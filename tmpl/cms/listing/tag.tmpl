@@ -85,7 +85,7 @@ jQuery('a.edit-tag').live('click', function() {
     .hide()
     .after(
       jQuery('<div>')
-      .attr('class', 'tag-editor')
+      .attr('class', 'tag-editor inline-editor')
       .append(
         jQuery('<input>')
           .val(name)
@@ -93,6 +93,7 @@ jQuery('a.edit-tag').live('click', function() {
       )
       .append(
         jQuery('<button>')
+          .attr('class', 'button')
           .text('<__trans phrase="Rename">')
           .button()
           .click( function(){
@@ -103,6 +104,7 @@ jQuery('a.edit-tag').live('click', function() {
       )
       .append(
         jQuery('<button>')
+          .attr('class', 'button')
           .text('<__trans phrase="Cancel">')
           .button()
           .click( closeTagEditor )

@@ -232,6 +232,12 @@ select {
     margin-left: 0.5em;
 }
 
+/* Inline Editor Button */
+.inline-editor .button, 
+.inline-editor .ui-button {
+    margin: 0 0 0 5px;
+}
+
 /* -- Split Button */
 .split .button {
     float: left;
@@ -240,14 +246,13 @@ select {
     font-weight: bold;
     padding-right: 0.8em;
 }
-
 .split .toggle-button {
     margin-left: -1px;
     border-top-left-radius: 0; 
     border-bottom-left-radius: 0;
 }
-
 .split .detail {
+    display: none;
     width: 99%;
 }
 
@@ -258,7 +263,6 @@ select {
 #alignment li {
     display: inline;
 }
-
 #alignment .ui-button {
     width: 50px;
     margin: 0;
