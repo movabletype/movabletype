@@ -236,6 +236,8 @@ sub list_actions {
             unless UNIVERSAL::isa( $actions->{$a}{plugin}, 'MT::Plugin' );
         $actions->{$a}{js_message} = $actions->{$a}{label}
             unless $actions->{$a}{js_message};
+        $actions->{$a}{action_mode} = $actions->{$a}{mode}
+            if $actions->{$a}{mode};
         if ( exists $actions->{$a}{continue_prompt_handler} ) {
             my $code = $app->handler_to_coderef(
                 $actions->{$a}{continue_prompt_handler} );
@@ -3397,6 +3399,7 @@ sub load_list_actions {
         $param->{more_list_actions} = \@plugin_actions;
         $param->{list_actions}      = \@core_actions;
         $param->{button_actions}    = \@button_actions;
+        $param->{all_actions}       = $all_actions;
         $param->{has_list_actions}
             = ( @plugin_actions || @core_actions ) ? 1 : 0;
     }

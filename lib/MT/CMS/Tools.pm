@@ -303,7 +303,7 @@ sub new_password {
 
 sub do_list_action {
     my $app = shift;
-    $app->validate_magic or return;
+    #$app->validate_magic or return;
     my $q    = $app->param;
     # plugin_action_selector should always (?) be in the query; use it?
     my $action_name = $app->param('action_name');
@@ -352,6 +352,22 @@ sub do_list_action {
             ( $blog ? ( blog_id => $blog->is_blog ? $blog_id : [ $blog->id, map { $_->id } @{$blog->blogs} ] ) : () ),
         );
         $q->param('id', map { $_->id } @objs );
+    }
+    else {
+        my @ids = $q->param('id');
+        if ( scalar @ids == 1 && $ids[0] =~ /,/ ) {
+            $q->param('id', split ',', $ids[0] );
+        }
+    }
+    if ( $q->param('xhr') ) {
+        my $res = $the_action->{code}->($app);
+        if ( !defined $res && !$app->errstr ) {
+            return $app->json_error( MT->translate( q{Error occured while act [_1]: [_2]}, $the_action->label, $app->errstr ) );
+        }
+        elsif ( !defined $res ) {
+            return;
+        }
+        return $app->forward('filtered_list', ( 'HASH' eq ref $res ? %$res : () ) );
     }
     $the_action->{code}->($app);
 }

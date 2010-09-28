@@ -137,6 +137,10 @@ sub core_methods {
         'handle_junk'        => "${pkg}Comment::handle_junk",
         'not_junk'           => "${pkg}Comment::not_junk",
         'open_batch_editor'  => "${pkg}Entry::open_batch_editor",
+        'delete_filters'     => {
+            code => "${pkg}Filter::delete_filters",
+            app_mode => 'JSON',
+        },
 
         'ping'               => "${pkg}Entry::send_pings",
         'rebuild_phase'      => "${pkg}Blog::rebuild_phase",
@@ -589,6 +593,7 @@ sub core_list_actions {
                 order       => 300,
                 code        => "${pkg}Tag::add_tags_to_entries",
                 input       => 1,
+                xhr         => 1,
                 input_label => 'Tags to add to selected entries',
                 condition   => sub {
                     return 0 if $app->mode eq 'view';
@@ -1448,6 +1453,17 @@ sub core_list_actions {
                 mode       => 'delete',
                 order      => 110,
                 js_message => 'delete',
+                button     => 1,
+            },
+        },
+        'filter' => {
+            'delete' => {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete_filters',
+                order      => 110,
+                js_message => 'delete',
+                xhr        => 1,
                 button     => 1,
             },
         },

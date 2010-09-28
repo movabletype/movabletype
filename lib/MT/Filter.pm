@@ -107,7 +107,7 @@ sub list_props {
                 my $label = $reg->{label} || $reg->{object_label};
                 if ( !$label ) {
                     my $class = $reg->{object_type} || $screen_id;
-                    $label = MT->model($class)->class_label;
+                    $label = $class ? MT->model($class)->class_label : $prop->class;
                 }
                 return ref $label ? $label->() : $label;
             },

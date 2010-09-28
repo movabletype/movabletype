@@ -62,13 +62,13 @@
     <mt:setvarblock name="jq_js_include" append="1">
 var messages = {};
         <mt:loop name="button_actions">
-messages['<mt:var name="mode">'] = '<__trans phrase="<mt:var name="js_message">" escape="js">';
+messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" escape="js">';
         </mt:loop>
     </mt:setvarblock>
 
     <mt:setvarblock name="button_actions">
         <mt:loop name="button_actions">
-  <a href="#<mt:var name="mode">" class="button"><mt:var name="label"></a>
+  <a href="#<mt:var name="key">" class="button<mt:if name="xhr"> xhr</mt:if>"><mt:var name="label"></a>
         </mt:loop>
     </mt:setvarblock>
 </mt:if>
@@ -603,7 +603,7 @@ function renderList(mode, columns, values, limit, page ) {
     params['sort_order'] = jQuery('th.sorted').find('span').hasClass('desc') ? 'descend' : 'ascend';
   }
   if (jQuery('input[name=filter_id]').val()) {
-    params['id'] = jQuery('input[name=filter_id]').val();
+    params['fid'] = jQuery('input[name=filter_id]').val();
   }
   if (jQuery('input[name=filter_name]').val()) {
     params['label'] = jQuery('input[name=filter_name]').val();
@@ -1089,70 +1089,116 @@ jQuery('.action_selector').change(function() {
   jQuery('.action_selector').val(selected);
 });
 
-function doForMarked(formid, mode, singlar, plural, phrase) {
-    var $form = jQuery('#'+formid);
-    if (!$form.length) {
-      return;
-    }
+function doForMarked(formid, action, singlar, plural, phrase, xhr) {
+  var $form = jQuery('#'+formid);
+  if (!$form.length) {
+    return;
+  }
 
-    var action;
-    if ( mode == 'itemset_action' ) {
-        var $selected = $form.find('option:selected');
-        action = $selected.val();
-    }
-    else {
-        action = mode;
-    }
-    if (action == '') {
-      alert(trans('You must select an action.'));
-      return;
-    }
-    if (action) {
-      $form.find('input[name=action_name]').val(action);
+  var mode;
+  var params = {};
+  if ( action == 'itemset_action' ) {
+      var $selected = $form.find('option:selected');
+      action = $selected.val();
+  }
+
+  if (action == '') {
+    alert(trans('You must select an action.'));
+    return;
+  }
+  var opt = itemset_options[action];
+  if ( !opt )
+    return false;
+  var xhr = opt['xhr'];
+  var mode = opt['mode'] || 'itemset_action';
+  if ($form.find('input[name=itemset_action_input]').val()) {
+    $form.find('input[name=itemset_action_input]').val('');
+  }
+
+  var count = $form.find('input[name=id]').filter(':checked').length;
+  if (!count) {
+    alert(trans('You did not select any [_1] to [_2].', plural, phrase));
+    return;
+  }
+  if (opt['min'] && (count < opt['min'])) {
+    alert(trans('You can only act upon a minimum of [_1] [_2].', opt['min'], plural));
+    return false;
+  } else if (opt['max'] && (count > opt['max'])) {
+    alert(trans('You can only act upon a maximum of [_1] [_2].', opt['max'], plural));
+    return false;
+  } else if (opt['input']) {
+    if (input = prompt(opt['input'])) {
+      $form.find('[name=itemset_action_input]').val(input);
+      params['itemset_action_input'] = input;
     } else {
-      $form.find('input[name=action_name]').val('');
+      return false;
     }
+  } else if (opt['continue_prompt']) {
+    if (!confirm(opt['continue_prompt'])) {
+      return false;
+    }
+  }
 
-    var count = $form.find('input[name=id]').filter(':checked').length;
-    if (!count) {
-      alert(trans('You did not select any [_1] to [_2].', plural, phrase));
-      return;
-    }
-    if ($form.find('input[name=itemset_action_input]').val()) {
-      $form.find('input[name=itemset_action_input]').val('');
-    }
-    if (vals.length) {
-      $form.find('input[name=items]').val(jQuery.toJSON(vals));
-    }
+  if (xhr) {
+    params['mode'] = mode;
+    params['xhr'] = 1;
+    params['all_selected'] = jQuery('input[name=all_selected]').val();
+    params['magic_token'] = '<mt:var name="magic_token">';
+    params['id'] = $form
+        .find('input[name=id]:checked')
+        .map(function(){
+            return jQuery(this).val();
+        })
+        .get()
+        .join(",");
+    params['_type'] = '<mt:var name="object_type">';
+  }
+  if (action) {
+    $form.find('input[name=action_name]').val(action);
+      params['action_name'] = action;
+  } else {
+    $form.find('input[name=action_name]').val('');
+  }
 
-    if (phrase) {
-      var message = ( count == 1 )
-        ? trans('Are you sure you want to [_2] this [_1]?', singlar, phrase)
-        : trans('Are you sure you want to [_3] the [_1] selected [_2]?', count, plural, phrase);
-      if (!confirm(message)) {
-          return;
-      }
-    }
+  if (vals.length) {
+    var items = jQuery.toJSON(vals);
+    $form.find('input[name=items]').val(items);
+    params['items'] = items;
+  }
 
-    $form.find('input[name=__mode]').val(mode);
+  if (phrase) {
+    var message = ( count == 1 )
+      ? trans('Are you sure you want to [_2] this [_1]?', singlar, phrase)
+      : trans('Are you sure you want to [_3] the [_1] selected [_2]?', count, plural, phrase);
+    if (!confirm(message)) {
+        return;
+    }
+  }
+
+  $form.find('input[name=__mode]').val(mode);
+  if ( xhr )
+    renderList(params);
+  else
     $form.submit();
 }
 
-jQuery('button.mt-<mt:var name="object_type">-listing-form-action').mtDoPluginAction({
-    id: '<mt:var name="object_type">-listing-form',
-    plural: '<mt:var name="object_label_plural" escape="js">',
-    args: {},
-    phrase: 'to act upon'
+jQuery('button.mt-<mt:var name="object_type">-listing-form-action').click(function() {
+  var id = '<mt:var name="object_type">-listing-form';
+  var singlar = '<mt:var name="object_label" lower_case="1" escape="js">';
+  var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
+  var phrase = '<__trans phrase="act upon" escape="js">';
+  doForMarked(id, 'itemset_action', singlar, plural, phrase);
+  return false;
 });
 
 jQuery('.actions-bar a.button').click(function() {
   jQuery(this).attr('href').match(/#(.*)/);
-  var mode = RegExp.$1;
+  var action = RegExp.$1;
   var id = '<mt:var name="object_type">-listing-form';
   var singlar = '<mt:var name="object_label" lower_case="1" escape="js">';
   var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
-  var phrase = messages[mode];
-  doForMarked(id, mode, singlar, plural, phrase);
+  var phrase = messages[action];
+  doForMarked(id, action, singlar, plural, phrase);
   return false;
 });
 

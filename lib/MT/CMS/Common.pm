@@ -956,7 +956,7 @@ sub filtered_list {
     my ( %forward_params ) = @_;
     my $q    = $app->param;
     my $blog_id = $q->param('blog_id') || 0;
-    my $filter_id = $q->param('id') || $forward_params{saved_id};
+    my $filter_id = $q->param('fid') || $forward_params{saved_fid};
     my $blog = $blog_id ? $app->blog : undef;
     my $blog_ids = !$blog         ? undef
                  : $blog->is_blog ? [ $blog_id ]

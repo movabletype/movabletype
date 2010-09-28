@@ -226,19 +226,20 @@ sub js_recent_entries_for_tag {
 
 sub add_tags_to_entries {
     my $app = shift;
-
+    my $xhr = $app->param('xhr');
     my @id = $app->param('id');
 
     require MT::Tag;
     my $tags      = $app->param('itemset_action_input');
     my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
     my @tags      = MT::Tag->split( $tag_delim, $tags );
-    return $app->call_return unless @tags;
+    return $xhr ? undef : $app->call_return unless @tags;
 
     require MT::Entry;
 
     my $user  = $app->user;
     my $perms = $app->permissions;
+    my $entry_count = 0;
     foreach my $id (@id) {
         next unless $id;
         my $entry = MT::Entry->load($id) or next;
@@ -247,6 +248,7 @@ sub add_tags_to_entries {
           || $user->is_superuser
           || $perms->can_edit_entry( $entry, $user );
 
+        $entry_count++;
         $entry->add_tags(@tags);
         $entry->save
           or return $app->trans_error( "Error saving entry: [_1]",
@@ -254,7 +256,14 @@ sub add_tags_to_entries {
     }
 
     $app->add_return_arg( 'saved' => 1 );
-    $app->call_return;
+    return $xhr
+        ? { messages => [ {
+            cls => 'success',
+            msg => MT->translate(
+                'Added [_1] tags for [_2] entries successfully!',
+                scalar @tags,
+                $entry_count, )}]}
+        : $app->call_return;
 }
 
 sub remove_tags_from_entries {

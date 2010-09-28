@@ -11,7 +11,7 @@ use warnings;
 sub save {
     my $app       = shift;
     my $q         = $app->param;
-    my $id        = $q->param('id');
+    my $fid       = $q->param('fid');
     my $author_id = $q->param('author_id') || $app->user->id;
     my $blog_id   = $q->param('blog_id') || 0;
     my $label     = $q->param('label');
@@ -43,7 +43,7 @@ sub save {
             {   label     => $label,
                 object_ds => $ds,
                 author_id => $app->user->id,
-                ( $id ? ( id => { not => $id } ) : () ),
+                ( $fid ? ( id => { not => $fid } ) : () ),
             },
             {   limit      => 1,
                 fetch_only => { id => 1 },
@@ -57,8 +57,8 @@ sub save {
             )
         );
     }
-    if ($id) {
-        $filter = $filter_class->load($id)
+    if ($fid) {
+        $filter = $filter_class->load($fid)
             or return $app->json_error( $app->translate('No such filter') );
     }
     else {
@@ -101,7 +101,7 @@ sub save {
         $app->forward(
             'filtered_list',
             saved       => 1,
-            saved_id    => $filter->id,
+            saved_fid   => $filter->id,
             saved_label => $filter->label,
         );
     }
@@ -110,9 +110,9 @@ sub save {
 sub delete {
     my $app          = shift;
     my $q            = $app->param;
-    my $id           = $q->param('id');
+    my $fid          = $q->param('fid');
     my $filter_class = MT->model('filter');
-    my $filter       = $filter_class->load($id)
+    my $filter       = $filter_class->load($fid)
         or return $app->json_error( $app->translate('No such filter') );
     my $blog_id   = $q->param('blog_id') || 0;
     my $ds        = $q->param('datasource');
@@ -138,6 +138,30 @@ sub delete {
     $res{filters} = \@filters;
     $res{editable_filter_count} = scalar grep { $_->{can_edit} } @filters;
     return $app->json_result( \%res );
+}
+
+sub delete_filters {
+    my $app = shift;
+    my $id = $app->param('id');
+    my @ids = split ',', $id;
+    my $res = MT->model('filter')->remove({ id => \@ids })
+        or return $app->json_error(
+            MT->translate(
+                'Failed to remove filters: [_1]',
+                MT->model('filter')->errstr,
+            ));
+    unless ( $res > 0 ) {
+        ## if $res is 0E0 ( zero but true )
+        return $app->json_error(
+            MT->translate('No such filter.',) );
+    }
+    $app->forward( 'filtered_list', messages => [{
+        cls => 'success',
+        msg => MT->translate(
+            'Removed [_1] filters successfully.',
+            $res,
+        ),
+    }]);
 }
 
 ## Note that these filter loading methods below NOT return instances of MT::Filter class.
