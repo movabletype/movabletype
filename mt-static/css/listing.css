@@ -1,3 +1,4 @@
+#filter-header,
 .listing-table-block {
     position: relative;
 }
@@ -215,12 +216,59 @@ tfoot .col.head{
     margin-bottom: 10px;
 }
 .filteritem .item-label {
-  float: left;
-  margin-top: 3px;
-  margin-right: 10px;
-  font-weight: bold;
+    float: left;
+    margin-top: 3px;
+    margin-right: 10px;
+    font-weight: bold;
 }
 
+/* - Select Filter */
+#dialog_filter {
+    position: absolute;
+    left: 10px;
+    z-index: 90;
+    width: 380px;
+    background-color: #f3f3f3;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    -moz-border-radius: 0 0 5px 5px;
+    box-shadow: 1px 1px 2px #666;
+    -webkit-box-shadow: 1px 1px 2px #666;
+    -moz-box-shadow: 1px 1px 2px #666;
+}
+#dialog_filter_header {
+    position: relative;
+    padding: 5px 10px;
+    background-color: #dcdddd;
+}
+.edit-filter {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+}
+#dialog_filter_content {
+    padding-top: 0;
+}
+
+#create-new-link {
+    padding: 10px 0;
+    border-bottom: 1px solid #c0c6c9;
+    font-size: 110%;
+}
+#create-new-link a {
+    color: #2b2b2b;
+}
+#dialog_filter .filter {
+    margin: 0;
+    padding: 0.3em 0;
+    border-bottom: 1px solid #f3f3f3;
+}
+#dialog_filter.editing .filter {
+    border-color: #dcdddd;
+}
+#dialog_filter .filter.last-child {
+    border: 0;
+}
 .handle-filter {
     text-align: right;
 }
@@ -231,15 +279,6 @@ tfoot .col.head{
 .rename-link:hover {
     color: #c53d43;
 }
-.ui-dialog-content {
-    position: relative;
-}
-.edit-filter {
-    position: absolute;
-    right: 5px;
-    top: 5px;
-}
-
 .item-action {
     display: inline-block;
     margin-left: 8px;

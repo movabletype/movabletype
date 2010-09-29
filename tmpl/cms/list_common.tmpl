@@ -120,6 +120,14 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
               <img src="<$mt:var name="static_uri"$>images/arrow/arrow-toggle-big.png" />
             </a>
           </div>
+
+          <div id="dialog_filter" class="hidden">
+            <div id="dialog_filter_header">
+              <h2><__trans phrase="Select Filter"></h2>
+              <a href="#" class="edit-filter"><__trans phrase="Edit"></a>
+            </div>
+            <div id="dialog_filter_content" class="mod"></div>
+          </div>
         </div>
 
         <div id="filter-detail" class="detail">
@@ -167,10 +175,6 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
   </mt:if>
 
   </div>
-</div>
-
-<div id="dialog_filter" title="Select Filter">
-  <div class="edit-filter button"><__trans phrase="Edit"></div>
 </div>
 
 <div id="dialog_save_filter">
@@ -341,10 +345,10 @@ function renderFilterList() {
     jQuery('#dialog_filter .edit-filter').hide();
 
   jQuery('#filter_list').empty();
-  jQuery('<ul id="filter_list" />').appendTo('#dialog_filter');
+  jQuery('<ul id="filter_list" />').appendTo('#dialog_filter_content');
 
-  var line = '<span class="filter-label unit size3of5"><a href="#" id="new_filter" class="apply-link"><__trans phrase="New Filter"></a></span>';
-  jQuery('<li class="filter line" />').append(line).appendTo('#filter_list');
+  var line = '<div id="create-new-link"><a href="#" id="new_filter" class="icon-left-wide addnew apply-link"><__trans phrase="Create New Filter"></a></div>';
+  jQuery(line).appendTo('#filter_list');
   for (var i = 0, length = filters.length; i < length; i++) {
     var filter = filters[i];
     line = '<span class="filter-label unit size3of5"><a href="#'+i+'" class="apply-link">'+filter.label+'</a></span>';
@@ -363,7 +367,7 @@ function renderFilterList() {
     jQuery('#opener').html('<__trans phrase="New Filter">');
     jQuery('#filter_id').val('');
     updateItemList();
-    jQuery('#dialog_filter').dialog('close');
+    jQuery('#dialog_filter').addClass('hidden');
   });
   jQuery('#dialog_filter .filter-label a:not(#new_filter)').click(function() {
     jQuery(this).attr('href').match(/#(.*)/);
@@ -971,20 +975,19 @@ jQuery('#saveas').click(function() {
   return false;
 });
 
-jQuery('#dialog_filter').dialog({
-  autoOpen: false
-});
-
 jQuery('#opener').click(function() {
-  jQuery('#dialog_filter')
-    .find('.edit-filter')
-    .removeClass('editing')
-    .text('Edit').end()
-    .find('.filter').show().end()
-    .find('.rename-field').remove().end()
-    .find('.rename-link').hide().end()
-    .find('.delete-link').hide().end()
-    .dialog('open');
+  if (jQuery('#dialog_filter').hasClass('hidden')) {
+    jQuery('#dialog_filter')
+      .removeClass('editing hidden')
+      .find('.edit-filter')
+      .text('Edit').end()
+      .find('.filter').show().end()
+      .find('.rename-field').remove().end()
+      .find('.handle-filter').hide().end();
+  } else {
+    jQuery('#dialog_filter')
+      .addClass('hidden');
+  }
   return false;
 });
 
@@ -1067,17 +1070,15 @@ function addItems(items, op) {
 
 jQuery('#dialog_filter .edit-filter').click(function() {
     var text;
-    jQuery(this).toggleClass('editing');
+    jQuery(this).parents('#dialog_filter').toggleClass('editing');
     jQuery('.filter').show();
-    if (jQuery(this).hasClass('editing')) {
+    if (jQuery(this).parents('#dialog_filter').hasClass('editing')) {
       jQuery(this).text('Done Editing');
-      jQuery('.rename-link').show();
-      jQuery('.delete-link').show();
+      jQuery('.handle-filter').show();
     } else {
       jQuery(this).text('Edit');
       jQuery('.rename-field').remove();
-      jQuery('.rename-link').hide();
-      jQuery('.delete-link').hide();
+      jQuery('.handle-filter').hide();
     }
     return false;
 });
@@ -1102,7 +1103,7 @@ function applyFilter(index) {
     itemValues()
     renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
   }
-  jQuery('#dialog_filter').dialog('close');
+  jQuery('#dialog_filter').addClass('hidden');
 }
 
 jQuery('.action_selector').change(function() {
