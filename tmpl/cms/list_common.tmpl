@@ -141,7 +141,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
       </div>
   
       <div id="listing-table" class="listing-table-block">
-        <div id="listtable-overlay" class="overlay"></div>
+        <div id="listing-table-overlay" class="overlay"></div>
         <table id="<mt:var name="object_type">-table" class="listing-table <mt:var name="object_type">">
           <thead></thead>
           <tfoot></tfoot>
@@ -217,7 +217,7 @@ jQuery(window).bind( 'ajaxStart', function() {
     jQuery('.msg-error').remove();
   });
 
-jQuery('.indicator, #list-overlay')
+jQuery('.indicator, #listing-table-overlay')
   .hide()
   .bind('ajaxStart', function() {
     jQuery(this).show();
