@@ -622,6 +622,20 @@ sub cfg_registration {
     $param{cmtauth_loop} = \@cmtauth_loop;
     $param{saved}        = $app->param('saved');
 
+    my @def = split ',', $app->config('DefaultAssignments');
+    my @roles;
+    my @role_ids;
+    while ( my $r_id = shift @def ) {
+        my $b_id = shift @def;
+        next unless $b_id eq $blog->id;
+        my $role = $app->model('role')->load( $r_id )
+            or next;
+        push @roles, { role_id => $r_id, role_name => $role->name };
+        push @role_ids, $r_id;
+    }
+    $param{new_roles} = \@roles;
+    $param{new_created_user_role} = join ( ',', @role_ids );
+
     $app->load_tmpl( 'cfg_registration.tmpl', \%param );
 }
 
@@ -1729,6 +1743,20 @@ sub post_save {
                     $perms->errstr );
             }
         }
+    }
+    if ( $screen eq 'cfg_registration' ) {
+        my $blog_id = $obj->id;
+        my @role_ids = split ',', ( $app->param('new_created_user_role') || '' );
+        my @def = split ',', $app->config('DefaultAssignments');
+        my @defaults;
+        while ( my $r_id = shift @def ) {
+            my $b_id = shift @def;
+            next if $b_id eq $blog_id;
+            push @defaults, join( ',' , $r_id, $b_id );
+        }
+        push @defaults, join ( ',', $_, $blog_id ) for @role_ids;
+        $app->config( 'DefaultAssignments', join( ',', @defaults ), 1 );
+        $app->config->save_config;
     }
 
     if ( !$original->id ) {    # If the object is new, the "orignal" was blank

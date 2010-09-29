@@ -58,6 +58,21 @@ function dialog_closed(ok) {
     }
 }
 
+function returnRoleSelection(ok) {
+    if (ok) {
+        parent.jQuery('span.items').empty();
+
+        var ids = new Array();
+        jQuery('input[name=role-cb]:checked').each( function() {
+            ids.push(this.value);
+            parent.jQuery('span.items').append('<span id="selected-role-'+this.value+'" class="sticky-label selected-item">'+jQuery('tr#role-'+this.value+' > td.panel-label > label').text()+'&nbsp;<span class="remove clickable">x</span></span>');
+        });
+        parent.jQuery('input#new_created_user_role').val( ids.join(",") );
+    }
+    parent.jQuery.fn.mtDialog.close();
+}
+
+
 function init() {
     dialog = new Dialog.MultiPanel("assoc");
     panels = [];
@@ -66,7 +81,7 @@ function init() {
     panel.pager.setState(<mt:var name="pager_json">);
     panels[panels.length] = panel;</mt:loop>
     dialog.setPanels(panels);
-    dialog.open({}, dialog_closed);
+    dialog.open({}, <mt:var name="confirm_js" default="dialog_closed">);
 }
 
 TC.attachLoadEvent(init);

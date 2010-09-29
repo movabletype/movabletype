@@ -1548,7 +1548,7 @@ sub dialog_grant_role {
 
     my $type = $app->param('_type');
     my ( $user, $role );
-    if ($author_id) {
+    if ($author_id && $author_id ne 'PSEUDO') {
         $user = MT::Author->load($author_id);
     }
     if ($role_id) {
@@ -1588,13 +1588,6 @@ sub dialog_grant_role {
         $terms->{type}   = MT::Author::AUTHOR();
     }
 
-    my $pseudo_user_row = {
-        id    => 'PSEUDO',
-        label => $app->translate('(newly created user)'),
-        description =>
-          $app->translate('represents a user who will be created afterwards'),
-    };
-
     if ( $app->param('search') || $app->param('json') ) {
         my $params = {
             panel_type   => $type,
@@ -1609,17 +1602,7 @@ sub dialog_grant_role {
                 code     => $hasher,
                 params   => $params,
                 template => 'include/listing_panel.tmpl',
-                $app->param('search') ? ( no_limit => 1 ) : (
-                    pre_build => sub {
-                        my ($param) = @_;
-                        if ( $type && $type eq 'author' ) {
-                            if ( !$app->param('offset') ) {
-                                my $objs = $param->{object_loop} ||= [];
-                                unshift @$objs, $pseudo_user_row;
-                            }
-                        }
-                    }
-                ),
+                $app->param('search') ? ( no_limit => 1 ) : (),
             }
         );
     }
@@ -1726,8 +1709,12 @@ sub dialog_grant_role {
             };
 
             # Only show active user/groups.
+            my $limit = $app->param('limit') || 25;
             my $terms = {};
-            my $args = { sort => 'name' };
+            my $args = {
+                sort => 'name',
+                limit => $limit,
+            };
             if ( $source eq 'author' ) {
                 $terms->{status} = MT::Author::ACTIVE();
                 $terms->{type}   = MT::Author::AUTHOR();
@@ -1741,21 +1728,6 @@ sub dialog_grant_role {
                     params  => $panel_params,
                     terms   => $terms,
                     args    => $args,
-                    pre_build => sub {
-                        my ($param) = @_;
-                        my $limit = $param->{limit} || 25;
-                        my $count = 0;
-                        if ( $source && ( $source eq 'author' ) ) {
-                            if ( !$app->param('offset') ) {
-                                my $data = $panel_params->{object_loop}
-                                    ||= [];
-                                unshift @$data, $pseudo_user_row;
-                                splice( @$data, $limit ) if scalar(@$data) > $limit;
-                                $count = 1;
-                            }
-                        }
-                        return $count;
-                    },
                 }
             );
             if (
@@ -1772,6 +1744,10 @@ sub dialog_grant_role {
 
         # save the arguments from whence we came...
         $params->{return_args} = $app->return_args;
+
+        $params->{confirm_js} = $app->param('confirm_js')
+            if $app->param('confirm_js');
+
         $app->load_tmpl( 'dialog/create_association.tmpl', $params );
     }
 }
