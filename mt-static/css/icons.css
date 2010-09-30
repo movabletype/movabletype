@@ -4,13 +4,33 @@
 .icon16 {
     display: inline-block;
     width: 0px;
-    height: 17px;
-    padding-left: 17px;
+    height: 18px;
+    padding-left: 18px;
     overflow: hidden;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .icon-delete {
     background: transparent url(../images/delete.gif) center top no-repeat;
+}
+.icon-plus {
+    background-image: url(../images/status_icons/icon-plus.png);
+}
+.icon-minus {
+    background-image: url(../images/status_icons/icon-minus.png);
+}
+.icon-remove {
+    background-image: url(../images/status_icons/icon-remove.png);    
+}
+
+.action-icon {
+    border-radius: 9px;
+    -moz-border-radius: 9px;
+}
+.action-icon:hover {
+    background-color: #dcdddd;
 }
 
 .icon-left {

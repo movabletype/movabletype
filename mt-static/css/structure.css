@@ -174,8 +174,9 @@ pre {
 
 .close-link { 
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 50%;
+    right: 10px;
+    margin-top: -9px;
 }
 
 .rall {

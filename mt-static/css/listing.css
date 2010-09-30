@@ -221,6 +221,9 @@ tfoot .col.head{
     margin-right: 10px;
     font-weight: bold;
 }
+.filteritem .close-link {
+    top: 20px;
+}
 
 /* - Select Filter */
 #dialog_filter {
@@ -280,8 +283,7 @@ tfoot .col.head{
     color: #c53d43;
 }
 .item-action {
-    display: inline-block;
-    margin-left: 8px;
+    margin-left: 5px;
 }
 
 /* - Asset Preview */
