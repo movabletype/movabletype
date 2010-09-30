@@ -44,11 +44,6 @@ function cancelCreateMode () {
     </mt:if>
 </mt:setvarblock>
 
-<mt:if name="show_ip_info">
-<ul id="create-ip" class="action-link-list">
-    <li><a href="javascript:void(0)" onclick="setCreateMode()" class="icon-left icon-create"><__trans phrase="Ban IP Address"></a></li>
-</ul>
-
 <div id="create-inline-ipban" class="create-inline" style="display: none;">
     <form id="create-inline-ipban-form" method="post" action="<mt:var name="script_url">">
         <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
@@ -84,6 +79,11 @@ jQuery('#create-inline-ipban-form button.mt-do-action').click(function() {
 
 jQuery('#create-inline-ipban-form button.mt-cancel-action').click(function() {
     cancelCreateMode();
+    return false;
+});
+
+jQuery('#action-ban-ip').click( function() {
+    setCreateMode();
     return false;
 });
 

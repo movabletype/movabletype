@@ -534,6 +534,22 @@ sub core_content_actions {
                 order      => 200,
             },
         },
+        'banlist' => {
+            'ban_ip' => {
+                class => 'icon-create',
+                label => 'Ban IP Address',
+                id    => 'action-ban-ip',
+                order => 100,
+            },
+        },
+        'notification' => {
+            'add_contact' => {
+                class => 'icon-create',
+                label => 'Create Contact',
+                id    => 'action-create-contact',
+                order => 100,
+            },
+        },
     };
 }
 

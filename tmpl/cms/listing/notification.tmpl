@@ -98,17 +98,13 @@ function submit_edit_form(id) {
 }
 
 function setCreateMode () {
-    jQuery('#create-notification').hide();
     jQuery('#create-inline-notification').show();
-    jQuery('.actions-bar').hide();
     jQuery('#email').val('').focus();
     jQuery('#website').val('').focus();
 }
 
 function cancelCreateMode () {
-    jQuery('#create-notification').show();
     jQuery('#create-inline-notification').hide();
-    jQuery('.actions-bar').show();
     current_edit = 0;
 }
   /* ]]> */
@@ -138,10 +134,6 @@ function cancelCreateMode () {
   </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
-
-<ul id="create-notification" class="action-link-list">
-  <li id="create-contact"><a href="javascript:void(0)" onclick="setCreateMode()" class="icon-left icon-create"><__trans phrase="Create Contact"></a></li>
-</ul>
 
 <div class="create-inline" id="create-inline-notification" style="display: none;">
   <form method="post" action="<mt:var name="script_url">" id="create-inline-notification-form">
@@ -185,6 +177,11 @@ function cancelCreateMode () {
 
     jQuery('#create-inline-notification-form button.mt-cancel-action').click(function() {
         cancelCreateMode();
+        return false;
+    });
+
+    jQuery('#action-create-contact').click( function() {
+        setCreateMode();
         return false;
     });
 </mt:setvarblock>

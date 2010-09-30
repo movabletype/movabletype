@@ -270,7 +270,9 @@ sub content_actions {
                 blog_id     => ( $app->blog ? $app->blog->id : 0 ),
                 magic_token => $app->current_magic,
             },
-        );
+        ) if $action->{mode};
+        $args{id} = $action->{id}
+            if $action->{id};
         push @actions, $action;
     }
     $actions = $app->filter_conditional_list( \@actions, @param );
