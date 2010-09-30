@@ -231,7 +231,8 @@ tfoot .col.head{
     left: 10px;
     z-index: 90;
     width: 380px;
-    background-color: #f3f3f3;
+    border: 1px solid #dcdddd;
+    background-color: #fff;
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
     -moz-border-radius: 0 0 5px 5px;
@@ -264,7 +265,7 @@ tfoot .col.head{
 #dialog_filter .filter {
     margin: 0;
     padding: 0.3em 0;
-    border-bottom: 1px solid #f3f3f3;
+    border-bottom: 1px solid #fff;
 }
 #dialog_filter.editing .filter {
     border-color: #dcdddd;
