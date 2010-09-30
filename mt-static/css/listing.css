@@ -282,9 +282,6 @@ tfoot .col.head{
 .rename-link:hover {
     color: #c53d43;
 }
-.item-action {
-    margin-left: 5px;
-}
 
 /* - Asset Preview */
 .col .asset-preview {
@@ -299,23 +296,6 @@ tfoot .col.head{
 }
 .selected-items {
     min-height: 30px;
-}
-.selected-items .sticky-label {
-    padding: 0 0 0 0.3em;
-    margin: 0 0.2em 0.5em 0;
-    background-color: #dcdddd;
-    text-decoration: none;
-}
-.selected-items .sticky-label .remove {
-    border-left: 1px solid #adadad;
-    padding: 0 0.3em;
-    margin-left: 0.3em;
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px;
-}
-.selected-items .sticky-label .remove:hover {
-    background-color: #adadad;
-    color: white;
 }
 
 /* - Lisiting Footer */

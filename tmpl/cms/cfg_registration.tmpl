@@ -1,121 +1,123 @@
 <mt:setvar name="page_title" value="<__trans phrase="Registration Settings">">
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="registration-settings" value="1">
-<MTSetVarBlock name="system_msg">
-    <mt:if name="error">
-        <mtapp:statusmsg
-            id="generic-error"
-            class="error">
-            <mt:var name="error">
-        </mtapp:statusmsg>
-    </mt:if>
-    <mt:if name="saved">
-        <mtapp:statusmsg
-            id="saved"
-            class="success">
-            <__trans phrase="Your blog preferences have been saved.">
-        </mtapp:statusmsg>
-    </mt:if>
-</MTSetVarBlock>
+
+<mt:setvarblock name="system_msg">
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="error"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="saved">
+  <mtapp:statusmsg
+     id="saved"
+     class="success"
+     can_close="1">
+    <__trans phrase="Your blog preferences have been saved.">
+  </mtapp:statusmsg>
+</mt:if>
+</mt:setvarblock>
+
 <mt:include name="include/header.tmpl">
 
 <form name="cfg_form" method="post" action="<mt:var name="script_url">">
-    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
-    <input type="hidden" name="__mode" value="save" />
-    <input type="hidden" name="_type" value="blog" />
-    <input type="hidden" name="cfg_screen" value="cfg_registration" />
-    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
-    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+  <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+  <input type="hidden" name="__mode" value="save" />
+  <input type="hidden" name="_type" value="blog" />
+  <input type="hidden" name="cfg_screen" value="cfg_registration" />
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+<mt:unless name="external_user_management">
+  <mtapp:setting
+     id="allow_commenter_regist"
+     label="<__trans phrase="User Registration">"
+     hint="<__trans phrase="Allow registration for this website.">">
+  <mt:if name="system_disallow_registration">
+    <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Registration Not Enabled">" width="9" height="9" />
+    <span class="alert-warning-inline"><__trans phrase="Note: Registration is currently disabled at the system level."></span>
+  </mt:if>
+    <p><input type="checkbox" id="allow_commenter_regist" name="allow_commenter_regist" value="1"<mt:if name="allow_commenter_regist"> checked="checked"</mt:if> class="cb" /> <label for="allow_commenter_regist"><__trans phrase="Allow visitors to register as members of this website using one of the Authentication Methods selected below."></label></p>
+  </mtapp:setting>
+</mt:unless>
 
-    <mt:unless name="external_user_management">
-    <mtapp:setting
-        id="allow_commenter_regist"
-        label="<__trans phrase="User Registration">"
-        content_class="field-content-text"
-        hint="<__trans phrase="Allow registration for this website.">">
-        <mt:if name="system_disallow_registration">
-        <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Registration Not Enabled">" width="9" height="9" />
-        <span class="alert-warning-inline"><__trans phrase="Note: Registration is currently disabled at the system level."></span>
-        <mt:else>
-        </mt:else>
-        </mt:if>
-        <p><input type="checkbox" id="allow_commenter_regist" name="allow_commenter_regist" value="1"<mt:if name="allow_commenter_regist"> checked="checked"</mt:if> class="cb" /> <label for="allow_commenter_regist"><__trans phrase="Allow visitors to register as members of this website using one of the Authentication Methods selected below."></label></p>
-    </mtapp:setting>
-    </mt:unless>
+  <mtapp:setting
+     id="new_created_user_role"
+     label="<__trans phrase="New Created User">"
+     hint="<__trans phrase="Select a role you wish to assign to a user who will be created afterwards.">"
+     show_hint="1">
+    <div class="selected-items">
+      <span class="items">
+    <mt:if name="new_roles">
+    <mt:loop name="new_roles">
+      <span id="selected-role-<mt:var name="role_id">" class="sticky-label selected-item"><mt:var name="role_name" escape="html">&nbsp;<span class="remove clickable">x</span></span>
+    </mt:loop>
+    <mt:else>
+        <__trans phrase="(No role selected)">
+    </mt:if>
+      </span>
+    </div>
+    <input type="hidden" id="new_created_user_role" name="new_created_user_role" value="<mt:var name="new_created_user_role" escape="html">" />
+    <a class="mt-open-dialog" href="<mt:var name="script_url">?__mode=dialog_grant_role&amp;confirm_js=returnRoleSelection&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;_type=user&amp;author_id=PSEUDO&amp;type=<mt:var name="scope_type">" id="select-role-link">Select role</a>
+  </mtapp:setting>
 
-    <mtapp:setting
-        id="new_created_user_role"
-        label="<__trans phrase="New Created User">"
-        content_class="field-content-text"
-        hint="<__trans phrase="Select a role you wish to assign to a user who will be created afterwards.">"
-        show_hint="1">
-        <span class="items">
-        <mt:if name="new_roles">
-            <mt:loop name="new_roles">
-                <span id="selected-role-<mt:var name="role_id">" class="sticky-label selected-item"><mt:var name="role_name" escape="html">&nbsp;<span class="remove clickable">x</span></span>
-            </mt:loop>
-        <mt:else>
-            <__trans phrase="(No role selected)">
-        </mt:if>
-        </span>
-        <input type="hidden" id="new_created_user_role" name="new_created_user_role" value="<mt:var name="new_created_user_role" escape="html">" />
-        <br/><a class="mt-open-dialog" href="<mt:var name="script_url">?__mode=dialog_grant_role&amp;confirm_js=returnRoleSelection&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;_type=user&amp;author_id=PSEUDO&amp;type=<mt:var name="scope_type">" id="select-role-link">Select role</a>
-    </mtapp:setting>
-<fieldset>
+  <mtapp:setting
+     id="setting-auth-status"
+     label="<__trans phrase="Authentication Methods">">
+  <mt:unless name="commenter_authenticators">
+    <mt:if name="allow_reg_comments">
+      <mt:unless name="allow_unreg_comments">
+    <p class="alert-warning-inline icon-left icon-warning"><__trans phrase="Note: You have selected to accept comments from authenticated commenters only but authentication is not enabled. In order to receive authenticated comments, you must enable authentication."></p>
+      </mt:unless>
+    </mt:if>
+  </mt:unless>
+    <ul>
+      <mt:include name="include/anonymous_comment.tmpl">
+      <li><input type="checkbox" id="enabled_MovableType" name="enabled_MovableType" value="1"<mt:if name="enabled_MovableType"> checked="checked"</mt:if> /> <label for="enabled_MovableType"><__trans phrase="Movable Type"></label></li>
+  <mt:if name="cmtauth_loop">
+    <mt:loop name="cmtauth_loop">
+    <mt:if name="key" eq="TypeKey">
+      <mt:setvar name="typekey_enabled" value="1">
+      <li><input type="checkbox" id="enabled_<mt:var name="key" escape="html">" name="enabled_<mt:var name="key" escape="html">" value="1" onclick="toggleSubPrefs(this); return true"<mt:if name="enabled"> checked="checked"</mt:if><mt:if name="disabled"> disabled="disabled"</mt:if> /> <label for="enabled_<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label>
+        <ul id="enabled_TypeKey_prefs"<mt:unless name="enabled"> class="hidden"</mt:unless>>
+          <li>
+            <input type="checkbox" value="1" id="require_typekey_emails" name="require_typekey_emails"<mt:if name="require_typekey_emails"> checked="checked"</mt:if> class="cb" />&nbsp;<label for="require_typekey_emails"><__trans phrase="Require E-mail Address for Comments via TypePad"></label>
+            <p class="hint"><__trans phrase="Visitors must allow their TypePad account to share their e-mail address when commenting."></p>
+            <a href="javascript:void(0)" onclick="return openManual('blog_settings_feedback', 'require_email_address')" class="help-link">?</a>
+          </li>
+        </ul>
+      </li>
+    <mt:else>
+      <li><input type="<mt:if name="label">checkbox<mt:else>hidden</mt:if>" id="enabled_<mt:var name="key" escape="html">" name="enabled_<mt:var name="key" escape="html">" value="1"<mt:if name="enabled"> checked="checked"</mt:if><mt:if name="disabled"> disabled="disabled"</mt:if> /> <label for="enabled_<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label><mt:if name="disabled"> (<mt:var name="disabled_reason" default="<__trans phrase="One or more Perl modules may be missing to use this authentication method.">">)</mt:if></li>
+    </mt:if>
+  </mt:loop>
+    </ul>
+  </mt:if>
+  
+  <mt:unless name="typekey_enabled">
+    <div><a href="<mt:var name="script_url">?__mode=cfg_web_services&amp;blog_id=<mt:var name="blog_id" escape="url">"><__trans phrase="Setup TypePad authentication"></a> <__trans phrase="on the Web Services Settings page."></div>
+  </mt:unless>
+  <mt:unless name="openid_enabled">
+    <p>
+      <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="OpenID providers disabled">" width="9" height="9" />
+      <span class="alert-warning-inline"><__trans phrase="The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing."></span>
+    </p>
+  </mt:unless>
+  </mtapp:setting>
 
-    <mtapp:setting
-        id="setting-auth-status"
-        label="<__trans phrase="Authentication Methods">"
-        content_class="field-content-text">
-        <mt:unless name="commenter_authenticators"><mt:if name="allow_reg_comments"><mt:unless name="allow_unreg_comments">
-        <p>
-            <span class="alert-warning-inline icon-left icon-warning"><__trans phrase="Note: You have selected to accept comments from authenticated commenters only but authentication is not enabled. In order to receive authenticated comments, you must enable authentication."></span>
-        </p>
-        </mt:unless></mt:if></mt:unless>
-        <mt:include name="include/anonymous_comment.tmpl">
-
-        <p><input type="checkbox" id="enabled_MovableType" name="enabled_MovableType" value="1"<mt:if name="enabled_MovableType"> checked="checked"</mt:if> /> <label for="enabled_MovableType"><__trans phrase="Movable Type"></label></p>
-
-        <mt:if name="cmtauth_loop">
-        <mt:loop name="cmtauth_loop">
-        <mt:if name="key" eq="TypeKey">
-        <mt:setvar name="typekey_enabled" value="1">
-        <p><input type="checkbox" id="enabled_<mt:var name="key" escape="html">" name="enabled_<mt:var name="key" escape="html">" value="1" onclick="toggleSubPrefs(this); return true"<mt:if name="enabled"> checked="checked"</mt:if><mt:if name="disabled"> disabled="disabled"</mt:if> /> <label for="enabled_<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label></p>
-        <div id="enabled_TypeKey_prefs"<mt:unless name="enabled"> class="hidden"</mt:unless>>
-          <p style="margin-left: 25px;"><input type="checkbox" value="1" id="require_typekey_emails" name="require_typekey_emails"<mt:if name="require_typekey_emails"> checked="checked"</mt:if> class="cb" />&nbsp;<label for="require_typekey_emails"><__trans phrase="Require E-mail Address for Comments via TypePad"></label><br />
-          <span class="hint"><__trans phrase="Visitors must allow their TypePad account to share their e-mail address when commenting."></span>
-          <a href="javascript:void(0)" onclick="return openManual('blog_settings_feedback', 'require_email_address')" class="help-link">?</a></p>
-        </div>
-        <mt:else>
-        <p><input type="<mt:if name="label">checkbox<mt:else>hidden</mt:if>" id="enabled_<mt:var name="key" escape="html">" name="enabled_<mt:var name="key" escape="html">" value="1"<mt:if name="enabled"> checked="checked"</mt:if><mt:if name="disabled"> disabled="disabled"</mt:if> /> <label for="enabled_<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label><mt:if name="disabled"> (<mt:var name="disabled_reason" default="<__trans phrase="One or more Perl modules may be missing to use this authentication method.">">)</mt:if></p>
-        </mt:if>
-        </mt:loop>
-        </mt:if>
-
-        <mt:unless name="typekey_enabled">
-        <div><a href="<mt:var name="script_url">?__mode=cfg_web_services&amp;blog_id=<mt:var name="blog_id" escape="url">"><__trans phrase="Setup TypePad authentication"></a> <__trans phrase="on the Web Services Settings page."></div>
-        </mt:unless>
-        <mt:unless name="openid_enabled">
-        <p>
-        <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="OpenID providers disabled">" width="9" height="9" />
-        <span class="alert-warning-inline"><__trans phrase="The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing."></span>
-        </p>
-        </mt:unless>
-    </mtapp:setting>
-
-</fieldset>
-
-<mt:setvarblock name="action_buttons">
+  <mt:setvarblock name="action_buttons">
     <button
-        type="submit"
-        accesskey="s"
-        title="<__trans phrase="Save changes to these settings (s)">"
-        class="save action primary-button"
-        ><__trans phrase="Save Changes"></button>
-</mt:setvarblock>
-<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
-
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Save changes to these settings (s)">"
+       class="save action primary button">
+      <__trans phrase="Save Changes">
+    </button>
+  </mt:setvarblock>
+  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
 
 <mt:setvarblock name="jq_js_include" append="1">

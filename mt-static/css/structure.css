@@ -81,15 +81,35 @@ pre {
 
 .sticky-label {
     display: inline-block;
-    padding: 0.2em 0.3em;
+    margin-right: 10px;
+    padding: 0.2em;
+    padding-left: 0.5em;
     background-color: #f3f3f3;
     border-radius: 3px;
 }
-
 .sticky-label.required {
     background-color: #adadad;
     color: #fff;
     font-size: 80%;
+}
+
+.selected-items .sticky-label {
+    margin: 0 10px 0.2em 0;
+    background-color: #dcdddd;
+    text-decoration: none;
+}
+.selected-items .sticky-label .remove {
+    display: inline-block;
+    padding: 0 0.3em;
+    margin-left: 0.3em;
+    background-color: #adadad;
+    color: white;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+}
+.selected-items .sticky-label .remove:hover {
+    background-color: #9ea1a3;
+    color: #f3f3f3;
 }
 
 /* -- Overlay */
@@ -2592,11 +2612,10 @@ input#system_performance_logging_threshold {
     text-align: center;
 }
 
-/* -- Web Service Settings */
-#remote_auth_token {
-    width: 200px;
+/* -- Registration Settings */
+#setting-auth-status-field li ul {
+    margin: 0.5em 0 1.5em 2em;
 }
-
 
 /* -- Plugin Settings */
 #list-plugins .plugin .plugin-status a:link,
