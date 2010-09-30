@@ -134,6 +134,7 @@ function createItem(id, parent, label, number) {
   var line = '<span class="sort-tab"></span>';
   line += '<span class="item-label">'+label+'</span>';
   line += ' <span class="count fr">'+trans('[_1] <mt:var name="contents_label_plural" escape="js">', number)+'</span>';
+  line += ' <span class="item-ctrl"></span>';
   var $item = jQuery('<div id="'+id+'" class="'+parent+'" />').append(line);
   return $item;
 }
@@ -148,12 +149,12 @@ function initItem($item) {
     .addClass('lv-'+nest.length)
     .addClass('mod sortable-item');
   $item.find('.plus, .delete').remove();
-  jQuery('<span class="item-action plus clickable">[+]</span>')
-    .insertBefore($item.find('.count'))
+  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add Subcategory"></span>')
+    .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       jQuery('.add-form').remove();
       jQuery('.sort-tab').hide();
-      var $element = jQuery(this).parent('div');
+      var $element = jQuery(this).parent('.item-ctrl').parent('div');
       var parent = $element.attr('id');
       var $form = jQuery('<div class="mod add-form"><input type="text" class="text short" placeholder="Category Label" /></div>');
       $form.css('margin-left', (nest.length+1)*indent).insertAfter($element);
@@ -176,9 +177,9 @@ function initItem($item) {
         .appendTo($form);
       jQuery('.button').button();
     });
-  jQuery('<span class="delete clickable">[-]</span>')
-    .insertBefore($item.find('.count'))
-    .bind('click', function() {
+    jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon"><__trans phrase="Remove Categories"></span>')
+      .appendTo($item.find('.item-ctrl'))
+      .bind('click', function() {
       var id = jQuery(this).parent('.sortable-item').attr('id');
       removeItems(id);
     });

@@ -179,6 +179,10 @@ pre {
     margin-top: -9px;
 }
 
+.item-action {
+    margin-left: 5px;
+}
+
 .rall {
     border-radius: 5px;
     -moz-border-radius: 5px;
