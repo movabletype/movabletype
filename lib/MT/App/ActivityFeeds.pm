@@ -34,13 +34,17 @@ sub init_core_callbacks {
     my $app = shift;
 
     MT->_register_core_callbacks(
-        {   'ActivityFeed.system'  => \&_feed_system,
+        {
+            'ActivityFeed.system'  => \&_feed_system,
             'ActivityFeed.comment' => \&_feed_comment,
             'ActivityFeed.blog'    => \&_feed_blog,
             'ActivityFeed.ping'    => \&_feed_ping,
             'ActivityFeed.debug'   => \&_feed_debug,
             'ActivityFeed.entry'   => \&_feed_entry,
             'ActivityFeed.page'    => \&_feed_page,
+
+            # Alias
+            'ActivityFeed.log'     => \&_feed_system,
         }
     );
 }
@@ -202,7 +206,7 @@ sub process_log_feed {
     my $last_ts_blog;
     my %blogs;
     my $blog;
-    my $log_view_url = $app->base . $app->mt_uri( mode => 'view_log' );
+    my $log_view_url = $app->base . $app->mt_uri( mode => 'list', args => { '_type' => 'log' } );
 
     while ( my $log = $iter->() ) {
         if ( $log->blog_id ) {
@@ -228,7 +232,7 @@ sub process_log_feed {
         $item->{'log.created_on_iso'} = $ts_iso;
         my $id = $item->{'log.id'};
         my $year = substr( $ts, 0, 4 );
-        $item->{'log.permalink'} = $log_view_url . '#' . $id;
+        $item->{'log.permalink'} = $log_view_url . 'id=' . $id;
         $item->{'log.atom_id'}   = qq{tag:$host,$year:$path/$id};
         $item->{'log.message'}
             = entity_translate( encode_html( $item->{'log.message'}, 1 ) );

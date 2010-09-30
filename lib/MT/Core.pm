@@ -867,12 +867,18 @@ BEGIN {
                 primary       => 'title',
                 default_sort_key => 'authored_on',
                 permission    => "access_to_entry_list",
+                feed_link => sub {
+                    my ( $app ) = @_;
+                    return 0 if $app->blog && !$app->blog->is_blog;
+                    1;
+                },
             },
             page => {
                 object_label => 'Page',
                 primary       => 'title',
                 default_sort_key => 'modified_on',
-                permission => 'access_to_page_list'
+                permission => 'access_to_page_list',
+                feed_link => 1,
             },
             asset => {
                 object_label => 'Asset',
@@ -884,7 +890,9 @@ BEGIN {
                 object_label => 'Log',
                 default_sort_key => 'created_on',
                 primary    => 'message',
-                permission => 'access_to_log_list'
+                permission => 'access_to_log_list',
+                feed_link => 1,
+                feed_label => 'Activity Feed'
             },
             category => {
                 object_label => 'Category',
@@ -909,12 +917,14 @@ BEGIN {
                 default_sort_key => 'comment',
                 permission => 'access_to_comment_list',
                 primary => 'comment',
+                feed_link => 1,
             },
             ping => {
                 primary => 'excerpt',
                 object_label => 'Trackback',
                 default_sort_key => 'created_on',
                 permission => 'access_to_trackback_list',
+                feed_link => 1,
             },
             author => {
                 object_label => 'Author',
