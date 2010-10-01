@@ -2104,7 +2104,7 @@ sub cfg_prefs_save {
         $blog->max_revisions_template( $app->param('max_revisions_template') )
           if $app->param('max_revisions_template');
     }
-    if ( $blog->class eq 'blog' && $app->can_do('set_publish_paths') ) {
+    if ( $blog->class eq 'blog' ) {
         my $subdomain = $app->param('site_url_subdomain');
         $subdomain = '' if !$app->param('use_subdomain');
         $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
