@@ -925,14 +925,6 @@ sub munge_comment {
     $text;
 }
 
-my %DynamicURIs = (
-    'Individual' => 'entry/<$MTEntryID$>',
-    'Weekly'     => 'archives/week/<$MTArchiveDate format="%Y/%m/%d"$>',
-    'Monthly'    => 'archives/<$MTArchiveDate format="%Y/%m"$>',
-    'Daily'      => 'archives/<$MTArchiveDate format="%Y/%m/%d"$>',
-    'Category'   => 'section/<$MTCategoryID$>',
-);
-
 
 # basename must be unique across the entire blog it starts as dirified
 # title and, if that already exists, an appended ctr is incremented
@@ -1347,7 +1339,7 @@ sub mark_odd_rows {
             [ qw( AM PM ) ],
               "%e %B %Y %kh%M",
               "%e %B %Y",
-	      "%kh%M",
+              "%kh%M",
           ],
 
     'es' => [
