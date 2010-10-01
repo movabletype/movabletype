@@ -2111,7 +2111,7 @@ sub cfg_prefs_save {
     $blog->archive_type_preferred($at);
     $blog->include_cache( $app->param('include_cache') ? 1 : 0 );
 
-    if ( $blog->class eq 'blog' ) {
+    if ( $blog->class eq 'blog' && $app->can_do('set_publish_paths') ) {
         my $subdomain = $app->param('site_url_subdomain');
         $subdomain = '' if !$app->param('use_subdomain');
         $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
