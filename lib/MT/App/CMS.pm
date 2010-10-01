@@ -2299,14 +2299,12 @@ sub init_core_callbacks {
             $pkg . 'pre_load_filtered_list.author' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
                 my $terms = $opts->{terms};
-                delete $terms->{blog_id};
                 $terms->{type} = MT::Author::AUTHOR();
             },
             $pkg . 'pre_load_filtered_list.commenter' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
                 my $terms = $opts->{terms};
                 my $args = $opts->{args};
-                delete $terms->{blog_id};
                 $args->{joins} ||= [];
                 push @{ $args->{joins} }, MT->model('permission')->join_on(
                     undef,
@@ -2332,7 +2330,6 @@ sub init_core_callbacks {
             $pkg . 'pre_load_filtered_list.member' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
                 my $terms = $opts->{terms};
-                delete $terms->{blog_id};
                 my $args = $opts->{args};
                 $args->{joins} ||= [];
                 if ( MT->config->SingleCommunity ) {
@@ -2519,25 +2516,7 @@ sub init_core_callbacks {
             # tags
             $pkg . 'delete_permission_filter.tag' => "${pfx}Tag::can_delete",
             $pkg . 'post_delete.tag'              => "${pfx}Tag::post_delete",
-            $pkg . 'pre_load_filtered_list.tag' => sub {
-                my ( $cb, $app, $filter, $opts, $cols ) = @_;
-                my $terms = $opts->{terms};
-                my $args = $opts->{args};
-                my $blog_ids = $opts->{blog_ids};
-                if ( exists $terms->{blog_id} ) {
-                    delete $terms->{blog_id};
-                }
-                $args->{joins} ||= [];
-                push @{ $args->{joins} }, MT->model('objecttag')->join_on(
-                    undef, {
-                        ( $blog_ids ? ( blog_id => $blog_ids ) : () ),
-                        tag_id  => \'= tag_id',
-                    },
-                    {
-                        unique  => 1,
-                    });
-                return;
-            },
+            $pkg . 'pre_load_filtered_list.tag'   => "${pfx}Tag::cms_pre_load_filtered_list",
 
             # junk-related callbacks
             #'HandleJunk' => \&_builtin_spam_handler,
@@ -2559,15 +2538,6 @@ sub init_core_callbacks {
 
             # log
             $pkg . 'pre_load_filtered_list.log' => "${pfx}Log::cms_pre_load_filtered_list",
-
-            # filter
-            $pkg . 'pre_load_filtered_list.filter' => sub {
-                my ( $cb, $app, $filter, $opts, $cols ) = @_;
-                my $terms = $opts->{terms};
-                if ( exists $terms->{blog_id} ) {
-                    delete $terms->{blog_id};
-                }
-            },
 
         }
     );

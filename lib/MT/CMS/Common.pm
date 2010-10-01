@@ -968,6 +968,10 @@ sub filtered_list {
     my $blog_id = $q->param('blog_id') || 0;
     my $filter_id = $q->param('fid') || $forward_params{saved_fid};
     my $blog = $blog_id ? $app->blog : undef;
+    my $scope
+        = !$blog         ? 'system'
+        : $blog->is_blog ? 'blog'
+        :                  'website';
     my $blog_ids = !$blog         ? undef
                  : $blog->is_blog ? [ $blog_id ]
                  :                  [ $blog->id, map { $_->id } @{$blog->blogs} ];
@@ -1059,23 +1063,32 @@ sub filtered_list {
     my @cols = ( '__id', grep { /^[^\.]+$/ } split( ',', $cols ) );
     my @subcols = ( '__id', grep { /\./ } split( ',', $cols ) );
     $MT::DebugMode && $debug->{print}->("COLUMNS: $cols");
+
+    my $scope_mode = $setting->{scope_mode} || 'wide';
+    my @blog_id_term = (
+          !$blog_id             ? ()
+        : $scope_mode eq 'none' ? ()
+        : $scope_mode eq 'this' ? ( blog_id => $blog_id )
+        :                         ( blog_id => $blog_ids )
+    );
+
     my %load_options = (
-        terms => {
-            ( !defined $blog_ids || !scalar @$blog_ids ? () : ( blog_id => $blog_ids ) ),
-        },
+        terms => { @blog_id_term },
         args       => {},
         sort_by    => $q->param('sort_by') || '',
         sort_order => $q->param('sort_order') || '',
         limit      => $limit,
         offset     => $offset,
+        scope      => $scope,
+        blog_id    => $blog_id,
         blog_ids   => $blog_ids,
     );
 
     my %count_options = (
-        terms => {
-            ( !defined $blog_ids || !scalar @$blog_ids ? () : ( blog_id => $blog_ids ) ),
-        },
+        terms => { @blog_id_term },
         args       => {},
+        scope      => $scope,
+        blog_id    => $blog_id,
         blog_ids   => $blog_ids,
     );
 

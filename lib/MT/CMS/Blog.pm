@@ -2996,8 +2996,8 @@ sub cms_pre_load_filtered_list {
     my ( $cb, $app, $filter, $load_options, $cols ) = @_;
 
     my $terms = $load_options->{terms};
-    $terms->{parent_id} = delete $terms->{blog_id}
-        if $terms->{blog_id} && $app->blog;
+    $terms->{parent_id} = $load_options->{blog_id}
+        if $app->blog;
     $terms->{class} = 'blog';
 
     my $user = $app->user;

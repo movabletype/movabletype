@@ -63,8 +63,7 @@ sub rename_tag {
     my $id        = $app->param('__id');
     my $name      = $app->param('tag_name')
       or return $app->error( $app->translate("New name of the tag must be specified.") );
-    my $obj_type  = $app->param('__type') || 'entry';
-    my $obj_class = $app->model($obj_type);
+    my $obj_type  = $app->param('__type');
     my $tag_class = $app->model('tag');
     my $ot_class  = $app->model('objecttag');
     my $tag       = $tag_class->load($id)
@@ -72,36 +71,72 @@ sub rename_tag {
     my $tag2 =
       $tag_class->load( { name => $name }, { binary => { name => 1 } } );
 
-    if ($tag2) {
-        return $app->call_return if $tag->id == $tag2->id;
-    }
+    if ( $obj_type ) {
+        my $obj_class = $app->model($obj_type);
+        if ($tag2) {
+            return $app->call_return if $tag->id == $tag2->id;
+        }
+        my $terms = { tag_id => $tag->id };
+        if ( $blog_id ) {
+            my $blog = $app->model('blog')->load( $blog_id );
+            if ( $blog->is_blog ) {
+                $terms->{blog_id} = $blog_id if $blog_id;
+            } else {
+                my @blog_ids = map { $_->id } @{ $blog->blogs };
+                $terms->{blog_id} = \@blog_ids;
+            }
+        }
+        my $iter = $obj_class->load_iter(
+            {
+                (
+                    $obj_type =~ m/asset/i
+                    ? ( class => '*' )
+                    : ( class => $obj_type )
+                )
+            },
+            { join => MT::ObjectTag->join_on( 'object_id', $terms ) }
+        );
+        my @tagged_objects;
+        while ( my $o = $iter->() ) {
+            $o->remove_tags( $tag->name );
+            $o->add_tags($name);
+            push @tagged_objects, $o;
+        }
+        $_->save foreach @tagged_objects;
 
-    my $terms = { tag_id => $tag->id };
-    if ( $blog_id ) {
-        my $blog = $app->model('blog')->load( $blog_id );
-        if ( $blog->is_blog ) {
-            $terms->{blog_id} = $blog_id if $blog_id;
-        } else {
-            my @blog_ids = map { $_->id } @{ $blog->blogs };
+    }
+    else {
+        my $new_tag;
+        if ( $tag2 ) {
+            $new_tag = $tag2;
+        }
+        else {
+            my $anti_ot_terms = {
+                ( $blog_id ? ( blog_id => $blog_id ) : () ),
+                tag_id => $tag->id,
+            };
+            if ( my $ot_test = $ot_class->load( $anti_ot_terms ) ) {
+                $new_tag = $tag->clone;
+                $new_tag->name($name);
+                $new_tag->save();
+            }
+            else {
+                $tag->name( $name );
+                $tag->save();
+            }
+        }
+        if ( $new_tag ) {
+            my $ot_terms = {
+                ( $blog_id ? ( blog_id => $blog_id ) : () ),
+                tag_id => $tag->id,
+            };
+            my @ots = $ot_class->load( $ot_terms );
+            for my $ot ( @ots ) {
+                $ot->tag_id( $new_tag->id );
+                $ot->save;
+            }
         }
     }
-    my $iter = $obj_class->load_iter(
-        {
-            (
-                $obj_type =~ m/asset/i
-                ? ( class => '*' )
-                : ( class => $obj_type )
-            )
-        },
-        { join => MT::ObjectTag->join_on( 'object_id', $terms ) }
-    );
-    my @tagged_objects;
-    while ( my $o = $iter->() ) {
-        $o->remove_tags( $tag->name );
-        $o->add_tags($name);
-        push @tagged_objects, $o;
-    }
-    $_->save foreach @tagged_objects;
 
     if ($tag2) {
         $app->add_return_arg( merged => 1 );
@@ -549,40 +584,20 @@ sub build_tag_table {
 
 sub cms_pre_load_filtered_list {
     my ( $cb, $app, $filter, $load_options, $cols ) = @_;
-
     my $user = $app->user;
-    return if $user->is_superuser;
 
-    my $blog_id = $app->param('blog_id') || 0;
-    my $blog = $blog_id ? $app->blog : undef;
-    my $blog_ids = !$blog         ? undef
-                 : $blog->is_blog ? [ $blog_id ]
-                 :                  [ map { $_->id } @{$blog->blogs} ];
-
-    require MT::Permission;
-    my $iter = MT::Permission->load_iter(
-        {
-            author_id => $user->id,
-            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { 'not' => 0 } ) ),
-        }
-    );
-
-    my $filters;
-    while ( my $perm = $iter->() ) {
-        if ( $perm->can_do('manage_pages') ) {
-            push @$filters, ( '-or', { blog_id => $perm->blog_id } );
-        }
-    }
-
-    my $terms = $load_options->{terms} || {};
+    my $blog_id = $load_options->{blog_id};
+    my $terms = $load_options->{terms};
     delete $terms->{blog_id}
         if exists $terms->{blog_id};
+    my $args = $load_options->{args};
+    $args->{joins} ||= [];
 
-    my $new_terms;
-    push @$new_terms, ( $terms )
-        if ( keys %$terms );
-    push @$new_terms, ( '-and', $filters );
-    $load_options->{terms} = $new_terms;
+    push @{ $args->{joins} }, MT->model('objecttag')->join_on(
+        'tag_id',
+        { blog_id => $blog_id },
+    );
+
 }
 
 1;

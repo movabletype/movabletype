@@ -199,9 +199,9 @@ sub system_filter {
         $view = [ $view ] unless ref $view;
         my %view = map { $_ => 1 } @$view;
         my $blog = $app->blog;
-        return if !$blog && !$view{system};
-        return if $blog->is_blog && !$view{blog};
-        return if !$view{website};
+        return if !$blog                    && !$view{system};
+        return if  $blog &&  $blog->is_blog && !$view{blog};
+        return if  $blog && !$blog->is_blog && !$view{website};
     }
 
     my $hash = {

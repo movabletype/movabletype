@@ -855,12 +855,14 @@ BEGIN {
                 view => 'system',
                 default_sort_key => 'name',
                 permission => 'access_to_website_list',
+                scope_mode => 'none',
             },
             blog => {
                 object_label => 'Blog',
                 view => [qw( system website )],
                 primary => 'name',
                 default_sort_key => 'name',
+                scope_mode => 'none',
             },
             entry => {
                 object_label  => 'Entry',
@@ -932,6 +934,7 @@ BEGIN {
                 permission   => 'access_to_member_list',
                 default_sort_key => 'name',
                 view         => 'system',
+                scope_mode => 'none',
             },
             commenter => {
                 primary      => [ 'name', 'nickname' ],
@@ -943,7 +946,8 @@ BEGIN {
                     return MT->config->SingleCommunity;
                 },
                 view         => 'system',
-            },
+                scope_mode => 'none',
+             },
             member => {
                 primary      => [ 'name', 'nickname' ],
                 object_label => 'Member',
@@ -952,13 +956,15 @@ BEGIN {
                 permission   => 'access_to_blog_member_list',
                 default_sort_key => 'name',
                 view         => [ 'blog', 'website' ],
-            },
+                scope_mode => 'none',
+             },
             tag => {
                 primary      => 'name',
                 object_label => 'Tag',
                 permission => 'access_to_tag_list',
                 default_sort_key => 'name',
                 view         => [ 'blog', 'website' ],
+                scope_mode   => 'none',
             },
             association => {
                 object_label => 'Permission',
@@ -1004,6 +1010,7 @@ BEGIN {
                 permission => 'access_to_filter_list',
                 primary => 'label',
                 default_sort_key => 'created_on',
+                scope_mode => 'none',
             },
         },
         summaries => {

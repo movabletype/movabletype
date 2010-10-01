@@ -51,7 +51,7 @@ sub list_props {
             label   => 'Name',
             display => 'force',
             order   => 100,
-            html => sub {
+            html    => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
                 my $name = $obj->name;
@@ -67,8 +67,7 @@ sub list_props {
                 $db_args->{joins} ||= [];
                 push @{ $db_args->{joins} }, MT->model('objecttag')->join_on(
                     undef,
-                    {
-                        blog_id => $blog_id,
+                    {   blog_id => $blog_id,
                         tag_id  => \'= tag_id',
                     },
                     { unique => 1, },
@@ -77,62 +76,31 @@ sub list_props {
             },
         },
         entry_count => {
-            label => 'Entries',
-            base => '__virtual.integer',
+            label       => 'Entries',
+            base        => '__virtual.integer',
             count_class => 'entry',
-            display => 'default',
-            order   => 200,
-            col => 'id',
+            display     => 'default',
+            order       => 200,
+            col         => 'id',
             entry_class => 'entry',
-            raw   => sub {
+            view        => 'blog',
+            view_filter => 'none',
+            raw         => sub {
                 my ( $prop, $obj ) = @_;
                 my $blog_id = MT->app->param('blog_id') || 0;
-                MT->model( 'objecttag' )->count({
-                        ( $blog_id ? ( blog_id => $blog_id ) : () ),
+                MT->model('objecttag')->count(
+                    {   ( $blog_id ? ( blog_id => $blog_id ) : () ),
                         tag_id            => $obj->id,
                         object_datasource => 'entry',
                     },
-                    {
-                        join => MT::Entry->join_on(
+                    {   join => MT::Entry->join_on(
                             undef,
-                            {
-                                class => $prop->entry_class,
+                            {   class => $prop->entry_class,
                                 id    => \'= objecttag_object_id',
-                        }),
-                });
-            },
-            terms => sub {
-                my $prop = shift;
-                my ( $args, $db_terms, $db_args, $options ) = @_;
-                my $option = $args->{option};
-                my $value  = $args->{value};
-                my $blog_id = $options->{blog_ids};
-                my $having = 'equal'         eq $option ? \"= $value"
-                           : 'not_equal'     eq $option ? \"!= $value"
-                           : 'greater_than'  eq $option ? \"> $value"
-                           : 'greater_equal' eq $option ? \">= $value"
-                           : 'less_than'     eq $option ? \"< $value"
-                           :                              \"<= $value";
-
-                my $iter = MT->model('objecttag')->count_group_by({
-                    object_datasource => $prop->count_class,
-                }, {
-                    group => [ 'tag_id' ],
-                    having => { cnt => $having },
-                    unique => 1,
-                    join => MT::Entry->join_on(
-                        undef,
-                        {
-                            class => $prop->entry_class,
-                            id    => \'= objecttag_object_id',
-                            ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                    }),
-                });
-                my @ids;
-                while ( my ( $count, $id ) = $iter->() ) {
-                    push @ids, $id;
-                }
-                return { id => \@ids };
+                            }
+                        ),
+                    }
+                );
             },
             html_link => sub {
                 my ( $prop, $obj, $app ) = @_;
@@ -146,156 +114,153 @@ sub list_props {
                     },
                 );
             },
-            sort => sub {
+            bulk_sort => sub {
                 my $prop = shift;
-                my ( $terms, $args, $options ) = @_;
-                my @j_terms = 'HASH'  eq ref $terms && scalar %$terms ? ( '-and', $terms )
-                            : 'ARRAY' eq ref $terms && scalar @$terms ? ( '-and', @$terms )
-                            :                                           ();
-
-                my $c_args = {
-                    sort  => 'cnt',
-                    direction => $args->{direction} || 'ascend',
-                    limit     => $args->{limit} || 50,
-                    offset    => $args->{offset} || 0,
-                    group => [ 'tag_id' ],
-                    joins  => [
-                        MT->model('tag')->join_on(
-                            undef,
-                            [
-                                { id => \'= objecttag_tag_id' },
-                                @j_terms,
-                            ],
-                            {
-                                %$args,
-                            },
-                        ),
-                        MT::Entry->join_on(
-                            undef,
-                            {
-                                class => $prop->entry_class,
-                                id    => \'= objecttag_object_id',
-                        }),
-                    ],
-                };
-
+                my ( $objs, $options ) = @_;
                 my $iter = MT->model('objecttag')->count_group_by(
-                    {
+                    {   (   scalar @{ $options->{blog_ids} || [] }
+                            ? ( blog_id => $options->{blog_id} )
+                            : ()
+                        ),
                         object_datasource => 'entry',
                     },
-                    $c_args,
+                    {   sort      => 'cnt',
+                        direction => 'ascend',
+                        group     => ['tag_id'],
+                        join      => MT::Entry->join_on(
+                            undef,
+                            {   class => $prop->entry_class,
+                                id    => \'= objecttag_object_id',
+                            }
+                        ),
+                    },
                 );
-                my @ids;
+                my %counts;
                 while ( my ( $cnt, $id ) = $iter->() ) {
-                    push @ids, $id;
+                    $counts{$id} = $cnt;
                 }
-                my @tags = MT->model('tag')->load({ id => \@ids });
-                my %tags = map { $_->id => $_ } @tags;
-                return [ map { $tags{$_} } @ids ];
+                return sort {
+                    ( $counts{ $a->id } || 0 ) <=> ( $counts{ $b->id } || 0 )
+                } @$objs;
+            },
+        },
+        for_entry => {
+            label       => 'For Entries',
+            display     => 'none',
+            entry_class => 'entry',
+            view        => 'blog',
+            terms       => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args, $options ) = @_;
+                my $blog_id = $options->{blog_ids};
+                $db_args->{joins} ||= [];
+                push @{ $db_args->{joins} }, MT->model('objecttag')->join_on(
+                    'tag_id',
+                    {   object_datasource =>
+                            'entry',    # set 'entry' even if searching pages.
+                    },
+                    {   group  => ['tag_id'],
+                        unique => 1,
+                        join   => MT::Entry->join_on(
+                            undef,
+                            {   class => $prop->entry_class,
+                                id    => \'= objecttag_object_id',
+                            }
+                        ),
+                    }
+                );
+                return;
             },
         },
         page_count => {
-            base => 'tag.entry_count',
-            label => 'Pages',
-            display => 'default',
-            order   => 300,
+            base        => 'tag.entry_count',
+            label       => 'Pages',
+            display     => 'default',
+            order       => 300,
             count_class => 'page',
             entry_class => 'page',
+            view        => [ 'website', 'blog' ],
+
+        },
+        for_page => {
+            base        => 'tag.for_entry',
+            label       => 'For Pages',
+            entry_class => 'page',
+            view        => [ 'website', 'blog' ],
         },
         asset_count => {
-            base => 'tag.entry_count',
-            label => 'Assets',
-            display => 'default',
-            order   => 400,
-            count_class => 'asset',
-            raw   => sub {
+            label       => 'Assets',
+            base        => '__virtual.integer',
+            display     => 'default',
+            order       => 400,
+            view        => [ 'website', 'blog' ],
+            view_filter => 'none',
+            raw         => sub {
                 my ( $prop, $obj ) = @_;
                 my $blog_id = MT->app->param('blog_id') || 0;
-                MT->model( 'objecttag' )->count({
-                    ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                    tag_id => $obj->id,
-                    object_datasource => $prop->count_class,
-                });
-            },
-            terms => sub {
-                my $prop = shift;
-                my ( $args, $db_terms, $db_args, $options ) = @_;
-                my $option = $args->{option};
-                my $value  = $args->{value};
-                my $blog_id = $options->{blog_ids};
-                my $having = 'equal'         eq $option ? \"= $value"
-                           : 'not_equal'     eq $option ? \"!= $value"
-                           : 'greater_than'  eq $option ? \"> $value"
-                           : 'greater_equal' eq $option ? \">= $value"
-                           : 'less_than'     eq $option ? \"< $value"
-                           :                              \"<= $value";
-
-                my $iter = MT->model('objecttag')->count_group_by({
-                    object_datasource => $prop->count_class,
-                    ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                }, {
-                    group => [ 'tag_id' ],
-                    having => { cnt => $having },
-                    unique => 1,
-                });
-                my @ids;
-                while ( my ( $count, $id ) = $iter->() ) {
-                    push @ids, $id;
-                }
-                return { id => \@ids };
+                MT->model('objecttag')->count(
+                    {   ( $blog_id ? ( blog_id => $blog_id ) : () ),
+                        tag_id            => $obj->id,
+                        object_datasource => 'asset',
+                    },
+                );
             },
             html_link => sub {
                 my ( $prop, $obj, $app ) = @_;
                 return $app->uri(
                     mode => 'list',
                     args => {
-                        _type      => $prop->count_class,
+                        _type      => 'asset',
                         blog_id    => $app->param('blog_id') || 0,
                         filter     => 'tag',
                         filter_val => $obj->name,
                     },
                 );
             },
-            sort => sub {
+            bulk_sort => sub {
                 my $prop = shift;
-                my ( $terms, $args, $options ) = @_;
-                my @j_terms = 'HASH'  eq ref $terms && scalar %$terms ? ( '-and', $terms )
-                            : 'ARRAY' eq ref $terms && scalar @$terms ? ( '-and', @$terms )
-                            :                                           ();
-
-                my $c_args = {
-                    sort  => 'cnt',
-                    direction => $args->{direction} || 'ascend',
-                    limit     => $args->{limit} || 50,
-                    offset    => $args->{offset} || 0,
-                    group => [ 'tag_id' ],
-                    join  => MT->model('tag')->join_on(
-                        undef,
-                        [
-                            { id => \'= objecttag_tag_id' },
-                            @j_terms,
-                        ],
-                        {
-                            %$args,
-                        },
-                    ),
-                };
-
+                my ( $objs, $options ) = @_;
                 my $iter = MT->model('objecttag')->count_group_by(
-                    {
-                        object_datasource => 'entry',
+                    {   (   $options->{blog_id}
+                            ? ( blog_id => $options->{blog_id} )
+                            : ()
+                        ),
+                        object_datasource => 'asset',
                     },
-                    $c_args,
+                    {   sort      => 'cnt',
+                        direction => 'ascend',
+                        group     => ['tag_id'],
+                    },
                 );
-                my @ids;
+                my %counts;
                 while ( my ( $cnt, $id ) = $iter->() ) {
-                    push @ids, $id;
+                    $counts{$id} = $cnt;
                 }
-                my @tags = MT->model('tag')->load({ id => \@ids });
-                my %tags = map { $_->id => $_ } @tags;
-                return [ map { $tags{$_} } @ids ];
+                return sort {
+                    ( $counts{ $a->id } || 0 ) <=> ( $counts{ $b->id } || 0 )
+                } @$objs;
             },
         },
+        for_asset => {
+            label   => 'For Assets',
+            display => 'none',
+            view    => [ 'website', 'blog' ],
+            terms   => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args, $options ) = @_;
+                my $blog_id = $options->{blog_ids};
+                $db_args->{joins} ||= [];
+                push @{ $db_args->{joins} }, MT->model('objecttag')->join_on(
+                    'tag_id',
+                    { object_datasource => 'asset', },
+                    {   group  => ['tag_id'],
+                        unique => 1,
+                    }
+                );
+                return;
+            },
+        },
+
     };
 }
 
@@ -303,15 +268,18 @@ sub system_filters {
     return {
         entry => {
             label => 'Tags for Entry',
-            items => [{ type => 'entry_count', args => { option => 'greater_than', value => 0, }}],
+            view  => [ 'blog' ],
+            items => [{ type => 'for_entry', }],
         },
         page => {
             label => 'Tags for Page',
-            items => [{ type => 'page_count', args => { option => 'greater_than', value => 0, }}],
+            view  => [ 'website', 'blog' ],
+            items => [{ type => 'for_page', }],
         },
         asset => {
             label => 'Tags for Asset',
-            items => [{ type => 'asset_count', args => { option => 'greater_than', value => 0, }}],
+            view  => [ 'website', 'blog' ],
+            items => [{ type => 'for_asset', }],
         },
     },
 }
