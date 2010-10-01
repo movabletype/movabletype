@@ -348,10 +348,10 @@ sub do_list_action {
             author_id => $app->user->id,
             ( $blog ? ( blog_id   => $blog->id ) : () ),
         });
-        my @objs = $filter->load_objects(
+        my $objs = $filter->load_objects(
             ( $blog ? ( blog_id => $blog->is_blog ? $blog_id : [ $blog->id, map { $_->id } @{$blog->blogs} ] ) : () ),
         );
-        $q->param('id', map { $_->id } @objs );
+        $q->param('id', map { $_->id } @$objs );
     }
     else {
         my @ids = $q->param('id');

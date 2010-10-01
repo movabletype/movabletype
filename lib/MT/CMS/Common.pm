@@ -1094,15 +1094,23 @@ sub filtered_list {
 
     MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds, $app, $filter, \%count_options, \@cols );
 
-    my $count = $filter->count_objects(%count_options) || 0;
+    my $count = $filter->count_objects(%count_options);
+    if ( !defined $count ) {
+        return $app->error( $filter->errstr );
+    }
+
     $MT::DebugMode && $debug->{section}->('count objects');
     $load_options{total} = $count;
 
-    my (@objs, @data);
+    my ($objs, @data);
     if ( $count ) {
         MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds, $app, $filter, \%load_options, \@cols );
 
-        @objs = $filter->load_objects(%load_options);
+        $objs = $filter->load_objects(%load_options);
+        if ( !defined $objs ) {
+            return $app->error( $filter->errstr );
+        }
+
         $MT::DebugMode && $debug->{section}->('load objects');
 
         my %cols = map { $_ => 1 } @cols;
@@ -1127,10 +1135,10 @@ sub filtered_list {
             my $prop = $props->{$col};
             my @result;
             if ( $prop->has('bulk_html') ) {
-                @result = $prop->bulk_html( \@objs, $app, \%load_options );
+                @result = $prop->bulk_html( $objs, $app, \%load_options );
             }
             #elsif ( $prop->has('mtml') ) {
-            #    for my $obj ( @objs ) {
+            #    for my $obj ( @$objs ) {
             #        $tmpl->context->{__stash}{$ds} = $obj;
             #        my $out = $prop->html($obj, $app);
             #        $tmpl->text($out);
@@ -1140,19 +1148,19 @@ sub filtered_list {
             #    }
             #}
             elsif ( $prop->has('html') ) {
-                for my $obj ( @objs ) {
+                for my $obj ( @$objs ) {
                     push @result, $prop->html( $obj, $app, \%load_options );
                 }
             }
             elsif ( $prop->has('html_link') ) {
-                for my $obj ( @objs ) {
+                for my $obj ( @$objs ) {
                     my $link = $prop->html_link( $obj, $app, \%load_options );
                     my $raw  = $prop->raw( $obj, $app, \%load_options );
                     push @result, qq{<a href="$link">$raw</a>};
                 }
             }
             elsif ( $prop->has('raw') ) {
-                for my $obj ( @objs ) {
+                for my $obj ( @$objs ) {
                     my $out = $prop->raw( $obj, $app, \%load_options );
                     push @result, remove_html($out);
                 }
@@ -1162,7 +1170,7 @@ sub filtered_list {
             $MT::DebugMode && $debug->{section}->("prepare col $col");
         }
 
-        for my $i ( 0.. scalar @objs - 1 ) {
+        for my $i ( 0.. scalar @$objs - 1 ) {
             push @data, [ map { $_->[$i] } @results ];
         }
     }
@@ -1204,7 +1212,7 @@ sub filtered_list {
     $res{editable_filter_count} = $editable_filter_count;
     $res{messages} = \@messages;
     $MT::DebugMode && $debug->{section}->('finalize');
-    MT->run_callbacks( 'cms_filtered_list_param.' . $ds, $app, \%res, \@objs );
+    MT->run_callbacks( 'cms_filtered_list_param.' . $ds, $app, \%res, $objs );
     if ( $MT::DebugMode ) {
         my $total = Time::HiRes::tv_interval($debug->{total});
         my $out   = $debug->{out};

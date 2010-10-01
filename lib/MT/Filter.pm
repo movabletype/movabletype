@@ -199,7 +199,7 @@ sub load_objects {
     for my $item (@$items) {
         my $id = $item->{type};
         my $prop = MT::ListProperty->instance( $ds, $id )
-            or die "Invalid Filter $id";
+            or return $self->error( MT->translate( 'Invalid filter type [_1]:[_2]', $ds, $id ) );
         $item->{prop} = $prop;
         push @items, $item;
     }
@@ -230,7 +230,12 @@ sub load_objects {
     }
 
     my $sort_prop;
-    $sort_prop = MT::ListProperty->instance( $ds, $sort ) if $sort;
+    if ( $sort ) {
+        $sort_prop = MT::ListProperty->instance( $ds, $sort );
+        if ( !$sort_prop || !$sort_prop->can_sort($options{scope})  ) {
+            return $self->error( MT->translate( 'Invalid sort key [_1]:[_2]', $ds, $sort ) );
+        }
+    }
     my $has_post_process
         = scalar @grep_items
         || ( $sort_prop && ( $sort_prop->has('sort_method')
@@ -288,7 +293,7 @@ sub load_objects {
         @objs = @objs[ $offset .. $limit + $offset - 1 ];
     }
 
-    return @objs;
+    return \@objs;
 }
 
 sub count_objects {
@@ -296,7 +301,7 @@ sub count_objects {
     my (%options) = @_;
     my ( $terms, $args ) = @options{qw( terms args )};
 
-#    my $blog_id   = $options{terms}{blog_id};
+    # my $blog_id   = $options{terms}{blog_id};
     my $ds        = $self->object_ds;
     my $setting   = MT->registry( listing_screens => $ds ) || {};
     my $obj_type  = $setting->{object_type} || $ds;
@@ -305,10 +310,11 @@ sub count_objects {
     require MT::ListProperty;
     my @items;
 
+    ## Prepare properties
     for my $item (@$items) {
         my $id = $item->{type};
         my $prop = MT::ListProperty->instance( $ds, $id )
-            or die "Invalid Filter $id";
+            or return $self->error( MT->translate( 'Invalid filter type [_1]:[_2]', $ds, $id ) );
         $item->{prop} = $prop;
         push @items, $item;
     }
