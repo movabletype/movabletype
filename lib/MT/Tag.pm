@@ -721,13 +721,9 @@ sub remove_tags {
 sub has_tag {
     my $obj = shift;
     my ($tag) = @_;
-    # this should also check normalized versions
     $tag = $tag->name if ref $tag;
-    my $n8d_tag = MT::Tag->normalize($tag);
-    my @tags = $obj->tags;
-    foreach (@tags) {
+    foreach ( $obj->tags ) {
         return 1 if $tag eq $_;
-        return 1 if ($tag ne $n8d_tag) && ($n8d_tag eq MT::Tag->normalize($_));
     }
     0;
 }
