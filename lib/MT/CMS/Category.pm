@@ -646,7 +646,7 @@ sub filtered_list_param {
                 Encode::encode_utf8($_->label),
             )
         }
-        sort { $a->id <=> $b->id } @$objs
+        sort { $a->id <=> $b->id } @{ $objs || [] }
     );
     require Digest::MD5;
     $param->{checksum} = Digest::MD5::md5_hex( $text );
