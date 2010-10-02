@@ -69,7 +69,7 @@ sub save_config {
     foreach (@params) {
         next if $_ =~ m/^(__mode|return_args|plugin_sig|magic_token|blog_id)$/;
         my @values = $q->param($_);
-        if ($#values > 1) {
+        if ($#values > 0) {
             $param{$_} = \@values;
         } else {
             $param{$_} = $values[0];
