@@ -14,7 +14,7 @@ parent.jQuery.fn.mtDialog.close('<mt:var name="return_url" escape="js">');
         <mt:var name="error" escape="html">
     </mtapp:statusmsg>
 </mt:if>
-<form action="<mt:var name="script_url">" method="post" name="comments_form" id="comments-form" class="<mt:if name="preview_html">preview</mt:if>">
+<form action="<mt:var name="script_url">" method="post" name="comments_form" id="comments-form">
     <input type="hidden" name="__mode" value="" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
     <input type="hidden" name="reply_to" value="<mt:var name="reply_to" escape="html">" />
@@ -26,14 +26,6 @@ parent.jQuery.fn.mtDialog.close('<mt:var name="return_url" escape="js">');
             <$mt:var name="comment_text"$>
         </div>
     </div>
-<mt:if name="preview_html">
-    <div id="comment-preview">
-        <div class="intro"><__trans phrase="Preview of your comment"></div>
-        <div id="reply-body">
-            <mt:var name="preview_html">
-        </div>
-    </div>
-</mt:if>
 
     <mtapp:Setting
         id="comment-reply"
@@ -53,23 +45,6 @@ parent.jQuery.fn.mtDialog.close('<mt:var name="return_url" escape="js">');
            id="action publish-comment-action"
            class="save action primary-button"
            ><__trans phrase="Submit"></button>
-        <button
-           mt:command="submit"
-           mt:mode="reply_preview"
-           type="submit"
-           accesskey="v"
-           title="<__trans phrase="Preview reply (v)">"
-           id="preview-comment-action"
-           class="preview action"
-           ><__trans phrase="Preview"></button>
-        <button
-           onclick="DOM.removeClassName( DOM.getElement('comments-form'), 'preview' ); return false"
-           type="submit"
-           accesskey="r"
-           title="<__trans phrase="Re-edit reply (r)">"
-           id="re-edit-comment-action"
-           class="action"
-           ><__trans phrase="Re-edit"></button>
         <button
            type="submit"
            accesskey="x"
