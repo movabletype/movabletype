@@ -315,6 +315,7 @@ sub list_props {
                 my @entry_ids  = map { $_->id } @$objs;
                 my @placements = MT->model('placement')->load({
                     entry_id   => \@entry_ids,
+                    is_primary => 1,
                 }, {
                     fetchonly => {
                         entry_id    => 1,
@@ -384,6 +385,7 @@ sub list_props {
                             category_id => $cat_id,
                             entry_id    => \'= entry_id',
                             blog_id     => $blog_id,
+                            is_primary  => 1,
                         },
                         {
                             unique => 1,

@@ -65,6 +65,7 @@ sub list_props {
                 my ( $prop, $objs, $app ) = @_;
                 my $count_iter = MT->model('placement')->count_group_by({
                         blog_id => $app->blog->id,
+                        is_primary => 1,
                     }, {
                         group => [ 'category_id' ],
                 });
