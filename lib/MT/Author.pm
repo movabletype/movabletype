@@ -399,6 +399,7 @@ sub member_list_props {
             auto      => 1,
             bulk_html => \&_nickname_bulk_html,
             order     => 100,
+            display   => 'default',
         },
         name => {
             auto    => 1,
@@ -411,7 +412,7 @@ sub member_list_props {
             base    => '__virtual.single_select',
             label   => 'Role',
             order   => 300,
-            display => 'optional',
+            display => 'default',
             html    => sub {
                 my ( $prop, $obj ) = @_;
                 my $blog_id = MT->app->blog->id;
@@ -453,7 +454,7 @@ sub member_list_props {
         },
          entry_count => {
             base        => '__virtual.object_count',
-            view        => 'blog',
+            view        => [ 'blog', 'website' ],
             label       => 'Entries',
             count_class => 'entry',
             count_col   => 'author_id',
@@ -461,8 +462,8 @@ sub member_list_props {
             list_screen => 'entry',
             count_terms => sub {
                 my $prop = shift;
-                my $blog_id = MT->app ? MT->app->param('blog_id') : undef;
-                return $blog_id ? { blog_id => $blog_id } : {};
+                my ( $opts ) = @_;
+                return { blog_id => $opts->{blog_ids} };
             },
             count_args  => {
                 unique => 1,
@@ -478,8 +479,8 @@ sub member_list_props {
             list_screen => 'comment',
             count_terms => sub {
                 my $prop = shift;
-                my $blog_id = MT->app ? MT->app->param('blog_id') : undef;
-                return $blog_id ? { blog_id => $blog_id } : {};
+                my ( $opts ) = @_;
+                return { blog_id => $opts->{blog_ids} };
             },
             count_args  => {
                 unique => 1,

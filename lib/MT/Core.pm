@@ -620,9 +620,10 @@ BEGIN {
                     col_class => 'num',
                     default_sort_order => 'descend',
                     raw   => sub {
-                        my ( $prop, $obj ) = @_;
-                        my $count_terms = $prop->has('count_terms') ? $prop->count_terms : {};
-                        my $count_args  = $prop->has('count_args')  ? $prop->count_args  : {};
+                        my $prop = shift;
+                        my ( $obj, $app, $opts ) = @_;
+                        my $count_terms = $prop->has('count_terms') ? $prop->count_terms($opts) : {};
+                        my $count_args  = $prop->has('count_args')  ? $prop->count_args($opts) : {};
                         MT->model( $prop->count_class )->count(
                             {
                                 %$count_terms,
@@ -657,9 +658,10 @@ BEGIN {
                         );
                     },
                     bulk_sort => sub {
-                        my ( $prop, $objs ) = @_;
-                        my $count_terms = $prop->has('count_terms') ? $prop->count_terms : {};
-                        my $count_args  = $prop->has('count_args')  ? $prop->count_args  : {};
+                        my $prop = shift;
+                        my ( $objs, $opts ) = @_;
+                        my $count_terms = $prop->has('count_terms') ? $prop->count_terms($opts) : {};
+                        my $count_args  = $prop->has('count_args')  ? $prop->count_args($opts)  : {};
                         my $iter = MT->model( $prop->count_class )->count_group_by(
                             $count_terms,
                             {
@@ -682,9 +684,9 @@ BEGIN {
                     terms => 0,
                     grep => sub {
                         my $prop = shift;
-                        my ( $args, $objs ) = @_;
-                        my $count_terms = $prop->has('count_terms') ? $prop->count_terms : {};
-                        my $count_args  = $prop->has('count_args')  ? $prop->count_args  : {};
+                        my ( $args, $objs, $opts ) = @_;
+                        my $count_terms = $prop->has('count_terms') ? $prop->count_terms($opts) : {};
+                        my $count_args  = $prop->has('count_args')  ? $prop->count_args($opts)  : {};
                         my $iter = MT->model( $prop->count_class )->count_group_by(
                             $count_terms,
                             {
