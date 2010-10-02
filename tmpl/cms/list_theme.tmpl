@@ -192,9 +192,15 @@
 <mt:include name="include/header.tmpl">
 
 <mt:if name="blog_id">
+
+<div id="current-theme-group" class="theme-group">
+  <mt:setvar name="loop_for" value="current_theme_loop" /><mt:var name="theme_loop_tmpl">
+</div>
+
 <div id="<$mt:var name="scope_type"$>-theme-group" class="theme-group">
   <mt:setvar name="loop_for" value="theme_loop" /><mt:var name="theme_loop_tmpl">
 </div>
+
 <mt:else>
   <mt:if name="both_theme_loop">
 <div id="both-theme-group" class="theme-group">

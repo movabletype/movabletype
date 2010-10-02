@@ -28,6 +28,9 @@ sub list {
     }
     else {
         my $current_theme = $blog->theme;
+        $param{current_theme_loop} = _build_theme_table( current => $current_theme,
+                                                         classes => { current => 1, },
+                                                         blog    => $blog, );
         if ( $blog->is_blog ) {
             $param{theme_loop} = _build_theme_table( current => $current_theme,
                                                      classes => { blog => 1, both => 1 },
@@ -65,7 +68,13 @@ sub _build_theme_table {
     my $current_theme;
     my $themes = MT::Theme->load_all_themes();
     foreach my $theme (values %$themes) {
-        next if !$theme->{class} || !$classes->{ $theme->{class} };
+        if ( $classes->{current} ) {
+            next if $theme->id ne ( $current || '' );
+        }
+        else {
+            next if !$theme->{class} || !$classes->{ $theme->{class} };
+            next if $theme->id eq ( $current || '' );
+        }
         my @keys = qw( id author_name author_link version );
         my %theme;
         map { $theme{$_} = $theme->{$_} } @keys;
