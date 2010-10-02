@@ -342,7 +342,7 @@ sub _hdlr_authors {
         if (lc $args->{'sort_by'} eq 'display_name') {
             $args{'sort'} = 'nickname';
         } elsif ('score' eq $args->{sort_by} || 'rate' eq $args->{sort_by}) {
-            $score_limit = delete($args->{lastn}) || 0;
+            $score_limit = delete($args->{limit}) || 0;
             $score_offset = delete($args->{offset}) || 0;
             $re_sort = 1;
         } elsif (MT::Author->has_column($args->{sort_by})) {
