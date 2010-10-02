@@ -669,10 +669,11 @@ function renderList(mode, columns, values, limit, page ) {
         jQuery('<tr id="'+id+'">'+line+'</tr>').appendTo('tbody');
       }
       jQuery('#resultstats').remove();
-      var n = cols.length + 1;
+      var n = jQuery('#disp_cols').find('input.main:checked').length;
+
       if (count == 0) {
         var message = trans('No [_1] could be found.', '<mt:var name="object_label" lower_case="1" escape="js">');
-        jQuery('<td class="col" colspan="'+n+'">'+message+'</tr>').appendTo('tbody');
+        jQuery('<td class="col fullwidth-row" colspan="'+n+'">'+message+'</tr>').appendTo('tbody');
       }
       renderPagination(count, limit, page, last, total);
       filters = data.result.filters;
@@ -759,10 +760,15 @@ jQuery('ul#disp_cols .main:checkbox').click(function() {
   renderColumns(col, checked);
   if (checked)
     renderList('filtered_list', cols, vals, jQuery('#row').val(), currentPage);
+  var n = jQuery('#disp_cols').find('input.main:checked').length;
+  jQuery('td.fullwidth-row').attr('colspan', n);
+
 });
 
 jQuery('ul#disp_cols .sub:checkbox').click(function() {
-    toggleSubField(this);
+  toggleSubField(this);
+  var n = jQuery('#disp_cols').find('input.main:checked').length;
+  jQuery('td.fullwidth-row').attr('colspan', n);
 });
 
 function toggleSubField (obj) {
@@ -780,10 +786,10 @@ jQuery('#row').change(function() {
 });
 
 function addSelectAll($node) {
-  var n = cols.length + 1;
+  var n = jQuery('#disp_cols').find('input.main:checked').length;
   $node
     .parents('tbody')
-    .prepend('<tr class="select-all"><td class="col" colspan="'+n+'"><input type="hidden" name="all_selected" /></td></tr>');
+    .prepend('<tr class="select-all"><td class="col fullwidth-row" colspan="'+n+'"><input type="hidden" name="all_selected" /></td></tr>');
   var select_text = 'Select all '+total+' items';
   var cancel_text = 'All '+total+' items are selected';
   jQuery('<a href="#"></a>')
