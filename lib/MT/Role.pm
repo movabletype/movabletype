@@ -52,16 +52,72 @@ sub list_props {
             label => 'Name',
             display => 'force',
             order   => 100,
-            html_link => sub {
+            sub_fields => [
+                {
+                    class => 'description',
+                    label => 'Description',
+                },
+            ],
+            asc_count => sub {
                 my $prop = shift;
-                my ( $obj, $app ) = @_;
-                return $app->uri(
-                    mode => 'view',
-                    args => {
-                        _type   => 'role',
-                        id      => $obj->id,
-                        blog_id => 0,
-                });
+                my ( $objs, $opts ) = @_;
+                if ( exists $opts->{asc_count} ) {
+                    return $opts->{asc_count};
+                }
+                else {
+                    my @ids = map { $_->id } @$objs;
+                    my $c_iter = MT->model('association')->count_group_by(
+                        {
+                            role_id => \@ids,
+                        },
+                        {
+                            group => [ 'role_id' ],
+                        },
+                    );
+                    my %asc_count;
+                    while ( my ( $cnt, $id ) = $c_iter->() ) {
+                        $asc_count{$id} = $cnt;
+                    }
+                    return $opts->{asc_count} = \%asc_count;
+                }
+            },
+            bulk_html => sub {
+                my $prop = shift;
+                my ( $objs, $app, $opts ) = @_;
+                my $asc_count = $prop->asc_count($objs, $opts);
+                my @out;
+                for my $obj ( @$objs ) {
+                    my $len = 40; ## FIXME: Hard coded
+                    my $desc = $obj->description;
+                    if ( length $desc > $len ) {
+                        $desc = substr($desc, 0, $len);
+                        $desc .= '...';
+                    }
+                    my $url = $app->uri(
+                        mode => 'view',
+                        args => {
+                            _type   => 'role',
+                            id      => $obj->id,
+                            blog_id => 0,
+                    });
+                    my $cnt = $asc_count->{ $obj->id };
+                    my $name = $obj->name;
+                    my $status_img = MT->static_path
+                        . (
+                        $cnt
+                        ? '/images/status_icons/role-active.gif'
+                        : '/images/status_icons/role-inactive.gif'
+                        );
+                    my $status_class = $cnt ? 'role-active' : 'role-inactive';
+                    push @out, qq{
+                        <span class="icon status $status_class">
+                            <img alt="$status_class" src="$status_img" />
+                        </span>
+                        <a href="$url">$name</a>
+                        <p class="description">$desc</p>
+                    };
+                }
+                return @out;
             },
         },
         association_count => {
@@ -81,6 +137,15 @@ sub list_props {
         created_on => {
             base => '__virtual.created_on',
             order => 300,
+        },
+        modified_on => {
+            base => '__virtual.modified_on',
+            display => 'none',
+        },
+        created_by => {
+            base => '__virtual.author_name',
+            label => 'Created by',
+            display => 'none',
         },
     };
 }
