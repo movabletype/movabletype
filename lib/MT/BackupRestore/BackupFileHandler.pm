@@ -171,6 +171,21 @@ sub start_element {
                             }
                         }
                     }
+                } elsif ('filter' eq $name) {
+                    if ( $objects->{"MT::Author#".$column_data{author_id}} ) {
+                        $obj = $class->load({
+                            author_id => $column_data{author_id},
+                            label => $column_data{label},
+                            object_ds => $column_data{object_ds},
+                        });
+                        if ( $obj ) {
+                            $obj->restore_parent_ids(\%column_data, $objects);
+                            my $old_id = $column_data{id};
+                            $objects->{"$class#$old_id"} = $obj;
+                            $self->{current} = $obj;
+                            $self->{loaded} = 1;
+                        }
+                    }
                 }
                 unless ($obj) {
                     $obj = $class->new;
@@ -270,7 +285,7 @@ sub end_element {
             }
         } else {
             my $old_id = $obj->id;
-            unless ((('author' eq $name) || ('template' eq $name)) && (exists $self->{loaded})) {
+            unless ((('author' eq $name) || ('template' eq $name) || ('filter' eq $name)) && (exists $self->{loaded})) {
                 delete $obj->{column_values}->{id};
                 delete $obj->{changed_cols}->{id};
             } else {

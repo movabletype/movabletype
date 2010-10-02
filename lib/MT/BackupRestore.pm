@@ -1458,6 +1458,30 @@ sub parents {
     };
 }
 
+package MT::Filter;
+
+sub restore_parent_ids {
+    my $obj = shift;
+    my ($data, $objects) = @_;
+    my $new_blog = $objects->{'MT::Blog#' . $data->{blog_id}};
+    $new_blog = $objects->{'MT::Website#' . $data->{blog_id}}
+        unless $new_blog;
+
+    if ($new_blog) {
+        $data->{blog_id} = $new_blog->id;
+        $obj->blog_id( $data->{blog_id} );
+    }
+    return 1;
+}
+
+sub parents {
+    my $obj = shift;
+    {
+        author_id => { class => MT->model('author'), optional => 1 },
+        blog_id => [ MT->model('blog'), MT->model('website') ],
+    };
+}
+
 1;
 __END__
 
