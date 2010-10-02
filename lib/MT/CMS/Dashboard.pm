@@ -107,7 +107,8 @@ sub dashboard {
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
     foreach my $subdir (qw( uploads userpics )) {
-        $param->{support_path} = $app->support_directory_path;
+        $param->{support_path} =
+          File::Spec->catdir( $app->support_directory_path, $subdir );
         if ( !$fmgr->exists( $param->{support_path} ) ) {
             $fmgr->mkpath( $param->{support_path} );
         }
