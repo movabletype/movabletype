@@ -258,7 +258,8 @@ filter_types['<mt:var name="type">'] = '<div class="filtertype type-<mt:var name
 </mt:loop>
 
 jQuery('#filter_types').hide();
-jQuery('#filter-detail').hide();
+<mt:unless name="open_filter_panel">jQuery('#filter-detail').hide();</mt:unless>
+jQuery('.filter-block').mtToggleField(<mt:if name="open_filter_panel">{default_hide: false}</mt:if>);
 
 var cols = [];
 var vals = [];
@@ -1181,7 +1182,10 @@ function doForMarked(formid, action, singlar, plural, phrase, xhr) {
         .get()
         .join(",");
     params['_type'] = '<mt:var name="object_type">';
+  } else {
+    jQuery('input[name=return_args]').val(jQuery('input[name=return_args]').val()+'&does_act=1');
   }
+
   if (action) {
     $form.find('input[name=action_name]').val(action);
       params['action_name'] = action;

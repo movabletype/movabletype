@@ -779,6 +779,7 @@ sub list {
     my $rows = $list_pref->{rows} || 50;
     my $last_filter = $list_pref->{last_filter} || '';
     $last_filter = '' if $last_filter eq '_allpass';
+    my $last_items = $list_pref->{last_items} || [];
     my $initial_sys_filter = $q->param('filter_key');
     if ( !$initial_sys_filter && $last_filter =~ /\D/ ) {
         $initial_sys_filter = $last_filter;
@@ -811,6 +812,19 @@ sub list {
     elsif ( $last_filter ) {
         my $filter = MT->model('filter')->load($last_filter);
         $initial_filter = $filter->to_hash if $filter;
+    }
+    elsif ( scalar @$last_items && $app->param('does_act') ) {
+        my $filter = MT->model('filter')->new;
+        $filter->set_values({
+            object_ds => $obj_type,
+            items     => $last_items,
+            author_id => $app->user->id,
+            blog_id   => $blog_id || 0,
+            label     => $app->translate('New Filter'),
+            can_edit  => 1,
+        });
+        $initial_filter = $filter->to_hash if $filter;
+        $param{open_filter_panel} = 1;
     }
 
     my $columns = $list_pref->{columns} || [];
@@ -1182,6 +1196,7 @@ sub filtered_list {
     $list_pref->{rows} = $limit;
     $list_pref->{columns} = [ split ',', $cols ];
     $list_pref->{last_filter} = $filter_id ? $filter_id : $allpass ? '_allpass' : '';
+    $list_pref->{last_items} = $filteritems;
     $app->user->list_prefs($list_prefs);
     ## FIXME: should handle errors..
     $app->user->save;

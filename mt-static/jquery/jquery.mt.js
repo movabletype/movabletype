@@ -844,12 +844,14 @@ $.fn.mtToggleField = function(options) {
     var defaults = {
         click_class: 'detail-link',
         detail_class: 'detail',
-        hide_clicked: false
+        hide_clicked: false,
+        default_hide: true,
     };
     var opts = $.extend(defaults, options);
     return this.each(function() {
         var $field = $(this);
-        $('.'+opts.detail_class).hide();
+        if (opts.default_hide)
+            $field.find('.'+opts.detail_class).hide();
         $field.find('.'+opts.click_class).click(function(event) {
             $field.toggleClass('active').find('.'+opts.detail_class).toggle();
             event.preventDefault();
