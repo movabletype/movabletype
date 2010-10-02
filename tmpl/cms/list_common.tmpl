@@ -1136,6 +1136,9 @@ function doForMarked(formid, action, singlar, plural, phrase, xhr) {
   }
 
   var count = $form.find('input[name=id]').filter(':checked').length;
+  if ( jQuery('input[name=all_selected]').val() == 1 ) {
+      count = total;
+  }
   if (!count) {
     alert(trans('You did not select any [_1] to [_2].', plural, phrase));
     return;
