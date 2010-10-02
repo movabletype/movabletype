@@ -603,7 +603,9 @@ sub _nickname_bulk_html {
         map { $_->userpic_asset_id => 1 }
         grep { $_->userpic_asset_id }
         @$objs;
-    my @userpics = MT->model('asset.image')->load({ id => [ keys %asset_for_load ]});
+    my @userpics;
+    @userpics = MT->model('asset.image')->load({ id => [ keys %asset_for_load ]})
+        if scalar keys %asset_for_load;
     my %userpic  = map { $_->id => $_ } @userpics;
     my @results;
     my $mail_icon = MT->static_path . 'images/status_icons/email.gif';
