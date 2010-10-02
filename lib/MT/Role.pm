@@ -114,8 +114,9 @@ sub list_props {
                             <img alt="$status_class" src="$status_img" />
                         </span>
                         <a href="$url">$name</a>
+                    } . ( $desc ? qq{
                         <p class="description">$desc</p>
-                    };
+                    } : q{} );
                 }
                 return @out;
             },
