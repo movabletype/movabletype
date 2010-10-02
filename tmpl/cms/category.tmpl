@@ -180,7 +180,7 @@ function initItem($item) {
     jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon"><__trans phrase="Remove Categories"></span>')
       .appendTo($item.find('.item-ctrl'))
       .bind('click', function() {
-      var id = jQuery(this).parent('.sortable-item').attr('id');
+      var id = jQuery(this).parents('.sortable-item').attr('id');
       removeItems(id);
     });
 }
