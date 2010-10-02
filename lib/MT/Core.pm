@@ -904,6 +904,7 @@ BEGIN {
                 contents_label_plural => 'Entries',
                 permission => 'access_to_category_list',
                 view => 'blog',
+                scope_mode => 'this',
             },
             folder => {
                 primary      => 'label',
@@ -913,6 +914,7 @@ BEGIN {
                 contents_label_plural => 'Pages',
                 permission => 'access_to_category_list',
                 view => [ 'website', 'blog' ],
+                scope_mode => 'this',
             },
             comment => {
                 object_label => 'Comment',
