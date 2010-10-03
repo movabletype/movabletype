@@ -242,7 +242,7 @@ var table = jQuery('table.listing-table')[0];
 var col_classes = {};
 <mt:loop name="list_columns">
 line += '<th class="col head <mt:var name="id"><mt:if name="primary"> primary</mt:if><mt:if name="col_class"> <mt:var name="col_class"></mt:if>"><div><a href="#<mt:var name="id">" class="sort-link"><mt:var name="label"></a></div></th>';
-<mt:if name="default_sort_order">
+<mt:if name="default_sort_order" eq="descend">
 jQuery.data(table, '<mt:var name="id">', 'desc');
 <mt:else>
 jQuery.data(table, '<mt:var name="id">', 'asc');
@@ -422,7 +422,7 @@ function renameFilter(index, fid, name) {
       __mode: 'save_filter',
       datasource: '<mt:var name="list_type">',
       blog_id: <mt:var name="blog_id">,
-      id: fid,
+      fid: fid,
       label: name,
       items: jQuery.toJSON(filters[index].items),
       list: 0
@@ -461,7 +461,7 @@ function removeFilter(element) {
     dataType: 'json',
     data: {
       __mode: 'delete_filter',
-      id: filters[index].id,
+      fid: filters[index].id,
       datasource: '<mt:var name="list_type">',
       blog_id: <mt:var name="blog_id">
     },
