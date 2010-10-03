@@ -169,6 +169,7 @@ sub list_props {
             display => 'default',
             order   => 300,
             col => 'name',  # this looks up mt_blog.blog_nam column
+            default_sort_order => 'ascend',
             bulk_html => sub {
                 my $prop = shift;
                 my ( $objs, $app ) = @_;
@@ -208,6 +209,15 @@ sub list_props {
                 return {
                     blog_id => [ map { $_->id } @blogs ],
                 };
+            },
+            sort => 0,
+            bulk_sort => sub {
+                my $prop = shift;
+                my ( $objs ) = @_;
+                my %blog_id = map { $_->blog_id => 1 } @$objs;
+                my @blogs = MT->model('blog')->load({ id => [ keys %blog_id ] });
+                my %blogname = map { $_->id => $_->name } @blogs;
+                return sort { $blogname{ $a->blog_id } cmp $blogname{ $b->blog_id } } @$objs;
             },
         },
         created_on => {

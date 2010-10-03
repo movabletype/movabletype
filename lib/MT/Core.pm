@@ -778,6 +778,14 @@ BEGIN {
                         my $app = MT->app or return;
                         return !$app->blog || !$app->blog->is_blog;
                     },
+                    bulk_sort => sub {
+                        my $prop = shift;
+                        my ( $objs ) = @_;
+                        my %blog_id = map { $_->blog_id => 1 } @$objs;
+                        my @blogs = MT->model('blog')->load({ id => [ keys %blog_id ] });
+                        my %blogname = map { $_->id => $_->name } @blogs;
+                        return sort { $blogname{ $a->blog_id } cmp $blogname{ $b->blog_id } } @$objs;
+                    },
                 },
                 current_user => {
                     label => 'My Items',
