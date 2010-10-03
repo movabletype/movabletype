@@ -887,7 +887,9 @@ sub list {
            label                 => $_->label,
            field                 => $_->filter_tmpl,
            single_select_options => $_->single_select_options( $app ),
-           singleton             => $_->singleton,
+           singleton             => $_->singleton              ? 1
+                                  : $_->has('filter_editable') ? !$_->filter_editable
+                                  :                              0,
            editable              => $_->has('filter_editable') ? $_->filter_editable : 1,
         }}
         sort {

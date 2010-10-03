@@ -254,7 +254,7 @@ jQuery(line).appendTo('thead tr, tfoot tr');
 
 var filter_types = {};
 <mt:loop name="filter_types">
-filter_types['<mt:var name="type">'] = '<div class="filtertype type-<mt:var name="type"><mt:unless name="editable"> no-edit</mt:unless>"><div class="item-label"><mt:var name="label"></div><div class="fields"><mt:var name="field" mteval="1" regex_replace="/\n*/g":""><span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add"></span><span class="item-action minus clickable icon-minus icon16 action-icon"><__trans phrase="Remove"></span></div></div>';
+filter_types['<mt:var name="type">'] = '<div class="filtertype type-<mt:var name="type"><mt:unless name="editable"> no-edit</mt:unless>"><div class="item-label"><mt:var name="label"></div><div class="fields"><mt:var name="field" mteval="1" regex_replace="/\n*/g":""><mt:unless name="singleton"><span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add"></span><span class="item-action minus clickable icon-minus icon16 action-icon"><__trans phrase="Remove"></span></mt:unless></div></div>';
 </mt:loop>
 
 jQuery('#filter_types').hide();

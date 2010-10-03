@@ -442,6 +442,7 @@ BEGIN {
                 single_select => {
                     base      => '__virtual.base',
                     sort      => 0,
+                    singleton => 1,
                     terms => sub {
                         my $prop   = shift;
                         my ($args) = @_;
@@ -718,6 +719,7 @@ BEGIN {
                     label => 'Legacy Quick Filter',
                     priority => 1,
                     filter_editable => 0,
+                    singleton => 1,
                     terms => sub {
                         my $prop = shift;
                         my ( $args, $db_terms, $db_args ) = @_;
