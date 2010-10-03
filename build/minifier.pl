@@ -20,7 +20,8 @@ my %types = (
 my $file = shift or die "Usage $0 <file>\n";
 die "File not found: $file\n" unless ( -e $file );
 
-my ( $ext ) = ( $file =~ m/\.(.*)$/ );
+require File::Basename;
+my $ext =  ( File::Basename::fileparse( $file, qr/[A-Za-z0-9]+$/ ) )[2];
 
 unless ( defined $ext && exists( $types{ lc( $ext ) } ) ) {
     die "$0 can only handle filetypes: ".join( ',', keys %types );
