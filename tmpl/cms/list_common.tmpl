@@ -898,26 +898,28 @@ function dateOption($node) {
   $node.parent('.fields').find('.date-option .'+type).show();
 }
 
-function filterItem(type) {
+function filterItem(type, datepicker_off) {
   var $item = jQuery(filter_types[type]);
   if ( $item && $item.attr('class') && $item.attr('class').match(/no-edit/) ) {
     $item.find('input').attr('disabled', 1);
     $item.find('select').attr('disabled', 1);
   }
-  $item
-    .find('.filter-date').each(function() {
-        dateOption(jQuery(this));
-    }).bind('change', function() {
-        dateOption(jQuery(this));
-    }).end()
-    .find('.datetime').datepicker({
-      dateFormat: 'yy-mm-dd',
-      dayNamesMin: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-      monthNames: ['-01','-02','-03','-04','-05','-06','-07','-08','-09','-10','-11','-12'],
-      showMonthAfterYear: true,
-      prevText: '&lt;',
-      nextText: '&gt;'
-    });
+  if ( !datepicker_off ) {
+    $item
+      .find('.filter-date').each(function() {
+          dateOption(jQuery(this));
+      }).bind('change', function() {
+          dateOption(jQuery(this));
+      }).end()
+      .find('.datetime').datepicker({
+        dateFormat: 'yy-mm-dd',
+        dayNamesMin: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+        monthNames: ['-01','-02','-03','-04','-05','-06','-07','-08','-09','-10','-11','-12'],
+        showMonthAfterYear: true,
+        prevText: '&lt;',
+        nextText: '&gt;'
+      });
+  }
   return $item;
 }
 
@@ -1245,10 +1247,24 @@ jQuery('.filtertype .plus').live('click', function() {
   var $filtertype = jQuery(this).parents('.filtertype');
   $filtertype.attr('class').match(/type-(\w+)/);
   var type = RegExp.$1;
-  var $node = filterItem(type);
-  $node.clone(true)
-    .insertAfter($filtertype)
+  var $node = filterItem(type, true);
+  var $clone = $node.clone(true);
+  $clone.insertAfter($filtertype)
     .find('.item-label').addClass('invisible');
+
+  $clone.find('.filter-date').each(function() {
+      dateOption(jQuery(this));
+  }).bind('change', function() {
+      dateOption(jQuery(this));
+  }).end()
+  .find('.datetime').datepicker({
+      dateFormat: 'yy-mm-dd',
+      dayNamesMin: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+      monthNames: ['-01','-02','-03','-04','-05','-06','-07','-08','-09','-10','-11','-12'],
+      showMonthAfterYear: true,
+      prevText: '&lt;',
+      nextText: '&gt;'
+  });
 });
 
 jQuery(window).bind('listReady', function(){
