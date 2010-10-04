@@ -915,7 +915,8 @@ BEGIN {
                 primary    => 'message',
                 permission => 'access_to_log_list',
                 feed_link => 1,
-                feed_label => 'Activity Feed'
+                feed_label => 'Activity Feed',
+                screen_label => 'Activity Log',
             },
             category => {
                 object_label => 'Category',
