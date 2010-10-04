@@ -410,7 +410,7 @@ sub member_list_props {
         },
         role => {
             base    => '__virtual.single_select',
-            label   => 'Role',
+            label   => 'Roles',
             order   => 300,
             display => 'default',
             html    => sub {
