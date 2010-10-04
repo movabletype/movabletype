@@ -394,6 +394,16 @@ sub list_props {
                 );
                 return;
             },
+            label_via_param => sub {
+                my $prop = shift;
+                my ( $app ) = @_;
+                my $id = $app->param('filter_val');
+                my $cat = MT->model('category')->load($id);
+                return MT->translate(
+                    'Entries from category: [_1]',
+                    $cat->label,
+                );
+            },
         },
         authored_on => {
             auto  => 1,

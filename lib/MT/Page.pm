@@ -39,9 +39,20 @@ sub list_props {
             base             => 'entry.category',
             label            => 'Folder',
             display          => 'default',
+            view_filter      => ['blog', 'website'],
             order            => 500,
             category_class   => 'folder',
             zero_state_label => '(root)',
+            label_via_param => sub {
+                my $prop = shift;
+                my ( $app ) = @_;
+                my $id = $app->param('filter_val');
+                my $cat = MT->model('category')->load($id);
+                return MT->translate(
+                    'Pages in folder: [_1]',
+                    $cat->label,
+                );
+            },
         },
         created_on    => { base => 'entry.created_on',     order => 600, },
         modified_on   => { base => 'entry.modified_on',    order => 700, },
