@@ -658,7 +658,7 @@ function renderList(mode, columns, values, limit, page ) {
         jQuery('<tr id="'+id+'">'+line+'</tr>').appendTo('tbody');
       }
       jQuery('#resultstats').remove();
-      var n = jQuery('#disp_cols').find('input.main:checked').length;
+      var n = jQuery('#disp_cols').find('input.main:checked').length + 1;
 
       if (count == 0) {
         var message = trans('No [_1] could be found.', '<mt:var name="object_label" lower_case="1" escape="js">');
@@ -752,14 +752,14 @@ jQuery('ul#disp_cols .main:checkbox').click(function() {
   renderColumns(col, checked);
   if (checked)
     renderList('filtered_list', cols, vals, jQuery('#row').val(), currentPage);
-  var n = jQuery('#disp_cols').find('input.main:checked').length;
+  var n = jQuery('#disp_cols').find('input.main:checked').length + 1;
   jQuery('td.fullwidth-row').attr('colspan', n);
 
 });
 
 jQuery('ul#disp_cols .sub:checkbox').click(function() {
   toggleSubField(this);
-  var n = jQuery('#disp_cols').find('input.main:checked').length;
+  var n = jQuery('#disp_cols').find('input.main:checked').length + 1;
   jQuery('td.fullwidth-row').attr('colspan', n);
 });
 
@@ -778,9 +778,10 @@ jQuery('#row').change(function() {
 });
 
 function addSelectAll($node) {
-  var n = jQuery('#disp_cols').find('input.main:checked').length;
+  var n = jQuery('#disp_cols').find('input.main:checked').length + 1;
   $node
     .parents('tbody')
+    .append('<tr class="select-all"><td class="col fullwidth-row" colspan="'+n+'"></td></tr>')
     .prepend('<tr class="select-all"><td class="col fullwidth-row" colspan="'+n+'"><input type="hidden" name="all_selected" /></td></tr>');
   var select_text = 'Select all '+total+' items';
   var cancel_text = 'All '+total+' items are selected';
