@@ -117,12 +117,12 @@ sub ts2epoch {
     my ($yr, $mo, $dy, $hr, $mn, $sc) = unpack('A4A2A2A2A2A2', $ts);
     my $epoch = Time::Local::timegm_nocheck($sc, $mn, $hr, $dy, $mo-1, $yr);
     return unless $epoch;
-    $epoch = offset_time($epoch, $blog, '-') if ref $blog;
+    $epoch = offset_time($epoch, $blog, '-');
     $epoch;
 }
 sub epoch2ts {
     my ($blog, $epoch) = @_;
-    $epoch = offset_time($epoch, $blog) if defined $blog;
+    $epoch = offset_time($epoch, $blog);
     my ($s, $m, $h, $d, $mo, $y) = gmtime($epoch);
     sprintf("%04d%02d%02d%02d%02d%02d",
                      $y+1900, $mo+1, $d, $h, $m, $s);
@@ -465,6 +465,7 @@ sub offset_time {
     } else {
         $offset = MT->config->TimeOffset;
     }
+
     $offset += 1 if $blog && (localtime $ts)[8];
     $offset *= -1 if $dir && $dir eq '-';
     $ts += $offset * 3600;
