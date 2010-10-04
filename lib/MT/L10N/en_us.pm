@@ -164,6 +164,7 @@ the address you provided is correct and belongs to you.',
 
     '_WEBMASTER_MT4' => 'Webmaster',
     '_THEME_AUTHOR' => 'Author',
+    '_FILTER_FUTURE' => 'Future',
 );
 
 1;
