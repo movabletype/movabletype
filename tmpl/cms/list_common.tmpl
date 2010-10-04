@@ -219,24 +219,6 @@ jQuery(window).bind( 'ajaxStart', function() {
     jQuery('.msg-error').remove();
   });
 
-jQuery('.indicator, #listing-table-overlay')
-  .hide()
-  .bind('ajaxStart', function() {
-    jQuery(this).show();
-  })
-  .bind('ajaxStop', function() {
-    jQuery(this).hide();
-  });
-
-jQuery('div.pagination')
-  .hide()
-  .bind('ajaxStart', function() {
-    jQuery(this).hide();
-  })
-  .bind('ajaxStop', function() {
-    jQuery(this).show();
-  });
-
 var line = '<th class="col head cb"><input type="checkbox" /></th>';
 var table = jQuery('table.listing-table')[0];
 var col_classes = {};
@@ -633,6 +615,9 @@ function renderList(mode, columns, values, limit, page ) {
     params['label'] = jQuery('input[name=filter_name]').val();
   }
 
+  jQuery('.indicator, #listing-table-overlay').show();
+  jQuery('div.pagination').hide();
+
   jQuery.ajax({
     type: 'POST',
     url: '<mt:var name="script_url">',
@@ -687,6 +672,9 @@ function renderList(mode, columns, values, limit, page ) {
       editable_filter_count = data.result.editable_filter_count;
     },
     complete: function() {
+      jQuery('.indicator, #listing-table-overlay').hide();
+      jQuery('div.pagination').show();
+
       jQuery('tbody tr:even').addClass('even');
       jQuery('tbody tr:odd').addClass('odd');
       var $checkboxes = jQuery('td :checkbox');
