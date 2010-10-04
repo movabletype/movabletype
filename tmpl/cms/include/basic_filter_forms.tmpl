@@ -28,7 +28,7 @@
     </select>
 </mt:SetVarTemplate>
 
-<mt:SetVarTemplate name="filter_form_date">
+<mt:SetVarTemplate name="filter_form_future_date">
     <select class="<mt:var name="type">-option filter-date">
         <option value="range"><__trans phrase="Range"></option>
         <option value="days"><__trans phrase="Days"></option>
@@ -36,6 +36,21 @@
         <option value="after"><__trans phrase="After"></option>
         <option value="future"><__trans phrase="Future"></option>
         <option value="past"><__trans phrase="Past"></option>
+    </select>
+    <span class="date-option">
+    <label class="date"><__trans phrase="Origin "><input type="text" class="<mt:var name="type">-origin text datetime" /></label>
+    <label class="range"><__trans phrase="From "><input type="text" class="<mt:var name="type">-from text datetime" /></label>
+    <label class="range"><__trans phrase="To "><input type="text" class="<mt:var name="type">-to text datetime" /></label>
+    <label class="days"><__trans phrase="Days "><input type="text" class="<mt:var name="type">-days text days" /></label>
+    </span>
+</mt:SetVarTemplate>
+
+<mt:SetVarTemplate name="filter_form_date">
+    <select class="<mt:var name="type">-option filter-date">
+        <option value="range"><__trans phrase="Range"></option>
+        <option value="days"><__trans phrase="Days"></option>
+        <option value="before"><__trans phrase="Before"></option>
+        <option value="after"><__trans phrase="After"></option>
     </select>
     <span class="date-option">
     <label class="date"><__trans phrase="Origin "><input type="text" class="<mt:var name="type">-origin text datetime" /></label>

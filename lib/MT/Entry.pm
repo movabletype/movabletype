@@ -398,6 +398,7 @@ sub list_props {
             auto  => 1,
             display => 'default',
             label => 'Created',
+            use_future => 1,
             order => 600,
         },
         modified_on => {

@@ -290,7 +290,8 @@ BEGIN {
                 },
                 date => {
                     base        => '__virtual.base',
-                    col_class       => 'date',
+                    col_class   => 'date',
+                    use_future  => 0,
                     terms => sub {
                         my $prop   = shift;
                         my ($args) = @_;
@@ -423,7 +424,15 @@ BEGIN {
                         }
                     },
 
-                    filter_tmpl => '<mt:Var name="filter_form_date">',
+                    filter_tmpl => sub {
+                        my $prop = shift;
+                        if ( $prop->use_future ) {
+                            return '<mt:Var name="filter_form_future_date">';
+                        }
+                        else {
+                            return '<mt:Var name="filter_form_date">';
+                        }
+                    },
                     html => sub {
                         my ( $prop, $obj ) = @_;
                         my $ts = $prop->raw($obj) or return '';
