@@ -321,6 +321,7 @@ sub list_props {
                         entry_id    => 1,
                         category_id => 1,
                 }});
+                return map { $prop->zero_state_label } @$objs unless scalar @placements;
                 my %placements = map { $_->entry_id => $_->category_id } @placements;
                 my @cat_ids    = map { $_->category_id } @placements;
                 my @categories = MT->model($prop->category_class)->load({ id => \@cat_ids }, {
