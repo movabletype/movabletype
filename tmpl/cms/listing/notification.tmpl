@@ -1,5 +1,5 @@
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
-
 <script type="text/javascript">
 /* <![CDATA[ */
 var current_edit = 0;
@@ -109,6 +109,7 @@ function cancelCreateMode () {
 }
   /* ]]> */
 </script>
+</mt:setvarblock>
 
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
@@ -135,6 +136,7 @@ function cancelCreateMode () {
 </mt:if>
 </mt:setvarblock>
 
+<mt:setvarblock name="content_header" append="1">
 <div class="create-inline" id="create-inline-notification" style="display: none;">
   <form method="post" action="<mt:var name="script_url">" id="create-inline-notification-form">
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
@@ -169,6 +171,7 @@ function cancelCreateMode () {
     </span>
   </form>
 </div>
+</mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('#create-inline-notification-form button.mt-do-action').click(function() {

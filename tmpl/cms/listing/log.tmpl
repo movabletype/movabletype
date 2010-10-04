@@ -1,3 +1,11 @@
+<mt:setvarblock name="content_header" prepend="1">
+<mt:if name="time_offset">
+  <__trans phrase="All times are displayed in GMT[_1]." params="<mt:var name="time_offset">">
+<mt:else>
+  <__trans phrase="All times are displayed in GMT.">
+</mt:if>
+</mt:setvarblock>
+
 <mt:setvarblock name="jq_js_include" append="1">
 jQuery(window).bind('listReady', function() {
     jQuery('td.message').mtToggleField();

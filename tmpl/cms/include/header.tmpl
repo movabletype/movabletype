@@ -172,41 +172,6 @@
         </mt:if>
       </mt:if>
       <!-- /Menu Bar Nav--></div>
-
-<mt:Ignore>
-      <mt:if name="blog_id">
-        <mt:if name="compose_menus">
-        <div id="<mt:var name="scope_type">-fav-actions-nav" class="fav-actions-nav">
-
-          <ul>
-          <mt:loop name="compose_menus">
-            <mt:loop name="menus">
-              <mt:if name="__first__">
-              <li>
-                <em>
-                  <a href="<mt:var name="link">" class="fav-actions-root-link">
-                    <span class="<mt:var name="root_class">"><mt:var name="root_label"></span>
-                  </a>
-                </em>
-                <div id="fav-actions" class="fav-actions hidden">
-                  <ul>
-              </mt:if>
-                    <li><a href="<mt:var name="link">"><span class="action-label"><mt:var name="label"></span></a></li>
-              <mt:if name="__last__">
-                  </ul>
-                </div>
-              </li>
-              </mt:if>
-            </mt:loop>
-          </mt:loop>
-          </ul>
-
-        </div>
-        </mt:if>
-      </mt:if>
-      <!-- /Fav Actions--></div>
-</mt:Ignore>
-
     <!-- /Menu Bar --></div>
   </mt:if>
   <!-- /Header --></div>
