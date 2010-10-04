@@ -941,6 +941,7 @@ sub list {
     $param{list_columns}    = \@list_columns;
     $param{filter_types}    = \@filter_types;
     $param{object_type}     = $type;
+    $param{page_title}      = $screen_settings->{screen_label};
     $param{object_label}
         = $screen_settings->{object_label}
         || $obj_class->class_label;

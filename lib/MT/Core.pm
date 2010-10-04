@@ -1015,6 +1015,7 @@ BEGIN {
                 primary => 'ip',
                 permission => 'access_to_banlist',
                 default_sort_key => 'created_on',
+                screen_label => 'IP Banning Settings',
             },
             notification => {
                 object_label => 'AddressBook',
