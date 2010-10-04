@@ -290,7 +290,8 @@ sub load_objects {
          && $limit < scalar @objs
        )
     {
-        @objs = @objs[ $offset .. $limit + $offset - 1 ];
+        my $max = scalar @objs < $limit + $offset ? scalar @objs  - 1 : $limit + $offset - 1;
+        @objs = @objs[ $offset .. $max ];
     }
 
     return \@objs;
