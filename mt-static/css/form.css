@@ -67,6 +67,14 @@
     outline: 0;
 }
 
+.text.disabled {
+    border-color: #dcdddd;
+    background-color: #f3f3f3;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+}
+
 select { 
     height: 1.9em;
     border: 1px solid #adadad;

@@ -52,6 +52,7 @@
   <div class="actions-bar actions-bar-login">
     <button
        type="submit"
+       id="sign-in-button"
        accesskey="s"
        title="<__trans phrase="Sign In (s)">"
        class="sign-in action primary button">
@@ -72,6 +73,7 @@
 if (window.top && (window.top.location != window.location)) {
   jQuery('#username')
     .val( window.top.jQuery('#user .username').text())
+    .addClass('disabled')
     .attr('disabled','disabled');
   jQuery('#sign-in-button').click(function(){
     jQuery('#username').removeAttr('disabled');
