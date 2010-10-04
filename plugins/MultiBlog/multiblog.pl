@@ -76,11 +76,15 @@ MT->add_plugin($plugin);
 # Register entry post-save callback for rebuild triggers
 MT->add_callback( 'cms_post_save.entry', 10, $plugin,
     sub { $plugin->runner( 'post_entry_save', @_ ) } );
+MT->add_callback( 'api_post_save.entry', 10, $plugin,
+    sub { $plugin->runner( 'post_entry_save', @_ ) } );
 MT->add_callback( 'scheduled_post_published', 10, $plugin,
     sub { $plugin->runner( 'post_entry_pub', @_ ) } );
 
 # Register page post-save callback for rebuild triggers
 MT->add_callback( 'cms_post_save.page', 10, $plugin,
+    sub { $plugin->runner( 'post_entry_save', @_ ) } );
+MT->add_callback( 'api_post_save.page', 10, $plugin,
     sub { $plugin->runner( 'post_entry_save', @_ ) } );
 
 # Register Comment/TB post-save callbacks for rebuild triggers
