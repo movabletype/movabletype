@@ -1592,7 +1592,9 @@ sub core_menus {
             order => 500,
         },
         'user' => {
-            label => "Users",
+            label => sub {
+                $app->translate( $app->blog ? 'Members' : 'Users' );
+            },
             order => 600,
         },
         'design' => {
