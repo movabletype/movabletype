@@ -1169,6 +1169,7 @@ sub core_list_actions {
                 code      => "${pkg}User::remove_user_assoc",
                 mode      => 'remove_user_assoc',
                 button    => 1,
+                js_message => 'remove',
                 condition => sub {
                     my $app = MT->app;
                     return $app->can_do('remove_user_assoc');
