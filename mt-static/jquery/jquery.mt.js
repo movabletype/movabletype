@@ -845,7 +845,7 @@ $.fn.mtToggleField = function(options) {
         click_class: 'detail-link',
         detail_class: 'detail',
         hide_clicked: false,
-        default_hide: true,
+        default_hide: true
     };
     var opts = $.extend(defaults, options);
     return this.each(function() {
