@@ -1365,6 +1365,16 @@ MT = {};
 
 if ( window.App ) {
 
+/* Custom event for AutoSave */
+jQuery.event.special.pre_autosave = {
+    setup:function( data, ns ) {
+        return false;
+    },
+    teardown:function( ns ) {
+        return false;
+    }
+};
+
 App.singletonConstructor =
 MT.App = new Class( App, {
   
@@ -1721,6 +1731,9 @@ MT.App = new Class( App, {
     
     
     autoSave: function() {
+        /* Fire event */
+        jQuery(window).trigger('pre_autosave');
+
         var data = DOM.getFormData( this.form );
         data["_autosave"] = 1;
 

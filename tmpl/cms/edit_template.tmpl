@@ -868,5 +868,8 @@ function syncEditor() {
         }
         return false;
     });
+    jQuery(window).bind('pre_autosave', function(){
+        syncEditor();
+    });
 </mt:setvarblock>
 <mt:include name="include/footer.tmpl">
