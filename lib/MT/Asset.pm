@@ -173,10 +173,10 @@ sub list_props {
             terms   => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
-                my $col = $prop->{col} or die;
                 my $value = $args->{value};
-                $db_args->{no_class} = 1;
-                return { $col => $value };
+                $db_args->{no_class} = 0;
+                $db_terms->{class} = $value;
+                return;
             },
             ## FIXME: Get these values from registry or somewhere...
             single_select_options => [
