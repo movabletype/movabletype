@@ -77,11 +77,20 @@ sub list_props {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
                 my $msg  = $obj->message;
-                my $desc = $obj->description;
+                my $desc;
+                if ( 'MT::Log' eq ref $obj ) {
+                    $desc = MT::Util::encode_html($obj->metadata) || '';
+                }
+                else {
+                    $desc = $obj->description;
+                }
                 $desc = $desc->() if ref $desc eq 'CODE';
+                $desc = '' if $msg eq $desc;
+                $desc = MT::Util::encode_html($desc);
+                $msg  = MT::Util::encode_html($msg);
                 return $desc
                   ? qq{
-                    <div class="log-messeage">
+                    <div class="log-message can-select">
                       <a href="#" class="toggle-link detail-link">$msg</a>
                       <div class="log-metadata detail">
                         <pre>$desc</pre>
@@ -89,7 +98,7 @@ sub list_props {
                     </div>
                 }
                   : qq{
-                    $msg
+                    <div class="log-message can-select">$msg</div>
                 };
             },
         },
@@ -251,7 +260,6 @@ sub description {
         require MT::Util;
         $msg = MT::Util::encode_html($msg);
     }
-                            
     $msg;
 }
 
