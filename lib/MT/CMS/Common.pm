@@ -848,13 +848,15 @@ sub list {
                  : $disp eq 'default' ? 1
                  :                      0;
         my $force = $disp eq 'force' ? 1 : 0;
+        my $default = $disp eq 'default' ? 1 : 0;
         my @subfields;
         if ( my $subfields = $prop->sub_fields ) {
             for my $sub ( @$subfields ) {
                 push @subfields, {
-                    display => $cols{ $id . '.' . $sub->{class} },
-                    class   => $sub->{class},
-                    label   => $sub->{label},
+                    display    => $cols{ $id . '.' . $sub->{class} },
+                    class      => $sub->{class},
+                    label      => $sub->{label},
+                    is_default => $sub->{display} eq 'default' ? 1 : 0,
                 }
             }
         }
@@ -867,6 +869,7 @@ sub list {
             sortable           => $prop->can_sort,
             sorted             => $prop->id eq $default_sort ? 1 : 0,
             display            => $show,
+            is_default         => $force || $default,
             force_display      => $force,
             default_sort_order => $prop->default_sort_order || 'ascend',
             order              => $prop->order,

@@ -215,16 +215,19 @@ sub list_props {
             order => 200,
             sub_fields => [
                 {
-                    class => 'status',
-                    label => 'Status',
+                    class   => 'status',
+                    label   => 'Status',
+                    display => 'default',
                 },
                 {
-                    class => 'view-link',
-                    label => 'Link',
+                    class   => 'view-link',
+                    label   => 'Link',
+                    display => 'default',
                 },
                 {
-                    class => 'excerpt',
-                    label => 'Excerpt',
+                    class   => 'excerpt',
+                    label   => 'Excerpt',
+                    display => 'optional',
                 },
             ],
             html => sub {

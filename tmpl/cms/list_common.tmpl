@@ -44,7 +44,7 @@
 	     type="checkbox"
 	     value="<mt:var name="id" escape="html">"
 	     name="custom_prefs"
-         class="main"
+         class="main<mt:if name="is_default"> show-default</mt:if>"
 	     id="custom-prefs-<$mt:var name="id" escape="html"$>"
 	     <mt:if name="display">checked="checked"</mt:if> />
       <label for="custom-prefs-<$mt:var name="id" escape="html"$>"><mt:var name="label"></label></li>
@@ -54,7 +54,7 @@
 	     type="checkbox"
 	     value="<mt:var name="class">"
 	     name="custom_prefs"
-         class="sub"
+         class="sub<mt:if name="is_default"> show-default</mt:if>"
 	     id="custom-prefs-<$mt:var name="id" escape="html"$>.<mt:var name="class">"
 	     <mt:if name="display">checked="checked"</mt:if> />
       <label for="custom-prefs-<$mt:var name="id" escape="html"$>.<mt:var name="class">"><mt:var name="label"></label></li>
@@ -62,6 +62,7 @@
   </mt:loop>
   </ul>
 </mtapp:setting>
+<span id="reset-display-options" class="button"><__trans phrase="Reset"></span>
 </div>
 </mt:setvarblock>
 
@@ -646,7 +647,10 @@ function renderList(mode, columns, values, limit, page ) {
       var count = objs.length;
       var last = data.result.page_max;
       total = parseInt(data.result.count);
-      var return_cols = data.result.columns.split(',');
+      var return_columns = data.result.columns.split(',');
+      var return_cols = jQuery.grep( return_columns, function( val, idx ){
+        return val.match(/\./);
+      }, true );
       var main_cols = {};
       jQuery('#disp_cols input.main.checkbox:checked').each(function() {
         main_cols[ jQuery(this).val() ] = 1;
@@ -774,6 +778,21 @@ jQuery('ul#disp_cols .main:checkbox').click(function() {
 
 jQuery('ul#disp_cols .sub:checkbox').click(function() {
   toggleSubField(this);
+  var n = jQuery('#disp_cols').find('input.main:checked').length + 1;
+  jQuery('td.fullwidth-row').attr('colspan', n);
+});
+
+jQuery('#reset-display-options').click(function() {
+  jQuery('#disp_cols input[type=checkbox]').each(function() {
+    if ( jQuery(this).is('.show-default') ) {
+      jQuery(this).attr('checked', 'checked');
+    }
+    else {
+      jQuery(this).removeAttr('checked');
+    }
+  });
+  renderColumns();
+  renderList({});
   var n = jQuery('#disp_cols').find('input.main:checked').length + 1;
   jQuery('td.fullwidth-row').attr('colspan', n);
 });
@@ -1019,7 +1038,7 @@ jQuery('#save-filter').click(function() {
     return false;
   }
   itemValues();
-  renderList('save_filter', cols, vals, jQuery('#row').val(), 1);    
+  renderList('save_filter', cols, vals, jQuery('#row').val(), 1);
 });
 
 jQuery('#cancel-save-filter').click(function() {
