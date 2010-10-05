@@ -891,7 +891,14 @@ ul.tabs li a {
     margin-bottom: 10px;
 }
 
-
+/* -- Action Link List */ 
+.action-link-list {
+    margin-top: 5px;
+}
+.action-link-list li {
+    display: inline-block;
+    margin-right: 10px;
+}
 
 /* -- Object Nav */
 .object-nav { 
