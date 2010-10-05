@@ -6,7 +6,7 @@
 <mtapp:statusmsg
     id="generic-error"
     class="error">
-    <mt:var name="error" escape="html">
+    <mt:if name="enable_pre"><pre></mt:if><mt:var name="error" escape="html"><mt:if name="enable_pre"></pre></mt:if>
 </mtapp:statusmsg>
 
 <mt:setvarblock name="action_buttons">

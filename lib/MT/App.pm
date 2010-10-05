@@ -2609,7 +2609,7 @@ sub show_error {
     if ( $MT::DebugMode ) {
         if ( $@ ) {
             # Use 'pre' tag to wrap Perl error
-            $error = '<pre>' . encode_html( $error ) . '</pre>';
+            $param->{enable_pre} = 1;
         }
     }
     else {
@@ -2620,7 +2620,6 @@ sub show_error {
             # may be helpful forensics to an attacker.
             $error = $1;
         }
-        $error = encode_html( $error );
         $error
             =~ s!(https?://\S+)!<a href="$1" target="_blank">$1</a>!g;
     }
@@ -2652,7 +2651,7 @@ sub show_error {
     $app->run_callbacks('template_param.error', $app, $tmpl->param, $tmpl);
     my $out = $tmpl->output;
     if ( !defined $out ) {
-        $error = '<pre>' . $error . '</pre>' unless $error =~ m/<pre>/;
+        $param->{enable_pre} = 1 unless $error =~ m/<pre>/;
         return
               "Can't build error template; got error '"
             . encode_html( $tmpl->errstr )
