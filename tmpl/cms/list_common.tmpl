@@ -569,6 +569,44 @@ function renderPagination(count, limit, page, last, total) {
   });
 }
 
+function saveListPrefs() {
+  cols = [];
+  jQuery('ul#disp_cols input:checked').each(function() {
+    jQuery(this).attr('id').match(/custom-prefs-(.*)/);
+    var id = RegExp.$1;
+    cols.push(id);
+  });
+
+  jQuery.ajax({
+    type: 'POST',
+    url: '<mt:var name="script_url">',
+    dataType: 'json',
+    data: {
+      __mode: 'save_list_prefs',
+      datasource: '<mt:var name="list_type">',
+      blog_id: '<mt:var name="blog_id">',
+      columns: cols.join(','),
+      limit: jQuery('#row').val()
+    },
+    success: function(data) {
+      handleMessages(data);
+      return false;
+    },
+    error: function(xhr, status) {
+      if ( this_request != request_id ) {
+          return false;
+      }
+      if ( xhr.status == 401 ) {
+        loginAgain(function(){
+          renderList(mode, columns, values, limit, page);
+        });
+      }
+      else
+        alert('Ajax error: ' + status);
+    }
+  });
+}
+
 var request_id = 0;
 function renderList(mode, columns, values, limit, page ) {
   var this_request = ++request_id;
@@ -771,6 +809,8 @@ jQuery('ul#disp_cols .main:checkbox').click(function() {
   renderColumns(col, checked);
   if (checked)
     renderList('filtered_list', cols, vals, jQuery('#row').val(), currentPage);
+  else
+    saveListPrefs();
   var n = jQuery('#disp_cols').find('input.main:checked').length + 1;
   jQuery('td.fullwidth-row').attr('colspan', n);
 
@@ -780,6 +820,7 @@ jQuery('ul#disp_cols .sub:checkbox').click(function() {
   toggleSubField(this);
   var n = jQuery('#disp_cols').find('input.main:checked').length + 1;
   jQuery('td.fullwidth-row').attr('colspan', n);
+  saveListPrefs();
 });
 
 jQuery('#reset-display-options').click(function() {

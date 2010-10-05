@@ -1255,6 +1255,29 @@ sub filtered_list {
     return $app->json_result(\%res);
 }
 
+sub save_list_prefs {
+    my $app  = shift;
+    my $ds = $app->param('datasource');
+    my $blog_id = $app->param('blog_id') || 0;
+    my $blog = $blog_id ? $app->blog : undef;
+    my $scope
+        = !$blog         ? 'system'
+        : $blog->is_blog ? 'blog'
+        :                  'website';
+    my $limit  = $app->param('limit')   || 50; # FIXME: hard coded.
+    my $cols   = $app->param('columns') || '';
+    my $list_prefs = $app->user->list_prefs       || {};
+    my $list_pref  = $list_prefs->{$ds}{$blog_id} ||= {};
+    $list_pref->{rows}    = $limit;
+    $list_pref->{columns} = [ split ',', $cols ];
+    #$list_pref->{last_filter} = $filter_id ? $filter_id : $allpass ? '_allpass' : '';
+    #$list_pref->{last_items} = $filteritems;
+    $app->user->list_prefs($list_prefs);
+    $app->user->save
+        or return $app->json_error( $app->user->errstr );
+    return $app->json_result({ success => 1 });
+}
+
 sub _list {
     my $app  = shift;
     my $q    = $app->param;
