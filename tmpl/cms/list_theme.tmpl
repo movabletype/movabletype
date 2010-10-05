@@ -40,7 +40,7 @@
 </div>
 </mt:setvarblock>
 
-<mt:setvarTemplate name="theme_loop_tmpl">
+<mt:setvartemplate name="theme_loop_tmpl">
 <mt:loop name="$loop_for">
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -179,7 +179,7 @@
   <__trans phrase="No themes are installed.">
 </mtapp:statusmsg>
 </mt:loop>
-</mt:setVarTemplate>
+</mt:setvartemplate>
 
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
@@ -194,29 +194,31 @@
 <mt:if name="blog_id">
 
 <div id="current-theme-group" class="theme-group">
+  <h2><__trans phrase="Current Theme"></h2>
   <mt:setvar name="loop_for" value="current_theme_loop" /><mt:var name="theme_loop_tmpl">
 </div>
 
 <div id="<$mt:var name="scope_type"$>-theme-group" class="theme-group">
+  <h2><__trans phrase="Available Themes"></h2>
   <mt:setvar name="loop_for" value="theme_loop" /><mt:var name="theme_loop_tmpl">
 </div>
 
 <mt:else>
   <mt:if name="both_theme_loop">
 <div id="both-theme-group" class="theme-group">
-  <h3><__trans phrase="Themes for Both Blogs and Websites"></h3>
+  <h2><__trans phrase="Themes for Both Blogs and Websites"></h2>
   <mt:setvar name="loop_for" value="both_theme_loop" /><mt:var name="theme_loop_tmpl">
 </div>
   </mt:if>
   <mt:if name="blog_theme_loop">
 <div id="blog-theme-group" class="theme-group">
-  <h3><__trans phrase="Themes for Blogs"></h3>
+  <h2><__trans phrase="Themes for Blogs"></h2>
   <mt:setvar name="loop_for" value="blog_theme_loop" /><mt:var name="theme_loop_tmpl">
 </div>
   </mt:if>
   <mt:if name="website_theme_loop">
 <div id="website-theme-group" class="theme-group">
-  <h3><__trans phrase="Themes for Websites"></h3>
+  <h2><__trans phrase="Themes for Websites"></h2>
   <mt:setvar name="loop_for" value="website_theme_loop" /><mt:var name="theme_loop_tmpl">
 </div>
   </mt:if>

@@ -38,6 +38,12 @@ a:active {
 }
 */
 
+h2 {
+    margin-bottom: 0.5em;
+    font-size: 115%;
+    font-weight: bold;
+}
+
 pre {
     margin: 10px 0 0;
     border: 1px solid #c0c6c9;
@@ -2732,9 +2738,6 @@ input#system_performance_logging_threshold {
 }
 
 /* -- Theme Setting */
-#list-themes .theme-group { 
-    margin-bottom: 45px;
-}
 #list-themes .theme { 
     position: relative;
     clear: both;
