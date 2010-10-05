@@ -18,8 +18,8 @@ function validate(f) {
 }
 
 function is_valid_path(path_){
-    var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
-    str = encodeURI(str);
+    var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~$\+,\/:;=\?@]/g, "");
+    str = encodeURIComponent(str);
     if (str.indexOf('%') != -1) {
         return false;
     }
