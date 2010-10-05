@@ -2,6 +2,8 @@
 
 use strict;
 use lib qw( lib extlib );
+binmode STDOUT, ":utf8";
+binmode STDERR, ":utf8";
 
 use Getopt::Long;
 use LWP::UserAgent;

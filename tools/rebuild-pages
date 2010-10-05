@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+binmode STDOUT, ":utf8";
 
 use lib qw(lib ../lib ../extlib extlib );
 

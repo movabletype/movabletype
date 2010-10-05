@@ -1,6 +1,10 @@
 #!/usr/bin/perl -w
 
 use strict;
+use lib 'lib', 'extlib';
+binmode STDOUT, ":utf8";
+binmode STDERR, ":utf8";
+
 use MT;
 use MT::Author;
 use MT::Entry;
