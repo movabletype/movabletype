@@ -1051,7 +1051,7 @@ sub filtered_list {
         if ( $items =~ /^".*"$/ ) {
             $items =~ s/^"//;
             $items =~ s/"$//;
-            $items =~ s/\\"/"/g;
+            $items = MT::Util::decode_js($items);
         }
         $MT::DebugMode && $debug->{print}->($items);
         require JSON;

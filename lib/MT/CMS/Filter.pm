@@ -7,6 +7,7 @@
 package MT::CMS::Filter;
 use strict;
 use warnings;
+use MT::Util;
 
 sub save {
     my $app       = shift;
@@ -26,7 +27,7 @@ sub save {
         if ( $items_json =~ /^".*"$/ ) {
             $items_json =~ s/^"//;
             $items_json =~ s/"$//;
-            $items_json =~ s/\\"/"/g;
+            $items_json = MT::Util::decode_js($items_json);
         }
         require JSON;
         my $json = JSON->new->utf8(0);

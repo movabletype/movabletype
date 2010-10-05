@@ -17,7 +17,7 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
                  rich_text_transform html_text_transform encode_html decode_html
                  iso2ts ts2iso offset_time offset_time_list first_n_words
                  archive_file_for format_ts dirify remove_html
-                 days_in wday_from_ts encode_js get_entry spam_protect
+                 days_in wday_from_ts encode_js decode_js get_entry spam_protect
                  is_valid_email encode_php encode_url decode_url encode_xml
                  decode_xml is_valid_url is_url discover_tb convert_high_ascii 
                  mark_odd_rows dsa_verify perl_sha1_digest relative_date
@@ -516,6 +516,13 @@ sub encode_js {
     $str =~ s!\r!\\r!g;
     $str =~ s!\t!\\t!g;
     Encode::is_utf8($str) ? $str : Encode::decode_utf8($str);
+}
+
+sub decode_js {
+    my ( $str ) = @_;
+    return unless defined $str;
+    $str =~ s/\\(.)/$1/g;
+    return $str;
 }
 
 sub encode_php {
