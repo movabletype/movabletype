@@ -534,8 +534,11 @@ BEGIN {
                         return $author ? $author->nickname : MT->translate('*User deleted*');
                     },
                     terms => sub {
-                        my ( $prop, $args ) = @_;
+                        my $prop   = shift;
+                        my ($args, $load_terms, $load_args) = @_;
                         my $col = $prop->datasource->has_column('author_id') ? 'author_id' : 'created_by';
+                        my $driver = $prop->datasource->driver;
+                        $col = $driver->dbd->db_column_name($prop->datasource->datasource, $col);
                         my $option = $args->{option};
                         my $query  = $args->{string};
                         if ( 'contains' eq $option ) {
@@ -547,9 +550,15 @@ BEGIN {
                         elsif ( 'end' eq $option ) {
                             $query = { like => "%$query" };
                         }
-                        ## FIXME: use join...
-                        my @authors = MT->model('author')->load({ nickname => $query }, { fetch_only => { id => 1 } });
-                        return { $col => [ map { $_->id } @authors ] };
+
+                        $load_args->{joins} ||= [];
+                        push @{ $load_args->{joins} }, MT->model('author')->join_on(
+                            undef,
+                            {
+                                id => \"=$col",
+                                nickname => $query,
+                            }, {}
+                        );
                     },
                     bulk_sort => sub {
                         my $prop = shift;
