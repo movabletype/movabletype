@@ -1221,6 +1221,7 @@ sub filtered_list {
     require POSIX;
     my %res;
     $res{objects}  = \@data;
+    $res{columns}  = $cols;
     $res{count}    = $count;
     $res{page}     = $page;
     $res{page_max} = POSIX::ceil( $count / $limit );

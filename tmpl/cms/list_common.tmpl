@@ -568,7 +568,10 @@ function renderPagination(count, limit, page, last, total) {
   });
 }
 
+var request_id = 0;
 function renderList(mode, columns, values, limit, page ) {
+  var this_request = ++request_id;
+
   // If the first arg is Object, it's Hash style call
   var args = {};
   if ( typeof mode == 'object' ) {
@@ -627,6 +630,10 @@ function renderList(mode, columns, values, limit, page ) {
     dataType: 'json',
     data: params,
     success: function(data) {
+      if ( this_request != request_id ) {
+          return false;
+      }
+
       if ( !handleMessages(data) ) return;
 <mt:if name="config.debugmode">
       if (data.result.debug) {
@@ -639,9 +646,10 @@ function renderList(mode, columns, values, limit, page ) {
       var count = objs.length;
       var last = data.result.page_max;
       total = parseInt(data.result.count);
-      var main_cols = [];
+      var return_cols = data.result.columns.split(',');
+      var main_cols = {};
       jQuery('#disp_cols input.main.checkbox:checked').each(function() {
-        main_cols.push( jQuery(this).val() );
+        main_cols[ jQuery(this).val() ] = 1;
       });
       for (var row = 0; row < count; row++) {
         var id = objs[row][0];
@@ -652,8 +660,9 @@ function renderList(mode, columns, values, limit, page ) {
           line = '<td class="cb col"><input type="checkbox" name="id" value="'+id+'" /></td>';
         }
         for (var col = 1, col_length = objs[row].length; col < col_length; col++) {
-          var col_id = main_cols[ col - 1 ];
-          line += '<td class="col '+col_id+' '+col_classes[col_id]+'">' + objs[row][col] + '</td>';
+          var col_id = return_cols[ col - 1 ];
+          if ( main_cols[col_id] )
+              line += '<td class="col '+col_id+' '+col_classes[col_id]+'">' + objs[row][col] + '</td>';
         }
         jQuery('<tr id="'+id+'">'+line+'</tr>').appendTo('tbody');
       }
@@ -675,6 +684,9 @@ function renderList(mode, columns, values, limit, page ) {
       editable_filter_count = data.result.editable_filter_count;
     },
     complete: function() {
+      if ( this_request != request_id ) {
+          return false;
+      }
       jQuery('.indicator, #listing-table-overlay').hide();
       jQuery('div.pagination').show();
 
@@ -701,6 +713,9 @@ function renderList(mode, columns, values, limit, page ) {
       jQuery(window).trigger('listReady');
     },
     error: function(xhr, status) {
+      if ( this_request != request_id ) {
+          return false;
+      }
       if ( xhr.status == 401 ) {
         loginAgain(function(){
           renderList(mode, columns, values, limit, page);
