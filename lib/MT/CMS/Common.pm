@@ -964,6 +964,13 @@ sub list {
         = $screen_settings->{container_label_plural}
         || $obj_class->container_label_plural;
 
+
+    my $s_type = $screen_settings->{search_type} || $obj_type;
+    if ( my $search_apis = $app->registry( search_apis => $s_type ) ) {
+        $param{search_type}  = $s_type;
+        $param{search_label} = $search_apis->{label};
+    }
+
     my $template = $screen_settings->{template} || 'list_common.tmpl';
 
     my $feed_link = $screen_settings->{feed_link};
