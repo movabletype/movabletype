@@ -21,48 +21,56 @@
 <mt:setvarblock name="display_options">
 <mt:setvar name="show_display_options_link" value="1">
 <div id="display-options-detail" class="display-options-detail detail">
-<mtapp:setting
-   id="per_page"
-   label="<__trans phrase="_DISPLAY_OPTIONS_SHOW">"
-   label_class="no-header">
-  <__trans phrase="Show">
-  <select id="row" name="limit">
-    <option value="25"<mt:if name="limit_25"> selected="selected"</mt:if>><__trans phrase="25 rows"></option>
-    <option value="50"<mt:if name="limit_50"> selected="selected"</mt:if>><__trans phrase="50 rows"></option>
-    <option value="100"<mt:if name="limit_100"> selected="selected"</mt:if>><__trans phrase="100 rows"></option>
-    <option value="200"<mt:if name="limit_200"> selected="selected"</mt:if>><__trans phrase="200 rows"></option>
-  </select>
-</mtapp:setting>
-<mtapp:setting
-   id="display_columns"
-   label="<__trans phrase="Column">"
-   label_class="top-label">
-  <ul id="disp_cols" class="multiple-selection">
-  <mt:loop name="list_columns">
-    <li class="<mt:if name="force_display"> hidden</mt:if>">
-      <input
-	     type="checkbox"
-	     value="<mt:var name="id" escape="html">"
-	     name="custom_prefs"
-         class="main<mt:if name="is_default"> show-default</mt:if>"
-	     id="custom-prefs-<$mt:var name="id" escape="html"$>"
-	     <mt:if name="display">checked="checked"</mt:if> />
-      <label for="custom-prefs-<$mt:var name="id" escape="html"$>"><mt:var name="label"></label></li>
-    <mt:loop name="sub_fields">
+  <mtapp:setting
+     id="per_page"
+     label="<__trans phrase="_DISPLAY_OPTIONS_SHOW">"
+     label_class="no-header">
+    <__trans phrase="Show">
+    <select id="row" name="limit">
+      <option value="25"<mt:if name="limit_25"> selected="selected"</mt:if>><__trans phrase="25 rows"></option>
+      <option value="50"<mt:if name="limit_50"> selected="selected"</mt:if>><__trans phrase="50 rows"></option>
+      <option value="100"<mt:if name="limit_100"> selected="selected"</mt:if>><__trans phrase="100 rows"></option>
+      <option value="200"<mt:if name="limit_200"> selected="selected"</mt:if>><__trans phrase="200 rows"></option>
+    </select>
+  </mtapp:setting>
+  <mtapp:setting
+     id="display_columns"
+     label="<__trans phrase="Column">"
+     label_class="top-label">
+    <ul id="disp_cols" class="multiple-selection">
+    <mt:loop name="list_columns">
+      <li class="<mt:if name="force_display"> hidden</mt:if>">
+        <input
+	       type="checkbox"
+	       value="<mt:var name="id" escape="html">"
+	       name="custom_prefs"
+           class="main<mt:if name="is_default"> show-default</mt:if>"
+	       id="custom-prefs-<$mt:var name="id" escape="html"$>"
+	       <mt:if name="display">checked="checked"</mt:if> />
+          <label for="custom-prefs-<$mt:var name="id" escape="html"$>"><mt:var name="label"></label>
+      </li>
+      <mt:loop name="sub_fields">
       <li class="sub-field">
-      <input
-	     type="checkbox"
-	     value="<mt:var name="class">"
-	     name="custom_prefs"
-         class="sub<mt:if name="is_default"> show-default</mt:if>"
-	     id="custom-prefs-<$mt:var name="id" escape="html"$>.<mt:var name="class">"
-	     <mt:if name="display">checked="checked"</mt:if> />
-      <label for="custom-prefs-<$mt:var name="id" escape="html"$>.<mt:var name="class">"><mt:var name="label"></label></li>
+        <input
+	       type="checkbox"
+	       value="<mt:var name="class">"
+	       name="custom_prefs"
+           class="sub<mt:if name="is_default"> show-default</mt:if>"
+	       id="custom-prefs-<$mt:var name="id" escape="html"$>.<mt:var name="class">"
+	       <mt:if name="display">checked="checked"</mt:if> />
+          <label for="custom-prefs-<$mt:var name="id" escape="html"$>.<mt:var name="class">"><mt:var name="label"></label>
+      </li>
+      </mt:loop>
     </mt:loop>
-  </mt:loop>
-  </ul>
-</mtapp:setting>
-<span id="reset-display-options" class="button"><__trans phrase="Reset"></span>
+    </ul>
+  </mtapp:setting>
+  <mtapp:setting
+     id="reset_display_options"
+     label="<__trans phrase="Reset display options">"
+     label_class="display-options"
+     show_label="0">
+    <a href="#" id="reset-display-options"><__trans phrase="Reset defaults"></a>
+  </mtapp:setting>
 </div>
 </mt:setvarblock>
 
@@ -844,6 +852,7 @@ jQuery('#reset-display-options').click(function() {
   renderList({});
   var n = jQuery('#disp_cols').find('input.main:checked').length + 1;
   jQuery('td.fullwidth-row').attr('colspan', n);
+  return false;
 });
 
 function toggleSubField (obj) {
