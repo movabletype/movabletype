@@ -293,7 +293,6 @@ sub commenter_list_props {
                     <span class="icon auth-type">
                         <img alt="$auth_label" src="$auth_img" width="12" height="12" />
                     </span>
-                    <img alt="$auth_label" src="$auth_img" width="12" height="12" />
                     <span class="username"><a href="$edit_link">$name</a></span>
                     <span class="status $lc_status_label">
                         <img alt="enabled" src="$status_img" />
@@ -587,7 +586,7 @@ sub _author_name_html {
     my $name = $obj->name;
     my $out = qq{
         <span class="icon auth-type">
-          <img alt="$auth_label" src="$auth_img" width="12" height="12" />
+            <img alt="$auth_label" src="$auth_img" width="12" height="12" />
         </span>
         <span class="username"><a href="$edit_link">$name</a></span>
         <span class="status $lc_status_label">
