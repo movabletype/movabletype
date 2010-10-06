@@ -362,7 +362,11 @@ function renderFilterList() {
     return false;
   });
   jQuery('#dialog_filter .delete-link').click(function() {
-    removeFilter(this);
+    var label = jQuery(this).parents('.filter').children('.filter-label').text();
+    var message = trans('Are you sure you want to remove this [_1]?', label);
+    if (confirm(message)) {
+      removeFilter(this);
+    }
     return false;
   });
   jQuery('#dialog_filter .rename-link').click(function() {
