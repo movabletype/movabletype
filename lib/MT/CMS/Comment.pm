@@ -147,6 +147,19 @@ sub edit_commenter {
     $param->{type_author} = 1
         if MT::Author::AUTHOR() == $obj->type;
 
+    $param->{can_edit_commenters} = $app->user->is_superuser
+        ? 1
+        : $app->config->SingleCommunity
+            ? $app->blog
+                ? 0
+                : $app->user->can_do('edit_commenter_status')
+                    ? 1
+                    : 0
+            : $app->blog
+                ? $app->user->permissions($blog_id)->can_do('edit_commenter_status')
+                    ? 1
+                    : 0
+                : 0;
     1;
 }
 

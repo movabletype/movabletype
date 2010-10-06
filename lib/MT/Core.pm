@@ -2031,6 +2031,7 @@ sub load_core_permissions {
                 'edit_all_trackbacks'                   => 1,
                 'edit_comment_status'                   => 1,
                 'edit_commenter'                        => 1,
+                'edit_commenter_status'                 => 1,
                 'edit_trackback_status'                 => 1,
                 'edit_trackback_status_via_notify_mail' => 1,
                 'get_comment_feed'                      => 1,

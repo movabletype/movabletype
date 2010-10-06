@@ -1025,8 +1025,16 @@ sub core_list_actions {
                 code       => "${pkg}Comment::trust_commenter_by_comment",
                 permit_action => 'trust_commenters_via_list',
                 condition   => sub {
-                    return $app->mode ne 'view';
-                    }
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+                    return $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog
+                            ? 1
+                            : 0;
+                }
             },
             'untrust_commenter' => {
                 label      => "Untrust Commenter(s)",
@@ -1034,8 +1042,16 @@ sub core_list_actions {
                 code       => "${pkg}Comment::untrust_commenter_by_comment",
                 permit_action => 'untrust_commenters_via_list',
                 condition   => sub {
-                    return $app->mode ne 'view';
-                    }
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+                    return $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog
+                            ? 1
+                            : 0;
+                }
             },
             'ban_commenter' => {
                 label      => "Ban Commenter(s)",
@@ -1043,8 +1059,16 @@ sub core_list_actions {
                 code       => "${pkg}Comment::ban_commenter_by_comment",
                 permit_action => 'ban_commenters_via_list',
                 condition   => sub {
-                    return $app->mode ne 'view';
-                    }
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+                    return $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog
+                            ? 1
+                            : 0;
+                }
             },
             'unban_commenter' => {
                 label      => "Unban Commenter(s)",
@@ -1052,8 +1076,16 @@ sub core_list_actions {
                 code       => "${pkg}Comment::unban_commenter_by_comment",
                 permit_action => 'unban_commenters_via_list',
                 condition   => sub {
-                    return $app->mode ne 'view';
-                    }
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+                    return $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog
+                            ? 1
+                            : 0;
+                }
             },
             'publish' => {
                 label      => 'Publish',
@@ -1063,10 +1095,16 @@ sub core_list_actions {
                 js_message => 'publish',
                 button     => 1,
                 condition  => sub {
-                    $app->param('blog_id')
-                        ? $app->can_do('edit_comment_status')
-                        : $app->user->is_superuser;
-                },
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+                    return $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog
+                            ? 1
+                            : 0;
+                }
             },
             'delete' => {
                 label      => 'Delete',
