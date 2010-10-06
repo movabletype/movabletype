@@ -980,6 +980,7 @@ BEGIN {
                 },
                 view         => 'system',
                 scope_mode => 'none',
+                screen_label => 'Manage Commenter',
              },
             member => {
                 primary      => [ 'name', 'nickname' ],
