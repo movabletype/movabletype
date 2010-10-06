@@ -27,6 +27,7 @@ __PACKAGE__->install_properties({
         'remote_auth_token' => 'string(50)',
         'entry_prefs' => 'string(255)',
         'text_format' => 'string(30)',
+        'date_format' => 'string(30)',
         'status' => 'integer',
         'external_id' => 'string(255)',
         #'last_login' => 'datetime',
@@ -54,6 +55,7 @@ __PACKAGE__->install_properties({
     defaults => {
         type => 1,
         status => 1,
+        date_format => 'relative',
     },
     indexes => {
         created_on => 1,

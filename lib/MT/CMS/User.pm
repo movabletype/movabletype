@@ -58,6 +58,7 @@ sub edit {
           unless exists $param->{langauges};
         eval { require MT::Image; MT::Image->new or die; };
         $param->{can_use_userpic} = $@ ? 0 : 1;
+        $param->{date_format} = $app->user->date_format || 'relative';
     } else {
         if ( $app->config->ExternalUserManagement ) {
             return $app->error( MT->translate('Invalid request') );

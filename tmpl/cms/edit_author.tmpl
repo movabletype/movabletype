@@ -330,6 +330,17 @@ TC.attachLoadEvent(init);
     </mtapp:setting>
 
     <mtapp:setting
+        id="date_format"
+        label="<__trans phrase="Date Format">"
+        show_hint="1"
+        hint="<__trans phrase="Default date formatting in the Movable Type interface.">">
+        <select name="date_format" id="date_format" class="se">
+            <option value="relative"<mt:if name="date_format" eq="relative"> selected="selected"</mt:if>><__trans phrase="Relative"></option>
+            <option value="full"<mt:if name="date_format" eq="full"> selected="selected"</mt:if>><__trans phrase="Full"></option>
+        </select>
+    </mtapp:setting>
+
+    <mtapp:setting
         id="tag_delim"
         label="<__trans phrase="Tag Delimiter">"
         show_hint="1"
