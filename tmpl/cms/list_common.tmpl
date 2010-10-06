@@ -1361,6 +1361,9 @@ if ( initial_filter.can_save )
 else
   jQuery('#save').hide();
 
+if (jQuery('#disp_cols li:not(.hidden)').size() == 0)
+  jQuery('#display_columns-field, #reset-display-options').hide();
+
 itemValues()
 renderColumns();
 renderFilterList();
