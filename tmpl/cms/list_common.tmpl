@@ -383,6 +383,10 @@ function renderFilterList() {
     $this.hide().next('.delete-link').hide();
     jQuery('<a href=#'+fid+' class="tool-link save button"><__trans phrase="Save"></a>').bind('click', function() {
       var name = jQuery('#filter_'+fid).val();
+      if (name == text) {
+          // Not modified.
+          return $handle.find('.cancel').click();
+      }
       if ( !validateFilterName(name) ) {
           alert(trans('label "[_1]" is already in use.', name));
           return false;
