@@ -870,6 +870,12 @@ jQuery('#row').change(function() {
 });
 
 function addSelectAll($node) {
+  if ( jQuery('div.pagination .start').hasClass('disabled')
+    && jQuery('div.pagination .end').hasClass('disabled') )
+  {
+    return false;
+  }
+
   var n = jQuery('#disp_cols').find('input.main:checked').length + 1;
   $node
     .parents('tbody')
