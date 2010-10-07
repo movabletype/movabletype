@@ -344,7 +344,9 @@ function renderFilterList() {
   jQuery(line).appendTo('#filter_list');
   for (var i = 0, length = filters.length; i < length; i++) {
     var filter = filters[i];
-    line = '<span class="filter-label unit size3of5"><a href="#'+i+'" class="apply-link">'+filter.label+'</a></span>';
+    line = '<span class="filter-label unit size3of5"><a href="#'+i+'" class="apply-link '
+      + ( filter.can_save ? 'user-filter' : 'system-filter' ) 
+      + '">'+filter.label+'</a></span>';
     if (filter.can_save) {
       line += '<span class="handle-filter unit size2of5"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Rename"></a><a href="#'+i+'" class="delete-link tool-link icon16 icon-delete"><__trans phrase="Delete"></a></span>';
     }
@@ -377,42 +379,48 @@ function renderFilterList() {
     }
     return false;
   });
-  jQuery('#dialog_filter .rename-link').click(function() {
-    var $this = jQuery(this);
-    $this.attr('href').match(/#(.*)/);
-    var index = RegExp.$1;
-    var fid = filters[index].id;
-    var $label = $this.parents('.filter').children('.filter-label');
-    var $handle = $this.parents('.filter').children('.handle-filter');
-    var text = $label.find('.apply-link').hide().text();
-    jQuery('<input type="text" id="filter_'+fid+'" class="text full" />')
-      .val(text)
-      .appendTo($label);
-    $this.hide().next('.delete-link').hide();
-    jQuery('<a href=#'+fid+' class="tool-link save button"><__trans phrase="Save"></a>').bind('click', function() {
-      var name = jQuery('#filter_'+fid).val();
-      if (name == text) {
-          // Not modified.
-          return $handle.find('.cancel').click();
-      }
-      if ( !validateFilterName(name) ) {
-          alert(trans('label "[_1]" is already in use.', name));
-          return false;
-      }
-      renameFilter(index, fid, name);
-      return false;
-    }).appendTo($handle);
-    jQuery('<a href=#'+fid+' class="tool-link cancel button"><__trans phrase="Cancel"></a>').bind('click', function() {
-       $label
-         .find('.apply-link').show().end()
-         .find('input').remove();
-       $handle
-         .find('a:visible').remove().end()
-         .find('a:hidden').css('display','inline-block');
-       return false;
-    }).appendTo($handle);
+  jQuery('#dialog_filter .rename-link').click(openFilterRenameField);
+}
+
+function openFilterRenameField() {
+  var $this = jQuery(this);
+  $this.attr('href').match(/#(.*)/);
+  var index = RegExp.$1;
+  var fid = filters[index].id;
+  var $label = $this.parents('.filter').children('.filter-label');
+  var $handle = $this.parents('.filter').children('.handle-filter');
+  var text = $label.find('.apply-link').hide().text();
+  jQuery('<input type="text" id="filter_'+fid+'" class="text full" />')
+    .val(text)
+    .appendTo($label);
+  $this.hide().next('.delete-link').hide();
+  jQuery('<a href=#'+fid+' class="tool-link save button"><__trans phrase="Save"></a>').bind('click', function() {
+    var name = jQuery('#filter_'+fid).val();
+    if (name == text) {
+        // Not modified.
+        return $handle.find('.cancel').click();
+    }
+    if ( !validateFilterName(name) ) {
+        alert(trans('label "[_1]" is already in use.', name));
+        return false;
+    }
+    renameFilter(index, fid, name);
     return false;
-  });
+  }).appendTo($handle);
+  jQuery('<a href=#'+fid+' class="tool-link cancel button"><__trans phrase="Cancel"></a>')
+    .bind('click', cancelFilterRenameField )
+    .appendTo($handle);
+  return false;
+}
+
+function cancelFilterRenameField() {
+  jQuery(this).parents('.filter').children('.filter-label')
+    .find('.apply-link').show().end()
+    .find('input').remove();
+  jQuery(this).parents('.filter').children('.handle-filter')
+    .find('a:visible').remove().end()
+    .find('a:hidden').css('display','inline-block');
+  return false;
 }
 
 function renameFilter(index, fid, name) {
@@ -1172,6 +1180,7 @@ jQuery('#dialog_filter .edit-filter').click(function() {
       jQuery('.handle-filter').show();
     } else {
       jQuery(this).text('Edit');
+      jQuery('#dialog_filter a.button.cancel').click();
       jQuery('.rename-field').remove();
       jQuery('.handle-filter').hide();
     }
