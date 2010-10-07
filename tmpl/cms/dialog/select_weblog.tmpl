@@ -22,7 +22,7 @@ function returnBlogSelection(ok) {
         var ids = new Array(); 
         var names = new Array(); 
 
-        jQuery('#blog-panel .selected-items a').each( function (){
+        jQuery('#blog-panel span.items').children().each( function (){
             var id = jQuery(this).attr('id');
             id = id.replace(/\D/g, '');
             ids.push(id);
