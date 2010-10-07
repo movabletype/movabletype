@@ -870,9 +870,7 @@ jQuery('#row').change(function() {
 });
 
 function addSelectAll($node) {
-  if ( jQuery('div.pagination .start').hasClass('disabled')
-    && jQuery('div.pagination .end').hasClass('disabled') )
-  {
+  if (total <= jQuery('#row').val()) {
     return false;
   }
 
