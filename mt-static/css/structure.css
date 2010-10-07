@@ -39,7 +39,7 @@ a:active {
 */
 
 h2 {
-    margin-bottom: 0.5em;
+    margin: 1em 0;
     font-size: 115%;
     font-weight: bold;
 }
@@ -995,22 +995,21 @@ fieldset {
 
 .field {
     overflow: hidden;
-    padding: 0 0 10px;
+    padding: 10px 0 0;
+    margin: 0 0 10px;
 }
-
 .field-header {
     color: #2b2b2b;
-    font-weight: bold;
 }
 
 .field-left-label .field-header {
     float: left;
-    width: 13em;
-    margin-right: 10px;
+    width: 14em;
+    padding-right: 0.25em;
     text-align: right;
 }
 .field-left-label .field-content {
-    margin-left: 15em;
+    margin-left: 15.5em;
 }
 
 .field-top-label .field-header {
@@ -1620,11 +1619,7 @@ fieldset {
 
 /* -- Title Field */
 .edit-entry #title-field { 
-    margin-top: 0;
-}
-.edit-entry #title {
-    outline: none;
-    font-size: 200%;
+    padding: 0;
 }
 
 /* -- Permalink Field */
@@ -2261,11 +2256,7 @@ body.preview-screen {
 
 /* -- Template Title */
 .edit-template #title-field { 
-    margin-top: 0;
-}
-.edit-template #title {
-    outline: none;
-    font-size: 200%;
+    padding: 0;
 }
 
 #template-body-actions {
@@ -2507,12 +2498,6 @@ body.preview-screen {
 
 
 /* - Edit Comment, Ping */
-
-/* - Edit Role */
-#permission-list li { 
-    display: inline-block;
-    width: 195px;
-}
 
 /* - Settings */
 #system-check iframe {
@@ -2838,11 +2823,9 @@ input#system_performance_logging_threshold {
     border: 1px solid #c8c2be;
     background-color: white;
 }
-
 #select-personal-blog-theme .theme .theme-thumbnail { 
     margin: 15px;
 }
-
 #select-personal-blog-theme .theme .theme-meta { 
     margin: 15px 0 15px 135px;
 }

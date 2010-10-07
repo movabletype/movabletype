@@ -68,10 +68,10 @@ function validate (f) {
        id="system-performance-logging"
        class="has-option"
        label="<__trans phrase="Performance Logging">"
-       content_class="field-content-text"
        hint="<__trans phrase="Turn on performance logging, which will report any system event that takes the number of seconds specified by Logging Threshold.">"
        show_hint="1">
       <input type="checkbox" name="system_performance_logging" id="system-performance-logging" <mt:if name="system_performance_logging" eq="1">checked="checked"</mt:if> />
+      <label for="system-performance-logging"><__trans phrase="Turn on performance logging"></label>
     </mt:app:setting>
 
     <div id="system-performance-logging-option" class="serring-option">
@@ -95,7 +95,6 @@ function validate (f) {
     <mtapp:setting
        id="track-revisions"
        label="<__trans phrase="Revision History">"
-       content_class="field-content-text"
        hint="<__trans phrase="Enable this setting to have Movable Type track revisions made by users to entries, pages and templates.">">
       <input type="checkbox" name="track_revisions" id="track-revisions" <mt:if name="track_revisions"> checked="checked"</mt:if> /> <label for="track_revisions"><__trans phrase="Track revision history"></label>
     </mtapp:setting>
@@ -103,11 +102,10 @@ function validate (f) {
 </fieldset>
 
 <mtapp:settinggroup id="system-feedback-controls">
-  <h3><__trans phrase="System-wide Feedback Controls"></h3>
+  <h2><__trans phrase="System-wide Feedback Controls"></h2>
   <mtapp:setting
      id="comment-disable"
      label="<__trans phrase="Prohibit Comments">"
-     content_class="field-content-text"
      hint="<__trans phrase="This will override all individual blog settings.">">
     <input type="checkbox" name="comment_disable" id="comment-disable"<mt:if name="comment_disable"> checked="checked"</mt:if> /> <label for="comment_disable"><__trans phrase="Disable comments for all blogs."></label>
   </mtapp:setting>
@@ -115,18 +113,16 @@ function validate (f) {
   <mtapp:setting
      id="ping-disable"
      label="<__trans phrase="Prohibit TrackBacks">"
-     content_class="field-content-text"
      hint="<__trans phrase="This will override all individual blog settings.">">
     <input type="checkbox" name="ping_disable" id="ping-disable" <mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" /> <label for="ping_disable"><__trans phrase="Disable receipt of TrackBacks for all blogs."></label>
   </mtapp:setting>
 </mtapp:settinggroup>
 
 <mtapp:settinggroup id="outbound-notifications">
-  <h3><__trans phrase="Outbound Notifications"></h3>
+  <h2><__trans phrase="Outbound Notifications"></h2>
   <mtapp:setting
      id="disable-notify-ping"
      label="<__trans phrase="Prohibit Notification Pings">"
-     content_class="field-content-text"
      hint="<__trans phrase="Disable sending notification pings when a new entry is created in any blog on the system.">">
     <input type="checkbox" name="disable_notify_ping" id="disable-notify-ping" value="1"<mt:if name="disabled_notify_ping"> checked="checked"</mt:if> class="cb" /> <label for="disable_notify_ping"><__trans phrase="Disable notification pings for all blogs."></label>
   </mtapp:setting>
@@ -134,7 +130,6 @@ function validate (f) {
   <mtapp:setting
      id="trackback-send"
      label="<__trans phrase="Send Outbound TrackBacks to">"
-     content_class="field-content-text"
      hint="<__trans phrase="Do not send outbound TrackBacks or use TrackBack auto-discovery if your installation is intended to be private.">"
      show_hint="1">
     <ul id="outbound-trackback-setting-list" class="setting-list">

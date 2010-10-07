@@ -160,7 +160,7 @@
       <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></a>
       <mt:if name="include_from" ne="self"><span class="include-from">(<mt:var name="include_blog_name">)</span></mt:if>
   <mt:else>
-      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)
+      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
       <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
   </mt:if>
     </li>
@@ -172,7 +172,7 @@
       <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></a>
       <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
   <mt:else>
-      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)
+      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
       <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
   </mt:if>
     </li>
@@ -184,7 +184,7 @@
       <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></a>
       <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
   <mt:else>
-      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)
+      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
       <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
   </mt:if>
     </li>
@@ -548,10 +548,10 @@ function toggleCache(id) {
      help_page="templates"
      help_section="template_name">
   <mt:if name="has_name">
-    <input type="text" name="name" id="title" class="text full" tabindex="1" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Template Name">"  maxlength="255" mt:watch-change="1" />
+    <input type="text" name="name" id="title" class="title text full" tabindex="1" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Template Name">"  maxlength="255" mt:watch-change="1" />
   <mt:else>
     <input type="hidden" name="name" value="<$mt:var name="name" escape="html"$>" />
-    <input type="text" name="name_display" id="title" class="text full" value="<$mt:var name="name" escape="html">" disabled="disabled" />
+    <input type="text" name="name_display" id="title" class="title text full" value="<$mt:var name="name" escape="html">" disabled="disabled" />
   </mt:if>
   </mtapp:setting>
 
