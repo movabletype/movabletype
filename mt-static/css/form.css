@@ -93,8 +93,8 @@ select {
     margin: 0 15px 5px 0;
 }
 .fixed-width.multiple-selection li {
-    width: 220px;
-    margin: 0;
+    width: 250px;
+    margin: 0 0 5px;
 }
 
 #notification-listing-table input[type="text"], 

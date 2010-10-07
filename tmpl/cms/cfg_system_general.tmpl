@@ -1,32 +1,37 @@
 <mt:setvar name="page_title" value="<__trans phrase="General Settings">">
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="system-general-settings" value="1">
+
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
   <mtapp:statusmsg
      id="generic-error"
-     class="error">
+     class="error"
+     can_close="0">
     <mt:var name="error">
   </mtapp:statusmsg>
 </mt:if>
 <mt:if name="test_mail_sent">
   <mtapp:statusmsg
      id="saved"
-     class="success">
+     class="success"
+     can_close="1">
     <__trans phrase="A test email was sent.">
   </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved">
   <mtapp:statusmsg
      id="saved"
-     class="success">
+     class="success"
+     can_close="1">
     <__trans phrase="Your settings have been saved.">
   </mtapp:statusmsg>
 </mt:if>
 <mt:if name="config_warning">
   <mtapp:statusmsg
      id="info"
-     class="info">
+     class="info"
+     can_close="0">
     <mt:var name="config_warning">
   </mtapp:statusmsg>
 </mt:if>
@@ -47,7 +52,7 @@ function validate (f) {
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
-  <fieldset>
+  <mtapp:settinggroup id="system-support-settings">
     <mtapp:setting
        id="system-email-address"
        label="<__trans phrase="System Email">"
@@ -98,11 +103,10 @@ function validate (f) {
        hint="<__trans phrase="Enable this setting to have Movable Type track revisions made by users to entries, pages and templates.">">
       <input type="checkbox" name="track_revisions" id="track-revisions" <mt:if name="track_revisions"> checked="checked"</mt:if> /> <label for="track_revisions"><__trans phrase="Track revision history"></label>
     </mtapp:setting>
+</mtapp:settinggroup>
 
-</fieldset>
-
+<h2><__trans phrase="System-wide Feedback Controls"></h2>
 <mtapp:settinggroup id="system-feedback-controls">
-  <h2><__trans phrase="System-wide Feedback Controls"></h2>
   <mtapp:setting
      id="comment-disable"
      label="<__trans phrase="Prohibit Comments">"
@@ -118,8 +122,8 @@ function validate (f) {
   </mtapp:setting>
 </mtapp:settinggroup>
 
+<h2><__trans phrase="Outbound Notifications"></h2>
 <mtapp:settinggroup id="outbound-notifications">
-  <h2><__trans phrase="Outbound Notifications"></h2>
   <mtapp:setting
      id="disable-notify-ping"
      label="<__trans phrase="Prohibit Notification Pings">"
@@ -172,8 +176,9 @@ function validate (f) {
     <div class="dialog actions-bar">
       <button
          type="submit"
-         class="action button primary"
-         ><__trans phrase="Send"></button>
+         class="action primary button">
+        <__trans phrase="Send">
+      </button>
     </div>
   </form>
 </div>

@@ -2510,14 +2510,6 @@ body.preview-screen {
     padding-bottom: 0;
 }
 
-.settings-screen ul#editor-fields { 
-    width: 600px;
-}
-.settings-screen ul#editor-fields li {
-    display: inline-block;
-    width: 30%;
-}
-
 .settings-screen a#increase-threshold,
 .settings-screen a#decrease-threshold {
     color: #383c3c;

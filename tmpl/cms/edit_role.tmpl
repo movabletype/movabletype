@@ -102,134 +102,132 @@ function init() {
 /* ]]> */
 </script>
 
-<div id="edit-role">
 <mt:if name="id">
-  <form id="role" name="role" method="post" action="<mt:var name="script_url">" onsubmit="return this['__mode'] ? true : false">
-    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+<form id="role" name="role" method="post" action="<mt:var name="script_url">" onsubmit="return this['__mode'] ? true : false">
+  <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
 <mt:else>
-  <form id="role" name="role" method="post" action="<mt:var name="script_url">">
+<form id="role" name="role" method="post" action="<mt:var name="script_url">">
 </mt:if>
-    <input type="hidden" name="__mode" value="save_role" />
-    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+  <input type="hidden" name="__mode" value="save_role" />
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
-    <mtapp:settinggroup id="role-details">
-      <h2><__trans phrase="Role Details"></h2>
-      <mtapp:setting
-         id="name"
-         label="<__trans phrase="Role Name">"
-         required="1">
-        <input type="text" name="name" id="name" class="text" value="<mt:var name="name" escape="html">" />
-      </mtapp:setting>
+  <h2><__trans phrase="Role Details"></h2>
+  <mtapp:settinggroup id="role-details">
+    <mtapp:setting
+       id="name"
+       label="<__trans phrase="Role Name">"
+       required="1">
+      <input type="text" name="name" id="name" class="text" value="<mt:var name="name" escape="html">" />
+    </mtapp:setting>
 
-      <mtapp:setting
-         id="description"
-         label="<__trans phrase="Description">">
-        <textarea name="description" id="description" class="text low"><mt:var name="description" escape="html"></textarea>
-      </mtapp:setting>
+    <mtapp:setting
+       id="description"
+       label="<__trans phrase="Description">">
+      <textarea name="description" id="description" class="text low"><mt:var name="description" escape="html"></textarea>
+    </mtapp:setting>
 
-    <mt:if name="id">
-      <mtapp:setting
-         id="created_by"
-         label="<__trans phrase="Created by">">
-        <mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if>
-      </mtapp:setting>
-    </mt:if>
-    </mtapp:settinggroup>
+  <mt:if name="id">
+    <mtapp:setting
+       id="created_by"
+       label="<__trans phrase="Created by">">
+      <mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if>
+    </mtapp:setting>
+  </mt:if>
+  </mtapp:settinggroup>
 
-    <mtapp:settinggroup id="role-privileges">
-      <h2><__trans phrase="Privileges"></h2>
-      <mtapp:setting
-         id="administration"
-         label="<__trans phrase="Administration">">
-        <ul class="fixed-width multiple-selection">
-        <mt:loop name="loaded_permissions">
-        <mt:if name="group" eq="blog_admin">
-          <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
-        </mt:if>
-        </mt:loop>
-        </ul>
-      </mtapp:setting>
-
-      <mtapp:setting
-         id="authoring_publishing"
-         label="<__trans phrase="Authoring and Publishing">">
-        <ul class="fixed-width multiple-selection">
-        <mt:loop name="loaded_permissions">
-        <mt:if name="group" eq="auth_pub">
-          <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
-        </mt:if>
-        </mt:loop>
-        </ul>
-      </mtapp:setting>
-
-      <mtapp:setting
-         id="designing"
-         label="<__trans phrase="Designing">">
-        <ul class="fixed-width multiple-selection">
-        <mt:loop name="loaded_permissions">
-        <mt:if name="group" eq="blog_design">
-          <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
-        </mt:if>
-        </mt:loop>
-        </ul>
-      </mtapp:setting>
-
-      <mtapp:setting
-         id="assets"
-         label="<__trans phrase="Assets">">
-        <ul class="fixed-width multiple-selection">
-        <mt:loop name="loaded_permissions">
-        <mt:if name="group" eq="blog_upload">
-          <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
-        </mt:if>
-        </mt:loop>
-        </ul>
-      </mtapp:setting>
-
-      <mtapp:setting
-         id="commenting"
-         label="<__trans phrase="Commenting">">
-        <ul class="fixed-width multiple-selection">
-        <mt:loop name="loaded_permissions">
-        <mt:if name="group" eq="blog_comment">
-          <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
-        </mt:if>
-        </mt:loop>
-        </ul>
-      </mtapp:setting>
-
-    <mt:if name="id">
-      <mt:if name="same_perm_loop">
-      <mtapp:setting
-         id="same_permissions"
-         label="<__trans phrase="Duplicate Roles">"
-         hint="<__trans phrase="These roles have the same privileges as this role">">
-        <div class="static">
-        <mt:loop name="same_perm_loop">
-          <a href="<mt:var name="script_url">?__mode=view&amp;_type=role&amp;id=<mt:var name="id" escape="url">"><mt:var name="name" escape="html"></a> 
-        </mt:loop>
-        </div>
-      </mtapp:setting>
+  <h2><__trans phrase="Privileges"></h2>
+  <mtapp:settinggroup id="role-privileges">
+    <mtapp:setting
+       id="administration"
+       label="<__trans phrase="Administration">">
+      <ul class="fixed-width multiple-selection">
+      <mt:loop name="loaded_permissions">
+      <mt:if name="group" eq="blog_admin">
+        <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
       </mt:if>
-    </mt:if>
-    </mtapp:settinggroup>
+      </mt:loop>
+      </ul>
+    </mtapp:setting>
 
-<mt:setvarblock name="action_buttons">
+    <mtapp:setting
+       id="authoring_publishing"
+       label="<__trans phrase="Authoring and Publishing">">
+      <ul class="fixed-width multiple-selection">
+      <mt:loop name="loaded_permissions">
+      <mt:if name="group" eq="auth_pub">
+        <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
+      </mt:if>
+      </mt:loop>
+      </ul>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="designing"
+       label="<__trans phrase="Designing">">
+      <ul class="fixed-width multiple-selection">
+      <mt:loop name="loaded_permissions">
+      <mt:if name="group" eq="blog_design">
+        <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
+      </mt:if>
+      </mt:loop>
+      </ul>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="assets"
+       label="<__trans phrase="Assets">">
+      <ul class="fixed-width multiple-selection">
+      <mt:loop name="loaded_permissions">
+      <mt:if name="group" eq="blog_upload">
+        <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
+      </mt:if>
+      </mt:loop>
+      </ul>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="commenting"
+       label="<__trans phrase="Commenting">">
+      <ul class="fixed-width multiple-selection">
+      <mt:loop name="loaded_permissions">
+      <mt:if name="group" eq="blog_comment">
+        <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
+      </mt:if>
+      </mt:loop>
+      </ul>
+    </mtapp:setting>
+
+  <mt:if name="id">
+    <mt:if name="same_perm_loop">
+    <mtapp:setting
+       id="same_permissions"
+       label="<__trans phrase="Duplicate Roles">"
+       hint="<__trans phrase="These roles have the same privileges as this role">">
+      <div class="static">
+      <mt:loop name="same_perm_loop">
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=role&amp;id=<mt:var name="id" escape="url">"><mt:var name="name" escape="html"></a> 
+      </mt:loop>
+      </div>
+    </mtapp:setting>
+    </mt:if>
+  </mt:if>
+  </mtapp:settinggroup>
+
+  <mt:setvarblock name="action_buttons">
     <button
     <mt:if name="id">
-        onclick="return checkChanged();"
+      onclick="return checkChanged();"
     </mt:if>
-        type="submit"
-        accesskey="s"
-        title="<__trans phrase="Save changes to this role (s)">"
-        class="save action primary-button"
-        ><__trans phrase="Save Changes"></button>
-</mt:setvarblock>
-<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+      type="submit"
+      accesskey="s"
+      title="<__trans phrase="Save changes to this role (s)">"
+      class="save action primary button">
+     <__trans phrase="Save Changes">
+    </button>
+  </mt:setvarblock>
+  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
-
-</div>
 
 <mt:setvarblock name="jq_js_include" append="1">
     init();

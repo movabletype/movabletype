@@ -1,5 +1,5 @@
 <mt:setvar name="page_title" value="<__trans phrase="User Settings">">
-<$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:setvar name="position_actions_bottom" value="1">
 <mt:setvar name="system-user-settings" value="1">
 
 <mt:setvarblock name="system_msg">
@@ -54,9 +54,10 @@ function clearNotifyUsers() {
   <input type="hidden" name="__mode" value="save_cfg_system_users" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
 <mt:unless name="external_user_management">
+  <h2><__trans phrase="User Registration"></h2>
   <mtapp:settinggroup id="external-user-management">
-    <h2><__trans phrase="User Registration"></h2>
     <mtapp:setting
        id="registration"
        label="<__trans phrase="Allow Registration">"
@@ -80,8 +81,8 @@ function clearNotifyUsers() {
   </mtapp:settinggroup>
 </mt:unless>
 
+  <h2><__trans phrase="New User Defaults"></h2>
   <mtapp:settinggroup id="new-user-defaults">
-    <h2><__trans phrase="New User Defaults"></h2>
     <mtapp:setting
        id="personal_weblog"
        label="<__trans phrase="Personal Blog">"
