@@ -985,7 +985,10 @@ sub list {
 
     $app->load_list_actions( $type, \%param );
     $app->load_content_actions( $type, \%param );
-    $app->load_tmpl( $template, \%param );
+    my $tmpl = $app->load_tmpl( $template, \%param )
+        or return;
+    $app->run_callbacks('list_template_param.' . $type, $app, $tmpl->param, $tmpl);
+    return $tmpl;
 }
 
 sub filtered_list {
@@ -1107,6 +1110,7 @@ sub filtered_list {
         limit      => $limit,
         offset     => $offset,
         scope      => $scope,
+        blog       => $blog,
         blog_id    => $blog_id,
         blog_ids   => $blog_ids,
     );
@@ -1115,6 +1119,7 @@ sub filtered_list {
         terms => { @blog_id_term },
         args       => {},
         scope      => $scope,
+        blog       => $blog,
         blog_id    => $blog_id,
         blog_ids   => $blog_ids,
     );

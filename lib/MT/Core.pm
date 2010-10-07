@@ -434,11 +434,11 @@ BEGIN {
                         }
                     },
                     html => sub {
-                        my ( $prop, $obj ) = @_;
-                        my $ts = $prop->raw($obj) or return '';
+                        my $prop = shift;
+                        my ( $obj, $app, $opts ) = @_;
+                        my $ts = $prop->raw(@_) or return '';
                         my $date_format = MT::App::CMS::LISTING_DATE_FORMAT();
-                        my $app = MT->app;
-                        my $blog = $app ? $app->blog : undef;
+                        my $blog = $opts->{blog};
                         my $is_relative = ( $app->user->date_format || 'relative' ) eq 'relative' ? 1 : 0;
                         return $is_relative ? MT::Util::relative_date( $ts, time, $blog )
                                             : MT::Util::format_ts( $date_format, $ts, $blog, $app->user ? $app->user->preferred_language : undef );

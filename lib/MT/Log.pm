@@ -8,6 +8,7 @@ package MT::Log;
 
 use strict;
 use base qw( MT::Object );
+use MT::Util qw( ts2epoch epoch2ts offset_time );
 
 # use constant is slow
 sub INFO ()     { 1 }
@@ -67,7 +68,18 @@ sub list_props {
             label   => 'Created on',
             order   => 100,
             display => 'force',
-        },
+            raw     => sub {
+                my $prop = shift;
+                my ( $obj, $app, $opts ) = @_;
+                my $ts = $obj->created_on;
+                my $blog = $opts->{blog};
+
+                ## All Log records are saved with GMT, so do trick here.
+                my $epoch = ts2epoch( undef, $ts, 1 ); # just get epoch with "no_offset" option
+                $epoch = offset_time( $epoch, $blog ); # from GMT to Blog( or system ) Timezone
+                return epoch2ts( $blog, $epoch, 1 );   # back to timestamp
+            },
+       },
         message => {
             auto    => 1,
             label   => 'Message',

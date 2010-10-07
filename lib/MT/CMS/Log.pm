@@ -427,6 +427,25 @@ sub apply_log_filter {
     \%arg;
 }
 
+sub template_param_list {
+    my $cb = shift;
+    my ( $app, $param, $tmpl ) = @_;
+    my ($so);
+    if ( my $blog = $app->blog ) {
+        $so = $blog->server_offset;
+    }
+    else {
+        $so = $app->config('TimeOffset');
+    }
+    if ($so) {
+        my $partial_hour_offset = 60 * abs( $so - int($so) );
+        my $tz                  = sprintf( "%s%02d:%02d",
+            $so < 0 ? '-' : '+',
+            abs($so), $partial_hour_offset );
+        $param->{time_offset} = $tz;
+    }
+}
+
 sub cms_pre_load_filtered_list {
     my ( $cb, $app, $filter, $load_options, $cols ) = @_;
 

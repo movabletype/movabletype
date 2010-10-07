@@ -112,17 +112,18 @@ sub ts2iso {
 }
 
 sub ts2epoch {
-    my ($blog, $ts) = @_;
+    my ( $blog, $ts, $no_offset ) = @_;
     return unless $ts;
     my ($yr, $mo, $dy, $hr, $mn, $sc) = unpack('A4A2A2A2A2A2', $ts);
     my $epoch = Time::Local::timegm_nocheck($sc, $mn, $hr, $dy, $mo-1, $yr);
     return unless $epoch;
-    $epoch = offset_time($epoch, $blog, '-');
+    $epoch = offset_time($epoch, $blog, '-') unless $no_offset;
     $epoch;
 }
+
 sub epoch2ts {
-    my ($blog, $epoch) = @_;
-    $epoch = offset_time($epoch, $blog);
+    my ( $blog, $epoch, $no_offset ) = @_;
+    $epoch = offset_time($epoch, $blog) unless $no_offset;
     my ($s, $m, $h, $d, $mo, $y) = gmtime($epoch);
     sprintf("%04d%02d%02d%02d%02d%02d",
                      $y+1900, $mo+1, $d, $h, $m, $s);
