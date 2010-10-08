@@ -513,7 +513,9 @@ sub core_content_actions {
         'member' => {
             'grant_role' => {
                 class  => 'icon-create',
-                label  => 'Add a user to this blog',
+                label  => sub {
+                    return $app->translate( 'Add a user to this [_1]', lc $app->blog->class_label);
+                },
                 mode   => 'dialog_grant_role',
                 args   => {
                     type  => 'blog',
