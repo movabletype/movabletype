@@ -268,7 +268,7 @@ sub list_props {
         ip => {
             auto  => 1,
             order => 300,
-            label => 'IP',
+            label => 'IP Address',
             condition => sub { MT->config->ShowIPInformation },
         },
         blog_name => {
