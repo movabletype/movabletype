@@ -364,7 +364,7 @@ sub export {
                 epoch2ts( $blog, ts2epoch( undef, $ts ) ), $blog, $app->user ? $app->user->preferred_language : undef );
         }
         else {
-            push @col, format_ts( "%Y-%m-%d %H:%M:%S", $log->created_on, undef, $app->user ? $app->user->preferred_language : undef );
+            push @col, format_ts( "%Y-%m-%d %H:%M:%S", epoch2ts( undef, offset_time( ts2epoch( undef, $log->created_on ))), undef, $app->user ? $app->user->preferred_language : undef );
         }
         push @col, $log->ip;
         my $blog;
