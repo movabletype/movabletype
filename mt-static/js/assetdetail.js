@@ -156,7 +156,7 @@ function showPage(id) {
         preview = ""
         + "<div class=\"asset-icon asset-icon-" + asset.ext + "\">"
         + "<strong>" + noPreview + "</strong>"
-        + "<a href=\"" + asset.url + "\" target=\"view_uploaded\">" + clickToSee + "</a>"
+        + "<a href=\"" + asset.url.encodeHTML() + "\" target=\"view_uploaded\">" + clickToSee + "</a>"
         + "</div>";
     }
     var labelDims = trans('Dimensions');
