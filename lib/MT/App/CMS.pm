@@ -2091,7 +2091,6 @@ sub core_menus {
             condition  => sub {
                 $app->config->ShowIPInformation;
             },
-            view => [ "blog", 'website' ],
         },
         'settings:system' => {
             label      => "General",
