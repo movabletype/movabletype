@@ -2042,7 +2042,7 @@ sub open_batch_editor {
     }
 
     # Loading objects
-    my $iter = $pkg->load_iter( { id => \@ids }, {} );
+    my $iter = $pkg->load_iter( { id => \@ids }, { sort => 'authored_on', direction => 'descend'  } );
 
     my $list_pref = $app->list_pref($type);
     my %param     = %$list_pref;
@@ -2187,10 +2187,12 @@ sub build_entry_table {
         if ( my $cat = $obj->category ) {
             $row->{category_label}    = $cat->label;
             $row->{category_basename} = $cat->basename;
+            $row->{category_id} = $cat->id;
         }
         else {
             $row->{category_label}    = '';
             $row->{category_basename} = '';
+            $row->{category_id} = '';
         }
         $row->{file_extension} = $obj->blog ? $obj->blog->file_extension : '';
         $row->{title_short} = $obj->title;
