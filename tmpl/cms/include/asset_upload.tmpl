@@ -11,7 +11,7 @@ function setExtraPath(sel) {
 function validate(f) {
 <mt:if name="extra_paths">
     if (!is_valid_path(f.extra_path.value)){
-        alert('<__trans phrase="You must set a valid destination." escape="js">');
+        alert(trans('[_1] contains an invalid character as directory name: [_2]', '<__trans phrase="Upload Destination" escape="js">', f.extra_path.value));
         return false;
     }
 </mt:if>
