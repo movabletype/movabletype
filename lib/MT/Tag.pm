@@ -8,6 +8,7 @@ package MT::Tag;
 
 use strict;
 use base qw( MT::Object );
+use MT::Util;
 
 __PACKAGE__->install_properties({
     column_defs => {
@@ -54,7 +55,7 @@ sub list_props {
             html    => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
-                my $name = $obj->name;
+                my $name = MT::Util::encode_html($obj->name);
                 my $id   = $obj->id;
                 return qq{<a href="#tagid-$id" class="edit-tag">$name</a>};
             },

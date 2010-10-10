@@ -226,10 +226,10 @@ BEGIN {
                         my $prop = shift;
                         my ( $app ) = @_;
                         return MT->translate(
-                            '[_1] in [_2] is [_3]',
+                            '[_1] in [_2]: [_3]',
                             $prop->datasource->class_label_plural,
                             $prop->label,
-                            $app->param('filter_val'),
+                            MT::Util::encode_html($app->param('filter_val')),
                         );
                     },
                     priority => 7,

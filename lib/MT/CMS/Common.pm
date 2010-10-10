@@ -932,8 +932,36 @@ sub list {
         $filter->{label} = MT::Util::encode_html($filter->{label});
     };
 
+    ## Encode all HTML in complex structure.
+    my $deep_do;
+    $deep_do = sub {
+        my ( $data, $sub ) = @_;
+        if ( ref $data eq 'HASH' ) {
+            $deep_do->( \$_, $sub ) for values %$data;
+        }
+        elsif ( ref $data eq 'ARRAY' ) {
+            $deep_do->( \$_, $sub ) for @$data;
+        }
+        elsif ( ref $data eq 'REF' ) {
+            $deep_do->( $$data, $sub );
+        }
+        elsif ( ref $data eq 'SCALAR' ) {
+            $sub->( $data );
+        }
+        elsif ( !ref $data ) {
+            $sub->( \$data );
+        }
+    };
+    my $enc = sub {
+        my $ref = shift;
+        $$ref = MT::Util::encode_html( $$ref );
+    };
+    $deep_do->( \@filters, $enc );
+    $deep_do->( $initial_filter, $enc );
+
     require JSON;
     my $json = JSON->new->utf8(0);
+
     $param{common_listing} = 1;
     $param{blog_id} = $blog_id || '0';
     $param{filters}        = $json->encode( \@filters );

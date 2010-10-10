@@ -1161,7 +1161,9 @@ function addItems(items, op) {
     }
     args = items[i].args;
     for (var key in args) {
-      $item.find('.'+type+'-'+key).val(args[key]);
+      // A sort of hack to decode HTML entities using jQuery.
+      var decoded = jQuery('<div>').html( args[key] ).text();
+      $item.find('.'+type+'-'+key).val( decoded );
     }
     var $node = $item.find('.filter-date');
     if ($node) {
