@@ -214,7 +214,10 @@ sub load_objects {
         my $prop = $item->{prop};
         $prop->has('terms') or next;
         my $filter_terms = $prop->terms( $item->{args}, $terms, $args, \%options );
-        if ( $filter_terms && ( 'HASH' eq ref $filter_terms && scalar %$filter_terms ) || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) ) {
+        if ( $filter_terms
+            && ( 'HASH'  eq ref $filter_terms && scalar %$filter_terms )
+            || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) )
+        {
             push @additional_terms, ( '-and', $filter_terms );
         }
     }
@@ -330,7 +333,10 @@ sub count_objects {
         my $prop         = $item->{prop};
         my $code         = $prop->has('terms') or next;
         my $filter_terms = $prop->terms( $item->{args}, $terms, $args, \%options );
-        if ( $filter_terms && 'HASH' eq ref $filter_terms && scalar %$filter_terms ) {
+        if ( $filter_terms
+            && ( 'HASH'  eq ref $filter_terms && scalar %$filter_terms )
+            || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) )
+        {
             push @additional_terms, ( '-and', $filter_terms );
         }
     }
