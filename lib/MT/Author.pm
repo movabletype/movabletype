@@ -527,12 +527,18 @@ sub member_system_filters {
             items => [
                 { type => 'type', args => { value => 1 }, },
             ],
+            condition => sub {
+                MT->config->SingleCommunity ? 0 : 1;
+            },
         },
         external_users => {
             label => 'Externally Authenticated Commenters',
             items => [
                 { type => 'type', args => { value => 2 }, },
             ],
+            condition => sub {
+                MT->config->SingleCommunity ? 0 : 1;
+            },
         },
     };
 }
