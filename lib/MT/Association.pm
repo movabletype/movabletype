@@ -143,6 +143,9 @@ sub list_props {
                         %$role_terms,
                     },
                 );
+                if ( scalar @roles < 1 ) {
+                    return { role_id => \'< 0' };
+                }
                 return {
                     role_id => [ map { $_->id } @roles ],
                 };
