@@ -998,6 +998,10 @@ sub list {
         $param{search_type}  = $s_type;
         $param{search_label} = $search_apis->{label};
     }
+    else {
+        $param{search_type}  = 'entry';
+        $param{search_label} = MT->translate('Entry');
+    }
 
     my $template = $screen_settings->{template} || 'list_common.tmpl';
 
