@@ -239,7 +239,10 @@ sub list_props {
             label     => 'Image height',
             meta_type => 'image_height',
         },
-        tag => { base => '__virtual.tag' },
+        tag => {
+            base           => '__virtual.tag',
+            tagged_class => '*',
+        },
     };
 }
 

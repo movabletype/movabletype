@@ -599,30 +599,26 @@ BEGIN {
                             $query = { like => "%$query" };
                         }
                         my $ds = $prop->object_type;
-
+                        my $tagged_class = $prop->tagged_class || $ds;
                         my $ds_join = MT->model($ds)->join_on(
                             undef,
                             {
                                 id => \'= objecttag_object_id',
                                 ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                                class => $ds,
+                                ( $tagged_class eq '*' ? () : ( class => $tagged_class )),
                             },
                             {
                                 unique => 1,
+                                ( $tagged_class eq '*' ? ( no_class => 1 ) : ()),
                             }
                         );
 
-                        ## FIXME FIXME FIXME ASAP!!!!
-                        ## WE NEED TO KNOW DATASOURCE OF TAGS ONLY VIA OBJECTTAG TABLE.
-                        if ( $ds eq 'page' || $ds eq 'entry' ) {
-                            $ds = 'entry';
-                        }
-
+                        my $tag_ds = $prop->tag_ds || $ds;
                         $base_args->{joins} ||= [];
                         push @{ $base_args->{joins} }, MT->model('objecttag')->join_on(
                             undef,
                             {
-                                object_datasource => $ds,
+                                object_datasource => $tag_ds,
                             }, {
                                 fetchonly => { object_id => 1 },
                                 unique    => 1,
@@ -806,8 +802,12 @@ BEGIN {
                         my %blog_site_map = map { $_->id => $_ } ( @blogs, @sites );
                         my @out;
                         for my $obj ( @$objs ) {
+                            if ( !$obj->blog_id ) {
+                                push @out, MT->translate('(system)');
+                                next;
+                            }
                             my $blog = $blog_site_map{$obj->blog_id};
-                            if ( ( my $site = $blog_site_map{$blog->parent_id} ) && $prop->site_name ) {
+                            if ( ( my $site = $blog_site_map{ $blog->parent_id } ) && $prop->site_name ) {
                                 push @out, join('/', $site->name, $blog->name);
                             }
                             else {
