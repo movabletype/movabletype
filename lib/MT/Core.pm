@@ -537,7 +537,7 @@ BEGIN {
                         my ( $prop, $obj ) = @_;
                         my $col = $prop->datasource->has_column('author_id') ? 'author_id' : 'created_by';
                         my $author = MT->model('author')->load( $obj->$col );
-                        return $author ? $author->nickname : MT->translate('*User deleted*');
+                        return $author ? ( $author->nickname || $author->name ) : MT->translate('*User deleted*');
                     },
                     terms => sub {
                         my $prop   = shift;
@@ -560,10 +560,18 @@ BEGIN {
                         $load_args->{joins} ||= [];
                         push @{ $load_args->{joins} }, MT->model('author')->join_on(
                             undef,
-                            {
-                                id => \"=$col",
-                                nickname => $query,
-                            }, {}
+                            [
+                                {
+                                    id => \"=$col",
+                                    nickname => $query,
+                                },
+                                '-or',
+                                {
+                                    id => \"=$col",
+                                    name => $query,
+                                },
+                            ],
+                            {}
                         );
                     },
                     bulk_sort => sub {
