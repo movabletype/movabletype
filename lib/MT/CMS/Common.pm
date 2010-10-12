@@ -1000,7 +1000,7 @@ sub list {
     }
     else {
         $param{search_type}  = 'entry';
-        $param{search_label} = MT->translate('Entry');
+        $param{search_label} = MT->translate('Entries');
     }
 
     my $template = $screen_settings->{template} || 'list_common.tmpl';
