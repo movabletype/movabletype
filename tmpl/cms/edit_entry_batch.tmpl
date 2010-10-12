@@ -93,6 +93,7 @@
                 </mt:loop>
                     </select>
             <mt:else>
+                <input type="hidden" name="category_id_<$mt:var name="id"$>" value="<mt:var name="category_id">">
                 <mt:if name="object_type" eq="entry">
                     <$mt:var name="category_label" escape="html" default="-"$>
                 <mt:else>
@@ -100,6 +101,7 @@
                 </mt:if>
             </mt:if>
         <mt:else>
+            <input type="hidden" name="category_id_<$mt:var name="id"$>" value="<mt:var name="category_id">">
             <mt:if name="object_type" eq="entry">
                 <$mt:var name="category_label" escape="html" default="-"$>
             <mt:else>
