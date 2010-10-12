@@ -337,7 +337,6 @@ BEGIN {
                         elsif ('past' eq $option ) {
                             $query = { op => '<', value => $now };
                         }
-                        use YAML; print STDERR YAML::Dump $query;
                         return { $col => $query };
                     },
                     args_via_param => sub {
