@@ -802,7 +802,7 @@ BEGIN {
                             id => [ keys %site_ids ],
                         }, {
                             fetchonly => { id => 1, name => 1, },
-                        });
+                        }) if keys %site_ids;
                         my %blog_site_map = map { $_->id => $_ } ( @blogs, @sites );
                         my @out;
                         for my $obj ( @$objs ) {
