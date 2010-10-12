@@ -77,7 +77,7 @@ sub list_props {
                 my $view_img   = MT->static_path . 'images/status_icons/view.gif';
                 return qq{
                     <span id="note-url-link-$id" class="view-link"><a href="javascript:void(0)" title="$title" onclick="edit_note($id); return false;">$url</a>}
-                    . ( $url ? qq{&nbsp;<a href="$url">                        <img alt="View" src="$view_img" /></a>} : '' )
+                    . ( $url ? qq{&nbsp;<a href="$url" target="_blank">                        <img alt="View" src="$view_img" /></a>} : '' )
                     . qq{</span>
                     <span id="note-url-field-$id" style="display: none">
                       <input type="text" name="note-url-$id" id="note-url-$id" class="text med" value="$url" />

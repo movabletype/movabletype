@@ -120,7 +120,7 @@ sub list_props {
                     </span>
                     <span class="ping-from">$ping_from</span>
                     <span class="view-link">
-                      <a href="$url">
+                      <a href="$url" target="_blank">
                         <img alt="View" src="$view_img" />
                       </a>
                     </span>
