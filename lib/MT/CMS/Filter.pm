@@ -36,6 +36,18 @@ sub save {
     else {
         $items = [];
     }
+
+    require MT::ListProperty;
+    for my $item ( @$items ) {
+        my $prop = MT::ListProperty->instance( $ds, $item->{type} );
+        if ( $prop->has('validate_item') ) {
+            $prop->validate_item($item)
+                or return $app->json_error(
+                    MT->translate( 'Invalid filter terms: [_1]', $prop->errstr )
+                );
+        }
+    }
+
     my $filter;
     my $filter_class = MT->model('filter');
 
@@ -104,6 +116,7 @@ sub save {
             saved       => 1,
             saved_fid   => $filter->id,
             saved_label => $filter->label,
+            validated   => 1,
         );
     }
 }

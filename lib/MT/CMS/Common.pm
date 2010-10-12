@@ -1104,6 +1104,19 @@ sub filtered_list {
         $allpass = 1;
         $filteritems = [];
     }
+    require MT::ListProperty;
+    my $props = MT::ListProperty->list_properties($ds);
+    if ( !$forward_params{validated} ) {
+        for my $item ( @$filteritems ) {
+            my $prop = $props->{ $item->{type} };
+            if ( $prop->has('validate_item') ) {
+                $prop->validate_item($item)
+                    or return $app->json_error(
+                        MT->translate( 'Invalid filter terms: [_1]', $prop->errstr )
+                    );
+            }
+        }
+    }
 
     my $filter = MT->model('filter')->new;
     $filter->set_values({
@@ -1178,8 +1191,6 @@ sub filtered_list {
         $MT::DebugMode && $debug->{section}->('load objects');
 
         my %cols = map { $_ => 1 } @cols;
-        require MT::ListProperty;
-        my $props = MT::ListProperty->list_properties($ds);
         my @results;
 
         ## FIXME: would like to build MTML if specified, but currently

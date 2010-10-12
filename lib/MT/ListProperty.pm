@@ -8,6 +8,7 @@ package MT::ListProperty;
 use strict;
 use warnings;
 use MT;
+use base qw( MT::ErrorHandler );
 
 {
     our %properties;
