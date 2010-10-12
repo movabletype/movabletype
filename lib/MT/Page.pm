@@ -34,7 +34,11 @@ sub list_props {
         id            => { base => 'entry.id',             order => 100, },
         title         => { base => 'entry.title',          order => 200, },
         author_name   => { base => 'entry.author_name',    order => 300, },
-        blog_name     => { base => 'entry.blog_name',      order => 400, },
+        blog_name => {
+            base      => '__common.blog_name',
+            display   => 'default',
+            order     => 400,
+        },
         folder => {
             base             => 'entry.category',
             label            => 'Folder',

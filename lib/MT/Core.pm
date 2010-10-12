@@ -776,27 +776,45 @@ BEGIN {
                     #grep  => \&MT::Filter::pack_grep,
                 },
                 blog_name => {
-                    label => 'Blog Name',
+                    label => 'Website/Blog Name',
                     order => 10000,
                     display => 'default',
+                    site_name => 1,
+                    view  => [ 'system', 'website' ],
                     bulk_html => sub {
                         my $prop = shift;
                         my ( $objs ) = @_;
                         my %blog_ids  = map { $_->blog_id => 1 } @$objs;
                         my @blogs = MT->model('blog')->load({
-                            id => [ keys %blog_ids ], },{
+                            id => [ keys %blog_ids ],
+                        },{
                             fetchonly => {
-                                id   => 1,
-                                name => 1,
+                                id        => 1,
+                                name      => 1,
+                                parent_id => 1,
                         }});
-                        my %names = map { $_->id => $_->name } @blogs;
-                        map { $names{$_->blog_id} || MT->translate('(system)') } @$objs;
-                    },
-                    raw => sub {
-                        my ( $prop, $obj ) = @_;
-                        my $blog_id = $obj->blog_id;
-                        return $blog_id ? MT->model('blog')->load($blog_id)->name
-                                        : MT->translate('System');
+                        my %blog_map = map { $_->id => $_ } @blogs;
+                        my %site_ids
+                            = map { $_->parent_id => 1 }
+                              grep { $_->parent_id && !$blog_map{$_->parent_id} }
+                              @blogs;
+                        my @sites = MT->model('website')->load({
+                            id => [ keys %site_ids ],
+                        }, {
+                            fetchonly => { id => 1, name => 1, },
+                        });
+                        my %blog_site_map = map { $_->id => $_ } ( @blogs, @sites );
+                        my @out;
+                        for my $obj ( @$objs ) {
+                            my $blog = $blog_site_map{$obj->blog_id};
+                            if ( ( my $site = $blog_site_map{$blog->parent_id} ) && $prop->site_name ) {
+                                push @out, join('/', $site->name, $blog->name);
+                            }
+                            else {
+                                push @out, $blog->name;
+                            };
+                        }
+                        return @out;
                     },
                     condition => sub {
                         my $prop = shift;
@@ -808,7 +826,9 @@ BEGIN {
                         my $prop = shift;
                         my ( $objs ) = @_;
                         my %blog_id = map { $_->blog_id => 1 } @$objs;
-                        my @blogs = MT->model('blog')->load({ id => [ keys %blog_id ] });
+                        my @blogs = MT->model('blog')->load(
+                            { id => [ keys %blog_id ] },
+                            { no_class => 1,});
                         my %blogname = map { $_->id => $_->name } @blogs;
                         return sort { $blogname{ $a->blog_id } cmp $blogname{ $b->blog_id } } @$objs;
                     },

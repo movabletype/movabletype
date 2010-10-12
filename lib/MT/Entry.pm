@@ -299,9 +299,11 @@ sub list_props {
             display => 'default',
         },
         blog_name => {
-            base  => '__common.blog_name',
-            display => 'default',
-            order => 400,
+            base      => '__common.blog_name',
+            label     => sub { MT->app->blog ? 'Blog Name' : 'Website/Blog Name' },
+            display   => 'default',
+            site_name => sub { MT->app->blog ? 0 : 1 },
+            order     => 400,
         },
         category => {
             label => 'Category',
