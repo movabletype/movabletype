@@ -560,7 +560,7 @@ BEGIN {
                         $load_args->{joins} ||= [];
                         push @{ $load_args->{joins} }, MT->model('author')->join_on(
                             undef,
-                            [
+                            [[
                                 {
                                     id => \"=$col",
                                     nickname => $query,
@@ -570,7 +570,7 @@ BEGIN {
                                     id => \"=$col",
                                     name => $query,
                                 },
-                            ],
+                            ]],
                             {}
                         );
                     },
