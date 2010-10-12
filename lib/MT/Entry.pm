@@ -314,9 +314,10 @@ sub list_props {
             view_filter => 'blog',
             category_class => 'category',
             zero_state_label => '-',
-            bulk_html => sub {
+            bulk_cats => sub {
                 my $prop = shift;
-                my ( $objs ) = @_;
+                my ( $objs, $app, $opts ) = @_;
+                return ( $opts->{bulk_cats}, $opts->{bulk_placements} ) if $opts->{bulk_cats};
                 my @entry_ids  = map { $_->id } @$objs;
                 my @placements = MT->model('placement')->load({
                     entry_id   => \@entry_ids,
@@ -326,8 +327,13 @@ sub list_props {
                         entry_id    => 1,
                         category_id => 1,
                 }});
-                return map { $prop->zero_state_label } @$objs unless scalar @placements;
+                unless ( scalar @placements ) {
+                    $opts->{bulk_placements} = {};
+                    $opts->{bulk_cats} = {};
+                    return ({},{});
+                }
                 my %placements = map { $_->entry_id => $_->category_id } @placements;
+                $opts->{bulk_placements} = \%placements;
                 my @cat_ids    = map { $_->category_id } @placements;
                 my @categories = MT->model($prop->category_class)->load({ id => \@cat_ids }, {
                     fetchonly => {
@@ -335,7 +341,26 @@ sub list_props {
                         label => 1,
                 }});
                 my %categories = map { $_->id => $_->label } @categories;
-                return map { $categories{  $placements{$_->id} || 0 } || $prop->zero_state_label } @$objs;
+                $opts->{bulk_cats} = \%categories;
+                return ( \%categories, \%placements );
+            },
+            bulk_html => sub {
+                my $prop = shift;
+                my ( $objs, $app, $opts ) = @_;
+                my ( $cats, $placs ) = $prop->bulk_cats(@_);
+                return map {
+                    $cats->{  $placs->{$_->id} || 0 } || $prop->zero_state_label
+                } @$objs;
+            },
+            bulk_sort => sub {
+                my $prop = shift;
+                my ( $objs, $app, $opts ) = @_;
+                my ( $cats, $placs ) = $prop->bulk_cats(@_);
+                return sort {
+                    ( $cats->{ $placs->{$a->id} || 0 } || $prop->zero_state_label )
+                    cmp
+                    ( $cats->{ $placs->{$b->id} || 0 } || $prop->zero_state_label )
+                } @$objs;
             },
             raw   => sub {
                 my ( $prop, $obj ) = @_;
