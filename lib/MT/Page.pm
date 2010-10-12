@@ -25,7 +25,7 @@ MT->add_callback( 'cms_pre_save.' . 'page', 1, undef, \&MT::Revisable::mt_presav
 # prioritized and thus caused problems with plugins
 # registering a post_save and saving     
 MT->add_callback( 'api_post_save.' . 'page', 9, undef, \&MT::Revisable::mt_postsave_obj );
-MT->add_callback( 'cms_post_save.' . 'page', 9, undef, \&MT::Revisable::mt_postsave_obj );               
+MT->add_callback( 'cms_post_save.' . 'page', 9, undef, \&MT::Revisable::mt_postsave_obj );
 
 __PACKAGE__->add_callback( 'post_remove', 0, MT->component('core'), \&MT::Revisable::mt_postremove_obj );
 
@@ -66,7 +66,15 @@ sub list_props {
         text          => { base => 'entry.text' },
         text_more     => { base => 'entry.text_more' },
         authored_on   => { base => 'entry.authored_on' },
-        status        => { base => 'entry.status' },
+        status        => {
+            base => 'entry.status',
+            single_select_options => [
+                { label => 'Draft',     value => 1, },
+                { label => 'Published', value => 2, },
+                { label => 'Reviewing', value => 3, },
+                { label => 'Future',    value => 4, },
+            ],
+        },
         basename      => { base => 'entry.basename' },
         commented_on  => { base => 'entry.commented_on' },
         tag           => {
