@@ -231,7 +231,7 @@ jQuery(window).bind( 'ajaxStart', function() {
     jQuery('.msg-error').remove();
   });
 
-var line = '<th class="col head cb"><input type="checkbox" /></th>';
+var line = '<th class="col head cb"<mt:unless name="has_list_actions"> style="display: none;"</mt:unless>><input type="checkbox" /></th>';
 var table = jQuery('table.listing-table')[0];
 var col_classes = {};
 <mt:loop name="list_columns">
@@ -502,7 +502,7 @@ function removeFilter(element) {
 
 function renderColumns( col, chk ) {
   cols = [];
-  jQuery('thead th, tfoot th').hide().filter('.cb').show();
+  jQuery('thead th, tfoot th').hide()<mt:if name="has_list_actions">.filter('.cb').show()</mt:if>;
   jQuery('ul#disp_cols input:checked').each(function() {
     jQuery(this).attr('id').match(/custom-prefs-(.*)/);
     var id = RegExp.$1;
@@ -719,11 +719,11 @@ function renderList(mode, columns, values, limit, page ) {
       });
       for (var row = 0; row < count; row++) {
         var id = objs[row][0];
-        var line;
+        var line = '';
         if (checked[page] && checked[page][id]) {
-          line = '<td class="cb col"><input type="checkbox" checked="checked" name="id" value="'+id+'" /></td>';
+          line = '<td class="cb col"<mt:unless name="has_list_actions"> style="display: none;"</mt:unless>><input type="checkbox" checked="checked" name="id" value="'+id+'" /></td>';
         } else {
-          line = '<td class="cb col"><input type="checkbox" name="id" value="'+id+'" /></td>';
+          line = '<td class="cb col"<mt:unless name="has_list_actions"> style="display: none;"</mt:unless>><input type="checkbox" name="id" value="'+id+'" /></td>';
         }
         for (var col = 1, col_length = objs[row].length; col < col_length; col++) {
           var col_id = return_cols[ col - 1 ];
@@ -733,8 +733,7 @@ function renderList(mode, columns, values, limit, page ) {
         jQuery('<tr id="'+id+'">'+line+'</tr>').appendTo('tbody');
       }
       jQuery('#resultstats').remove();
-      var n = jQuery('#disp_cols').find('input.main:checked').length + 1;
-
+      var n = columnLength();
       if (count == 0) {
         var message = trans('No [_1] could be found.', '<mt:var name="object_label" lower_case="1" escape="js">');
         jQuery('<td class="col fullwidth-row" colspan="'+n+'">'+message+'</tr>').appendTo('tbody');
@@ -835,14 +834,14 @@ jQuery('ul#disp_cols .main:checkbox').click(function() {
     renderList('filtered_list', cols, vals, jQuery('#row').val(), currentPage);
   else
     saveListPrefs();
-  var n = jQuery('#disp_cols').find('input.main:checked').length + 1;
+  var n = columnLength();
   jQuery('td.fullwidth-row').attr('colspan', n);
 
 });
 
 jQuery('ul#disp_cols .sub:checkbox').click(function() {
   toggleSubField(this);
-  var n = jQuery('#disp_cols').find('input.main:checked').length + 1;
+  var n = columnLength();
   jQuery('td.fullwidth-row').attr('colspan', n);
   saveListPrefs();
 });
@@ -858,7 +857,7 @@ jQuery('#reset-display-options').click(function() {
   });
   renderColumns();
   renderList({});
-  var n = jQuery('#disp_cols').find('input.main:checked').length + 1;
+  var n = columnLength();
   jQuery('td.fullwidth-row').attr('colspan', n);
   return false;
 });
@@ -882,7 +881,7 @@ function addSelectAll($node) {
     return false;
   }
 
-  var n = jQuery('#disp_cols').find('input.main:checked').length + 1;
+  var n = columnLength();
   $node
     .parents('tbody')
     .append('<tr class="select-all"><td class="col fullwidth-row" colspan="'+n+'"></td></tr>')
@@ -913,6 +912,11 @@ function removeSelectAll($node) {
   jQuery('input[name=all_selected]').val('');
 }
 
+function columnLength () {
+  return jQuery('#disp_cols').find('input.main:checked').length<mt:if name="has_list_actions"> + 1</mt:if>;
+}
+
+<mt:if name="has_list_actions">
 jQuery('tbody').selectable({
   filter: 'tr',
   cancel: 'a, .select-all, .text, .can-select, button, pre, :input:not([name=id])',
@@ -936,6 +940,7 @@ jQuery('tbody').selectable({
     }
   }
 });
+</mt:if>
 
 jQuery('th :checkbox').click(function() {
   var $checkboxes = jQuery('tr :checkbox');

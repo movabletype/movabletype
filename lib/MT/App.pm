@@ -3401,8 +3401,10 @@ sub load_list_actions {
         $param->{list_actions}      = \@core_actions;
         $param->{button_actions}    = \@button_actions;
         $param->{all_actions}       = $all_actions;
-        $param->{has_list_actions}
-            = ( @plugin_actions || @core_actions ) ? 1 : 0;
+        $param->{has_pulldown_actions} =
+            ( @plugin_actions || @core_actions ) ? 1 : 0;
+        $param->{has_list_actions} = scalar @$all_actions;
+
     }
     my $filters = $app->list_filters( $type, @p );
     $param->{list_filters} = $filters if $filters;
