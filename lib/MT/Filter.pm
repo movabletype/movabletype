@@ -376,7 +376,7 @@ sub pack_terms {
     require MT::ListProperty;
 
     for my $item (@$items) {
-        my $id = delete $item->{type};
+        my $id = $item->{type};
         my $list_prop = MT::ListProperty->instance( $ds, $id )
             or die "Invalid Filter $id";
         $item->{prop} = $list_prop;
@@ -401,8 +401,32 @@ sub pack_terms {
 }
 
 sub pack_grep {
-    # TBD
-    1;
+    my $prop = shift;
+    my ( $args, $objs, $opts ) = @_;
+    my @objs = @$objs;
+    my $op = $args->{op} || 'and';
+    my $items = $args->{items};
+    my $ds    = $prop->{class};
+    my @items;
+    require MT::ListProperty;
+
+    for my $item (@$items) {
+        my $id = $item->{type};
+        my $list_prop = MT::ListProperty->instance( $ds, $id )
+            or die "Invalid Filter $id";
+        $item->{prop} = $list_prop;
+        push @items, $item;
+    }
+
+    @items = sort {
+        ( $a->{prop}->priority || 5 ) <=> ( $b->{prop}->priority || 5 )
+    } @items;
+    for my $item (@items) {
+        my $prop = $item->{prop};
+        $prop->has('grep') or next;
+        @objs = $prop->grep($item->{args}, \@objs, $opts);
+    }
+    return @objs;
 }
 
 1;

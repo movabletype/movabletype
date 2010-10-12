@@ -773,7 +773,7 @@ BEGIN {
                 pack => {
                     view  => [],
                     terms => \&MT::Filter::pack_terms,
-                    #grep  => \&MT::Filter::pack_grep,
+                    grep  => \&MT::Filter::pack_grep,
                 },
                 blog_name => {
                     label => 'Website/Blog Name',
