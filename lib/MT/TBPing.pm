@@ -140,11 +140,12 @@ sub list_props {
             order   => 300,
         },
         target => {
-            label   => 'Target',
-            display => 'default',
-            order   => 400,
-            base    => '__virtual.string',
-            bulk_html  => sub {
+            label       => 'Target',
+            display     => 'default',
+            order       => 400,
+            view_filter => 'none',
+            base        => '__virtual.string',
+            bulk_html   => sub {
                 my ( $prop, $objs, $app ) = @_;
                 my %tbs = map { $_->tb_id => 1 } @$objs;
                 my @tbs = MT->model('trackback')->load({ id => [ keys %tbs ] });
@@ -164,11 +165,11 @@ sub list_props {
                     my $obj;
                     if ( $tb->entry_id ) {
                         $obj = $entry_map{$tb->entry_id};
-                        $title_prop->{col} = 'title'; 
+                        $title_prop->{col} = 'title';
                     }
                     elsif ( $tb->category_id ) {
                         $obj = $category_map{$tb->category_id};
-                        $title_prop->{col} = 'label'; 
+                        $title_prop->{col} = 'label';
                     }
                     my $title_html = $title_prop->html($obj,$app);
                     my $type = $obj->class_type;
