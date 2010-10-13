@@ -74,11 +74,7 @@ sub save {
         $param{error}       = $app->errstr;
         $param{return_args} = $app->param('return_args');
 
-        if ( $type eq 'notification' ) {
-            $app->mode('list');
-            return $app->forward( 'list', \%param );
-        }
-        elsif ( ( $app->param('cfg_screen') || '' ) eq 'cfg_prefs' ) {
+        if ( ( $app->param('cfg_screen') || '' ) eq 'cfg_prefs' ) {
             return MT::CMS::Blog::cfg_prefs( $app, \%param );
         }
         elsif ( $app->param('forward_list') ) {
@@ -356,19 +352,7 @@ sub save {
 
     # TODO: convert this to use $app->call_return();
     # then templates can determine the page flow.
-    if ( $type eq 'notification' ) {
-        return $app->redirect(
-            $app->uri(
-                'mode' => 'list',
-                args   => {
-                    '_type' => 'notification',
-                    blog_id => $blog_id,
-                    saved   => $obj->email
-                }
-            )
-        );
-    }
-    elsif ( my $cfg_screen = $q->param('cfg_screen') ) {
+    if ( my $cfg_screen = $q->param('cfg_screen') ) {
         if ( $cfg_screen eq 'cfg_publish_profile' ) {
             my $dcty = $obj->custom_dynamic_templates || 'none';
             if ( ( $dcty eq 'all' ) || ( $dcty eq 'archives' ) ) {

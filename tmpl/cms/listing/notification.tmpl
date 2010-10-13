@@ -1,116 +1,3 @@
-<mt:setvarblock name="js_include" append="1">
-<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
-<script type="text/javascript">
-/* <![CDATA[ */
-var current_edit = 0;
-var old_note_email = '';
-var old_note_url = '';
-function highlight_note(id) {
-    if (current_edit) return;
-    jQuery('#note-link-' + id).css({
-        'backgroundColor': '#FFC',
-        'borderColor': '#FFC'
-    });
-}
-
-function unhighlight_note(id) {
-    jQuery('#note-link-' + id).css({
-        'backgroundColor': 'transparent',
-        'borderColor': '#3F658C'
-    });
-}
-
-function edit_note(id) {
-    if (current_edit) return;
-    var note_links = new Array();
-    note_links.push(getByID('note-email-link-' + id));
-    note_links.push(getByID('note-url-link-' + id));
-    var note_fields = new Array();
-    note_fields.push(getByID('note-email-field-' + id));
-    note_fields.push(getByID('note-url-field-' + id));
-    var note_email = getByID('note-email-' + id);
-    var note_url = getByID('note-url-' + id);
-    if (!note_links.length || !note_fields.length || !note_email) return;
-    current_edit = id;
-    old_note_email = note_email.value;
-    old_note_url = note_url.value;
-    for (i=0;i<2;++i) {
-        note_links[i].style.display = 'none';
-        note_fields[i].style.display = 'inline';
-    }
-    note_email.focus();
-    note_email.select();
-    unhighlight_note(id);
-    return false;
-}
-
-function cancel_edit(id) {
-    var note_links = new Array();
-    note_links.push(getByID('note-email-link-' + id));
-    note_links.push(getByID('note-url-link-' + id));
-    var note_fields = new Array();
-    note_fields.push(getByID('note-email-field-' + id));
-    note_fields.push(getByID('note-url-field-' + id));
-    var note_email = getByID('note-email-' + id);
-    var note_url = getByID('note-url-' + id);
-    if (!note_links.length || !note_fields.length || !note_email) return;
-    note_email.value = old_note_email;
-    old_note_email = '';
-    note_url.value = old_note_url;
-    old_note_url = '';
-    current_edit = 0;
-    for (i=0;i<2;++i) {
-        note_links[i].style.display = 'inline';
-        note_fields[i].style.display = 'none';
-    }
-    return false;
-}
-
-function submit_edit(id) {
-    if ((0 != current_edit) && (id != current_edit))
-        id = current_edit;
-    // if old email matches new email, ignore submission (same as cancel)
-    // if new email is already in our noteList array, warn user
-    // if not in noteList and not in range of noteList notes, check with server.
-    var note_form = getByID('create-inline-notification-form');
-    var note_email = getByID('note-email-' + id);
-    var note_url = getByID('note-url-' + id);
-    if (!note_form || !note_email || !note_url) return false;
-    var new_note_email = note_email.value;
-    var new_note_url = note_url.value;
-    if ((old_note_email == new_note_email) && (old_note_url == new_note_url)) {
-        cancel_edit(id);
-        return false;
-    }
-    return submit_edit_form(id);
-}
-
-function submit_edit_form(id) {
-    var note_form = getByID('create-inline-notification-form');
-    var note_email = getByID('note-email-' + id);
-    var note_url = getByID('note-url-' + id);
-    if (!note_form || !note_email) return false;
-    note_form['id'].value = id;
-    note_form['email'].value = note_email.value;
-    note_form['url'].value = note_url.value;
-    note_form.submit();
-    return false;
-}
-
-function setCreateMode () {
-    jQuery('#create-inline-notification').show();
-    jQuery('#email').val('').focus();
-    jQuery('#website').val('').focus();
-}
-
-function cancelCreateMode () {
-    jQuery('#create-inline-notification').hide();
-    current_edit = 0;
-}
-  /* ]]> */
-</script>
-</mt:setvarblock>
-
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
   <mtapp:statusmsg
@@ -138,13 +25,6 @@ function cancelCreateMode () {
 
 <mt:setvarblock name="content_header" append="1">
 <div class="create-inline" id="create-inline-notification" style="display: none;">
-  <form method="post" action="<mt:var name="script_url">" id="create-inline-notification-form">
-    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-    <input type="hidden" name="__mode" value="save" />
-    <input type="hidden" name="_type" value="notification" />
-    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-    <input type="hidden" name="id" value="" />
     <mtapp:setting
        id="email"
        label="<__trans phrase="Email">"
@@ -160,6 +40,7 @@ function cancelCreateMode () {
     <span class="buttons">
       <button
          type="submit"
+         id="submit-new-contact"
          class="button">
         <__trans phrase="Add Contact">
       </button>
@@ -169,13 +50,120 @@ function cancelCreateMode () {
         <__trans phrase="Cancel">
       </button> 
     </span>
-  </form>
 </div>
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('#create-inline-notification-form button.mt-do-action').click(function() {
-        jQuery('#create-inline-notification-form').submit();
+    var current_edit = 0;
+    var old_note_email = '';
+    var old_note_url = '';
+
+    function edit_note(id) {
+        if (current_edit) return;
+        var note_links = new Array();
+        note_links.push( jQuery('#note-email-link-' + id) );
+        note_links.push( jQuery('#note-url-link-'   + id) );
+        var note_fields = new Array();
+        note_fields.push( jQuery('#note-email-field-' + id) );
+        note_fields.push( jQuery('#note-url-field-'   + id) );
+
+        var $note_email = jQuery('#note-email-' + id);
+        var $note_url   = jQuery('#note-url-'   + id);
+        if (!note_links.length || !note_fields.length || !$note_email) return;
+        current_edit = id;
+
+        old_note_email = $note_email.val();
+        old_note_url   = $note_url.val();
+        for (i=0;i<2;++i) {
+            note_links[i].hide();
+            note_fields[i].show();
+        }
+        $note_email.focus();
+        $note_email.select();
+        return false;
+    }
+
+    function cancel_edit(id) {
+        var note_links = new Array();
+        note_links.push( jQuery('#note-email-link-' + id) );
+        note_links.push( jQuery('#note-url-link-'   + id) );
+        var note_fields = new Array();
+        note_fields.push( jQuery('#note-email-field-' + id) );
+        note_fields.push( jQuery('#note-url-field-'   + id) );
+
+        var $note_email = jQuery('#note-email-' + id);
+        var $note_url   = jQuery('#note-url-'   + id);
+        if (!note_links.length || !note_fields.length || !$note_email) return;
+
+        $note_email.val( old_note_email );
+        old_note_email = '';
+        $note_url.val( old_note_url );
+        old_note_url = '';
+        current_edit = 0;
+        for (i=0;i<2;++i) {
+            note_links[i].show();
+            note_fields[i].hide();
+        }
+        return false;
+    }
+
+    function submit_edit(id) {
+        if ((0 != current_edit) && (id != current_edit))
+            id = current_edit;
+        // if old email matches new email, ignore submission (same as cancel)
+        // if new email is already in our noteList array, warn user
+        // if not in noteList and not in range of noteList notes, check with server.
+        var $note_email = jQuery('#note-email-' + id);
+        var $note_url   = jQuery('#note-url-' + id);
+        if (!$note_email.val() || !$note_url.val() ) return false;
+        var new_note_email = $note_email.val();
+        var new_note_url = $note_url.val();
+        if ((old_note_email == new_note_email) && (old_note_url == new_note_url)) {
+            cancel_edit(id);
+            return false;
+        }
+        return submit_edit_form(id);
+    }
+
+    function submit_edit_form(id) {
+        var note_email = jQuery('#note-email-' + id).val();
+        var note_url = jQuery('#note-url-' + id).val();
+        renderList({
+            __mode: 'save',
+            _type: 'notification',
+            email: note_email,
+            url: note_url,
+            id: id,
+            forward_list: 1,
+            magic_token: 1
+        });
+        cancelCreateMode();
+        return false;
+    }
+
+    function setCreateMode () {
+        jQuery('#create-inline-notification').show();
+        jQuery('#email').val('').focus();
+        jQuery('#website').val('').focus();
+    }
+
+    function cancelCreateMode () {
+        jQuery('#create-inline-notification').hide();
+        current_edit = 0;
+    }
+
+
+    jQuery('#submit-new-contact').click(function() {
+        renderList({
+            __mode: 'save',
+            _type: 'notification',
+            email: jQuery('#email').val(),
+            url: jQuery('#url').val(),
+            forward_list: 1,
+            magic_token: 1
+        });
+        cancelCreateMode();
+        return false;
     });
 
     jQuery('#create-inline-notification-form button.mt-cancel-action').click(function() {
@@ -187,5 +175,27 @@ function cancelCreateMode () {
         setCreateMode();
         return false;
     });
+
+    jQuery('.start-edit').live('click', function () {
+        jQuery(this).attr('href').match(/#(\d+)/);
+        var id = RegExp.$1;
+        edit_note(id);
+        return false;
+    });
+
+    jQuery('.cancel-edit').live('click', function () {
+        jQuery(this).attr('href').match(/#(\d+)/);
+        var id = RegExp.$1;
+        cancel_edit(id);
+        return false;
+    });
+
+    jQuery('.submit-note').live('click', function () {
+        jQuery(this).attr('href').match(/#(\d+)/);
+        var id = RegExp.$1;
+        submit_edit(id);
+        return false;
+    });
+
 </mt:setvarblock>
 

@@ -52,7 +52,7 @@ sub list_props {
                 my $id    = $obj->id;
                 my $title = MT->translate('Click to edit contact');
                 return qq{
-                    <a href="javascript:void(0)" title="$title" class="edit-link" id="note-email-link-$id" onclick="edit_note($id); return false;">$email</a>
+                    <a href="#$id" title="$title" class="edit-link note-email-link start-edit" id="note-email-link-$id">$email</a>
                     <span id="note-email-field-$id" style="display: none">
                     <input type="text" name="note-email-$id" id="note-email-$id" class="text full" value="$email" />
                     </span>
@@ -62,7 +62,7 @@ sub list_props {
         url => {
             auto => 1,
             label => 'URL',
-            display => 'default',
+            display => 'force',
             order   => 200,
             html => sub {
                 my $prop = shift;
@@ -76,25 +76,24 @@ sub list_props {
                 my $cancel_label = MT->translate('Cancel');
                 my $view_img   = MT->static_path . 'images/status_icons/view.gif';
                 return qq{
-                    <span id="note-url-link-$id" class="view-link"><a href="javascript:void(0)" title="$title" onclick="edit_note($id); return false;">$url</a>}
+                    <span id="note-url-link-$id" class="view-link"><a href="#$id" class="start-edit" title="$title">$url</a>}
                     . ( $url ? qq{&nbsp;<a href="$url" target="_blank">                        <img alt="View" src="$view_img" /></a>} : '' )
                     . qq{</span>
                     <span id="note-url-field-$id" style="display: none">
                       <input type="text" name="note-url-$id" id="note-url-$id" class="text med" value="$url" />
                       <span class="buttons">
-                        <button
-                           type="button"
-                           onclick="submit_edit($id); return false;"
+                        <a
+                           href="#$id"
                            title="$save_changes_label"
-                           class="button">
+                           class="button submit-note">
                           $save_label
-                        </button>
-                        <button
+                        </a>
+                        <a
+                           href="#$id"
                            type="button"
-                           onclick="cancel_edit($id); return false;"
-                           class="button">
+                           class="button cancel-edit">
                           $cancel_label
-                        </button>
+                        </a>
                       </span>
                     </span>
                 };
