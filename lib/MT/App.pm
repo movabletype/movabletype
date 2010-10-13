@@ -1827,7 +1827,7 @@ sub login {
     require MT::Auth;
     my $ctx = MT::Auth->fetch_credentials( { app => $app } );
     unless ($ctx) {
-        if ( $app->param('submit') ) {
+        if ( defined( $app->param('password') ) ) {
             return $app->error( $app->translate('Invalid login.') );
         }
         return;
