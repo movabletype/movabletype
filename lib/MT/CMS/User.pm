@@ -80,7 +80,8 @@ sub edit {
         $perm->{id} = 'can_' . $perm->{id};
         $perm->{label} = $app->translate($perms->{$key}->{label}->());
         $perm->{order} = $perms->{$key}->{order};
-        $perm->{can_do} = $user_perms{$key};
+        $perm->{can_do} =
+          $id ? $user_perms{$key} : $param->{ 'perm_' . $perm->{id} };
 
         if (exists $perms->{$key}->{inherit_from}) {
             my @inherit;
@@ -127,8 +128,8 @@ sub edit {
           unless ( exists $param->{'auth_pref_tag_delim'} );
     }
     $param->{text_filters} =
-      $app->load_text_filters( $obj ? $obj->text_format : undef,
-        'comment' );
+      $app->load_text_filters(
+        $obj ? $obj->text_format : $param->{'text_format'}, 'comment' );
     unless ( exists $param->{'auth_pref_tag_delim'} ) {
         my $delim = chr( $auth_prefs->{tag_delim} );
         if ( $delim eq ',' ) {
