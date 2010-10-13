@@ -89,7 +89,10 @@ sub list_props {
                         %$author_terms,
                     },
                 );
-                return { author_id => [ map { $_->id } @authors ] };
+                return
+                    scalar @authors
+                    ? { author_id => [ map { $_->id } @authors ] }
+                    : { author_id => { '<' => 0 } };
             },
             bulk_sort => sub {
                 my $prop = shift;
