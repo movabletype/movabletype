@@ -54,21 +54,22 @@ sub class_label_plural {
 sub list_props {
     return {
         user_name => {
-            label => 'User/Group',
+            label => 'User',
             base => '__virtual.string',
             display => 'force',
             order   => 100,
-            col => 'name',  # this looks up author/group table
+            col => 'name',  # this looks up author table
             html => sub {
                 my ( $prop, $obj, $app ) = @_;
-                my $type = $obj->type == USER_BLOG_ROLE() ? 'user' : 'group';
+                my $type = 'user';
                 my $icon_url = MT->static_path . 'images/nav_icons/color/' . $type . '.gif';
-                my $name = $obj->$type->name;
+                return '(unknown object)' unless defined $obj->user;
+                my $name = $obj->user->name;
                 my $edit_link = $app->uri(
                     mode => 'view',
                     args => {
-                        _type   => $type eq 'user' ? 'author' : 'group',
-                        id      => $obj->$type->id,
+                        _type   => 'author',
+                        id      => $obj->user->id,
                         blog_id => 0,
                     },
                 );
@@ -88,27 +89,12 @@ sub list_props {
                         %$author_terms,
                     },
                 );
-                my @groups = MT->model('group')->load(
-                    {
-                        %$author_terms,
-                    },
-                );
-                return [
-                    { author_id => [ map { $_->id } @authors ] },
-                    '-or',
-                    { group_id => [ map { $_->id } @groups ] },
-                ];
+                return { author_id => [ map { $_->id } @authors ] };
             },
             bulk_sort => sub {
                 my $prop = shift;
                 my ( $objs ) = @_;
-                sort {
-                    ( $a->type == USER_BLOG_ROLE() ? $a->user->name
-                                                   : $a->group->name )
-                    cmp
-                    ( $b->type == USER_BLOG_ROLE() ? $b->user->name
-                                                   : $b->group->name )
-                } @$objs;
+                sort { $a->user->name cmp $b->user->name } @$objs;
             },
             sort => 0,
         },
@@ -227,7 +213,6 @@ sub list_props {
             base  => '__virtual.created_on',
             order => 400,
         },
-
         role_id => {
             auto    => 1,
             label   => 'Role',
@@ -268,39 +253,13 @@ sub list_props {
         _type => {
             view => [],
             terms => sub {
-               return { type => [ 1, 2 ] };
+               my $types = MT->component('Enterprise') ? [ 1, 2 ] : 1;
+               return { type => $types };
             }
-        },
-        type => {
-            base    => '__virtual.single_select',
-            display => 'none',
-            col     => 'type',
-            label   => 'Type',
-            single_select_options => [
-                { label => 'User', value => 1, },
-                { label => 'Group', value => 2, },
-            ],
         },
         modified_on => {
             display => 'none',
             base => '__virtual.modified_on',
-        },
-    };
-}
-
-sub system_filters {
-    return {
-        for_user => {
-            label => 'Associations for User',
-            items => [
-                { type => 'type', args => { value => '1' }, },
-            ],
-        },
-        for_group => {
-            label => 'Associations for Group',
-            items => [
-                { type => 'type', args => { value => '2' }, },
-            ],
         },
     };
 }

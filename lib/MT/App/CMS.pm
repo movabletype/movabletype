@@ -2330,6 +2330,8 @@ sub init_core_callbacks {
             $pkg
                 . 'delete_permission_filter.association' =>
                 "${pfx}User::can_delete_association",
+            $pkg . 'pre_load_filtered_list.association'
+                => "${pfx}User::cms_pre_load_filtered_list_assoc",
 
             # user callbacks
             $pkg . 'edit.author'                   => "${pfx}User::edit",
@@ -2412,12 +2414,6 @@ sub init_core_callbacks {
                     );
                 }
 
-            },
-            $pkg . 'pre_load_filtered_list.association' => sub {
-                my ( $cb, $app, $filter, $opts, $cols ) = @_;
-                $filter->append_item({
-                    type => '_type',
-                });
             },
 
             # website callbacks

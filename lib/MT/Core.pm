@@ -930,7 +930,6 @@ BEGIN {
             author      => '$Core::MT::Author::system_filters',
             member      => '$Core::MT::Author::member_system_filters',
             commenter   => '$Core::MT::Author::commenter_system_filters',
-            association => '$Core::MT::Association::system_filters',
             log         => '$Core::MT::Log::system_filters',
         },
         listing_screens => {

@@ -1802,6 +1802,13 @@ sub can_delete_association {
     1;
 }
 
+sub cms_pre_load_filtered_list_assoc {
+    my ( $cb, $app, $filter, $opts, $cols ) = @_;
+    $filter->append_item({
+        type => '_type',
+    });
+}
+
 sub can_view {
     my ( $eh, $app, $id ) = @_;
     return $id && ( $app->user->id == $id );
