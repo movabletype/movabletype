@@ -1238,7 +1238,7 @@ function doForMarked(formid, action, singlar, plural, phrase, xhr) {
       action = $selected.val();
   }
 
-  if (action == '') {
+  if (action == '' || action == '0') {
     alert(trans('You must select an action.'));
     return;
   }
