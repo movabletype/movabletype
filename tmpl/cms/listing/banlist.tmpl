@@ -28,12 +28,6 @@
 <mt:setvarblock name="content_header" append="1">
 <mt:setvar name="ip_info" value="1">
 <div id="create-inline-ipban" class="create-inline" style="display: none;">
-  <form id="create-inline-ipban-form" method="post" action="<mt:var name="script_url">">
-    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-    <input type="hidden" name="__mode" value="save" />
-    <input type="hidden" name="_type" value="banlist" />
-    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
     <mtapp:setting
        id="ip-address"
        label="<__trans phrase="IP Address">"
@@ -41,45 +35,52 @@
       <input type="text" name="ip" id="ip-address" value="<mt:var name="ip" escape="html">" maxlength="15" />
       <button
          type="submit"
+         id="submit-ipban"
          class="save button">
         <__trans phrase="Save">
-      </button> 
+      </button>
       <button
          type="button"
          class="cancel button mt-cancel-action">
         <__trans phrase="Cancel">
-      </button> 
+      </button>
     </mtapp:setting>
-  </form>
 </div>
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-    function setCreateMode () {
+    function openCreateMode () {
         jQuery('#create-ip').hide();
         jQuery('#create-inline-ipban').show();
         jQuery('#actions-bar-top').hide();
         jQuery('#ip-address').val('').focus();
     }
-    
-    function cancelCreateMode () {
+
+    function closeCreateMode () {
         jQuery('#create-ip').show();
         jQuery('#create-inline-ipban').hide();
         jQuery('#actions-bar-top').show();
         current_edit = 0;
     }
 
-    jQuery('#create-inline-ipban-form button.mt-do-action').click(function() {
-        jQuery('#create-inline-ipban-form').submit();
+    jQuery('#submit-ipban').click(function() {
+        renderList({
+            __mode: 'save',
+            _type: 'banlist',
+            ip: jQuery('#ip-address').val(),
+            forward_list: 1,
+            magic_token: 1
+        });
+        closeCreateMode();
     });
-    
-    jQuery('#create-inline-ipban-form button.mt-cancel-action').click(function() {
-        cancelCreateMode();
+
+    jQuery('#create-inline-ipban button.mt-cancel-action').click(function() {
+        closeCreateMode();
         return false;
     });
-    
+
     jQuery('#action-ban-ip').click( function() {
-        setCreateMode();
+        openCreateMode();
         return false;
     });
 </mt:setvarblock>

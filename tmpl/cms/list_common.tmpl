@@ -265,6 +265,7 @@ var filters = <mt:var name="filters">;
 var initial_filter = <mt:var name="initial_filter">;
 var current_id = initial_filter.id;
 var currentPage = 1;
+var magic_token = '<mt:var name="magic_token">';
 
 function handleMessages( data ) {
   jQuery('#msg-block').empty();
@@ -658,7 +659,9 @@ function renderList(mode, columns, values, limit, page ) {
     delete args['page'];
   }
   limit = parseInt(limit);
-
+  if ( args['magic_token'] ) {
+    args['magic_token'] = magic_token;
+  }
   var params = {
     __mode: mode,
     datasource: '<mt:var name="list_type">',
@@ -1279,7 +1282,7 @@ function doForMarked(formid, action, singlar, plural, phrase, xhr) {
     params['mode'] = mode;
     params['xhr'] = 1;
     params['all_selected'] = jQuery('input[name=all_selected]').val();
-    params['magic_token'] = '<mt:var name="magic_token">';
+    params['magic_token'] = 1;
     params['id'] = $form
         .find('input[name=id]:checked')
         .map(function(){

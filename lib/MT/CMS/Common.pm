@@ -74,12 +74,15 @@ sub save {
         $param{error}       = $app->errstr;
         $param{return_args} = $app->param('return_args');
 
-        if ( ( $type eq 'notification' ) || ( $type eq 'banlist' ) ) {
+        if ( $type eq 'notification' ) {
             $app->mode('list');
             return $app->forward( 'list', \%param );
         }
         elsif ( ( $app->param('cfg_screen') || '' ) eq 'cfg_prefs' ) {
             return MT::CMS::Blog::cfg_prefs( $app, \%param );
+        }
+        elsif ( $app->param('forward_list') ) {
+            return $app->json_error($param{error});
         }
         else {
             if ($type) {
@@ -394,18 +397,6 @@ sub save {
         $app->add_return_arg( no_writedir => 1 )
           unless $fmgr->exists($site_path) && $fmgr->can_write($site_path);
     }
-    elsif ( $type eq 'banlist' ) {
-        return $app->redirect(
-            $app->uri(
-                'mode' => 'list',
-                args   => {
-                    '_type' => 'banlist',
-                    blog_id => $blog_id,
-                    saved   => $obj->ip
-                }
-            )
-        );
-    }
     elsif ( $type eq 'template' && $q->param('rebuild') ) {
         if ( !$id ) {
             # add return argument for newly created templates
@@ -473,6 +464,10 @@ sub save {
                 $fmgr->delete($thumb_file);
             }
         }
+    }
+
+    if ( $app->param('forward_list') ) {
+        return $app->forward('filtered_list');
     }
 
     $app->add_return_arg( 'id' => $obj->id ) if !$original->id;

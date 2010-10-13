@@ -2737,6 +2737,7 @@ sub run {
         $get_method_info = sub {
             $code = $app->handlers_for_mode($mode);
 
+            @handlers = ();
             @handlers = ref($code) eq 'ARRAY' ? @$code : ($code)
                 if defined $code;
 
