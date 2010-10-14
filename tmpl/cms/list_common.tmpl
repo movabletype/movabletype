@@ -1413,7 +1413,11 @@ itemValues()
 renderColumns();
 renderFilterList();
 <mt:if name="default_sort_key">
-jQuery('table.listing-table thead th.<mt:var name="default_sort_key"> a.sort-link').click();
+var $initial_sort_button = jQuery('table.listing-table thead th.<mt:var name="default_sort_key"> a.sort-link');
+if ( $initial_sort_button.length )
+  $initial_sort_button.click();
+else
+  renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
 <mt:else>
 renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
 </mt:if>
