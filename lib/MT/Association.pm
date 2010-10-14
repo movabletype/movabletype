@@ -221,13 +221,10 @@ sub list_props {
             label   => 'Role',
             display => 'none',
             filter_editable => 0,
-            args_via_param => sub {
-                my ( $prop, $app ) = @_;
-                return { option => 'equal', value => $app->param('filter_val') };
-            },
             label_via_param => sub {
-                my ( $prop, $app ) = @_;
-                my $role = MT->model('role')->load( $app->param('filter_val') );
+                my ( $prop, $app, $val ) = @_;
+                my $role = MT->model('role')->load( $val )
+                    or return $prop->error(MT->translate('Invalid parameter.'));
                 return MT->translate(
                     'Associations with role: [_1]',
                     $role->name,
@@ -239,20 +236,16 @@ sub list_props {
             label   => 'Author',
             display => 'none',
             filter_editable => 0,
-            args_via_param => sub {
-                my ( $prop, $app ) = @_;
-                return { option => 'equal', value => $app->param('filter_val') };
-            },
             label_via_param => sub {
-                my ( $prop, $app ) = @_;
-                my $author = MT->model('author')->load( $app->param('filter_val') );
+                my ( $prop, $app, $val ) = @_;
+                my $author = MT->model('author')->load( $val )
+                    or return $prop->error(MT->translate('Invalid parameter.'));
                 return MT->translate(
                     'Associations of author: [_1]',
                     $author->nickname,
                 );
             },
         },
-
         _type => {
             view => [],
             terms => sub {

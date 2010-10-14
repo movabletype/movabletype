@@ -116,21 +116,6 @@ sub system_filters {
                 { type => 'commented_on', args => { option => 'days', days => 7 } }
             ],
         },
-        _by_date => {
-            label => sub {
-                require MT::ListProperty;
-                my $prop = MT::ListProperty->instance( 'entry', 'authored_on');
-                return $prop->label_via_param( MT->app );
-            },
-            items => sub {
-                require MT::ListProperty;
-                my $prop = MT::ListProperty->instance( 'entry', 'authored_on');
-                items => [{
-                    type => 'authored_on',
-                    args => $prop->args_via_param(MT->app),
-                }],
-            },
-        },
     };
 }
 

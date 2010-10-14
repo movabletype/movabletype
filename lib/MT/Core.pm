@@ -219,17 +219,17 @@ BEGIN {
                     filter_tmpl => '<mt:var name="filter_form_string">',
                     args_via_param => sub {
                         my $prop  = shift;
-                        my ($app) = @_;
-                        return { option => 'equal', string => $app->param('filter_val') };
+                        my ($app, $val) = @_;
+                        return { option => 'equal', string => $val };
                     },
                     label_via_param => sub {
                         my $prop = shift;
-                        my ( $app ) = @_;
+                        my ( $app, $val ) = @_;
                         return MT->translate(
                             '[_1] in [_2]: [_3]',
                             $prop->datasource->class_label_plural,
                             $prop->label,
-                            MT::Util::encode_html($app->param('filter_val')),
+                            MT::Util::encode_html($val),
                         );
                     },
                     priority => 7,
@@ -272,8 +272,8 @@ BEGIN {
                     },
                     args_via_param => sub {
                         my $prop  = shift;
-                        my ($app) = @_;
-                        return { option => 'equal', value => $app->param('filter_val') };
+                        my ($app, $val) = @_;
+                        return { option => 'equal', value => $val };
                     },
                     filter_tmpl => '<mt:Var name="filter_form_integer">',
                     priority => 4,
@@ -362,8 +362,7 @@ BEGIN {
                     },
                     args_via_param => sub {
                         my $prop  = shift;
-                        my ($app) = @_;
-                        my $val = $app->param('filter_val');
+                        my ($app, $val) = @_;
                         my $param;
                         if ( $val =~ m/\-/ ) {
                             my ( $from, $to ) = split /-/, $val;
@@ -386,9 +385,8 @@ BEGIN {
                     },
                     label_via_param => sub {
                         my $prop = shift;
-                        my ( $app ) = @_;
+                        my ( $app, $val ) = @_;
                         require MT::Util;
-                        my $val = $app->param('filter_val');
                         my ($mode, $from, $to);
                         if ( $val =~ m/\-/ ) {
                             my ( $from, $to ) = split /-/, $val;
@@ -486,10 +484,18 @@ BEGIN {
                         my $value  = $args->{value};
                         return { $col => $value };
                     },
+                    label_via_param => sub {
+                        my $prop  = shift;
+                        my ($app, $val) = @_;
+                        my $opts = $prop->single_select_options;
+                        my ( $selected ) = grep { $_->{value} eq $val } @$opts
+                            or return $prop->error( MT->translate('Invalid parameter.'));
+                        return MT->translate( '[_1] is [_2]', $prop->label, $selected->{label});
+                    },
                     args_via_param => sub {
                         my $prop  = shift;
-                        my ($app) = @_;
-                        return { value => $app->param('filter_val') };
+                        my ($app, $val) = @_;
+                        return { value => $val };
                     },
                     filter_tmpl => '<mt:Var name="filter_form_single_select">',
                     priority => 2,
@@ -866,18 +872,28 @@ BEGIN {
                     label => 'My Items',
                     order => 20000,
                     display => 'none',
+                    filter_tmpl => '',
                     filter_editable => 0,
                     condition => sub {
                         my $prop = shift;
-                        return $prop->datasource->has_column( 'author_id' );
+                        my $class = $prop->datasource;
+                        return $class->has_column( 'author_id' ) || $class->has_column( 'created_by' );
                     },
                     terms => sub {
+                        my $prop   = shift;
+                        my ($args, $load_terms, $load_args) = @_;
                         my $app = MT->app or return;
-                        return { author_id => $app->user->id };
+                        my $class = $prop->datasource;
+                        my $col = $class->has_column( 'author_id' ) ? 'author_id' : 'created_by';
+                        return { $col => $app->user->id };
                     },
                     filter_tmpl => '',
                     singleton => 1,
-
+                    label_via_param => sub {
+                        my $prop = shift;
+                        my $class = $prop->datasource;
+                        return MT->translate( 'My [_1]', $class->class_label_plural );
+                    },
                 },
                 current_context => {
                     label => 'This Context Only',

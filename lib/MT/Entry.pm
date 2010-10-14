@@ -575,18 +575,12 @@ sub list_props {
             label => 'Author ID',
             label_via_param => sub {
                 my $prop = shift;
-                my ( $app ) = @_;
-                my $author_id = $app->param('filter_val');
-                my $author    = MT->model('author')->load($author_id);
+                my ( $app, $val ) = @_;
+                my $author    = MT->model('author')->load($val);
                 return MT->translate(
                     'Entries by [_1]',
                     $author->nickname,
                 );
-            },
-            args_via_param => sub {
-                my $prop  = shift;
-                my ($app) = @_;
-                return { option => 'equal', value => $app->param('filter_val') };
             },
         },
         tag => {
@@ -626,21 +620,6 @@ sub system_filters {
             items => [
                 { type => 'commented_on', args => { option => 'days', days => 7 } }
             ],
-        },
-        _by_date => {
-            label => sub {
-                require MT::ListProperty;
-                my $prop = MT::ListProperty->instance( 'entry', 'authored_on');
-                return $prop->label_via_param( MT->app );
-            },
-            items => sub {
-                require MT::ListProperty;
-                my $prop = MT::ListProperty->instance( 'entry', 'authored_on');
-                items => [{
-                    type => 'authored_on',
-                    args => $prop->args_via_param(MT->app),
-                }],
-            },
         },
     };
 }

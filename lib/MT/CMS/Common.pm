@@ -773,16 +773,33 @@ sub list {
     if ( $app->param('no_filter') ) {
         # Nothing to do.
     }
-    elsif ( my $col = $app->param('filter') ) {
-        if ( my $prop = $list_props->{$col} ) {
-            $initial_filter = {
-                label => $prop->has('label_via_param') ? $prop->label_via_param($app) : $prop->label,
-                items => [{
+    elsif ( my @cols = $app->param('filter') ) {
+        my @vals = $app->param('filter_val');
+        my @items;
+        my @labels;
+        for my $col ( @cols ) {
+            my $val = shift @vals;
+            if ( my $prop = $list_props->{$col} ) {
+                my ( $args, $label );
+                if ( $prop->has('args_via_param') ) {
+                    $args = $prop->args_via_param($app, $val)
+                        or return $app->error( $prop->errstr );
+                }
+                if ( $prop->has('label_via_param') ) {
+                    $label = $prop->label_via_param($app, $val)
+                        or return $app->error( $prop->errstr );
+                }
+                push @items, {
                     type => $col,
-                    args => $prop->args_via_param($app),
-                }],
-            };
+                    args => ($args || {}),
+                };
+                push @labels, ($label || $prop->label);
+            }
         }
+        $initial_filter = {
+            label => join( ', ', @labels ),
+            items => \@items,
+        };
     }
     elsif ( $initial_sys_filter ) {
         require MT::CMS::Filter;
