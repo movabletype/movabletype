@@ -110,7 +110,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
       <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
       <mt:if name="return_args"><input type="hidden" name="return_args" value="<mt:var name="return_args">" /></mt:if>
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
-    
+
       <div id="actions-bar-top" class="actions-bar line">
         <div class="list-actions">
           <mt:var name="button_actions">
@@ -119,7 +119,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
         <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
         <div class="pagination"></div>
       </div>
-    
+
       <div id="filter" class="filter-block">
         <div id="filter-header">
           <input type="hidden" id="filter_name" value="" />
@@ -157,7 +157,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
           </div>
         </div>
       </div>
-  
+
       <div id="listing-table" class="listing-table-block">
         <div id="listing-table-overlay" class="overlay"></div>
         <table id="<mt:var name="object_type">-table" class="listing-table <mt:var name="object_type">">
@@ -166,14 +166,14 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
           <tbody></tbody>
         </table>
       </div>
-  
+
       <div id="actions-bar-bottom" class="actions-bar line">
         <mt:var name="button_actions">
         <mt:include name="include/itemset_action_widget.tmpl">
         <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
         <div class="pagination"></div>
       </div>
-  
+
     </form>
 
   <mt:if name="listing_footer_content">
@@ -237,8 +237,8 @@ jQuery.data(table, '<mt:var name="id">', 'asc');
 </mt:if>
 col_classes["<mt:var name="id">"] = "<mt:var name="col_class">";
 </mt:loop>
-jQuery('thead, tfoot').append('<tr>');
-jQuery(line).appendTo('thead tr, tfoot tr');
+jQuery('table.listing-table thead, table.listing-table tfoot').append('<tr>');
+jQuery(line).appendTo('table.listing-table thead tr, table.listing-table tfoot tr');
 
 var filter_types = {};
 <mt:loop name="filter_types">
@@ -497,7 +497,7 @@ function removeFilter(element) {
 
 function renderColumns( col, chk ) {
   cols = [];
-  jQuery('thead th, tfoot th').hide()<mt:if name="has_list_actions">.filter('.cb').show()</mt:if>;
+  jQuery('table.listing-table thead th, table.listing-table tfoot th').hide()<mt:if name="has_list_actions">.filter('.cb').show()</mt:if>;
   jQuery('ul#disp_cols input:checked').each(function() {
     jQuery(this).attr('id').match(/custom-prefs-(.*)/);
     var id = RegExp.$1;
@@ -505,11 +505,11 @@ function renderColumns( col, chk ) {
   });
   jQuery('ul#disp_cols input.main:checked').each(function() {
     var id = jQuery(this).val();
-    jQuery('th.'+id).show();
+    jQuery('table.listing-table th.'+id).show();
   });
   if ( col && chk ) {
-    var header = jQuery('thead th.' + col);
-    var idx = jQuery('thead th:visible').index(header) - 1;
+    var header = jQuery('table.listing-table thead th.' + col);
+    var idx = jQuery('table.listing-table thead th:visible').index(header) - 1;
     jQuery('table.listing-table tr').each( function() {
       jQuery(this).find('td:eq(' + idx + ')').after( '<td class="col"> </td>' );
     });
@@ -521,7 +521,7 @@ function renderColumns( col, chk ) {
 
 function saveChecked(page) {
   checked[page] = [];
-  jQuery('tbody tr input:checked').each(function() {
+  jQuery('table.listing-table tbody tr input:checked').each(function() {
     var id = jQuery(this).parents('tr').attr('id');
     checked[page][id] = 1;
   });
@@ -669,10 +669,10 @@ function renderList(mode, columns, values, limit, page ) {
   if (values.length) {
     params['items'] = jQuery.toJSON(values);
   }
-  if (jQuery('th.sorted').length) {
-    jQuery('th.sorted').find('a').attr('href').match(/#(.*)/);
+  if (jQuery('table.listing-table th.sorted').length) {
+    jQuery('table.listing-table th.sorted').find('a').attr('href').match(/#(.*)/);
     params['sort_by'] = RegExp.$1;
-    params['sort_order'] = jQuery('th.sorted').find('span').hasClass('desc') ? 'descend' : 'ascend';
+    params['sort_order'] = jQuery('table.listing-table th.sorted').find('span').hasClass('desc') ? 'descend' : 'ascend';
   }
   if (jQuery('input[name=filter_id]').val()) {
     params['fid'] = jQuery('input[name=filter_id]').val();
@@ -700,8 +700,8 @@ function renderList(mode, columns, values, limit, page ) {
         jQuery('#listing-debug-block').text(data.result.debug);
       }
 </mt:if>
-      jQuery('tbody').empty();
-      jQuery('th :checkbox').removeAttr('checked');
+      jQuery('table.listing-table tbody').empty();
+      jQuery('table.listing-table th :checkbox').removeAttr('checked');
       var objs = data.result.objects;
       var count = objs.length;
       var last = data.result.page_max;
@@ -727,13 +727,13 @@ function renderList(mode, columns, values, limit, page ) {
           if ( main_cols[col_id] )
               line += '<td class="col '+col_id+' '+col_classes[col_id]+'">' + objs[row][col] + '</td>';
         }
-        jQuery('<tr id="'+id+'">'+line+'</tr>').appendTo('tbody');
+        jQuery('<tr id="'+id+'">'+line+'</tr>').appendTo('table.listing-table tbody');
       }
       jQuery('#resultstats').remove();
       var n = columnLength();
       if (count == 0) {
         var message = trans('No [_1] could be found.', '<mt:var name="object_label" lower_case="1" escape="js">');
-        jQuery('<td class="col fullwidth-row" colspan="'+n+'">'+message+'</tr>').appendTo('tbody');
+        jQuery('<td class="col fullwidth-row" colspan="'+n+'">'+message+'</tr>').appendTo('table.listing-table tbody');
       }
       renderPagination(count, limit, page, last, total);
       filters = data.result.filters;
@@ -752,13 +752,13 @@ function renderList(mode, columns, values, limit, page ) {
       jQuery('.indicator, #listing-table-overlay').hide();
       jQuery('div.pagination').show();
 
-      jQuery('tbody tr:even').addClass('even');
-      jQuery('tbody tr:odd').addClass('odd');
+      jQuery('table.listing-table tbody tr:even').addClass('even');
+      jQuery('table.listing-table tbody tr:odd').addClass('odd');
       var $checkboxes = jQuery('td :checkbox');
       var $checked = jQuery('td :checked');
       $checked.parents('tr').addClass('selected');
       if ($checkboxes.length && $checkboxes.length == $checked.length) {
-        jQuery('th :checkbox').attr('checked', 'checked');
+        jQuery('table.listing-table th :checkbox').attr('checked', 'checked');
         addSelectAll($checkboxes);
       }
       if (mode == 'save_filter') {
@@ -869,7 +869,7 @@ function toggleSubField (obj) {
 }
 
 jQuery('#row').change(function() {
-  jQuery('tbody').empty();
+  jQuery('table.listing-table tbody').empty();
   checked = [];
   renderColumns();
   renderList('filtered_list', cols, vals, jQuery(this).val(), 1);
@@ -916,7 +916,7 @@ function columnLength () {
 }
 
 <mt:if name="has_list_actions">
-jQuery('tbody').selectable({
+jQuery('table.listing-table tbody').selectable({
   filter: 'tr',
   cancel: 'a, .select-all, .text, .can-select, button, pre, :input:not([name=id])',
   selected: function(event, ui) {
@@ -928,20 +928,20 @@ jQuery('tbody').selectable({
       jQuery(ui.selected).addClass('selected');
       $checkboxes.attr('checked', 'checked');
     }
-    if (jQuery('td :checkbox').length == jQuery('td :checked').length) {
-      jQuery('th :checkbox').attr('checked', 'checked');
-      if (!jQuery('tr.select-all').length) {
+    if (jQuery('table.listing-table td :checkbox').length == jQuery('table.listing-table td :checked').length) {
+      jQuery('table.listing-table th :checkbox').attr('checked', 'checked');
+      if (!jQuery('table.listing-table tr.select-all').length) {
         addSelectAll($checkboxes);
       }
     } else {
-      jQuery('th :checkbox').removeAttr('checked');
+      jQuery('table.listing-table th :checkbox').removeAttr('checked');
       removeSelectAll($checkboxes);
     }
   }
 });
 </mt:if>
 
-jQuery('th :checkbox').click(function() {
+jQuery('table.listing-table th :checkbox').click(function() {
   var $checkboxes = jQuery('tr :checkbox');
   if (this.checked) {
     $checkboxes.attr('checked', 'checked');
@@ -954,7 +954,7 @@ jQuery('th :checkbox').click(function() {
   }
 });
 
-jQuery('thead a, tfoot a').click(function() {
+jQuery('table.listing-table thead a, tfoot a').click(function() {
   var url = jQuery(this).attr('href');
   var $th = jQuery('a[href=\''+url+'\']').parents('th');
   if ($th.hasClass('sorted')) {
@@ -965,7 +965,7 @@ jQuery('thead a, tfoot a').click(function() {
       $order.removeClass('asc').addClass('desc');
     }
   } else {
-    jQuery('thead th, tfoot th').removeClass('sorted').find('span').remove();
+    jQuery('table.listing-table thead th, tfoot th').removeClass('sorted').find('span').remove();
     $th.addClass('sorted');
     url.match(/#(.*)/);
     jQuery('<span class="sm '+jQuery.data(table, RegExp.$1)+'"></span>').appendTo($th.find('div'));
