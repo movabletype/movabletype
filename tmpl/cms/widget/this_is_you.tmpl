@@ -14,38 +14,42 @@
 
 <mt:if name="draft_count">
     <mt:if name="can_list_entries">
-            <li><__trans phrase="You have <a href="[_1]">[quant,_2,draft,drafts]</a>." params="<mt:var name="script_url">?__mode=search_replace&amp;_type=entry&amp;do_search=1&amp;publish_status=1&amp;my_posts=1%%<mt:var name="draft_count">"></li>
+            <li><__trans phrase="You have <a href="[_1]">[quant,_2,draft,drafts]</a>." params="<mt:var name="script_url">?__mode=list&amp;_type=entry&amp;filter=status&amp;filter_val=1&amp;filter=current_user%%<mt:var name="draft_count">"></li>
     <mt:else>
             <li><__trans phrase="You have [quant,_1,draft,drafts]." params="<mt:var name="draft_count">"></li>
     </mt:if>
 </mt:if>
+
+<mt:setVarBlock name="my_entries_url"><mt:var name="script_url">?__mode=list&amp;_type=entry&amp;blog_id=0&amp;filter=current_user&filter_val=&amp;filter=status&amp;filter_val=2</mt:setVarBlock>
+<mt:setVarBlock name="my_pages_url"><mt:var name="script_url">?__mode=list&amp;_type=page&amp;blog_id=0&amp;filter=current_user&filter_val=&amp;filter=status&amp;filter_val=2</mt:setVarBlock>
+<mt:setVarBlock name="my_comments_url"><mt:var name="script_url">?__mode=list&amp;_type=comment&amp;filter=for_current_user&amp;filter_val=&amp;filter=status&amp;filter_val=approved</mt:setVarBlock>
 
 <mt:if name="publish_count">
     <mt:if name="comment_count">
         <mt:if name="can_list_entries">
             <mt:if name="can_list_pages">
                 <mt:if name="can_list_comments">
-            <li><__trans phrase="You've written <a href="[_1][_2]">[quant,_3,entry,entries]</a>, <a href="[_1][_4]">[quant,_5,page,pages]</a> with <a href="[_1][_6]">[quant,_7,comment,comments]</a>." params="<mt:var name="script_url">%%?__mode=list&amp;_type=entry&amp;blog_id=0&amp;filter=current_user&filter_val=&amp;filter=status&amp;filter_val=2%%<mt:var name="publish_count">%%?__mode=list&amp;_type=page&amp;blog_id=0&amp;filter=current_user&amp;filter_val=&amp;filter=status&amp;filter_val=2%%<mt:var name="publish_page_count">%%?__mode=list&amp;_type=comment&amp;filter=current_user&amp;filter_val=&amp;filter=status&amp;filter_val=approved%%<mt:var name="comment_count">"></li>
+            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>, <a href="[_3]">[quant,_4,page,pages]</a> with <a href="[_5]">[quant,_6,comment,comments]</a>." params="<mt:var name="my_entries_url">%%<mt:var name="publish_count">%%<mt:var name="my_pages_url">%%<mt:var name="publish_page_count">%%<mt:var name="my_comments_url">%%<mt:var name="comment_count">"></li>
                 <mt:else>
-            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>, <a href="[_3]">[quant,_4,page,pages]</a> with [quant,_5,comment,comments]." params="<mt:var name="script_url">?__mode=search_replace&amp;_type=entry&amp;do_search=1&amp;publish_status=2&amp;my_posts=1%%<mt:var name="publish_count">%%<mt:var name="script_url">?__mode=search_replace&amp;_type=page&amp;do_search=1&amp;publish_status=2&amp;my_posts=1%%<mt:var name="publish_page_count">%%<mt:var name="comment_count">"></li>
+            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>, <a href="[_3]">[quant,_4,page,pages]</a> with [quant,_5,comment,comments]." params="<mt:var name="my_entries_url">%%<mt:var name="publish_count">%%<mt:var name="my_pages_url">%%<mt:var name="publish_page_count">%%<mt:var name="comment_count">"></li>
                 </mt:if>
             <mt:else>
                 <mt:if name="can_list_comments">
-            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>, [quant,_3,page,pages] with <a href="[_4]">[quant,_5,comment,comments]</a>." params="<mt:var name="script_url">?__mode=search_replace&amp;_type=entry&amp;do_search=1&amp;publish_status=2&amp;my_posts=1%%<mt:var name="publish_count">%%<mt:var name="publish_page_count">%%<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;do_search=1&amp;my_posts=1%%<mt:var name="comment_count">"></li>
+            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>, [quant,_3,page,pages] with <a href="[_4]">[quant,_5,comment,comments]</a>." params="<mt:var name="my_entries_url">%%<mt:var name="publish_count">%%<mt:var name="publish_page_count">%%<mt:var name="my_comments_url">%%<mt:var name="comment_count">"></li>
                 <mt:else>
-            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>, [quant,_3,page,pages] with [quant,_4,comment,comments]." params="<mt:var name="script_url">?__mode=search_replace&amp;_type=entry&amp;do_search=1&amp;publish_status=2&amp;my_posts=1%%<mt:var name="publish_count">%%<mt:var name="publish_page_count">%%<mt:var name="comment_count">"></li>
+            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>, [quant,_3,page,pages] with [quant,_4,comment,comments]." params="<mt:var name="my_entries_url">%%<mt:var name="publish_count">%%<mt:var name="publish_page_count">%%<mt:var name="comment_count">"></li>
                 </mt:if>
             </mt:if>
         <mt:else>
             <mt:if name="can_list_pages">
                 <mt:if name="can_list_comments">
-            <li><__trans phrase="You've written [quant,_1,entry,entries], <a href="[_2]">[quant,_3,page,pages]</a> with <a href="[_4]">[quant,_5,comment,comments]</a>." params="<mt:var name="publish_count">%%<mt:var name="script_url">?__mode=search_replace&amp;_type=page&amp;do_search=1&amp;publish_status=2&amp;my_posts=1%%<mt:var name="publish_page_count">%%<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;do_search=1&amp;my_posts=1%%<mt:var name="comment_count">"></li>
+            <li><__trans phrase="You've written [quant,_1,entry,entries], <a href="[_2]">[quant,_3,page,pages]</a> with <a href="[_4]">[quant,_5,comment,comments]</a>." params="<mt:var name="publish_count">%%<mt:var name="my_pages_url">%%<mt:var name="publish_page_count">%%<mt:var name="my_comments_url">%%<mt:var name="comment_count">"></li>
                 <mt:else>
-            <li><__trans phrase="You've written [quant,_1,entry,entries], <a href="[_2]">[quant,_3,page,pages]</a> with [quant,_4,comment,comments]." params="<mt:var name="publish_count">%%<mt:var name="script_url">?__mode=search_replace&amp;_type=page&amp;do_search=1&amp;publish_status=2&amp;my_posts=1%%<mt:var name="publish_page_count">%%<mt:var name="comment_count">"></li>
+            <li><__trans phrase="You've written [quant,_1,entry,entries], <a href="[_2]">[quant,_3,page,pages]</a> with [quant,_4,comment,comments]." params="<mt:var name="publish_count">%%<mt:var name="my_pages_url">%%<mt:var name="publish_page_count">%%<mt:var name="comment_count">"></li>
                 </mt:if>
             <mt:else>
                 <mt:if name="can_list_comments">
-            <li><__trans phrase="You've written [quant,_1,entry,entries], [quant,_2,page,pages] with <a href="[_3]">[quant,_4,comment,comments]</a>." params="<mt:var name="publish_count">%%<mt:var name="publish_page_count">%%<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;do_search=1&amp;my_posts=1%%<mt:var name="comment_count">"></li>
+            <li><__trans phrase="You've written [quant,_1,entry,entries], [quant,_2,page,pages] with <a href="[_3]">[quant,_4,comment,comments]</a>." params="<mt:var name="publish_count">%%<mt:var name="publish_page_count">%%<mt:var name="my_comments_count">%%<mt:var name="comment_count">"></li>
                 <mt:else>
             <li><__trans phrase="You've written [quant,_1,entry,entries], [quant,_2,page,pages] with [quant,_3,comment,comments]." params="<mt:var name="publish_count">%%<mt:var name="publish_page_count">%%<mt:var name="comment_count">"></li>
                 </mt:if>
@@ -54,13 +58,13 @@
     <mt:else>
         <mt:if name="can_list_entries">
             <mt:if name="can_list_pages">
-            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>, <a href="[_3]">[quant,_4,page,pages]</a>." params="<mt:var name="script_url">?__mode=search_replace&amp;_type=entry&amp;do_search=1&amp;publish_status=2&amp;my_posts=1%%<mt:var name="publish_count">%%<mt:var name="script_url">?__mode=search_replace&amp;_type=page&amp;do_search=1&amp;publish_status=2&amp;my_posts=1%%<mt:var name="publish_page_count">"></li>
+            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>, <a href="[_3]">[quant,_4,page,pages]</a>." params="<mt:var name="my_entries_count">%%<mt:var name="publish_count">%%<mt:var name="my_pages_count">%%<mt:var name="publish_page_count">"></li>
             <mt:else>
             <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>, [quant,_3,page,pages]." params="<mt:var name="script_url">?__mode=search_replace&amp;_type=entry&amp;do_search=1&amp;publish_status=2&amp;my_posts=1%%<mt:var name="publish_count">%%<mt:var name="publish_page_count">"></li>
             </mt:if>
         <mt:else>
             <mt:if name="can_list_pages">
-            <li><__trans phrase="You've written [quant,_1,entry,entries], <a href="[_2]">[quant,_3,page,pages]</a>." params="<mt:var name="publish_count">%%<mt:var name="script_url">?__mode=search_replace&amp;_type=page&amp;do_search=1&amp;publish_status=2&amp;my_posts=1%%<mt:var name="publish_page_count">"></li>
+            <li><__trans phrase="You've written [quant,_1,entry,entries], <a href="[_2]">[quant,_3,page,pages]</a>." params="<mt:var name="publish_count">%%<mt:var name="my_pages_url">%%<mt:var name="publish_page_count">"></li>
             <mt:else>
             <li><__trans phrase="You've written [quant,_1,entry,entries], [quant,_2,page,pages]." params="<mt:var name="publish_count">%%<mt:var name="publish_page_count">"></li>
             </mt:if>
@@ -69,13 +73,13 @@
 <mt:else>
     <mt:if name="can_list_pages">
         <mt:if name="can_list_comments">
-            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,page,pages]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>." params="<mt:var name="script_url">?__mode=search_replace&amp;_type=page&amp;do_search=1&amp;publish_status=2&amp;my_posts=1%%<mt:var name="publish_page_count">%%<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;do_search=1&amp;my_posts=1%%<mt:var name="comment_count">"></li>
+            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,page,pages]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>." params="<mt:var name="my_pages_url">%%<mt:var name="publish_page_count">%%<mt:var name="my_comments_count">%%<mt:var name="comment_count">"></li>
         <mt:else>
-            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,page,pages]</a> with [quant,_3,comment,comments]." params="<mt:var name="script_url">?__mode=search_replace&amp;_type=page&amp;do_search=1&amp;publish_status=2&amp;my_posts=1%%<mt:var name="publish_page_count">%%<mt:var name="comment_count">"></li>
+            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,page,pages]</a> with [quant,_3,comment,comments]." params="<mt:var name="my_pages_url">%%<mt:var name="publish_page_count">%%<mt:var name="comment_count">"></li>
         </mt:if>
     <mt:else>
         <mt:if name="can_list_comments">
-            <li><__trans phrase="You've written [quant,_1,page,pages] with <a href="[_2]">[quant,_3,comment,comments]</a>." params="<mt:var name="publish_page_count">%%<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;do_search=1&amp;my_posts=1%%<mt:var name="comment_count">"></li>
+            <li><__trans phrase="You've written [quant,_1,page,pages] with <a href="[_2]">[quant,_3,comment,comments]</a>." params="<mt:var name="publish_page_count">%%<mt:var name="my_comments_url">%%<mt:var name="comment_count">"></li>
         <mt:else>
             <li><__trans phrase="You've written [quant,_1,page,pages] with [quant,_2,comment,comments]." params="<mt:var name="publish_page_count">%%<mt:var name="comment_count">"></li>
         </mt:if>
