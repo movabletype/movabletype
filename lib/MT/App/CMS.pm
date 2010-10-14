@@ -2640,6 +2640,8 @@ sub set_default_tmpl_params {
     my $auth_mode = $app->config('AuthenticationModule');
     my ($pref) = split /\s+/, $auth_mode;
 
+    $param->{debug_panels} = [];
+
     # TODO - remove after testing or after new IA is defined
     $param->{app_layout_fixed} = 0;
     $param->{athena_nav}       = 1;

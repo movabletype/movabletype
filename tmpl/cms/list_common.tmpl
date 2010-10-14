@@ -210,12 +210,6 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
   </div>
 </div>
 
-
-
-<mt:if name="config.debugmode">
-<pre id="debug-block" style="border: 1px solid #000; background-color: #eee;"></pre>
-</mt:if>
-
 <mt:setvarblock name="jq_js_include" append="1">
 
 jQuery.event.special.listReady = {
@@ -703,7 +697,7 @@ function renderList(mode, columns, values, limit, page ) {
       if ( !handleMessages(data) ) return;
 <mt:if name="config.debugmode">
       if (data.result.debug) {
-        jQuery('#debug-block').text(data.result.debug);
+        jQuery('#listing-debug-block').text(data.result.debug);
       }
 </mt:if>
       jQuery('tbody').empty();

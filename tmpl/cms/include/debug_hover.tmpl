@@ -34,8 +34,8 @@
     <mt:SetVar name="title" value="HTTP Headers">
     <mt:SetVar name="nav_title" value="HTTP Headers">
 </mt:SetHashVar>
-<mt:Var name="debug_panels" function="push" value="$version_panel">
-<mt:Var name="debug_panels" function="push" value="$subversion_panel">
+<mt:Var name="debug_panels" function="unshift" value="$version_panel">
+<mt:Var name="debug_panels" function="unshift" value="$subversion_panel">
 <mt:Var name="debug_panels" function="push" value="$sql_panel">
 <mt:Var name="debug_panels" function="push" value="$cache_panel">
 <mt:Var name="debug_panels" function="push" value="$requestvars_panel">
@@ -144,8 +144,12 @@
         </div>
         <div class="djDebugPanelContent">
             <div class="scroll">
-<mt:SetVarBlock name="debug_module">include/debug_toolbar/<mt:Var name="name" lower_case="1">.tmpl</mt:SetVarBlock>
-<mt:Include name="$debug_module">
+<mt:If name="content">
+    <mt:Var name="content">
+<mt:Else>
+    <mt:SetVarBlock name="debug_module"><mt:If name="template"><mt:Var name="template"><mt:Else>include/debug_toolbar/<mt:Var name="name" lower_case="1">.tmpl</mt:If></mt:SetVarBlock>
+    <mt:Include name="$debug_module">
+</mt:If>
             </div>
         </div>
     </div>

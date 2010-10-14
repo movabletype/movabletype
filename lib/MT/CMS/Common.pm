@@ -1013,6 +1013,14 @@ sub list {
 
     $app->load_list_actions( $type, \%param );
     $app->load_content_actions( $type, \%param );
+
+    push @{$param{debug_panels}}, {
+        name => 'CommonListing',
+        title => 'CommonListing',
+        nav_title => 'CommonListing',
+        content => '<pre id="listing-debug-block" style="border: 1px solid #000; background-color: #eee; font-family: Courier;"></pre>',
+    } if $MT::DebugMode;
+
     my $tmpl = $app->load_tmpl( $template, \%param )
         or return;
     $app->run_callbacks('list_template_param.' . $type, $app, $tmpl->param, $tmpl);
