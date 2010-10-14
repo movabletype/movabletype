@@ -795,6 +795,8 @@ function renderList(mode, columns, values, limit, page ) {
   });
 }
 
+jQuery.fn.mtRenderList = renderList;
+
 function itemValues() {
   var $items = jQuery('#filter-detail .filteritem');
   vals = [];
