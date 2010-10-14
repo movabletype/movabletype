@@ -353,7 +353,7 @@ sub list_props {
 
         modified_on => {
             auto    => 1,
-            label   => 'Modeified on',
+            label   => 'Modified on',
             display => 'none'
         },
         created_on => {
