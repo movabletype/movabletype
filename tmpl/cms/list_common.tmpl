@@ -1118,6 +1118,9 @@ jQuery('#save-filter').click(function() {
     return false;
   }
   itemValues();
+  jQuery(window).one('listReady', function() {
+    jQuery('#saveas').show();
+  });
   renderList('save_filter', cols, vals, jQuery('#row').val(), 1);
 });
 
