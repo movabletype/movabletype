@@ -41,11 +41,6 @@
   <p id="indicator"><img src="<mt:var name="static_uri">images/indicator-login.gif" alt="<__trans phrase="Indicator">" /><p>
 </div>
 
-<mt:if name="config.debugmode">
-<pre id="debug-block" style="border: 1px solid #000; background-color: #eee;"></pre>
-</mt:if>
-
-
 <mt:setvarblock name="jq_js_include" append="1">
 jQuery('p#indicator')
   .hide()
@@ -425,7 +420,7 @@ function renderNestedList() {
       if ( !handleMessages(data) ) return;
 <mt:if name="config.debugmode">
       if (data.result.debug) {
-        jQuery('#debug-block').text(data.result.debug);
+        jQuery('#listing-debug-block').text(data.result.debug);
       }
 </mt:if>
       renderItems(data);
