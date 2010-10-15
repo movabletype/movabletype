@@ -522,7 +522,7 @@
         <li>
           <input type="checkbox" name="allow_comments" id="allow_comments" value="1"<mt:if name="allow_comments"> checked="checked"</mt:if> class="cb" /> <label for="allow_comments"><__trans phrase="Accept Comments"></label>
         <mt:unless name="new_object">
-          <span class="comments-link feedback-count"><__trans phrase="<a href="[_2]">[_1]</a>" params="<$mt:var name="num_comments"$>%%<$mt:var name="script_url">?__mode=list&_type=comment&amp;filter_key=_comments_by_entry&amp;filter_val=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"></span>
+          <span class="comments-link feedback-count"><__trans phrase="<a href="[_2]">[_1]</a>" params="<$mt:var name="num_comments"$>%%<$mt:var name="script_url">?__mode=list&_type=comment&amp;filter=entry&amp;filter_val=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"></span>
         </mt:unless>
         </li>
         <li>

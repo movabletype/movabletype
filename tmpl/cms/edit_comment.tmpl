@@ -245,7 +245,7 @@
     </mt:if>
 
     <mt:if name="commenter_id">
-        <a title="<__trans phrase="View all comments by this commenter">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;filter_key=_comments_by_user&amp;blog_id=<mt:var name="blog_id">&amp;filter_val=<mt:var name="commenter_id" escape="html">"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a>
+        <a title="<__trans phrase="View all comments by this commenter">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;filter=commenter_id&amp;blog_id=<mt:var name="blog_id">&amp;filter_val=<mt:var name="commenter_id" escape="html">"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a>
     <mt:else>
         <a title="<__trans phrase="View all comments by this commenter">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;is_limited=1&amp;search_cols=author&amp;search=<mt:var name="author" escape="html">&amp;do_search=1"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a>
     </mt:if>
@@ -312,7 +312,7 @@
         hint="<__trans phrase="[_1] this comment was made on" params="$entry_class_label">"
         show_hint="0">
         <mt:if name="no_entry">[<__trans phrase="[_1] no longer exists" params="<mt:var name="entry_class_label">">]<mt:else><a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="entry_class" escape="url">&amp;id=<mt:var name="entry_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">"><mt:var name="entry_title" escape="html"></a></mt:if>
-        <a title="<__trans phrase="View all comments on this [_1]" params="<mt:var name="entry_class_label" lower_case="1">">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=_comments_by_entry&amp;filter_val=<mt:var name="entry_id" escape="url">"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+        <a title="<__trans phrase="View all comments on this [_1]" params="<mt:var name="entry_class_label" lower_case="1">">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=entry&amp;filter_val=<mt:var name="entry_id" escape="url">"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
     </mtapp:setting>
 
     <mtapp:setting

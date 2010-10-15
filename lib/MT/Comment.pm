@@ -263,7 +263,7 @@ sub list_props {
                       $status_img
                     </span>
                 };
-            }
+            },
         },
         ip => {
             auto  => 1,
@@ -393,10 +393,17 @@ sub list_props {
             label_via_param => sub {
                 my $prop = shift;
                 my ( $app, $val ) = @_;
-                my $author    = MT->model('author')->load($val);
+                my $user = MT->model('author')->load($val);
                 return MT->translate(
-                    'Comments by [_1]',
-                    $author->nickname,
+                    "All comments by [_1] '[_2]'",
+                    ( $user->type == MT::Author::COMMENTER()
+                        ? $app->translate("Commenter")
+                        : $app->translate("Author")
+                    ),
+                    (     $user->nickname
+                        ? $user->nickname . ' (' . $user->name . ')'
+                        : $user->name
+                    )
                 );
             },
         },
