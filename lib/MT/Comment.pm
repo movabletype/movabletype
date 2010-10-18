@@ -292,9 +292,11 @@ sub list_props {
                     },
                     {
                         sort => 'title',
+                        direction => $args->{direction} || 'ascend',
                     },
                 );
                 $args->{sort} = [];
+                return;
             },
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
