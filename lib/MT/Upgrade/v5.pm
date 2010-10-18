@@ -544,7 +544,7 @@ sub _v5_remove_technorati {
 
     my $iter = $class->load_iter( { class => '*' } );
     while ( my $blog = $iter->() ) {
-        next unless $blog->update_pings =~ m/technorati/i;
+        next unless ($blog->update_pings || '') =~ m/technorati/i;
 
         my @pings = split ',', $blog->update_pings;
         @pings = grep { $_ ne 'technorati' } @pings;
