@@ -150,6 +150,7 @@ sub list_props {
             display     => 'none',
             entry_class => 'entry',
             view        => 'blog',
+            singleton   => '1',
             terms       => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args, $options ) = @_;
