@@ -125,9 +125,9 @@ sub save {
 sub delete {
     my $app          = shift;
     my $q            = $app->param;
-    my $fid          = $q->param('fid');
+    my $id          = $q->param('id');
     my $filter_class = MT->model('filter');
-    my $filter       = $filter_class->load($fid)
+    my $filter       = $filter_class->load($id)
         or return $app->json_error( $app->translate('No such filter') );
     my $blog_id   = $q->param('blog_id') || 0;
     my $ds        = $q->param('datasource');
@@ -152,7 +152,28 @@ sub delete {
     $res{id} = $filter->id;
     $res{filters} = \@filters;
     $res{editable_filter_count} = scalar grep { $_->{can_edit} } @filters;
-    return $app->json_result( \%res );
+    my $list = $app->param('list');
+    if ( defined $list && !$list ) {
+        my %res;
+        my @filters = filters( $app, $ds );
+        my $allpass_filter = {
+            label => MT->translate('(none)'),
+            items => [],
+        };
+        unshift @filters, $allpass_filter;
+        for my $filter ( @filters ) {
+            $filter->{label} = MT::Util::encode_html($filter->{label});
+        };
+
+        $res{id} = $filter->id;
+        $res{filters} = \@filters;
+        $res{editable_filter_count} = scalar grep { $_->{can_edit} } @filters;
+        return $app->json_result( \%res );
+    }
+    else {
+        # Forward to MT::Common::filterd_list
+        $app->forward( 'filtered_list' );
+    }
 }
 
 sub delete_filters {

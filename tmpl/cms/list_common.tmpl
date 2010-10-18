@@ -342,7 +342,7 @@ function renderFilterList() {
     var filter = filters[i];
     line = '<span class="filter-label unit size3of5"><a href="#'+i+'" class="apply-link '
       + ( filter.can_save ? 'user-filter' : 'system-filter' ) 
-      + '">'+filter.label+'</a></span>';
+      + '">'+filter.label+'</a><span class="filter-alt-label">'+filter.label+'</span></span>';
     if ( parseInt(filter.can_save) ) {
       line += '<span class="handle-filter unit size2of5"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Rename"></a><a href="#'+i+'" class="delete-link tool-link icon16 icon-delete"><__trans phrase="Delete"></a></span>';
     }
@@ -361,6 +361,7 @@ function renderFilterList() {
     jQuery('#dialog_filter').addClass('hidden');
   });
   jQuery('#dialog_filter .filter-label a:not(#new_filter)').click(function() {
+    jQuery('#dialog_filter').addClass('hidden');
     jQuery(this).attr('href').match(/#(.*)/);
     var index = RegExp.$1;
     applyFilter(index);
@@ -368,7 +369,7 @@ function renderFilterList() {
     return false;
   });
   jQuery('#dialog_filter .delete-link').click(function() {
-    var label = jQuery(this).parents('.filter').children('.filter-label').text();
+    var label = jQuery(this).parents('.filter').find('.apply-link').text();
     var message = trans("Are you sure you want to remove the filter '[_1]'?", label);
     if (confirm(message)) {
       removeFilter(this);
@@ -376,6 +377,12 @@ function renderFilterList() {
     return false;
   });
   jQuery('#dialog_filter .rename-link').click(openFilterRenameField);
+
+  if ( jQuery('#dialog_filter').hasClass('editing') && editable_filter_count > 0 ) {
+    startFiltersEdit();
+  } else {
+    finishFiltersEdit();
+  }
 }
 
 function openFilterRenameField() {
@@ -385,7 +392,7 @@ function openFilterRenameField() {
   var fid = filters[index].id;
   var $label = $this.parents('.filter').children('.filter-label');
   var $handle = $this.parents('.filter').children('.handle-filter');
-  var text = $label.find('.apply-link').hide().text();
+  var text = $label.find('.filter-alt-label').hide().text();
   jQuery('<input type="text" id="filter_'+fid+'" class="text full" />')
     .val(text)
     .appendTo($label);
@@ -411,7 +418,7 @@ function openFilterRenameField() {
 
 function cancelFilterRenameField() {
   jQuery(this).parents('.filter').children('.filter-label')
-    .find('.apply-link').show().end()
+    .find('.filter-alt-label').show().end()
     .find('input').remove();
   jQuery(this).parents('.filter').children('.handle-filter')
     .find('a:visible').remove().end()
@@ -461,39 +468,48 @@ function removeFilter(element) {
   jQuery(element).attr('href').match(/#(.*)/);
   var index = RegExp.$1;
   var remove_current = filters[index].id == current_id;
-  jQuery.ajax({
-    type: 'POST',
-    url: '<mt:var name="script_url">',
-    dataType: 'json',
-    data: {
-      __mode: 'delete_filter',
-      fid: filters[index].id,
-      datasource: '<mt:var name="list_type">',
-      blog_id: <mt:var name="blog_id">
-    },
-    success: function(data) {
-      if ( !handleMessages(data) ) return;
-      editable_filter_count = data.result.editable_filter_count;
-      filters = data.result.filters;
-      if ( remove_current ) {
-        jQuery('#filter_id').val('');
-        current_id = 0;
-        applyFilter(0);
+
+  if ( remove_current ) {
+    applyFilter(0, 1);
+    renderList({
+      mode: 'delete_filter',
+      id: filters[index].id,
+    });
+  }
+  else {
+    jQuery.ajax({
+      type: 'POST',
+      url: '<mt:var name="script_url">',
+      dataType: 'json',
+      data: {
+        __mode: 'delete_filter',
+        id: filters[index].id,
+        datasource: '<mt:var name="list_type">',
+        blog_id: <mt:var name="blog_id">,
+        list: 0
+      },
+      success: function(data) {
+        if ( !handleMessages(data) ) return;
+        editable_filter_count = data.result.editable_filter_count;
+        filters = data.result.filters;
+        if ( editable_filter_count == 0 ) {
+          finishFiltersEdit();
+        }
+      },
+      complete: function() {
+        renderFilterList();
+      },
+      error: function(xhr, status) {
+        if ( xhr.status == 401 ) {
+          loginAgain(function(){
+            removeFilter(element);
+          });
+        }
+        else
+          alert('Ajax error: ' + status);
       }
-    },
-    complete: function() {
-      renderFilterList();
-    },
-    error: function(xhr, status) {
-      if ( xhr.status == 401 ) {
-        loginAgain(function(){
-          removeFilter(element);
-        });
-      }
-      else
-        alert('Ajax error: ' + status);
-    }
-  });
+    });
+  }
 }
 
 function renderColumns( col, chk ) {
@@ -762,7 +778,7 @@ function renderList(mode, columns, values, limit, page ) {
         jQuery('table.listing-table th :checkbox').attr('checked', 'checked');
         addSelectAll($checkboxes);
       }
-      if (mode == 'save_filter') {
+      if (mode == 'save_filter' || mode == 'delete_filter') {
         renderFilterList();
       }
       if (!jQuery('.msg-error').length) {
@@ -1085,16 +1101,10 @@ jQuery('#saveas').click(function() {
 
 jQuery('#opener').click(function() {
   if (jQuery('#dialog_filter').hasClass('hidden')) {
-    jQuery('#dialog_filter')
-      .removeClass('editing hidden')
-      .find('.edit-filter')
-      .text('Edit').end()
-      .find('.filter').show().end()
-      .find('.rename-field').remove().end()
-      .find('.handle-filter').hide().end();
+    finishFiltersEdit();
+    jQuery('#dialog_filter').removeClass('hidden');
   } else {
-    jQuery('#dialog_filter')
-      .addClass('hidden');
+    jQuery('#dialog_filter').addClass('hidden');
   }
   return false;
 });
@@ -1183,21 +1193,36 @@ function addItems(items, op) {
 
 jQuery('#dialog_filter .edit-filter').click(function() {
     var text;
-    jQuery(this).parents('#dialog_filter').toggleClass('editing');
     jQuery('.filter').show();
     if (jQuery(this).parents('#dialog_filter').hasClass('editing')) {
-      jQuery(this).text('Done Editing');
-      jQuery('.handle-filter').show();
+      jQuery(this).parents('#dialog_filter').removeClass('editing');
+      finishFiltersEdit();
     } else {
-      jQuery(this).text('Edit');
-      jQuery('#dialog_filter a.button.cancel').click();
-      jQuery('.rename-field').remove();
-      jQuery('.handle-filter').hide();
+      jQuery(this).parents('#dialog_filter').addClass('editing');
+      startFiltersEdit();
     }
     return false;
 });
 
-function applyFilter(index) {
+function startFiltersEdit () {
+  jQuery('#dialog_filter').addClass('editing');
+  jQuery('#dialog_filter .edit-filter').text('Done Editing');
+  jQuery('.handle-filter').show();
+  jQuery('.filter-alt-label').show();
+  jQuery('.apply-link').hide();
+}
+
+function finishFiltersEdit () {
+  jQuery('#dialog_filter').removeClass('editing');
+  jQuery('#dialog_filter .edit-filter').text('Edit');
+  jQuery('#dialog_filter a.button.cancel').click();
+  jQuery('.rename-field').remove();
+  jQuery('.handle-filter').hide();
+  jQuery('.filter-alt-label').hide();
+  jQuery('.apply-link').show();
+}
+
+function applyFilter(index, no_render) {
   jQuery('#filter_name').val('');
   jQuery('#filter_id').val('');
   jQuery('.filteritem').remove();
@@ -1214,10 +1239,10 @@ function applyFilter(index) {
     else
       jQuery('#save').hide();
     jQuery('input[name=filter_id]').val(filters[index].id);
-    itemValues()
-    renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
+    itemValues();
+    if ( !no_render )
+      renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
   }
-  jQuery('#dialog_filter').addClass('hidden');
 }
 
 jQuery('.action_selector').change(function() {
