@@ -1170,7 +1170,7 @@ sub save_cfg_system_users {
 
     my $cfg = $app->config;
     my $tz  = $app->param('default_time_zone');
-    $app->config( 'DefaultTimezone', $tz || undef, 1 );
+    $app->config( 'DefaultTimezone', $tz, 1 );
     $app->config( 'NewUserAutoProvisioning',
         $app->param('personal_weblog') ? 1 : 0, 1 );
     $app->config( 'NewUserBlogTheme', $theme_id || undef, 1 );
