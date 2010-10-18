@@ -1518,7 +1518,6 @@ BEGIN {
                 page_actions => sub { MT->app->core_page_actions(@_) },
                 content_actions => sub { MT->app->core_content_actions(@_) },
                 list_actions => sub { MT->app->core_list_actions(@_) },
-                list_filters => sub { MT->app->core_list_filters(@_) },
                 search_apis  => sub {
                     require MT::CMS::Search;
                     return MT::CMS::Search::core_search_apis( MT->app, @_ );
