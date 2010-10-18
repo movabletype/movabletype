@@ -247,6 +247,7 @@ sub list_props {
             label   => 'For Assets',
             display => 'none',
             view    => [ 'website', 'blog' ],
+            singleton   => '1',
             terms   => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args, $options ) = @_;
