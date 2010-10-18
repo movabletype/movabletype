@@ -2474,6 +2474,7 @@ sub init_core_callbacks {
             $pkg . 'delete_permission_filter.tag' => "${pfx}Tag::can_delete",
             $pkg . 'post_delete.tag'              => "${pfx}Tag::post_delete",
             $pkg . 'pre_load_filtered_list.tag'   => "${pfx}Tag::cms_pre_load_filtered_list",
+            'list_template_param.tag' => "${pfx}Tag::template_param_list",
 
             # junk-related callbacks
             #'HandleJunk' => \&_builtin_spam_handler,
