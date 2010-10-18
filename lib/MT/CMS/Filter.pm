@@ -86,6 +86,7 @@ sub save {
             items     => $items,
         }
     );
+    $filter->modified_by($app->user->id);
     $filter->save
         or return $app->json_error(
         $app->translate( 'Failed to save filter: [_1]', $filter->errstr ) );
