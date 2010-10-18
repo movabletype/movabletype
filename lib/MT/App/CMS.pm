@@ -1788,7 +1788,7 @@ sub core_menus {
             args              => { _type => 'tag', filter_key => 'entry' },
             permission        => 'edit_tags',
             system_permission => 'administer',
-            view              => [ "blog", "website"] ,
+            view              => [ "blog" ] ,
         },
         'entry:view_category' => {
             order      => 10000,
