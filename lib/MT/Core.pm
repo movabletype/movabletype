@@ -571,31 +571,23 @@ BEGIN {
                         my ($args, $load_terms, $load_args) = @_;
                         my $col = $prop->datasource->has_column('author_id') ? 'author_id' : 'created_by';
                         my $driver = $prop->datasource->driver;
-                        $col = $driver->dbd->db_column_name($prop->datasource->datasource, $col);
-                        my $option = $args->{option};
-                        my $query  = $args->{string};
-                        if ( 'contains' eq $option ) {
-                            $query = { like => "%$query%" };
-                        }
-                        elsif ( 'begining' eq $option ) {
-                            $query = { like => "$query%" };
-                        }
-                        elsif ( 'end' eq $option ) {
-                            $query = { like => "%$query" };
-                        }
-
+                        my $colname = $driver->dbd->db_column_name($prop->datasource->datasource, $col);
+                        $prop->{col} = 'name';
+                        my $name_query = $prop->super(@_);
+                        $prop->{col} = 'nickname';
+                        my $nick_query = $prop->super(@_);
                         $load_args->{joins} ||= [];
                         push @{ $load_args->{joins} }, MT->model('author')->join_on(
                             undef,
                             [[
                                 {
-                                    id => \"=$col",
-                                    nickname => $query,
+                                    id       => \"= $colname",
+                                    %$name_query,
                                 },
                                 '-or',
                                 {
-                                    id => \"=$col",
-                                    name => $query,
+                                    id   => \"= $colname",
+                                    %$nick_query,
                                 },
                             ]],
                             {}
