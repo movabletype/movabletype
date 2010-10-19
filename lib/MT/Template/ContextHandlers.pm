@@ -2951,7 +2951,7 @@ TABLE
     if ($show_actions) {
         local $ctx->{__stash}{vars}{__contents__} = $table;
         return $ctx->build(<<EOT);
-<div id="$id" class="$listing_class line">
+<div id="$id" class="listing line $listing_class">
     <div class="listing-header">
         $listing_header
     </div>

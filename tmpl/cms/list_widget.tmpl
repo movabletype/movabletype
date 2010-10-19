@@ -48,7 +48,7 @@ function init() {
 <mt:include name="include/header.tmpl">
 
 <mt:setvarblock name="listing_header">
-    <h3><__trans phrase="Widget Sets"></h3>
+    <h2><__trans phrase="Widget Sets"></h2>
     <p><a href="<mt:var name="script_url">?__mode=edit_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create Widget Set"></a></p>
 </mt:setvarblock>
 <mtapp:listing
@@ -56,9 +56,9 @@ function init() {
     <mt:if name="__first__">
     <mt:setvarblock name="table_header">
         <tr>
-            <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-            <th class="widgetmanager-name primary-col"><__trans phrase="Name"></th>
-            <th class="widgetmanager-widgets primary-col"><__trans phrase="Installed Widgets"></th>
+            <th class="col head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+            <th class="col head widgetmanager-name primary"><span class="col-label"><__trans phrase="Name"></span></th>
+            <th class="col head widgetmanager-widgets primary"><span class="col-label"><__trans phrase="Installed Widgets"></span></th>
         </tr>
     </mt:setvarblock>
     <thead>
@@ -70,9 +70,9 @@ function init() {
     <tbody>
     </mt:if>
         <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-            <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="select" /></td>
-            <td class="widgetmanager-name"><a href="?__mode=edit_widget&blog_id=<mt:var name="blog_id">&id=<mt:var name="id" escape="url">"><mt:var name="widgetmanager" escape="html"></a></td>
-            <td class="widgetmanager-widgets"><mt:var name="names" escape="html"></td>
+            <td class="col cb"><input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="select" /></td>
+            <td class="col widgetmanager-name"><a href="?__mode=edit_widget&blog_id=<mt:var name="blog_id">&id=<mt:var name="id" escape="url">"><mt:var name="widgetmanager" escape="html"></a></td>
+            <td class="col widgetmanager-widgets"><mt:var name="names" escape="html"></td>
         </tr>
     <mt:if name="__last__">
     </tbody>

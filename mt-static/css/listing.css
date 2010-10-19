@@ -1,3 +1,7 @@
+.listing {
+    margin-bottom: 50px;
+}
+
 #filter-header,
 .listing-table-block {
     position: relative;
@@ -51,9 +55,12 @@
     width: 25%;
 }
 .col.cb, 
-.col.si, 
 .col.view { 
     width: 2.6em;
+    text-align: center;
+}
+.col.si {
+    width: 4em;
     text-align: center;
 }
 
@@ -86,11 +93,13 @@ tfoot .col.head{
 .col.head div {
     position: relative;
 }
-.sort-link {
+.col-label {
     display: block;
+    padding: 7px 8px;
+}
+.sort-link {
     width: 100%;
     margin-right: 18px;
-    padding: 7px 8px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -180,9 +189,6 @@ tfoot .col.head{
     border-top-right-radius: 0;
     border-top-left-radius: 0;
     -moz-border-radius: 0 0 5px 5px;
-}
-.legacy.listing-table .col.head {
-    padding: 7px 8px;
 }
 
 /* - Filter */
