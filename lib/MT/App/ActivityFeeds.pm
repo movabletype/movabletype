@@ -232,7 +232,7 @@ sub process_log_feed {
         $item->{'log.created_on_iso'} = $ts_iso;
         my $id = $item->{'log.id'};
         my $year = substr( $ts, 0, 4 );
-        $item->{'log.permalink'} = $log_view_url . 'id=' . $id;
+        $item->{'log.permalink'} = $log_view_url . '&id=' . $id;
         $item->{'log.atom_id'}   = qq{tag:$host,$year:$path/$id};
         $item->{'log.message'}
             = entity_translate( encode_html( $item->{'log.message'}, 1 ) );
