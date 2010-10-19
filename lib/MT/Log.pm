@@ -233,6 +233,15 @@ sub list_props {
             label   => 'IP',
             display => 'none',
         },
+        id => {
+            base    => '__virtual.id',
+            label_via_param => sub {
+                my $prop = shift;
+                my ( $app ) = @_;
+                my $id = $app->param('filter_val');
+                return MT->translate( 'Showing only ID: [_1]',  $id);
+            },
+        },
     };
 }
 

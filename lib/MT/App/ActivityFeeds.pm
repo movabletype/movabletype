@@ -10,7 +10,7 @@ use strict;
 use base 'MT::App';
 use MT::Author qw(AUTHOR);
 use MT::Util qw(perl_sha1_digest_hex ts2epoch epoch2ts ts2iso iso2ts
-    encode_html encode_url);
+    encode_html encode_url encode_xml);
 use HTTP::Date qw(time2isoz str2time time2str);
 
 sub id {'feeds'}
@@ -232,7 +232,7 @@ sub process_log_feed {
         $item->{'log.created_on_iso'} = $ts_iso;
         my $id = $item->{'log.id'};
         my $year = substr( $ts, 0, 4 );
-        $item->{'log.permalink'} = encode_html($log_view_url . 'id=' . $id);
+        $item->{'log.permalink'} = encode_xml($log_view_url . '&filter=id&filter_val=' . $id);
         $item->{'log.atom_id'}   = qq{tag:$host,$year:$path/$id};
         $item->{'log.message'}
             = entity_translate( encode_html( $item->{'log.message'}, 1 ) );
