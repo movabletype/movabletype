@@ -88,13 +88,9 @@ select {
     -moz-box-shadow: 0 1px 0 #f3f3f3;
 }
 
-.multiple-selection li {
-    display: inline-block;
-    margin: 0 15px 5px 0;
-}
-.fixed-width.multiple-selection li {
-    width: 250px;
-    margin: 0 0 5px;
+.col select, 
+.col .text {
+    width: 100%;
 }
 
 #notification-listing-table input[type="text"], 

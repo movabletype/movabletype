@@ -39,7 +39,7 @@ a:active {
 */
 
 h2 {
-    margin: 1em 0;
+    margin: 1em 0 0.5em;
     font-size: 115%;
     font-weight: bold;
 }
@@ -117,6 +117,21 @@ pre {
     background-color: #9ea1a3;
     color: #f3f3f3;
 }
+
+
+/* -- Multiple Selection */
+.multiple-selection {
+    display: inline-block;
+}
+.multiple-selection li {
+    display: inline-block;
+    margin: 0 15px 5px 0;
+}
+.fixed-width.multiple-selection li {
+    width: 250px;
+    margin: 0 0 5px;
+}
+
 
 /* -- Overlay */
 .overlay, 
@@ -718,8 +733,8 @@ ul.tabs li a {
 
 #menu-bar-icons li a { 
     display: inline-block;
-    width: 23px;
-    height: 23px;
+    width: 24px;
+    height: 24px;
     color: #f3f3f3;
     background-position: center;
     background-repeat: no-repeat;
@@ -743,9 +758,9 @@ ul.tabs li a {
     border-radius: 3px;
 }
 
-#rebuild-site span, 
-#view-site span, 
-#cms-search span, 
+#rebuild-site a span, 
+#view-site a span, 
+#cms-search a span, 
 #blog-dashboard a span {
     display: none;
 }
@@ -1054,10 +1069,6 @@ fieldset {
 .actions-bar { 
     position: relative;
     margin: 10px 0; 
-}
-.actions-bar-bottom { 
-    margin-top: 50px;
-    margin-bottom: 0.75em;
 }
 .listing .button-actions { 
     margin-right: 10px;
