@@ -647,8 +647,8 @@ sub _hdlr_entries {
 
     my $namespace = $args->{namespace};
     my $no_resort = 0;
-    my $post_sort_limit = 0;
-    my $post_sort_offset = 0;
+    my $score_limit = 0;
+    my $score_offset = 0;
     my @entries;
     if (!$entries) {
         my ($start, $end) = ($ctx->{current_timestamp},
@@ -706,19 +706,14 @@ sub _hdlr_entries {
             $args->{sort_by} =~ s/:/./; # for meta:name => meta.name
             $args->{sort_by} = 'ping_count' if $args->{sort_by} eq 'trackback_count';
             if ($class->is_meta_column($args->{sort_by})) {
-                $post_sort_limit = delete($args->{limit}) || 0;
-                $post_sort_offset = delete($args->{offset}) || 0;
-                if ( $post_sort_limit || $post_sort_offset ) {
-                    delete $args->{lastn};
-                }
                 $no_resort = 0;
             } elsif ($class->has_column($args->{sort_by})) {
                 $args{sort} = $args->{sort_by};
                 $no_resort = 1;
             } elsif ($args->{limit} && ('score' eq $args->{sort_by} || 'rate' eq $args->{sort_by})) {
-                $post_sort_limit = delete($args->{limit}) || 0;
-                $post_sort_offset = delete($args->{offset}) || 0;
-                if ( $post_sort_limit || $post_sort_offset ) {
+                $score_limit = delete($args->{limit}) || 0;
+                $score_offset = delete($args->{offset}) || 0;
+                if ( $score_limit || $score_offset ) {
                     delete $args->{lastn};
                 }
                 $no_resort = 0;
@@ -887,21 +882,21 @@ sub _hdlr_entries {
             my @tmp;
             my $i = 0;
             while (my ($score, $object_id) = $scores->()) {
-                $i++, next if $post_sort_offset && $i < $post_sort_offset;
+                $i++, next if $score_offset && $i < $score_offset;
                 push @tmp, delete $e{ $object_id } if exists $e{ $object_id };
                 $scores->end, last unless %e;
                 $i++;
-                $scores->end, last if $post_sort_limit && (scalar @tmp) >= $post_sort_limit;
+                $scores->end, last if $score_limit && (scalar @tmp) >= $score_limit;
             }
 
-            if (!$post_sort_limit || (scalar @tmp) < $post_sort_limit) {
+            if (!$score_limit || (scalar @tmp) < $score_limit) {
                 foreach (values %e) {
                     if ($so eq 'ascend') {
                         unshift @tmp, $_;
                     } else {
                         push @tmp, $_;
                     }
-                    last if $post_sort_limit && (scalar @tmp) >= $post_sort_limit;
+                    last if $score_limit && (scalar @tmp) >= $score_limit;
                 }
             }
             @entries = @tmp;
@@ -918,20 +913,20 @@ sub _hdlr_entries {
             my @tmp;
             my $i = 0;
             while (my ($score, $object_id) = $scores->()) {
-                $i++, next if $post_sort_offset && $i < $post_sort_offset;
+                $i++, next if $score_offset && $i < $score_offset;
                 push @tmp, delete $e{ $object_id } if exists $e{ $object_id };
                 $scores->end, last unless %e;
                 $i++;
-                $scores->end, last if $post_sort_limit && (scalar @tmp) >= $post_sort_limit;
+                $scores->end, last if $score_limit && (scalar @tmp) >= $score_limit;
             }
-            if (!$post_sort_limit || (scalar @tmp) < $post_sort_limit) {
+            if (!$score_limit || (scalar @tmp) < $score_limit) {
                 foreach (values %e) {
                     if ($so eq 'ascend') {
                         unshift @tmp, $_;
                     } else {
                         push @tmp, $_;
                     }
-                    last if $post_sort_limit && (scalar @tmp) >= $post_sort_limit;
+                    last if $score_limit && (scalar @tmp) >= $score_limit;
                 }
             }
             @entries = @tmp;
@@ -950,7 +945,6 @@ sub _hdlr_entries {
                         sort { $b->$col() cmp $a->$col() } @entries;
                 }
             }
-            @entries = @entries[$post_sort_offset .. $post_sort_limit-1];
         } else {
             my $so = $args->{sort_order} || ($blog ? $blog->sort_order_posts : 'descend') || '';
             if (my $def = $class->column_def($col)) {

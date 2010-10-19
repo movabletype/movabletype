@@ -1001,9 +1001,6 @@ abstract class MTDatabase {
                 } elseif ($args['sort_by'] == 'trackback_count') {
                     $sort_field = 'entry_ping_count';
                 } elseif (preg_match('/field[:\.]/', $args['sort_by'])) {
-                    $post_sort_limit = $limit ? $limit : 0;
-                    $post_sort_offset = $offset ? $offset : 0;
-                    $limit = 0; $offset = 0;
                     $no_resort = 0;
                 } else {
                     $sort_field = 'entry_' . $args['sort_by'];
@@ -1260,16 +1257,12 @@ abstract class MTDatabase {
                           || ($sort_field == 'entry_comment_count') || ($sort_field == 'entry_ping_count')) {
                         $sort_fn = "if (\$a->$sort_field == \$b->$sort_field) return 0; return \$a->$sort_field < \$b->$sort_field ? -1 : 1;";
                     } else {
-                        $sort_fn = "\$f = '" . addslashes($sort_field) . "'; return strcmp(\$a->\$f,\$b->\$f);";
+                        $sort_fn = "return strcmp(\$a->$sort_field,\$b->$sort_field);";
                     }
                     $sorter = create_function(
                         $order == 'asc' ? '$a,$b' : '$b,$a',
                         $sort_fn);
                     usort($entries, $sorter);
-
-                    if (isset($post_sort_offset)) {
-                        $entries = array_slice($entries, $post_sort_offset, $post_sort_limit);
-                    }
                 }
             }
         }
