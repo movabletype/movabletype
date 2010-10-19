@@ -4,21 +4,21 @@
     <mt:if name="__first__">
     <thead>
         <tr>
-            <th class="archive-type"><__trans phrase="Type"></th>
-            <th class="archive-path primary-col"><__trans phrase="Path"></th>
-            <th class="publish-options"><__trans phrase="Publishing"></th>
-            <th class="archive-delete si"><div><span><__trans phrase="Delete"></span></div></th>
+            <th class="col head archive-type"><span class="col-label"><__trans phrase="Type"></span></th>
+            <th class="col head archive-path primary"><span class="col-label"><__trans phrase="Path"></span></th>
+            <th class="col head publish-options"><span class="col-label"><__trans phrase="Publishing"></span></th>
+            <th class="col head archive-delete si"><span><__trans phrase="Delete"></span></th>
         </tr>
     </thead>
     <tbody>
     </mt:if>
         <tr id="<mt:var name="map_id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-            <td class="archive-type"><mt:var name="archive_label">
+            <td class="col archive-type"><mt:var name="archive_label">
     <mt:if name="has_multiple_archives">
                 <input type="checkbox" name="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">" id="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">"<mt:if name="map_is_preferred"> checked="checked"</mt:if> value="1" onchange="togglePreferred(this, '<mt:var name="map_id">')" /><input type="hidden" name="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">" value="<mt:if name="map_is_preferred">1<mt:else>0</mt:if>" />
     </mt:if>
             </td> 
-            <td class="archive-path">
+            <td class="col archive-path">
                 <select id="archive_file_sel_<mt:var name="map_id">" class="tmpl-path" name="archive_file_sel_<mt:var name="map_id">" onchange="archiveFileSelect(this)">
     <mt:loop name="archive_tmpl_loop">
                     <option value="<mt:var name="value" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="name" escape="html"></option>
@@ -26,7 +26,7 @@
                     <option value=""><__trans phrase="Custom..."></option>
                 </select><input type="text" id="archive_file_tmpl_<mt:var name="map_id">" class="tmpl-path tmpl-path-custom hidden" name="archive_file_tmpl_<mt:var name="map_id">" value="<mt:var name="file_template" escape="html">" />
             </td>
-            <td class="publish-options">
+            <td class="col publish-options">
                 <select name="map_build_type_<mt:var name="map_id">" id="build-type" class="half-width">
                     <option value="1"<mt:if name="map_build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically (default)"></option>
     <mt:if name="publish_queue_available">
@@ -48,7 +48,7 @@
                     <option value="0"<mt:if name="map_build_type_0"> selected="selected"</mt:if>><__trans phrase="Do Not Publish"></option>
                 </select>
             </td>
-            <td class="archive-delete si"><a href="javascript:void(0)" onclick="return deleteMap('<mt:var name="map_id">')" class="delete-archive-link"><span><__trans phrase="Delete"></span></a></td>
+            <td class="col archive-delete si"><a href="javascript:void(0)" onclick="return deleteMap('<mt:var name="map_id">')" class="delete-archive-link"><span><__trans phrase="Delete"></span></a></td>
         </tr>
     <mt:if name="__last__">
     </tbody>
