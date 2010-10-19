@@ -99,7 +99,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 
 <div id="msg-block"></div>
 
-<div id="listing" class="line">
+<div id="listing" class="listing line">
   <div class="unit size1of1">
     <form id="<mt:var name="object_type">-listing-form" method="POST">
       <input type="hidden" name="__mode" value="" />
@@ -230,7 +230,7 @@ var line = '<th class="col head cb"<mt:unless name="has_list_actions"> style="di
 var table = jQuery('table.listing-table')[0];
 var col_classes = {};
 <mt:loop name="list_columns">
-line += '<th class="col head <mt:var name="id"><mt:if name="primary"> primary</mt:if><mt:if name="col_class"> <mt:var name="col_class"></mt:if>"><div><a href="#<mt:var name="id">" class="sort-link"><mt:var name="label"></a></div></th>';
+line += '<th class="col head <mt:var name="id"><mt:if name="primary"> primary</mt:if><mt:if name="col_class"> <mt:var name="col_class"></mt:if>"><div><a href="#<mt:var name="id">" class="sort-link col-label"><mt:var name="label"></a></div></th>';
 <mt:if name="default_sort_order" eq="descend">
 jQuery.data(table, '<mt:var name="id">', 'desc');
 <mt:else>

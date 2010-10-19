@@ -1,194 +1,221 @@
 <mt:setvarblock name="listing_header">
-    <h3><mt:var name="template_type_label"></h3>
+  <h2><mt:var name="template_type_label"></h2>
+<mt:unless name="template_type" like="/system|email|backup/">
+  <mt:if name="template_type" eq="archive">
+  <__trans phrase="Create Archive Template:">
+  <ul class="multiple-selection">
+  <mt:if name="is_blog">
+    <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry"></a></li>
+    <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry Listing"></a></li>
+  </mt:if>
+    <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Page"></a></li>
+  <mt:elseif name="template_type" eq="module">
+    <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=module&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create template module"></a></li>
+  <mt:elseif name="template_type" eq="index">
+    <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=index&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create index template"></a></li>
+  <mt:elseif name="create_link">
+    <mt:var name="create_link">
+  </mt:if>
+  </ul>
+</mt:unless>
+</mt:setvarblock>
 
-    <mt:unless name="template_type" like="/system|email|backup/">
-        <mt:if name="template_type" eq="archive">
-    <p><__trans phrase="Create Archive Template:">
-        <mt:if name="is_blog">&nbsp;
-        <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry"></a>
-        &nbsp;
-        <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry Listing"></a></mt:if>
-        &nbsp;
-        <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Page"></a>
-    </p>
-        <mt:elseif name="template_type" eq="module">
-    <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=module&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create template module"></a></p>
-        <mt:elseif name="template_type" eq="index">
-    <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=index&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create index template"></a></p>
-        <mt:elseif name="create_link">
-        <mt:var name="create_link">
-        </mt:if>
-    </mt:unless>
-</mt:setvarblock>
 <mt:setvarblock name="action_buttons">
-    <mt:unless name="template_type" eq="system"><mt:unless name="template_type" eq="email">
-    
+<mt:unless name="template_type" eq="system">
+  <mt:unless name="template_type" eq="email">
     <mt:if name="publish_from_search">
-    <mt:if name="blog_id">
-        <button
-            type="button"
-            accesskey="a"
-            title="<__trans phrase="Publish selected templates (a)">"
-            class="button mt-publish-<mt:var name="template_type" default="template" escape="html">-templates"
-            ><__trans phrase="Publish"></button>
+      <mt:if name="blog_id">
+  <button
+     type="button"
+     accesskey="a"
+     title="<__trans phrase="Publish selected templates (a)">"
+     class="button mt-publish-<mt:var name="template_type" default="template" escape="html">-templates">
+    <__trans phrase="Publish">
+  </button>
+      </mt:if>
     </mt:if>
-    </mt:if>
-    
     <mt:if name="template_type" eq="index">
-        <button
-            type="button"
-            accesskey="a"
-            title="<__trans phrase="Publish selected templates (a)">"
-            class="button mt-publish-<mt:var name="template_type" default="template" escape="html">-templates"
-            ><__trans phrase="Publish"></button>
-    <mt:else if name="template_type" eq="archive">
-        <button
-            type="button"
-            accesskey="a"
-            title="<__trans phrase="Publish selected templates (a)">"
-            class="button mt-publish-<mt:var name="template_type" default="template" escape="html">-templates"
-            ><__trans phrase="Publish"></button>
+  <button
+     type="button"
+     accesskey="a"
+     title="<__trans phrase="Publish selected templates (a)">"
+     class="button mt-publish-<mt:var name="template_type" default="template" escape="html">-templates">
+    <__trans phrase="Publish">
+  </button>
+    <mt:elseif name="template_type" eq="archive">
+  <button
+     type="button"
+     accesskey="a"
+     title="<__trans phrase="Publish selected templates (a)">"
+     class="button mt-publish-<mt:var name="template_type" default="template" escape="html">-templates">
+    <__trans phrase="Publish">
+  </button>
     </mt:if>
-    <button
-        type="button"
-        accesskey="x"
-        title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
-        class="button mt-delete-<mt:var name="template_type" default="template" escape="html">-templates"
-        ><__trans phrase="Delete"></button>
-    </mt:unless></mt:unless>
+  <button
+     type="button"
+     accesskey="x"
+     title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
+     class="button mt-delete-<mt:var name="template_type" default="template" escape="html">-templates">
+    <__trans phrase="Delete">
+  </button>
+  </mt:unless>
+</mt:unless>
 </mt:setvarblock>
+
 <mt:setvarblock name="table_id"><mt:var name="template_type" default="template" escape="html">-listing</mt:setvarblock>
-<mtapp:listing id="$table_id" hide_pager="1" class="show-all" listing_class="show-actions-bar" type="template">
-    <mt:if __first__>
-        <mt:setvarblock name="table_header">
-            <tr>
-                <th class="col head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-                <th class="col head template-name primary"><__trans phrase="Template Name"></th>
-        <mt:if name="template_type" eq="index">
-                <th class="col head output-file"><__trans phrase="Output File"></th>
-        </mt:if>
-        <mt:if name="template_type" eq="archive">
-                <th class="col head output-file"><__trans phrase="Archive Path"></th>
-        </mt:if>
-        <mt:unless name="blog_view">
-            <mt:if name="scope_type" ne="blog">
-                <th class="col head blog primary"><__trans phrase="Website/Blog"></th>
-            </mt:if>
-        </mt:unless>
-        <mt:if name="template_type" like="/(index|archive)/">
-                <th class="col head publishing-method"><__trans phrase="Publish"></th>
-        </mt:if>
-        <mt:if name="template_type" like="(module|widget)">
-            <mt:if name="blog_id">
-                <th class="col head ssi-method"><__trans phrase="SSI"></th>
-                <th class="col head cache-method"><__trans phrase="Cached"></th>
-            </mt:if>
-        </mt:if>
-        <mt:unless name="screen_id" eq="search-replace">
-                <th class="col head linked-template si"><img src="<mt:var name="static_uri">images/status_icons/linked.gif" alt="<__trans phrase="Linked Template">" title="<__trans phrase="Linked Template">" width="17" height="9" /></th>
-        </mt:unless>
-        <mt:unless name="blog_view">
-                <th class="col head view"><__trans phrase="View"></th>
-        </mt:unless>
-            </tr>
-        </mt:setvarblock>
-        <thead>
-            <mt:var name="table_header">
-        </thead>
-        <tfoot>
-            <mt:var name="table_header">
-        </tfoot>
-        <tbody>
-    </mt:if>
-            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> template-<$mt:var name="template_type" default="template" escape="html"$>">
-                <td class="col cb"><input type="checkbox" name="id" class="select" value="<mt:var name="id">" /></td>
-                <td class="col template-name"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="name" escape="html"></a></td>
-    <mt:if name="template_type" like="/(index|archive)/">
-                <td class="col output-file">
-        <mt:if name="outfile">
-            <mt:var name="outfile" escape="html"> <mt:if name="published_url"><a href="<mt:var name="published_url" escape="html" >" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><img src="<mt:var name="static_uri">images/status_icons/view.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" /></a></mt:if>
-        <mt:else name="template_type" eq="archive">
-                    <ul>
-            <mt:loop name="archive_types">
-                <mt:loop name="archive_tmpl_loop">
-                        <mt:if name="selected"><li><mt:var name="name" escape="html"><mt:var name="build_type" value="$map_build_type"></li></mt:if>
-                </mt:loop>
-            </mt:loop>
-                    </ul>
-        <mt:else>
-                    <span><__trans phrase="-"></span>
-        </mt:if>
-                </td>
-    </mt:if>
-        <mt:unless name="blog_view">
-            <mt:if name="scope_type" ne="blog">
-                <td class="col blog"><a href="<$mt:var name="script_url"$>?__mode=list_template&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
-            </mt:if>
-    </mt:unless>
+
+<mtapp:listing id="$table_id" hide_pager="1" class="show-all" listing_class="listing" type="template">
+<mt:if __first__>
+  <mt:setvarblock name="table_header">
+    <tr>
+      <th class="col head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+      <th class="col head template-name primary"><span class="col-label"><__trans phrase="Template Name"></span></th>
     <mt:if name="template_type" eq="index">
-                <td class="col publishing-method">
-                    <mt:if name="build_type" eq="0"><__trans phrase="Disabled">
-                    <mt:elseif name="build_type" eq="2"><__trans phrase="Manual">
-                    <mt:elseif name="build_type" eq="3"><__trans phrase="Dynamic">
-                    <mt:elseif name="build_type" eq="4"><__trans phrase="Publish Queue">
-                    <mt:elseif name="build_type" eq="5"><__trans phrase="Scheduled">
-                    <mt:else><__trans phrase="Static"></mt:if>
-                </td>
-    <mt:else name="template_type" eq="archive">
-                <td class="col publishing-method">
-                    <ul>
-            <mt:loop name="archive_types">
-                <mt:loop name="archive_tmpl_loop">
-                    <mt:if name="selected">
-                        <li>
-                    <mt:if name="map_build_type" eq="0"><__trans phrase="Disabled">
-                    <mt:elseif name="map_build_type" eq="2"><__trans phrase="Manual">
-                    <mt:elseif name="map_build_type" eq="3"><__trans phrase="Dynamic">
-                    <mt:elseif name="map_build_type" eq="4"><__trans phrase="Publish Queue">
-                    <mt:elseif name="map_build_type" eq="5"><__trans phrase="Scheduled">
-                    <mt:else><__trans phrase="Static"></mt:if>
-                        </li>
-                    </mt:if>
-                </mt:loop>
-            </mt:loop>
-                    </ul>
-                </td>
-    <mt:else name="template_type" like="(module|widget)">
-        <mt:if name="blog_id">
-                <td class="col ssi-method si status-<mt:if name="use_ssi">enabled<mt:else>disabled</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="" width="9" height="9" title="" /></td>
-                <td class="col cache-method si status-<mt:if name="use_cache">cached<mt:else>uncached</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="" width="9" height="9" title="" /></td>
-        </mt:if>
+      <th class="col head output-file primary"><span class="col-label"><__trans phrase="Output File"></span></th>
+    </mt:if>
+    <mt:if name="template_type" eq="archive">
+      <th class="col head output-file primary"><span class="col-label"><__trans phrase="Archive Path"></span></th>
+    </mt:if>
+    <mt:unless name="blog_view">
+      <mt:if name="scope_type" ne="blog">
+      <th class="col head blog primary"><span class="col-label"><__trans phrase="Website/Blog"></span></th>
+      </mt:if>
+    </mt:unless>
+    <mt:if name="template_type" like="/(index|archive)/">
+      <th class="col head publishing-method"><span class="col-label"><__trans phrase="Publish"></span></th>
+    </mt:if>
+    <mt:if name="template_type" like="(module|widget)">
+      <mt:if name="blog_id">
+      <th class="col head ssi-method"><span class="col-label"><__trans phrase="SSI"></span></th>
+      <th class="col head cache-method"><span class="col-label"><__trans phrase="Cached"></span></th>
+      </mt:if>
     </mt:if>
     <mt:unless name="screen_id" eq="search-replace">
-                <td class="col linked-template si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> /></td>
+      <th class="col head linked-template si"><span class="col-label"><img src="<mt:var name="static_uri">images/status_icons/linked.gif" alt="<__trans phrase="Linked Template">" title="<__trans phrase="Linked Template">" /></span></th>
     </mt:unless>
     <mt:unless name="blog_view">
-                <td class="col view">
-            <mt:if name="outfile">
-                <mt:if name="published_url">
-                    <a href="<mt:var name="published_url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><img src="<mt:var name="static_uri">images/status_icons/view.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" /></a>
-                </mt:if>
-            <mt:else>
-                    <span><__trans phrase="-"></span>
-            </mt:if>
-                </td>
+      <th class="col head view"><span class="col-label"><__trans phrase="View"></span></th>
     </mt:unless>
-            </tr>
-    <mt:if __last__>
-        </tbody>
+    </tr>
+  </mt:setvarblock>
+
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+
+  <tfoot>
+    <mt:var name="table_header">
+  </tfoot>
+
+  <tbody>
+</mt:if>
+
+    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> template-<$mt:var name="template_type" default="template" escape="html"$>">
+      <td class="col cb"><input type="checkbox" name="id" class="select" value="<mt:var name="id">" /></td>
+      <td class="col template-name"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="name" escape="html"></a></td>
+    <mt:if name="template_type" like="/(index|archive)/">
+      <td class="col output-file">
+      <mt:if name="outfile">
+        <mt:var name="outfile" escape="html"> <mt:if name="published_url"><a href="<mt:var name="published_url" escape="html" >" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><img src="<mt:var name="static_uri">images/status_icons/view.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" /></a></mt:if>
+        <mt:else name="template_type" eq="archive">
+        <ul>
+        <mt:loop name="archive_types">
+          <mt:loop name="archive_tmpl_loop">
+            <mt:if name="selected">
+          <li><mt:var name="name" escape="html"><mt:var name="build_type" value="$map_build_type"></li>
+            </mt:if>
+          </mt:loop>
+        </mt:loop>
+        </ul>
+      <mt:else>
+        <span><__trans phrase="-"></span>
+      </mt:if>
+      </td>
     </mt:if>
+    <mt:unless name="blog_view">
+      <mt:if name="scope_type" ne="blog">
+      <td class="col blog"><a href="<$mt:var name="script_url"$>?__mode=list_template&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
+      </mt:if>
+    </mt:unless>
+    <mt:if name="template_type" eq="index">
+      <td class="col publishing-method">
+      <mt:if name="build_type" eq="0">
+        <__trans phrase="Disabled">
+      <mt:elseif name="build_type" eq="2">
+        <__trans phrase="Manual">
+      <mt:elseif name="build_type" eq="3">
+        <__trans phrase="Dynamic">
+      <mt:elseif name="build_type" eq="4">
+        <__trans phrase="Publish Queue">
+      <mt:elseif name="build_type" eq="5">
+        <__trans phrase="Scheduled">
+      <mt:else>
+        <__trans phrase="Static">
+      </mt:if>
+      </td>
+    <mt:else name="template_type" eq="archive">
+      <td class="col publishing-method">
+        <ul>
+        <mt:loop name="archive_types">
+          <mt:loop name="archive_tmpl_loop">
+            <mt:if name="selected">
+          <li>
+          <mt:if name="map_build_type" eq="0">
+            <__trans phrase="Disabled">
+          <mt:elseif name="map_build_type" eq="2">
+            <__trans phrase="Manual">
+          <mt:elseif name="map_build_type" eq="3">
+            <__trans phrase="Dynamic">
+          <mt:elseif name="map_build_type" eq="4">
+            <__trans phrase="Publish Queue">
+          <mt:elseif name="map_build_type" eq="5">
+            <__trans phrase="Scheduled">
+          <mt:else>
+            <__trans phrase="Static"></mt:if>
+          </li>
+            </mt:if>
+          </mt:loop>
+        </mt:loop>
+        </ul>
+      </td>
+    <mt:else name="template_type" like="(module|widget)">
+      <mt:if name="blog_id">
+      <td class="col ssi-method si status-<mt:if name="use_ssi">enabled<mt:else>disabled</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="" width="9" height="9" title="" /></td>
+      <td class="col cache-method si status-<mt:if name="use_cache">cached<mt:else>uncached</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="" width="9" height="9" title="" /></td>
+      </mt:if>
+    </mt:if>
+    <mt:unless name="screen_id" eq="search-replace">
+      <td class="col linked-template si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> /></td>
+    </mt:unless>
+    <mt:unless name="blog_view">
+      <td class="col view">
+      <mt:if name="outfile">
+        <mt:if name="published_url">
+        <a href="<mt:var name="published_url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><img src="<mt:var name="static_uri">images/status_icons/view.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" /></a>
+        </mt:if>
+      <mt:else>
+        <span><__trans phrase="-"></span>
+      </mt:if>
+      </td>
+    </mt:unless>
+    </tr>
+
+<mt:if __last__>
+  </tbody>
+</mt:if>
+
 <mt:else>
-    <div id="<$mt:var name="template_type" default="template" escape="html"$>-listing" class="listing zero-state-listing zero-state">
-        <div class="listing-header">
-            <$mt:var name="listing_header"$>
-        </div>
-        <mtapp:statusmsg
-            id="zero-state"
-            class="info zero-state">
-            <__trans phrase="No [_1] could be found." params="<$mt:var name="template_type_label" lower_case="1"$>">
-        </mtapp:statusmsg>
-    </div>
+  <div id="<$mt:var name="template_type" default="template" escape="html"$>-listing" class="listing zero-state-listing zero-state">
+    <mt:var name="listing_header">
+    <mtapp:statusmsg
+       id="zero-state"
+       class="info zero-state"
+       can_close="0">
+      <__trans phrase="No [_1] could be found." params="<$mt:var name="template_type_label" lower_case="1"$>">
+    </mtapp:statusmsg>
+  </div>
 </mtapp:listing>
+
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('button.mt-delete-<mt:var name="template_type" default="template" escape="js" remove_html="1">-templates').mtDeleteItems({
         id: '<$mt:var name="template_type" default="template" escape="js"$>-listing-form',
