@@ -37,6 +37,9 @@
     vertical-align: top;
     word-wrap: break-word;
 }
+.last-child .col { 
+    border-width: 0;
+}
 .col a { 
     color: #274a78;
 }
@@ -77,7 +80,7 @@
     vertical-align: middle;
 }
 tfoot .col.head{
-    border-width: 0 0 0 1px;
+    border-width: 1px 0 0 1px;
 }
 .col.head.first-child {
     border-left: 0;
@@ -184,6 +187,14 @@ tfoot .col.head{
     margin: 0 0 10px;
     border-radius: 5px;
     -moz-border-radius: 5px;
+}
+.legacy thead .col.head:first-child {
+    border-top-left-radius: 5px;
+    -moz-border-radius: 5px 0 0 0;
+}
+.legacy thead .col.head:last-child {
+    border-top-right-radius: 5px;
+    -moz-border-radius: 0 5px 0 0;
 }
 .has-filter .legacy.listing-table {
     border-top-right-radius: 0;
