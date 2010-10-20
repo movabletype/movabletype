@@ -11,7 +11,8 @@
 .msg-success { 
     background-color: #cee4ae;
 }
-.msg-alert { 
+.msg-alert, 
+.msg.warning { 
     background-color: #fef263;
 }
 .msg-error { 

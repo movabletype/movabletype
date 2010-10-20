@@ -2,59 +2,34 @@
 <mt:setvar name="system-information" value="1">
 <mt:include name="include/header.tmpl">
 
-<mtapp:setting
-    id="system_users"
-    label="<__trans phrase="User Counts">"
-    label_class="top-label"
-    content_class="field-content-text"
-    hint="<__trans phrase="Number of users registered in this system.">"
-    show_label="0">
-    <div class="listing">
-        <table cellspacing="0">
-            <thead>
-                <tr>
-                    <th><__trans phrase="Total Users"></th>
-                    <th><__trans phrase="Commenters"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="odd">
-                    <td><$mt:var name="user_count"$></td>
-                    <td><$mt:var name="commenter_count"$></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</mtapp:setting>
+<ul>
+  <li>
+    <strong><__trans phrase="Total Users"></strong>: <mt:var name="user_count">
+  </li>
+  <li>
+    <strong><__trans phrase="Commenters"></strong>: <mt:var name="commenter_count">
+  </li>
+</ul>
 
-<mtapp:setting
-    id="memcached_enabled"
-    label="<__trans phrase="Memcache Status">"
-    label_class="top-label"
-    content_class="field-content-text">
-    <div class="info">
-        <p><__trans phrase="Memcache is [_1]." params="<em><mt:if name="memcached_enabled"><__trans phrase="configured"><mt:else><__trans phrase="disabled"></mt:if></em>"></p>
-    <mt:if name="memcached_enabled">
-        <p><__trans phrase="Memcache Server is [_1]." params="<em><mt:if name="memcached_active"><__trans phrase="available"><mt:else><__trans phrase="unavailable"></mt:if></em>"></p>
+<ul>
+  <li>
+    <strong><__trans phrase="Memcache Status"></strong>: 
+    <__trans phrase="Memcache is [_1]." params="<em><mt:if name="memcached_enabled"><__trans phrase="configured"><mt:else><__trans phrase="disabled"></mt:if></em>">
+  <mt:if name="memcached_enabled">
+    <__trans phrase="Memcache Server is [_1]." params="<em><mt:if name="memcached_active"><__trans phrase="available"><mt:else><__trans phrase="unavailable"></mt:if></em>">
+  </mt:if>
+  </li>
+  <li>
+    <strong><__trans phrase="Server Model"></strong>: 
+    <mt:if name="server_modperl">
+      mod_perl
+    <mt:else name="server_fastcgi">
+      FastCGI
+    <mt:else>
+      CGI
     </mt:if>
-    </div>
-</mtapp:setting>
-
-<mtapp:setting
-    id="memcached_enabled"
-    label="<__trans phrase="Server Model">"
-    label_class="top-label"
-    content_class="field-content-text">
-    <div class="info">
-        <mt:if name="server_modperl">
-            mod_perl
-        <mt:else name="server_fastcgi">
-            FastCGI
-        <mt:else>
-            CGI
-        </mt:if>
-    </div>
-</mtapp:setting>
+  </li>
+</ul>
 
 <mtapp:setting
     id="system_check"
@@ -64,7 +39,7 @@
     hint="">
     <div class="info">
         <mt:if name="syscheck_html">
-            <$mt:var name="syscheck_html"$>
+          <mt:var name="syscheck_html">
         <mt:else>
             <p><__trans phrase="Movable Type could not find the script named 'mt-check.cgi'. To resolve this issue, ensure that the mt-check.cgi script exists and that the CheckScript configuration parameter (if it is necessary) references it properly."></p>
         </mt:if>
