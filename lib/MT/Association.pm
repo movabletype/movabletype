@@ -107,6 +107,13 @@ sub list_props {
             order   => 200,
             base => '__virtual.string',
             col => 'name',  # this looks up role table
+            sub_fields => [
+                {
+                    class   => 'role-detail',
+                    label   => 'Role Detail',
+                    display => 'optional',
+                },
+            ],
             html => sub {
                 my ( $prop, $obj, $app ) = @_;
                 my $role = $obj->role;
@@ -119,8 +126,23 @@ sub list_props {
                         blog_id => 0,
                     },
                 );
+                my $detail = $role->permissions;
+                if ( defined $detail ) {
+                    my @perms = map { $_ =~ s/'//g; $_; } split ',', $detail;
+                    my $all_perms = MT->registry('permissions');
+                    my @permhashes = map { $all_perms->{ 'blog.' . $_ } } @perms;
+                    $detail
+                        = join ', ', (
+                        sort
+                        map { ref $_->{label} ? $_->{label}->() : $_->{label} }
+                        @permhashes );
+                }
+                else {
+                    $detail = '';
+                }
                 return qq{
-                    <a href="$edit_link">$name</a>
+                    <span class="rolename"><a href="$edit_link">$name</a></span>
+                    <p class="role-detail description">$detail<p>
                 };
             },
             terms => sub {
