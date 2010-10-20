@@ -75,10 +75,10 @@
       <td class="col title">
       <mt:if name="has_edit_access">
         <mt:if name="title">
-        <input type="text" name="title_<$mt:var name="id"$>" value="<$mt:var name="title" escape="html" default="..."$>" />
+        <input type="text" name="title_<$mt:var name="id"$>" class="text full" value="<$mt:var name="title" escape="html" default="..."$>" />
         <mt:else>
         <input type="hidden" name="title_<$mt:var name="id"$>" value="" />
-        <input type="text" name="no_title_<$mt:var name="id"$>" placeholder="<$mt:var name="title_short" escape="html"$>" />
+        <input type="text" name="no_title_<$mt:var name="id"$>" class="text full" placeholder="<$mt:var name="title_short" escape="html"$>" />
         </mt:if>
       <mt:else>
         <mt:var name="title" escape="html" default="...">
@@ -120,7 +120,7 @@
       </td>
       <td class="col datetime">
       <mt:if name="has_publish_access">
-        <input type="text" name="created_on_<$mt:var name="id"$>" value="<$mt:var name="created_on_time_formatted"$>" />
+        <input type="text" name="created_on_<$mt:var name="id"$>" class="text full" value="<$mt:var name="created_on_time_formatted"$>" />
       <mt:else>
         <span title="<$mt:var name="created_on_time_formatted"$>">
         <mt:if name="created_on_relative">

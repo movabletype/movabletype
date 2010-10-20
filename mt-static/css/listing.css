@@ -226,6 +226,7 @@ tfoot .col.head{
 }
 .filteritem {
     position: relative;
+    min-height: 30px;
     margin: 0 10px 0;
     padding: 10px 10px 0;
     background-color: #fff;

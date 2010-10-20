@@ -87,9 +87,7 @@ select {
     -webkit-box-shadow: 0 1px 0 #f3f3f3;
     -moz-box-shadow: 0 1px 0 #f3f3f3;
 }
-
-.col select, 
-.col .text {
+.col select {
     width: 100%;
 }
 
