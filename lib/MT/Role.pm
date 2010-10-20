@@ -126,6 +126,7 @@ sub list_props {
             label       => 'Associations',
             display     => 'default',
             order       => 200,
+            col_class   => '',
             count_class => 'association',
             count_col   => 'role_id',
             filter_type => 'role_id',
