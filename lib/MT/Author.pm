@@ -108,19 +108,19 @@ use vars qw(@EXPORT_OK %EXPORT_TAGS);
 
 sub list_props {
     return {
+        name => {
+            auto      => 1,
+            label     => 'Name',
+            display   => 'force',
+            order     => 100,
+            bulk_html  => \&_bulk_author_name_html,
+        },
         nickname => {
             auto      => 1,
             label     => 'Nickname',
             display   => 'default',
-            order     => 100,
+            order     => 200,
             bulk_html => \&_nickname_bulk_html,
-        },
-        name => {
-            auto    => 1,
-            label   => 'Name',
-            display => 'force',
-            order   => 200,
-            html    => \&_author_name_html,
         },
         entry_count => {
             label       => 'Entries',
@@ -245,63 +245,16 @@ sub system_filters {
 
 sub commenter_list_props {
     return {
-        nickname      => {
-            base  => 'author.nickname',
-            order => 100,
-        },
         name => {
             auto => 1,
             label => 'Name',
             display => 'force',
+            order => 100,
+            bulk_html => \&_bulk_author_name_html,
+        },
+        nickname      => {
+            base  => 'author.nickname',
             order => 200,
-            html => sub {
-                my ( $prop, $obj, $app ) = @_;
-                my ($status_img, $status_label);
-                $status_img = $obj->is_trusted   ? 'trusted.gif'
-                            : $obj->is_banned    ? 'banned.gif'
-                            :                      'authenticated.gif'
-                            ;
-                $status_label = $obj->is_trusted   ? 'Trusted'
-                              : $obj->is_banned    ? 'Banned'
-                              :                      'Authenticated'
-                              ;
-                $status_img = MT->static_path . 'images/status_icons/' . $status_img;
-                my $lc_status_label = lc $status_label;
-                my $edit_link = $app->uri(
-                    mode => 'view',
-                    args => {
-                        _type   => 'commenter',
-                        id      => $obj->id,
-                        blog_id => 0,
-                    },
-                );
-
-                my $auth_img = MT->static_path;
-                my $auth_label;
-                if ( $obj->auth_type eq 'MT' ) {
-                    $auth_img .= 'images/comment/mt_logo.png';
-                    $auth_label = 'Movable Type';
-                }
-                else {
-                    my $auth = MT->registry( commenter_authenticators => $obj->auth_type );
-                    $auth_img .= $auth->{logo_small};
-                    $auth_label = $auth->{label};
-                    $auth_label = $auth_label->() if ref $auth_label;
-                }
-                my $lc_auth_label = lc $auth_label;
-
-                my $name = $obj->name;
-                my $out = qq{
-                    <span class="icon auth-type">
-                        <img alt="$auth_label" src="$auth_img" width="12" height="12" />
-                    </span>
-                    <span class="username"><a href="$edit_link">$name</a></span>
-                    <span class="status $lc_status_label">
-                        <img alt="enabled" src="$status_img" />
-                    </span>
-                };
-                return $out;
-            },
         },
         comment_count => {
             base  => 'author.comment_count',
@@ -395,19 +348,19 @@ sub commenter_system_filters {
 
 sub member_list_props {
     return {
+        name => {
+            auto      => 1,
+            label     => 'Name',
+            display   => 'force',
+            bulk_html => \&_bulk_author_name_html,
+            order     => 100,
+        },
         nickname => {
             label     => 'Nickname',
             auto      => 1,
             bulk_html => \&_nickname_bulk_html,
-            order     => 100,
+            order     => 200,
             display   => 'default',
-        },
-        name => {
-            auto    => 1,
-            label   => 'Name',
-            display => 'force',
-            html    => \&_author_name_html,
-            order   => 200,
         },
         role => {
             base    => '__virtual.single_select',
@@ -543,68 +496,7 @@ sub member_system_filters {
     };
 }
 
-sub _author_name_html {
-    my ( $prop, $obj, $app ) = @_;
-    my ($status_img, $status_label);
-    if ( $obj->type == MT::Author::AUTHOR() ) {
-        $status_img = $obj->status == ACTIVE()   ? 'user-enabled.gif'
-                    : $obj->status == INACTIVE() ? 'user-disabled.gif'
-                    :                              'user-pending.gif'
-                    ;
-        $status_label = $obj->status == ACTIVE()   ? 'Enabled'
-                      : $obj->status == INACTIVE() ? 'Disabled'
-                      :                              'Pending'
-                      ;
-    }
-    else {
-        $status_img = $obj->is_trusted   ? 'trusted.gif'
-                    : $obj->is_banned    ? 'banned.gif'
-                    :                      'authenticated.gif'
-                    ;
-        $status_label = $obj->is_trusted   ? 'Trusted'
-                      : $obj->is_banned    ? 'Banned'
-                      :                      'Authenticated'
-                      ;
-    }
-    $status_img = MT->static_path . 'images/status_icons/' . $status_img;
-    my $lc_status_label = lc $status_label;
-    my $edit_link = $app->uri(
-        mode => 'view',
-        args => {
-            _type => $obj->type == MT::Author::AUTHOR() ? 'author' : 'commenter',
-            id => $obj->id,
-            blog_id => 0,
-        },
-    );
-
-    my $auth_img = MT->static_path;
-    my $auth_label;
-    if ( $obj->auth_type eq 'MT' ) {
-        $auth_img .= 'images/comment/mt_logo.png';
-        $auth_label = 'Movable Type';
-    }
-    else {
-        my $auth = MT->registry( commenter_authenticators => $obj->auth_type );
-        $auth_img .= $auth->{logo_small};
-        $auth_label = $auth->{label};
-        $auth_label = $auth_label->() if ref $auth_label;
-    }
-    my $lc_auth_label = lc $auth_label;
-
-    my $name = $obj->name;
-    my $out = qq{
-        <span class="icon auth-type">
-            <img alt="$auth_label" src="$auth_img" width="12" height="12" />
-        </span>
-        <span class="username"><a href="$edit_link">$name</a></span>
-        <span class="status $lc_status_label">
-            <img alt="enabled" src="$status_img" />
-        </span>
-    };
-    return $out;
-}
-
-sub _nickname_bulk_html {
+sub _bulk_author_name_html {
     my ( $prop, $objs, $app ) = @_;
     # Load userpics
     my %asset_for_load =
@@ -617,6 +509,7 @@ sub _nickname_bulk_html {
     my %userpic  = map { $_->id => $_ } @userpics;
     my @results;
     my $mail_icon = MT->static_path . 'images/status_icons/email.gif';
+    my $view_icon = MT->static_path . 'images/status_icons/view.gif';
     for my $obj ( @$objs ) {
         my $userpic_url;
         if ( my $userpic = $userpic{ $obj->userpic_asset_id || 0 } ) {
@@ -626,13 +519,82 @@ sub _nickname_bulk_html {
             $userpic_url = MT->static_path . 'images/default-userpic-36.jpg';
         }
         my $name = $obj->nickname;
+        my ($status_img, $status_label);
+        if ( $obj->type == MT::Author::AUTHOR() ) {
+            $status_img = $obj->status == ACTIVE()   ? 'user-enabled.gif'
+                        : $obj->status == INACTIVE() ? 'user-disabled.gif'
+                        :                              'user-pending.gif'
+                        ;
+            $status_label = $obj->status == ACTIVE()   ? 'Enabled'
+                          : $obj->status == INACTIVE() ? 'Disabled'
+                          :                              'Pending'
+                          ;
+        }
+        else {
+            $status_img = $obj->is_trusted   ? 'trusted.gif'
+                        : $obj->is_banned    ? 'banned.gif'
+                        :                      'authenticated.gif'
+                        ;
+            $status_label = $obj->is_trusted   ? 'Trusted'
+                          : $obj->is_banned    ? 'Banned'
+                          :                      'Authenticated'
+                          ;
+        }
+        $status_img = MT->static_path . 'images/status_icons/' . $status_img;
+        my $lc_status_label = lc $status_label;
+        my $edit_link = $app->uri(
+            mode => 'view',
+            args => {
+                _type => $obj->type == MT::Author::AUTHOR() ? 'author' : 'commenter',
+                id => $obj->id,
+                blog_id => 0,
+            },
+        );
+
+        my $auth_img = MT->static_path;
+        my $auth_label;
+        if ( $obj->auth_type eq 'MT' ) {
+            $auth_img .= 'images/comment/mt_logo.png';
+            $auth_label = 'Movable Type';
+        }
+        else {
+            my $auth = MT->registry( commenter_authenticators => $obj->auth_type );
+            $auth_img .= $auth->{logo_small};
+            $auth_label = $auth->{label};
+            $auth_label = $auth_label->() if ref $auth_label;
+        }
+        my $lc_auth_label = lc $auth_label;
+
+        my $name  = $obj->name;
+        my $email = $obj->email;
+        my $url   = $obj->url;
         my $out = qq{
-            <span class="icon userpic"><img src="$userpic_url" width="12" height="12" /></span>
+            <div class="userpic picture small ">
+                <img src="$userpic_url" />
+                <img alt="$auth_label" src="$auth_img" class="auth-type" />
+                <img alt="$status_label" src="$status_img" class="status $lc_status_label" />
+            </div>
+            <span class="username"><a href="$edit_link">$name</a></span>
+        };
+        if ( $url || $email ) {
+            $out .= q{<ul class="description">};
+            $out .= qq{<li><img alt="Email "src="$mail_icon" />: <a href="mailto:$email">$email</a></li>} if $email;
+            $out .= qq{<li><img alt="URL" src="$view_icon" />: <a href="$url" target="_blank">$url</a></li>} if $url;
+            $out .= q{</ul>};
+        }
+        push @results, $out;
+    }
+    return @results;
+}
+
+sub _nickname_bulk_html {
+    my ( $prop, $objs, $app ) = @_;
+    my @results;
+    for my $obj ( @$objs ) {
+        my $name = $obj->nickname;
+        my $out = qq{
             <span class="displayname">$name</span>
         };
-        if ( my $email = $obj->email ) {
-            $out .= qq{<a href="mailto:$email"><img src="$mail_icon" /></a>};
-        }
         push @results, $out;
     }
     return @results;

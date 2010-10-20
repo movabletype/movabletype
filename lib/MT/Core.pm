@@ -1025,14 +1025,14 @@ BEGIN {
             },
             author => {
                 object_label => 'Author',
-                primary      => [ 'name', 'nickname' ],
+                primary      => 'name',
                 permission   => 'access_to_member_list',
                 default_sort_key => 'name',
                 view         => 'system',
                 scope_mode => 'none',
             },
             commenter => {
-                primary      => [ 'name', 'nickname' ],
+                primary      => 'name',
                 object_label => 'Commenter',
                 object_type  => 'author',
                 permission   => 'access_to_commenter_list',
@@ -1045,7 +1045,7 @@ BEGIN {
                 screen_label => 'Manage Commenter',
              },
             member => {
-                primary      => [ 'name', 'nickname' ],
+                primary      => 'name',
                 object_label => 'Member',
                 object_label_plural => 'Members',
                 object_type  => 'author',
@@ -1067,7 +1067,7 @@ BEGIN {
                 object_type => 'association',
                 permission => 'access_to_permission_list',
                 default_sort_key => 'created_on',
-                primary => 'user_name',
+                primary => [ 'user_name', 'role_name' ],
                 view => 'system',
             },
             role => {
