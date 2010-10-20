@@ -165,6 +165,7 @@ sub list_props {
                 my $prop = shift;
                 my ( $terms, $args ) = @_;
                 $args->{joins} ||= [];
+                delete $args->{sort};
                 push @{ $args->{joins} }, MT->model('role')->join_on(
                     undef,
                     {
@@ -172,6 +173,7 @@ sub list_props {
                     },
                     {
                         sort => 'name',
+                        direction => delete $args->{direction},
                     },
                 );
                 return;
