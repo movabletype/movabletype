@@ -15,13 +15,13 @@ function rebuildMultiBlogTriggerTable() {
         var str = "";
         for (var i = 0; i < multiBlogRebuilds.length; i++) {
             str += "<tr class=\"" + ((i + 1) % 2 == 0 ? "even" : "odd") + "\">";
-            str += "<td> <MT_TRANS phrase="When"> <strong>"
+            str += "<td class=\"col\"> <MT_TRANS phrase="When">"
                 + multiBlogRebuilds[i][2]
-                + "</strong></td><td>"
+                + "</td><td class='col'>"
                 + multiBlogRebuilds[i][4]
                 + "</td>";
-            str += "<td>" + multiBlogRebuilds[i][0] + "</td>";
-            str += "<td><a href='javascript:void(0)' onclick='removeMultiBlogTrigger(" + i + ")'><img src='<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/delete.gif' width='9' height='11' alt='<MT_TRANS phrase="Remove">' /></a></td>";
+            str += "<td class='col'>" + multiBlogRebuilds[i][0] + "</td>";
+            str += "<td class='col si'><a href='javascript:void(0)' onclick='removeMultiBlogTrigger(" + i + ")'><img alt='<MT_TRANS phrase="Remove">' src='<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/delete.gif' /></a></td>";
             str += "</tr>\n";
             values[i] = multiBlogRebuilds[i][1];
             values[i] += ":";
@@ -29,7 +29,7 @@ function rebuildMultiBlogTriggerTable() {
             values[i] += ":";
             values[i] += multiBlogRebuilds[i][5];
         }
-        str = "<table cellspacing='0'><tr><thead><th><MT_TRANS phrase="Weblog" escape="js"></th><th><MT_TRANS phrase="Trigger" escape="js"></th><th><MT_TRANS phrase="Action" escape="js"></th><th></th></thead></tr>\n" + str + "</table>";
+        str = "<table class='legacy listing-table'><thead><tr><th class='col head primary'><span class='col-label'><MT_TRANS phrase="Weblog" escape="js"></span></th><th class='col head primary'><span class='col-label'><MT_TRANS phrase="Trigger" escape="js"></span></th><th class='col head primary'><span class='col-label'><MT_TRANS phrase="Action" escape="js"></span></th><th class='col head si'><img alt='<MT_TRANS phrase="Remove">' src='<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/delete.gif' /></th></tr></thead><tfoot><tr><th class='col head primary'><span class='col-label'><MT_TRANS phrase="Weblog" escape="js"></span></th><th class='col head primary'><span class='col-label'><MT_TRANS phrase="Trigger" escape="js"></span></th><th class='col head primary'><span class='col-label'><MT_TRANS phrase="Action" escape="js"></span></th><th class='col head si'><img alt='<MT_TRANS phrase="Remove">' src='<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/delete.gif' /></th></tr></tfoot>\n" + str + "</table>";
         getByID('multiblog_blog_list').innerHTML = str;
         getByID('rebuild_triggers').value = values.join('|');
     }
