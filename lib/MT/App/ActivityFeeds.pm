@@ -603,7 +603,8 @@ sub _feed_system {
     $args->{filter}     = $filter;
     $args->{filter_val} = $filter_val;
     $args->{blog_id}    = $blog_id if $blog_id;
-    my $link = $app->base . $app->mt_uri( mode => 'view_log', args => $args );
+    $args->{_type} = 'log';
+    my $link = $app->base . $app->mt_uri( mode => 'list', args => $args );
     my $param = {
         feed_link  => $link,
         feed_title => $app->translate('Movable Type System Activity')
@@ -621,10 +622,11 @@ sub _feed_debug {
     my $args    = {
         'filter'     => 'class',
         'filter_val' => 'debug',
-        $blog_id ? ( blog_id => $blog_id ) : ()
+        $blog_id ? ( blog_id => $blog_id ) : (),
+        '_type' => 'log',
     };
     my $terms = $app->apply_log_filter($args);
-    my $link = $app->base . $app->mt_uri( mode => 'view_log', args => $args );
+    my $link = $app->base . $app->mt_uri( mode => 'list', args => $args );
     my $param = {
         feed_link  => $link,
         feed_title => $app->translate('Movable Type Debug Activity'),

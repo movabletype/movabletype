@@ -1332,7 +1332,7 @@ sub restore_premature_cancel {
     my $param = { restore_success => 1 };
     if ( defined $deferred && ( scalar( keys %$deferred ) ) ) {
         _log_dirty_restore( $app, $deferred );
-        my $log_url = $app->uri( mode => 'view_log', args => {} );
+        my $log_url = $app->uri( mode => 'list', args => { '_type' => 'log' } );
         $param->{restore_success} = 0;
         my $message =
           $app->translate(
@@ -1357,7 +1357,7 @@ sub restore_premature_cancel {
             }
         );
     }
-    $app->redirect( $app->uri( mode => 'view_log', args => {} ) );
+    $app->redirect( $app->uri( mode => 'list', args => { '_type' => 'log' } ) );
 }
 
 sub _restore_non_blog_asset {
@@ -1579,7 +1579,7 @@ sub adjust_sitepath {
     }
     if ($error) {
         $param->{error}     = $error;
-        $param->{error_url} = $app->base . $app->uri( mode => 'view_log', args => {} );
+        $param->{error_url} = $app->base . $app->uri( mode => 'list', args => { '_type' => 'log' } );
     }
     for my $key (
         qw(files last redirect is_dirty is_asset objects_json deferred_json))
@@ -1776,7 +1776,7 @@ sub dialog_restore_upload {
         $param->{restore_end} = 1;
         if ( $param->{is_dirty} ) {
             _log_dirty_restore( $app, $deferred );
-            my $log_url = $app->base . $app->uri( mode => 'view_log', args => {} );
+            my $log_url = $app->base . $app->uri( mode => 'list', args => { '_type' => 'log' } );
             $param->{error} =
               $app->translate(
 'Some objects were not restored because their parent objects were not restored.'
@@ -1786,12 +1786,12 @@ sub dialog_restore_upload {
         elsif ( scalar( keys %$error_assets ) ) {
             $param->{error} =
               $app->translate('Some of the files were not restored correctly.');
-            my $log_url = $app->uri( mode => 'view_log', args => {} );
+            my $log_url = $app->uri( mode => 'list', args => { '_type' => 'log' } );
             $param->{error_url} = $log_url;
         }
         elsif ( scalar @errors ) {
             $param->{error} = join '; ', @errors;
-            my $log_url = $app->uri( mode => 'view_log', args => {} );
+            my $log_url = $app->uri( mode => 'list', args => { '_type' => 'log' } );
             $param->{error_url} = $log_url;
         }
         else {
@@ -2107,7 +2107,7 @@ sub restore_file {
 
     if ( !defined($deferred) || scalar( keys %$deferred ) ) {
         _log_dirty_restore( $app, $deferred );
-        my $log_url = $app->uri( mode => 'view_log', args => {} );
+        my $log_url = $app->uri( mode => 'list', args => { '_type' => 'log' } );
         $$errormsg .= '; ' if $$errormsg;
         $$errormsg .= $app->translate(
 'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.',
@@ -2202,7 +2202,7 @@ sub restore_directory {
 
     if ( scalar( keys %$deferred ) ) {
         _log_dirty_restore( $app, $deferred );
-        my $log_url = $app->uri( mode => 'view_log', args => {} );
+        my $log_url = $app->uri( mode => 'list', args => { '_type' => 'log' } );
         $$error = $app->translate(
 'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.',
             $log_url
