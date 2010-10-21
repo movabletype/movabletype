@@ -49,6 +49,13 @@
 </mt:unless>
 
   <div id="retry-buttons" class="actions-bar" <mt:if name="file_not_found">style="display:none;"</mt:if>>
+    <button 
+       name="back"
+       type="submit"
+       onclick="go('previous_step');"
+       class="goback action button">
+      <__trans phrase="Back">
+    </button>
   <mt:unless name="config_created">
     <button
        name="retry"
@@ -66,13 +73,6 @@
       <__trans phrase="Continue">
     </button>
   </mt:unless>
-    <button 
-       name="back"
-       type="submit"
-       onclick="go('previous_step');"
-       class="goback action button">
-      <__trans phrase="Back">
-    </button>
   </div>
   
   <div id="automatic-buttons" class="actions-bar" <mt:unless name="file_not_found">style="display:none;"</mt:unless>>
@@ -80,15 +80,15 @@
        name="retry"
        type="submit"
        onclick="go('retry');"
-       class="retry action primary button">
-      <__trans phrase="Continue">
+       class="goback action button">
+      <__trans phrase="Back">
     </button>
     <button
        name="retry"
        type="submit"
        onclick="go('retry');"
-       class="goback action button">
-      <__trans phrase="Back">
+       class="retry action primary button">
+      <__trans phrase="Continue">
     </button>
   </div>
 </form>

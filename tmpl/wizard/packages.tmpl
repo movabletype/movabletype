@@ -84,6 +84,13 @@
 </mt:if>
 
   <div class="actions-bar">
+    <button 
+       name="back"
+       type="submit"
+       onclick="this.form.reset(); go('previous_step');"
+       class="goback action button">
+      <__trans phrase="Back">
+    </button>
   <mt:if name="missing_db_or_optional">
     <mt:if name="missing_db">
     <button
@@ -95,13 +102,6 @@
     </button>
     <mt:else>
       <mt:if name="optional">
-    <button 
-       name="continue"
-       type="submit"
-       onclick="go('next_step');"
-       class="continue action primary button">
-      <__trans phrase="Continue">
-    </button>
     <button
        name="retry"
        type="submit"
@@ -110,6 +110,13 @@
        style="display: none;"
        class="retry action button">
       <__trans phrase="Retry">
+    </button>
+    <button 
+       name="continue"
+       type="submit"
+       onclick="go('next_step');"
+       class="continue action primary button">
+      <__trans phrase="Continue">
     </button>
       <mt:else>
     <button
@@ -132,7 +139,6 @@
     </button>
     </mt:if>
   </mt:if>
-  
   <mt:if name="success">
     <button 
        name="continue"
@@ -142,14 +148,7 @@
       <__trans phrase="Continue">
     </button>
   </mt:if>
-  
-    <button 
-       name="back"
-       type="submit"
-       onclick="this.form.reset(); go('previous_step');"
-       class="goback action button">
-      <__trans phrase="Back">
-    </button>
+
   </div>
 </form>
 
@@ -175,7 +174,7 @@ function toggleList() {
     var retry_btn = getByID('retry-btn');
     if (retry_btn) {
         if (retry_btn.style.display == 'none')
-            retry_btn.style.display = 'block';
+            retry_btn.style.display = 'inline';
         else
             retry_btn.style.display = 'none';
     }

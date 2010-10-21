@@ -10,60 +10,57 @@
 
 <div class="upgrade">
 <mt:unless name="up_to_date">
-    <script type="text/javascript" src="<mt:var name="static_uri">js/tc.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-    <script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-
-
-    <div id="upgrade-container" class="upgrade-process">
-        <ul id="upgrade-progress">
-        </ul>
-    </div>
-
-    <div id="progress-bar">
-        <img src="<mt:var name="static_uri">images/indeterminate-progress-bar.gif" alt="" height="24" width="124" />
-    </div>
-
-    <div id="error-message-div" style="display: none">
-        <p id="error-message" class="error-message">
+  <script type="text/javascript" src="<mt:var name="static_uri">js/tc.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <div id="upgrade-container" class="upgrade-process">
+    <ul id="upgrade-progress">
+    </ul>
+  </div>
+  <div id="progress-bar">
+    <img src="<mt:var name="static_uri">images/indeterminate-progress-bar.gif" alt="" height="24" width="124" />
+  </div>
+  <div id="error-message-div" style="display: none">
+    <p id="error-message" class="error-message">
     <mt:if name="installing">
-            <__trans phrase="Error during installation:">
+      <__trans phrase="Error during installation:">
     <mt:else>
-            <__trans phrase="Error during upgrade:">
+      <__trans phrase="Error during upgrade:">
     </mt:if>
-            <span id="error-message-text"></span>
-        </p>
+      <span id="error-message-text"></span>
+    </p>
+  </div>
+  <form method="post" action="<mt:var name="mt_admin_url">" id="completed-action" style="display: none">
+  <mt:if name="installing">
+    <input type="hidden" name="installed" value="1">
+  </mt:if>
+    <div class="actions-bar">
+      <button
+         type="submit"
+         accesskey="s"
+         title="<mt:if name="installing"><__trans phrase="Sign in to Movable Type (s)"><mt:else><__trans phrase="Return to Movable Type (s)"></mt:if>"
+         class="action primary button">
+      <mt:if name="installing">
+        <__trans phrase="Sign in to Movable Type">
+      <mt:else>
+        <__trans phrase="Return to Movable Type">
+      </mt:if>
+      </button>
     </div>
-
-    <form method="post" action="<mt:var name="mt_admin_url">" id="completed-action" style="display: none">
-    <mt:if name="installing">
-        <input type="hidden" name="installed" value="1">
-    </mtif>
-        <div class="actions-bar">
-            <button
-                type="submit"
-                accesskey="s"
-                title="<mt:if name="installing"><__trans phrase="Sign in to Movable Type (s)"><mt:else><__trans phrase="Return to Movable Type (s)"></mt:if>"
-                class="action primary-button"
-                ><mt:if name="installing"><__trans phrase="Sign in to Movable Type"><mt:else><__trans phrase="Return to Movable Type"></mt:if></button>
-        </div>
-    </form>
-
+  </form>
 <mt:else>
-
-    <p><__trans phrase="Your database is already current."></p>
-
-    <form method="post" action="<mt:var name="mt_admin_url">">
-        <div class="actions-bar">
-            <button
-                type="submit"
-                accesskey="s"
-                title="<__trans phrase="Return to Movable Type (s)">"
-                class="action primary-button"
-                ><__trans phrase="Return to Movable Type"></button>
-        </div>
-    </form>
-
+  <p><__trans phrase="Your database is already current."></p>
+  <form method="post" action="<mt:var name="mt_admin_url">">
+    <div class="actions-bar">
+      <button
+         type="submit"
+         accesskey="s"
+         title="<__trans phrase="Return to Movable Type (s)">"
+         class="action primary button">
+        <__trans phrase="Return to Movable Type">
+      </button>
+    </div>
+  </form>
 </mt:unless>
 </div>
 

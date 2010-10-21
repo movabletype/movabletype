@@ -1,141 +1,128 @@
 <mt:setvarblock name="page_title"><__trans phrase="Create Your First Website"></mt:setvarblock>
+
 <mt:setvar name="complete" value="1">
-
-<mt:setvarblock name="html_head" append="1">
-<style type="text/css">
-div.warning#version-warning {
-    position: relative;
-    padding: 1em;
-}
-</style>
-
-</mt:setvarblock>
 
 <mt:include name="include/chromeless_header.tmpl">
 
 <div class="upgrade">
-
-<div id="warning_gone"<mt:if name="version_warning"> style="display:none;"</mt:if>>
-<p class="intro"><__trans phrase="In order to properly publish your website, you must provide Movable Type with your website's URL and the filesystem path where its files should be published."></p>
-
-<mt:if name="error">
+  <div id="warning_gone"<mt:if name="version_warning"> style="display:none;"</mt:if>>
+    <p class="intro"><__trans phrase="In order to properly publish your website, you must provide Movable Type with your website's URL and the filesystem path where its files should be published."></p>
+  <mt:if name="error">
     <mtapp:statusmsg
-        id="setup-website-error"
-        class="error">
-        <mt:var name="error">
+       id="setup-website-error"
+       class="error"
+       can_close="0">
+      <mt:var name="error">
     </mtapp:statusmsg>
-</mt:if>
+  </mt:if>
 
-<form id="website_form" method="post" action="<mt:var name="script_url">">
-<input type="hidden" name="__mode" value="init_website">
-<input type="hidden" name="finish" value="0">
-<input type="hidden" name="back" value="0">
-<input type="hidden" name="config" value="<mt:var name="config" escape="html">">
+    <form id="website_form" method="post" action="<mt:var name="script_url">">
+      <input type="hidden" name="__mode" value="init_website" />
+      <input type="hidden" name="finish" value="0" />
+      <input type="hidden" name="back" value="0" />
+      <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
+      <fieldset>
+      <mtapp:setting
+         id="website_name"
+         label="<__trans phrase="Website Name">"
+         label_class="top-label">
+        <input type="text" id="website_name" class="text full" name="website_name" value="<mt:if name="website_name"><mt:var name="website_name" escape="html"><mt:else><__trans phrase="My First Website"></mt:if>" onkeyup="dirify_website_name(this)" />
+      </mtapp:setting>
 
-<fieldset>
+      <mtapp:setting
+         id="website_url"
+         label="<__trans phrase="Website URL">"
+         label_class="top-label">
+        <input type="text" id="website_url" class="text full" name="website_url" value="<mt:if name="website_url"><mt:var name="website_url" escape="html"></mt:if>" />
+      </mtapp:setting>
 
-    <mtapp:setting
-        id="website_name"
-        label="<__trans phrase="Website Name">"
-        label_class="top-label">
-        <input type="text" id="website_name" class="ti" name="website_name" value="<mt:if name="website_name"><mt:var name="website_name" escape="html"><mt:else><__trans phrase="My First Website"></mt:if>" onkeyup="dirify_website_name(this)" />
-    </mtapp:setting>
-
-    <mtapp:setting
-        id="website_url"
-        label="<__trans phrase="Website URL">"
-        label_class="top-label">
-        <input type="text" id="website_url" class="ti" name="website_url" value="<mt:if name="website_url"><mt:var name="website_url" escape="html"></mt:if>" />
-    </mtapp:setting>
-
-    <mtapp:setting
-        id="website_path"
-        label="<__trans phrase="Website Root">"
-        label_class="top-label">
-        <input type="text" id="website_path" class="ti" name="website_path" value="<mt:if name="website_path"><mt:var name="website_path" escape="html"></mt:if>" />
+      <mtapp:setting
+         id="website_path"
+         label="<__trans phrase="Website Root">"
+         label_class="top-label">
+        <input type="text" id="website_path" class="text full" name="website_path" value="<mt:if name="website_path"><mt:var name="website_path" escape="html"></mt:if>" />
         <p class="hint"><__trans phrase="The 'Website Root' is the directory in your web server's filesystem where Movable Type will publish the files for your website. The web server must have write access to this directory."></p>
-    </mtapp:setting>
+      </mtapp:setting>
 
-<mt:if name="theme_index">
-     <mtapp:setting
-        id="website_theme"
-        label="<__trans phrase="Theme">"
-        hint="<__trans phrase="Select the theme you wish to use for this new website.">">
+    <mt:if name="theme_index">
+      <mtapp:setting
+         id="website_theme"
+         label="<__trans phrase="Theme">"
+         hint="<__trans phrase="Select the theme you wish to use for this new website.">">
         <select name="website_theme">
         <mt:loop name="theme_loop">
-            <option value="<mt:var name="key" escape="html">"<mt:if name="website_theme"><mt:if name="key" eq="$website_theme"> selected="selected"</mt:if><mt:else><mt:if name="key" eq="$config.DefaultWebsiteTheme"> selected="selected"</mt:if></mt:if>><mt:var name="label" escape="html"></option>
+          <option value="<mt:var name="key" escape="html">"<mt:if name="website_theme"><mt:if name="key" eq="$website_theme"> selected="selected"</mt:if><mt:else><mt:if name="key" eq="$config.DefaultWebsiteTheme"> selected="selected"</mt:if></mt:if>><mt:var name="label" escape="html"></option>
         </mt:loop>
         </select>
-    </mtapp:setting>
-</mt:if>
+      </mtapp:setting>
+    </mt:if>
 
-    <mtapp:setting
-        id="website_timezone"
-        label="<__trans phrase="Time Zone">"
-        label_class="top-label"
-        hint="<__trans phrase="Select your timezone from the pulldown menu.">">
+      <mtapp:setting
+         id="website_timezone"
+         label="<__trans phrase="Time Zone">"
+         label_class="top-label"
+         hint="<__trans phrase="Select your timezone from the pulldown menu.">">
         <select name="website_timezone" id="website_timezone" class="se">
-        <option value=""><__trans phrase="Time zone not selected"></option>
-        <option value="13"<mt:if name="WEBSITE_TIMEZONE_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
-        <option value="12"<mt:if name="WEBSITE_TIMEZONE_12"> selected="selected"</mt:if>><__trans phrase="UTC+12 (International Date Line East)"></option>
-        <option value="11"<mt:if name="WEBSITE_TIMEZONE_11"> selected="selected"</mt:if>><__trans phrase="UTC+11"></option>
-        <option value="10"<mt:if name="WEBSITE_TIMEZONE_10"> selected="selected"</mt:if>><__trans phrase="UTC+10 (East Australian Time)"></option>
-        <option value="9.5"<mt:if name="WEBSITE_TIMEZONE_9_5"> selected="selected"</mt:if>><__trans phrase="UTC+9.5 (Central Australian Time)"></option>
-        <option value="9"<mt:if name="WEBSITE_TIMEZONE_9"> selected="selected"</mt:if>><__trans phrase="UTC+9 (Japan Time)"></option>
-        <option value="8"<mt:if name="WEBSITE_TIMEZONE_8"> selected="selected"</mt:if>><__trans phrase="UTC+8 (China Coast Time)"></option>
-        <option value="7"<mt:if name="WEBSITE_TIMEZONE_7"> selected="selected"</mt:if>><__trans phrase="UTC+7 (West Australian Time)"></option>
-        <option value="6.5"<mt:if name="WEBSITE_TIMEZONE_6_5"> selected="selected"</mt:if>><__trans phrase="UTC+6.5 (North Sumatra)"></option>
-        <option value="6"<mt:if name="WEBSITE_TIMEZONE_6"> selected="selected"</mt:if>><__trans phrase="UTC+6 (Russian Federation Zone 5)"></option>
-        <option value="5.5"<mt:if name="WEBSITE_TIMEZONE_5_5"> selected="selected"</mt:if>><__trans phrase="UTC+5.5 (Indian)"></option>
-        <option value="5"<mt:if name="WEBSITE_TIMEZONE_5"> selected="selected"</mt:if>><__trans phrase="UTC+5 (Russian Federation Zone 4)"></option>
-        <option value="4"<mt:if name="WEBSITE_TIMEZONE_4"> selected="selected"</mt:if>><__trans phrase="UTC+4 (Russian Federation Zone 3)"></option>
-        <option value="3.5"<mt:if name="WEBSITE_TIMEZONE_3_5"> selected="selected"</mt:if>><__trans phrase="UTC+3.5 (Iran)"></option>
-        <option value="3"<mt:if name="WEBSITE_TIMEZONE_3"> selected="selected"</mt:if>><__trans phrase="UTC+3 (Baghdad Time/Moscow Time)"></option>
-        <option value="2"<mt:if name="WEBSITE_TIMEZONE_2"> selected="selected"</mt:if>><__trans phrase="UTC+2 (Eastern Europe Time)"></option>
-        <option value="1"<mt:if name="WEBSITE_TIMEZONE_1"> selected="selected"</mt:if>><__trans phrase="UTC+1 (Central European Time)"></option>
-        <option value="0"<mt:if name="WEBSITE_TIMEZONE_0"> selected="selected"</mt:if>><__trans phrase="UTC+0 (Universal Time Coordinated)"></option>
-        <option value="-1"<mt:if name="WEBSITE_TIMEZONE__1"> selected="selected"</mt:if>><__trans phrase="UTC-1 (West Africa Time)"></option>
-        <option value="-2"<mt:if name="WEBSITE_TIMEZONE__2"> selected="selected"</mt:if>><__trans phrase="UTC-2 (Azores Time)"></option>
-        <option value="-3"<mt:if name="WEBSITE_TIMEZONE__3"> selected="selected"</mt:if>><__trans phrase="UTC-3 (Atlantic Time)"></option>
-        <option value="-3.5"<mt:if name="WEBSITE_TIMEZONE__3_5"> selected="selected"</mt:if>><__trans phrase="UTC-3.5 (Newfoundland)"></option>
-        <option value="-4"<mt:if name="WEBSITE_TIMEZONE__4"> selected="selected"</mt:if>><__trans phrase="UTC-4 (Atlantic Time)"></option>
-        <option value="-5"<mt:if name="WEBSITE_TIMEZONE__5"> selected="selected"</mt:if>><__trans phrase="UTC-5 (Eastern Time)"></option>
-        <option value="-6"<mt:if name="WEBSITE_TIMEZONE__6"> selected="selected"</mt:if>><__trans phrase="UTC-6 (Central Time)"></option>
-        <option value="-7"<mt:if name="WEBSITE_TIMEZONE__7"> selected="selected"</mt:if>><__trans phrase="UTC-7 (Mountain Time)"></option>
-        <option value="-8"<mt:if name="WEBSITE_TIMEZONE__8"> selected="selected"</mt:if>><__trans phrase="UTC-8 (Pacific Time)"></option>
-        <option value="-9"<mt:if name="WEBSITE_TIMEZONE__9"> selected="selected"</mt:if>><__trans phrase="UTC-9 (Alaskan Time)"></option>
-        <option value="-10"<mt:if name="WEBSITE_TIMEZONE__10"> selected="selected"</mt:if>><__trans phrase="UTC-10 (Aleutians-Hawaii Time)"></option>
-        <option value="-11"<mt:if name="WEBSITE_TIMEZONE__11"> selected="selected"</mt:if>><__trans phrase="UTC-11 (Nome Time)"></option>
+          <option value=""><__trans phrase="Time zone not selected"></option>
+          <option value="13"<mt:if name="WEBSITE_TIMEZONE_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
+          <option value="12"<mt:if name="WEBSITE_TIMEZONE_12"> selected="selected"</mt:if>><__trans phrase="UTC+12 (International Date Line East)"></option>
+          <option value="11"<mt:if name="WEBSITE_TIMEZONE_11"> selected="selected"</mt:if>><__trans phrase="UTC+11"></option>
+          <option value="10"<mt:if name="WEBSITE_TIMEZONE_10"> selected="selected"</mt:if>><__trans phrase="UTC+10 (East Australian Time)"></option>
+          <option value="9.5"<mt:if name="WEBSITE_TIMEZONE_9_5"> selected="selected"</mt:if>><__trans phrase="UTC+9.5 (Central Australian Time)"></option>
+          <option value="9"<mt:if name="WEBSITE_TIMEZONE_9"> selected="selected"</mt:if>><__trans phrase="UTC+9 (Japan Time)"></option>
+          <option value="8"<mt:if name="WEBSITE_TIMEZONE_8"> selected="selected"</mt:if>><__trans phrase="UTC+8 (China Coast Time)"></option>
+          <option value="7"<mt:if name="WEBSITE_TIMEZONE_7"> selected="selected"</mt:if>><__trans phrase="UTC+7 (West Australian Time)"></option>
+          <option value="6.5"<mt:if name="WEBSITE_TIMEZONE_6_5"> selected="selected"</mt:if>><__trans phrase="UTC+6.5 (North Sumatra)"></option>
+          <option value="6"<mt:if name="WEBSITE_TIMEZONE_6"> selected="selected"</mt:if>><__trans phrase="UTC+6 (Russian Federation Zone 5)"></option>
+          <option value="5.5"<mt:if name="WEBSITE_TIMEZONE_5_5"> selected="selected"</mt:if>><__trans phrase="UTC+5.5 (Indian)"></option>
+          <option value="5"<mt:if name="WEBSITE_TIMEZONE_5"> selected="selected"</mt:if>><__trans phrase="UTC+5 (Russian Federation Zone 4)"></option>
+          <option value="4"<mt:if name="WEBSITE_TIMEZONE_4"> selected="selected"</mt:if>><__trans phrase="UTC+4 (Russian Federation Zone 3)"></option>
+          <option value="3.5"<mt:if name="WEBSITE_TIMEZONE_3_5"> selected="selected"</mt:if>><__trans phrase="UTC+3.5 (Iran)"></option>
+          <option value="3"<mt:if name="WEBSITE_TIMEZONE_3"> selected="selected"</mt:if>><__trans phrase="UTC+3 (Baghdad Time/Moscow Time)"></option>
+          <option value="2"<mt:if name="WEBSITE_TIMEZONE_2"> selected="selected"</mt:if>><__trans phrase="UTC+2 (Eastern Europe Time)"></option>
+          <option value="1"<mt:if name="WEBSITE_TIMEZONE_1"> selected="selected"</mt:if>><__trans phrase="UTC+1 (Central European Time)"></option>
+          <option value="0"<mt:if name="WEBSITE_TIMEZONE_0"> selected="selected"</mt:if>><__trans phrase="UTC+0 (Universal Time Coordinated)"></option>
+          <option value="-1"<mt:if name="WEBSITE_TIMEZONE__1"> selected="selected"</mt:if>><__trans phrase="UTC-1 (West Africa Time)"></option>
+          <option value="-2"<mt:if name="WEBSITE_TIMEZONE__2"> selected="selected"</mt:if>><__trans phrase="UTC-2 (Azores Time)"></option>
+          <option value="-3"<mt:if name="WEBSITE_TIMEZONE__3"> selected="selected"</mt:if>><__trans phrase="UTC-3 (Atlantic Time)"></option>
+          <option value="-3.5"<mt:if name="WEBSITE_TIMEZONE__3_5"> selected="selected"</mt:if>><__trans phrase="UTC-3.5 (Newfoundland)"></option>
+          <option value="-4"<mt:if name="WEBSITE_TIMEZONE__4"> selected="selected"</mt:if>><__trans phrase="UTC-4 (Atlantic Time)"></option>
+          <option value="-5"<mt:if name="WEBSITE_TIMEZONE__5"> selected="selected"</mt:if>><__trans phrase="UTC-5 (Eastern Time)"></option>
+          <option value="-6"<mt:if name="WEBSITE_TIMEZONE__6"> selected="selected"</mt:if>><__trans phrase="UTC-6 (Central Time)"></option>
+          <option value="-7"<mt:if name="WEBSITE_TIMEZONE__7"> selected="selected"</mt:if>><__trans phrase="UTC-7 (Mountain Time)"></option>
+          <option value="-8"<mt:if name="WEBSITE_TIMEZONE__8"> selected="selected"</mt:if>><__trans phrase="UTC-8 (Pacific Time)"></option>
+          <option value="-9"<mt:if name="WEBSITE_TIMEZONE__9"> selected="selected"</mt:if>><__trans phrase="UTC-9 (Alaskan Time)"></option>
+          <option value="-10"<mt:if name="WEBSITE_TIMEZONE__10"> selected="selected"</mt:if>><__trans phrase="UTC-10 (Aleutians-Hawaii Time)"></option>
+          <option value="-11"<mt:if name="WEBSITE_TIMEZONE__11"> selected="selected"</mt:if>><__trans phrase="UTC-11 (Nome Time)"></option>
         </select>
-    </mtapp:setting>
+      </mtapp:setting>
+      </fieldset>
 
-</fieldset>
-
+      <div class="actions-bar">
+        <button
+           id="back_button"
+           name="back_button"
+           value="back"
+           type="submit"
+           accesskey="x"
+           title="<__trans phrase="Back (x)">"
+           class="goback action button">
+          <__trans phrase="Back">
+        </button>
+        <button
+           id="finish_button"
+           name="finish_button"
+           value="finish"
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Finish install (s)">"
+           class="action primary button">
+          <__trans phrase="Finish install">
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
-</div>
-
-<div class="actions-bar">
-    <button
-       id="finish_button"
-       name="finish_button"
-       value="finish"
-       type="submit"
-       accesskey="s"
-       title="<__trans phrase="Finish install (s)">"
-       class="action primary-button"
-       ><__trans phrase="Finish install"></button>
-    <button
-       id="back_button"
-       name="back_button"
-       value="back"
-       type="submit"
-       accesskey="x"
-       title="<__trans phrase="Back (x)">"
-       class="goback action"
-       ><__trans phrase="Back"></button>
-</div>
-
-</form>
 
 <script type="text/javascript">
 /* <![CDATA[ */

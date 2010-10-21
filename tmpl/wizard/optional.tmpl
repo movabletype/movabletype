@@ -10,18 +10,18 @@
   <p class="intro"><span class="ready"><__trans phrase="Your mail configuration is complete."></span> <__trans phrase="Check your email to confirm receipt of a test email from Movable Type and then proceed to the next step."></p>
   <div id="buttons" class="actions-bar">
     <button
-       name="continue"
-       type="submit"
-       onclick="go('next_step');"
-       class="continue action primary button">
-      <__trans phrase="Continue">
-    </button>
-    <button
        name="back"
        type="submit"
        onclick="this.form.reset(); go('previous_step');"
        class="goback action button">
       <__trans phrase="Back">
+    </button>
+    <button
+       name="continue"
+       type="submit"
+       onclick="go('next_step');"
+       class="continue action primary button">
+      <__trans phrase="Continue">
     </button>
   </div>
   <p id="more"><a href="javascript:void(0)" onclick="hideByID('buttons'); hideByID('more'); showByID('settings');"><__trans phrase="Show current mail settings"></a></p>
@@ -103,28 +103,28 @@
 
       <div id="goback" class="actions-bar" <mt:if name="mail_transfer">style="display: none"</mt:if>>
         <button
-           name="continue"
-           type="submit"
-           onclick="go('next_step');"
-           class="continue action primary button">
-          <__trans phrase="Continue">
-        </button>
-        <button
            name="back"
            type="submit"
            onclick="this.form.reset(); go('previous_step');"
            class="goback action button">
           <__trans phrase="Back">
         </button>
-      </div>
-
-      <div id="submit" class="actions-bar" <mt:unless name="mail_transfer">style="display: none"</mt:unless>>
         <button
            name="continue"
            type="submit"
            onclick="go('next_step');"
            class="continue action primary button">
           <__trans phrase="Continue">
+        </button>
+      </div>
+
+      <div id="submit" class="actions-bar" <mt:unless name="mail_transfer">style="display: none"</mt:unless>>
+        <button
+           name="back"
+           type="submit"
+           onclick="this.form.reset(); go('previous_step');"
+           class="goback action button">
+          <__trans phrase="Back">
         </button>
         <button
            name="test"
@@ -135,11 +135,11 @@
           <__trans phrase="Send Test Email">
         </button>
         <button
-           name="back"
+           name="continue"
            type="submit"
-           onclick="this.form.reset(); go('previous_step');"
-           class="goback action button">
-          <__trans phrase="Back">
+           onclick="go('next_step');"
+           class="continue action primary button">
+          <__trans phrase="Continue">
         </button>
       </div>
     </fieldset>

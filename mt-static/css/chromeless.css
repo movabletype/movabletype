@@ -64,11 +64,6 @@ h3 {
     margin-bottom: 20px;
 }
 
-.field-header label {
-    color: #777;
-    font-weight: bold;
-}
-
 #file-field .field-content, 
 #file-field .field-content #file { 
     margin-top: 10px;
@@ -84,6 +79,11 @@ h3 {
     position: relative;
     min-height: 30px;
     margin: 25px 0 0;
+    text-align: right;
+}
+
+.actions-bar .button {
+    margin: 0 0 0 5px;
 }
 
 #container.show-actions-bar-top .actions-bar-top {

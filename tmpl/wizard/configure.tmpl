@@ -34,18 +34,18 @@
   <p id="show_settings"><a href="javascript:void(0)" onclick="showByID('db_settings'); hideByID('show_settings'); hideByID('success'); return false;"><__trans phrase="Show Current Settings"></a></p>
   <div id="success" class="actions-bar">
     <button
-       name="continue"
-       type="submit"
-       onclick="go('next_step');"
-       class="continue action primary button">
-      <__trans phrase="Continue">
-    </button>
-    <button
        name="back"
        type="submit"
        onclick="needValidate = false; this.form.reset(); go('previous_step');"
        class="goback action button">
       <__trans phrase="Back">
+    </button>
+    <button
+       name="continue"
+       type="submit"
+       onclick="go('next_step');"
+       class="continue action primary button">
+      <__trans phrase="Continue">
     </button>
   </div>
 <mt:else>
@@ -117,19 +117,19 @@
     <mt:unless name="success">
       <div id="submit" class="actions-bar" <mt:unless name="dbtype">style="display: none"</mt:unless>>
         <button
+           name="back"
+           type="submit"
+           onclick="needValidate = false; this.form.reset(); go('previous_step');"
+           class="goback action button">
+          <__trans phrase="Back">
+        </button>
+        <button
            name="test"
            type="submit"
            value="1"
            onclick="go('test');"
            class="action primary button">
           <__trans phrase="Test Connection">
-        </button>
-        <button
-           name="back"
-           type="submit"
-           onclick="needValidate = false; this.form.reset(); go('previous_step');"
-           class="goback action button">
-          <__trans phrase="Back">
         </button>
       </div>
 
@@ -147,11 +147,11 @@
     <mt:if name="success">
       <div id="continue" class="actions-bar">
         <button
-           name="continue"
+           name="back"
            type="submit"
-           onclick="go('next_step');"
-           class="continue action primary button">
-          <__trans phrase="Continue">
+           onclick="needValidate = false; this.form.reset(); go('previous_step');"
+           class="goback action button">
+          <__trans phrase="Back">
         </button>
         <button
            name="test"
@@ -162,11 +162,11 @@
           <__trans phrase="Test Connection">
         </button>
         <button
-           name="back"
+           name="continue"
            type="submit"
-           onclick="needValidate = false; this.form.reset(); go('previous_step');"
-           class="goback action button">
-          <__trans phrase="Back">
+           onclick="go('next_step');"
+           class="continue action primary button">
+          <__trans phrase="Continue">
         </button>
       </div>
     </mt:if>
