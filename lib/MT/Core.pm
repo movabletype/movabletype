@@ -293,26 +293,46 @@ BEGIN {
                     col_class   => 'date',
                     use_future  => 0,
                     validate_item => sub {
-                        my $prop = shift;
-                        my ( $item ) = @_;
-                        my $args = $item->{args};
+                        my $prop   = shift;
+                        my ($item) = @_;
+                        my $args   = $item->{args};
                         my $option = $args->{option}
                             or return $prop->error(
-                                MT->translate( 'option is required' )
-                            );
+                            MT->translate('option is required') );
                         my %params = (
                             range  => { from   => 1, to => 1 },
                             before => { origin => 1 },
                             after  => { origin => 1 },
                             days   => { days   => 1 },
                         );
-                        my $params = $params{$option};
-                        $params->{option} = 1;
+
+                        my $using = $params{$option};
+                        $using->{option} = 1;
                         for my $key ( keys %$args ) {
-                            $params->{$key} or delete $args->{$key};
+                            if ( $using->{$key} ) {
+                                ## validate it
+                                if ( $key eq 'days' ) {
+                                    return $prop->error(
+                                        MT->translate(
+                                            q{Days can't include non numeriacal characters.}
+                                        )
+                                    ) if $args->{days} =~ /\D/;
+                                }
+                                elsif ( $key ne 'option' ) {
+                                    my $date = $args->{$key};
+                                    return $prop->error(
+                                        MT->translate(q{Invalid date.}) )
+                                        unless $date
+                                            =~ m/^\d{4}\-\d{2}\-\d{2}$/;
+                                }
+                            }
+                            else {
+                                ## or remove from $args.
+                                delete $args->{$key};
+                            }
                         }
                         return 1;
-                    },
+                        },
                     terms => sub {
                         my $prop   = shift;
                         my ($args) = @_;
