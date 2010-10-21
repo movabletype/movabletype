@@ -1561,6 +1561,10 @@ sub core_menus {
             label => "Design",
             order => 700,
         },
+        'filter' => {
+            label => "Listing Filters",
+            order => 780,
+        },
         'settings' => {
             label => "Settings",
             order => 800,
@@ -1955,6 +1959,15 @@ sub core_menus {
             mode       => 'edit_widget',
             view       => [ "blog", 'website', 'system' ],
             display    => 0,
+        },
+
+        'filter:member' => {
+            label      => "Manage",
+            order      => 100,
+            mode       => 'list',
+            args       => { _type => 'filter' },
+            view       => "system",
+            system_permission => 'administer',
         },
 
         'settings:general' => {
