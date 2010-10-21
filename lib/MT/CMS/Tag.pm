@@ -582,12 +582,6 @@ sub build_tag_table {
     $param->{object_loop} = $param->{tag_table}[0]{object_loop};
 }
 
-sub template_param_list {
-    my $cb = shift;
-    my ( $app, $param, $tmpl ) = @_;
-    $param->{tag_object_type} = $app->param('filter_key');
-}
-
 sub cms_pre_load_filtered_list {
     my ( $cb, $app, $filter, $load_options, $cols ) = @_;
     my $user = $app->user;

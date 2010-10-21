@@ -1637,8 +1637,6 @@ sub delete {
             # Also, if we're in a website context, remove ONLY tags from that website and weblog which belongs to website.
             if ($blog_id) {
                 my $ot_class  = $app->model('objecttag');
-                my $obj_type  = $q->param('__type') || 'entry';
-                my $obj_class = $app->model($obj_type);
                 my $blog      = $app->model('blog')->load( $blog_id );
                 my $iter      = $ot_class->load_iter(
                     {
@@ -1649,21 +1647,7 @@ sub delete {
                                 ]
                             )
                             ),
-                        object_datasource => $obj_class->datasource,
                         tag_id            => $id
-                    },
-                    {
-                        'join' => $obj_class->join_on(
-                            undef,
-                            {
-                                id => \'= objecttag_object_id',
-                                (
-                                    $obj_class =~ m/asset/i
-                                    ? ()
-                                    : ( class => $obj_class->class_type )
-                                )
-                            }
-                        )
                     }
                 );
 
