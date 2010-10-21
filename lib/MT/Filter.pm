@@ -148,8 +148,9 @@ sub list_props {
             },
         },
         created_on => {
-            base  => '__virtual.created_on',
-            order => 500,
+            base    => '__virtual.created_on',
+            display => 'default',
+            order   => 500,
         },
         modified_on => {
             base  => '__virtual.modified_on',

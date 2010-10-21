@@ -59,13 +59,24 @@ sub list_props {
             },
         },
         created_on    => { base => 'entry.created_on',     order => 600, },
-        modified_on   => { base => 'entry.modified_on',    order => 700, },
-        comment_count => { base => 'entry.comment_count',  order => 800, },
+        modified_on   => {
+            order   => 700,
+            base    => 'entry.modified_on',
+            display => 'default',
+        },
+        comment_count => {
+            display => 'optional',
+            base    => 'entry.comment_count',
+            order   => 800,
+        },
         ping_count    => { base => 'entry.ping_count',     order => 900, },
 
         text          => { base => 'entry.text' },
         text_more     => { base => 'entry.text_more' },
-        authored_on   => { base => 'entry.authored_on' },
+        authored_on   => {
+            base    => 'entry.authored_on',
+            display => 'optional',
+        },
         status        => {
             base => 'entry.status',
             single_select_options => [

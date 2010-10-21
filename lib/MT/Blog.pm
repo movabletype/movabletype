@@ -161,18 +161,20 @@ sub list_props {
             },
         },
         entry_count => {
-            label => 'Entries',
-            order => 300,
-            base  => '__virtual.object_count',
+            label       => 'Entries',
+            order       => 300,
+            base        => '__virtual.object_count',
+            display     => 'default',
             count_class => 'entry',
             count_col   => 'blog_id',
             filter_type => 'blog_id',
             list_screen => 'entry',
         },
         page_count => {
-            label => 'Pages',
-            order => 400,
-            base  => '__virtual.object_count',
+            label       => 'Pages',
+            order       => 400,
+            base        => '__virtual.object_count',
+            display     => 'default',
             count_class => 'page',
             count_col   => 'blog_id',
             filter_type => 'blog_id',
@@ -208,10 +210,11 @@ sub list_props {
             count_terms => { author_id => { not => 0 } },
         },
         parent_website => {
-            view => [ 'system' ],
-            label => 'Website',
-            order => 800,
-            raw => sub {
+            view    => [ 'system' ],
+            label   => 'Website',
+            order   => 800,
+            display => 'default',
+            raw     => sub {
                 my ( $prop, $obj ) = @_;
                 return $obj->website->name;
             },

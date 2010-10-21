@@ -237,8 +237,9 @@ sub list_props {
             },
         },
         created_on => {
-            base  => '__virtual.created_on',
-            order => 400,
+            base    => '__virtual.created_on',
+            display => 'default',
+            order   => 400,
         },
         role_id => {
             auto    => 1,

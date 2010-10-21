@@ -35,16 +35,18 @@ sub list_props {
             base  => 'blog.name',
         },
         blog_count => {
-            label => 'Blogs',
-            order => 200,
-            base  => '__virtual.object_count',
+            label       => 'Blogs',
+            order       => 200,
+            base        => '__virtual.object_count',
+            display     => 'default',
             count_class => 'blog',
             count_col   => 'parent_id',
             filter_type => 'blog_id',
             list_screen => 'blog',
         },
         page_count    => {
-            base => 'blog.page_count',
+            base      => 'blog.page_count',
+            display   => 'default',
             html_link => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
