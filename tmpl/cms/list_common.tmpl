@@ -212,6 +212,15 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 
 <mt:setvarblock name="jq_js_include" prepend="1">
 
+jQuery.extend(jQuery.validator.messages, {
+  required: "<__trans phrase="This field is required.">",
+  email: "<__trans phrase="Please enter a valid email address.">",
+  url: "<__trans phrase="Please enter a valid URL.">",
+  date: "<__trans phrase="Please enter a valid date.">",
+  number: "<__trans phrase="Please enter a valid number.">",
+  digits: "<__trans phrase="Please enter only digits">",
+});
+
 jQuery('#<mt:var name="object_type">-listing-form').validate({
   ignore: '.ignore-validate',
   onsubmit: false,
