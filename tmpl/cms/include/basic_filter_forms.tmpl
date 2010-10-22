@@ -27,6 +27,13 @@
         <option value="less_equal"><__trans phrase="Less equal"></option>
     </select>
 </mt:SetVarTemplate>
+<mt:SetVarBlock name="jq_js_include" append="1">
+    jQuery.validator.addClassRules("prop-integer",{
+        required: true,
+        digits: true
+    });
+</mt:SetVarBlock>
+
 
 <mt:SetVarTemplate name="filter_form_future_date">
     <select class="<mt:var name="type">-option filter-date">
@@ -45,6 +52,7 @@
     </span>
 </mt:SetVarTemplate>
 
+
 <mt:SetVarTemplate name="filter_form_date">
     <select class="<mt:var name="type">-option filter-date">
         <option value="range"><__trans phrase="Range"></option>
@@ -59,6 +67,22 @@
     <label class="days"><__trans phrase="Days "><input type="text" class="<mt:var name="type">-days text days" /></label>
     </span>
 </mt:SetVarTemplate>
+<mt:SetVarBlock name="jq_js_include" append="1">
+    jQuery.validator.addMethod('datetime', function( value, element){
+        return this.optional(element) || /^\d{4}\-\d{2}\-\d{2}/.test(value);
+    }, '<__trans phrase="Invalid Date time format.">');
+    jQuery.validator.addClassRules({
+        datetime: {
+            required: true,
+            datetime: true
+        },
+        days: {
+            required: true,
+            digits: true
+        }
+    });
+</mt:SetVarBlock>
+
 
 <mt:SetVarTemplate name="filter_form_single_select">
     <select class="<mt:var name="type">-value">

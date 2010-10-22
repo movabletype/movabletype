@@ -210,6 +210,23 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
   </div>
 </div>
 
+<mt:setvarblock name="jq_js_include" prepend="1">
+
+jQuery('#<mt:var name="object_type">-listing-form').validate({
+  ignore: '.ignore-validate',
+  onsubmit: false,
+  errorClass: "msg-error",
+  errorPlacement: function (error, element) {
+    error
+      .removeAttr('generated')
+      .prependTo(element.parents('.fields'));
+  },
+});
+
+
+
+</mt:setVarBlock>
+
 <mt:setvarblock name="jq_js_include" append="1">
 
 jQuery.event.special.listReady = {
@@ -222,7 +239,7 @@ jQuery.event.special.listReady = {
 };
 
 jQuery(window).bind( 'ajaxStart', function() {
-    jQuery('.msg-error').remove();
+    jQuery('#msg-block .msg-error').remove();
   });
 
 var line = '<th class="col head cb"<mt:unless name="has_list_actions"> style="display: none;"</mt:unless>><input type="checkbox" /></th>';
@@ -780,7 +797,7 @@ function renderList(mode, columns, values, limit, page ) {
       if (mode == 'save_filter' || mode == 'delete_filter') {
         renderFilterList();
       }
-      if (!jQuery('.msg-error').length) {
+      if (!jQuery('#msg-block .msg-error').length) {
         jQuery('#dialog_save_filter').dialog('close');
       } else {
         if (jQuery('#dialog_save_filter:visible').length) {
@@ -1033,7 +1050,10 @@ function filterItem(type, datepicker_off) {
         monthNames: ['-01','-02','-03','-04','-05','-06','-07','-08','-09','-10','-11','-12'],
         showMonthAfterYear: true,
         prevText: '&lt;',
-        nextText: '&gt;'
+        nextText: '&gt;',
+        onSelect: function( dateText, inst ) {
+          inst.input.valid();
+        }
       });
   }
   return $item;
@@ -1057,6 +1077,10 @@ jQuery('#additem').click(function() {
 });
 
 jQuery('#apply').click(function() {
+  jQuery('#msg-block .msg-error').remove();
+  var ok = 1;
+  jQuery('#filter-detail').find('input:visible').each( function(){ if ( !jQuery(this).valid() ) ok = 0 } );
+  if ( !ok ) return false;
   jQuery('input[name=filter_id]').val('');
   itemValues()
   renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
@@ -1064,7 +1088,10 @@ jQuery('#apply').click(function() {
 });
 
 jQuery('#save').click(function() {
-  jQuery('.msg-error').remove();
+  jQuery('#msg-block .msg-error').remove();
+  var ok = 1;
+  jQuery('#filter-detail').find('input:visible').each( function(){ if ( !jQuery(this).valid() ) ok = 0 } );
+  if ( !ok ) return false;
   if (jQuery('#filter_id').val()) {
     jQuery('input[name=filter_name]').val(jQuery('#filter_name').val());
     jQuery('input[name=filter_id]').val(jQuery('#filter_id').val());
@@ -1084,7 +1111,10 @@ jQuery('#save').click(function() {
 });
 
 jQuery('#saveas').click(function() {
-  jQuery('.msg-error').remove();
+  jQuery('#msg-block .msg-error').remove();
+  var ok = 1;
+  jQuery('#filter-detail').find('input:visible').each( function(){ if ( !jQuery(this).valid() ) ok = 0 } );
+  if ( !ok ) return false;
   jQuery('input[name=filter_name]').val('');
   jQuery('input[name=filter_id]').val('');
   jQuery('#dialog_save_filter')
@@ -1440,6 +1470,5 @@ else
 <mt:else>
 renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
 </mt:if>
-
 </mt:setvarblock>
 <mt:include name="include/footer.tmpl">
