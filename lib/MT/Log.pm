@@ -241,6 +241,7 @@ sub list_props {
                 my $id = $app->param('filter_val');
                 return MT->translate( 'Showing only ID: [_1]',  $id);
             },
+            display => 'none',
         },
     };
 }
