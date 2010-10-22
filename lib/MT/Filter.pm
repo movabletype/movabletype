@@ -431,3 +431,147 @@ sub pack_grep {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+MT::Filter - Movable Type filter record
+
+=head1 SYNOPSIS
+
+    use MT::Filter;
+    my $filter = MT::Filter->new;
+    $filter->object_ds('entry');
+    $filter->items([
+        {
+            type => 'title',
+            args => {
+                option => 'equal',
+                string => 'foo',
+            },
+        }
+        {
+            type => 'created_on',
+            args => {
+                option => 'after',
+                origin => '2010-10-21',
+            },
+        }
+    ]);
+    my @objs = $filter->load_objects;
+    $filter->save
+        or die $filter->errstr;
+
+=head1 DESCRIPTION
+
+An I<MT::Filter> object represents a filter that user creates in each listing screen.
+It contains the detail of filtering, and also can execute the filter and fetch the
+objects that can pass the filter.
+
+=head1 USAGE
+
+As a subclass of I<MT::Object>, I<MT::Filter> inherits all of the
+data-management and -storage methods from that class; thus you should look
+at the I<MT::Object> documentation for details about creating a new object,
+loading an existing object, saving an object, etc.
+
+The following methods are unique to the I<MT::Filter> interface:
+
+=head2 $filter->count_objects( %options )
+
+Returns a number of objects which specified by the filter.
+
+=over 4
+
+=item *  terms
+
+Basic temrs which passed to I<Data::ObjectDriver> load method.
+
+=item *  args
+
+Basic args which passed to I<Data::ObjectDriver> load method.
+
+=back
+
+=head2 $filter->load_objects( %options )
+
+Execute the filter and returns loaded objects.
+
+=over 4
+
+=item *  terms => $terms
+
+Basic temrs which passed to I<Data::ObjectDriver> load method.
+
+=item *  args => $args
+
+Basic args which passed to I<Data::ObjectDriver> load method.
+
+=item *  sort_by => "property"
+
+Specify the property id to sort to. The id MUST be combined to
+I<MT::ListProperty> object that can execute sorting.
+
+=item *  sort_order => "ascend|descend"
+
+To be used together with a scalar I<sort> value; specifies the sort
+order (ascending or descending). The default is C<ascend>.
+
+=item *  limit => "N"
+
+Rather than loading all of the matching objects (the default), load only
+C<N> objects.
+
+=item *  offset => "M"
+
+To be used together with I<limit>; rather than returning the first C<N>
+matches (the default), return matches C<M> through C<N + M>.
+
+=back
+
+=head2 $filter->append_item( $item )
+
+Add filter item to filter object.
+
+=head1 DATA ACCESS METHODS
+
+The I<MT::Filter> object holds the following pieces of data. These fields can
+be accessed and set using the standard data access methods described in the
+I<MT::Object> documentation.
+
+=over 4
+
+=item * id
+
+The numeric ID of the filter.
+
+=item * blog_id
+
+The numeric ID of the blog in which this filter has been created.
+
+=item * author_id
+
+The numeric ID of the author who created this filter.
+
+=item * label
+
+The label of the filter.
+
+=item * items
+
+The filter items that contains the detail of filtering logic based on I<MT::ListProperty>
+data tree.
+
+=back
+
+=head1 FILTER ITEMS
+
+Items is an arrey ref of the hash ref contains keys I<type> and I<args>. Each hash ref,
+called I<Item>, is combined to proper ListProperty which specified by filter object's
+object_ds and I<type> value, and give I<args> to ListProperty for executing the filter.
+
+=head1 AUTHOR & COPYRIGHTS
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut
