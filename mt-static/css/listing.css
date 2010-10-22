@@ -138,18 +138,23 @@ tfoot .col.head{
     background-image: url(../images/arrow/arrow-sort-bottom.png);
 }
 
-/* -- Sub Column */
+/* -- Sub Columns */
 .col .description {
     margin: 0.75em 0 0;
-    font-size: 90%;
+    font-size: 87%;
+}
+.col .user-info {
+    overflow: hidden;
+}
+.col .user-info-item {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .col .icon {
     display: inline-block;
     margin-right: 3px;
     vertical-align: top;
-}
-.col .userpic img {
-    border: 1px solid #c0c6c9;
 }
 .col .picture {
     margin-bottom: 0;
@@ -157,8 +162,12 @@ tfoot .col.head{
 .col .picture img {
     border: 0;
 }
-.col .thumbnail {
+.col .thumbnail, 
+.col .userpic {
     border: 1px solid #c0c6c9;
+}
+.col .userpic .icon {
+    margin: 0;
 }
 .col .reply-link {
     margin-left: 15px;

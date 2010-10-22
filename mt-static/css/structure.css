@@ -90,6 +90,15 @@ pre {
     border: 1px solid #c0c6c9;
 }
 
+.userpic {
+    position: relative;
+}
+.userpic .icon {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
 .sticky-label {
     display: inline-block;
     margin-right: 10px;

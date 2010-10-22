@@ -513,7 +513,7 @@ sub _bulk_author_name_html {
     for my $obj ( @$objs ) {
         my $userpic_url;
         if ( my $userpic = $userpic{ $obj->userpic_asset_id || 0 } ) {
-            ( $userpic_url ) = $userpic->thumbnail_url( Width => 12, Height => 12, Square => 1 );
+            ( $userpic_url ) = $userpic->thumbnail_url( Width => 36, Height => 36, Square => 1 );
         }
         else {
             $userpic_url = MT->static_path . 'images/default-userpic-36.jpg';
@@ -571,15 +571,17 @@ sub _bulk_author_name_html {
         my $out = qq{
             <div class="userpic picture small ">
                 <img src="$userpic_url" />
-                <img alt="$auth_label" src="$auth_img" class="auth-type" />
-                <img alt="$status_label" src="$status_img" class="status $lc_status_label" />
+                <img alt="$auth_label" src="$auth_img" width="12" height="12" class="icon auth-type" />
             </div>
+            <span class="icon status $status_label">
+                <img alt="$status_label" src="$status_img" class="icon status $lc_status_label" />
+            </span>
             <span class="username"><a href="$edit_link">$name</a></span>
         };
         if ( $url || $email ) {
-            $out .= q{<ul class="description">};
-            $out .= qq{<li><img alt="Email "src="$mail_icon" />: <a href="mailto:$email">$email</a></li>} if $email;
-            $out .= qq{<li><img alt="URL" src="$view_icon" />: <a href="$url" target="_blank">$url</a></li>} if $url;
+            $out .= q{<ul class="user-info description">};
+            $out .= qq{<li class="user-info-item user-email"><img alt="Email "src="$mail_icon" /> <a href="mailto:$email" title="$email">$email</a></li>} if $email;
+            $out .= qq{<li class="user-info-item user-url"><img alt="URL" src="$view_icon" /> <a href="$url" title="$url">$url</a></li>} if $url;
             $out .= q{</ul>};
         }
         push @results, $out;
