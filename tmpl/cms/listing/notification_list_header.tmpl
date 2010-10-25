@@ -145,10 +145,12 @@
         jQuery('#create-inline-notification').show();
         jQuery('#url').val('');
         jQuery('#email').val('').focus();
+        jQuery('#content-actions').hide();
     }
 
     function cancelCreateMode () {
         jQuery('#create-inline-notification').hide();
+        jQuery('#content-actions').show();
         current_edit = 0;
     }
 

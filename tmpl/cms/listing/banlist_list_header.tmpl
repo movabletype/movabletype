@@ -50,14 +50,14 @@
 
 <mt:setvarblock name="jq_js_include" append="1">
     function openCreateMode () {
-        jQuery('#create-ip').hide();
+        jQuery('#content-actions').hide();
         jQuery('#create-inline-ipban').show();
         jQuery('#actions-bar-top').hide();
         jQuery('#ip-address').val('').focus();
     }
 
     function closeCreateMode () {
-        jQuery('#create-ip').show();
+        jQuery('#content-actions').show();
         jQuery('#create-inline-ipban').hide();
         jQuery('#actions-bar-top').show();
         current_edit = 0;
