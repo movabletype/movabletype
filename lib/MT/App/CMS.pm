@@ -542,7 +542,7 @@ sub core_content_actions {
         'banlist' => {
             'ban_ip' => {
                 class => 'icon-create',
-                label => 'Ban IP Address',
+                label => 'Add IP Address',
                 id    => 'action-ban-ip',
                 order => 100,
             },
