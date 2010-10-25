@@ -53,9 +53,10 @@ sub save {
 
     # Search duplicate.
     if (my $dupe = $filter_class->load(
-            {   label     => $label,
-                object_ds => $ds,
+            {
                 author_id => $app->user->id,
+                object_ds => $ds,
+                label     => $label,
                 ( $fid ? ( id => { not => $fid } ) : () ),
             },
             {   limit      => 1,

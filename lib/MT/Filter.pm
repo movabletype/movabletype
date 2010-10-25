@@ -23,6 +23,17 @@ __PACKAGE__->install_properties(
         datasource  => 'filter',
         primary_key => 'id',
         audit       => 1,
+        indexes => {
+            author_id => 1,
+            created_on  => 1,
+            modified_on => 1,
+            label => 1,
+
+            # Load by author with ds
+            author_ds => {
+                columns => [ 'author_id', 'object_ds' ],
+            },
+        },
     }
 );
 
