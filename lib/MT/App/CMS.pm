@@ -550,7 +550,7 @@ sub core_content_actions {
         'notification' => {
             'add_contact' => {
                 class => 'icon-create',
-                label => 'Create Contact',
+                label => 'Add Contact',
                 id    => 'action-create-contact',
                 order => 100,
             },
