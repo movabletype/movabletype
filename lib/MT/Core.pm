@@ -1112,14 +1112,16 @@ BEGIN {
             },
             notification => {
                 object_label => 'AddressBook',
-                condition => sub {
+                condition    => sub {
                     my $app = shift;
                     return 1 if MT->config->EnableAddressbook;
-                    $app->errtrans('Address Book is disabled by system configuration.');
+                    $app->errtrans(
+                        'Address Book is disabled by system configuration.');
                 },
-                permission => 'access_to_notification_list',
-                primary => [ 'email', 'url' ],
+                permission       => 'access_to_notification_list',
+                primary          => [ 'email', 'url' ],
                 default_sort_key => 'created_on',
+                screen_label     => 'Manage Address Book',
             },
             filter => {
                 object_label => 'Filter',
