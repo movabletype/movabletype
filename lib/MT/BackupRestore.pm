@@ -61,6 +61,9 @@ sub core_backup_instructions {
         'objectasset'   => {
             'order' => 510
         },
+        'filter'        => {
+            'order' => 510
+        },
         # Ping should be backed up after Trackback.
         'tbping'        => {
             'order' => 520
@@ -1478,7 +1481,18 @@ sub parents {
     my $obj = shift;
     {
         author_id => { class => MT->model('author'), optional => 1 },
-        blog_id => [ MT->model('blog'), MT->model('website') ],
+    };
+}
+
+sub backup_terms_args {
+    my $class = shift;
+    my ($blog_ids) = @_;
+
+    return {
+        terms => undef,
+        args => {
+            join => [ MT->model('filter'), 'author_id', undef, { unique => 1 } ],
+        },
     };
 }
 
