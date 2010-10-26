@@ -4339,6 +4339,9 @@ sub view {
 
 sub setup_filtered_ids {
     my $app = shift;
+    my $select_all = $app->param('all_selected');
+    $app->param('all_selected', undef);
+    return unless $select_all;
     my $blog_id = $app->param('blog_id');
     my $blog = $app->blog;
     my $debug = {};
@@ -4357,16 +4360,37 @@ sub setup_filtered_ids {
     else {
         $filteritems = [];
     }
+    my $ds = $app->param('_type');
     my $filter = MT->model('filter')->new;
     $filter->set_values({
-        object_ds => $app->param('_type'),
+        object_ds => $ds,
         items     => $filteritems,
         author_id => $app->user->id,
         ( $blog ? ( blog_id   => $blog->id ) : () ),
     });
-    my $objs = $filter->load_objects(
-        ( $blog ? ( blog_id => $blog->is_blog ? $blog_id : [ $blog->id, map { $_->id } @{$blog->blogs} ] ) : () ),
-    );
+    my $scope
+        = !$blog         ? 'system'
+        : $blog->is_blog ? 'blog'
+        :                  'website';
+    my $blog_ids
+        = !$blog         ? []
+        : $blog->is_blog ? [ $blog_id ]
+        :                  [ $blog->id, map { $_->id } @{ $blog->blogs } ];
+    my $terms = {};
+    $terms->{blog_id} = $blog_ids if $blog;
+    my $args = {};
+    my $opts = {
+        terms      => $terms,
+        args       => $args,
+        scope      => $scope,
+        blog       => $blog,
+        blog_id    => $blog_id,
+        blog_ids   => $blog_ids,
+    };
+
+    MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds, $app, $filter, $opts, [] );
+    my $objs = $filter->load_objects(%$opts)
+        or die $filter->errstr;
     $app->param('id', map { $_->id } @$objs );
 }
 

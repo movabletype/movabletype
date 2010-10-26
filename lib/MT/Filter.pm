@@ -256,8 +256,8 @@ sub load_objects {
         || ( $sort_prop && ( $sort_prop->has('sort_method')
                              || $sort_prop->has('bulk_sort')));
     if (!$has_post_process) {
-        $args->{limit}  = $limit;
-        $args->{offset} = $offset;
+        $args->{limit}  = $limit if $limit;
+        $args->{offset} = $offset if $offset;
     }
 
     ## It's time to load now.
@@ -269,7 +269,8 @@ sub load_objects {
         if ( $sort_result && 'ARRAY' eq ref $sort_result ) {
             return if !scalar @$sort_result;
             if ( !ref $sort_result->[0] ) {
-                @objs = $class->load({ id => $sort_result });
+                @objs = $class->load({ id => $sort_result })
+                    or return $self->error( $class->errstr );
             }
             else {
                 @objs = @$sort_result;
@@ -277,12 +278,12 @@ sub load_objects {
         }
         else {
             @objs = $class->load( $terms, $args )
-                or return;
+                or return $self->error( $class->errstr );
         }
     }
     else {
         @objs = $class->load( $terms, $args )
-            or return;
+            or return $self->error( $class->errstr );
     }
 
     for my $item (@grep_items) {
