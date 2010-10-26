@@ -545,7 +545,7 @@ sub _bulk_author_name_html {
     my %userpic  = map { $_->id => $_ } @userpics;
     my @results;
     my $mail_icon = MT->static_path . 'images/status_icons/email.gif';
-    my $view_icon = MT->static_path . 'images/status_icons/view.gif';
+    my $view_icon = MT->static_path . 'images/status_icons/link.gif';
     for my $obj ( @$objs ) {
         my $userpic_url;
         if ( my $userpic = $userpic{ $obj->userpic_asset_id || 0 } ) {
