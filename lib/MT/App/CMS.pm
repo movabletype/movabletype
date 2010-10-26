@@ -1546,6 +1546,10 @@ sub core_menus {
             label => "Assets",
             order => 400,
         },
+        'tag' => {
+            label => "Tags",
+            order => 450,
+        },
         'feedback' => {
             label => "Comments",
             order => 500,
@@ -1699,15 +1703,6 @@ sub core_menus {
             permission => 'edit_categories',
             view       => "blog",
         },
-        'entry:tag' => {
-            label             => "Tags",
-            order             => 400,
-            mode              => 'list',
-            args              => { _type => 'tag', filter_key => 'entry' },
-            permission        => 'edit_tags',
-            system_permission => 'administer',
-            view              => [ "blog" ] ,
-        },
         'entry:view_category' => {
             order      => 10000,
             mode       => 'view',
@@ -1764,15 +1759,6 @@ sub core_menus {
             permission => 'manage_pages',
             view       => [ "blog", 'website' ],
         },
-        'page:tag' => {
-            label             => "Tags",
-            order             => 400,
-            mode              => 'list',
-            args              => { _type => 'tag', filter_key => 'page' },
-            permission        => 'edit_tags',
-            system_permission => 'administer',
-            view              => [ "blog", 'website' ],
-        },
         'page:view_folder' => {
             order      => 10000,
             mode       => 'view',
@@ -1821,15 +1807,6 @@ sub core_menus {
             permission => 'upload,edit_assets',
             view       => [ "blog", 'website' ],
         },
-        'asset:tag' => {
-            label             => "Tags",
-            order             => 400,
-            mode              => 'list',
-            args              => { _type => 'tag', filter_key => 'asset' },
-            permission        => 'edit_tags',
-            system_permission => 'administer',
-            view              => [ "blog", 'website' ],
-        },
         'asset:view_asset' => {
             order      => 10000,
             mode       => 'view',
@@ -1842,6 +1819,16 @@ sub core_menus {
             mode       => 'upload_file',
             view       => [ "blog", 'website', 'system' ],
             display    => 0,
+        },
+
+        'tag:manage' => {
+            label             => "Manage",
+            order             => 100,
+            mode              => 'list',
+            args              => { _type => 'tag' },
+            permission        => 'edit_tags',
+            system_permission => 'administer',
+            view              => [ "blog", 'website' ],
         },
 
         'feedback:comment' => {
