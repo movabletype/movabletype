@@ -1761,6 +1761,17 @@ sub dialog_grant_role {
 
 sub dialog_select_assoc_type {
     my $app = shift;
+
+    my $blog_id   = $app->param('blog_id');
+    my $this_user = $app->user;
+    PERMCHECK: {
+        last PERMCHECK
+            if $app->can_do('grant_role_for_all_blogs');
+        last PERMCHECK
+            if $blog_id && $this_user->permissions($blog_id)->can_do('grant_role_for_blog');
+        return $app->permission_denied()
+    }
+
     my $params;
 
     $params->{return_args} = '__mode=list&_type=association&blog_id=0';
