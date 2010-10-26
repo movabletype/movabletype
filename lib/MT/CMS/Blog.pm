@@ -1042,6 +1042,8 @@ sub rebuild_pages {
 
 sub rebuild_new_phase {
     my ($app) = @_;
+    $app->setup_filtered_ids
+        if $app->param('all_selected');
     require MT::CMS::Entry;
     MT::CMS::Entry::publish_entries($app);
 }

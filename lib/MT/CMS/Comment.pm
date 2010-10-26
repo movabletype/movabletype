@@ -1242,6 +1242,8 @@ sub set_item_visible {
 
     my $type    = $app->param('_type');
     my $class   = $app->model($type);
+    $app->setup_filtered_ids
+        if $app->param('all_selected');
     my @obj_ids = $app->param('id');
 
     if ( my $req_nonce = $app->param('nonce') ) {

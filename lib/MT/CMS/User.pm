@@ -959,6 +959,8 @@ sub set_object_status {
       || ( $type eq 'group' );
 
     my $class = $app->model($type);
+    $app->setup_filtered_ids
+        if $app->param('all_selected');
 
     my @sync;
     my $saved = 0;
@@ -1223,6 +1225,9 @@ sub remove_user_assoc {
     my $can_remove_administrator = $app->can_do('remove_administrator_association');
 
     my $blog_id = $app->param('blog_id');
+
+    $app->setup_filtered_ids
+        if $app->param('all_selected');
     my @ids = $app->param('id');
     return $app->errtrans("Invalid request.")
         unless $blog_id && @ids;

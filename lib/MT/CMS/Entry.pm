@@ -312,7 +312,7 @@ sub edit {
     $param->{dirty} = $q->param('dirty') ? 1 : 0;
 
     if ($id) {
-        my $cats = $obj->categories; 
+        my $cats = $obj->categories;
         %places = map { $_->id => 1 } @$cats;
     }
     my $cats = $q->param('category_ids');
@@ -2515,6 +2515,7 @@ sub delete {
     $app->validate_magic() or return;
     require MT::Blog;
     my $q       = $app->param;
+
     my $blog;
     if ( my $blog_id = $q->param('blog_id') ) {
         $blog = MT::Blog->load($blog_id)
@@ -2525,6 +2526,8 @@ sub delete {
         ( ( $blog && $blog->count_static_templates('Individual') == 0 )
             || MT::Util->launch_background_tasks() ) ? 1 : 0;
 
+    $app->setup_filtered_ids
+        if $app->param('all_selected');
     my %rebuild_recipe;
     for my $id ( $q->param('id') ) {
         my $class = $app->model("entry");

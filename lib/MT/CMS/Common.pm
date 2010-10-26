@@ -1594,6 +1594,8 @@ sub delete {
     my $author  = $app->user;
 
     $app->validate_magic() or return;
+    $app->setup_filtered_ids
+        if $app->param('all_selected');
 
     my ( $entry_id, $cat_id, $author_id ) = ( "", "", "" );
     my %rebuild_entries;
