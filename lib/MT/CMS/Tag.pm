@@ -596,8 +596,8 @@ sub cms_pre_load_filtered_list {
     push @{ $args->{joins} }, MT->model('objecttag')->join_on(
         'tag_id',
         { blog_id => $blog_id },
+        { unique => 1 },
     );
-
 }
 
 1;
