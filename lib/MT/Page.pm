@@ -97,6 +97,8 @@ sub list_props {
             base   => 'entry.tag',
             tag_ds => 'entry',
         },
+        current_user  => { base => 'entry.current_user', label => 'My Pages', },
+        author_status => { base => 'entry.author_status' },
     };
 }
 

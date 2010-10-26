@@ -566,6 +566,47 @@ sub list_props {
         tag => {
             base => '__virtual.tag',
         },
+        current_user => {
+            base            => '__common.current_user',
+            label           => 'My Entries',
+            filter_editable => 1,
+        },
+        author_status => {
+            base    => '__virtual.single_select',
+            display => 'none',
+            label   => 'Author Status',
+            single_select_options => [
+                { label => 'Deleted Users',  value => 'deleted', },
+                { label => 'Enabled Users',  value => 'enabled', },
+                { label => 'Disabled Users', value => 'disabled', },
+            ],
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $val = $args->{value};
+                if ( $val eq 'deleted' ) {
+                    my @all_authors = MT->model('author')->load(
+                        undef,
+                        { fetchonly => { id => 1 }, },
+                    );
+                    return {
+                        author_id => { not => [ map { $_->id } @all_authors ] },
+                    };
+                }
+                else {
+                    my $status = $val eq 'enabled' ? MT::Author::ACTIVE()
+                                                   : MT::Author::INACTIVE();
+                    $db_args->{joins} ||= [];
+                    push @{ $db_args->{joins} }, MT->model('author')->join_on(
+                        undef,
+                        {
+                            id => \'= entry_author_id',
+                            status => $status,
+                        },
+                    );
+                }
+            },
+        },
     };
 }
 
