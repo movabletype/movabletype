@@ -20,13 +20,13 @@
 
     <mt:setvarblock name="table_header">
       <tr>
-        <th class="col head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-        <th class="col head template-name primary"><__trans phrase="Template Name"></th>
+        <th class="col head cb"><span class="col-label"><input type="checkbox" name="id-head" value="all" class="select" /></span></th>
+        <th class="col head template-name primary"><span class="col-label"><__trans phrase="Template Name"></span></th>
       <mt:if name="template_type" eq="index">
-        <th class="col head output-file"><__trans phrase="Output File"></th>
+        <th class="col head output-file"><span class="col-label"><__trans phrase="Output File"></span></th>
       </mt:if>
       <mt:if name="template_type" eq="archive">
-        <th class="col head output-file"><__trans phrase="Archive Path"></th>
+        <th class="col head output-file"><span class="col-label"><__trans phrase="Archive Path"></span></th>
       </mt:if>
       </tr>
     </mt:setvarblock>

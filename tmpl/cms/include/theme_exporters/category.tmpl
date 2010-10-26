@@ -3,9 +3,9 @@
 
 <mt:setvarblock name="table_header">
   <tr>
-    <th class="col head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-    <th class="col head display-name primary"><__trans phrase="Category Name"></th>
-    <th class="col head description primary"><__trans phrase="Description"></th>
+    <th class="col head cb"><span class="col-label"><input type="checkbox" name="id-head" value="all" class="select" /></span></th>
+    <th class="col head display-name primary"><span class="col-label"><__trans phrase="Category Name"></span></th>
+    <th class="col head description primary"><span class="col-label"><__trans phrase="Description"></span></th>
   </tr>
 </mt:setvarblock>
 
@@ -31,9 +31,9 @@
            />
       </td>
       <td class="col display-name">
-        <span style="margin-left: <mt:var name="category_pixel_depth">px;">
+        <div style="margin-left: <mt:var name="category_pixel_depth">px;">
           <mt:var name="category_label" escape="html">
-        </span>
+        </div>
       </td>
       <td class="col description">
         <mt:var name="category_description" escape="html">
