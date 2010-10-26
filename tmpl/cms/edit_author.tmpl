@@ -13,7 +13,7 @@
 </mt:if>
 
 <mt:setvarblock name="related_content">
-<$mtapp:PageActions$>
+<mtapp:PageActions>
 </mt:setvarblock>
 
 <mt:setvarblock name="system_msg" id="system_msg">
@@ -37,14 +37,14 @@
   <mtapp:statusmsg
      id="generic-error"
      class="error"
-     can_close="1">
+     can_close="0">
     <mt:var name="error">
   </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
 
 <mt:setvarblock name="html_head" append="1">
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/client.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
 </mt:setvarblock>
 
 <mt:setvarblock name="related_content">
@@ -175,7 +175,7 @@ TC.attachLoadEvent(init);
     <mtapp:setting
        id="status"
        label="<__trans phrase="_USER_STATUS_CAPTION">"
-       label_class="<$mt:var name="user_status"$>"
+       label_class="left-label <mt:var name="user_status">"
        hint="<__trans phrase="Status of user in the system. Disabling a user prevents that person from using the system but preserves their content and history.">">
       <select name="status" id="status" class="half-width" onchange="toggleDisabled(this.value);">
         <option <mt:if name="status_enabled">selected="selected"</mt:if> value="1"><__trans phrase="_USER_ENABLED"></option>
