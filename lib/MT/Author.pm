@@ -117,12 +117,12 @@ sub list_props {
                 {
                     class   => 'userpic',
                     label   => 'Userpic',
-                    display => 'default',
+                    display => 'optional',
                 },
                 {
                     class   => 'user-info',
                     label   => 'User Info',
-                    display => 'default',
+                    display => 'optional',
                 },
             ],
             bulk_html  => \&_bulk_author_name_html,
@@ -266,12 +266,12 @@ sub commenter_list_props {
                 {
                     class   => 'userpic',
                     label   => 'Userpic',
-                    display => 'default',
+                    display => 'optional',
                 },
                 {
                     class   => 'user-info',
                     label   => 'User Info',
-                    display => 'default',
+                    display => 'optional',
                 },
             ],
             bulk_html => \&_bulk_author_name_html,
@@ -381,12 +381,12 @@ sub member_list_props {
                 {
                     class   => 'userpic',
                     label   => 'Userpic',
-                    display => 'default',
+                    display => 'optional',
                 },
                 {
                     class   => 'user-info',
                     label   => 'User Info',
-                    display => 'default',
+                    display => 'optional',
                 },
             ],
             order     => 100,

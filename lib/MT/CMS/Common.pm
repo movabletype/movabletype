@@ -849,7 +849,8 @@ sub list {
         if ( my $subfields = $prop->sub_fields ) {
             for my $sub ( @$subfields ) {
                 push @subfields, {
-                    display    => $cols{ $id . '.' . $sub->{class} },
+                    display    => $cols{ $id . '.' . $sub->{class} }
+                                      || $sub->{display} eq 'default',
                     class      => $sub->{class},
                     label      => $sub->{label},
                     is_default => $sub->{display} eq 'default' ? 1 : 0,
