@@ -113,6 +113,18 @@ sub list_props {
             label     => 'Name',
             display   => 'force',
             order     => 100,
+            sub_fields => [
+                {
+                    class   => 'userpic',
+                    label   => 'Userpic',
+                    display => 'default',
+                },
+                {
+                    class   => 'user-info',
+                    label   => 'User Info',
+                    display => 'default',
+                },
+            ],
             bulk_html  => \&_bulk_author_name_html,
         },
         nickname => {
@@ -250,6 +262,18 @@ sub commenter_list_props {
             label => 'Name',
             display => 'force',
             order => 100,
+            sub_fields => [
+                {
+                    class   => 'userpic',
+                    label   => 'Userpic',
+                    display => 'default',
+                },
+                {
+                    class   => 'user-info',
+                    label   => 'User Info',
+                    display => 'default',
+                },
+            ],
             bulk_html => \&_bulk_author_name_html,
         },
         nickname      => {
@@ -353,6 +377,18 @@ sub member_list_props {
             label     => 'Name',
             display   => 'force',
             bulk_html => \&_bulk_author_name_html,
+            sub_fields => [
+                {
+                    class   => 'userpic',
+                    label   => 'Userpic',
+                    display => 'default',
+                },
+                {
+                    class   => 'user-info',
+                    label   => 'User Info',
+                    display => 'default',
+                },
+            ],
             order     => 100,
         },
         nickname => {
