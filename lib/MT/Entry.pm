@@ -447,39 +447,14 @@ sub list_props {
             order => 700,
         },
         comment_count => {
-            base      => '__virtual.single_select',
-            col       => 'comment_count',
-            col_class => 'num',
+            auto      => 1,
             display   => 'default',
             label     => 'Comments',
             order     => 800,
-            terms => sub {
-                my ( $prop, $args ) = @_;
-                my $col = $prop->col;
-                if ( $args->{value} ) {
-                    return { $col => { '>' => 0 }};
-                }
-                else {
-                    return { $col => 0 };
-                }
-            },
-            sort => sub {
-                my $prop = shift;
-                my ( $terms, $args ) = @_;
-                $args->{sort} = $prop->col;
-            },
-            single_select_options => sub {
-                my $prop = shift;
-                return [
-                    { label => 'Has ' . $prop->label, value => 1 },
-                    { label => 'No ' . $prop->label, value => 0 },
-                ];
-            },
         },
         ping_count => {
-            base    => 'entry.comment_count',
+            auto    => 1,
             display => 'optional',
-            col     => 'ping_count',
             label   => 'Trackbacks',
             order   => 900,
         },
@@ -492,6 +467,11 @@ sub list_props {
             auto    => 1,
             display => 'none',
             label   => 'Extended',
+        },
+        excerpt => {
+            auto    => 1,
+            display => 'none',
+            label   => 'Excerpt',
         },
         status => {
             label => 'Status',

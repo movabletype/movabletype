@@ -73,6 +73,11 @@ sub list_props {
 
         text          => { base => 'entry.text' },
         text_more     => { base => 'entry.text_more' },
+        excerpt => {
+            base    => 'entry.excerpt',
+            display => 'none',
+            label   => 'Excerpt',
+        },
         authored_on   => {
             base    => 'entry.authored_on',
             display => 'optional',
