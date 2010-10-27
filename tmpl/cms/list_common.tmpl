@@ -462,9 +462,12 @@ function updateFilterSaveButtons (){
   }
   if ( allPass ) {
     jQuery('#toggle-filter-detail').hide();
+    jQuery('#allpass-filter').hide();
   }
-  else
+  else {
     jQuery('#toggle-filter-detail').show();
+    jQuery('#allpass-filter').show();
+  }
 }
 
 function openFilterRenameField() {
