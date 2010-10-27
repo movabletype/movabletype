@@ -245,10 +245,9 @@ jQuery('#<mt:var name="object_type">-listing-form').validate({
         jQuery('#validate-errors label[for=' + id + ']').parent('li').remove();
     }
     this.defaultShowErrors();
+    updateFilterSaveButtons();
   }
 });
-
-
 
 </mt:setVarBlock>
 
@@ -399,8 +398,6 @@ function renderFilterList() {
     jQuery('<li class="filter line" />').append(line).appendTo('#filter_list');
   }
   jQuery('#new_filter').click(function() {
-    jQuery('#saveas').hide();
-    jQuery('#save').show();
     jQuery('#filter-detail').show().parent('#filter').addClass('active');
     jQuery('#item_list').attr('selectedIndex', 0);
     jQuery('.filteritem').remove();
@@ -409,13 +406,15 @@ function renderFilterList() {
     jQuery('#filter_id').val('');
     updateItemList();
     jQuery('#dialog_filter').addClass('hidden');
+    editNewFilter = 1;
+    updateFilterSaveButtons();
   });
   jQuery('#dialog_filter .filter-label a:not(#new_filter)').click(function() {
     jQuery('#dialog_filter').addClass('hidden');
     jQuery(this).attr('href').match(/#(.*)/);
     var index = RegExp.$1;
     applyFilter(index);
-    jQuery('#saveas').show();
+    updateFilterSaveButtons();
     return false;
   });
   jQuery('#dialog_filter .delete-link').click(function() {
@@ -432,6 +431,29 @@ function renderFilterList() {
     startFiltersEdit();
   } else {
     finishFiltersEdit();
+  }
+}
+
+var editSysFilter = 0;
+var editNewFilter = 0;
+function updateFilterSaveButtons (){
+  if ( jQuery('#filter-detail div.filteritem').length > 0 ) {
+    jQuery('#apply').removeClass('disabled').removeAttr('disabled');
+
+    if ( editSysFilter )
+      jQuery('#save').addClass('disabled').attr('disabled', 'disabled');
+    else
+      jQuery('#save').removeClass('disabled').removeAttr('disabled');
+
+    if ( editNewFilter )
+      jQuery('#saveas').hide();
+    else
+      jQuery('#saveas').show();
+  }
+  else {
+    jQuery('#apply').addClass('disabled').attr('disabled','disabled');
+    jQuery('#save').addClass('disabled').attr('disabled', 'disabled');
+    jQuery('#saveas').hide();
   }
 }
 
@@ -830,6 +852,8 @@ function renderList(mode, columns, values, limit, page ) {
       }
       if (mode == 'save_filter' || mode == 'delete_filter') {
         renderFilterList();
+        editSysFilter = 0;
+        updateFilterSaveButtons();
       }
       if (!jQuery('#msg-block .msg-error').length) {
         jQuery('#dialog_save_filter').dialog('close');
@@ -1112,8 +1136,10 @@ jQuery('#additem').click(function() {
     .bind('click', function() {
       jQuery(this).parent('.filteritem').remove();
       updateItemList();
+      updateFilterSaveButtons();
     });
   updateItemList();
+  updateFilterSaveButtons();
 });
 
 jQuery('#apply').click(function() {
@@ -1193,7 +1219,8 @@ jQuery('#save-filter').click(function() {
   }
   itemValues();
   jQuery(window).one('listReady', function() {
-    jQuery('#saveas').show();
+    editNewFilter = 0;
+    updateFilterSaveButtons();
   });
   renderList('save_filter', cols, vals, jQuery('#row').val(), 1);
 });
@@ -1252,6 +1279,7 @@ function addItems(items, op) {
         .bind('click', function() {
           jQuery(this).parent('.filteritem').remove();
           updateItemList();
+          updateFilterSaveButtons();
         });
     }
     args = items[i].args;
@@ -1266,6 +1294,7 @@ function addItems(items, op) {
     }
   }
   updateItemList();
+  updateFilterSaveButtons();
 }
 
 jQuery('#dialog_filter .edit-filter').click(function() {
@@ -1311,10 +1340,10 @@ function applyFilter(index, no_render) {
     jQuery('#filter_name').val(name);
     jQuery('#filter_id').val(filter.id);
     current_id = filter.id;
-    if ( filter.can_save )
-      jQuery('#save').show();
+    if ( parseInt(filter.can_save) )
+      editSysFilter = 0;
     else
-      jQuery('#save').hide();
+      editSysFilter = 1;
     jQuery('input[name=filter_id]').val(filters[index].id);
     itemValues();
     if ( !no_render )
@@ -1498,10 +1527,8 @@ jQuery('#filter_name').val(initial_filter.label);
 jQuery('#filter_id').val(initial_filter.id);
 jQuery('input[name=filter_id]').val(initial_filter.id);
 jQuery('input[name=filter_name]').val(initial_filter.label);
-if ( initial_filter.can_save )
-  jQuery('#save').show();
-else
-  jQuery('#save').hide();
+
+editSysFilter = !parseInt(initial_filter.can_edit);
 
 if (jQuery('#disp_cols li:not(.hidden)').size() == 0)
   jQuery('#display_columns-field, #reset-display-options').hide();
@@ -1518,5 +1545,7 @@ else
 <mt:else>
 renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
 </mt:if>
+updateFilterSaveButtons();
+
 </mt:setvarblock>
 <mt:include name="include/footer.tmpl">

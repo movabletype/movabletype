@@ -921,6 +921,8 @@ sub list {
     my $allpass_filter = {
         label => MT->translate('(none)'),
         items => [],
+        can_edit => 0,
+        can_save => 0,
     };
     unshift @filters, $allpass_filter;
     $initial_filter = $allpass_filter
