@@ -919,12 +919,12 @@ sub list {
     require MT::CMS::Filter;
     my @filters = MT::CMS::Filter::filters( $app, $type );
     my $allpass_filter = {
-        label => MT->translate('(none)'),
+        label => MT->translate('All [_1]', $screen_settings->{object_label_plural} || $obj_class->class_label_plural ),
         items => [],
+        id    => '_allpass',
         can_edit => 0,
         can_save => 0,
     };
-    unshift @filters, $allpass_filter;
     $initial_filter = $allpass_filter
         unless $initial_filter;
     for my $filter ( @filters, $initial_filter ) {
@@ -965,6 +965,7 @@ sub list {
     $param{blog_id} = $blog_id || '0';
     $param{filters}        = $json->encode( \@filters );
     $param{initial_filter} = $json->encode($initial_filter);
+    $param{allpass_filter} = $json->encode($allpass_filter);
     $param{filters_raw}    = \@filters;
     $param{editable_filter_count} = scalar grep { $_->{can_edit} } @filters;
     $param{default_sort_key} = $default_sort;
@@ -1272,13 +1273,6 @@ sub filtered_list {
     require MT::CMS::Filter;
     my @filters = MT::CMS::Filter::filters( $app, $ds );
     my $editable_filter_count = scalar grep { $_->{can_edit} } @filters;
-    my $allpass_filter = {
-        label => MT->translate('(none)'),
-        items => [],
-        id    => '_allpass',
-        type  => '_allpass',
-    };
-    unshift @filters, $allpass_filter;
     for my $filter ( @filters ) {
         $filter->{label} = MT::Util::encode_html($filter->{label});
     }
