@@ -243,6 +243,10 @@ sub list_props {
             base           => '__virtual.tag',
             tagged_class => '*',
         },
+        id => {
+            base => '__virtual.id',
+            display => 'none',
+        },
     };
 }
 

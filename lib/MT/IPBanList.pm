@@ -56,6 +56,10 @@ sub list_props {
             display => 'default',
             order   => 300,
         },
+        modified_on => {
+            base => '__virtual.modified_on',
+            display => 'none',
+        },
     };
 }
 

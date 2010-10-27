@@ -174,6 +174,14 @@ sub list_props {
                 return;
             },
         },
+        is_private => {
+            base => '__virtual.single_select',
+            label => 'Is private',
+            single_select_options => [
+                { label => 'Is Private',  value => 1, },
+                { label => 'Not Private', value => 0, },
+            ],
+        },
         page_count => {
             base        => 'tag.entry_count',
             label       => 'Pages',

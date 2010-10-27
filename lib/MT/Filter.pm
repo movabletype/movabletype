@@ -106,6 +106,42 @@ sub list_props {
             display => 'default',
             order   => 300,
         },
+        author_status => {
+            base    => '__virtual.single_select',
+            display => 'none',
+            label   => 'Author Status',
+            single_select_options => [
+                { label => 'Deleted Users',  value => 'deleted', },
+                { label => 'Enabled Users',  value => 'enabled', },
+                { label => 'Disabled Users', value => 'disabled', },
+            ],
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $val = $args->{value};
+                if ( $val eq 'deleted' ) {
+                    my @all_authors = MT->model('author')->load(
+                        undef,
+                        { fetchonly => { id => 1 }, },
+                    );
+                    return {
+                        author_id => { not => [ map { $_->id } @all_authors ] },
+                    };
+                }
+                else {
+                    my $status = $val eq 'enabled' ? MT::Author::ACTIVE()
+                                                   : MT::Author::INACTIVE();
+                    $db_args->{joins} ||= [];
+                    push @{ $db_args->{joins} }, MT->model('author')->join_on(
+                        undef,
+                        {
+                            id => \'= filter_author_id',
+                            status => $status,
+                        },
+                    );
+                }
+            },
+        },
         object_ds => {
             base    => '__virtual.single_select',
             label   => 'For',

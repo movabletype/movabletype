@@ -214,6 +214,7 @@ sub list_props {
             label   => 'Website',
             order   => 800,
             display => 'default',
+            filter_editable => 0,
             raw     => sub {
                 my ( $prop, $obj ) = @_;
                 return $obj->website->name;
