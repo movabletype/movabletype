@@ -481,6 +481,7 @@ sub core_content_actions {
                 label => 'Delete all Spam trackbacks',
                 return_args => 1,
                 order => 100,
+                confirm_msg => 'Are you sure you want to remove all TrackBacks reported as spam?',
             },
         },
         'comment' => {
@@ -490,6 +491,7 @@ sub core_content_actions {
                 label => 'Delete all Spam comments',
                 return_args => 1,
                 order => 100,
+                confirm_msg => 'Are you sure you want to remove all comments reported as spam?',
             },
         },
         'role' => {
@@ -531,6 +533,7 @@ sub core_content_actions {
                 label      => 'Clear Activity Log',
                 mode       => 'reset_log',
                 order      => 100,
+                confirm_msg => 'Are you sure you want to reset the activity log?',
             },
             'download_log' => {
                 class => 'icon-download',

@@ -6,7 +6,7 @@
 <mt:setvarblock name="content_header">
 <ul id="content-actions" class="action-link-list">
 <mt:loop name-"content_actions">
-  <li><a href="<mt:var name="url">" class="icon-left<mt:if name"class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"<mt:if name="id">id=<mt:var name="id"></mt:if>><mt:var name="label"></a></li>
+  <li><a href="<mt:var name="url">" class="icon-left<mt:if name"class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"<mt:if name="id">id=<mt:var name="id"></mt:if><mt:if name="confirm_msg"> onclick="return confirm('<__trans phrase="<mt:var name="confirm_msg">">')"</mt:if>><mt:var name="label"></a></li>
 </mt:loop>
 </ul>
 </mt:setvarblock>
