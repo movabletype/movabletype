@@ -1481,6 +1481,7 @@ sub parents {
     my $obj = shift;
     {
         author_id => { class => MT->model('author'), optional => 1 },
+        blog_id   => { class => MT->model('blog')  , optional => 1 },
     };
 }
 
@@ -1491,7 +1492,7 @@ sub backup_terms_args {
     return {
         terms => undef,
         args => {
-            join => [ MT->model('filter'), 'author_id', undef, { unique => 1 } ],
+            join => [ MT->model('author'), undef, { id => \'=filter_author_id' }, { unique => 1 } ],
         },
     };
 }
