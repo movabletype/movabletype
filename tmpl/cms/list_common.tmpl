@@ -98,6 +98,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 <mt:include name="include/basic_filter_forms.tmpl">
 
 <div id="msg-block"></div>
+<ul id="validate-errors"></ul>
 
 <div id="listing" class="listing line has-filter">
   <div class="unit size1of1">
@@ -224,12 +225,27 @@ jQuery.extend(jQuery.validator.messages, {
 jQuery('#<mt:var name="object_type">-listing-form').validate({
   ignore: '.ignore-validate',
   onsubmit: false,
-  errorClass: "msg-error",
   errorPlacement: function (error, element) {
-    error
-      .removeAttr('generated')
-      .prependTo(element.parents('.fields'));
+    var id;
+    jQuery('#validate-errors').append(
+      jQuery('<li />').append(jQuery(error))
+    );
   },
+  showErrors: function( errorMap, errorList ) {
+    //jQuery('#msg-block').empty();
+    var successes = this.successList;
+    for ( var i = 0; i< successes.length; i++ ) {
+        var success = successes[i];
+        var id = success.name;
+        jQuery('#validate-errors label[for=' + id + ']').parent('li').remove();
+    }
+    for ( var i = 0; i< errorList.length; i++ ) {
+        var error = errorList[i];
+        var id = error.element.name;
+        jQuery('#validate-errors label[for=' + id + ']').parent('li').remove();
+    }
+    this.defaultShowErrors();
+  }
 });
 
 
@@ -286,15 +302,12 @@ var initial_filter = <mt:var name="initial_filter">;
 var current_id = initial_filter.id;
 var currentPage = 1;
 var magic_token = '<mt:var name="magic_token">';
+var inputCount = 0;
 
 function handleMessages( data ) {
   jQuery('#msg-block').empty();
   if ( data.error ) {
-    jQuery('#msg-block').append(
-      '<div class="msg msg-error">'
-      + data.error
-      + '<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />'
-      + '</div>');
+    showMessage( data.error, 'error');
     return false;
   }
   if ( !data.result ) return false;
@@ -302,15 +315,27 @@ function handleMessages( data ) {
   if ( !data.result.messages ) return true;
   for ( var i=0; i < messages.length; i++ ) {
     var msg   = messages[i];
-    var text  = msg.msg;
-    var cls   = msg.cls;
+    showMessage(msg.msg, msg.cls);
+  }
+  return true;
+}
+
+function showMessage( content, cls ){
+  if ( typeof content == 'object' ) {
+    jQuery('#msg-block').append(
+      jQuery('<div>')
+        .attr('class', 'msg msg-' + cls )
+        .append(content)
+        .append('<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />')
+    )
+  }
+  else {
     jQuery('#msg-block').append(
       '<div class="msg msg-' + cls + '">'
-      + text
+      + content
       + '<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />'
       + '</div>');
   }
-  return true;
 }
 
 function loginAgain(fn) {
@@ -1074,7 +1099,13 @@ jQuery('#additem').click(function() {
   $item
     .insertAfter('.selectfilter')
     .wrap('<div class="filteritem" />')
-    .find('.minus').hide();
+    .find('.minus').hide().end()
+    .find('input').each( function() {
+      var id = jQuery(this).attr('id') || jQuery(this).attr('name') || 'input-' + inputCount++;
+      jQuery(this)
+        .attr('id', id)
+        .attr('name', id);
+    });
   jQuery('#item_list').attr('selectedIndex', 0);
   jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item"></span>')
     .insertAfter($item)
@@ -1199,6 +1230,14 @@ function addItems(items, op) {
       prev_type = RegExp.$1;
     }
     var $item = filterItem(type);
+    $item.find('input').each( function() {
+      var id = jQuery(this).attr('id') || jQuery(this).attr('name') || 'input-' + inputCount++;
+      jQuery(this)
+        .attr('id', id)
+        .attr('name', id);
+    });
+
+
     if (op && type == prev_type) {
       $item
         .insertAfter($filtertype)
@@ -1207,7 +1246,7 @@ function addItems(items, op) {
       $item
         .insertAfter('.selectfilter')
         .wrap('<div class="filteritem" />')
-        .find('.minus').hide();
+        .find('.minus').hide().end();
       jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item"></span>')
         .insertAfter($item)
         .bind('click', function() {
