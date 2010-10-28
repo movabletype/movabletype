@@ -1309,6 +1309,7 @@ function addItems(items, op) {
     }
     args = items[i].args;
     for (var key in args) {
+      if ( typeof args[key] != 'string' && typeof args[key] != 'number' ) continue;
       // A sort of hack to decode HTML entities using jQuery.
       var decoded = jQuery('<div>').html( args[key] ).text();
       $item.find('.'+type+'-'+key).val( decoded );
