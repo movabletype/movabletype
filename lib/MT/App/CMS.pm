@@ -548,6 +548,9 @@ sub core_content_actions {
                 label => 'Add IP Address',
                 id    => 'action-ban-ip',
                 order => 100,
+                condition => sub {
+                    MT->app && MT->app->param('blog_id');
+                },
             },
         },
         'notification' => {
@@ -556,6 +559,9 @@ sub core_content_actions {
                 label => 'Add Contact',
                 id    => 'action-create-contact',
                 order => 100,
+                condition => sub {
+                    MT->app && MT->app->param('blog_id');
+                },
             },
         },
     };
@@ -2012,7 +2018,6 @@ sub core_menus {
             condition  => sub {
                 $app->config->ShowIPInformation;
             },
-            view              => [ "blog", 'website' ],
         },
         'settings:system' => {
             label      => "General",
@@ -2121,7 +2126,6 @@ sub core_menus {
             mode       => 'list',
             args       => { _type => 'notification' },
             permission => 'edit_notifications',
-            view       => [ "blog", 'website' ],
             condition  => sub {
                 return $app->config->EnableAddressBook;
             },
