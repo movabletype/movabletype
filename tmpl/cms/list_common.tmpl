@@ -408,6 +408,7 @@ function renderFilterList() {
     jQuery('#filter_id').val('');
     updateItemList();
     jQuery('#dialog_filter').addClass('hidden');
+    editSysFilter = 0;
     editNewFilter = 1;
     allPass = 0;
     updateFilterSaveButtons();
@@ -842,8 +843,10 @@ function renderList(mode, columns, values, limit, page ) {
       filters = data.result.filters;
       if ( data.result.label ) {
         jQuery('#opener').html(data.result.label);
+        jQuery('#filter_name').val(data.result.label);
       }
       if ( data.result.id ) {
+        jQuery('#filter_id').val(data.result.id);
         current_id = data.result.id;
       }
       editable_filter_count = data.result.editable_filter_count;
@@ -867,6 +870,7 @@ function renderList(mode, columns, values, limit, page ) {
       if (mode == 'save_filter' || mode == 'delete_filter') {
         renderFilterList();
         editSysFilter = 0;
+        editNewFilter = 0;
         updateFilterSaveButtons();
       }
       if (!jQuery('#msg-block .msg-error').length) {
@@ -1173,19 +1177,27 @@ jQuery('#save').click(function() {
   jQuery('#filter-detail').find('input:visible').each( function(){ if ( !jQuery(this).valid() ) ok = 0 } );
   if ( !ok ) return false;
   if (jQuery('#filter_id').val()) {
+    // Overwrite current filter.
     jQuery('input[name=filter_name]').val(jQuery('#filter_name').val());
     jQuery('input[name=filter_id]').val(jQuery('#filter_id').val());
     itemValues()
     renderList('save_filter', cols, vals, jQuery('#row').val(), 1);
   } else {
-    jQuery('input[name=filter_name]').val('');
+    // Create new filter.
+    var temp_base = 1;
+    var temp;
+    while ( 1 ) {
+      temp = trans('[_1] - Filter [_2]', '<mt:var name="object_label">', temp_base++);
+      if ( 0 == jQuery.grep(filters, function(f){ return f.label == temp }).length )
+          break;
+    }
+    jQuery('input[name=filter_name]').val(temp);
     jQuery('input[name=filter_id]').val('');
     jQuery('#dialog_save_filter').dialog({
       title: 'Save Filter',
       dialogClass: 'save',
       modal: true
-    })
-      .dialog('open');
+    }).dialog('open');
   }
   return false;
 });
@@ -1195,7 +1207,7 @@ jQuery('#saveas').click(function() {
   var ok = 1;
   jQuery('#filter-detail').find('input:visible').each( function(){ if ( !jQuery(this).valid() ) ok = 0 } );
   if ( !ok ) return false;
-  jQuery('input[name=filter_name]').val('');
+  jQuery('input[name=filter_name]').val(jQuery('#opener').text());
   jQuery('input[name=filter_id]').val('');
   jQuery('#dialog_save_filter')
     .dialog({
@@ -1203,8 +1215,7 @@ jQuery('#saveas').click(function() {
       dialogClass: 'save',
       width: 450,
       modal: true
-    })
-      .dialog('open');
+    }).dialog('open');
   return false;
 });
 
