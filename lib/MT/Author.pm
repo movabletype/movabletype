@@ -602,8 +602,8 @@ sub _bulk_author_name_html {
         my $lc_auth_label = lc $auth_label;
 
         my $name  = $obj->name;
-        my $email = $obj->email;
-        my $url   = $obj->url;
+        my $email = MT::Util::encode_html($obj->email);
+        my $url   = MT::Util::encode_html($obj->url);
         my $out = qq{
             <div class="userpic picture small ">
                 <img src="$userpic_url" />
