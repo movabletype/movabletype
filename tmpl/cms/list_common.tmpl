@@ -556,7 +556,7 @@ function removeFilter(element) {
   var remove_current = filters[index].id == current_id;
 
   if ( remove_current ) {
-    applyFilter(0, 1);
+    doApplyFilter(allpass_filter, 1);
     renderList({
       mode: 'delete_filter',
       id: filters[index].id,
