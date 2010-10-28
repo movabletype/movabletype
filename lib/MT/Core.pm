@@ -1062,7 +1062,7 @@ BEGIN {
                 },
                 view         => 'system',
                 scope_mode => 'none',
-                screen_label => 'Manage Commenter',
+                screen_label => 'Manage Commenters',
              },
             member => {
                 primary      => 'name',
