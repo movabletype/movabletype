@@ -1563,6 +1563,10 @@ sub core_menus {
             },
             order => 600,
         },
+        'commenter' => {
+            label => 'Commenters',
+            order => 625,
+        },
         'design' => {
             label => "Design",
             order => 700,
@@ -1629,8 +1633,8 @@ sub core_menus {
             permission => "administer",
             view       => "system",
         },
-        'user:commenter' => {
-            label      => "Manage Commenter",
+        'commenter:manage' => {
+            label      => "Manage",
             order      => 151,
             mode       => "list",
             args       => { _type => "commenter" },
