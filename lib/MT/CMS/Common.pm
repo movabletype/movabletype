@@ -754,8 +754,7 @@ sub list {
 
     my $list_prefs = $app->user->list_prefs || {};
     my $list_pref = $list_prefs->{$type}{$blog_id} || {};
-    ## FIXME: Hardcoded
-    my $rows = $list_pref->{rows} || 50;
+    my $rows = $list_pref->{rows} || 50;      ## FIXME: Hardcoded
     my $last_filter = $list_pref->{last_filter} || '';
     $last_filter = '' if $last_filter eq '_allpass';
     my $last_items = $list_pref->{last_items} || [];
@@ -893,9 +892,11 @@ sub list {
            editable              => $_->has('filter_editable') ? $_->filter_editable : 1,
         }}
         sort {
-              !$a->{order} ? 1
-            : !$b->{order} ? -1
-            : $a->{order} <=> $b->{order}
+              ( $a->item_order && $b->item_order )   ? $a->item_order <=> $b->item_order
+            : ( !$a->item_order && $b->item_order )  ? 1
+            : ( $a->item_order  && !$b->item_order ) ? -1
+            :                                          ( ref $a->label  ? $a->label->() : $a->label )
+                                                       cmp ( ref $b->label ? $b->label->() : $b->label );
         }
         grep {
             $_->can_filter( $scope )
