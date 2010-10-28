@@ -161,6 +161,11 @@ sub js_tag_check {
     my $type      = $app->param('_type') || 'entry';
     my $tag_class = $app->model('tag')
       or return $app->json_error( $app->translate("Invalid request.") );
+    require MT::Tag;
+    my $n8d = MT::Tag->normalize($name);
+    return $app->json_result( { valid => 0 } )
+        unless defined($n8d) && length($n8d);
+
     my $tag =
       $tag_class->load( { name => $name }, { binary => { name => 1 } } );
     my $class = $app->model($type)
@@ -176,7 +181,7 @@ sub js_tag_check {
         );
         undef $tag unless $exist;
     }
-    return $app->json_result( { exists => $tag ? 1 : 0 } );
+    return $app->json_result( { valid => 1, exists => $tag ? 1 : 0 } );
 }
 
 sub js_tag_list {

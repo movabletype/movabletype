@@ -13,7 +13,6 @@ function submitEdit( id, newname, oldname ) {
   // if old name matches new name, ignore submission (same as cancel)
   // if new name is already in our tagList array, warn user
   // if not in tagList and not in range of tagList tags, check with server.
-
   if ( newname == oldname ) {
     closeTagEditor();
     return false;
@@ -24,6 +23,7 @@ function submitEdit( id, newname, oldname ) {
       return false;
   }
 
+  var okgo = true;
   if ( tag_names[ newname ] ) {
     if (!confirm(trans(tag_rename_warning, oldname, newname))) {
       return false;
@@ -41,7 +41,15 @@ function submitEdit( id, newname, oldname ) {
         blog_id: <mt:var name="blog_id">
       },
       success: function(data) {
-        if ( !handleMessages(data) ) return false;
+        if ( !handleMessages(data) ) {
+          okgo = false;
+          return false;
+        }
+        if ( !data.result.valid ) {
+          alert(trans("Tag must have a valid name"));
+          okgo = false;
+          return false;
+        }
         if ( data.result.exists ) {
           if (!confirm(trans(tag_rename_warning, oldname, newname))) {
             return false;
@@ -54,11 +62,15 @@ function submitEdit( id, newname, oldname ) {
             removeFilter(element);
           });
         }
-        else
+        else {
+          okgo = false;
           alert('Ajax error: ' + status);
+        }
       }
     });
   }
+  if ( !okgo )
+    return false;
 
   renderList({
     mode: 'rename_tag',
