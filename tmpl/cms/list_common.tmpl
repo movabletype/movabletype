@@ -127,7 +127,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
           <input type="hidden" id="filter_id" value="" />
           <div class="mod filter-header">
             <__trans phrase="Filter:"> <a href="#" id="opener"><__trans phrase="Select Filter..."></a>
-            <span id="allpass-filter" class="item-action minus clickable icon-minus icon16 action-icon"><__trans phrase="Remove"></span>
+            <a href="#" id="allpass-filter" class="item-action minus clickable">[ <__trans phrase="Remove Filter"> ]</a>
             <a href="#" id="toggle-filter-detail" class="toggle-button detail-link">
               <img src="<$mt:var name="static_uri"$>images/arrow/arrow-toggle-big.png" />
             </a>
@@ -1346,6 +1346,7 @@ jQuery('#allpass-filter').click( function() {
   jQuery('#filter-detail').hide();
   jQuery('#filter').removeClass('active');
   doApplyFilter(allpass_filter);
+  return false;
 });
 
 function applyFilter(index, no_render) {

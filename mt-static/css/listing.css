@@ -224,6 +224,10 @@ tfoot .col.head{
     border-top-left-radius: 5px;
     -moz-border-radius: 5px 5px 0 0;
 }
+.filter-header #allpass-filter {
+    color: #C53D43;
+    font-size: 87%;
+}
 .filter-header .toggle-button {
     border-top-right-radius: 5px;
     -moz-border-radius: 0 5px 0 0;
@@ -308,10 +312,6 @@ tfoot .col.head{
 }
 .tool-link {
     margin: 0 0 0 0.5em;
-}
-.rename-link, 
-.rename-link:hover {
-    color: #c53d43;
 }
 
 /* - Asset Preview */
