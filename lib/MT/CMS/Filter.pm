@@ -96,11 +96,6 @@ sub save {
     if ( defined $list && !$list ) {
         my %res;
         my @filters = filters( $app, $ds );
-        my $allpass_filter = {
-            label => MT->translate('(none)'),
-            items => [],
-        };
-        unshift @filters, $allpass_filter;
         for my $filter ( @filters ) {
             $filter->{label} = MT::Util::encode_html($filter->{label});
         };
@@ -141,11 +136,6 @@ sub delete {
     $app->translate( 'Failed to delete filter: [_1]', $filter->errstr ) );
     my %res;
     my @filters = filters( $app, $ds );
-    my $allpass_filter = {
-        label => MT->translate('(none)'),
-        items => [],
-    };
-    unshift @filters, $allpass_filter;
     for my $filter ( @filters ) {
         $filter->{label} = MT::Util::encode_html($filter->{label});
     };
@@ -157,15 +147,9 @@ sub delete {
     if ( defined $list && !$list ) {
         my %res;
         my @filters = filters( $app, $ds );
-        my $allpass_filter = {
-            label => MT->translate('(none)'),
-            items => [],
-        };
-        unshift @filters, $allpass_filter;
         for my $filter ( @filters ) {
             $filter->{label} = MT::Util::encode_html($filter->{label});
         };
-
         $res{id} = $filter->id;
         $res{filters} = \@filters;
         $res{editable_filter_count} = scalar grep { $_->{can_edit} } @filters;
