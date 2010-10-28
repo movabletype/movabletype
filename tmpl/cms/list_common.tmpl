@@ -471,6 +471,7 @@ function updateFilterSaveButtons (){
 }
 
 function openFilterRenameField() {
+  cancelFilterRenameField();
   var $this = jQuery(this);
   $this.attr('href').match(/#(.*)/);
   var index = RegExp.$1;
@@ -482,7 +483,7 @@ function openFilterRenameField() {
     .val(text)
     .appendTo($label);
   $this.hide().next('.delete-link').hide();
-  jQuery('<a href=#'+fid+' class="tool-link save button"><__trans phrase="Save"></a>').bind('click', function() {
+  jQuery('<a href="#'+fid+'" class="tool-link save button"><__trans phrase="Save"></a>').bind('click', function() {
     var name = jQuery('#filter_'+fid).val();
     if (name == text) {
         // Not modified.
@@ -495,18 +496,18 @@ function openFilterRenameField() {
     renameFilter(index, fid, name);
     return false;
   }).appendTo($handle);
-  jQuery('<a href=#'+fid+' class="tool-link cancel button"><__trans phrase="Cancel"></a>')
+  jQuery('<a href="#'+fid+'" class="tool-link cancel button"><__trans phrase="Cancel"></a>')
     .bind('click', cancelFilterRenameField )
     .appendTo($handle);
   return false;
 }
 
 function cancelFilterRenameField() {
-  jQuery(this).parents('.filter').children('.filter-label')
-    .find('.filter-alt-label').show().end()
+  jQuery('.filter-label')
+    .find('.filter-alt-label:hidden').show().end()
     .find('input').remove();
-  jQuery(this).parents('.filter').children('.handle-filter')
-    .find('a:visible').remove().end()
+  jQuery('.handle-filter')
+    .find('a.save:visible, a.cancel:visible').remove().end()
     .find('a:hidden').css('display','inline-block');
   return false;
 }
