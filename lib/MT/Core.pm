@@ -1099,7 +1099,8 @@ BEGIN {
                 view => 'system',
             },
             banlist => {
-                object_label => 'IP Ban',
+                object_label => 'IP address',
+                object_label_plural => 'IP addresses',
                 condition => sub {
                     my $app = shift;
                     return 1 if MT->config->ShowIPInformation;
@@ -1111,7 +1112,7 @@ BEGIN {
                 screen_label => 'IP Banning Settings',
             },
             notification => {
-                object_label => 'AddressBook',
+                object_label => 'Contact',
                 condition    => sub {
                     my $app = shift;
                     return 1 if MT->config->EnableAddressbook;
