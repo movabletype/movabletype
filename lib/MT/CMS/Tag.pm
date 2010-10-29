@@ -7,53 +7,6 @@ package MT::CMS::Tag;
 
 use strict;
 
-sub list {
-    my $app = shift;
-    my %param;
-    my $filter_key = $app->param('filter_key') || 'entry';
-    my $type       = $app->param('_type')      || $filter_key;
-    my $plural;
-    $param{TagObjectType} = $type;
-    $param{Package}       = $app->model($type);
-
-    if ( !$app->blog && !$app->user->is_superuser ) {
-        return $app->permission_denied();
-    }
-
-    my $blog = $app->blog;
-    return $app->return_to_dashboard( redirect => 1 )
-        unless $app->param('blog_id');
-
-    my $perms = $app->permissions;
-    if ( $app->blog && ( ( !$perms ) || ( $perms && $perms->is_empty ) ) ) {
-        $app->delete_param('blog_id');
-        return $app->permission_denied();
-    }
-    return $app->permission_denied()
-        unless $app->can_do('edit_tags');
-
-    if ( $param{Package}->can('class_label_plural') ) {
-        $plural = $param{Package}->class_label_plural();
-    }
-    else {
-        if ( $type =~ m/y$/ ) {
-            $plural = $type;
-            $plural =~ s/y$/ies/;
-        }
-        else {
-            $plural = $type . 's';
-        }
-        $plural =~ s/(.*)/\u$1/;
-    }
-
-    $param{TagObjectLabelPlural} = $plural;
-    $app->model($type) or return;
-    unless ( UNIVERSAL::can( $param{Package}, 'tag_count' ) ) {
-        return $app->errtrans("Invalid type");
-    }
-    list_tag_for($app, %param);
-}
-
 sub rename_tag {
     my $app     = shift;
     my $perms   = $app->permissions;

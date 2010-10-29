@@ -12,14 +12,6 @@ sub edit {
     return MT::CMS::Category::edit(@_);
 }
 
-sub list {
-    my $app = shift;
-    my $filter_key = $app->param('filter_key') || 'folder';
-    $app->param( 'type', 'folder' );
-    return $app->forward( 'list_category',
-        { type => 'folder', filter_key => $filter_key } );
-}
-
 sub can_view {
     my ( $eh, $app, $id ) = @_;
     $app->can_do('open_folder_edit_screen');

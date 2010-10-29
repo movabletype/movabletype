@@ -269,16 +269,6 @@ sub edit {
     1;
 }
 
-sub list {
-    my $app = shift;
-    my $blog = $app->blog;
-    return $app->return_to_dashboard( redirect => 1 )
-        if ($blog && !$blog->is_blog());
-
-    $app->param( 'type', 'website' );
-    return $app->forward( 'list_blog', { type => 'website' } );
-}
-
 sub post_save {
     MT::CMS::Blog::post_save(@_);
 }

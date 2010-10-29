@@ -12,11 +12,6 @@ sub edit {
     require MT::CMS::Entry;
     MT::CMS::Entry::edit(@_);
 }
-sub list {
-    my $app = shift;
-    $app->param( 'type', 'page' );
-    return $app->forward('list_entry', { type => 'page' } );
-}
 
 sub save_pages {
     my $app = shift;
