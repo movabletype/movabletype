@@ -371,14 +371,14 @@ sub list_props {
             terms => sub {
                 my ( $prop, $args ) = @_;
                 return $args->{value} eq 'approved'  ? { visible => 1, junk_status => NOT_JUNK() }
-                     : $args->{value} eq 'moderated' ? { visible => 0, junk_status => NOT_JUNK() }
-                     : $args->{value} eq 'not_junk'  ? { junk_status => NOT_JUNK() }
-                     :                                 { junk_status => JUNK() }
+                     : $args->{value} eq 'pending'   ? { visible => 0, junk_status => NOT_JUNK() }
+                     : $args->{value} eq 'junk'      ? { junk_status => JUNK() }
+                     :                                 { junk_status => NOT_JUNK() }
                      ;
             },
             single_select_options => [
                 { label => 'Approved',         value => 'approved', },
-                { label => 'Unapproved',       value => 'moderated', },
+                { label => 'Unapproved',       value => 'pending', },
                 { label => 'Not spam',         value => 'not_junk', },
                 { label => 'Reported as spam', value => 'junk', },
             ],

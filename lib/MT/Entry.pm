@@ -305,7 +305,7 @@ sub list_props {
             site_name => sub { MT->app->blog ? 0 : 1 },
             order     => 400,
         },
-        category => {
+        category_id => {
             label => 'Category',
             order => 500,
             display   => 'default',

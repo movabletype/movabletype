@@ -180,12 +180,19 @@ sub list_props {
             col   => 'status',
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
-                return { status => $args->{value} };
+                my $val = $args->{value};
+                my %statuses = (
+                    active   => ACTIVE(),
+                    disabled => INACTIVE(),
+                    pending  => PENDING(),
+                );
+                $val = exists $statuses{$val} ? $statuses{$val} : $val;
+                return { status => $val };
             },
             single_select_options => [
-                { label => 'Active Users',   value => '1', },
-                { label => 'Disabled Users', value => '2', },
-                { label => 'Pending Users',  value => '3', },
+                { label => 'Active Users',   value => 'active', },
+                { label => 'Disabled Users', value => 'disabled', },
+                { label => 'Pending Users',  value => 'pending', },
             ],
         },
         url => {
