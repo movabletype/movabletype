@@ -2018,6 +2018,7 @@ sub core_menus {
             condition  => sub {
                 $app->config->ShowIPInformation;
             },
+            view       => [qw( system website blog )],
         },
         'settings:system' => {
             label      => "General",
@@ -2129,6 +2130,7 @@ sub core_menus {
             condition  => sub {
                 return $app->config->EnableAddressBook;
             },
+            view       => [qw( system website blog )],
         },
         'tools:activity_log' => {
             label             => "Activity Log",

@@ -223,32 +223,36 @@ jQuery.extend(jQuery.validator.messages, {
   digits: "<__trans phrase="Please enter only digits">",
 });
 
-jQuery('#<mt:var name="object_type">-listing-form').validate({
-  ignore: '.ignore-validate',
-  onsubmit: false,
-  errorPlacement: function (error, element) {
-    var id;
-    jQuery('#validate-errors').append(
-      jQuery('<li />').append(jQuery(error))
-    );
-  },
-  showErrors: function( errorMap, errorList ) {
-    //jQuery('#msg-block').empty();
-    var successes = this.successList;
-    for ( var i = 0; i< successes.length; i++ ) {
-        var success = successes[i];
-        var id = success.name;
-        jQuery('#validate-errors label[for=' + id + ']').parent('li').remove();
+function defaultValidateRules () {
+  return {
+    ignore: '.ignore-validate',
+    onsubmit: false,
+    errorPlacement: function (error, element) {
+      var id;
+      jQuery('#validate-errors').append(
+        jQuery('<li />').append(jQuery(error))
+      );
+    },
+    showErrors: function( errorMap, errorList ) {
+      //jQuery('#msg-block').empty();
+      var successes = this.successList;
+      for ( var i = 0; i< successes.length; i++ ) {
+          var success = successes[i];
+          var id = success.name;
+          jQuery('#validate-errors label[for=' + id + ']').parent('li').remove();
+      }
+      for ( var i = 0; i< errorList.length; i++ ) {
+          var error = errorList[i];
+          var id = error.element.name;
+          jQuery('#validate-errors label[for=' + id + ']').parent('li').remove();
+      }
+      this.defaultShowErrors();
+      updateFilterSaveButtons();
     }
-    for ( var i = 0; i< errorList.length; i++ ) {
-        var error = errorList[i];
-        var id = error.element.name;
-        jQuery('#validate-errors label[for=' + id + ']').parent('li').remove();
-    }
-    this.defaultShowErrors();
-    updateFilterSaveButtons();
-  }
-});
+  };
+}
+
+jQuery('#<mt:var name="object_type">-listing-form').validate( defaultValidateRules() );
 
 </mt:setVarBlock>
 

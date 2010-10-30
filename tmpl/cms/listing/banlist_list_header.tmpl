@@ -27,12 +27,12 @@
 
 <mt:setvarblock name="content_header" append="1">
 <mt:setvar name="ip_info" value="1">
-<div id="create-inline-ipban" class="create-inline" style="display: none;">
+<form id="create-inline-ipban" class="create-inline" style="display: none;">
     <mtapp:setting
        id="ip-address"
        label="<__trans phrase="IP Address">"
        label_class="inline">
-      <input type="text" name="ip" id="ip-address" value="<mt:var name="ip" escape="html">" maxlength="15" />
+      <input type="text" name="ip-address" id="ip-address" class="ipaddress" value="<mt:var name="ip" escape="html">" maxlength="15" />
       <button
          type="submit"
          id="submit-ipban"
@@ -45,10 +45,22 @@
         <__trans phrase="Cancel">
       </button>
     </mtapp:setting>
-</div>
+</form>
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
+    var rules = defaultValidateRules();
+    jQuery.validator.addMethod('ipaddress', function( value, element){
+        return this.optional(element) || /^(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])$/.test(value);
+    }, '<__trans phrase="Invalid IP address.">');
+    jQuery.validator.addClassRules({
+        ipaddress: {
+            required: true,
+            ipaddress: true
+        },
+    });
+    jQuery('#create-inline-ipban').validate(rules);
+
     function openCreateMode () {
         jQuery('#content-actions').hide();
         jQuery('#create-inline-ipban').show();
@@ -64,6 +76,8 @@
     }
 
     jQuery('#submit-ipban').click(function() {
+        if ( !jQuery('#ip-address').valid() )
+            return false;
         renderList({
             __mode: 'save',
             _type: 'banlist',
@@ -72,6 +86,7 @@
             magic_token: 1
         });
         closeCreateMode();
+        return false;
     });
 
     jQuery('#create-inline-ipban button.mt-cancel-action').click(function() {
