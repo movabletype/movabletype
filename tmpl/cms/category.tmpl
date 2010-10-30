@@ -188,7 +188,7 @@ function addItem(parent, label) {
   }
   for (var i = 0, length = itemlist.length; i < length; i++) {
     if (itemlist[i] == label) {
-      jQuery('#msg-block').append('<div class="msg msg-error">'+trans('[_1] is exists.', label)+'</div>');
+      jQuery('#msg-block').append('<div class="msg msg-error">'+trans("[_1] '[_2]' already exists.", '<mt:var name="object_label">', label)+'</div>');
       return;
     }
   }
