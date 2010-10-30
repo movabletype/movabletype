@@ -443,6 +443,8 @@ function renderNestedList() {
 jQuery('.add').click(function() {
   var parent = jQuery(this).parent('#area-action').find('select').val();
   var label = jQuery(this).parent('#area-action').find('input').val();
+  // sort of hack to do HTML escape.
+  label = jQuery('<div />').text(label).html();
   addItem(parent, label);
   return false;
 });
