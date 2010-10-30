@@ -4153,7 +4153,17 @@ sub _build_category_list {
         %expanded = map { $_->id => 1 } @parents;
     }
 
-    my @cats    = $class->_flattened_category_hierarchy($blog_id);
+    my $meta    = $type . '_order';
+    my $blog    = MT->model('blog')->load({ id => $blog_id }, { no_class => 1 });
+    my $id_ord  = $blog->$meta || '';
+    my @cats    = $class->load({ blog_id => $blog_id });
+    @cats       = MT::Category::_sort_by_id_list(
+                      $id_ord,
+                      \@cats,
+                      unknown_place        => 'top',
+                      secondary_sort       => 'created_on',
+                      secondary_sort_order => 'descend' );
+    @cats       = MT::Category::_flattened_category_hierarchy(\@cats);
     my $cols    = $class->column_names;
     my $depth   = 0;
     my $i       = 1;

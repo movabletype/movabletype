@@ -104,7 +104,12 @@ sub list_props {
                 my $blog = MT::Blog->load({ id => $rep->blog_id }, { no_class => 1 });
                 my $meta = $prop->class . '_order';
                 my $text = $blog->$meta || '';
-                my @cats = _sort_by_id_list( $text, $objs );
+                my @cats = _sort_by_id_list(
+                    $text,
+                    $objs,
+                    unknown_place        => 'top',
+                    secondary_sort       => 'created_on',
+                    secondary_sort_order => 'descend' );
                 @cats = grep { ref $_ } MT::Category::_flattened_category_hierarchy( \@cats );
                 return @cats;
             },
@@ -406,7 +411,7 @@ sub _flattened_category_hierarchy {
 }
 
 sub _sort_by_id_list {
-    my ( $text, $objs ) = @_;
+    my ( $text, $objs, %opts ) = @_;
     my @ids = split ',', $text;
     my %id_map = map { $_->id => $_ } @$objs;
     my @objs;
@@ -414,7 +419,17 @@ sub _sort_by_id_list {
         push @objs, delete $id_map{$id} if $id_map{$id};
     }
     if ( scalar %id_map ) {
-        push @objs, sort { $a->label cmp $b->label } values %id_map;
+        my $sort  = $opts{secondary_sort}       || 'id';
+        my $order = $opts{secondary_sort_order} || 'ascend';
+        my $place = $opts{unknown_place}        || 'bottom';
+        my @unknowns = sort { $a->$sort cmp $b->$sort } values %id_map;
+        @unknowns = reverse @unknowns if $order eq 'descend';
+        if ( $place eq 'top' ) {
+            unshift @objs, @unknowns;
+        }
+        else {
+            push @objs, @unknowns;
+        }
     }
     @objs;
 }
