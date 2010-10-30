@@ -185,12 +185,23 @@ function addItem(parent, label) {
     jQuery('#msg-block').append('<div class="msg msg-error">'+trans('label is empty.', label)+'</div>');
     return false;
   }
-  for (var i = 0, length = itemlist.length; i < length; i++) {
-    if (itemlist[i] == label) {
-      jQuery('#msg-block').append('<div class="msg msg-error">'+trans("[_1] '[_2]' already exists.", '<mt:var name="object_label">', label)+'</div>');
-      return false;
-    }
+
+  var dupe = 0;
+  var $parent = jQuery('#' + parent);
+  $parent.attr('class').match(/lv-(\w+)/);
+  var level = parseInt(RegExp.$1) + 1;
+  jQuery('.' + parent + '.lv-' + level).each( function () {
+      var sibling_label = jQuery(this).find('.item-label').text();
+      if ( sibling_label == label ) {
+        dupe = 1;
+        return false;
+      }
+  });
+  if ( dupe ) {
+    jQuery('#msg-block').append('<div class="msg msg-error">'+trans("[_1] '[_2]' already exists.", '<mt:var name="object_label">', label)+'</div>');
+    return false;
   }
+
   var id = 'x'+dummy;
   var $item = createItem(id, parent, label, 0);
   initItem($item);
