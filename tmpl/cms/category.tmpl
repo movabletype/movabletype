@@ -175,9 +175,9 @@ function initItem($item) {
     jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon"><__trans phrase="Remove Categories"></span>')
       .appendTo($item.find('.item-ctrl'))
       .bind('click', function() {
-      var id = jQuery(this).parents('.sortable-item').attr('id');
-      removeItems(id);
-    });
+        var id = jQuery(this).parents('.sortable-item').attr('id');
+        removeItems(id);
+      });
 }
 
 function addItem(parent, label) {
@@ -227,7 +227,7 @@ function setItemList() {
   jQuery('.sortable-item:visible').each(function() {
     var $item = jQuery(this);
     var id = $item.attr('id');
-    var label = $item.find('.item-label').text();
+    var label = $item.find('.item-label').html();
     jQuery('#itemlist').append('<option id="opt-'+id+'" value="'+id+'">'+label+'</option>');
     itemlist.push(label);
   });
