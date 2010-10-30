@@ -156,10 +156,9 @@ function initItem($item) {
       jQuery('<button type="button" class="add button"><__trans phrase="Add"></button>')
         .bind('click', function() {
           var label = jQuery(this).parent('.add-form').find('input').val();
-          addItem(parent, label);
-          if (!jQuery('.msg-error').length) {
-            jQuery(this).parent('.add-form').remove();
-            jQuery('.sort-tab').show();
+          if ( addItem(parent, label) ) {
+              jQuery(this).parent('.add-form').remove();
+              jQuery('.sort-tab').show();
           }
         })
         .appendTo($form);
@@ -184,12 +183,12 @@ function addItem(parent, label) {
   jQuery('#msg-block').empty();
   if (label == '') {
     jQuery('#msg-block').append('<div class="msg msg-error">'+trans('label is empty.', label)+'</div>');
-    return;
+    return false;
   }
   for (var i = 0, length = itemlist.length; i < length; i++) {
     if (itemlist[i] == label) {
       jQuery('#msg-block').append('<div class="msg msg-error">'+trans("[_1] '[_2]' already exists.", '<mt:var name="object_label">', label)+'</div>');
-      return;
+      return false;
     }
   }
   var id = 'x'+dummy;
@@ -202,6 +201,7 @@ function addItem(parent, label) {
   dummy++;
   isdirty = true;
   fixZeroStateMessage();
+  return true;
 }
 
 function removeItems(id) {
@@ -453,7 +453,9 @@ jQuery('.add').click(function() {
   var label = jQuery(this).parent('#area-action').find('input').val();
   // sort of hack to do HTML escape.
   label = jQuery('<div />').text(label).html();
-  addItem(parent, label);
+  if ( addItem(parent, label) ) {
+    jQuery(this).parent('#area-action').find('input').val('');
+  }
   return false;
 });
 
