@@ -26,7 +26,7 @@
         <select id="itemlist" name="itemlist">
           <option id="opt-0" value="0"><__trans phrase="Top Level"></option>
         </select>
-        <input type="text" class="text short" placeholder="Category Label">
+        <input type="text" class="text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">">
         <button type="button" class="add button"><__trans phrase="Add"></button>
       </div>
 
@@ -144,14 +144,14 @@ function initItem($item) {
     .addClass('lv-'+nest.length)
     .addClass('mod sortable-item');
   $item.find('.plus, .delete').remove();
-  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add Subcategory"></span>')
+  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add child item"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       jQuery('.add-form').remove();
       jQuery('.sort-tab').hide();
       var $element = jQuery(this).parent('.item-ctrl').parent('div');
       var parent = $element.attr('id');
-      var $form = jQuery('<div class="mod add-form"><input type="text" class="text short" placeholder="Category Label" /></div>');
+      var $form = jQuery('<div class="mod add-form"><input type="text" class="text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">" /></div>');
       $form.css('margin-left', (nest.length+1)*indent).insertAfter($element);
       jQuery('<button type="button" class="add button"><__trans phrase="Add"></button>')
         .bind('click', function() {
@@ -171,7 +171,7 @@ function initItem($item) {
         .appendTo($form);
       jQuery('.button').button();
     });
-    jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon"><__trans phrase="Remove Categories"></span>')
+    jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon"><__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">"></span>')
       .appendTo($item.find('.item-ctrl'))
       .bind('click', function() {
         var id = jQuery(this).parents('.sortable-item').attr('id');
