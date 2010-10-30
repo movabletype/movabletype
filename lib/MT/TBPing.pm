@@ -225,6 +225,7 @@ sub list_props {
         },
         entry_id => {
             base => '__virtual.integer',
+            label => 'Entry/Page',
             display => 'none',
             filter_editable => 0,
             terms => sub {
