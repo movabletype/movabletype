@@ -388,6 +388,8 @@ BEGIN {
                             my ( $from, $to ) = split /-/, $val;
                             $from = undef unless $from =~ m/^\d{8}$/;
                             $to = undef unless $to =~ m/^\d{8}$/;
+                            $from =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
+                            $to   =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
                             $param = $from && $to ? { option => 'range',  from => $from, to => $to }
                                    : $from        ? { option => 'after',  origin => $from }
                                    :                { option => 'before', origin => $to };
