@@ -201,6 +201,7 @@ function addItem(parent, label) {
   itemlist.push(label);
   dummy++;
   isdirty = true;
+  fixZeroStateMessage();
 }
 
 function removeItems(id) {
@@ -219,6 +220,7 @@ function removeItems(id) {
   jQuery('.sort-tab').show();
   setItemList();
   isdirty = true;
+  fixZeroStateMessage();
 }
 
 function setItemList() {
@@ -397,12 +399,18 @@ function renderItems(data) {
     jQuery('#itemlist').append('<option id="opt-'+id+'" value="'+id+'">'+label+'</option>');
     itemlist.push(jQuery(label).text());
   }
-  if (count == 0) {
-    var message = trans('No [_1] could be found.', '<mt:var name="object_label" lower_case="1" escape="js">');
-    jQuery('<p>'+message+'</p>').appendTo('#root');
-  }
+  fixZeroStateMessage();
   checksum = data.result.checksum;
   setHoverAction(jQuery('.sortable-item'));
+}
+
+function fixZeroStateMessage () {
+  if ( jQuery('#root div.sortable-item').length <= 1 ) {
+    var message = trans('No [_1] could be found.', '<mt:var name="object_label" lower_case="1" escape="js">');
+    jQuery('<p id="zero-state-message">'+message+'</p>').appendTo('#root');
+  }
+  else
+    jQuery('#zero-state-message').hide();
 }
 
 function renderNestedList() {
