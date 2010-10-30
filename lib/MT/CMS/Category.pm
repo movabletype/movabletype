@@ -153,7 +153,7 @@ sub bulk_update {
         if ( $json =~ /^".*"$/ ) {
             $json =~ s/^"//;
             $json =~ s/"$//;
-            $json =~ s/\\"/"/g;
+            $json = MT::Util::decode_js($json);
         }
         require JSON;
         my $decode = JSON->new->utf8(0);
