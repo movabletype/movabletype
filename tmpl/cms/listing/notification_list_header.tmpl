@@ -24,18 +24,18 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="content_header" append="1">
-<div class="create-inline" id="create-inline-notification" style="display: none;">
+<form class="create-inline" id="create-inline-notification" style="display: none;">
     <mtapp:setting
        id="email"
        label="<__trans phrase="Email">"
        label_class="inline">
-      <input type="text" name="email" id="email" class="text short" value="<mt:var name="email" escape="html">" />
+      <input type="text" name="email" id="email" class="text short email" value="<mt:var name="email" escape="html">" />
     </mtapp:setting>
     <mtapp:setting
        id="website"
        label="<__trans phrase="Website URL">"
        label_class="inline">
-      <input type="text" name="url" id="url" class="text short" value="<mt:var name="url" escape="html">">
+      <input type="text" name="url" id="url" class="text short url" value="<mt:var name="url" escape="html">">
     </mtapp:setting>
     <span class="buttons">
       <button
@@ -50,10 +50,21 @@
         <__trans phrase="Cancel">
       </button> 
     </span>
-</div>
+</form>
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
+    jQuery.validator.addClassRules({
+        url: {
+            required: true,
+            url: true
+        },
+        email: {
+            required: true,
+            email: true
+        },
+    });
+
     var current_edit = 0;
     var old_note_email = '';
     var old_note_url = '';
@@ -116,6 +127,7 @@
         var $note_email = jQuery('#note-email-' + id);
         var $note_url   = jQuery('#note-url-' + id);
         if (!$note_email.val() || !$note_url.val() ) return false;
+        if (!$note_email.valid() || !$note_url.valid() ) return false;
         var new_note_email = $note_email.val();
         var new_note_url = $note_url.val();
         if ((old_note_email == new_note_email) && (old_note_url == new_note_url)) {
@@ -141,6 +153,9 @@
         return false;
     }
 
+    var rules = defaultValidateRules();
+    jQuery('#create-inline-notification').validate(rules);
+
     function setCreateMode () {
         jQuery('#create-inline-notification').show();
         jQuery('#url').val('');
@@ -154,8 +169,9 @@
         current_edit = 0;
     }
 
-
     jQuery('#submit-new-contact').click(function() {
+        if ( !jQuery('#create-inline-notification').valid() )
+            return false;
         renderList({
             __mode: 'save',
             _type: 'notification',
