@@ -689,6 +689,7 @@ BEGIN {
                     base => '__virtual.integer',
                     col_class => 'num',
                     default_sort_order => 'descend',
+                    ref_column => 'id',
                     raw   => sub {
                         my $prop = shift;
                         my ( $obj, $app, $opts ) = @_;
@@ -779,7 +780,8 @@ BEGIN {
                         return @$objs unless $op;
                         my $val = $args->{value};
                         my $sub = eval "sub { $val $op shift }";
-                        return grep { $sub->( $map{$_->id} || 0 ) } @$objs;
+                        my $ref_col = $prop->{ref_column};
+                        return grep { $sub->( $map{$_->$ref_col} || 0 ) } @$objs;
                     },
                 },
             },
