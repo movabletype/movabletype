@@ -2959,11 +2959,9 @@ sub build_menus {
 
             my $app_param_type = $app->param('_type') || '';
             if ( $sub->{args} ) {
-                next if !$sub->{args}->{_type};
-
                 if ( $sub->{mode} eq $mode
                      && defined($app->param('_type'))
-                     && $sub->{args}->{_type} eq $app->param('_type')
+                     && ( $sub->{args}->{_type} || '' ) eq $app->param('_type')
                      && ( !defined( $sub->{args}->{filter_key}) ||
                          ( defined($app->param('filter_key')) && $sub->{args}->{filter_key} eq $app->param('filter_key') ) ) )
                 {
