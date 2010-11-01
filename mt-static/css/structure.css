@@ -1571,14 +1571,6 @@ fieldset {
     background-color: #f2f2b0 ! important;
 }
 
-.list-revision-dialog .datetime { 
-    width: 25%;
-}
-
-.list-revision-dialog .note { 
-    width: 50%;
-}
-
 /* - Edit Comment, Ping, Author & Entry */
 .edit-comment #status-field,
 .edit-ping #status-field,

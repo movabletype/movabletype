@@ -156,6 +156,11 @@
 .icon-mini-new-asset    { background-image: url(../images/nav_icons/mini/asset-new.gif); }
 .icon-mini-delete span  { display: none; }
 
+.listing img {
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
 .listing .status-publish img { background-image: url(../images/status_icons/success.gif); }
 .listing .status-draft img { background-image: url(../images/status_icons/draft.gif); }
 .listing .status-future img { background-image: url(../images/status_icons/future.gif); }
