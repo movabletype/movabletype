@@ -36,56 +36,59 @@
     <__trans phrase="TempDir is required.">
   </mtapp:statusmsg>
 </mt:if>
-  <!-- TempDir -->
+
+<!-- TempDir -->
   <mtapp:setting
      id="temp_dir"
      label="<__trans phrase="TempDir">"
      label_class="top-label"
      hint="<__trans phrase="The physical path for temporary directory.">">
-    <input type="text" id="temp_dir" class="ti" name="temp_dir" value="<mt:if name="temp_dir"><mt:var name="temp_dir" escape="html"></mt:if>" />
+    <input type="text" name="temp_dir" id="temp_dir" class="text full" value="<mt:if name="temp_dir"><mt:var name="temp_dir" escape="html"></mt:if>" />
   </mtapp:setting>
 
-        <div id="goback" class="actions-bar" <mt:unless name="success">style="display: none"</mt:unless>>
-            <button
-                name="continue"
-                type="submit"
-                onclick="go('next_step');"
-                class="continue action primary-button"
-                ><__trans phrase="Continue"></button>
-
-            <button
-                name="test"
-                type="submit"
-                onclick="go('test')"
-                class="test action primary-button"
-                ><__trans phrase="Test"></button>
-
-            <button
-                name="back"
-                type="submit"
-                onclick="this.form.reset(); go('previous_step');"
-                class="goback action"
-                ><__trans phrase="Back"></button>
-        </div>
-
-        <div id="submit" class="actions-bar" <mt:if name="success">style="display: none"</mt:if>>
-            <button
-                name="test"
-                type="submit"
-                value="1"
-                onclick="go('test')"
-                class="test action primary-button"
-                ><__trans phrase="Test"></button>
-
-            <button
-                name="back"
-                type="submit"
-                onclick="this.form.reset(); go('previous_step');"
-                class="goback action"
-                ><__trans phrase="Back"></button>
-        </div>
-    </fieldset>
+  <div id="goback" class="actions-bar" <mt:unless name="success">style="display: none"</mt:unless>>
+    <button
+       name="back"
+       type="submit"
+       onclick="this.form.reset(); go('previous_step');"
+       class="goback action button">
+      <__trans phrase="Back">
+    </button>
+    <button
+       name="test"
+       type="submit"
+       onclick="go('test')"
+       class="test action button">
+      <__trans phrase="Test">
+    </button>
+    <button
+       name="continue"
+       type="submit"
+       onclick="go('next_step');"
+       class="continue action primary button">
+      <__trans phrase="Continue">
+    </button>
+  </div>
+  
+  <div id="submit" class="actions-bar" <mt:if name="success">style="display: none"</mt:if>>
+    <button
+       name="back"
+       type="submit"
+       onclick="this.form.reset(); go('previous_step');"
+       class="goback action button">
+      <__trans phrase="Back">
+    </button>
+    <button
+       name="test"
+       type="submit"
+       value="1"
+       onclick="go('test')"
+       class="test action primary button">
+      <__trans phrase="Test">
+    </button>
+  </div>
 </form>
+
 <script type="text/javascript">
 /* <![CDATA[ */
 function go(mode) {

@@ -35,7 +35,6 @@
   <div class="mt-config-file-path">
     <mt:var name="config_file">
   </div>
-  <p><__trans phrase="To change the settings, click the 'Back' button below."></p>
   </mt:unless>
 </mt:if>
 <mt:unless name="config_created">
@@ -45,10 +44,12 @@
     <textarea class="text full high code" onclick="this.select()"><mt:include name="mt-config.tmpl"></textarea>
   </div>
 <mt:unless name="config_created">
-  <p><input id="manually" class="cb" type="checkbox" name="manually" value="1" onclick="toggleConfig()" <mt:if name="manually">checked="checked"</mt:if>> <label for="manually"><__trans phrase="The mt-config.cgi file has been created manually."></label></p>
+  <p><input name="manually" id="manually" type="checkbox" value="1" onclick="toggleConfig()" <mt:if name="manually">checked="checked"</mt:if>> <label for="manually"><__trans phrase="The mt-config.cgi file has been created manually."></label></p>
 </mt:unless>
 
   <div id="retry-buttons" class="actions-bar" <mt:if name="file_not_found">style="display:none;"</mt:if>>
+    <p><mt:var name="file_not_found"></p>
+    <mt:unless name="config_created">
     <button 
        name="back"
        type="submit"
@@ -56,7 +57,6 @@
        class="goback action button">
       <__trans phrase="Back">
     </button>
-  <mt:unless name="config_created">
     <button
        name="retry"
        type="submit"
@@ -76,6 +76,7 @@
   </div>
   
   <div id="automatic-buttons" class="actions-bar" <mt:unless name="file_not_found">style="display:none;"</mt:unless>>
+    <p><mt:var name="file_not_found"></p>
     <button
        name="retry"
        type="submit"
