@@ -49,7 +49,7 @@
                 </mt:if>
             <mt:else>
                 <mt:if name="can_list_comments">
-            <li><__trans phrase="You've written [quant,_1,entry,entries], [quant,_2,page,pages] with <a href="[_3]">[quant,_4,comment,comments]</a>." params="<mt:var name="publish_count">%%<mt:var name="publish_page_count">%%<mt:var name="my_comments_count">%%<mt:var name="comment_count">"></li>
+            <li><__trans phrase="You've written [quant,_1,entry,entries], [quant,_2,page,pages] with <a href="[_3]">[quant,_4,comment,comments]</a>." params="<mt:var name="publish_count">%%<mt:var name="publish_page_count">%%<mt:var name="my_comments_url">%%<mt:var name="comment_count">"></li>
                 <mt:else>
             <li><__trans phrase="You've written [quant,_1,entry,entries], [quant,_2,page,pages] with [quant,_3,comment,comments]." params="<mt:var name="publish_count">%%<mt:var name="publish_page_count">%%<mt:var name="comment_count">"></li>
                 </mt:if>
@@ -58,7 +58,7 @@
     <mt:else>
         <mt:if name="can_list_entries">
             <mt:if name="can_list_pages">
-            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>, <a href="[_3]">[quant,_4,page,pages]</a>." params="<mt:var name="my_entries_count">%%<mt:var name="publish_count">%%<mt:var name="my_pages_count">%%<mt:var name="publish_page_count">"></li>
+            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>, <a href="[_3]">[quant,_4,page,pages]</a>." params="<mt:var name="my_entries_url">%%<mt:var name="publish_count">%%<mt:var name="my_pages_url">%%<mt:var name="publish_page_count">"></li>
             <mt:else>
             <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>, [quant,_3,page,pages]." params="<mt:var name="script_url">?__mode=search_replace&amp;_type=entry&amp;do_search=1&amp;publish_status=2&amp;my_posts=1%%<mt:var name="publish_count">%%<mt:var name="publish_page_count">"></li>
             </mt:if>
@@ -73,7 +73,7 @@
 <mt:else>
     <mt:if name="can_list_pages">
         <mt:if name="can_list_comments">
-            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,page,pages]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>." params="<mt:var name="my_pages_url">%%<mt:var name="publish_page_count">%%<mt:var name="my_comments_count">%%<mt:var name="comment_count">"></li>
+            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,page,pages]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>." params="<mt:var name="my_pages_url">%%<mt:var name="publish_page_count">%%<mt:var name="my_comments_url">%%<mt:var name="comment_count">"></li>
         <mt:else>
             <li><__trans phrase="You've written <a href="[_1]">[quant,_2,page,pages]</a> with [quant,_3,comment,comments]." params="<mt:var name="my_pages_url">%%<mt:var name="publish_page_count">%%<mt:var name="comment_count">"></li>
         </mt:if>
