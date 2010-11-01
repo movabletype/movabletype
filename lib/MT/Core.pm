@@ -703,8 +703,16 @@ BEGIN {
                             $count_args,
                         );
                     },
-                    html_link => sub {
-                        my ( $prop, $obj, $app ) = @_;
+                    html => sub {
+                        my $prop = shift;
+                        my ( $obj, $app ) = @_;
+                        my $count = $prop->raw(@_);
+                        if ( $prop->has('list_permit_action') ) {
+                            my $user = $app->user;
+                            my $perm = $user->permissions($obj);
+                            return $count
+                                unless $perm->can_do($prop->list_permit_action);
+                        }
                         my $args;
                         if ( $prop->filter_type eq 'blog_id' ) {
                             $args = {
@@ -723,10 +731,11 @@ BEGIN {
                                     : () ),
                             };
                         }
-                        return $app->uri(
+                        my $uri = $app->uri(
                             mode => 'list',
                             args => $args,
                         );
+                        return qq{<a href="$uri">$count</a>};
                     },
                     bulk_sort => sub {
                         my $prop = shift;

@@ -169,6 +169,7 @@ sub list_props {
             count_col   => 'blog_id',
             filter_type => 'blog_id',
             list_screen => 'entry',
+            list_permit_action => 'access_to_entry_list',
         },
         page_count => {
             label       => 'Pages',
@@ -179,6 +180,7 @@ sub list_props {
             count_col   => 'blog_id',
             filter_type => 'blog_id',
             list_screen => 'page',
+            list_permit_action => 'access_to_page_list',
         },
         asset_count => {
             label => 'Assets',
@@ -189,6 +191,7 @@ sub list_props {
             filter_type => 'blog_id',
             list_screen => 'asset',
             count_args  => { no_class => 1 },
+            list_permit_action => 'access_to_asset_list',
         },
         comment_count => {
             label => 'Comments',
@@ -198,6 +201,7 @@ sub list_props {
             count_col   => 'blog_id',
             filter_type => 'blog_id',
             list_screen => 'comment',
+            list_permit_action => 'access_to_comment_list',
         },
         member_count => {
             label => 'Members',
@@ -208,6 +212,7 @@ sub list_props {
             filter_type => 'blog_id',
             list_screen => 'member',
             count_terms => { author_id => { not => 0 } },
+            list_permit_action => 'access_to_member_list',
         },
         parent_website => {
             view    => [ 'system' ],
