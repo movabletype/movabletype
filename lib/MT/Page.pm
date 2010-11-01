@@ -40,7 +40,7 @@ sub list_props {
             order     => 400,
         },
         folder => {
-            base             => 'entry.category',
+            base             => 'entry.category_id',
             label            => 'Folder',
             display          => 'default',
             view_filter      => ['blog', 'website'],
