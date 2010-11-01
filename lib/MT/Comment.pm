@@ -429,6 +429,16 @@ sub list_props {
                 );
             },
         },
+        email => {
+            auto    => 1,
+            display => 'none',
+            label   => 'Email',
+        },
+        url => {
+            auto    => 1,
+            display => 'none',
+            label   => 'URL',
+        },
     };
 }
 
