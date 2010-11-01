@@ -76,20 +76,27 @@ sub list_props {
                 my @out;
                 for my $obj ( @$objs ) {
                     my $obj_class = $obj->class;
-                    my $uri = $app->uri(
-                        mode => 'list',
-                        args => {
-                            _type      => ($obj_class eq 'category' ? 'entry' : 'page'),
-                            filter     => $obj_class,
-                            filter_val => $obj->id,
-                            blog_id    => $obj->blog_id,
-                        },
-                    );
-                    push @out, sprintf(
-                        '<a href="%s">%s</a>',
-                        $uri,
-                        $count{$obj->id} || '0',
-                    );
+                    my $contents_type = $obj_class eq 'category' ? 'entry' : 'page';
+                    my $action = 'access_to_' . $contents_type . '_list';
+                    if ( $app->can_do( $action ) ) {
+                        my $uri = $app->uri(
+                            mode => 'list',
+                            args => {
+                                _type      => ($obj_class eq 'category' ? 'entry' : 'page'),
+                                filter     => $obj_class,
+                                filter_val => $obj->id,
+                                blog_id    => $obj->blog_id,
+                            },
+                        );
+                        push @out, sprintf(
+                            '<a href="%s">%s</a>',
+                            $uri,
+                            $count{$obj->id} || '0',
+                        );
+                    }
+                    else {
+                        push @out, $count{$obj->id} || '0';
+                    }
                 }
                 return @out;
             },
