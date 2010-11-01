@@ -1234,6 +1234,7 @@ sub _hdlr_comment_author_identity {
     }
     my $result = qq{<img alt=\"\" src=\"$logo\" width=\"16\" height=\"16\" />};
     if ($link) {
+        $link   = MT::Util::encode_html($link);
         $result = qq{<a class="commenter-profile" href=\"$link\">$result</a>};
     }
     return $result;
