@@ -154,7 +154,7 @@
    id="source_blog"
    label="<__trans phrase="Source Site">">
   <input type="text" name="blog_name" id="blog_name" class="text" value="<mt:var name="source_blog_name" escape="html">" />
-  <a title="<__trans phrase="Search for other TrackBacks from this site">" href="<mt:var name="script_url">?__mode=search_replace&amp;blog_id=<mt:var name="blog_id">&amp;_type=ping&amp;search=<mt:var name="source_blog_name" escape="url">&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+  <a title="<__trans phrase="Search for other TrackBacks from this site">" href="<mt:var name="script_url">?__mode=list&amp;blog_id=<mt:var name="blog_id">&amp;_type=ping&amp;filter=source_blog_name&amp;filter_val=<mt:var name="source_blog_name" escape="url">"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
 </mtapp:setting>
 
 <mtapp:setting
@@ -163,14 +163,14 @@
    hint=""
    show_hint="0">
   <input type="text" name="title" id="title" class="text" value="<mt:var name="title" escape="html">" />
-  <a title="<__trans phrase="Search for other TrackBacks with this title">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;search=<mt:var name="title" escape="url">&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+  <a title="<__trans phrase="Search for other TrackBacks with this title">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;filter=title&amp;filter_val=<mt:var name="title" escape="url">"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
 </mtapp:setting>
 
 <mtapp:setting
    id="source_url"
    label="<__trans phrase="URL">">
   <input type="text" name="source_url" id="source_url" class="text" value="<mt:var name="source_url" escape="html">" />
-  <a title="<__trans phrase="Search for other TrackBacks with this status">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;search=<mt:var name="source_url" escape="url">&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+  <a title="<__trans phrase="Search for other TrackBacks with this status">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;filter=source_url&amp;filter_val=<mt:var name="source_url" escape="url">&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
 </mtapp:setting>
 
 <mt:if name="entry_ping">
@@ -203,14 +203,14 @@
    id="date"
    label="<__trans phrase="Date">">
   <mt:var name="created_on_time_formatted">
-  <a title="<__trans phrase="View all TrackBacks created on this day">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;from=<mt:var name="created_on" escape="html">&amp;to=<mt:var name="created_on" escape="html">&amp;show_all=1&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+  <a title="<__trans phrase="View all TrackBacks created on this day">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;filter=created_on&amp;filter_val=<mt:date ts="$created_on" format="%Y%m%d">-<mt:date ts="$created_on" format="%Y%m%d">"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
 </mtapp:setting>
 
 <mtapp:setting
    id="source_ip"
    label="<__trans phrase="IP">">
   <mt:var name="ip" escape="html">
-  <a title="<__trans phrase="View all TrackBacks from this IP address">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;search_cols=ip&amp;search=<mt:var name="ip" escape="url">&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+  <a title="<__trans phrase="View all TrackBacks from this IP address">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;filter=ip&amp;filter_val=<mt:var name="ip" escape="url">&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
 </mtapp:setting>
 
 <mtapp:setting

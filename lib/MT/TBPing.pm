@@ -215,6 +215,11 @@ sub list_props {
             display => 'none',
             base  => '__virtual.string',
         },
+        source_url => {
+            auto    => 1,
+            label   => 'Sender URL',
+            display => 'none',
+        },
         status => {
             base  => 'comment.status',
         },

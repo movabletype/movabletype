@@ -127,7 +127,7 @@ TC.attachLoadEvent(init);
             hint="<__trans phrase="The Name of the commenter">"
             show_hint="0">
             <mt:var name="nickname" escape="html">
-            <a title="<__trans phrase="View all comments with this name">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;search_cols=name&amp;search=<mt:var name="nickname" escape="url">&amp;do_search=1"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a>
+            <a title="<__trans phrase="View all comments with this name">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=author&amp;filter_val=<mt:var name="nickname" escape="url">"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a>
         </mtapp:setting>
     
         <mtapp:setting
@@ -144,7 +144,7 @@ TC.attachLoadEvent(init);
             hint="<__trans phrase="The Email of the commenter">"
             show_hint="0">
             <mt:if name="is_email_hidden"><__trans phrase="Withheld"><mt:else><mt:var name="email" escape="html"></mt:if>
-            <mt:if name="is_email_hidden">&nbsp;<mt:else><a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;search_cols=email&amp;search=<mt:var name="email" escape="url">&amp;do_search=1"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a></mt:if>        </mtapp:setting>
+            <mt:if name="is_email_hidden">&nbsp;<mt:else><a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a></mt:if>        </mtapp:setting>
     
         <mtapp:setting
             id="url"
@@ -168,7 +168,6 @@ TC.attachLoadEvent(init);
             <span class="icon-left-wide icon-authenticated"><__trans phrase="Authenticated"></span>
                 </mt:if>
             </mt:if>
-            <a title="<__trans phrase="View all commenters">" href="<mt:var name="script_url">?__mode=list&_type=member&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=commenter"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a>
         </mtapp:setting>
     
         <mt:if name="position_actions_bottom">
