@@ -14,6 +14,7 @@
 <__trans phrase="Create Template">
   </mt:if>
 </mt:if>
+<mt:var name="template_group">
 </mt:setvarblock>
 
 <mt:setvarblock name="html_title"><mt:if name="id"><mt:if name="name"><mt:var name="name" escape="html"><mt:else><mt:var name="template_name"></mt:if> - <__trans phrase="Edit Template"><mt:else><__trans phrase="Create Template"></mt:if></mt:setvarblock>
@@ -125,7 +126,7 @@
    label="<__trans phrase="Useful Links">">
   <ul>
   <mt:if name="type" eq="backup">
-    <li><a href="<mt:var name="script_url">?__mode=list_template&amp;filter_key=backup_templates&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Template Backups"></a></li>
+    <li><a href="<mt:var name="script_url">?__mode=list_template&amp;filter_key=backup_templates&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></a></li>
   </mt:if>
   <mt:if name="template_group" eq="widget">
     <li><a href="<mt:var name="script_url">?__mode=list_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Widgets"></a></li>
@@ -139,7 +140,6 @@
     <li><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">#module-option-settings" class="icon-left icon-related"><__trans phrase="Module Option Settings"></a></li>
     </mt:if>
   <mt:else>
-    <li><a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">#<$mt:var name="template_group"$>" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></a></li>
     <li><a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="List all templates"></a></li>
   </mt:if>
   <mt:if name="published_url">
