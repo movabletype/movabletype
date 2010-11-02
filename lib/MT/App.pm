@@ -2179,7 +2179,7 @@ sub create_user_pending {
         delete $param->{email};
         return $app->error(
             $app->translate(
-                "Email Address is required for password recovery.")
+                "Email Address is required for password reset.")
         );
     }
 

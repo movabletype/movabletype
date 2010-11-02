@@ -1337,7 +1337,7 @@ sub save_filter {
     }
     my $email = $app->param('email');
     return $eh->error(
-        MT->translate("Email Address is required for password recovery") )
+        MT->translate("Email Address is required for password reset.") )
       unless $email;
     if ( !is_valid_email($email) ) {
         return $eh->error( $app->translate("Email Address is invalid.") );

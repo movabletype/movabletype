@@ -27,16 +27,16 @@
   <a
      href="<$mt:var name="return_to" escape="html" $>"
      accesskey="x"
-     title="<__trans phrase="Go Back (x)">"
-     class="action button primary button">
-    <__trans phrase="Go Back">
+     title="<__trans phrase="Back (x)">"
+     class="action button">
+    <__trans phrase="Back">
   </a>
 <mt:elseif name="can_signin">
   <a
      href="<$mt:var name="script_url"$>"
      accesskey="s"
      title="<__trans phrase="Sign in to Movable Type (s)">"
-     class="action button primary button">
+     class="action primary button">
     <__trans phrase="Sign in to Movable Type">
   </a>
 </mt:if>
@@ -62,19 +62,20 @@
   </mt:if>
     <div class="actions-bar actions-bar-login">
       <button
-         type="submit"
-         accesskey="s"
-         title="<__trans phrase="Recover (s)">"
-         class="recover action primary button">
-        <__trans phrase="Recover">
-      </button>
-      <button
          onclick="history.back(); return false;"
          type="submit"
          accesskey="x"
          class="action button"
-         title="<__trans phrase="Go Back (x)">">
-        <__trans phrase="Go Back"></button>
+         title="<__trans phrase="Back (x)">">
+        <__trans phrase="Back">
+      </button>
+      <button
+         type="submit"
+         accesskey="s"
+         title="<__trans phrase="Reset (s)">"
+         class="reset action primary button">
+        <__trans phrase="Reset">
+      </button>
     </div>
   </fieldset>
 </form>

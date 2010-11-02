@@ -114,7 +114,7 @@ sub recover_password {
 
     if ( !$email ) {
         return $app->start_recover(
-            { error => $app->translate('Email Address is required for password recovery.'), } );
+            { error => $app->translate('Email Address is required for password reset.'), } );
     }
 
     # Searching user by email (and username)
