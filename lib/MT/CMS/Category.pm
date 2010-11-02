@@ -139,7 +139,7 @@ sub save {
 
 sub bulk_update {
     my $app = shift;
-    $app->can_do('manage_categories')
+    $app->can_do('edit_categories')
         or return $app->json_error(
             $app->translate( "Permission denied." ));
 
