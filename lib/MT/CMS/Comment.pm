@@ -1288,41 +1288,40 @@ sub cms_pre_load_filtered_list {
     my $user = $app->user;
     return if $user->is_superuser;
 
-    my $blog_id = $app->param('blog_id') || 0;
-    my $blog = $blog_id ? $app->blog : undef;
-    my $blog_ids = !$blog         ? undef
-                 : $blog->is_blog ? [ $blog_id ]
-                 :                  [ map { $_->id } @{$blog->blogs} ];
-
+    my $blog_ids = $load_options->{blog_ids};
     require MT::Permission;
     my $iter = MT::Permission->load_iter(
         {
             author_id => $user->id,
-            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { 'not' => 0 } ) ),
+            ( scalar @$blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { 'not' => 0 } ) ),
         }
     );
 
     my $args = $load_options->{args};
-    my $filters;
+    my $filters = [];
     while ( my $perm = $iter->() ) {
-        if ( $perm->can_do('manage_feedback') || $perm->can_do('manage_pages')) {
-            push @$filters, ( '-or', { blog_id => $perm->blog_id } );
-        } elsif ( $perm->can_do('create_post') ) {
-            push @$filters, ( '-or', {
+        if ( $perm->can_do('view_all_comments') ) {
+            push @$filters, '-or' if scalar @$filters;
+            push @$filters, { blog_id => $perm->blog_id };
+        } elsif ( $perm->can_do('view_own_entry_comment') ) {
+            push @$filters, '-or' if scalar @$filters;
+            push @$filters, {
                 blog_id => $perm->blog_id,
                 author_id => $user->id,
-            } );
+            };
         }
     }
 
-    $args->{joins} ||= [];
-    push @{ $args->{joins} }, MT->model('entry')->join_on(
-        undef, [
-             { id => \'=comment_entry_id', },
-             '-and',
-             $filters,
-        ],
-    );
+    if ( scalar @$filters ) {
+        $args->{joins} ||= [];
+        push @{ $args->{joins} }, MT->model('entry')->join_on(
+            undef, [
+                 { id => \'=comment_entry_id', },
+                 '-and',
+                 $filters,
+            ],
+        );
+    }
 
     my $terms = $load_options->{terms} || {};
     delete $terms->{blog_id}

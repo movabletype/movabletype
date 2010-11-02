@@ -2157,6 +2157,7 @@ sub load_core_permissions {
                 'view_feedback'                         => 1,
                 'access_to_banlist'                     => 1,
                 'use_tools:search'                      => 1,
+                'view_all_comments'                     => 1,
             }
         },
         'blog.manage_pages' => {
@@ -2187,6 +2188,7 @@ sub load_core_permissions {
                 'use_tools:search'                => 1,
                 'open_blog_listing_screen'        => 1,
                 'publish_page_via_list'           => 1,
+                'view_all_comments'               => 1,
             }
         },
         'blog.manage_users' => {
@@ -2222,6 +2224,7 @@ sub load_core_permissions {
             'order'            => 200,
             'permitted_action' => {
                 'publish_entry_via_list'                => 1,
+                'view_own_entry_comment'                => 1,
                 'approve_own_entry_comment'             => 1,
                 'approve_own_entry_trackback'           => 1,
                 'bulk_edit_own_entry_comments'          => 1,
