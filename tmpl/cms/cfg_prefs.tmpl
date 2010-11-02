@@ -52,6 +52,7 @@
   </mtapp:statusmsg>
         <mt:else>
           <mt:if name="saved">
+            <mt:if name="can_rebuild">
   <mtapp:statusmsg
      id="saved"
      class="success"
@@ -59,6 +60,14 @@
      can_close="0">
     <__trans phrase="Your preferences have been saved.">
   </mtapp:statusmsg>
+            <mt:else>
+  <mtapp:statusmsg
+     id="saved"
+     class="success"
+     can_close="1">
+    <__trans phrase="Your preferences have been saved.">
+  </mtapp:statusmsg>
+            </mt:if>
           </mt:if>
         </mt:if>
       </mt:if>
