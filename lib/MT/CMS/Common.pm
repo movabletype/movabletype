@@ -918,7 +918,7 @@ sub list {
     #}
 
     require MT::CMS::Filter;
-    my @filters = MT::CMS::Filter::filters( $app, $type );
+    my $filters = MT::CMS::Filter::filters( $app, $type, encode_html => 1 );
     my $allpass_filter = {
         label => MT->translate('All [_1]', $screen_settings->{object_label_plural} || $obj_class->class_label_plural ),
         items => [],
@@ -928,47 +928,21 @@ sub list {
     };
     $initial_filter = $allpass_filter
         unless $initial_filter;
-    for my $filter ( @filters, $initial_filter ) {
-        $filter->{label} = MT::Util::encode_html($filter->{label});
-    };
-
     ## Encode all HTML in complex structure.
-    my $deep_do;
-    $deep_do = sub {
-        my ( $data, $sub ) = @_;
-        if ( ref $data eq 'HASH' ) {
-            $deep_do->( \$_, $sub ) for values %$data;
-        }
-        elsif ( ref $data eq 'ARRAY' ) {
-            $deep_do->( \$_, $sub ) for @$data;
-        }
-        elsif ( ref $data eq 'REF' ) {
-            $deep_do->( $$data, $sub );
-        }
-        elsif ( ref $data eq 'SCALAR' ) {
-            $sub->( $data );
-        }
-        elsif ( !ref $data ) {
-            $sub->( \$data );
-        }
-    };
-    my $enc = sub {
+    MT::Util::deep_do( $initial_filter, sub {
         my $ref = shift;
         $$ref = MT::Util::encode_html( $$ref );
-    };
-    $deep_do->( \@filters, $enc );
-    $deep_do->( $initial_filter, $enc );
+    });
 
     require JSON;
     my $json = JSON->new->utf8(0);
 
     $param{common_listing} = 1;
     $param{blog_id} = $blog_id || '0';
-    $param{filters}        = $json->encode( \@filters );
+    $param{filters}        = $json->encode( $filters );
     $param{initial_filter} = $json->encode($initial_filter);
     $param{allpass_filter} = $json->encode($allpass_filter);
-    $param{filters_raw}    = \@filters;
-    $param{editable_filter_count} = scalar grep { $_->{can_edit} } @filters;
+    $param{filters_raw}    = $filters;
     $param{default_sort_key} = $default_sort;
     $param{list_columns}    = \@list_columns;
     $param{filter_types}    = \@filter_types;
@@ -1271,11 +1245,7 @@ sub filtered_list {
     $app->user->save;
 
     require MT::CMS::Filter;
-    my @filters = MT::CMS::Filter::filters( $app, $ds );
-    my $editable_filter_count = scalar grep { $_->{can_edit} } @filters;
-    for my $filter ( @filters ) {
-        $filter->{label} = MT::Util::encode_html($filter->{label});
-    }
+    my $filters = MT::CMS::Filter::filters( $app, $ds, encode_html => 1 );
 
     require POSIX;
     my %res;
@@ -1286,8 +1256,7 @@ sub filtered_list {
     $res{page_max} = POSIX::ceil( $count / $limit );
     $res{id}       = $filter_id;
     $res{label}    = MT::Util::encode_html( $forward_params{saved_label} ) if $forward_params{saved_label};
-    $res{filters}  = \@filters;
-    $res{editable_filter_count} = $editable_filter_count;
+    $res{filters}  = $filters;
     $res{messages} = \@messages;
     $MT::DebugMode && $debug->{section}->('finalize');
     MT->run_callbacks( 'cms_filtered_list_param.' . $ds, $app, \%res, $objs );

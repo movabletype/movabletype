@@ -95,14 +95,9 @@ sub save {
     my $list = $q->param('list');
     if ( defined $list && !$list ) {
         my %res;
-        my @filters = filters( $app, $ds );
-        for my $filter ( @filters ) {
-            $filter->{label} = MT::Util::encode_html($filter->{label});
-        };
-
+        my $filters = filters( $app, $ds, encode_html => 1 );
         $res{id} = $filter->id;
-        $res{filters} = \@filters;
-        $res{editable_filter_count} = scalar grep { $_->{can_edit} } @filters;
+        $res{filters} = $filters;
         return $app->json_result( \%res );
     }
     else {
@@ -135,24 +130,12 @@ sub delete {
         or return $app->json_error(
     $app->translate( 'Failed to delete filter: [_1]', $filter->errstr ) );
     my %res;
-    my @filters = filters( $app, $ds );
-    for my $filter ( @filters ) {
-        $filter->{label} = MT::Util::encode_html($filter->{label});
-    };
-
-    $res{id} = $filter->id;
-    $res{filters} = \@filters;
-    $res{editable_filter_count} = scalar grep { $_->{can_edit} } @filters;
     my $list = $app->param('list');
     if ( defined $list && !$list ) {
         my %res;
-        my @filters = filters( $app, $ds );
-        for my $filter ( @filters ) {
-            $filter->{label} = MT::Util::encode_html($filter->{label});
-        };
+        my $filters = filters( $app, $ds, encode_html => 1 );
         $res{id} = $filter->id;
-        $res{filters} = \@filters;
-        $res{editable_filter_count} = scalar grep { $_->{can_edit} } @filters;
+        $res{filters} = $filters;
         return $app->json_result( \%res );
     }
     else {
@@ -276,7 +259,7 @@ sub legacy_filter {
 }
 
 sub filters {
-    my ( $app, $type ) = @_;
+    my ( $app, $type, %opts ) = @_;
     my $obj_class    = MT->model($type);
     my @user_filters = MT->model('filter')
         ->load( { author_id => $app->user->id, object_ds => $type } );
@@ -303,13 +286,19 @@ sub filters {
     }
 
     my @filters = ( @user_filters, @sys_filters, @legacy_filters );
-    for my $filter (@filters) {
+    for my $filter ( @filters ) {
         my $label = $filter->{label};
         if ( 'CODE' eq ref $label ) {
             $filter->{label} = $label->();
         }
+        if ( $opts{encode_html} ) {
+            MT::Util::deep_do( $filter, sub {
+                my $ref = shift;
+                $$ref = MT::Util::encode_html( $$ref );
+            });
+        }
     }
-    return @filters;
+    return \@filters;
 }
 
 1;

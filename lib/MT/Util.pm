@@ -27,7 +27,7 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
                  epoch2ts ts2epoch escape_unicode unescape_unicode
                  sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
                  weaken log_time make_string_csv browser_language sanitize_embed
-                 extract_url_path break_up_text dir_separator );
+                 extract_url_path break_up_text dir_separator deep_do );
 
 {
 my $Has_Weaken;
@@ -2221,6 +2221,25 @@ sub dir_separator {
     my $sep = File::Spec->catdir( 'MT', 'MT' );
     $sep =~ s/MT//g;
     return $sep;
+}
+
+sub deep_do {
+    my ( $data, $sub ) = @_;
+    if ( ref $data eq 'HASH' ) {
+        deep_do( \$_, $sub ) for values %$data;
+    }
+    elsif ( ref $data eq 'ARRAY' ) {
+        deep_do( \$_, $sub ) for @$data;
+    }
+    elsif ( ref $data eq 'REF' ) {
+        deep_do( $$data, $sub );
+    }
+    elsif ( ref $data eq 'SCALAR' ) {
+        $sub->( $data );
+    }
+    elsif ( !ref $data ) {
+        $sub->( \$data );
+    }
 }
 
 1;
