@@ -589,24 +589,80 @@ sub prepare_statement {
             }
         }
 
-        ## Join across the given column(s).
-        $j_col = [$j_col] unless ref $j_col;
-        my $to_class = $j_args->{to}
-            ? MT->model($j_args->{to})
-                : $class;
-        my $tuple = $to_class->primary_key_tuple;
-        my $alias = $j_args->{alias};
-        COLUMN: foreach my $i (0..$#$j_col) {
-            next unless defined $j_col->[$i];
-            my $t = $tuple->[$i];
-            my $c = $j_col->[$i];
+        $stmt->{joins} = $join_stmt->{joins}
+            if $join_stmt->{joins};
 
-            my $where_col = $driver->_decorate_column_name($to_class, $t);
-            my $dec_j_col = $alias
-                ? $alias . '.' . $driver->_decorate_column_name($j_class, $c)
-                : $driver->_decorate_column_name($j_class, $c);
-            my $where_val = "= $dec_j_col";
-            $stmt->add_where($where_col, \$where_val);
+        if ( $j_args->{type} ) {
+            my $cond = $j_args->{condition};
+            my $cond_query;
+            my $to_class = $j_args->{to}
+                ? MT->model($j_args->{to})
+                : $class;
+            my $to_table = $driver->table_for( $to_class );
+            my $j_table = $driver->table_for( $j_class );
+            if ( 'HASH' eq ref $cond ) {
+                foreach my $cond_col ( keys %$cond ) {
+                    my $col = $driver->_decorate_column_name( $j_class, $cond_col );
+                    $cond_query .= ' AND ' if $cond_query;
+                    my $condition = $cond->{$cond_col};
+                    if ( 'SCALAR' eq ref $condition ) {
+                        $condition = $$condition;
+                    } else {
+                        $condition = " = $condition";
+                    }
+                    $cond_query .= " $col " . $condition;
+                }
+            } else {
+                $cond = [ $cond ] unless ref $cond;
+                my $tuple = $to_class->primary_key_tuple;
+                my $alias = $j_args->{alias};
+               COLUMN: foreach my $i (0..$#$cond) {
+                   next unless defined $cond->[$i];
+                   my $t = $tuple->[$i];
+                   my $c = $cond->[$i];
+
+                   my $where_col = $driver->_decorate_column_name($to_class, $t);
+                   my $dec_j_col = $alias
+                        ? $alias . '.' . $driver->_decorate_column_name($j_class, $c)
+                        : $driver->_decorate_column_name($j_class, $c);
+                   my $where_val = "$dec_j_col";
+                   $cond_query .= ' AND ' if $cond_query;
+                   $cond_query .= "$where_col = $where_val";
+               }
+            }
+
+            $stmt->add_join(
+                $to_table,
+                {
+                    table     => $j_table,
+                    condition => $cond_query,
+                    type      => $j_args->{type},
+                },
+            );
+
+            my @new_from = grep { $_ ne $j_table and  $_ ne $to_table } @{ $stmt->from };
+            $stmt->from( \@new_from );
+
+        } else {
+            ## Join across the given column(s).
+            $j_col = [$j_col] unless ref $j_col;
+            my $to_class = $j_args->{to}
+                ? MT->model($j_args->{to})
+                : $class;
+            my $tuple = $to_class->primary_key_tuple;
+            my $alias = $j_args->{alias};
+            COLUMN: foreach my $i (0..$#$j_col) {
+                next unless defined $j_col->[$i];
+                my $t = $tuple->[$i];
+                my $c = $j_col->[$i];
+
+                my $where_col = $driver->_decorate_column_name($to_class, $t);
+                my $dec_j_col = $alias
+                    ? $alias . '.' . $driver->_decorate_column_name($j_class, $c)
+                    : $driver->_decorate_column_name($j_class, $c);
+                my $where_val = "= $dec_j_col";
+                $stmt->add_where($where_col, \$where_val);
+            }
         }
     }
 

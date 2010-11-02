@@ -247,6 +247,46 @@ sub list_props {
             base => '__virtual.id',
             display => 'none',
         },
+        excerpt_userpic => {
+            label     => 'Excerpts Userpic',
+            display   => 'none',
+            view      => 'system',
+            singleton => 1,
+            terms     => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+
+                my $tag = MT->model('tag')->load(
+                    { name => '@userpic', },
+                    {   fetchonly => { id   => 1, },
+                        binary    => { name => 1 },
+                    }
+                );
+
+                if ($tag) {
+                    $db_args->{joins} ||= [];
+                    push @{ $db_args->{joins} },
+                        MT->model('objecttag')->join_on(
+                        undef,
+                        [   [   { tag_id => { not => $tag->id }, },
+                                '-or',
+                                { tag_id => \'IS NULL', },
+                            ],
+                            '-and',
+                            [   {   object_datasource => MT::Asset->datasource
+                                },
+                                '-or',
+                                { object_datasource => \'IS NULL' },
+                            ],
+                        ],
+                        {   unique    => 1,
+                            type      => 'left',
+                            condition => 'object_id',
+                        }
+                        );
+                }
+            },
+            },
     };
 }
 

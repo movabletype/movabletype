@@ -1227,6 +1227,235 @@ sub clean_db : Test(teardown) {
 }
 
 
+package Test::TypedJoin;
+use Test::More;
+use MT::Test;
+use base qw( Test::Class MT::Test );
+
+sub reset_db : Test(setup) {
+    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+}
+
+sub make_pc_data {
+    my $self = shift;
+    $self->make_objects(
+        { __class => 'Foo',
+          name    => 'Apple',
+          text    => 'OSX',
+          status  => 11,        },
+        { __class => 'Foo',
+          name    => 'Linux',
+          text    => 'Linux',
+          status  => 12,       },
+        { __class => 'Foo',
+          name    => 'Microsoft',
+          text    => 'Windows',
+          status  => 13,          },
+        { __class => 'Foo',
+          name    => 'NextStep',
+          text    => 'NextStep',
+          status  => 13,          },
+
+        { __class => 'Bar',
+          __wait   => 1,
+          name    => 'Snow Leopard',
+          status  => 1,
+          foo_id  => 1,             },
+        { __class => 'Bar',
+          __wait   => 1,
+          name    => 'Tiger',
+          status  => 0,
+          foo_id  => 1,             },
+        { __class => 'Bar',
+          __wait   => 1,
+          name    => 'Ubuntu',
+          status  => 1,
+          foo_id  => 2,            },
+        { __class => 'Bar',
+          __wait   => 1,
+          name    => 'Windows 7',
+          status  => 1,
+          foo_id  => 3,          },
+        { __class => 'Bar',
+          __wait   => 1,
+          name    => 'Windows 95',
+          status  => 0,
+          foo_id  => 3,          },
+
+        { __class => 'Baz',
+          __wait   => 1,
+          name    => '10.6.3',
+          status  => 1,
+          bar_id  => 1,             },
+        { __class => 'Baz',
+          __wait   => 1,
+          name    => 'kubuntu',
+          status  => 1,
+          bar_id  => 3,             },
+        { __class => 'Baz',
+          __wait   => 1,
+          name    => 'xbuntu',
+          status  => 1,
+          bar_id  => 3,             },
+    );
+}
+
+sub left_join : Tests(1) {
+    my $self = shift;
+    $self->make_pc_data();
+
+    my $nextstep = Foo->load(4);
+
+    my @data = Foo->load(
+        {
+        },
+        {
+            join => [
+                'Bar',
+                undef,
+                {
+                    id => \'is null',
+                },
+                {
+                    type => 'left',
+                    condition => 'foo_id',
+                },
+            ],
+        }
+    );
+    are_objects(\@data, [ $nextstep ], 'Left join');
+
+}
+
+sub left_join_hashed_condition : Tests(1) {
+    my $self = shift;
+    $self->make_pc_data();
+
+    my $nextstep = Foo->load(4);
+
+    my @data = Foo->load(
+        {
+        },
+        {
+            join => [
+                'Bar',
+                undef,
+                {
+                    id => \'is null',
+                },
+                {
+                    type => 'left',
+                    condition => {
+                        foo_id => 'foo_id',
+                    }
+                },
+            ],
+        }
+    );
+    are_objects(\@data, [ $nextstep ], 'Left join with hashed condition');
+
+}
+
+sub left_join_complex_condition : Tests(1) {
+    my $self = shift;
+    $self->make_pc_data();
+
+    my $apple = Foo->load(1);
+    my $microsoft = Foo->load(3);
+    my $nextstep = Foo->load(4);
+
+    my @data = Foo->load(
+        {
+        },
+        {
+            join => [
+                'Bar',
+                undef,
+                [
+                    {
+                        id => \'is null',
+                    },
+                    '-or',
+                    {
+                        id => { not => 3 },
+                    },
+                ],
+                {
+                    type => 'left',
+                    condition => 'foo_id',
+                    unique => 1,
+                },
+            ],
+            sort => 'id',
+        }
+    );
+    are_objects(\@data, [ $apple, $microsoft, $nextstep ], 'Left join with complex conditions');
+}
+
+sub left_join_multi : Tests(1) {
+    my $self = shift;
+    $self->make_pc_data();
+
+    my $apple = Foo->load(1);
+    my $microsoft = Foo->load(3);
+
+    my @data = Foo->load(
+        {
+        },
+        {
+            join => [
+                'Bar',
+                'foo_id',
+                {
+                },
+                {
+                    unique => 1,
+                    join => [
+                        'Baz',
+                        undef,
+                        {
+                            bar_id => \'is null',
+                        },
+                        {
+                            type => 'left',
+                            condition => 'bar_id',
+                        }
+                    ],
+                },
+            ],
+            sort => 'id',
+        }
+    );
+    are_objects(\@data, [ $apple, $microsoft ], 'Left join with complex conditions');
+}
+
+sub left_join_multi_joins : Tests(1) {
+    my $self = shift;
+    $self->make_pc_data();
+
+    my $apple = Foo->load(1);
+    my $microsoft = Foo->load(3);
+
+    my @data = Foo->load(
+        {
+        },
+        {
+            joins => [
+                [ 'Bar', 'foo_id', { }, { unique => 1, } ],
+                [ 'Baz', undef, { bar_id => \'is null', }, { type => 'left', condition => 'bar_id', to => 'bar' } ],
+            ],
+            sort => 'id',
+        }
+    );
+    are_objects(\@data, [ $apple, $microsoft ], 'Left join with complex conditions');
+}
+
+
+sub clean_db : Test(teardown) {
+    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+}
+
+
 package main;
 use MT::Test;
 
