@@ -3499,7 +3499,7 @@ sub make_return_args {
     my %args;
     foreach my $v (@vars) {
         if ( my @p = $app->param($v) ) {
-            $args{$v} = ( scalar @p > 1 && $v eq 'filter_val' ) ? \@p : $p[0];
+            $args{$v} = ( scalar @p > 1 && ( $v eq 'filter_val' || $v eq 'filter') ) ? \@p : $p[0];
         }
     }
     my $return = $app->uri_params( mode => $app->mode, 'args' => \%args );
