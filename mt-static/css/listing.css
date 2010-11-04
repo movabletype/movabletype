@@ -163,11 +163,11 @@ tfoot .col.head{
 }
 .col .thumbnail, 
 .col .userpic {
-    width: 45px;
-    height: 45px;
     border: 1px solid #c0c6c9;
 }
 .col .thumbnail {
+    width: 45px;
+    height: 45px;
     background: #f3f3f3 url(../images/thumbnail-bg.png) repeat top left;
 }
 .col .userpic .icon {
