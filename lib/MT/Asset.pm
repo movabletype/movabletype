@@ -286,7 +286,51 @@ sub list_props {
                         );
                 }
             },
+        },
+        author_status => {
+            label   => 'Author Status',
+            display => 'none',
+            base    => '__virtual.single_select',
+            terms   => sub {
+                my $prop = shift;
+                my ( $args, $base_terms, $base_args, $opts, ) = @_;
+                my $val = $args->{value};
+                if ( $val eq 'deleted' ) {
+                    $base_args->{joins} ||= [];
+                    push @{ $base_args->{joins} }, MT->model('author')->join_on(
+                        undef,
+                        {
+                            id => \'is null',
+                        },
+                        {
+                            type => 'left',
+                            condition => { id => \'= asset_created_by' },
+                        },
+                    );
+                }
+                else {
+                    my %statuses = (
+                        active   => MT::Author::ACTIVE(),
+                        disabled => MT::Author::INACTIVE(),
+                        pending  => MT::Author::PENDING(),
+                    );
+                    my $status = $statuses{$args->{value}};
+                    $base_args->{joins} ||= [];
+                    push @{ $base_args->{joins} }, MT->model('author')->join_on(
+                        undef,
+                        {
+                            id     => \'= asset_created_by',
+                            status => $status,
+                        },
+                    );
+                }
             },
+            single_select_options => [
+                { label => 'Deleted Users',  value => 'deleted',   },
+                { label => 'Enabled Users',  value => 'active',   },
+                { label => 'Disabled Users', value => 'disabled',  },
+            ],
+        },
     };
 }
 

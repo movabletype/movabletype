@@ -401,9 +401,10 @@ sub count_objects {
         }
     }
     if ( !( scalar @grep_items ) ) {
-        return $class->count( $terms, $args );
+        my $count = $class->count( $terms, $args );
+        return $self->error($class->errstr) unless defined $count;
+        return $count;
     }
-
     my @objs = $class->load( $terms, $args );
 
     for my $item (@items) {
