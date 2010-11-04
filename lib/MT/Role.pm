@@ -129,7 +129,49 @@ sub list_props {
             col_class   => '',
             count_class => 'association',
             count_col   => 'role_id',
-            filter_type => 'role_id',
+            view_filter => [],
+        },
+        active_inactive => {
+            base    => '__virtual.single_select',
+            label   => 'Active/Inactive',
+            display => 'none',
+            terms   => sub {
+                my $prop = shift;
+                my ( $args, $base_terms, $base_args, $opts, ) = @_;
+                my $val = $args->{value};
+                if ( $val eq 'active' ) {
+                    $base_args->{joins} ||= [];
+                    push @{ $base_args->{joins} }, MT->model('association')->join_on(
+                        undef,
+                        {
+                            id => \'is not null',
+                        },
+                        {
+                            unique => 1,
+                            type => 'left',
+                            condition => { role_id => \'= role_id' },
+                        },
+                    );
+                }
+                else {
+                    $base_args->{joins} ||= [];
+                    push @{ $base_args->{joins} }, MT->model('association')->join_on(
+                        undef,
+                        {
+                            id => \'is null',
+                        },
+                        {
+                            unique => 1,
+                            type => 'left',
+                            condition => { role_id => \'= role_id' },
+                        },
+                    );
+                }
+            },
+            single_select_options => [
+                { label => 'Active',   value => 'active', },
+                { label => 'Inactive', value => 'inactive', },
+            ],
         },
         description => {
             auto => 1,
