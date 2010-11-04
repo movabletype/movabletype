@@ -482,6 +482,9 @@ sub core_content_actions {
                 return_args => 1,
                 order => 100,
                 confirm_msg => 'Are you sure you want to remove all TrackBacks reported as spam?',
+                condition => sub {
+                    $app->can_do('delete_junk_comments') || $app->can_do('delete_all_junk_comments');
+                },
             },
         },
         'comment' => {
@@ -492,6 +495,9 @@ sub core_content_actions {
                 return_args => 1,
                 order => 100,
                 confirm_msg => 'Are you sure you want to remove all comments reported as spam?',
+                condition => sub {
+                    $app->can_do('delete_junk_comments') || $app->can_do('delete_all_junk_comments');
+                },
             },
         },
         'role' => {
