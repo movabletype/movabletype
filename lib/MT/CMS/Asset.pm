@@ -1490,36 +1490,27 @@ sub cms_pre_load_filtered_list {
     my $user = $app->user;
     return if $user->is_superuser;
 
-    my $blog_id = $app->param('blog_id') || 0;
-    my $blog = $blog_id ? $app->blog : undef;
-    my $blog_ids = !$blog         ? undef
-                 : $blog->is_blog ? [ $blog_id ]
-                 :                  [ map { $_->id } @{$blog->blogs} ];
+    my $load_blog_ids = $load_options->{blog_ids} || undef;
 
     require MT::Permission;
     my $iter = MT::Permission->load_iter(
         {
             author_id => $user->id,
-            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { 'not' => 0 } ) ),
+            ( $load_blog_ids ? ( blog_id => $load_blog_ids ) : ( blog_id => { 'not' => 0 } ) ),
         }
     );
 
-    my $filters;
+    my $blog_ids;
     while ( my $perm = $iter->() ) {
         if ( $perm->can_do('edit_assets') ) {
-            push @$filters, ( '-or', { blog_id => $perm->blog_id } );
+            push @$blog_ids, $perm->blog_id;
         }
     }
 
     my $terms = $load_options->{terms} || {};
-    delete $terms->{blog_id}
-        if exists $terms->{blog_id};
-
-    my $new_terms;
-    push @$new_terms, ( $terms )
-        if ( keys %$terms );
-    push @$new_terms, ( '-and', $filters );
-    $load_options->{terms} = $new_terms;
+    $terms->{blog_id} = $blog_ids
+        if $blog_ids;
+    $load_options->{terms} = $terms;
 }
 
 
