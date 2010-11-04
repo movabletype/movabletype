@@ -174,7 +174,7 @@ sub list_props {
             auto  => 1,
             display => 'default',
             html => sub {
-                my ( $prop, $obj, $app ) = @_;
+                my ( $prop, $obj, $app, $opts ) = @_;
                 my $name = MT::Util::remove_html( $obj->author );
                 my ( $link, $status_img, $status_class, $lc_status_class, $auth_img, $auth_label );
                 my $id  = $obj->commenter_id;
@@ -210,28 +210,71 @@ sub list_props {
                         blog_id => $obj->blog_id,
                 });
                 my $commenter = MT->model('author')->load($id);
+
+                if ( !$commenter ) {
+                    $link = $app->uri(
+                        mode => 'search_replace',
+                        args => {
+                            _type       => 'comment',
+                            search_cols => 'author',
+                            is_limited  => 1,
+                            do_search   => 1,
+                            search      => $name,
+                            blog_id     => $app->blog ? $app->blog->id : 0,
+                    });
+                    $status_img = '';
+                    $status_class = 'Deleted';
+                    $lc_status_class = lc $status_class;
+                    my $link_title = MT->translate('Search other comments from this deleted commenter');
+                    my $optional_status = MT->translate('(Deleted)');
+                    return qq{
+                        <span class="commenter">
+                          <a href="$link" title="$link_title">$name</a> $optional_status
+                        </span>
+                    };
+                }
+
                 my $status = $commenter->status;
                 my $status_icon;
-                if ( $commenter->type == MT::Author::AUTHOR() ) {
-                    $status_icon = $commenter->is_active    ? 'user-enabled.gif'
-                                 : $commenter->is_banned    ? 'user-disabled.gif'
-                                 :                            'user-pending.gif'
-                                 ;
-                    $status_class = $commenter->is_active    ? 'Enabled'
-                                  : $commenter->is_banned    ? 'Disabled'
-                                  :                            'Pending'
-                                  ;
+
+                if ( MT->config->SingleCommunity ) {
+                    if ( $commenter->type == MT::Author::AUTHOR() ) {
+                        $status_icon
+                            = $commenter->status == MT::Author::ACTIVE()
+                            ? 'user-enabled.gif'
+                            : $commenter->status == MT::Author::INACTIVE()
+                            ? 'user-disabled.gif'
+                            : 'user-pending.gif';
+                        $status_class
+                            = $commenter->status == MT::Author::ACTIVE()
+                            ? 'Enabled'
+                            : $commenter->status == MT::Author::INACTIVE()
+                            ? 'Disabled'
+                            : 'Pending';
+                    }
+                    else {
+                        $status_icon
+                            = $commenter->is_trusted(0) ? 'trusted.gif'
+                            : $commenter->is_banned(0)  ? 'banned.gif'
+                            :                             'authenticated.gif';
+                        $status_class
+                            = $commenter->is_trusted(0) ? 'Trusted'
+                            : $commenter->is_banned(0)  ? 'Banned'
+                            :                             'Authenticated';
+                    }
                 }
                 else {
-                    $status_icon = $commenter->is_trusted   ? 'trusted.gif'
-                                 : $commenter->is_banned    ? 'banned.gif'
-                                 :                            'authenticated.gif'
-                                 ;
-                    $status_class = $commenter->is_trusted   ? 'Trusted'
-                                  : $commenter->is_banned    ? 'Banned'
-                                  :                            'Authenticated'
-                                  ;
+                    my $blog_id = $opts->{blog_id};
+                    $status_icon
+                        = $commenter->is_trusted($blog_id) ? 'trusted.gif'
+                        : $commenter->is_banned($blog_id)  ? 'banned.gif'
+                        :   'authenticated.gif';
+                    $status_class
+                        = $commenter->is_trusted($blog_id) ? 'Trusted'
+                        : $commenter->is_banned($blog_id)  ? 'Banned'
+                        :                                    'Authenticated';
                 }
+
                 $lc_status_class = lc $status_class;
                 my $status_url = $static . 'images/status_icons/' . $status_icon;
                 $status_img = qq{<img src="$status_url" />};
@@ -438,6 +481,50 @@ sub list_props {
             auto    => 1,
             display => 'none',
             label   => 'URL',
+        },
+        commenter_status => {
+            label   => 'Commenter Status',
+            display => 'none',
+            base    => 'commenter.status',
+            terms   => sub {
+                my $prop = shift;
+                my ( $args, $base_terms, $base_args, $opts, ) = @_;
+                my $val = $args->{value};
+                if ( $val eq 'deleted' ) {
+                    $base_args->{joins} ||= [];
+                    push @{ $base_args->{joins} }, MT->model('author')->join_on(
+                        undef,
+                        {
+                            id => \'is null',
+                        },
+                        {
+                            type => 'left',
+                            condition => { id => \'= comment_commenter_id' },
+                        },
+                    );
+                    return { commenter_id => \' is not null', };
+                }
+                elsif ( $val eq 'anonymous' ) {
+                    return { commenter_id => \' is null' };
+                }
+                else {
+                    my ( $com_terms, $com_args ) = ( {}, {} );
+                    $prop->super( $args, $com_terms, $com_args, $opts );
+                    $base_args->{joins} ||= [];
+                    push @{ $base_args->{joins} }, MT->model('author')->join_on(
+                        undef,
+                        { id => \'= comment_commenter_id', %$com_terms },
+                        $com_args,
+                    );
+                }
+            },
+            single_select_options => [
+                { label => 'Deleted Users/Deleted Commenters', value => 'deleted',   },
+                { label => 'Enabled Users/Enabled Commenters', value => 'enabled',   },
+                { label => 'Disabled Users/Banned Commenters', value => 'disabled',  },
+                { label => 'Pending Users/Pending Commenters', value => 'pending',   },
+                { label => 'Anonymous Commenters',             value => 'anonymous', },
+            ],
         },
     };
 }

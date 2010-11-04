@@ -179,7 +179,8 @@ sub list_props {
             label => 'Status',
             col   => 'status',
             terms => sub {
-                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
                 my $val = $args->{value};
                 my %statuses = (
                     active   => ACTIVE(),
@@ -244,19 +245,19 @@ sub system_filters {
         enabled => {
             label => 'Enabled Users',
             items => [
-                { type => 'status', args => { value => '1' }, },
+                { type => 'status', args => { value => 'active' }, },
             ],
         },
         disabled => {
             label => 'Disabled Users',
             items => [
-                { type => 'status', args => { value => '2' }, },
+                { type => 'status', args => { value => 'disabled' }, },
             ],
         },
         pending => {
             label => 'Pending Users',
             items => [
-                { type => 'status', args => { value => '3' }, },
+                { type => 'status', args => { value => 'pending' }, },
             ],
         },
     };
@@ -311,15 +312,17 @@ sub commenter_list_props {
             label => 'Status',
             col   => 'status',
             terms => sub {
-                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                my ( $prop, $args, $db_terms, $db_args, $opts ) = @_;
                 my $val = $args->{value};
                 $db_args->{joins} ||= [];
+                my $blog_id = MT->config->SingleCommunity ? 0 : $opts->{blog_ids};
                 if ( $val eq 'enabled' ) {
                     push @{ $db_args->{joins} }, MT->model('permission')->join_on(
                         undef,
                         {
                             permissions => { like => '%\'comment\'%', },
                             author_id => \'= author_id',
+                            blog_id   => $blog_id,
                         }
                     );
                 }
@@ -329,6 +332,7 @@ sub commenter_list_props {
                         {
                             restrictions => { like => '%\'comment\'%', },
                             author_id    => \'= author_id',
+                            blog_id   => $blog_id,
                         }
                     );
                 }
@@ -339,6 +343,7 @@ sub commenter_list_props {
                             permissions  => \'IS NULL',
                             restrictions => \'IS NULL',
                             author_id    => \'= author_id',
+                            blog_id   => $blog_id,
                         }
                     );
                 }
@@ -449,7 +454,7 @@ sub member_list_props {
                 return [ map {{ label => $_->name, value => $_->id }} @roles ];
             },
         },
-         entry_count => {
+        entry_count => {
             base        => '__virtual.object_count',
             view        => [ 'blog', 'website' ],
             label       => 'Entries',
@@ -540,7 +545,7 @@ sub member_system_filters {
 }
 
 sub _bulk_author_name_html {
-    my ( $prop, $objs, $app ) = @_;
+    my ( $prop, $objs, $app, $opts ) = @_;
     # Load userpics
     my %asset_for_load =
         map { $_->userpic_asset_id => 1 }
@@ -563,26 +568,40 @@ sub _bulk_author_name_html {
         }
         my $name = $obj->nickname;
         my ($status_img, $status_label);
-        if ( $obj->type == MT::Author::AUTHOR() ) {
-            $status_img = $obj->status == ACTIVE()   ? 'user-enabled.gif'
-                        : $obj->status == INACTIVE() ? 'user-disabled.gif'
-                        :                              'user-pending.gif'
-                        ;
-            $status_label = $obj->status == ACTIVE()   ? 'Enabled'
-                          : $obj->status == INACTIVE() ? 'Disabled'
-                          :                              'Pending'
-                          ;
+        if ( MT->config->SingleCommunity ) {
+            if ( $obj->type == MT::Author::AUTHOR() ) {
+                $status_img = $obj->status == ACTIVE()   ? 'user-enabled.gif'
+                            : $obj->status == INACTIVE() ? 'user-disabled.gif'
+                            :                              'user-pending.gif'
+                            ;
+                $status_label = $obj->status == ACTIVE()   ? 'Enabled'
+                              : $obj->status == INACTIVE() ? 'Disabled'
+                              :                              'Pending'
+                              ;
+            }
+            else {
+                $status_img = $obj->is_trusted(0) ? 'trusted.gif'
+                            : $obj->is_banned(0)  ? 'banned.gif'
+                            :                              'authenticated.gif'
+                            ;
+                $status_label = $obj->is_trusted(0) ? 'Trusted'
+                              : $obj->is_banned(0)  ? 'Banned'
+                              :                              'Authenticated'
+                              ;
+            }
         }
         else {
-            $status_img = $obj->is_trusted   ? 'trusted.gif'
-                        : $obj->is_banned    ? 'banned.gif'
-                        :                      'authenticated.gif'
+            my $blog_id = $opts->{blog_id};
+            $status_img = $obj->is_trusted($blog_id) ? 'trusted.gif'
+                        : $obj->is_banned($blog_id)  ? 'banned.gif'
+                        :                              'authenticated.gif'
                         ;
-            $status_label = $obj->is_trusted   ? 'Trusted'
-                          : $obj->is_banned    ? 'Banned'
-                          :                      'Authenticated'
+            $status_label = $obj->is_trusted($blog_id) ? 'Trusted'
+                          : $obj->is_banned($blog_id)  ? 'Banned'
+                          :                              'Authenticated'
                           ;
         }
+
         $status_img = MT->static_path . 'images/status_icons/' . $status_img;
         my $lc_status_label = lc $status_label;
         my $edit_link = $app->uri(
