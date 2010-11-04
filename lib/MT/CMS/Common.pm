@@ -1155,7 +1155,7 @@ sub filtered_list {
 
     my $count = $filter->count_objects(%count_options);
     if ( !defined $count ) {
-        return $app->error( $filter->errstr );
+        return $app->error( MT->translate( "An error occured while counting objects: [_1]", $filter->errstr));
     }
 
     $MT::DebugMode && $debug->{section}->('count objects');
@@ -1167,7 +1167,7 @@ sub filtered_list {
 
         $objs = $filter->load_objects(%load_options);
         if ( !defined $objs ) {
-            return $app->error( $filter->errstr );
+            return $app->error( MT->translate( "An error occured while loading objects: [_1]", $filter->errstr));
         }
 
         $MT::DebugMode && $debug->{section}->('load objects');
@@ -1231,7 +1231,6 @@ sub filtered_list {
             push @data, [ map { $_->[$i] } @results ];
         }
     }
-
 
     ## Save user list prefs.
     my $list_prefs = $app->user->list_prefs || {};
