@@ -1431,16 +1431,6 @@ fieldset {
     color: #9e3d3f;
 }
 
-
-.listing .linked-template { 
-    width: 4em;
-}
-
-.listing td.settings { 
-    text-align: center;
-}
-
-
 /* -- Create Inline */
 .create-inline {
     display: none;
@@ -1453,49 +1443,8 @@ fieldset {
     border-radius: 5px;
 }
 
-/* -- List Template */
-#list-template .listing-header p, 
-#list-widget-set .listing-header p { 
-    margin-bottom: 0.5em;
-}
-#list-template .listing .output-file { 
-    width: 45%;
-}
-#list-template .listing .output-file ul li, 
-#list-template .listing .publishing-method ul li { 
-    margin-bottom: 0;
-}
 
 /* -- List Asset */
-#asset-listing-table .asset-thumb {
-    height: 75px;
-    width: 75px;
-    border: 2px solid #C8C2BE;
-    background: #EEE url(../images/asset/file.gif) no-repeat center center;
-}
-#asset-listing-table .asset-thumb { background-image: url(../images/asset/file.gif); }
-#asset-listing-table .asset-type-image .asset-thumb { background-image: url(../images/asset/image.gif); }
-#asset-listing-table .asset-type-audio .asset-thumb { background-image: url(../images/asset/audio.gif); }
-#asset-listing-table .asset-type-video .asset-thumb { background-image: url(../images/asset/video.gif); }
-
-#asset-listing-table .status-missing .asset-thumb { background-image: url(../images/asset/file-warning.gif); }
-#asset-listing-table .status-missing .asset-type-image .asset-thumb { background-image: url(../images/asset/image-warning.gif); }
-#asset-listing-table .status-missing .asset-type-audio .asset-thumb { background-image: url(../images/asset/audio-warning.gif); }
-#asset-listing-table .status-missing .asset-type-video .asset-thumb { background-image: url(../images/asset/video-warning.gif); }
-
-#asset-listing-table .asset-thumbnail .asset-thumb {
-    position: relative;
-    height: 79px;
-    width: 79px;
-    overflow: hidden;
-    background: #2b2b2b;
-    border: none;
-}
-
-#asset-listing-table .asset-no-thumbnail .asset-thumb a {
-    display: block;
-    height: 75px;
-}
 #asset-listing-table .asset-thumb a span {
     display: none;
 }
@@ -1512,46 +1461,6 @@ fieldset {
 
 .asset-image {
     background-image: url(../images/asset-image.gif);
-}
-
-#asset-listing-table .asset-thumb-innner {
-    margin: 2px;
-}
-
-.asset-listing-table .as-file-status .asset-preview-link {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 18px;
-    height: 18px;
-    background: transparent url(../images/preview.gif) no-repeat;
-}
-.asset-listing-table .as-file-status .asset-preview-link a:hover {
-    text-decoration: none;
-}
-.asset-listing-table .as-file-status .asset-preview-link span {
-    display: none;
-}
-
-.asset-icon {
-    height: 146px;
-    border: 1px solid #d7e3f5;
-    background: #fff url('../images/filetype_icons/default_lg.gif') no-repeat center 5px;
-    text-align: center;
-}
-
-.asset-icon strong {
-    display: block;
-    margin-top: 108px;
-    height: 18px;
-    color: #2b2b2b;
-    font-style: italic;
-    font-weight: normal;
-}
-
-.asset-icon a {
-    display: block;
-    height: 18px;
 }
 
 /* -- List Notification */

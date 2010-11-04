@@ -15,7 +15,7 @@
   <mt:setvarblock name="table_header">
     <tr>
       <th class="col head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-      <th class="col head">&nbsp;</th>
+      <th class="col head asset-thumbnail">&nbsp;</th>
       <th class="col head name primary"><span class="col-label"><__trans phrase="Label"></span></th>
     <mt:unless name="blog_view">
       <mt:unless name="scope_type" eq="blog">
@@ -40,32 +40,24 @@
         <input type="hidden" id="asset-<mt:var name="id">-json" value="<mt:var name="metadata_json" escape="html">" />
         <input type="checkbox" name="id" value="<mt:var name="id">" class="select" />
       </td>
-      <td class="col asset-type-<mt:var name="asset_type" escape="html" lower_case="1">">
-        <div class="asset-thumb">
-          <div class="asset-thumb-inner">
-          <mt:if name="file_is_missing">
-            <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name"$>"><span class="asset-missing"><__trans phrase="Asset Missing"></span></a>
+      <td class="col asset-thumbnail asset-type-<mt:var name="asset_type" escape="html" lower_case="1">">
+        <div class="asset-thumb thumbnail">
+        <mt:if name="file_is_missing">
+          <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name"$>"><span class="asset-missing"><__trans phrase="Asset Missing"></span></a>
+        <mt:else>
+          <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name"$>">
+          <mt:if name="has_thumbnail">
+            <img src="<mt:var name="thumbnail_url" escape="html">"<mt:if name="thumbnail_width"> style="padding: <$mt:var name="thumbnail_height_offset"$>px <$mt:var name="thumbnail_width_offset"$>px"</mt:if> />
           <mt:else>
-            <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name"$>">
-            <mt:if name="has_thumbnail">
-              <img src="<mt:var name="thumbnail_url" escape="html">"<mt:if name="thumbnail_width"> style="padding: <$mt:var name="thumbnail_height_offset"$>px <$mt:var name="thumbnail_width_offset"$>px"</mt:if> />
-            <mt:else>
-              <span><__trans phrase="No thumbnail image"></span>
-            </mt:if>
-            </a>
-            <mt:if name="has_thumbnail">
-              <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id">');" class="asset-preview-link"><span><__trans phrase="Preview"></span></a>
-            </mt:if>
+            <span><__trans phrase="No thumbnail image"></span>
           </mt:if>
-          </div>
+          </a>
+        </mt:if>
         </div>
       </td>
       <td class="col name">
         <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name"$>"><$mt:var name="label" escape="html"$></a>
         <div class="as-asset-type"><mt:if name="file_is_missing"><__trans phrase="[_1] is missing" params="<mt:var name="asset_class" escape="html">"><mt:else><mt:var name="asset_class" escape="html"></mt:if></div>
-        <div id="asset-<mt:var name="id">-preview" class="asset-preview">
-          <div id="asset-<mt:var name="id">-preview-inner" class="asset-preview-inner"></div>
-        </div>
       </td>
       <mt:unless name="blog_view">
         <mt:unless name="scope_type" eq="blog">

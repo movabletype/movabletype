@@ -79,7 +79,7 @@
       <th class="col head blog"><span class="col-label"><__trans phrase="Website/Blog"></span></th>
     </mt:unless>
     <mt:unless name="mode_view_entry">
-      <th class="col head entry primary-col"><span class="col-label"><__trans phrase="Entry/Page"></span></th>
+      <th class="col head entry primary"><span class="col-label"><__trans phrase="Entry/Page"></span></th>
     </mt:unless>
       <th class="col head date"><span class="col-label"><__trans phrase="Date"></span></th>
     <mt:if name="show_ip_info">
@@ -105,13 +105,7 @@
       </td>
     <mt:unless name="tab_junk">
       <td class="col si <mt:if name="visible">status-publish<mt:elseif name="junk_status" eq="-1">status-spam<mt:else>status-pending</mt:if>">
-      <mt:if name="visible">
-        <a href="<mt:var name="script_url">?__mode=list&amp;_type=comment<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter_key=published" title="<__trans phrase="Only show published comments">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Published">" width="9" height="9" /></a>
-      <mt:elseif name="junk_status" eq="-1">
-        <a href="<mt:var name="script_url">?__mode=list&amp;_type=comment<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter_key=spam" title="<__trans phrase="Only show spam comments">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Spam">" width="9" height="9" /></a>
-      <mt:else>
-        <a href="<mt:var name="script_url">?__mode=list&amp;_type=comment<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter_key=unpublished" title="<__trans phrase="Only show pending comments">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Pending">" width="9" height="9" /></a>
-      </mt:if>
+        <img src="<mt:var name="static_uri">images/spacer.gif" alt="" class="status-icon" width="9" height="9" />
       </td>
     </mt:unless>
       <td class="col comment"<mt:if name="view_expanded"> colspan="<mt:unless name="is_blog"><mt:if name="show_ip_info">5<mt:else>4</mt:if><mt:else><mt:if name="show_ip_info">4<mt:else>3</mt:if></mt:unless>"<mt:else><mt:if name="mode_view_commenter"> colspan="2"</mt:if><mt:if name="mode_view_entry"> colspan="2"</mt:if></mt:if>>

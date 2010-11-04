@@ -206,3 +206,7 @@
 .asset-icon-txt { background-image: url(../images/filetype_icons/txt_lg.gif); }
 .asset-icon-xls { background-image: url(../images/filetype_icons/xls_lg.gif); }
 .asset-icon-zip { background-image: url(../images/filetype_icons/zip_lg.gif); }
+
+.listing .thumbnail img {
+    background: none;
+}

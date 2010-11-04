@@ -66,7 +66,7 @@
     <mt:unless name="view_expanded">
       <th class="col head excerpt primary"><span class="col-label"><__trans phrase="Excerpt"></span></th>
     </mt:unless>
-      <th class="col head from<mt:if name="view_expanded"> primary-col</mt:if>"><span class="col-label"><__trans phrase="From"></span></th>
+      <th class="col head from<mt:if name="view_expanded"> primary</mt:if>"><span class="col-label"><__trans phrase="From"></span></th>
     <mt:unless name="is_blog">
       <th class="col head blog"><span class="col-label"><__trans phrase="Website/Blog"></span></th>
     </mt:unless>
@@ -95,13 +95,7 @@
       </td>
     <mt:unless name="tab_junk">
       <td class="col si status-<mt:if name="visible">publish<mt:elseif name="junk_status">pending</mt:if>">
-      <mt:if name="visible">
-        <a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=approved" title="<__trans phrase="Only show published TrackBacks">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Published">" width="9" height="9" /></a>
-      <mt:elseif name="junk_status" eq="-1">
-        <a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=spam" title="<__trans phrase="Only show spam TrackBacks">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Spam">" width="9" height="9" /></a>
-      <mt:else>
-        <a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=pending" title="<__trans phrase="Only show pending TrackBacks">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Pending">" width="9" height="9" /></a>
-      </mt:if>
+        <img src="<mt:var name="static_uri">images/spacer.gif" alt="" class="status-icon" width="9" height="9" />
       </td>
     </mt:unless>
       <td class="col excerpt" <mt:if name="view_expanded"> colspan="<mt:unless name="is_blog"><mt:if name="show_ip_info">5<mt:else>4</mt:if><mt:else><mt:if name="show_ip_info">4<mt:else>3</mt:if></mt:unless>"</mt:if>>

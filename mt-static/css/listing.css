@@ -57,12 +57,12 @@
 .col.target { 
     width: 25%;
 }
-.col.cb, 
-.col.view { 
+.col.cb { 
     width: 2.6em;
     text-align: center;
 }
-.col.si {
+.col.si,
+.col.view {
     width: 4em;
     text-align: center;
 }
@@ -163,7 +163,12 @@ tfoot .col.head{
 }
 .col .thumbnail, 
 .col .userpic {
+    width: 45px;
+    height: 45px;
     border: 1px solid #c0c6c9;
+}
+.col .thumbnail {
+    background: #f3f3f3 url(../images/thumbnail-bg.png) repeat top left;
 }
 .col .userpic .icon {
     margin: 0;
@@ -212,6 +217,13 @@ tfoot .col.head{
     border-top-right-radius: 0;
     border-top-left-radius: 0;
     -moz-border-radius: 0 0 5px 5px;
+}
+
+.col.asset-thumbnail {
+    width: 6em;
+}
+.col.asset-thumbnail .thumbnail {
+    margin: 0 auto;
 }
 
 
