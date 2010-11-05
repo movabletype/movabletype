@@ -447,17 +447,13 @@ sub cms_pre_load_filtered_list {
     my $user = $app->user;
     return if $user->is_superuser;
 
-    my $blog_id = $app->param('blog_id') || 0;
-    my $blog = $blog_id ? $app->blog : undef;
-    my $blog_ids = !$blog         ? undef
-                 : $blog->is_blog ? [ $blog_id ]
-                 :                  [ map { $_->id } @{$blog->blogs} ];
+    my $load_blog_ids = $load_options->{blog_ids} || undef;
 
     require MT::Permission;
     my $iter = MT::Permission->load_iter(
         {
             author_id => $user->id,
-            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { 'not' => 0 } ) ),
+            ( $load_blog_ids ? ( blog_id => $load_blog_ids ) : ( blog_id => { 'not' => 0 } ) ),
         }
     );
 
@@ -475,9 +471,9 @@ sub cms_pre_load_filtered_list {
     }
 
     $args->{joins} ||= [];
-    push @{ $args->{joins} }, MT->model('entry')->join_on(
+    push @{ $args->{joins} }, MT->model('trackback')->join_on(
         undef, [
-             { id => \'=comment_entry_id', },
+             { id => \'=tbping_tb_id', },
              '-and',
              $filters,
         ],
