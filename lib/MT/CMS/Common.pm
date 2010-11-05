@@ -702,7 +702,12 @@ sub list {
     my %param;
     $param{list_type} = $type;
 
-    my $screen_settings = MT->registry('listing_screens' => $type )
+    my @components
+        = map  { $_->{id} }
+          grep { $_->registry( listing_screens => $type ) }
+          MT::Component->select;
+
+    my $screen_settings = MT->registry( listing_screens => $type )
         or return $app->error(
             $app->translate('Unknown action [_1]', $list_mode)
         );
@@ -948,6 +953,7 @@ sub list {
     $param{filter_types}    = \@filter_types;
     $param{object_type}     = $type;
     $param{page_title}      = $screen_settings->{screen_label};
+    $param{list_components} = \@components;
     $param{object_label}
         = $screen_settings->{object_label}
         || $obj_class->class_label;
@@ -966,7 +972,6 @@ sub list {
     $param{container_label_plural}
         = $screen_settings->{container_label_plural}
         || $obj_class->container_label_plural;
-
 
     my $s_type = $screen_settings->{search_type} || $obj_type;
     if ( my $search_apis = $app->registry( search_apis => $s_type ) ) {
