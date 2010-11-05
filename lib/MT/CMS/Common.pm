@@ -704,7 +704,7 @@ sub list {
 
     my @components
         = map  { $_->{id} }
-          grep { $_->registry( listing_screens => $type ) }
+          grep { $_->registry( list_properties => $type ) || $_->registry( listing_screens => $type ) }
           MT::Component->select;
 
     my $screen_settings = MT->registry( listing_screens => $type )
