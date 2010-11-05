@@ -34,7 +34,7 @@ The argument for the numify attribute is the separator character to use
 sub _fltr_numify {
     my ($str, $arg, $ctx) = @_;
     $arg = ',' if (!defined $arg) || ($arg eq '1');
-    $str =~ s/(^[−+]?\d+?(?=(?>(?:\d{3})+)(?!\d))|\G\d{3}(?=\d))/$1$arg/g;
+    $str =~ s/(^[-+]?\d+?(?=(?>(?:\d{3})+)(?!\d))|\G\d{3}(?=\d))/$1$arg/g;
     return $str;
 }
 
