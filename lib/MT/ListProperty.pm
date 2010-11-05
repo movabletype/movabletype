@@ -43,6 +43,7 @@ sub init {
     $self->{object_type} = $object_type;
     $self->{datasource}  = MT->model($object_type);
     $self->_init_core;
+    $self->_get('init') if $self->{init};
     $self;
 }
 
@@ -182,10 +183,11 @@ sub base {
             or die "Failed to load auto prop for $class $id";
         my $prop = __PACKAGE__->instance( '__virtual', $auto_type )
             or die "Failed to load auto prop for $class $id";
-        $orig_obj->{col} = $id;
         $prop;
     }
 }
+
+sub col { $_[0]->_get('col') || $_[0]->id }
 
 sub _scope_filter {
     my $prop = shift;
