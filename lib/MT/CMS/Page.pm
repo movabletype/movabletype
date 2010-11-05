@@ -68,7 +68,7 @@ sub cms_pre_load_filtered_list {
     my $blog_ids;
     while ( my $perm = $iter->() ) {
         if ( $perm->can_do('manage_pages') ) {
-            push @$blog_ids, $perm->blog_id };
+            push @$blog_ids, $perm->blog_id;
         }
     }
 
