@@ -2630,7 +2630,7 @@ sub cms_pre_load_filtered_list {
     while ( my $perm = $iter->() ) {
         my $user_filter;
         $user_filter->{blog_id} = $perm->blog_id;
-        if ( !$perm->can_do('publish_post') &&
+        if ( !$perm->can_do('publish_all_entry') &&
              !$perm->can_do('edit_all_entries')
          ) {
             $user_filter->{author_id} = $user->id;
