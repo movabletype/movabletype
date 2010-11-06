@@ -611,6 +611,7 @@ sub registry {
     if ( ref $c ) {
         if ( !@_ ) { return $c->{registry} ||= {} }
         if ( ref $_[0] ) {
+            $c->{__localized} = 0;
             return $c->{registry} = shift;
         }
         my @path = @_;
