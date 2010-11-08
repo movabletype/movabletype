@@ -2173,63 +2173,56 @@ sub core_menus {
 
 sub core_compose_menus {
     my $app = shift;
-
     return {
-        compose_menus => {
-            label => 'Create New',
-            order => 100,
-            menus => {
-                'entry' => {
-                    label      => "Entry",
-                    order      => 100,
-                    mode       => 'view',
-                    args       => { _type => 'entry' },
-                    permission => 'create_post',
-                    view       => "blog",
-                },
-                'page' => {
-                    label      => "Page",
-                    order      => 200,
-                    mode       => 'view',
-                    args       => { _type => 'page' },
-                    permission => 'manage_pages',
-                    view       => [ "blog", 'website' ],
-                },
-                'asset' => {
-                    label      => "Asset",
-                    order      => 300,
-                    mode       => 'start_upload',
-                    permission => 'upload,edit_assets',
-                    view       => [ "blog", 'website' ],
-                },
-                'website' => {
-                    label         => "Website",
-                    order         => 200,
-                    mode          => 'view',
-                    args          => { _type => 'website' },
-                    permit_action => 'use_website:create_menu',
-                    view          => "system",
-                },
-                'user' => {
-                    label      => "User",
-                    order      => 100,
-                    mode       => "view",
-                    args       => { _type => "author" },
-                    permission => "administer",
-                    condition  => sub {
-                        return !MT->config->ExternalUserManagement;
-                    },
-                    view => "system",
-                },
-                'blog:create' => {
-                    label         => "Blog",
-                    order         => 400,
-                    mode          => 'view',
-                    args          => { _type => 'blog' },
-                    permit_action => 'use_blog:create_menu',
-                    view          => "website",
-                },
+        'entry' => {
+            label      => "Entry",
+            order      => 100,
+            mode       => 'view',
+            args       => { _type => 'entry' },
+            permission => 'create_post',
+            view       => "blog",
+        },
+        'page' => {
+            label      => "Page",
+            order      => 200,
+            mode       => 'view',
+            args       => { _type => 'page' },
+            permission => 'manage_pages',
+            view       => [ "blog", 'website' ],
+        },
+        'asset' => {
+            label      => "Asset",
+            order      => 300,
+            mode       => 'start_upload',
+            permission => 'upload,edit_assets',
+            view       => [ "blog", 'website' ],
+        },
+        'website' => {
+            label         => "Website",
+            order         => 200,
+            mode          => 'view',
+            args          => { _type => 'website' },
+            permit_action => 'use_website:create_menu',
+            view          => "system",
+        },
+        'user' => {
+            label      => "User",
+            order      => 100,
+            mode       => "view",
+            args       => { _type => "author" },
+            permission => "administer",
+            condition  => sub {
+                return !MT->config->ExternalUserManagement;
             },
+            view => "system",
+        },
+        'blog:create' => {
+            label         => "Blog",
+            order         => 400,
+            mode          => 'view',
+            args          => { _type => 'blog' },
+            permit_action => 'use_blog:create_menu',
+            view          => "website",
         },
     };
 }
@@ -3133,66 +3126,48 @@ sub build_compose_menus {
     my $user = $app->user
       or return;
 
-    my $scope = $app->blog
-        ? $app->blog->is_blog
-            ? 'blog'
-            : 'website'
-        : defined $app->param('blog_id')
-            ? 'system'
-            : 'user';
+    my $scope = $app->view;
     my $blog_id = $app->blog
         ? $app->blog->id
         : 0;
 
     my $menus = $app->registry('compose_menus');
-    my @root_keys = keys %$menus;
-    my @root_menus;
-
-    foreach my $root_key ( @root_keys ) {
-        my @menus;
-        my $items;
-        my $sub_menus = $menus->{$root_key}{menus};
-
-        foreach my $key ( keys %$sub_menus ) {
-            my $item = $sub_menus->{$key};
-            if ( $item->{view} ) {
-                if ( ref $item->{view} eq 'ARRAY' ) {
-                    next
-                        unless ( scalar grep { $_ eq $scope } @{ $item->{view} } );
-                }
-                else {
-                    next if $item->{view} ne $scope;
-                }
-            }
-            if ( $item->{mode} ) {
-                $item->{link} = $app->uri(
-                    mode => $item->{mode},
-                    args => {
-                        %{ $item->{args} || {} },
-                        (
-                            $blog_id
-                                ? ( blog_id => $blog_id )
-                                : ()
-                            )
-                    }
-                );
-            }
-
-            push @menus, $item;
-        }
-        next unless @menus;
-
-        my $compose_menus = $app->filter_conditional_list( \@menus, ($param) );
-        @$compose_menus = sort { $a->{order} <=> $b->{order} } @$compose_menus;
-        $items->{menus} = $compose_menus;
-        $items->{root_label} = $menus->{$root_key}{label};
-        $items->{order} = $menus->{$root_key}{order};
-
-        push @root_menus, $items;
+    if ( my $legacy_menus = $menus->{compose_menus} ) {
+        $menus = { %$menus, %{$legacy_menus->{menus}}, };
+        delete $menus->{compose_menus};
     }
+    my @root_keys = keys %$menus;
+    my @menus;
 
-    @root_menus = sort { $a->{order} <=> $b->{order} } @root_menus;
-    $param->{compose_menus} = \@root_menus;
+    foreach my $key ( @root_keys ) {
+        my $item = $menus->{$key};
+        if ( $item->{view} ) {
+            if ( ref $item->{view} eq 'ARRAY' ) {
+                next
+                    unless ( scalar grep { $_ eq $scope } @{ $item->{view} } );
+            }
+            else {
+                next if $item->{view} ne $scope;
+            }
+        }
+        if ( $item->{mode} ) {
+            $item->{link} = $app->uri(
+                mode => $item->{mode},
+                args => {
+                    %{ $item->{args} || {} },
+                    (
+                        $blog_id
+                            ? ( blog_id => $blog_id )
+                            : ()
+                        )
+                }
+            );
+        }
+        push @menus, $item;
+    }
+    my $compose_menus = $app->filter_conditional_list( \@menus, ($param) );
+    @menus = sort { $a->{order} <=> $b->{order} } @menus;
+    $param->{compose_menus} = \@menus;
 }
 
 sub return_to_dashboard {

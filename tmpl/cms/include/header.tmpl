@@ -150,9 +150,8 @@
         <mt:if name="compose_menus">
         <div id="<mt:var name="scope_type">-fav-actions-nav" class="fav-actions-nav split">
         <mt:loop name="compose_menus">
-          <mt:loop name="menus">
           <mt:if name="__first__">
-          <a href="<mt:var name="link">" class="button"><mt:var name="root_label"></a>
+          <a href="<mt:var name="link">" class="button"><__trans phrase="Create New"></a>
           <a hre="#" class="toggle-button button detail-link">
             <img src="<$mt:var name="static_uri"$>images/arrow/arrow-toggle-black.png" />
           </a>
@@ -166,7 +165,6 @@
             </ul>
           </div>
           </mt:if>
-          </mt:loop>
         </mt:loop>
         </div>
         </mt:if>
