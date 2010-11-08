@@ -20,14 +20,17 @@
     -webkit-box-shadow: 0 1px 0 #f3f3f3;
     -moz-box-shadow: 0 1px 0 #f3f3f3;
 }
-.short,
-.password {
+.edit-screen .text {
+    width: 100%;
+}
+.text.short,
+.text.password {
     width: 200px;
 }
-.med {
+.text.med {
     width: 50%;
 }
-.full {
+.text.full {
     width: 100%;
     max-width: 100%;
 }
