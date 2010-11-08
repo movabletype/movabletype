@@ -77,7 +77,6 @@ pre {
     clear: both;
     position: relative;
     margin: 1.5em 0;
-    text-align: center;
 }
 .picture.small {
     float: left;
@@ -85,9 +84,7 @@ pre {
 }
 
 .picture img { 
-    margin: 0 auto;
     height: auto;
-    border: 1px solid #c0c6c9;
 }
 
 .userpic {
@@ -97,6 +94,17 @@ pre {
     position: absolute;
     right: 0;
     bottom: 0;
+}
+.thumbnail, 
+.userpic {
+    border: 1px solid #c0c6c9;
+}
+.thumbnail {
+    background: #f3f3f3 url(../images/thumbnail-bg.png) repeat top left;
+}
+.asset-thumb {
+    width: 45px;
+    height: 45px;
 }
 
 .sticky-label {
@@ -266,6 +274,16 @@ pre {
 .option {
     margin: 10px 0;
 }
+
+.metadata-item {
+    line-height: 1.2;
+    margin-bottom: 0.5em;
+}
+.metadata-item strong {
+    margin-right: 0.5em;
+}
+
+
 
 /* -- Tabs */
 .ui-tabs .ui-tabs-hide {
@@ -2327,47 +2345,30 @@ body.preview-screen {
     margin-top: 3px;
 }
 
-/* - Edit Template */
-/* -- CodeMirror */
 
 /* - Edit Asset */
-.edit-asset .asset-preview {
-    position: relative;
-    text-align: center;
-    width: 260px;
+.asset-preview-thumb {
+    min-width: 240px;
+    width: 240px;
 }
-
-.edit-asset .asset-thumb {
-    min-height: 260px;
-    border: 1px solid #c8c2be;
+.asset-preview-thumb .thumbnail {
+    display: inline-block;
 }
-
-.edit-asset .asset-thumb img { 
-    margin: 10px 0;
+.asset-preview-thumb img {
+    border: 0;
 }
-
-.edit-asset .asset-thumb span {
-    display: none;
+.edit-asset .asset-metadata {
+    overflow: hidden;
 }
-.edit-asset .asset-thumb .asset-missing-msg {
-    display: inline;
-    background: url(../images/status_icons/warning.gif) no-repeat left center;
-    padding-left: 15px;
-}
-
-.edit-asset .asset-thumb-metadata {
-    margin-top: 10px;
-}
-
-.edit-asset .view-asset-link {
-    margin-left: 5px;
+.edit-asset .asset-info {
+    clear: both;
 }
 
 /* -- Related Assets Widget */
 #related-assets .asset {
     overflow: hidden;
     clear: left;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     padding-bottom: 5px; 
 }
 #related-assets .asset.last-child { 
@@ -2375,47 +2376,9 @@ body.preview-screen {
     padding-bottom: 0;
 }
 
-#related-assets .asset-thumb  {
-    min-height: 80px;
-    width: 80px;
-    height: 80px;
-    border: 1px solid #c8c2be;
-}
-#related-assets .asset-no-thumbnail .asset-thumb a {
-    display: block;
-}
-#related-assets .asset-thumbnail .asset-thumb img {
-    margin-top: 2px;
-    border: 0;
-}
-
-.edit-asset #related-assets .asset-thumb a span {
-    display: none;
-}
-
-.edit-asset #related-assets .asset .asset-metadata {
-    margin-left: 95px;
-}
-
-.edit-asset #related-assets .asset-label { 
-    margin-bottom: 5px;
-    word-wrap: break-word;
-    /*font-size: 12px;*/
-}
-
-.edit-asset #related-assets .asset-size li {
-    margin: 0;
-    line-height: 1.3;
-}
-
 .edit-asset .actions-bar {
     clear: both;
 }
-
-.edit-asset .asset-thumb { background: #f3f3f3 url(../images/asset/file.gif) no-repeat center center; }
-.edit-asset .asset-type-image .asset-thumb { background-image: url(../images/asset/image.gif); }
-.edit-asset .asset-type-audio .asset-thumb { background-image: url(../images/asset/audio.gif); }
-.edit-asset .asset-type-video .asset-thumb { background-image: url(../images/asset/video.gif); }
 
 .edit-asset .status-missing .asset-thumb { background-image: url(../images/asset/file-warning.gif); }
 .edit-asset .status-missing .asset-type-image .asset-thumb { background-image: url(../images/asset/image-warning.gif); }
