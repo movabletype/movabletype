@@ -20,6 +20,9 @@ sub edit {
     return $app->return_to_dashboard( redirect => 1 )
         if $blog && !$id;
 
+    return $app->permission_denied()
+        unless $app->user->can_create_website();
+
     if ($id) {
         my $output = $param->{output} ||= 'cfg_prefs.tmpl';
         $param->{need_full_rebuild}  = 1 if $q->param('need_full_rebuild');
