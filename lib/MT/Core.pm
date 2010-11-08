@@ -1017,7 +1017,39 @@ BEGIN {
                 object_label => 'Log',
                 default_sort_key => 'created_on',
                 primary    => 'message',
-                permission => 'access_to_log_list',
+                condition        => sub {
+                    my $app = MT->instance;
+                    my $user = $app->user;
+                    my $blog_id = $app->param('blog_id');
+                    return 1 if $user->is_superuser;
+                    return 0 unless defined $blog_id;
+    
+                    my $terms;
+                    push @$terms, { author_id => $user->id };
+                    if ( $blog_id ) {
+                        push @$terms, [ '-and', {
+                            blog_id => $blog_id,
+                            permissions => { like => "\%'view_blog_log'\%" },
+                        }];
+                    } else {
+                        push @$terms, [ '-and',
+                            [
+                                {
+                                    blog_id => 0,
+                                    permissions => { like => "\%'view_log'\%" },
+                                },
+                                '-or',
+                                {
+                                    blog_id => \' > 0',
+                                    permissions => { like => "\%'view_blog_log'\%" },
+                                }
+                            ]
+                        ];
+                    }
+
+                    my $cnt = MT->model('permission')->count( $terms );
+                    return ( $cnt && $cnt > 0 ) ? 1 : 0;
+                },
                 feed_link => 1,
                 feed_label => 'Activity Feed',
                 screen_label => 'Activity Log',

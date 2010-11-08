@@ -2139,15 +2139,45 @@ sub core_menus {
             view       => [qw( system website blog )],
         },
         'tools:activity_log' => {
-            label             => "Activity Log",
-            order             => 800,
-            mode              => "list",
-            args              => {
+            label            => "Activity Log",
+            order            => 800,
+            mode             => "list",
+            args             => {
                 _type => 'log',
             },
-            permission        => "view_blog_log",
-            system_permission => "view_log",
-            view              => [ "blog", 'website', 'system' ],
+            condition        => sub {
+                my $user = $app->user;
+                my $blog_id = $app->param('blog_id');
+                return 1 if $user->is_superuser;
+                return 0 unless defined $blog_id;
+
+                my $terms;
+                push @$terms, { author_id => $user->id };
+                if ( $blog_id ) {
+                    push @$terms, [ '-and', {
+                        blog_id => $blog_id,
+                        permissions => { like => "\%'view_blog_log'\%" },
+                    }];
+                } else {
+                    push @$terms, [ '-and',
+                        [
+                            {
+                                blog_id => 0,
+                                permissions => { like => "\%'view_log'\%" },
+                            },
+                            '-or',
+                            {
+                                blog_id => \' > 0',
+                                permissions => { like => "\%'view_blog_log'\%" },
+                            }
+                        ]
+                    ];
+                }
+
+                my $cnt = MT->model('permission')->count( $terms );
+                return ( $cnt && $cnt > 0 ) ? 1 : 0;
+            },
+            view             => [ "blog", 'website', 'system' ],
         },
         'tools:system_information' => {
             label => "System Information",

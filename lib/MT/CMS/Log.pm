@@ -459,7 +459,7 @@ sub cms_pre_load_filtered_list {
     my $iter = MT::Permission->load_iter(
         {
             author_id => $user->id,
-            permissions => { like => '%administer_blog%' },
+            permissions => { like => '%view_blog_log%' },
         },
     );
 
