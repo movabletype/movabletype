@@ -1027,8 +1027,14 @@ BEGIN {
                     my $terms;
                     push @$terms, { author_id => $user->id };
                     if ( $blog_id ) {
+                        my $blog = MT->model('blog')->load( $blog_id );
+                        my @blog_ids;
+                        push @blog_ids, $blog_id;
+                        if ( $blog && !$blog->is_blog ) {
+                            push @blog_ids, map { $_->id } @{$blog->blogs};
+                        }
                         push @$terms, [ '-and', {
-                            blog_id => $blog_id,
+                            blog_id => \@blog_ids,
                             permissions => { like => "\%'view_blog_log'\%" },
                         }];
                     } else {
