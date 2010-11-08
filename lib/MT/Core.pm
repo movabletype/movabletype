@@ -1559,6 +1559,7 @@ BEGIN {
                     return MT::Import->core_import_formats();
                 },
                 compose_menus => sub { MT->app->core_compose_menus() },
+                user_menus    => sub { MT->app->core_user_menus() },
             },
             upgrade => {
                 handler => 'MT::App::Upgrader',

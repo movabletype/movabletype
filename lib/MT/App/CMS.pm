@@ -2227,6 +2227,35 @@ sub core_compose_menus {
     };
 }
 
+sub core_user_menus {
+    my $app = shift;
+    return {
+        'profile' => {
+            label      => 'Profile',
+            order      => 100,
+            mode       => 'view',
+            args       => { _type => 'author' },
+            user_param => 'id',
+            view       => "system",
+            condition  => sub {
+                my ( $app, $param ) = @_;
+                $param->{is_me} ? 1 : $app->can_do('view_other_user_profile');
+            },
+        },
+        'permission' => {
+            label      => "Permissions",
+            order      => 200,
+            mode       => 'list',
+            args       => {
+                _type  => 'association',
+                filter => 'author_id',
+            },
+            user_param => 'filter_val',
+            view       => "system",
+        },
+    };
+}
+
 sub init_core_callbacks {
     my $app = shift;
     my $pkg = 'cms_';
@@ -2660,8 +2689,14 @@ sub set_default_tmpl_params {
 sub build_page {
     my $app = shift;
     my ( $page, $param ) = @_;
-    $param ||= {};
-
+    if ( !defined $param ) {
+        if ( $page->isa('MT::Template') ) {
+            $param = $page->param();
+        }
+        else {
+            $param = {};
+        }
+    }
     my $blog_id = $app->param('blog_id') || 0;
     my $blog;
     my $blog_class = $app->model('blog');
@@ -2715,6 +2750,16 @@ sub build_page {
     my $build_compose_menus = exists $param->{build_compose_menus} ? $param->{build_compose_menus} : 1;
     $app->build_compose_menus( $param )
         if $build_compose_menus;
+
+
+    my $build_user_menus
+        = exists $param->{build_user_menus} ? $param->{build_user_menus}
+        : $param->{user_menu_id}            ? 1
+        : $app->param('author_id')          ? 1
+        :                                     0;
+
+    $app->build_user_menus( $param )
+        if $build_user_menus;
 
     $app->SUPER::build_page( $page, $param );
 }
@@ -3168,6 +3213,63 @@ sub build_compose_menus {
     my $compose_menus = $app->filter_conditional_list( \@menus, ($param) );
     @menus = sort { $a->{order} <=> $b->{order} } @menus;
     $param->{compose_menus} = \@menus;
+}
+
+sub build_user_menus {
+    my $app = shift;
+    my ( $param ) = @_;
+    return if exists $param->{user_menus};
+    my $login_user = $app->user
+      or return;
+    my $scope = $app->view;
+    my $user_id = $param->{user_menu_id} || $app->param('author_id') || $login_user->id;
+    my $menu_user = MT->model('author')->load($user_id)
+        or return $app->errtrans('Invalid params');
+    $param->{user_menu_id} ||= $user_id;
+    $param->{user_menu_user} = $menu_user;
+    $param->{is_me} ||= $login_user->id == $user_id;
+    my $reg_menus = $app->registry('user_menus');
+    my $menus = $app->filter_conditional_list( $reg_menus, $app, $param );
+    my @menus;
+    foreach my $key ( keys %$menus ) {
+        my %menu_item;
+        my $item = $menus->{$key};
+        if ( $item->{view} ) {
+            if ( ref $item->{view} eq 'ARRAY' ) {
+                next
+                    unless ( scalar grep { $_ eq $scope } @{ $item->{view} } );
+            }
+            else {
+                next if $item->{view} ne $scope;
+            }
+        }
+        if ( my $link = $item->{link} ) {
+            $link = MT->handler_to_coderef($link) unless ref $link;
+            $menu_item{link} = $link->($param);
+        }
+        elsif ( $item->{mode} ) {
+            my $user_key = $item->{user_param} || 'author_id';
+            $menu_item{link} = $app->uri(
+                mode => $item->{mode},
+                args => {
+                    %{ $item->{args} || {} },
+                    blog_id   => 0,
+                    $user_key => $user_id,
+                }
+            );
+        }
+        if ( my $hdlr = $item->{label_handler} ) {
+            $hdlr = MT->handler_to_coderef($hdlr) unless ref $hdlr;
+            $menu_item{label} = $hdlr->($app, $param);
+        }
+        else {
+            $menu_item{label} = $item->{label};
+        }
+        $menu_item{order} = $item->{order};
+        push @menus, \%menu_item;
+    }
+    @menus = sort { $a->{order} <=> $b->{order} } @menus;
+    $param->{user_menus} = \@menus;
 }
 
 sub return_to_dashboard {

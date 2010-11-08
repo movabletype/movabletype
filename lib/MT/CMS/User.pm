@@ -24,6 +24,7 @@ sub edit {
     if ($id) {
         # TODO: Populate permissions / blogs for this user
         # populate blog_loop, permission_loop
+        $param->{user_menu_id} = $id;
         $param->{is_me} = 1 if $id == $author->id;
         $param->{editing_other_profile} = 1
           if !$param->{is_me} && $app->can_do('edit_other_profile');
