@@ -145,6 +145,7 @@ sub edit {
         $param->{'auth_pref_tag_delim'} = $delim;
     }
     $param->{'nav_authors'} = 1;
+    $param->{active_user_menu} = 'profile';
 }
 
 sub edit_role {

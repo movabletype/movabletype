@@ -2,9 +2,9 @@
 <mt:if name="user_menus">
 <mt:loop name="user_menus">
   <mt:if name="link">
-    <li><a href="<mt:var name="link">"><mt:var name="label"></a></li>
+    <li<mt:if "is_active"> class="active"</mt:if>><a href="<mt:var name="link">"><mt:var name="label"></a></li>
   <mt:else>
-    <li><mt:var name="label"></li>
+    <li<mt:if "is_active"> class="active"</mt:if>><mt:var name="label"></li>
   </mt:if>
 </mt:loop>
 </mt:if>

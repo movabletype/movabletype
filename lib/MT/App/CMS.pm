@@ -2252,6 +2252,10 @@ sub core_user_menus {
             },
             user_param => 'filter_val',
             view       => "system",
+            condition  => sub {
+                my ( $app, $param ) = @_;
+                $param->{is_me} ? 1 : $app->can_do('view_other_user_permissions');
+            },
         },
     };
 }
@@ -3227,6 +3231,7 @@ sub build_user_menus {
         or return $app->errtrans('Invalid params');
     $param->{user_menu_id} ||= $user_id;
     $param->{user_menu_user} = $menu_user;
+    my $active = $param->{active_user_menu};
     $param->{is_me} ||= $login_user->id == $user_id;
     my $reg_menus = $app->registry('user_menus');
     my $menus = $app->filter_conditional_list( $reg_menus, $app, $param );
@@ -3266,6 +3271,7 @@ sub build_user_menus {
             $menu_item{label} = $item->{label};
         }
         $menu_item{order} = $item->{order};
+        $menu_item{is_active} = $active eq $key ? 1 : 0;
         push @menus, \%menu_item;
     }
     @menus = sort { $a->{order} <=> $b->{order} } @menus;
