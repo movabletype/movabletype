@@ -25,6 +25,19 @@
   <mt:unless name="template_type" eq="email">
     <mt:if name="publish_from_search">
       <mt:if name="blog_id">
+        <mt:if name="can_rebuild">
+  <button
+     type="button"
+     accesskey="a"
+     title="<__trans phrase="Publish selected templates (a)">"
+     class="button mt-publish-<mt:var name="template_type" default="template" escape="html">-templates">
+    <__trans phrase="Publish">
+  </button>
+        </mt:if>
+      </mt:if>
+    </mt:if>
+    <mt:if name="template_type" eq="index">
+      <mt:if name="can_rebuild">
   <button
      type="button"
      accesskey="a"
@@ -33,16 +46,8 @@
     <__trans phrase="Publish">
   </button>
       </mt:if>
-    </mt:if>
-    <mt:if name="template_type" eq="index">
-  <button
-     type="button"
-     accesskey="a"
-     title="<__trans phrase="Publish selected templates (a)">"
-     class="button mt-publish-<mt:var name="template_type" default="template" escape="html">-templates">
-    <__trans phrase="Publish">
-  </button>
     <mt:elseif name="template_type" eq="archive">
+      <mt:if name="can_rebuild">
   <button
      type="button"
      accesskey="a"
@@ -50,6 +55,7 @@
      class="button mt-publish-<mt:var name="template_type" default="template" escape="html">-templates">
     <__trans phrase="Publish">
   </button>
+      </mt:if>
     </mt:if>
   <button
      type="button"
