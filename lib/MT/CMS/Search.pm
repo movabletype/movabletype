@@ -12,6 +12,7 @@ sub core_search_apis {
     my $app = shift;
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
+
     my $author  = $app->user;
     my @perms;
     if ( !$blog_id ) {
@@ -30,12 +31,23 @@ sub core_search_apis {
             'condition' => sub {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
-                return 1 if !$blog_id;
-                return 1 if
-                    $author->permissions($blog_id)->can_do('create_post') ||
-                    $author->permissions($blog_id)->can_do('publish_post') ||
-                    $author->permissions($blog_id)->can_do('edit_all_posts');
-                return 0;
+
+                my $cnt = MT->model('permission')->count([
+                    {
+                        ( ( $blog_id ) ? ( blog_id => $blog_id ) : ( blog_id => \'> 0' ) ),
+                        author_id => $author->id,
+                    },
+                    '-and',
+                    [
+                        {  permissions => { like => "\%'create_post'\%" } },
+                        '-or',
+                        { permissions => { like => "\%'publish_post'\%" } },
+                        '-or',
+                        { permissions => { like => "\%'edit_all_posts'\%" } },
+                    ],
+                ]);
+
+                return ( $cnt && $cnt > 0 ) ? 1 : 0;
             },
             'handler' => '$Core::MT::CMS::Entry::build_entry_table',
             'label' => 'Entries',
@@ -68,13 +80,25 @@ sub core_search_apis {
             'condition' => sub {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
-                return 1 if !$blog_id;
-                return 1 if
-                    $author->permissions($blog_id)->can_do('create_post') ||
-                    $author->permissions($blog_id)->can_do('publish_post') ||
-                    $author->permissions($blog_id)->can_do('edit_all_posts');
-                    $author->permissions($blog_id)->can_do('manage_feedback');
-                return 0;
+
+                my $cnt = MT->model('permission')->count([
+                    {
+                        ( ( $blog_id ) ? ( blog_id => $blog_id ) : ( blog_id => \'> 0' ) ),
+                        author_id => $author->id,
+                    },
+                    '-and',
+                    [
+                        {  permissions => { like => "\%'create_post'\%" } },
+                        '-or',
+                        { permissions => { like => "\%'publish_post'\%" } },
+                        '-or',
+                        { permissions => { like => "\%'edit_all_posts'\%" } },
+                        '-or',
+                        { permissions => { like => "\%'manage_feedback'\%" } },
+                    ],
+                ]);
+
+                return ( $cnt && $cnt > 0 ) ? 1 : 0;
             },
             'handler' => '$Core::MT::CMS::Comment::build_comment_table',
             'label' => 'Comments',
@@ -104,13 +128,25 @@ sub core_search_apis {
             'condition' => sub {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
-                return 1 if !$blog_id;
-                return 1 if
-                    $author->permissions($blog_id)->can_do('create_post') ||
-                    $author->permissions($blog_id)->can_do('publish_post') ||
-                    $author->permissions($blog_id)->can_do('edit_all_posts');
-                    $author->permissions($blog_id)->can_do('manage_feedback');
-                return 0;
+
+                my $cnt = MT->model('permission')->count([
+                    {
+                        ( ( $blog_id ) ? ( blog_id => $blog_id ) : ( blog_id => \'> 0' ) ),
+                        author_id => $author->id,
+                    },
+                    '-and',
+                    [
+                        {  permissions => { like => "\%'create_post'\%" } },
+                        '-or',
+                        { permissions => { like => "\%'publish_post'\%" } },
+                        '-or',
+                        { permissions => { like => "\%'edit_all_posts'\%" } },
+                        '-or',
+                        { permissions => { like => "\%'manage_feedback'\%" } },
+                    ],
+                ]);
+
+                return ( $cnt && $cnt > 0 ) ? 1 : 0;
             },
             'label' => 'TrackBacks',
             'handler' => '$Core::MT::CMS::TrackBack::build_ping_table',
@@ -150,10 +186,16 @@ sub core_search_apis {
             'condition' => sub {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
-                return 1 if !$blog_id;
-                return 1 if
-                    $author->permissions($blog_id)->can_do('manage_pages') ||
-                return 0;
+
+                my $cnt = MT->model('permission')->count(
+                    {
+                        ( ( $blog_id ) ? ( blog_id => $blog_id ) : ( blog_id => \'> 0' ) ),
+                        author_id => $author->id,
+                        permissions => { like => "\%'manage_pages'\%" },
+                    },
+                );
+
+                return ( $cnt && $cnt > 0 ) ? 1 : 0;
             },
             'label' => 'Pages',
             'handler' => '$Core::MT::CMS::Entry::build_entry_table',
@@ -187,10 +229,22 @@ sub core_search_apis {
             'condition' => sub {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
-                return 1 if !$blog_id;
-                return 1 if
-                    $author->permissions($blog_id)->can_do('edit_templates') ||
-                return 0;
+
+                my $cnt = MT->model('permission')->count([
+                    {
+                        ( ( $blog_id ) ? ( blog_id => $blog_id ) : ( blog_id => \'> 0' ) ),
+                        author_id => $author->id,
+                        permissions => { like => "\%'edit_templates'\%" },
+                    },
+                    '-or',
+                    {
+                        author_id => $author->id,
+                        permissions => { like => "\%'edit_templates'\%" },
+                        blog_id => 0,
+                    },
+                ]);
+
+                return ( $cnt && $cnt > 0 ) ? 1 : 0;
             },
             'handler' => '$Core::MT::CMS::Template::build_template_table',
             'label'         => 'Templates',
@@ -230,10 +284,16 @@ sub core_search_apis {
             'condition' => sub {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
-                return 1 if !$blog_id;
-                return 1 if
-                    $author->permissions($blog_id)->can_do('edit_assets') ||
-                return 0;
+
+                my $cnt = MT->model('permission')->count(
+                    {
+                        ( ( $blog_id ) ? ( blog_id => $blog_id ) : ( blog_id => \'> 0' ) ),
+                        author_id => $author->id,
+                        permissions => { like => "\%'edit_assets'\%" },
+                    }
+                );
+
+                return ( $cnt && $cnt > 0 ) ? 1 : 0;
             },
             'label' => 'Assets',
             'handler' => '$Core::MT::CMS::Asset::build_asset_table',
@@ -270,10 +330,32 @@ sub core_search_apis {
             'condition' => sub {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
-                return 1 if !$blog_id;
-                return 1 if
-                    $author->permissions($blog_id)->can_do('view_blog_log') ||
-                return 0;
+
+                my $terms;
+                push @$terms, { author_id => $author->id };
+                if ( $blog_id ) {
+                    push @$terms, [ '-and', {
+                        blog_id => $blog_id,
+                        permissions => { like => "\%'view_blog_log'\%" },
+                    }];
+                } else {
+                    push @$terms, [ '-and',
+                        [
+                            {
+                                blog_id => 0,
+                                permissions => { like => "\%'view_log'\%" },
+                            },
+                            '-or',
+                            {
+                                blog_id => \' > 0',
+                                permissions => { like => "\%'view_blog_log'\%" },
+                            }
+                        ]
+                    ];
+                }
+
+                my $cnt = MT->model('permission')->count( $terms );
+                return ( $cnt && $cnt > 0 ) ? 1 : 0;
             },
             'handler' => '$Core::MT::CMS::Log::build_log_table',
             'label' => 'Activity Log',
@@ -301,10 +383,16 @@ sub core_search_apis {
             'condition' => sub {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
-                return 1 if !$blog_id && $author->permissions(0)->can_do('administer');
-                return 1 if
-                    $author->permissions($blog_id)->can_do('administer_blog') ||
-                return 0;
+
+                my $cnt = MT->model('permission')->count(
+                    {
+                        ( ( $blog_id ) ? ( blog_id => $blog_id ) : ( blog_id => \'> 0' ) ),
+                        author_id => $author->id,
+                        permissions => { like => "\%'administer_blog'\%" },
+                    },
+                );
+
+                return ( $cnt && $cnt > 0 ) ? 1 : 0;
             },
             'label' => 'Users',
             'handler' => '$Core::MT::CMS::User::build_author_table',
