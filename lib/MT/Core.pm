@@ -1038,7 +1038,7 @@ BEGIN {
                 template     => 'category.tmpl',
                 contents_label        => 'Page',
                 contents_label_plural => 'Pages',
-                permission => 'access_to_category_list',
+                permission => 'access_to_folder_list',
                 view => [ 'website', 'blog' ],
                 scope_mode => 'this',
             },
