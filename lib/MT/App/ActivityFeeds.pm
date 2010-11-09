@@ -590,8 +590,11 @@ sub _feed_system {
                 unless $perm && $perm->can_do('get_system_feed');
         }
         else {
-            return $cb->error( $app->translate("No permissions.") )
-                unless $app->can_do('get_all_system_feed');
+            unless ( $app->can_do('get_all_system_feed') ) {
+                unless ( $user->can_do('export_blog_log', at_least_one => 1 ) ) {
+                    return $cb->error( $app->translate("No permissions.") );
+                }
+            }
         }
     }
 
@@ -602,7 +605,22 @@ sub _feed_system {
     }
     $args->{filter}     = $filter;
     $args->{filter_val} = $filter_val;
-    $args->{blog_id}    = $blog_id if $blog_id;
+
+    if ( $blog_id ) {
+        $args->{blog_id}    = $blog_id;
+    } else {
+        unless ( $app->can_do('get_all_system_feed') ) {
+            my $iter = MT->model('permission')->load_iter({
+                author_id => $user->id,
+            });
+            my $blog_ids;
+            while ( my $p = $iter->() ) {
+                push @$blog_ids, $p->blog_id
+                    if $p->can_do('export_blog_log');
+            }
+            $args->{blog_id} = join ',', @$blog_ids;
+        }
+    }
     $args->{_type} = 'log';
     my $link = $app->base . $app->mt_uri( mode => 'list', args => $args );
     my $param = {
