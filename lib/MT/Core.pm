@@ -1132,7 +1132,7 @@ BEGIN {
                 primary      => 'name',
                 object_label => 'Commenter',
                 object_type  => 'author',
-                permission   => 'access_to_commenter_list',
+                permission   => 'administer',
                 default_sort_key => 'name',
                 condition => sub {
                     return MT->config->SingleCommunity;
