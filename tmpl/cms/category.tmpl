@@ -26,8 +26,8 @@
         <select id="itemlist" name="itemlist">
           <option id="opt-0" value="0"><__trans phrase="Top Level"></option>
         </select>
-        <input type="text" class="text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">">
-        <button type="button" class="add button"><__trans phrase="Add"></button>
+        <input type="text" name="<mt:var name="object_label" lower_case="1">_label" class="text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">">
+        <button type="submit" class="add button"><__trans phrase="Add"></button>
       </div>
 
       <div id="root" class="sortable"></div>
@@ -151,8 +151,8 @@ function initItem($item) {
       jQuery('.sort-tab').hide();
       var $element = jQuery(this).parent('.item-ctrl').parent('div');
       var parent = $element.attr('id');
-      var $form = jQuery('<div class="mod add-form"><input type="text" class="text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">" />\n</div>');
-      $form.css('margin-left', (nest.length+1)*indent).insertAfter($element);
+      var $form = jQuery('<div class="mod add-form"><input type="text" name="<mt:var name="object_label" lower_case="1">_label" class="text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">" />\n</div>');
+      $form.css('margin-left', (nest.length+1)*indent).insertAfter($element).find('input[name=<mt:var name="object_label" lower_case="1">_label]').focus();
       jQuery('<button type="button" class="add button"><__trans phrase="Add"></button>')
         .bind('click', function() {
           var label = jQuery(this).parent('.add-form').find('input').val();
