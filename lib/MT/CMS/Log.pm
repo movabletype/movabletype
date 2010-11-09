@@ -16,10 +16,10 @@ sub view {
     my $blog_id = $app->param('blog_id');
     my $perms   = $app->permissions;
     PERMCHECK: {
-	if ($blog_id) {
+        if ($blog_id) {
             last PERMCHECK
                 if $app->can_do('open_blog_log_screen');
-	}
+        }
         last PERMCHECK
             if $app->can_do('open_system_log_screen');
         return $app->permission_denied();
@@ -261,21 +261,50 @@ sub reset {
         $args->{ 'blog_id' } = $blog_id;
     }
     else {
-        return permission_denied()
-          unless $app->can_do('reset_system_log');
-        if ( $log_class->remove( { class => '*' } ) ) {
-            $app->log(
-                {
-                    message => $app->translate(
-                        "Activity log reset by '[_1]'",
-                        $author->name
-                    ),
-                    level    => MT::Log::INFO(),
-                    class    => 'system',
-                    category => 'reset_log'
+        if ( $app->can_do('reset_system_log') ) {
+            if ( $log_class->remove( { class => '*' } ) ) {
+                $app->log(
+                    {
+                        message => $app->translate(
+                            "Activity log reset by '[_1]'",
+                            $author->name
+                        ),
+                        level    => MT::Log::INFO(),
+                        class    => 'system',
+                        category => 'reset_log'
+                    }
+                );
+            }
+        } else {
+            my $iter = MT->model('permission')->load_iter({
+                author_id => $author->id,
+            });
+            my $blogs;
+            while ( my $p = $iter->() ) {
+                if ( $p->can_do('reset_blog_log') ) {
+                    push @$blogs, $p->blog;
                 }
-            );
+            }
+            return $app->permission_denied()
+                unless $blogs;
+
+            foreach my $blog ( @$blogs ) {
+                if ( $log_class->remove( { blog_id => $blog->id, class => '*' } ) ) {
+                    $app->log(
+                        {
+                            message => $app->translate(
+                                "Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'",
+                                $blog->name, $blog->id, $author->name
+                            ),
+                            level    => MT::Log::INFO(),
+                            class    => 'system',
+                            category => 'reset_log'
+                        }
+                    );
+                }
+            }
         }
+        $args->{ 'blog_id' } = 0;
     }
     my $log_url = $app->uri( mode => 'list', args => $args );
     $app->redirect( $log_url );
@@ -292,9 +321,11 @@ sub export {
         if ($blog_view) {
             last PERMCHECK
                 if $perms->can_do('export_blog_log');
-	}
+        }
         last PERMCHECK
             if $app->can_do('export_system_log');
+        last PERMCHECK
+            if $user->can_do('export_blog_log', at_least_one => 1 );
         return $app->permission_denied();
     }
 
@@ -328,6 +359,18 @@ sub export {
         my $blog_ids = $app->_load_child_blog_ids($blog->id);
         push @$blog_ids, $blog->id;
         $terms{blog_id} = $blog_ids;
+    } else {
+        if ( !$user->can_do('view_log') ) {
+            my $iter = MT->model('permission')->load_iter({
+                author_id => $user->id,
+                permissions => { like => '%view_blog_log%' },
+            });
+            my $blog_ids;
+            while ( my $p = $iter->() ) {
+                push @$blog_ids, $p->blog_id;
+            }
+            $terms{blog_id} = $blog_ids;
+        }
     }
     my $log_class  = $app->model('log');
     my $blog_class = $app->model('blog');
@@ -455,11 +498,14 @@ sub cms_pre_load_filtered_list {
     my $user = $app->user;
     return if $user->is_superuser;
 
+    my $blog_ids = $load_options->{blog_ids};
+
     require MT::Permission;
     my $iter = MT::Permission->load_iter(
         {
             author_id => $user->id,
             permissions => { like => '%view_blog_log%' },
+            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { 'not' => 0 } ) ),
         },
     );
 
