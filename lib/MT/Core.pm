@@ -2222,6 +2222,7 @@ sub load_core_permissions {
                 'access_to_banlist'                     => 1,
                 'use_tools:search'                      => 1,
                 'view_all_comments'                     => 1,
+                'manage_feedback'                       => 1,
             }
         },
         'blog.manage_pages' => {
