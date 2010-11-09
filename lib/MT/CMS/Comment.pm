@@ -1289,11 +1289,12 @@ sub cms_pre_load_filtered_list {
     return if $user->is_superuser;
 
     my $blog_ids = $load_options->{blog_ids};
+
     require MT::Permission;
     my $iter = MT::Permission->load_iter(
         {
             author_id => $user->id,
-            ( scalar @$blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { 'not' => 0 } ) ),
+            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { 'not' => 0 } ) ),
         }
     );
 
