@@ -1618,6 +1618,10 @@ sub core_menus {
             mode  => "list",
             args  => { _type => "blog" },
             view  => [ "system", "website" ],
+            condition => sub {
+                require MT::CMS::Blog;
+                return MT::CMS::Blog::can_view_blog_list( $app );
+            },
         },
         'blog:create' => {
             label         => "New",

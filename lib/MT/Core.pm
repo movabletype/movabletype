@@ -988,6 +988,10 @@ BEGIN {
                 primary => 'name',
                 default_sort_key => 'name',
                 scope_mode => 'none',
+                condition => sub {
+                    require MT::CMS::Blog;
+                    return MT::CMS::Blog::can_view_blog_list( MT->instance );
+                },
             },
             entry => {
                 object_label  => 'Entry',

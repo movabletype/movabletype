@@ -2909,42 +2909,58 @@ sub cms_pre_load_filtered_list {
 
     my $user = $app->user;
     return if $user->is_superuser;
+    return 1 if $user->permissions(0)->can_do('edit_templates');
 
     my $iter = MT::Permission->load_iter(
-        [
-            {
-                author_id => $user->id,
-            },
-            '-and',
-            [
-                {
-                    blog_id => 0,
-                    permissions => { like => '%edit_templates%' },
-                },
-                '-or',
-                {
-                    blog_id => { not => 0 },
-                    permissions => { not => 'comment' },
-                }
-            ]
-        ],
+        {
+            author_id => $user->id,
+            blog_id => { not => 0 },
+            permissions => { not => 'comment' },
+        }
     );
 
     my $blog_ids;
     while ( my $perm = $iter->() ) {
-        if ( !$perm->blog_id ) {
-            # User has system.edit_template
-            $blog_ids = undef;
-            last;
-        }
-        my $website = MT->model('blog')->load($perm->blog_id);
+        my $blog = $perm->blog;
         push @$blog_ids, $perm->blog_id
-            if $website && $website->class eq 'blog';
+            if $blog && $blog->class eq 'blog';
     }
-
-    $terms->{id} = $blog_ids
-        if $blog_ids;
+    if ( $blog_ids ) {
+        $terms->{id} = $blog_ids
+    } else {
+        $terms->{id} = 0;
+    }
     $load_options->{terms} = $terms;
+}
+
+sub can_view_blog_list {
+    my $app = shift;
+
+    return 1 if $app->user->is_superuser;
+    return 1 if $app->user->permissions(0)->can_do('edit_templates');
+
+    my $blog = $app->blog;
+    my $blog_ids = !$blog
+        ? undef
+        : $blog->is_blog
+            ? [ $blog->id ]
+            : [ map { $_->id } @{$blog->blogs} ];
+
+    require MT::Permission;
+    my $iter = MT::Permission->load_iter(
+        {
+            author_id => $app->user->id,
+            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+            permissions => { not => 'comment' },
+        }
+    );
+
+    my $cond;
+    while ( my $p = $iter->() ) {
+        $cond = 1, last
+            if $p->blog->is_blog;
+    }
+    return $cond ? 1 : 0;
 }
 
 1;
