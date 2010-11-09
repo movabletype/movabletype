@@ -999,6 +999,32 @@ BEGIN {
                     return 0 if $app->blog && !$app->blog->is_blog;
                     1;
                 },
+                condition => sub{
+                    my $app = MT->instance;
+                    return 1 if $app->user->is_superuser;
+
+                    my $blog = $app->blog;
+                    my $blog_ids = !$blog
+                        ? undef
+                        : $blog->is_blog
+                            ? [ $blog->id ]
+                            : [ map { $_->id } @{$blog->blogs} ];
+
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter(
+                        {
+                            author_id => $app->user->id,
+                            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                        }
+                    );
+
+                    my $cond;
+                    while ( my $p = $iter->() ) {
+                        $cond = 1, last
+                            if $p->can_do('access_to_entry_list')
+                    }
+                    return $cond ? 1 : 0;
+                },
             },
             page => {
                 object_label => 'Page',
