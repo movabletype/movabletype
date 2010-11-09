@@ -519,6 +519,7 @@ sub can_search_replace {
         return 0 unless $perms;
         return 0 unless $perms->permissions;
         return 0 unless $perms->can_do('use_tools:search');
+        return 1;
     } else {
         my $blog = $app->blog;
         my $blog_ids = !$blog
