@@ -128,8 +128,8 @@ function handleMessages( data ) {
 function createItem(id, parent, label, number) {
   var line = '<span class="sort-tab"></span>';
   line += '<span class="item-label">'+label+'</span>';
-  line += ' <span class="count fr">'+trans('[_1] <mt:var name="contents_label_plural" escape="js">', number)+'</span>';
   line += ' <span class="item-ctrl"></span>';
+  line += ' <span class="count fr">'+trans('[_1] <mt:var name="contents_label_plural" escape="js">', number)+'</span>';
   var $item = jQuery('<div id="'+id+'" class="'+parent+'" />').append(line);
   return $item;
 }
@@ -142,7 +142,7 @@ function initItem($item) {
   $item.css('margin-left', nest.length*indent)
     .addClass(nest.join(' '))
     .addClass('lv-'+nest.length)
-    .addClass('mod sortable-item');
+    .addClass('sortable-item');
   $item.find('.plus, .delete').remove();
   jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add child item"></span>')
     .appendTo($item.find('.item-ctrl'))
@@ -151,7 +151,7 @@ function initItem($item) {
       jQuery('.sort-tab').hide();
       var $element = jQuery(this).parent('.item-ctrl').parent('div');
       var parent = $element.attr('id');
-      var $form = jQuery('<div class="mod add-form"><input type="text" class="text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">" /></div>');
+      var $form = jQuery('<div class="mod add-form"><input type="text" class="text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">" />\n</div>');
       $form.css('margin-left', (nest.length+1)*indent).insertAfter($element);
       jQuery('<button type="button" class="add button"><__trans phrase="Add"></button>')
         .bind('click', function() {
@@ -396,7 +396,7 @@ function setHoverAction($elements) {
 function renderItems(data) {
   jQuery('#root').empty();
   jQuery('#itemlist option').not(':first').remove();
-  jQuery('<div id="0" class="0 mod sortable-item" />').hide().appendTo('#root');
+  jQuery('<div id="0" class="0 sortable-item" />').hide().appendTo('#root');
   total = parseInt(data.result.count);
   var objs = data.result.objects;
   var count = objs.length;

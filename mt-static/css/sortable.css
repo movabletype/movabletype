@@ -24,18 +24,21 @@
 
 .sortable-item,
 .add-form {
-    clear: right;
     position: relative;
-    background-color: #fff;
     border: 1px solid #adadad;
     border-top-color: #cfd0d0;
     border-left-color: #cfd0d0;
+    background-color: #fff;
+    overflow: hidden;
+}
+.sortable-item {
+   padding: 0 10px;
 }
 .sort-tab {
     display: block;
     position: absolute;
     top: 0;
-    left: 0px;
+    left: 0;
     width: 20px;
     height: 100%;
     background-color: #e8ecef;
@@ -43,14 +46,15 @@
 }
 
 .sortable-item .item-label {
+    float: left;
+    display: inline-block;
+    height: 42px;
+    line-height: 42px;
     margin: 0 5px 0 20px;
 }
 
 .sortable-item .item-label a {
-    display: inline-block;
     max-width: 15em;
-    min-height: 18px;
-    line-height: 18px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -58,10 +62,16 @@
 
 .sortable-item .item-ctrl {
     display: none;
-    position: absolute;
 }
 .sortable-item.on .item-ctrl {
+    float: left;
     display: inline-block;
+    margin-top: 10px;
+}
+.sortable-item .count {
+    float: right;
+    height: 42px;
+    line-height: 42px;
 }
 
 #root .ui-state-highlight {
