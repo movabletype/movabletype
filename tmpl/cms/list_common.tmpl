@@ -104,7 +104,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 
 <div id="listing" class="listing line has-filter">
   <div class="unit size1of1">
-    <form id="<mt:var name="object_type">-listing-form" method="POST">
+    <form id="<mt:var name="object_type">-listing-form" method="post">
       <input type="hidden" name="__mode" value="" />
       <input type="hidden" name="_type" value="<mt:var name="object_type">" />
       <input type="hidden" name="action_name" value="" />
@@ -195,6 +195,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 </div>
 
 <div id="dialog_save_filter">
+  <form method="post">
   <div id="filter_label" title="Filter Label">
     <div class="item-label"><__trans phrase="Label:"> </div>
     <div><input type="text" class="text full" name="filter_name" value="" /></div>
@@ -203,7 +204,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
   <div id="dialog-msg-block"></div>
   <div class="dialog actions-bar">
     <button
-       type="button"
+       type="submit"
        id="save-filter"
        class="action primary button">
       <__trans phrase="Save">
@@ -215,6 +216,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
       <__trans phrase="Cancel">
     </button>
   </div>
+</form>
 </div>
 
 <mt:setvarblock name="jq_js_include" prepend="1">
@@ -1227,7 +1229,10 @@ jQuery('#save').click(function() {
     jQuery('#dialog_save_filter').dialog({
       title: 'Save Filter',
       dialogClass: 'save',
-      modal: true
+      modal: true,
+      open: function(){
+        jQuery('input[name=filter_name]').focus();
+      }
     }).dialog('open');
   }
   return false;
@@ -1246,6 +1251,9 @@ jQuery('#saveas').click(function() {
       dialogClass: 'save',
       width: 450,
       modal: true
+      open: function () {
+        jQuery('input[name=filter_name]').focus();
+      }
     }).dialog('open');
   return false;
 });
