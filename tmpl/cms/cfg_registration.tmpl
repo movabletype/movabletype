@@ -44,6 +44,7 @@
   </mtapp:setting>
 </mt:unless>
 
+<mt:if name="can_administer_blog">
   <mtapp:setting
      id="new_created_user_role"
      label="<__trans phrase="New Created User">"
@@ -63,6 +64,7 @@
     <input type="hidden" id="new_created_user_role" name="new_created_user_role" value="<mt:var name="new_created_user_role" escape="html">" />
     <a class="mt-open-dialog" href="<mt:var name="script_url">?__mode=dialog_grant_role&amp;confirm_js=returnRoleSelection&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;_type=user&amp;author_id=PSEUDO&amp;type=<mt:var name="scope_type">" id="select-role-link">Select role</a>
   </mtapp:setting>
+</mt:if>
 
   <mtapp:setting
      id="setting-auth-status"

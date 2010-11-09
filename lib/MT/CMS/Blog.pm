@@ -1649,18 +1649,21 @@ sub post_save {
         }
     }
     if ( $screen eq 'cfg_registration' ) {
-        my $blog_id = $obj->id;
-        my @role_ids = split ',', ( $app->param('new_created_user_role') || '' );
-        my @def = split ',', $app->config('DefaultAssignments');
-        my @defaults;
-        while ( my $r_id = shift @def ) {
-            my $b_id = shift @def;
-            next if $b_id eq $blog_id;
-            push @defaults, join( ',' , $r_id, $b_id );
+        my $new_default_roles = $app->param('new_created_user_role');
+        if ( defined $new_default_roles ) {
+            my $blog_id = $obj->id;
+            my @role_ids = split ',', ( $app->param('new_created_user_role') || '' );
+            my @def = split ',', $app->config('DefaultAssignments');
+            my @defaults;
+            while ( my $r_id = shift @def ) {
+                my $b_id = shift @def;
+                next if $b_id eq $blog_id;
+                push @defaults, join( ',' , $r_id, $b_id );
+            }
+            push @defaults, join ( ',', $_, $blog_id ) for @role_ids;
+            $app->config( 'DefaultAssignments', join( ',', @defaults ), 1 );
+            $app->config->save_config;
         }
-        push @defaults, join ( ',', $_, $blog_id ) for @role_ids;
-        $app->config( 'DefaultAssignments', join( ',', @defaults ), 1 );
-        $app->config->save_config;
     }
 
     if ( !$original->id ) {    # If the object is new, the "orignal" was blank
