@@ -856,6 +856,8 @@ sub _build_favorite_websites_data {
             if ( $perms && $perms->can_do('apply_theme') );
         $row->{can_access_to_comment_list} = 1
             if ( $user->is_superuser ) || $perms->can_do('view_feedback');
+        $row->{can_use_tools_search} = 1
+            if ( $perms && $perms->can_do('use_tools:search') );
         my @num_vars = qw(
             website_blog_count website_page_count website_comment_count
         );
@@ -990,6 +992,8 @@ sub _build_favorite_blogs_data {
             if ( $user->is_superuser ) || $perms->can_do('view_feedback');
         $row->{can_access_to_blog_setting_screen} = 1
             if ( $perms && $perms->can_do('access_to_blog_config_screen') );
+        $row->{can_use_tools_search} = 1
+            if ( $perms && $perms->can_do('use_tools:search') );
         my @num_vars = qw(
             blog_entry_count blog_page_count blog_comment_count
         );
