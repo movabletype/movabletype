@@ -508,13 +508,54 @@ sub core_search_apis {
     return $types;
 }
 
+sub can_search_replace {
+    my $app = shift;
+
+    return 1 if $app->user->is_superuser;
+    return 1 if $app->user->permissions(0)->can_do('edit_templates');
+    return 1 if $app->user->permissions(0)->can_do('view_log');
+    if ( $app->param('blog_id') ) {
+        my $perms = $app->user->permissions( $app->param('blog_id') );
+        return 0 unless $perms;
+        return 0 unless $perms->permissions;
+        return 0 unless $perms->can_do('use_tools:search');
+    } else {
+        my $blog = $app->blog;
+        my $blog_ids = !$blog
+            ? undef
+            : $blog->is_blog
+                ? [ $blog->id ]
+                : [ $blog->id, map { $_->id } @{$blog->blogs} ];
+
+        require MT::Permission;
+        my $iter = MT::Permission->load_iter(
+            {
+                author_id => $app->user->id,
+                ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+            }
+        );
+
+        my $cond;
+        while ( my $p = $iter->() ) {
+            $cond = 1, last
+                if $p->can_do('use_tools:search')
+            }
+        return $cond ? 1 : 0;
+    }
+    return 0;
+}
+
 sub search_replace {
     my $app = shift;
+    my $blog_id = $app->param('blog_id');
+
+    return $app->permission_denied()
+        unless can_search_replace( $app );
+
     return $app->return_to_dashboard( redirect => 1 )
         if !$app->can_do('use_tools:search') && $app->param('blog_id');
 
     my $param = do_search_replace($app, @_) or return;
-    my $blog_id = $app->param('blog_id');
     $app->add_breadcrumb( $app->translate('Search & Replace') );
     $param->{nav_search}   = 1;
     $param->{screen_class} = "search-replace";

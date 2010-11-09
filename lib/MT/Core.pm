@@ -2071,6 +2071,7 @@ sub load_core_permissions {
                 'remove_tags_from_assets_via_list' => 1,
                 'save_asset'                       => 1,
                 'use_tools:search'                 => 1,
+                'search_assets'                    => 1,
             }
         },
         'blog.edit_categories' => {
@@ -2334,7 +2335,6 @@ sub load_core_permissions {
             'label'            => 'Upload File',
             'order'            => 100,
             'permitted_action' => {
-                'search_assets'                  => 1,
                 'upload'                         => 1,
                 'upload_asset_via_atom_server'   => 1,
                 'upload_asset_via_xmlrpc_server' => 1,

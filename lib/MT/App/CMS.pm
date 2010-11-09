@@ -2074,14 +2074,8 @@ sub core_menus {
             mode              => "search_replace",
             view              => [ "blog", 'website', 'system' ],
             condition         => sub {
-                return 1 if $app->user->is_superuser;
-                if ( $app->param('blog_id') ) {
-                    my $perms = $app->user->permissions( $app->param('blog_id') );
-                    return 0 unless $perms;
-                    return 0 unless $perms->permissions;
-                    return 0 unless $perms->can_do('use_tools:search');
-                }
-                return 1;
+                require MT::CMS::Search;
+                return MT::CMS::Search::can_search_replace( $app );
             }
         },
         'tools:plugins' => {
