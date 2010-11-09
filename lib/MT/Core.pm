@@ -2109,7 +2109,6 @@ sub load_core_permissions {
                 'save_banlist'                 => 1,
                 'save_blog_config'             => 1,
                 'update_welcome_message'       => 1,
-                'access_to_banlist'            => 1,
             }
         },
         'blog.edit_notifications' => {
