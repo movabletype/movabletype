@@ -471,11 +471,16 @@ sub cms_pre_load_filtered_list {
     }
 
     $args->{joins} ||= [];
+    push @{ $args->{joins} }, MT->model('entry')->join_on(
+        undef, [
+             { id => \'=trackback_entry_id', },
+             '-and',
+             $filters,
+        ],
+    );
     push @{ $args->{joins} }, MT->model('trackback')->join_on(
         undef, [
              { id => \'=tbping_tb_id', },
-             '-and',
-             $filters,
         ],
     );
 
