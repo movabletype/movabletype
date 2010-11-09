@@ -2179,7 +2179,6 @@ sub load_core_permissions {
             'label'            => 'Manage Feedback',
             'order'            => 200,
             'permitted_action' => {
-                'access_to_commenter_list'              => 1,
                 'access_to_comment_list'                => 1,
                 'access_to_trackback_list'              => 1,
                 'approve_all_comment'                   => 1,
