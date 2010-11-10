@@ -19,7 +19,7 @@
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
 
       <div class="actions-bar">
-        <button type="button" class="save action button"><__trans phrase="Save Changes"></button>
+        <button type="button" class="save action button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
       </div>
 
       <div id="area-action" class="mod sortable-header">
@@ -59,6 +59,16 @@ var checksum = '';
 var isdirty = false;
 var indent = 20;
 var root_pos = jQuery('#root').position();
+
+function setDirty( dirty ) {
+    isdirty = dirty;
+    if ( isdirty ) {
+        jQuery('button.save').removeAttr('disabled').removeClass('disabled');
+    }
+    else {
+        jQuery('button.save').attr('disabled', 'disabled').addClass('disabled');
+    }
+}
 
 function loginAgain(fn) {
   jQuery(window)
@@ -212,7 +222,7 @@ function addItem(parent, label) {
   jQuery('#opt-'+parent).after('<option id="opt-'+id+'" value="'+id+'">'+label+'</option>');
   itemlist.push(label);
   dummy++;
-  isdirty = true;
+  setDirty(true);
   fixZeroStateMessage();
   return true;
 }
@@ -239,7 +249,7 @@ function removeItems(id) {
   jQuery('#'+id).next('.add-form').remove().end().remove();
   jQuery('.sort-tab').show();
   setItemList();
-  isdirty = true;
+  setDirty(true);
   fixZeroStateMessage();
 }
 
@@ -308,7 +318,7 @@ function initMoving() {
       });
       setHoverAction(jQuery('.'+id));
       setItemList();
-      isdirty = true;
+      setDirty(true);
     },
     sort: function(event, ui) {
       var $item = jQuery(ui.item);
@@ -504,7 +514,7 @@ function bulkUpdateCategories() {
     success: function(data) {
       if ( !handleMessages(data) ) return;
       renderItems(data);
-      isdirty = false;
+      setDirty(false);
     },
     complete: function() {
       initMoving();
