@@ -139,13 +139,23 @@ sub save {
 
 sub bulk_update {
     my $app = shift;
-    $app->can_do('edit_categories')
-        or return $app->json_error(
-            $app->translate( "Permission denied." ));
+    my $model   = $app->param('datasource') || 'category';
+    if ( 'category' eq $model ) {
+        $app->can_do('edit_categories')
+            or return $app->json_error(
+                $app->translate( "Permission denied." ));
+    } elsif ( 'folder' eq $model ) {
+        $app->can_do('save_folder')
+            or return $app->json_error(
+                $app->translate( "Permission denied." ));
+    } else {
+        return $app->json_error(
+            $app->translate('Invalid request.')
+        );
+    }
 
     my $blog_id = $app->param('blog_id');
     my $blog    = $app->blog;
-    my $model   = $app->param('datasource') || 'category';
     my $class   = MT->model($model);
     my @messages; 
     my $objects;
