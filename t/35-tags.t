@@ -23,6 +23,10 @@ require POSIX;
 
 my $mt = MT->new();
 
+# Clear cache
+my $request = MT::Request->instance;
+$request->{__stash} = {};
+
 local $/ = undef;
 open F, "<t/35-tags.dat";
 my $test_json = <F>;
