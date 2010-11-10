@@ -239,9 +239,10 @@ function removeItems(id) {
   var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
   var $items = jQuery('.'+id);
   var count = $items.length + 1;
+  var label = jQuery('#'+id).find('.item-label').text();
   var message = (count == 1)
-    ? trans('Are you sure you want to remove this [_1]?', singlar)
-    : trans('Are you sure you want to remove the [_1] selected [_2]?', count, plural);
+    ? trans('Are you sure you want to remove [_1] [_2]?', singlar, label)
+    : trans('Are you sure you want to remove [_1] [_2] with [_3] sub [_4]?', singlar, label, count - 1, (count > 2 ? plural : singlar));
   if (!confirm(message)) {
       return;
   }
