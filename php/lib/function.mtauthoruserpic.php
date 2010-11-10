@@ -31,8 +31,8 @@ function smarty_function_mtauthoruserpic($args, &$ctx) {
     $mt = MT::get_instance();
     $dimensions = sprintf('width="%s" height="%s"', $mt->config('UserpicThumbnailSize'), $mt->config('UserpicThumbnailSize'));
 
-    $link =sprintf('<img src="%s" %s alt="%s" />',
-                   encode_html($userpic_url), $dimensions, encode_html($asset['label']));
+    $link =sprintf('<img src="%s?%d" %s alt="%s" />',
+                   encode_html($userpic_url), $asset_id, $dimensions, encode_html($asset['label']));
 
     return $link;
 }

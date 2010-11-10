@@ -24,12 +24,12 @@ function smarty_function_mtentryauthoruserpic($args, &$ctx) {
     $userpic_url = userpic_url($asset[0], $blog, $author);
     if (empty($userpic_url))
         return '';
-    $asset_path = asset_path($asset[0]->asset_file_path, $blog);
-    list($src_w, $src_h, $src_type, $src_attr) = getimagesize($asset_path);
-    $dimensions = sprintf('width="%s" height="%s"', $src_w, $src_h);
 
-    $link =sprintf('<img src="%s" %s alt="%s" />',
-                   encode_html($userpic_url), $dimensions, encode_html($asset->label));
+    $mt = MT::get_instance();
+    $dimensions = sprintf('width="%s" height="%s"', $mt->config('UserpicThumbnailSize'), $mt->config('UserpicThumbnailSize'));
+
+    $link =sprintf('<img src="%s?%d" %s alt="%s" />',
+                   encode_html($userpic_url), $asset_id, $dimensions, encode_html($asset->label));
 
     return $link;
 }
