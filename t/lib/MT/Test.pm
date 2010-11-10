@@ -1012,6 +1012,14 @@ It\'s a hard rain\'s a-gonna fall',
     $tmpl->type('custom');
     $tmpl->save or die "Couldn't save template record 1: " . $tmpl->errstr;
 
+    my $include_block_tmpl = new MT::Template;
+    $include_block_tmpl->blog_id(1);
+    $include_block_tmpl->name('header-line');
+    $include_block_tmpl->text('<h1><MTGetVar name="contents"></h1>');
+    $include_block_tmpl->type('custom');
+    $include_block_tmpl->save
+      or die "Couldn't save template record 2: " . $include_block_tmpl->errstr;
+
     my $tmpl_map = new MT::TemplateMap;
     $tmpl_map->blog_id(1);
     $tmpl_map->template_id( $tmpl->id );

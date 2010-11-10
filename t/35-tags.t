@@ -68,6 +68,7 @@ my %const = (
     DAYS_CONSTANT2 => $daysdiff - 1,
     CURRENT_YEAR => POSIX::strftime("%Y", localtime),
     CURRENT_MONTH => POSIX::strftime("%m", localtime),
+    STATIC_FILE_PATH => MT->instance->static_file_path . '/',
 );
 
 $test_json =~ s/\Q$_\E/$const{$_}/g for keys %const;
@@ -124,6 +125,7 @@ $const = array(
     'DAYS_CONSTANT2' => '<DAYS_CONSTANT2>',
     'CURRENT_YEAR' => strftime("%Y"),
     'CURRENT_MONTH' => strftime("%m"),
+    'STATIC_FILE_PATH' => '<STATIC_FILE_PATH>',
 );
 
 $output_results = 0;

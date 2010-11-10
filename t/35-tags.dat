@@ -449,5 +449,157 @@
 { "r" : "1", "t" : "<mt:Websites><mt:WebsiteHasBlog>true</mt:WebsiteHasBlog></mt:Websites>", "e" : "true"}, #448
 { "r" : "1", "t" : "<mt:BlogParentWebsite><mt:WebsiteID></mt:BlogParentWebsite>", "e" : "2"}, #449
 { "r" : "0", "t" : "<MTCalendar><MTCalendarWeekHeader month='197801'><tr></MTCalendarWeekHeader><td><MTCalendarCellNumber>,<MTCalendarIfEntries><MTEntries lastn='1'><a href='<$MTEntryPermalink$>'><$MTCalendarDay$></a></MTEntries></MTCalendarIfEntries><MTCalendarIfNoEntries><$MTCalendarDay$></MTCalendarIfNoEntries><MTCalendarIfBlank>&nbsp;</MTCalendarIfBlank></td><MTCalendarWeekFooter></tr></MTCalendarWeekFooter></MTCalendar>', 'e' : '<tr><td>1,&nbsp;</td><td>2,&nbsp;</td><td>3,&nbsp;</td><td>4,&nbsp;</td><td>5,&nbsp;</td><td>6,1</td><td>7,2</td></tr><tr><td>8,3</td><td>9,4</td><td>10,5</td><td>11,6</td><td>12,7</td><td>13,8</td><td>14,9</td></tr><tr><td>15,10</td><td>16,11</td><td>17,12</td><td>18,13</td><td>19,14</td><td>20,15</td><td>21,16</td></tr><tr><td>22,17</td><td>23,18</td><td>24,19</td><td>25,20</td><td>26,21</td><td>27,22</td><td>28,23</td></tr><tr><td>29,24</td><td>30,25</td><td>31,26</td><td>32,27</td><td>33,28</td><td>34,29</td><td>35,30</td></tr>"}, #450
-{ "r" : "0", "t" : "<MTGoogleSearch query='six apart' results='1'><MTGoogleSearchResult property='URL'></MTGoogleSearch>", "e" : "http://www.sixapart.com/"} #451
+{ "r" : "0", "t" : "<MTGoogleSearch query='six apart' results='1'><MTGoogleSearchResult property='URL'></MTGoogleSearch>", "e" : "http://www.sixapart.com/"}, #451
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentIfModerated>Moderated<MTElse>NotModerated</MTCommentIfModerated></MTComments>", "e" : "Moderated"}, #452
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentLink></MTComments>", "e" : "http://narnia.na/nana/archives/1962/01/verse-2.html#comment-2"}, #453
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentName></MTComments>", "e" : "John Doe"}, #454
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentParentID></MTComments>", "e" : ""}, #455
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentRank></MTComments>", "e" : ""}, #456
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentReplyToLink></MTComments>", "e" : "<a title=\"Reply\" href=\"javascript:void(0);\" onclick=\"mtReplyCommentOnClick(2, 'John Doe')\">Reply</a>"}, #457
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentScore></MTComments>", "e" : ""}, #458
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentScoreAVG></MTComments>", "e" : ""}, #459
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentScoreCount></MTComments>", "e" : ""}, #460
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentScoreHigh></MTComments>", "e" : ""}, #461
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentScoreLow></MTComments>", "e" : ""}, #462
+{ "r" : "1", "t" : "<MTCategories><MTCategoryBasename></MTCategories>", "e" : "foosubfoo"}, #463
+{ "r" : "1", "t" : "<MTCategories><MTCategoryCommentCount></MTCategories>", "e" : "30"}, #464
+{ "r" : "1", "t" : "<MTCategories><MTCategoryIfAllowPings>Allow<MTElse>NotAllow</MTCategoryIfAllowPings></MTCategories>", "e" : "NotAllowNotAllow"}, #465
+{ "r" : "1", "t" : "<MTCategories><MTCategoryTrackbackCount></MTCategories>", "e" : "00"}, #466
+{ "r" : "1", "t" : "<MTSubCategories category='subfoo' include_current='1'><MTParentCategories glue='-' exclude_current='1'><MTCategoryLabel></MTParentCategories></MTSubCategories>", "e" : "foo"}, #467
+{ "r" : "1", "t" : "<MTSubCategories category='subfoo' include_current='1'><MTParentCategories glue='-'><MTCategoryLabel></MTParentCategories></MTSubCategories>", "e" : "foo-subfoo"}, #468
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentBlogID></MTComments>", "e" : "1"}, #469
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommenterID></MTComments>", "e" : "4"}, #470
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommenterURL></MTComments>", "e" : ""}, #471
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommenterUsername></MTComments>", "e" : "John Doe"}, #472
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommenterUserpic></MTComments>", "e" : ""}, #473
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommenterUserpicAsset></MTCommenterUserpicAsset></MTComments>", "e" : ""}, #474
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommenterUserpicURL></MTComments>", "e" : ""}, #475
+{ "r" : "1", "t" : "<MTBlogs><MTBlogCategoryCount></MTBlogs>", "e" : "3"}, #476
+{ "r" : "1", "t" : "<MTBlogs><MTBlogPingCount></MTBlogs>", "e" : "2"}, #477
+{ "r" : "1", "t" : "<MTBlogs><MTBlogTemplatesetID></MTBlogs>", "e" : "classic-blog"}, #478
+{ "r" : "1", "t" : "<MTBlogs><MTBlogThemeID></MTBlogs>", "e" : "classic-blog"}, #479
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorEntryCount></MTAuthors>", "e" : "5"}, #480
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorHasEntry><MTAuthorName setvar=\"author_name\"><MTEntries author=\"$author_name\" lastn=\"1\">has</MTEntries></MTAuthorHasEntry></MTAuthors>", "e" : "has"}, #481
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorHasPage><MTAuthorName setvar=\"author_name\"><MTPages author=\"$author_name\" lastn=\"1\">has</MTPages></MTAuthorHasPage></MTAuthors>", "e" : "has"}, #482
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorNext><MTAuthorName></MTAuthorNext></MTAuthors>", "e" : ""}, #483
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorPrevious><MTAuthorName></MTAuthorPrevious></MTAuthors>", "e" : "Bob D"}, #484
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorRank></MTAuthors>", "e" : ""}, #485
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorScore></MTAuthors>", "e" : ""}, #486
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorScoreAvg></MTAuthors>", "e" : ""}, #487
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorScoreCount></MTAuthors>", "e" : ""}, #488
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorScoreHigh></MTAuthors>", "e" : ""}, #489
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorScoreLow></MTAuthors>", "e" : ""}, #490
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpic></MTAuthors>", "e" : "<img src=\"http://narnia.na/nana/assets_c/userpics/userpic-2-100x100.png?1\" width=\"100\" height=\"100\" alt=\"\" />"}, #491
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpicAsset><MTAssetFileName></MTAuthorUserpicAsset></MTAuthors>", "e" : "test.jpg"}, #492
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpicURL></MTAuthors>", "e" : "http://narnia.na/nana/assets_c/userpics/userpic-2-100x100.png"}, #493
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorBasename></MTAuthors>", "e" : "chucky_dee"}, #494
+{ "r" : "1", "t" : "<MTAssets assets_per_row=\"2\"><MTAssetIsFirstInRow>First</MTAssetIsFirstInRow><MTAssetIsLastInRow>Last</MTAssetIsLastInRow></MTAssets>", "e" : "FirstLast"}, #495
+{ "r" : "1", "t" : "<MTAssets lastn='1'><MTAssetIfTagged tag=\"alpha\">Tagged<MTElse>Not Tagged</MTAssetIfTagged></MTAssets>", "e" : "Tagged"}, #496
+{ "r" : "1", "t" : "<MTAssets lastn='1'><MTAssetIfTagged tag=\"empty_tag_name\">Tagged<MTElse>Not Tagged</MTAssetIfTagged></MTAssets>", "e" : "Not Tagged"}, #497
+{ "r" : "1", "t" : "<MTArchiveList type='Individual'><MTArchiveListHeader><MTArchiveTypeLabel></MTArchiveListHeader></MTArchiveList>", "e" : "Entry"}, #498
+{ "r" : "1", "t" : "<MTUserSessionCookieDomain>", "e" : ".narnia.na"}, #499
+{ "r" : "1", "t" : "<MTUserSessionCookieName>", "e" : "mt_blog_user"}, #500
+{ "r" : "1", "t" : "<MTUserSessionCookiePath>", "e" : "/"}, #501
+{ "r" : "1", "t" : "<MTUserSessionCookieTimeout>", "e" : "14400"}, #502
+{ "r" : "1", "t" : "<MTWebsiteCommentCount>", "e" : "9"}, #503
+{ "r" : "1", "t" : "<MTWebsiteHost>", "e" : "narnia.na"}, #504
+{ "r" : "1", "t" : "<MTWebsiteIfCommentsOpen>Opened</MTWebsiteIfCommentsOpen>", "e" : "Opened"}, #505
+{ "r" : "1", "t" : "<MTWebsitePageCount>", "e" : "4"}, #506
+{ "r" : "1", "t" : "<MTWebsitePingCount>", "e" : "2"}, #507
+{ "r" : "1", "t" : "<MTWebsiteRelativeURL>", "e" : "/nana/"}, #508
+{ "r" : "1", "t" : "<MTWebsiteThemeID>", "e" : "classic-blog"}, #509
+{ "r" : "1", "t" : "<MTNotifyScript>", "e" : "mt-add-notify.cgi"}, #510
+{ "r" : "1", "t" : "<MTPages lastn='1'><MTPageIfTagged tag='page3'><MTPageTitle></MTPageIfTagged></MTPages>", "e" : "Page #3"}, #511
+{ "r" : "1", "t" : "<MTPages lastn='1' offset='1'><MTPageNext><MTPageTitle></MTPageNext></MTPages>", "e" : "Page #3"}, #512
+{ "r" : "1", "t" : "<MTPages lastn='1'><MTPagePrevious><MTPageTitle></MTPagePrevious></MTPages>", "e" : "Page #2"}, #513
+{ "r" : "1", "t" : "<MTPages lastn='3'><MTPagesHeader><ul></MTPagesHeader><li><MTPageTitle></li><MTPagesFooter></ul></MTPagesFooter></MTPages>", "e" : "<ul><li>Page #3</li><li>Page #2</li><li>Page #1</li></ul>"}, #514
+{ "r" : "1", "t" : "<MTFolders><MTParentFolder><MTFolderLabel></MTParentFolder></MTFolders>", "e" : "download"}, #515
+{ "r" : "1", "t" : "<MTFolders><MTHasParentFolder><MTFolderLabel></MTHasParentFolder></MTFolders>", "e" : "nightly"}, #516
+{ "r" : "1", "t" : "<MTPings lastn='1'><MTPingRank></MTPings>", "e" : ""}, #517
+{ "r" : "1", "t" : "<MTPings lastn='1'><MTPingScore></MTPings>", "e" : ""}, #518
+{ "r" : "1", "t" : "<MTPings lastn='1'><MTPingScoreavg></MTPings>", "e" : ""}, #519
+{ "r" : "1", "t" : "<MTPings lastn='1'><MTPingScorecount></MTPings>", "e" : ""}, #520
+{ "r" : "1", "t" : "<MTPings lastn='1'><MTPingScorehigh></MTPings>", "e" : ""}, #521
+{ "r" : "1", "t" : "<MTPings lastn='1'><MTPingScorelow></MTPings>", "e" : ""}, #522
+{ "r" : "1", "t" : "<MTPings><MTPingsHeader><ul></MTPingsHeader><li><MTPingTitle></li><MTPingsFooter></ul></MTPingsFooter></MTPings>", "e" : "<ul><li>Trackbacking to a page</li><li>Foo</li></ul>"}, #523
+{ "r" : "1", "t" : "<MTProductName>", "e" : "Movable Type"}, #524
+{ "r" : "1", "t" : "<MTSection>Content</MTSection>", "e" : "Content"}, #525
+{ "r" : "1", "t" : "<MTSetVars>\nfoo=Foo\n</MTSetVars><MTGetVar name='foo'>", "e" : "Foo"}, #526
+{ "r" : "1", "t" : "<MTSetVarTemplate name='foo_template'><MTSetVar name='foo' value='Bar'></MTSetVarTemplate><MTSetVar name='foo' value='Foo'><MTVar name='foo_template'><MTGetVar name='foo'>", "e" : "Bar"}, #527
+{ "r" : "1", "t" : "<MTStaticFilePath>", "e" : "STATIC_FILE_PATH"}, #528
+{ "r" : "1", "t" : "<MTSubFolders><MTIF tag='FolderID' eq='21'><MTFolderLabel>;<MTSubfolderRecurse></MTIF></MTSubFolders>", "e" : ""}, #529
+{ "r" : "1", "t" : "<MTSupportDirectoryURL>", "e" : "/cgi-bin/mt-static/support/"}, #530
+{ "r" : "1", "t" : "<MTTemplateNOTE note='Comment'>", "e" : ""}, #531
+{ "r" : "1", "t" : "<MTFolders><MTIF tag='FolderID' eq='22'><MTToplevelFolder><MTFolderLabel></MTToplevelFolder></MTIF></MTFolders>", "e" : "download"}, #532
+{ "r" : "1", "t" : "<MTSetVar name='foo' value='Foo'><MTUnless name='foo' eq='Bar'>Content</MTUnless>", "e" : "Content"}, #533
+{ "r" : "1", "t" : "<MTSetVar name='foo' value='Foo'><MTUnless name='foo' eq='Foo'>Content</MTUnless>", "e" : ""}, #534
+{ "r" : "1", "t" : "<MTFolders><MTFolderHeader><ul></MTFolderHeader><li><MTFolderLabel></li><MTFolderFooter></ul></MTFolderFooter></MTFolders>", "e" : "<ul><li>download</li><li>info</li><li>nightly</li></ul>"}, #535
+{ "r" : "1", "t" : "<MTFolders show_empty='1' glue=','><MTFolderLabel>-<MTFolderNext show_empty='1'><MTFolderLabel></MTFolderNext></MTFolders>", "e" : "download-info,info-,nightly-"}, #536
+{ "r" : "1", "t" : "<MTFolders show_empty='1' glue=','><MTFolderLabel>-<MTFolderPrevious show_empty='1'><MTFolderLabel></MTFolderPrevious></MTFolders>", "e" : "download-,info-download,nightly-"}, #537
+{ "r" : "1", "t" : "<MTFolders><MTHasSubFolders><MTSubFolders><MTFolderID></MTSubFolders></MTHasSubFolders></MTFolders>", "e" : "22"}, #538
+{ "r" : "1", "t" : "<MTHTTPContentType type='application/xml'>", "e" : ""}, #539
+{ "r" : "1", "t" : "<MTIfAuthor>HasAuthor:Outside</MTIfAuthor><MTAuthors lastn='1'><MTIfAuthor>HasAuthor:Inside</MTIfAuthor></MTAuthors>", "e" : "HasAuthor:Inside"}, #540
+{ "r" : "1", "t" : "<MTIfBlog>HasBlog</MTIfBlog>", "e" : "HasBlog"}, #541
+{ "r" : "1", "t" : "<MTIfCommenterRegistrationAllowed>Allowed</MTIfCommenterRegistrationAllowed>", "e" : "Allowed"}, #542
+{ "r" : "1", "t" : "<MTComments lastn='3' glue=','><MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTIfCommenterTrusted>trusted<MTElse>untrusted</MTElse></MTIfCommenterTrusted><MTElse><MTCommentAuthor></MTIfNonEmpty></MTComments>", "e" : "Chucky Dee: trusted,Comment 3: untrusted,John Doe: trusted"}, #543
+{ "r" : "1", "t" : "<MTIfExternalUserManagement>External</MTIfExternalUserManagement>", "e": ""}, #544
+{ "r" : "1", "t" : "<MTPages id='22'><MTIfFolder name='download'>download</MTIfFolder></MTPages>", "e" : "download"}, #545
+{ "r" : "1", "t" : "<MTPages id='23'><MTIfFolder name='download'>download</MTIfFolder></MTPages>", "e" : ""}, #546
+{ "r" : "1", "t" : "<MTIfImageSupport>Supported</MTIfImageSupport>", "e" : "Supported"}, #547
+{ "r" : "1", "t" : "<MTIfPingsModerated>Moderated</MTIfPingsModerated>", "e" : "Moderated"}, #548
+{ "r" : "1", "t" : "<MTIfRequireCommentEmails>Requied</MTIfRequireCommentEmails>", "e" : ""}, #549
+{ "r" : "1", "t" : "<MTDate ts='20101010101010'>", "e" : "October 10, 2010 10:10 AM"}, #550
+{ "r" : "1", "t" : "<MTEntriesCount>", "e" : "6"}, #551
+{ "r" : "1", "t" : "<MTEntries lastn='3'><MTDateHeader>Header:<MTEntryDate>,</MTDateHeader><MTDateFooter>Footer:<MTEntryDate>,</MTDateFooter></MTEntries>", "e" : "Header:January 31, 1978  7:45 AM,Footer:January 31, 1978  7:45 AM,Header:January 31, 1965  7:45 AM,Footer:January 31, 1965  7:45 AM,Header:January 31, 1964  7:45 AM,Footer:January 31, 1964  7:45 AM,"}, #552
+{ "r" : "1", "t" : "<MTEntries lastn='3'><MTEntriesHeader><ul></MTEntriesHeader><li><MTEntryTitle></li><MTEntriesFooter><ul></MTEntriesFooter></MTEntries>", "e" : "<ul><li>A Rainy Day</li><li>Verse 5</li><li>Verse 4</li><ul>"}, #553
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAdditionalCategories glue=','><MTCategoryLabel></MTEntryAdditionalCategories></MTEntries>", "e" : ""}, #554
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorID></MTEntries>", "e" : "2"}, #555
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorUserpic></MTEntries>", "e" : "<img src=\"http://narnia.na/nana/assets_c/userpics/userpic-2-100x100.png?1\" width=\"100\" height=\"100\" alt=\"\" />"}, #556
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorUserpicAsset><MTAssetFilename></MTEntryAuthorUserpicAsset></MTEntries>", "e" : "test.jpg"}, #557
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorUserpicURL></MTEntries>", "e" : "http://narnia.na/nana/assets_c/userpics/userpic-2-100x100.png"}, #558
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryBlogDescription></MTEntries>", "e" : "Narnia None Test Blog"}, #559
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryBlogID></MTEntries>", "e" : "1"}, #560
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryBlogName></MTEntries>", "e" : "none"}, #561
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryBlogURL></MTEntries>", "e" : "http://narnia.na/nana/"}, #562
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryClassLabel lower_case='1'></MTEntries>", "e" : "entry"}, #563
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryCreatedDate></MTEntries>", "e" : "January 31, 1978  7:45 AM"}, #564
+{ "r" : "1", "t" : "<MTEntries category=\"foo\" lastn=\"1\"><MTEntryIfCategory category='foo'><MTCategoryLabel></MTEntryIfCategory></MTEntries>", "e" : "foo"}, #565
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryModifiedDate></MTEntries>", "e" : "January 31, 1978  7:46 AM"}, #566
+{ "r" : "1", "t" : "<MTIncludeBlock module='header-line'>Title</MTIncludeBlock>", "e" : "<h1>Title</h1>"}, #567
+{ "r" : "1", "t" : "<MTIncludeBlock module='header-line'>Title</MTIncludeBlock>", "e" : "<h1>Title</h1>"}, #568
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">a\nb\n\nc</MTSetVarBlock><MTGetVar name=\"foo\" count_paragraphs=\"1\">", "e" : "3"}, #569
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">-1234567</MTSetVarBlock><MTGetVar name=\"foo\" numify=\"1\">", "e" : "-1,234,567"}, #570
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">Foo</MTSetVarBlock><MTGetVar name=\"foo\" encode_sha1=\"1\">", "e" : "201a6b3053cc1422d2c3670b62616221d2290929"}, #571
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">Foo</MTSetVarBlock><MTGetVar name=\"foo\" spacify=\" \">", "e" : "F o o"}, #572
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">Foo</MTSetVarBlock><MTGetVar name=\"foo\" count_characters=\"1\">", "e" : "3"}, #573
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">Foo</MTSetVarBlock><MTGetVar name=\"foo\" cat=\"Bar\">", "e" : "FooBar"}, #574
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">FooBar</MTSetVarBlock><MTGetVar name=\"foo\" regex_replace=\"/Fo*/i\",\"Bar\">", "e" : "BarBar"}, #575
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">Foo Bar Baz</MTSetVarBlock><MTGetVar name=\"foo\" count_words=\"1\">", "e" : "3"}, #576
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">foo</MTSetVarBlock><MTGetVar name=\"foo\" capitalize=\"1\">", "e" : "Foo"}, #577
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">FooBar</MTSetVarBlock><MTGetVar name=\"foo\" replace=\"Bar\",\"Foo\">", "e" : "FooFoo"}, #578
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">aaa\nbbb</MTSetVarBlock><MTGetVar name=\"foo\" indent=\"2\">", "e" : "  aaa\n  bbb"}, #579
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">aaa\nbbb</MTSetVarBlock><MTGetVar name=\"foo\" indent=\"2\">", "e" : "  aaa\n  bbb"}, #580
+{ "r" : "1", "t" : "<MTSetVar name=\"foo\" value=\"Foo\"><MTSetVar name=\"bar\" value=\"<MTGetVar name='foo'>\"><MTGetVar name=\"bar\" mteval=\"1\">", "e" : "Foo"}, #581
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\"><span>Foo</span></MTSetVarBlock><MTGetVar name=\"foo\" strip_tags=\"1\">", "e" : "Foo"}, #582
+{ "r" : "1", "t" : "<MTSetVar name=\"foo\" value=\"Foo\"><MTVar name=\"foo\" setvar=\"bar\"><MTVar name=\"bar\">", "e" : "Foo"}, #583
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">1234567890</MTSetVarBlock><MTGetVar name=\"foo\" wrap_text=\"4\">", "e" : "123\n456\n789\n0"}, #584
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">123\n456</MTSetVarBlock><MTGetVar name=\"foo\" nl2br=\"xhtml\" strip=\"\">", "e" : "123<br/>456"}, #585
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">  Foo  Bar  </MTSetVarBlock><MTGetVar name=\"foo\" strip=\"\">", "e" : "FooBar"}, #586
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">  Foo  Bar  </MTSetVarBlock><MTGetVar name=\"foo\" strip=\"&nbsp;\">", "e" : "&nbsp;Foo&nbsp;Bar&nbsp;"}, #587
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">1</MTSetVarBlock><MTGetVar name=\"foo\" string_format=\"%06d\">", "e" : "000001"}, #588
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\"></MTSetVarBlock><MTGetVar name=\"foo\" _default=\"Default\">", "e" : "Default"}, #589
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">Foo</MTSetVarBlock><MTGetVar name=\"foo\" _default=\"Default\">", "e" : "Foo"}, #590
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\"><span>Foo</span></MTSetVarBlock><MTGetVar name=\"foo\" escape=\"html\">", "e" : "&lt;span&gt;Foo&lt;/span&gt;"}, #591
+{ "r" : "0", "t" : "<MTSetVarBlock name=\"foo\"><span>Foo</span></MTSetVarBlock><MTGetVar name=\"foo\" escape=\"htmlall\">", "e" : "&lt;span&gt;Foo&lt;/span&gt;"}, #592
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">http://example.com/?q=@</MTSetVarBlock><MTGetVar name=\"foo\" escape=\"url\">", "e" : "http%3A%2F%2Fexample.com%2F%3Fq%3D%40"}, #593
+{ "r" : "0", "t" : "<MTSetVarBlock name=\"foo\">http://example.com/?q=@</MTSetVarBlock><MTGetVar name=\"foo\" escape=\"urlpathinfo\">", "e" : "http%3A//example.com/%3Fq%3D%40"}, #594
+{ "r" : "0", "t" : "<MTSetVarBlock name=\"foo\">http://example.com/?q=@</MTSetVarBlock><MTGetVar name=\"foo\" escape=\"quotes\">", "e" : "http://example.com/?q=@"}, #595
+{ "r" : "0", "t" : "<MTSetVarBlock name=\"foo\">http://example.com/?q=@</MTSetVarBlock><MTGetVar name=\"foo\" escape=\"hex\">", "e" : "%68%74%74%70%3a%2f%2f%65%78%61%6d%70%6c%65%2e%63%6f%6d%2f%3f%71%3d%40"}, #596
+{ "r" : "0", "t" : "<MTSetVarBlock name=\"foo\">http://example.com/?q=@</MTSetVarBlock><MTGetVar name=\"foo\" escape=\"hexentity\">", "e" : "&#x68;&#x74;&#x74;&#x70;&#x3a;&#x2f;&#x2f;&#x65;&#x78;&#x61;&#x6d;&#x70;&#x6c;&#x65;&#x2e;&#x63;&#x6f;&#x6d;&#x2f;&#x3f;&#x71;&#x3d;&#x40;"}, #597
+{ "r" : "0", "t" : "<MTSetVarBlock name=\"foo\">http://example.com/?q=@</MTSetVarBlock><MTGetVar name=\"foo\" escape=\"decentity\">", "e" : "&#104;&#116;&#116;&#112;&#58;&#47;&#47;&#101;&#120;&#97;&#109;&#112;&#108;&#101;&#46;&#99;&#111;&#109;&#47;&#63;&#113;&#61;&#64;"}, #598
+{ "r" : "0", "t" : "<MTSetVarBlock name=\"foo\"><script>alert(\"test\");</script></MTSetVarBlock><MTGetVar name=\"foo\" escape=\"javascript\">", "e" : "\\<s\\cript\\>alert(\\\"test\\\");\\<\\/s\\cript\\>"}, #599
+{ "r" : "0", "t" : "<MTSetVarBlock name=\"foo\">test@example.com</MTSetVarBlock><MTGetVar name=\"foo\" escape=\"mail\">", "e" : "test [AT] example [DOT] com"}, #600
+{ "r" : "0", "t" : "<MTSetVarBlock name=\"foo\"><span>Foo</span></MTSetVarBlock><MTGetVar name=\"foo\" escape=\"nonstd\">", "e" : "<span>Foo</span>"}, #601
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\"><a href=\"http://example.com/\">Example</a></MTSetVarBlock><MTGetVar name=\"foo\" nofollowfy=\"1\">", "e" : "<a href=\"http://example.com/\" rel=\"nofollow\">Example</a>"}, #602
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\"><a href=\"http://example.com/\" rel=\"next\">Example</a></MTSetVarBlock><MTGetVar name=\"foo\" nofollowfy=\"1\">", "e" : "<a href=\"http://example.com/\" rel=\"nofollow next\">Example</a>"} #603
 ]
