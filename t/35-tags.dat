@@ -180,7 +180,7 @@
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTags glue=\",\"><MTTagID></MTEntryTags></MTEntries>", "e" : "1,2,3"}, #179
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryIfTagged>has tags</MTEntryIfTagged></MTEntries>", "e" : "has tags"}, #180
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryIfTagged tag=\"grandpa\">tagged</MTEntryIfTagged></MTEntries>", "e" : "tagged"}, #181
-{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTags glue=\" \"><MTTagSearchLink></MTEntryTags></MTEntries>", "e" : "http://narnia.na/cgi-bin/mt-search.cgi?blog_id=1&amp;tag=grandpa&amp;limit=20 http://narnia.na/cgi-bin/mt-search.cgi?blog_id=1&amp;tag=rain&amp;limit=20 http://narnia.na/cgi-bin/mt-search.cgi?blog_id=1&amp;tag=strolling&amp;limit=20"}, #182
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTags glue=\" \"><MTTagSearchLink></MTEntryTags></MTEntries>", "e" : "http://narnia.na/cgi-bin/mt-search.cgi?IncludeBlogs=1&amp;tag=grandpa&amp;limit=20 http://narnia.na/cgi-bin/mt-search.cgi?IncludeBlogs=1&amp;tag=rain&amp;limit=20 http://narnia.na/cgi-bin/mt-search.cgi?IncludeBlogs=1&amp;tag=strolling&amp;limit=20"}, #182
 { "r" : "1", "t" : "<MTTags glue=':'><MTTagCount></MTTags>", "e" : "2:1:4:1:5"}, #183
 { "r" : "1", "t" : "<MTIfTypeKeyToken>tokened</MTIfTypeKeyToken>", "e" : "tokened"}, #184
 { "r" : "1", "t" : "<MTIfCommentsModerated>moderated</MTIfCommentsModerated>", "e" : "moderated"}, #185
@@ -222,7 +222,7 @@
 { "r" : "1", "t" : "<MTArchiveList archive_type='Daily'><MTArchiveDateEnd></MTArchiveList>", "e" : "January 31, 1978 11:59 PMJanuary 31, 1965 11:59 PMJanuary 31, 1964 11:59 PMJanuary 31, 1963 11:59 PMJanuary 31, 1962 11:59 PMJanuary 31, 1961 11:59 PM"}, #221
 { "r" : "1", "t" : "<MTArchiveList archive_type='Weekly'><MTArchiveDateEnd></MTArchiveList>", "e" : "February  4, 1978 11:59 PMFebruary  6, 1965 11:59 PMFebruary  1, 1964 11:59 PMFebruary  2, 1963 11:59 PMFebruary  3, 1962 11:59 PMFebruary  4, 1961 11:59 PM"}, #222
 { "r" : "1", "t" : "<MTComments lastn='3'><MTFeedbackScore>,</MTComments>", "e" : "0,0,1.5,"}, #223
-{ "r" : "1", "t" : "<MTComments lastn='3' glue=','><MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTCommenterIfTrusted>trusted<MTElse>untrusted</MTElse></MTCommenterIfTrusted><MTElse><MTCommentAuthor></MTIfNonEmpty></MTComments>", "e" : "Chucky Dee: trusted,Comment 3: untrusted,John Doe: untrusted"}, #224
+{ "r" : "1", "t" : "<MTComments lastn='3' glue=','><MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTCommenterIfTrusted>trusted<MTElse>untrusted</MTElse></MTCommenterIfTrusted><MTElse><MTCommentAuthor></MTIfNonEmpty></MTComments>", "e" : "Chucky Dee: trusted,Comment 3: untrusted,John Doe: trusted"}, #224
 { "r" : "1", "t" : "<MTTags glue=','><MTTagName> <MTTagRank></MTTags>", "e" : "anemones 4,grandpa 6,rain 2,strolling 6,verse 1"}, #225
 { "r" : "1", "t" : "<MTEntries tag='grandpa' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "6,2,6"}, #226
 { "r" : "1", "t" : "<MTEntries tag='verse' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "2,1"}, #227
