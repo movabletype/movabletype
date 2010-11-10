@@ -86,7 +86,8 @@ sub load_all_themes {
 
     my %ids = map { $_ => 1 } ( keys %$themes_reg, @packages, @sets );
     for my $id ( keys %ids ) {
-        $installed->{$id} = $pkg->load($id);
+        my $theme = $pkg->load($id);
+        $installed->{$id} = $theme if $theme;
     }
     return $installed;
 }
