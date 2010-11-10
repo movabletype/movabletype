@@ -160,7 +160,7 @@ sub dialog_list_asset {
     my $blog = $blog_class->load($blog_id) if $blog_id;
     my $perms = $app->permissions;
     return $app->permission_denied()
-        if $mode_userpic ne 'upload_userpic' && !$perms->can_do('access_to_insert_asset_list');
+        if $mode_userpic ne 'upload_userpic' && !$app->can_do('access_to_insert_asset_list');
 
     my $asset_class = $app->model('asset') or return;
     my %terms;
@@ -231,7 +231,7 @@ sub dialog_list_asset {
     $carry_params{'user_id'} = $app->param('filter_val')
         if $filter eq 'userpic';
     _set_start_upload_params($app, \%carry_params)
-        if $perms->can_do('upload');
+        if $app->can_do('upload');
     my ($ext_from, $ext_to) = ( $app->param('ext_from'), $app->param('ext_to') );
     $app->listing(
         {
