@@ -492,13 +492,14 @@ sub init_data {
     my $chuckd = MT::Author->new();
     $chuckd->set_values(
         {
-            name         => 'Chuck D',
-            nickname     => 'Chucky Dee',
-            email        => 'chuckd@example.com',
-            url          => 'http://chuckd.com/',
-            api_password => 'seecret',
-            auth_type    => 'MT',
-            created_on   => '19780131074500',
+            name             => 'Chuck D',
+            nickname         => 'Chucky Dee',
+            email            => 'chuckd@example.com',
+            url              => 'http://chuckd.com/',
+            userpic_asset_id => 1,
+            api_password     => 'seecret',
+            auth_type        => 'MT',
+            created_on       => '19780131074500',
         }
     );
     $chuckd->set_password("bass");
