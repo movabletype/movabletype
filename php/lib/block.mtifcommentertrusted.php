@@ -13,6 +13,7 @@ function smarty_block_mtifcommentertrusted($args, $content, &$ctx, &$repeat) {
             $is_trust = 0;
         } else {
             $perm = $a->permissions(0);
+            $perm = is_array($perm) ? array_shift($perm) : $perm;
             if ( !empty( $perm ) ) {
                 if ( preg_match("/'administer'/", $perm->permission_permissions) )
                     $is_trust = 1;
@@ -27,6 +28,7 @@ function smarty_block_mtifcommentertrusted($args, $content, &$ctx, &$repeat) {
                 }
 
                 $perm = $a->permissions($blog_id);
+                $perm = is_array($perm) ? array_shift($perm) : $perm;
                 if ( !empty($perm) ) {
                     if ( preg_match("/'comment'/", $perm->permission_restrictions) )
                         $is_trust = 0;
