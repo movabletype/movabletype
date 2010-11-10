@@ -1859,7 +1859,12 @@ abstract class MTDatabase {
                             or
                                 (
                                     permission_blog_id = 0
-                                    and permission_permissions like '%administer%'  
+                                    and
+                                        (
+                                            permission_permissions like '%administer%'
+                                            or
+                                            permission_permissions like '%comment%'
+                                        )
                                 )
                             )
                         ";
@@ -2417,10 +2422,16 @@ abstract class MTDatabase {
         if (isset($args['class'])) {
             $class = $args['class'];
         }
+        $author_filter = '';
+        if (isset($args['author_id'])) {
+            $author_id = intval($args['author_id']);
+            $author_filter = 'and entry_author_id = ' . $author_id;
+        }
 
         $where = "entry_status = 2
                   and entry_class='$class'
-                  $blog_filter";
+                  $blog_filter
+                  $author_filter";
 
         require_once('class.mt_entry.php');
         $entry = new Entry;
