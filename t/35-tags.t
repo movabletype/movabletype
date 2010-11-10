@@ -85,6 +85,7 @@ foreach my $test_item (@$test_suite) {
     $ctx->{__stash}{entry} = undef if $test_item->{t} =~ m/MTComments|MTPings/;
     $ctx->{__stash}{entries} = undef if $test_item->{t} =~ m/MTEntries|MTPages/;
     $ctx->stash('comment', undef);
+    $request->{__stash} = {};
     my $result = build($ctx, $test_item->{t});
     is($result, $test_item->{e}, "perl test " . $num++);
 }
@@ -154,7 +155,9 @@ function run(&$ctx, $suite) {
     global $entry;
     global $mt;
     global $tmpl;
+    $base_stash = $ctx->__stash;
     foreach ($suite as $test_item) {
+        $ctx->__stash = $base_stash;
         $mt->db()->savedqueries = array();
         if ( preg_match('/MT(Entry|Link)/', $test_item->t) 
           && !preg_match('/MT(Comments|Pings)/', $test_item->t) )
