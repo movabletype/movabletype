@@ -173,6 +173,7 @@ sub list_props {
                     }
                     my $title_html = $title_prop->html($obj,$app);
                     my $type = $obj->class_type;
+                    $type = 'categories' if $type eq 'category';
                     my $img = MT->static_path . 'images/nav_icons/color/' . $type . '.gif';
                     push @res, qq{
                         <span class="icon target-type $type">
