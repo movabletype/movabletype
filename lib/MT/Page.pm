@@ -39,7 +39,7 @@ sub list_props {
             display   => 'default',
             order     => 400,
         },
-        folder => {
+        folder_id => {
             base             => 'entry.category_id',
             label            => 'Folder',
             display          => 'default',

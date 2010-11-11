@@ -83,7 +83,7 @@ sub list_props {
                             mode => 'list',
                             args => {
                                 _type      => ($obj_class eq 'category' ? 'entry' : 'page'),
-                                filter     => $obj_class,
+                                filter     => $obj_class . '_id',
                                 filter_val => $obj->id,
                                 blog_id    => $obj->blog_id,
                             },
