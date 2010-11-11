@@ -335,7 +335,7 @@ ul.tabs li a {
     overflow: hidden;
     position: relative;
     height: auto;
-    min-width: 960px;
+    min-width: 980px;
     min-height: 100%;
 }
 

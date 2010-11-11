@@ -81,6 +81,7 @@
 /* - UI Dialog */
 .ui-dialog-titlebar {
     padding: 10px;
+    line-height: 1.1;
 }
 
 .ui-dialog-buttonpane {
@@ -93,8 +94,8 @@
 
 .ui-dialog-titlebar-close {
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: 8px;
+    right: 8px;
     width: 16px;
     height: 16px;
     padding: 1px;
@@ -118,6 +119,7 @@
 
 .dialog .actions-bar {
     overflow: auto;
+    text-align: right;
 }
 .dialog .actions-bar-bottom {
     margin: 50px 0 0;
