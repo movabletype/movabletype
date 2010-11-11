@@ -443,7 +443,7 @@ sub handle_junk {
                 $rebuild_entries{$parent_id} = 1;
             }
             else {
-                $rebuild_categories{ $obj->category_id } = 1;
+                $rebuild_categories{ $parent_id } = 1;
 
                 # TODO: do something with this list.
             }
