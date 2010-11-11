@@ -459,6 +459,7 @@ sub list_props {
         },
         for_current_user => {
             label => 'For my entries',
+            singleton => 1,
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 my $user = MT->app->user;
