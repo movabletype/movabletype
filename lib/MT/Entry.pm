@@ -386,7 +386,7 @@ sub list_props {
                         value => 0,
                     },
                     map {{
-                        label => $_->label,
+                        label => MT::Util::encode_js($_->label),
                         value => $_->id,
                     }} @categories ];
             },
