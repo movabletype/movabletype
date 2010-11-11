@@ -48,6 +48,7 @@ sub list_props {
     return {
         id => {
             base  => '__virtual.id',
+            display => 'optional',
             order => 100,
         },
         label => {
@@ -242,10 +243,6 @@ sub list_props {
         tag => {
             base           => '__virtual.tag',
             tagged_class => '*',
-        },
-        id => {
-            base => '__virtual.id',
-            display => 'none',
         },
         excerpt_userpic => {
             label     => 'Excerpts Userpic',
