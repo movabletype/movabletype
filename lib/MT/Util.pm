@@ -522,7 +522,7 @@ sub encode_js {
 sub decode_js {
     my ( $str ) = @_;
     return unless defined $str;
-    $str =~ s/\\(.)/$1/g;
+    $str =~ s/(\\)(?!u)(.)/$2/g;
     return $str;
 }
 
