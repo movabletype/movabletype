@@ -209,6 +209,7 @@ sub list_props {
             base => '__virtual.single_select',
             label => 'Privilege',
             display => 'none',
+            singleton => 0,
             single_select_options => sub {
                 my $prop = shift;
                 my $perms = MT->registry('permissions');
