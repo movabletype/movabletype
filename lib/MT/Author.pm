@@ -605,15 +605,6 @@ sub _bulk_author_name_html {
 
         $status_img = MT->static_path . 'images/status_icons/' . $status_img;
         my $lc_status_label = lc $status_label;
-        my $edit_link = $app->uri(
-            mode => 'view',
-            args => {
-                _type => $obj->type == MT::Author::AUTHOR() ? 'author' : 'commenter',
-                id => $obj->id,
-                blog_id => 0,
-            },
-        );
-
         my $auth_img = MT->static_path;
         my $auth_label;
         if ( $obj->auth_type eq 'MT' ) {
@@ -639,8 +630,22 @@ sub _bulk_author_name_html {
             <span class="icon status $status_label">
                 <img alt="$status_label" src="$status_img" class="icon status $lc_status_label" />
             </span>
-            <span class="username"><a href="$edit_link">$name</a></span>
         };
+
+        if ( $app->can_do('edit_authors') || $app->user->id == $obj->id ) {
+            my $edit_link = $app->uri(
+                mode => 'view',
+                args => {
+                    _type => $obj->type == MT::Author::AUTHOR() ? 'author' : 'commenter',
+                    id => $obj->id,
+                    blog_id => 0,
+                },
+            );
+            $out .= qq{<span class="username"><a href="$edit_link">$name</a></span>};
+        }
+        else {
+            $out .= qq{<span class="username">$name</span>};
+        }
         if ( $url || $email ) {
             $out .= q{<ul class="user-info description">};
             $out .= qq{<li class="user-info-item user-email"><img alt="Email "src="$mail_icon" /> <a href="mailto:$email" title="$email">$email</a></li>} if $email;
