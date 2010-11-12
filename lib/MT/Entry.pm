@@ -428,7 +428,10 @@ sub list_props {
                 my $prop = shift;
                 my ( $app ) = @_;
                 my $id = $app->param('filter_val');
-                my $cat = MT->model('category')->load($id);
+                my $cat = MT->model('category')->load($id)
+                    or return $prop->error(
+                        MT->translate('[_1] ( id:[_2] ) not exists.', $prop->datasource->container_label, $id )
+                    );
                 return MT->translate(
                     'Entries from category: [_1]',
                     $cat->label,

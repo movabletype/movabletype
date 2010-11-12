@@ -701,6 +701,7 @@ sub list {
     }
     my %param;
     $param{list_type} = $type;
+    my @messages;
 
     my @components
         = map  { $_->{id} }
@@ -788,17 +789,30 @@ sub list {
         my @vals = $app->param('filter_val');
         my @items;
         my @labels;
+        my $invalid_param_filter = 0;
         for my $col ( @cols ) {
             my $val = shift @vals;
             if ( my $prop = $list_props->{$col} ) {
                 my ( $args, $label );
                 if ( $prop->has('args_via_param') ) {
-                    $args = $prop->args_via_param($app, $val)
-                        or return $app->error( $prop->errstr );
+                    $args = $prop->args_via_param($app, $val);
+                    if ( !$args ) {
+                        push @messages, { cls => 'error', msg => MT->translate(
+                            q{Invalid filter: [_1]}, $prop->errstr
+                        )};
+                        $invalid_param_filter = 1;
+                        next;
+                    }
                 }
                 if ( $prop->has('label_via_param') ) {
-                    $label = $prop->label_via_param($app, $val)
-                        or return $app->error( $prop->errstr );
+                    $label = $prop->label_via_param($app, $val);
+                    if ( !$label ) {
+                        push @messages, { cls => 'error', msg => MT->translate(
+                            q{Invalid filter: [_1]}, $prop->errstr
+                        )};
+                        $invalid_param_filter = 1;
+                        next;
+                    }
                 }
                 push @items, {
                     type => $col,
@@ -806,11 +820,17 @@ sub list {
                 };
                 push @labels, ($label || $prop->label);
             }
+            else {
+                push @messages, { cls => 'error', msg => MT->translate(
+                    q{Invalid filter: [_1]}, $col,
+                )};
+                $invalid_param_filter = 1;
+            }
         }
         $initial_filter = {
             label => join( ', ', @labels ),
             items => \@items,
-        };
+        } unless $invalid_param_filter;
     }
     elsif ( $initial_sys_filter ) {
         require MT::CMS::Filter;
@@ -954,6 +974,7 @@ sub list {
     $param{filters}        = $json->encode( $filters );
     $param{initial_filter} = $json->encode($initial_filter);
     $param{allpass_filter} = $json->encode($allpass_filter);
+    $param{messages}       = $json->encode(\@messages);
     $param{filters_raw}    = $filters;
     $param{default_sort_key} = $default_sort;
     $param{list_columns}    = \@list_columns;

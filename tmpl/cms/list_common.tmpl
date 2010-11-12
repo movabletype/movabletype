@@ -1595,5 +1595,11 @@ renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
 </mt:if>
 updateFilterSaveButtons();
 
+var messages = <mt:var name="messages">;
+for ( var i=0; i<messages.length; i++) {
+    var message = messages[i];
+    showMessage( message.msg, message.cls );
+}
+
 </mt:setvarblock>
 <mt:include name="include/footer.tmpl">
