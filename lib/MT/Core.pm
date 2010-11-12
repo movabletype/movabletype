@@ -908,10 +908,8 @@ BEGIN {
                     },
                     terms => sub {
                         my $prop   = shift;
-                        my ($args, $load_terms, $load_args) = @_;
-                        my $app = MT->app or return;
-                        $load_terms->{blog_id} = $app->param('blog_id');
-                        return;
+                        my ($args, $load_terms, $load_args, $opts) = @_;
+                        { blog_id => $opts->{blog_id} };
                     },
                     singleton => 1,
                 },
