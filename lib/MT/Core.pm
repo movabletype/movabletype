@@ -1068,7 +1068,7 @@ BEGIN {
             category => {
                 object_label => 'Category',
                 primary      => 'label',
-                template     => 'category.tmpl',
+                template     => 'list_category.tmpl',
                 contents_label        => 'Entry',
                 contents_label_plural => 'Entries',
                 permission => 'access_to_category_list',
@@ -1078,7 +1078,7 @@ BEGIN {
             folder => {
                 primary      => 'label',
                 object_label => 'Folder',
-                template     => 'category.tmpl',
+                template     => 'list_category.tmpl',
                 contents_label        => 'Page',
                 contents_label_plural => 'Pages',
                 permission => 'access_to_folder_list',
