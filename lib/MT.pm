@@ -2387,8 +2387,19 @@ sub build_page {
         ## logging out, or deleting something.
         my $q = $mt->{query};
         if ($mode) {
-            my @query = map { { name => $_, value => $q->param($_) }; }
-                grep { ($_ ne 'username') && ($_ ne 'password') && ($_ ne 'submit') && ($mode eq 'logout' ? ($_ ne '__mode') : 1) } $q->param;
+            my @query;
+            my @query_keys = grep {
+                       ( $_ ne 'username' )
+                    && ( $_ ne 'password' )
+                    && ( $_ ne 'submit' )
+                    && ( $mode eq 'logout' ? ( $_ ne '__mode' ) : 1 )
+            } $q->param;
+            for my $query_key (@query_keys) {
+                my @vals = $q->param($query_key);
+                for my $val (@vals) {
+                    push @query, { name => $query_key, value => $val };
+                }
+            }
             $param->{query_params} = \@query;
         }
         $param->{login_again} = $mt->{login_again};
