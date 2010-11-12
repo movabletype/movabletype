@@ -174,17 +174,22 @@ BEGIN {
         list_properties => {
             __virtual => {
                 base => {
-                    raw => sub {
-                        my $prop  = shift;
-                        my ($obj) = @_;
-                        my $col   = $prop->col;
-                        return $obj->$col;
-                    },
-                    sort => sub {
+                    init => sub {
                         my $prop = shift;
-                        my ( $terms, $args ) = @_;
-                        $args->{sort} = $prop->col;
-                        return;
+                        if ( $prop->has('col') ) {
+                            $prop->{raw} = sub {
+                                my $prop  = shift;
+                                my ($obj) = @_;
+                                my $col   = $prop->col;
+                                return $obj->$col;
+                            };
+                            $prop->{sort} = sub {
+                                my $prop = shift;
+                                my ( $terms, $args ) = @_;
+                                $args->{sort} = $prop->col;
+                                return;
+                            };
+                        }
                     },
                 },
                 string => {

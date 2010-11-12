@@ -10,17 +10,15 @@ use warnings;
 use MT;
 use base qw( MT::ErrorHandler );
 
-{
-    our %properties;
-
-    sub instance {
-        my $pkg = shift;
-        my ( $cls, $id ) = @_;
-        if ( !defined $id && $cls =~ m/\./ ) {
-            ( $cls, $id ) = split /\./, $cls, 2;
-        }
-        return $properties{$cls}{$id} ||= $pkg->new( $cls, $id );
+sub instance {
+    my $pkg = shift;
+    my ( $cls, $id ) = @_;
+    if ( !defined $id && $cls =~ m/\./ ) {
+        ( $cls, $id ) = split /\./, $cls, 2;
     }
+    my $prop = $pkg->new( $cls, $id );
+    $prop->_get('init') if $prop->has('init');
+    $prop;
 }
 
 sub new {
@@ -143,7 +141,7 @@ sub base {
     my $orig_obj = shift;
     return $self->{_base} if exists $self->{_base};
     if ( $self->{base} ) {
-        $self->{_base} = __PACKAGE__->instance( $self->{base} );
+        $self->{_base} = __PACKAGE__->new( $self->{base} );
     }
     elsif ( $self->{auto} ) {
         $self->{_base} = $self->_auto_base($orig_obj);
@@ -180,7 +178,7 @@ sub base {
         my $column_type = $def->{type};
         my $auto_type   = $AUTO{$column_type}
             or die "Failed to load auto prop for $class $id";
-        my $prop = __PACKAGE__->instance( '__virtual', $auto_type )
+        my $prop = __PACKAGE__->new( '__virtual', $auto_type )
             or die "Failed to load auto prop for $class $id";
         $orig_obj->{col} = $id;
         $prop;
