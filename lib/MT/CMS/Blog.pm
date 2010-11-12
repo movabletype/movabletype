@@ -564,7 +564,7 @@ sub rebuild_phase {
     my $type = $app->param('_type') || 'entry';
     my @ids  = $app->param('id');
     $app->{goback} = $app->return_uri;
-    $app->{value} ||= $app->translate('Go Back');
+    $app->{value} ||= $app->translate('Back');
     if ( $type eq 'entry' ) {
         my %ids = map { $_ => 1 } @ids;
         return $app->rebuild_these( \%ids );
@@ -643,7 +643,7 @@ sub rebuild_pages {
                 $edit_type = $entry ? $entry->class : 'entry';
             }
             $app->{goback} = $app->object_edit_uri( $edit_type, $obj_id );
-            $app->{value} ||= $app->translate('Go Back');
+            $app->{value} ||= $app->translate('Back');
         }
     }
 
