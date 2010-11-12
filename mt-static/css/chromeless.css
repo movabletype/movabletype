@@ -6,6 +6,10 @@ body {
     font-size: 13px;
     font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
 }
+.chromeless-wide { 
+    background-color: #fff;
+}
+
 
 a { 
     color: #5c909b;
@@ -93,14 +97,9 @@ h3 {
     display: block;
 }
 
-.actions-bar-login { 
-    text-align: right;
-}
-
 /* - Layout */
 #container {
     position: relative;
-    width: 520px;
     margin: 45px auto 30px;
     padding: 30px 30px 25px;
     border: 1px solid #c0c6c9;
@@ -109,24 +108,27 @@ h3 {
     -moz-border-radius: 5px;
 }
 
-/* -- Wide Layout */
-.error-screen #container {
-    width: 95%;
+/* -- Sign In */
+#sign-in #container, 
+#reset-password #container, 
+#change-password #container { 
+    width: 320px;
 }
 
-.chromeless-wide { 
-    background-color: #fff;
-}
-.chromeless-wide #container-inner {
-    background: none;
-}
+/* -- Wide Layout */
 .chromeless-wide #container {
-    width: 360px;
-    margin: 20px auto;
+    min-width: 360px;
+    margin: 20px;
     padding: 0;
     border: 0;
     background-color: transparent;
 }
+
+/* -- Wizerd */
+.wizerd #container {
+    width: 550px;
+}
+
 
 /* - Header */
 #header {
@@ -135,6 +137,8 @@ h3 {
 #header .comment_signin_title {
     margin-left: 20px;
 }
+
+
 
 #brand {
     width: 250px;
@@ -169,9 +173,6 @@ h3 {
 }
 
 /* - Sign in Screen */
-#sign-in #container { 
-    width: 320px;
-}
 #sign-in #page-title { 
     display: none;
 }
@@ -286,18 +287,23 @@ ul#profile-data li {
 
 /* - Publush */
 /* -- Progress Bar */
-.progress-bar {
-    height: 20px;
-    width: 322px;
-    background: url('../images/progress-bar.gif') repeat-x 100% 0;
-    border: 1px solid #9CBCCB;
+.progressbar {
+    height: 2em;
+    border: 1px solid #c0c6c9;
+    background: #fff;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
 }
-.progress-bar span {
-    display: none;
+.progressbar.indeterminate {
+    background: #c0c6c9 url(../images/progress-bar-indeterminate.gif) repeat;
 }
-
-.progress-bar-indeterminate {
-    background: url('../images/progress-bar-indeterminate.gif') repeat-x 0 0;
+.ui-progressbar .ui-progressbar-value {
+    height:100%;
+    background-color: #dcdddd;
+    background: -webkit-gradient(linear, left top, left bottom, from(#58bee3), to(#32789e));
+    background: -moz-linear-gradient(top, #58bee3, #32789e);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    -moz-border-radius: 5px 0 0 5px;
 }
-
 

@@ -30,10 +30,12 @@
 </mt:unless>
 <mt:unless name="optimize_ui">
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
 <mt:else>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
 </mt:unless>
@@ -55,7 +57,7 @@
 
 </head>
 
-<body id="<$mt:var name="screen_id"$>" class="chromeless<mt:if name="mt_debug"> debug</mt:if><mt:if name="error_page"><mt:if name="is_full_screen"> error-screen</mt:if> chromeless-wide</mt:if><mt:if name="screen_type" eq="popup-screen"> chromeless-wide</mt:if> <$mt:var name="body_class" default="dialog"$>">
+<body <mt:if name="screen_id">id="<$mt:var name="screen_id"$>" </mt:if>class="chromeless<mt:if name="mt_debug"> debug</mt:if><mt:if name="error_page"> chromeless-wide</mt:if><mt:if name="screen_type" eq="popup-screen"> chromeless-wide</mt:if> <$mt:var name="body_class" default="dialog"$>">
   <div id="container">
     <div id="brand">
       <span><__trans phrase="Movable Type"></span>

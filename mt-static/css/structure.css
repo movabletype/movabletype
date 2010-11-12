@@ -228,18 +228,32 @@ pre {
 .detail {
     clear: both;
 }
-
-#progress-bar, 
-.progress-bar {
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-}
-
 .close-link { 
     position: absolute;
     top: 50%;
     right: 10px;
     margin-top: -9px;
+}
+
+/* -- Progress Bar */
+.progressbar {
+    height: 2em;
+    border: 1px solid #c0c6c9;
+    background: #fff;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+.progressbar.indeterminate {
+    background: #c0c6c9 url(../images/progress.gif) repeat;
+}
+.ui-progressbar .ui-progressbar-value {
+    height:100%;
+    background-color: #dcdddd;
+    background: -webkit-gradient(linear, left top, left bottom, from(#58bee3), to(#32789e));
+    background: -moz-linear-gradient(top, #58bee3, #32789e);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    -moz-border-radius: 5px 0 0 5px;
 }
 
 .item-action {
