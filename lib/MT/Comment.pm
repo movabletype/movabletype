@@ -360,17 +360,21 @@ sub list_props {
                 my %entry_ids  = map { $_->entry_id => 1 } @$objs;
                 my @entries = MT->model('entry')->load({
                     id => [ keys %entry_ids ],
+                }, {
+                    no_class => 1,
                 });
                 my %entries   = map { $_->id => $_ } @entries;
-                my $title_prop = MT::ListProperty->instance( '__virtual.title' );
-                $title_prop->{col} = 'title';
                 my @result;
                 for my $obj ( @$objs ) {
                     my $id    = $obj->entry_id;
                     my $entry = $entries{$id};
+                    if ( !$entry ) {
+                        push @result, MT->translate('Deleted');
+                        next;
+                    }
                     my $type  = $entry->class_type;
                     my $img = MT->static_path . 'images/nav_icons/color/' . $type . '.gif';
-                    my $title_html = $title_prop->html($entry,$app);
+                    my $title_html = MT::ListProperty::make_common_label_html($entry, $app, 'title', 'No title');
                     push @result, qq{
                         <span class="icon target-type $type">
                           <img src="$img" />

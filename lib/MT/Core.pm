@@ -539,37 +539,7 @@ BEGIN {
                     label     => 'Label',
                     display   => 'force',
                     alternative_label => 'No label',
-                    html => sub {
-                        my $prop = shift;
-                        my ( $obj, $app ) = @_;
-                        my $id      = $obj->id;
-                        my $col     = $prop->col;
-                        my $label   = $obj->$col;
-                        my $blog_id = $obj->has_column('blog_id') ? $obj->blog_id
-                                    : $app->blog                  ? $app->blog->id
-                                    :                               0;
-                        my $type    = $obj->class_type;
-                        my $edit_link = $app->uri(
-                            mode => 'view',
-                            args => {
-                                _type   => $type,
-                                id      => $id,
-                                blog_id => $blog_id,
-                            },
-                        );
-                        if ( $label ) {
-                            $label = MT::Util::encode_html($label);
-                            return qq{<a href="$edit_link">$label</a>};
-                        }
-                        else {
-                            return MT->translate(
-				qq{[_1] (<a href="[_2]">id:[_3]</a>)},
-                                $prop->has('alternative_label') ? $prop->alternative_label : 'No ' . $prop->label,
-                                $edit_link,
-                                $id,
-                            )
-                        }
-                    },
+                    html => \&MT::ListProperty::common_label_html,
                 },
                 title => { base => '__virtual.label', alternative_label => 'No Title', },
                 name  => { base => '__virtual.label', alternative_label => 'No Name', },

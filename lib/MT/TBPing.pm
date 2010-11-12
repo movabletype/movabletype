@@ -158,20 +158,22 @@ sub list_props {
                 my @categories = MT->model('category')->load({ id => [ keys %categories ]})
                     if scalar keys %categories;
                 my %category_map  = map { $_->id => $_ } @categories;
-                my $title_prop = MT::ListProperty->instance( '__virtual.title' );
+                my ($title_col, $alt_label);
                 my @res;
                 for my $obj ( @$objs ) {
                     my $tb = $tb_map{$obj->tb_id};
                     my $obj;
                     if ( $tb->entry_id ) {
                         $obj = $entry_map{$tb->entry_id};
-                        $title_prop->{col} = 'title';
+                        $title_col = 'title';
+                        $alt_label = 'No title';
                     }
                     elsif ( $tb->category_id ) {
                         $obj = $category_map{$tb->category_id};
-                        $title_prop->{col} = 'label';
+                        $title_col = 'label';
+                        $alt_label = 'No label';
                     }
-                    my $title_html = $title_prop->html($obj,$app);
+                    my $title_html = MT::ListProperty::make_common_label_html($obj, $app, $title_col, $alt_label);
                     my $type = $obj->class_type;
                     $type = 'categories' if $type eq 'category';
                     my $img = MT->static_path . 'images/nav_icons/color/' . $type . '.gif';

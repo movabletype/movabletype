@@ -250,4 +250,40 @@ sub can_filter {
         && $prop->_scope_filter( 'filter', @_ );
 }
 
+sub common_label_html {
+    my $prop = shift;
+    my ( $obj, $app ) = @_;
+    return make_common_label_html( $obj, $app, $prop->col, $prop->alternative_label );
+}
+
+sub make_common_label_html {
+    my ( $obj, $app, $col, $alt_label ) = @_;
+    my $id      = $obj->id;
+    my $label   = $obj->$col;
+    my $blog_id = $obj->has_column('blog_id') ? $obj->blog_id
+                : $app->blog                  ? $app->blog->id
+                :                               0;
+    my $type    = $obj->class_type;
+    my $edit_link = $app->uri(
+        mode => 'view',
+        args => {
+            _type   => $type,
+            id      => $id,
+            blog_id => $blog_id,
+        },
+    );
+    if ( $label ) {
+        $label = MT::Util::encode_html($label);
+        return qq{<a href="$edit_link">$label</a>};
+    }
+    else {
+        return MT->translate(
+            qq{[_1] (<a href="[_2]">id:[_3]</a>)},
+                $alt_label ? $alt_label : 'No ' . $label,
+                $edit_link,
+                $id,
+        );
+    }
+}
+
 1;
