@@ -415,16 +415,17 @@ function renderFilterList() {
 
   for (var i = 0, length = filters.length; i < length; i++) {
     var filter = filters[i];
-    var line = '<span class="filter-label unit size2of3"><a href="#'+i+'" class="apply-link '
-      + ( filter.can_save ? 'user-filter' : 'system-filter' ) 
-      + '">'+filter.label+'</a></span>';
     if ( parseInt(filter.can_save) ) {
-      line += '<span class="handle-filter unit size1of3" style="display: none;"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Rename"></a><a href="#'+i+'" class="delete-link tool-link icon16 icon-delete"><__trans phrase="Delete"></a></span>';
-    }
-    if ( parseInt(filter.can_save) ) {
+      var line = '<span class="filter-label unit size4of5"><a href="#'+i+'" class="apply-link '
+        + ( filter.can_save ? 'user-filter' : 'system-filter' )
+        + '">'+filter.label+'</a></span>'
+        + '<span class="handle-filter unit size1of5" style="display: none;"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Re"></a><a href="#'+i+'" class="delete-link tool-link icon16 icon-delete"><__trans phrase="Delete"></a></span>';
       jQuery('<li class="filter line" />').append(line).appendTo('#user-filters');
     }
     else {
+      var line = '<span class="filter-label"><a href="#'+i+'" class="apply-link '
+        + ( filter.can_save ? 'user-filter' : 'system-filter' )
+        + '">'+filter.label+'</a></span>';
       jQuery('<li class="filter line" />').append(line).appendTo('#built-in-filters');
     }
   }
