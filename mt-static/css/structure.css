@@ -908,7 +908,8 @@ ul.tabs li a {
     border-radius: 5px;
 }
 
-.top-menu.first-child div { 
+.top-menu.first-child div, 
+.top-menu.first-child.last-child div { 
     -moz-border-radius: 5px 5px 0 0;
     border-top-right-radius: 5px;
     border-top-left-radius: 5px;
