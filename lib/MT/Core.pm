@@ -2055,6 +2055,7 @@ sub load_core_permissions {
                 'view_feedback'                           => 1,
                 'use_entry:manage_menu'                   => 1,
                 'use_tools:search'                        => 1,
+                'view_own_entry_comment'                  => 1,
             }
         },
         'blog.edit_all_posts' => {
@@ -2219,6 +2220,7 @@ sub load_core_permissions {
                 'trust_commenters_via_list'             => 1,
                 'unapprove_comments_via_list'           => 1,
                 'unapprove_trackbacks_via_list'         => 1,
+                'approve_comments_via_list'             => 1,
                 'unban_commenters_via_list'             => 1,
                 'untrust_commenters_via_list'           => 1,
                 'view_commenter'                        => 1,
@@ -2227,6 +2229,7 @@ sub load_core_permissions {
                 'use_tools:search'                      => 1,
                 'view_all_comments'                     => 1,
                 'manage_feedback'                       => 1,
+                'delete_comments_via_list'              => 1,
             }
         },
         'blog.manage_pages' => {
@@ -2293,7 +2296,6 @@ sub load_core_permissions {
             'order'            => 200,
             'permitted_action' => {
                 'publish_entry_via_list'                => 1,
-                'view_own_entry_comment'                => 1,
                 'approve_own_entry_comment'             => 1,
                 'approve_own_entry_trackback'           => 1,
                 'bulk_edit_own_entry_comments'          => 1,
@@ -2319,7 +2321,10 @@ sub load_core_permissions {
                 'set_entry_draft_via_list'              => 1,
                 'unapprove_comments_via_list'           => 1,
                 'unapprove_trackbacks_via_list'         => 1,
+                'approve_comments_via_list'             => 1,
+                'delete_comments_via_list'              => 1,
                 'use_tools:search'                      => 1,
+                'reply_comment_from_cms'                => 1,
             }
         },
         'blog.rebuild' => {

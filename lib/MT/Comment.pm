@@ -133,23 +133,25 @@ sub list_props {
                         :                MT::Util::format_ts( $date_format, $ts, $blog, $app->user ? $app->user->preferred_language : undef );
 
                 my $reply_link;
-                my $return_arg = $app->uri_params(
-                    mode => 'list',
-                    args => {
-                        _type => 'comment',
-                        blog_id => $app->blog ? $app->blog->id : 0,
-                });
-                my $reply_url  = $app->uri(
-                    mode => 'dialog_post_comment',
-                    args => {
-                        reply_to    => $id,
-                        blog_id     => $obj->blog_id,
-                        return_args => $return_arg,
-                        magic_token => $app->current_magic,
-                    },
-                );
-                my $reply_str = MT->translate('Reply');
-                $reply_link = qq{<a href="$reply_url" class="reply-link mt-open-dialog">$reply_str</a>};
+                if ( $app->user->permissions($obj->blog->id)->can_do('reply_comment_from_cms') and $obj->is_published ) {
+                    my $return_arg = $app->uri_params(
+                        mode => 'list',
+                        args => {
+                            _type => 'comment',
+                            blog_id => $app->blog ? $app->blog->id : 0,
+                    });
+                    my $reply_url  = $app->uri(
+                        mode => 'dialog_post_comment',
+                        args => {
+                            reply_to    => $id,
+                            blog_id     => $obj->blog_id,
+                            return_args => $return_arg,
+                            magic_token => $app->current_magic,
+                        },
+                    );
+                    my $reply_str = MT->translate('Reply');
+                    $reply_link = qq{<a href="$reply_url" class="reply-link mt-open-dialog">$reply_str</a>}
+                }
 
                 return qq{
                     <span class="icon status $lc_status_class">
