@@ -1163,7 +1163,10 @@ BEGIN {
             tag => {
                 primary      => 'name',
                 object_label => 'Tag',
-                permission => 'access_to_tag_list',
+                permission => {
+                    permit_action => 'access_to_tag_list',
+                    inherit => 0,
+                },
                 default_sort_key => 'name',
                 view         => [ 'blog', 'website' ],
                 scope_mode   => 'none',

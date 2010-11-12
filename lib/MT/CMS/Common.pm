@@ -738,12 +738,19 @@ sub list {
 
     # Permission check
     if ( defined $screen_settings->{permission} && !$app->user->is_superuser() ) {
+        my $list_permission = $screen_settings->{permission};
+        my $inherit_blogs = 1;
+        if ( 'HASH' eq ref $list_permission ) {
+            $inherit_blogs = $list_permission->{inherit}
+                if defined $list_permission->{inherit};
+            $list_permission = $list_permission->{permit_action};
+        }
         my $allowed = 0;
-        my @act = split /\s*,\s*/, $screen_settings->{permission};
+        my @act = split /\s*,\s*/, $list_permission;
         my $blog_ids = undef;
         if ( $blog_id ) {
             push @$blog_ids, $blog_id;
-            if ( $scope eq 'website' ) {
+            if ( $scope eq 'website' && $inherit_blogs ) {
                 push @$blog_ids, $_->id foreach @{ $app->blog->blogs() };
             }
         }
