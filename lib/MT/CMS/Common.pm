@@ -1246,7 +1246,7 @@ sub filtered_list {
                 for my $obj ( @$objs ) {
                     my $link = $prop->html_link( $obj, $app, \%load_options );
                     my $raw  = $prop->raw( $obj, $app, \%load_options );
-                    push @result, qq{<a href="$link">$raw</a>};
+                    push @result, ( $link ? qq{<a href="$link">$raw</a>} : $raw );
                 }
             }
             elsif ( $prop->has('raw') ) {

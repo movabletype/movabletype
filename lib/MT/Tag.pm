@@ -105,6 +105,7 @@ sub list_props {
             },
             html_link => sub {
                 my ( $prop, $obj, $app ) = @_;
+                $app->can_do('access_to_' . $prop->entry_class . '_list') || return;
                 return $app->uri(
                     mode => 'list',
                     args => {
@@ -218,6 +219,7 @@ sub list_props {
             },
             html_link => sub {
                 my ( $prop, $obj, $app ) = @_;
+                $app->can_do('access_to_asset_list') or return;
                 return $app->uri(
                     mode => 'list',
                     args => {
