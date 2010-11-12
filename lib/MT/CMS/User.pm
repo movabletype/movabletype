@@ -626,7 +626,7 @@ sub remove_user_assoc {
     my $user = $app->user;
     my $perms = $app->permissions;
     return $app->permission_denied()
-        unless $app->can_do('remove_user_association');
+        unless $app->can_do('remove_user_assoc');
     my $can_remove_administrator = $app->can_do('remove_administrator_association');
 
     my $blog_id = $app->param('blog_id');
