@@ -535,6 +535,7 @@ BEGIN {
                 ## translate('No Name')
                 ## translate('No Label')
                 label => {
+                    auto      => 1,
                     label     => 'Label',
                     display   => 'force',
                     alternative_label => 'No label',

@@ -874,7 +874,7 @@ sub list {
             label              => $prop->label,
             primary            => $primary_col{$id} ? 1 : 0,
             col_class          => $prop->col_class,
-            sortable           => $prop->can_sort($scope),
+            sortable           => $prop->can_sort,
             sorted             => $prop->id eq $default_sort ? 1 : 0,
             display            => $show,
             is_default         => $force || $default,

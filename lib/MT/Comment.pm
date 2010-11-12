@@ -322,9 +322,9 @@ sub list_props {
         },
         entry => {
             label => 'Entry/Page',
-            base => '__virtual.title',
+            base => '__virtual.integer',
             col_class => 'string',
-            view_filter => [],
+            filter_editable => 0,
             order => 500,
             display => 'default',
             sort => sub {
@@ -343,6 +343,17 @@ sub list_props {
                 $args->{sort} = [];
                 return;
             },
+            terms => sub {
+                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                $db_args->{joins} ||= [];
+                push @{ $db_args->{joins} }, MT->model('entry')->join_on(
+                    undef,
+                    {
+                        id => [ '-and', $args->{value}, \'= comment_entry_id' ],
+                    },
+                );
+                return;
+            },
             bulk_html => sub {
                 my $prop = shift;
                 my ( $objs, $app ) = @_;
@@ -351,13 +362,15 @@ sub list_props {
                     id => [ keys %entry_ids ],
                 });
                 my %entries   = map { $_->id => $_ } @entries;
+                my $title_prop = MT::ListProperty->instance( '__virtual.title' );
+                $title_prop->{col} = 'title';
                 my @result;
                 for my $obj ( @$objs ) {
                     my $id    = $obj->entry_id;
                     my $entry = $entries{$id};
                     my $type  = $entry->class_type;
                     my $img = MT->static_path . 'images/nav_icons/color/' . $type . '.gif';
-                    my $title_html = $prop->super($entry,$app);
+                    my $title_html = $title_prop->html($entry,$app);
                     push @result, qq{
                         <span class="icon target-type $type">
                           <img src="$img" />
@@ -371,23 +384,6 @@ sub list_props {
                 my ( $prop, $obj ) = @_;
                 my $entry_id = $obj->entry_id;
                 return $entry_id ? MT->model('entry')->load($entry_id)->title : '';
-            },
-        },
-        entry_id => {
-            auto => 1,
-            label => 'Entry',
-            filter_editable => 0,
-            display => 'none',
-            terms => sub {
-                my ( $prop, $args, $db_terms, $db_args ) = @_;
-                $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} }, MT->model('entry')->join_on(
-                    undef,
-                    {
-                        id => [ '-and', $args->{value}, \'= comment_entry_id' ],
-                    },
-                );
-                return;
             },
             label_via_param => sub {
                 my $prop = shift;

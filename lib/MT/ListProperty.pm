@@ -16,7 +16,6 @@ sub instance {
     if ( !defined $id && $cls =~ m/\./ ) {
         ( $cls, $id ) = split /\./, $cls, 2;
     }
-print STDERR "Get instance $cls, $id";
     my $prop = $pkg->new( $cls, $id );
     $prop->_get('init') if $prop->has('init');
     $prop;
@@ -173,7 +172,6 @@ sub base {
         my $self     = shift;
         my $orig_obj = shift || $self;
         my $id       = $orig_obj->id;
-print STDERR "  aaa" . $id  . "[" . $orig_obj->datasource . "]";
         my $class    = $orig_obj->datasource;
         my $def      = $class->column_def($id)
             or die "Failed to load auto prop for $class $id";
