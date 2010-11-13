@@ -21,7 +21,7 @@ sub edit {
         if $blog && !$id;
 
     return $app->permission_denied()
-        unless $app->user->can_create_website();
+        if !$id && !$app->user->can_create_website();
 
     if ($id) {
         my $output = $param->{output} ||= 'cfg_prefs.tmpl';

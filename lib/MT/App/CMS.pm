@@ -2497,6 +2497,7 @@ sub init_core_callbacks {
             $pkg . 'post_delete.website' => "${pfx}Website::post_delete",
             $pkg . 'save_permission_filter.website' => "${pfx}Website::can_save",
             $pkg . 'pre_load_filtered_list.website' => "${pfx}Website::cms_pre_load_filtered_list",
+            $pkg . 'view_permission_filter.website' => "${pfx}Blog::can_view",
 
             # blog callbacks
             $pkg . 'edit.blog'                   => "${pfx}Blog::edit",
