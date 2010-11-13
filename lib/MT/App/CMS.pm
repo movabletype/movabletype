@@ -993,10 +993,31 @@ sub core_list_actions {
                 js_message => 'publish',
                 button     => 1,
                 condition  => sub {
-                    $app->param('blog_id')
-                        ? $app->can_do('edit_trackback_status')
-                        : $app->user->is_superuser;
-                },
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+
+                    my $blog = $app->blog;
+                    my $blog_ids = !$blog
+                        ? undef
+                        : $blog->is_blog
+                            ? [ $blog->id ]
+                            : [ $blog->id, map { $_->id } @{$blog->blogs} ];
+
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter(
+                        {
+                            author_id => $app->user->id,
+                            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                        }
+                    );
+
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        $cond = 0, last
+                            if !$p->can_do('approve_trackback_via_list')
+                        }
+                    return $cond;
+                }
             },
             'delete' => {
                 label      => 'Delete',
