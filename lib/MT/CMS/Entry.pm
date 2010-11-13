@@ -2321,11 +2321,8 @@ sub can_delete {
     my ( $eh, $app, $obj ) = @_;
     my $author = $app->user;
     return 1 if $author->is_superuser();
-    my $perms = $app->permissions;
-    if ( !$perms || $perms->blog_id != $obj->blog_id ) {
-        $perms ||= $author->permissions( $obj->blog_id );
-    }
-    return $perms && $perms->can_edit_entry( $obj, $author );
+
+    return $author->permissions( $obj->blog_id )->can_edit_entry( $obj, $author);
 }
 
 sub pre_save {
