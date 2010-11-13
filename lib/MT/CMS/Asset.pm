@@ -587,7 +587,11 @@ sub can_view {
 
 sub can_delete {
     my ( $eh, $app, $obj ) = @_;
-    return $app->can_do('delete_asset');
+    if ( $obj->blog_id ) {
+        return $app->user->permissions($obj->blog_id)->can_do('delete_asset');
+    } else{
+        return $app->can_do('delete_asset');
+    }
 }
 
 sub pre_save {
