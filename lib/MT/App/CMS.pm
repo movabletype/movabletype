@@ -554,6 +554,7 @@ sub core_content_actions {
                 label => 'Add IP Address',
                 id    => 'action-ban-ip',
                 order => 100,
+                permit_action => 'save_banlist',
                 condition => sub {
                     MT->app && MT->app->param('blog_id');
                 },
