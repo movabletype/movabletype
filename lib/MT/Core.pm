@@ -1100,7 +1100,7 @@ BEGIN {
             author => {
                 object_label => 'Author',
                 primary      => 'name',
-                permission   => 'access_to_member_list',
+                permission   => 'administer',
                 default_sort_key => 'name',
                 view         => 'system',
                 scope_mode => 'none',
