@@ -2,6 +2,16 @@
 <mt:setvarblock name="page_title"><__trans phrase="Manage [_1]" params="<mt:var name="object_label_plural">"></mt:setvarblock>
 </mt:unless>
 
+<mt:if name="build_user_menus">
+<mt:setvarblock name="related_content">
+  <mtapp:widget
+     id="user-properties"
+     label="<__trans phrase="User properties">">
+    <mt:include name="include/users_content_nav.tmpl">
+  </mtapp:widget>
+</mt:setvarblock>
+</mt:if>
+
 <mt:if name="content_actions">
 <mt:setvarblock name="content_header">
 <ul id="content-actions" class="action-link-list">
