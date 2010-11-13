@@ -123,11 +123,13 @@ TC.attachLoadEvent( init );
     </mtapp:setting>
 
   <mt:if name="tb">
-    <mtapp:setting
-       id="view_trackbacks"
-       label="<__trans phrase="TrackBacks">">
+    <mt:if name="can_view_trackbacks">
+      <mtapp:setting
+         id="view_trackbacks"
+         label="<__trans phrase="TrackBacks">">
       <div id="view_trackbacks"><strong><a href="<$mt:var name="script_url">?__mode=list&amp;_type=ping&amp;filter=category_id&amp;filter_val=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"><__trans phrase="View TrackBacks"></a></strong></div>
-    </mtapp:setting>
+      </mtapp:setting>
+    </mt:if>
   </mt:if>
 
     <div id="allow_pings_prefs" style="display:<mt:if name="allow_pings">block<mt:else>none</mt:if>">

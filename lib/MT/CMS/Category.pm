@@ -67,6 +67,8 @@ sub edit {
     $param->{search_label}     = $entry_class->class_label_plural;
     $param->{search_type}      = $entry_type;
 
+    $param->{can_view_trackbacks} = $app->can_do('access_to_trackback_list');
+
     1;
 }
 
