@@ -177,7 +177,7 @@ sub can_delete {
         or return 0;
     if ( my $entry = $tb->entry ) {
         if ( !$perms || $perms->blog_id != $entry->blog_id ) {
-            $perms ||= $author->permissions( $entry->blog_id );
+            $perms = $author->permissions( $entry->blog_id );
         }
 
         # publish_post allows entry author to delete comment.

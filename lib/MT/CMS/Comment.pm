@@ -770,14 +770,15 @@ sub can_delete {
     require MT::Entry;
     my $entry = MT::Entry->load( $obj->entry_id )
         or return 0;
+
     if ( !$perms || $perms->blog_id != $entry->blog_id ) {
-        $perms ||= $author->permissions( $entry->blog_id );
+        $perms = $author->permissions( $entry->blog_id );
     }
 
     # TBD: replace this check to new permission syntax.
 
     # publish_post allows entry author to delete comment.
-    return 1 if $app->can_do('delete_every_comment');
+    return 1 if $perms->can_do('delete_every_comment');
     return 1 if $perms->can_edit_entry( $entry, $author, 1 );
     return 0 if $obj->visible;    # otherwise, visible comment can't be deleted.
     return $perms && $perms->can_edit_entry( $entry, $author );
