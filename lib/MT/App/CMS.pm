@@ -2871,7 +2871,6 @@ sub build_page {
     $app->build_compose_menus( $param )
         if $build_compose_menus;
 
-
     my $build_user_menus
         = exists $param->{build_user_menus} ? $param->{build_user_menus}
         : $param->{user_menu_id}            ? 1
@@ -3330,8 +3329,12 @@ sub build_compose_menus {
         }
         push @menus, $item;
     }
-    my $compose_menus = $app->filter_conditional_list( \@menus, ($param) );
-    @menus = sort { $a->{order} <=> $b->{order} } @menus;
+    
+    if ( my $compose_menus = $app->filter_conditional_list( \@menus, ($param) ) ) {
+        @menus = sort { $a->{order} <=> $b->{order} } @$compose_menus;
+    } else {
+        @menus = ();
+    }
     $param->{compose_menus} = \@menus;
 }
 
