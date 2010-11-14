@@ -50,9 +50,11 @@
                         <a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Settings"></a>
                     </li>
     </mt:if>
+    <mt:if name="can_use_tools_search">
                     <li>
                         <a href="<mt:var name="script_url">?__mode=search_replace&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Search"></a>
                     </li>
+    </mt:if>
                 </ul>
                 <ul id="blog-<mt:var name="blog_id">-action" class="blog-action">
     <mt:if name="can_create_new_entry">
