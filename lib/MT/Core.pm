@@ -998,7 +998,7 @@ BEGIN {
                     my $cond;
                     while ( my $p = $iter->() ) {
                         $cond = 1, last
-                            if $p->can_do('access_to_entry_list')
+                            if $p->can_do('access_to_entry_list') and $p->blog->is_blog;
                     }
                     return $cond ? 1 : 0;
                 },

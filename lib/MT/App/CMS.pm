@@ -1742,7 +1742,7 @@ sub core_menus {
                 my $cond;
                 while ( my $p = $iter->() ) {
                     $cond = 1, last
-                        if $p->can_do('use_entry:manage_menu')
+                        if $p->can_do('use_entry:manage_menu') and $p->blog->is_blog;
                 }
                 return $cond ? 1 : 0;
             },
