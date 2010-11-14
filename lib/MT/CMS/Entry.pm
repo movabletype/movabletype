@@ -2234,9 +2234,8 @@ sub build_entry_table {
                                   :                   $blog_perms->can_do('edit_all_pages') ) );
         if ($is_power_edit) {
             $row->{has_publish_access} = $app_author->is_superuser
-              || ( ( 'entry' eq $type )
-                && $blog_perms
-                && $blog_perms->can_edit_entry( $obj, $app_author, 1 ) );
+              || ( $blog_perms
+                   && $blog_perms->can_edit_entry( $obj, $app_author, 1 ) );
             $row->{is_editable} = $row->{has_edit_access};
 
             ## This is annoying. In order to generate and pre-select the
