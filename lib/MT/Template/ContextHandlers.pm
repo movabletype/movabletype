@@ -1551,7 +1551,7 @@ sub _hdlr_loop {
         local $vars->{__even__} = ($i % 2 ) == 0;
         local $vars->{__counter__} = $i;
         my @names;
-        if (UNIVERSAL::isa($item, 'MT::Object')) {
+        if (ref $item && UNIVERSAL::isa($item, 'MT::Object')) {
             @names = @{ $item->column_names };
         } else {
             if (ref($item) eq 'HASH') {
@@ -1565,7 +1565,7 @@ sub _hdlr_loop {
         my @var_names;
         push @var_names, lc $_ for @names;
         local @{$vars}{@var_names};
-        if (UNIVERSAL::isa($item, 'MT::Object')) {
+        if (ref $item && UNIVERSAL::isa($item, 'MT::Object')) {
             $vars->{lc($_)} = $item->column($_) for @names;
         } elsif (ref($item) eq 'HASH') {
             $vars->{lc($_)} = $item->{$_} for @names;
