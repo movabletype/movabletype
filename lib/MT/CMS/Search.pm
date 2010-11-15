@@ -159,7 +159,7 @@ sub core_search_apis {
                     require MT::Entry;
                     my $entry = MT::Entry->load( $tb->entry_id );
                     return
-                      grep { $_->can_edit_entry( $entry, $author ) } @perms;
+                      grep { $_->can_do('manage_feedback') || $_->can_edit_entry( $entry, $author ) } @perms;
                 }
                 elsif ( $tb->category_id ) {
                     return grep { $_->can_do('search_category_trackbacks') } @perms;
