@@ -3,9 +3,13 @@
 <mt:if name="closing">
 <script type="text/javascript">
 /* <![CDATA[ */
+<mt:if name="return_url">
+parent.jQuery.fn.mtDialog.close('<mt:var name="return_url" escape="js">');
+<mt:else>
 parent.jQuery.fn.mtDialog.close( null, function () {
     parent.jQuery.fn.mtRenderList({});
 });
+</mt:if>
 
 /* ]]> */
 </script>
