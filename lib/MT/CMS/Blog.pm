@@ -504,7 +504,7 @@ sub cfg_registration {
             if ( 'MovableType' eq $_ ) {
                 $param{enabled_MovableType} = 1;
             }
-            else {
+            elsif ( exists $cmtauth{$_} ) {
                 $cmtauth{$_}->{enabled} = 1;
             }
         }
