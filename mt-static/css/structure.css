@@ -307,7 +307,7 @@ pre {
 .ui-tabs-nav, 
 ul.tabs { 
     margin-bottom: 20px;
-    border-bottom: 1px solid #c8c2be;
+    border-bottom: 1px solid #c0c6c9;
 }
 
 .ui-tabs-nav li, 
@@ -504,7 +504,7 @@ ul.tabs li a {
 #utility-nav a {
     display: inline-block;
     padding: 0 5px;
-    color: #C8C2BE;
+    color: #C0C6C9;
     text-decoration: none;
     outline: 0;
 }
@@ -529,7 +529,7 @@ ul.tabs li a {
 
 #utility-nav #user .userpic { 
     margin-top: -1px;
-    border: 1px solid #c8c2be;
+    border: 1px solid #c0c6c9;
 }
 
 #utility-nav #help { 
@@ -886,13 +886,11 @@ ul.tabs li a {
 .sub-menu-link.current { 
     background-color: #dcdddd;
 }
-
 .top-menu div { 
     position: relative;
     border-style: solid solid none;
     border-width: 1px;
 }
-
 .sub-menu { 
     display: none;
     border-style: solid solid none;
@@ -903,46 +901,57 @@ ul.tabs li a {
     display: block;
 }
 
-.menu-nav  { 
+.menu-nav, 
+.top-menu.first-child.last-child div { 
     -moz-border-radius: 5px;
     border-radius: 5px;
 }
-
-.top-menu.first-child div, 
-.top-menu.first-child.last-child div { 
+.top-menu.first-child div { 
     -moz-border-radius: 5px 5px 0 0;
     border-top-right-radius: 5px;
     border-top-left-radius: 5px;
 }
-
+.top-menu.first-child .toggle-button {
+    -moz-border-radius: 0 5px 0 0;
+    border-top-right-radius: 5px;
+}
 .top-menu.last-child div, 
 .top-menu.last-child .sub-menu { 
     -moz-border-radius: 0 0 5px 5px;
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
-    border-bottom: 1px solid #c8c2be;
+    border-bottom: 1px solid #c0c6c9;
 }
-
-.top-menu.first-child .toggle-button {
-    -moz-border-radius: 0 5px 0 0;
-    border-top-right-radius: 5px;
-}
-
 .top-menu.last-child .toggle-button {
     -moz-border-radius: 0 0 5px 0;
     border-bottom-right-radius: 5px;
 }
-
 .top-menu-open.last-child div, 
 .top-menu-open.last-child .toggle-button { 
     -moz-border-radius: 0;
     border-radius: 0;
     border-bottom: 0;
 }
-
 .current.first-child .top-menu-link {
     -moz-border-radius: 5px 0 0 0;
     border-top-left-radius: 5px;
+}
+.top-menu.first-child.last-child .toggle-button {
+    -moz-border-radius: 0 5px 5px 0;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+.top-menu-open.first-child.last-child div {
+    -moz-border-radius: 5px 5px 0 0;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.top-menu-open.first-child.last-child .toggle-button {
+    -moz-border-radius: 0 5px 0 0;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 0;
 }
 
 
@@ -1742,7 +1751,7 @@ fieldset {
     max-width: 100%;
     position: absolute;
     z-index: 100;
-    border: 1px solid #c8c2be;
+    border: 1px solid #c0c6c9;
     background-color: #F3F3F3;
 }
 
@@ -1790,7 +1799,7 @@ fieldset {
 .ui-datepicker { 
     display: none;
     width: 200px;
-    border: 1px solid #c8c2be;
+    border: 1px solid #c0c6c9;
     background-color: #fff;
     padding: 2px;
 }
@@ -1853,13 +1862,13 @@ fieldset {
 }
 
 .ui-datepicker .ui-state-default { 
-    border: 1px solid #c8c2be;
+    border: 1px solid #c0c6c9;
     background-color: #f3f3f3;
 }
 
 .ui-datepicker .ui-state-hover { 
     border-color: #7b7c7d;
-    background-color: #c8c2be;
+    background-color: #c0c6c9;
 }
 
 .ui-datepicker .ui-state-highlight { 
@@ -1945,7 +1954,7 @@ fieldset {
 }
 
 .category-selector-list {
-    border: 1px solid #c8c2be;
+    border: 1px solid #c0c6c9;
     background: #fff;
     height: 120px;
     padding: 3px;
@@ -2220,7 +2229,7 @@ body.preview-screen {
 
 #template-body-actions {
     padding: 4px 8px;
-    border: 1px solid #c8c2be;
+    border: 1px solid #c0c6c9;
     border-bottom: none;
     background: #f3f3f3;
 }
@@ -2532,7 +2541,7 @@ input#system_performance_logging_threshold {
 
 #list-plugins .plugin {
     margin-bottom: -1px;
-    border: 1px solid #c8c2be;
+    border: 1px solid #c0c6c9;
     background-color: #fff;
 }
 #list-plugins .plugin-expanded {
@@ -2625,7 +2634,7 @@ input#system_performance_logging_threshold {
     overflow: auto;
     margin-bottom: -1px;
     padding: 15px;
-    border: 1px solid #c8c2be;
+    border: 1px solid #c0c6c9;
     background-color: #fff;
 }
 #list-themes .theme-expanded { 
@@ -2709,14 +2718,14 @@ input#system_performance_logging_threshold {
 }
 
 #new_user_theme_thumb img { 
-    border: 1px solid #c8c2be;
+    border: 1px solid #c0c6c9;
 }
 
 #select-personal-blog-theme .theme { 
     position: relative;
     overflow: hidden;
     margin-bottom: -1px;
-    border: 1px solid #c8c2be;
+    border: 1px solid #c0c6c9;
     background-color: white;
 }
 #select-personal-blog-theme .theme .theme-thumbnail { 
@@ -2764,7 +2773,7 @@ input#system_performance_logging_threshold {
 .import-process pre {
     overflow: auto;
     margin: 0 0 10px;
-    border: 1px solid #c8c2be;
+    border: 1px solid #c0c6c9;
     padding: 10px;
     background-color: #fff;
     height: 300px;
@@ -2848,7 +2857,7 @@ div.template-group-content.active {
 }
 
 .search-replace .search-bar {
-    border-bottom: 1px solid #c8c2be;
+    border-bottom: 1px solid #c0c6c9;
     padding: 30px 0;
     background-color: #fff;
 }
@@ -2990,7 +2999,7 @@ div.template-group-content.active {
 
 /* - Footer */
 #footer { 
-    border-top: 1px solid #c8c2be;
+    border-top: 1px solid #c0c6c9;
     padding: 8px 0 1px;
     background-color: #dcdddd;
     font-size: 85%;
@@ -3093,7 +3102,7 @@ div.template-group-content.active {
 
 .mt-beta #footer #msg-beta {
     margin-bottom: 10px;
-    border-bottom: 1px solid #c8c2be;
+    border-bottom: 1px solid #c0c6c9;
     background-color: #f2f2b0;
     text-align: center;
 }
