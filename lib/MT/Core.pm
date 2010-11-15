@@ -192,6 +192,24 @@ BEGIN {
                         }
                     },
                 },
+                hidden => {
+                    base        => '__virtual.base',
+                    terms => sub {
+                        my $prop   = shift;
+                        my ($args, $db_terms, $db_args) = @_;
+                        my $col    = $prop->col or die;
+                        my $option = $args->{option};
+                        my $value  = $args->{value};
+                        if ( $prop->is_meta ) {
+                            return $prop->join_meta( $db_args, $value );
+                        }
+                        else {
+                            return { $col => $value };
+                        }
+                    },
+                    filter_tmpl => '<mt:Var name="filter_form_hidden">',
+                    priority => 4,
+                },
                 string => {
                     base      => '__virtual.base',
                     col_class     => 'string',

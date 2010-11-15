@@ -1360,7 +1360,12 @@ function addItems(items, op) {
       if ( typeof args[key] != 'string' && typeof args[key] != 'number' ) continue;
       // A sort of hack to decode HTML entities using jQuery.
       var decoded = jQuery('<div>').html( args[key] ).text();
-      $item.find('.'+type+'-'+key).val( decoded );
+      $item.find('.'+type+'-'+key).each( function(){
+        if ( jQuery(this).is('input') )
+            jQuery(this).val( decoded );
+        else
+            jQuery(this).text( decoded );
+      });
     }
     var $node = $item.find('.filter-date');
     if ($node) {

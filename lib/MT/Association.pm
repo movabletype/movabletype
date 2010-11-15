@@ -257,18 +257,32 @@ sub list_props {
             },
         },
         author_id => {
-            auto    => 1,
-            label   => 'Author',
+            base    => '__virtual.hidden',
+            col     => 'author_id',
             display => 'none',
             filter_editable => 0,
             label_via_param => sub {
                 my ( $prop, $app, $val ) = @_;
                 my $author = MT->model('author')->load( $val )
                     or return $prop->error(MT->translate('Invalid parameter.'));
-                return MT->translate(
-                    'Associations of author: [_1]',
+                my $label = MT->translate(
+                    'Associations for [_1]',
                     $author->nickname,
                 );
+                return $label;
+            },
+            args_via_param => sub {
+                my ( $prop, $app, $val ) = @_;
+                my $author = MT->model('author')->load( $val )
+                    or return $prop->error(MT->translate('Invalid parameter.'));
+                my $label = MT->translate(
+                    'Associations for [_1]',
+                    $author->nickname,
+                );
+                return {
+                    value => $val,
+                    label => $label,
+                };
             },
         },
         _type => {
