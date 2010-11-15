@@ -797,7 +797,7 @@ sub list {
                 if ( $prop->has('args_via_param') ) {
                     $args = $prop->args_via_param($app, $val);
                     if ( !$args ) {
-                        push @messages, { cls => 'error', msg => MT->translate(
+                        push @messages, { cls => 'alert', msg => MT->translate(
                             q{Invalid filter: [_1]}, $prop->errstr
                         )};
                         $invalid_param_filter = 1;
@@ -807,7 +807,7 @@ sub list {
                 if ( $prop->has('label_via_param') ) {
                     $label = $prop->label_via_param($app, $val);
                     if ( !$label ) {
-                        push @messages, { cls => 'error', msg => MT->translate(
+                        push @messages, { cls => 'alert', msg => MT->translate(
                             q{Invalid filter: [_1]}, $prop->errstr
                         )};
                         $invalid_param_filter = 1;
@@ -821,7 +821,7 @@ sub list {
                 push @labels, ($label || $prop->label);
             }
             else {
-                push @messages, { cls => 'error', msg => MT->translate(
+                push @messages, { cls => 'alert invalid-filter', msg => MT->translate(
                     q{Invalid filter: [_1]}, $col,
                 )};
                 $invalid_param_filter = 1;

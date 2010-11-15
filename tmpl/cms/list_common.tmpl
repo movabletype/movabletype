@@ -323,7 +323,6 @@ var magic_token = '<mt:var name="magic_token">';
 var inputCount = 0;
 
 function handleMessages( data ) {
-  jQuery('#msg-block').empty();
   if ( data.error ) {
     showMessage( data.error, 'error');
     return false;
