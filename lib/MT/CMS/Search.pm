@@ -105,7 +105,7 @@ sub core_search_apis {
             'perm_check' => sub {
                 require MT::Entry;
                 my $entry = MT::Entry->load( $_[0]->entry_id );
-                grep { $_->can_edit_entry( $entry, $author ) } @perms;
+                grep { $_->can_do('manage_feedback') || $_->can_edit_entry( $entry, $author ) } @perms;
             },
             'search_cols' => {
                 'url' => sub { $app->translate('URL') },
