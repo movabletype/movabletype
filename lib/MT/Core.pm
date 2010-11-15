@@ -195,15 +195,9 @@ BEGIN {
                 string => {
                     base      => '__virtual.base',
                     col_class     => 'string',
-                    #sort_method => sub {
-                    #    my $prop = shift;
-                    #    my ( $obj_a, $obj_b ) = @_;
-                    #    my $col = $prop->{col};
-                    #    return $obj_a->$col cmp $obj_b->$col;
-                    #},
                     terms => sub {
                         my $prop   = shift;
-                        my ($args) = @_;
+                        my ( $args, $db_terms, $db_args ) = @_;
                         my $col    = $prop->col or die;
                         my $option = $args->{option};
                         my $query  = $args->{string};
@@ -219,7 +213,12 @@ BEGIN {
                         elsif ( 'end' eq $option ) {
                             $query = { like => "%$query" };
                         }
-                        return { $col => $query };
+                        if ( $prop->is_meta ) {
+                            return $prop->join_meta( $db_args, $query );
+                        }
+                        else {
+                            return { $col => $query };
+                        }
                     },
                     filter_tmpl => '<mt:var name="filter_form_string">',
                     args_via_param => sub {
@@ -250,30 +249,35 @@ BEGIN {
                     #},
                     terms => sub {
                         my $prop   = shift;
-                        my ($args) = @_;
+                        my ($args, $db_terms, $db_args) = @_;
                         my $col    = $prop->col or die;
                         my $option = $args->{option};
                         my $value  = $args->{value};
                         my $query;
                         if ( 'equal' eq $option ) {
-                            $query = { $col => $value };
+                            $query = $value;
                         }
                         elsif ('not_equal' eq $option) {
-                            $query = { $col => { not => $value } };
+                            $query = { not => $value };
                         }
                         elsif ('greater_than' eq $option) {
-                            $query = { $col => { '>' => $value } };
+                            $query = { '>' => $value };
                         }
                         elsif ('greater_equal' eq $option) {
-                            $query = { $col => { '>=' => $value } };
+                            $query = { '>=' => $value };
                         }
                         elsif ('less_than' eq $option) {
-                            $query = { $col => { '<' => $value } };
+                            $query = { '<' => $value };
                         }
                         elsif ('less_equal' eq $option) {
-                            $query = { $col => { '<=' => $value } };
+                            $query = { '<=' => $value };
                         }
-                        return $query;
+                        if ( $prop->is_meta ) {
+                            return $prop->join_meta( $db_args, $query );
+                        }
+                        else {
+                            return { $col => $query };
+                        }
                     },
                     args_via_param => sub {
                         my $prop  = shift;
@@ -340,7 +344,7 @@ BEGIN {
                         },
                     terms => sub {
                         my $prop   = shift;
-                        my ($args) = @_;
+                        my ($args, $db_terms, $db_args) = @_;
                         my $col    = $prop->col;
                         my $option = $args->{option};
                         my $query;
@@ -383,7 +387,12 @@ BEGIN {
                         elsif ('past' eq $option ) {
                             $query = { op => '<', value => $now };
                         }
-                        return { $col => $query };
+                        if ( $prop->is_meta ) {
+                            $prop->join_meta( $db_args, $query );
+                        }
+                        else {
+                            return { $col => $query };
+                        }
                     },
                     args_via_param => sub {
                         my $prop  = shift;

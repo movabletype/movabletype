@@ -61,7 +61,7 @@ sub _init_core {
         $prop = $common_props->{$id};
 
         # Property is undefined
-        die "Can't initialize list property $cls $id" if !$prop;
+        die MT->translate(q{Can't initialize list property [_1].[_2].}, $cls, $id) if !$prop;
     }
 
     delete $prop->{plugin};
@@ -166,23 +166,93 @@ sub base {
         float     => 'float',
         ## TBD
         # blob      => '',
+
+        ## Meta
+        vchar         => 'string',
+        vchar_idx     => 'string',
+        vinteger      => 'integer',
+        vinteger_idx  => 'integer',
+        vdatetime     => 'date',
+        vdatetime_idx => 'date',
+        vfloat        => 'float',
+        vfloat_idx    => 'float',
+        vclob         => 'string',
+        ## TBD
+        # vblob         => '',
     );
 
     sub _auto_base {
-        my $self     = shift;
-        my $orig_obj = shift || $self;
-        my $id       = $orig_obj->id;
-        my $class    = $orig_obj->datasource;
-        my $def      = $class->column_def($id)
-            or die "Failed to load auto prop for $class $id";
+        my $self       = shift;
+        my $orig_obj   = shift || $self;
+        my $id         = $orig_obj->id;
+        my $class      = $orig_obj->datasource;
+        my $prop_class = $self->class;
+        require MT::Meta;
+        if ( !$class->has_column($id) ) {
+            die MT->translate(
+                'Failed to init auto list property [_1].[_2]: Cannot find definition of column [_3].',
+                $prop_class,
+                $id,
+                $id,
+            );
+        }
+        my $def;
+        if ( $class->has_meta && $class->is_meta_column($id) ) {
+            $def = MT::Meta->metadata_by_name( $class, $id );
+            $orig_obj->{is_meta} = 1;
+            $orig_obj->{meta_col} = $def->{type};
+        }
+        else {
+            $def = $class->column_def($id);
+        }
         my $column_type = $def->{type};
-        my $auto_type   = $AUTO{$column_type}
-            or die "Failed to load auto prop for $class $id";
-        my $prop = __PACKAGE__->new( '__virtual', $auto_type )
-            or die "Failed to load auto prop for $class $id";
+        my $auto_type = $AUTO{$column_type}
+            or die MT->translate(
+                'Failed to init auto list property [_1].[_2]: unsupported column type.',
+                $prop_class,
+                $id
+            );
         $orig_obj->{col} = $id;
-        $prop;
+        my $prop = __PACKAGE__->instance( '__virtual', $auto_type );
+        return $prop;
     }
+}
+
+sub join_meta {
+    my $prop = shift;
+    my ( $to_args, $cond, $opts ) = @_;
+    my $class = $prop->datasource;
+    my $meta_class = $class->meta_pkg;
+    my $meta_pk = $meta_class->primary_key_tuple;
+    $meta_pk = $meta_pk->[0]; # we only need the first column, that's the id
+    my $meta_id_cond = '= ' . $meta_pk;
+
+    my ( %j_terms, %j_args );
+    $j_terms{type} = $prop->col;
+    $j_args{unique} = 1;
+    if ( $opts->{sort} ) {
+        $j_args{sort}      = $prop->meta_col;
+        $j_args{direction} = $opts->{direction};
+        delete $to_args->{sort};
+        delete $to_args->{direction};
+    }
+    if ( $opts->{sort} && !defined $cond ) {
+        $j_args{type}      = 'left';
+        $j_args{jalias} = 'left_' . $prop->col;
+        $j_args{condition} = $meta_pk;
+    }
+    else {
+        $j_terms{$prop->meta_col} = $cond if defined $cond;
+        $j_terms{$meta_pk} = \$meta_id_cond;
+        $j_args{alias} = $prop->col;
+    }
+
+    $to_args->{joins} ||= [];
+    push @{ $to_args->{joins} }, $prop->datasource->meta_pkg->join_on(
+        undef,
+        [\%j_terms], \%j_args,
+    );
+    return;
 }
 
 sub _scope_filter {
