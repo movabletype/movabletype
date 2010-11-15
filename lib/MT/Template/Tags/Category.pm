@@ -406,9 +406,11 @@ sub _hdlr_category_prevnext {
         my $meta = $class_type . '_order';
         my $text = $blog->$meta || '';
         $cats = [ MT::Category::_sort_by_id_list( $text, $cats ) ];
+        @$cats = reverse @$cats if $sort_order eq 'descend';
     }
     else {
         $cats = [ sort { $a->$sort_by cmp $b->$sort_by } @$cats ];
+        @$cats = reverse @$cats if $sort_order eq 'descend';
     }
 
     my ($pos, $idx);
@@ -576,9 +578,11 @@ sub _hdlr_sub_categories {
         my $meta = $class_type . '_order';
         my $text = $blog->$meta || '';
         @$cats = MT::Category::_sort_by_id_list( $text, \@cats );
+        @$cats = reverse @$cats if $sort_order eq 'descend';
     }
     else {
-        $cats = \@cats;
+        $cats = [ sort { $a->$sort_by cmp $b->$sort_by } @cats ];
+        @$cats = reverse @$cats if $sort_order eq 'descend';
     }
 
     # Init variables
@@ -605,16 +609,25 @@ sub _hdlr_sub_categories {
 
         local $ctx->{__stash}{'category_count'};
 
-        local $ctx->{__stash}{'entries'} =
-            delay(sub { my @args = ({ blog_id => $ctx->stash('blog_id'),
-                                 status => MT::Entry::RELEASE() },
-                               { 'join' => [ 'MT::Placement', 'entry_id',
-                                             { category_id => $cat->id } ],
-                                 'sort' => 'authored_on',
-                                 direction => 'descend' });
+        local $ctx->{__stash}{'entries'} = delay(
+            sub {
+                my @args = (
+                    {   blog_id => $ctx->stash('blog_id'),
+                        status  => MT::Entry::RELEASE()
+                    },
+                    {   'join' => [
+                            'MT::Placement', 'entry_id',
+                            { category_id => $cat->id }
+                        ],
+                        'sort'    => 'authored_on',
+                        direction => 'descend'
+                    }
+                );
 
-                   my @entries = $entry_class->load(@args); 
-                   \@entries } );
+                my @entries = $entry_class->load(@args);
+                \@entries;
+            }
+        );
 
         defined (my $out = $builder->build($ctx, $tokens, $cond))
             or return $ctx->error($ctx->errstr);
@@ -1535,9 +1548,11 @@ sub _hdlr_sub_cats_recurse {
         my $meta = $class_type . '_order';
         my $text = $blog->$meta || '';
         @$cats = MT::Category::_sort_by_id_list( $text, \@cats );
+        @$cats = reverse @$cats if $sort_order eq 'descend';
     }
     else {
         $cats = [ sort { $a->$sort_by cmp $b->$sort_by } @cats ];
+        @$cats = reverse @$cats if $sort_order eq 'descend';
     }
 
     # Init variables
@@ -1550,6 +1565,10 @@ sub _hdlr_sub_cats_recurse {
         local $ctx->{__stash}{'category'} = $c;
         local $ctx->{__stash}{'subCatIsFirst'} = !$count;
         local $ctx->{__stash}{'subCatIsLast'} = !scalar @$cats;
+        local $ctx->{__stash}{'subCatsSortOrder'}   = $sort_order;
+        local $ctx->{__stash}{'subCatsSortMethod'}  = $sort_method;
+        local $ctx->{__stash}{'subCatsSortBy'}      = $custom_order ? 'user_custom' : $sort_by;
+
         local $ctx->{__stash}{'subCatsDepth'} = $depth + 1;
         local $ctx->{__stash}{vars}->{'__depth__'} = $depth + 1;
         local $ctx->{__stash}{'folder_header'} = !$count
