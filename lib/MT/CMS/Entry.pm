@@ -2422,9 +2422,9 @@ sub update_entry_status {
         return $app->permission_denied()
             unless $app_author->is_superuser
                 || ( ( $entry->class eq 'entry' )
-                    && $perms && $perms->can_edit_entry( $entry, $app_author, 1 ) )
+                    && $app_author->permissions($entry->blog_id)->can_edit_entry( $entry, $app_author, 1 ) )
                 || ( ( $entry->class eq 'page' )
-                    && $perms && $perms->can_manage_pages );
+                    && $app_author->permissions($entry->blog_id)->can_manage_pages );
 
         if ( $app->config('DeleteFilesAtRebuild')
             && ( MT::Entry::RELEASE() eq $entry->status ) )
