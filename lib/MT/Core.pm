@@ -869,6 +869,10 @@ BEGIN {
                                 next;
                             }
                             my $blog = $blog_site_map{$obj->blog_id};
+                            unless ( $blog ) {
+                                push @out, MT->translate('*Website/Blog deleted*');
+                                next;
+                            }
                             if ( ( my $site = $blog_site_map{ $blog->parent_id } ) && $prop->site_name ) {
                                 push @out, join('/', $site->name, $blog->name);
                             }
