@@ -1132,10 +1132,13 @@ BEGIN {
                 object_label => 'Member',
                 object_label_plural => 'Members',
                 object_type  => 'author',
-                permission   => 'access_to_blog_member_list',
                 default_sort_key => 'name',
                 view         => [ 'blog', 'website' ],
                 scope_mode => 'none',
+                permission => {
+                    permit_action => 'access_to_blog_member_list',
+                    inherit => 0,
+                },
              },
             tag => {
                 primary      => 'name',
