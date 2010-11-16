@@ -1303,6 +1303,7 @@ jQuery('#save-filter').click(function() {
     updateFilterSaveButtons();
   });
   renderList('save_filter', cols, vals, jQuery('#row').val(), 1);
+  return false;
 });
 
 jQuery('#cancel-save-filter').click(function() {
