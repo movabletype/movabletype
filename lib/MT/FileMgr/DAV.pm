@@ -121,7 +121,7 @@ sub rename {
     my($from, $to) = @_;
     $fmgr->{dav}->move(-url => $from, -dest => $to)
         or return $fmgr->error(MT->translate("Renaming '[_1]' to '[_2]' failed: [_3]", $from, $to,
-            $fmgr->{dav}->message);
+            $fmgr->{dav}->message));
     1;
 }
 
