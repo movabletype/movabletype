@@ -7,7 +7,7 @@ use warnings;
 use lib 't/lib', 'lib', 'extlib';
 use MT::Test;
 
-use Test::More tests => 229;
+use Test::More tests => 251;
 
 use_ok('MT::Bootstrap');
 use_ok('MT::ErrorHandler');
@@ -44,6 +44,10 @@ use_ok('MT::CMS::TrackBack');
 use_ok('MT::CMS::Common');
 use_ok('MT::CMS::Page');
 use_ok('MT::CMS::User');
+use_ok('MT::CMS::Website');
+use_ok('MT::CMS::Theme');
+use_ok('MT::CMS::Filter');
+use_ok('MT::CMS::RptLog');
 
 # Supporting applications
 use_ok('MT::App::ActivityFeeds');
@@ -59,6 +63,9 @@ use_ok('MT::App::Search::FreeText');
 use_ok('MT::App::Search::Legacy');
 use_ok('MT::App::Search::TagSearch');
 
+# Publish archive dynamically
+use_ok('MT::App::Viewer');
+
 # Auth framework
 use_ok('MT::Auth');
 use_ok('MT::Auth::MT');
@@ -67,6 +74,11 @@ use_ok('MT::Auth::LiveJournal');
 use_ok('MT::Auth::OpenID');
 use_ok('MT::Auth::TypeKey');
 use_ok('MT::Auth::Vox');
+use_ok('MT::Auth::WordPress');
+use_ok('MT::Auth::Hatena');
+use_ok('MT::Auth::AIM');
+use_ok('MT::Auth::Yahoo');
+use_ok('MT::Auth::GoogleOpenId');
 
 # MT::Objects
 use_ok('MT::Object');
@@ -104,6 +116,9 @@ use_ok('MT::Blocklist');
 use_ok('MT::Object::BaseCache');
 use_ok('MT::Touch');
 use_ok('MT::Website');
+use_ok('MT::Filter');
+use_ok('MT::Page');
+use_ok('MT::Folder');
 
 # Utility modules
 use_ok('MT::Builder');
@@ -113,7 +128,28 @@ use_ok('MT::DateTime');
 use_ok('MT::DefaultTemplates');
 use_ok('MT::FileMgr');
 use_ok('MT::FileMgr::Local');
+use_ok('MT::FileMgr::FTP');
+SKIP: {
+    if (eval{ require Net::SFTP }) {
+        use_ok('MT::FileMgr::SFTP');
+    }
+    else {
+        skip('Net::SFTP is not installed', 1);
+    }
+}
+SKIP: {
+    if (eval{ require HTTP::DAV }) {
+        use_ok('MT::FileMgr::DAV');
+    }
+    else {
+        skip('HTTP::DAV is not installed', 1);
+    }
+}
 use_ok('MT::Image');
+use_ok('MT::Image::GD');
+use_ok('MT::Image::NetPBM');
+use_ok('MT::Image::Imager');
+use_ok('MT::Image::ImageMagick');
 use_ok('MT::ImportExport');
 use_ok('MT::Import');
 use_ok('MT::JunkFilter');
@@ -127,11 +163,19 @@ use_ok('MT::PublishOption');
 use_ok('MT::Scorable');
 use_ok('MT::Template::Node');
 use_ok('MT::Template::Handler');
+use_ok('MT::ListProperty');
 
 use_ok('MT::Util');
 use_ok('MT::Util::Archive');
 use_ok('MT::Util::Archive::Tgz');
-use_ok('MT::Util::Archive::Zip');
+SKIP: {
+    if (eval{ require Archive::Zip }) {
+        use_ok('MT::Util::Archive::Zip');
+    }
+    else {
+        skip('Archive::Zip is not installed', 1);
+    }
+}
 use_ok('MT::Util::Captcha');
 use_ok('MT::Util::LogProcessor');
 use_ok('MT::Util::PerformanceData');
@@ -170,6 +214,7 @@ use_ok('MT::ObjectDriver::DDL::SQLite');
 use_ok('MT::ObjectDriver::DDL::mysql');
 use_ok('MT::ObjectDriver::Driver::DBI');
 use_ok('MT::ObjectDriver::Driver::Cache::RAM');
+use_ok('MT::ObjectDriver::Driver::CacheWrapper');
 use_ok('MT::ObjectDriver::Driver::DBD::Legacy');
 use_ok('MT::ObjectDriver::Driver::DBD::mysql');
 use_ok('MT::ObjectDriver::Driver::DBD::Pg');
