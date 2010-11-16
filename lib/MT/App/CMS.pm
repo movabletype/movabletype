@@ -513,6 +513,7 @@ sub core_content_actions {
                 class => 'icon-create',
                 label      => 'Grant Permission',
                 mode       => 'dialog_select_assoc_type',
+                permit_action => 'create_any_association',
                 order      => 100,
                 dialog => 1,
             },
@@ -2360,10 +2361,28 @@ sub core_user_menus {
         'permission' => {
             label      => "Permissions",
             order      => 200,
-            mode       => 'list',
-            args       => {
-                _type  => 'association',
-                filter => 'author_id',
+            link       => sub {
+                my ($app, $param) = @_;
+                if ( $app->can_do('access_to_permission_list') ) {
+                    return $app->uri(
+                        mode => 'list',
+                        args => {
+                            blog_id    => 0,
+                            _type      => 'association',
+                            filter     => 'author_id',
+                            filter_val => $param->{user_menu_id},
+                        },
+                    );
+                }
+                else {
+                    return $app->uri(
+                        mode => 'list',
+                        args => {
+                            blog_id => 0,
+                            _type   => 'association',
+                        },
+                    );
+                }
             },
             user_param => 'filter_val',
             view       => "system",
@@ -2407,6 +2426,8 @@ sub init_core_callbacks {
                 "${pfx}User::can_delete_association",
             $pkg . 'pre_load_filtered_list.association'
                 => "${pfx}User::cms_pre_load_filtered_list_assoc",
+            'list_template_param.association' => "${pfx}User::template_param_list",
+
 
             # user callbacks
             $pkg . 'edit.author'                   => "${pfx}User::edit",
@@ -3369,7 +3390,7 @@ sub build_user_menus {
         }
         if ( my $link = $item->{link} ) {
             $link = MT->handler_to_coderef($link) unless ref $link;
-            $menu_item{link} = $link->($param);
+            $menu_item{link} = $link->($app, $param);
         }
         elsif ( $item->{mode} ) {
             my $user_key = $item->{user_param} || 'author_id';

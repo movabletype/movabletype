@@ -140,10 +140,18 @@ sub list_props {
                 else {
                     $detail = '';
                 }
-                return qq{
-                    <span class="rolename"><a href="$edit_link">$name</a></span>
-                    <p class="role-detail description">$detail<p>
-                };
+                if ( $app->can_do('edit_role') ) {
+                    return qq{
+                        <span class="rolename"><a href="$edit_link">$name</a></span>
+                        <p class="role-detail description">$detail<p>
+                    };
+                }
+                else {
+                    return qq{
+                        <span class="rolename">$name</span>
+                        <p class="role-detail description">$detail<p>
+                    };
+                }
             },
             terms => sub {
                 my $prop = shift;

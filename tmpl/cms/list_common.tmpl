@@ -12,6 +12,7 @@
 </mt:setvarblock>
 </mt:if>
 
+<mt:if name="use_actions">
 <mt:if name="content_actions">
 <mt:setvarblock name="content_header">
 <ul id="content-actions" class="action-link-list">
@@ -20,6 +21,7 @@
 </mt:loop>
 </ul>
 </mt:setvarblock>
+</mt:if>
 </mt:if>
 
 <mt:setvarblock name="listing_footer_content"><mt:if name="feed_url">
@@ -125,14 +127,17 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
 
       <div id="actions-bar-top" class="actions-bar line">
+<mt:if name="use_actions">
         <div class="list-actions">
           <mt:var name="button_actions">
           <mt:include name="include/itemset_action_widget.tmpl">
         </div>
+</mt:if>
+
         <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
         <div class="pagination"></div>
       </div>
-
+<mt:if name="use_filters">
       <div id="filter" class="filter-block">
         <div id="filter-header">
           <input type="hidden" id="filter_name" value="" />
@@ -163,6 +168,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
           </div>
         </div>
       </div>
+</mt:if>
 
       <div id="listing-table" class="listing-table-block">
         <div id="listing-table-overlay" class="overlay"></div>
@@ -174,8 +180,10 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
       </div>
 
       <div id="actions-bar-bottom" class="actions-bar line">
+<mt:if name="use_actions">
         <mt:var name="button_actions">
         <mt:include name="include/itemset_action_widget.tmpl">
+</mt:if>
         <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
         <div class="pagination"></div>
       </div>

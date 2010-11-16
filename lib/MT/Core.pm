@@ -1176,7 +1176,7 @@ BEGIN {
             association => {
                 object_label => 'Permission',
                 object_type => 'association',
-                permission => 'access_to_permission_list',
+                #permission => 'access_to_permission_list',
                 default_sort_key => 'created_on',
                 primary => [ 'user_name', 'role_name' ],
                 view => 'system',
@@ -2417,6 +2417,8 @@ sub load_core_permissions {
                 'administer'                     => 1,
                 'create_role'                    => 1,
                 'create_user'                    => 1,
+                'create_any_association'         => 1,
+                'access_to_any_permission_list'  => 1,
                 'delete_all_junk_comments'       => 1,
                 'delete_user_via_list'           => 1,
                 'edit_authors'                   => 1,

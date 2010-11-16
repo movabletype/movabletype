@@ -983,6 +983,8 @@ sub list {
     $param{page_title}      = $screen_settings->{screen_label};
     $param{list_components} = \@components;
     $param{build_user_menus} = $screen_settings->{has_user_properties};
+    $param{use_filters} = 1;
+    $param{use_actions} = 1;
     $param{object_label}
         = $screen_settings->{object_label}
         || $obj_class->class_label;
@@ -1024,8 +1026,10 @@ sub list {
             : $app->translate( "[_1] Feed", $obj_class->class_label );
     }
 
-    $app->load_list_actions( $type, \%param );
-    $app->load_content_actions( $type, \%param );
+    if ( $param{use_actions} ) {
+        $app->load_list_actions( $type, \%param );
+        $app->load_content_actions( $type, \%param );
+    }
 
     push @{$param{debug_panels}}, {
         name => 'CommonListing',

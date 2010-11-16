@@ -1229,6 +1229,26 @@ sub cms_pre_load_filtered_list_assoc {
     $filter->append_item({
         type => '_type',
     });
+    if ( !$app->can_do('access_to_any_permission_list' ) ) {
+        $filter->append_item({
+            type => 'author_id',
+            args => {
+                option => 'eq',
+                value  => $app->user->id,
+            },
+        });
+    }
+}
+
+sub template_param_list {
+    my $cb = shift;
+    my ( $app, $param, $tmpl ) = @_;
+    return if $app->can_do('access_to_permission_list');
+    $param->{use_filters} = 0;
+    $param->{use_actions} = 0;
+    $param->{has_list_actions} = 0;
+    my $author_name = $app->user->name;
+    $param->{page_title} = MT->translate( q{[_1]'s Assciations}, $author_name );
 }
 
 sub can_view {
