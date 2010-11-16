@@ -1369,7 +1369,7 @@ function addItems(items, op) {
       // A sort of hack to decode HTML entities using jQuery.
       var decoded = jQuery('<div>').html( args[key] ).text();
       $item.find('.'+type+'-'+key).each( function(){
-        if ( jQuery(this).is('input') )
+        if ( jQuery(this).is('input, select') )
             jQuery(this).val( decoded );
         else
             jQuery(this).text( decoded );
