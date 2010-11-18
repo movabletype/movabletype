@@ -22,8 +22,6 @@ use vars qw( $DB_DIR $T_CFG );
 use MT::BackupRestore;
 use Data::Dumper;
 
-unlink(<t/db/*>);
-
 my @emails = ( 'fumiakiy@sixapart.jp', 'fyoshimatsu@sixapart.com' );
 my $chuck = MT::Author->load({ name => 'Chuck D' });
 my $bob = MT::Author->load({ name => 'Bob D' });
