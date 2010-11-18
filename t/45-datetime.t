@@ -9,6 +9,9 @@ use DateTime::TimeZone;
 use Time::Local qw(timegm);
 use MT::Util qw(week2ymd);
 
+use MT;
+my $mt = MT->new;
+
 my @dates;
 
 foreach my $year ( 2000..2001 ) {
