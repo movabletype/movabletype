@@ -1005,7 +1005,9 @@ BEGIN {
                 feed_link => sub {
                     my ( $app ) = @_;
                     return 0 if $app->blog && !$app->blog->is_blog;
-                    1;
+                    return 1 if $app->user->is_superuser;
+                    return 1 if $app->user->permissions($app->blog->id)->can_do('get_entry_feed');
+                    0;
                 },
                 condition => sub{
                     my $app = MT->instance;
@@ -1039,7 +1041,13 @@ BEGIN {
                 primary       => 'title',
                 default_sort_key => 'modified_on',
                 permission => 'access_to_page_list',
-                feed_link => 1,
+                feed_link => sub {
+                    my ( $app ) = @_;
+                    return 0 if $app->blog && !$app->blog->is_blog;
+                    return 1 if $app->user->is_superuser;
+                    return 1 if $app->user->permissions($app->blog->id)->can_do('get_page_feed');
+                    0;
+                },
             },
             asset => {
                 object_label => 'Asset',
@@ -1057,7 +1065,7 @@ BEGIN {
                     my $blog_id = $app->param('blog_id');
                     return 1 if $user->is_superuser;
                     return 0 unless defined $blog_id;
-    
+
                     my $terms;
                     push @$terms, { author_id => $user->id };
                     if ( $blog_id ) {
@@ -1090,7 +1098,14 @@ BEGIN {
                     my $cnt = MT->model('permission')->count( $terms );
                     return ( $cnt && $cnt > 0 ) ? 1 : 0;
                 },
-                feed_link => 1,
+                feed_link => sub {
+                    my ( $app ) = @_;
+                    return 1 if $app->user->is_superuser;
+                    return 1 if $app->can_do('get_all_system_feed');
+                    return 1 if $app->blog
+                        and $app->user->permissions($app->blog->id)->can_do('get_system_feed');
+                    0;
+                },
                 feed_label => 'Activity Feed',
                 screen_label => 'Activity Log',
             },
@@ -1119,14 +1134,26 @@ BEGIN {
                 default_sort_key => 'comment',
                 permission => 'access_to_comment_list',
                 primary => 'comment',
-                feed_link => 1,
+                feed_link => sub {
+                    my ( $app ) = @_;
+                    return 0 if $app->blog && !$app->blog->is_blog;
+                    return 1 if $app->user->is_superuser;
+                    return 1 if $app->user->permissions($app->blog->id)->can_do('get_comment_feed');
+                    0;
+                },
             },
             ping => {
                 primary => 'excerpt',
                 object_label => 'Trackback',
                 default_sort_key => 'created_on',
                 permission => 'access_to_trackback_list',
-                feed_link => 1,
+                feed_link => sub {
+                    my ( $app ) = @_;
+                    return 0 if $app->blog && !$app->blog->is_blog;
+                    return 1 if $app->user->is_superuser;
+                    return 1 if $app->user->permissions($app->blog->id)->can_do('get_trackback_feed');
+                    0;
+                },
             },
             author => {
                 object_label => 'Author',
@@ -1990,6 +2017,7 @@ sub load_core_permissions {
                 'delete_blog'                      => 1,
                 'force_post_comment'               => 1,
                 'get_blog_feed'                    => 1,
+                'get_system_feed'                  => 1,
                 'grant_administer_role'            => 1,
                 'import_blog_with_authors'         => 1,
                 'open_blog_export_screen'          => 1,
@@ -2052,7 +2080,6 @@ sub load_core_permissions {
                 'get_categories_via_xmlrpc_server'        => 1,
                 'get_category_list_via_xmlrpc_server'     => 1,
                 'get_entries_via_xmlrpc_server'           => 1,
-                'get_entry_feed'                          => 1,
                 'get_post_categories_via_xmlrpc_server'   => 1,
                 'get_tag_list_via_xmlrpc_server'          => 1,
                 'insert_asset'                            => 1,
@@ -2066,6 +2093,10 @@ sub load_core_permissions {
                 'use_entry:manage_menu'                   => 1,
                 'use_tools:search'                        => 1,
                 'view_own_entry_comment'                  => 1,
+                'view_own_entry_trackback'                => 1,
+                'get_entry_feed'                          => 1,
+                'get_comment_feed'                        => 1,
+                'get_trackback_feed'                      => 1,
             }
         },
         'blog.edit_all_posts' => {
@@ -2093,6 +2124,7 @@ sub load_core_permissions {
                 'set_entry_draft_via_list'         => 1,
                 'use_entry:manage_menu'            => 1,
                 'use_tools:search'                 => 1,
+                'get_entry_feed'                   => 1,
             }
         },
         'blog.edit_assets' => {
@@ -2239,6 +2271,7 @@ sub load_core_permissions {
                 'access_to_banlist'                     => 1,
                 'use_tools:search'                      => 1,
                 'view_all_comments'                     => 1,
+                'view_all_trackbacks'                   => 1,
                 'manage_feedback'                       => 1,
                 'delete_comments_via_list'              => 1,
             }

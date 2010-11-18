@@ -44,13 +44,13 @@
         &lt;ul&gt;
             &lt;strong&gt;<__trans phrase="Actions">:&lt;/strong&gt;&lt;br /&gt;
     
-            &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=view&amp;_type=page&amp;id=<mt:var name="log.entry.id">&amp;blog_id=<mt:var name="log.entry.blog_id">"&gt;<__trans phrase="Edit">&lt;/a&gt;&lt;/li&gt;
+            <mt:if name="log.entry.can_edit">&lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=view&amp;_type=page&amp;id=<mt:var name="log.entry.id">&amp;blog_id=<mt:var name="log.entry.blog_id">"&gt;<__trans phrase="Edit">&lt;/a&gt;&lt;/li&gt;</mt:if>
 
-            <mt:if name="log.entry.status_is_1">
+            <mt:if name="log.entry.can_change_status"><mt:if name="log.entry.status_is_1">
             &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=rebuild_new_phase&amp;_type=page&amp;blog_id=<mt:var name="log.entry.blog_id">&amp;id=<mt:var name="log.entry.id">&amp;return_args=__mode%3Dview%26_type%3Dpage%26id%3D<mt:var name="log.entry.id">%26blog_id%3D<mt:var name="log.entry.blog_id">&amp;feed_token=<mt:var name="feed_token">"&gt;<__trans phrase="Publish">&lt;/a&gt;&lt;/li&gt;
             <mt:else>
             &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=itemset_action&amp;action_name=set_draft&amp;_type=page&amp;blog_id=<mt:var name="log.entry.blog_id">&amp;id=<mt:var name="log.entry.id">&amp;return_args=__mode%3Dview%26_type%3Dpage%26id%3D<mt:var name="log.entry.id">%26blog_id%3D<mt:var name="log.entry.blog_id">&amp;feed_token=<mt:var name="feed_token">"&gt;<__trans phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
-            </mt:if>
+            </mt:if></mt:if>
 
           <mt:if name="loop_actions">
           <mt:loop name="loop_actions">

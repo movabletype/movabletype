@@ -45,6 +45,12 @@ sub init_core_callbacks {
 
             # Alias
             'ActivityFeed.log'     => \&_feed_system,
+
+            # Filter
+            'ActivityFeed.filter_object.entry'   => \&_filter_entry,
+            'ActivityFeed.filter_object.page'   => \&_filter_page,
+            'ActivityFeed.filter_object.comment' => \&_filter_comment,
+            'ActivityFeed.filter_object.ping'    => \&_filter_ping,
         }
     );
 }
@@ -220,6 +226,11 @@ sub process_log_feed {
         # establish blog for permission to_hash
         $app->blog($blog);
         my $item = $log->to_hash;
+
+        # Filtering
+        my $ret = MT->run_callbacks( "ActivityFeed.filter_object.".$log->class, $app, $item );
+        next unless defined $ret && $ret;
+
         my $ts   = $item->{'log.created_on'};
         last if $last_mod && ( $ts < $last_mod );
 
@@ -708,6 +719,104 @@ sub _feed_page {
         }
     );
     $$feed = $app->process_log_feed( $terms, $param );
+}
+
+sub _filter_entry {
+    my ( $cb, $app, $item ) = @_;
+    my $user = $app->user;
+
+    return 0 if !exists $item->{'log.entry.id'};
+
+    my $entry = MT->model('entry')->load($item->{'log.entry.id'})
+        or return 0;
+
+    my $own = $entry->author_id == $user->id;
+    my $perm = $user->permissions( $entry->blog_id )
+        or return 0;
+
+    if ( !$app->can_do('get_all_system_feed') && !$perm->can_do('get_system_feed') ) {
+        return 0
+            if !$own && !$perm->can_do('edit_all_entries');
+    }
+
+    $item->{'log.entry.can_edit'} =
+        $perm->can_edit_entry( $entry, $user, ( $entry->status eq MT::Entry::RELEASE() ? 1 : () ) ) ? 1 : 0;
+    $item->{'log.entry.can_change_status'} =
+        $perm->can_do('publish_all_entry')
+            ? 1
+            : $own && $perm->can_do('publish_own_entry')
+                ? 1
+                : 0;
+
+    return 1;
+}
+
+sub _filter_page {
+    my ( $cb, $app, $item ) = @_;
+    my $user = $app->user;
+
+    return 0 if !exists $item->{'log.entry.id'};
+
+    my $perm = $user->permissions( $item->{'log.entry.blog.id'} )
+        or return 0;
+
+    if ( !$app->can_do('get_all_system_feed') && !$perm->can_do('get_system_feed') ) {
+        return 0
+            if !$perm->can_do('manage_pages');
+    }
+
+    $item->{'log.entry.can_edit'} = $perm->can_do('manage_pages') ? 1 : 0;
+    $item->{'log.entry.can_change_status'} = $perm->can_do('manage_pages') ? 1 : 0;
+
+    return 1;
+}
+
+sub _filter_comment {
+    my ( $cb, $app, $item ) = @_;
+    my $user = $app->user;
+
+    return 0 if !exists $item->{'log.comment.id'};
+    my $own = $item->{'log.comment.entry.author.id'} == $user->id;
+    my $perm = $user->permissions( $item->{'log.comment.blog.id'} )
+        or return 0;
+
+    if ( !$app->can_do('get_all_system_feed') && !$perm->can_do('get_system_feed') ) {
+        if ( !$perm->can_do('view_all_comments') ) {
+            return 0 if !$own;
+            return 0 if $own && !$perm->can_do('view_own_entry_comment');
+        }
+    }
+
+    $item->{'log.comment.can_edit'} = 1
+        if $own && $perm->can_do('edit_own_entry_comment_without_status')
+            || $perm->can_do('view_all_comments');
+    $item->{'log.comment.can_change_status'} = $perm->can_do('edit_comment_status') ? 1 :0;
+
+    return 1;
+}
+
+sub _filter_ping {
+    my ( $cb, $app, $item ) = @_;
+    my $user = $app->user;
+
+    return 0 if !exists $item->{'log.tbping.id'};
+    my $own = $item->{'log.tbping.entry.author.id'} == $user->id;
+    my $perm = $user->permissions( $item->{'log.tbping.blog.id'} )
+        or return 0;
+
+    if ( !$app->can_do('get_all_system_feed') && !$perm->can_do('get_system_feed') ) {
+        if ( !$perm->can_do('view_all_trackbacks') ) {
+            return 0 if !$own;
+            return 0 if $own && !$perm->can_do('view_own_entry_trackback');
+        }
+    }
+
+    $item->{'log.tbping.can_edit'} = 1
+        if $own && $perm->can_do('edit_own_entry_trackback_without_status')
+            || $perm->can_do('view_all_trackback');
+    $item->{'log.tbping.can_change_status'} = $perm->can_do('edit_trackback_status') ? 1 :0;
+
+    return 1;
 }
 
 1;
