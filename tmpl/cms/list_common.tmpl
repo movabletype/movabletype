@@ -30,6 +30,16 @@
   </mt:if>
 </mt:if></mt:setvarblock>
 
+<mt:loop name="list_components">
+  <mt:setvarblock name="object_listing">listing/<mt:var name="object_type">_list_header.tmpl</mt:setvarblock>
+  <mt:include name="$object_listing" component="$__value__">
+</mt:loop>
+
+<mt:setvarblock name="system_msg">
+<div id="msg-block"></div>
+<ul id="validate-errors"></ul>
+</mt:setvarblock>
+
 <mt:setvarblock name="display_options">
 <mt:setvar name="show_display_options_link" value="1">
 <div id="display-options-detail" class="display-options-detail detail">
@@ -102,17 +112,9 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
     </mt:setvarblock>
 </mt:if>
 
-<mt:loop name="list_components">
-    <mt:setvarblock name="object_listing">listing/<mt:var name="object_type">_list_header.tmpl</mt:setvarblock>
-    <mt:include name="$object_listing" component="$__value__">
-</mt:loop>
-
 <mt:include name="include/header.tmpl">
 
 <mt:include name="include/basic_filter_forms.tmpl">
-
-<div id="msg-block"></div>
-<ul id="validate-errors"></ul>
 
 <div id="listing" class="listing line has-filter">
   <div class="unit size1of1">

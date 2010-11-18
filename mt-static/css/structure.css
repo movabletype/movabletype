@@ -1476,7 +1476,7 @@ fieldset {
 /* -- Create Inline */
 .create-inline {
     display: none;
-    margin-bottom: 10px;
+    margin: 10px 0;
     padding: 8px 10px;
     background-color: #dcdddd;
     -moz-border-radius: 5px;
