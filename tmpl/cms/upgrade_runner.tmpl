@@ -17,11 +17,9 @@
     <ul id="upgrade-progress">
     </ul>
   </div>
-  <div id="progress-bar">
-    <img src="<mt:var name="static_uri">images/indeterminate-progress-bar.gif" alt="" height="24" width="124" />
-  </div>
-  <div id="error-message-div" style="display: none">
-    <p id="error-message" class="error-message">
+  <div id="progressbar" class="progressbar indeterminate"></div>
+  <div id="error-message-div" class="msg msg-error" style="display: none">
+    <p class="msg-text">
     <mt:if name="installing">
       <__trans phrase="Error during installation:">
     <mt:else>
@@ -68,7 +66,7 @@
     <script type="text/javascript">
     /* <![CDATA[ */
     function upgradeDone(success) {
-        var progress = getByID("progress-bar");
+        var progress = getByID("progressbar");
         if (progress) {
             progress.style.display = "none";
         }

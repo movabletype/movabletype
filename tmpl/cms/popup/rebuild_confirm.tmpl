@@ -33,19 +33,19 @@
 
   <mt:setvarblock name="action_buttons">
     <button
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Publish (s)">"
+       class="publish action primary button">
+      <__trans phrase="_REBUILD_PUBLISH">
+    </button>
+    <button
        onclick="window.close()"
        type="submit"
        accesskey="x"
        title="<__trans phrase="Cancel (x)">"
        class="close action button">
       <__trans phrase="Cancel">
-    </button>
-    <button
-       type="submit"
-       accesskey="s"
-       title="<__trans phrase="Publish (s)">"
-       class="publish action primary button">
-      <__trans phrase="_REBUILD_PUBLISH">
     </button>
   </mt:setvarblock>
   <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">

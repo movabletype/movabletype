@@ -54,16 +54,18 @@ function submit_form(f, command) {
            type="submit"
            accesskey="s"
            title="<__trans phrase="Overwrite">"
-           class="action primary-button"
-           ><__trans phrase="Overwrite"></button>
+           class="action primary button">
+          <__trans phrase="Overwrite">
+        </button>
         <button
            onclick="submit_form(this.form, 'no');"
            name="overwrite_no_button"
            value="1"
            type="submit"
            title="<__trans phrase="Cancel">"
-           class="action"
-           ><__trans phrase="Cancel"></button>
+           class="action button">
+          <__trans phrase="Cancel">
+        </button>
     </mt:setvarblock>
     <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>

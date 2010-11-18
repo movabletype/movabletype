@@ -441,7 +441,8 @@
        title="<mt:var name="button_title">"
        class="publish action primary button"
        value="2">
-      <mt:var name="button_text"></button>
+      <mt:var name="button_text">
+    </button>
     <mt:if name="id">
       <a
          href="javascript:void(0)"
@@ -462,17 +463,19 @@
          name="status"
          type="submit"
          title="<__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html">"
-         class="save draft action primary-button"
+         class="save draft action primary button"
          value="1">
-        <__trans phrase="Save Draft"></button>
+        <__trans phrase="Save Draft">
+      </button>
     <mt:else>
       <button
          mt:mode="save_entry"
          name="status"
          type="submit"
          title="<__trans phrase="Update this [_1]" params="<mt:var name="object_label">" escape="html">"
-         class="update action primary-button">
-        <__trans phrase="Update"></button>
+         class="update action primary button">
+        <__trans phrase="Update">
+      </button>
     </mt:if>
   </mt:if>
   </div>

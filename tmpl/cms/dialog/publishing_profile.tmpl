@@ -86,14 +86,16 @@ function init() {
             <button
                type="submit"
                accesskey="s"
-               class="action primary-button next"
-               ><__trans phrase="Continue"></button>
+               class="action primary button next">
+              <__trans phrase="Continue">
+            </button>
             <button
                type="submit"
                accesskey="x"
                title="<__trans phrase="Cancel (x)">"
-               class="action mt-close-dialog"
-               ><__trans phrase="Cancel"></button>
+               class="action button mt-close-dialog">
+              <__trans phrase="Cancel">
+            </button>
         </div>
     </div>
     <div id="confirm-panel" class="hidden panel">
@@ -105,14 +107,16 @@ function init() {
             <button
                 type="button"
                 accesskey="s"
-                class="action primary-button close"
-                ><__trans phrase="Confirm"></button>
+                class="action primary button close">
+              <__trans phrase="Confirm">
+            </button>
             <button
                 type="submit"
-                class="cancel action mt-close-dialog"
+                class="cancel action button mt-close-dialog"
                 accesskey="x"
-                title="<__trans phrase="Cancel (x)">"
-                ><__trans phrase="Cancel"></button>
+                title="<__trans phrase="Cancel (x)">">
+              <__trans phrase="Cancel">
+            </button>
             <!-- <button
                 onclick="toggleHidden('confirm-panel'); toggleHidden('refresh-panel'); return false"
                 type="submit"

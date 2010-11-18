@@ -51,19 +51,19 @@
   <div id="retry-buttons" class="actions-bar" <mt:if name="file_not_found">style="display:none;"</mt:if>>
     <p><mt:var name="file_not_found"></p>
     <mt:unless name="config_created">
-    <button 
-       name="back"
-       type="submit"
-       onclick="go('previous_step');"
-       class="goback action button">
-      <__trans phrase="Back">
-    </button>
     <button
        name="retry"
        type="submit"
        onclick="go('retry');"
        class="retry action primary button">
       <__trans phrase="Retry">
+    </button>
+    <button 
+       name="back"
+       type="submit"
+       onclick="go('previous_step');"
+       class="goback action button">
+      <__trans phrase="Back">
     </button>
   <mt:else>
     <button
@@ -82,15 +82,15 @@
        name="retry"
        type="submit"
        onclick="go('retry');"
-       class="goback action button">
-      <__trans phrase="Back">
+       class="retry action primary button">
+      <__trans phrase="Continue">
     </button>
     <button
        name="retry"
        type="submit"
        onclick="go('retry');"
-       class="retry action primary button">
-      <__trans phrase="Continue">
+       class="goback action button">
+      <__trans phrase="Back">
     </button>
   </div>
 </form>

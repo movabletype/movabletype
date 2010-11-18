@@ -116,11 +116,6 @@
     padding: 1px 10px 10px;
     overflow: auto;
 }
-
-.dialog .actions-bar {
-    overflow: auto;
-    text-align: right;
-}
 .dialog .actions-bar-bottom {
     margin: 50px 0 0;
 }

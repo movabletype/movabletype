@@ -76,18 +76,10 @@ h3 {
 /* - Actions Bar */
 .action-buttons {
     margin: 20px 0 15px;
-    text-align: right;
 }
 
 .actions-bar {
-    position: relative;
-    min-height: 30px;
     margin: 25px 0 0;
-    text-align: right;
-}
-
-.actions-bar .button {
-    margin: 0 0 0 5px;
 }
 
 #container.show-actions-bar-top .actions-bar-top {
@@ -185,8 +177,7 @@ h3 {
     background-position: 3px center;
 }
 #forget-password { 
-    position: absolute;
-    bottom: 0;
+    float: right;
     margin: 0 0 3px;
 }
 #sign-up { 
@@ -210,15 +201,14 @@ h3 {
     position: relative;
     overflow: auto;
     margin: 10px 0;
-    border: 1px solid #ccc;
+    border: 1px solid #c0c6c9;
     padding: 10px;
-    background-color: #fafafa;
+    background-color: #fbfbfb;
     height: 200px;
 }
 
-.upgrade #progress-bar { 
-    margin: 25px 0 10px;
-    text-align: right;
+.upgrade #progressbar { 
+    margin: 25px 0 0;
 }
 
 /* - Profile */
@@ -288,7 +278,7 @@ ul#profile-data li {
 /* - Publush */
 /* -- Progress Bar */
 .progressbar {
-    height: 2em;
+    height: 25px;
     border: 1px solid #c0c6c9;
     background: #fff;
     border-radius: 5px;

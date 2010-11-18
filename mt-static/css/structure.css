@@ -2614,11 +2614,6 @@ input#system_performance_logging_threshold {
     display: none;
 }
 
-#list-plugins .actions-bar {
-    margin-bottom: 10px;
-    text-align: right;
-}
-
 #list-plugins #plugin_control .actions-bar { 
     text-align: center;
 }

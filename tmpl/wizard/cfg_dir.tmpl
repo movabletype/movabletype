@@ -49,13 +49,6 @@
 
   <div id="goback" class="actions-bar" <mt:unless name="success">style="display: none"</mt:unless>>
     <button
-       name="back"
-       type="submit"
-       onclick="this.form.reset(); go('previous_step');"
-       class="goback action button">
-      <__trans phrase="Back">
-    </button>
-    <button
        name="test"
        type="submit"
        onclick="go('test')"
@@ -68,6 +61,13 @@
        onclick="go('next_step');"
        class="continue action primary button">
       <__trans phrase="Continue">
+    </button>
+    <button
+       name="back"
+       type="submit"
+       onclick="this.form.reset(); go('previous_step');"
+       class="goback action button">
+      <__trans phrase="Back">
     </button>
   </div>
   
