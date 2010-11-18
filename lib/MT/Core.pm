@@ -1043,7 +1043,6 @@ BEGIN {
                 permission => 'access_to_page_list',
                 feed_link => sub {
                     my ( $app ) = @_;
-                    return 0 if $app->blog && !$app->blog->is_blog;
                     return 1 if $app->user->is_superuser;
                     return 1 if $app->user->permissions($app->blog->id)->can_do('get_page_feed');
                     0;
@@ -1136,7 +1135,6 @@ BEGIN {
                 primary => 'comment',
                 feed_link => sub {
                     my ( $app ) = @_;
-                    return 0 if $app->blog && !$app->blog->is_blog;
                     return 1 if $app->user->is_superuser;
                     return 1 if $app->user->permissions($app->blog->id)->can_do('get_comment_feed');
                     0;
@@ -1149,7 +1147,6 @@ BEGIN {
                 permission => 'access_to_trackback_list',
                 feed_link => sub {
                     my ( $app ) = @_;
-                    return 0 if $app->blog && !$app->blog->is_blog;
                     return 1 if $app->user->is_superuser;
                     return 1 if $app->user->permissions($app->blog->id)->can_do('get_trackback_feed');
                     0;

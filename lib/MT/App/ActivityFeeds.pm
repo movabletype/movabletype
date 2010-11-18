@@ -351,22 +351,32 @@ sub _feed_ping {
     # verify user has permission to view entries for given weblog
     my $blog_id = $app->param('blog_id');
     if ($blog_id) {
-        if ( !$user->is_superuser ) {
-            require MT::Permission;
-            my $perm = MT::Permission->load(
-                {   author_id => $user->id,
-                    blog_id   => $blog_id
-                }
-            );
-            return $cb->error( $app->translate("No permissions.") )
-                unless ( $perm && $perm->can_do('get_trackback_feed') );
+        my $blog_ids;
+        my $blog = MT->model('blog')->load( $blog_id )
+            or return $cb->error( $app->translate("Invalid request.") );
+        if ( !$blog->is_blog ) {
+            push @$blog_ids, map { $_->id } @{ $blog->blogs };
         }
-        $blog = MT::Blog->load($blog_id) or return;
+        push @$blog_ids, $blog_id;
+
+        my $iter= MT->model('permission')->load_iter(
+            { author_id => $user->id, blog_id => $blog_ids } );
+
+        $blog_ids = ();
+        while ( my $p = $iter->() ) {
+            push @$blog_ids, $p->blog_id
+                if $p->can_do('get_trackback_feed');
+        }
+
+        return $cb->error( $app->translate("No permissions.") )
+            unless $blog_ids;
+
+        $blog_id = join ',', @$blog_ids;
     }
     else {
         if ( !$user->is_superuser ) {
 
-       # limit activity log view to only weblogs this user has permissions for
+            # limit activity log view to only weblogs this user has permissions for
             require MT::Permission;
             my @perms = MT::Permission->load( { author_id => $user->id } );
             return $cb->error( $app->translate("No permissions.") )
@@ -413,18 +423,27 @@ sub _feed_comment {
     # verify user has permission to view entries for given weblog
     my $blog_id = $app->param('blog_id');
     if ($blog_id) {
-        if ( !$user->is_superuser ) {
-            require MT::Permission;
-            my $perm = MT::Permission->load(
-                {   author_id => $user->id,
-                    blog_id   => $blog_id
-                }
-            );
-            return $cb->error( $app->translate("No permissions.") )
-                unless ( $perm && $perm->can_do('get_comment_feed') );
+        my $blog_ids;
+        $blog = MT->model('blog')->load( $blog_id )
+            or return $cb->error( $app->translate("Invalid request.") );
+        if ( !$blog->is_blog ) {
+            push @$blog_ids, map { $_->id } @{ $blog->blogs };
+        }
+        push @$blog_ids, $blog_id;
+
+        my $iter= MT->model('permission')->load_iter(
+            { author_id => $user->id, blog_id => $blog_ids } );
+
+        $blog_ids = ();
+        while ( my $p = $iter->() ) {
+            push @$blog_ids, $p->blog_id
+                if $p->can_do('get_comment_feed');
         }
 
-        $blog = MT::Blog->load($blog_id) or return;
+        return $cb->error( $app->translate("No permissions.") )
+            unless $blog_ids;
+
+        $blog_id = join ',', @$blog_ids;
     }
     else {
 
@@ -592,19 +611,33 @@ sub _feed_system {
     my $filter_val = $app->param('filter_val');
 
     # verify user has permission to view entries for given weblog
-    if ( !$user->is_superuser ) {
-        if ($blog_id) {
-            require MT::Permission;
-            my $perm = MT::Permission->load(
-                { author_id => $user->id, blog_id => $blog_id } );
-            return $cb->error( $app->translate("No permissions.") )
-                unless $perm && $perm->can_do('get_system_feed');
+    if ($blog_id) {
+        my $blog_ids;
+        my $blog = MT->model('blog')->load( $blog_id )
+            or return $cb->error( $app->translate("Invalid request.") );
+        if ( !$blog->is_blog ) {
+            push @$blog_ids, map { $_->id } @{ $blog->blogs };
         }
-        else {
-            unless ( $app->can_do('get_all_system_feed') ) {
-                unless ( $user->can_do('export_blog_log', at_least_one => 1 ) ) {
-                    return $cb->error( $app->translate("No permissions.") );
-                }
+        push @$blog_ids, $blog_id;
+
+        my $iter= MT->model('permission')->load_iter(
+            { author_id => $user->id, blog_id => $blog_ids } );
+
+        $blog_ids = ();
+        while ( my $p = $iter->() ) {
+            push @$blog_ids, $p->blog_id
+                if $p->can_do('get_system_feed');
+        }
+
+        return $cb->error( $app->translate("No permissions.") )
+            unless $blog_ids;
+
+        $blog_id = join ',', @$blog_ids;
+    }
+    else {
+        unless ( $app->can_do('get_all_system_feed') ) {
+            unless ( $user->can_do('export_blog_log', at_least_one => 1 ) ) {
+                return $cb->error( $app->translate("No permissions.") );
             }
         }
     }
@@ -674,15 +707,27 @@ sub _feed_page {
     # verify user has permission to view entries for given weblog
     my $blog_id = $app->param('blog_id');
     if ($blog_id) {
-        if ( !$user->is_superuser ) {
-            require MT::Permission;
-            my $perm = MT::Permission->load(
-                { author_id => $user->id, blog_id => $blog_id } );
-            return $cb->error( $app->translate("No permissions.") )
-                unless ( $perm && $perm->can_do('get_page_feed') );
+        my $blog_ids;
+        $blog = MT->model('blog')->load( $blog_id )
+            or return $cb->error( $app->translate("Invalid request.") );
+        if ( !$blog->is_blog ) {
+            push @$blog_ids, map { $_->id } @{ $blog->blogs };
+        }
+        push @$blog_ids, $blog_id;
+
+        my $iter= MT->model('permission')->load_iter(
+            { author_id => $user->id, blog_id => $blog_ids } );
+
+        $blog_ids = ();
+        while ( my $p = $iter->() ) {
+            push @$blog_ids, $p->blog_id
+                if $p->can_do('get_page_feed');
         }
 
-        $blog = MT::Blog->load($blog_id) or return;
+        return $cb->error( $app->translate("No permissions.") )
+            unless $blog_ids;
+
+        $blog_id = join ',', @$blog_ids;
     }
     else {
         if ( !$user->is_superuser ) {
