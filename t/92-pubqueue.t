@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib', 'lib', 'extlib';
-use Test::More tests => 68;
+use Test::More tests => 69;
 
 use MT;
 use MT::Blog;
