@@ -182,13 +182,13 @@ BEGIN {
                                 my ($obj) = @_;
                                 my $col   = $prop->col;
                                 return $obj->$col;
-                            };
+                            } unless $prop->has('raw');
                             $prop->{sort} = sub {
                                 my $prop = shift;
                                 my ( $terms, $args ) = @_;
                                 $args->{sort} = $prop->col;
                                 return;
-                            };
+                            } unless $prop->has('sort');
                         }
                     },
                 },
