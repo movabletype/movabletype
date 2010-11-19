@@ -136,7 +136,43 @@ sub filter_conditional_list {
     my $test = sub {
         my ($item) = @_;
         if ( my $action = $item->{permit_action} ) {
-            $app->can_do($action) or return 0;
+            my $include_all;
+            if ( 'HASH' eq ref $action ) {
+                $include_all = $action->{include_all} || 0;
+                $action = $action->{permit_action};
+            }
+            my $blog = $app->blog;
+            my $blog_ids;
+            push @$blog_ids, $blog->id
+                if $blog;
+            if ( $include_all and $blog and !$blog->is_blog) {
+                my $blogs = $blog->blogs;
+                my @map = map { $_->id } @$blogs;
+                push @$blog_ids, map { $_->id } @{$blog->blogs};
+            }
+
+            my $terms = {
+                author_id => $app->user->id,
+                ( $blog_ids ? ( blog_id => $blog_ids ) : ( ) ),
+            };
+
+            my $count = MT->model('permission')->count( $terms );
+            return 0 unless $count;
+
+            my $iter = MT->model('permission')->load_iter( $terms );
+
+            my @actions = split /,/, $action;
+            my $cond = 0;
+            while ( my $p = $iter->() ) {
+                my $allowed;
+                foreach my $act ( @actions ) {
+                    $allowed = 1
+                        if $p->can_do( $act );
+                }
+                $cond++ if $allowed;
+            }
+
+            return 0 if !$cond or ( $include_all and $cond != $count );
         }
         else {
             return 0

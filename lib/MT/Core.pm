@@ -2050,7 +2050,6 @@ sub load_core_permissions {
             'permitted_action'        => {
                 'comment'             => 1,
                 'post_comment'        => 1,
-                'use_tools:search'    => 1,
             }
         },
         'blog.create_post' => {
@@ -2444,6 +2443,7 @@ sub load_core_permissions {
                 'access_to_all_association_list' => 1,
                 'access_to_system_author_list'   => 1,
                 'access_to_system_dashboard'     => 1,
+                'access_to_all_commenter_list'   => 1,
                 'administer'                     => 1,
                 'create_role'                    => 1,
                 'create_user'                    => 1,
