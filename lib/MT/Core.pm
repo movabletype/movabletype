@@ -791,7 +791,7 @@ BEGIN {
                         return @$objs unless $op;
                         my $val = $args->{value};
                         my $sub = eval "sub { $val $op shift }";
-                        my $ref_col = $prop->{ref_column};
+                        my $ref_col = $prop->ref_column;
                         return grep { $sub->( $map{$_->$ref_col} || 0 ) } @$objs;
                     },
                 },
