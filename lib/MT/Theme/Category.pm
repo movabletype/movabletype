@@ -85,7 +85,7 @@ sub _count_descendant_categories {
     my $children = $data->{children};
     for my $child ( values %$children ) {
         $count++;
-        $count += _count_descendant_categories( $child, $count );
+        $count += _count_descendant_categories( $child, 0 );
     }
     $count;
 }
