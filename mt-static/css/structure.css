@@ -1124,10 +1124,10 @@ fieldset {
 /* - Actions Bar */
 .actions-bar { 
     position: relative;
-    margin: 10px 0; 
+    margin: 10px 0 30px; 
 }
-.listing .button-actions { 
-    margin-right: 10px;
+.widget .actions-bar {
+    margin-bottom: 0;
 }
 
 .plugin-actions { 
@@ -1776,12 +1776,37 @@ fieldset {
 }
 
 /* -- Publishing Widget */
-#entry-publishing-widget { 
-    position: relative;
-}
-
 #edit-page #basename { 
     width: 180px;
+}
+#entry-publishing-widget .save-action {
+    width: 114px;
+    margin-right: 10px;
+}
+#entry-publishing-widget .preview-action {
+    width: 114px;
+}
+#entry-publishing-widget .actions-bar {
+    margin-top: 20px;
+}
+#entry-publishing-widget .actions-bar .button {
+    width: 100%;
+}
+#entry-publishing-widget .delete-action {
+    margin-top: 5px;
+    text-align: right;
+}
+#entry-publishing-widget a.delete { 
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
+    padding-left: 17px;
+    background: transparent url(../images/delete.gif) left bottom no-repeat;
+    color: #7b7c7d;
+}
+#entry-publishing-widget a.delete:hover { 
+    background-position: left top;
+    color: #9e3d3f;
 }
 
 /* --- Publish Date Field */
@@ -1892,42 +1917,6 @@ fieldset {
     -khtml-border-radius: 3px;
     -webkit-border-radius: 3px;
     border-radius: 3px;
-}
-
-/* --- Publish Buttons */
-#entry-status-widget .actions-bar button, 
-#entry-publishing-widget .actions-bar button { 
-    min-width: 0;
-}
-#entry-publishing-widget .actions-bar { 
-    height: 25px;
-}
-
-#entry-publishing-widget button.preview, 
-#entry-publishing-widget a.delete { 
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 0;
-}
-
-#entry-publishing-widget a.delete { 
-    display: inline-block;
-    top: 50%;
-    height: 20px;
-    line-height: 20px;
-    margin-top: -10px;
-    padding-left: 17px;
-    background: transparent url(../images/delete.gif) left bottom no-repeat;
-    color: #7b7c7d;
-}
-#entry-publishing-widget a.delete:hover { 
-    background-position: left top;
-    color: #9e3d3f;
-}
-
-#entry-publishing-widget .delete span { 
-    display: none;
 }
 
 /* -- Categories Widget */

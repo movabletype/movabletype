@@ -208,7 +208,6 @@
   <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" id="m_t" />
   <input type="hidden" name="action_name" value="" />
   <input type="hidden" name="itemset_action_input" value="" />
-  <input type="hidden" name="status" id="status" value="<mt:var name="status" default="1">" />
   <input type="hidden" name="dirty" value="" />
 <mt:if name="use_revision">
   <input type="hidden" name="save_revision" id="save_revision" value="1" />
@@ -331,46 +330,88 @@
 <mtapp:widget
    id="entry-publishing-widget"
    label="<__trans phrase="Publishing">">
+
 <mt:if name="new_object">
-  <mt:setvar name="scheduled_button_text" value="<__trans phrase="Save">">
-  <mt:setvar name="draft_button_text" value="<__trans phrase="Save Draft">">
-  <mt:setvarblock name="draft_button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
-  <mt:setvar name="button_text" value="<__trans phrase="Publish">">
-  <mt:setvarblock name="button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
-<mt:else>
-  <mt:setvar name="scheduled_button_text" value="<__trans phrase="Save Changes">">
   <mt:if name="status_publish">
-  <mt:setvar name="button_text" value="<__trans phrase="Update">">
-  <mt:setvarblock name="button_title"><__trans phrase="Update this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
-  <mt:setvar name="draft_button_text" value="<__trans phrase="Unpublish">">
-  <mt:setvarblock name="draft_button_title"><__trans phrase="Unpublish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvar name="button_text" value="<__trans phrase="Publish">">
+    <mt:setvarblock name="button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
   <mt:else>
-  <mt:setvar name="button_text" value="<__trans phrase="Publish">">
-  <mt:setvarblock name="button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
-  <mt:setvar name="draft_button_text" value="<__trans phrase="Save Draft">">
+    <mt:setvar name="button_text" value="<__trans phrase="Save">">
+    <mt:setvarblock name="button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+  </mt:if>
+  <mt:setvar name="publish_button_text" value="<__trans phrase="Publish">">
+  <mt:setvarblock name="publish_button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+  <mt:setvar name="draft_button_text" value="<__trans phrase="Save">">
   <mt:setvarblock name="draft_button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+  <mt:setvar name="scheduled_button_text" value="<__trans phrase="Schedule">">
+<mt:else>
+  <mt:if name="status_publish">
+    <mt:setvar name="button_text" value="<__trans phrase="Update">">
+    <mt:setvarblock name="button_title"><__trans phrase="Update this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvar name="publish_button_text" value="<__trans phrase="Update">">
+    <mt:setvarblock name="publish_button_title"><__trans phrase="Update this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvar name="draft_button_text" value="<__trans phrase="Save">">
+    <mt:setvarblock name="draft_button_title"><__trans phrase="Unpublish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+  <mt:else>
+    <mt:setvar name="button_text" value="<__trans phrase="Save">">
+    <mt:setvarblock name="button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvar name="publish_button_text" value="<__trans phrase="Publish">">
+    <mt:setvarblock name="publish_button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvar name="draft_button_text" value="<__trans phrase="Save">">
+    <mt:setvarblock name="draft_button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:if name="status_future">
+      <mt:setvar name="scheduled_button_text" value="<__trans phrase="Save">">
+    <mt:else>
+      <mt:setvar name="scheduled_button_text" value="<__trans phrase="Schedule">">
+    </mt:if>
   </mt:if>
 </mt:if>
   <mt:setvarblock name="scheduled_button_title"><__trans phrase="Save this [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
-  <div class="actions-bar">
-    <button
-       mt:mode="preview_entry"
-       name="preview_entry"
-       type="submit"
-       accesskey="v"
-       title="<mt:var name="preview_button_title">"
-       class="preview action button">
-      <__trans phrase="Preview"></button>
-  <mt:if name="can_publish_post">
-    <button
-       mt:mode="save_entry"
-       type="submit"
-       title="<mt:var name="draft_button_title">"
-       class="save draft action button"
-       value="1">
-      <mt:var name="draft_button_text"></button>
-  </mt:if>
-  </div>
+  <mtapp:setting
+     id="status"
+     label="<__trans phrase="Status">"
+     label_class="top-label"
+     help_page="entries"
+     help_section="status">
+  <mt:unless name="sitepath_configured">
+    <input type="hidden" name="status" id="status" value="1" /><span><__trans phrase="Unpublished"></span>&nbsp;<span class="alert-warning-inline"><img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" /> <a href="<$mt:var name="script_url"$>?__mode=cfg_archives&amp;id=<$mt:var name="blog_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mt:if name="object_type" eq="entry"><__trans phrase="You must configure this blog before you can publish this entry."><mt:else><__trans phrase="You must configure this blog before you can publish this page."></mt:if></a></span>
+  <mt:else>
+    <mt:if name="can_publish_post">
+    <select name="status" id="status" class="full" onchange="highlightSwitch(this)">
+      <option value="1"<mt:if name="status_draft"> selected="selected"</mt:if>><__trans phrase="Unpublished (Draft)"></option>
+      <option value="2"<mt:if name="status_publish"> selected="selected"</mt:if>><__trans phrase="Published"></option>
+    <mt:if name="status_review">
+      <option value="3" selected="selected"><__trans phrase="Unpublished (Review)"></option>
+    <mt:else name="status_spam">
+      <option value="5" selected="selected"><__trans phrase="Unpublished (Spam)"></option>
+    </mt:if>
+    <mt:if name="new_object">
+      <option value="4"<mt:if name="status_future"> selected="selected"</mt:if>><__trans phrase="Scheduled"></option>
+    <mt:else>
+      <mt:unless name="status_publish">
+      <option value="4"<mt:if name="status_future"> selected="selected"</mt:if>><__trans phrase="Scheduled"></option>
+      </mt:unless>
+    </mt:if>
+    </select>
+    <mt:else>
+      <mt:if name="new_object">
+    <input type="hidden" name="status" id="status" value="1" /><span><__trans phrase="Unpublished"></span>
+      <mt:else>
+        <mt:if name="status_draft">
+    <input type="hidden" name="status" id="status" value="1" /><span><__trans phrase="Unpublished (Draft)"></span>
+        <mt:else name="status_publish">
+    <input type="hidden" name="status" id="status" value="2" /><span><__trans phrase="Published"></span>
+        <mt:else name="status_future">
+    <input type="hidden" name="status" id="status" value="4" /><span><__trans phrase="Scheduled"></span>
+        <mt:else name="status_review">
+    <input type="hidden" name="status" id="status" value="3" /><span><__trans phrase="Unpublished (Review)"></span>
+        <mt:else name="status_spam">
+    <input type="hidden" name="status" id="status" value="5" /><span><__trans phrase="Unpublished (Spam)"></span>
+        </mt:if>
+      </mt:if>
+    </mt:if>
+  </mt:unless>
+  </mtapp:setting>
 
 <mt:if name="status_future">
   <mt:setvar name="authored_on_label" value="<__trans phrase="Publish On">">
@@ -386,9 +427,6 @@
      help_section="date">
     <div class="date-time-fields<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>">
       <input type="text" id="created-on" class="text date text-date" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" /> @ <input type="text" class="text time" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>" />
-    <mt:if name="can_publish_post">
-      <p class="scheduled"><input type="checkbox" name="scheduled" id="scheduled" value="1"<mt:if name="status_future"> checked="checked"</mt:if> class="cb" /> <label for="scheduled"><__trans phrase="Scheduled"></label></p>
-    </mt:if>
     </div>
   </mtapp:setting>
 
@@ -432,53 +470,45 @@
   </mtapp:setting>
 </mt:if>
 
-  <div class="actions-bar">
-  <mt:if name="can_publish_post">
+  <div class="actions-bar line">
+    <div class="save-action unit size1of2">
     <button
        mt:mode="save_entry"
        name="status"
        type="submit"
        title="<mt:var name="button_title">"
-       class="publish action primary button"
-       value="2">
+       class="publish action primary button">
       <mt:var name="button_text">
     </button>
-    <mt:if name="id">
-      <a
-         href="javascript:void(0)"
-         mt:command="do-remove-items"
-         mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">"
-         mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">"
-         mt:object-type="<mt:var name="object_type" escape="html">" mt:blog-id="<mt:var name="blog_id">"
-         type="submit"
-         title="<mt:var name="delete_button_title">"
-         class="delete"
-         accesskey="x">
-        <__trans phrase="Delete"></a>
-    </mt:if>
-  <mt:else>
-    <mt:if name="new_object">
-      <button
-         mt:mode="save_entry"
-         name="status"
-         type="submit"
-         title="<__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html">"
-         class="save draft action primary button"
-         value="1">
-        <__trans phrase="Save Draft">
-      </button>
-    <mt:else>
-      <button
-         mt:mode="save_entry"
-         name="status"
-         type="submit"
-         title="<__trans phrase="Update this [_1]" params="<mt:var name="object_label">" escape="html">"
-         class="update action primary button">
-        <__trans phrase="Update">
-      </button>
-    </mt:if>
-  </mt:if>
+    </div>
+    <div class="preview-action unit size1of2">
+    <button
+       mt:mode="preview_entry"
+       name="preview_entry"
+       type="submit"
+       accesskey="v"
+       title="<mt:var name="preview_button_title">"
+       class="preview action button">
+      <__trans phrase="Preview">
+    </button>
+    </div>
   </div>
+  <mt:if name="id">
+  <div class="delete-action">
+    <a
+       href="javascript:void(0)"
+       mt:command="do-remove-items"
+       mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">"
+       mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">"
+       mt:object-type="<mt:var name="object_type" escape="html">" mt:blog-id="<mt:var name="blog_id">"
+       type="submit"
+       title="<mt:var name="delete_button_title">"
+       class="delete"
+       accesskey="x">
+      <__trans phrase="Delete">
+    </a>
+  </div>
+  </mt:if>
 
 <mt:unless name="sitepath_configured">
   <input type="hidden" name="status" id="status" value="1" />
@@ -1201,22 +1231,20 @@
         jQuery('input#revision-note').toggle();
     });
 
-    jQuery('input#scheduled').click(function() {
-        if (this.checked) {
+    jQuery('select#status').change(function() {
+        var selectedStatus = jQuery(this).val();
+        if (selectedStatus == 2) {
+            jQuery('button.publish').text('<mt:var name="publish_button_text">');
+            jQuery('button.publish').attr('title', '<mt:var name="publish_button_title">');
+        } else if (selectedStatus == 4) {
             jQuery('button.publish').text('<mt:var name="scheduled_button_text">');
-            jQuery('button.publish').attr('title', '<mt:var name="scheduled_button_title">');
-            jQuery('button.draft').hide();
+            jQuery('button.publish').attr('title', '<mt:var name="scheduled_button_title">');            
         } else {
-            jQuery('button.publish').text('<mt:var name="button_text">');
-            jQuery('button.publish').attr('title', '<mt:var name="button_title">');
-            jQuery('button.draft').show();
+            jQuery('button.publish').text('<mt:var name="draft_button_text">');
+            jQuery('button.publish').attr('title', '<mt:var name="draft_button_title">');            
         }
     });
-    if (jQuery('input#scheduled:checked').length) {
-        jQuery('button.publish').text('<mt:var name="scheduled_button_text">');
-        jQuery('button.publish').attr('title', '<mt:var name="scheduled_button_title">');
-        jQuery('button.draft').hide();
-    }
+
     jQuery('button.mt-<mt:var name="object_type">-listing-form-action').mtDoPluginAction({
         id: 'entry_form',
         plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>',
