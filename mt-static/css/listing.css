@@ -43,10 +43,6 @@
 .col a { 
     color: #274a78;
 }
-.col.primary { 
-    width: auto;
-    min-width: 15%;
-}
 .col.num { 
     width: 7em;
 }
@@ -65,6 +61,10 @@
 .col.view {
     width: 4em;
     text-align: center;
+}
+.col.primary { 
+    width: auto;
+    min-width: 15%;
 }
 
 .col.head { 
