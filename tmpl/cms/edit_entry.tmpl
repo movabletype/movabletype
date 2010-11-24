@@ -493,6 +493,7 @@
     </button>
     </div>
   </div>
+<mt:if name="can_publish_post">
   <mt:if name="id">
   <div class="delete-action">
     <a
@@ -509,6 +510,7 @@
     </a>
   </div>
   </mt:if>
+</mt:if>
 
 <mt:unless name="sitepath_configured">
   <input type="hidden" name="status" id="status" value="1" />
