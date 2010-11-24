@@ -2566,7 +2566,7 @@ sub _hdlr_app_setting {
     $class = ($class eq '') ? 'hidden' : $class . ' hidden' unless $shown;
 
     return $ctx->build(<<"EOT");
-<div id="$id-field" class="mod field$req_class $label_class $class"$indent_css>
+<div id="$id-field" class="field$req_class $label_class $class"$indent_css>
     <div class="field-header">
       <label id="$id-label" for="$id">$label$req</label>
     </div>
