@@ -101,7 +101,7 @@ class Blog extends BaseObject
     function archive_path() {
         $site = $this->website();
         $path = '';
-        if (!empty($site))
+        if (!empty($site) && !empty($site->blog_archive_path))
             $path = $site->blog_archive_path . DIRECTORY_SEPARATOR;
         $path = $path . $this->blog_archive_path;
         return $path;
