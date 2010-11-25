@@ -1,3 +1,8 @@
+/* Body Has Dialog */
+body.has-dialog {
+    overflow: hidden;
+}
+
 /* - Modal Overlay */
 .mt-dialog-overlay {
     display: none;
