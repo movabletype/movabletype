@@ -555,7 +555,7 @@ sub system_filters {
         pending => {
             label => 'Pending comments',
             items => [
-                { type => 'status', args => { value => 'moderated' }, },
+                { type => 'status', args => { value => 'pending' }, },
             ],
         },
         published => {
