@@ -9,7 +9,7 @@ body.has-dialog {
     z-index: 1001;
     width: 100%;
     min-width: 960px;
-    height: 200%;
+    height: 100%;
 }
 
 /* - Dialog Block */

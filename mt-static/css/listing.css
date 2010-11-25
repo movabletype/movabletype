@@ -69,7 +69,7 @@
 
 .col.head { 
     padding: 0;
-    border-width: 0 0 1px 1px;
+    border-width: 0 1px 1px 0;
     background-color: #dcdddd;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
     background: -moz-linear-gradient(top, #f3f3f3, #dcdddd);
@@ -92,10 +92,10 @@ thead .col.head:last-child {
     -moz-border-radius: 0;
 }
 tfoot .col.head{
-    border-width: 1px 0 0 1px;
+    border-width: 1px 1px 0 0;
 }
-.col.head.first-child {
-    border-left: 0;
+.col.head.last-child {
+    border-right: 0;
 }
 .col.head a {
     text-decoration: none;

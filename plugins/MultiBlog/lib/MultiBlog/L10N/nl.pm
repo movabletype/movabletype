@@ -58,9 +58,9 @@ use vars qw( %Lexicon );
 	'Create Trigger' => 'Nieuwe trigger aanmaken',
 	'Search Weblogs' => 'Doorzoek weblogs',
 	'When this' => 'indien dit',
-	'* All blogs in this website' => '* Alle blogs onder deze website',
+	'(All blogs in this website)' => '(Alle blogs onder deze website)',
 	'Select to apply this trigger to all blogs in this website.' => 'Kiezen om deze trigger toe te passen op alle blogs op deze website.',
-	'* All websites and blogs in this system' => '* Alle websites en blogs in dit systeem',
+	'(All websites and blogs in this system)' => '(Alle websites en blogs in dit systeem)',
 	'Select to apply this trigger to all websites and blogs in this system.' => 'Selecteer dit om deze trigger toe te passen op alle websites en blogs in dit systeem', # Translate - New
 	'saves an entry/page' => 'een bericht/pagina opslaat',
 	'publishes an entry/page' => 'een bericht/pagina publiceert',

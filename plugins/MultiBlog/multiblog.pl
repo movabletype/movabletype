@@ -154,7 +154,7 @@ sub add_trigger {
                             {
                             id    => '_blogs_in_website',
                             label => $plugin->translate(
-                                '* All blogs in this website'),
+                                '(All blogs in this website)'),
                             description => $plugin->translate(
                                 'Select to apply this trigger to all blogs in this website.'
                             ),
@@ -165,7 +165,7 @@ sub add_trigger {
                         {
                         id    => '_all',
                         label => $plugin->translate(
-                            '* All websites and blogs in this system'),
+                            '(All websites and blogs in this system)'),
                         description => $plugin->translate(
                             'Select to apply this trigger to all websites and blogs in this system.'
                         ),
