@@ -230,9 +230,10 @@ sub list_props {
                         %$blog_terms,
                     },
                 );
-                return {
-                    blog_id => [ map { $_->id } @blogs ],
-                };
+                return
+                    scalar @blogs
+                    ? { blog_id => [ map { $_->id } @blogs ], }
+                    : { blog_id => -1 };
             },
             sort => 0,
             bulk_sort => sub {
