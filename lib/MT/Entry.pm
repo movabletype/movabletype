@@ -666,6 +666,13 @@ sub system_filters {
             items => sub {
                 [ { type => 'current_user' }, { type => 'current_context' } ],
             },
+            view => 'website',
+        },
+        my_posts => {
+            label => 'My Entries',
+            items => sub {
+                [ { type => 'current_user' } ],
+            },
         },
         commented_in_last_7_days => {
             label => 'Entries with comments in the last 7 days',
