@@ -454,12 +454,40 @@ sub list_props {
             display   => 'default',
             label     => 'Comments',
             order     => 800,
+            html_link => sub {
+                my $prop = shift;
+                my ( $obj, $app, $opts ) = @_;
+                return unless $app->can_do('access_to_comment_list');
+                return $app->uri(
+                    mode => 'list',
+                    args => {
+                        _type      => 'comment',
+                        filter     => 'entry',
+                        filter_val => $obj->id,
+                        blog_id    => $opts->{blog_id} || 0,
+                    },
+                );
+            },
         },
         ping_count => {
             auto    => 1,
             display => 'optional',
             label   => 'Trackbacks',
             order   => 900,
+            html_link => sub {
+                my $prop = shift;
+                my ( $obj, $app, $opts ) = @_;
+                return unless $app->can_do('access_to_trackback_list');
+                return $app->uri(
+                    mode => 'list',
+                    args => {
+                        _type      => 'ping',
+                        filter     => 'entry_id',
+                        filter_val => $obj->id,
+                        blog_id    => $opts->{blog_id} || 0,
+                    },
+                );
+            },
         },
         text => {
             auto    => 1,
