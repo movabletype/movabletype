@@ -473,7 +473,6 @@
   <div class="actions-bar line">
     <div class="save-action unit size1of2">
     <button
-       mt:mode="save_entry"
        name="status"
        type="submit"
        title="<mt:var name="button_title">"
@@ -483,7 +482,6 @@
     </div>
     <div class="preview-action unit size1of2">
     <button
-       mt:mode="preview_entry"
        name="preview_entry"
        type="submit"
        accesskey="v"
@@ -1218,11 +1216,8 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('button.publish').click(function(event) {
-        jQuery('form#entry_form > input[name=status]').val(2);
-    });
-    jQuery('button.draft').click(function(event) {
-        jQuery('form#entry_form > input[name=status]').val(1);
+    jQuery('button.preview').click(function(event) {
+        jQuery('form#entry_form input[name=__mode]').val('preview_entry');
     });
     jQuery('input#title').mtRebasename({
         edit: '<__trans phrase="Edit">',
@@ -1240,10 +1235,10 @@
             jQuery('button.publish').attr('title', '<mt:var name="publish_button_title">');
         } else if (selectedStatus == 4) {
             jQuery('button.publish').text('<mt:var name="scheduled_button_text">');
-            jQuery('button.publish').attr('title', '<mt:var name="scheduled_button_title">');            
+            jQuery('button.publish').attr('title', '<mt:var name="scheduled_button_title">');
         } else {
             jQuery('button.publish').text('<mt:var name="draft_button_text">');
-            jQuery('button.publish').attr('title', '<mt:var name="draft_button_title">');            
+            jQuery('button.publish').attr('title', '<mt:var name="draft_button_title">');
         }
     });
 
@@ -1267,7 +1262,7 @@
     });
 
     jQuery('div#display-options-detail :checkbox').click(function() {
-        var $field_block = jQuery('div#'+this.value+'-field');                 
+        var $field_block = jQuery('div#'+this.value+'-field');
         if ( this.checked ) {
             $field_block.removeClass('hidden');
             $field_block.show();
