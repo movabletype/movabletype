@@ -573,6 +573,16 @@ sub core_content_actions {
                     MT->app && MT->app->param('blog_id');
                 },
             },
+            'download_csv' => {
+                class => 'icon-download',
+                label => 'Download Address Book (CSV)',
+                order => 200,
+                mode  => 'export_notification',
+                return_args => 1,
+                condition => sub {
+                    MT->app && MT->app->can_do('export_addressbook');
+                }
+            },
         },
     };
 }
