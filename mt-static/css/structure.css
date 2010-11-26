@@ -710,32 +710,29 @@ ul.tabs li a {
     float: right;
 }
 
-.fav-actions-nav .toggle-button {
-    width: 5px;
-}
-
-.fav-actions-nav .button {
-    border-color: #c89932;
-    background-color: #c89932;
-    background: -webkit-gradient(linear, left top, left bottom, from(#fcc800), to(#f8b500));
-    background: -moz-linear-gradient(top, #fcc800, #f8b500);
+.fav-actions-nav .action.button {
+    border-color: #f8b500;
+    background-color: #ffd900;
+    background: -webkit-gradient(linear, left top, left bottom, from(#ffd900), to(#f8b500));
+    background: -moz-linear-gradient(top, #ffd900, #f8b500);
+    color: #2b2b2b;
+    text-shadow: none;    
     box-shadow: 1px 1px 2px #666;
     -webkit-box-shadow: 1px 1px 2px #666;
     -moz-box-shadow: 1px 1px 2px #666;
 }
-.fav-actions-nav .button:hover {
-    border-color: #d0a443;
-    background-color: #d0a443;
-    background: -webkit-gradient(linear, left top, left bottom, from(#ffcf16), to(#ffbf13));
-    background: -moz-linear-gradient(top, #ffcf16, #ffbf13);
+.fav-actions-nav .action.button:hover {
+    border-color: #c89932;
+    background-color: #ffdd1a;
+    background: -webkit-gradient(linear, left top, left bottom, from(#ffdd1a), to(#ffbf13));
+    background: -moz-linear-gradient(top, #ffdd1a, #ffbf13);
 }
 
-.fav-actions-nav .button:active, 
+.fav-actions-nav .action.button:active, 
 .fav-actions-nav.active .toggle-button {
-    border-color: #c89932;
     background-color: #c89932;
-    background: -webkit-gradient(linear, left top, left bottom, from(#d9a62e), to(#e6b422));
-    background: -moz-linear-gradient(top, #d9a62e, #e6b422);
+    background: -webkit-gradient(linear, left top, left bottom, from(#ffbf13), to(#ffdd1a));
+    background: -moz-linear-gradient(top, #ffbf13, #ffdd1a);
 }
 
 .fav-actions { 

@@ -747,7 +747,7 @@ $.fn.mtRebasename = function(options) {
         var $input = $('input#basename');
         var dirify_text = $input.hide().val();
         $input.hide().before('<span class="basename-text"></span>');
-        $input.parent('span.basename').after('<button id="mt-set-basename" class="mt-edit-field-button">'+opts.edit+'</button>');
+        $input.parent('span.basename').after('<button id="mt-set-basename" class="mt-edit-field-button button">'+opts.edit+'</button>');
         if (opts.basename) {
             $('span.basename-text').text(opts.basename);
         } else {

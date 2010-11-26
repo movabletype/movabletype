@@ -154,7 +154,7 @@ select {
 /* -- Large Button */
 .button.action, 
 .ui-button.action {
-    padding: 0.25em 1em 0.2em;
+    padding: 0.25em 0.8em 0.2em;
     border-color: #7b7c7d;
     background-color: #adadad;
     background: -webkit-gradient(linear, left top, left bottom, from(#adadad), to(#7b7c7d));
@@ -229,22 +229,31 @@ select {
 }
 
 /* -- Split Button */
-.split .button {
+.split .action.button {
     float: left;
     margin: 0;
     font-size: 13px;
     font-weight: bold;
-    padding-right: 0.8em;
+    border-top-right-radius: 0; 
+    border-bottom-right-radius: 0;
+    -moz-border-radius: 3px 0 0 3px;
 }
-.split .toggle-button {
-    margin-left: -1px;
+.split .action.toggle-button {
+    width: 16px;
+    height: 16px;
+    padding-right: 0.2em;
+    padding-left: 0.2em;
+    border-radius: 3px;
     border-top-left-radius: 0; 
     border-bottom-left-radius: 0;
+    -moz-border-radius: 0 3px 3px 0;
 }
 .split .detail {
     display: none;
     width: 99%;
 }
+
+
 
 .ui-helper-hidden-accessible {
     position: absolute;
