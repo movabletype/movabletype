@@ -113,7 +113,6 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 </mt:if>
 
 <mt:include name="include/header.tmpl">
-
 <mt:include name="include/basic_filter_forms.tmpl">
 
 <div id="listing" class="listing line has-filter">
@@ -667,6 +666,13 @@ function renderColumns( col, chk ) {
   else if ( col && !chk ) {
     jQuery('table.listing-table td.' + col).remove();
   }
+  jQuery('table.listing-table thead, table.listing-table tfoot').each(function() {
+    jQuery(this)
+      .find('th')
+      .removeClass('first-visible-child')
+      .filter(':visible:first')
+      .addClass('first-visible-child');
+  });
 }
 
 function saveChecked(page) {
