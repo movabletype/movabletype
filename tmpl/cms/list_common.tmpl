@@ -606,6 +606,8 @@ function removeFilter(element) {
   var remove_current = filters[index].id == current_id;
 
   if ( remove_current ) {
+    allPass = 1;
+    updateFilterSaveButtons();
     doApplyFilter(allpass_filter, 1);
     renderList({
       mode: 'delete_filter',
@@ -1422,6 +1424,8 @@ function doApplyFilter(filter, no_render) {
     editSysFilter = 0;
   else
     editSysFilter = 1;
+  if ( filter.id == '_allpass' )
+    allPass = 1;
   jQuery('input[name=filter_id]').val(filter.id);
   itemValues();
   if ( !no_render )
