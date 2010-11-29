@@ -565,7 +565,7 @@ sub pre_load_filtered_list {
     delete $opts->{offset};
     delete $opts->{sort_order};
     $opts->{sort_by} = 'custom_sort';
-    @$cols = qw( id parent label entry_count );
+    @$cols = qw( id parent label basename entry_count );
 }
 
 sub filtered_list_param {

@@ -53,6 +53,11 @@ __PACKAGE__->install_properties({
 sub list_props {
     return {
         label => { base => '__virtual.label' },
+        basename => {
+            auto => 1,
+            label => 'Basename',
+            html => sub { '' },
+        },
         id    => 'ID',
         parent => {
             auto  => 1,

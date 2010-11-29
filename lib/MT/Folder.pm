@@ -39,6 +39,7 @@ sub list_props {
         label  => {
             base => 'category.label',
         },
+        basename  => 'Basename',
         parent => {
             base => 'category.parent',
         },

@@ -138,9 +138,11 @@ function handleMessages( data ) {
   return true;
 }
 
-function createItem(id, parent, label, number) {
+function createItem(id, parent, label, basename, number) {
   var line = '<span class="sort-tab"></span>';
   line += '<span class="item-label">'+label+'</span>';
+  if ( basename )
+    line += '<span class="item-basename">('+basename+')</span>';
   line += ' <span class="item-ctrl"></span>';
   line += ' <span class="count fr">'+trans('[_1] <mt:var name="contents_label_plural" escape="js">', number)+'</span>';
   var $item = jQuery('<div id="'+id+'" class="'+parent+'" />').append(line);
@@ -218,7 +220,7 @@ function addItem(parent, label) {
   }
 
   var id = 'x'+dummy;
-  var $item = createItem(id, parent, label, 0);
+  var $item = createItem(id, parent, label, '', 0);
   initItem($item);
   $item.insertAfter(jQuery('#'+parent));
 
@@ -425,8 +427,9 @@ function renderItems(data) {
     var id = parseInt(objs[i][0]);
     var parent = parseInt(objs[i][1]);
     var label = objs[i][2];
-    var number = objs[i][3]
-    var $item = createItem(id, parent, label, number);
+    var basename = objs[i][3];
+    var number = objs[i][4]
+    var $item = createItem(id, parent, label, basename, number);
     initItem($item);
     $item.appendTo('#root');
 
