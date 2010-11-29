@@ -2602,6 +2602,8 @@ sub edit_widget {
     my @avail_modules = map { {
         id => $_, name => $all_widgets{$_}{name}, blog_id => $all_widgets{$_}{blog_id}
     } } keys %all_widgets;
+    @avail_modules = sort { $a->{name} cmp $b->{name} } @avail_modules
+        if @avail_modules;
     $param->{available} = \@avail_modules;
 
     my $res = $app->run_callbacks('cms_edit.widgetset', $app, $id, $wtmpl, $param);
