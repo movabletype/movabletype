@@ -464,10 +464,11 @@ function renderFilterList() {
     jQuery('#filter_id').val('');
     updateItemList();
     jQuery('#dialog_filter').dialog('close');
-    editSysFilter = 0;
-    editNewFilter = 1;
-    allPass = 0;
-    updateFilterSaveButtons();
+    updateFilterSaveButtons({
+      system: 0,
+      new: 1,
+      allpass: 0
+    });
   });
   jQuery('#dialog_filter .filter-label a:not(#new_filter)').click(function() {
     jQuery('#dialog_filter').dialog('close');
@@ -492,7 +493,13 @@ var editSysFilter = 0;
 var editNewFilter = 0;
 var allPass       = 0;
 
-function updateFilterSaveButtons (){
+function updateFilterSaveButtons ( opts ){
+  if ( opts ) {
+    if ( opts.allpass != undefined ) allPass       = opts.allpass;
+    if ( opts.new != undefined )     editNewFilter = opts.new;
+    if ( opts.system != undefined )  editSysFilter = opts.system;
+  }
+
   if ( jQuery('#filter-detail div.filteritem').length > 0 ) {
     jQuery('#apply').removeClass('disabled').removeAttr('disabled');
 
@@ -512,11 +519,9 @@ function updateFilterSaveButtons (){
     jQuery('#saveas').hide();
   }
   if ( allPass ) {
-    jQuery('#toggle-filter-detail').hide();
     jQuery('#allpass-filter').hide();
   }
   else {
-    jQuery('#toggle-filter-detail').show();
     jQuery('#allpass-filter').show();
   }
 }
@@ -606,8 +611,7 @@ function removeFilter(element) {
   var remove_current = filters[index].id == current_id;
 
   if ( remove_current ) {
-    allPass = 1;
-    updateFilterSaveButtons();
+    updateFilterSaveButtons({ allpass: 1 });
     doApplyFilter(allpass_filter, 1);
     renderList({
       mode: 'delete_filter',
@@ -922,9 +926,10 @@ function renderList(mode, columns, values, limit, page ) {
       }
       if (mode == 'save_filter' || mode == 'delete_filter') {
         renderFilterList();
-        editSysFilter = 0;
-        editNewFilter = 0;
-        updateFilterSaveButtons();
+        updateFilterSaveButtons({
+          system: 0,
+          new:    0
+        });
       }
       if (!jQuery('#msg-block .msg-error').length) {
         jQuery('#dialog_save_filter').dialog('close');
@@ -1190,6 +1195,7 @@ function filterItem(type, datepicker_off) {
 
 jQuery('#additem').click(function() {
   var type = jQuery('#item_list').val();
+  if ( !type ) return false;
   var $item = filterItem(type);
   $item
     .insertAfter('.selectfilter')
@@ -1209,8 +1215,15 @@ jQuery('#additem').click(function() {
       updateItemList();
       updateFilterSaveButtons();
     });
+  if ( allPass ) {
+    jQuery('#filter_id').val('');
+    jQuery('#opener').text('<__trans phrase="Unknown Filter">');
+    editNewFilter = 1;
+    editSysFilter = 0;
+    allPass       = 0;
+  }
   updateItemList();
-  updateFilterSaveButtons();
+  updateFilterSaveButtons({ allpass: false });
 });
 
 jQuery('#apply').click(function() {
@@ -1309,8 +1322,7 @@ jQuery('#save-filter').click(function() {
   }
   itemValues();
   jQuery(window).one('listReady', function() {
-    editNewFilter = 0;
-    updateFilterSaveButtons();
+    updateFilterSaveButtons({ new: 0 });
   });
   renderList('save_filter', cols, vals, jQuery('#row').val(), 1);
   return false;
