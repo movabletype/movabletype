@@ -2818,7 +2818,14 @@ MT.App.CategorySelector = new Class( Component, {
             /* update the cache */
             app.catCache.setItem( "cat:" + cat.id, cat );
             this.list.addItem( cat, true );
+            var div = this.list.getItem( cat.id );
+            div.parentNode.removeChild( div );
+            /* move it after the parent */
+            this.list.content.insertBefore( div, this.list.getFirstItem() );
+            this.list.toggleCheckbox( div, true ); // added checked attribute again for IE
+            DOM.removeClassName( div, "hidden" );
         }
+
         /* recheck selection */
         this.listItemsSelected( this.list );
     },
