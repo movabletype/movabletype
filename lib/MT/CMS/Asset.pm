@@ -1376,7 +1376,7 @@ sub _upload_file {
     if (
         !(
             $asset = $asset_pkg->load(
-                { file_path => $asset_file, blog_id => $blog_id },
+                { class => '*', file_path => $asset_file, blog_id => $blog_id },
                 { binary => { file_path => 1 } }
             )
         )
@@ -1391,6 +1391,15 @@ sub _upload_file {
         $asset->created_by( $app->user->id );
     }
     else {
+        if ( $asset->class ne $asset_pkg->class_type ) {
+            return $app->error(
+                $app->translate(
+"Can't overwrite with the file of different type. Original: [_1] Uploaded: [_2]",
+                    $asset->class_label,
+                    $asset_pkg->class_label
+                )
+            );
+        }
         $asset->modified_by( $app->user->id );
     }
     my $original = $asset->clone;
