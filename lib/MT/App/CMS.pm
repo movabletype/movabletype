@@ -166,8 +166,6 @@ sub core_methods {
         },
 
         'start_move_blogs'     => "${pkg}Website::move_blogs",
-        'view_rpt_log'         => "${pkg}RptLog::view",
-        'reset_rpt_log'        => "${pkg}RptLog::reset",
         'reset_log'            => "${pkg}Log::reset",
         'export_log'           => "${pkg}Log::export",
         'export_notification'  => "${pkg}AddressBook::export",
