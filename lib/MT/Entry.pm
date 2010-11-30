@@ -400,11 +400,13 @@ sub list_props {
                         MT->model( 'placement' )->join_on(
                             undef,
                             {
-                                entry_id    => \'!= entry_id',
-                                blog_id     => $blog_id,
+                                id      => \'is null',
                             },
                             {
-                                unique => 1,
+                                type      => 'left',
+                                condition => {
+                                    entry_id => \'= entry_id',
+                                },
                             },
                     );
                     return;
