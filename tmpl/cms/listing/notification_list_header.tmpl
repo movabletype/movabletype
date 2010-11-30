@@ -126,8 +126,8 @@
         // if not in noteList and not in range of noteList notes, check with server.
         var $note_email = jQuery('#note-email-' + id);
         var $note_url   = jQuery('#note-url-' + id);
-        if (!$note_email.val() || !$note_url.val() ) return false;
-        if (!$note_email.valid() || !$note_url.valid() ) return false;
+        if ( !$note_email.val() || !$note_email.valid() ) return false;
+        if ( $note_url.val() && !$note_url.valid() ) return false;
         var new_note_email = $note_email.val();
         var new_note_url = $note_url.val();
         if ((old_note_email == new_note_email) && (old_note_url == new_note_url)) {
