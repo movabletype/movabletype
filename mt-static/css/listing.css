@@ -69,7 +69,7 @@
 
 .col.head { 
     padding: 0;
-    border-width: 0 1px 1px 0;
+    border-width: 0 0 1px 1px;
     background-color: #dcdddd;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
     background: -moz-linear-gradient(top, #f3f3f3, #dcdddd);
@@ -79,11 +79,11 @@
     white-space: nowrap;
     vertical-align: middle;
 }
-thead .col.head:first-child {
+thead .col.head.first-child {
     border-top-left-radius: 5px;
     -moz-border-radius: 5px 0 0 0;
 }
-thead .col.head:last-child {
+thead .col.head.last-child {
     border-top-right-radius: 5px;
     -moz-border-radius: 0 5px 0 0;
 }
@@ -92,10 +92,11 @@ thead .col.head:last-child {
     -moz-border-radius: 0;
 }
 tfoot .col.head{
-    border-width: 1px 1px 0 0;
+    border-width: 1px 0 0 1px;
 }
-.col.head.last-child {
-    border-right: 0;
+.col.head.first-child, 
+.col.head.first-visible-child {
+    border-left: 0;
 }
 .col.head a {
     text-decoration: none;

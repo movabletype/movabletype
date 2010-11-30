@@ -45,12 +45,16 @@
     cursor: move ! important;
 }
 
-.sortable-item .item-label {
+.sortable-item .item-label, 
+.sortable-item .item-basename {
     float: left;
     display: inline-block;
     height: 42px;
     line-height: 42px;
     margin: 0 5px 0 20px;
+}
+.sortable-item .item-basename {
+    margin-left: 5px;
 }
 
 .sortable-item .item-label a {
