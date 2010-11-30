@@ -49,7 +49,7 @@ is( $blog->allow_pings,        0 );
 ## only applied template set has this.
 my $main_index;
 ok($main_index = MT->model('template')->load({ blog_id => $blog->id, identifier => 'main_index' }));
-is($main_index->text, "I am MT\nI am MT\n", 'loaded template');
+is($main_index->text, "I am MT\nI am MT", 'loaded template');
 
 ## and backuped templates exists.
 ok( MT->model('template')->load({ blog_id => $blog->id, type => 'backup'}) );
