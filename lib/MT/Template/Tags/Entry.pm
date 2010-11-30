@@ -997,7 +997,6 @@ sub _hdlr_entries {
         local $ctx->{__stash}{blog_id} = $e->blog_id;
         local $ctx->{__stash}{entry} = $e;
         local $ctx->{current_timestamp} = $e->authored_on;
-        local $ctx->{current_timestamp_end} = $e->authored_on;
         local $ctx->{modification_timestamp} = $e->modified_on;
         my $this_day = substr $e->authored_on, 0, 8;
         my $next_day = $this_day;
