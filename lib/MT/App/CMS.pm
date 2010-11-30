@@ -481,7 +481,7 @@ sub core_content_actions {
                 label => 'Delete all Spam trackbacks',
                 return_args => 1,
                 order => 100,
-                confirm_msg => 'Are you sure you want to remove all TrackBacks reported as spam?',
+                confirm_msg => 'Are you sure you want to remove all trackbacks reported as spam?',
                 permit_action => {
                     include_all => 1,
                     permit_action => 'delete_junk_comments,delete_all_junk_comments',
