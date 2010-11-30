@@ -1496,10 +1496,6 @@ function doForMarked(formid, action, singlar, plural, phrase, xhr) {
     } else {
       return false;
     }
-  } else if (opt['continue_prompt']) {
-    if (!confirm(opt['continue_prompt'])) {
-      return false;
-    }
   }
 
   if (xhr) {
@@ -1532,7 +1528,12 @@ function doForMarked(formid, action, singlar, plural, phrase, xhr) {
     params['items'] = items;
   }
 
-  if (phrase) {
+ if (opt['continue_prompt']) {
+    if (!confirm(opt['continue_prompt'])) {
+      return false;
+    }
+  }
+  else if (phrase) {
     var message = ( count == 1 )
       ? trans('Are you sure you want to [_2] this [_1]?', singlar, phrase)
       : trans('Are you sure you want to [_3] the [_1] selected [_2]?', count, plural, phrase);
