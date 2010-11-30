@@ -144,7 +144,7 @@ function createItem(id, parent, label, basename, number) {
   if ( basename )
     line += '<span class="item-basename">('+basename+')</span>';
   line += ' <span class="item-ctrl"></span>';
-  line += ' <span class="count fr">'+trans('[_1] <mt:var name="contents_label_plural" escape="js">', number)+'</span>';
+  line += ' <span class="count fr">'+number+'</span>';
   var $item = jQuery('<div id="'+id+'" class="'+parent+'" />').append(line);
   return $item;
 }
