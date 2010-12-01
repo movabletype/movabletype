@@ -2680,7 +2680,7 @@ sub show_error {
         $param->{goback} ||= $app->{goback}
             ? "window.location='" . $app->{goback} . "'"
             : 'history.back()';
-        $param->{value}  ||= $app->{value}  || $app->translate("Go Back");
+        $param->{value}  ||= $app->{value}  || $app->translate("Back");
     }
     local $param->{error} = $error;
     $tmpl->param($param);

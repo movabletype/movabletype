@@ -140,7 +140,7 @@
                 <input type="hidden" name="quicksearch" value="1" />
                 <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
                 <input accesskey="q" type="text" name="search" autocomplete="off" class="search-query input-hint" value="<__trans phrase="Search"><mt:if name="search_label"> <$mt:var name="search_label"$><mt:else> <__trans phrase="Entries"></mt:if>" title="<__trans phrase="Search (q)">" size="15" onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" />
-                <button type="button" onclick="document.quicksearch.submit(); return false;"><__trans phrase="Search"></button>
+                <button type="button" class="button" onclick="document.quicksearch.submit(); return false;"><__trans phrase="Search"></button>
               </form>
             </div>
           <!-- Serarch --></li>

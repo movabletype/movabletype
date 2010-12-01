@@ -3449,7 +3449,7 @@ sub show_error {
             );
             $param->{goback} ||= qq{window.location='$url'};
         }
-        $param->{value} ||= $app->{value} || $app->translate('Go Back');
+        $param->{value} ||= $app->{value} || $app->translate('Back');
     }
 
     return $app->SUPER::show_error($param);

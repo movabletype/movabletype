@@ -107,8 +107,7 @@ select {
 }
 
 /* - Button */ 
-.button, 
-.ui-button { 
+.button { 
     line-height: 1.3;
     overflow: visible;
     display: inline-block;
@@ -133,27 +132,21 @@ select {
     -webkit-box-shadow: 0 1px 0 #f3f3f3;
     -moz-box-shadow: 0 1px 0 #f3f3f3;
 }
-.ui-button-text {
-    display: inline-block;
-}
-.button:hover, 
-.ui-button:hover {
+.button:hover {
     border-color: #7b7c7d;
     color: inherit;
     background-color: #fafafa;
     background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e9eaea));
     background: -moz-linear-gradient(top, #fafafa, #e9eaea);
 }
-.button:active, 
-.ui-button:active {
+.button:active {
     background-color: #dcdddd;
     background: -webkit-gradient(linear, left top, left bottom, from(#dcdddd), to(#f3f3f3));
     background: -moz-linear-gradient(top, #dcdddd, #f3f3f3);
 }
 
 /* -- Large Button */
-.button.action, 
-.ui-button.action {
+.button.action {
     padding: 0.25em 0.8em 0.2em;
     border-color: #7b7c7d;
     background-color: #adadad;
@@ -164,37 +157,32 @@ select {
     font-size: 14px;
     font-weight: bold;
 }
-.button.action:hover, 
-.ui-button.action:hover {
+.button.action:hover {
     border-color: #595857;  
     background-color: #bababa;
     background: -webkit-gradient(linear, left top, left bottom, from(#bababa), to(#88898a));
     background: -moz-linear-gradient(top, #bababa, #88898a);
 }
-.button.action:active, 
-.ui-button.action:active {
+.button.action:active {
     background-color: #7d7c7d;
     background: -webkit-gradient(linear, left top, left bottom, from(#7d7c7d), to(#adadad));
     background: -moz-linear-gradient(top, #7d7c7d, #adadad);
 }
 
 /* -- Primary Button */
-.button.primary, 
-.ui-button.primary {
+.button.primary {
     border-color: #165e83;
     background-color: #2a83a2;
     background: -webkit-gradient(linear, left top, left bottom, from(#2a83a2), to(#165e83));
     background: -moz-linear-gradient(top, #2a83a2, #165e83);
 }
-.button.primary:hover, 
-.ui-button.primary:hover {
+.button.primary:hover {
     border-color: #274a78;
     background-color: #2f93b6;
     background: -webkit-gradient(linear, left top, left bottom, from(#2f93b6), to(#1a6e99));
     background: -moz-linear-gradient(top, #2f93b6, #1a6e99);
 }
-.button.primary:active, 
-.ui-button.primary:active {
+.button.primary:active {
     background-color: #165e83;
     background: -webkit-gradient(linear, left top, left bottom, from(#165e83), to(#2a83a2));
     background: -moz-linear-gradient(top, #165e83, #2a83a2);
@@ -203,10 +191,7 @@ select {
 /* -- Disable Button */
 .button.disabled, 
 .button.action.disabled, 
-.button.primary.disabled, 
-.ui-button.disabled, 
-.ui-button.action.disabled, 
-.ui-button.primary.disabled {
+.button.primary.disabled {
     border-color: #c0c6c9 ! important;
     cursor: default ! important;
     background: #f3f3f3 ! important;
@@ -231,7 +216,9 @@ select {
 /* -- Split Button */
 .split .action.button {
     float: left;
+    line-height: 16px;
     margin: 0;
+    padding: 0.2em 0.6em;
     font-size: 13px;
     font-weight: bold;
     border-top-right-radius: 0; 
@@ -253,8 +240,6 @@ select {
     width: 99%;
 }
 
-
-
 .ui-helper-hidden-accessible {
     position: absolute;
 }
@@ -265,4 +250,8 @@ select {
 #alignment .ui-button {
     width: 50px;
     margin: 0;
+}
+
+.ui-button-icon-only .ui-button-text {
+    display: none;
 }

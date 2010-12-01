@@ -56,18 +56,14 @@
     padding: 0;
 }
 
-.editor-toolbar span { 
-    display: inline-block;
-}
-
 .editor-mode-textarea iframe, 
 .editor-mode-iframe .text, 
-.editor-plaintext .editor-toolbar a.button.command-toggle-wysiwyg,
-.editor-plaintext .editor-toolbar a.button.command-toggle-html,
-.editor-plaintext .editor-toolbar a.button.command-outdent, 
-.webkit-detected .editor-toolbar a.button.command-insert-link,
-.webkit-detected .editor-toolbar a.button.command-indent,
-.webkit-detected .editor-toolbar a.button.command-outdent {
+.editor-plaintext .editor-toolbar .button.command-toggle-wysiwyg,
+.editor-plaintext .editor-toolbar .button.command-toggle-html,
+.editor-plaintext .editor-toolbar .button.command-outdent, 
+.webkit-detected .editor-toolbar .button.command-insert-link,
+.webkit-detected .editor-toolbar .button.command-indent,
+.webkit-detected .editor-toolbar .button.command-outdent {
     display: none;
 }
 
@@ -79,10 +75,6 @@
 }
 .editor-toolbar .button:hover {
     background-image: url(../../images/buttons/toolbar/toolbar-hover.gif);
-}
-.editor-toolbar .button s,
-.editor-toolbar .button b {
-    display: none;
 }
 .editor-toolbar .button.command-font-size-smaller,
 .editor-toolbar .button.command-font-size-smaller:hover {
