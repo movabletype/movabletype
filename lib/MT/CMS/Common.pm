@@ -922,6 +922,7 @@ sub list {
                                   : $_->has('filter_editable') ? !$_->filter_editable
                                   :                              0,
            editable              => $_->has('filter_editable') ? $_->filter_editable : 1,
+           base_type             => $_->base_type,
         }}
         sort {
               ( $a->item_order && $b->item_order )   ? $a->item_order <=> $b->item_order

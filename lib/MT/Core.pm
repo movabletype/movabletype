@@ -208,6 +208,7 @@ BEGIN {
                         }
                     },
                     filter_tmpl => '<mt:Var name="filter_form_hidden">',
+                    base_type   => 'hidden',
                     priority => 4,
                 },
                 string => {
@@ -239,6 +240,7 @@ BEGIN {
                         }
                     },
                     filter_tmpl => '<mt:var name="filter_form_string">',
+                    base_type   => 'string',
                     args_via_param => sub {
                         my $prop  = shift;
                         my ($app, $val) = @_;
@@ -303,6 +305,7 @@ BEGIN {
                         return { option => 'equal', value => $val };
                     },
                     filter_tmpl => '<mt:Var name="filter_form_integer">',
+                    base_type   => 'integer',
                     priority => 4,
                 },
                 float => {
@@ -314,6 +317,7 @@ BEGIN {
                         my $col = $prop->col;
                         return sprintf "%0.1f", $obj->$col;
                     },
+                    base_type   => 'float',
                 },
                 date => {
                     base        => '__virtual.base',
@@ -514,6 +518,7 @@ BEGIN {
                             return '<mt:Var name="filter_form_date">';
                         }
                     },
+                    base_type => 'date',
                     html => sub {
                         my $prop = shift;
                         my ( $obj, $app, $opts ) = @_;
@@ -552,6 +557,7 @@ BEGIN {
                         return { value => $val };
                     },
                     filter_tmpl => '<mt:Var name="filter_form_single_select">',
+                    base_type   => 'single_select',
                     priority => 2,
                 },
                 id => {
