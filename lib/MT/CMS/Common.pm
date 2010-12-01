@@ -1296,6 +1296,7 @@ sub filtered_list {
     $res{label}    = MT::Util::encode_html( $forward_params{saved_label} ) if $forward_params{saved_label};
     $res{filters}  = $filters;
     $res{messages} = \@messages;
+    %res = ( %forward_params, %res );
     $MT::DebugMode && $debug->{section}->('finalize');
     MT->run_callbacks( 'cms_filtered_list_param.' . $ds, $app, \%res, $objs );
     if ( $MT::DebugMode ) {
@@ -1376,6 +1377,8 @@ sub delete {
     my @rebuild_cats;
     my $required_items = 0;
     my @not_deleted;
+    my $delete_count = 0;
+    my %return_arg;
     for my $id ( $q->param('id') ) {
         next unless $id;    # avoid 'empty' ids
         if ( ( $type eq 'association' ) && ( $id =~ /PSEUDO-/ ) ) {
@@ -1510,7 +1513,7 @@ sub delete {
                   );
                 my $dn = $ldap->get_dn( $obj->name );
                 if ($dn) {
-                    $app->add_return_arg( author_ldap_found => 1 );
+                    $return_arg{author_ldap_found} = 1;
                 }
             }
         } elsif ( $type eq 'website' ) {
@@ -1540,7 +1543,9 @@ sub delete {
               );
             $app->run_callbacks( 'cms_post_delete.' . $type, $app, $obj );
         }
+        $delete_count++;
     }
+
     require MT::Entry;
     for my $entry_id ( keys %rebuild_entries ) {
         my $entry = MT::Entry->load($entry_id);
@@ -1561,26 +1566,43 @@ sub delete {
     $app->run_callbacks( 'rebuild', MT::Blog->load($blog_id) );
 
     if ( $#not_deleted >= 0 ) {
-        $app->add_return_arg( 'not_deleted' => 1 );
-        $app->add_return_arg( 'error_id' => join ',', @not_deleted );
+        $return_arg{not_deleted} = 1;
+        $return_arg{error_id}     = join ',', @not_deleted;
     }
     else {
-        $app->add_return_arg(
+        $return_arg{
             $type eq 'ping'
-            ? ( saved_deleted_ping => 1 )
-            : ( saved_deleted => 1 )
-        );
+            ? 'saved_deleted_ping'
+            : 'saved_deleted'
+          }
+          = 1;
     }
 
     if ( $q->param('is_power_edit') ) {
-        $app->add_return_arg( is_power_edit => 1 );
+        $return_arg{is_power_edit} = 1;
     }
     if ($required_items) {
-        $app->add_return_arg(
-            error => $app->translate("System templates can not be deleted.") );
+        $return_arg{error} = $app->translate("System templates can not be deleted.");
     }
 
-    $app->call_return;
+    if ( $app->param('xhr') ) {
+        my @msgs;
+        if ( delete $return_arg{saved_deleted} ) {
+            push @msgs, {
+                cls => 'success',
+                msg => MT->translate(
+                    'The selected [_1] has been deleted from the database.',
+                    $delete_count == 1 ? $class->class_label : $class->class_label_plural,
+            )};
+        }
+
+        $return_arg{messages} = \@msgs;
+        return \%return_arg;
+    }
+    else {
+        $app->add_return_arg(%return_arg);
+        return $app->call_return;
+    }
 }
 
 sub not_junk_test {

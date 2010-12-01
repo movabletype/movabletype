@@ -1191,7 +1191,7 @@ sub core_list_actions {
             'delete' => {
                 label      => 'Delete',
                 code       => "${pkg}Common::delete",
-                mode       => 'delete',
+                xhr        => 1,
                 order      => 110,
                 js_message => 'delete',
                 button     => 1,
@@ -2294,6 +2294,20 @@ sub init_core_callbacks {
             $pkg . 'post_delete.website' => "${pfx}Website::post_delete",
             $pkg . 'save_permission_filter.website' => "${pfx}Website::can_save",
             $pkg . 'pre_load_filtered_list.website' => "${pfx}Website::cms_pre_load_filtered_list",
+            $pkg . 'filtered_list_param.website' => sub {
+                my ( $cb, $app, $param, $objs ) = @_;
+                if ( $param->{not_deleted} ) {
+                    $param->{messages} ||= [];
+                    push @{ $param->{messages} }, {
+                        cls => 'alert',
+                        msg => MT->translate(
+                            'Some websites were not deleted. You need to delete blogs under the website first.',
+                        )
+                    };
+                }
+            },
+
+
             $pkg . 'view_permission_filter.website' => "${pfx}Blog::can_view",
 
             # blog callbacks
