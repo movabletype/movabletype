@@ -78,6 +78,8 @@ MT->add_callback( 'cms_post_save.entry', 10, $plugin,
     sub { $plugin->runner( 'post_entry_save', @_ ) } );
 MT->add_callback( 'api_post_save.entry', 10, $plugin,
     sub { $plugin->runner( 'post_entry_save', @_ ) } );
+MT->add_callback( 'cms_post_bulk_save.entries', 10, $plugin,
+    sub { $plugin->runner( 'post_entries_bulk_save', @_ ) } );
 MT->add_callback( 'scheduled_post_published', 10, $plugin,
     sub { $plugin->runner( 'post_entry_pub', @_ ) } );
 
@@ -86,6 +88,8 @@ MT->add_callback( 'cms_post_save.page', 10, $plugin,
     sub { $plugin->runner( 'post_entry_save', @_ ) } );
 MT->add_callback( 'api_post_save.page', 10, $plugin,
     sub { $plugin->runner( 'post_entry_save', @_ ) } );
+MT->add_callback( 'cms_post_bulk_save.pages', 10, $plugin,
+    sub { $plugin->runner( 'post_entries_bulk_save', @_ ) } );
 
 # Register Comment/TB post-save callbacks for rebuild triggers
 MT->add_callback( 'MT::Comment::post_save', 10, $plugin,

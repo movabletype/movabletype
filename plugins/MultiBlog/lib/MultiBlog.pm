@@ -127,6 +127,14 @@ sub post_feedback_save {
     }
 }
 
+sub post_entries_bulk_save {
+    my $plugin = shift;
+    my ( $eh, $app, $entries ) = @_;
+    foreach my $entry (@$entries) {
+        &post_entry_save( $plugin, $eh, $app, $entry->{current} );
+    }
+}
+
 sub post_entry_save {
     my $plugin = shift;
     my ( $eh, $app, $entry ) = @_;

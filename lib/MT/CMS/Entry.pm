@@ -2414,6 +2414,7 @@ sub update_entry_status {
     my $app_author = $app->user;
     my $perms      = $app->permissions;
 
+    my @objects;
     foreach my $id (@ids) {
         my $entry = MT::Entry->load($id)
           or return $app->errtrans(
@@ -2438,6 +2439,7 @@ sub update_entry_status {
                 ArchiveType => $archive_type
             );
         }
+        my $original   = $entry->clone;
         my $old_status = $entry->status;
         $entry->status($new_status);
         $entry->save() and $rebuild_these{$id} = 1;
@@ -2458,8 +2460,22 @@ sub update_entry_status {
                 metadata => $entry->id
             }
         );
+        push( @objects, { current => $entry, original => $original } )
     }
-    $app->rebuild_these( \%rebuild_these, how => MT::App::CMS::NEW_PHASE() );
+
+    my $tmpl =
+      $app->rebuild_these( \%rebuild_these, how => MT::App::CMS::NEW_PHASE() );
+
+    if (@objects) {
+        my $obj = $objects[0]{current};
+        $app->run_callbacks(
+            'cms_post_bulk_save.'
+              . ( $obj->class eq 'entry' ? 'entries' : 'pages' ),
+            $app, \@objects
+        );
+    }
+
+    $tmpl;
 }
 
 sub _finish_rebuild_ping {
