@@ -1,95 +1,103 @@
-<mt:setvarblock name="page_title"><mt:if name="id"><__trans phrase="Edit Widget Set"><mt:else><__trans phrase="Create Widget Set"></mt:if>
-</mt:setvarblock>
-<$mt:setvar name="position_actions_bottom" value="1"$>
-<mt:setvarblock name="html_head" append="1">
-<link rel="stylesheet" href="<mt:var name="static_uri">css/widget.css" type="text/css" />
+<mt:setvarblock name="page_title"><mt:if name="id"><__trans phrase="Edit Widget Set"><mt:else><__trans phrase="Create Widget Set"></mt:if></mt:setvarblock>
+
+<mt:setvar name="position_actions_bottom" value="1">
+
+<mt:setvarblock name="system_msg">
+<mt:if name="saved">
+  <mtapp:statusmsg
+     id="saved"
+     class="success"
+     can_close="1">
+    <__trans phrase="Your widget set changes have been saved.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="error"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+</mt:if>
 </mt:setvarblock>
 
 <mt:include name="include/header.tmpl">
 
-<div id="msg-block">
-<mt:if name="saved">
-    <mtapp:statusmsg
-        id="saved"
-        class="success">
-        <__trans phrase="Your widget set changes have been saved.">
-    </mtapp:statusmsg>
-</mt:if>
-<mt:if name="error">
-    <mtapp:statusmsg
-        id="generic-error"
-        class="error">
-        <mt:var name="error">
-    </mtapp:statusmsg>
-</mt:if>
-</div>
-
 <div id="edit-form">
+  <form id="manager" name="manager" method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="save_widget" />
+  <mt:if name="id">
+    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+  </mt:if>
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="modules" value="" />
 
-    <form id="manager" name="manager" method="post" action="<mt:var name="script_url">">
-      <input type="hidden" name="__mode" value="save_widget" />
-      <mt:if name="id"><input type="hidden" name="id" value="<mt:var name="id" escape="html">" /></mt:if>
-      <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
-      <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-      <input type="hidden" name="modules" value="" />
-
-      <fieldset>
-      <mtapp:setting
-          id="name"
-          label="<__trans phrase="Widget Set Name">"
-          label_class="top-label">
-          <div class="textarea-wrapper">
-              <input type="text" name="name" id="name" class="full-width" value="<mt:var name="name" escape="html">" />
-          </div>
-      </mtapp:setting>
-
-      <mtapp:setting
-          id="widgets"
-          label="<__trans phrase="Drag and drop the widgets that belong in this Widget Set into the 'Installed Widgets' column.">"
-          label_class="top-label">
-          <div id="stage" class="pkg">
-              <div id="installed-column" class="pkg">
-                <p><__trans phrase="Installed Widgets"></p>
-                <ul id="installed-column-items" class="connectSortable">
-              <mt:loop name="installed">
-                  <li>
-                    <div id="module-<mt:var name="id" escape="html">" class="module pkg">
-                      <div class="module-name"><a href="javascript:void(0)"><mt:var name="name" escape="html"></a></div>
-                      <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_new"><__trans phrase="edit"></a></div>
-                    </div>
-                  </li>
-              </mt:loop>
-                </ul>
-              </div>
-              <div id="center-column" class="pkg">&nbsp;</div>
-              <div id="available-column" class="pkg connectSortable">
-                <p><__trans phrase="Available Widgets"></p>
-                <ul id="available-column-items" class="connectSortable">
-              <mt:loop name="available">
-                  <li>
-                    <div id="module-<mt:var name="id" escape="html">" class="module pkg">
-                      <div class="module-name"><a href="javascript:void(0)"><mt:var name="name" escape="html"></a></div>
-                      <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_new"><__trans phrase="edit"></a></div>
-                    </div>
-                  </li>
-              </mt:loop>
-              </ul>
-              <div id="stage-drop">&nbsp;</div>
-          </div>
-      </mtapp:setting>
-      </fieldset>
+    <mtapp:setting
+       id="name"
+       label="<__trans phrase="Widget Set Name">"
+       label_class="no-header">
+      <input type="text" name="name" id="name" class="text full title" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Widget Set Name">" />
+    </mtapp:setting>
 
     <mt:setvarblock name="action_buttons">
-        <button
-            type="submit"
-            accesskey="s"
-            title="<__trans phrase="Save changes to this widget set (s)">"
-            class="save action primary button">
-          <__trans phrase="Save Changes">
-        </button>
+      <button
+         type="submit"
+         accesskey="s"
+         title="<__trans phrase="Save changes to this widget set (s)">"
+         class="save action primary button">
+        <__trans phrase="Save Changes">
+      </button>
     </mt:setvarblock>
     <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
-    </form>
+
+    <p><__trans phrase="Drag and drop the widgets that belong in this Widget Set into the 'Installed Widgets' column."></p>
+
+    <div class="line">
+      <div id="available-column" class="unit size1of2">
+        <mtapp:widget
+           id="available-widgets"
+           label="<__trans phrase="Available Widgets">">
+          <div id="available-column-items" class="connectSortable">
+          <mt:loop name="available">
+            <div id="widget-<mt:var name="id" escape="html">" class="widget widget-item">
+              <div class="widget-header">
+                <div class="widget-action">
+                  <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank"><__trans phrase="edit"></a>
+                </div>
+                <div class="widget-label">
+                  <h3><mt:var name="name" escape="html"></h3>
+                </div>
+              </div>
+            </div>
+          </mt:loop>
+          </div>
+        </mtapp:widget>
+      </div>
+
+      <div id="installed-column" class="unit size1of2">
+        <mtapp:widget
+           id="installed-widgets"
+           label="<__trans phrase="Installed Widgets">">
+          <div id="installed-column-items" class="connectSortable">
+          <mt:loop name="installed">
+            <div id="widget-<mt:var name="id" escape="html">" class="widget widget-item">
+              <div class="widget-header">
+                <div class="widget-action">
+                  <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank"><__trans phrase="edit"></a>
+                </div>
+                <div class="widget-label">
+                  <h3><mt:var name="name" escape="html"></h3>
+                </div>
+              </div>
+            </div>
+          </mt:loop>
+          </div>
+        </mtapp:widget>
+      </div>
+    </div>
+
+  </form>
 </div>
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('#manager').validate({
@@ -110,24 +118,22 @@
         connectWith: '.connectSortable',
         placeholder: 'placeholder',
         distance: 3,
-        opacity: 0.8,
         cursor: 'move',
-        forcePlaceholderSize: true
+        forcePlaceholderSize: true,
+        tolerance: 'pointer' 
     }).disableSelection();
 
 
     jQuery('button.save').click( function () {
         var data = [];
         var rex = RegExp("module-([0-9]+)");
-
-        jQuery('#installed-column-items .module').each( function () {
+        jQuery('#installed-column-items .widget-item').each( function () {
             if (this.id.match(rex)) {
                 data.push( RegExp.$1 );
             }
         });
-
         jQuery('form#manager input[name=modules]').val( data.toString() );
     });
-
 </mt:setvarblock>
+
 <mt:include name="include/footer.tmpl">

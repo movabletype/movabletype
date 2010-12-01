@@ -2701,14 +2701,14 @@ EOT
     }
     return <<"EOT";
 <div id="$id" class="widget $class"$tabbed>
-        <div class="widget-header $header_class">
-                $header_action
-                $widget_header
-        </div>
-        <div class="widget-content">
-$insides
-        </div>
-        <div class="widget-footer">$widget_footer</div>$corners
+  <div class="widget-header $header_class">
+    <div class="widget-action">$header_action</div>
+    <div class="widget-label">$widget_header</div>
+  </div>
+  <div class="widget-content">
+    $insides
+  </div>
+  <div class="widget-footer">$widget_footer</div>$corners
 </div>
 EOT
 }
