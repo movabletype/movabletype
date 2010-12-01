@@ -198,7 +198,6 @@ tfoot .col.head{
 
 /* - Legacy Listing */ 
 .legacy.listing-table {
-    margin: 0 0 10px;
     border-radius: 5px;
     -moz-border-radius: 5px;
 }
@@ -239,25 +238,27 @@ tfoot .col.head{
 }
 .filteritem {
     position: relative;
-    min-height: 30px;
-    margin: 0 10px 0;
-    padding: 10px 10px 0;
+    margin: 0 10px;
+    padding: 0 10px;
     background-color: #fff;
     border: 1px solid #adadad;
     border-top-color: #cfd0d0;
     border-left-color: #cfd0d0;
+    overflow: hidden;
 }
-.filtertype {
-    margin-bottom: 10px;
-}
-.filteritem .item-label {
+.filteritem .item-label, 
+.filteritem .prop-hidden {
     float: left;
-    margin-top: 3px;
+    line-height: 42px;
     margin-right: 10px;
     font-weight: bold;
 }
-.filteritem .close-link {
-    top: 20px;
+.filteritem .item-fields {
+    line-height: 42px;
+}
+.filteritem .item-ctrl {
+    position: relative;
+    top: 5px;
 }
 
 /* - Select Filter */
