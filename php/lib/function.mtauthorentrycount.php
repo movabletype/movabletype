@@ -19,7 +19,7 @@ function smarty_function_mtauthorentrycount($args, &$ctx) {
     }
 
     $args['blog_id'] = $ctx->stash('blog_id');
-    $args['author_id'] = $$author->id;
+    $args['author_id'] = $author->id;
     $count = $ctx->mt->db()->blog_entry_count($args);
     return $ctx->count_format($count, $args);
 }
