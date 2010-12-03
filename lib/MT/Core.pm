@@ -1346,6 +1346,11 @@ BEGIN {
                 path    => 1,
                 type    => 'ARRAY',
             },
+            'LocalLib' => {
+                default => undef,
+                path    => 1,
+                type    => 'ARRAY',
+            },
             'EnableArchivePaths' => { default => 0, },
             'SearchTemplatePath' => {
                 default => 'search_templates',

@@ -911,6 +911,14 @@ sub init_config {
         }
     }
 
+    if ( my $local_lib = $cfg->LocalLib ) {
+        $local_lib = [$local_lib] if !ref $local_lib;
+        eval "use local::lib qw( @{$local_lib} )";
+        return $mt->trans_error( 'Can\'t load local lib from path [_1]: ',
+            join( ', ', @$local_lib ), $@, )
+          if $@;
+    }
+
     return $mt->trans_error("Bad ObjectDriver config")
       unless $cfg->ObjectDriver;
 
