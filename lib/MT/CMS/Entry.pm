@@ -1787,6 +1787,7 @@ sub save_entries {
     my $blog_id        = $q->param('blog_id');
     my $this_author    = $app->user;
     my $this_author_id = $this_author->id;
+    my @objects;
     for my $p (@p) {
         next unless $p =~ /^author_id_(\d+)/;
         my $id    = $1;
@@ -1910,8 +1911,11 @@ sub save_entries {
                 metadata => $entry->id
             }
         );
-        $app->run_callbacks( 'cms_post_save.' . $type, $app, $entry, $orig_obj );
+        push( @objects, { current => $entry, original => $orig_obj } )
     }
+    $app->run_callbacks(
+        'cms_post_bulk_save.' . ( $type eq 'entry' ? 'entries' : 'pages' ),
+        $app, \@objects );
     $app->add_return_arg( 'saved' => 1, is_power_edit => 1 );
     $app->call_return;
 }
