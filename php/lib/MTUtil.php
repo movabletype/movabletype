@@ -1172,10 +1172,10 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     # Modify the tag argument, replacing the tag name with '#TagID'
     # Create a ID-based hash of the tags that are used in the arg
     foreach ($tags as $tag) {
-        $tagn = $tag->tag_name;
+        $tagn = quotemeta($tag->tag_name);
         $tagid = $tag->tag_id;
         $oldexpr = $expr;
-	    $expr = preg_replace("!(?:\Q[$tagn]\E|\Q$tagn\E)!", "#$tagid",
+	    $expr = preg_replace("/(\sAND\s|\sOR\s|\s?NOT\s|\(|\A)\s*?\Q$tagn\E\s*?(\Z|\)|\sAND\s|\sOR\s|\sNOT\s)/", "#$tagid",
 	        $expr);
 	    if ($oldexpr != $expr)
 	        $tags_used[$tagid] = $tag;
