@@ -15,11 +15,8 @@
 <mt:else>
   <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/main.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
 </mt:unless>
-  <!--[if lte IE 7]>
+  <!--[if IE]>
   <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
-  <![endif]-->
-  <!--[if lte IE 6]>
-  <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie6.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
   <![endif]-->
 <mt:if name="local_lang_id" ne="en-us">
   <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version_id" escape="url">" />

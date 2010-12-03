@@ -72,7 +72,7 @@
     border-width: 0 0 1px 1px;
     background-color: #dcdddd;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
-    background: -moz-linear-gradient(top, #f3f3f3, #dcdddd);
+    background: -moz-linear-gradient(top, #f3f3f3 0%, #dcdddd 100%);
     font-size: 11px;
     font-weight: bold;
     text-shadow: rgb(248,251,248) 0 1px 0;
@@ -104,7 +104,7 @@ tfoot .col.head{
 .col.sorted { 
     background-color: #f3f3f3;
     background: -webkit-gradient(linear, left top, left bottom, from(#dcdddd), to(#f3f3f3));
-    background: -moz-linear-gradient(top, #dcdddd, #f3f3f3);
+    background: -moz-linear-gradient(top, #dcdddd 0%, #f3f3f3 100%);
 }
 .col.head div {
     position: relative;
@@ -256,32 +256,39 @@ tfoot .col.head{
 .filteritem .item-content {
     line-height: 42px;
 }
-.filteritem .item-ctrl {
-    position: relative;
-    top: 5px;
-}
 
 /* - Select Filter */
 #dialog_filter_content {
-    padding-top: 0;
     max-height: 420px;
+    padding-top: 0;
     overflow: auto;
 }
 #create-new-link {
-    padding: 0.5em 0.8em;
-    background-color: #dcdddd;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
+    padding: 0.5em 0.3em;
+    border-bottom: 1px solid #c0c6c9;
 }
 #create-new-link a {
     color: #2b2b2b;
 }
 #dialog_filter .filter {
     margin: 0;
-    padding: 0.3em 0;
+    padding: 0.3em 0.5em;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
 }
-.handle-filter {
+#dialog_filter .filter:hover {
+    background-color: #dcdddd;
+}
+.filter-label {
+    min-height: 20px;
+}
+.filter-ctrl {
     text-align: right;
+    height: 20px;
+}
+.filter-ctrl a {
+    display: inline-block;
+    vertical-align: middle;
 }
 .tool-link {
     margin: 0 0 0 0.5em;

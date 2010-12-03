@@ -154,21 +154,21 @@ pre {
     top: 0;
     right: 0;
     height: 100%;
-    background-color: #dcdddd;
+    background-color: #f3f3f3;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
     background: -moz-linear-gradient(top, #f3f3f3, #dcdddd);
     border-left: 1px solid #c0c6c9;
     text-align: center;
 }
 .toggle-button:hover {
-    background-color: #e7e7eb;
-    background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e7e7eb));
-    background: -moz-linear-gradient(top, #fafafa, #e7e7eb);
+    background-color: #fafafa;
+    background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e9eaea));
+    background: -moz-linear-gradient(top, #fafafa, #e9eaea);
 }
 .active .toggle-button {
-    background-color: #dbdbdb;
-    background: -webkit-gradient(linear, left top, left bottom, from(#dbdbdb), to(#ebebeb));
-    background: -moz-linear-gradient(top, #dbdbdb, #ebebeb));
+    background-color: #dcdddd;
+    background: -webkit-gradient(linear, left top, left bottom, from(#dcdddd), to(#f3f3f3));
+    background: -moz-linear-gradient(top, #dcdddd, #f3f3f3));
 }
 .toggle-button img {
     position: absolute;
@@ -362,6 +362,7 @@ ul.tabs li a {
 .has-related-content #content-body {
     margin-right: 220px;
 }
+#dashboard #content-body, 
 .edit-screen #content-body {
     margin-right: 280px;
 }
@@ -377,6 +378,7 @@ ul.tabs li a {
     width: 200px;
     margin-right: -220px;
 }
+#dashboard #related-content, 
 .edit-screen #related-content {
     width: 260px;
     margin-right: -280px;
@@ -841,9 +843,9 @@ ul.tabs li a {
     padding: 0;
 }
 .current .top-menu-link { 
-    background-color: #dcdddd;
-    background: -webkit-gradient(linear, left top, left bottom, from(#ebebeb), to(#dbdbdb));
-    background: -moz-linear-gradient(top, #ebebeb, #dbdbdb));
+    background-color: #f3f3f3;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
+    background: -moz-linear-gradient(top, #f3f3f3, #dcdddd));
     color: #2b2b2b;
     font-weight: bold;
     text-shadow: #f8fbf8 0 1px 0;
@@ -1008,6 +1010,9 @@ ul.tabs li a {
     margin: 0;
     color: #2b2b2b;
     font-weight: bold;
+}
+.tabbed .widget-label h3 {
+    display: none;
 }
 .widget-action {
     float: right;
@@ -1212,9 +1217,6 @@ fieldset {
 #favorite_blogs .widget-header { 
     padding-bottom: 0;
     border-bottom: 0;
-}
-#favorite_blogs .widget-label { 
-    display: none;
 }
 #favorite_blogs #favorite-blogs-tabs { 
     margin: 0 -10px;
@@ -2339,7 +2341,7 @@ body.preview-screen {
 }
 #installed-column-items,
 #available-column-items {
-    min-height: 500px;
+    min-height: 100px;
 }
 #available-widgets {
     margin-right: 10px;

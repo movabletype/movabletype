@@ -1,197 +1,168 @@
-/* - Generic */
-/* -- form */
-body { 
-    word-break: break-all;
-}
-
-input.text, 
-input.password, 
-select, 
-textarea { 
-    padding: 2px 0 2px 2px ! important;
-    border: 1px solid #c8c2be;
-}
-
-input.text, 
-textarea { 
-    width: 28em;
-}
-
-input.password { 
-    width: 15em ! important;
-}
-
-input.smaller-text { 
-    width: 3.5em ! important;
-}
-
-input.extra-path { 
-    width: 12em ! important;
-}
-
-#basic-search input.search-query {
-    padding-left: 0 ! important;
-}
-
-.widget input[type="text"], 
-.widget textarea, 
-.edit-entry input[type="text"], 
-.edit-entry textarea, 
-.edit-template input[type="text"], 
-.edit-template textarea { 
-    width: 99%;
-}
-
-.edit-entry #editor-content-textarea { 
-    width: 100%;
-    padding-left: 0;
-}
-
-.widget input[type="text"], 
-.widget input[type="password"], 
-.widget textarea { 
-    width: 96%;
-}
-
-#sign-in input[type="text"] { 
-    width: 313px;
-}
-
-#sign-in #username, 
-#sign-in #password, 
-#reset-password input, 
-#change-password input { 
-    width: 335px ! important;
-}
-
-#sign-in .has-auth-icon input {
-    padding-left: 22px ! important;
-}
-
+/* - form.css */
 /* -- Button */
-button { 
-    min-height: 20px;
+.button {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#f3f3f3', 
+        endColorstr='#dcdddd', 
+        GradientType=0 
+    );
+}
+.button:hover {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#fafafa', 
+        endColorstr='#e9eaea', 
+        GradientType=0 
+    );
+}
+.button:active {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#dcdddd', 
+        endColorstr='#f3f3f3', 
+        GradientType=0 
+    );
 }
 
-button.action { 
-    font-weight: bold;
-    height: 23px;
+/* -- Large Button */
+.button.action {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#adadad', 
+        endColorstr='#7b7c7d', 
+        GradientType=0 
+    );
+}
+.button.action:hover {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#bababa', 
+        endColorstr='#88898a', 
+        GradientType=0 
+    );
+}
+.button.action:active {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#88898a', 
+        endColorstr='#bababa', 
+        GradientType=0 
+    );
 }
 
-/* - Component */
-.icon-left { 
-    background-position: left 2px;
+/* -- Primary Button */
+.button.primary {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#2a83a2', 
+        endColorstr='#165e83', 
+        GradientType=0 
+    );
+}
+.button.primary:hover {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#2f93b6', 
+        endColorstr='#1a6e99', 
+        GradientType=0 
+    );
+}
+.button.primary:active {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#165e83', 
+        endColorstr='#2a83a2', 
+        GradientType=0 
+    );
 }
 
-/* - App Header */
-#header { 
-    z-index: 1200;
+/* - listing.css */
+/* -- Table Header */
+.col.head {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#f3f3f3', 
+        endColorstr='#dcdddd', 
+        GradientType=0 
+    );
+}
+.col.head.sorted {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#dcdddd', 
+        endColorstr='#f3f3f3', 
+        GradientType=0 
+    );
 }
 
-/* - Selector Nav */
-#selector-nav-list a.toggle-button img { 
-    margin-top: 0;
+/* - structure.css */
+/* -- Toggle Button */
+.toggle-button {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#f3f3f3', 
+        endColorstr='#dcdddd', 
+        GradientType=0 
+    );
+}
+.toggle-button:hover {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#fafafa', 
+        endColorstr='#e9eaea', 
+        GradientType=0 
+    );
+}
+.toggle-button:active {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#dcdddd', 
+        endColorstr='#f3f3f3', 
+        GradientType=0 
+    );
 }
 
-#selector-nav .selector a,
-#selector-nav .selector span { 
-    overflow: visible;
+/* -- Progress Bar */
+.ui-progressbar .ui-progressbar-value {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#58bee3', 
+        endColorstr='#32789e', 
+        GradientType=0 
+    );
 }
 
-/* - Menu Bar Nav */
-#menu-bar-nav { 
-    width: 250px;
+/* -- Favorite Actions Split Button */
+.fav-actions-nav .action.button {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#ffd900', 
+        endColorstr='#f8b500', 
+        GradientType=0 
+    );
+}
+.fav-actions-nav .action.button:hover {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#ffdd1a', 
+        endColorstr='#ffbf13', 
+        GradientType=0 
+    );
+}
+.fav-actions-nav .action.button:active {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#f8b500', 
+        endColorstr='#ffd900', 
+        GradientType=0 
+    );
 }
 
-/* - Navigation Menu */
-#menu { 
-    z-index: 1100;
+/* -- Menu Navigation */
+.current .top-menu-link {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#f3f3f3', 
+        endColorstr='#dcdddd', 
+        GradientType=0 
+    );
 }
 
-ul.menu-nav li.top-menu { 
-    margin-top: -4px;
-}
-ul.menu-nav li.top-menu.first-child { 
-    margin-top: 0;
-}
-ul.menu-nav li.first-child a { 
-    margin-top: 0;
-}
-
-ul.menu-nav a.top-menu-link .menu-label { 
-    word-break: normal;
+/* -- Widget */
+.widget-header { 
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#f3f3f3', 
+        endColorstr='#dcdddd', 
+        GradientType=0 
+    );
 }
 
-/* - Widgets */
-/* -- Favorite Website, Blog Widget */
-.favorite-blogs-widget .blog-container { 
-    height: auto;
-    margin-right: 0;
-    overflow: visible;
-}
-
-.favorite-blogs-widget .blog-action {
-    right: 0;
-}
-
-ul#asset-list li a.remove-asset {
-    top: 6px;
-    margin-top: 0;
-}
-
-/* - Listing Table */
-.listing th, 
-.listing td { 
-    padding: 6px 8px;
-}
-
-.listing td.view, 
-.listing td.cb, 
-.listing td.si, 
-.listing td.number { 
-    padding-top: 8px;
-}
-
-/* - Fields */
-.field-header { 
-    word-break: normal; 
-}
-
-#template-options #template-options-header h3 { 
-    float: left;
-}
-
-/* - dialog */
-#tags-field {
-    z-index: 100;
-}
-
-/* - fake display: inline-block; */
-.ui-tabs-nav li, 
-ul.tabs li, 
-#utility-nav li, 
-#selector-nav .current, 
-.object-nav li, 
-#editor .editor-header .tab, 
-#field-convert_breaks, 
-#template-options #template-options-header h3, 
-#caching-field li li, 
-#permission-list li, 
-.settings-screen ul#editor-fields li, 
-.edit-author #system_permissions-field li, 
-.template-group-header h3, 
-#search-bar-advanced-search li, 
-.search-replace .advanced-options li, 
-.dialog .selected-items .items a .remove, 
-.mt-beta #footer #msg-beta p { 
-    display: inline;
-    height: 1%;
-}
-
-/* - haslayout */
-ul.menu-nav, 
-.welcome-widget, 
-#content-body, 
-.favorite-blogs-widget .blog-content { 
-    zoom: 1;
+.sort-enabled:hover .field-header {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#f3f3f3', 
+        endColorstr='#dcdddd', 
+        GradientType=0 
+    );
 }
