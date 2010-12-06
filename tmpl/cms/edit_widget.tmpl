@@ -60,7 +60,7 @@
            label="<__trans phrase="Available Widgets">">
           <div id="available-column-items" class="connectSortable">
           <mt:loop name="available">
-            <div id="widget-<mt:var name="id" escape="html">" class="widget widget-item">
+            <div id="module-<mt:var name="id" escape="html">" class="widget widget-item">
               <div class="widget-header">
                 <div class="widget-action">
                   <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank"><__trans phrase="edit"></a>
@@ -81,7 +81,7 @@
            label="<__trans phrase="Installed Widgets">">
           <div id="installed-column-items" class="connectSortable">
           <mt:loop name="installed">
-            <div id="widget-<mt:var name="id" escape="html">" class="widget widget-item">
+            <div id="module-<mt:var name="id" escape="html">" class="widget widget-item">
               <div class="widget-header">
                 <div class="widget-action">
                   <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank"><__trans phrase="edit"></a>

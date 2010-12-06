@@ -992,7 +992,7 @@ ul.tabs li a {
 }
 .widget-header { 
     position: relative;
-    padding: 7px 10px 5px;
+    padding: 5px 8px 5px 10px;
     background-color: #dcdddd;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
     background: -moz-linear-gradient(top, #f3f3f3, #dcdddd);
@@ -1003,12 +1003,13 @@ ul.tabs li a {
 .widget-no-header .widget-header { 
     display: none;
 }
+.widget-label h2,
 .widget-label h3,
 .widget-label h4,
 .widget-label h5, 
 .widget-label h6 {
     margin: 0;
-    color: #2b2b2b;
+    font-size: 100%;
     font-weight: bold;
 }
 .tabbed .widget-label h3 {
@@ -1018,17 +1019,10 @@ ul.tabs li a {
     float: right;
 }
 .widget-close-link { 
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: none;
-    height: 16px;
-    width: 16px;
-    margin-right: 10px;
-    margin-top: 7px;
-    background-image: url(../images/widget/widget-icons.png);
-    background-position: -32px 0;
-    background-repeat: no-repeat;
+    display: inline-block;
+    height: 15px;
+    width: 15px;
+    background: url(../images/widget/widget-icons.png) -33px 0 no-repeat;
 }
 .widget-close-link span { 
     display: none;
@@ -1216,7 +1210,6 @@ fieldset {
 /* --- on User Dashboard --- */
 #favorite_blogs .widget-header { 
     padding-bottom: 0;
-    border-bottom: 0;
 }
 #favorite_blogs #favorite-blogs-tabs { 
     margin: 0 -10px;
@@ -1224,6 +1217,9 @@ fieldset {
 #favorite_blogs #favorite-blogs-tabs ul.tabs { 
     margin-bottom: 0;
     width: 100%;
+}
+.blog-name {
+    margin-top: 0;
 }
 
 /* --- on System, Website Dashboard --- */
@@ -1236,10 +1232,6 @@ fieldset {
     position: relative;
     margin-bottom: 30px;
     overflow: hidden;
-}
-.favorite-blogs-widget .blog-theme-thumbnail img { 
-    width: 100px;
-    height: 75px;
 }
 .favorite-blogs-widget .blog-meta { 
     margin-right: 120px;
@@ -2338,9 +2330,12 @@ body.preview-screen {
 .widget-item {
     margin-bottom: 8px;
     cursor: move;
+    -webkit-box-shadow: 0 1px 0 #fff;
+    -moz-box-shadow: 0 1px 0 #fff;
+    box-shadow: 0 1px 0 #fff;
 }
-#installed-column-items,
-#available-column-items {
+#available-column-items, 
+#installed-column-items {
     min-height: 100px;
 }
 #available-widgets {
@@ -2348,6 +2343,13 @@ body.preview-screen {
 }
 #installed-widgets {
     margin-left: 10px;
+    background-color: #f6f6f6;
+}
+#installed-widgets > .widget-header {
+    background-color: #adadad;
+    background: -webkit-gradient(linear, left top, left bottom, from(#adadad), to(#7b7c7d));
+    background: -moz-linear-gradient(top, #adadad 0%, #7b7c7d 100%);
+    color: #fffffc;
 }
 
 /* - Edit Asset */

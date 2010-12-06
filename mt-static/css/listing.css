@@ -32,13 +32,10 @@
     width: 13%;
     padding: 7px 8px;
     border: solid #c0c6c9;
-    border-width: 0 0 1px;
+    border-width: 0;
     text-align: left;
     vertical-align: top;
     word-wrap: break-word;
-}
-.last-child .col { 
-    border-width: 0;
 }
 .col a { 
     color: #274a78;
