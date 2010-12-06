@@ -1065,10 +1065,6 @@ BEGIN {
                     my ( $app ) = @_;
                     return 1 if $app->user->is_superuser;
 
-                    my ( $app ) = @_;
-                    return 0 if $app->blog && !$app->blog->is_blog;
-                    return 1 if $app->user->is_superuser;
-
                     if ( $app->blog ) {
                         return 1 if $app->user->permissions($app->blog->id)->can_do('get_page_feed');
                     } else {

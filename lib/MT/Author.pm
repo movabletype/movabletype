@@ -567,7 +567,6 @@ sub _bulk_author_name_html {
         else {
             $userpic_url = MT->static_path . 'images/default-userpic-36.jpg';
         }
-        my $name = $obj->nickname;
         my ($status_img, $status_label);
         if ( MT->config->SingleCommunity ) {
             if ( $obj->type == MT::Author::AUTHOR() ) {
