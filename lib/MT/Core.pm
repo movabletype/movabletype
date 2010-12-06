@@ -2288,6 +2288,7 @@ sub load_core_permissions {
                 'reset_blog_templates'      => 1,
                 'search_templates'          => 1,
                 'use_tools:search'          => 1,
+                'refresh_templates'         => 1.
             }
         },
         'blog.manage_feedback' => {
@@ -2400,6 +2401,7 @@ sub load_core_permissions {
                 'apply_theme'                => 1,
                 'open_theme_export_screen'   => 1,
                 'do_export_theme'            => 1,
+                'refresh_templates'          => 1.
             },
         },
         'blog.publish_post' => {
@@ -2581,6 +2583,7 @@ sub load_core_permissions {
                 'use_tools:search'             => 1,
                 'open_blog_listing_screen'     => 1,
                 'open_all_blog_listing_screen' => 1,
+                'refresh_templates'            => 1.
             },
         },
         'system.manage_plugins' => {

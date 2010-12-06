@@ -2741,6 +2741,7 @@ Accepted values: "all", "index".
 
 sub _hdlr_app_statusmsg {
     my ($ctx, $args, $cond) = @_;
+    my $app = MT->instance;
     my $id = $args->{id};
     my $class = $args->{class} || 'info';
     my $msg = $ctx->slurp;
@@ -2750,9 +2751,13 @@ sub _hdlr_app_statusmsg {
     if (!$blog && $blog_id) {
         $blog = MT->model('blog')->load($blog_id);
     }
-    $rebuild = '' if $blog && $blog->custom_dynamic_templates eq 'all';
-    $rebuild = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild">%%</a>">} if $rebuild eq 'all';
-    $rebuild = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">%%</a>">} if $rebuild eq 'index';
+    if ( $app->user->can_do('rebuild') ) {
+        $rebuild = '' if $blog && $blog->custom_dynamic_templates eq 'all'; 
+        $rebuild = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild">%%</a>">} if $rebuild eq 'all';
+        $rebuild = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">%%</a>">} if $rebuild eq 'index';
+    } else {
+        $rebuild = '';
+    }
     my $close = '';
     if ($id && ($args->{can_close} || (!exists $args->{can_close}))) {
         $close = qq{<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />};

@@ -1809,7 +1809,8 @@ sub dialog_refresh_templates {
         unless $app->user->is_superuser()
             || $app->user->can_edit_templates()
             || ( $perms && (    $perms->can_edit_templates()
-                             || $perms->can_administer_blog() ) );
+                             || $perms->can_administer_blog()
+                             || $perms->can_do('refresh_templates') ) );
 
     my $param = {};
     if ( my $blog = $app->blog ) {
@@ -1893,6 +1894,7 @@ sub refresh_all_templates {
             my $can_refresh_blog = !$perms                       ? 0
                                  : $perms->can_edit_templates()  ? 1
                                  : $perms->can_administer_blog() ? 1
+                                 : $perms->can_do('refresh_templates')  ? 1
                                  :                                 0
                                  ;
             if (!$can_refresh_blog) {
