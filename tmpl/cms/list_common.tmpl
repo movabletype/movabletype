@@ -465,9 +465,9 @@ function renderFilterList() {
     updateItemList();
     jQuery('#dialog_filter').dialog('close');
     updateFilterSaveButtons({
-      system: 0,
-      new: 1,
-      allpass: 0
+      system:     0,
+      new_filter: 1,
+      allpass:    0
     });
   });
   jQuery('#dialog_filter .filter-label a:not(#new_filter)').click(function() {
@@ -495,9 +495,9 @@ var allPass       = 0;
 
 function updateFilterSaveButtons ( opts ){
   if ( opts ) {
-    if ( opts.allpass != undefined ) allPass       = opts.allpass;
-    if ( opts.new != undefined )     editNewFilter = opts.new;
-    if ( opts.system != undefined )  editSysFilter = opts.system;
+    if ( opts.allpass    != undefined ) allPass       = opts.allpass;
+    if ( opts.new_filter != undefined ) editNewFilter = opts.new_filter;
+    if ( opts.system     != undefined ) editSysFilter = opts.system;
   }
 
   if ( jQuery('#filter-detail div.filteritem').length > 0 ) {
@@ -927,8 +927,8 @@ function renderList(mode, columns, values, limit, page ) {
       if (mode == 'save_filter' || mode == 'delete_filter') {
         renderFilterList();
         updateFilterSaveButtons({
-          system: 0,
-          new:    0
+          system:     0,
+          new_filter: 0
         });
       }
       if (!jQuery('#msg-block .msg-error').length) {
@@ -1322,7 +1322,7 @@ jQuery('#save-filter').click(function() {
   }
   itemValues();
   jQuery(window).one('listReady', function() {
-    updateFilterSaveButtons({ new: 0 });
+    updateFilterSaveButtons({ new_filter: 0 });
   });
   renderList('save_filter', cols, vals, jQuery('#row').val(), 1);
   return false;
