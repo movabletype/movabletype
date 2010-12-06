@@ -1193,6 +1193,7 @@ sub build_comment_table {
             $entry = $entry_pkg->new;
             $entry->title( '* ' . $app->translate('Orphaned comment') . ' *' );
         }
+        $row->{can_reply} = $author->permissions($entry->blog->id)->can_edit_entry( $entry, $author, 1 );
         $row->{entry_class} = $entry->class;
         $row->{entry_class_label} = $entry->class_label;
         $row->{entry_title} = (

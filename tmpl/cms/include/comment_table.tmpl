@@ -114,9 +114,9 @@
         <mt:if name="has_edit_access">
         <span class="actions-link">
           <a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" title="<__trans phrase="Edit this comment">"><__trans phrase="Edit"></a>
-          <mt:if name="visible">
+          <mt:if name="visible"><mt:if name="can_reply">
             | <a href="<mt:var name="script_url">?__mode=dialog_post_comment&amp;reply_to=<mt:var name="id" escape="url">&amp;magic_token=<mt:var name="magic_token" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url"><mt:if name="return_args">&amp;return_args=<mt:var name="return_args" escape="url"></mt:if>" class="mt-open-dialog"><__trans phrase="Reply"></a>
-          </mt:if>
+          </mt:if></mt:if>
         </span>
         </mt:if>
       <mt:else>
