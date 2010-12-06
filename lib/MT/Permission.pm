@@ -474,11 +474,14 @@ sub can_edit_entry {
             or die;
     }
     die unless $entry->isa('MT::Entry');
+
+    return 1 if $author->permissions($entry->blog_id)->can_do('edit_all_entries');
+
     if ( 'page' eq $entry->class ) {
         return $perms->can_manage_pages;
     }
     my $own_entry = $entry->author_id == $author->id;
-    
+
     if ( defined $status ) {
         return $own_entry ? $perms->can_do('edit_own_published_entry')
                           : $perms->can_do('edit_all_published_entry');

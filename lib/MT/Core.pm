@@ -2194,6 +2194,7 @@ sub load_core_permissions {
                 'use_entry:manage_menu'            => 1,
                 'use_tools:search'                 => 1,
                 'get_entry_feed'                   => 1,
+                'save_multiple_entries'            => 1,
             }
         },
         'blog.edit_assets' => {

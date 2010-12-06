@@ -1769,14 +1769,47 @@ sub save_entries {
     my $app   = shift;
     my $perms = $app->permissions;
     my $type  = $app->param('_type');
-    if ( $type eq 'page' ) {
-        $app->can_do('save_multiple_pages')
-            or return $app->permission_denied();
+    my $blog_id = $app->param('blog_id');
+    return $app->return_to_dashboard( redirect => 1 )
+        unless $blog_id;
+    my $blog = $app->model('blog')->load($blog_id);
+    return $app->return_to_dashboard( redirect => 1 )
+        unless $blog;
+
+    PERMCHECK: {
+        my $action = $type eq 'page'
+            ? 'save_multiple_pages'
+            : 'save_multiple_entries';
+        if ($blog_id) {
+            if ( $blog->is_blog ) {
+                last PERMCHECK if $app->can_do($action);
+            } else {
+                my $blogs = $blog->blogs;
+                my $blog_ids;
+                my @map = map { $_->id } @$blogs;
+                push @$blog_ids, map { $_->id } @{$blog->blogs};
+
+                my $terms = {
+                    author_id => $app->user->id,
+                    ( $blog_ids ? ( blog_id => $blog_ids ) : ( ) ),
+                };
+                my $iter = MT->model('permission')->load_iter( $terms );
+                if ( $iter ) {
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        last if !$p->can_do( $action );
+                    }
+                    last PERMCHECK if $cond;
+                }
+            }
+        }
+        else {
+            last PERMCHECK
+                if $app->user->can_do( $action, at_least_one => 1 );
+        }
+        return $app->permission_denied();
     }
-    elsif ( $type eq 'entry' ) {
-        $app->can_do('save_multiple_entries')
-            or return $app->permission_denied();
-    }
+
     $app->validate_magic() or return;
 
     my $q = $app->param;
@@ -1784,7 +1817,6 @@ sub save_entries {
     require MT::Entry;
     require MT::Placement;
     require MT::Log;
-    my $blog_id        = $q->param('blog_id');
     my $this_author    = $app->user;
     my $this_author_id = $this_author->id;
     my @objects;
@@ -2036,7 +2068,27 @@ sub open_batch_editor {
             ? 'open_batch_page_editor_via_list'
             : 'open_batch_entry_editor_via_list';
         if ($blog_id) {
-            last PERMCHECK if $app->can_do($action);
+            if ( $blog->is_blog ) {
+                last PERMCHECK if $app->can_do($action);
+            } else {
+                my $blogs = $blog->blogs;
+                my $blog_ids;
+                my @map = map { $_->id } @$blogs;
+                push @$blog_ids, map { $_->id } @{$blog->blogs};
+
+                my $terms = {
+                    author_id => $app->user->id,
+                    ( $blog_ids ? ( blog_id => $blog_ids ) : ( ) ),
+                };
+                my $iter = MT->model('permission')->load_iter( $terms );
+                if ( $iter ) {
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        last if !$p->can_do( $action );
+                    }
+                    last PERMCHECK if $cond;
+                }
+            }
         }
         else {
             last PERMCHECK

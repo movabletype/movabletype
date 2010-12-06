@@ -658,7 +658,7 @@ sub core_list_actions {
                 js_message => 'publish',
                 button     => 1,
                 permit_action => {
-                    permit_action => 'publish_entry_via_list',
+                    permit_action => 'publish_entry_via_list,publish_all_entry',
                     include_all => 1,
                 },
                 condition  => sub {
