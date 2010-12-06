@@ -126,7 +126,7 @@
 
     jQuery('button.save').click( function () {
         var data = [];
-        var rex = RegExp("module-([0-9]+)");
+        var rex = RegExp("widget-([0-9]+)");
         jQuery('#installed-column-items .widget-item').each( function () {
             if (this.id.match(rex)) {
                 data.push( RegExp.$1 );
