@@ -1012,7 +1012,21 @@ BEGIN {
                     my ( $app ) = @_;
                     return 0 if $app->blog && !$app->blog->is_blog;
                     return 1 if $app->user->is_superuser;
-                    return 1 if $app->user->permissions($app->blog->id)->can_do('get_entry_feed');
+
+                    if ( $app->blog ) {
+                        return 1 if $app->user->permissions($app->blog->id)->can_do('get_entry_feed');
+                    } else {
+                        my $iter = MT->model('permission')->load_iter({
+                            author_id => $app->user->id,
+                            blog_id => { not => 0 },
+                        });
+                        my $cond;
+                        while ( my $p = $iter->() ) {
+                            $cond = 1, last
+                                if $p->can_do('get_entry_feed');
+                        }
+                        return $cond ? 1 : 0;
+                    }
                     0;
                 },
                 condition => sub{
@@ -1050,7 +1064,25 @@ BEGIN {
                 feed_link => sub {
                     my ( $app ) = @_;
                     return 1 if $app->user->is_superuser;
-                    return 1 if $app->user->permissions($app->blog->id)->can_do('get_page_feed');
+
+                    my ( $app ) = @_;
+                    return 0 if $app->blog && !$app->blog->is_blog;
+                    return 1 if $app->user->is_superuser;
+
+                    if ( $app->blog ) {
+                        return 1 if $app->user->permissions($app->blog->id)->can_do('get_page_feed');
+                    } else {
+                        my $iter = MT->model('permission')->load_iter({
+                            author_id => $app->user->id,
+                            blog_id => { not => 0 },
+                        });
+                        my $cond;
+                        while ( my $p = $iter->() ) {
+                            $cond = 1, last
+                                if $p->can_do('get_page_feed');
+                        }
+                        return $cond ? 1 : 0;
+                    }
                     0;
                 },
             },
@@ -1142,7 +1174,22 @@ BEGIN {
                 feed_link => sub {
                     my ( $app ) = @_;
                     return 1 if $app->user->is_superuser;
-                    return 1 if $app->user->permissions($app->blog->id)->can_do('get_comment_feed');
+
+
+                    if ( $app->blog ) {
+                        return 1 if $app->user->permissions($app->blog->id)->can_do('get_comment_feed');
+                    } else {
+                        my $iter = MT->model('permission')->load_iter({
+                            author_id => $app->user->id,
+                            blog_id => { not => 0 },
+                        });
+                        my $cond;
+                        while ( my $p = $iter->() ) {
+                            $cond = 1, last
+                                if $p->can_do('get_entry_feed');
+                        }
+                        return $cond ? 1 : 0;
+                    }
                     0;
                 },
             },
@@ -1154,7 +1201,22 @@ BEGIN {
                 feed_link => sub {
                     my ( $app ) = @_;
                     return 1 if $app->user->is_superuser;
-                    return 1 if $app->user->permissions($app->blog->id)->can_do('get_trackback_feed');
+
+
+                    if ( $app->blog ) {
+                        return 1 if $app->user->permissions($app->blog->id)->can_do('get_trackback_feed');
+                    } else {
+                        my $iter = MT->model('permission')->load_iter({
+                            author_id => $app->user->id,
+                            blog_id => { not => 0 },
+                        });
+                        my $cond;
+                        while ( my $p = $iter->() ) {
+                            $cond = 1, last
+                                if $p->can_do('get_entry_feed');
+                        }
+                        return $cond ? 1 : 0;
+                    }
                     0;
                 },
             },
