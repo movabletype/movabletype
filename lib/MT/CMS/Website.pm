@@ -294,6 +294,16 @@ sub post_delete {
     MT::CMS::User::_delete_pseudo_association($app, undef, $obj->id);
 }
 
+sub can_view {
+    my ( $eh, $app, $id ) = @_;
+    if ( $id ) {
+        return $app->can_do('open_blog_config_screen');
+    }
+    else {
+        return $app->can_do('open_new_website_screen');
+    }
+}
+
 sub can_save {
     my ( $eh, $app, $id ) = @_;
     my $perms = $app->permissions;

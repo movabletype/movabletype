@@ -2308,7 +2308,7 @@ sub init_core_callbacks {
             },
 
 
-            $pkg . 'view_permission_filter.website' => "${pfx}Blog::can_view",
+            $pkg . 'view_permission_filter.website' => "${pfx}Website::can_view",
 
             # blog callbacks
             $pkg . 'edit.blog'                   => "${pfx}Blog::edit",
