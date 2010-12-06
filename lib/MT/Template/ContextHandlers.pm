@@ -2751,7 +2751,7 @@ sub _hdlr_app_statusmsg {
     if (!$blog && $blog_id) {
         $blog = MT->model('blog')->load($blog_id);
     }
-    if ( $app->user->can_do('rebuild') ) {
+    if ( $app->user and $app->user->can_do('rebuild') ) {
         $rebuild = '' if $blog && $blog->custom_dynamic_templates eq 'all'; 
         $rebuild = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild">%%</a>">} if $rebuild eq 'all';
         $rebuild = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">%%</a>">} if $rebuild eq 'index';
