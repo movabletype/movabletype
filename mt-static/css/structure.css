@@ -1012,7 +1012,7 @@ ul.tabs li a {
     font-size: 100%;
     font-weight: bold;
 }
-.tabbed .widget-label h3 {
+.tabbed .widget-label h2 {
     display: none;
 }
 .widget-action {

@@ -2652,11 +2652,11 @@ sub _hdlr_app_widget {
     }
     my $widget_header = "";
     if ($label_link && $label_onclick) {
-        $widget_header = "\n<h3 class=\"widget-label\"><a href=\"$label_link\" onclick=\"$label_onclick\"><span>$label</span></a></h3>";
+        $widget_header = "\n<h2><a href=\"$label_link\" onclick=\"$label_onclick\"><span>$label</span></a></h2>";
     } elsif ($label_link) {
-        $widget_header = "\n<h3 class=\"widget-label\"><a href=\"$label_link\"><span>$label</span></a></h3>";
+        $widget_header = "\n<h2><a href=\"$label_link\"><span>$label</span></a></h2>";
     } else {
-        $widget_header = "\n<h3 class=\"widget-label\"><span>$label</span></h3>";
+        $widget_header = "\n<h2><span>$label</span></h2>";
     }
     my $token = $ctx->var('magic_token') || '';
     my $scope = $ctx->var('widget_scope') || 'system';
@@ -2673,7 +2673,7 @@ sub _hdlr_app_widget {
     my $insides = $ctx->slurp($args, $cond);
     my $widget_footer = ($ctx->var('widget_footer') || '');
     my $var_header = ($ctx->var('widget_header') || '');
-    if ($var_header =~ m/<h3[ >]/i) {
+    if ($var_header =~ m/<h2[ >]/i) {
         $widget_header = $var_header;
     } else {
         $widget_header .= $var_header;

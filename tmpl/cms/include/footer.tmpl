@@ -57,7 +57,6 @@ jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=<mt:var name="dialog_
 <mt:unless name="delayed_bootstrap">
 App.bootstrapInline( false );
 </mt:unless>
-
 jQuery(function() {
 <mt:var name="jq_js_include">
     if (typeof document.body.style.maxHeight == "undefined") {
@@ -98,14 +97,6 @@ jQuery(function() {
     jQuery('input').each(function() {
         jQuery(this).addClass(jQuery(this).attr('type'));
     });
-    jQuery('.widget-header').hover(
-        function() {
-            jQuery(this).children('.widget-close-link').toggle();
-        },
-        function() {
-            jQuery(this).children('.widget-close-link').toggle();
-        }
-    );
 });
 /* ]]> */
 </script>

@@ -8,17 +8,17 @@
     border: 1px solid #dcdddd;
     border-top-color: #adadad;
     border-left-color: #adadad;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
     background-color: #fbfbfb;
     font-size: 13px;
     vertical-align: middle;
     box-shadow: 0 1px 0 #f3f3f3;
     -webkit-box-shadow: 0 1px 0 #f3f3f3;
     -moz-box-shadow: 0 1px 0 #f3f3f3;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
 }
 .edit-screen .text {
     width: 100%;
@@ -108,6 +108,7 @@ select {
 
 /* - Button */ 
 .button { 
+    cursor: pointer;
     line-height: 1.3;
     overflow: visible;
     display: inline-block;
@@ -118,7 +119,7 @@ select {
     border: 1px solid #adadad;
     background-color: #f3f3f3;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
-    background: -moz-linear-gradient(top, #f3f3f3, #dcdddd);
+    background: -moz-linear-gradient(top, #f3f3f3 0%, #dcdddd 100%);
     color: #2b2b2b;
     font-size: 12px;
     font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
@@ -127,22 +128,21 @@ select {
     vertical-align: middle;
     border-radius: 3px;
     -moz-border-radius: 3px;
-    cursor: pointer;
-    box-shadow: 0 1px 0 #f3f3f3;
     -webkit-box-shadow: 0 1px 0 #f3f3f3;
     -moz-box-shadow: 0 1px 0 #f3f3f3;
+    box-shadow: 0 1px 0 #f3f3f3;
 }
 .button:hover {
     border-color: #7b7c7d;
     color: inherit;
     background-color: #fafafa;
     background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e9eaea));
-    background: -moz-linear-gradient(top, #fafafa, #e9eaea);
+    background: -moz-linear-gradient(top, #fafafa 0%, #e9eaea 100%);
 }
 .button:active {
     background-color: #dcdddd;
     background: -webkit-gradient(linear, left top, left bottom, from(#dcdddd), to(#f3f3f3));
-    background: -moz-linear-gradient(top, #dcdddd, #f3f3f3);
+    background: -moz-linear-gradient(top, #dcdddd 0%, #f3f3f3 100%);
 }
 
 /* -- Large Button */
@@ -151,7 +151,7 @@ select {
     border-color: #7b7c7d;
     background-color: #adadad;
     background: -webkit-gradient(linear, left top, left bottom, from(#adadad), to(#7b7c7d));
-    background: -moz-linear-gradient(top, #adadad, #7b7c7d);
+    background: -moz-linear-gradient(top, #adadad 0%, #7b7c7d 100%);
     color: #fffffc;
     text-shadow: #383c3c 1px 1px 1px;
     font-size: 14px;
@@ -161,12 +161,12 @@ select {
     border-color: #595857;  
     background-color: #bababa;
     background: -webkit-gradient(linear, left top, left bottom, from(#bababa), to(#88898a));
-    background: -moz-linear-gradient(top, #bababa, #88898a);
+    background: -moz-linear-gradient(top, #bababa 0%, #88898a 100%);
 }
 .button.action:active {
     background-color: #7d7c7d;
     background: -webkit-gradient(linear, left top, left bottom, from(#7d7c7d), to(#adadad));
-    background: -moz-linear-gradient(top, #7d7c7d, #adadad);
+    background: -moz-linear-gradient(top, #7d7c7d 0%, #adadad 100%);
 }
 
 /* -- Primary Button */
@@ -174,18 +174,18 @@ select {
     border-color: #165e83;
     background-color: #2a83a2;
     background: -webkit-gradient(linear, left top, left bottom, from(#2a83a2), to(#165e83));
-    background: -moz-linear-gradient(top, #2a83a2, #165e83);
+    background: -moz-linear-gradient(top, #2a83a2 0%, #165e83 100%);
 }
 .button.primary:hover {
     border-color: #274a78;
     background-color: #2f93b6;
     background: -webkit-gradient(linear, left top, left bottom, from(#2f93b6), to(#1a6e99));
-    background: -moz-linear-gradient(top, #2f93b6, #1a6e99);
+    background: -moz-linear-gradient(top, #2f93b6 0%, #1a6e99 100%);
 }
 .button.primary:active {
     background-color: #165e83;
     background: -webkit-gradient(linear, left top, left bottom, from(#165e83), to(#2a83a2));
-    background: -moz-linear-gradient(top, #165e83, #2a83a2);
+    background: -moz-linear-gradient(top, #165e83 0%, #2a83a2 100%);
 }
 
 /* -- Disable Button */
@@ -197,9 +197,9 @@ select {
     background: #f3f3f3 ! important;
     color: #c0c6c9 ! important;
     text-shadow: none;
-    box-shadow: none;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
+    box-shadow: none;
 }
 
 /* -- Edit Field Button */
@@ -221,19 +221,19 @@ select {
     padding: 0.2em 0.6em;
     font-size: 13px;
     font-weight: bold;
+    -moz-border-radius: 3px 0 0 3px;
     border-top-right-radius: 0; 
     border-bottom-right-radius: 0;
-    -moz-border-radius: 3px 0 0 3px;
 }
 .split .action.toggle-button {
     width: 16px;
     height: 16px;
     padding-right: 0.2em;
     padding-left: 0.2em;
+    -moz-border-radius: 0 3px 3px 0;
     border-radius: 3px;
     border-top-left-radius: 0; 
     border-bottom-left-radius: 0;
-    -moz-border-radius: 0 3px 3px 0;
 }
 .split .detail {
     display: none;
@@ -252,6 +252,6 @@ select {
     margin: 0;
 }
 
-.ui-button-icon-only .ui-button-text {
-    display: none;
+.action-icon {
+    vertical-align: middle;
 }
