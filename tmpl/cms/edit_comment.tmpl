@@ -198,11 +198,13 @@
     <span class="hint"><__trans phrase="(Trusted)"></span>
       <mt:unless name="is_mine">
     <span class="commenter-actions">
-        <mt:unless name="type_author">
+        <mt:if name="can_edit_commenters">
+          <mt:unless name="type_author">
       <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=untrust&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="button commenter-neutral"><__trans phrase="Untrust Commenter"></a>
-        </mt:unless>
+          </mt:unless>
       <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=ban&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="button commenter-ban"><__trans phrase="Ban Commenter"></a>
     </span>
+        </mt:if>
       </mt:unless>
 
     <mt:else name="commenter_banned">
@@ -215,12 +217,14 @@
       </mt:if>
     <span class="hint"><__trans phrase="(Banned)"></span>
       <mt:unless name="is_mine">
+        <mt:if name="can_edit_commenters">
     <span class="commenter-actions">
-        <mt:unless name="type_author">
+          <mt:unless name="type_author">
       <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=trust&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="button commenter-trust"><__trans phrase="Trust Commenter"></a>
-        </mt:unless>
+          </mt:unless>
       <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=unban&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="button commenter-neutral"><__trans phrase="Unban Commenter"></a>
     </span>
+        </mt:if>
       </mt:unless>
       
     <mt:else>
@@ -233,12 +237,14 @@
       </mt:if>
     <span class="hint"><__trans phrase="(Pending)"></span>
       <mt:unless name="is_mine">
+        <mt:if name="can_edit_commenters">
     <span class="commenter-actions">
-        <mt:unless name="type_author">
+          <mt:unless name="type_author">
       <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=trust&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="button commenter-trust"><__trans phrase="Trust Commenter"></a>
-        </mt:unless>
+          </mt:unless>
       <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=ban&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="button commenter-ban"><__trans phrase="Ban Commenter"></a>
     </span>
+        </mt:if>
       </mt:unless>
     </mt:if>
   </mtapp:setting>
