@@ -87,7 +87,6 @@ sub list_props {
             single_select_options => [
                 { label => 'Draft',     value => 1, },
                 { label => 'Published', value => 2, },
-                { label => 'Reviewing', value => 3, },
                 { label => 'Future',    value => 4, },
             ],
         },
