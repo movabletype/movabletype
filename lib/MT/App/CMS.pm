@@ -575,6 +575,7 @@ sub core_content_actions {
                 label => 'Add Contact',
                 id    => 'action-create-contact',
                 order => 100,
+                permission => 'edit_notifications',
                 condition => sub {
                     MT->app && MT->app->param('blog_id');
                 },
@@ -585,8 +586,9 @@ sub core_content_actions {
                 order => 200,
                 mode  => 'export_notification',
                 return_args => 1,
+                permission => 'export_addressbook',
                 condition => sub {
-                    MT->app && MT->app->can_do('export_addressbook');
+                    MT->app && MT->app->param('blog_id');
                 }
             },
         },
