@@ -867,4 +867,194 @@ $.fn.mtToggleField = function(options) {
     });
 };
 
+/*
+ * mtValidate
+ *
+ * Usage:
+ *   jQuery('.input').mtValidate();
+ *   jQuery('.msg').mtValidate({: true});
+ *
+ */
+
+$.mtValidator = function ( options, ns ) {
+    $.extend( this, options );
+    this.namespace = ns;
+};
+
+$.extend( $.mtValidator, {
+    prototype: {
+        options: {},
+        validateElement: function ( $elem, val ) {
+            var validator  = this;
+            var rules = $.mtValidateRules;
+            validator.error  = false;
+            validator.errstr = undefined;
+            $.each ( rules, function( selector, fn ) {
+                if ( $elem.is(selector) ) {
+                    var fn = rules[selector];
+                    validator.error  = false;
+                    validator.errstr = undefined;
+                    validator.test   = fn;
+                    var res = validator.test($elem);
+                    if ( validator.error || !res ) {
+                        if ( !validator.errstr ) {
+                            validator.raise(
+                                $.mtValidateMessages[selector]
+                                || 'Invalid value'
+                            );
+                        }
+                        return false;
+                    }
+                }
+            });
+            return !validator.error;
+        },
+        raise: function (msg) {
+            this.error  = true;
+            this.errstr = this.trans(msg || 'Invalid value');
+            return false;
+        },
+        trans: function (msg) {
+            return ( 'function' == typeof window.trans ) ? trans(msg) : msg;
+        },
+        validClass: 'valid',
+        errorClass: 'error',
+        wrapError: function ( $target, msg ) {
+            return $('<label/>')
+                .attr('for', $target.attr('id') )
+                .addClass('msg-error')
+                .text(msg);
+        },
+        updateError: function( $target, $error_block, msg ) {
+            $error_block.text(msg);
+        },
+        showError: function ( $target, $error_block ) {
+            $target.after($error_block);
+        },
+        removeError: function( $target, $error_block ) {
+            $error_block.remove();
+        }
+    }
+});
+
+$.mtValidators = [];
+$.mtValidateRules = {
+    '.date': function ($e) {
+        return !$e.val() || /^\d{4}\-\d{2}\-\d{2}$/.test($e.val());
+    },
+
+    // RegExp code taken from http://bassistance.de/jquery-plugins/jquery-plugin-validation/
+    '.email': function ($e) {
+        return !$e.val() || /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i.test($e.val());
+    },
+
+    // RegExp code taken from http://bassistance.de/jquery-plugins/jquery-plugin-validation/
+    '.url': function ($e) {
+        return !$e.val() || /^(https?|ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i.test($e.val());
+    },
+
+    '.required': function ($e) {
+        return $e.val().length > 0;
+    },
+    '.digit, .num': function ($e) {
+        return /^\d+$/.test($e.val());
+    },
+    '.number': function ($e) {
+        return /\d/.test($e.val()) && /^\d*\.?\d*$/.test($e.val());
+    },
+};
+
+$.mtValidateMessages = {
+    '.date':        'Invalid date format',
+    '.email':       'Invalid mail address',
+    '.url':         'Invalid URL',
+    '.required':    'This field is required',
+    '.digit, .num': 'This field must be integer',
+    '.number':      'This field must be number',
+};
+
+$.fn.mtValidate = function( options ) {
+    options = $.extend({}, options);
+    var ns = options.namespace || 'default';
+    var validator = $.mtValidators[ns];
+    if ( !validator ) {
+        validator = $.mtValidators[ns] = new $.mtValidator(options, ns);
+    }
+    this.each( function () {
+//        validator.elements;
+        $.data( this, 'mtValidator', ns );
+    });
+    return this.mtValid();
+};
+
+$.fn.mtValidator = function() {
+    var ns = $.data( this.get(0), 'mtValidator' );
+    return $.mtValidators[ns];
+}
+
+$.fn.mtValid = function() {
+    var errors = 0;
+    var successes = 0;
+    this.each( function () {
+        var $this = $(this);
+        var validator = $this.mtValidator();
+        if ( !validator ) return true;
+        var $current_error = $.data( this, 'mtValidateError' );
+        var res = validator.validateElement($this);
+        if ( res ) {
+            successes++;
+            if ( $current_error ) {
+                validator.removeError( $this, $current_error );
+            }
+            $.data( this, 'mtValidateError', null );
+            $.data( this, 'mtValidateLastError', null );
+            $this.addClass( validator.validClass );
+            $this.removeClass( validator.errorClass );
+        }
+        else {
+            errors++;
+            var msg = validator.errstr;
+            if ( $current_error ) {
+                var last_error = $.data( this, 'mtValidateLastError' );
+                if ( last_error != msg ) {
+                    validator.updateError( $this, $current_error, msg );
+                }
+            }
+            else {
+                var $error_block = validator.wrapError( $this, msg );
+                validator.showError( $this, $error_block );
+                $.data( this, 'mtValidateError', $error_block );
+                $.data( this, 'mtValidateLastError', msg );
+            }
+            $.data( this, 'mtValidateLastError', msg );
+            $this.addClass( validator.errorClass );
+            $this.removeClass( validator.validClass );
+        }
+    });
+    return errors == 0;
+}
+
+$.fn.mtUnvalidate = function() {
+    this.each( function () { 
+        var validator = $(this).mtValidator();
+        if ( validator ) {
+            var $current_error = $.data( this, 'mtValidateError' );
+            if ( $current_error ) {
+                validator.removeError( $(this), $current_error );
+            }
+            $.data( this, 'mtValidator', null );
+            $.data( this, 'mtValidateError', null );
+            $.data( this, 'mtValidateLastError', null );
+            $(this).removeClass( validator.errorClass );            
+            $(this).removeClass( validator.validClass );            
+        }
+    })
+};
+
+$('input, textarea').live('keyup focusin focusout', function () {
+    var ns = $.data( this, 'mtValidator' );
+    if ( !ns ) return true;
+    $(this).mtValid();
+});
+
 })(jQuery);

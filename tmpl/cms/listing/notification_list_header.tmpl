@@ -29,7 +29,7 @@
        id="email"
        label="<__trans phrase="Email">"
        label_class="inline">
-      <input type="text" name="email" id="email" class="text short email" value="<mt:var name="email" escape="html">" />
+      <input type="text" name="email" id="email" class="text short required email" value="<mt:var name="email" escape="html">" />
     </mtapp:setting>
     <mtapp:setting
        id="website"
@@ -54,16 +54,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery.validator.addClassRules({
-        url: {
-            required: false,
-            url: true
-        },
-        email: {
-            required: true,
-            email: true
-        },
-    });
+    jQuery(window).mtValidate({ namespace: 'notification' });
 
     var current_edit = 0;
     var old_note_email = '';
@@ -115,6 +106,8 @@
             note_links[i].show();
             note_fields[i].hide();
         }
+        $note_email.mtUnvalidate();
+        $note_url.mtUnvalidate();
         return false;
     }
 
@@ -126,14 +119,16 @@
         // if not in noteList and not in range of noteList notes, check with server.
         var $note_email = jQuery('#note-email-' + id);
         var $note_url   = jQuery('#note-url-' + id);
-        if ( !$note_email.val() || !$note_email.valid() ) return false;
-        if ( $note_url.val() && !$note_url.valid() ) return false;
+        if ( !$note_email.val() || !$note_email.mtValidate({ namespace: 'notification' }) ) return false;
+        if ( $note_url.val() && !$note_url.mtValidate({ namespace: 'notification' }) ) return false;
         var new_note_email = $note_email.val();
         var new_note_url = $note_url.val();
         if ((old_note_email == new_note_email) && (old_note_url == new_note_url)) {
             cancel_edit(id);
             return false;
         }
+        $note_email.mtUnvalidate();
+        $note_url.mtUnvalidate();
         return submit_edit_form(id);
     }
 
@@ -153,9 +148,6 @@
         return false;
     }
 
-    var rules = defaultValidateRules();
-    jQuery('#create-inline-notification').validate(rules);
-
     function setCreateMode () {
         jQuery('#create-inline-notification').show();
         jQuery('#url').val('');
@@ -165,12 +157,14 @@
 
     function cancelCreateMode () {
         jQuery('#create-inline-notification').hide();
+        jQuery('#create-inline-notification input').mtUnvalidate();
         jQuery('#content-actions').show();
+
         current_edit = 0;
     }
 
     jQuery('#submit-new-contact').click(function() {
-        if ( !jQuery('#create-inline-notification').valid() )
+        if ( !jQuery('#create-inline-notification input').mtValidate({ namespace: 'notification' }) )
             return false;
         renderList({
             __mode: 'save',

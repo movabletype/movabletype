@@ -37,7 +37,6 @@
 
 <mt:setvarblock name="system_msg">
 <div id="msg-block"></div>
-<ul id="validate-errors"></ul>
 </mt:setvarblock>
 
 <mt:setvarblock name="display_options">
@@ -237,45 +236,6 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 
 <mt:setvarblock name="jq_js_include" prepend="1">
 
-jQuery.extend(jQuery.validator.messages, {
-  required: "<__trans phrase="This field is required.">",
-  email: "<__trans phrase="Please enter a valid email address.">",
-  url: "<__trans phrase="Please enter a valid URL.">",
-  date: "<__trans phrase="Please enter a valid date.">",
-  number: "<__trans phrase="Please enter a valid number.">",
-  digits: "<__trans phrase="Please enter only digits">",
-});
-
-function defaultValidateRules () {
-  return {
-    ignore: '.ignore-validate',
-    onsubmit: false,
-    errorPlacement: function (error, element) {
-      var id;
-      jQuery('#validate-errors').append(
-        jQuery('<li />').append(jQuery(error))
-      );
-    },
-    showErrors: function( errorMap, errorList ) {
-      //jQuery('#msg-block').empty();
-      var successes = this.successList;
-      for ( var i = 0; i< successes.length; i++ ) {
-          var success = successes[i];
-          var id = success.name;
-          jQuery('#validate-errors label[for=' + id + ']').parent('li').remove();
-      }
-      for ( var i = 0; i< errorList.length; i++ ) {
-          var error = errorList[i];
-          var id = error.element.name;
-          jQuery('#validate-errors label[for=' + id + ']').parent('li').remove();
-      }
-      this.defaultShowErrors();
-      updateFilterSaveButtons();
-    }
-  };
-}
-
-jQuery('#<mt:var name="object_type">-listing-form').validate( defaultValidateRules() );
 
 </mt:setVarBlock>
 
@@ -931,6 +891,8 @@ function renderList(mode, columns, values, limit, page ) {
           new_filter: 0
         });
       }
+      jQuery('#filter-detail').find('input:visible').mtUnvalidate();
+
       if (!jQuery('#msg-block .msg-error').length) {
         jQuery('#dialog_save_filter').dialog('close');
       } else {
@@ -1161,6 +1123,7 @@ function dateOption($node) {
   default:
     type = 'range';
   }
+  $node.parent('.item-content').find('input').mtUnvalidate();
   $node.parent('.item-content').find('.date-option label').hide();
   $node.parent('.item-content').find('.date-option .'+type).show();
 }
@@ -1178,7 +1141,7 @@ function filterItem(type, datepicker_off) {
       }).bind('change', function() {
           dateOption(jQuery(this));
       }).end()
-      .find('.datetime').datepicker({
+      .find('.date').datepicker({
         dateFormat: 'yy-mm-dd',
         dayNamesMin: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
         monthNames: ['-01','-02','-03','-04','-05','-06','-07','-08','-09','-10','-11','-12'],
@@ -1186,7 +1149,7 @@ function filterItem(type, datepicker_off) {
         prevText: '&lt;',
         nextText: '&gt;',
         onSelect: function( dateText, inst ) {
-          inst.input.valid();
+          inst.input.mtValid();
         }
       });
   }
@@ -1226,11 +1189,38 @@ jQuery('#additem').click(function() {
   updateFilterSaveButtons({ allpass: false });
 });
 
+jQuery(window).mtValidate({
+  showError: function($target, $error) {
+    var $ul = jQuery('#msg-block #invalid-filter #validate-errors');
+    if ( !$ul.length ) {
+      var $block = jQuery('<div id="invalid-filter" class="msg msg-error"/>');
+      jQuery('#msg-block').append($block);
+      $ul = jQuery('<ul id="validate-errors"/>');
+      $block.append($ul);
+    }
+    $ul.append($error);
+  },
+  wrapError: function($target, msg) {
+    return jQuery('<li/>')
+      .append( jQuery('<label />')
+        .attr('for', $target.attr('id') )
+        .addClass('msg-error')
+        .text(msg) );
+
+  },
+  removeError: function($target, $error) {
+    $error.remove();
+    var $ul = jQuery('#msg-block #invalid-filter #validate-errors');
+    if ( !$ul.children().length ) {
+      jQuery('#msg-block #invalid-filter').remove();
+    }
+  },
+});
+
 jQuery('#apply').click(function() {
   jQuery('#msg-block .msg-error').remove();
-  var ok = 1;
-  jQuery('#filter-detail').find('input:visible').each( function(){ if ( !jQuery(this).valid() ) ok = 0 } );
-  if ( !ok ) return false;
+  var $inputs = jQuery('#filter-detail').find('input:visible');
+  if ( !$inputs.mtValidate() ) return false;
   jQuery('input[name=filter_id]').val('');
   itemValues()
   renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
@@ -1239,9 +1229,8 @@ jQuery('#apply').click(function() {
 
 jQuery('#save').click(function() {
   jQuery('#msg-block .msg-error').remove();
-  var ok = 1;
-  jQuery('#filter-detail').find('input:visible').each( function(){ if ( !jQuery(this).valid() ) ok = 0 } );
-  if ( !ok ) return false;
+  var $inputs = jQuery('#filter-detail').find('input:visible');
+  if ( !$inputs.mtValidate() ) return false;
   if (jQuery('#filter_id').val()) {
     // Overwrite current filter.
     jQuery('input[name=filter_name]').val(jQuery('#filter_name').val());
@@ -1275,9 +1264,8 @@ jQuery('#save').click(function() {
 
 jQuery('#saveas').click(function() {
   jQuery('#msg-block .msg-error').remove();
-  var ok = 1;
-  jQuery('#filter-detail').find('input:visible').each( function(){ if ( !jQuery(this).valid() ) ok = 0 } );
-  if ( !ok ) return false;
+  var $inputs = jQuery('#filter-detail').find('input:visible');
+  if ( !$inputs.mtValidate() ) return false;
   jQuery('input[name=filter_name]').val(jQuery('#opener').text());
   jQuery('input[name=filter_id]').val('');
   jQuery('#dialog_save_filter')
@@ -1590,7 +1578,7 @@ jQuery('.filtertype .plus').live('click', function() {
   }).bind('change', function() {
       dateOption(jQuery(this));
   }).end()
-  .find('.datetime').datepicker({
+  .find('.date').datepicker({
       dateFormat: 'yy-mm-dd',
       dayNamesMin: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
       monthNames: ['-01','-02','-03','-04','-05','-06','-07','-08','-09','-10','-11','-12'],
