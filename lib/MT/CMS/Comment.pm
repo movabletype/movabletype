@@ -53,6 +53,13 @@ sub edit {
         else {
             $param->{no_entry} = 1;
         }
+
+        $param->{can_delete_comment} = $param->{has_publish_access}
+            ? 1
+            : !$obj->is_published()
+                ? 1
+                : 0;
+
         $param->{comment_approved} = $obj->is_published
           or $param->{comment_pending} = $obj->is_moderated
           or $param->{is_junk}         = $obj->is_junk;

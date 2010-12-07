@@ -2438,6 +2438,7 @@ sub load_core_permissions {
                 'delete_comments_via_list'              => 1,
                 'use_tools:search'                      => 1,
                 'reply_comment_from_cms'                => 1,
+                'edit_comment_status_of_own_entry'      => 1,
             }
         },
         'blog.rebuild' => {

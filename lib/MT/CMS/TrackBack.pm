@@ -68,6 +68,12 @@ sub edit {
             }
         }
 
+        $param->{can_delete_ping} = $param->{has_publish_access}
+            ? 1
+            : !$obj->is_published()
+                ? 1
+                : 0;
+
         $param->{"ping_approved"} = $obj->is_published
           or $param->{"ping_pending"} = $obj->is_moderated
           or $param->{"is_junk"}      = $obj->is_junk;
