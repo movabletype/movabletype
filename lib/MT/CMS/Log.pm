@@ -239,24 +239,37 @@ sub reset {
     my $log_class = $app->model('log');
     my $args = { 'reset' => 1, '_type' => 'log' };
     if ( my $blog_id = $app->param('blog_id') ) {
-        my $perms = $app->permissions;
-        return $app->permission_denied()
-          unless $perms && $perms->can_do('reset_blog_log');
         my $blog_class = $app->model('blog');
         my $blog = $blog_class->load( $blog_id )
             or return $app->errtrans("Invalid request.");
-        if ( $log_class->remove( { blog_id => $blog_id, class => '*' } ) ) {
-            $app->log(
-                {
-                    message => $app->translate(
-"Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'",
-                        $blog->name, $blog_id, $author->name
-                    ),
-                    level    => MT::Log::INFO(),
-                    class    => 'system',
-                    category => 'reset_log'
-                }
-            );
+
+        my $blogs;
+        push @$blogs, $blog
+            if $author->permissions( $blog->id )->can_do( 'reset_blog_log' );
+        if ( !$blog->is_blog ) {
+            foreach my $b ( @{$blog->blogs} ) {
+                push @$blogs, $b
+                    if $author->permissions( $b->id )->can_do( 'reset_blog_log' );
+            }
+        }
+        return $app->permission_denied()
+            unless $blogs;
+
+        foreach my $blog ( @$blogs ) {
+            if ( $log_class->remove( { blog_id => $blog->id, class => '*' } ) ) {
+                $app->log(
+                    {
+                        message => $app->translate(
+                            "Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'",
+                            $blog->name, $blog->id, $author->name
+                        ),
+                        level    => MT::Log::INFO(),
+                        class    => 'system',
+                        category => 'reset_log',
+                        blog_id  => $blog->id,
+                    }
+                );
+            }
         }
         $args->{ 'blog_id' } = $blog_id;
     }
@@ -316,11 +329,19 @@ sub export {
     my $perms     = $app->permissions;
     my $blog      = $app->blog;
     my $blog_view = $blog ? 1 : 0;
+    my $blog_ids;
 
     PERMCHECK: {
-        if ($blog_view) {
-            last PERMCHECK
-                if $perms->can_do('export_blog_log');
+        if ( $blog_view ) {
+            push @$blog_ids, $blog->id
+                if $user->permissions( $blog->id )->can_do('export_blog_log');
+            if ( !$blog->is_blog ) {
+                foreach my $b ( @{ $blog->blogs } ) {                    
+                    push @$blog_ids, $b->id
+                        if $user->permissions( $b->id )->can_do('export_blog_log');
+                }
+            }
+            last PERMCHECK if $blog_ids;
         }
         last PERMCHECK
             if $app->can_do('export_system_log');
@@ -356,8 +377,6 @@ sub export {
     }
 
     if ($blog) {
-        my $blog_ids = $app->_load_child_blog_ids($blog->id);
-        push @$blog_ids, $blog->id;
         $terms{blog_id} = $blog_ids;
     } else {
         if ( !$user->can_do('view_log') ) {

@@ -541,12 +541,20 @@ sub core_content_actions {
                 mode       => 'reset_log',
                 order      => 100,
                 confirm_msg => 'Are you sure you want to reset the activity log?',
+                permit_action => {
+                    permit_action => 'reset_blog_log',
+                    include_all => 1,
+                },
             },
             'download_log' => {
                 class => 'icon-download',
                 label      => 'Download Log (CSV)',
                 mode       => 'export_log',
                 order      => 200,
+                permit_action => {
+                    permit_action => 'export_blog_log',
+                    include_all => 1,
+                },
             },
         },
         'banlist' => {
