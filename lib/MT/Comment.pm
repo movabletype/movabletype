@@ -798,10 +798,6 @@ sub to_hash {
 
 sub visible {
     my $comment = shift;
-    if ( @_ ) {
-        use Carp;
-        Carp::confess "Why?";
-    }
     return $comment->SUPER::visible unless @_;
 
     ## Note transitions in visibility in the object, so that
