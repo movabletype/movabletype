@@ -1206,7 +1206,6 @@ jQuery(window).mtValidate({
         .attr('for', $target.attr('id') )
         .addClass('msg-error')
         .text(msg) );
-
   },
   removeError: function($target, $error) {
     $error.remove();
@@ -1218,9 +1217,9 @@ jQuery(window).mtValidate({
 });
 
 jQuery('#apply').click(function() {
-  jQuery('#msg-block .msg-error').remove();
   var $inputs = jQuery('#filter-detail').find('input:visible');
   if ( !$inputs.mtValidate() ) return false;
+  jQuery('#msg-block .msg-error').remove();
   jQuery('input[name=filter_id]').val('');
   itemValues()
   renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
@@ -1228,9 +1227,9 @@ jQuery('#apply').click(function() {
 });
 
 jQuery('#save').click(function() {
-  jQuery('#msg-block .msg-error').remove();
   var $inputs = jQuery('#filter-detail').find('input:visible');
   if ( !$inputs.mtValidate() ) return false;
+  jQuery('#msg-block .msg-error').remove();
   if (jQuery('#filter_id').val()) {
     // Overwrite current filter.
     jQuery('input[name=filter_name]').val(jQuery('#filter_name').val());
@@ -1263,9 +1262,9 @@ jQuery('#save').click(function() {
 });
 
 jQuery('#saveas').click(function() {
-  jQuery('#msg-block .msg-error').remove();
   var $inputs = jQuery('#filter-detail').find('input:visible');
   if ( !$inputs.mtValidate() ) return false;
+  jQuery('#msg-block .msg-error').remove();
   jQuery('input[name=filter_name]').val(jQuery('#opener').text());
   jQuery('input[name=filter_id]').val('');
   jQuery('#dialog_save_filter')
