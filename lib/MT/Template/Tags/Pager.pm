@@ -8,6 +8,7 @@ package MT::Template::Tags::Pager;
 use strict;
 
 use MT;
+use MT::Util qw( encode_url );
 
 ###########################################################################
 
@@ -151,9 +152,9 @@ sub _hdlr_pager_link {
             $link .= '?';
         }
     }
-    $link .= "limit=$limit";
-    $link .= "&page=$page" if $page;
-    $link .= "&Template=$template" if $template;
+    $link .= "limit=" . encode_url($limit);
+    $link .= "&page=" . encode_url($page) if $page;
+    $link .= "&Template=" . encode_url($template) if $template;
 
     return $link;
 }

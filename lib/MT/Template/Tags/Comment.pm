@@ -1472,7 +1472,8 @@ sub _hdlr_comment_reply_link {
         return  $ctx->_no_comment_error();
 
     my $label = $args->{label} || $args->{text} || MT->translate('Reply');
-    my $comment_author = MT::Util::encode_html( MT::Util::encode_js($comment->author) );
+    my $comment_author = MT::Util::encode_html(
+        MT::Util::encode_html( MT::Util::encode_js( $comment->author ) ), 1 );
     my $onclick = sprintf( $args->{onclick} || "mtReplyCommentOnClick(%d, '%s')", $comment->id, $comment_author);
 
     return sprintf(qq(<a title="%s" href="javascript:void(0);" onclick="$onclick">%s</a>),

@@ -464,6 +464,7 @@ sub _hdlr_assets {
             AssetsHeader => !$i,
             AssetsFooter => !defined $assets[$i+1],
         });
+        return $ctx->error( $builder->errstr ) unless defined $out;
         $res .= $out;
         $row_count++;
         $row_count = 0 if $row_count > $per_row;
@@ -973,6 +974,8 @@ sub _hdlr_asset_property {
     } elsif ($prop =~ m/^image_/) {
         $ret = 0;
     } else {
+        $a->has_column($prop)
+            or return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $prop, 'property'));
         $ret = $a->$prop || '';
     }
 
