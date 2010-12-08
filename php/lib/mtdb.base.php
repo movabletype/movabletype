@@ -193,7 +193,7 @@ abstract class MTDatabase {
             if ( count($incl) > 1 )
                 return " in (" . implode(',', $incl) . ' )';
             else
-                return " = " . $incl[0];
+                return " = " . array_shift($incl);
         } elseif ( !empty($excl) ) {
             return " not in (" . implode(',', $excl) . ' )';
         } else {
