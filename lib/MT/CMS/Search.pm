@@ -661,7 +661,7 @@ sub do_search_replace {
         $is_limited = 0 unless scalar @cols;
     }
     if ( !$is_limited ) {
-        @cols = keys %{ $search_api->{$type}->{search_cols} };
+        @cols = grep { $_ ne 'plugin' } keys %{ $search_api->{$type}->{search_cols} };
     }
     my $quicksearch_id;
     if ($quicksearch && ($search || '') ne '' && $search !~ m{ \D }xms) {
