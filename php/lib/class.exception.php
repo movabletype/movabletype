@@ -61,12 +61,40 @@ class MTUnsupportedImageTypeException extends MTException {
     }
 }
 
+class MTInitException extends MTException {
+    protected $is_debug;
+
+    public function __construct ( $e, $debug = false ) {
+        $this->is_debug = $debug;
+        parent::__construct( $e->getMessage(), $e->getCode());
+    }
+
+    public function is_debug () {
+        return $this->is_debug;
+    }
+}
+
+
 #/***
 # * Default exception handler
 # */
 function default_exception_handler ($e) {
-    echo "<b>Error:</b> ". $e->getMessage() ."<br>\n";
-    echo "<pre>".$e->getTraceAsString()."</pre>";
+
+    if ( $e instanceof MTInitException ) {
+        header( "HTTP/1.1 503 Service Unavailable" );
+        header("Content-type: text/plain");
+        echo "503 Service Unavailable\n\n";
+
+        if ( $e->is_debug() ) {
+            echo "Error:\n". $e->getMessage() ."\n";
+            echo "StackTrace:\n".$e->getTraceAsString()."\n";
+        }
+        exit;
+    }
+
+    $msg = "<p><b>Error:</b> ". $e->getMessage() ."<br></p>" .
+           "<pre>" . $e->getTraceAsString() . "</pre>";
+    trigger_error( $msg );
 }
 #
 #/***

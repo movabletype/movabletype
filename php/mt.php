@@ -10,9 +10,9 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '5.031');
-define('VERSION_ID', '5.031');
-define('PRODUCT_VERSION', '5.031');
+define('VERSION', '5.04');
+define('VERSION_ID', '5.04');
+define('PRODUCT_VERSION', '5.04');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -35,7 +35,7 @@ class MT {
     protected $blog_id;
     protected $db;
     protected $config;
-    protected $debugging = true;
+    protected $debugging = false;
     protected $caching = false;
     protected $conditional = false;
     protected $log = array();
@@ -56,9 +56,13 @@ class MT {
      * $mt = MT::get_instance();
      */
     private function __construct($blog_id = null, $cfg_file = null) {
-        error_reporting(E_ALL ^ E_NOTICE);
-        $this->id = md5(uniqid('MT',true));
-        $this->init($blog_id, $cfg_file);
+        error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
+        try {
+            $this->id = md5(uniqid('MT',true));
+            $this->init($blog_id, $cfg_file);
+        } catch (Exception $e ) {
+            throw new MTInitException( $e, $this->debugging );
+        }
     }
 
     public static function get_instance($blog_id = null, $cfg_file = null) {
@@ -284,6 +288,10 @@ class MT {
             }
         }
 
+        if ( !empty( $cfg['debugmode'] ) && intval($cfg['debugmode']) > 0 ) {
+            $this->debugging = true;
+        }
+
         $this->config =& $cfg;
         $this->config_defaults();
 
@@ -433,13 +441,24 @@ class MT {
 
         $blog_id or $blog_id = $this->blog_id;
 
-        $ctx =& $this->context();
-        $this->init_plugins();
-        $ctx->caching = $this->caching;
+       try {
+           $ctx =& $this->context();
+           $this->init_plugins();
+           $ctx->caching = $this->caching;
 
-        // Some defaults...
-        $mtdb =& $this->db();
-        $ctx->mt->db =& $mtdb;
+           // Some defaults...
+            $mtdb =& $this->db();
+            $ctx->mt->db =& $mtdb;
+       } catch (Exception $e ) {
+            if ( $this->debugging ) {
+                $msg = "<b>Error:</b> ". $e->getMessage() ."<br>\n" .
+                       "<pre>".$e->getTraceAsString()."</pre>";
+
+                return trigger_error( $msg, E_USER_ERROR);
+            }
+            header( "503 Service Unavailable" );
+            return false;
+        }
 
         // User-specified request through request variable
         $path = $this->request;
@@ -467,6 +486,7 @@ class MT {
         }
 
         // now set the path so it may be queried
+        $path = preg_replace('/\\\\/', '\\\\\\\\', $path );
         $this->request = $path;
 
         $pathinfo = pathinfo($path);
@@ -641,8 +661,8 @@ class MT {
         restore_error_handler();
     }
 
-    function resolve_url($path) {
-        $data = $this->db->resolve_url($path, $this->blog_id);
+    function resolve_url($path, $build_type = 3) {
+        $data = $this->db->resolve_url($path, $this->blog_id, $build_type);
         if ( isset($data)
             && isset($data->fileinfo_entry_id)
             && is_numeric($data->fileinfo_entry_id)
@@ -744,43 +764,66 @@ class MT {
 
     function error_handler($errno, $errstr, $errfile, $errline) {
         if ($errno & (E_ALL ^ E_NOTICE)) {
-            if (version_compare(phpversion(), '4.3.0', '>=')) {
+            if ( !empty( $this->db ) ) {
+                if (version_compare(phpversion(), '4.3.0', '>=')) {
+                    $charset = $this->config('PublishCharset');
+                    $errstr = htmlentities($errstr, ENT_COMPAT, $charset);
+                    $errfile = htmlentities($errfile, ENT_COMPAT, $charset);
+                } else {
+                    $errstr = htmlentities($errstr, ENT_COMPAT);
+                    $errfile = htmlentities($errfile, ENT_COMPAT);
+                }
+                $mtphpdir = $this->config('PHPDir');
+                $ctx =& $this->context();
+                $ctx->stash('blog_id', $this->blog_id);
+                $ctx->stash('local_blog_id', $this->blog_id);
+                $ctx->stash('blog', $this->db->fetch_blog($this->blog_id));
+                if ( $this->debugging ) {
+                    $ctx->stash('error_message', $errstr."<!-- file: $errfile; line: $errline; code: $errno -->");
+                    $ctx->stash('error_code', $errno);
+                } else {
+                    if ( 404 == $this->http_error) {
+                        $ctx->stash('error_message', $errstr);
+                    } else {
+                        $ctx->stash('error_message', 'An error occurs.');
+                    }
+                }
+
+                $http_error = $this->http_error;
+                if (!$http_error) {
+                    $http_error = 500;
+                }
+                $ctx->stash('http_error', $http_error);
+                $ctx->stash('error_file', $errfile);
+                $ctx->stash('error_line', $errline);
+                $ctx->template_dir = $mtphpdir . DIRECTORY_SEPARATOR . 'tmpl';
+                $ctx->caching = 0;
+                $ctx->stash('StaticWebPath', $this->config('StaticWebPath'));
+                $ctx->stash('PublishCharset', $this->config('PublishCharset'));
                 $charset = $this->config('PublishCharset');
-                $errstr = htmlentities($errstr, ENT_COMPAT, $charset);
-                $errfile = htmlentities($errfile, ENT_COMPAT, $charset);
+                $out = $ctx->tag('Include', array('type' => 'dynamic_error', 'dynamic_error' => 1, 'system_template' => 1));
+                if (isset($out)) {
+                    header("Content-type: text/html; charset=".$charset);
+                    echo $out;
+                } else {
+                    header("HTTP/1.1 500 Server Error");
+                    header("Content-type: text/plain");
+                    echo "Error executing error template.";
+                }
+                exit;
             } else {
-                $errstr = htmlentities($errstr, ENT_COMPAT);
-                $errfile = htmlentities($errfile, ENT_COMPAT);
-            }
-            $mtphpdir = $this->config('PHPDir');
-            $ctx =& $this->context();
-            $ctx->stash('blog_id', $this->blog_id);
-            $ctx->stash('local_blog_id', $this->blog_id);
-            $ctx->stash('blog', $this->db->fetch_blog($this->blog_id));
-            $ctx->stash('error_message', $errstr."<!-- file: $errfile; line: $errline; code: $errno -->");
-            $ctx->stash('error_code', $errno);
-            $http_error = $this->http_error;
-            if (!$http_error) {
-                $http_error = 500;
-            }
-            $ctx->stash('http_error', $http_error);
-            $ctx->stash('error_file', $errfile);
-            $ctx->stash('error_line', $errline);
-            $ctx->template_dir = $mtphpdir . DIRECTORY_SEPARATOR . 'tmpl';
-            $ctx->caching = 0;
-            $ctx->stash('StaticWebPath', $this->config('StaticWebPath'));
-            $ctx->stash('PublishCharset', $this->config('PublishCharset'));
-            $charset = $this->config('PublishCharset');
-            $out = $ctx->tag('Include', array('type' => 'dynamic_error', 'dynamic_error' => 1, 'system_template' => 1));
-            if (isset($out)) {
-                header("Content-type: text/html; charset=".$charset);
-                echo $out;
-            } else {
-                header("HTTP/1.1 500 Server Error");
+                header( "HTTP/1.1 503 Service Unavailable" );
                 header("Content-type: text/plain");
-                echo "Error executing error template.";
+                echo "503 Service Unavailable\n\n";
+
+                if ( $this->debugging ) {
+                    echo "Errno: $errno\n";
+                    echo "Error: $errstr\n";
+                    echo "File: $errfile  Line: $errline\n";
+                }
+
+                exit;
             }
-            exit;
         }
     }
 

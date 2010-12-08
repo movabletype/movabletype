@@ -691,17 +691,19 @@ sub prepare_context {
         }
     }
     $ctx->{current_timestamp} = $app->param('context_date_start') ? $app->param('context_date_start') : MT::Util::epoch2ts( $blog_id, time);
-    if ($app->param('author')) {
+    if ($app->param('author') && $app->param('author') =~ /^[0-9]*$/ ) {
         require MT::Author;
-        my $author = MT::Author->load($app->param('author'));
-        $ctx->stash('author', $author);
-        $ctx->var('author_archive', 1);
+        if ( my $author = MT::Author->load($app->param('author')) ) {
+            $ctx->stash('author', $author);
+            $ctx->var('author_archive', 1);
+        }
     }
-    if ($app->param('category')) {
+    if ($app->param('category') && $app->param('category') =~ /^[0-9]*$/) {
         require MT::Category;
-        my $category = MT::Category->load($app->param('category'));
-        $ctx->stash('category', $category);
-        $ctx->var('category_archive', 1);
+        if ( my $category = MT::Category->load($app->param('category')) ) {
+            $ctx->stash('category', $category);
+            $ctx->var('category_archive', 1);
+        }
     }
 
     $ctx;
@@ -1027,6 +1029,8 @@ sub _join_category {
         $query =~ s/'/"/g;
     }
 
+    my $can_search_by_id = $query =~ /^[0-9]*$/ ? 1 : 0;
+
     my $lucene_struct = Lucene::QueryParser::parse_query($query);
     if ( 'PROHIBITED' eq $term->{type} ) {
         $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
@@ -1034,7 +1038,11 @@ sub _join_category {
 
     # search for exact match
     my ($terms)
-        = $app->_query_parse_core( $lucene_struct, { id => 1, label => 1 }, {} );
+        = $app->_query_parse_core( $lucene_struct, {
+            ( $can_search_by_id ? ( id => 1 ) : () ),
+            label => 1
+            },
+        {} );
     return unless $terms && @$terms;
     push @$terms, '-and',
         {
@@ -1062,12 +1070,18 @@ sub _join_author {
         $query =~ s/'/"/g;
     }
 
+    my $can_search_by_id = $query =~ /^[0-9]*$/ ? 1 : 0;
+
     my $lucene_struct = Lucene::QueryParser::parse_query($query);
     if ( 'PROHIBITED' eq $term->{type} ) {
         $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
     }
+
     my ($terms)
-        = $app->_query_parse_core( $lucene_struct, { id => 1, nickname => 'like' },
+        = $app->_query_parse_core( $lucene_struct, {
+            ( $can_search_by_id ? ( id => 1 ) : () ),
+            nickname => 'like',
+        },
         {} );
     return unless $terms && @$terms;
     push @$terms, '-and', { id => \'= entry_author_id', };

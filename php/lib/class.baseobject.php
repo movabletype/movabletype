@@ -120,8 +120,8 @@ abstract class BaseObject extends ADOdb_Active_Record
                 $table = $key;
                 $cond = $joins[$key]['condition'];
                 $type = '';
-                if (isset($jo[$key]['type']))
-                    $type = $jo[$key]['type'];
+                if (isset($joins[$key]['type']))
+                    $type = $joins[$key]['type'];
                 $join .= ' ' . strtolower($type) . ' JOIN ' . $table . ' ON ' . $cond;
             }
         }

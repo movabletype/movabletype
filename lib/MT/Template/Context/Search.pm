@@ -375,7 +375,7 @@ sub _hdlr_results {
 }
 
 sub context_script {
-	my ( $ctx, $args, $cond ) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $search_string = decode_html( $ctx->stash('search_string') ) ;
     my $cgipath = $ctx->invoke_handler('cgipath', $args);
@@ -386,41 +386,40 @@ sub context_script {
         $link .= "&__mode=$mode";
     }
     if ( my $type = $ctx->stash('type') ) {
-        $type = encode_url($type);
-        $link .= "&type=$type";
+        $link .= "&type=" . encode_url($type);
     }
     if ( my $include_blogs = $ctx->stash('include_blogs') ) {
-        $link .= "&IncludeBlogs=$include_blogs";
+        $link .= "&IncludeBlogs=" . encode_url($include_blogs);
     }
     elsif ( my $blog_id = $ctx->stash('blog_id') ) {
-        $link .= "&blog_id=$blog_id";
+        $link .= "&blog_id=" . encode_url($blog_id);
     }
- 
+
     my $category = $ctx->stash('search_category');
-    $link .= "&category=$category" if $category;
-    
+    $link .= "&category=" . encode_url($category) if $category;
+
     my $author = $ctx->stash('search_author');
-    $link .= "&author=$author" if $author;
+    $link .= "&author=" . encode_url($author) if $author;
 
     my $year = $ctx->stash('search_year');
-    $link .= "&year=$year" if $year;
+    $link .= "&year=" . encode_url($year) if $year;
 
     my $month = $ctx->stash('search_month');
-    $link .= "&month=$month" if $month;
+    $link .= "&month=" . encode_url($month) if $month;
 
     my $day = $ctx->stash('search_day');
-    $link .= "&day=$day" if $day;
+    $link .= "&day=" . encode_url($day) if $day;
 
     my $archive_type = $ctx->stash('search_archive_type');
-    $link .= "&archive_type=$archive_type" if $archive_type;
+    $link .= "&archive_type=" . encode_url($archive_type) if $archive_type;
 
     my $template_id = $ctx->stash('search_template_id');
-    $link .= "&template_id=$template_id" if $template_id;
+    $link .= "&template_id=" . encode_url($template_id) if $template_id;
 
     if ( my $format = $ctx->stash('format') ) {
         $link .= '&format=' . encode_url($format);
     }
-	$link;
+    $link;
 }
 
 1;

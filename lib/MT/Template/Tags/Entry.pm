@@ -1342,6 +1342,8 @@ sub _hdlr_entry_flag {
     my $flag = lc $args->{flag}
         or return $ctx->error(MT->translate(
             'You used <$MTEntryFlag$> without a flag.' ));
+    $e->has_column($flag)
+        or return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $flag, 'flag'));
     my $v = $e->$flag();
     ## The logic here: when we added the convert_breaks flag, we wanted it
     ## to default to checked, because we added it in 2.0, and people had

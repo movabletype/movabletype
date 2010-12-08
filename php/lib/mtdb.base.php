@@ -210,9 +210,8 @@ abstract class MTDatabase {
     }
 
     // Public method
-    public function resolve_url($path, $blog_id) {
+    public function resolve_url($path, $blog_id, $build_type = 3) {
         $path = preg_replace('!/$!', '', $path);
-        $path = $this->escape($path);
         $blog_id = intval($blog_id);
         # resolve for $path -- one of:
         #      /path/to/file.html
@@ -229,15 +228,20 @@ abstract class MTDatabase {
         $extras['join'] = array(
             'mt_template' => array(
                 'condition' => "fileinfo_template_id = template_id"
-                ),
-            );
+            ),
+            'mt_templatemap' => array(
+                'condition' => "fileinfo_templatemap_id = templatemap_id",
+                'type' => 'left'
+            ),
+        );
+
         foreach ( array($path, urldecode($path), urlencode($path)) as $p ) {
             $where = "fileinfo_blog_id = $blog_id
                       and ((fileinfo_url = '%1\$s' or fileinfo_url = '%1\$s/') or (fileinfo_url like '%1\$s/$escindex%%'))
                       and template_type != 'backup'
                       order by length(fileinfo_url) asc";
             $fileinfo= new FileInfo;
-            $records = $fileinfo->Find(sprintf($where, $p),  false, false, $extras);
+            $records = $fileinfo->Find(sprintf($where, $this->escape($p)),  false, false, $extras);
             if (!empty($records))
                 break;
         }
@@ -246,6 +250,22 @@ abstract class MTDatabase {
 
         $found = false;
         foreach ($records as $record) {
+            if ( !empty( $build_type ) ) {
+                if ( !is_array( $build_type ) ) {
+                    $build_type_array = array( $build_type );
+                } else {
+                    $build_type_array = $build_type;
+                }
+
+                $tmpl =  $record->template();
+                $map = $record->templatemap();
+                $type = empty( $map ) ? $tmpl->build_type : $map->build_type;
+
+                if ( !in_array( $type, $build_type_array ) ) {
+                    continue;
+                }
+            }
+
             $fiurl = $record->url;
             if ($fiurl == $path) {
                 $found = true;

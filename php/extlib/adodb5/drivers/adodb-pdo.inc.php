@@ -130,6 +130,9 @@ class ADODB_pdo extends ADOConnection {
 		if ($argDatabasename) {
 			$argDSN .= ';dbname='.$argDatabasename;
 		}
+        if ( $this->port )
+            $argDSN .= ';port=' . $this->port;
+
 		try {
 			$this->_connectionID = new PDO($argDSN, $argUsername, $argPassword);
 		} catch (Exception $e) {
