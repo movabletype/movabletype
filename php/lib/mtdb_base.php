@@ -56,7 +56,8 @@ class MTDatabaseBase extends ezsql {
     function unserialize($data) {
         if (!$this->serializer) {
             require_once("MTSerialize.php");
-            $this->serializer =& new MTSerialize();
+            $serializer = new MTSerialize();
+            $this->serializer =& $serializer;
         }
         return $this->serializer->unserialize($data);
     }
@@ -66,9 +67,8 @@ class MTDatabaseBase extends ezsql {
         parent::query($query);
     }
 
-    function &resolve_url($path, $blog_id) {
+    function &resolve_url($path, $blog_id, $build_type = 3) {
         $path = preg_replace('!/$!', '', $path);
-        $path = $this->escape($path);
         $blog_id = intval($blog_id);
         # resolve for $path -- one of:
         #      /path/to/file.html
@@ -90,7 +90,7 @@ class MTDatabaseBase extends ezsql {
                    and template_type != 'backup'
                  order by length(fileinfo_url) asc
             ";
-            $rows = $this->get_results(sprintf($sql,$p), ARRAY_A);
+            $rows = $this->get_results(sprintf($sql,$this->escape($p)), ARRAY_A);
             if ($rows) {
                 break;
             }
@@ -100,6 +100,21 @@ class MTDatabaseBase extends ezsql {
 
         $found = false;
         foreach ($rows as $row) {
+            if ( !empty( $build_type ) ) {
+                if ( !is_array( $build_type ) ) {
+                    $build_type_array = array( $build_type );
+                } else {
+                    $build_type_array = $build_type;
+                }
+
+                $type = isset($row['templatemap_build_type']) && strlen($row['templatemap_build_type']) > 0
+                    ? $row['templatemap_build_type'] : $row['template_build_type'];
+
+                if ( !in_array( $type, $build_type_array ) ) {
+                    continue;
+                }
+            }
+
             $fiurl = $row['fileinfo_url'];
             if ($fiurl == $path) {
                 $found = true;

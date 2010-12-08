@@ -384,15 +384,15 @@ sub context_script {
         $link .= "&type=$type";
     }
     if ( my $include_blogs = $ctx->stash('include_blogs') ) {
-        $link .= "&IncludeBlogs=$include_blogs";
+        $link .= "&IncludeBlogs=" . encode_url($include_blogs);
     }
     elsif ( my $blog_id = $ctx->stash('blog_id') ) {
-        $link .= "&blog_id=$blog_id";
+        $link .= "&blog_id=" . encode_url($blog_id);
     }
     if ( my $format = $ctx->stash('format') ) {
         $link .= '&format=' . encode_url($format);
     }
-	$link;
+    $link;
 }
 
 1;
