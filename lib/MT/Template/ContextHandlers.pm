@@ -9001,6 +9001,8 @@ sub _hdlr_entry_flag {
     my $flag = lc $args->{flag}
         or return $ctx->error(MT->translate(
             'You used <$MTEntryFlag$> without a flag.' ));
+    $e->has_column($flag)
+        or return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $flag, 'flag'));
     my $v = $e->$flag();
     ## The logic here: when we added the convert_breaks flag, we wanted it
     ## to default to checked, because we added it in 2.0, and people had
@@ -11370,7 +11372,8 @@ sub _hdlr_comment_reply_link {
         return  $ctx->_no_comment_error();
 
     my $label = $args->{label} || $args->{text} || MT->translate('Reply');
-    my $comment_author = MT::Util::encode_html( MT::Util::encode_js($comment->author) );
+    my $comment_author = MT::Util::encode_html(
+        MT::Util::encode_html( MT::Util::encode_js( $comment->author ) ), 1 );
     my $onclick = sprintf( $args->{onclick} || "mtReplyCommentOnClick(%d, '%s')", $comment->id, $comment_author);
 
     return sprintf(qq(<a title="%s" href="javascript:void(0);" onclick="$onclick">%s</a>),
@@ -16479,6 +16482,7 @@ sub _hdlr_assets {
             AssetsHeader => !$i,
             AssetsFooter => !defined $assets[$i+1],
         });
+        return $ctx->error( $builder->errstr ) unless defined $out;
         $res .= $out;
         $row_count++;
         $row_count = 0 if $row_count > $per_row;
@@ -17070,6 +17074,8 @@ sub _hdlr_asset_property {
     } elsif ($prop =~ m/^image_/) {
         $ret = 0;
     } else {
+        $a->has_column($prop)
+            or return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $prop, 'property'));
         $ret = $a->$prop || '';
     }
 

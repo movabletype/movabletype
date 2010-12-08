@@ -160,7 +160,7 @@
 
 				// try to find table name
 				
-				eregi ("insert *into *([^ ]+).*", $query, $regs);
+				preg_match ("/insert *into *([^ ]+).*/i", $query, $regs);
 				
 				//print_r($regs);
 				
