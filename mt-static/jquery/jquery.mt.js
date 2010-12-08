@@ -1049,6 +1049,7 @@ $.fn.mtUnvalidate = function() {
             $(this).removeClass( validator.validClass );            
         }
     })
+    return this;
 };
 
 $('input, textarea').live('keyup focusin focusout', function () {

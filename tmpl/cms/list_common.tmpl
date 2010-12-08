@@ -1174,7 +1174,7 @@ jQuery('#additem').click(function() {
   jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item"></span>')
     .insertAfter($item)
     .bind('click', function() {
-      jQuery(this).parent('.filteritem').remove();
+      jQuery(this).parent('.filteritem').find('input').mtUnvalidate().end().remove();
       updateItemList();
       updateFilterSaveButtons();
     });
@@ -1368,7 +1368,7 @@ function addItems(items, op) {
       jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item"></span>')
         .insertAfter($item)
         .bind('click', function() {
-          jQuery(this).parent('.filteritem').remove();
+          jQuery(this).parent('.filteritem').find('input').mtUnvalidate().end().remove();
           updateItemList();
           updateFilterSaveButtons();
         });
@@ -1558,7 +1558,7 @@ jQuery('.actions-bar a.button').click(function() {
 });
 
 jQuery('.filtertype .minus').live('click', function() {
-  jQuery(this).parents('.filtertype').remove();
+  jQuery(this).parents('.filtertype').find('input').mtUnvalidate().end().remove();
 });
 
 jQuery('.filtertype .plus').live('click', function() {
