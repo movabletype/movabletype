@@ -49,17 +49,11 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-    var rules = defaultValidateRules();
-    jQuery.validator.addMethod('ipaddress', function( value, element){
-        return this.optional(element) || /^(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])$/.test(value);
-    }, '<__trans phrase="Invalid IP address.">');
-    jQuery.validator.addClassRules({
-        ipaddress: {
-            required: true,
-            ipaddress: true
-        },
-    });
-    jQuery('#create-inline-ipban').validate(rules);
+
+    jQuery.mtValidateRules['.ipaddress'] = function( $e ){
+        return /^(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])$/.test($e.val()) };
+    jQuery.mtValidateMessages['.ipaddress'] = '<__trans phrase="Invalid IP address.">';
+    jQuery().mtValidate({ namespace: 'ipban' });
 
     function openCreateMode () {
         jQuery('#content-actions').hide();
@@ -76,7 +70,7 @@
     }
 
     jQuery('#submit-ipban').click(function() {
-        if ( !jQuery('#ip-address').valid() )
+        if ( !jQuery('#ip-address').mtValidate({ namespace: 'ipban' }) )
             return false;
         renderList({
             __mode: 'save',
@@ -90,6 +84,7 @@
     });
 
     jQuery('#create-inline-ipban button.mt-cancel-action').click(function() {
+        jQuery('#ip-address').mtUnvalidate();
         closeCreateMode();
         return false;
     });
