@@ -915,7 +915,7 @@ sub list {
            prop                  => $_,
            id                    => $_->id,
            type                  => $_->type,
-           label                 => $_->label,
+           label                 => $_->filter_label || $_->label,
            field                 => $_->filter_tmpl,
            single_select_options => $_->single_select_options( $app ),
            singleton             => $_->singleton              ? 1
@@ -928,8 +928,15 @@ sub list {
               ( $a->item_order && $b->item_order )   ? $a->item_order <=> $b->item_order
             : ( !$a->item_order && $b->item_order )  ? 1
             : ( $a->item_order  && !$b->item_order ) ? -1
-            :                                          ( ref $a->label  ? $a->label->() : $a->label )
-                                                       cmp ( ref $b->label ? $b->label->() : $b->label );
+            : (
+                  defined $a->filter_label
+                      ? ( ref $a->filter_label ? $a->filter_label->() : $a->filter_label )
+                      : ( ref $a->label ? $a->label->() : $a->label )
+              ) cmp (
+                  defined $b->filter_label
+                      ? ( ref $b->filter_label ? $b->filter_label->() : $b->filter_label )
+                      : ( ref $b->label ? $b->label->() : $b->label )
+              );
         }
         grep {
             $_->can_filter( $scope )

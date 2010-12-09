@@ -403,14 +403,14 @@ sub list_props {
         },
 
         modified_on => {
-            auto    => 1,
             label   => 'Modified on',
-            display => 'none'
+            display => 'none',
+            base    => '__virtual.modified_on',
         },
         created_on => {
-            auto    => 1,
             label   => 'Created on',
-            display => 'none'
+            display => 'none',
+            base    => '__virtual.created_on',
         },
         status => {
             label => 'Status',
@@ -440,7 +440,7 @@ sub list_props {
             auto => 1,
             filter_editable => 0,
             display => 'none',
-            label => 'Commenter ID',
+            label => 'Commenter',
             label_via_param => sub {
                 my $prop = shift;
                 my ( $app, $val ) = @_;
@@ -461,10 +461,12 @@ sub list_props {
         text => {
             auto => 1,
             label => 'Text',
+            filter_label => 'Comment Text',
             display => 'none',
         },
         for_current_user => {
             label => 'For my entries',
+            filter_label => 'Comments on my entries/pages',
             singleton => 1,
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
@@ -483,6 +485,7 @@ sub list_props {
             auto    => 1,
             display => 'none',
             label   => 'Email',
+            filter_label => 'Email Address',
         },
         url => {
             auto    => 1,

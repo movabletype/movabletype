@@ -111,6 +111,7 @@ sub list_props {
         name => {
             auto      => 1,
             label     => 'Name',
+            filter_label => 'Username',
             display   => 'force',
             order     => 100,
             sub_fields => [
@@ -130,6 +131,7 @@ sub list_props {
         nickname => {
             auto      => 1,
             label     => 'Nickname',
+            filter_label => 'Display Name',
             display   => 'default',
             order     => 200,
             bulk_html => \&_nickname_bulk_html,
@@ -200,6 +202,7 @@ sub list_props {
             auto => 1,
             display => 'none',
             label => 'URL',
+            filter_label => 'Website URL',
             html_link => sub {
                 my ( $prop, $obj, $app ) = @_;
                 return $obj->url;
@@ -235,6 +238,7 @@ sub list_props {
         email => {
             auto => 1,
             label => 'Email',
+            filter_label => 'Email Address',
             display => 'none',
         },
         id => { view => [] },
@@ -269,6 +273,7 @@ sub commenter_list_props {
         name => {
             auto => 1,
             label => 'Name',
+            filter_label => 'Username',
             display => 'force',
             order => 100,
             sub_fields => [
@@ -388,6 +393,7 @@ sub member_list_props {
         name => {
             auto      => 1,
             label     => 'Name',
+            filter_label => 'Username',
             display   => 'force',
             bulk_html => \&_bulk_author_name_html,
             sub_fields => [
@@ -406,6 +412,7 @@ sub member_list_props {
         },
         nickname => {
             label     => 'Nickname',
+            filter_label => 'Display Name',
             auto      => 1,
             bulk_html => \&_nickname_bulk_html,
             order     => 200,
@@ -517,6 +524,7 @@ sub member_list_props {
         email => {
             auto => 1,
             label => 'Email',
+            filter_label => 'Email Address',
             display => 'none',
         },
     };

@@ -168,6 +168,7 @@ sub list_props {
         },
         class => {
             label   => 'Class',
+            filter_label => 'Type',
             col     => 'class',
             display => 'none',
             base    => '__virtual.single_select',
@@ -196,6 +197,7 @@ sub list_props {
             auto    => 1,
             display => 'none',
             label   => 'File path',
+            filter_label => 'Upload Destination',
         },
         file_name => {
             auto    => 1,
@@ -206,9 +208,11 @@ sub list_props {
             auto    => 1,
             display => 'none',
             label   => 'Suffix',
+            filter_label => 'File Extension',
         },
         image_width => {
             label     => 'Image width',
+            filter_label => 'Pixel width',
             base      => '__virtual.integer',
             display   => 'none',
             meta_type => 'image_width',
@@ -238,14 +242,15 @@ sub list_props {
         image_height => {
             base      => 'asset.image_width',
             label     => 'Image height',
+            filter_label => 'Pixel height',
             meta_type => 'image_height',
         },
         tag => {
             base           => '__virtual.tag',
             tagged_class => '*',
         },
-        excerpt_userpic => {
-            label     => 'Excerpts Userpic',
+        except_userpic => {
+            label     => 'Except Userpic',
             display   => 'none',
             view      => 'system',
             singleton => 1,

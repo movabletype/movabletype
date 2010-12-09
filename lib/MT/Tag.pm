@@ -178,6 +178,7 @@ sub list_props {
         is_private => {
             base    => '__virtual.single_select',
             label   => 'Is private',
+            filter_label => 'Private',
             display => 'none',
             single_select_options => [
                 { label => 'Is Private',  value => 1, },

@@ -74,6 +74,7 @@ sub list_props {
     return {
         excerpt => {
             label => 'Excerpt',
+            filter_label => 'Trackback Text',
             auto => 1,
             display => 'force',
             order => 100,
@@ -130,6 +131,7 @@ sub list_props {
         },
         ip => {
             label => 'IP',
+            filter_label => 'IP Address',
             auto  => 1,
             order => 200,
             condition => sub { MT->config->ShowIPInformation },
@@ -213,21 +215,21 @@ sub list_props {
             condition => sub {0},
         },
         source_blog_name => {
-            label => 'Sender blog name',
+            label => 'Source Site',
             col   => 'blog_name',
             display => 'none',
             base  => '__virtual.string',
         },
         source_url => {
             auto    => 1,
-            label   => 'Sender URL',
+            label   => 'URL',
             display => 'none',
         },
         status => {
             base  => 'comment.status',
         },
         title => {
-            label => 'Sender title',
+            label => 'Source Title',
             auto  => 1,
             display => 'none',
         },
@@ -267,6 +269,7 @@ sub list_props {
             base => '__virtual.integer',
             display => 'none',
             filter_editable => 0,
+            filter_label => 'Category',
             terms => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
@@ -296,6 +299,7 @@ sub list_props {
         },
         for_current_user => {
             label => 'For my entries',
+            filter_label => 'Trackbacks on my entries/pages',
             singleton => 1,
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;

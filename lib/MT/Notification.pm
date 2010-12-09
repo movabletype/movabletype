@@ -42,6 +42,7 @@ sub list_props {
         email => {
             auto => 1,
             label => 'Email',
+            filter_label => 'Email Address',
             display => 'force',
             order   => 100,
             html => sub {

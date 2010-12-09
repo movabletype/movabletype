@@ -66,6 +66,7 @@ sub list_props {
         created_on => {
             auto    => 1,
             label   => 'Created on',
+            filter_label => 'Date Created',
             order   => 100,
             display => 'force',
             raw     => sub {
@@ -231,7 +232,7 @@ sub list_props {
         ip => {
             auto    => 1,
             label   => 'IP',
-            display => 'none',
+            filter_label => 'IP Address',
         },
         id => {
             base    => '__virtual.id',

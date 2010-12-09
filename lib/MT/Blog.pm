@@ -237,6 +237,7 @@ sub list_props {
         site_url => {
             auto  => 1,
             label => 'Blog URL',
+            filter_label => 'URL',
             display => 'none',
             html_link => sub {
                 my ( $prop, $obj, $app ) = @_;
@@ -246,6 +247,7 @@ sub list_props {
         site_path => {
             auto  => 1,
             label => 'Blog root',
+            filter_label => 'Root Path',
             display => 'none',
         },
         theme_id => {

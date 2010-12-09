@@ -189,6 +189,7 @@ sub list_props {
         },
         blog_name => {
             label => 'Blog/Website',
+            filter_label => 'Site',
             base => '__virtual.string',
             display => 'default',
             order   => 300,
@@ -270,6 +271,7 @@ sub list_props {
             col     => 'author_id',
             display => 'none',
             filter_editable => 0,
+            filter_label => 'Author',
             label_via_param => sub {
                 my ( $prop, $app, $val ) = @_;
                 my $author = MT->model('author')->load( $val )

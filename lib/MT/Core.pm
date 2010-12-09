@@ -577,14 +577,16 @@ BEGIN {
                 title => { base => '__virtual.label', alternative_label => 'No Title', },
                 name  => { base => '__virtual.label', alternative_label => 'No Name', },
                 created_on => {
-                    auto      => 1,
-                    label     => 'Created on',
-                    display   => 'optional',
+                    auto         => 1,
+                    label        => 'Created on',
+                    filter_label => 'Date Created',
+                    display      => 'optional',
                 },
                 modified_on => {
-                    auto      => 1,
-                    label     => 'Modified',
-                    display   => 'optional',
+                    auto         => 1,
+                    label        => 'Modified',
+                    filter_label => 'Date Modified',
+                    display      => 'optional',
                 },
                 author_name => {
                     label => 'Author',
@@ -934,6 +936,7 @@ BEGIN {
                 },
                 current_context => {
                     label => 'This Context Only',
+                    filter_label => 'Current Website',
                     order => 30000,
                     view => 'website',
                     display => 'none',

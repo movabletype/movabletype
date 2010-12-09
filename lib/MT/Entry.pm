@@ -307,6 +307,7 @@ sub list_props {
         },
         category_id => {
             label => 'Category',
+            label => 'Primary Category',
             order => 500,
             display   => 'default',
             base  => '__virtual.single_select',
@@ -441,11 +442,12 @@ sub list_props {
             },
         },
         authored_on => {
-            auto  => 1,
-            display => 'default',
-            label => 'Created',
-            use_future => 1,
-            order => 600,
+            auto         => 1,
+            display      => 'default',
+            label        => 'Created',
+            filter_label => 'Publish Date',
+            use_future   => 1,
+            order        => 600,
         },
         modified_on => {
             base  => '__virtual.modified_on',
@@ -532,6 +534,7 @@ sub list_props {
         commented_on => {
             base          => '__virtual.date',
             label         => 'Commented on',
+            filter_label  => 'Date Commented',
             comment_class => 'comment',
             display       => 'none',
             terms => sub {
