@@ -125,11 +125,13 @@ sub context {
     my $plugin = shift;
     my ( $ctx, $args, $cond ) = @_;
 
+    my $include_blogs = $args->{include_blogs} || $args->{blog_ids};
+
     # Assuming multiblog context, set it.
-    if ($args->{include_blogs} || $args->{exclude_blogs}) {
+    if ($include_blogs || $args->{exclude_blogs}) {
         $ctx->stash('multiblog_context', 1);
-        $ctx->stash('multiblog_include_blog_ids', join ( ',', $args->{include_blogs} ))
-            if $args->{include_blogs};
+        $ctx->stash('multiblog_include_blog_ids', join ( ',', $include_blogs ))
+            if $include_blogs;
         $ctx->stash('multiblog_exclude_blog_ids', join ( ',', $args->{exclude_blogs} ))
             if $args->{exclude_blogs};
     }
