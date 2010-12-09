@@ -224,7 +224,10 @@ function addItem(parent, label) {
   initItem($item);
   $item.insertAfter(jQuery('#'+parent));
 
-  jQuery('#opt-'+parent).after('<option id="opt-'+id+'" value="'+id+'">'+label+'</option>');
+  var nest = countNested(parent, []);
+  var nestLevel = nest.length;
+  jQuery('#opt-'+parent).after('<option id="opt-'+id+'" value="'+id+'">'+nestedLabel(nestLevel, label)+'</option>');
+
   itemlist.push(label);
   dummy++;
   setDirty(true);
@@ -266,7 +269,9 @@ function setItemList() {
     var $item = jQuery(this);
     var id = $item.attr('id');
     var label = $item.find('.item-label').html();
-    jQuery('#itemlist').append('<option id="opt-'+id+'" value="'+id+'">'+label+'</option>');
+    var nest = countNested(id, []);
+    var nestLevel = nest.length - 1;
+    jQuery('#itemlist').append('<option id="opt-'+id+'" value="'+id+'">'+nestedLabel(nestLevel, label)+'</option>');
     itemlist.push(label);
   });
 }
@@ -279,6 +284,14 @@ function countNested(id, nest) {
   var parent = RegExp.$1;
   nest.push(parent);
   return countNested(parent, nest);
+}
+
+function nestedLabel( level, label ) {
+  ret = '';
+  for( i = 0; i < level; i++ ) {
+    ret = '-&nbsp;'+ret;
+  }
+  return ret + label;
 }
 
 function initMoving() {
@@ -432,8 +445,9 @@ function renderItems(data) {
     var $item = createItem(id, parent, label, basename, number);
     initItem($item);
     $item.appendTo('#root');
-
-    jQuery('#itemlist').append('<option id="opt-'+id+'" value="'+id+'">'+label+'</option>');
+    var nest = countNested(parent, []);
+    var nestLevel = nest.length;
+    jQuery('#itemlist').append('<option id="opt-'+id+'" value="'+id+'">'+nestedLabel(nestLevel, label)+'</option>');
     itemlist.push(jQuery(label).text());
   }
   fixZeroStateMessage();
