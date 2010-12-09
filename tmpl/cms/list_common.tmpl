@@ -453,6 +453,10 @@ var editSysFilter = 0;
 var editNewFilter = 0;
 var allPass       = 0;
 
+jQuery.mtValidateRules['[name=filter_name], .rename-filter-input'] = function ($e) {
+  return validateFilterName($e.val()) ? true : this.raise(trans('Label "[_1]" is already in use.', $e.val() ));
+};
+
 function updateFilterSaveButtons ( opts ){
   if ( opts ) {
     if ( opts.allpass    != undefined ) allPass       = opts.allpass;
@@ -495,7 +499,7 @@ function openFilterRenameField() {
   var $label = $this.parents('.filter').children('.filter-label');
   var $handle = $this.parents('.filter').children('.handle-filter');
   var text = $label.find('.apply-link').hide().text();
-  jQuery('<input type="text" id="filter_'+fid+'" class="text full" />')
+  jQuery('<input type="text" id="filter_'+fid+'" class="text full rename-filter-input" />')
     .val(text)
     .appendTo($label);
   $this.hide().next('.delete-link').hide();
@@ -505,10 +509,10 @@ function openFilterRenameField() {
         // Not modified.
         return $handle.find('.cancel').click();
     }
-    if ( !validateFilterName(name) ) {
-        alert(trans('label "[_1]" is already in use.', name));
-        return false;
-    }
+    if ( !jQuery('#filter_' + fid).mtValidate({
+      namespace: 'filterName'
+    }) ) return false;
+
     renameFilter(index, fid, name);
     return false;
   }).appendTo($handle);
@@ -519,6 +523,7 @@ function openFilterRenameField() {
 }
 
 function cancelFilterRenameField() {
+  jQuery('.rename-filter-input').mtUnvalidate();
   jQuery('.filter-label')
     .find('.apply-link:hidden').show().end()
     .find('input').remove();
@@ -1302,11 +1307,10 @@ jQuery('#dialog_save_filter').dialog({
 });
 
 jQuery('#save-filter').click(function() {
+  if ( !jQuery('input[name=filter_name]').mtValidate({
+    namespace: 'filterName'
+  }) ) return false;
   var name = jQuery('input[name=filter_name]').val();
-  if ( !validateFilterName(name) ) {
-    alert(trans('label "[_1]" is already in use.', name));
-    return false;
-  }
   itemValues();
   jQuery(window).one('listReady', function() {
     updateFilterSaveButtons({ new_filter: 0 });
