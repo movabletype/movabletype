@@ -863,6 +863,54 @@ sub core_list_actions {
                 order      => 110,
                 js_message => 'delete',
                 button     => 1,
+                condition  => sub {
+                    return 1 if $app->user->is_superuser;
+
+                    my $blogs;
+                    if ( $app->blog ) {
+                        push @$blogs, $app->blog->id;
+                        push @$blogs, map { $_->id } @{$app->blog->blogs}
+                            unless $app->blog->is_blog;
+                    }
+
+                    my $iter = MT->model('permission')->load_iter({
+                        author_id => $app->user->id,
+                        ( $blogs ? ( blog_id => $blogs ) : ( blog_id => { not => 0 } ) ),
+                    });
+
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        $cond = 0, last
+                        if ( !$p->can_do('delete_own_entry_trackback')
+                             && $p->can_do( 'delete_own_entry_unpublished_trackback' ) );
+                    }
+
+                    if ( !$cond ) {
+                        my $count = MT->model('tbping')->count({
+                            visible => 1,
+                        }, {
+                            join => MT->model('trackback')->join_on(
+                                undef,
+                                {
+                                    id => \' = tbping_tb_id',
+                                },
+                                {
+                                    join => MT->model('entry')->join_on(
+                                        undef,
+                                        {
+                                            id => \' = trackback_entry_id',
+                                            author_id => $app->user->id,
+                                        }
+                                    ),
+                                }
+                            ),
+                        });
+                        $cond = 1
+                            if $count == 0;
+                    }
+
+                    return $cond;
+                },
             },
         },
         'comment' => {
@@ -1005,6 +1053,46 @@ sub core_list_actions {
                 order      => 110,
                 js_message => 'delete',
                 button     => 1,
+                condition  => sub {
+                    return 1 if $app->user->is_superuser;
+
+                    my $blogs;
+                    if ( $app->blog ) {
+                        push @$blogs, $app->blog->id;
+                        push @$blogs, map { $_->id } @{$app->blog->blogs}
+                            unless $app->blog->is_blog;
+                    }
+
+                    my $iter = MT->model('permission')->load_iter({
+                        author_id => $app->user->id,
+                        ( $blogs ? ( blog_id => $blogs ) : ( blog_id => { not => 0 } ) ),
+                    });
+
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        $cond = 0, last
+                        if ( !$p->can_do('delete_own_entry_comment')
+                             && $p->can_do( 'delete_own_entry_unpublished_comment' ) );
+                    }
+
+                    if ( !$cond ) {
+                        my $count = MT->model('comment')->count({
+                            visible => 1,
+                        }, {
+                            join => MT->model('entry')->join_on(
+                                undef,
+                                {
+                                    id => \' = comment_entry_id',
+                                    author_id => $app->user->id,
+                                }
+                            ),
+                        });
+                        $cond = 1
+                            if $count == 0;
+                    }
+
+                    return $cond;
+                },
             },
         },
         'commenter' => {
