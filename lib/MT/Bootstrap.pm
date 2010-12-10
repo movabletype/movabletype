@@ -183,7 +183,8 @@ sub import {
             if ($app && UNIVERSAL::isa($app, 'MT::App') && !UNIVERSAL::isa($app, 'MT::App::Wizard')) {
                 require MT::I18N;
                 my $enc = MT::I18N::guess_encoding( $err );
-                $err = Encode::decode( $enc, $err );
+                $err = Encode::decode( $enc, $err )
+                    unless Encode::is_utf8($err);
                 eval {
                     # line __LINE__ __FILE__
                     if (!$MT::DebugMode && ($err =~ m/^(.+?)( at .+? line \d+)(.*)$/s)) {
@@ -216,8 +217,8 @@ sub import {
                 }
                 print "Content-Type: text/plain; charset=$charset\n\n";
                 print $app
-                  ? $app->translate( "Got an error: [_1]", $err )
-                  : "Got an error: $err";
+                  ? Encode::encode( $charset, $app->translate( "Got an error: [_1]", $err ) )
+                  : "Got an error: " . Encode::encode( $charset, $err );
             }
         }
     }

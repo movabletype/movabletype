@@ -270,11 +270,15 @@ sub bulk_update {
             $deletes,
         ),
     };
-    
+
     my @ordered_ids = map { $_->id } @objects;
     my $order = join ',', @ordered_ids;
     $blog->$meta($order);
     $blog->save;
+
+    $app->run_callbacks(
+        'cms_post_bulk_save.' . $model, $app, \@objects );
+
     $app->forward( 'filtered_list', messages => \@messages );
 }
 
