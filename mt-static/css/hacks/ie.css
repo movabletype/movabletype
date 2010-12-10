@@ -68,6 +68,13 @@
     );
 }
 
+/* -- Disabale Button */
+.button.disabled, 
+.button.action.disabled, 
+.button.primary.disabled {
+    filter: none ! important;
+}
+
 /* - listing.css */
 /* -- Table Header */
 .col.head {
