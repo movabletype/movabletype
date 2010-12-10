@@ -1862,7 +1862,8 @@ sub escape_unicode {
                 (?:(?:\xf0[\x90-\xbf])|
                    (?:[\xf1-\xf3][\x80-\xbf])|
                    (?:\xf4[\x80-\x8f])[\x80-\xbf]{2}))/
-                '&#'.hex(unpack("H*", Encode::encode('ucs2', $1))).';'
+                       my $s = Encode::decode_utf8( $1 ) unless Encode::is_utf8( $1 );
+                '&#'.hex(unpack("H*", Encode::encode('ucs2', $s))).';'
             /egx;
     $text;
 }
