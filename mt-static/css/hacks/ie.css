@@ -68,6 +68,11 @@
     );
 }
 
+/* -- Toolbar Button */
+.button.toolbar {
+    filter: none ! important;
+}
+
 /* -- Disabale Button */
 .button.disabled, 
 .button.action.disabled, 

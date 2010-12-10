@@ -196,10 +196,10 @@ select {
     cursor: default ! important;
     background: #f3f3f3 ! important;
     color: #c0c6c9 ! important;
-    text-shadow: none;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    box-shadow: none;
+    text-shadow: none ! important;
+    -webkit-box-shadow: none ! important;
+    -moz-box-shadow: none ! important;
+    box-shadow: none ! important;
 }
 
 /* -- Edit Field Button */

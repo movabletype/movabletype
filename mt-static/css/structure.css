@@ -1687,7 +1687,7 @@ fieldset {
     border-left: 1px solid #c0c6c9;
     background-position: -22px 0;
 }
-.button.toolbar .ui-button-text {
+.button.toolbar .button-label {
     display: none;
 }
 
