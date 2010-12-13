@@ -182,7 +182,71 @@ function initItem($item) {
     .addClass(nest.join(' '))
     .addClass('lv-'+nest.length)
     .addClass('sortable-item');
-  $item.find('.plus, .delete').remove();
+  $item.find('.item-ctrl, .edit-form').remove().end().append('<span class="item-ctrl">');
+
+  jQuery('<span class="item-action clickable"><__trans phrase="Edit"></span>')
+    .appendTo($item.find('.item-ctrl'))
+    .bind('click', function() {
+      var $element = jQuery(this).parent('.item-ctrl').parent('div');
+      var $label = $element.find('.item-label a').length ? $element.find('.item-label a') : $element.find('.item-label');
+      var $basename = $element.find('.item-basename');
+      var $children = $element.children().hide();
+      var $form = jQuery('<div class="mod edit-form"/>')
+        .append(jQuery('<label><__trans phrase="Label"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short label" /></label>'));
+      $form.find('.label').val($label.text());
+
+<mt:if name="object_type" eq="category">
+      jQuery.mtValidateRules['.label'] = function ($e) {
+        return hasDupe(parent, id, $e.val()) ? this.raise('Duplicated label on this level') : true;
+        };
+<mt:else>
+      $form.append(jQuery('<label><__trans phrase="Basename"><input type="text" name="<mt:var name="object_type" lower_case="1">_basename" class="text short basename" /></label>'));
+      $form.find('.basename').val($basename.text());
+      jQuery.mtValidateRules['.basename'] = function ($e) {
+        return hasDupe(parent, id, null, $e.val()) ? this.raise('Duplicated basename on this level') : true;
+        };
+</mt:if>
+
+      jQuery('<button type="submit" class="rename button"><__trans phrase="Rename"></button>')
+        .bind('click', function() {
+          if ( !$element.find('input.label').mtValidate({ namespace: 'basename' }) ) return false;
+<mt:if name="object_type" eq="folder">
+          if ( !$element.find('input.basename').mtValidate({ namespace: 'basename' }) ) return false;
+          $basename.text( $element.find('input.basename').val() );
+</mt:if>
+          $label.text( $element.find('input.label').val() );
+          $children.show();
+          initItem($item);
+          setDirty(true);
+        })
+        .appendTo($form);
+      jQuery('<button type="button" class="cancel button"><__trans phrase="Cancel"></button>')
+        .bind('click', function() {
+          jQuery('#msg-block').empty();
+          jQuery(this).parent('.add-form').remove();
+          jQuery('.sort-tab').show();
+          $children.show();
+          initItem($item);
+        })
+        .appendTo($form);
+      $form.appendTo($element);
+      $form.find('.label, .basename').bind('keypress', function (e) {
+        if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+          $form.find('button.rename').click();
+          return false;
+        }
+      });
+      $form.find('.label').focus();
+    });
+
+
+
+
+
+
+
+
+
   jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add child item"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
@@ -210,12 +274,13 @@ function initItem($item) {
         .appendTo($form);
       jQuery('.button').button();
     });
-    jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon"><__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">"></span>')
-      .appendTo($item.find('.item-ctrl'))
-      .bind('click', function() {
-        var id = jQuery(this).parents('.sortable-item').attr('id');
-        removeItems(id);
-      });
+
+  jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon"><__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">"></span>')
+    .appendTo($item.find('.item-ctrl'))
+    .bind('click', function() {
+      var id = jQuery(this).parents('.sortable-item').attr('id');
+      removeItems(id);
+    });
 }
 
 function hasDupe( parent, id, label, basename ) {
@@ -636,7 +701,7 @@ function bulkUpdateCategories() {
     var myid = $item.attr('id');
     $item.attr('class').match(/^(\w+).*/);
     var parentid = RegExp.$1;
-    items.push({id: myid, parent: parentid, label: $item.find('.item-label').text()});
+    items.push({id: myid, parent: parentid, label: $item.find('.item-label').text(), basename: $item.find('.item-basename').text() });
   });
   jQuery.ajax({
     type: 'POST',
