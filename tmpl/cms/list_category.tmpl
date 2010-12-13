@@ -44,6 +44,30 @@
   <p id="indicator"><img src="<mt:var name="static_uri">images/indicator-login.gif" alt="<__trans phrase="Indicator">" /><p>
 </div>
 
+<div id="dialog-change-basename" class="dialog">
+<mt:if name="object_type" eq="category">
+  <p><__trans phrase="Can't move to the level where the exists same label. Please enter new label which is unique in this level."></p>
+  <label for="new-label">Label <input type="text" id="new-label"></label>
+<mt:else>
+  <p><__trans phrase="Can't move to the level where the exists same basename. Please enter new basename which is unique in this level."></p>
+  <label for="new-basename">Basename <input type="text" id="new-basename"></label>
+</mt:if>
+  <div>
+    <button
+       type="button"
+       id="cancel-move"
+       class="action button">
+      <__trans phrase="Cancel">
+    </button>
+    <button
+       type="submit"
+       id="change-and-move"
+       class="action primary button">
+      <__trans phrase="Change and move">
+    </button>
+  </div>
+</div>
+
 <mt:setvarblock name="jq_js_include" append="1">
 jQuery('p#indicator')
   .hide()
@@ -142,7 +166,7 @@ function createItem(id, parent, label, basename, number) {
   var line = '<span class="sort-tab"></span>';
   line += '<span class="item-label">'+label+'</span>';
   if ( basename )
-    line += '<span class="item-basename">('+basename+')</span>';
+    line += '<span class="item-basename-wrapper">(</span><span class="item-basename">'+basename+'</span><span class="item-basename-wrapper">)</span>';
   line += ' <span class="item-ctrl"></span>';
   line += ' <span class="count fr">'+number+'</span>';
   var $item = jQuery('<div id="'+id+'" class="'+parent+'" />').append(line);
@@ -194,6 +218,33 @@ function initItem($item) {
       });
 }
 
+function hasDupe( parent, id, label, basename ) {
+  var $parent = jQuery('#' + parent);
+  $parent.attr('class').match(/lv-(\w+)/);
+  var parent_level = parseInt(RegExp.$1);
+  if ( isNaN(parent_level) ) parent_level = -1;
+  var level = parent_level + 1;
+  var dupe = false;
+  jQuery('.' + parent + '.lv-' + level).each( function () {
+      if ( id && id == jQuery(this).attr('id') ) return true;
+<mt:if name="object_type" eq="category">
+      var sibling_label = jQuery(this).find('.item-label').text();
+      if ( ( label && sibling_label == label ) ) {
+        dupe = true;
+        return false;
+      }
+<mt:else>
+      var sibling_basename = jQuery(this).find('.item-basename').text();
+      if ( ( basename && sibling_basename == basename ) ) {
+        dupe = true;
+        return false;
+      }
+</mt:if>
+  });
+  return dupe;
+}
+
+
 function addItem(parent, label) {
   jQuery('#msg-block').empty();
   if (label == '') {
@@ -201,20 +252,7 @@ function addItem(parent, label) {
     return false;
   }
 
-  var dupe = 0;
-  var $parent = jQuery('#' + parent);
-  $parent.attr('class').match(/lv-(\w+)/);
-  var parent_level = parseInt(RegExp.$1);
-  if ( isNaN(parent_level) ) parent_level = -1;
-  var level = parent_level + 1;
-  jQuery('.' + parent + '.lv-' + level).each( function () {
-      var sibling_label = jQuery(this).find('.item-label').text();
-      if ( sibling_label == label ) {
-        dupe = 1;
-        return false;
-      }
-  });
-  if ( dupe ) {
+  if (hasDupe( parent, 0, label) ) {
     jQuery('#msg-block').append('<div class="msg msg-error">'+trans("[_1] '[_2]' already exists.", '<mt:var name="object_label">', label)+'</div>');
     return false;
   }
@@ -296,6 +334,7 @@ function nestedLabel( level, label ) {
 
 function initMoving() {
   var place;
+  var original_class;
   jQuery('.sortable').sortable({
     distance: 8,
     opacity: 0.8,
@@ -303,6 +342,7 @@ function initMoving() {
     handle: 'span.sort-tab',
     start: function(event, ui) {
       var $item = jQuery(ui.item);
+      original_class = $item.attr('class');
       var id = $item.attr('id');
       var count = jQuery('.'+id).hide().length;
       if (count) {
@@ -316,28 +356,105 @@ function initMoving() {
     stop: function(event, ui) {
       var $item = jQuery(ui.item);
       var id = $item.attr('id');
-      $item.find('.with').remove();
-      $item.find('.plus, .delete').show();
       if (!place) place = 0;
       if (id == place) {
         jQuery('.'+id).show();
         return;
       }
-      $item.attr('class', place);
-      initItem($item);
-      jQuery('.'+id).each(function() {
-        var $this = jQuery(this).clone();
-        jQuery(this).remove();
-        $this.attr('class').match(/^(\w+).*/);
-        var parent = RegExp.$1;
-        $this.attr('class', parent);
-        initItem($this);
-        $this.insertAfter($item).show();
-        $item = $this;
-      });
-      setHoverAction(jQuery('.'+id));
-      setItemList();
-      setDirty(true);
+      function _stop() {
+        $item.find('.with').remove();
+        $item.find('.plus, .delete').show();
+        $item.attr('class', place);
+        initItem($item);
+        var $last = $item;
+        jQuery('.'+id).each(function() {
+          var $this = jQuery(this).clone();
+          jQuery(this).remove();
+          $this.attr('class').match(/^(\w+).*/);
+          var parent = RegExp.$1;
+          $this.attr('class', parent);
+          initItem($this);
+          $this.insertAfter($last).show();
+          $last = $this;
+        });
+        setHoverAction(jQuery('.'+id));
+        setItemList();
+        setDirty(true);
+      }
+
+      if (
+<mt:if name="object_type" eq="category">
+        hasDupe(place, id, $item.find('.item-label').text() )
+<mt:else>
+        hasDupe(place, id, null, $item.find('.item-basename').text() )
+</mt:if>
+      ) {
+
+        $item.attr('class', place);
+        initItem($item);
+<mt:if name="object_type" eq="category">
+        jQuery.mtValidateRules['#new-label'] = function ($e) {
+          return hasDupe(place, id, $e.val()) ? this.raise('Duplicated label on this level') : true;
+        };
+<mt:else>
+        jQuery.mtValidateRules['#new-basename'] = function ($e) {
+          return hasDupe(place, id, null, $e.val()) ? this.raise('Duplicated basename on this basename') : true;
+        };
+</mt:if>
+        jQuery('#new-label').val($item.find('.item-label').text())
+        jQuery('#new-basename').val($item.find('.item-basename').text())
+        jQuery('#change-and-move')
+          .unbind('click')
+          .bind( 'click', function(){
+<mt:if name="object_type" eq="category">
+            if ( jQuery('#new-label').mtValidate({ namespace: 'basename' }) ) {
+              var $label = $item.find('.item-label a').length ? $item.find('.item-label a') : $item.find('.item-label');
+              $label.text( jQuery('#new-label').val() );
+              _stop();
+              jQuery('#dialog-change-basename').dialog('close');
+
+            }
+<mt:else>
+            if ( jQuery('#new-basename').mtValidate({ namespace: 'basename' }) ) {
+              var $basename = $item.find('.item-basename');
+              $basename.text( jQuery('#new-basename').val() );
+              _stop();
+              jQuery('#dialog-change-basename').dialog('close');
+
+            }
+</mt:if>
+            return false;
+          });
+        jQuery('#cancel-move')
+          .unbind('click')
+          .bind('click', function () {
+            jQuery('.sortable').sortable('cancel');
+            $item.attr('class', original_class);
+            jQuery('.'+id).show();
+            $item.find('.with').remove();
+            $item.find('.plus, .delete').show();
+            initItem($item);
+            setHoverAction(jQuery('.'+id));
+            setItemList();
+            jQuery('#dialog-change-basename').dialog('close');
+          });
+        jQuery('#dialog-change-basename').dialog({
+            title: 'Alert',
+            autoOpen: true,
+            resizable: false,
+            draggable: false,
+            modal: true
+        });
+<mt:if name="object_type" eq="category">
+        jQuery('#new-label').mtValidate({ namespace: 'basename' }).focus();
+<mt:else>
+        jQuery('#new-basename').mtValidate({ namespace: 'basename' }).focus();
+</mt:if>
+
+      }
+      else {
+        _stop();
+      }
     },
     sort: function(event, ui) {
       var $item = jQuery(ui.item);
