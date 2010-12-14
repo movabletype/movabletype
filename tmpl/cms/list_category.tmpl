@@ -182,7 +182,8 @@ function initItem($item) {
     .addClass(nest.join(' '))
     .addClass('lv-'+nest.length)
     .addClass('sortable-item');
-  $item.find('.item-ctrl, .edit-form').remove().end().append('<span class="item-ctrl">');
+  $item.find('.item-ctrl, .edit-form').remove();
+  $item.append('<span class="item-ctrl">');
 
   jQuery('<span class="item-action clickable"><__trans phrase="Edit"></span>')
     .appendTo($item.find('.item-ctrl'))
@@ -239,14 +240,6 @@ function initItem($item) {
       $form.find('.label').focus();
     });
 
-
-
-
-
-
-
-
-
   jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add child item"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
@@ -281,6 +274,7 @@ function initItem($item) {
       var id = jQuery(this).parents('.sortable-item').attr('id');
       removeItems(id);
     });
+  setHoverAction($item);
 }
 
 function hasDupe( parent, id, label, basename ) {
