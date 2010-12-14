@@ -156,6 +156,12 @@ sub list_props {
                 }
                 return \@options;
             },
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                delete $db_args->{no_class};
+                $prop->super(@_);
+            },
         },
 
         #category => {
