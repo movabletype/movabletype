@@ -419,7 +419,7 @@ function renderFilterList() {
     jQuery('#filter-detail').show().parent('#filter').addClass('active');
     jQuery('#item_list').attr('selectedIndex', 0);
     jQuery('.filteritem').remove();
-    jQuery('input[name=filter_name]').val('<__trans phrase="New Filter">');
+    jQuery('input[name=filter_name]').mtUnvalidate().val('<__trans phrase="New Filter">');
     jQuery('#opener').html('<__trans phrase="New Filter">');
     jQuery('#filter_id').val('');
     updateItemList();
@@ -1250,7 +1250,7 @@ jQuery('#save').click(function() {
       if ( 0 == jQuery.grep(filters, function(f){ return f.label == temp }).length )
           break;
     }
-    jQuery('input[name=filter_name]').val(temp);
+    jQuery('input[name=filter_name]').mtUnvalidate().val(temp);
     jQuery('input[name=filter_id]').val('');
     jQuery('#dialog_save_filter').dialog({
       title: 'Save Filter',
@@ -1270,7 +1270,7 @@ jQuery('#saveas').click(function() {
   var $inputs = jQuery('#filter-detail').find('input:visible');
   if ( !$inputs.mtValidate() ) return false;
   jQuery('#msg-block .msg-error').remove();
-  jQuery('input[name=filter_name]').val(jQuery('#opener').text());
+  jQuery('input[name=filter_name]').mtUnvalidate().val(jQuery('#opener').text());
   jQuery('input[name=filter_id]').val('');
   jQuery('#dialog_save_filter')
     .dialog({
