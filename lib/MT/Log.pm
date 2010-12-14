@@ -140,8 +140,22 @@ sub list_props {
             display               => 'none',
             base                  => '__virtual.single_select',
             single_select_options => sub {
+                my $prop = shift;
+                my $app = shift;
+                my $terms = {};
+                if ( my $blog_id = $app->param('blog_id') ) {
+                    my $blog = MT->model('blog')->load($blog_id);
+                    if ( $blog->is_blog ) {
+                        $terms->{blog_id} = $blog->id;
+                    }
+                    else {
+                        my $blogs = $blog->blogs;
+                        $terms->{blog_id} =
+                          [ map { $_->id } ( $blog, @$blogs ) ];
+                    }
+                }
                 my $iter = MT->model('log')->count_group_by(
-                    undef,
+                    $terms,
                     {   group    => ['class'],
                         no_class => 1,
                     },
