@@ -137,7 +137,7 @@ pre {
 
 /* -- Overlay */
 .overlay, 
-.ui-widge-overlay {
+.ui-widget-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -220,7 +220,7 @@ pre {
     -moz-border-radius: 5px;
 }
 .progressbar.indeterminate {
-    background: #c0c6c9 url(../images/progress.gif) repeat;
+    background: #c0c6c9 url(../images/progress-bar-indeterminate.gif) repeat;
 }
 .ui-progressbar .ui-progressbar-value {
     height:100%;
