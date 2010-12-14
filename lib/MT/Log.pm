@@ -249,6 +249,7 @@ sub list_props {
                 return MT->translate( 'Showing only ID: [_1]',  $id);
             },
             display => 'none',
+            filter_editable => 0,
         },
     };
 }
