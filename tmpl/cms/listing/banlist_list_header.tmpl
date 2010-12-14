@@ -59,7 +59,7 @@
         jQuery('#content-actions').hide();
         jQuery('#create-inline-ipban').show();
         jQuery('#actions-bar-top').hide();
-        jQuery('#ip-address').val('').focus();
+        jQuery('#ip-address').mtUnvalidate().val('').focus();
     }
 
     function closeCreateMode () {
