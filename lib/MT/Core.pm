@@ -719,7 +719,13 @@ BEGIN {
                         my $count = $prop->raw(@_);
                         if ( $prop->has('list_permit_action') ) {
                             my $user = $app->user;
-                            my $perm = $user->permissions($obj);
+                            my $perm = $user->permissions(
+                                $obj->isa('MT::Blog')
+                                    ? ( $obj->id )
+                                    : $obj->has_column('blog_id')
+                                        ? $obj->blog_id
+                                        : 0
+                            );
                             return $count
                                 unless $perm->can_do($prop->list_permit_action);
                         }
