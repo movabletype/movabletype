@@ -203,7 +203,7 @@ function initItem($item) {
       var $basename = $element.find('.item-basename-text');
       var $children = $element.children().hide();
       var $form = jQuery('<div class="mod edit-form"/>')
-        .append(jQuery('<label><__trans phrase="Label"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short label" /></label>'));
+        .append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short label" placeholder="<__trans phrase="Label">" />'));
       $form.find('.label').val($label.text());
 
 <mt:if name="object_type" eq="category">
@@ -211,7 +211,7 @@ function initItem($item) {
         return hasDupe(parent, id, $e.val()) ? this.raise('Duplicated label on this level') : true;
         };
 <mt:else>
-      $form.append(jQuery('<label><__trans phrase="Basename"><input type="text" name="<mt:var name="object_type" lower_case="1">_basename" class="text short basename" /></label>'));
+      $form.append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_basename" class="text short basename" placeholder="<__trans phrase="Basename">" />'));
       $form.find('.basename').val($basename.text());
       jQuery.mtValidateRules['.basename'] = function ($e) {
         return hasDupe(parent, id, null, $e.val()) ? this.raise('Duplicated basename on this level') : true;
