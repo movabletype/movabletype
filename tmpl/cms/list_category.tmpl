@@ -21,7 +21,7 @@
       <mt:if name="return_args"><input type="hidden" name="return_args" value="<mt:var name="return_args">" /></mt:if>
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
 
-      <div class="actions-bar">
+      <div class="actions-bar actions-bar-top">
         <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
       </div>
 
@@ -35,7 +35,7 @@
 
       <div id="root" class="sortable"></div>
 
-      <div class="actions-bar">
+      <div class="actions-bar actions-bar-top">
         <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
       </div>
 
@@ -44,26 +44,36 @@
   <p id="indicator"><img src="<mt:var name="static_uri">images/indicator-login.gif" alt="<__trans phrase="Indicator">" /><p>
 </div>
 
-<div id="dialog-change-basename" class="dialog">
+<div id="dialog-change-basename" class="dialog" style="display: none;">
 <mt:if name="object_type" eq="category">
   <p><__trans phrase="Can't move to the level where the exists same label. Please enter new label which is unique in this level."></p>
-  <label for="new-label">Label <input type="text" id="new-label"></label>
+  <mtapp:setting
+     id="new-label"
+     label="<__trans phrase="Label">"
+     label_class="top-label">
+    <input type="text" id="new-label" class="text full">
+  </mtapp:setting>
 <mt:else>
   <p><__trans phrase="Can't move to the level where the exists same basename. Please enter new basename which is unique in this level."></p>
-  <label for="new-basename">Basename <input type="text" id="new-basename"></label>
+  <mtapp:setting
+     id="new-basename"
+     label="<__trans phrase="Basename">"
+     label_class="top-label">
+    <input type="text" id="new-basename" class="text full">
+  </mtapp:setting>
 </mt:if>
-  <div>
-    <button
-       type="button"
-       id="cancel-move"
-       class="action button">
-      <__trans phrase="Cancel">
-    </button>
+  <div class="dialog actions-bar">
     <button
        type="submit"
        id="change-and-move"
        class="action primary button">
       <__trans phrase="Change and move">
+    </button>
+    <button
+       type="button"
+       id="cancel-move"
+       class="action button">
+      <__trans phrase="Cancel">
     </button>
   </div>
 </div>
@@ -166,7 +176,7 @@ function createItem(id, parent, label, basename, number) {
   var line = '<span class="sort-tab"></span>';
   line += '<span class="item-label">'+label+'</span>';
   if ( basename )
-    line += '<span class="item-basename-wrapper">(</span><span class="item-basename">'+basename+'</span><span class="item-basename-wrapper">)</span>';
+    line += '<span class="item-basename">(<span class="item-basename-text">'+basename+'</span>)</span>';
   line += ' <span class="item-ctrl"></span>';
   line += ' <span class="count fr">'+number+'</span>';
   var $item = jQuery('<div id="'+id+'" class="'+parent+'" />').append(line);
@@ -190,7 +200,7 @@ function initItem($item) {
     .bind('click', function() {
       var $element = jQuery(this).parent('.item-ctrl').parent('div');
       var $label = $element.find('.item-label a').length ? $element.find('.item-label a') : $element.find('.item-label');
-      var $basename = $element.find('.item-basename');
+      var $basename = $element.find('.item-basename-text');
       var $children = $element.children().hide();
       var $form = jQuery('<div class="mod edit-form"/>')
         .append(jQuery('<label><__trans phrase="Label"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short label" /></label>'));
@@ -293,7 +303,7 @@ function hasDupe( parent, id, label, basename ) {
         return false;
       }
 <mt:else>
-      var sibling_basename = jQuery(this).find('.item-basename').text();
+      var sibling_basename = jQuery(this).find('.item-basename-text').text();
       if ( ( basename && sibling_basename == basename ) ) {
         dupe = true;
         return false;
@@ -410,7 +420,7 @@ function initMoving() {
           : '<mt:var name="object_label_plural" lower_case="1" escape="js">';
         jQuery('<span class="with"> + '+count+' '+label+' </span>').insertAfter($item.find('.item-label'));
       }
-      $item.find('.plus, .delete').hide();
+      $item.find('.item-ctrl').hide();
     },
     stop: function(event, ui) {
       var $item = jQuery(ui.item);
@@ -445,7 +455,7 @@ function initMoving() {
 <mt:if name="object_type" eq="category">
         hasDupe(place, id, $item.find('.item-label').text() )
 <mt:else>
-        hasDupe(place, id, null, $item.find('.item-basename').text() )
+        hasDupe(place, id, null, $item.find('.item-basename-text').text() )
 </mt:if>
       ) {
 
@@ -461,7 +471,7 @@ function initMoving() {
         };
 </mt:if>
         jQuery('#new-label').val($item.find('.item-label').text())
-        jQuery('#new-basename').val($item.find('.item-basename').text())
+        jQuery('#new-basename').val($item.find('.item-basename-text').text())
         jQuery('#change-and-move')
           .unbind('click')
           .bind( 'click', function(){
@@ -475,7 +485,7 @@ function initMoving() {
             }
 <mt:else>
             if ( jQuery('#new-basename').mtValidate({ namespace: 'basename' }) ) {
-              var $basename = $item.find('.item-basename');
+              var $basename = $item.find('.item-basename-text');
               $basename.text( jQuery('#new-basename').val() );
               _stop();
               jQuery('#dialog-change-basename').dialog('close');
@@ -498,11 +508,17 @@ function initMoving() {
             jQuery('#dialog-change-basename').dialog('close');
           });
         jQuery('#dialog-change-basename').dialog({
-            title: 'Alert',
-            autoOpen: true,
-            resizable: false,
-            draggable: false,
-            modal: true
+          title: 'Alert',
+          dialogClass: 'alert',
+          autoOpen: true,
+          width: 450,
+          modal: true,
+          resizable: false,
+          draggable: false,
+          closeOnEscape: false,
+          open: function(){
+            jQuery('input[type=text]').focus();
+          }
         });
 <mt:if name="object_type" eq="category">
         jQuery('#new-label').mtValidate({ namespace: 'basename' }).focus();
@@ -695,7 +711,7 @@ function bulkUpdateCategories() {
     var myid = $item.attr('id');
     $item.attr('class').match(/^(\w+).*/);
     var parentid = RegExp.$1;
-    items.push({id: myid, parent: parentid, label: $item.find('.item-label').text(), basename: $item.find('.item-basename').text() });
+    items.push({id: myid, parent: parentid, label: $item.find('.item-label').text(), basename: $item.find('.item-basename-text').text() });
   });
   jQuery.ajax({
     type: 'POST',

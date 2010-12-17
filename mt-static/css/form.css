@@ -67,6 +67,10 @@
 .text.title {
     font-size: 200%;
 }
+.text.error {
+    border-color: #c53d43;
+    background-color: #f2b1b1;
+}
 .readonly { 
     background-color: #dcdddd ! important;
     color: #7b7c7d;

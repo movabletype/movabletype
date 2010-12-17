@@ -211,27 +211,29 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 
 <div id="dialog_save_filter" class="dialog">
   <form method="post">
-  <div id="filter_label" title="Filter Label">
-    <div class="item-label"><__trans phrase="Label:"> </div>
-    <div><input type="text" class="text full" name="filter_name" value="" /></div>
-    <div><input type="hidden" name="filter_id" value="" /></div>
-  </div>
-  <div id="dialog-msg-block"></div>
-  <div class="dialog actions-bar">
-    <button
-       type="button"
-       id="cancel-save-filter"
-       class="action button">
-      <__trans phrase="Cancel">
-    </button>
-    <button
-       type="submit"
-       id="save-filter"
-       class="action primary button">
-      <__trans phrase="Save">
-    </button>
-  </div>
-</form>
+    <div id="dialog-msg-block"></div>
+    <mtapp:setting
+       id="filter-label"
+       label="<__trans phrase="Filter Label">"
+       label_class="top-label">
+      <input type="hidden" name="filter_id" value="" />
+      <input type="text" class="text full" name="filter_name" value="" />
+    </mtapp:setting>
+    <div class="dialog actions-bar">
+      <button
+         type="submit"
+         id="save-filter"
+         class="action primary button">
+        <__trans phrase="Save">
+      </button>
+      <button
+         type="button"
+         id="cancel-save-filter"
+         class="action button">
+        <__trans phrase="Cancel">
+      </button>
+    </div>
+  </form>
 </div>
 
 <mt:setvarblock name="jq_js_include" prepend="1">
@@ -397,7 +399,7 @@ function renderFilterList() {
       var line = '<span class="filter-label unit size2of3"><a href="#'+i+'" class="apply-link '
         + ( filter.can_save ? 'user-filter' : 'system-filter' )
         + '">'+filter.label+'</a></span>'
-        + '<span class="handle-filter unit size1of3" style="display: none;"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Rename"></a><a href="#'+i+'" class="delete-link tool-link icon16 icon-delete"><__trans phrase="Delete"></a></span>';
+        + '<span class="filter-ctrl unit size1of3" style="display: none;"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Rename"></a><a href="#'+i+'" class="delete-link tool-link icon16 icon-delete"><__trans phrase="Delete"></a></span>';
       jQuery('<li class="filter line" />').append(line).appendTo('#user-filters');
     }
     else {
@@ -409,10 +411,10 @@ function renderFilterList() {
   }
   jQuery('.filter').hover(
     function () {
-      jQuery(this).find('.handle-filter:not(:has(.save))').show();
+      jQuery(this).find('.filter-ctrl:not(:has(.save))').show();
     },
     function () {
-      jQuery(this).find('.handle-filter:not(:has(.save))').hide();
+      jQuery(this).find('.filter-ctrl:not(:has(.save))').hide();
     }
   );
   jQuery('#new_filter').click(function() {
@@ -497,7 +499,7 @@ function openFilterRenameField() {
   var index = RegExp.$1;
   var fid = filters[index].id;
   var $label = $this.parents('.filter').children('.filter-label');
-  var $handle = $this.parents('.filter').children('.handle-filter');
+  var $handle = $this.parents('.filter').children('.filter-ctrl');
   var text = $label.find('.apply-link').hide().text();
   jQuery('<input type="text" id="filter_'+fid+'" class="text full rename-filter-input" />')
     .val(text)
@@ -527,7 +529,7 @@ function cancelFilterRenameField() {
   jQuery('.filter-label')
     .find('.apply-link:hidden').show().end()
     .find('input').remove();
-  jQuery('.handle-filter')
+  jQuery('.filter-ctrl')
     .find('a.save, a.cancel').remove().end()
     .find('a:hidden').css('display','inline-block');
   return false;
@@ -1258,6 +1260,8 @@ jQuery('#save').click(function() {
       width: 450,
       modal: true,
       resizable: false,
+      draggable: false,
+      closeOnEscape: false,
       open: function(){
         jQuery('input[name=filter_name]').focus();
       }

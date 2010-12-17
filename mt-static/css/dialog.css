@@ -109,6 +109,7 @@ body.has-dialog {
     background-repeat: no-repeat;
 }
 
+.alert .ui-dialog-titlebar-close, 
 .save .ui-dialog-titlebar-close {
     display: none;
 }
