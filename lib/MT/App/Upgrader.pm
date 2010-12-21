@@ -371,12 +371,12 @@ sub init_website {
 
         # suggest site_path & site_url
         my $path = $app->document_root();
-        $param{website_path} = File::Spec->catdir( $path, 'WEBSITE-NAME' );
+        $param{website_path} = File::Spec->catdir( $path );
 
         my $url = $app->base . '/';
         $url =~ s!/cgi(?:-bin)?(/.*)?$!/!;
         $url =~ s!/mt/?$!/!i;
-        $param{website_url} = $url . 'WEBSITE-NAME/';
+        $param{website_url} = $url;
 
         return $app->build_page( 'setup_initial_website.tmpl', \%param );
     }
