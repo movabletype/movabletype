@@ -197,6 +197,7 @@ sub list_props {
         modified_on => {
             auto    => 1,
             label   => 'Modeified on',
+            filter_label => 'Date Modified',
             display => 'none' },
         from => {
             label => 'From',
