@@ -63,6 +63,10 @@ abstract class MTDatabase {
         return $this->conn->Execute($sql);
     }
 
+    public function decorate_column( $order ) {
+        return $order;
+    }
+
     public function SelectLimit($sql, $limit = -1, $offset = -1) {
         return $this->conn->SelectLimit($sql, $limit, $offset);
     }
@@ -1645,11 +1649,16 @@ abstract class MTDatabase {
                 require_once('class.mt_category.php');
                 $category_class = new Category();
                 if ( $category_class->has_column('category_'.$sort_by) ) {
-                    $sort_by  = 'category_'.$sort_by;
+                    $tableInfo =& $category_class->TableInfo();
+                    if ( $tableInfo->flds['category_'.$sort_by]->type == "CLOB" ) {
+                        $sort_by = $this->decorate_column('category_'.$sort_by);
+                    } else {
+                        $sort_by  = 'category_'.$sort_by;
+                    }
                 } else {
                     $sort_by = 'category_label';
                 }
-            }
+           }
         }
 
         $count_column = 'placement_id';
