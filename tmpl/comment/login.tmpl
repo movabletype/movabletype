@@ -6,7 +6,9 @@
    id="comment_signin_options"
    label="<__trans phrase="Sign in using">...">
   <select name="auth_options" id="auth_options" class="full">
+  <mt:if name="enabled_MovableType">
     <option value="<mt:var name="default_id" escape="html">"><mt:var name="default_signin" escape="html"></option>
+  </mt:if>
   <mt:loop name="auth_loop">
     <option value="<mt:var name="id" escape="html">"><mt:var name="name" escape="html"></option>
   </mt:loop>
@@ -97,7 +99,7 @@ jQuery(function() {
     jQuery('#auth_options').change(function() {
         jQuery('div[id^=signin_with_]').hide();
         jQuery('#signin_with_'+jQuery(this).val()).show();
-    });
+    }).change();
 });
 /* ]]> */
 </script>
