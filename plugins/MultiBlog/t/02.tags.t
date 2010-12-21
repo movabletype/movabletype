@@ -44,25 +44,30 @@ sub undef_to_empty_string {
 run {
     my $block = shift;
 
-    my $overrides =
-      $block->access_overrides
-      ? eval $block->access_overrides
-      : $default_access_overrides;
-    $plugin->set_config_value( 'access_overrides', $overrides, 'system' );
+    SKIP:
+    {
+        skip $block->skip, 1 if $block->skip;
 
-    my $tmpl = $app->model('template')->new;
-    $tmpl->text( $block->template );
-    my $ctx = $tmpl->context;
+        my $overrides =
+          $block->access_overrides
+          ? eval $block->access_overrides
+          : $default_access_overrides;
+        $plugin->set_config_value( 'access_overrides', $overrides, 'system' );
 
-    my $blog = MT::Blog->load($blog_id);
-    $ctx->stash( 'blog',    $blog );
-    $ctx->stash( 'blog_id', $blog->id );
-    $ctx->stash( 'builder', MT::Builder->new );
+        my $tmpl = $app->model('template')->new;
+        $tmpl->text( $block->template );
+        my $ctx = $tmpl->context;
 
-    my $result = $tmpl->build;
-    $result =~ s/(\r\n|\r|\n)+\z//g;
+        my $blog = MT::Blog->load($blog_id);
+        $ctx->stash( 'blog',    $blog );
+        $ctx->stash( 'blog_id', $blog->id );
+        $ctx->stash( 'builder', MT::Builder->new );
 
-    is( $result, $block->expected, $block->name );
+        my $result = $tmpl->build;
+        $result =~ s/(\r\n|\r|\n)+\z//g;
+
+        is( $result, $block->expected, $block->name );
+    }
 };
 
 sub php_test_script {
@@ -116,42 +121,28 @@ SKIP:
     run {
         my $block = shift;
 
-        my $overrides =
-          $block->access_overrides
-          ? eval $block->access_overrides
-          : $default_access_overrides;
-        $plugin->set_config_value( 'access_overrides', $overrides, 'system' );
+        SKIP:
+        {
+            skip $block->skip, 1 if $block->skip;
+            my $overrides =
+              $block->access_overrides
+              ? eval $block->access_overrides
+              : $default_access_overrides;
+            $plugin->set_config_value( 'access_overrides', $overrides,
+                'system' );
 
-        open2( my $php_in, my $php_out, 'php -q' );
-        print $php_out &php_test_script( $block->template, $block->text );
-        close $php_out;
-        my $php_result = do { local $/; <$php_in> };
-        $php_result =~ s/(\r\n|\r|\n)+\z//g;
+            open2( my $php_in, my $php_out, 'php -q' );
+            print $php_out &php_test_script( $block->template, $block->text );
+            close $php_out;
+            my $php_result = do { local $/; <$php_in> };
+            $php_result =~ s/(\r\n|\r|\n)+\z//g;
 
-        my $name = $block->name . ' - dynamic';
-        is( $php_result, $block->expected, $name );
+            my $name = $block->name . ' - dynamic';
+            is( $php_result, $block->expected, $name );
+        }
     };
 }
 
-
-
-#=== mt:MultiBlogLocalBlog
-#--- template
-#<mt:MultiBlog blog_ids="1" mode="context"><mt:MultiBlogLocalBlog><mt:BlogName /></mt:MultiBlogLocalBlog></mt:MultiBlog>
-#--- expected
-#aaaaaaaaaaaaaaaaaaaa
-#--- access_overrides
-#{ 1 => 2 }
-#
-#
-#=== mt:MultiBlogIfLocalBlog
-#--- template
-#<mt:MultiBlog blog_ids="1" mode="loop">
-#    <mt:MultiBlogLocalBlog>
-#    <mt:MultiBlogIfLocalBlog>Foo</mt:MultiBlogIfLocalBlog>
-#    </mt:MultiBlogLocalBlog>
-#</mt:MultiBlog>
-#--- expected
 
 __END__
 
@@ -309,3 +300,26 @@ http://narnia.na/cgi-bin/mt-search.cgi?IncludeBlogs=1&amp;tag=anemones&amp;limit
 none
 --- access_overrides
 { 1 => 2 }
+
+
+=== mt:MultiBlogLocalBlog
+--- template
+<mt:MultiBlog blog_ids="1" mode="context"><mt:MultiBlogLocalBlog><mt:BlogName /></mt:MultiBlogLocalBlog></mt:MultiBlog>
+--- expected
+
+--- access_overrides
+{ 1 => 2 }
+--- skip
+mt:MultiBlogLocalBlog is not working correctly in r6534
+
+
+=== mt:MultiBlogIfLocalBlog
+--- template
+<mt:MultiBlog blog_ids="1" mode="loop">
+    <mt:MultiBlogLocalBlog>
+    <mt:MultiBlogIfLocalBlog>Foo</mt:MultiBlogIfLocalBlog>
+    </mt:MultiBlogLocalBlog>
+</mt:MultiBlog>
+--- expected
+--- skip
+mt:MultiBlogIfLocalBlog is not working correctly in r6534
