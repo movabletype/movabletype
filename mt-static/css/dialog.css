@@ -125,7 +125,7 @@ body.has-dialog {
     padding: 1px 10px 10px;
     overflow: auto;
 }
-.dialog .actions-bar {
+.dialog.actions-bar {
     margin: 50px 0 0;
 }
 

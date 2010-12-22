@@ -111,13 +111,12 @@ tfoot .col.head{
     padding: 7px 8px;
 }
 .sort-link {
-    width: 100%;
-    margin-right: 18px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 .sorted .sort-link {
     width: auto;
+    margin-right: 18px;
     padding-right: 0;
 }
 .sm {
@@ -177,7 +176,6 @@ tfoot .col.head{
 /* -- Page Navigation */
 .indicator,
 .pagination {
-    float: right;
     height: 22px;
     line-height: 22px;
     font-family: Arial, sans-serif;

@@ -183,12 +183,16 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 
       <div id="actions-bar-bottom" class="actions-bar actions-bar-bottom line">
 <mt:if name="use_actions">
-        <mt:var name="button_actions">
-        <mt:include name="include/itemset_action_widget.tmpl">
+        <div class="list-actions">
+          <mt:var name="button_actions">
+          <mt:include name="include/itemset_action_widget.tmpl">
+        </div>
 </mt:if>
         <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
         <div class="pagination"></div>
       </div>
+
+
 
     </form>
 
