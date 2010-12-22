@@ -15,7 +15,7 @@ body.has-dialog {
 /* - Dialog Block */
 .mt-dialog, 
 .ui-dialog {
-    position: relative;
+    position: absolute;
     border: 1px solid #adadad;
     background-color: #f3f3f3;
     box-shadow: #2b2b2b 0 3px 10px;
@@ -34,9 +34,12 @@ body.has-dialog {
     width: 680px;
     margin-left: -340px;
 }
-
 .mt-dialog span {
     display: none;
+}
+
+.ui-dialog.ui-draggable .ui-dialog-titlebar {
+    cursor: move;
 }
 
 

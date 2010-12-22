@@ -13,22 +13,24 @@
 </mt:if>
 
 <mt:if name="use_actions">
-<mt:if name="content_actions">
-<mt:setvarblock name="content_header">
-<ul id="content-actions" class="action-link-list">
-<mt:loop name-"content_actions">
-  <li><a href="<mt:var name="url">" class="icon-left<mt:if name"class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"<mt:if name="id">id=<mt:var name="id"></mt:if><mt:if name="confirm_msg"> onclick="return confirm('<__trans phrase="<mt:var name="confirm_msg">">')"</mt:if>><mt:var name="label"></a></li>
-</mt:loop>
-</ul>
-</mt:setvarblock>
-</mt:if>
+  <mt:if name="content_actions">
+    <mt:setvarblock name="content_header">
+    <ul id="content-actions" class="action-link-list">
+    <mt:loop name-"content_actions">
+      <li><a href="<mt:var name="url">" class="icon-left<mt:if name"class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"<mt:if name="id">id=<mt:var name="id"></mt:if><mt:if name="confirm_msg"> onclick="return confirm('<__trans phrase="<mt:var name="confirm_msg">">')"</mt:if>><mt:var name="label"></a></li>
+    </mt:loop>
+    </ul>
+    </mt:setvarblock>
+  </mt:if>
 </mt:if>
 
-<mt:setvarblock name="listing_footer_content"><mt:if name="feed_url">
+<mt:setvarblock name="listing_footer_content">
+<mt:if name="feed_url">
   <mt:if name="object_type_feed">
   <li class="footer-link-item"><a href="<$mt:var name="feed_url" escape="html"$>" class="icon-feed icon-left" title="<$mt:var name="feed_name" escape="html"$>" target="_blank"><$mt:var name="object_type_feed"$></a></li>
   </mt:if>
-</mt:if></mt:setvarblock>
+</mt:if>
+</mt:setvarblock>
 
 <mt:loop name="list_components">
   <mt:setvarblock name="object_listing">listing/<mt:var name="object_type">_list_header.tmpl</mt:setvarblock>
@@ -201,14 +203,6 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
   </div>
 </div>
 
-<div id="dialog_filter">
-  <div id="create-new-link">
-    <a href="#" id="new_filter" class="icon-left-wide addnew apply-link"><__trans phrase="Create New"></a>
-  </div>
-  <div id="dialog_filter_content"></div>
-</div>
-
-
 <div id="dialog_save_filter" class="dialog">
   <form method="post">
     <div id="dialog-msg-block"></div>
@@ -236,10 +230,12 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
   </form>
 </div>
 
-<mt:setvarblock name="jq_js_include" prepend="1">
-
-
-</mt:setVarBlock>
+<div id="dialog_filter">
+  <div id="create-new-link">
+    <a href="#" id="new_filter" class="icon-left-wide addnew apply-link"><__trans phrase="Create New"></a>
+  </div>
+  <div id="dialog_filter_content"></div>
+</div>
 
 <mt:setvarblock name="jq_js_include" append="1">
 
@@ -1291,11 +1287,10 @@ jQuery('#saveas').click(function() {
 });
 
 jQuery('#dialog_filter').dialog({
-  autoOpen: false,
-  title: 'Select Filter',
-  width: 380,
-  resizable: false,
-  position: 'center'
+    autoOpen: false,
+    title: 'Select Filter',
+    width: 380,
+    resizable: false
 });
 
 jQuery('#opener').click(function() {
