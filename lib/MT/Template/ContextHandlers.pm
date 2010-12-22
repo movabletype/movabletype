@@ -1122,7 +1122,9 @@ sub _hdlr_if {
     }
     elsif (defined(my $tag = $args->{tag})) {
         $tag =~ s/^MT:?//i;
-        $value = $ctx->tag( $tag, $args, $cond );
+        use Storable qw( dclone );
+        my $local_args = dclone( $args );
+        $value = $ctx->tag( $tag, $local_args, $cond );
     }
 
     $ctx->{__stash}{vars}{__cond_value__} = $value;
