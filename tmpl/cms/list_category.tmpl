@@ -4,10 +4,13 @@
 <div id="msg-block"></div>
 </mt:setvarblock>
 
+<mt:loop name="list_components">
+  <mt:setvarblock name="object_listing">listing/<mt:var name="object_type">_list_header.tmpl</mt:setvarblock>
+  <mt:include name="$object_listing" component="$__value__">
+</mt:loop>
+
 <mt:include name="include/header.tmpl">
 <mt:include name="include/basic_filter_forms.tmpl">
-<mt:setvarblock name="object_listing">listing/<mt:var name="object_type">.tmpl</mt:setvarblock>
-<mt:include name="$object_listing">
 
 <div class="line">
   <div class="unit size1of1">
@@ -677,6 +680,7 @@ function renderNestedList() {
       renderItems(data);
     },
     complete: function() {
+      jQuery(window).trigger('listReady');
       initMoving();
     },
     error: function(xhr, status) {
