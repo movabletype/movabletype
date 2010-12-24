@@ -203,14 +203,6 @@ sub post_entry_pub {
 sub perform_mb_action {
     my ( $app, $blog_id, $action ) = @_;
 
-    # Don't rebuild the same thing twice in a request
-    require MT::Request;
-    my $r = MT::Request->instance;
-    my $rebuilt = $r->stash('multiblog_rebuilt') || {};
-    return if exists $rebuilt->{"$blog_id,$action"};
-    $rebuilt->{"$blog_id,$action"} = 1;
-    $r->stash('multiblog_rebuilt', $rebuilt);
-
     # If the action we are performing starts with ri
     # we rebuild indexes for the given blog_id
     if ( $action =~ /^ri/ ) {
