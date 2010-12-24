@@ -162,6 +162,11 @@ sub blogs {
     }
 }
 
+sub has_blog{
+    my $class = shift;
+    return scalar @{$class->blogs} ? 1 : 0;
+}
+
 sub add_blog {
     my $website = shift;
     my ( $blog ) = @_;

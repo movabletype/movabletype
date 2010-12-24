@@ -2944,7 +2944,9 @@ sub can_view_blog_list {
         ? undef
         : $blog->is_blog
             ? [ $blog->id ]
-            : [ map { $_->id } @{$blog->blogs} ];
+            : $blog->has_blog
+                ? [ map { $_->id } @{$blog->blogs} ]
+                : undef;
 
     require MT::Permission;
     my $iter = MT::Permission->load_iter(
