@@ -61,10 +61,11 @@ run {
         my $blog = MT::Blog->load($blog_id);
         $ctx->stash( 'blog',    $blog );
         $ctx->stash( 'blog_id', $blog->id );
+        $ctx->stash( 'local_blog_id', $blog->id );
         $ctx->stash( 'builder', MT::Builder->new );
 
         my $result = $tmpl->build;
-        $result =~ s/(\r\n|\r|\n)+\z//g;
+        $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
 
         is( $result, $block->expected, $block->name );
     }
@@ -99,6 +100,7 @@ $db = $mt->db();
 $ctx =& $mt->context();
 
 $ctx->stash('blog_id', 2);
+$ctx->stash('local_blog_id', 2);
 $blog = $db->fetch_blog(2);
 $ctx->stash('blog', $blog);
 
@@ -135,7 +137,7 @@ SKIP:
             print $php_out &php_test_script( $block->template, $block->text );
             close $php_out;
             my $php_result = do { local $/; <$php_in> };
-            $php_result =~ s/(\r\n|\r|\n)+\z//g;
+            $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
 
             my $name = $block->name . ' - dynamic';
             is( $php_result, $block->expected, $name );
@@ -228,7 +230,9 @@ __END__
 
 === mt:Include
 --- template
-<mt:MultiBlog blog_ids="1" mode="loop"><mt:Include module="blog-name" /></mt:MultiBlog>
+<mt:MultiBlog blog_ids="1" mode="loop">
+    <mt:Include module="blog-name" />
+</mt:MultiBlog>
 --- expected
 none
 --- access_overrides
@@ -302,24 +306,40 @@ none
 { 1 => 2 }
 
 
-=== mt:MultiBlogLocalBlog
+=== mt:MultiBlogLocalBlog mode="context"
 --- template
-<mt:MultiBlog blog_ids="1" mode="context"><mt:MultiBlogLocalBlog><mt:BlogName /></mt:MultiBlogLocalBlog></mt:MultiBlog>
+<mt:MultiBlog blog_ids="1" mode="context">
+    <mt:MultiBlogLocalBlog>
+        <mt:BlogName />
+    </mt:MultiBlogLocalBlog>
+</mt:MultiBlog>
 --- expected
-
+Test site
 --- access_overrides
 { 1 => 2 }
---- skip
-mt:MultiBlogLocalBlog is not working correctly in r6534
+
+
+=== mt:MultiBlogLocalBlog mode="loop"
+--- template
+<mt:MultiBlog blog_ids="1" mode="loop">
+    <mt:MultiBlogLocalBlog>
+        <mt:BlogName />
+    </mt:MultiBlogLocalBlog>
+</mt:MultiBlog>
+--- expected
+Test site
+--- access_overrides
+{ 1 => 2 }
 
 
 === mt:MultiBlogIfLocalBlog
 --- template
 <mt:MultiBlog blog_ids="1" mode="loop">
     <mt:MultiBlogLocalBlog>
-    <mt:MultiBlogIfLocalBlog>Foo</mt:MultiBlogIfLocalBlog>
+        <mt:MultiBlogIfLocalBlog>Foo</mt:MultiBlogIfLocalBlog>
     </mt:MultiBlogLocalBlog>
 </mt:MultiBlog>
 --- expected
---- skip
-mt:MultiBlogIfLocalBlog is not working correctly in r6534
+Foo
+--- access_overrides
+{ 1 => 2 }
