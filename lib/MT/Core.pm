@@ -1236,6 +1236,7 @@ BEGIN {
             commenter => {
                 primary      => 'name',
                 object_label => 'Commenter',
+                object_label_plural => 'Commenters',
                 object_type  => 'author',
                 permission   => 'administer',
                 default_sort_key => 'name',
