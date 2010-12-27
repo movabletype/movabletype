@@ -138,7 +138,7 @@ tfoot .col.head{
 /* -- Sub Columns */
 .col .description {
     margin: 0.75em 0 0;
-    font-size: 87%;
+    font-size: 90%;
 }
 .col .user-info {
     overflow: hidden;
@@ -148,9 +148,16 @@ tfoot .col.head{
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.col .content-text {
+    overflow: hidden;
+}
 .col .icon {
     display: inline-block;
     margin-right: 3px;
+}
+.col .comment.status {
+    float: left;
+    margin-right: 5px;
 }
 .col .picture {
     margin-bottom: 0;

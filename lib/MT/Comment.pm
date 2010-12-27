@@ -98,7 +98,7 @@ sub list_props {
                 my ( $prop, $obj, $app ) = @_;
                 my $text = MT::Util::remove_html($obj->text);
                 ## FIXME: Hard coded...
-                my $len  = 40;
+                my $len  = 4000;
                 if ( $len < length($text) ) {
                     $text = substr($text, 0, $len);
                     $text .= '...';
@@ -154,12 +154,14 @@ sub list_props {
                 }
 
                 return qq{
-                    <span class="icon status $lc_status_class">
+                    <span class="icon comment status $lc_status_class">
                       <img alt="$status_class" src="$status_img" />
                     </span>
-                    <a href="$link">$date</a>
-                    $reply_link
-                    <p class="comment-text description">$text</p>
+                    <p class="comment-text content-text">$text</p>
+                    <div class="item-ctrl">
+                      <a href="$link">$date</a>
+                      $reply_link
+                    </div>
                 };
             },
             sort => sub {
