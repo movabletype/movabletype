@@ -643,6 +643,10 @@ sub list_props {
                 }
             },
         },
+        current_context => {
+            base => '__common.current_context',
+            condition => sub { 0 },
+        },
     };
 }
 

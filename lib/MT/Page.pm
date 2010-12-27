@@ -98,6 +98,7 @@ sub list_props {
         },
         current_user  => { base => 'entry.current_user', label => 'My Pages', },
         author_status => { base => 'entry.author_status' },
+        current_context => { base => '__common.current_context' },
     };
 }
 
