@@ -228,6 +228,13 @@ __END__
 --- expected
 
 
+=== mt:Include outside MultiBlog
+--- template
+<mt:Include module="blog-name" blog_id="1" />
+--- expected
+Test site
+
+
 === mt:Include
 --- template
 <mt:MultiBlog blog_ids="1" mode="loop">
@@ -239,11 +246,13 @@ none
 { 1 => 2 }
 
 
+
 === mt:BlogCategoryCount
 --- template
 <mt:BlogCategoryCount include_blogs="1,2,3" />
 --- expected
 0
+
 
 === mt:BlogEntryCount
 --- template
@@ -251,11 +260,13 @@ none
 --- expected
 0
 
+
 === mt:BlogPingCount
 --- template
 <mt:BlogPingCount include_blogs="1,2,3" />
 --- expected
 0
+
 
 === mt:TagSearchLink
 --- template
