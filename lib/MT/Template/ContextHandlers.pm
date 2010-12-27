@@ -1122,8 +1122,8 @@ sub _hdlr_if {
     }
     elsif (defined(my $tag = $args->{tag})) {
         $tag =~ s/^MT:?//i;
-        use Storable qw( dclone );
-        my $local_args = dclone( $args );
+        require Storable;
+        my $local_args = Storable::dclone( $args );
         $value = $ctx->tag( $tag, $local_args, $cond );
     }
 
