@@ -2172,6 +2172,8 @@ sub load_core_permissions {
                 'get_entry_feed'                          => 1,
                 'get_comment_feed'                        => 1,
                 'get_trackback_feed'                      => 1,
+                'add_tags_to_entry_via_list'              => 1,
+                'remove_tags_from_entry_via_list'         => 1,
             }
         },
         'blog.edit_all_posts' => {
