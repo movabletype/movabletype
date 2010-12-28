@@ -224,6 +224,15 @@ sub list_props {
                 my ( $prop, $obj ) = @_;
                 return $obj->website->name;
             },
+            bulk_sort => sub {
+                my $prop = shift;
+                my ( $objs ) = @_;
+                my %parents = map { $_->parent_id => 1 } @$objs;
+                return @$objs if scalar keys %parents <= 1;
+                my @parents = MT->model('website')->load({ id => [ keys %parents ] });
+                my %parent_names = map { $_->id => $_->name } @parents;
+                return sort { $parent_names{ $a->parent_id } cmp $parent_names{ $b->parent_id } } @$objs;
+            },
         },
         created_on  => {
             base  => '__virtual.created_on',
