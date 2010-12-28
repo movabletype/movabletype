@@ -4,130 +4,63 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id$
+# $Id: TypePadAntiSpam.pl 5151 2010-01-06 07:51:27Z takayama $
 
-package MT::Plugin::TypePadAntiSpam;
+package TypePadAntiSpam;
 
 use strict;
 
-use base qw( MT::Plugin );
-our $VERSION = '1.0';
+sub template_param_cfg_plugin {
+    my ($cb, $app, $param, $tmpl) = @_;
+    my $plugin = MT->component('TypePadAntiSpam');
+    my $sig = $plugin->{plugin_sig};
+    my $blog = $app->isa('MT::App::CMS') ? $app->blog : undef;
 
-my $plugin;
-{
-    my $settings = [
-        ['api_key', { Scope => 'system'} ],
-        ['weight',  { Default => 1, Scope => 'blog'}],
-        ['service_host',  { Default => 'api.antispam.typepad.com', Scope => 'system'}],
-    ];
-    my $about = {
-        name                   => 'TypePad AntiSpam',
-        id                     => 'typepadantispam',
-        key                    => __PACKAGE__,
-        author_name            => 'Six Apart Ltd.',
-        author_link            => 'http://www.sixapart.com/',
-        version                => $VERSION,
-        blog_config_template   => 'config.tmpl',
-        system_config_template => 'system.tmpl',
-        settings               => MT::PluginSettings->new($settings),
-        l10n_class             => 'TypePadAntiSpam::L10N',
-        registry => {
-            callbacks => {
-                handle_spam => \&handle_junk,
-                handle_ham => \&handle_not_junk,
-                'MT::Comment::pre_save' => \&pre_save_obj,
-                'MT::TBPing::pre_save' => \&pre_save_obj,
-            },
-            junk_filters => {
-                'TypePadAntiSpam' => {
-                    label => 'TypePad AntiSpam',
-                    code => \&typepadantispam_score,
-                },
-            },
-            tags => {
-                function => {
-                    TypePadAntiSpamCounter => \&_hdlr_tpas_counter,
-                },
-            },
-            widgets => {
-                typepadantispam => {
-                    label      => 'TypePad AntiSpam',
-                    template   => 'stats_widget.tmpl',
-                    handler    => \&stats_widget, 
-                    set        => 'sidebar',
-                    singular   => 1,
-                    order      => 2.1,
-                    condition  => sub {
-                        return $plugin->api_key ? 1 : 0;
-                    },
-                },
-            },
-        },
-    };
-    $plugin = __PACKAGE__->new($about);
-}
-MT->add_plugin($plugin);
-if (MT->version_number < 4) {
-    MT->add_callback('HandleJunk',    5, $plugin, \&handle_junk);
-    MT->add_callback('HandleNotJunk', 5, $plugin, \&handle_not_junk);
-    MT->add_callback('MT::Comment::pre_save', 5, $plugin, \&pre_save_obj);
-    MT->add_callback('MT::TBPing::pre_save', 5, $plugin, \&pre_save_obj);
-    MT->register_junk_filter({
-        name => 'TypePadAntiSpam',
-        code => \&typepadantispam_score
-    });
-    require MT::Template::Context;
-    MT::Template::Context->add_tag( TypePadAntiSpamCounter => \&_hdlr_tpas_counter );
-}
+    my ($data) = grep($_->{plugin_sig} eq $sig, @{ $param->{plugin_loop} });
+    $data->{plugin_desc} = '<p>' . $data->{plugin_desc} . '</p>';
 
-#--- plugin handlers
-
-sub instance {
-    return $plugin;
-}
-
-sub description {
-    my $plugin = shift;
-    my $app = MT->instance;
-    my $blog;
-    if ($app->isa('MT::App::CMS')) {
-        $blog = $app->blog;
-    }
-    my $sys_blocked = $plugin->blocked();
-    my $desc = '<p>' . $plugin->translate('TypePad AntiSpam is a free service from Six Apart that helps protect your blog from comment and TrackBack spam. The TypePad AntiSpam plugin will send every comment or TrackBack submitted to your blog to the service for evaluation, and Movable Type will filter items if TypePad AntiSpam determines it is spam. If you discover that TypePad AntiSpam incorrectly classifies an item, simply change its classification by marking it as "Spam" or "Not Spam" from the Manage Comments screen, and TypePad AntiSpam will learn from your actions. Over time the service will improve based on reports from its users, so take care when marking items as "Spam" or "Not Spam."') . '</p>';
-
+    my $sys_blocked = &blocked();
     if ($blog) {
-        my $blog_blocked = $blog ? $plugin->blocked($blog) : 0;
-        $desc .= '<p>' . $plugin->translate('So far, TypePad AntiSpam has blocked [quant,_1,message,messages] for this blog, and [quant,_2,message,messages] system-wide.', $blog_blocked, $sys_blocked) . '</p>';
+        my $blog_blocked = $blog ? &blocked($blog) : 0;
+        $data->{plugin_desc} .= '<p>' . $plugin->translate('So far, TypePad AntiSpam has blocked [quant,_1,message,messages] for this blog, and [quant,_2,message,messages] system-wide.', $blog_blocked, $sys_blocked) . '</p>';
     } else {
-        $desc .= '<p>' . $plugin->translate('So far, TypePad AntiSpam has blocked [quant,_1,message,messages] system-wide.', $sys_blocked) . '</p>';
+        $data->{plugin_desc} .= '<p>' . $plugin->translate('So far, TypePad AntiSpam has blocked [quant,_1,message,messages] system-wide.', $sys_blocked) . '</p>';
     }
-    return $desc;
 }
 
 sub _hdlr_tpas_counter {
     my ($ctx, $args, $cond) = @_;
     my $blog = $ctx->stash('blog');
     if ($ctx->can('count_format')) {
-        return $ctx->count_format($plugin->blocked($blog), $args);
+        return $ctx->count_format(&blocked($blog), $args);
     } else {
-        return $plugin->blocked($blog) || 0;
+        return &blocked($blog) || 0;
     }
 }
 
-sub save_config {
-    my $plugin = shift;
-    my ($args, $scope) = @_;
+sub plugin_data_pre_save {
+    my $plugin = MT->component('TypePadAntiSpam');
+    my ( $cb, $obj, $original ) = @_;
+    my ( $args, $scope ) = ( $obj->data, $obj->key );
+
+    return 1
+        unless ( $obj->plugin eq $plugin->key )
+        && ( $scope =~ m/^configuration/ );
+
+    $scope =~ s/^configuration:?|:.*//g;
 
     my $app = MT->instance;
 
     $scope ||= 'system';
     if ( $scope eq 'system' ) {
-        my $existing_api_key = $plugin->api_key || '';
+        my $existing_api_key = '';
+        if ( $app->can('param') ) {
+            $existing_api_key = $app->param('existing_api_key') || '';
+        }
         my $new_api_key = $args->{api_key} || '';
         if ( ($new_api_key ne '') && ( $new_api_key ne $existing_api_key ) ) {
             # user assigned a new API key
-            $plugin->require_tpas;
+            &require_tpas;
             local $MT::TypePadAntiSpam::SERVICE_HOST = $args->{service_host}
                 if $args->{service_host};
             my $url = $app->base . $app->mt_uri;
@@ -140,11 +73,12 @@ sub save_config {
         }
     }
 
-    my $result = $plugin->SUPER::save_config(@_);
-    return $result if MT->version_number < 4;
+    return 1 if MT->version_number < 4;
 
     my $user = $app->user;
     my $blog_id = $app->blog->id if $app->blog;
+
+    return 1 unless $user;
 
     my $widget_store = $user->widgets();
     if ($widget_store && %$widget_store) {
@@ -171,7 +105,7 @@ sub save_config {
         }
     }
 
-    return $result;
+    return 1;
 }
 
 sub default_widgets {
@@ -190,12 +124,12 @@ sub stats_widget {
     my ( $tmpl, $param ) = @_;
     my $blog = $app->blog;
     if ($blog) {
-        $param->{'blog_blocked'} = $plugin->blocked($blog) || 0;
+        $param->{'blog_blocked'} = &blocked($blog) || 0;
     }
-    $param->{'system_blocked'} = $plugin->blocked();
+    $param->{'system_blocked'} = &blocked();
     $param->{'language'} = lc substr( MT->instance->current_language, 0, 2 );
     $param->{'use_ssl'} = $app->is_secure;
-    $param->{'api_key'} = $plugin->api_key;
+    $param->{'api_key'} = &api_key();
     return;
 }
 
@@ -204,16 +138,16 @@ sub pre_save_obj {
     if (!$obj->id && $obj->is_junk && ($obj->junk_log =~ m/TypePad AntiSpam says spam/)) {
         # this was junked due in part to TypePad AntiSpam
         if (my $blog = $obj->blog) {
-            $plugin->blocked( $blog, $plugin->blocked($blog) + 1 );
+            &blocked( $blog, &blocked($blog) + 1 );
         }
         # now increment total block count:
-        $plugin->blocked( undef, $plugin->blocked() + 1 );
+        &blocked( undef, &blocked() + 1 );
     }
 }
 
 sub handle_junk {
     my ($cb, $app, $thing) = @_;
-    $plugin->require_tpas;
+    &require_tpas;
     my $key    = is_valid_key($thing)       or return;
     my $sig    = package_signature($thing)  or return;
     MT::TypePadAntiSpam->submit_spam($sig, $key);
@@ -221,15 +155,16 @@ sub handle_junk {
 
 sub handle_not_junk {
     my ($cb, $app, $thing) = @_;
-    $plugin->require_tpas;
+    &require_tpas;
     my $key    = is_valid_key($thing)       or return;
     my $sig    = package_signature($thing)  or return;
     MT::TypePadAntiSpam->submit_ham($sig, $key);
 }
 
 sub typepadantispam_score {
+    my $plugin = MT->component('TypePadAntiSpam');
     my $thing = shift;
-    $plugin->require_tpas;
+    &require_tpas;
     my $key    = is_valid_key($thing)
         or return MT::JunkFilter::ABSTAIN();
     my $sig    = package_signature($thing, 1)
@@ -259,14 +194,14 @@ sub is_valid_key {
     my $thing = shift;
     my $r     = MT->request;
     unless ($r->stash('MT::Plugin::TypePadAntiSpam::api_key')) {
-        my $key = $plugin->api_key || return;
+        my $key = &api_key() || return;
         $r->stash('MT::Plugin::TypePadAntiSpam::api_key', $key);
     }
     $r->stash('MT::Plugin::TypePadAntiSpam::api_key');
 }
 
 sub require_tpas {
-    my $plugin = shift;
+    my $plugin = MT->component('TypePadAntiSpam');
     require MT::TypePadAntiSpam;
 
     my $host = $plugin->get_config_value('service_host');
@@ -330,8 +265,12 @@ sub cache {
     $cache->{$id};
 }
 
+sub has_api_key {
+    &api_key();
+}
+
 sub api_key {
-    my $plugin = shift;
+    my $plugin = MT->component('TypePadAntiSpam');
     my $blog = shift;
     if (@_) {
         my $key = shift;
@@ -342,7 +281,7 @@ sub api_key {
 }
 
 sub blocked {
-    my $plugin = shift;
+    my $plugin = MT->component('TypePadAntiSpam');
     my $blog = shift;
     my $blog_id = (ref($blog) && $blog->isa('MT::Blog')) ? $blog->id : $blog;
     my $blocked = $plugin->get_config_value('blocked', $blog_id ? 'blog:' . $blog_id : 'system');

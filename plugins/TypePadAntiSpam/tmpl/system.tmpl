@@ -5,6 +5,7 @@
         </div>
         <div class="field-content">
             <div class="textarea-wrapper"><input type="text" size="15" id="tpas_api_key" name="api_key" value="<TMPL_VAR NAME=API_KEY ESCAPE=HTML>" /></div>
+            <input type="hidden" id="existing_api_key" name="existing_api_key" value="<TMPL_VAR NAME=API_KEY ESCAPE=HTML>" />
             <TMPL_UNLESS NAME=API_KEY>
             <p class="hint"><MT_TRANS phrase="To enable this plugin, you'll need a free TypePad AntiSpam API key. You can <strong>get your free API key at [_1]antispam.typepad.com[_2]</strong>. Once you have your key, return to this page and enter it in the field below." params='<a href="http://antispam.typepad.com/" target="_blank">%%</a>'></p>
             </TMPL_UNLESS>
