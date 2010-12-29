@@ -11,17 +11,17 @@ use base 'MT::ErrorHandler';
 use MT::Author qw( AUTHOR );
 
 sub sanity_check {
-    my $auth = shift;
+    my $auth  = shift;
     my ($app) = @_;
-    my $q = $app->param;
-    my $id = $q->param('id');
+    my $q     = $app->param;
+    my $id    = $q->param('id');
 
-    if ($q->param('pass') ne $q->param('pass_verify')) {
+    if ( $q->param('pass') ne $q->param('pass_verify') ) {
         return $app->translate('Passwords do not match.');
     }
     if ( $q->param('pass') && ( $id && $app->user->id == $id ) ) {
         my $author = MT::Author->load($id)
-          or return $app->translate('Failed to verify current password.');
+            or return $app->translate('Failed to verify current password.');
         if ( !$auth->is_valid_password( $author, $q->param('old_pass') ) ) {
             return $app->translate('Failed to verify current password.');
         }
@@ -31,22 +31,23 @@ sub sanity_check {
 
 sub is_valid_password {
     my $auth = shift;
-    my($author, $pass, $crypted, $error_ref) = @_;
+    my ( $author, $pass, $crypted, $error_ref ) = @_;
     $pass ||= '';
 
     my $real_pass = $author->column('password');
-    if ((!$real_pass) || ($real_pass eq '(none)')) {
+    if ( ( !$real_pass ) || ( $real_pass eq '(none)' ) ) {
         return 0;
     }
-    return $crypted ? $real_pass eq $pass :
-                      crypt($pass, $real_pass) eq $real_pass;
+    return $crypted
+        ? $real_pass eq $pass
+        : crypt( $pass, $real_pass ) eq $real_pass;
 }
 
-sub can_recover_password { 1 }
-sub is_profile_needed { 1 }
-sub password_exists { 1 }
-sub delegate_auth { 0 }
-sub can_logout { 1 }
+sub can_recover_password {1}
+sub is_profile_needed    {1}
+sub password_exists      {1}
+sub delegate_auth        {0}
+sub can_logout           {1}
 
 # Standard MT-based login form / cookie auth.
 sub login_credentials {
@@ -54,12 +55,18 @@ sub login_credentials {
     my ($ctx) = @_;
 
     my $app = $ctx->{app} or return;
-    if ($app->param('username') && $app->param('password')) {
-        my ($user, $pass, $remember);
-        $user = $app->param('username');
-        $pass = $app->param('password');
+    if ( $app->param('username') && $app->param('password') ) {
+        my ( $user, $pass, $remember );
+        $user     = $app->param('username');
+        $pass     = $app->param('password');
         $remember = $app->param('remember') ? 1 : 0;
-        return { %$ctx, username => $user, password => $pass, permanent => $remember, auth_type => 'MT' };
+        return {
+            %$ctx,
+            username  => $user,
+            password  => $pass,
+            permanent => $remember,
+            auth_type => 'MT'
+        };
     }
     return undef;
 }
@@ -70,11 +77,18 @@ sub session_credentials {
 
     my $app = $ctx->{app} or return;
     my $cookies = $app->cookies;
-    if ($cookies->{$app->user_cookie}) {
-        my $cookie = $cookies->{$app->user_cookie}->value;
-        $cookie = Encode::decode( $app->charset, $cookie ) unless Encode::is_utf8($cookie);
-        my ($user, $session_id, $remember) = split /::/, $cookie;
-        return { %$ctx, username => $user, session_id => $session_id, permanent => $remember, auth_type => 'MT' };
+    if ( $cookies->{ $app->user_cookie } ) {
+        my $cookie = $cookies->{ $app->user_cookie }->value;
+        $cookie = Encode::decode( $app->charset, $cookie )
+            unless Encode::is_utf8($cookie);
+        my ( $user, $session_id, $remember ) = split /::/, $cookie;
+        return {
+            %$ctx,
+            username   => $user,
+            session_id => $session_id,
+            permanent  => $remember,
+            auth_type  => 'MT'
+        };
     }
     return undef;
 }
@@ -95,39 +109,46 @@ sub validate_credentials {
     my $auth = shift;
     my ($ctx) = @_;
 
-    my $app = $ctx->{app};
+    my $app      = $ctx->{app};
     my $username = $ctx->{username};
     my $password = $ctx->{password};
-    my $result = MT::Auth::UNKNOWN();
+    my $result   = MT::Auth::UNKNOWN();
 
-    if ((defined $username) && ($username ne '')) {
+    if ( ( defined $username ) && ( $username ne '' ) ) {
+
         # load author from db
         my $user_class = $app->user_class;
-        my ($author) = $user_class->search({ name => $username, type => AUTHOR, auth_type => 'MT' });
+        my ($author)
+            = $user_class->search(
+            { name => $username, type => AUTHOR, auth_type => 'MT' } );
 
         if ($author) {
+
             # password validation
-            if ($ctx->{session_id}) {
+            if ( $ctx->{session_id} ) {
                 $app->user($author);
                 $result = MT::Auth::SUCCESS();
-            } else {
+            }
+            else {
                 my $error;
-                if ($author->is_valid_password($password, 0, \$error)) {
+                if ( $author->is_valid_password( $password, 0, \$error ) ) {
                     $app->user($author);
                     $result = MT::Auth::NEW_LOGIN();
-                } else {
+                }
+                else {
                     $app->error($error);
                     $result = MT::Auth::INVALID_PASSWORD();
                 }
             }
         }
-        if ($author && !$author->is_active) {
+        if ( $author && !$author->is_active ) {
             if ( MT::Author::INACTIVE() == $author->status ) {
                 $result = MT::Auth::INACTIVE();
                 $app->user(undef);
             }
             elsif ( MT::Author::PENDING() == $author->status ) {
                 $result = MT::Auth::PENDING();
+
                 # leave user in $app - removed later in app
             }
         }
@@ -139,7 +160,7 @@ sub invalidate_credentials {
     my $auth = shift;
     my ($ctx) = @_;
 
-    my $app = $ctx->{app};
+    my $app  = $ctx->{app};
     my $user = $app->user;
     if ($user) {
         $user->remove_sessions;

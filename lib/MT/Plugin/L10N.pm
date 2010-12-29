@@ -27,11 +27,13 @@ sub get_handle {
     my ($lang) = @_;
     my $lh;
 
-    # Look up plugin's handle first.  
+    # Look up plugin's handle first.
     # If not available, use system's handle.
-    eval { $lh = $this->SUPER::get_handle($lang) ||
-        $this->SUPER::get_handle('en_us'); };
-    if (!$@ && $lh) {
+    eval {
+               $lh = $this->SUPER::get_handle($lang)
+            || $this->SUPER::get_handle('en_us');
+    };
+    if ( !$@ && $lh ) {
         return $lh;
     }
     return MT->language_handle;

@@ -12,96 +12,68 @@ use Symbol;
 use base qw( MT::ErrorHandler );
 
 sub NS_MOVABLETYPE {'http://www.sixapart.com/ns/movabletype'}
-;
 
 use File::Spec;
 use File::Copy;
 
-MT->add_callback('restore', 3, MT->instance, sub {
-    my ($cb, $objects, $deferred, $errors, $callback) = @_;
-    MT::BackupRestore->cb_restore_objects( $objects, $callback );
-});
+MT->add_callback(
+    'restore',
+    3,
+    MT->instance,
+    sub {
+        my ( $cb, $objects, $deferred, $errors, $callback ) = @_;
+        MT::BackupRestore->cb_restore_objects( $objects, $callback );
+    }
+);
 
-MT->add_callback('restore_asset', 3, MT->instance, sub {
-    my ($cb, $asset, $callback) = @_;
-    MT::BackupRestore->cb_restore_asset( $asset, $callback );
-});
+MT->add_callback(
+    'restore_asset',
+    3,
+    MT->instance,
+    sub {
+        my ( $cb, $asset, $callback ) = @_;
+        MT::BackupRestore->cb_restore_asset( $asset, $callback );
+    }
+);
 
 sub core_backup_instructions {
+
     # The list of classes that require specific orders
     # and/or special instructions.
     # Every other class will have the order of '500'.
     return {
-        'website'       => {
-            'order' => 350
-        },
-        'blog'          => {
-            'order' => 400
-        },
-        'author'        => {
-            'order' => 420
-        },
+        'website' => { 'order' => 350 },
+        'blog'    => { 'order' => 400 },
+        'author'  => { 'order' => 420 },
+
         # These 'association' classes should be backed up
         # after the object classes.
-        'association'   => {
-            'order' => 510
-        },
-        'placement'     => {
-            'order' => 510
-        },
-        'trackback'     => {
-            'order' => 510
-        },
-        'objecttag'     => {
-            'order' => 510
-        },
-        'objectscore'   => {
-            'order' => 510
-        },
-        'objectasset'   => {
-            'order' => 510
-        },
-        'filter'        => {
-            'order' => 510
-        },
+        'association' => { 'order' => 510 },
+        'placement'   => { 'order' => 510 },
+        'trackback'   => { 'order' => 510 },
+        'objecttag'   => { 'order' => 510 },
+        'objectscore' => { 'order' => 510 },
+        'objectasset' => { 'order' => 510 },
+        'filter'      => { 'order' => 510 },
+
         # Ping should be backed up after Trackback.
-        'tbping'        => {
-            'order' => 520
-        },
-        'ping'          =>  {
-            'order' => 520
-        },
-        'ping_cat'      => {
-            'order' => 520
-        },
+        'tbping'   => { 'order' => 520 },
+        'ping'     => { 'order' => 520 },
+        'ping_cat' => { 'order' => 520 },
+
         # Comment should be backed up after TBPing
         # because saving a comment ultimately triggers
         # MT::TBPing::save.
-        'comment'        => {
-            'order' => 530
-        },
+        'comment' => { 'order' => 530 },
+
         # Session, config and TheSchwartz packages are never backed up.
-        'session'       => {
-            'skip' => 1
-        },
-        'config'        => {
-            'skip' => 1
-        },
-        'ts_job'        => {
-            'skip' => 1
-        },
-        'ts_error'      => {
-            'skip' => 1
-        },
-        'ts_exitstatus' => {
-            'skip' => 1
-        },
-        'ts_funcmap'    => {
-            'skip' => 1
-        },
-        'touch' => {
-            'skip' => 1
-        },
+        'session'       => { 'skip' => 1 },
+        'config'        => { 'skip' => 1 },
+        'ts_job'        => { 'skip' => 1 },
+        'ts_error'      => { 'skip' => 1 },
+        'ts_exitstatus' => { 'skip' => 1 },
+        'ts_funcmap'    => { 'skip' => 1 },
+        'touch'         => { 'skip' => 1 },
     };
 }
 
@@ -111,105 +83,128 @@ sub _populate_obj_to_backup {
 
     my %populated;
     if ( defined($blog_ids) && scalar(@$blog_ids) ) {
+
         # author will be handled at last
-        $populated{MT->model('author')} = 1;
+        $populated{ MT->model('author') } = 1;
 
         my $blog_class = MT->model('blog');
-        if ( my @blogs = $blog_class->load( { id => \@$blog_ids, class => '*' } ) ) {
+        if ( my @blogs
+            = $blog_class->load( { id => \@$blog_ids, class => '*' } ) )
+        {
             my $is_blog;
             foreach my $blog (@blogs) {
                 $is_blog = 1, last
                     if $blog->is_blog();
             }
             if ($is_blog) {
-                $populated{MT->model('website')} = 1
+                $populated{ MT->model('website') } = 1;
             }
         }
 
     }
 
     my @object_hashes;
-    my $types = MT->registry('object_types');
+    my $types        = MT->registry('object_types');
     my $instructions = MT->registry('backup_instructions');
-    foreach my $key (keys %$types) {
-        next if $key =~ /\w+\.\w+/; # skip subclasses
+    foreach my $key ( keys %$types ) {
+        next if $key =~ /\w+\.\w+/;    # skip subclasses
         my $class = MT->model($key);
         next unless $class;
-        next if $class eq $key; # FIXME: to remove plugin object_classes
-        next if exists($instructions->{$key})
-             && exists($instructions->{$key}{skip})
-             && $instructions->{$key}{skip};
+        next if $class eq $key;    # FIXME: to remove plugin object_classes
+        next
+            if exists( $instructions->{$key} )
+                && exists( $instructions->{$key}{skip} )
+                && $instructions->{$key}{skip};
         next if exists $populated{$class};
-        my $order = exists($instructions->{$key})
-                 && exists($instructions->{$key}{order})
+        my $order
+            = exists( $instructions->{$key} )
+            && exists( $instructions->{$key}{order} )
             ? $instructions->{$key}{order}
             : 500;
 
         if ( $class->can('create_obj_to_backup') ) {
-            $class->create_obj_to_backup(
-                $blog_ids, \@object_hashes, \%populated, $order);
+            $class->create_obj_to_backup( $blog_ids, \@object_hashes,
+                \%populated, $order );
         }
         else {
-            $pkg->_create_obj_to_backup(
-                $class, $blog_ids, \@object_hashes, \%populated, $order);
+            $pkg->_create_obj_to_backup( $class, $blog_ids, \@object_hashes,
+                \%populated, $order );
         }
     }
 
     if ( defined($blog_ids) && scalar(@$blog_ids) ) {
+
         # Author has two ways to be associated to a blog
         my $class = MT->model('author');
-        unshift @object_hashes, {
-            $class => { 
+        unshift @object_hashes,
+            {
+            $class => {
                 terms => undef,
-                args => { 'join' =>
-                    [ MT->model('association'), 'author_id', { blog_id => $blog_ids }, { unique => 1 } ]
+                args  => {
+                    'join' => [
+                        MT->model('association'), 'author_id',
+                        { blog_id => $blog_ids }, { unique => 1 }
+                    ]
                 }
             },
             'order' => 500
-        }; 
-        unshift @object_hashes, {
-            $class => { 
+            };
+        unshift @object_hashes,
+            {
+            $class => {
                 terms => undef,
-                args => { 'join' =>
-                    [ MT->model('permission'), 'author_id', { blog_id => $blog_ids }, { unique => 1 } ]
+                args  => {
+                    'join' => [
+                        MT->model('permission'), 'author_id',
+                        { blog_id => $blog_ids }, { unique => 1 }
+                    ]
                 }
             },
             'order' => 500
-        };
+            };
 
-        # Author could also be in objectscore table. 
-        unshift @object_hashes, {
+        # Author could also be in objectscore table.
+        unshift @object_hashes,
+            {
             $class => {
                 terms => undef,
-                args  => { 'join' =>
-                    [ MT->model('objectscore'), 'author_id', undef, { unique => 1 } ],
+                args  => {
+                    'join' => [
+                        MT->model('objectscore'), 'author_id',
+                        undef, { unique => 1 }
+                    ],
                 }
             },
             'order' => 500
-        };
-        unshift @object_hashes, {
+            };
+        unshift @object_hashes,
+            {
             $class => {
                 terms => undef,
-                args  => { 'join' =>
-                    [ MT->model('objectscore'), 'object_id', { object_ds => 'author' }, { unique => 1 } ],
+                args  => {
+                    'join' => [
+                        MT->model('objectscore'), 'object_id',
+                        { object_ds => 'author' }, { unique => 1 }
+                    ],
                 }
             },
             'order' => 500
-        };
+            };
 
         # And objectscores.
         my $oc = MT->model('objectscore');
-        push @object_hashes, {
+        push @object_hashes,
+            {
             $oc => {
                 terms => { object_ds => 'author' },
-                args => undef,
+                args  => undef,
             },
             'order' => 510,
-        };
+            };
     }
     @object_hashes = sort { $a->{order} <=> $b->{order} } @object_hashes;
     my @obj_to_backup;
-    foreach my $hash ( @object_hashes ) {
+    foreach my $hash (@object_hashes) {
         delete $hash->{order};
         push @obj_to_backup, $hash;
     }
@@ -218,36 +213,40 @@ sub _populate_obj_to_backup {
 
 sub _create_obj_to_backup {
     my $pkg = shift;
-    my ($class, $blog_ids, $obj_to_backup, $populated, $order) = @_;
+    my ( $class, $blog_ids, $obj_to_backup, $populated, $order ) = @_;
 
     my $instructions = MT->registry('backup_instructions');
-    my $columns = $class->column_names;
+    my $columns      = $class->column_names;
     foreach my $column (@$columns) {
         if ( $column =~ /^(\w+)_id$/ ) {
-            my $parent = $1;
+            my $parent  = $1;
             my $p_class = MT->model($parent);
             next unless $p_class;
             next if exists $populated->{$p_class};
-            next if exists($instructions->{$parent})
-                 && exists($instructions->{$parent}{skip})
-                 && $instructions->{$parent}{skip};
-            my $p_order = exists($instructions->{$parent})
-                       && exists($instructions->{$parent}{order})
+            next
+                if exists( $instructions->{$parent} )
+                    && exists( $instructions->{$parent}{skip} )
+                    && $instructions->{$parent}{skip};
+            my $p_order
+                = exists( $instructions->{$parent} )
+                && exists( $instructions->{$parent}{order} )
                 ? $instructions->{$parent}{order}
                 : 500;
-            $pkg->_create_obj_to_backup(
-                $p_class, $blog_ids, $obj_to_backup, $populated, $p_order);
+            $pkg->_create_obj_to_backup( $p_class, $blog_ids, $obj_to_backup,
+                $populated, $p_order );
         }
     }
 
     if ( $class->can('backup_terms_args') ) {
-        push @$obj_to_backup, {
+        push @$obj_to_backup,
+            {
             $class  => $class->backup_terms_args($blog_ids),
             'order' => $order
-        };
+            };
     }
     else {
-        push @$obj_to_backup, $pkg->_default_terms_args($class, $blog_ids, $order);
+        push @$obj_to_backup,
+            $pkg->_default_terms_args( $class, $blog_ids, $order );
     }
 
     $populated->{$class} = 1;
@@ -255,13 +254,13 @@ sub _create_obj_to_backup {
 
 sub _default_terms_args {
     my $pkg = shift;
-    my ($class, $blog_ids, $order) = @_;
+    my ( $class, $blog_ids, $order ) = @_;
 
-    if (defined($blog_ids) && scalar(@$blog_ids)) {
+    if ( defined($blog_ids) && scalar(@$blog_ids) ) {
         return {
             $class => {
                 terms => { 'blog_id' => $blog_ids },
-                args => undef
+                args  => undef
             },
             'order' => $order,
         };
@@ -274,28 +273,30 @@ sub _default_terms_args {
     }
 }
 
-
 sub backup {
     my $class = shift;
-    my ($blog_ids, $printer, $splitter, $finisher, $progress, $size, $enc, $metadata) = @_;
+    my ($blog_ids, $printer, $splitter, $finisher,
+        $progress, $size,    $enc,      $metadata
+    ) = @_;
 
-	# removed global items from backup for blog-specific backups as this creates multiple copies of global items
-	# when multiple blogs from the same instance are restored one-by-one. ideally, this should be a user setting on the backup form
-	# push @$blog_ids, '0' if defined($blog_ids) && scalar(@$blog_ids);
+# removed global items from backup for blog-specific backups as this creates multiple copies of global items
+# when multiple blogs from the same instance are restored one-by-one. ideally, this should be a user setting on the backup form
+# push @$blog_ids, '0' if defined($blog_ids) && scalar(@$blog_ids);
 
-    my $obj_to_backup = $class->_populate_obj_to_backup( $blog_ids );
+    my $obj_to_backup = $class->_populate_obj_to_backup($blog_ids);
 
     my $header .= "<movabletype xmlns='" . NS_MOVABLETYPE . "'\n";
-    $header .= join ' ', map { $_ . "='" . $metadata->{$_} . "'" } keys %$metadata;
+    $header .= join ' ',
+        map { $_ . "='" . $metadata->{$_} . "'" } keys %$metadata;
     $header .= ">\n";
     $header = "<?xml version='1.0'?>\n$header";
     $printer->($header);
 
     my $files = {};
-    _loop_through_objects(
-        $printer, $splitter, $finisher, $progress, $size, $obj_to_backup, $files, $header);
+    _loop_through_objects( $printer, $splitter, $finisher, $progress, $size,
+        $obj_to_backup, $files, $header );
 
-    my $else_xml = MT->run_callbacks('Backup', $blog_ids, $progress);
+    my $else_xml = MT->run_callbacks( 'Backup', $blog_ids, $progress );
     $printer->($else_xml) if $else_xml ne '1';
 
     $printer->('</movabletype>');
@@ -303,49 +304,51 @@ sub backup {
 }
 
 sub _loop_through_objects {
-    my ($printer, $splitter, $finisher, $progress, $size, $obj_to_backup, $files, $header) = @_;
+    my ( $printer, $splitter, $finisher, $progress, $size, $obj_to_backup,
+        $files, $header )
+        = @_;
 
     my $counter = 1;
-    my $bytes = 0;
+    my $bytes   = 0;
     my %authors_seen;
     my $author_pkg = MT->model('author');
     for my $class_hash (@$obj_to_backup) {
-        my ($class, $term_arg) = each(%$class_hash);
+        my ( $class, $term_arg ) = each(%$class_hash);
         eval "require $class;";
         my $children = $class->properties->{child_classes} || {};
-        for my $child_class (keys %$children) {
+        for my $child_class ( keys %$children ) {
             eval "require $child_class;";
         }
-        if (my $err = $@) {
-            $progress->("$err\n", 'Error');
+        if ( my $err = $@ ) {
+            $progress->( "$err\n", 'Error' );
             next;
         }
         my @metacolumns;
         if ( exists( $class->properties->{meta} )
-          && $class->properties->{meta} ) {
+            && $class->properties->{meta} )
+        {
             require MT::Meta;
-            @metacolumns = MT::Meta->metadata_by_class( $class );
+            @metacolumns = MT::Meta->metadata_by_class($class);
         }
         my $records = 0;
-        my $state = MT->translate('Backing up [_1] records:', $class);
-        $progress->($state, $class->class_type || $class->datasource);
-        my $limit = 50;
+        my $state = MT->translate( 'Backing up [_1] records:', $class );
+        $progress->( $state, $class->class_type || $class->datasource );
+        my $limit  = 50;
         my $offset = 0;
-        my $terms = $term_arg->{terms} || {};
-        my $args = $term_arg->{args};
+        my $terms  = $term_arg->{terms} || {};
+        my $args   = $term_arg->{args};
+
         unless ( exists $args->{sort} ) {
-            $args->{sort} = 'id';
+            $args->{sort}      = 'id';
             $args->{direction} = 'ascend';
         }
         while (1) {
             $args->{offset} = $offset;
-            $args->{limit} = $limit + 1;
+            $args->{limit}  = $limit + 1;
             my $iter;
-            eval {
-                $iter = $class->load_iter($terms, $args);
-            };
-            if (my $err = $@) {
-                $progress->("$class:$err\n", 'Error');
+            eval { $iter = $class->load_iter( $terms, $args ); };
+            if ( my $err = $@ ) {
+                $progress->( "$class:$err\n", 'Error' );
             }
             last unless $iter;
             my $count = 0;
@@ -358,81 +361,113 @@ sub _loop_through_objects {
                     last;
                 }
                 $count++;
-                if ( ( $class eq $author_pkg )
-                  && ( exists $authors_seen{$object->id} ) ) {
+                if (   ( $class eq $author_pkg )
+                    && ( exists $authors_seen{ $object->id } ) )
+                {
                     next;
                 }
-                $bytes += $printer->($object->to_xml(undef, \@metacolumns) . "\n");
+                $bytes += $printer->(
+                    $object->to_xml( undef, \@metacolumns ) . "\n" );
                 $records++;
-                if ($size && ($bytes >= $size)) {
-                    $splitter->(++$counter, $header);
+                if ( $size && ( $bytes >= $size ) ) {
+                    $splitter->( ++$counter, $header );
                     $bytes = 0;
                 }
                 if ( $class eq $author_pkg ) {
-                    # Authors may be duplicated because of how terms and args are created.
-                    $authors_seen{$object->id} = 1;
-                } elsif ( $class->datasource eq 'asset' ) {
-                    $files->{$object->id} = [$object->url, $object->file_path, $object->file_name];
+
+        # Authors may be duplicated because of how terms and args are created.
+                    $authors_seen{ $object->id } = 1;
+                }
+                elsif ( $class->datasource eq 'asset' ) {
+                    $files->{ $object->id } = [
+                        $object->url, $object->file_path,
+                        $object->file_name
+                    ];
                 }
             }
             last unless $next;
-            $progress->($state . " " . MT->translate("[_1] records backed up...", $records), $class->datasource)
-                if $records && ($records % 100 == 0);
+            $progress->(
+                $state . " "
+                    . MT->translate( "[_1] records backed up...", $records ),
+                $class->datasource
+            ) if $records && ( $records % 100 == 0 );
         }
         if ( $class eq $author_pkg && %authors_seen ) {
-            my $num_authors = scalar(keys %authors_seen);
-            $progress->($state . " " . MT->translate("[_1] records backed up.", $num_authors), $class->class_type || $class->datasource);
-        } elsif ($records) {
-            $progress->($state . " " . MT->translate("[_1] records backed up.", $records), $class->class_type || $class->datasource);
-        } else {
-            $progress->($state . " " . MT->translate("There were no [_1] records to be backed up.", $class), $class->class_type || $class->datasource);
+            my $num_authors = scalar( keys %authors_seen );
+            $progress->(
+                $state . " "
+                    . MT->translate( "[_1] records backed up.",
+                    $num_authors ),
+                $class->class_type || $class->datasource
+            );
+        }
+        elsif ($records) {
+            $progress->(
+                $state . " "
+                    . MT->translate( "[_1] records backed up.", $records ),
+                $class->class_type || $class->datasource
+            );
+        }
+        else {
+            $progress->(
+                $state . " "
+                    . MT->translate(
+                    "There were no [_1] records to be backed up.", $class
+                    ),
+                $class->class_type || $class->datasource
+            );
         }
     }
 }
 
 sub restore_file {
     my $class = shift;
-    my ($fh, $errormsg, $schema_version, $overwrite, $callback) = @_;
+    my ( $fh, $errormsg, $schema_version, $overwrite, $callback ) = @_;
 
-    my $objects = {};
+    my $objects  = {};
     my $deferred = {};
-    my $errors = [];
+    my $errors   = [];
 
-    my ($blog_ids, $asset_ids) = eval { $class->restore_process_single_file(
-        $fh, $objects, $deferred, $errors, $schema_version, $overwrite, $callback
-    ); };
+    my ( $blog_ids, $asset_ids ) = eval {
+        $class->restore_process_single_file( $fh, $objects, $deferred,
+            $errors, $schema_version, $overwrite, $callback );
+    };
 
-    unless ( $@ ) {
-        MT->run_callbacks('restore', $objects, $deferred, $errors, $callback);
+    unless ($@) {
+        MT->run_callbacks( 'restore', $objects, $deferred, $errors,
+            $callback );
     }
-    $$errormsg = join('; ', @$errors);
-    ($deferred, $blog_ids);
+    $$errormsg = join( '; ', @$errors );
+    ( $deferred, $blog_ids );
 }
 
 sub restore_process_single_file {
     my $class = shift;
-    my ($fh, $objects, $deferred, $errors, $schema_version, $overwrite,  $callback) = @_;
+    my ( $fh, $objects, $deferred, $errors, $schema_version, $overwrite,
+        $callback )
+        = @_;
 
-    my %restored_blogs = map { $objects->{$_}->id => 1; } grep { 'blog' eq $objects->{$_}->datasource } keys %$objects;
+    my %restored_blogs = map { $objects->{$_}->id => 1; }
+        grep { 'blog' eq $objects->{$_}->datasource } keys %$objects;
 
     require XML::SAX;
     require MT::BackupRestore::BackupFileHandler;
     my $handler = MT::BackupRestore::BackupFileHandler->new(
-        callback => $callback,
-        objects => $objects,
-        deferred => $deferred,
-        errors => $errors,
-        schema_version => $schema_version,
+        callback           => $callback,
+        objects            => $objects,
+        deferred           => $deferred,
+        errors             => $errors,
+        schema_version     => $schema_version,
         overwrite_template => $overwrite,
     );
 
     require MT::Util;
     my $parser = MT::Util::sax_parser();
-    $callback->(ref($parser) . "\n") if MT->config->DebugMode;
+    $callback->( ref($parser) . "\n" ) if MT->config->DebugMode;
     $handler->{is_pp} = ref($parser) eq 'XML::SAX::PurePerl' ? 1 : 0;
     $parser->{Handler} = $handler;
     eval { $parser->parse_file($fh); };
-    if (my $e = $@) {
+    if ( my $e = $@ ) {
         push @$errors, $e;
         $callback->($e);
         die $e if $handler->{critical};
@@ -441,48 +476,66 @@ sub restore_process_single_file {
     my @blog_ids;
     my @asset_ids;
 
-    while (my ($key, $value) = each %$objects) {
-        if ('blog' eq $value->datasource) {
-            push @blog_ids, $value->id unless exists $restored_blogs{$value->id};
-        } elsif ('asset' eq $value->datasource) {
+    while ( my ( $key, $value ) = each %$objects ) {
+        if ( 'blog' eq $value->datasource ) {
+            push @blog_ids, $value->id
+                unless exists $restored_blogs{ $value->id };
+        }
+        elsif ( 'asset' eq $value->datasource ) {
             my ($old_id) = $key =~ /^.+#(\d+)$/;
             push @asset_ids, $value->id, $old_id;
         }
     }
 
-    my $blog_ids = scalar(@blog_ids) ? \@blog_ids : undef;
+    my $blog_ids  = scalar(@blog_ids)  ? \@blog_ids  : undef;
     my $asset_ids = scalar(@asset_ids) ? \@asset_ids : undef;
-    ($blog_ids, $asset_ids);
+    ( $blog_ids, $asset_ids );
 }
 
 sub restore_directory {
     my $class = shift;
-    my ($dir, $errors, $error_assets, $schema_version, $overwrite, $callback) = @_;
+    my ( $dir, $errors, $error_assets, $schema_version, $overwrite,
+        $callback )
+        = @_;
 
     my $manifest;
     my @files;
-    opendir my $dh, $dir or push(@$errors, MT->translate("Can't open directory '[_1]': [_2]", $dir, "$!")), return undef;
-    for my $f (readdir $dh) {
+    opendir my $dh, $dir
+        or push( @$errors,
+        MT->translate( "Can't open directory '[_1]': [_2]", $dir, "$!" ) ),
+        return undef;
+    for my $f ( readdir $dh ) {
         next if $f !~ /^.+\.manifest$/i;
-        $manifest = File::Spec->catfile($dir, Encode::decode( MT->config->PublishCharset, $f));
+        $manifest = File::Spec->catfile( $dir,
+            Encode::decode( MT->config->PublishCharset, $f ) );
         last;
     }
     closedir $dh;
     unless ($manifest) {
-        push @$errors, MT->translate("No manifest file could be found in your import directory [_1].", $dir);
-        return (undef, undef);
+        push @$errors,
+            MT->translate(
+            "No manifest file could be found in your import directory [_1].",
+            $dir
+            );
+        return ( undef, undef );
     }
 
     my $fh = gensym;
-    open $fh, "<$manifest" or push(@$errors, MT->translate("Can't open [_1].", $manifest)), return 0;
+    open $fh, "<$manifest"
+        or push( @$errors, MT->translate( "Can't open [_1].", $manifest ) ),
+        return 0;
     my $backups = __PACKAGE__->process_manifest($fh);
     close $fh;
-    unless($backups) {
-        push @$errors, MT->translate("Manifest file [_1] was not a valid Movable Type backup manifest file.", $manifest);
-        return (undef, undef);
+    unless ($backups) {
+        push @$errors,
+            MT->translate(
+            "Manifest file [_1] was not a valid Movable Type backup manifest file.",
+            $manifest
+            );
+        return ( undef, undef );
     }
 
-    $callback->(MT->translate("Manifest file: [_1]", $manifest) . "\n");
+    $callback->( MT->translate( "Manifest file: [_1]", $manifest ) . "\n" );
 
     my %objects;
     my $deferred = {};
@@ -492,33 +545,37 @@ sub restore_directory {
     my @asset_ids;
     for my $file (@$files) {
         my $fh = gensym;
-        my $filepath = File::Spec->catfile($dir, $file);
-        open $fh, "<$filepath" or push @$errors, MT->translate("Can't open [_1]."), next;
+        my $filepath = File::Spec->catfile( $dir, $file );
+        open $fh, "<$filepath"
+            or push @$errors, MT->translate("Can't open [_1]."), next;
 
-        my ($tmp_blog_ids, $tmp_asset_ids) = eval { __PACKAGE__->restore_process_single_file(
-            $fh, \%objects, $deferred, $errors, $schema_version, $overwrite, $callback); };
+        my ( $tmp_blog_ids, $tmp_asset_ids ) = eval {
+            __PACKAGE__->restore_process_single_file( $fh, \%objects,
+                $deferred, $errors, $schema_version, $overwrite, $callback );
+        };
 
         close $fh;
         last if $@;
 
-        push @blog_ids, @$tmp_blog_ids if defined $tmp_blog_ids;
+        push @blog_ids,  @$tmp_blog_ids  if defined $tmp_blog_ids;
         push @asset_ids, @$tmp_asset_ids if defined $tmp_asset_ids;
     }
 
-    unless ( $@ ) {
-        MT->run_callbacks('restore', \%objects, $deferred, $errors, $callback);
+    unless ($@) {
+        MT->run_callbacks( 'restore', \%objects, $deferred, $errors,
+            $callback );
     }
-    my $blog_ids = scalar(@blog_ids) ? \@blog_ids : undef;
+    my $blog_ids  = scalar(@blog_ids)  ? \@blog_ids  : undef;
     my $asset_ids = scalar(@asset_ids) ? \@asset_ids : undef;
-    ($deferred, $blog_ids, $asset_ids);
+    ( $deferred, $blog_ids, $asset_ids );
 }
 
 sub process_manifest {
     my $class = shift;
     my ($stream) = @_;
 
-    if ((ref($stream) eq 'Fh') || (ref($stream) eq 'GLOB')){
-        seek($stream, 0, 0) or return undef;
+    if ( ( ref($stream) eq 'Fh' ) || ( ref($stream) eq 'GLOB' ) ) {
+        seek( $stream, 0, 0 ) or return undef;
         require XML::SAX;
         require MT::BackupRestore::ManifestFileHandler;
         my $handler = MT::BackupRestore::ManifestFileHandler->new();
@@ -527,7 +584,7 @@ sub process_manifest {
         my $parser = MT::Util::sax_parser();
         $parser->{Handler} = $handler;
         eval { $parser->parse_file($stream); };
-        if (my $e = $@) {
+        if ( my $e = $@ ) {
             die $e;
         }
         return $handler->{backups};
@@ -537,58 +594,68 @@ sub process_manifest {
 
 sub restore_asset {
     my $class = shift;
-    my ($file, $asset, $old_id, $fmgr, $errors, $callback) = @_;
+    my ( $file, $asset, $old_id, $fmgr, $errors, $callback ) = @_;
 
     my $id = $asset->id;
 
     my $path = $asset->file_path;
-    unless (defined($path)) {
-        $callback->(MT->translate('Path was not found for the file ([_1]).', $id));
+    unless ( defined($path) ) {
+        $callback->(
+            MT->translate( 'Path was not found for the file ([_1]).', $id ) );
         return 0;
     }
-    my ($vol, $dir, $fn) = File::Spec->splitpath($path);
-    my $voldir =  "$vol$dir";
-    if (!-w $voldir) {
-        unless (defined $fmgr) {
-            my $blog = MT->model('blog')->load($asset->blog_id);
+    my ( $vol, $dir, $fn ) = File::Spec->splitpath($path);
+    my $voldir = "$vol$dir";
+    if ( !-w $voldir ) {
+        unless ( defined $fmgr ) {
+            my $blog = MT->model('blog')->load( $asset->blog_id );
             $fmgr = $blog->file_mgr if $blog;
         }
-        unless (defined $fmgr) {
-            $errors->{$id} = MT->translate('[_1] is not writable.', $voldir) ;
-        } else {
-            $voldir =~ s|/$|| unless $voldir eq '/';  ## OS X doesn't like / at the end in mkdir().
-            unless ($fmgr->exists($voldir)) {
-                $fmgr->mkpath($voldir) or
-                    $errors->{$id} = MT->translate("Error making path '[_1]': [_2]", $path, $fmgr->errstr);
+        unless ( defined $fmgr ) {
+            $errors->{$id}
+                = MT->translate( '[_1] is not writable.', $voldir );
+        }
+        else {
+            $voldir =~ s|/$||
+                unless $voldir eq
+                    '/';    ## OS X doesn't like / at the end in mkdir().
+            unless ( $fmgr->exists($voldir) ) {
+                $fmgr->mkpath($voldir)
+                    or $errors->{$id}
+                    = MT->translate( "Error making path '[_1]': [_2]",
+                    $path, $fmgr->errstr );
             }
         }
     }
-    if (-w $voldir) {
+    if ( -w $voldir ) {
         my $filename = "$old_id-" . $asset->file_name;
-        $callback->(MT->translate("Copying [_1] to [_2]...", $filename, $path));
-        $file = MT::FileMgr::Local::_local( $file )
-            unless ref( $file );
-        copy($file, MT::FileMgr::Local::_local( $path ))
+        $callback->(
+            MT->translate( "Copying [_1] to [_2]...", $filename, $path ) );
+        $file = MT::FileMgr::Local::_local($file)
+            unless ref($file);
+        copy( $file, MT::FileMgr::Local::_local($path) )
             or $errors->{$id} = $!;
     }
 
     if ( exists $errors->{$id} ) {
-        return $callback->( MT->translate('Failed: ') . $errors->{$id} . "\n" );
+        return $callback->(
+            MT->translate('Failed: ') . $errors->{$id} . "\n" );
     }
 
     $callback->( MT->translate("Done.") . "\n" );
 
-    MT->run_callbacks('restore_asset', $asset, $callback);
+    MT->run_callbacks( 'restore_asset', $asset, $callback );
 
     1;
 }
 
 sub _sync_asset_id {
-    my ($text, $related) = @_;
+    my ( $text, $related ) = @_;
 
     my $new_text = $text;
 
-    $new_text =~ s!<form([^>]*?\s)mt:asset-id=(["'])(\d+)(["'])([^>]*?)>(.+?)</form>!
+    $new_text
+        =~ s!<form([^>]*?\s)mt:asset-id=(["'])(\d+)(["'])([^>]*?)>(.+?)</form>!
         my $old_id = $3;
         my $result = '';
         if ( my $asset = $related->{$old_id} ) {
@@ -614,7 +681,7 @@ sub _sync_asset_id {
 
 sub cb_restore_objects {
     my $pkg = shift;
-    my ($all_objects, $callback) = @_;
+    my ( $all_objects, $callback ) = @_;
 
     my %entries;
     my %assets;
@@ -623,115 +690,131 @@ sub cb_restore_objects {
         if ( $key =~ /^MT::Entry#(\d+)$/ ) {
             my $new_id = $all_objects->{$key}->id;
             $entries{$new_id} = $all_objects->{$key};
-        } elsif ( $key =~ /^MT::Asset#(\d+)$/ ) {
+        }
+        elsif ( $key =~ /^MT::Asset#(\d+)$/ ) {
             my $old_id = $1;
             my $new_id = $all_objects->{$key}->id;
             $assets{$new_id} = {
                 object => $all_objects->{$key},
                 old_id => $old_id,
             };
-        } elsif ( $key =~ /^MT::Author#(\d+)$/ ) {
+        }
+        elsif ( $key =~ /^MT::Author#(\d+)$/ ) {
+
             # restore userpic association now
             my $new_author = $all_objects->{$key};
             if ( !$all_objects->{$key}->{no_overwrite} ) {
                 if ( my $userpic_id = $new_author->userpic_asset_id ) {
-                    if ( my $new_asset = $all_objects->{'MT::Asset#' . $userpic_id} ) {
+                    if ( my $new_asset
+                        = $all_objects->{ 'MT::Asset#' . $userpic_id } )
+                    {
                         $new_author->userpic_asset_id( $new_asset->id );
                     }
                 }
             }
+
             # also restore ids of favorite blogs
             if ( my $favorites = $new_author->favorite_blogs ) {
                 next unless 'ARRAY' eq ref($favorites);
                 my @new_favs;
-                if ( @$favorites ) {
-                    foreach my $old_id ( @$favorites ) {
-                        my $blog = $all_objects->{'MT::Blog#' . $old_id};
+                if (@$favorites) {
+                    foreach my $old_id (@$favorites) {
+                        my $blog = $all_objects->{ 'MT::Blog#' . $old_id };
                         push @new_favs, $blog->id if $blog;
                     }
                 }
-                $new_author->favorite_blogs(\@new_favs) if @new_favs;
+                $new_author->favorite_blogs( \@new_favs ) if @new_favs;
             }
             if ( my $favorites = $new_author->favorite_websites ) {
                 next unless 'ARRAY' eq ref($favorites);
                 my @new_favs;
-                if ( @$favorites ) {
-                    foreach my $old_id ( @$favorites ) {
-                        my $blog = $all_objects->{'MT::Website#' . $old_id};
+                if (@$favorites) {
+                    foreach my $old_id (@$favorites) {
+                        my $blog = $all_objects->{ 'MT::Website#' . $old_id };
                         push @new_favs, $blog->id if $blog;
                     }
                 }
-                $new_author->favorite_websites(\@new_favs) if @new_favs;
+                $new_author->favorite_websites( \@new_favs ) if @new_favs;
             }
             $new_author->update;
+
             # call trigger to save meta
-            $new_author->call_trigger('post_save', $new_author);
+            $new_author->call_trigger( 'post_save', $new_author );
         }
     }
 
     my $i = 0;
     $callback->(
-        MT->translate("Restoring asset associations ... ( [_1] )", $i++),
+        MT->translate( "Restoring asset associations ... ( [_1] )", $i++ ),
         'cb-restore-entry-asset'
     );
     for my $obj_id ( keys %entries ) {
         my $entry = $entries{$obj_id};
 
-        my @placements = MT->model('objectasset')->load( {
-            object_id => $obj_id,
-            object_ds => 'entry',
-            blog_id => $entry->blog_id
-        });
+        my @placements = MT->model('objectasset')->load(
+            {   object_id => $obj_id,
+                object_ds => 'entry',
+                blog_id   => $entry->blog_id
+            }
+        );
         next unless @placements;
 
         my %related;
-        for my $placement ( @placements ) {
-            my $asset_hash = $assets{$placement->asset_id};
+        for my $placement (@placements) {
+            my $asset_hash = $assets{ $placement->asset_id };
             next unless $asset_hash;
             $related{ $asset_hash->{old_id} } = $asset_hash->{object};
         }
 
-        if ($entry->class == 'entry') {
+        if ( $entry->class == 'entry' ) {
             $callback->(
-                MT->translate("Restoring asset associations in entry ... ( [_1] )", $i++),
+                MT->translate(
+                    "Restoring asset associations in entry ... ( [_1] )", $i++
+                ),
                 'cb-restore-entry-asset'
             );
-        } else {
+        }
+        else {
             $callback->(
-                MT->translate("Restoring asset associations in page ... ( [_1] )", $i++),
+                MT->translate(
+                    "Restoring asset associations in page ... ( [_1] )", $i++
+                ),
                 'cb-restore-entry-asset'
             );
         }
 
-        for my $col ( qw( text text_more ) ) {
+        for my $col (qw( text text_more )) {
             my $text = $entry->$col;
             next unless $text;
-            $text = _sync_asset_id( $text, \%related ); 
+            $text = _sync_asset_id( $text, \%related );
             $entry->$col($text);
         }
-        $entry->update();  # directly call update to bypass processing in save()
+        $entry->update()
+            ;    # directly call update to bypass processing in save()
     }
     $callback->( MT->translate("Done.") . "\n" );
     1;
 }
 
 sub _sync_asset_url {
-    my ($text, $asset) = @_;
+    my ( $text, $asset ) = @_;
 
-    my $filename = quotemeta(encode_url($asset->file_name));
-    my $url = $asset->url;
-    my $id = $asset->id;
-    my @children = MT->model('asset')->load(
-        { parent => $asset->id, blog_id => $asset->blog_id, class => '*' }
-    );
+    my $filename = quotemeta( encode_url( $asset->file_name ) );
+    my $url      = $asset->url;
+    my $id       = $asset->id;
+    my @children
+        = MT->model('asset')
+        ->load(
+        { parent => $asset->id, blog_id => $asset->blog_id, class => '*' } );
     my %children = map {
         $_->id => {
-            'filename' => quotemeta(encode_url($_->file_name)),
-            'url' => $_->url
-        }
+            'filename' => quotemeta( encode_url( $_->file_name ) ),
+            'url'      => $_->url
+            }
     } @children;
 
-    $text =~ s!<form([^>]*?\s)mt:asset-id=(["'])$id(["'])([^>]*?)>(.+?)</form>!
+    $text
+        =~ s!<form([^>]*?\s)mt:asset-id=(["'])$id(["'])([^>]*?)>(.+?)</form>!
         my $result = '<form' . $1 . 'mt:asset-id=' . $2 . $id . $3 . $4 . '>';
         my $html = $5;
         $html =~ s#<a([^>]*? )href=(["'])[^>]+?/$filename(["'])([^>]*?)>#<a$1href=$2$url$3$4>#gim;
@@ -753,41 +836,48 @@ sub _sync_asset_url {
 
 sub cb_restore_asset {
     my $pkg = shift;
-    my ($asset, $callback) = @_;
+    my ( $asset, $callback ) = @_;
 
-    my @placements = MT->model('objectasset')->load( {
-        asset_id => $asset->id, 
-        blog_id => $asset->blog_id
-    });
+    my @placements = MT->model('objectasset')->load(
+        {   asset_id => $asset->id,
+            blog_id  => $asset->blog_id
+        }
+    );
 
     my $i = 0;
     $callback->(
-        MT->translate('Restoring url of the assets ( [_1] )...', $i++),
+        MT->translate( 'Restoring url of the assets ( [_1] )...', $i++ ),
         'cb-restore-asset-url'
     );
-    for my $placement (@placements) {  
-        next unless 'entry' eq $placement->object_ds;  
+    for my $placement (@placements) {
+        next unless 'entry' eq $placement->object_ds;
         my $entry = MT->model('entry')->load( $placement->object_id );
         next unless $entry;
 
-        if ($entry->class == 'entry') {
+        if ( $entry->class == 'entry' ) {
             $callback->(
-                MT->translate('Restoring url of the assets in entry ( [_1] )...', $i++),
-                'cb-restore-asset-url'
-            );
-        } else {
-            $callback->(
-                MT->translate('Restoring url of the assets in page ( [_1] )...', $i++),
+                MT->translate(
+                    'Restoring url of the assets in entry ( [_1] )...', $i++
+                ),
                 'cb-restore-asset-url'
             );
         }
-        for my $col ( qw( text text_more ) ) {
+        else {
+            $callback->(
+                MT->translate(
+                    'Restoring url of the assets in page ( [_1] )...', $i++
+                ),
+                'cb-restore-asset-url'
+            );
+        }
+        for my $col (qw( text text_more )) {
             my $text = $entry->$col;
             next unless $text;
             $text = _sync_asset_url( $text, $asset );
             $entry->$col($text);
         }
-        $entry->update();  # directly call update to bypass processing in save()
+        $entry->update()
+            ;    # directly call update to bypass processing in save()
     }
     $callback->( MT->translate("Done.") . "\n" );
     1;
@@ -795,56 +885,63 @@ sub cb_restore_asset {
 
 sub _restore_asset_multi {
     my $class = shift;
-    my ($asset_element, $objects, $errors, $callback, $blogs_meta) = @_;
+    my ( $asset_element, $objects, $errors, $callback, $blogs_meta ) = @_;
 
     my $old_id = $asset_element->{asset_id};
-    if (!defined($old_id)) {
-        $callback->(MT->translate('ID for the file was not set.'));
+    if ( !defined($old_id) ) {
+        $callback->( MT->translate('ID for the file was not set.') );
         return 0;
     }
     my $asset_class = MT->model('asset');
-    my $asset = $objects->{"$asset_class#$old_id"};
-    unless (defined($asset)) {
-        $callback->(MT->translate('The file ([_1]) was not restored.', $old_id));
+    my $asset       = $objects->{"$asset_class#$old_id"};
+    unless ( defined($asset) ) {
+        $callback->(
+            MT->translate( 'The file ([_1]) was not restored.', $old_id ) );
         return 0;
     }
 
     my $fmgr;
-    if (exists $blogs_meta->{$asset->blog_id}) {
-        my $blog = MT->model('blog')->load($asset->blog_id)
+    if ( exists $blogs_meta->{ $asset->blog_id } ) {
+        my $blog = MT->model('blog')->load( $asset->blog_id )
             or return 0;
 
-        my $meta = $blogs_meta->{$asset->blog_id};
+        my $meta = $blogs_meta->{ $asset->blog_id };
         my $path = $asset->file_path;
-        my $url = $asset->url;
-        if (my $archive_path = $meta->{'archive_path'}) {
+        my $url  = $asset->url;
+        if ( my $archive_path = $meta->{'archive_path'} ) {
             my $old_archive_path = $meta->{'old_archive_path'};
             $path =~ s/\Q$old_archive_path\E/$archive_path/i;
             $asset->file_path($path);
         }
-        if (my $archive_url = $meta->{'archive_url'}) {
+        if ( my $archive_url = $meta->{'archive_url'} ) {
             my $old_archive_url = $meta->{'old_archive_url'};
             $url =~ s/\Q$old_archive_url\E/$archive_url/i;
             $asset->url($url);
         }
-        if (my $site_path = $meta->{'site_path'}) {
+        if ( my $site_path = $meta->{'site_path'} ) {
             my $old_site_path = $meta->{'old_site_path'};
             $path =~ s/\Q$old_site_path\E/$site_path/i;
             $asset->file_path($path);
         }
-        if (my $site_url = $meta->{'site_url'}) {
+        if ( my $site_url = $meta->{'site_url'} ) {
             my $old_site_url = $meta->{'old_site_url'};
             $url =~ s/\Q$old_site_url\E/$site_url/i;
             $asset->url($url);
         }
-        $callback->(MT->translate("Changing path for the file '[_1]' (ID:[_2])...", $asset->label, $asset->id));
-        $asset->save or $callback->(MT->translate("failed") . "\n");
-        $callback->(MT->translate("ok") . "\n");
+        $callback->(
+            MT->translate(
+                "Changing path for the file '[_1]' (ID:[_2])...",
+                $asset->label, $asset->id
+            )
+        );
+        $asset->save or $callback->( MT->translate("failed") . "\n" );
+        $callback->( MT->translate("ok") . "\n" );
 
         $fmgr = $blog->file_mgr;
     }
     my $file = $asset_element->{fh};
-    $class->restore_asset($file, $asset, $old_id, $fmgr, $errors, $callback);
+    $class->restore_asset( $file, $asset, $old_id, $fmgr, $errors,
+        $callback );
 }
 
 package MT::Object;
@@ -852,22 +949,27 @@ package MT::Object;
 sub _is_element {
     my $obj = shift;
     my ($def) = @_;
-    return (('text' eq $def->{type}) || (('string' eq $def->{type}) && (255 < $def->{size}))) ? 1 : 0;
+    return (   ( 'text' eq $def->{type} )
+            || ( ( 'string' eq $def->{type} ) && ( 255 < $def->{size} ) ) )
+        ? 1
+        : 0;
 }
 
 sub to_xml {
     my $obj = shift;
-    my ($namespace, $metacolumns) = @_;
+    my ( $namespace, $metacolumns ) = @_;
 
-    my $coldefs = $obj->column_defs;
+    my $coldefs  = $obj->column_defs;
     my $colnames = $obj->column_names;
     my $xml;
 
     my $elem = $obj->datasource;
     unless ( UNIVERSAL::isa( $obj, 'MT::Log' ) ) {
         if ( $obj->properties
-          && ( my $ccol = $obj->properties->{class_column} ) ) {
+            && ( my $ccol = $obj->properties->{class_column} ) )
+        {
             if ( my $class = $obj->$ccol ) {
+
                 # use class_type value instead if
                 # the value resolves to a Perl package
                 $elem = $class
@@ -879,28 +981,36 @@ sub to_xml {
     $xml = '<' . $elem;
     $xml .= " xmlns='$namespace'" if defined($namespace) && $namespace;
 
-    my (@elements, @blobs, @meta);
+    my ( @elements, @blobs, @meta );
     for my $name (@$colnames) {
-        if ($obj->column($name) || (defined($obj->column($name)) && ('0' eq $obj->column($name)))) {
+        if ($obj->column($name)
+            || ( defined( $obj->column($name) )
+                && ( '0' eq $obj->column($name) ) )
+            )
+        {
             if ( ( $obj->properties->{meta_column} || '' ) eq $name ) {
                 push @meta, $name;
                 next;
             }
-            elsif ($obj->_is_element($coldefs->{$name})) {
+            elsif ( $obj->_is_element( $coldefs->{$name} ) ) {
                 push @elements, $name;
                 next;
-            } elsif ('blob' eq $coldefs->{$name}->{type}) {
+            }
+            elsif ( 'blob' eq $coldefs->{$name}->{type} ) {
                 push @blobs, $name;
                 next;
             }
-            $xml .= " $name='" . MT::Util::encode_xml($obj->column($name), 1) . "'";
+            $xml .= " $name='"
+                . MT::Util::encode_xml( $obj->column($name), 1 ) . "'";
         }
     }
     my ( @meta_elements, @meta_blobs );
-    if ( defined( $metacolumns ) && @$metacolumns ) {
-        foreach my $metacolumn ( @$metacolumns ) {
+    if ( defined($metacolumns) && @$metacolumns ) {
+        foreach my $metacolumn (@$metacolumns) {
             my $name = $metacolumn->{name};
-            if ($obj->$name || (defined($obj->$name) && ('0' eq $obj->$name))) {
+            if ( $obj->$name
+                || ( defined( $obj->$name ) && ( '0' eq $obj->$name ) ) )
+            {
                 if ( 'vclob' eq $metacolumn->{type} ) {
                     push @meta_elements, $name;
                 }
@@ -908,31 +1018,36 @@ sub to_xml {
                     push @meta_blobs, $name;
                 }
                 else {
-                    $xml .= " $name='" . MT::Util::encode_xml($obj->$name, 1) . "'";
+                    $xml .= " $name='"
+                        . MT::Util::encode_xml( $obj->$name, 1 ) . "'";
                 }
             }
         }
     }
     $xml .= '>';
-    $xml .= "<$_>" . MT::Util::encode_xml($obj->column($_), 1) . "</$_>" foreach @elements;
+    $xml .= "<$_>" . MT::Util::encode_xml( $obj->column($_), 1 ) . "</$_>"
+        foreach @elements;
     require MIME::Base64;
     $xml .= "<$_>"
-         . MIME::Base64::encode_base64(
-            Encode::encode( MT->config->PublishCharset, $obj->column($_) ), '')
-         . "</$_>"
-            foreach @blobs;
+        . MIME::Base64::encode_base64(
+        Encode::encode( MT->config->PublishCharset, $obj->column($_) ), '' )
+        . "</$_>"
+        foreach @blobs;
     foreach my $meta_col (@meta) {
         my $hashref = $obj->$meta_col;
-        $xml .= "<$meta_col>" . 
-                MIME::Base64::encode_base64(MT::Serialize->serialize(\$hashref), '') .
-                "</$meta_col>";
+        $xml .= "<$meta_col>"
+            . MIME::Base64::encode_base64(
+            MT::Serialize->serialize( \$hashref ), '' )
+            . "</$meta_col>";
     }
-    $xml .= "<$_>" . MT::Util::encode_xml($obj->$_, 1) . "</$_>" foreach @meta_elements;
+    $xml .= "<$_>" . MT::Util::encode_xml( $obj->$_, 1 ) . "</$_>"
+        foreach @meta_elements;
     foreach my $vblob_col (@meta_blobs) {
         my $vblob = $obj->$vblob_col;
-        $xml .= "<$vblob_col>" . 
-                MIME::Base64::encode_base64(MT::Serialize->serialize(\$vblob), '') .
-                "</$vblob_col>";
+        $xml .= "<$vblob_col>"
+            . MIME::Base64::encode_base64(
+            MT::Serialize->serialize( \$vblob ), '' )
+            . "</$vblob_col>";
     }
     $xml .= '</' . $elem . '>';
     $xml;
@@ -945,10 +1060,10 @@ sub parents {
 
 sub _restore_id {
     my $obj = shift;
-    my ($key, $val, $data, $objects) = @_;
+    my ( $key, $val, $data, $objects ) = @_;
 
     return 0 unless 'ARRAY' eq ref($val);
-    return 1 if 0 == $data->{$key}; 
+    return 1 if 0 == $data->{$key};
 
     my $new_obj;
     my $old_id = $data->{$key};
@@ -963,40 +1078,42 @@ sub _restore_id {
 
 sub restore_parent_ids {
     my $obj = shift;
-    my ($data, $objects) = @_;
+    my ( $data, $objects ) = @_;
 
     my $parents = $obj->parents;
-    my $count = scalar(keys %$parents);
+    my $count   = scalar( keys %$parents );
 
     my $done = 0;
-    while (my ($key, $val) = each(%$parents)) {
-        $val = [ $val ] unless (ref $val);
-        if ('ARRAY' eq ref($val)) {
-            $done += $obj->_restore_id($key, $val, $data, $objects);
+    while ( my ( $key, $val ) = each(%$parents) ) {
+        $val = [$val] unless ( ref $val );
+        if ( 'ARRAY' eq ref($val) ) {
+            $done += $obj->_restore_id( $key, $val, $data, $objects );
         }
-        elsif ('HASH' eq ref($val)) {
+        elsif ( 'HASH' eq ref($val) ) {
             my $v = $val->{class};
-            $v = [ $v ] unless (ref $v);
+            $v = [$v] unless ( ref $v );
             my $result = 0;
-            if (my $relations = $val->{relations}) {
+            if ( my $relations = $val->{relations} ) {
                 my $col = $relations->{key};
-                my $ds = $data->{$col};
-                my $ev = $relations->{$ds . '_id'};
+                my $ds  = $data->{$col};
+                my $ev  = $relations->{ $ds . '_id' };
                 $ev = MT->model($ds) unless $ev;
                 return 0 unless $ev;
-                $ev = [ $ev ] unless (ref $ev);
-                $done += $obj->_restore_id($key, $ev, $data, $objects);
+                $ev = [$ev] unless ( ref $ev );
+                $done += $obj->_restore_id( $key, $ev, $data, $objects );
             }
             else {
-                $result = $obj->_restore_id($key, $v, $data, $objects);
-                $result = 1 if exists($val->{optional}) && $val->{optional};
-                $data->{$key} = -1 
-                  if !$result && (exists($val->{orphanize}) && $val->{orphanize});
+                $result = $obj->_restore_id( $key, $v, $data, $objects );
+                $result = 1 if exists( $val->{optional} ) && $val->{optional};
+                $data->{$key} = -1
+                    if !$result
+                        && ( exists( $val->{orphanize} )
+                            && $val->{orphanize} );
                 $done += $result;
             }
         }
     }
-    ($count == $done) ? 1 : 0;
+    ( $count == $done ) ? 1 : 0;
 }
 
 package MT::Website;
@@ -1006,11 +1123,10 @@ sub backup_terms_args {
     my ($blog_ids) = @_;
 
     if ( defined($blog_ids) && scalar(@$blog_ids) ) {
-        return
-          {
+        return {
             terms => { 'id' => $blog_ids, class => 'website' },
-            args => undef,
-          };
+            args  => undef,
+        };
     }
     else {
         return { terms => undef, args => undef };
@@ -1023,9 +1139,9 @@ sub backup_terms_args {
     my $class = shift;
     my ($blog_ids) = @_;
 
-    my $column = 'id';
+    my $column     = 'id';
     my $blog_class = MT->model('blog');
-    if (my @blogs = $blog_class->load(@$blog_ids)) {
+    if ( my @blogs = $blog_class->load(@$blog_ids) ) {
         my $is_blog;
         foreach my $blog (@blogs) {
             $is_blog = 1, last
@@ -1036,11 +1152,10 @@ sub backup_terms_args {
     }
 
     if ( defined($blog_ids) && scalar(@$blog_ids) ) {
-        return
-          {
+        return {
             terms => { $column => $blog_ids, class => 'blog' },
-            args => undef,
-          };
+            args  => undef,
+        };
     }
     else {
         return { terms => { class => 'blog' }, args => undef };
@@ -1049,9 +1164,7 @@ sub backup_terms_args {
 
 sub parents {
     my $obj = shift;
-    {
-        parent_id => MT->model('website'),
-    };
+    { parent_id => MT->model('website'), };
 }
 
 package MT::Tag;
@@ -1061,20 +1174,15 @@ sub backup_terms_args {
     my ($blog_ids) = @_;
 
     if ( defined($blog_ids) && scalar(@$blog_ids) ) {
-        return
-          {
+        return {
             terms => undef,
-            args =>
-              {
-                'join' =>
-                  [
-                    'MT::ObjectTag', 
-                    'tag_id',
-                    { blog_id => $blog_ids },
-                    { unique => 1 }
-                  ]
-              }
-          };
+            args  => {
+                'join' => [
+                    'MT::ObjectTag', 'tag_id',
+                    { blog_id => $blog_ids }, { unique => 1 }
+                ]
+            }
+        };
     }
     else {
         return { terms => undef, args => undef };
@@ -1088,20 +1196,15 @@ sub backup_terms_args {
     my ($blog_ids) = @_;
 
     if ( defined($blog_ids) && scalar(@$blog_ids) ) {
-        return
-          {
+        return {
             terms => undef,
-            args =>
-              {
-                'join' =>
-                  [
-                    'MT::Association',
-                    'role_id',
-                    { blog_id => $blog_ids },
-                    { unique => 1 }
-                  ]
-              }
-          };
+            args  => {
+                'join' => [
+                    'MT::Association', 'role_id',
+                    { blog_id => $blog_ids }, { unique => 1 }
+                ]
+            }
+        };
     }
     else {
         return { terms => undef, args => undef };
@@ -1115,14 +1218,19 @@ sub backup_terms_args {
     my ($blog_ids) = @_;
 
     if ( defined($blog_ids) && scalar(@$blog_ids) ) {
-        return
-          {
-            terms => { 'blog_id' => $blog_ids, 'class' => $class->properties->{class_type} },
+        return {
+            terms => {
+                'blog_id' => $blog_ids,
+                'class'   => $class->properties->{class_type}
+            },
             args => undef
-          }
+        };
     }
     else {
-        return { terms => { 'class' => $class->properties->{class_type} }, args => undef };
+        return {
+            terms => { 'class' => $class->properties->{class_type} },
+            args  => undef
+        };
     }
 }
 
@@ -1132,24 +1240,23 @@ sub to_xml {
     my $obj = shift;
     my $xml = q();
 
-    return $xml if exists $assets_seen->{$obj->id};
+    return $xml if exists $assets_seen->{ $obj->id };
 
-    if ($obj->parent) {
-        my $parent = MT->model('asset')->load($obj->parent)
+    if ( $obj->parent ) {
+        my $parent = MT->model('asset')->load( $obj->parent )
             or return $xml;
         $xml .= $parent->to_xml(@_);
         $xml .= "\n";
     }
 
     $xml .= $obj->SUPER::to_xml(@_);
-    $assets_seen->{$obj->id} = 1;
+    $assets_seen->{ $obj->id } = 1;
     $xml;
 }
 
 sub parents {
     my $obj = shift;
-    {
-        blog_id => [ MT->model('blog'), MT->model('website') ],
+    {   blog_id => [ MT->model('blog'), MT->model('website') ],
         parent  => MT->model('asset')
     };
 }
@@ -1165,11 +1272,11 @@ sub backup_terms_args {
 
 sub restore_parent_ids {
     my $obj = shift;
-    my ($data, $objects) = @_;
+    my ( $data, $objects ) = @_;
 
-    if ($data->{key} =~ /^configuration:blog:(\d+)$/i) {
-        my $new_blog = $objects->{'MT::Blog#' . $1};
-        $new_blog = $objects->{'MT::Website#' . $1}
+    if ( $data->{key} =~ /^configuration:blog:(\d+)$/i ) {
+        my $new_blog = $objects->{ 'MT::Blog#' . $1 };
+        $new_blog = $objects->{ 'MT::Website#' . $1 }
             unless $new_blog;
 
         if ($new_blog) {
@@ -1183,17 +1290,17 @@ package MT::Association;
 
 sub restore_parent_ids {
     my $obj = shift;
-    my ($data, $objects) = @_;
+    my ( $data, $objects ) = @_;
 
-    my ($u, $b, $g, $r) = (0, 0, 0, 0);
+    my ( $u, $b, $g, $r ) = ( 0, 0, 0, 0 );
 
     my $processor = sub {
-        my ($elem) = @_;
-        my $class = MT->model($elem);
-        my $old_id = $data->{$elem . '_id'};
+        my ($elem)  = @_;
+        my $class   = MT->model($elem);
+        my $old_id  = $data->{ $elem . '_id' };
         my $new_obj = $objects->{"$class#$old_id"};
         return 0 unless defined($new_obj) && $new_obj;
-        $data->{$elem . '_id'} = $new_obj->id;
+        $data->{ $elem . '_id' } = $new_obj->id;
         return 1;
     };
 
@@ -1209,7 +1316,9 @@ sub restore_parent_ids {
     # USER_ROLE       => 4;
     # GROUP_ROLE      => 5;
 
-    ($u && $g) || ($u && $r) || ($g && $r) ? 1 : 0; # || ($u && $b && $r) || ($g && $b && $r)
+    ( $u && $g )
+        || ( $u && $r )
+        || ( $g && $r ) ? 1 : 0;    # || ($u && $b && $r) || ($g && $b && $r)
 }
 
 package MT::Category;
@@ -1220,22 +1329,21 @@ sub to_xml {
     my $obj = shift;
     my $xml = q();
 
-    return $xml if exists $category_seen->{$obj->id};
+    return $xml if exists $category_seen->{ $obj->id };
 
-    if ('0' ne $obj->parent) {
+    if ( '0' ne $obj->parent ) {
         $xml .= $obj->parent_category->to_xml(@_);
         $xml .= "\n";
     }
 
     $xml .= $obj->SUPER::to_xml(@_);
-    $category_seen->{$obj->id} = 1;
+    $category_seen->{ $obj->id } = 1;
     $xml;
 }
 
 sub parents {
     my $obj = shift;
-    {
-        blog_id => [ MT->model('blog'), MT->model('website') ],
+    {   blog_id => [ MT->model('blog'),     MT->model('website') ],
         parent  => [ MT->model('category'), MT->model('folder') ],
     };
 }
@@ -1244,9 +1352,8 @@ package MT::Comment;
 
 sub parents {
     my $obj = shift;
-    {
-        entry_id => [ MT->model('entry'), MT->model('page') ],
-        blog_id => [ MT->model('blog'), MT->model('website') ],
+    {   entry_id => [ MT->model('entry'), MT->model('page') ],
+        blog_id  => [ MT->model('blog'),  MT->model('website') ],
         commenter_id => { class => MT->model('author'), optional => 1 },
     };
 }
@@ -1255,9 +1362,9 @@ package MT::Entry;
 
 sub parents {
     my $obj = shift;
-    {
-        blog_id => [ MT->model('blog'), MT->model('website') ],
-        author_id => { class => MT->model('author'), optional => 1, orphanize => 1 },
+    {   blog_id => [ MT->model('blog'), MT->model('website') ],
+        author_id =>
+            { class => MT->model('author'), optional => 1, orphanize => 1 },
     };
 }
 
@@ -1265,12 +1372,21 @@ package MT::FileInfo;
 
 sub parents {
     my $obj = shift;
-    {
-        entry_id => { class => [ MT->model('entry'), MT->model('page') ], optional => 1 },
-        blog_id => { class => [ MT->model('blog'), MT->model('website') ], optional => 1 },
-        templatemap_id => { class => MT->model('templatemap'), optional => 1 },
+    {   entry_id => {
+            class    => [ MT->model('entry'), MT->model('page') ],
+            optional => 1
+        },
+        blog_id => {
+            class    => [ MT->model('blog'), MT->model('website') ],
+            optional => 1
+        },
+        templatemap_id =>
+            { class => MT->model('templatemap'), optional => 1 },
         template_id => { class => MT->model('template'), optional => 1 },
-        category_id => { class => [ MT->model('category'), MT->model('folder') ], optional => 1 },
+        category_id => {
+            class    => [ MT->model('category'), MT->model('folder') ],
+            optional => 1
+        },
         author_id => { class => MT->model('author'), optional => 1 },
     };
 }
@@ -1279,22 +1395,21 @@ package MT::Notification;
 
 sub parents {
     my $obj = shift;
-    {
-        blog_id => [ MT->model('blog'), MT->model('website') ],
-    };
+    { blog_id => [ MT->model('blog'), MT->model('website') ], };
 }
 
 package MT::ObjectTag;
 
 sub parents {
     my $obj = shift;
-    {
-        blog_id => [ MT->model('blog'), MT->model('website') ],
-        tag_id => MT->model('tag'),
-        object_id => { relations => {
-            key => 'object_datasource',
-            entry_id => [ MT->model('entry'), MT->model('page') ],
-        }}
+    {   blog_id   => [ MT->model('blog'), MT->model('website') ],
+        tag_id    => MT->model('tag'),
+        object_id => {
+            relations => {
+                key      => 'object_datasource',
+                entry_id => [ MT->model('entry'), MT->model('page') ],
+            }
+        }
     };
 }
 
@@ -1302,8 +1417,7 @@ package MT::Permission;
 
 sub parents {
     my $obj = shift;
-    {
-        blog_id => [ MT->model('blog'), MT->model('website') ],
+    {   blog_id => [ MT->model('blog'), MT->model('website') ],
         author_id => { class => MT->model('author'), optional => 1 },
     };
 }
@@ -1312,10 +1426,9 @@ package MT::Placement;
 
 sub parents {
     my $obj = shift;
-    {
-        category_id => [ MT->model('category'), MT->model('folder') ],
-        blog_id => [ MT->model('blog'), MT->model('website') ],
-        entry_id => [ MT->model('entry'), MT->model('page') ],
+    {   category_id => [ MT->model('category'), MT->model('folder') ],
+        blog_id     => [ MT->model('blog'),     MT->model('website') ],
+        entry_id    => [ MT->model('entry'),    MT->model('page') ],
     };
 }
 
@@ -1323,9 +1436,8 @@ package MT::TBPing;
 
 sub parents {
     my $obj = shift;
-    {
-        blog_id => [ MT->model('blog'), MT->model('website') ],
-        tb_id => MT->model('trackback'),
+    {   blog_id => [ MT->model('blog'), MT->model('website') ],
+        tb_id   => MT->model('trackback'),
     };
 }
 
@@ -1333,18 +1445,15 @@ package MT::Template;
 
 sub parents {
     my $obj = shift;
-    {
-        blog_id => [ MT->model('blog'), MT->model('website') ],
-    };
+    { blog_id => [ MT->model('blog'), MT->model('website') ], };
 }
 
 package MT::TemplateMap;
 
 sub parents {
     my $obj = shift;
-    {
-        blog_id => [ MT->model('blog'), MT->model('website') ],
-        template_id  => MT->model('template')
+    {   blog_id     => [ MT->model('blog'), MT->model('website') ],
+        template_id => MT->model('template')
     };
 }
 
@@ -1352,34 +1461,35 @@ package MT::Trackback;
 
 sub restore_parent_ids {
     my $obj = shift;
-    my ($data, $objects) = @_;
+    my ( $data, $objects ) = @_;
 
-    my $result = 0;
+    my $result     = 0;
     my $blog_class = MT->model('blog');
-    my $new_blog = $objects->{$blog_class . '#' . $data->{blog_id}};
+    my $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
     if ( !$new_blog ) {
         $blog_class = MT->model('website');
         $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
     }
     return 0 if !$new_blog;
     $data->{blog_id} = $new_blog->id;
-    if (my $cid = $data->{category_id}) {
+    if ( my $cid = $data->{category_id} ) {
         my $cat_class = MT->model('category');
-        my $new_obj = $objects->{$cat_class . '#' . $cid};
+        my $new_obj   = $objects->{ $cat_class . '#' . $cid };
         unless ($new_obj) {
             $cat_class = MT->model('folder');
-            $new_obj = $objects->{$cat_class . '#' . $cid};
+            $new_obj   = $objects->{ $cat_class . '#' . $cid };
         }
         if ($new_obj) {
             $data->{category_id} = $new_obj->id;
             $result = 1;
         }
-    } elsif (my $eid = $data->{entry_id}) {
+    }
+    elsif ( my $eid = $data->{entry_id} ) {
         my $entry_class = MT->model('entry');
-        my $new_obj = $objects->{$entry_class . '#' . $eid};
+        my $new_obj     = $objects->{ $entry_class . '#' . $eid };
         unless ($new_obj) {
             $entry_class = MT->model('page');
-            $new_obj = $objects->{$entry_class . '#' . $eid};
+            $new_obj     = $objects->{ $entry_class . '#' . $eid };
         }
         if ($new_obj) {
             $data->{entry_id} = $new_obj->id;
@@ -1393,15 +1503,16 @@ package MT::ObjectAsset;
 
 sub parents {
     my $obj = shift;
-    {
-        blog_id => [ MT->model('blog'), MT->model('website') ],
-        asset_id => MT->model('asset'),
-        object_id => { relations => {
-            key => 'object_ds',
-            entry_id => [ MT->model('entry'), MT->model('page') ],
-            category_id => [ MT->model('category'), MT->model('folder') ],
-            blog_id => [ MT->model('blog'), MT->model('website') ],
-        }}
+    {   blog_id   => [ MT->model('blog'), MT->model('website') ],
+        asset_id  => MT->model('asset'),
+        object_id => {
+            relations => {
+                key         => 'object_ds',
+                entry_id    => [ MT->model('entry'), MT->model('page') ],
+                category_id => [ MT->model('category'), MT->model('folder') ],
+                blog_id     => [ MT->model('blog'), MT->model('website') ],
+            }
+        }
     };
 }
 
@@ -1413,33 +1524,31 @@ sub backup_terms_args {
 
     # authors are processed in _populate_obj_to_backup method
     if ( defined($blog_ids) && scalar(@$blog_ids) ) {
-        return
-          {
-            terms => {
-                object_ds => [ 'entry', 'page' ],
-            },
-            args => { 'join' =>
-                MT->model('entry')->join_on( undef,
-                    {
-                        id => \'=objectscore_object_id',
+        return {
+            terms => { object_ds => [ 'entry', 'page' ], },
+            args  => {
+                'join' => MT->model('entry')->join_on(
+                    undef,
+                    {   id      => \'=objectscore_object_id',
                         blog_id => $blog_ids,
-                    }, {
-                        unique => 1,
-                })
+                    },
+                    { unique => 1, }
+                )
             }
-          }
+        };
     }
     return { terms => undef, args => undef };
 }
 
 sub parents {
     my $obj = shift;
-    {
-        author_id => MT->model('author'),
-        object_id => { relations => {
-            key => 'object_ds',
-            entry_id => [ MT->model('entry'), MT->model('page') ],
-        }}
+    {   author_id => MT->model('author'),
+        object_id => {
+            relations => {
+                key      => 'object_ds',
+                entry_id => [ MT->model('entry'), MT->model('page') ],
+            }
+        }
     };
 }
 
@@ -1447,27 +1556,23 @@ package MT::IPBanList;
 
 sub parents {
     my $obj = shift;
-    {
-        blog_id => [ MT->model('blog'), MT->model('website') ],
-    };
+    { blog_id => [ MT->model('blog'), MT->model('website') ], };
 }
 
 package MT::Blocklist;
 
 sub parents {
     my $obj = shift;
-    {
-        blog_id => [ MT->model('blog'), MT->model('website') ],
-    };
+    { blog_id => [ MT->model('blog'), MT->model('website') ], };
 }
 
 package MT::Filter;
 
 sub restore_parent_ids {
     my $obj = shift;
-    my ($data, $objects) = @_;
-    my $new_blog = $objects->{'MT::Blog#' . $data->{blog_id}};
-    $new_blog = $objects->{'MT::Website#' . $data->{blog_id}}
+    my ( $data, $objects ) = @_;
+    my $new_blog = $objects->{ 'MT::Blog#' . $data->{blog_id} };
+    $new_blog = $objects->{ 'MT::Website#' . $data->{blog_id} }
         unless $new_blog;
 
     if ($new_blog) {
@@ -1479,9 +1584,8 @@ sub restore_parent_ids {
 
 sub parents {
     my $obj = shift;
-    {
-        author_id => { class => MT->model('author'), optional => 1 },
-        blog_id   => { class => MT->model('blog')  , optional => 1 },
+    {   author_id => { class => MT->model('author'), optional => 1 },
+        blog_id   => { class => MT->model('blog'),   optional => 1 },
     };
 }
 
@@ -1491,8 +1595,11 @@ sub backup_terms_args {
 
     return {
         terms => undef,
-        args => {
-            join => [ MT->model('author'), undef, { id => \'=filter_author_id' }, { unique => 1 } ],
+        args  => {
+            join => [
+                MT->model('author'), undef,
+                { id => \'=filter_author_id' }, { unique => 1 }
+            ],
         },
     };
 }

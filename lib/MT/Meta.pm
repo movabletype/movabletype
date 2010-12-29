@@ -15,23 +15,24 @@ use warnings;
 #--------------------------------------#
 # Constants
 
-sub TYPE_VCHAR ()             { 1 }
-sub TYPE_VCHAR_INDEXED ()     { 2 }
-sub TYPE_VBLOB ()             { 3 }
-sub TYPE_VINTEGER ()          { 4 }
-sub TYPE_VINTEGER_INDEXED ()  { 5 }
-sub TYPE_VDATETIME ()         { 6 }
-sub TYPE_VDATETIME_INDEXED () { 7 }
-sub TYPE_VFLOAT ()            { 8 }
-sub TYPE_VFLOAT_INDEXED ()    { 9 }
-sub TYPE_VCLOB ()             { 10 }
+sub TYPE_VCHAR ()             {1}
+sub TYPE_VCHAR_INDEXED ()     {2}
+sub TYPE_VBLOB ()             {3}
+sub TYPE_VINTEGER ()          {4}
+sub TYPE_VINTEGER_INDEXED ()  {5}
+sub TYPE_VDATETIME ()         {6}
+sub TYPE_VDATETIME_INDEXED () {7}
+sub TYPE_VFLOAT ()            {8}
+sub TYPE_VFLOAT_INDEXED ()    {9}
+sub TYPE_VCLOB ()             {10}
 
-sub DEBUG () { 0 }
+sub DEBUG () {0}
 
 ## Specify if the faster REPLACE INTO can be used instead of INSERT/UPDATE
 our $REPLACE_ENABLED = 0;
 
-our (%Types, %TypesByName);
+our ( %Types, %TypesByName );
+
 BEGIN {
     %Types = (
         TYPE_VCHAR()             => "vchar",
@@ -49,17 +50,17 @@ BEGIN {
     %TypesByName = reverse %Types;
 
     # some other aliases
-    $TypesByName{string} = TYPE_VCHAR;
-    $TypesByName{integer} = TYPE_VINTEGER;
-    $TypesByName{datetime} = TYPE_VDATETIME;
-    $TypesByName{float} = TYPE_VFLOAT;
-    $TypesByName{string_indexed} = TYPE_VCHAR_INDEXED;
-    $TypesByName{integer_indexed} = TYPE_VINTEGER_INDEXED;
+    $TypesByName{string}           = TYPE_VCHAR;
+    $TypesByName{integer}          = TYPE_VINTEGER;
+    $TypesByName{datetime}         = TYPE_VDATETIME;
+    $TypesByName{float}            = TYPE_VFLOAT;
+    $TypesByName{string_indexed}   = TYPE_VCHAR_INDEXED;
+    $TypesByName{integer_indexed}  = TYPE_VINTEGER_INDEXED;
     $TypesByName{datetime_indexed} = TYPE_VDATETIME_INDEXED;
-    $TypesByName{float_indexed} = TYPE_VFLOAT_INDEXED;
-    $TypesByName{text} = TYPE_VCLOB;
-    $TypesByName{hash} = TYPE_VBLOB;
-    $TypesByName{array} = TYPE_VBLOB;
+    $TypesByName{float_indexed}    = TYPE_VFLOAT_INDEXED;
+    $TypesByName{text}             = TYPE_VCLOB;
+    $TypesByName{hash}             = TYPE_VBLOB;
+    $TypesByName{array}            = TYPE_VBLOB;
 }
 
 ## $Registry = {
@@ -87,14 +88,14 @@ BEGIN {
 ##     },
 ##   },
 ## }
-our($Registry, $RegistryById);
+our ( $Registry, $RegistryById );
 
 #--------------------------------------#
 # Public Class Methods
 
 sub _meta_args {
     my $class = shift;
-    my ($pkg, $which) = @_;
+    my ( $pkg, $which ) = @_;
     $which ||= 'meta';
     my $meth = $which . '_args';
     $pkg->$meth;
@@ -102,25 +103,25 @@ sub _meta_args {
 
 sub install {
     my $class = shift;
-    my ($pkg, $params, $which) = @_;
+    my ( $pkg, $params, $which ) = @_;
 
     ## add base class defs, if they exist
-    my $base_args = $class->_meta_args($pkg, $which);
+    my $base_args = $class->_meta_args( $pkg, $which );
     if ($base_args) {
-        while ( my ($k, $v) = each (%{ $base_args }) ) {
+        while ( my ( $k, $v ) = each( %{$base_args} ) ) {
             $params->{$k} = $v;
         }
     }
 
     ## add inherited metadata fields...
     my $key = $params->{key};
-    my $inherited = $class->_load_inheritance($pkg, $key);
+    my $inherited = $class->_load_inheritance( $pkg, $key );
 
-    my $fields = delete $params->{fields}; # we'll reduce this big value
+    my $fields = delete $params->{fields};    # we'll reduce this big value
     push @$fields, @$inherited;
 
     ## ... and add metadata fields to registry after
-    $class->register($pkg, $key, $fields);
+    $class->register( $pkg, $key, $fields );
 
     ## ... and save reduced fields in params (will be installed in properties)
     ##     while saving extra properties
@@ -130,26 +131,27 @@ sub install {
     }
 
     ## build subclass
-    $class->_build_subclass($pkg, $params, $which);
+    $class->_build_subclass( $pkg, $params, $which );
 
     return $params->{fields};
 }
 
 sub register {
     my $class = shift;
-    my ($pkg, $key, $fields) = @_;
+    my ( $pkg, $key, $fields ) = @_;
 
-    foreach my $field ( @{ $fields } ) {
+    foreach my $field ( @{$fields} ) {
         my $name = $field->{name};
         my $type = $field->{type};
         my $zip  = $field->{zip};
 
         ## check for potential deep recursion
-#        warn("$pkg has $name subroutine! Deep recursion imminent!")
-#            if $pkg->can($name);
+        #        warn("$pkg has $name subroutine! Deep recursion imminent!")
+        #            if $pkg->can($name);
 
         my $type_id = $TypesByName{$type}
-            or Carp::croak("Invalid metadata type '$type' for field $pkg $field->{name}");
+            or Carp::croak(
+            "Invalid metadata type '$type' for field $pkg $field->{name}");
 
         ## load registry
         print STDERR "$pkg is registering metadata $key\t$name\n" if DEBUG;
@@ -169,13 +171,13 @@ sub register {
 
 sub metadata_by_class {
     my $class = shift;
-    my($pkg) = @_;
+    my ($pkg) = @_;
     values %{ $Registry->{ $pkg->meta_args->{key} }{$pkg} };
 }
 
 sub metadata_by_name {
     my $class = shift;
-    my($pkg, $name) = @_;
+    my ( $pkg, $name ) = @_;
     $Registry->{ $pkg->meta_args->{key} }{$pkg}{$name};
 }
 
@@ -183,15 +185,16 @@ sub metadata_by_name {
 
 sub has_own_metadata_of {
     my $class = shift;
-    my($pkg)  = @_;
-    my $key   = $pkg->meta_args->{key}; # xxx is it really safe to call meta_args?
+    my ($pkg) = @_;
+    my $key
+        = $pkg->meta_args->{key};   # xxx is it really safe to call meta_args?
     exists $Registry->{$key}{$pkg};
 }
 
 sub normalize_type {
     my $pkg = shift;
     my ($type) = @_;
-    return $Types{ $TypesByName{ $type } || TYPE_VBLOB };
+    return $Types{ $TypesByName{$type} || TYPE_VBLOB };
 }
 
 #--------------------------------------#
@@ -199,13 +202,13 @@ sub normalize_type {
 
 sub _load_inheritance {
     my $class = shift;
-    my ($pkg, $key) = @_;
+    my ( $pkg, $key ) = @_;
 
-    no strict 'refs'; ## no critic
+    no strict 'refs';    ## no critic
     my $base = ${"$pkg\::ISA"}[0];
     return [] if $base eq $pkg;
     my @inherited;
-    if (exists $Registry->{$key}{$base}) {
+    if ( exists $Registry->{$key}{$base} ) {
         for my $field ( values %{ $Registry->{$key}->{$base} } ) {
             push @inherited, $field;
         }
@@ -215,22 +218,24 @@ sub _load_inheritance {
 
 sub _build_subclass {
     my $class = shift;
-    my ($pkg, $meta, $which) = @_;
+    my ( $pkg, $meta, $which ) = @_;
 
     my $subclass = $pkg->meta_pkg($which);
     return unless $subclass;
 
-    no strict 'refs'; ## no critic
+    no strict 'refs';    ## no critic
     return if defined ${"${subclass}::VERSION"};
 
     ## Try to use this subclass first to see if it exists
     my $subclass_file = $subclass . '.pm';
     $subclass_file =~ s{::}{/}g;
-    eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';require '$subclass_file';$subclass->import();";
+    eval "# line " . __LINE__ . " " . __FILE__
+        . "\nno warnings 'all';require '$subclass_file';$subclass->import();";
     if ($@) {
         ## Die if we get an unexpected error
         die $@ unless $@ =~ /Can't locate /;
-    } else {
+    }
+    else {
         ## This class exists.  We don't need to do anything.
         return 1;
     }
@@ -245,8 +250,9 @@ sub _build_subclass {
         1;
     ";
 
-    ## no critic ProhibitStringyEval 
-    eval $subclass_src or print STDERR "Could not create package $subclass!\n";
+    ## no critic ProhibitStringyEval
+    eval $subclass_src
+        or print STDERR "Could not create package $subclass!\n";
 
     $subclass->install_properties($meta);
 }

@@ -11,29 +11,39 @@ package TypePadAntiSpam;
 use strict;
 
 sub template_param_cfg_plugin {
-    my ($cb, $app, $param, $tmpl) = @_;
+    my ( $cb, $app, $param, $tmpl ) = @_;
     my $plugin = MT->component('TypePadAntiSpam');
-    my $sig = $plugin->{plugin_sig};
-    my $blog = $app->isa('MT::App::CMS') ? $app->blog : undef;
+    my $sig    = $plugin->{plugin_sig};
+    my $blog   = $app->isa('MT::App::CMS') ? $app->blog : undef;
 
-    my ($data) = grep($_->{plugin_sig} eq $sig, @{ $param->{plugin_loop} });
+    my ($data) = grep( $_->{plugin_sig} eq $sig, @{ $param->{plugin_loop} } );
     $data->{plugin_desc} = '<p>' . $data->{plugin_desc} . '</p>';
 
     my $sys_blocked = &blocked();
     if ($blog) {
         my $blog_blocked = $blog ? &blocked($blog) : 0;
-        $data->{plugin_desc} .= '<p>' . $plugin->translate('So far, TypePad AntiSpam has blocked [quant,_1,message,messages] for this blog, and [quant,_2,message,messages] system-wide.', $blog_blocked, $sys_blocked) . '</p>';
-    } else {
-        $data->{plugin_desc} .= '<p>' . $plugin->translate('So far, TypePad AntiSpam has blocked [quant,_1,message,messages] system-wide.', $sys_blocked) . '</p>';
+        $data->{plugin_desc} .= '<p>'
+            . $plugin->translate(
+            'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] for this blog, and [quant,_2,message,messages] system-wide.',
+            $blog_blocked, $sys_blocked
+            ) . '</p>';
+    }
+    else {
+        $data->{plugin_desc} .= '<p>'
+            . $plugin->translate(
+            'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] system-wide.',
+            $sys_blocked
+            ) . '</p>';
     }
 }
 
 sub _hdlr_tpas_counter {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
-    if ($ctx->can('count_format')) {
-        return $ctx->count_format(&blocked($blog), $args);
-    } else {
+    if ( $ctx->can('count_format') ) {
+        return $ctx->count_format( &blocked($blog), $args );
+    }
+    else {
         return &blocked($blog) || 0;
     }
 }
@@ -58,7 +68,9 @@ sub plugin_data_pre_save {
             $existing_api_key = $app->param('existing_api_key') || '';
         }
         my $new_api_key = $args->{api_key} || '';
-        if ( ($new_api_key ne '') && ( $new_api_key ne $existing_api_key ) ) {
+        if ( ( $new_api_key ne '' ) && ( $new_api_key ne $existing_api_key ) )
+        {
+
             # user assigned a new API key
             &require_tpas;
             local $MT::TypePadAntiSpam::SERVICE_HOST = $args->{service_host}
@@ -66,9 +78,18 @@ sub plugin_data_pre_save {
             my $url = $app->base . $app->mt_uri;
             my $res = MT::TypePadAntiSpam->verify( $new_api_key, $url );
             if ( $res->http_status >= 500 ) {
-                return $plugin->error($plugin->translate("Failed to verify your TypePad AntiSpam API key: [_1]", $res->http_response->message));
-            } elsif ( $res->status != 1 ) {
-                return $plugin->error($plugin->translate("The TypePad AntiSpam API key provided is invalid."));
+                return $plugin->error(
+                    $plugin->translate(
+                        "Failed to verify your TypePad AntiSpam API key: [_1]",
+                        $res->http_response->message
+                    )
+                );
+            }
+            elsif ( $res->status != 1 ) {
+                return $plugin->error(
+                    $plugin->translate(
+                        "The TypePad AntiSpam API key provided is invalid.")
+                );
             }
         }
     }
@@ -81,26 +102,30 @@ sub plugin_data_pre_save {
     return 1 unless $user;
 
     my $widget_store = $user->widgets();
-    if ($widget_store && %$widget_store) {
-        my $sys_db = $widget_store->{'dashboard:system'} ||= default_widgets();
-        my $blog_db = $widget_store->{'dashboard:blog:' . $blog_id} ||= default_widgets()
+    if ( $widget_store && %$widget_store ) {
+        my $sys_db = $widget_store->{'dashboard:system'}
+            ||= default_widgets();
+        my $blog_db = $widget_store->{ 'dashboard:blog:' . $blog_id }
+            ||= default_widgets()
             if $blog_id;
 
         my $changed = 0;
-        if ($blog_id && (!exists $blog_db->{'typepadantispam'})) {
-            $blog_db->{'typepadantispam'} =
-                { order => 2.1,  # following mt shortcuts, if shown
-                    set => 'sidebar' };
+        if ( $blog_id && ( !exists $blog_db->{'typepadantispam'} ) ) {
+            $blog_db->{'typepadantispam'} = {
+                order => 2.1,        # following mt shortcuts, if shown
+                set   => 'sidebar'
+            };
             $changed++;
         }
-        if (!exists $sys_db->{'typepadantispam'}) {
-            $sys_db->{'typepadantispam'} =
-                { order => 2.1,  # following mt shortcuts, if shown
-                    set => 'sidebar' };
+        if ( !exists $sys_db->{'typepadantispam'} ) {
+            $sys_db->{'typepadantispam'} = {
+                order => 2.1,        # following mt shortcuts, if shown
+                set   => 'sidebar'
+            };
             $changed++;
         }
         if ($changed) {
-            $user->widgets( $widget_store );
+            $user->widgets($widget_store);
             $user->save;
         }
     }
@@ -109,10 +134,11 @@ sub plugin_data_pre_save {
 }
 
 sub default_widgets {
+
     # FIXME: This should come from the app
     return {
         'blog_stats' =>
-          { param => { tab => 'entry' }, order => 1, set => 'main' },
+            { param => { tab => 'entry' }, order => 1, set => 'main' },
         'this_is_you-1' => { order => 1, set => 'sidebar' },
         'mt_shortcuts'  => { order => 2, set => 'sidebar' },
         'mt_news'       => { order => 3, set => 'sidebar' },
@@ -128,64 +154,73 @@ sub stats_widget {
     }
     $param->{'system_blocked'} = &blocked();
     $param->{'language'} = lc substr( MT->instance->current_language, 0, 2 );
-    $param->{'use_ssl'} = $app->is_secure;
-    $param->{'api_key'} = &api_key();
+    $param->{'use_ssl'}  = $app->is_secure;
+    $param->{'api_key'}  = &api_key();
     return;
 }
 
 sub pre_save_obj {
-    my ($cb, $obj) = @_;
-    if (!$obj->id && $obj->is_junk && ($obj->junk_log =~ m/TypePad AntiSpam says spam/)) {
+    my ( $cb, $obj ) = @_;
+    if (  !$obj->id
+        && $obj->is_junk
+        && ( $obj->junk_log =~ m/TypePad AntiSpam says spam/ ) )
+    {
+
         # this was junked due in part to TypePad AntiSpam
-        if (my $blog = $obj->blog) {
+        if ( my $blog = $obj->blog ) {
             &blocked( $blog, &blocked($blog) + 1 );
         }
+
         # now increment total block count:
         &blocked( undef, &blocked() + 1 );
     }
 }
 
 sub handle_junk {
-    my ($cb, $app, $thing) = @_;
+    my ( $cb, $app, $thing ) = @_;
     &require_tpas;
-    my $key    = is_valid_key($thing)       or return;
-    my $sig    = package_signature($thing)  or return;
-    MT::TypePadAntiSpam->submit_spam($sig, $key);
+    my $key = is_valid_key($thing)      or return;
+    my $sig = package_signature($thing) or return;
+    MT::TypePadAntiSpam->submit_spam( $sig, $key );
 }
 
 sub handle_not_junk {
-    my ($cb, $app, $thing) = @_;
+    my ( $cb, $app, $thing ) = @_;
     &require_tpas;
-    my $key    = is_valid_key($thing)       or return;
-    my $sig    = package_signature($thing)  or return;
-    MT::TypePadAntiSpam->submit_ham($sig, $key);
+    my $key = is_valid_key($thing)      or return;
+    my $sig = package_signature($thing) or return;
+    MT::TypePadAntiSpam->submit_ham( $sig, $key );
 }
 
 sub typepadantispam_score {
     my $plugin = MT->component('TypePadAntiSpam');
-    my $thing = shift;
+    my $thing  = shift;
     &require_tpas;
-    my $key    = is_valid_key($thing)
+    my $key = is_valid_key($thing)
         or return MT::JunkFilter::ABSTAIN();
-    my $sig    = package_signature($thing, 1)
+    my $sig = package_signature( $thing, 1 )
         or return MT::JunkFilter::ABSTAIN();
-    my $res = MT::TypePadAntiSpam->check($sig, $key);
+    my $res = MT::TypePadAntiSpam->check( $sig, $key );
     my $http_resp = $res->http_response;
-    if ( $http_resp && ! $http_resp->is_success ) {
-        MT->log("TypePad AntiSpam error: " . $http_resp->message);
-    } elsif ( !$http_resp ) {
+    if ( $http_resp && !$http_resp->is_success ) {
+        MT->log( "TypePad AntiSpam error: " . $http_resp->message );
+    }
+    elsif ( !$http_resp ) {
         if ( MT::TypePadAntiSpam->errstr ) {
-            MT->log("TypePad AntiSpam error: " . MT::TypePadAntiSpam->errstr );
+            MT->log(
+                "TypePad AntiSpam error: " . MT::TypePadAntiSpam->errstr );
         }
     }
     return MT::JunkFilter::ABSTAIN()
         unless $res && $res->http_response->is_success;
-    my $weight = $plugin->get_config_value('weight',
-        'blog:' . $thing->blog_id) || 1;
-    my ($score, $grade) = $res->status
-                        ? ($weight, 'ham')
-                        : (-$weight, 'spam');
-    ($score, ["TypePad AntiSpam says $grade"]);
+    my $weight
+        = $plugin->get_config_value( 'weight', 'blog:' . $thing->blog_id )
+        || 1;
+    my ( $score, $grade )
+        = $res->status
+        ? ( $weight, 'ham' )
+        : ( -$weight, 'spam' );
+    ( $score, ["TypePad AntiSpam says $grade"] );
 }
 
 #--- utility
@@ -193,9 +228,9 @@ sub typepadantispam_score {
 sub is_valid_key {
     my $thing = shift;
     my $r     = MT->request;
-    unless ($r->stash('MT::Plugin::TypePadAntiSpam::api_key')) {
+    unless ( $r->stash('MT::Plugin::TypePadAntiSpam::api_key') ) {
         my $key = &api_key() || return;
-        $r->stash('MT::Plugin::TypePadAntiSpam::api_key', $key);
+        $r->stash( 'MT::Plugin::TypePadAntiSpam::api_key', $key );
     }
     $r->stash('MT::Plugin::TypePadAntiSpam::api_key');
 }
@@ -211,35 +246,42 @@ sub require_tpas {
 }
 
 sub package_signature {
-    my $thing = shift;
+    my $thing              = shift;
     my ($include_referrer) = @_;
-    my $sig   = MT::TypePadAntiSpam::Signature->new;
+    my $sig                = MT::TypePadAntiSpam::Signature->new;
     if ($include_referrer) {
-        $sig->user_agent($ENV{HTTP_USER_AGENT});
-        $sig->referrer($ENV{HTTP_REFERER});
+        $sig->user_agent( $ENV{HTTP_USER_AGENT} );
+        $sig->referrer( $ENV{HTTP_REFERER} );
     }
-    $sig->user_ip($thing->ip);
-    $sig->blog(cache('B' . $thing->blog_id));
-    if (ref $thing eq 'MT::Comment') {
+    $sig->user_ip( $thing->ip );
+    $sig->blog( cache( 'B' . $thing->blog_id ) );
+    if ( ref $thing eq 'MT::Comment' ) {
         my $entry = $thing->entry;
-        $sig->article_date(MT->version_number < 4 ? $entry->created_on : $entry->authored_on);
-        $sig->permalink($entry->permalink);
+        $sig->article_date(
+            MT->version_number < 4
+            ? $entry->created_on
+            : $entry->authored_on
+        );
+        $sig->permalink( $entry->permalink );
         $sig->comment_type('comment');
-        $sig->comment_author($thing->author);
-        $sig->comment_author_email($thing->email);
-        $sig->comment_author_url($thing->url);
-        $sig->comment_content($thing->text);
-    } elsif (ref $thing eq 'MT::TBPing') {
+        $sig->comment_author( $thing->author );
+        $sig->comment_author_email( $thing->email );
+        $sig->comment_author_url( $thing->url );
+        $sig->comment_content( $thing->text );
+    }
+    elsif ( ref $thing eq 'MT::TBPing' ) {
         my $p = $thing->parent;
-        if ($p->isa('MT::Entry')) {
-            $sig->article_date(MT->version_number < 4 ? $p->created_on : $p->authored_on);
-            $sig->permalink($p->permalink);
+        if ( $p->isa('MT::Entry') ) {
+            $sig->article_date(
+                MT->version_number < 4 ? $p->created_on : $p->authored_on );
+            $sig->permalink( $p->permalink );
         }
         $sig->comment_type('trackback');
-        $sig->comment_author($thing->blog_name);
-        $sig->comment_author_url($thing->source_url);
-        $sig->comment_content(join "\n", $thing->title, $thing->excerpt);
-    } else {
+        $sig->comment_author( $thing->blog_name );
+        $sig->comment_author_url( $thing->source_url );
+        $sig->comment_content( join "\n", $thing->title, $thing->excerpt );
+    }
+    else {
         return;    # don't know what this is.
     }
     $sig;
@@ -250,13 +292,15 @@ sub cache {
     my $cache = MT->request->stash('MT::Plugin::TypePadAntiSpam::permalinks');
     unless ($cache) {
         $cache = {};
-        MT->request->stash('MT::Plugin::TypePadAntiSpam::permalinks', $cache);
+        MT->request->stash( 'MT::Plugin::TypePadAntiSpam::permalinks',
+            $cache );
     }
-    unless ($cache->{$id}) {
-        if ($id =~ /^B/) {
-            my $b = MT::Blog->load(substr($id, 1)) or return;
+    unless ( $cache->{$id} ) {
+        if ( $id =~ /^B/ ) {
+            my $b = MT::Blog->load( substr( $id, 1 ) ) or return;
             $cache->{$id} = $b->site_url;
-        } else {
+        }
+        else {
             require MT::Entry;
             my $e = MT::Entry->load($id) or return;
             $cache->{$id} = $e->permalink;
@@ -271,23 +315,27 @@ sub has_api_key {
 
 sub api_key {
     my $plugin = MT->component('TypePadAntiSpam');
-    my $blog = shift;
+    my $blog   = shift;
     if (@_) {
         my $key = shift;
-        $plugin->set_config_value('api_key', $key);
-    } else {
+        $plugin->set_config_value( 'api_key', $key );
+    }
+    else {
         return $plugin->get_config_value('api_key');
     }
 }
 
 sub blocked {
     my $plugin = MT->component('TypePadAntiSpam');
-    my $blog = shift;
-    my $blog_id = (ref($blog) && $blog->isa('MT::Blog')) ? $blog->id : $blog;
-    my $blocked = $plugin->get_config_value('blocked', $blog_id ? 'blog:' . $blog_id : 'system');
+    my $blog   = shift;
+    my $blog_id
+        = ( ref($blog) && $blog->isa('MT::Blog') ) ? $blog->id : $blog;
+    my $blocked = $plugin->get_config_value( 'blocked',
+        $blog_id ? 'blog:' . $blog_id : 'system' );
     return $blocked || 0 unless @_;
     my ($count) = @_;
-    $plugin->set_config_value('blocked', $count, $blog_id ? 'blog:' . $blog_id : 'system');
+    $plugin->set_config_value( 'blocked', $count,
+        $blog_id ? 'blog:' . $blog_id : 'system' );
     return $count;
 }
 

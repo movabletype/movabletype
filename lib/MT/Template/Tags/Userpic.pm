@@ -28,8 +28,8 @@ sub _hdlr_author_userpic {
     my ($ctx) = @_;
     my $author = $ctx->stash('author');
     unless ($author) {
-        my $e = $ctx->stash('entry'); 
-        $author = $e->author if $e; 
+        my $e = $ctx->stash('entry');
+        $author = $e->author if $e;
     }
     return $ctx->_no_author_error() unless $author;
     return $author->userpic_html() || '';
@@ -52,8 +52,8 @@ sub _hdlr_author_userpic_url {
     my ($ctx) = @_;
     my $author = $ctx->stash('author');
     unless ($author) {
-        my $e = $ctx->stash('entry'); 
-        $author = $e->author if $e; 
+        my $e = $ctx->stash('entry');
+        $author = $e->author if $e;
     }
     return $ctx->_no_author_error() unless $author;
     return $author->userpic_url() || '';
@@ -82,21 +82,21 @@ asset template tags to display the userpic's properties.
 =cut
 
 sub _hdlr_author_userpic_asset {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $author = $ctx->stash('author');
     unless ($author) {
-        my $e = $ctx->stash('entry'); 
-        $author = $e->author if $e; 
+        my $e = $ctx->stash('entry');
+        $author = $e->author if $e;
     }
     return $ctx->_no_author_error() unless $author;
     my $asset = $author->userpic or return '';
 
-    my $tok = $ctx->stash('tokens');
+    my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
 
     local $ctx->{__stash}{asset} = $asset;
-    $builder->build($ctx, $tok, { %$cond });
+    $builder->build( $ctx, $tok, {%$cond} );
 }
 
 ###########################################################################
@@ -144,7 +144,7 @@ for more information about publishing assets.
 =cut
 
 sub _hdlr_entry_author_userpic_asset {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $author = $e->author;
@@ -152,11 +152,11 @@ sub _hdlr_entry_author_userpic_asset {
 
     my $asset = $author->userpic or return '';
 
-    my $tok = $ctx->stash('tokens');
+    my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
 
     local $ctx->{__stash}{asset} = $asset;
-    return $builder->build($ctx, $tok, { %$cond });
+    return $builder->build( $ctx, $tok, {%$cond} );
 }
 
 ###########################################################################
@@ -229,21 +229,22 @@ B<Example:>
 =cut
 
 sub _hdlr_commenter_userpic_asset {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
     my $cmntr = $ctx->stash('commenter');
+
     # undef means commenter has no commenter_id
     # need default userpic asset? do nothing now.
     return '' unless $cmntr;
 
     my $asset = $cmntr->userpic or return '';
 
-    my $tok = $ctx->stash('tokens');
+    my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
 
     local $ctx->{__stash}{asset} = $asset;
-    $builder->build($ctx, $tok, { %$cond });
+    $builder->build( $ctx, $tok, {%$cond} );
 }
 
 1;

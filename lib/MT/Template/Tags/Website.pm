@@ -39,14 +39,14 @@ would iterate over only the websites with IDs 1, 12 and 19.
 =cut
 
 sub _hdlr_websites {
-    my($ctx, $args, $cond) = @_;
-    my (%terms, %args);
+    my ( $ctx, $args, $cond ) = @_;
+    my ( %terms, %args );
 
-    $ctx->set_blog_load_context($args, \%terms, \%args, 'id')
-        or return $ctx->error($ctx->errstr);
+    $ctx->set_blog_load_context( $args, \%terms, \%args, 'id' )
+        or return $ctx->error( $ctx->errstr );
 
     my $builder = $ctx->stash('builder');
-    my $tokens = $ctx->stash('tokens');
+    my $tokens  = $ctx->stash('tokens');
 
     local $ctx->{__stash}{entries} = undef
         if $args->{ignore_archive_context};
@@ -64,24 +64,24 @@ sub _hdlr_websites {
     $terms{class} = 'website' unless $terms{class};
     $args{'sort'} = 'name';
     $args{direction} = 'ascend';
-    my $iter = MT::Website->load_iter(\%terms, \%args);
-    my $res = '';
+    my $iter  = MT::Website->load_iter( \%terms, \%args );
+    my $res   = '';
     my $count = 0;
-    my $next = $iter->();
-    my $vars = $ctx->{__stash}{vars} ||= {};
+    my $next  = $iter->();
+    my $vars  = $ctx->{__stash}{vars} ||= {};
     while ($next) {
         my $site = $next;
         $next = $iter->();
         $count++;
-        local $ctx->{__stash}{blog} = $site;
+        local $ctx->{__stash}{blog}    = $site;
         local $ctx->{__stash}{blog_id} = $site->id;
-        local $vars->{__first__} = $count == 1;
-        local $vars->{__last__} = !$next;
-        local $vars->{__odd__} = ($count % 2) == 1;
-        local $vars->{__even__} = ($count % 2) == 0;
-        local $vars->{__counter__} = $count;
-        defined(my $out = $builder->build($ctx, $tokens, $cond))
-            or return $ctx->error($builder->errstr);
+        local $vars->{__first__}       = $count == 1;
+        local $vars->{__last__}        = !$next;
+        local $vars->{__odd__}         = ( $count % 2 ) == 1;
+        local $vars->{__even__}        = ( $count % 2 ) == 0;
+        local $vars->{__counter__}     = $count;
+        defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
+            or return $ctx->error( $builder->errstr );
         $res .= $out;
     }
     $res;
@@ -119,7 +119,7 @@ Outputs the numeric ID of the website currently in context.
 =cut
 
 sub _hdlr_website_id {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return 0 unless $blog;
     return 0 if $blog->class ne 'website';
@@ -137,7 +137,7 @@ Outputs the name of the website currently in context.
 =cut
 
 sub _hdlr_website_name {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     return $ctx->_no_website_error()
@@ -157,7 +157,7 @@ Outputs the description field of the website currently in context.
 =cut
 
 sub _hdlr_website_description {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     return $ctx->_no_website_error()
@@ -167,7 +167,7 @@ sub _hdlr_website_description {
 }
 
 {
-    my %real_lang = (cz => 'cs', dk => 'da', jp => 'ja', si => 'sl');
+    my %real_lang = ( cz => 'cs', dk => 'da', jp => 'ja', si => 'sl' );
     ###########################################################################
 
 =head2 WebsiteLanguage
@@ -194,21 +194,25 @@ it to the IETF RFC # 3066.
 
 =cut
 
-sub _hdlr_website_language {
-    my ($ctx, $args, $cond) = @_;
-    my $blog = $ctx->stash('blog');
-    return $ctx->_no_website_error()
-        if $blog->class ne 'website';
-    my $lang_tag = ($blog ? $blog->language : $ctx->{config}->DefaultLanguage) || '';
-    $lang_tag = ($real_lang{$lang_tag} || $lang_tag);
-    if ($args->{'locale'}) {
-        $lang_tag =~ s/^(..)([-_](..))?$/$1 . '_' . uc($3||$1)/e;
-    } elsif ($args->{"ietf"}) {
-        # http://www.ietf.org/rfc/rfc3066.txt
-        $lang_tag =~ s/_/-/;
+    sub _hdlr_website_language {
+        my ( $ctx, $args, $cond ) = @_;
+        my $blog = $ctx->stash('blog');
+        return $ctx->_no_website_error()
+            if $blog->class ne 'website';
+        my $lang_tag
+            = ( $blog ? $blog->language : $ctx->{config}->DefaultLanguage )
+            || '';
+        $lang_tag = ( $real_lang{$lang_tag} || $lang_tag );
+        if ( $args->{'locale'} ) {
+            $lang_tag =~ s/^(..)([-_](..))?$/$1 . '_' . uc($3||$1)/e;
+        }
+        elsif ( $args->{"ietf"} ) {
+
+            # http://www.ietf.org/rfc/rfc3066.txt
+            $lang_tag =~ s/_/-/;
+        }
+        $lang_tag;
     }
-    $lang_tag;
-}
 }
 
 ###########################################################################
@@ -223,7 +227,7 @@ Outputs the Site URL field of the website currently in context. An ending
 =cut
 
 sub _hdlr_website_url {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     return $ctx->_no_website_error()
@@ -246,7 +250,7 @@ Outputs the Site Root field of the website currently in context. An ending
 =cut
 
 sub _hdlr_website_path {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     return $ctx->_no_website_error()
@@ -281,17 +285,17 @@ If specified, will produce the timezone without the ":" character
 =cut
 
 sub _hdlr_website_timezone {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     return $ctx->_no_website_error()
         if $blog->class ne 'website';
-    my $so = $blog->server_offset;
-    my $no_colon = $args->{no_colon};
-    my $partial_hour_offset = 60 * abs($so - int($so));
-    sprintf("%s%02d%s%02d", $so < 0 ? '-' : '+',
-            abs($so), $no_colon ? '' : ':',
-            $partial_hour_offset);
+    my $so                  = $blog->server_offset;
+    my $no_colon            = $args->{no_colon};
+    my $partial_hour_offset = 60 * abs( $so - int($so) );
+    sprintf( "%s%02d%s%02d",
+        $so < 0   ? '-' : '+', abs($so),
+        $no_colon ? ''  : ':', $partial_hour_offset );
 }
 
 ###########################################################################
@@ -359,10 +363,10 @@ sub _hdlr_website_cc_license_image {
     return $ctx->_no_website_error()
         if $blog->class ne 'website';
     my $cc = $blog->cc_license or return '';
-    my ($code, $license, $image_url) = $cc =~ /(\S+) (\S+) (\S+)/;
+    my ( $code, $license, $image_url ) = $cc =~ /(\S+) (\S+) (\S+)/;
     return $image_url if $image_url;
-    "http://creativecommons.org/images/public/" .
-        ($cc eq 'pd' ? 'norights' : 'somerights');
+    "http://creativecommons.org/images/public/"
+        . ( $cc eq 'pd' ? 'norights' : 'somerights' );
 }
 
 ###########################################################################
@@ -378,7 +382,7 @@ string.
 =cut
 
 sub _hdlr_website_file_extension {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     return $ctx->_no_website_error()
@@ -408,7 +412,7 @@ sub _hdlr_website_has_blog {
     my $blog_class = MT->model('blog');
     my %terms;
     $terms{parent_id} = $blog->id;
-    $terms{class} = 'blog';
+    $terms{class}     = 'blog';
     return $blog_class->exist( \%terms ) ? 1 : 0;
 }
 
@@ -441,20 +445,22 @@ underscores ("_").
 =cut
 
 sub _hdlr_website_host {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     my $host = $blog->site_url;
-    if ($host =~ m!^https?://([^/:]+)(:\d+)?/?!) {
-        if ($args->{signature}) {
+    if ( $host =~ m!^https?://([^/:]+)(:\d+)?/?! ) {
+        if ( $args->{signature} ) {
+
             # using '_' to replace '.' since '-' is a valid
             # letter for domains
             my $sig = $1;
             $sig =~ s/\./_/g;
             return $sig;
         }
-        return $args->{exclude_port} ? $1 : $1 . ($2 || '');
-    } else {
+        return $args->{exclude_port} ? $1 : $1 . ( $2 || '' );
+    }
+    else {
         return '';
     }
 }
@@ -470,19 +476,21 @@ Similar to the L<WebsiteURL> tag, but removes any domain name from the URL.
 =cut
 
 sub _hdlr_website_relative_url {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog;
-    if ($args->{id} && ($args->{id} =~ m/^\d+$/)) {
-        $blog = MT::Website->load($args->{id});
-    } else {
+    if ( $args->{id} && ( $args->{id} =~ m/^\d+$/ ) ) {
+        $blog = MT::Website->load( $args->{id} );
+    }
+    else {
         $blog = $ctx->stash('blog');
     }
     return '' unless $blog;
     my $host = $blog->site_url;
     return '' unless defined $host;
-    if ($host =~ m!^https?://[^/]+(/.*)$!) {
+    if ( $host =~ m!^https?://[^/]+(/.*)$! ) {
         return $1;
-    } else {
+    }
+    else {
         return '';
     }
 }
@@ -498,7 +506,7 @@ Outputs applied theme's ID for the website currently in context.
 =cut
 
 sub _hdlr_website_theme_id {
-    shift->invoke_handler('blogThemeID', @_);
+    shift->invoke_handler( 'blogThemeID', @_ );
 }
 
 ###########################################################################
@@ -512,22 +520,22 @@ A container tag which loads parent website of blog in the current context.
 =cut
 
 sub _hdlr_blog_parent_website {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $blog = $ctx->stash('blog');
     return $ctx->_no_blog_error() unless $blog;
 
     my $builder = $ctx->stash('builder');
-    my $tokens = $ctx->stash('tokens');
+    my $tokens  = $ctx->stash('tokens');
 
     require MT::Website;
     my $website = $blog->website();
 
     my $res = '';
-    local $ctx->{__stash}{blog} = $website;
+    local $ctx->{__stash}{blog}    = $website;
     local $ctx->{__stash}{blog_id} = $website->id;
-    defined(my $out = $builder->build($ctx, $tokens, $cond))
-        or return $ctx->error($builder->errstr);
+    defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
+        or return $ctx->error( $builder->errstr );
     $res .= $out;
     $res;
 }

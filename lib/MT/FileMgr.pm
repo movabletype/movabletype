@@ -11,7 +11,7 @@ use base qw( MT::ErrorHandler );
 
 sub new {
     my $class = shift;
-    my $type = shift;
+    my $type  = shift;
     $class .= "::" . $type;
     eval "use $class;";
     die "Unsupported file manager $class: $@" if $@;
@@ -34,13 +34,13 @@ sub can_write;
 sub mkpath;
 sub rename;
 sub delete;
-sub content_is_updated { 1 }
-sub file_mod_time { undef }
-sub file_size { undef }
+sub content_is_updated {1}
+sub file_mod_time      {undef}
+sub file_size          {undef}
 
 sub is_handle {
-    my($fmgr, $f) = @_;
-    my $fd = ref($f) || ref(\$f) eq 'GLOB' ? fileno($f) : undef;
+    my ( $fmgr, $f ) = @_;
+    my $fd = ref($f) || ref( \$f ) eq 'GLOB' ? fileno($f) : undef;
     return defined $fd;
 }
 

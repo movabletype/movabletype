@@ -17,31 +17,31 @@ use base qw( MT::ObjectDriver::SQL );
 
 sub as_limit {
     my $stmt = shift;
-    my $n = $stmt->limit;
-    my $o = $stmt->offset || 0;
+    my $n    = $stmt->limit;
+    my $o    = $stmt->offset || 0;
     $n = 'ALL' if !$n && $o;
     return '' unless $n;
-    die "Non-numerics in limit/offset clause ($n, $o)" if ($o =~ /\D/) || (($n ne 'ALL') && ($n =~ /\D/));
-    return sprintf "LIMIT %s%s\n", $n,
-           ($o ? " OFFSET " . int($o) : "");
+    die "Non-numerics in limit/offset clause ($n, $o)"
+        if ( $o =~ /\D/ ) || ( ( $n ne 'ALL' ) && ( $n =~ /\D/ ) );
+    return sprintf "LIMIT %s%s\n", $n, ( $o ? " OFFSET " . int($o) : "" );
 }
 
 sub _mk_term {
     my $stmt = shift;
-    my ($col, $val) = @_;
+    my ( $col, $val ) = @_;
 
-    if (ref $val eq 'HASH') {
-        if (!exists $val->{op}) {
-            if (exists $val->{like}) {
+    if ( ref $val eq 'HASH' ) {
+        if ( !exists $val->{op} ) {
+            if ( exists $val->{like} ) {
                 my $cols = $stmt->binary;
-                if (!$cols || !exists $cols->{$col}) {
+                if ( !$cols || !exists $cols->{$col} ) {
                     $val = { op => 'ILIKE', value => $val->{like} };
                 }
             }
         }
     }
 
-    $stmt->SUPER::_mk_term($col, $val);
+    $stmt->SUPER::_mk_term( $col, $val );
 }
 
 1;

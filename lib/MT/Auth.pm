@@ -9,44 +9,49 @@ package MT::Auth;
 use strict;
 use base 'MT::ErrorHandler';
 
-sub SUCCESS ()          { 1 }
-sub UNKNOWN ()          { 2 }
-sub INACTIVE ()         { 3 }
-sub INVALID_PASSWORD () { 4 }
-sub DELETED ()          { 5 }
-sub REDIRECT_NEEDED ()  { 6 }
-sub NEW_LOGIN ()        { 7 }
-sub NEW_USER ()         { 8 }
-sub PENDING ()          { 9 }
+sub SUCCESS ()          {1}
+sub UNKNOWN ()          {2}
+sub INACTIVE ()         {3}
+sub INVALID_PASSWORD () {4}
+sub DELETED ()          {5}
+sub REDIRECT_NEEDED ()  {6}
+sub NEW_LOGIN ()        {7}
+sub NEW_USER ()         {8}
+sub PENDING ()          {9}
 
 {
-my $auth_module;
-sub _driver {
-    my @auth_modes = split(/\s+/, MT->config->AuthenticationModule);
-    foreach my $auth_mode (@auth_modes) {
-        my $auth_module_name = 'MT::Auth::' . $auth_mode;
-        eval 'require ' . $auth_module_name;
-        if (my $err = $@) {
-            die (MT->translate("Bad AuthenticationModule config '[_1]': [_2]", $auth_mode, $err));
+    my $auth_module;
+
+    sub _driver {
+        my @auth_modes = split( /\s+/, MT->config->AuthenticationModule );
+        foreach my $auth_mode (@auth_modes) {
+            my $auth_module_name = 'MT::Auth::' . $auth_mode;
+            eval 'require ' . $auth_module_name;
+            if ( my $err = $@ ) {
+                die(MT->translate(
+                        "Bad AuthenticationModule config '[_1]': [_2]",
+                        $auth_mode, $err
+                    )
+                );
+            }
+            my $auth_module = $auth_module_name->new;
+            die $auth_module_name->errstr
+                if ( !$auth_module || ( ref( \$auth_module ) eq 'SCALAR' ) );
+            return $auth_module;
         }
-        my $auth_module = $auth_module_name->new;
-        die $auth_module_name->errstr
-            if (!$auth_module || (ref(\$auth_module) eq 'SCALAR'));
-        return $auth_module;
+        die( MT->translate("Bad AuthenticationModule config") );
     }
-    die(MT->translate("Bad AuthenticationModule config"));
-}
 
-sub _handle {
-    my $method = shift;
-    my $mod = $auth_module ||= _driver();
-    return undef unless $mod->can($method);
-    $mod->$method(@_);
-}
+    sub _handle {
+        my $method = shift;
+        my $mod = $auth_module ||= _driver();
+        return undef unless $mod->can($method);
+        $mod->$method(@_);
+    }
 
-sub release {
-    undef $auth_module;
-}
+    sub release {
+        undef $auth_module;
+    }
 }
 
 BEGIN {
@@ -58,15 +63,19 @@ BEGIN {
         new_user new_login login_form fetch_credentials
     );
     no strict 'refs';
+
     foreach my $meth (@methods) {
-        *{"MT::Auth::$meth"} = sub { shift; _handle($meth, @_) };
+        *{"MT::Auth::$meth"} = sub { shift; _handle( $meth, @_ ) };
     }
 }
 
 sub task_synchronize {
     my $obj = shift;
+
     # This task method is only invoked if ExternalUserManagement is enabled.
-    return unless MT->config->ExternalUserManagement || MT->config->ExternalGroupManagement;
+    return
+        unless MT->config->ExternalUserManagement
+            || MT->config->ExternalGroupManagement;
     return $obj->synchronize(@_);
 }
 

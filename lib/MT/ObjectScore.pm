@@ -9,42 +9,44 @@ package MT::ObjectScore;
 use strict;
 use base qw( MT::Object );
 
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id'           => 'integer not null auto_increment',
-        'namespace'    => 'string(100) not null',
-        'object_id'    => 'integer',
-        'author_id'    => 'integer',
-        'score'        => 'float',
-        'object_ds'    => 'string(50) not null',
-        'ip'           => 'string(50)',
-    },
-    indexes => {
-        # usually used to remove all scores for a given object
-        ds_obj => {
-            columns => ['object_ds', 'object_id'],
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'        => 'integer not null auto_increment',
+            'namespace' => 'string(100) not null',
+            'object_id' => 'integer',
+            'author_id' => 'integer',
+            'score'     => 'float',
+            'object_ds' => 'string(50) not null',
+            'ip'        => 'string(50)',
         },
-        # common requests for scoring
-        ns_user_ds_obj => {
-            columns => ['namespace', 'author_id', 'object_ds', 'object_id'],
+        indexes => {
+
+            # usually used to remove all scores for a given object
+            ds_obj => { columns => [ 'object_ds', 'object_id' ], },
+
+            # common requests for scoring
+            ns_user_ds_obj => {
+                columns =>
+                    [ 'namespace', 'author_id', 'object_ds', 'object_id' ],
+            },
+
+            # common requests for anonymous scoring (ip-based)
+            ns_ip_ds_obj => {
+                columns => [ 'namespace', 'ip', 'object_ds', 'object_id' ],
+            },
+
+            # for scored_by method
+            user_ns => { columns => [ 'author_id', 'namespace' ], },
         },
-        # common requests for anonymous scoring (ip-based)
-        ns_ip_ds_obj => {
-            columns => ['namespace', 'ip', 'object_ds', 'object_id'],
+        defaults => {
+            object_id => 0,
+            author_id => 0,
         },
-        # for scored_by method
-        user_ns => {
-            columns => ['author_id', 'namespace'],
-        },
-    },
-    defaults => {
-        object_id => 0,
-        author_id => 0,
-    },
-    audit => 1,
-    datasource  => 'objectscore',
-    primary_key => 'id',
-});
+        audit       => 1,
+        datasource  => 'objectscore',
+        primary_key => 'id',
+    }
+);
 
 sub class_label {
     MT->translate("Object Score");
@@ -56,11 +58,12 @@ sub class_label_plural {
 
 sub scored_by {
     my $class = shift;
-    my ($namespace, $user) = @_;
-    MT::ObjectScore->load_iter({
-        author_id => $user->id,
-        defined($namespace) ? (namespace => $namespace) : (),
-    });
+    my ( $namespace, $user ) = @_;
+    MT::ObjectScore->load_iter(
+        {   author_id => $user->id,
+            defined($namespace) ? ( namespace => $namespace ) : (),
+        }
+    );
 }
 
 sub score {
@@ -69,7 +72,7 @@ sub score {
         $objectscore->{__orig_value}->{score} = $objectscore->score
             unless exists( $objectscore->{__orig_value}->{score} );
     }
-    return $objectscore->SUPER::score( @_ );
+    return $objectscore->SUPER::score(@_);
 }
 
 1;
@@ -128,4 +131,3 @@ of the same type.  The smaller the number is, the higher the object's rank is.
 Please see L<MT/AUTHOR & COPYRIGHT>.
 
 =cut
-

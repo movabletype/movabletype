@@ -22,17 +22,18 @@ sub _getset {
 }
 
 sub _getset_coderef {
-    my ($obj, $key, @param) = @_;
+    my ( $obj, $key, @param ) = @_;
+
     # We only do this weird thing for MT::ArchiveType, which for MT 4
     # allowed assignment of a coderef to the base MT::ArchiveType class.
     # With MT 4.2 and later, this routine should be overridden by a
     # subclass, and therefore, shouldn't do anything by itself.
-    if (ref($obj) eq __PACKAGE__) {
-        if (@param && ref($param[0]) eq 'CODE') {
+    if ( ref($obj) eq __PACKAGE__ ) {
+        if ( @param && ref( $param[0] ) eq 'CODE' ) {
             $obj->_getset( $key, @param );
             return;
         }
-        if (my $code = $obj->_getset($key)) {
+        if ( my $code = $obj->_getset($key) ) {
             return $code->(@param);
         }
     }
@@ -47,23 +48,27 @@ sub name { shift->_getset( 'name', @_ ) }
 sub archive_group_iter {
     shift->_getset_coderef( 'archive_group_iter', @_ );
 }
+
 sub archive_group_entries {
     shift->_getset_coderef( 'archive_group_entries', @_ );
 }
+
 sub archive_file {
     shift->_getset_coderef( 'archive_file', @_ );
 }
+
 sub archive_title {
     shift->_getset_coderef( 'archive_title', @_ );
 }
+
 sub archive_label {
     shift->_getset_coderef( 'archive_label', @_ );
 }
 
 sub group_based {
     my $obj = shift;
-    if (ref($obj) eq __PACKAGE__) {
-        return $obj->_getset( 'archive_group_entries' ) ? 1 : 0;
+    if ( ref($obj) eq __PACKAGE__ ) {
+        return $obj->_getset('archive_group_entries') ? 1 : 0;
     }
     return 0;
 }
@@ -72,48 +77,48 @@ sub default_archive_templates {
     shift->_getset( 'default_archive_templates', @_ );
 }
 sub dynamic_template { shift->_getset( 'dynamic_template', @_ ) }
-sub entry_class      { shift->_getset( 'entry_class',      @_ ) || 'entry' }
-sub category_class   { shift->_getset( 'category_class',   @_ ) || 'category' }
-sub template_params  { shift->_getset('template_params') }
+sub entry_class { shift->_getset( 'entry_class', @_ ) || 'entry' }
+sub category_class { shift->_getset( 'category_class', @_ ) || 'category' }
+sub template_params { shift->_getset('template_params') }
 
-sub dynamic_support  {
+sub dynamic_support {
     my $obj = shift;
-    if (ref $obj ne __PACKAGE__) {
-        return 1; # assume support unless overridden
+    if ( ref $obj ne __PACKAGE__ ) {
+        return 1;    # assume support unless overridden
     }
-    $obj->_getset( 'dynamic_support',  @_ );
+    $obj->_getset( 'dynamic_support', @_ );
 }
 
 sub category_based {
     my $obj = shift;
-    if (ref $obj ne __PACKAGE__) {
+    if ( ref $obj ne __PACKAGE__ ) {
         return $obj->isa('MT::ArchiveType::Category');
     }
-    return $obj->_getset('category_based', @_);
+    return $obj->_getset( 'category_based', @_ );
 }
 
 sub entry_based {
     my $obj = shift;
-    if (ref $obj ne __PACKAGE__) {
+    if ( ref $obj ne __PACKAGE__ ) {
         return $obj->isa('MT::ArchiveType::Individual');
     }
-    return $obj->_getset('entry_based', @_);
+    return $obj->_getset( 'entry_based', @_ );
 }
 
 sub date_based {
     my $obj = shift;
-    if (ref $obj ne __PACKAGE__) {
+    if ( ref $obj ne __PACKAGE__ ) {
         return $obj->isa('MT::ArchiveType::Date');
     }
-    return $obj->_getset('date_based', @_);
+    return $obj->_getset( 'date_based', @_ );
 }
 
 sub author_based {
     my $obj = shift;
-    if (ref $obj ne __PACKAGE__) {
+    if ( ref $obj ne __PACKAGE__ ) {
         return $obj->isa('MT::ArchiveType::Author');
     }
-    return $obj->_getset('author_based', @_);
+    return $obj->_getset( 'author_based', @_ );
 }
 
 sub archive_entries_count {
@@ -135,22 +140,18 @@ sub archive_entries_count {
     }
 
     my $count = MT->model('entry')->count(
-        {
-            blog_id => $blog->id,
+        {   blog_id => $blog->id,
             status  => MT::Entry::RELEASE(),
             ( $ts ? ( authored_on => [ $start, $end ] ) : () ),
             ( $auth ? ( author_id => $auth->id ) : () ),
         },
-        {
-            ( $ts ? ( range_incl => { authored_on => 1 } ) : () ),
-            (
-                $cat
-                ? (
-                    'join' => [
+        {   ( $ts ? ( range_incl => { authored_on => 1 } ) : () ),
+            (   $cat
+                ? ( 'join' => [
                         'MT::Placement', 'entry_id',
                         { category_id => $cat->id }
                     ]
-                  )
+                    )
                 : ()
             ),
         }
@@ -162,9 +163,11 @@ sub archive_entries_count {
 sub date_range {
     shift->_getset_coderef( 'date_range', @_ );
 }
+
 sub next_archive_entry {
     shift->_getset_coderef( 'next_archive_entry', @_ );
 }
+
 sub previous_archive_entry {
     shift->_getset_coderef( 'previous_archive_entry', @_ );
 }

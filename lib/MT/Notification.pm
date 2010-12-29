@@ -10,24 +10,25 @@ use strict;
 use MT::Blog;
 use MT::Object;
 @MT::Notification::ISA = qw( MT::Object );
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id' => 'integer not null auto_increment',
-        'blog_id' => 'integer not null',
-        'name' => 'string(50)',
-        'email' => 'string(75)',
-        'url' => 'string(255)',
-    },
-    indexes => {
-        blog_id => 1,
-        email => 1,
-    },
-    child_of => 'MT::Blog',
-    datasource => 'notification',
-    audit => 1,
-    primary_key => 'id',
-    listing_screen => 1,
-});
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'      => 'integer not null auto_increment',
+            'blog_id' => 'integer not null',
+            'name'    => 'string(50)',
+            'email'   => 'string(75)',
+            'url'     => 'string(255)',
+        },
+        indexes => {
+            blog_id => 1,
+            email   => 1,
+        },
+        child_of       => 'MT::Blog',
+        datasource     => 'notification',
+        audit          => 1,
+        primary_key    => 'id',
+        listing_screen => 1,
+    }
+);
 
 sub class_label {
     MT->translate('Contact');
@@ -40,16 +41,16 @@ sub class_label_plural {
 sub list_props {
     return {
         email => {
-            auto => 1,
-            label => 'Email',
+            auto         => 1,
+            label        => 'Email',
             filter_label => 'Email Address',
-            display => 'force',
-            order   => 100,
-            html => sub {
+            display      => 'force',
+            order        => 100,
+            html         => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
                 require MT::Util;
-                my $email = MT::Util::encode_html($obj->email);
+                my $email = MT::Util::encode_html( $obj->email );
                 my $id    = $obj->id;
                 my $title = MT->translate('Click to edit contact');
                 return qq{
@@ -61,24 +62,29 @@ sub list_props {
             },
         },
         url => {
-            auto => 1,
-            label => 'URL',
+            auto    => 1,
+            label   => 'URL',
             display => 'force',
             order   => 200,
-            html => sub {
+            html    => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
                 require MT::Util;
-                my $url = MT::Util::encode_html($obj->url);
+                my $url   = MT::Util::encode_html( $obj->url );
                 my $id    = $obj->id;
                 my $title = MT->translate('Click to edit contact');
                 my $save_changes_label = MT->translate('Save Changes');
-                my $save_label = MT->translate('Save');
-                my $cancel_label = MT->translate('Cancel');
-                my $view_img   = MT->static_path . 'images/status_icons/view.gif';
+                my $save_label         = MT->translate('Save');
+                my $cancel_label       = MT->translate('Cancel');
+                my $view_img
+                    = MT->static_path . 'images/status_icons/view.gif';
                 return qq{
                     <span id="note-url-link-$id" class="view-link"><a href="#$id" class="start-edit" title="$title">$url</a>}
-                    . ( $url ? qq{&nbsp;<a href="$url" target="_blank">                        <img alt="View" src="$view_img" /></a>} : '' )
+                    . (
+                    $url
+                    ? qq{&nbsp;<a href="$url" target="_blank">                        <img alt="View" src="$view_img" /></a>}
+                    : ''
+                    )
                     . qq{</span>
                     <span id="note-url-field-$id" style="display: none">
                       <input type="text" name="note-url-$id" id="note-url-$id" class="text med url" value="$url" />
@@ -105,12 +111,12 @@ sub list_props {
             order => 300,
         },
         created_on => {
-            base => '__virtual.created_on',
+            base    => '__virtual.created_on',
             display => 'default',
             order   => 400,
         },
         modified_on => {
-            base => '__virtual.modified_on',
+            base    => '__virtual.modified_on',
             display => 'none',
         },
     };

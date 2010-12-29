@@ -9,39 +9,40 @@ package MT::Association;
 use strict;
 use base qw( MT::Object );
 
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id'           => 'integer not null auto_increment',
-        'type'         => 'integer not null',
-        'author_id'    => 'integer',
-        'blog_id'      => 'integer',
-        'group_id'     => 'integer',
-        'role_id'      => 'integer',
-    },
-    indexes => {
-        blog_id        => 1,
-        author_id      => 1,
-        role_id        => 1,
-        group_id       => 1,
-        type           => 1,
-        created_on     => 1,
-    },
-    defaults => {
-        author_id      => 0,
-        group_id       => 0,
-        blog_id        => 0,
-        role_id        => 0,
-    },
-    audit => 1,
-    datasource  => 'association',
-    primary_key => 'id',
-});
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'        => 'integer not null auto_increment',
+            'type'      => 'integer not null',
+            'author_id' => 'integer',
+            'blog_id'   => 'integer',
+            'group_id'  => 'integer',
+            'role_id'   => 'integer',
+        },
+        indexes => {
+            blog_id    => 1,
+            author_id  => 1,
+            role_id    => 1,
+            group_id   => 1,
+            type       => 1,
+            created_on => 1,
+        },
+        defaults => {
+            author_id => 0,
+            group_id  => 0,
+            blog_id   => 0,
+            role_id   => 0,
+        },
+        audit       => 1,
+        datasource  => 'association',
+        primary_key => 'id',
+    }
+);
 
-sub USER_BLOG_ROLE ()  { 1 }
-sub GROUP_BLOG_ROLE () { 2 }
-sub USER_GROUP ()      { 3 }
-sub USER_ROLE ()       { 4 }
-sub GROUP_ROLE ()      { 5 }
+sub USER_BLOG_ROLE ()  {1}
+sub GROUP_BLOG_ROLE () {2}
+sub USER_GROUP ()      {3}
+sub USER_ROLE ()       {4}
+sub GROUP_ROLE ()      {5}
 
 sub class_label {
     MT->translate("Association");
@@ -54,17 +55,20 @@ sub class_label_plural {
 sub list_props {
     return {
         user_name => {
-            label => 'User',
-            base => '__virtual.string',
+            label   => 'User',
+            base    => '__virtual.string',
             display => 'force',
             order   => 100,
-            col => 'name',  # this looks up author table
-            html => sub {
+            col     => 'name',               # this looks up author table
+            html    => sub {
                 my ( $prop, $obj, $app ) = @_;
                 my $type = 'user';
-                my $icon_url = MT->static_path . 'images/nav_icons/color/' . $type . '.gif';
+                my $icon_url
+                    = MT->static_path
+                    . 'images/nav_icons/color/'
+                    . $type . '.gif';
                 return '(unknown object)' unless defined $obj->user;
-                my $name = $obj->user->name;
+                my $name      = $obj->user->name;
                 my $edit_link = $app->uri(
                     mode => 'view',
                     args => {
@@ -84,11 +88,8 @@ sub list_props {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
                 my $author_terms = $prop->super(@_);
-                my @authors = MT->model('author')->load(
-                    {
-                        %$author_terms,
-                    },
-                );
+                my @authors
+                    = MT->model('author')->load( { %$author_terms, }, );
                 return
                     scalar @authors
                     ? { author_id => [ map { $_->id } @authors ] }
@@ -96,28 +97,27 @@ sub list_props {
             },
             bulk_sort => sub {
                 my $prop = shift;
-                my ( $objs ) = @_;
+                my ($objs) = @_;
                 sort { $a->user->name cmp $b->user->name } @$objs;
             },
             sort => 0,
         },
         role_name => {
-            label => 'Role',
-            display => 'force',
-            order   => 200,
-            base => '__virtual.string',
-            col => 'name',  # this looks up role table
+            label      => 'Role',
+            display    => 'force',
+            order      => 200,
+            base       => '__virtual.string',
+            col        => 'name',               # this looks up role table
             sub_fields => [
-                {
-                    class   => 'role-detail',
+                {   class   => 'role-detail',
                     label   => 'Role Detail',
                     display => 'optional',
                 },
             ],
             html => sub {
                 my ( $prop, $obj, $app ) = @_;
-                my $role = $obj->role;
-                my $name = $role->name;
+                my $role      = $obj->role;
+                my $name      = $role->name;
                 my $edit_link = $app->uri(
                     mode => 'view',
                     args => {
@@ -130,12 +130,16 @@ sub list_props {
                 if ( defined $detail ) {
                     my @perms = map { $_ =~ s/'//g; $_; } split ',', $detail;
                     my $all_perms = MT->registry('permissions');
-                    my @permhashes = map { $all_perms->{ 'blog.' . $_ } } @perms;
-                    $detail
-                        = join ', ', (
+                    my @permhashes
+                        = map { $all_perms->{ 'blog.' . $_ } } @perms;
+                    $detail = join ', ', (
                         sort
-                        map { ref $_->{label} ? $_->{label}->() : $_->{label} }
-                        @permhashes );
+                            map {
+                            ref $_->{label}
+                                ? $_->{label}->()
+                                : $_->{label}
+                            } @permhashes
+                    );
                 }
                 else {
                     $detail = '';
@@ -157,17 +161,11 @@ sub list_props {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
                 my $role_terms = $prop->super(@_);
-                my @roles = MT->model('role')->load(
-                    {
-                        %$role_terms,
-                    },
-                );
+                my @roles = MT->model('role')->load( { %$role_terms, }, );
                 if ( scalar @roles < 1 ) {
                     return { role_id => \'< 0' };
                 }
-                return {
-                    role_id => [ map { $_->id } @roles ],
-                };
+                return { role_id => [ map { $_->id } @roles ], };
             },
             sort => sub {
                 my $prop = shift;
@@ -176,11 +174,8 @@ sub list_props {
                 delete $args->{sort};
                 push @{ $args->{joins} }, MT->model('role')->join_on(
                     undef,
-                    {
-                        id => \'= association_role_id',
-                    },
-                    {
-                        sort => 'name',
+                    { id => \'= association_role_id', },
+                    {   sort      => 'name',
                         direction => delete $args->{direction},
                     },
                 );
@@ -188,32 +183,32 @@ sub list_props {
             },
         },
         blog_name => {
-            label => 'Blog/Website',
+            label        => 'Blog/Website',
             filter_label => 'Site',
-            base => '__virtual.string',
-            display => 'default',
-            order   => 300,
-            col => 'name',  # this looks up mt_blog.blog_nam column
+            base         => '__virtual.string',
+            display      => 'default',
+            order        => 300,
+            col => 'name',    # this looks up mt_blog.blog_nam column
             default_sort_order => 'ascend',
-            bulk_html => sub {
+            bulk_html          => sub {
                 my $prop = shift;
                 my ( $objs, $app ) = @_;
-                my %blog_ids  = map { $_->blog_id => 1 } @$objs;
-                my @blogs = MT->model('blog')->load({
-                    id => [ keys %blog_ids ], },{
-                    fetchonly => {
-                        id   => 1,
-                        name => 1,
-                }});
+                my %blog_ids = map { $_->blog_id => 1 } @$objs;
+                my @blogs = MT->model('blog')->load(
+                    { id => [ keys %blog_ids ], },
+                    {   fetchonly => {
+                            id   => 1,
+                            name => 1,
+                        }
+                    }
+                );
                 my %names = map { $_->id => $_->name } @blogs;
                 my @outs;
-                for my $obj ( @$objs ) {
-                    my $name = $names{$obj->blog_id};
+                for my $obj (@$objs) {
+                    my $name          = $names{ $obj->blog_id };
                     my $dashboard_url = $app->uri(
                         mode => 'dashboard',
-                        args => {
-                            blog_id => $obj->blog_id,
-                        },
+                        args => { blog_id => $obj->blog_id, },
                     );
                     push @outs, qq{
                         <a href="$dashboard_url">$name</a>
@@ -225,9 +220,8 @@ sub list_props {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
                 my $blog_terms = $prop->super(@_);
-                my @blogs = MT->model('blog')->load(
-                    {
-                        class => '*',
+                my @blogs      = MT->model('blog')->load(
+                    {   class => '*',
                         %$blog_terms,
                     },
                 );
@@ -236,14 +230,17 @@ sub list_props {
                     ? { blog_id => [ map { $_->id } @blogs ], }
                     : { blog_id => -1 };
             },
-            sort => 0,
+            sort      => 0,
             bulk_sort => sub {
-                my $prop = shift;
-                my ( $objs ) = @_;
+                my $prop    = shift;
+                my ($objs)  = @_;
                 my %blog_id = map { $_->blog_id => 1 } @$objs;
-                my @blogs = MT->model('blog')->load({ id => [ keys %blog_id ] });
+                my @blogs
+                    = MT->model('blog')->load( { id => [ keys %blog_id ] } );
                 my %blogname = map { $_->id => $_->name } @blogs;
-                return sort { $blogname{ $a->blog_id } cmp $blogname{ $b->blog_id } } @$objs;
+                return sort {
+                    $blogname{ $a->blog_id } cmp $blogname{ $b->blog_id }
+                } @$objs;
             },
         },
         created_on => {
@@ -252,44 +249,41 @@ sub list_props {
             order   => 400,
         },
         role_id => {
-            auto    => 1,
-            label   => 'Role',
-            display => 'none',
+            auto            => 1,
+            label           => 'Role',
+            display         => 'none',
             filter_editable => 0,
             label_via_param => sub {
                 my ( $prop, $app, $val ) = @_;
-                my $role = MT->model('role')->load( $val )
-                    or return $prop->error(MT->translate('Invalid parameter.'));
-                return MT->translate(
-                    'Associations with role: [_1]',
-                    $role->name,
-                );
+                my $role = MT->model('role')->load($val)
+                    or return $prop->error(
+                    MT->translate('Invalid parameter.') );
+                return MT->translate( 'Associations with role: [_1]',
+                    $role->name, );
             },
         },
         author_id => {
-            base    => '__virtual.hidden',
-            col     => 'author_id',
-            display => 'none',
+            base            => '__virtual.hidden',
+            col             => 'author_id',
+            display         => 'none',
             filter_editable => 0,
-            filter_label => 'Author',
+            filter_label    => 'Author',
             label_via_param => sub {
                 my ( $prop, $app, $val ) = @_;
-                my $author = MT->model('author')->load( $val )
-                    or return $prop->error(MT->translate('Invalid parameter.'));
-                my $label = MT->translate(
-                    'Associations for [_1]',
-                    $author->nickname,
-                );
+                my $author = MT->model('author')->load($val)
+                    or return $prop->error(
+                    MT->translate('Invalid parameter.') );
+                my $label = MT->translate( 'Associations for [_1]',
+                    $author->nickname, );
                 return $label;
             },
             args_via_param => sub {
                 my ( $prop, $app, $val ) = @_;
-                my $author = MT->model('author')->load( $val )
-                    or return $prop->error(MT->translate('Invalid parameter.'));
-                my $label = MT->translate(
-                    'Associations for [_1]',
-                    $author->nickname,
-                );
+                my $author = MT->model('author')->load($val)
+                    or return $prop->error(
+                    MT->translate('Invalid parameter.') );
+                my $label = MT->translate( 'Associations for [_1]',
+                    $author->nickname, );
                 return {
                     value => $val,
                     label => $label,
@@ -297,15 +291,15 @@ sub list_props {
             },
         },
         _type => {
-            view => [],
+            view  => [],
             terms => sub {
-               my $types = MT->component('Enterprise') ? [ 1, 2 ] : 1;
-               return { type => $types };
-            }
+                my $types = MT->component('Enterprise') ? [ 1, 2 ] : 1;
+                return { type => $types };
+                }
         },
         modified_on => {
             display => 'none',
-            base => '__virtual.modified_on',
+            base    => '__virtual.modified_on',
         },
     };
 }
@@ -320,7 +314,7 @@ sub save {
 sub remove {
     my $assoc = shift;
     my $res = $assoc->SUPER::remove(@_) or return;
-    if (ref $assoc) {
+    if ( ref $assoc ) {
         $assoc->rebuild_permissions;
     }
     $res;
@@ -334,45 +328,58 @@ sub rebuild_permissions {
 
 sub user {
     my $assoc = shift;
-    $assoc->cache_property('user', sub {
-        require MT::Author;
-        $assoc->author_id ? MT::Author->load($assoc->author_id) : undef;
-    });
+    $assoc->cache_property(
+        'user',
+        sub {
+            require MT::Author;
+            $assoc->author_id ? MT::Author->load( $assoc->author_id ) : undef;
+        }
+    );
 }
 
 sub blog {
     my $assoc = shift;
-    $assoc->cache_property('blog', sub {
-        require MT::Blog;
-        $assoc->blog_id ? MT::Blog->load($assoc->blog_id) : undef;
-    });
+    $assoc->cache_property(
+        'blog',
+        sub {
+            require MT::Blog;
+            $assoc->blog_id ? MT::Blog->load( $assoc->blog_id ) : undef;
+        }
+    );
 }
 
 sub group {
     my $assoc = shift;
-    $assoc->cache_property('group', sub {
-        require MT::Group;
-        $assoc->group_id ? MT::Group->load($assoc->group_id) : undef;
-    });
+    $assoc->cache_property(
+        'group',
+        sub {
+            require MT::Group;
+            $assoc->group_id ? MT::Group->load( $assoc->group_id ) : undef;
+        }
+    );
 }
 
 sub role {
     my $assoc = shift;
-    $assoc->cache_property('role', sub {
-        require MT::Role;
-        $assoc->role_id ? MT::Role->load($assoc->role_id) : undef;
-    });
+    $assoc->cache_property(
+        'role',
+        sub {
+            require MT::Role;
+            $assoc->role_id ? MT::Role->load( $assoc->role_id ) : undef;
+        }
+    );
 }
 
 # Creates an association between 2 or 3 objects
 sub link {
-    my $pkg = shift;
+    my $pkg   = shift;
     my $terms = $pkg->objects_to_terms(@_);
     return unless $terms;
     my $assoc = $pkg->get_by_key($terms);
-    if (!$assoc->id) {
-        if (MT->instance->isa('MT::App')) {
-            $assoc->created_by(MT->instance->user->id) if (defined(MT->instance->user));
+    if ( !$assoc->id ) {
+        if ( MT->instance->isa('MT::App') ) {
+            $assoc->created_by( MT->instance->user->id )
+                if ( defined( MT->instance->user ) );
         }
         $assoc->save or return;
     }
@@ -381,7 +388,7 @@ sub link {
 
 # Removes an association between 2 or 3 objects
 sub unlink {
-    my $pkg = shift;
+    my $pkg   = shift;
     my $terms = $pkg->objects_to_terms(@_);
     return unless $terms;
     my $assoc = $pkg->get_by_key($terms);
@@ -389,26 +396,30 @@ sub unlink {
 }
 
 sub objects_to_terms {
-    my $pkg = shift;
+    my $pkg   = shift;
     my %param = map { ref $_ => $_ } @_;
     my $terms = {};
-    $terms->{author_id} = $param{'MT::Author'}->id if $param{'MT::Author'};
-    $terms->{group_id} = $param{'MT::Group'}->id if $param{'MT::Group'};
-    $terms->{role_id} = $param{'MT::Role'}->id if $param{'MT::Role'};
-    $terms->{blog_id} = $param{'MT::Blog'}->id if $param{'MT::Blog'};
-    $terms->{blog_id} = $param{'MT::Website'}->id if $param{'MT::Website'};
-    if ($terms->{author_id} && $terms->{blog_id} && $terms->{role_id}) {
+    $terms->{author_id} = $param{'MT::Author'}->id  if $param{'MT::Author'};
+    $terms->{group_id}  = $param{'MT::Group'}->id   if $param{'MT::Group'};
+    $terms->{role_id}   = $param{'MT::Role'}->id    if $param{'MT::Role'};
+    $terms->{blog_id}   = $param{'MT::Blog'}->id    if $param{'MT::Blog'};
+    $terms->{blog_id}   = $param{'MT::Website'}->id if $param{'MT::Website'};
+    if ( $terms->{author_id} && $terms->{blog_id} && $terms->{role_id} ) {
         $terms->{type} = USER_BLOG_ROLE;
-    } elsif ($terms->{group_id} && $terms->{blog_id} && $terms->{role_id}) {
+    }
+    elsif ( $terms->{group_id} && $terms->{blog_id} && $terms->{role_id} ) {
         $terms->{type} = GROUP_BLOG_ROLE;
-    } elsif ($terms->{group_id} && $terms->{author_id}) {
+    }
+    elsif ( $terms->{group_id} && $terms->{author_id} ) {
         $terms->{type} = USER_GROUP;
-    # To be defined...
-    #} elsif ($terms->{user_id} && $terms->{role_id}) {
-    #    $terms->{type} = USER_ROLE;
-    #} elsif ($terms->{group_id} && $terms->{role_id}) {
-    #    $terms->{type} = GROUP_ROLE;
-    } else {
+
+        # To be defined...
+        #} elsif ($terms->{user_id} && $terms->{role_id}) {
+        #    $terms->{type} = USER_ROLE;
+        #} elsif ($terms->{group_id} && $terms->{role_id}) {
+        #    $terms->{type} = GROUP_ROLE;
+    }
+    else {
         return undef;
     }
     $terms;

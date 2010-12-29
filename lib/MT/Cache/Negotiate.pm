@@ -28,7 +28,7 @@ sub new {
 
 sub AUTOLOAD {
     my $self = shift;
-    (my $method = our $AUTOLOAD) =~ s/^.*:://;
+    ( my $method = our $AUTOLOAD ) =~ s/^.*:://;
     return unless $self->{'__cache_driver'};
     return $self->{'__cache_driver'}->$method(@_);
 }

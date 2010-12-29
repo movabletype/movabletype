@@ -17,7 +17,8 @@ use base qw( Data::ObjectDriver::SQL );
 #--------------------------------------#
 # Class Accessors
 
-my @ACCESSORS = qw( transform range range_incl lob_columns date_columns not null not_null like distinct from_stmt binary );
+my @ACCESSORS
+    = qw( transform range range_incl lob_columns date_columns not null not_null like distinct from_stmt binary );
 __PACKAGE__->mk_accessors(@ACCESSORS);
 
 #--------------------------------------#
@@ -35,11 +36,11 @@ sub new {
     for my $field (@ACCESSORS) {
         next if $field eq 'distinct';
         next if $field eq 'from_stmt';
-        $stmt->$field(defined $data{$field} ? { %{ $data{$field} } } : {});
+        $stmt->$field( defined $data{$field} ? { %{ $data{$field} } } : {} );
     }
-    $stmt->distinct($data{distinct} || 0);
-    if(defined $data{from_stmt}) {
-        $stmt->from_stmt($data{from_stmt});
+    $stmt->distinct( $data{distinct} || 0 );
+    if ( defined $data{from_stmt} ) {
+        $stmt->from_stmt( $data{from_stmt} );
     }
 
     $stmt;
@@ -47,10 +48,11 @@ sub new {
 
 sub ts2db {
     return unless $_[0];
-    if($_[0] =~ m{ \A \d{4} - }xms) {
+    if ( $_[0] =~ m{ \A \d{4} - }xms ) {
         return $_[0];
     }
-    my $ret = sprintf '%04d-%02d-%02d %02d:%02d:%02d', unpack 'A4A2A2A2A2A2', $_[0];
+    my $ret = sprintf '%04d-%02d-%02d %02d:%02d:%02d', unpack 'A4A2A2A2A2A2',
+        $_[0];
     return $ret;
 }
 
@@ -69,48 +71,52 @@ sub _subselect_distinct {
     ## let's do a subselect.
     my $subselect = $class->new;
     $subselect->from_stmt($stmt);
-    $subselect->select([ @{ $stmt->select } ]);
+    $subselect->select( [ @{ $stmt->select } ] );
+
     #for my $col (@{ $subselect->select }) {
     #    $col = $driver->dbd->fix_subselect_column($col); ## FIXME
     #}
-    $subselect->select_map({ %{ $stmt->select_map } });
-    for my $col (keys %{ $subselect->select_map }) {
+    $subselect->select_map( { %{ $stmt->select_map } } );
+    for my $col ( keys %{ $subselect->select_map } ) {
         my $new_col = $col;
+
         #$new_col = $driver->dbd->fix_subselect_column($new_col); ## FIXME
-        $subselect->select_map->{$new_col} = delete $subselect->select_map->{$col};
+        $subselect->select_map->{$new_col}
+            = delete $subselect->select_map->{$col};
     }
-    $subselect->bind      ([ @{ $stmt->bind } ]);
-    $subselect->distinct  (1);
+    $subselect->bind( [ @{ $stmt->bind } ] );
+    $subselect->distinct(1);
 
     $stmt->distinct(0);
     $subselect;
 }
-
 
 #--------------------------------------#
 # Instance Methods
 
 sub as_sql {
     my $stmt = shift;
-    my $sql = '';
+    my $sql  = '';
 
     my $old_sel;
-    if (@{ $stmt->select }) {
+    if ( @{ $stmt->select } ) {
         $old_sel = $stmt->select;
 
         $sql = 'SELECT ';
-        if($stmt->distinct) {
+        if ( $stmt->distinct ) {
             $sql .= 'DISTINCT ';
         }
-        $sql .= join(', ', @{ $stmt->select }) . "\n";
-        $stmt->select([]);
+        $sql .= join( ', ', @{ $stmt->select } ) . "\n";
+        $stmt->select( [] );
     }
 
-    if ($stmt->from_stmt) {
-        $sql .= 'FROM ('
+    if ( $stmt->from_stmt ) {
+        $sql
+            .= 'FROM ('
             . $stmt->from_stmt->as_sql(@_)
-            . ") t\n";  # t is the subquery alias
-    } else {
+            . ") t\n";    # t is the subquery alias
+    }
+    else {
         $sql .= $stmt->SUPER::as_sql(@_);
 
         ## Check if we generated an unbounded query for mt_session, since we're seeing those in production.
@@ -132,74 +138,85 @@ sub as_sql {
 
 sub _mk_term {
     my $stmt = shift;
-    my ($col, $val) = @_;
+    my ( $col, $val ) = @_;
 
     $col =~ s/ \A [\w\.]+? \. //x;
 
     ## Any last-minute property -> field name manipulation
-    if (my $m = $stmt->column_mutator) {
+    if ( my $m = $stmt->column_mutator ) {
         $col = $m->($col);
     }
 
-    if (ref $val eq 'HASH') {
-        if (!exists $val->{op}) {
+    if ( ref $val eq 'HASH' ) {
+        if ( !exists $val->{op} ) {
+
             # hash-style value, containing hints on operation
-            if (exists $val->{like}) {
+            if ( exists $val->{like} ) {
                 $val = { op => 'LIKE', value => $val->{like} };
             }
-            if (exists $val->{not_like}) {
+            if ( exists $val->{not_like} ) {
                 $val = { op => 'NOT LIKE', value => $val->{not_like} };
             }
-            elsif (exists $val->{not_null}) {
+            elsif ( exists $val->{not_null} ) {
                 $val = \'is not null';
             }
-            elsif (exists $val->{not}) {
+            elsif ( exists $val->{not} ) {
                 my $v = $val->{not};
-                if ('ARRAY' eq ref($v)) {
-                    if(my $transformed_column = $stmt->transform->{$col}) {
+                if ( 'ARRAY' eq ref($v) ) {
+                    if ( my $transformed_column = $stmt->transform->{$col} ) {
                         $col = $transformed_column;
                     }
-                    my $term = $col . ' NOT IN (' . join (',', ('?') x scalar @$v ) . ')';
-                    return ($term, $v, $col);
-                } elsif (ref $v) {
+                    my $term
+                        = $col
+                        . ' NOT IN ('
+                        . join( ',', ('?') x scalar @$v ) . ')';
+                    return ( $term, $v, $col );
+                }
+                elsif ( ref $v ) {
                     die "Unsupported value in 'not' column";
-                } else {
-                    $val = { value => $v,
-                             op    => '!=' };
+                }
+                else {
+                    $val = {
+                        value => $v,
+                        op    => '!='
+                    };
                 }
             }
-            elsif (exists $val->{between}) {
-                my $low = @{$val->{between}}[0];
-                my $high = @{$val->{between}}[1];
-                if($stmt->date_columns->{$col}) {
-                    $low = ts2db($low);
+            elsif ( exists $val->{between} ) {
+                my $low  = @{ $val->{between} }[0];
+                my $high = @{ $val->{between} }[1];
+                if ( $stmt->date_columns->{$col} ) {
+                    $low  = ts2db($low);
                     $high = ts2db($high);
                 }
-                $val = [ '-and', { op => '>=', value => $low },
-                    { op => '<=', value => $high } ];
+                $val = [
+                    '-and',
+                    { op => '>=', value => $low },
+                    { op => '<=', value => $high }
+                ];
             }
-            elsif (exists $val->{'>='}) {
+            elsif ( exists $val->{'>='} ) {
                 $val = { op => '>=', value => $val->{'>='} };
             }
-            elsif (exists $val->{'>'}) {
+            elsif ( exists $val->{'>'} ) {
                 $val = { op => '>', value => $val->{'>'} };
             }
-            elsif (exists $val->{'<='}) {
+            elsif ( exists $val->{'<='} ) {
                 $val = { op => '<=', value => $val->{'<='} };
             }
-            elsif (exists $val->{'<'}) {
+            elsif ( exists $val->{'<'} ) {
                 $val = { op => '<', value => $val->{'<'} };
             }
-            elsif (exists $val->{'!='}) {
+            elsif ( exists $val->{'!='} ) {
                 $val = { op => '!=', value => $val->{'!='} };
             }
         }
 
         ## Translate dates from app to database format.
-        if(($stmt->date_columns->{$col}) && (ref($val) eq 'HASH')) {
+        if ( ( $stmt->date_columns->{$col} ) && ( ref($val) eq 'HASH' ) ) {
             my $v = $val->{value};
-            if (ref($v) eq 'ARRAY') {
-                $v->[$_] = ts2db($v->[$_]) for @$v;
+            if ( ref($v) eq 'ARRAY' ) {
+                $v->[$_] = ts2db( $v->[$_] ) for @$v;
             }
             else {
                 $val->{value} = ts2db($v);
@@ -214,25 +231,26 @@ sub _mk_term {
         ## We may recurse, so let us empty range inclusions in our scope.
         local $range_incl->{$col} = $range_incl->{$col};
         local $range->{$col}      = $range->{$col};
-        if ($range_incl->{$col} || $range->{$col}) {
-            my ($lt, $gt) = $range_incl->{$col} ? ('<=', '>=') : ('<', '>');
+        if ( $range_incl->{$col} || $range->{$col} ) {
+            my ( $lt, $gt )
+                = $range_incl->{$col} ? ( '<=', '>=' ) : ( '<', '>' );
             my @vals;
 
-            my ($first_val, $last_val) = @$val;
-            if ($stmt->date_columns->{$col}) {
+            my ( $first_val, $last_val ) = @$val;
+            if ( $stmt->date_columns->{$col} ) {
                 $first_val = ts2db($first_val) if defined $first_val;
-                $last_val = ts2db($last_val) if defined $last_val;
+                $last_val  = ts2db($last_val)  if defined $last_val;
             }
 
             ## Ignore first value if it's undef (right-bounded range, eg [undef, 20050101000000] )
-            if (defined $first_val) {
+            if ( defined $first_val ) {
                 push @vals, { op => $gt, value => $first_val };
             }
             ## Ignore last value if it's defined (left-bounded range, eg [20050101000000] )
-            if (defined $last_val) {
-                push @vals, { op => $lt, value => $last_val  };
+            if ( defined $last_val ) {
+                push @vals, { op => $lt, value => $last_val };
             }
-            if (2 == scalar @vals) {
+            if ( 2 == scalar @vals ) {
                 $val = [ '-and', @vals ];
             }
             else {
@@ -243,85 +261,95 @@ sub _mk_term {
             ## called recursively with each of those hashrefs inside it.
             ## So ignore that we're using an inclusive range within this
             ## call's scope.
-            undef ($range_incl->{$col} ? $range_incl->{$col} : $range->{$col});
+            undef(
+                $range_incl->{$col} ? $range_incl->{$col} : $range->{$col} );
         }
 
         ## Translate dates from app to database format.
-        if ($stmt->date_columns->{$col}) {
-            if (ref($val) eq 'HASH') {
+        if ( $stmt->date_columns->{$col} ) {
+            if ( ref($val) eq 'HASH' ) {
                 my $v = $val->{value};
-                if (ref($v) eq 'ARRAY') {
-                    $v->[$_] = ts2db($v->[$_]) for @$v;
+                if ( ref($v) eq 'ARRAY' ) {
+                    $v->[$_] = ts2db( $v->[$_] ) for @$v;
                 }
                 else {
                     $val->{value} = ts2db($v);
                 }
-            } elsif (!ref($val)) {
+            }
+            elsif ( !ref($val) ) {
                 $val = ts2db($val);
             }
         }
 
-        if ($stmt->not->{$col}) {
-            if ('ARRAY' eq ref($val)) {
-                if(my $transformed_column = $stmt->transform->{$col}) {
+        if ( $stmt->not->{$col} ) {
+            if ( 'ARRAY' eq ref($val) ) {
+                if ( my $transformed_column = $stmt->transform->{$col} ) {
                     $col = $transformed_column;
                 }
-                my $term = $col . ' NOT IN (' . join (',', ('?') x scalar @$val ) . ')';
-                return ($term, $val, $col);
+                my $term
+                    = $col
+                    . ' NOT IN ('
+                    . join( ',', ('?') x scalar @$val ) . ')';
+                return ( $term, $val, $col );
             }
-            elsif (ref $val) {
+            elsif ( ref $val ) {
                 die "Unsupported value in 'not' column";
             }
             else {
-                $val = { value => $val,
-                         op    => '!=', };
+                $val = {
+                    value => $val,
+                    op    => '!=',
+                };
             }
         }
 
-        if ($stmt->null->{$col}) {
+        if ( $stmt->null->{$col} ) {
             $val = \'is null';
         }
 
-        if ($stmt->not_null->{$col}) {
+        if ( $stmt->not_null->{$col} ) {
             $val = \'is not null';
         }
 
-        if ($stmt->like->{$col}) {
-            if (ref($val) eq 'HASH') {
+        if ( $stmt->like->{$col} ) {
+            if ( ref($val) eq 'HASH' ) {
                 $val->{op} = 'LIKE';
-            } elsif (!ref($val)) {
-                $val = { op    => 'LIKE',
-                         value => $val,   };
+            }
+            elsif ( !ref($val) ) {
+                $val = {
+                    op    => 'LIKE',
+                    value => $val,
+                };
             }
         }
     }
 
     ## Transformation modifies the column name, so it should be last.
-    if(my $transformed_column = $stmt->transform->{$col}) {
+    if ( my $transformed_column = $stmt->transform->{$col} ) {
         $col = $transformed_column;
     }
 
     ## Prevent D::OD from re-mutating, since we've done it here
     local $stmt->{column_mutator} = undef;
 
-    $stmt->SUPER::_mk_term($col, $val);
+    $stmt->SUPER::_mk_term( $col, $val );
 }
 
 sub make_subselect {
-    my $stmt = shift;
+    my $stmt  = shift;
     my $class = ref $stmt;
 
     my $subselect = $class->new();
     for my $field (qw( bind distinct )) {
-        $subselect->$field($stmt->$field());
+        $subselect->$field( $stmt->$field() );
     }
 
-    my @new_selects = map { s{ \A \w+\. }{}xms } @{ $stmt->select };
-    $subselect->select(\@new_selects);
+    my @new_selects = map {s{ \A \w+\. }{}xms} @{ $stmt->select };
+    $subselect->select( \@new_selects );
 
     my %new_select_map;
     my $sel_map = $stmt->select_map;
-    for my $select_field (keys %$sel_map) {
+    for my $select_field ( keys %$sel_map ) {
         my $new_select_field = $select_field;
         $new_select_field =~ s{ \A \w+\. }{}xms;
         $new_select_map{$new_select_field} = $sel_map->{$select_field};
@@ -335,9 +363,9 @@ sub field_decorator {
     my $stmt = shift;
     my ($class) = @_;
     return sub {
-        my($term) = @_;
+        my ($term) = @_;
         my $field_prefix = $class->datasource;
-        for my $col (@{ $class->column_names }) {
+        for my $col ( @{ $class->column_names } ) {
             $term =~ s/\b$col\b/${field_prefix}_$col/g;
         }
         return $term;
@@ -346,17 +374,18 @@ sub field_decorator {
 
 sub as_limit {
     my $stmt = shift;
-    my $n = $stmt->limit;
+    my $n    = $stmt->limit;
+
     # Support offset without limit
     my $o = $stmt->offset || 0;
     $n = 2147483647 if !$n && $o;
     return '' unless $n;
-    die "Non-numerics in limit/offset clause ($n, $o)" if ($n =~ /\D/) || ($o =~ /\D/);
-    return sprintf "LIMIT %d%s\n", $n,
-           ($o ? " OFFSET " . int($o) : "");
+    die "Non-numerics in limit/offset clause ($n, $o)"
+        if ( $n =~ /\D/ ) || ( $o =~ /\D/ );
+    return sprintf "LIMIT %d%s\n", $n, ( $o ? " OFFSET " . int($o) : "" );
 }
 
-sub add_freetext_where { 0 }
+sub add_freetext_where {0}
 
 1;
 __END__

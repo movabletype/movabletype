@@ -10,56 +10,62 @@ use strict;
 use base qw( MT::Entry );
 use MT::Util qw( archive_file_for );
 
-__PACKAGE__->install_properties({
-    class_type => 'page',
-    child_of => 'MT::Blog',
-    child_classes => ['MT::Comment','MT::Placement','MT::Trackback','MT::FileInfo'],
-});
+__PACKAGE__->install_properties(
+    {   class_type    => 'page',
+        child_of      => 'MT::Blog',
+        child_classes => [
+            'MT::Comment',   'MT::Placement',
+            'MT::Trackback', 'MT::FileInfo'
+        ],
+    }
+);
 
 # Callbacks: clean list of changed columns to only
 # include versioned columns
-MT->add_callback( 'api_pre_save.' . 'page', 1, undef, \&MT::Revisable::mt_presave_obj );
-MT->add_callback( 'cms_pre_save.' . 'page', 1, undef, \&MT::Revisable::mt_presave_obj );
+MT->add_callback( 'api_pre_save.' . 'page',
+    1, undef, \&MT::Revisable::mt_presave_obj );
+MT->add_callback( 'cms_pre_save.' . 'page',
+    1, undef, \&MT::Revisable::mt_presave_obj );
 
-# Callbacks: object-level callbacks could not be 
+# Callbacks: object-level callbacks could not be
 # prioritized and thus caused problems with plugins
-# registering a post_save and saving     
-MT->add_callback( 'api_post_save.' . 'page', 9, undef, \&MT::Revisable::mt_postsave_obj );
-MT->add_callback( 'cms_post_save.' . 'page', 9, undef, \&MT::Revisable::mt_postsave_obj );
+# registering a post_save and saving
+MT->add_callback( 'api_post_save.' . 'page',
+    9, undef, \&MT::Revisable::mt_postsave_obj );
+MT->add_callback( 'cms_post_save.' . 'page',
+    9, undef, \&MT::Revisable::mt_postsave_obj );
 
-__PACKAGE__->add_callback( 'post_remove', 0, MT->component('core'), \&MT::Revisable::mt_postremove_obj );
+__PACKAGE__->add_callback( 'post_remove', 0, MT->component('core'),
+    \&MT::Revisable::mt_postremove_obj );
 
 sub list_props {
     return {
-        id            => { base => 'entry.id',             order => 100, },
-        title         => { base => 'entry.title',          order => 200, },
-        author_name   => { base => 'entry.author_name',    order => 300, },
-        blog_name => {
-            base      => '__common.blog_name',
-            display   => 'default',
-            order     => 400,
+        id          => { base => 'entry.id',          order => 100, },
+        title       => { base => 'entry.title',       order => 200, },
+        author_name => { base => 'entry.author_name', order => 300, },
+        blog_name   => {
+            base    => '__common.blog_name',
+            display => 'default',
+            order   => 400,
         },
         folder_id => {
             base             => 'entry.category_id',
             label            => 'Folder',
             display          => 'default',
-            view_filter      => ['blog', 'website'],
+            view_filter      => [ 'blog', 'website' ],
             order            => 500,
             category_class   => 'folder',
             zero_state_label => '(root)',
-            label_via_param => sub {
-                my $prop = shift;
-                my ( $app ) = @_;
-                my $id = $app->param('filter_val');
-                my $cat = MT->model('category')->load($id);
-                return MT->translate(
-                    'Pages in folder: [_1]',
-                    $cat->label,
-                );
+            label_via_param  => sub {
+                my $prop  = shift;
+                my ($app) = @_;
+                my $id    = $app->param('filter_val');
+                my $cat   = MT->model('category')->load($id);
+                return MT->translate( 'Pages in folder: [_1]', $cat->label, );
             },
         },
-        created_on    => { base => 'entry.created_on',     order => 600, },
-        modified_on   => {
+        created_on  => { base => 'entry.created_on', order => 600, },
+        modified_on => {
             order   => 700,
             base    => 'entry.modified_on',
             display => 'default',
@@ -69,35 +75,36 @@ sub list_props {
             base    => 'entry.comment_count',
             order   => 800,
         },
-        ping_count    => { base => 'entry.ping_count',     order => 900, },
+        ping_count => { base => 'entry.ping_count', order => 900, },
 
-        text          => { base => 'entry.text' },
-        text_more     => { base => 'entry.text_more' },
-        excerpt => {
+        text      => { base => 'entry.text' },
+        text_more => { base => 'entry.text_more' },
+        excerpt   => {
             base    => 'entry.excerpt',
             display => 'none',
             label   => 'Excerpt',
         },
-        authored_on   => {
+        authored_on => {
             base    => 'entry.authored_on',
             display => 'optional',
         },
-        status        => {
-            base => 'entry.status',
+        status => {
+            base                  => 'entry.status',
             single_select_options => [
                 { label => 'Draft',     value => 1, },
                 { label => 'Published', value => 2, },
                 { label => 'Future',    value => 4, },
             ],
         },
-        basename      => { base => 'entry.basename' },
-        commented_on  => { base => 'entry.commented_on' },
-        tag           => {
+        basename     => { base => 'entry.basename' },
+        commented_on => { base => 'entry.commented_on' },
+        tag          => {
             base   => 'entry.tag',
             tag_ds => 'entry',
         },
-        current_user  => { base => 'entry.current_user', label => 'My Pages', },
-        author_status => { base => 'entry.author_status' },
+        current_user =>
+            { base => 'entry.current_user', label => 'My Pages', },
+        author_status   => { base => 'entry.author_status' },
         current_context => { base => '__common.current_context' },
     };
 }
@@ -106,32 +113,29 @@ sub system_filters {
     return {
         published => {
             label => 'Published Pages',
-            items => [
-                { type => 'status', args => { value => '2' }, },
-            ],
+            items => [ { type => 'status', args => { value => '2' }, }, ],
         },
         draft => {
             label => 'Unpublished Pages',
-            items => [
-                { type => 'status', args => { value => '1' }, },
-            ],
+            items => [ { type => 'status', args => { value => '1' }, }, ],
         },
         future => {
             label => 'Scheduled Pages',
-            items => [
-                { type => 'status', args => { value => '4' }, },
-            ],
+            items => [ { type => 'status', args => { value => '4' }, }, ],
         },
         my_posts_on_this_context => {
             label => 'My Pages',
             items => sub {
-                [ { type => 'current_user' }, { type => 'current_context' } ],
+                [ { type => 'current_user' }, { type => 'current_context' } ]
+                ,;
             },
         },
         commented_in_last_7_days => {
             label => 'Pages with comments in the last 7 days',
             items => [
-                { type => 'commented_on', args => { option => 'days', days => 7 } }
+                {   type => 'commented_on',
+                    args => { option => 'days', days => 7 }
+                }
             ],
         },
     };
@@ -159,17 +163,17 @@ sub folder {
 
 sub archive_file {
     my $page = shift;
-    my $blog = $page->blog() || return $page->error(MT->translate(
-                                                     "Load of blog failed: [_1]",
-                                                     MT::Blog->errstr));
-    return archive_file_for($page, $blog, 'Page');
+    my $blog = $page->blog()
+        || return $page->error(
+        MT->translate( "Load of blog failed: [_1]", MT::Blog->errstr ) );
+    return archive_file_for( $page, $blog, 'Page' );
 }
 
 sub archive_url {
     my $page = shift;
-    my $blog = $page->blog() || return $page->error(MT->translate(
-                                                     "Load of blog failed: [_1]",
-                                                     MT::Blog->errstr));
+    my $blog = $page->blog()
+        || return $page->error(
+        MT->translate( "Load of blog failed: [_1]", MT::Blog->errstr ) );
     my $url = $blog->site_url || "";
     $url .= '/' unless $url =~ m!/$!;
     return $url . $page->archive_file(@_);
@@ -182,7 +186,7 @@ sub permalink {
 
 sub all_permalinks {
     my $page = shift;
-    return ($page->permalink(@_));
+    return ( $page->permalink(@_) );
 }
 
 1;

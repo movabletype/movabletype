@@ -34,8 +34,7 @@ sub init_core_callbacks {
     my $app = shift;
 
     MT->_register_core_callbacks(
-        {
-            'ActivityFeed.system'  => \&_feed_system,
+        {   'ActivityFeed.system'  => \&_feed_system,
             'ActivityFeed.comment' => \&_feed_comment,
             'ActivityFeed.blog'    => \&_feed_blog,
             'ActivityFeed.ping'    => \&_feed_ping,
@@ -44,11 +43,11 @@ sub init_core_callbacks {
             'ActivityFeed.page'    => \&_feed_page,
 
             # Alias
-            'ActivityFeed.log'     => \&_feed_system,
+            'ActivityFeed.log' => \&_feed_system,
 
             # Filter
             'ActivityFeed.filter_object.entry'   => \&_filter_entry,
-            'ActivityFeed.filter_object.page'   => \&_filter_page,
+            'ActivityFeed.filter_object.page'    => \&_filter_page,
             'ActivityFeed.filter_object.comment' => \&_filter_comment,
             'ActivityFeed.filter_object.ping'    => \&_filter_ping,
         }
@@ -69,7 +68,10 @@ sub login {
         $app->translate( "Error loading [_1]: [_2]", $user_class, $@ ) )
         if $@;
     my $author = $user_class->load( { name => $username, type => AUTHOR } );
-    if ( $author && $author->is_active && ( ( $author->api_password || '' ) ne '' ) ) {
+    if (   $author
+        && $author->is_active
+        && ( ( $author->api_password || '' ) ne '' ) )
+    {
         my $auth_token
             = perl_sha1_digest_hex( 'feed:' . $author->api_password );
         if ( $token eq $auth_token ) {
@@ -160,7 +162,7 @@ sub mode_default {
                 $app->set_header( 'Last-Modified', $last_update )
                     if $last_update;
                 $app->send_http_header("application/atom+xml");
-                $app->print_encode( $feed );
+                $app->print_encode($feed);
             }
         }
         else {
@@ -212,7 +214,8 @@ sub process_log_feed {
     my $last_ts_blog;
     my %blogs;
     my $blog;
-    my $log_view_url = $app->base . $app->mt_uri( mode => 'list', args => { '_type' => 'log' } );
+    my $log_view_url = $app->base
+        . $app->mt_uri( mode => 'list', args => { '_type' => 'log' } );
 
     while ( my $log = $iter->() ) {
         if ( $log->blog_id ) {
@@ -228,10 +231,12 @@ sub process_log_feed {
         my $item = $log->to_hash;
 
         # Filtering
-        my $ret = MT->run_callbacks( "ActivityFeed.filter_object.".$log->class, $app, $item );
+        my $ret
+            = MT->run_callbacks( "ActivityFeed.filter_object." . $log->class,
+            $app, $item );
         next unless defined $ret && $ret;
 
-        my $ts   = $item->{'log.created_on'};
+        my $ts = $item->{'log.created_on'};
         last if $last_mod && ( $ts < $last_mod );
 
         if ( !defined($last_ts) or ( $ts gt $last_ts ) ) {
@@ -243,8 +248,9 @@ sub process_log_feed {
         $item->{'log.created_on_iso'} = $ts_iso;
         my $id = $item->{'log.id'};
         my $year = substr( $ts, 0, 4 );
-        $item->{'log.permalink'} = encode_xml($log_view_url . '&filter=id&filter_val=' . $id);
-        $item->{'log.atom_id'}   = qq{tag:$host,$year:$path/$id};
+        $item->{'log.permalink'}
+            = encode_xml( $log_view_url . '&filter=id&filter_val=' . $id );
+        $item->{'log.atom_id'} = qq{tag:$host,$year:$path/$id};
         $item->{'log.message'}
             = entity_translate( encode_html( $item->{'log.message'}, 1 ) );
         my $class = $log->class || 'system';
@@ -273,7 +279,10 @@ sub process_log_feed {
     $param->{loop_entries} = \@entries;
     my $str = qq();
     for my $key ( $app->param ) {
-        $str .= "&amp;" . encode_url($key) . "=" . encode_url($app->param($key));
+        $str
+            .= "&amp;"
+            . encode_url($key) . "="
+            . encode_url( $app->param($key) );
     }
     $str =~ s/^&amp;(.+)$/?$1/;
     $param->{feed_self} = $app->base . $app->app_path . $app->script . $str;
@@ -352,15 +361,15 @@ sub _feed_ping {
     my $blog_id = $app->param('blog_id');
     if ($blog_id) {
         my $blog_ids;
-        my $blog = MT->model('blog')->load( $blog_id )
+        my $blog = MT->model('blog')->load($blog_id)
             or return $cb->error( $app->translate("Invalid request.") );
         if ( !$blog->is_blog ) {
             push @$blog_ids, map { $_->id } @{ $blog->blogs };
         }
         push @$blog_ids, $blog_id;
 
-        my $iter= MT->model('permission')->load_iter(
-            { author_id => $user->id, blog_id => $blog_ids } );
+        my $iter = MT->model('permission')
+            ->load_iter( { author_id => $user->id, blog_id => $blog_ids } );
 
         $blog_ids = ();
         while ( my $p = $iter->() ) {
@@ -376,12 +385,13 @@ sub _feed_ping {
     else {
         if ( !$user->is_superuser ) {
 
-            # limit activity log view to only weblogs this user has permissions for
+       # limit activity log view to only weblogs this user has permissions for
             require MT::Permission;
             my @perms = MT::Permission->load( { author_id => $user->id } );
             return $cb->error( $app->translate("No permissions.") )
                 unless @perms;
-            my @blog_list = map { $_->blog_id } grep { $_->can_do('get_trackback_feed') } @perms;
+            my @blog_list = map { $_->blog_id }
+                grep { $_->can_do('get_trackback_feed') } @perms;
             push @blog_list, $_->blog_id foreach @perms;
             $blog_id = join ',', @blog_list;
         }
@@ -394,7 +404,7 @@ sub _feed_ping {
             '_type' => 'ping',
             ( $blog ? ( blog_id => $blog_id ) : () ),
         }
-    );
+        );
     my $param = {
         feed_link  => $link,
         feed_title => $blog
@@ -424,15 +434,15 @@ sub _feed_comment {
     my $blog_id = $app->param('blog_id');
     if ($blog_id) {
         my $blog_ids;
-        $blog = MT->model('blog')->load( $blog_id )
+        $blog = MT->model('blog')->load($blog_id)
             or return $cb->error( $app->translate("Invalid request.") );
         if ( !$blog->is_blog ) {
             push @$blog_ids, map { $_->id } @{ $blog->blogs };
         }
         push @$blog_ids, $blog_id;
 
-        my $iter= MT->model('permission')->load_iter(
-            { author_id => $user->id, blog_id => $blog_ids } );
+        my $iter = MT->model('permission')
+            ->load_iter( { author_id => $user->id, blog_id => $blog_ids } );
 
         $blog_ids = ();
         while ( my $p = $iter->() ) {
@@ -452,7 +462,8 @@ sub _feed_comment {
             my @perms = MT::Permission->load( { author_id => $user->id } );
             return $cb->error( $app->translate("No permissions.") )
                 unless @perms;
-            my @blog_list = map { $_->blog_id } grep { $_->can_do('get_comment_feed') } @perms;
+            my @blog_list = map { $_->blog_id }
+                grep { $_->can_do('get_comment_feed') } @perms;
             $blog_id = join ',', @blog_list;
         }
     }
@@ -464,7 +475,7 @@ sub _feed_comment {
             _type => 'comment',
             ( $blog ? ( blog_id => $blog_id ) : () )
         }
-    );
+        );
     my $param = {
         feed_link  => $link,
         feed_title => $blog
@@ -510,7 +521,8 @@ sub _feed_entry {
             my @perms = MT::Permission->load( { author_id => $user->id } );
             return $cb->error( $app->translate("No permissions.") )
                 unless @perms;
-            my @blog_list = map { $_->blog_id } grep { $_->can_do('get_entry_feed') } @perms;
+            my @blog_list = map { $_->blog_id }
+                grep { $_->can_do('get_entry_feed') } @perms;
             $blog_id = join ',', @blog_list;
         }
     }
@@ -522,7 +534,7 @@ sub _feed_entry {
             '_type' => 'entry',
             ( $blog ? ( blog_id => $blog_id ) : () )
         }
-    );
+        );
     my $param = {
         feed_link  => $link,
         feed_title => $blog
@@ -569,7 +581,8 @@ sub _feed_blog {
             my @perms = MT::Permission->load( { author_id => $user->id } );
             return $cb->error( $app->translate("No permissions.") )
                 unless @perms;
-            my @blog_list = map { $_->blog_id } grep { $_->can_do('get_blog_feed') } @perms;
+            my @blog_list = map { $_->blog_id }
+                grep { $_->can_do('get_blog_feed') } @perms;
             $blog_id = join ',', @blog_list;
         }
     }
@@ -613,15 +626,15 @@ sub _feed_system {
     # verify user has permission to view entries for given weblog
     if ($blog_id) {
         my $blog_ids;
-        my $blog = MT->model('blog')->load( $blog_id )
+        my $blog = MT->model('blog')->load($blog_id)
             or return $cb->error( $app->translate("Invalid request.") );
         if ( !$blog->is_blog ) {
             push @$blog_ids, map { $_->id } @{ $blog->blogs };
         }
         push @$blog_ids, $blog_id;
 
-        my $iter= MT->model('permission')->load_iter(
-            { author_id => $user->id, blog_id => $blog_ids } );
+        my $iter = MT->model('permission')
+            ->load_iter( { author_id => $user->id, blog_id => $blog_ids } );
 
         $blog_ids = ();
         while ( my $p = $iter->() ) {
@@ -636,7 +649,7 @@ sub _feed_system {
     }
     else {
         unless ( $app->can_do('get_all_system_feed') ) {
-            unless ( $user->can_do('export_blog_log', at_least_one => 1 ) ) {
+            unless ( $user->can_do( 'export_blog_log', at_least_one => 1 ) ) {
                 return $cb->error( $app->translate("No permissions.") );
             }
         }
@@ -650,13 +663,13 @@ sub _feed_system {
     $args->{filter}     = $filter;
     $args->{filter_val} = $filter_val;
 
-    if ( $blog_id ) {
-        $args->{blog_id}    = $blog_id;
-    } else {
+    if ($blog_id) {
+        $args->{blog_id} = $blog_id;
+    }
+    else {
         unless ( $app->can_do('get_all_system_feed') ) {
-            my $iter = MT->model('permission')->load_iter({
-                author_id => $user->id,
-            });
+            my $iter = MT->model('permission')
+                ->load_iter( { author_id => $user->id, } );
             my $blog_ids;
             while ( my $p = $iter->() ) {
                 push @$blog_ids, $p->blog_id
@@ -688,7 +701,7 @@ sub _feed_debug {
         '_type' => 'log',
     };
     my $terms = $app->apply_log_filter($args);
-    my $link = $app->base . $app->mt_uri( mode => 'list', args => $args );
+    my $link  = $app->base . $app->mt_uri( mode => 'list', args => $args );
     my $param = {
         feed_link  => $link,
         feed_title => $app->translate('Movable Type Debug Activity'),
@@ -708,15 +721,15 @@ sub _feed_page {
     my $blog_id = $app->param('blog_id');
     if ($blog_id) {
         my $blog_ids;
-        $blog = MT->model('blog')->load( $blog_id )
+        $blog = MT->model('blog')->load($blog_id)
             or return $cb->error( $app->translate("Invalid request.") );
         if ( !$blog->is_blog ) {
             push @$blog_ids, map { $_->id } @{ $blog->blogs };
         }
         push @$blog_ids, $blog_id;
 
-        my $iter= MT->model('permission')->load_iter(
-            { author_id => $user->id, blog_id => $blog_ids } );
+        my $iter = MT->model('permission')
+            ->load_iter( { author_id => $user->id, blog_id => $blog_ids } );
 
         $blog_ids = ();
         while ( my $p = $iter->() ) {
@@ -736,7 +749,8 @@ sub _feed_page {
             my @perms = MT::Permission->load( { author_id => $user->id } );
             return $cb->error( $app->translate("No permissions.") )
                 unless @perms;
-            my @blog_list = map { $_->blog_id } grep { $_->can_do('get_page_feed') } @perms;
+            my @blog_list = map { $_->blog_id }
+                grep { $_->can_do('get_page_feed') } @perms;
             $blog_id = join ',', @blog_list;
         }
     }
@@ -748,7 +762,7 @@ sub _feed_page {
             '_type' => 'page',
             ( $blog ? ( blog_id => $blog_id ) : () )
         }
-    );
+        );
     my $param = {
         feed_link  => $link,
         feed_title => $blog
@@ -772,26 +786,26 @@ sub _filter_entry {
 
     return 0 if !exists $item->{'log.entry.id'};
 
-    my $entry = MT->model('entry')->load($item->{'log.entry.id'})
+    my $entry = MT->model('entry')->load( $item->{'log.entry.id'} )
         or return 0;
 
-    my $own = $entry->author_id == $user->id;
+    my $own  = $entry->author_id == $user->id;
     my $perm = $user->permissions( $entry->blog_id )
         or return 0;
 
-    if ( !$app->can_do('get_all_system_feed') && !$perm->can_do('get_system_feed') ) {
+    if (   !$app->can_do('get_all_system_feed')
+        && !$perm->can_do('get_system_feed') )
+    {
         return 0
             if !$own && !$perm->can_do('edit_all_entries');
     }
 
-    $item->{'log.entry.can_edit'} =
-        $perm->can_edit_entry( $entry, $user, ( $entry->status eq MT::Entry::RELEASE() ? 1 : () ) ) ? 1 : 0;
-    $item->{'log.entry.can_change_status'} =
-        $perm->can_do('publish_all_entry')
-            ? 1
-            : $own && $perm->can_do('publish_own_entry')
-                ? 1
-                : 0;
+    $item->{'log.entry.can_edit'} = $perm->can_edit_entry( $entry, $user,
+        ( $entry->status eq MT::Entry::RELEASE() ? 1 : () ) ) ? 1 : 0;
+    $item->{'log.entry.can_change_status'}
+        = $perm->can_do('publish_all_entry') ? 1
+        : $own && $perm->can_do('publish_own_entry') ? 1
+        :                                              0;
 
     return 1;
 }
@@ -805,13 +819,16 @@ sub _filter_page {
     my $perm = $user->permissions( $item->{'log.entry.blog.id'} )
         or return 0;
 
-    if ( !$app->can_do('get_all_system_feed') && !$perm->can_do('get_system_feed') ) {
+    if (   !$app->can_do('get_all_system_feed')
+        && !$perm->can_do('get_system_feed') )
+    {
         return 0
             if !$perm->can_do('manage_pages');
     }
 
     $item->{'log.entry.can_edit'} = $perm->can_do('manage_pages') ? 1 : 0;
-    $item->{'log.entry.can_change_status'} = $perm->can_do('manage_pages') ? 1 : 0;
+    $item->{'log.entry.can_change_status'}
+        = $perm->can_do('manage_pages') ? 1 : 0;
 
     return 1;
 }
@@ -821,11 +838,13 @@ sub _filter_comment {
     my $user = $app->user;
 
     return 0 if !exists $item->{'log.comment.id'};
-    my $own = $item->{'log.comment.entry.author.id'} == $user->id;
+    my $own  = $item->{'log.comment.entry.author.id'} == $user->id;
     my $perm = $user->permissions( $item->{'log.comment.blog.id'} )
         or return 0;
 
-    if ( !$app->can_do('get_all_system_feed') && !$perm->can_do('get_system_feed') ) {
+    if (   !$app->can_do('get_all_system_feed')
+        && !$perm->can_do('get_system_feed') )
+    {
         if ( !$perm->can_do('view_all_comments') ) {
             return 0 if !$own;
             return 0 if $own && !$perm->can_do('view_own_entry_comment');
@@ -835,7 +854,8 @@ sub _filter_comment {
     $item->{'log.comment.can_edit'} = 1
         if $own && $perm->can_do('edit_own_entry_comment_without_status')
             || $perm->can_do('view_all_comments');
-    $item->{'log.comment.can_change_status'} = $perm->can_do('edit_comment_status') ? 1 :0;
+    $item->{'log.comment.can_change_status'}
+        = $perm->can_do('edit_comment_status') ? 1 : 0;
 
     return 1;
 }
@@ -845,11 +865,13 @@ sub _filter_ping {
     my $user = $app->user;
 
     return 0 if !exists $item->{'log.tbping.id'};
-    my $own = $item->{'log.tbping.entry.author.id'} == $user->id;
+    my $own  = $item->{'log.tbping.entry.author.id'} == $user->id;
     my $perm = $user->permissions( $item->{'log.tbping.blog.id'} )
         or return 0;
 
-    if ( !$app->can_do('get_all_system_feed') && !$perm->can_do('get_system_feed') ) {
+    if (   !$app->can_do('get_all_system_feed')
+        && !$perm->can_do('get_system_feed') )
+    {
         if ( !$perm->can_do('view_all_trackbacks') ) {
             return 0 if !$own;
             return 0 if $own && !$perm->can_do('view_own_entry_trackback');
@@ -859,7 +881,8 @@ sub _filter_ping {
     $item->{'log.tbping.can_edit'} = 1
         if $own && $perm->can_do('edit_own_entry_trackback_without_status')
             || $perm->can_do('view_all_trackback');
-    $item->{'log.tbping.can_change_status'} = $perm->can_do('edit_trackback_status') ? 1 :0;
+    $item->{'log.tbping.can_change_status'}
+        = $perm->can_do('edit_trackback_status') ? 1 : 0;
 
     return 1;
 }

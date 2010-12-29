@@ -10,18 +10,19 @@ use strict;
 
 sub upgrade_functions {
     return {
+
         # < 2.1
         'core_fix_placement_blog_ids' => {
             version_limit => 2.1,
-            priority => 9.2,
-            updater => {
-                type => 'placement',
-                label => 'Updating category placements...',
+            priority      => 9.2,
+            updater       => {
+                type      => 'placement',
+                label     => 'Updating category placements...',
                 condition => sub { !$_[0]->blog_id },
-                code => sub {
+                code      => sub {
                     require MT::Category;
-                    my $cat = MT::Category->load($_[0]->category_id);
-                    $_[0]->blog_id($cat->blog_id) if $cat;
+                    my $cat = MT::Category->load( $_[0]->category_id );
+                    $_[0]->blog_id( $cat->blog_id ) if $cat;
                 },
             },
         },
@@ -29,14 +30,16 @@ sub upgrade_functions {
         # < 3.0
         'core_set_blog_allow_comments' => {
             version_limit => 3.0,
-            priority => 9.3,
-            updater => {
-                type => 'blog',
-                label => 'Assigning comment/moderation settings...',
-                condition => sub { !(defined $_[0]->allow_unreg_comments ||
-                                     defined $_[0]->allow_reg_comments ||
-                                     defined $_[0]->manual_approve_comments ||
-                                     defined $_[0]->moderate_unreg_comments) },
+            priority      => 9.3,
+            updater       => {
+                type      => 'blog',
+                label     => 'Assigning comment/moderation settings...',
+                condition => sub {
+                    !(     defined $_[0]->allow_unreg_comments
+                        || defined $_[0]->allow_reg_comments
+                        || defined $_[0]->manual_approve_comments
+                        || defined $_[0]->moderate_unreg_comments );
+                },
                 code => sub {
                     $_[0]->allow_unreg_comments(1)
                         unless defined $_[0]->allow_unreg_comments;

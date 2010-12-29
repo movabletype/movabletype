@@ -43,13 +43,13 @@ sub init {
 sub core_import_formats {
     return {
         'import_mt' => {
-            label => 'Movable Type',
-            type => 'MT::ImportExport',
+            label   => 'Movable Type',
+            type    => 'MT::ImportExport',
             handler => 'MT::ImportExport::import_contents',
         },
         'import_mt_format' => {
-            label => 'Another system (Movable Type format)',
-            type => 'MT::ImportExport',
+            label   => 'Another system (Movable Type format)',
+            type    => 'MT::ImportExport',
             handler => 'MT::ImportExport::import_contents',
             options => [ 'title_start', 'title_end', 'default_status' ],
             options_template => 'import_others.tmpl',
@@ -59,63 +59,86 @@ sub core_import_formats {
 
 sub _get_stream_iterator {
     my $class = shift;
-    my ($stream, $cb) = @_;
+    my ( $stream, $cb ) = @_;
     my $iter;
-    if (ref($stream) eq 'Fh') {
-        seek($stream, 0, 0) or return $class->error(MT->translate("Can't rewind"));
+    if ( ref($stream) eq 'Fh' ) {
+        seek( $stream, 0, 0 )
+            or return $class->error( MT->translate("Can't rewind") );
         $iter = sub {
             my $str = $stream;
             my $eof = eof($stream);
             return $eof ? undef : $str;
         };
-    } elsif (ref($stream) eq 'SCALAR') {
+    }
+    elsif ( ref($stream) eq 'SCALAR' ) {
         require IO::String;
         $stream = IO::String->new($$stream);
+        $iter   = sub {
+            my $str = $stream;
+            $stream = undef;
+            $str;
+        };
+    }
+    elsif ( ref $stream ) {
+        seek( $stream, 0, 0 )
+            or return $class->error( MT->translate("Can't rewind") );
         $iter = sub {
             my $str = $stream;
             $stream = undef;
             $str;
         };
-    } elsif (ref $stream) {
-        seek($stream, 0, 0) or return $class->error(MT->translate("Can't rewind"));
-        $iter = sub {
-            my $str = $stream;
-            $stream = undef;
-            $str;
-        };
-    } else {
-        if (-f $stream) {
+    }
+    else {
+        if ( -f $stream ) {
             my $fh = gensym();
-            open $fh, $stream or return $class->error(MT->translate("Can't open '[_1]': [_2]", $stream, $!));
+            open $fh, $stream
+                or return $class->error(
+                MT->translate( "Can't open '[_1]': [_2]", $stream, $! ) );
             $stream = $fh;
-            $iter = sub {
+            $iter   = sub {
                 my $str = $stream;
                 $stream = undef;
                 $str;
             };
-        } elsif (-d $stream) {
+        }
+        elsif ( -d $stream ) {
             my @files_to_import;
             my $dir = $stream;
             $stream = undef;
-            opendir DH, $dir or return $class->error(MT->translate(
-                "Can't open directory '[_1]': [_2]", $dir, "$!"));
-            for my $f (readdir DH) {
+            opendir DH, $dir
+                or return $class->error(
+                MT->translate(
+                    "Can't open directory '[_1]': [_2]",
+                    $dir, "$!"
+                )
+                );
+            for my $f ( readdir DH ) {
                 next if $f =~ /^\./;
-                my $file = File::Spec->catfile($dir, $f);
+                my $file = File::Spec->catfile( $dir, $f );
                 push @files_to_import, $file if -r $file;
             }
             closedir DH;
             unless (@files_to_import) {
-                return $class->error(MT->translate("No readable files could be found in your import directory [_1].", $dir));
+                return $class->error(
+                    MT->translate(
+                        "No readable files could be found in your import directory [_1].",
+                        $dir
+                    )
+                );
             }
             $iter = sub {
                 close $stream if $stream;
                 return undef unless @files_to_import;
                 my $file = shift @files_to_import;
-                my $fh = gensym();
-                $cb->(MT->translate("Importing entries from file '[_1]'", $file) ."\n");
+                my $fh   = gensym();
+                $cb->(
+                    MT->translate( "Importing entries from file '[_1]'",
+                        $file )
+                        . "\n"
+                );
                 open $fh, "<$file"
-                    or return $class->error(MT->translate("Can't open '[_1]': [_2]", $file, $!));
+                    or return $class->error(
+                    MT->translate( "Can't open '[_1]': [_2]", $file, $! ) );
                 $stream = $fh;
             };
         }
@@ -123,26 +146,30 @@ sub _get_stream_iterator {
     $iter;
 }
 
-
 sub import_contents {
-    my $self = shift;
-    my %param = @_;
-    my $stream = delete $param{Stream};
-    my $iter = $self->_get_stream_iterator($stream, $param{Callback});
-    my $importer = $self->importer($param{Key});
+    my $self     = shift;
+    my %param    = @_;
+    my $stream   = delete $param{Stream};
+    my $iter     = $self->_get_stream_iterator( $stream, $param{Callback} );
+    my $importer = $self->importer( $param{Key} );
     $param{Iter} = $iter;
     my $code = $importer->{code} || $importer->{handler};
-    unless (ref $code eq 'CODE') {
+    unless ( ref $code eq 'CODE' ) {
         $code = $importer->{code} = MT->handler_to_coderef($code);
     }
     if ($code) {
-        my $result = eval {
-            $importer->{code}->($importer->{type}, %param);
-        };
+        my $result
+            = eval { $importer->{code}->( $importer->{type}, %param ); };
         print "Error: $@" if $@;
         return $result;
-    } else {
-        return $self->error(MT->translate("Couldn't resolve import format [_1]", $param{Key}));
+    }
+    else {
+        return $self->error(
+            MT->translate(
+                "Couldn't resolve import format [_1]",
+                $param{Key}
+            )
+        );
     }
 }
 
@@ -151,15 +178,17 @@ sub _get_options_tmpl {
     my ($key) = @_;
 
     my $importer = $self->importer($key);
-    my $tmpl = $importer->{options_template};
+    my $tmpl     = $importer->{options_template};
     return q() unless $tmpl;
     return $tmpl->($importer) if ref $tmpl eq 'CODE';
-    if ($tmpl =~ /\s/) {
+    if ( $tmpl =~ /\s/ ) {
         return $tmpl;
-    } else { # no spaces in $tmpl; must be a filename...
-        if (my $c = $importer->{plugin}) {
+    }
+    else {    # no spaces in $tmpl; must be a filename...
+        if ( my $c = $importer->{plugin} ) {
             return $c->load_tmpl($tmpl) or die $c->errstr;
-        } else {
+        }
+        else {
             return MT->instance->load_tmpl($tmpl);
         }
     }
@@ -167,12 +196,12 @@ sub _get_options_tmpl {
 
 sub get_options_html {
     my $self = shift;
-    my ($key, $blog_id) = @_;
+    my ( $key, $blog_id ) = @_;
     return q() unless $blog_id;
     my $importer = $self->importer($key);
 
     my $blog_class = MT->model('blog');
-    my $blog = $blog_class->load($blog_id)
+    my $blog       = $blog_class->load($blog_id)
         or return q();
 
     my $snip_tmpl = $self->_get_options_tmpl($key);
@@ -180,18 +209,19 @@ sub get_options_html {
 
     require MT::Template;
     my $tmpl;
-    if (ref $snip_tmpl ne 'MT::Template') {
+    if ( ref $snip_tmpl ne 'MT::Template' ) {
         $tmpl = MT::Template->new(
-            type => 'scalarref',
+            type   => 'scalarref',
             source => ref $snip_tmpl ? $snip_tmpl : \$snip_tmpl,
         );
-    } else {
+    }
+    else {
         $tmpl = $snip_tmpl;
     }
 
-    if (my $options_param = $importer->{options_param}) {
-        if (ref($options_param) ne 'CODE') {
-            if (my $c = $importer->{plugin}) {
+    if ( my $options_param = $importer->{options_param} ) {
+        if ( ref($options_param) ne 'CODE' ) {
+            if ( my $c = $importer->{plugin} ) {
                 $options_param = MT->handler_to_coderef($options_param);
             }
         }
@@ -199,17 +229,20 @@ sub get_options_html {
             if ref $options_param eq 'CODE';
 
         $param->{blog_id} = $blog_id;
-        $param->{missing_paths} =
-          (      ( defined $blog->site_path || defined $blog->archive_path )
-              && ( -d $blog->site_path || -d $blog->archive_path ) ) ? 0 : 1;
+        $param->{missing_paths}
+            = (    ( defined $blog->site_path || defined $blog->archive_path )
+                && ( -d $blog->site_path || -d $blog->archive_path ) )
+            ? 0
+            : 1;
 
         $tmpl->param($param) if $param;
     }
     my $html = $tmpl->output();
-    if ($html =~ m/<(_|MT)_TRANS /i) {
-        if (my $c = $importer->{plugin}) {
+    if ( $html =~ m/<(_|MT)_TRANS /i ) {
+        if ( my $c = $importer->{plugin} ) {
             $html = $c->translate_templatized($html);
-        } else {
+        }
+        else {
             $html = MT->translate_templatized($html);
         }
     }

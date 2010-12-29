@@ -140,4 +140,3 @@ Adds the specified string as a file.
 =head2 add_tree( '/path/to/directory' )
 
 Adds all files incleded in the specified directory into the archive file.
-

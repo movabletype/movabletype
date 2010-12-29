@@ -48,7 +48,8 @@ sub process_log_files {
     $start_ts = $start_ts->epoch;
     $end_ts   = $end_ts->epoch;
 
-    my $log_files = $proc->find_log_files_covering_range( $start_ts, $end_ts );
+    my $log_files
+        = $proc->find_log_files_covering_range( $start_ts, $end_ts );
 
     my $record_count = 0;
     my $sample       = $proc->{sample};
@@ -72,7 +73,7 @@ sub process_log_files {
         if ( $log_file =~ /\.gz$/ ) {
             $proc->debug("Processing gzipped file $log_file");
             my $fh = gzopen( $log_file, "rb" )
-              or croak "Couldn't open $log_file: $!";
+                or croak "Couldn't open $log_file: $!";
             while ( $fh->gzreadline( my ($line) ) ) {
                 last unless $process_line->( \$line );
             }
@@ -97,12 +98,12 @@ sub _parse_date {
     if ( $date =~ /^\d{14}$/ ) {
         ( $y, $mo, $d, $h, $m, $s ) = unpack 'A4A2A2A2A2A2', $date;
     }
-    elsif ( $date =~
-/^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})?)?)?)?/
-      )
+    elsif ( $date
+        =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})?)?)?)?/
+        )
     {
-        ( $y, $mo, $d, $h, $m, $s, $tz ) =
-          ( $1, $2 || 1, $3 || 1, $4 || 0, $5 || 0, $6 || 0, $7 );
+        ( $y, $mo, $d, $h, $m, $s, $tz )
+            = ( $1, $2 || 1, $3 || 1, $4 || 0, $5 || 0, $6 || 0, $7 );
     }
     else {
         Carp::croak('Invalid date');
@@ -121,10 +122,10 @@ sub _parse_date {
 
     ## In case TZ flag in the string and user's timezone is different
     if ( defined $tz ) {
-        my $secs = $tz eq 'Z' ? 0 : DateTime::TimeZone::offset_as_seconds($tz);
-        my $offset =
-          DateTime::TimeZone->new( name => $default_tz || 'UTC' )
-          ->offset_for_datetime($dt);
+        my $secs
+            = $tz eq 'Z' ? 0 : DateTime::TimeZone::offset_as_seconds($tz);
+        my $offset = DateTime::TimeZone->new( name => $default_tz || 'UTC' )
+            ->offset_for_datetime($dt);
         $dt->subtract( seconds => $secs - $offset );
     }
     return $dt;
@@ -191,7 +192,7 @@ sub find_log_files_covering_range {
             my $get_line;
             if ($is_gz) {
                 my $fh = gzopen( $file, "rb" )
-                  or croak "Couldn't open $file: $!";
+                    or croak "Couldn't open $file: $!";
                 $get_line = sub {
                     my $line;
                     $fh->gzreadline($line);
@@ -210,15 +211,15 @@ sub find_log_files_covering_range {
                 $rec = _parse_single_record( \$line );
             }
             push @start_times,
-              {
+                {
                 start_ts => $rec->{ts},
                 filename => $file->stringify,
-              };
+                };
         }
     }
 
     @start_times = sort { $a->{start_ts} <=> $b->{start_ts} }
-      grep { defined $_ } @start_times;
+        grep { defined $_ } @start_times;
 
     my @found_files;
     for my $i ( 0 .. $#start_times ) {
@@ -234,14 +235,14 @@ sub find_log_files_covering_range {
             }
         }
     }
-    $proc->debug( "Files in our date range are : " . Dumper( \@found_files ) );
+    $proc->debug(
+        "Files in our date range are : " . Dumper( \@found_files ) );
     return \@found_files;
 }
 
 sub _parse_single_record {
     my ($line_ref) = @_;
-    if (
-        $$line_ref =~ /
+    if ($$line_ref =~ /
         ^\[(?:\w{3})\s(\w{3})\s+
         (\d{1,2})\s
         (\d{2}):(\d{2}):(\d{2})\s(\d{4})\]\s
@@ -249,18 +250,19 @@ sub _parse_single_record {
         pt-times:\spid=(?:\d+),\suri=([^,]+),\s
         (.*)$
     /x
-      )
+        )
     {
-        my ( $mon, $mday, $h, $m, $s, $year, $server, $uri, $times ) =
-          ( $1, $2, $3, $4, $5, $6, $7, $8, $9 );
+        my ( $mon, $mday, $h, $m, $s, $year, $server, $uri, $times )
+            = ( $1, $2, $3, $4, $5, $6, $7, $8, $9 );
         my $domain = '';
         $mon = $months{$mon};
         my $rec = {
             url    => $uri,
             domain => $domain,
             server => $server,
-            ts =>
-              Time::Local::timelocal_nocheck( $s, $m, $h, $mday, $mon, $year ),
+            ts     => Time::Local::timelocal_nocheck(
+                $s, $m, $h, $mday, $mon, $year
+            ),
             mday   => int $mday,
             month  => $mon + 1,
             year   => $year,

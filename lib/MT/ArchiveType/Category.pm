@@ -25,13 +25,11 @@ sub dynamic_template {
 
 sub default_archive_templates {
     return [
-        {
-            label => MT->translate('category/sub-category/index.html'),
+        {   label    => MT->translate('category/sub-category/index.html'),
             template => '%-c/%i',
             default  => 1
         },
-        {
-            label => MT->translate('category/sub_category/index.html'),
+        {   label    => MT->translate('category/sub_category/index.html'),
             template => '%c/%i'
         }
     ];
@@ -96,20 +94,22 @@ sub archive_group_iter {
     require MT::Entry;
 
     # issue a single count_group_by for all categories
-    my $cnt_iter = MT::Placement->count_group_by({
-        blog_id => $blog_id,
-    }, {
-        group => [ 'category_id' ],
-        join => MT::Entry->join_on('id', { status => MT::Entry::RELEASE() }),
-    });
+    my $cnt_iter = MT::Placement->count_group_by(
+        { blog_id => $blog_id, },
+        {   group => ['category_id'],
+            join  => MT::Entry->join_on(
+                'id', { status => MT::Entry::RELEASE() }
+            ),
+        }
+    );
     my %counts;
-    while (my ($count, $cat_id) = $cnt_iter->()) {
+    while ( my ( $count, $cat_id ) = $cnt_iter->() ) {
         $counts{$cat_id} = $count;
     }
 
     return sub {
         while ( my $c = $iter->() ) {
-            my $count = $counts{$c->id};
+            my $count = $counts{ $c->id };
             next unless $count || $args->{show_empty};
             return ( $count, category => $c );
         }
@@ -121,7 +121,7 @@ sub archive_group_entries {
     my $obj = shift;
     my ( $ctx, %param ) = @_;
     my $limit = $param{limit};
-    if ( $limit && ($limit eq 'auto') ) {
+    if ( $limit && ( $limit eq 'auto' ) ) {
         my $blog = $ctx->stash('blog');
         $limit = $blog->entries_on_index if $blog;
     }
@@ -129,8 +129,7 @@ sub archive_group_entries {
     require MT::Entry;
     my @entries = MT::Entry->load(
         { status => MT::Entry::RELEASE() },
-        {
-            join => [
+        {   join => [
                 'MT::Placement', 'entry_id',
                 { category_id => $c->id }, { unique => 1 }
             ],
@@ -149,8 +148,7 @@ sub archive_entries_count {
     $cat = $entry->category unless $cat;
     return 0 unless $cat;
     return $obj->SUPER::archive_entries_count(
-        {
-            Blog        => $blog,
+        {   Blog        => $blog,
             ArchiveType => $at,
             Category    => $cat
         }

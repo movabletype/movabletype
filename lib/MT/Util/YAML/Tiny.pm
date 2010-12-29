@@ -21,8 +21,9 @@ sub Dump {
 
 sub Load {
     my ($yaml) = @_;
-    my ($y) = YAML::Tiny::Load($yaml);
+    my ($y)    = YAML::Tiny::Load($yaml);
     if ( ref($y) eq 'ARRAY' ) {
+
         # skip over non-hash elements
         shift @$y while @$y && ( ref( $y->[0] ) ne 'HASH' );
         return $y->[0] if @$y;
@@ -38,11 +39,9 @@ sub LoadFile {
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
     if ( !$fmgr->exists($file) ) {
-        return MT->error(
-            MT->translate('File not found: [_1]', $file)
-        );
+        return MT->error( MT->translate( 'File not found: [_1]', $file ) );
     }
-    my $yaml = $fmgr->get_data($file, 'output');
+    my $yaml = $fmgr->get_data( $file, 'output' );
     return MT::Util::YAML::Tiny::Load($yaml);
 }
 

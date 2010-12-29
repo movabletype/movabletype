@@ -14,7 +14,8 @@ sub new {
     my $class = shift;
     $class .= "::" . MT->config->ImageDriver;
     eval "require $class"
-        or return $class->error( MT->translate("Invalid Image Driver [_1]", $class) );
+        or return $class->error(
+        MT->translate( "Invalid Image Driver [_1]", $class ) );
     my $image = bless {}, $class;
     $image->load_driver
         or return $class->error( $image->errstr );
@@ -28,49 +29,51 @@ sub new {
 sub get_dimensions {
     my $image = shift;
     my %param = @_;
-    my($w, $h) = ($image->{width}, $image->{height});
-    if (my $pct = $param{Scale}) {
-        ($w, $h) = (int($w * $pct / 100), int($h * $pct / 100));
+    my ( $w, $h ) = ( $image->{width}, $image->{height} );
+    if ( my $pct = $param{Scale} ) {
+        ( $w, $h ) = ( int( $w * $pct / 100 ), int( $h * $pct / 100 ) );
         $w = 1 if $w < 1;
         $h = 1 if $h < 1;
-    } else {
-        if ($param{Width} && $param{Height}) {
-            ($w, $h) = ($param{Width}, $param{Height});
-        } else {
-            my $x = $param{Width} || $w;
+    }
+    else {
+        if ( $param{Width} && $param{Height} ) {
+            ( $w, $h ) = ( $param{Width}, $param{Height} );
+        }
+        else {
+            my $x = $param{Width}  || $w;
             my $y = $param{Height} || $h;
             my $w_pct = $x / $w;
             my $h_pct = $y / $h;
-            my $pct = $param{Width} ? $w_pct : $h_pct;
-            ($w, $h) = (int($w * $pct), int($h * $pct));
+            my $pct   = $param{Width} ? $w_pct : $h_pct;
+            ( $w, $h ) = ( int( $w * $pct ), int( $h * $pct ) );
         }
     }
-    ($w, $h);
+    ( $w, $h );
 }
 
 sub inscribe_square {
-    my $class = shift;
+    my $class  = shift;
     my %params = @_;
-    my ($w, $h) = @params{qw( Width Height )};
+    my ( $w, $h ) = @params{qw( Width Height )};
 
-    my ($dim, $x, $y);
+    my ( $dim, $x, $y );
 
-    if ($w > $h) {
+    if ( $w > $h ) {
         $dim = $h;
-        $x = int(($w - $dim) / 2);
-        $y = 0;
+        $x   = int( ( $w - $dim ) / 2 );
+        $y   = 0;
     }
     else {
         $dim = $w;
-        $x = 0;
-        $y = int(($h - $dim) / 2);
+        $x   = 0;
+        $y   = int( ( $h - $dim ) / 2 );
     }
 
-    return ( Size => $dim, X => $x, Y => $y ); 
+    return ( Size => $dim, X => $x, Y => $y );
 }
 
 sub make_square {
-    my $image = shift;
+    my $image  = shift;
     my %square = $image->inscribe_square(
         Width  => $image->{width},
         Height => $image->{height},
@@ -79,29 +82,31 @@ sub make_square {
 }
 
 sub is_valid_image {
-    my ( $fh ) = @_;
+    my ($fh) = @_;
     return unless $fh;
 
     ## Read first 1k of image file
     my $data = '';
     binmode($fh);
-    seek($fh, 0, 0);
+    seek( $fh, 0, 0 );
     read $fh, $data, 1024;
-    seek($fh, 0, 0);
+    seek( $fh, 0, 0 );
 
-    return 0 if
-        ( $data =~ m/^\s*<[!?]/ ) ||
-        ( $data =~ m/<(HTML|SCRIPT|TITLE|BODY|HEAD|PLAINTEXT|TABLE|IMG |PRE|A )/i ) ||
-        ( $data =~ m/text\/html/i ) ||
-        ( $data =~ m/^\s*<(FRAMESET|IFRAME|LINK|BASE|STYLE|DIV|FONT|APPLET)/i ) ||
-        ( $data =~ m/^\s*<(APPLET|META|CENTER|FORM|ISINDEX|H[123456]|BR)/i )
-        ;
+    return 0
+        if ( $data =~ m/^\s*<[!?]/ )
+        || ( $data
+        =~ m/<(HTML|SCRIPT|TITLE|BODY|HEAD|PLAINTEXT|TABLE|IMG |PRE|A )/i )
+        || ( $data =~ m/text\/html/i )
+        || (
+        $data =~ m/^\s*<(FRAMESET|IFRAME|LINK|BASE|STYLE|DIV|FONT|APPLET)/i )
+        || (
+        $data =~ m/^\s*<(APPLET|META|CENTER|FORM|ISINDEX|H[123456]|BR)/i );
 
     return 1;
 }
 
 sub check_upload {
-    my $class = shift;
+    my $class  = shift;
     my %params = @_;
 
     my $fh = $params{Fh};
@@ -113,8 +118,8 @@ sub check_upload {
     eval { require Image::Size; };
     return $class->error(
         MT->translate(
-                "Perl module Image::Size is required to determine "
-              . "width and height of uploaded images."
+                  "Perl module Image::Size is required to determine "
+                . "width and height of uploaded images."
         )
     ) if $@;
     my ( $w, $h, $id ) = Image::Size::imgsize($fh);
@@ -125,17 +130,17 @@ sub check_upload {
 
     ## Check file size?
     my $file_size;
-    if ($params{Max}) {
+    if ( $params{Max} ) {
         ## Seek to the end of the handle to find the size.
-        seek $fh, 0, 2;  # wind to end
+        seek $fh, 0, 2;    # wind to end
         $file_size = tell $fh;
         seek $fh, 0, 0;
     }
 
     ## Check file content
     my $filepath = $params{Local};
-    my ( $filename, $path, $ext ) =
-      ( File::Basename::fileparse( $filepath, qr/[A-Za-z0-9]+$/ ) );
+    my ( $filename, $path, $ext )
+        = ( File::Basename::fileparse( $filepath, qr/[A-Za-z0-9]+$/ ) );
 
     # Check for Content Sniffing bug (IE)
     require MT::Asset::Image;
@@ -149,35 +154,44 @@ sub check_upload {
     }
 
     ## If the image exceeds the dimension limit, resize it before writing.
-    if (my $max_dim = $params{MaxDim}) {
-        if (defined($w) && defined($h) && ($w > $max_dim || $h > $max_dim)) {
+    if ( my $max_dim = $params{MaxDim} ) {
+        if (   defined($w)
+            && defined($h)
+            && ( $w > $max_dim || $h > $max_dim ) )
+        {
             my $uploaded_data = eval { local $/; <$fh> };
             my $img = $class->new( Data => $uploaded_data )
-                or return $class->error($class->errstr);
+                or return $class->error( $class->errstr );
 
-            if ($params{Square}) {
-                (undef, $w, $h) = $img->make_square()
-                    or return $class->error($img->errstr);
+            if ( $params{Square} ) {
+                ( undef, $w, $h ) = $img->make_square()
+                    or return $class->error( $img->errstr );
             }
-            (my($resized_data), $w, $h) = $img->scale(
-                (($w > $h) ? 'Width' : 'Height') => $max_dim )
-                    or return $class->error($img->errstr);
+            ( my ($resized_data), $w, $h )
+                = $img->scale(
+                ( ( $w > $h ) ? 'Width' : 'Height' ) => $max_dim )
+                or return $class->error( $img->errstr );
 
             $write_file = sub {
-                $params{Fmgr}->put_data( $resized_data, $params{Local}, 'upload' )
+                $params{Fmgr}
+                    ->put_data( $resized_data, $params{Local}, 'upload' );
             };
             $file_size = length $resized_data;
         }
     }
 
-    if (my $max_size = $params{Max}) {
-        if ($max_size < $file_size) {
-            return $class->error(MT->translate( "File size exceeds maximum allowed: [_1] > [_2]",
-                    $file_size, $max_size ) );
+    if ( my $max_size = $params{Max} ) {
+        if ( $max_size < $file_size ) {
+            return $class->error(
+                MT->translate(
+                    "File size exceeds maximum allowed: [_1] > [_2]",
+                    $file_size, $max_size
+                )
+            );
         }
     }
 
-    ($w, $h, $id, $write_file);
+    ( $w, $h, $id, $write_file );
 }
 
 1;

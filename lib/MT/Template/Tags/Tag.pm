@@ -13,82 +13,105 @@ use MT::Request;
 use MT::Promise qw( delay );
 
 sub _tags_for_blog {
-    my ($ctx, $terms, $args, $type) = @_;
+    my ( $ctx, $terms, $args, $type ) = @_;
     my $r = MT::Request->instance;
-    my $tag_cache = $r->stash('blog_tag_cache:' . $type) || {};
+    my $tag_cache = $r->stash( 'blog_tag_cache:' . $type ) || {};
     my @tags;
     my $cache_id;
     my $all_count;
     my $class = MT->model($type);
 
-    if (ref $terms->{blog_id} eq 'ARRAY') {
-        $cache_id = join ',', @{$terms->{blog_id}};
+    if ( ref $terms->{blog_id} eq 'ARRAY' ) {
+        $cache_id = join ',', @{ $terms->{blog_id} };
         $cache_id = '!' . $cache_id if $args->{not}{blog_id};
-    } else {
+    }
+    else {
         $cache_id = $terms->{blog_id} || 'all';
     }
-    if (!$tag_cache->{$cache_id}{tags}) {
+    if ( !$tag_cache->{$cache_id}{tags} ) {
         require MT::Tag;
-        @tags = MT::Tag->load_by_datasource($class->datasource, { is_private => 0, %$terms }, { %$args });
+        @tags = MT::Tag->load_by_datasource( $class->datasource,
+            { is_private => 0, %$terms }, {%$args} );
         $tag_cache->{$cache_id} = { tags => \@tags };
-        $r->stash('blog_tag_cache:' . $type, $tag_cache);
-    } else {
+        $r->stash( 'blog_tag_cache:' . $type, $tag_cache );
+    }
+    else {
         @tags = @{ $tag_cache->{$cache_id}{tags} };
     }
 
-    if (!exists $tag_cache->{$cache_id}{min}) {
+    if ( !exists $tag_cache->{$cache_id}{min} ) {
         require MT::Entry;
         my $min = 0;
         my $max = 0;
         foreach my $tag (@tags) {
+
             #clear cached count
             $tag->{__entry_count} = 0 if exists $tag->{__entry_count};
         }
         my %tags = map { $_->id => $_ } @tags;
-        my $count_iter = $class->count_group_by({
-            'asset' eq lc $type ? () :
-                (status => MT::Entry::RELEASE()),
-            %$terms,
-            },{
-            group => ['objecttag_tag_id'],
-            'join' => MT::ObjectTag->join_on('object_id', { object_datasource => $class->datasource, %$terms }, $args),
-            'asset' eq lc $type ? (no_class => 1) : (),
-            %$args
-        });            
-        while (my ($count, $tag_id) = $count_iter->()) {
+        my $count_iter = $class->count_group_by(
+            {   'asset' eq lc $type
+                ? ()
+                : ( status => MT::Entry::RELEASE() ),
+                %$terms,
+            },
+            {   group  => ['objecttag_tag_id'],
+                'join' => MT::ObjectTag->join_on(
+                    'object_id',
+                    { object_datasource => $class->datasource, %$terms },
+                    $args
+                ),
+                'asset' eq lc $type ? ( no_class => 1 ) : (),
+                %$args
+            }
+        );
+        while ( my ( $count, $tag_id ) = $count_iter->() ) {
             $tags{$tag_id}->{__entry_count} = $count;
-            $min = $count if ($count && ($count < $min)) || $min == 0;
-            $max = $count if $count && ($count > $max);
+            $min = $count if ( $count && ( $count < $min ) ) || $min == 0;
+            $max = $count if $count && ( $count > $max );
             $all_count += $count;
         }
-        $tag_cache->{$cache_id}{min} = $min;
-        $tag_cache->{$cache_id}{max} = $max;
+        $tag_cache->{$cache_id}{min}       = $min;
+        $tag_cache->{$cache_id}{max}       = $max;
         $tag_cache->{$cache_id}{all_count} = $all_count;
-        $tag_cache->{$cache_id}{tags} = [] unless $min;
+        $tag_cache->{$cache_id}{tags}      = [] unless $min;
     }
-    ($tag_cache->{$cache_id}{tags}, $tag_cache->{$cache_id}{min}, $tag_cache->{$cache_id}{max}), $tag_cache->{$cache_id}{all_count};
+    (   $tag_cache->{$cache_id}{tags},
+        $tag_cache->{$cache_id}{min},
+        $tag_cache->{$cache_id}{max}
+        ),
+        $tag_cache->{$cache_id}{all_count};
 }
 
 sub _tag_sort {
-    my ($tags, $column, $order) = @_;
+    my ( $tags, $column, $order ) = @_;
     $column ||= 'name';
-    $order ||= ($column eq 'name' ? 'ascend' : 'descend');
+    $order ||= ( $column eq 'name' ? 'ascend' : 'descend' );
     no warnings;
-    if ($column eq 'rank' or $column eq 'count') {
-        @$tags = grep { $_->{__entry_count} }
+    if ( $column eq 'rank' or $column eq 'count' ) {
+        @$tags
+            = grep { $_->{__entry_count} }
             lc $order eq 'ascend'
-                ? sort { $a->{__entry_count} <=> $b->{__entry_count} } @$tags
-                : sort { $b->{__entry_count} <=> $a->{__entry_count} } @$tags;
-    } elsif ($column eq 'id') {
-        @$tags = grep { $_->{__entry_count} }
-            lc $order eq 'descend'
-                ? sort { $b->{column_values}{$column} <=> $a->{column_values}{$column} } @$tags
-                : sort { $a->{column_values}{$column} <=> $b->{column_values}{$column} } @$tags;
-    } else {
-        @$tags = grep { $_->{__entry_count} }
-            lc $order eq 'descend'
-                ? sort { lc $b->{column_values}{name} cmp lc $a->{column_values}{name} } @$tags
-                : sort { lc $a->{column_values}{name} cmp lc $b->{column_values}{name} } @$tags;
+            ? sort { $a->{__entry_count} <=> $b->{__entry_count} } @$tags
+            : sort { $b->{__entry_count} <=> $a->{__entry_count} } @$tags;
+    }
+    elsif ( $column eq 'id' ) {
+        @$tags = grep { $_->{__entry_count} } lc $order eq 'descend'
+            ? sort {
+            $b->{column_values}{$column} <=> $a->{column_values}{$column}
+            } @$tags
+            : sort {
+            $a->{column_values}{$column} <=> $b->{column_values}{$column}
+            } @$tags;
+    }
+    else {
+        @$tags = grep { $_->{__entry_count} } lc $order eq 'descend'
+            ? sort {
+            lc $b->{column_values}{name} cmp lc $a->{column_values}{name}
+            } @$tags
+            : sort {
+            lc $a->{column_values}{name} cmp lc $b->{column_values}{name}
+            } @$tags;
     }
 }
 
@@ -179,40 +202,59 @@ can make this simple code into a powerful looking and useful "tag cloud".
 =cut
 
 sub _hdlr_tags {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     require MT::Tag;
     require MT::ObjectTag;
     require MT::Entry;
     my $type = $args->{type} || MT::Entry->datasource;
 
-    unless ($args->{blog_id} || $args->{include_blogs} || $args->{exclude_blogs}) {
+    unless ( $args->{blog_id}
+        || $args->{include_blogs}
+        || $args->{exclude_blogs} )
+    {
         my $app = MT->instance;
-        if ($app->isa('MT::App::Search')) {
+        if ( $app->isa('MT::App::Search') ) {
             my $exclude_blogs = $app->{searchparam}{ExcludeBlogs};
             my $include_blogs = $app->{searchparam}{IncludeBlogs};
-            if (my $excl = ($exclude_blogs && (0 < scalar(@$exclude_blogs))) ? $exclude_blogs : undef) {
+            if (my $excl
+                = ( $exclude_blogs && ( 0 < scalar(@$exclude_blogs) ) )
+                ? $exclude_blogs
+                : undef
+                )
+            {
                 $args->{exclude_blogs} ||= join ',', @$excl;
-            } elsif (my $incl = ($include_blogs && (0 < scalar(@$include_blogs))) ? $include_blogs : undef) {
+            }
+            elsif (
+                my $incl
+                = ( $include_blogs && ( 0 < scalar(@$include_blogs) ) )
+                ? $include_blogs
+                : undef
+                )
+            {
                 $args->{include_blogs} = join ',', @$incl;
-            } 
-            if (($args->{include_blogs} || $args->{exclude_blogs}) && $args->{blog_id}) {
+            }
+            if ( ( $args->{include_blogs} || $args->{exclude_blogs} )
+                && $args->{blog_id} )
+            {
                 delete $args->{blog_id};
             }
         }
     }
-    
-    my (%blog_terms, %blog_args);
-    $ctx->set_blog_load_context($args, \%blog_terms, \%blog_args) 
-        or return $ctx->error($ctx->errstr);
+
+    my ( %blog_terms, %blog_args );
+    $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
+        or return $ctx->error( $ctx->errstr );
 
     my @tag_filter;
-    my ($tags, $min, $max, $all_count) = _tags_for_blog($ctx, \%blog_terms, \%blog_args, $type);
+    my ( $tags, $min, $max, $all_count )
+        = _tags_for_blog( $ctx, \%blog_terms, \%blog_args, $type );
     my $builder = $ctx->stash('builder');
-    my $tokens = $ctx->stash('tokens');
-    my $needs_entries = (($ctx->stash('uncompiled') || '') =~ /<MT:?Entries/i) ? 1 : 0;
+    my $tokens  = $ctx->stash('tokens');
+    my $needs_entries
+        = ( ( $ctx->stash('uncompiled') || '' ) =~ /<MT:?Entries/i ) ? 1 : 0;
     my $glue = $args->{glue};
-    my $res = '';
+    my $res  = '';
     local $ctx->{__stash}{all_tag_count} = undef;
     local $ctx->{inside_mt_tags} = 1;
 
@@ -220,57 +262,63 @@ sub _hdlr_tags {
         foreach my $tag (@$tags) {
             my @args = (
                 { status => MT::Entry::RELEASE(), %blog_terms },
-                { sort      => 'authored_on',
-                  direction => 'descend',
-                  'join'    => MT::ObjectTag->join_on('object_id',
-                      { tag_id => $tag->id, object_datasource => $type, %blog_terms },
-                      { unique => 1, %blog_args },
-                  ),
-                  %blog_args,
+                {   sort      => 'authored_on',
+                    direction => 'descend',
+                    'join'    => MT::ObjectTag->join_on(
+                        'object_id',
+                        {   tag_id            => $tag->id,
+                            object_datasource => $type,
+                            %blog_terms
+                        },
+                        { unique => 1, %blog_args },
+                    ),
+                    %blog_args,
                 }
             );
-            $tag->{__entries} = delay(sub { my @e = MT::Entry->load(@args); \@e });
+            $tag->{__entries}
+                = delay( sub { my @e = MT::Entry->load(@args); \@e } );
         }
     }
 
-    my $top    = $args->{top}           || 0;
-    my $column = $args->{sort_by} ? lc( $args->{sort_by} )
-               : $top             ? 'rank'
-               :                    'name'
-               ;
-    my $limit  = $args->{limit}         || 0;
+    my $top = $args->{top} || 0;
+    my $column
+        = $args->{sort_by} ? lc( $args->{sort_by} )
+        : $top             ? 'rank'
+        :                    'name';
+    my $limit = $args->{limit} || 0;
     my @slice_tags;
-    if ($top > 0 && scalar @$tags > $top) {
-        _tag_sort($tags, 'rank');
+    if ( $top > 0 && scalar @$tags > $top ) {
+        _tag_sort( $tags, 'rank' );
         @slice_tags = @$tags[ 0 .. $top - 1 ];
-    } else {
+    }
+    else {
         @slice_tags = @$tags;
     }
-    _tag_sort(\@slice_tags, $column, $args->{sort_order} || '');
-    if ($limit > 0 && scalar @slice_tags > $limit) {
+    _tag_sort( \@slice_tags, $column, $args->{sort_order} || '' );
+    if ( $limit > 0 && scalar @slice_tags > $limit ) {
         @slice_tags = @slice_tags[ 0 .. $limit - 1 ];
     }
 
     local $ctx->{__stash}{include_blogs} = $args->{include_blogs};
     local $ctx->{__stash}{exclude_blogs} = $args->{exclude_blogs};
-    local $ctx->{__stash}{blog_ids} = $args->{blog_ids};
+    local $ctx->{__stash}{blog_ids}      = $args->{blog_ids};
     local $ctx->{__stash}{tag_min_count} = $min;
     local $ctx->{__stash}{tag_max_count} = $max;
     my $vars = $ctx->{__stash}{vars} ||= {};
     my $i = 0;
     foreach my $tag (@slice_tags) {
         $i++;
-        local $ctx->{__stash}{Tag} = $tag;
-        local $vars->{__first__} = $i == 1;
-        local $vars->{__last__} = !defined $slice_tags[$i];
-        local $vars->{__odd__} = ($i % 2) == 1;
-        local $vars->{__even__} = ($i % 2) == 0;
-        local $vars->{__counter__} = $i;
+        local $ctx->{__stash}{Tag}     = $tag;
+        local $vars->{__first__}       = $i == 1;
+        local $vars->{__last__}        = !defined $slice_tags[$i];
+        local $vars->{__odd__}         = ( $i % 2 ) == 1;
+        local $vars->{__even__}        = ( $i % 2 ) == 0;
+        local $vars->{__counter__}     = $i;
         local $ctx->{__stash}{entries} = $tag->{__entries}
             if exists $tag->{__entries};
         local $ctx->{__stash}{tag_entry_count} = $tag->{__entry_count};
-        local $ctx->{__stash}{all_tag_count} = $all_count;
-        defined(my $out = $builder->build($ctx, $tokens, $cond))
+        local $ctx->{__stash}{all_tag_count}   = $all_count;
+        defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $glue if defined $glue && length($res) && length($out);
         $res .= $out;
@@ -366,8 +414,8 @@ glued together by a comma and a space.
 =cut
 
 sub _hdlr_entry_tags {
-    my ($ctx, $args, $cond) = @_;
-    
+    my ( $ctx, $args, $cond ) = @_;
+
     require MT::Entry;
     my $entry = $ctx->stash('entry');
     return '' unless $entry;
@@ -378,15 +426,15 @@ sub _hdlr_entry_tags {
     local $ctx->{__stash}{all_tag_count} = undef;
 
     my $builder = $ctx->stash('builder');
-    my $tokens = $ctx->stash('tokens');
-    my $res = '';
-    my $tags = $entry->get_tag_objects;
+    my $tokens  = $ctx->stash('tokens');
+    my $res     = '';
+    my $tags    = $entry->get_tag_objects;
     for my $tag (@$tags) {
         next if $tag->is_private && !$args->{include_private};
-        local $ctx->{__stash}{Tag} = $tag;
-        local $ctx->{__stash}{tag_count} = undef;
+        local $ctx->{__stash}{Tag}             = $tag;
+        local $ctx->{__stash}{tag_count}       = undef;
         local $ctx->{__stash}{tag_entry_count} = undef;
-        defined(my $out = $builder->build($ctx, $tokens, $cond))
+        defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $glue if defined $glue && length($res) && length($out);
         $res .= $out;
@@ -439,13 +487,13 @@ Listing out the page's tags, separated by commas:
 =cut
 
 sub _hdlr_page_tags {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     return undef unless $ctx->check_page;
     require MT::Page;
     $args->{class_type} = MT::Page->properties->{class_type};
     local $ctx->{__stash}{class_type} = $args->{class_type};
-    &_hdlr_entry_tags(@_); 
+    &_hdlr_entry_tags(@_);
 }
 
 ###########################################################################
@@ -498,7 +546,7 @@ glued together by a comma and a space.
 =cut
 
 sub _hdlr_asset_tags {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     require MT::ObjectTag;
     require MT::Asset;
@@ -509,23 +557,31 @@ sub _hdlr_asset_tags {
     local $ctx->{__stash}{tag_max_count} = undef;
     local $ctx->{__stash}{tag_min_count} = undef;
     local $ctx->{__stash}{all_tag_count} = undef;
-    local $ctx->{__stash}{class_type} = 'asset';
+    local $ctx->{__stash}{class_type}    = 'asset';
 
-    my $iter = MT::Tag->load_iter(undef, { 'sort' => 'name',
-            'join' => MT::ObjectTag->join_on('tag_id',
-                    { object_id => $asset->id,
-                      blog_id => $asset->blog_id,
-                      object_datasource => MT::Asset->datasource },
-                    { unique => 1 } )});
+    my $iter = MT::Tag->load_iter(
+        undef,
+        {   'sort' => 'name',
+            'join' => MT::ObjectTag->join_on(
+                'tag_id',
+                {   object_id         => $asset->id,
+                    blog_id           => $asset->blog_id,
+                    object_datasource => MT::Asset->datasource
+                },
+                { unique => 1 }
+            )
+        }
+    );
     my $builder = $ctx->stash('builder');
-    my $tokens = $ctx->stash('tokens');
-    my $res = '';
-    while (my $tag = $iter->()) {
+    my $tokens  = $ctx->stash('tokens');
+    my $res     = '';
+
+    while ( my $tag = $iter->() ) {
         next if $tag->is_private && !$args->{include_private};
-        local $ctx->{__stash}{Tag} = $tag;
-        local $ctx->{__stash}{tag_count} = undef;
+        local $ctx->{__stash}{Tag}             = $tag;
+        local $ctx->{__stash}{tag_count}       = undef;
         local $ctx->{__stash}{tag_asset_count} = undef;
-        defined(my $out = $builder->build($ctx, $tokens, $cond))
+        defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $glue if defined $glue && length($res) && length($out);
         $res .= $out;
@@ -564,13 +620,17 @@ L<EntryTags> for an example of its usage.
 =cut
 
 sub _hdlr_entry_if_tagged {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $entry = $ctx->stash('entry');
     return 0 unless $entry;
-    my $tag = defined $args->{name} ? $args->{name} : (defined $args->{tag} ? $args->{tag} : '');
-    if ($tag ne '') {
+    my $tag
+        = defined $args->{name}
+        ? $args->{name}
+        : ( defined $args->{tag} ? $args->{tag} : '' );
+    if ( $tag ne '' ) {
         $entry->has_tag($tag);
-    } else {
+    }
+    else {
         my @tags = $entry->tags;
         @tags = grep /^[^@]/, @tags
             if !$args->{include_private};
@@ -615,12 +675,12 @@ B<Example:>
 =cut
 
 sub _hdlr_page_if_tagged {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     return undef unless $ctx->check_page(@_);
     require MT::Page;
     $args->{class_type} = MT::Page->properties->{class_type};
-    &_hdlr_entry_if_tagged(@_); 
+    &_hdlr_entry_if_tagged(@_);
 }
 
 ###########################################################################
@@ -653,14 +713,18 @@ L<EntryTags> for an example of its usage.
 =cut
 
 sub _hdlr_asset_if_tagged {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $a = $ctx->stash('asset')
         or return $ctx->_no_asset_error();
 
-    my $tag = defined $args->{name} ? $args->{name} : ( defined $args->{tag} ? $args->{tag} : '' );
-    if ($tag ne '') {
+    my $tag
+        = defined $args->{name}
+        ? $args->{name}
+        : ( defined $args->{tag} ? $args->{tag} : '' );
+    if ( $tag ne '' ) {
         $a->has_tag($tag);
-    } else {
+    }
+    else {
         my @tags = $a->tags;
         @tags = grep /^[^@]/, @tags
             if !$args->{include_private};
@@ -722,18 +786,21 @@ If present, the template tag will add 'blog_id' parameter for a link.
 =cut
 
 sub _hdlr_tag_search_link {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $tag = $ctx->stash('Tag');
     return '' unless $tag;
 
-    my (%blog_terms, %blog_args);
-    unless ($args->{blog_id} || $args->{include_blogs} || $args->{exclude_blogs}) {
+    my ( %blog_terms, %blog_args );
+    unless ( $args->{blog_id}
+        || $args->{include_blogs}
+        || $args->{exclude_blogs} )
+    {
         $args->{include_blogs} = $ctx->stash('include_blogs');
         $args->{exclude_blogs} = $ctx->stash('exclude_blogs');
-        $args->{blog_ids} = $ctx->stash('blog_ids');
+        $args->{blog_ids}      = $ctx->stash('blog_ids');
     }
-    $ctx->set_blog_load_context($args, \%blog_terms, \%blog_args)
-        or return $ctx->error($ctx->errstr);
+    $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
+        or return $ctx->error( $ctx->errstr );
 
     my $param = '';
     my $blogs = $blog_terms{blog_id};
@@ -741,37 +808,41 @@ sub _hdlr_tag_search_link {
     my $template_blog_id;
     if ( defined $args->{tmpl_blog_id} ) {
         $template_blog_id = $args->{tmpl_blog_id};
-        return $ctx->error( MT->translate( 'Invalid [_1] parameter.', 'tmpl_blog_id' ) )
+        return $ctx->error(
+            MT->translate( 'Invalid [_1] parameter.', 'tmpl_blog_id' ) )
             if ( $template_blog_id !~ m/^\d+$/ ) || !$template_blog_id;
 
         if ( 'parent' eq lc $template_blog_id ) {
             my $blog = $ctx->stash('blog');
-            $template_blog_id = $blog->is_blog
+            $template_blog_id
+                = $blog->is_blog
                 ? $blog->website->id
-                    : $blog->id;
+                : $blog->id;
         }
     }
 
     if ($blogs) {
-        if (ref $blogs eq 'ARRAY') {
+        if ( ref $blogs eq 'ARRAY' ) {
             if ( my $blog = $ctx->stash('blog') ) {
                 if ( !$blog->is_blog ) {
                     unshift @$blogs, $blog->id;
                 }
             }
-            if ($blog_args{not}{blog_id}) {
-                $param .= 'ExcludeBlogs=' . join(',', @$blogs);
-            } else {
-                $param .= 'IncludeBlogs=' . join(',', @$blogs);
+            if ( $blog_args{not}{blog_id} ) {
+                $param .= 'ExcludeBlogs=' . join( ',', @$blogs );
             }
-        } else {
+            else {
+                $param .= 'IncludeBlogs=' . join( ',', @$blogs );
+            }
+        }
+        else {
             $param .= 'IncludeBlogs=' . $blogs;
         }
         $param .= '&amp;';
     }
-    $param .= 'tag=' . encode_url($tag->name);
+    $param .= 'tag=' . encode_url( $tag->name );
     $param .= '&amp;limit=' . $ctx->{config}->MaxResults;
-    $param .= '&amp;blog_id='.$template_blog_id if $template_blog_id;
+    $param .= '&amp;blog_id=' . $template_blog_id if $template_blog_id;
     my $path = $ctx->cgi_path;
     $path . $ctx->{config}->SearchScript . '?' . $param;
 }
@@ -818,84 +889,94 @@ with some styling, a sidebar of any page.
 =cut
 
 sub _hdlr_tag_rank {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $max_level = $args->{max} || 6;
-    unless ($args->{blog_id} || $args->{include_blogs} || $args->{exclude_blogs}) {
+    unless ( $args->{blog_id}
+        || $args->{include_blogs}
+        || $args->{exclude_blogs} )
+    {
         $args->{include_blogs} = $ctx->stash('include_blogs');
         $args->{exclude_blogs} = $ctx->stash('exclude_blogs');
-        $args->{blog_ids} = $ctx->stash('blog_ids');
+        $args->{blog_ids}      = $ctx->stash('blog_ids');
     }
-    my (%blog_terms, %blog_args);
-    $ctx->set_blog_load_context($args, \%blog_terms, \%blog_args) 
-        or return $ctx->error($ctx->errstr);
+    my ( %blog_terms, %blog_args );
+    $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
+        or return $ctx->error( $ctx->errstr );
 
     my $tag = $ctx->stash('Tag');
     return '' unless $tag;
 
-    my $class_type = $ctx->stash('class_type') || 'entry';  # FIXME: defaults to?
+    my $class_type = $ctx->stash('class_type')
+        || 'entry';    # FIXME: defaults to?
     my $class = MT->model($class_type);
     my $ds    = $class->datasource;
-    my %term = $class_type eq 'entry' || $class_type eq 'page'
+    my %term
+        = $class_type eq 'entry' || $class_type eq 'page'
         ? ( status => MT::Entry::RELEASE() )
         : ();
 
     my $ntags = $ctx->stash('all_tag_count');
     unless ($ntags) {
         require MT::ObjectTag;
-        $ntags = $class->count({
-            %term,
-            %blog_terms,
-        }, {
-            'join' => MT::ObjectTag->join_on('object_id',
-                { object_datasource => $ds, %blog_terms },
-                \%blog_args ),
-            %blog_args,
-        });
-        $ctx->stash('all_tag_count', $ntags);
+        $ntags = $class->count(
+            { %term, %blog_terms, },
+            {   'join' => MT::ObjectTag->join_on(
+                    'object_id', { object_datasource => $ds, %blog_terms },
+                    \%blog_args
+                ),
+                %blog_args,
+            }
+        );
+        $ctx->stash( 'all_tag_count', $ntags );
     }
     return 1 unless $ntags;
 
     my $min = $ctx->stash('tag_min_count');
     my $max = $ctx->stash('tag_max_count');
-    unless (defined $min && defined $max) {
-        (my $tags, $min, $max, my $all_count) = _tags_for_blog($ctx, \%blog_terms, \%blog_args, $class_type);
-        $ctx->stash('tag_max_count', $max);
-        $ctx->stash('tag_min_count', $min);
+    unless ( defined $min && defined $max ) {
+        ( my $tags, $min, $max, my $all_count )
+            = _tags_for_blog( $ctx, \%blog_terms, \%blog_args, $class_type );
+        $ctx->stash( 'tag_max_count', $max );
+        $ctx->stash( 'tag_min_count', $min );
     }
     my $factor;
 
-    if ($max - $min == 0) {
+    if ( $max - $min == 0 ) {
         $min -= $max_level;
         $factor = 1;
-    } else {
-        $factor = ($max_level - 1) / log($max - $min + 1);
+    }
+    else {
+        $factor = ( $max_level - 1 ) / log( $max - $min + 1 );
     }
 
-    if ($ntags < $max_level) {
-        $factor *= ($ntags / $max_level);
+    if ( $ntags < $max_level ) {
+        $factor *= ( $ntags / $max_level );
     }
 
     my $count = $ctx->stash('tag_entry_count');
-    unless (defined $count) {
-        $count = $class->count({
-            %term,
-            %blog_terms,
-        }, {
-            'join' => MT::ObjectTag->join_on('object_id',
-                { tag_id => $tag->id, object_datasource => $ds, %blog_terms },
-                \%blog_args
-            ),
-            %blog_args,
-        });
-        $ctx->stash('tag_entry_count', $count);
+    unless ( defined $count ) {
+        $count = $class->count(
+            { %term, %blog_terms, },
+            {   'join' => MT::ObjectTag->join_on(
+                    'object_id',
+                    {   tag_id            => $tag->id,
+                        object_datasource => $ds,
+                        %blog_terms
+                    },
+                    \%blog_args
+                ),
+                %blog_args,
+            }
+        );
+        $ctx->stash( 'tag_entry_count', $count );
     }
 
-    if ($count - $min + 1 == 0) {
+    if ( $count - $min + 1 == 0 ) {
         return 0;
     }
 
-    my $level = int(log($count - $min + 1) * $factor);
+    my $level = int( log( $count - $min + 1 ) * $factor );
     $max_level - $level;
 }
 
@@ -939,13 +1020,14 @@ marks.
 =cut
 
 sub _hdlr_tag_name {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $tag = $ctx->stash('Tag');
     return '' unless $tag;
     my $name = $tag->name || '';
-    if ($args->{quote} && $name =~ m/ /) {
-       $name = '"' . $name . '"';
-    } elsif ($args->{normalize}) {
+    if ( $args->{quote} && $name =~ m/ / ) {
+        $name = '"' . $name . '"';
+    }
+    elsif ( $args->{normalize} ) {
         $name = MT::Tag->normalize($name);
     }
     $name;
@@ -962,7 +1044,7 @@ Outputs the numeric ID of the tag currently in context.
 =cut
 
 sub _hdlr_tag_id {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $tag = $ctx->stash('Tag');
     return '' unless $tag;
     $tag->id;
@@ -980,25 +1062,26 @@ in context.
 =cut
 
 sub _hdlr_tag_count {
-    my ($ctx, $args, $cond) = @_;
-    my $count = $ctx->stash('tag_entry_count');
-    my $tag = $ctx->stash('Tag');
-    my $blog_id = $ctx->stash('blog_id');
-    my $class_type = $ctx->stash('class_type') || 'entry';  # FIXME: defaults to?
+    my ( $ctx, $args, $cond ) = @_;
+    my $count      = $ctx->stash('tag_entry_count');
+    my $tag        = $ctx->stash('Tag');
+    my $blog_id    = $ctx->stash('blog_id');
+    my $class_type = $ctx->stash('class_type')
+        || 'entry';    # FIXME: defaults to?
     my $class = MT->model($class_type);
-    my %term = $class_type eq 'entry' || $class_type eq 'page'
+    my %term
+        = $class_type eq 'entry' || $class_type eq 'page'
         ? ( status => MT::Entry::RELEASE() )
         : ();
-    if ($tag && $class) {
-        unless (defined $count) {
-            $count = $class->tagged_count($tag->id, {
-                %term,
-                blog_id => $blog_id
-            });
+    if ( $tag && $class ) {
+
+        unless ( defined $count ) {
+            $count = $class->tagged_count( $tag->id,
+                { %term, blog_id => $blog_id } );
         }
     }
     $count ||= 0;
-    return $ctx->count_format($count, $args);
+    return $ctx->count_format( $count, $args );
 }
 
 1;

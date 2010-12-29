@@ -11,7 +11,7 @@ sub import_categories {
     my ( $element, $theme, $obj_to_apply ) = @_;
     my $cats = $element->{data};
     _add_categories( $theme, $obj_to_apply, $cats, 'category' )
-        or die "Failed to create theme default categories";;
+        or die "Failed to create theme default categories";
     return 1;
 }
 
@@ -19,7 +19,7 @@ sub import_folders {
     my ( $element, $theme, $obj_to_apply ) = @_;
     my $cats = $element->{data};
     _add_categories( $theme, $obj_to_apply, $cats, 'folder' )
-        or die "Failed to create theme default folders";;
+        or die "Failed to create theme default folders";
     return 1;
 }
 
@@ -28,13 +28,14 @@ sub _add_categories {
 
     for my $basename ( keys %$cat_data ) {
         my $datum = $cat_data->{$basename};
-        my $cat = MT->model($class)->load({
-            blog_id => $blog->id,
-            basename => $basename,
-        });
-        unless ( $cat ) {
+        my $cat   = MT->model($class)->load(
+            {   blog_id  => $blog->id,
+                basename => $basename,
+            }
+        );
+        unless ($cat) {
             $cat = MT->model($class)->new;
-            $cat->blog_id($blog->id);
+            $cat->blog_id( $blog->id );
             $cat->basename($basename);
             for my $key (qw{ label description }) {
                 my $val = $datum->{$key};
@@ -44,7 +45,7 @@ sub _add_categories {
                 else {
                     $val = $theme->translate($val) if $val;
                 }
-                $cat->$key( $val );
+                $cat->$key($val);
             }
             $cat->allow_pings( $datum->{allow_pings} || 0 );
             $cat->parent( $parent->id )
@@ -61,23 +62,29 @@ sub _add_categories {
 sub info_categories {
     my ( $element, $theme, $blog ) = @_;
     my $data = $element->{data};
-    my ( $parents, $children ) = (0,0);
+    my ( $parents, $children ) = ( 0, 0 );
     for my $parent ( values %$data ) {
         $parents++;
-        $children += _count_descendant_categories($parent, 0);
+        $children += _count_descendant_categories( $parent, 0 );
     }
-    return sub { MT->translate( '[_1] top level and [_2] sub categories.', $parents, $children ) };
+    return sub {
+        MT->translate( '[_1] top level and [_2] sub categories.',
+            $parents, $children );
+    };
 }
 
 sub info_folders {
     my ( $element, $theme, $blog ) = @_;
     my $data = $element->{data};
-    my ( $parents, $children ) = (0,0);
+    my ( $parents, $children ) = ( 0, 0 );
     for my $parent ( values %$data ) {
         $parents++;
-        $children += _count_descendant_categories($parent, 0);
+        $children += _count_descendant_categories( $parent, 0 );
     }
-    return sub { MT->translate( '[_1] top level and [_2] sub folders.', $parents, $children ) };
+    return sub {
+        MT->translate( '[_1] top level and [_2] sub folders.',
+            $parents, $children );
+    };
 }
 
 sub _count_descendant_categories {
@@ -91,14 +98,16 @@ sub _count_descendant_categories {
 }
 
 sub category_condition {
-    my ( $blog ) = @_;
-    my $cat = MT->model('category')->load({ blog_id => $blog->id }, { limit => 1 });
+    my ($blog) = @_;
+    my $cat = MT->model('category')
+        ->load( { blog_id => $blog->id }, { limit => 1 } );
     return defined $cat ? 1 : 0;
 }
 
 sub folder_condition {
-    my ( $blog ) = @_;
-    my $cat = MT->model('folder')->load({ blog_id => $blog->id }, { limit => 1 });
+    my ($blog) = @_;
+    my $cat = MT->model('folder')
+        ->load( { blog_id => $blog->id }, { limit => 1 } );
     return defined $cat ? 1 : 0;
 }
 
@@ -111,14 +120,16 @@ sub category_export_template {
     );
     return if !defined $list || !scalar @$list;
     my %checked_ids;
-    if ( $saved ) {
-        %checked_ids = map { $_ => 1 } @{$saved->{default_category_export_ids}};
+    if ($saved) {
+        %checked_ids
+            = map { $_ => 1 } @{ $saved->{default_category_export_ids} };
     }
-    for my $cat ( @$list ) {
-        $cat->{checked} = $saved ? $checked_ids{$cat->{category_id}} : 1;
+    for my $cat (@$list) {
+        $cat->{checked} = $saved ? $checked_ids{ $cat->{category_id} } : 1;
     }
     my %param = ( categories => $list );
-    return $app->load_tmpl( 'include/theme_exporters/category.tmpl', \%param);
+    return $app->load_tmpl( 'include/theme_exporters/category.tmpl',
+        \%param );
 }
 
 sub folder_export_template {
@@ -130,14 +141,15 @@ sub folder_export_template {
     );
     return if !defined $list || !scalar @$list;
     my %checked_ids;
-    if ( $saved ) {
-        %checked_ids = map { $_ => 1 } @{$saved->{default_folder_export_ids}};
+    if ($saved) {
+        %checked_ids
+            = map { $_ => 1 } @{ $saved->{default_folder_export_ids} };
     }
-    for my $cat ( @$list ) {
-        $cat->{checked} = $saved ? $checked_ids{$cat->{category_id}} : 1;
+    for my $cat (@$list) {
+        $cat->{checked} = $saved ? $checked_ids{ $cat->{category_id} } : 1;
     }
     my %param = ( folders => $list );
-    return $app->load_tmpl( 'include/theme_exporters/folder.tmpl', \%param);
+    return $app->load_tmpl( 'include/theme_exporters/folder.tmpl', \%param );
 }
 
 sub export_category {
@@ -145,14 +157,14 @@ sub export_category {
     my @cats;
     if ( defined $settings ) {
         my @ids = $settings->{default_category_export_ids};
-        @cats = MT->model('category')->load({ id => \@ids });
+        @cats = MT->model('category')->load( { id => \@ids } );
     }
     else {
-        @cats = MT->model('category')->load({ blog_id => $blog->id });
+        @cats = MT->model('category')->load( { blog_id => $blog->id } );
     }
-    my @tops = grep { ! $_->parent } @cats;
+    my @tops = grep { !$_->parent } @cats;
     my $data = {};
-    for my $top ( @tops ) {
+    for my $top (@tops) {
         $data->{ $top->basename } = _build_tree( \@cats, $top );
     }
     return %$data ? $data : undef;
@@ -163,14 +175,14 @@ sub export_folder {
     my @folders;
     if ( defined $settings ) {
         my @ids = $settings->{default_folder_export_ids};
-        @folders = MT->model('folder')->load({ id => \@ids });
+        @folders = MT->model('folder')->load( { id => \@ids } );
     }
     else {
-        @folders = MT->model('folder')->load({ blog_id => $blog->id });
+        @folders = MT->model('folder')->load( { blog_id => $blog->id } );
     }
-    my @tops = grep { ! $_->parent } @folders;
+    my @tops = grep { !$_->parent } @folders;
     my $data = {};
-    for my $top ( @tops ) {
+    for my $top (@tops) {
         $data->{ $top->basename } = _build_tree( \@folders, $top );
     }
     return %$data ? $data : undef;
@@ -178,19 +190,17 @@ sub export_folder {
 
 sub _build_tree {
     my ( $cats, $cat ) = @_;
-    my $hash = {
-        label => $cat->label,
-    };
+    my $hash = { label => $cat->label, };
     $hash->{description} = $cat->description if $cat->description;
     my @children = grep { $_->parent == $cat->id } @$cats;
     if ( scalar @children ) {
         $hash->{children} = {};
-        for my $child ( @children ) {
-            $hash->{children}{$child->basename} = _build_tree( $cats, $child );
+        for my $child (@children) {
+            $hash->{children}{ $child->basename }
+                = _build_tree( $cats, $child );
         }
     }
     return $hash;
 }
 
 1;
-

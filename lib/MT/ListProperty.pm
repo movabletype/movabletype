@@ -61,7 +61,9 @@ sub _init_core {
         $prop = $common_props->{$id};
 
         # Property is undefined
-        die MT->translate(q{Can't initialize list property [_1].[_2].}, $cls, $id) if !$prop;
+        die MT->translate( q{Can't initialize list property [_1].[_2].},
+            $cls, $id )
+            if !$prop;
     }
 
     delete $prop->{plugin};
@@ -153,6 +155,7 @@ sub base {
 }
 
 {
+
     # Mapping from column def keywords to basic property types.
     my %AUTO = (
         string    => 'string',
@@ -191,26 +194,22 @@ sub base {
         if ( !$class->has_column($id) ) {
             die MT->translate(
                 'Failed to init auto list property [_1].[_2]: Cannot find definition of column [_3].',
-                $prop_class,
-                $id,
-                $id,
-            );
+                $prop_class, $id, $id, );
         }
         my $def;
         if ( $class->has_meta && $class->is_meta_column($id) ) {
             $def = MT::Meta->metadata_by_name( $class, $id );
-            $orig_obj->{is_meta} = 1;
+            $orig_obj->{is_meta}  = 1;
             $orig_obj->{meta_col} = $def->{type};
         }
         else {
             $def = $class->column_def($id);
         }
         my $column_type = $def->{type};
-        my $auto_type = $AUTO{$column_type}
+        my $auto_type   = $AUTO{$column_type}
             or die MT->translate(
-                'Failed to init auto list property [_1].[_2]: unsupported column type.',
-                $prop_class,
-                $id
+            'Failed to init auto list property [_1].[_2]: unsupported column type.',
+            $prop_class, $id
             );
         $orig_obj->{col} = $id;
         my $prop = __PACKAGE__->instance( '__virtual', $auto_type );
@@ -221,14 +220,14 @@ sub base {
 sub join_meta {
     my $prop = shift;
     my ( $to_args, $cond, $opts ) = @_;
-    my $class = $prop->datasource;
+    my $class      = $prop->datasource;
     my $meta_class = $class->meta_pkg;
-    my $meta_pk = $meta_class->primary_key_tuple;
-    $meta_pk = $meta_pk->[0]; # we only need the first column, that's the id
+    my $meta_pk    = $meta_class->primary_key_tuple;
+    $meta_pk = $meta_pk->[0];   # we only need the first column, that's the id
     my $meta_id_cond = '= ' . $meta_pk;
 
     my ( %j_terms, %j_args );
-    $j_terms{type} = $prop->col;
+    $j_terms{type}  = $prop->col;
     $j_args{unique} = 1;
     if ( $opts->{sort} ) {
         $j_args{sort}      = $prop->meta_col;
@@ -238,20 +237,19 @@ sub join_meta {
     }
     if ( $opts->{sort} && !defined $cond ) {
         $j_args{type}      = 'left';
-        $j_args{jalias} = 'left_' . $prop->col;
+        $j_args{jalias}    = 'left_' . $prop->col;
         $j_args{condition} = $meta_pk;
     }
     else {
-        $j_terms{$prop->meta_col} = $cond if defined $cond;
-        $j_terms{$meta_pk} = \$meta_id_cond;
-        $j_args{alias} = $prop->col;
+        $j_terms{ $prop->meta_col } = $cond if defined $cond;
+        $j_terms{$meta_pk}          = \$meta_id_cond;
+        $j_args{alias}              = $prop->col;
     }
 
     $to_args->{joins} ||= [];
-    push @{ $to_args->{joins} }, $prop->datasource->meta_pkg->join_on(
-        undef,
-        [\%j_terms], \%j_args,
-    );
+    push @{ $to_args->{joins} },
+        $prop->datasource->meta_pkg->join_on( undef, [ \%j_terms ], \%j_args,
+        );
     return;
 }
 
@@ -300,8 +298,9 @@ sub list_properties {
 
 sub can_display {
     my $prop = shift;
-    return
-           ( $prop->has('bulk_html') || $prop->has('html') || $prop->has('raw') )
+    return (   $prop->has('bulk_html')
+            || $prop->has('html')
+            || $prop->has('raw') )
         && ( 'none' ne ( $prop->display || 'optional' ) )
         && $prop->_scope_filter( 'column', @_ );
 }
@@ -323,17 +322,19 @@ sub can_filter {
 sub common_label_html {
     my $prop = shift;
     my ( $obj, $app ) = @_;
-    return make_common_label_html( $obj, $app, $prop->col, $prop->alternative_label );
+    return make_common_label_html( $obj, $app, $prop->col,
+        $prop->alternative_label );
 }
 
 sub make_common_label_html {
     my ( $obj, $app, $col, $alt_label ) = @_;
-    my $id      = $obj->id;
-    my $label   = $obj->$col;
-    my $blog_id = $obj->has_column('blog_id') ? $obj->blog_id
-                : $app->blog                  ? $app->blog->id
-                :                               0;
-    my $type    = $obj->class_type;
+    my $id    = $obj->id;
+    my $label = $obj->$col;
+    my $blog_id
+        = $obj->has_column('blog_id') ? $obj->blog_id
+        : $app->blog                  ? $app->blog->id
+        :                               0;
+    my $type      = $obj->class_type;
     my $edit_link = $app->uri(
         mode => 'view',
         args => {
@@ -342,16 +343,15 @@ sub make_common_label_html {
             blog_id => $blog_id,
         },
     );
-    if ( $label ) {
+    if ($label) {
         $label = MT::Util::encode_html($label);
         return qq{<a href="$edit_link">$label</a>};
     }
     else {
         return MT->translate(
             qq{[_1] (<a href="[_2]">id:[_3]</a>)},
-                $alt_label ? $alt_label : 'No ' . $label,
-                $edit_link,
-                $id,
+            $alt_label ? $alt_label : 'No ' . $label,
+            $edit_link, $id,
         );
     }
 }

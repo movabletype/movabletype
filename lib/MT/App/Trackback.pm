@@ -117,7 +117,7 @@ XML
 </response>
 XML
     }
-    $app->print( Encode::encode_utf8( $res ) );
+    $app->print( Encode::encode_utf8($res) );
     1;
 }
 
@@ -302,8 +302,7 @@ sub ping {
     my $excerpt_max_len = const('LENGTH_ENTRY_PING_EXCERPT');
     if ($excerpt) {
         if ( length($excerpt) > $excerpt_max_len ) {
-            $excerpt
-                = substr( $excerpt, 0, $excerpt_max_len - 3 ) . '...';
+            $excerpt = substr( $excerpt, 0, $excerpt_max_len - 3 ) . '...';
         }
         $title
             = first_n_words( $excerpt,
@@ -449,14 +448,12 @@ sub _send_ping_notification {
 
     if ( $author && $author->email ) {
         if ($entry) {
-            $subj
-                = $app->translate( 'New TrackBack Ping to \'[_1]\'',
+            $subj = $app->translate( 'New TrackBack Ping to \'[_1]\'',
                 $entry->title );
         }
         elsif ($cat) {
             $subj
-                = $app->translate(
-                'New TrackBack Ping to Category \'[_1]\'',
+                = $app->translate( 'New TrackBack Ping to Category \'[_1]\'',
                 $cat->label );
         }
         my %head = (
@@ -528,8 +525,9 @@ sub _send_ping_notification {
             ping           => $ping,
             unapproved     => !$ping->visible(),
             state_editable => (
-                $author->is_superuser()
-                    || $author->permissions( $blog->id )->can_do('edit_trackback_status_via_notify_mail')
+                       $author->is_superuser()
+                    || $author->permissions( $blog->id )
+                    ->can_do('edit_trackback_status_via_notify_mail')
                 ) ? 1 : 0,
         );
         $param{entry}    = $entry if $entry;

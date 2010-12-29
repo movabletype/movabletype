@@ -10,32 +10,30 @@ use strict;
 use base qw( MT::Object );
 use MT::Util;
 
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id' => 'integer not null auto_increment primary key',
-        'name' => 'string(255) not null',
-        'n8d_id' => 'integer',
-        'is_private' => 'boolean'
-    },
-    indexes => {
-        name => 1,
-        n8d_id => 1,
-        name_id => {
-            columns => ['name', 'id'],
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'         => 'integer not null auto_increment primary key',
+            'name'       => 'string(255) not null',
+            'n8d_id'     => 'integer',
+            'is_private' => 'boolean'
         },
-        # for MTTags
-        private_id_name => {
-            columns => ['is_private', 'id', 'name'],
+        indexes => {
+            name    => 1,
+            n8d_id  => 1,
+            name_id => { columns => [ 'name', 'id' ], },
+
+            # for MTTags
+            private_id_name => { columns => [ 'is_private', 'id', 'name' ], },
         },
-    },
-    defaults => {
-        n8d_id => 0,
-        is_private => 0,
-    },
-    child_classes => ['MT::ObjectTag'],
-    datasource => 'tag',
-    primary_key => 'id',
-});
+        defaults => {
+            n8d_id     => 0,
+            is_private => 0,
+        },
+        child_classes => ['MT::ObjectTag'],
+        datasource    => 'tag',
+        primary_key   => 'id',
+    }
+);
 
 sub class_label {
     return MT->translate('Tag');
@@ -55,7 +53,7 @@ sub list_props {
             html    => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
-                my $name = MT::Util::encode_html($obj->name);
+                my $name = MT::Util::encode_html( $obj->name );
                 my $id   = $obj->id;
                 return qq{<a href="#tagid-$id" class="edit-tag">$name</a>};
             },
@@ -105,7 +103,8 @@ sub list_props {
             },
             html_link => sub {
                 my ( $prop, $obj, $app ) = @_;
-                $app->can_do('access_to_' . $prop->entry_class . '_list') || return;
+                $app->can_do( 'access_to_' . $prop->entry_class . '_list' )
+                    || return;
                 return $app->uri(
                     mode => 'list',
                     args => {
@@ -176,10 +175,10 @@ sub list_props {
             },
         },
         is_private => {
-            base    => '__virtual.single_select',
-            label   => 'Is private',
-            filter_label => 'Private',
-            display => 'none',
+            base                  => '__virtual.single_select',
+            label                 => 'Is private',
+            filter_label          => 'Private',
+            display               => 'none',
             single_select_options => [
                 { label => 'Is Private',  value => 1, },
                 { label => 'Not Private', value => 0, },
@@ -256,11 +255,11 @@ sub list_props {
             },
         },
         for_asset => {
-            label   => 'For Assets',
-            display => 'none',
-            view    => [ 'website', 'blog' ],
-            singleton   => '1',
-            terms   => sub {
+            label     => 'For Assets',
+            display   => 'none',
+            view      => [ 'website', 'blog' ],
+            singleton => '1',
+            terms     => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args, $options ) = @_;
                 my $blog_id = $options->{blog_ids};
@@ -283,43 +282,46 @@ sub system_filters {
     return {
         entry => {
             label => 'Tags for Entry',
-            view  => [ 'blog' ],
-            items => [{ type => 'for_entry', }],
+            view  => ['blog'],
+            items => [ { type => 'for_entry', } ],
         },
         page => {
             label => 'Tags for Page',
             view  => [ 'website', 'blog' ],
-            items => [{ type => 'for_page', }],
+            items => [ { type => 'for_page', } ],
         },
         asset => {
             label => 'Tags for Asset',
             view  => [ 'website', 'blog' ],
-            items => [{ type => 'for_asset', }],
+            items => [ { type => 'for_asset', } ],
         },
-    },
+        },
+        ;
 }
 
 sub save {
-    my $tag = shift;
+    my $tag  = shift;
     my $name = $tag->name;
-    return $tag->error(MT->translate("Tag must have a valid name"))
+    return $tag->error( MT->translate("Tag must have a valid name") )
         unless defined($name) && length($name);
     my $n8d = $tag->normalize;
-    return $tag->error(MT->translate("Tag must have a valid name"))
+    return $tag->error( MT->translate("Tag must have a valid name") )
         unless defined($n8d) && length($n8d);
-    if ($n8d ne $name) {
-        my $n8d_tag = MT::Tag->load({ name => $n8d });
-        if (!$n8d_tag) {
+    if ( $n8d ne $name ) {
+        my $n8d_tag = MT::Tag->load( { name => $n8d } );
+        if ( !$n8d_tag ) {
             $n8d_tag = new MT::Tag;
             $n8d_tag->name($n8d);
             $n8d_tag->save;
         }
-        if (!$tag->n8d_id || ($tag->n8d_id != $n8d_tag->id)) {
-            $tag->n8d_id($n8d_tag->id);
+        if ( !$tag->n8d_id || ( $tag->n8d_id != $n8d_tag->id ) ) {
+            $tag->n8d_id( $n8d_tag->id );
         }
-    } else {
+    }
+    else {
         $tag->n8d_id(0) if $tag->n8d_id;
     }
+
     # maintain the private flag...
     $tag->is_private( $name =~ m/^@/ ? 1 : 0 );
     $tag->SUPER::save();
@@ -328,9 +330,10 @@ sub save {
 sub normalize {
     my $tag = shift;
     my ($str) = @_;
-    if (!@_ && !(ref $tag)) {
+    if ( !@_ && !( ref $tag ) ) {
         $str = $tag;
-    } elsif (!$str && (ref $tag)) {
+    }
+    elsif ( !$str && ( ref $tag ) ) {
         $str = $tag->name;
     }
 
@@ -344,28 +347,34 @@ sub normalize {
 sub remove {
     my $tag = shift;
     my $n8d_tag;
-    if (ref $tag) {
-        if (!$tag->n8d_id) {
+    if ( ref $tag ) {
+        if ( !$tag->n8d_id ) {
+
             # normalized tag! we can't delete if others reference us
-            my $child_tags = MT::Tag->exist({n8d_id => $tag->id});
-            return $tag->error(MT->translate("This tag is referenced by others."))
+            my $child_tags = MT::Tag->exist( { n8d_id => $tag->id } );
+            return $tag->error(
+                MT->translate("This tag is referenced by others.") )
                 if $child_tags;
-        } else {
-            $n8d_tag = MT::Tag->load($tag->n8d_id);
+        }
+        else {
+            $n8d_tag = MT::Tag->load( $tag->n8d_id );
         }
     }
-    $tag->remove_children({key => 'tag_id'});
+    $tag->remove_children( { key => 'tag_id' } );
     $tag->SUPER::remove(@_)
-        or return $tag->error($tag->errstr);
+        or return $tag->error( $tag->errstr );
+
     # check for an orphaned normalized tag and delete if necessary
     if ($n8d_tag) {
+
         # Normalized tag, no longer referenced by other tags...
-        if (!MT::Tag->exist({n8d_id => $n8d_tag->id})) {
+        if ( !MT::Tag->exist( { n8d_id => $n8d_tag->id } ) ) {
+
             # Noramlized tag that no longer has any object tag associations
             require MT::ObjectTag;
-            if (!MT::ObjectTag->exist({tag_id => $n8d_tag->id})) {
+            if ( !MT::ObjectTag->exist( { tag_id => $n8d_tag->id } ) ) {
                 $n8d_tag->remove
-                    or return $tag->error($n8d_tag->errstr);
+                    or return $tag->error( $n8d_tag->errstr );
             }
         }
     }
@@ -374,13 +383,16 @@ sub remove {
 
 sub split {
     my $pkg = shift;
-    my ($delim, $str) = @_;
+    my ( $delim, $str ) = @_;
     $delim = quotemeta($delim);
     my @tags;
     $str =~ s/(^\s+|\s+$)//gs;
-    while (length($str) && ($str =~ m/^(((['"])(.*?)\3[^$delim]*?|.*?)($delim\s*|$))/s)) {
-        $str = substr($str, length($1));
+    while ( length($str)
+        && ( $str =~ m/^(((['"])(.*?)\3[^$delim]*?|.*?)($delim\s*|$))/s ) )
+    {
+        $str = substr( $str, length($1) );
         my $tag = defined $4 ? $4 : $2;
+
         #$tag =~ s/(^[\s,]+|[\s,]+$)//gs;
         $tag =~ s/(^\s+|\s+$)//gs;
         $tag =~ s/\s+/ /gs;
@@ -393,17 +405,19 @@ sub split {
 
 sub join {
     my $obj = shift;
-    my ($delim, @tags) = @_;
+    my ( $delim, @tags ) = @_;
     my $tags = '';
     foreach (@tags) {
-        $tags .= $delim . ($delim eq ' ' ? '' : ' ') if $tags ne '';
+        $tags .= $delim . ( $delim eq ' ' ? '' : ' ' ) if $tags ne '';
         if (m/\Q$delim\E/) {
             if (m/"/) {
                 $tags .= "'" . $_ . "'";
-            } else {
+            }
+            else {
                 $tags .= '"' . $_ . '"';
             }
-        } else {
+        }
+        else {
             $tags .= $_;
         }
     }
@@ -412,24 +426,27 @@ sub join {
 
 sub load_by_datasource {
     my $pkg = shift;
-    my ($datasource, $terms, $args) = @_;
+    my ( $datasource, $terms, $args ) = @_;
     $args ||= {};
     $args->{'sort'} ||= 'name';
     my $blog_id;
     my %jargs;
-    if ($terms->{blog_id}) {
+    if ( $terms->{blog_id} ) {
         $blog_id = $terms->{blog_id};
         delete $terms->{blog_id};
-        if ($args->{not} && $args->{not}{blog_id}) {
+        if ( $args->{not} && $args->{not}{blog_id} ) {
             $jargs{not}{blog_id} = 1;
         }
     }
-    $args->{'join'} ||= MT::ObjectTag->join_on('tag_id', {
-        $blog_id ? (blog_id => $blog_id) : (),
-        object_datasource => $datasource
-    }, { unique => 1, %jargs });
+    $args->{'join'} ||= MT::ObjectTag->join_on(
+        'tag_id',
+        {   $blog_id ? ( blog_id => $blog_id ) : (),
+            object_datasource => $datasource
+        },
+        { unique => 1, %jargs }
+    );
     my @tags;
-    my $iter = MT::Tag->load_iter($terms, $args);
+    my $iter = MT::Tag->load_iter( $terms, $args );
     while ( my $tag = $iter->() ) {
         push @tags, $tag;
     }
@@ -438,20 +455,28 @@ sub load_by_datasource {
 
 # static method for tag cache control
 sub cache_obj {
-    my $pkg = shift;
+    my $pkg     = shift;
     my (%param) = @_;
     my $user_id = $param{user_id};
     my $blog_id = $param{blog_id};
-    my $ds = $param{datasource};
+    my $ds      = $param{datasource};
 
     require MT::Session;
+
     # Clear any tag cache if tags were modified upon saving
-    my $sess_id = ($user_id ? 'user:' . $user_id . ';' : '') . ($blog_id ? 'blog:' . $blog_id . ';' : '') . 'datasource:' . $ds . ($param{private} ? ';private' : '');
-    my $tag_cache = MT::Session::get_unexpired_value(60 * 60, {
-        kind => 'TC',  # tag cache
-        id => $sess_id
-    });
-    if (!$tag_cache) {
+    my $sess_id
+        = ( $user_id ? 'user:' . $user_id . ';' : '' )
+        . ( $blog_id ? 'blog:' . $blog_id . ';' : '' )
+        . 'datasource:'
+        . $ds
+        . ( $param{private} ? ';private' : '' );
+    my $tag_cache = MT::Session::get_unexpired_value(
+        60 * 60,
+        {   kind => 'TC',      # tag cache
+            id   => $sess_id
+        }
+    );
+    if ( !$tag_cache ) {
         $tag_cache = new MT::Session;
         $tag_cache->kind('TC');
         $tag_cache->id($sess_id);
@@ -461,36 +486,49 @@ sub cache_obj {
 }
 
 sub clear_cache {
-    my $pkg = shift;
+    my $pkg     = shift;
     my (%param) = @_;
     my $blog_id = $param{blog_id};
     my $user_id = $param{user_id};
-    my $ds = $param{datasource};
+    my $ds      = $param{datasource};
 
     my $tag_cache;
-    my $sess_id = ($user_id ? 'user:' . $user_id . ';' : '') . ($blog_id ? 'blog:' . $blog_id . ';' : '') . 'datasource:' . $ds . ($param{private} ? ';private' : '');
+    my $sess_id
+        = ( $user_id ? 'user:' . $user_id . ';' : '' )
+        . ( $blog_id ? 'blog:' . $blog_id . ';' : '' )
+        . 'datasource:'
+        . $ds
+        . ( $param{private} ? ';private' : '' );
     require MT::Session;
-    $tag_cache = MT::Session->load({
-        kind => 'TC',
-        id => $sess_id});
+    $tag_cache = MT::Session->load(
+        {   kind => 'TC',
+            id   => $sess_id
+        }
+    );
     $tag_cache->remove if $tag_cache;
 
-    $sess_id = ($blog_id ? 'blog:' . $blog_id . ';' : '') . 'datasource:' . $ds . ';private';
-    $tag_cache = MT::Session->load({
-        kind => 'TC',
-        id => $sess_id});
+    $sess_id
+        = ( $blog_id ? 'blog:' . $blog_id . ';' : '' )
+        . 'datasource:'
+        . $ds
+        . ';private';
+    $tag_cache = MT::Session->load(
+        {   kind => 'TC',
+            id   => $sess_id
+        }
+    );
     $tag_cache->remove if $tag_cache;
 }
 
 sub cache {
-    my $pkg = shift;
+    my $pkg     = shift;
     my (%param) = @_;
     my $user_id = $param{user_id};
     my $blog_id = $param{blog_id};
-    my $class = $param{class};
-    if (ref($class) eq 'SCALAR') {
+    my $class   = $param{class};
+    if ( ref($class) eq 'SCALAR' ) {
         $class = eval "use $class;";
-        if (my $err = $@) {
+        if ( my $err = $@ ) {
             $class = eval 'use MT::Entry;';
         }
     }
@@ -498,40 +536,50 @@ sub cache {
     $param{datasource} = $ds;
 
     my $tag_cache = $pkg->cache_obj(%param);
-    my $data = $tag_cache->get('tag_cache');
+    my $data      = $tag_cache->get('tag_cache');
 
-    if (ref($data) ne 'ARRAY') {
-        my $private = $param{private};
+    if ( ref($data) ne 'ARRAY' ) {
+        my $private      = $param{private};
         my $class_column = $class->properties->{class_column};
+
         # FIXME: this should be a parameter; breaks MVC model
         my $limit = MT->config->MaxTagAutoCompletionItems;
         require MT::ObjectTag;
         my @tags = map { $_->name } MT::Tag->load(
             undef,
-            {
-                ( $private ? () : ( 'name' => { not_like => '@%' } ) ),
-                join => MT::ObjectTag->join_on( undef, {
-                    tag_id => \'= tag_id',
-                    ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                    object_datasource => $ds,
-                }, {
-                    unique => 1,
-                    join => $class->join_on( undef, {
-                        'id' => \'= objecttag_object_id',
+            {   ( $private ? () : ( 'name' => { not_like => '@%' } ) ),
+                join => MT::ObjectTag->join_on(
+                    undef,
+                    {   tag_id => \'= tag_id',
                         ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                        ( $class_column ? ( $class_column => $class->class_type ) : () ),
-                    }, {
-                        sort => ($class eq 'MT::Entry' ? 'authored_on' : 'modified_on'),
-                        direction => 'descend'
-                    })
-                }),
-                limit => $limit,
+                        object_datasource => $ds,
+                    },
+                    {   unique => 1,
+                        join   => $class->join_on(
+                            undef,
+                            {   'id' => \'= objecttag_object_id',
+                                ( $blog_id ? ( blog_id => $blog_id ) : () ),
+                                (   $class_column
+                                    ? ( $class_column => $class->class_type )
+                                    : ()
+                                ),
+                            },
+                            {   sort => (
+                                    $class eq 'MT::Entry' ? 'authored_on'
+                                    : 'modified_on'
+                                ),
+                                direction => 'descend'
+                            }
+                        )
+                    }
+                ),
+                limit     => $limit,
                 fetchonly => [ 'id', 'name' ]
             }
         );
         if (@tags) {
             $data = \@tags;
-            $tag_cache->set('tag_cache', \@tags);
+            $tag_cache->set( 'tag_cache', \@tags );
             $tag_cache->save;
         }
     }
@@ -542,14 +590,14 @@ sub cache {
 
 package MT::Taggable;
 
-use constant TAG_CACHE_TIME => 7 * 24 * 60 * 60;  ## 1 week
+use constant TAG_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
 
 sub install_properties {
     my $pkg = shift;
     my ($class) = @_;
 
     # synchronize tags if necessary
-    $class->add_trigger( post_save => \&post_save_tags );
+    $class->add_trigger( post_save  => \&post_save_tags );
     $class->add_trigger( pre_remove => \&pre_remove_tags );
 }
 
@@ -574,32 +622,41 @@ sub tag_cache_key {
 
 sub __load_tags {
     my $obj = shift;
-    my $t = MT->get_timer;
+    my $t   = MT->get_timer;
     $t->pause_partial if $t;
 
-    if (!$obj->id) {
+    if ( !$obj->id ) {
         $obj->{__tags} = [];
         return $obj->{__tag_objects} = [];
     }
     return if exists $obj->{__tag_objects};
 
     require MT::Memcached;
-    my $cache = MT::Memcached->instance;
+    my $cache  = MT::Memcached->instance;
     my $memkey = $obj->tag_cache_key;
     my @tags;
-    if (my $tag_ids = $cache->get($memkey)) {
-        @tags = grep { defined } @{ MT::Tag->lookup_multi($tag_ids) };
-    } else {
+    if ( my $tag_ids = $cache->get($memkey) ) {
+        @tags = grep {defined} @{ MT::Tag->lookup_multi($tag_ids) };
+    }
+    else {
         require MT::ObjectTag;
-        my $iter = MT::Tag->load_iter(undef, {
-            sort => 'name',  
-            join => [ 'MT::ObjectTag', 'tag_id', { object_id => $obj->id,
-                object_datasource => $obj->datasource }, { unique => 1 } ],       
-        });
+        my $iter = MT::Tag->load_iter(
+            undef,
+            {   sort => 'name',
+                join => [
+                    'MT::ObjectTag',
+                    'tag_id',
+                    {   object_id         => $obj->id,
+                        object_datasource => $obj->datasource
+                    },
+                    { unique => 1 }
+                ],
+            }
+        );
         while ( my $tag = $iter->() ) {
             push @tags, $tag;
         }
-        $cache->set($memkey, [ map { $_->id } @tags ], TAG_CACHE_TIME);
+        $cache->set( $memkey, [ map { $_->id } @tags ], TAG_CACHE_TIME );
     }
     $obj->{__tags} = [ map { $_->name } @tags ];
     $t->mark('MT::Tag::__load_tags') if $t;
@@ -620,7 +677,7 @@ sub get_tag_objects {
 
 sub set_tags {
     my $obj = shift;
-    $obj->{__tags} = [ sort @_ ];
+    $obj->{__tags}      = [ sort @_ ];
     $obj->{__save_tags} = 1;
 }
 
@@ -629,7 +686,7 @@ sub save_tags {
     return 1 unless $obj->{__save_tags};
     require MT::ObjectTag;
     my $clear_cache = 0;
-    my @tags = @{ $obj->{__tags} };
+    my @tags        = @{ $obj->{__tags} };
     return 1 unless @tags;
 
     my $t = MT->get_timer;
@@ -637,19 +694,24 @@ sub save_tags {
 
     $obj->{__tag_objects} = [];
     my $blog_id = $obj->has_column('blog_id') ? $obj->blog_id : 0;
-    my @existing_tags = MT::ObjectTag->load({object_id => $obj->id,
-        object_datasource => $obj->datasource });
+    my @existing_tags = MT::ObjectTag->load(
+        {   object_id         => $obj->id,
+            object_datasource => $obj->datasource
+        }
+    );
     my %existing_tags = map { $_->tag_id => $_ } @existing_tags;
     foreach my $tag_name (@tags) {
-        my $tag = MT::Tag->load({ name => $tag_name },
+        my $tag = MT::Tag->load( { name => $tag_name },
             { binary => { name => 1 } } );
         if ($tag) {
-            if (exists $existing_tags{$tag->id}) {
-                $existing_tags{$tag->id} = 0;
+            if ( exists $existing_tags{ $tag->id } ) {
+                $existing_tags{ $tag->id } = 0;
                 push @{ $obj->{__tag_objects} }, $tag;
                 next;
             }
-        } else {
+        }
+        else {
+
             # new tag
             $tag = new MT::Tag;
             $tag->name($tag_name);
@@ -658,23 +720,24 @@ sub save_tags {
         }
         my $otag = new MT::ObjectTag;
         $otag->blog_id($blog_id);
-        $otag->tag_id($tag->id);
-        $otag->object_id($obj->id);
-        $otag->object_datasource($obj->datasource);
-        $otag->save or return $obj->error($otag->errstr);
-        $existing_tags{$tag->id} = 0;
+        $otag->tag_id( $tag->id );
+        $otag->object_id( $obj->id );
+        $otag->object_datasource( $obj->datasource );
+        $otag->save or return $obj->error( $otag->errstr );
+        $existing_tags{ $tag->id } = 0;
         $clear_cache = 1;
 
         push @{ $obj->{__tag_objects} }, $tag;
     }
 
-    foreach my $otag (values %existing_tags) {
+    foreach my $otag ( values %existing_tags ) {
         next unless ref $otag;
         my $this_tag_id = $otag->tag_id;
         $otag->remove;
-        if (! MT::ObjectTag->exist({tag_id => $this_tag_id})) {
+        if ( !MT::ObjectTag->exist( { tag_id => $this_tag_id } ) ) {
+
             # no more references to this tag... just delete it now
-            if (my $tag = MT::Tag->load($this_tag_id)) {
+            if ( my $tag = MT::Tag->load($this_tag_id) ) {
                 $tag->remove;
             }
         }
@@ -682,7 +745,10 @@ sub save_tags {
     }
     delete $obj->{__save_tags};
     if ($clear_cache) {
-        MT::Tag->clear_cache(datasource => $obj->datasource, ($blog_id ? (blog_id => $blog_id) : ()));
+        MT::Tag->clear_cache(
+            datasource => $obj->datasource,
+            ( $blog_id ? ( blog_id => $blog_id ) : () )
+        );
 
         require MT::Memcached;
         MT::Memcached->instance->delete( $obj->tag_cache_key );
@@ -698,13 +764,13 @@ sub tags {
 }
 
 sub add_tags {
-    my $obj = shift;
+    my $obj    = shift;
     my (@tags) = @_;
-    my @etags = $obj->tags;
+    my @etags  = $obj->tags;
     push @tags, @etags;
     my %uniq;
     @uniq{@tags} = ();
-    $obj->set_tags(keys %uniq);
+    $obj->set_tags( keys %uniq );
 }
 
 sub remove_tags {
@@ -715,19 +781,24 @@ sub remove_tags {
         my %uniq;
         @uniq{@etags} = ();
         delete $uniq{$_} for @tags;
-        if (keys %uniq) {
-            $obj->set_tags(keys %uniq);
+        if ( keys %uniq ) {
+            $obj->set_tags( keys %uniq );
             return;
         }
     }
     require MT::ObjectTag;
-    my @et = MT::ObjectTag->load({ object_id => $obj->id,
-                                   object_datasource => $obj->datasource });
+    my @et = MT::ObjectTag->load(
+        {   object_id         => $obj->id,
+            object_datasource => $obj->datasource
+        }
+    );
     $_->remove for @et;
     $obj->{__tags} = [];
     delete $obj->{__save_tags};
-    MT::Tag->clear_cache(datasource => $obj->datasource,
-        ($obj->blog_id ? (blog_id => $obj->blog_id) : ())) if @et;
+    MT::Tag->clear_cache(
+        datasource => $obj->datasource,
+        ( $obj->blog_id ? ( blog_id => $obj->blog_id ) : () )
+    ) if @et;
 
     require MT::Memcached;
     MT::Memcached->instance->delete( $obj->tag_cache_key );
@@ -745,16 +816,16 @@ sub has_tag {
 
 # counts number of tags
 sub tag_count {
-    my $obj = shift;
+    my $obj     = shift;
     my ($terms) = @_;
-    my $pkg = ref $obj ? ref $obj : $obj;
+    my $pkg     = ref $obj ? ref $obj : $obj;
     $terms ||= {};
     my $jterms = {};
-    if (ref $obj) {
-        $terms->{object_id} = $obj->id if $obj->id;
-        $jterms->{blog_id} = $obj->blog_id if $obj->column('blog_id');
+    if ( ref $obj ) {
+        $terms->{object_id} = $obj->id      if $obj->id;
+        $jterms->{blog_id}  = $obj->blog_id if $obj->column('blog_id');
     }
-    if ($terms->{blog_id}) {
+    if ( $terms->{blog_id} ) {
         $jterms->{blog_id} = $terms->{blog_id};
         delete $terms->{blog_id};
     }
@@ -767,8 +838,7 @@ sub tag_count {
     require MT::ObjectTag;
     MT::Tag->count(
         undef,
-        {
-            join => MT::ObjectTag->join_on(
+        {   join => MT::ObjectTag->join_on(
                 'tag_id', $jterms,
                 { unique => 1, join => $pkg->join_on( undef, $pkg_terms ) }
             )
@@ -779,28 +849,32 @@ sub tag_count {
 # counts number of objects tagged with a given tag
 sub tagged_count {
     my $obj = shift;
-    my ($tag_id, $terms) = @_;
+    my ( $tag_id, $terms ) = @_;
     $terms ||= {};
     my $jterms = {};
     my $pkg = ref $obj ? ref $obj : $obj;
-    if (defined $tag_id && ($tag_id =~ m/\D/)) {
+    if ( defined $tag_id && ( $tag_id =~ m/\D/ ) ) {
         my $n8d_tag = MT::Tag->normalize($tag_id);
-        my $tag = MT::Tag->load({ name => [ $tag_id, $n8d_tag ] },
-            { binary => { name => 1 } });
+        my $tag     = MT::Tag->load(
+            { name => [ $tag_id, $n8d_tag ] },
+            { binary => { name => 1 } }
+        );
         return 0 unless $tag;
         $tag_id = $tag->id;
     }
-    if (ref $obj) {
-        $terms->{object_id} = $obj->id if $obj->id;
-        $jterms->{blog_id} = $obj->blog_id if $obj->column('blog_id');
-    } else {
+    if ( ref $obj ) {
+        $terms->{object_id} = $obj->id      if $obj->id;
+        $jterms->{blog_id}  = $obj->blog_id if $obj->column('blog_id');
+    }
+    else {
         $jterms->{blog_id} = $terms->{blog_id} if $terms->{blog_id};
     }
     $jterms->{object_datasource} = $pkg->datasource;
     $jterms->{tag_id} = $tag_id if $tag_id;
-    my $args = { join => ['MT::ObjectTag', 'object_id', $jterms, { unique => 1 }] };
+    my $args = {
+        join => [ 'MT::ObjectTag', 'object_id', $jterms, { unique => 1 } ] };
     require MT::ObjectTag;
-    $pkg->count($terms, $args);
+    $pkg->count( $terms, $args );
 }
 
 1;

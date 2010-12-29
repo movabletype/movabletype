@@ -14,7 +14,7 @@ use List::Util qw( shuffle );
 my $instance;
 
 our $RANDOMIZE_JOBS = 0;
-our $OBJECT_REPORT = 0;
+our $OBJECT_REPORT  = 0;
 
 sub instance {
     $instance ||= MT::TheSchwartz->new();
@@ -32,7 +32,8 @@ sub insert {
 }
 
 sub default_logger {
-    my ($msg, $job) = @_;
+    my ( $msg, $job ) = @_;
+
     # suppress TheSchwartz::Job's 'job completed'
     return if $msg eq 'job completed';
 
@@ -51,18 +52,18 @@ sub new {
     $OBJECT_REPORT = 1 if $Devel::Leak::Object::VERSION;
 
     $param{verbose} = \&default_logger
-        if $param{verbose} && (ref $param{verbose} ne 'CODE');
+        if $param{verbose} && ( ref $param{verbose} ne 'CODE' );
 
     my $client = $class->SUPER::new(%param);
 
     if ($client) {
         $instance = $client;
-        unless ( $workers ) {
+        unless ($workers) {
             $workers = [];
 
             my $all_workers ||= MT->registry("task_workers") || {};
 
-            foreach my $id (keys %$all_workers) {
+            foreach my $id ( keys %$all_workers ) {
                 my $w = $all_workers->{$id};
                 my $c = $w->{class} or next;
                 push @$workers, $c;
@@ -70,12 +71,16 @@ sub new {
         }
 
         if (@$workers) {
+
             # Can we do this?
-            foreach my $c ( @$workers ) {
-                if (eval('require ' . $c)) {
+            foreach my $c (@$workers) {
+                if ( eval( 'require ' . $c ) ) {
+
                     # Yes, we can do this.
-                    $client->can_do( $c );
-                } else {
+                    $client->can_do($c);
+                }
+                else {
+
                     # No, we can't. Here's why...
                     print STDERR "Failed to load worker class '$c': $@\n";
                 }
@@ -212,36 +217,36 @@ sub _has_enough_memory {
 # it's just returning time())
 sub get_server_time {
     my TheSchwartz $client = shift;
-    my($driver) = @_;
-    my $unixtime_sql = $driver->dbd->sql_for_unixtime;
+    my ($driver)           = @_;
+    my $unixtime_sql       = $driver->dbd->sql_for_unixtime;
     return $unixtime_sql if $unixtime_sql =~ m/^\d+$/;
     return $driver->r_handle->selectrow_array("SELECT $unixtime_sql");
 }
 
 sub work_until_done {
     my TheSchwartz $client = shift;
-    if ( ! $client ) {
+    if ( !$client ) {
         return;
     }
-    my $cap = MT->config('SchwartzClientDeadline'); # in seconds
+    my $cap       = MT->config('SchwartzClientDeadline');    # in seconds
     my $mem_limit = MT->config('SchwartzFreeMemoryLimit');
     $mem_limit ||= 0;
     my $swap_limit = MT->config('SchwartzSwapMemoryLimit');
     $swap_limit ||= 0;
     my $deadline;
-    if ( $cap ) {
+    if ($cap) {
         $deadline = time() + $cap;
         while ( time() < $deadline ) {
             $client->work_once or last;
-            last unless _has_enough_memory( $mem_limit );
-            last unless _has_enough_memory( $swap_limit );
+            last unless _has_enough_memory($mem_limit);
+            last unless _has_enough_memory($swap_limit);
         }
     }
     else {
-        while ( 1 ) {
+        while (1) {
             $client->work_once or last;
-            last unless _has_enough_memory( $mem_limit );
-            last unless _has_enough_swap( $swap_limit );
+            last unless _has_enough_memory($mem_limit);
+            last unless _has_enough_swap($swap_limit);
         }
     }
 }
@@ -251,7 +256,7 @@ sub work_periodically {
     my ($delay) = @_;
     $delay ||= 5;
     my $last_task_run = 0;
-    my $did_work = 0;
+    my $did_work      = 0;
 
     # holds state of objects at start
     my %obj_start;
@@ -265,17 +270,18 @@ sub work_periodically {
             %obj_pre = %Devel::Leak::Object::OBJECT_COUNT;
         }
 
-        if ($client->work_once) {
+        if ( $client->work_once ) {
             $did_work = 1;
         }
 
-        if ($last_task_run + 60 * 5 < time) {
+        if ( $last_task_run + 60 * 5 < time ) {
             MT->run_tasks();
-            $did_work = 1;
+            $did_work      = 1;
             $last_task_run = time;
         }
 
         if ($did_work) {
+
             # Clear RAM cache
             MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
 
@@ -283,7 +289,8 @@ sub work_periodically {
 
             $did_work = 0;
             if ($OBJECT_REPORT) {
-                my $report = leak_report(\%obj_start, \%obj_pre, \%Devel::Leak::Object::OBJECT_COUNT);
+                my $report = leak_report( \%obj_start, \%obj_pre,
+                    \%Devel::Leak::Object::OBJECT_COUNT );
                 $client->debug($report) if $report ne '';
             }
         }
@@ -293,25 +300,38 @@ sub work_periodically {
 }
 
 our %persistent;
+
 BEGIN {
-    %persistent = map { $_ => 1 } qw( MT::Callback MT::Task MT::Plugin MT::Component MT::ArchiveType MT::TaskMgr MT::WeblogPublisher MT::Serialize TheSchwartz::Job TheSchwartz::JobHandle );
+    %persistent = map { $_ => 1 }
+        qw( MT::Callback MT::Task MT::Plugin MT::Component MT::ArchiveType MT::TaskMgr MT::WeblogPublisher MT::Serialize TheSchwartz::Job TheSchwartz::JobHandle );
 }
+
 sub leak_report {
-    my ($start, $pre, $post) = @_;
+    my ( $start, $pre, $post ) = @_;
     my $reported;
     my $report = '';
-    foreach my $class (sort keys %$post) {
+    foreach my $class ( sort keys %$post ) {
+
         # skip reporting classes that are persistent in nature
         next if exists $persistent{$class};
 
         my $post_count = $post->{$class};
-        next if ! $post_count;
-        my $pre_count = $pre->{$class} || 0;
+        next if !$post_count;
+        my $pre_count   = $pre->{$class}   || 0;
         my $start_count = $start->{$class} || 0;
-        next if $post_count == 1;  # ignores most singletons
-        if (($pre_count != $post_count) || ($post_count != $start_count)) {
-            $report .= "Leak report (class, total, delta from last job(s), delta since process start):\n" unless $reported;
-            $report .= sprintf("%-40s %-10d %-10d %-10d\n", $class, $post_count, $post_count - $pre_count, $post_count - $start_count);
+        next if $post_count == 1;    # ignores most singletons
+        if (   ( $pre_count != $post_count )
+            || ( $post_count != $start_count ) )
+        {
+            $report
+                .= "Leak report (class, total, delta from last job(s), delta since process start):\n"
+                unless $reported;
+            $report .= sprintf(
+                "%-40s %-10d %-10d %-10d\n",
+                $class, $post_count,
+                $post_count - $pre_count,
+                $post_count - $start_count
+            );
             $reported = 1;
         }
     }
@@ -320,29 +340,33 @@ sub leak_report {
 
 sub _grab_a_job {
     my TheSchwartz $client = shift;
-    my $hashdsn = shift;
-    my $driver = $client->driver_for($hashdsn);
+    my $hashdsn            = shift;
+    my $driver             = $client->driver_for($hashdsn);
 
     ## Got some jobs! Randomize them to avoid contention between workers.
     my @jobs = $RANDOMIZE_JOBS ? shuffle(@_) : @_;
 
-  JOB:
-    while (my $job = shift @jobs) {
+JOB:
+    while ( my $job = shift @jobs ) {
         ## Convert the funcid to a funcname, based on this database's map.
-        $job->funcname( $client->funcid_to_name($driver, $hashdsn, $job->funcid) );
+        $job->funcname(
+            $client->funcid_to_name( $driver, $hashdsn, $job->funcid ) );
 
         ## Update the job's grabbed_until column so that
         ## no one else takes it.
-        my $worker_class = $job->funcname;
+        my $worker_class      = $job->funcname;
         my $old_grabbed_until = $job->grabbed_until;
 
         my $server_time = $client->get_server_time($driver)
             or die "expected a server time";
 
-        $job->grabbed_until($server_time + ($worker_class->grab_for || 1));
+        $job->grabbed_until(
+            $server_time + ( $worker_class->grab_for || 1 ) );
 
         ## Update the job in the database, and end the transaction.
-        if ($driver->update($job, { grabbed_until => $old_grabbed_until }) < 1) {
+        if ( $driver->update( $job, { grabbed_until => $old_grabbed_until } )
+            < 1 )
+        {
             ## We lost the race to get this particular job--another worker must
             ## have got it and already updated it. Move on to the next job.
             $TheSchwartz::T_LOST_RACE->() if $TheSchwartz::T_LOST_RACE;
@@ -350,10 +374,11 @@ sub _grab_a_job {
         }
 
         ## Now prepare the job, and return it.
-        my $handle = TheSchwartz::JobHandle->new({
-            dsn_hashed => $hashdsn,
-            jobid      => $job->jobid,
-        });
+        my $handle = TheSchwartz::JobHandle->new(
+            {   dsn_hashed => $hashdsn,
+                jobid      => $job->jobid,
+            }
+        );
         $handle->client($client);
         $job->handle($handle);
         return $job;

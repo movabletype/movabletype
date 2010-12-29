@@ -19,11 +19,11 @@ sub save_filter {
     $ip =~ s/(^\s+|\s+$)//g;
     return $eh->error(
         MT->translate("You did not enter an IP address to ban.") )
-      if ( '' eq $ip );
+        if ( '' eq $ip );
     my $blog_id = $app->param('blog_id');
     require MT::IPBanList;
-    my $existing =
-      MT::IPBanList->load( { 'ip' => $ip, 'blog_id' => $blog_id } );
+    my $existing
+        = MT::IPBanList->load( { 'ip' => $ip, 'blog_id' => $blog_id } );
     my $id = $app->param('id');
 
     if ( $existing && ( !$id || $existing->id != $id ) ) {
@@ -44,9 +44,11 @@ sub cms_pre_load_filtered_list {
     require MT::Permission;
     my $blog_ids = $load_options->{blog_ids} || undef;
     my $iter = MT::Permission->load_iter(
-        {
-            author_id => $user->id,
-            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 }) ),
+        {   author_id => $user->id,
+            (   $blog_ids
+                ? ( blog_id => $blog_ids )
+                : ( blog_id => { not => 0 } )
+            ),
         },
     );
 

@@ -11,92 +11,92 @@ use Encode;
 use MT::I18N::default;
 use Exporter;
 use vars qw(@ISA @EXPORT_OK);
-@ISA = qw(Exporter);
+@ISA       = qw(Exporter);
 @EXPORT_OK = qw(encode_text substr_text length_text guess_encoding const
-                wrap_text first_n_text break_up_text convert_high_ascii
-                lowercase uppercase utf8_off);
+    wrap_text first_n_text break_up_text convert_high_ascii
+    lowercase uppercase utf8_off);
 
-my %Supported_Languages = map {$_ => 1} ( qw( en_us ja ) );
+my %Supported_Languages = map { $_ => 1 } (qw( en_us ja ));
 
 no warnings 'redefine';
-sub guess_encoding { _handle(guess_encoding => @_) }
-sub encode_text { _handle(encode_text => @_) }
-sub wrap_text { MT::I18N::default->wrap_text_encode(@_); }
-sub first_n { _handle(first_n => @_) }
-sub first_n_text { _handle(first_n => @_) } # for backward compatibility
+sub guess_encoding { _handle( guess_encoding => @_ ) }
+sub encode_text    { _handle( encode_text    => @_ ) }
+sub wrap_text      { MT::I18N::default->wrap_text_encode(@_); }
+sub first_n        { _handle( first_n        => @_ ) }
+sub first_n_text { _handle( first_n => @_ ) }    # for backward compatibility
 
 sub substr_text {
-    my ($text, $startpos, $length, $enc) = @_;
-    $text = substr($text, $startpos, $length);
+    my ( $text, $startpos, $length, $enc ) = @_;
+    $text = substr( $text, $startpos, $length );
     $text;
 }
 
 sub length_text {
-    my ($text, $enc) = @_;
+    my ( $text, $enc ) = @_;
     return length($text);
 }
 
 sub break_up_text {
-    MT::Util::break_up_text( @_ );
+    MT::Util::break_up_text(@_);
 }
 
 my %HighASCII = (
-    "\xc0" => 'A',    # A`
-    "\xe0" => 'a',    # a`
-    "\xc1" => 'A',    # A'
-    "\xe1" => 'a',    # a'
-    "\xc2" => 'A',    # A^
-    "\xe2" => 'a',    # a^
-    "\xc4" => 'A',    # A:
-    "\xe4" => 'a',    # a:
-    "\xc5" => 'A',    # Aring
-    "\xe5" => 'a',    # aring
-    "\xc6" => 'AE',   # AE
-    "\xe6" => 'ae',   # ae
-    "\xc3" => 'A',    # A~
-    "\xe3" => 'a',    # a~
-    "\xc8" => 'E',    # E`
-    "\xe8" => 'e',    # e`
-    "\xc9" => 'E',    # E'
-    "\xe9" => 'e',    # e'
-    "\xca" => 'E',    # E^
-    "\xea" => 'e',    # e^
-    "\xcb" => 'E',    # E:
-    "\xeb" => 'e',    # e:
-    "\xcc" => 'I',    # I`
-    "\xec" => 'i',    # i`
-    "\xcd" => 'I',    # I'
-    "\xed" => 'i',    # i'
-    "\xce" => 'I',    # I^
-    "\xef" => 'i',    # i:
-    "\xd2" => 'O',    # O`
-    "\xf2" => 'o',    # o`
-    "\xd3" => 'O',    # O'
-    "\xf3" => 'o',    # o'
-    "\xd4" => 'O',    # O^
-    "\xf4" => 'o',    # o^
-    "\xd6" => 'O',    # O:
-    "\xf6" => 'o',    # o:
-    "\xd5" => 'O',    # O~
-    "\xf5" => 'o',    # o~
-    "\xd8" => 'O',    # O/
-    "\xf8" => 'o',    # o/
-    "\xd9" => 'U',    # U`
-    "\xf9" => 'u',    # u`
-    "\xda" => 'U',    # U'
-    "\xfa" => 'u',    # u'
-    "\xdb" => 'U',    # U^
-    "\xfb" => 'u',    # u^
-    "\xdc" => 'U',    # U:
-    "\xfc" => 'u',    # u:
-    "\xc7" => 'C',    # ,C
-    "\xe7" => 'c',    # ,c
-    "\xd1" => 'N',    # N~
-    "\xf1" => 'n',    # n~
-    "\xdd" => 'Y',    # Yacute
-    "\xfd" => 'y',    # yacute
-    "\xdf" => 'ss',   # szlig
-    "\xff" => 'y'     # yuml
+    "\xc0" => 'A',     # A`
+    "\xe0" => 'a',     # a`
+    "\xc1" => 'A',     # A'
+    "\xe1" => 'a',     # a'
+    "\xc2" => 'A',     # A^
+    "\xe2" => 'a',     # a^
+    "\xc4" => 'A',     # A:
+    "\xe4" => 'a',     # a:
+    "\xc5" => 'A',     # Aring
+    "\xe5" => 'a',     # aring
+    "\xc6" => 'AE',    # AE
+    "\xe6" => 'ae',    # ae
+    "\xc3" => 'A',     # A~
+    "\xe3" => 'a',     # a~
+    "\xc8" => 'E',     # E`
+    "\xe8" => 'e',     # e`
+    "\xc9" => 'E',     # E'
+    "\xe9" => 'e',     # e'
+    "\xca" => 'E',     # E^
+    "\xea" => 'e',     # e^
+    "\xcb" => 'E',     # E:
+    "\xeb" => 'e',     # e:
+    "\xcc" => 'I',     # I`
+    "\xec" => 'i',     # i`
+    "\xcd" => 'I',     # I'
+    "\xed" => 'i',     # i'
+    "\xce" => 'I',     # I^
+    "\xef" => 'i',     # i:
+    "\xd2" => 'O',     # O`
+    "\xf2" => 'o',     # o`
+    "\xd3" => 'O',     # O'
+    "\xf3" => 'o',     # o'
+    "\xd4" => 'O',     # O^
+    "\xf4" => 'o',     # o^
+    "\xd6" => 'O',     # O:
+    "\xf6" => 'o',     # o:
+    "\xd5" => 'O',     # O~
+    "\xf5" => 'o',     # o~
+    "\xd8" => 'O',     # O/
+    "\xf8" => 'o',     # o/
+    "\xd9" => 'U',     # U`
+    "\xf9" => 'u',     # u`
+    "\xda" => 'U',     # U'
+    "\xfa" => 'u',     # u'
+    "\xdb" => 'U',     # U^
+    "\xfb" => 'u',     # u^
+    "\xdc" => 'U',     # U:
+    "\xfc" => 'u',     # u:
+    "\xc7" => 'C',     # ,C
+    "\xe7" => 'c',     # ,c
+    "\xd1" => 'N',     # N~
+    "\xf1" => 'n',     # n~
+    "\xdd" => 'Y',     # Yacute
+    "\xfd" => 'y',     # yacute
+    "\xdf" => 'ss',    # szlig
+    "\xff" => 'y'      # yuml
 );
 my $HighASCIIRE = join '|', keys %HighASCII;
 
@@ -106,18 +106,18 @@ sub convert_high_ascii {
     $s;
 }
 
- #sub decode_utf8 {
+#sub decode_utf8 {
 #    my $class = shift;
 #    Encode::decode_utf8(@_);
 #}
 
 sub is_utf8 {
-    my ( $text ) = @_;
+    my ($text) = @_;
     Encode::is_utf8($text);
 }
 
 sub utf8_off {
-    my ( $text ) = @_;
+    my ($text) = @_;
     Encode::_utf8_off($text);
     return $text;
 }
@@ -132,30 +132,31 @@ sub uppercase {
 
 sub const {
     my $label = shift;
-    my $lang = _language();
+    my $lang  = _language();
     my $class = 'MT::I18N::' . $lang;
     $class->$label();
 }
 
 sub _handle {
-    my $meth = shift;
-    my $lang = _language();
+    my $meth  = shift;
+    my $lang  = _language();
     my $class = 'MT::I18N::' . $lang;
     $class->$meth(@_);
 }
 
 sub _language {
     my $lang = lc MT->current_language;
+
     #if ( MT->config('UseJcodeModule') ) {
     #    $lang = 'ja';
     #}
     $lang =~ tr/-/_/;
-    if (($Supported_Languages{$lang}) || 2 < 2) {
+    if ( ( $Supported_Languages{$lang} ) || 2 < 2 ) {
         my $class = 'MT::I18N::' . $lang;
         eval "require $class";
         die if $@;
         $class->import();
-        $Supported_Languages{$lang} = 2; # lang package loaded
+        $Supported_Languages{$lang} = 2;    # lang package loaded
     }
     $Supported_Languages{$lang} ? $lang : 'default';
 }

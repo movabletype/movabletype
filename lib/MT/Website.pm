@@ -9,14 +9,19 @@ package MT::Website;
 use strict;
 use base qw( MT::Blog );
 
-__PACKAGE__->install_properties({
-    class_type => 'website',
-    child_classes => ['MT::Page', 'MT::Template', 'MT::Asset',
-                      'MT::Folder', 'MT::Notification', 'MT::Log',
-                      'MT::ObjectTag', 'MT::Association', 'MT::Comment',
-                      'MT::TBPing', 'MT::Trackback', 'MT::TemplateMap',
-                      'MT::Touch',],
-});
+__PACKAGE__->install_properties(
+    {   class_type    => 'website',
+        child_classes => [
+            'MT::Page',         'MT::Template',
+            'MT::Asset',        'MT::Folder',
+            'MT::Notification', 'MT::Log',
+            'MT::ObjectTag',    'MT::Association',
+            'MT::Comment',      'MT::TBPing',
+            'MT::Trackback',    'MT::TemplateMap',
+            'MT::Touch',
+        ],
+    }
+);
 
 sub class_label {
     return MT->translate("Website");
@@ -28,12 +33,8 @@ sub class_label_plural {
 
 sub list_props {
     return {
-        id            => {
-            base  => 'blog.id',
-        },
-        name          => {
-            base  => 'blog.name',
-        },
+        id         => { base => 'blog.id', },
+        name       => { base => 'blog.name', },
         blog_count => {
             label       => 'Blogs',
             order       => 200,
@@ -44,7 +45,7 @@ sub list_props {
             filter_type => 'blog_id',
             list_screen => 'blog',
         },
-        page_count    => {
+        page_count => {
             base      => 'blog.page_count',
             display   => 'default',
             html_link => sub {
@@ -54,10 +55,10 @@ sub list_props {
                 $link . '&filter=current_context';
             },
         },
-        description   => { base => 'blog.description' },
-        entry_count   => { view => [] },
-        asset_count   => {
-            base => 'blog.asset_count',
+        description => { base => 'blog.description' },
+        entry_count => { view => [] },
+        asset_count => {
+            base      => 'blog.asset_count',
             html_link => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
@@ -66,7 +67,7 @@ sub list_props {
             },
         },
         comment_count => {
-            base => 'blog.comment_count',
+            base      => 'blog.comment_count',
             html_link => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
@@ -74,8 +75,8 @@ sub list_props {
                 $link . '&filter=current_context';
             },
         },
-        member_count  => {
-            base => 'blog.member_count',
+        member_count => {
+            base      => 'blog.member_count',
             html_link => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
@@ -83,28 +84,30 @@ sub list_props {
                 $link . '&filter=current_context';
             },
         },
-        theme_id      => {
-            base => 'blog.theme_id',
+        theme_id => {
+            base                  => 'blog.theme_id',
             single_select_options => sub {
                 my $prop = shift;
                 require MT::Theme;
                 my $themes = MT::Theme->load_all_themes;
                 return [
-                    map {{ label => $_->label, value => $_->id }}
-                    sort { $a->label cmp $b->label }
-                    grep { $_->{class} eq 'website' || $_->{class} eq 'both' }
-                    values %$themes
+                    map { { label => $_->label, value => $_->id } }
+                        sort { $a->label cmp $b->label }
+                        grep {
+                               $_->{class} eq 'website'
+                            || $_->{class} eq 'both'
+                        } values %$themes
                 ];
             },
         },
-        created_on    => { base => 'blog.created_on' },
-        modified_on   => { base => 'blog.modified_on' },
-        site_url      => {
-            base => 'blog.site_url',
+        created_on  => { base => 'blog.created_on' },
+        modified_on => { base => 'blog.modified_on' },
+        site_url    => {
+            base         => 'blog.site_url',
             filter_label => 'URL',
         },
-        site_path     => {
-            base => 'blog.site_path',
+        site_path => {
+            base         => 'blog.site_path',
             filter_label => 'Root Path',
         },
     };
@@ -112,7 +115,7 @@ sub list_props {
 
 sub create_default_website {
     my $class = shift;
-    my ($site_name, $site_theme) = @_;
+    my ( $site_name, $site_theme ) = @_;
     $site_name ||= MT->translate("First Website");
     $class = ref $class if ref $class;
 
@@ -124,7 +127,7 @@ sub create_default_website {
     $website->follow_auth_links(1);
 
     # Enable default commenter authentication
-    $website->commenter_authenticators(MT->config('DefaultCommenterAuth'));
+    $website->commenter_authenticators( MT->config('DefaultCommenterAuth') );
 
     # set class type
     $website->class('website');
@@ -132,51 +135,57 @@ sub create_default_website {
     $website->page_layout('layout-wtt');
     $website->theme_id($site_theme) if $site_theme;
 
-    $website->save or return $class->error($website->errstr);
+    $website->save or return $class->error( $website->errstr );
 
     # Apply website theme
-    if ( $site_theme ) {
+    if ($site_theme) {
         $website->apply_theme()
-            or return $class->error($website->errstr);
+            or return $class->error( $website->errstr );
     }
     return $website;
 }
 
 sub blogs {
     my $class = shift;
-    my ($terms, $args) = @_;
+    my ( $terms, $args ) = @_;
 
     my $blog_class = MT->model('blog');
-    if ($terms || $args) {
+    if ( $terms || $args ) {
         $terms ||= {};
-        $terms->{class} = 'blog';
+        $terms->{class}     = 'blog';
         $terms->{parent_id} = $class->id;
         return [ $blog_class->load( $terms, $args ) ];
-    } else {
-        $class->cache_property('blogs', sub {
-            [ $blog_class->load({
-                parent_id => $class->id,
-                class     => 'blog'
-            }) ];
-        });
+    }
+    else {
+        $class->cache_property(
+            'blogs',
+            sub {
+                [   $blog_class->load(
+                        {   parent_id => $class->id,
+                            class     => 'blog'
+                        }
+                    )
+                ];
+            }
+        );
     }
 }
 
-sub has_blog{
+sub has_blog {
     my $class = shift;
-    return scalar @{$class->blogs} ? 1 : 0;
+    return scalar @{ $class->blogs } ? 1 : 0;
 }
 
 sub add_blog {
     my $website = shift;
-    my ( $blog ) = @_;
+    my ($blog) = @_;
     return unless $blog;
 
-    $blog->parent_id($website->id);
+    $blog->parent_id( $website->id );
     $blog->save;
 
-    # Apply permission to website administrator if (s)he has manage_member_blogs permission.
-    my $author_class = MT->model('author');
+# Apply permission to website administrator if (s)he has manage_member_blogs permission.
+    my $author_class   = MT->model('author');
     my @website_admins = $author_class->load(
         { type => MT::Author::AUTHOR(), },
         {   join => MT::Permission->join_on(
@@ -188,14 +197,14 @@ sub add_blog {
             )
         }
     );
-    if ( @website_admins ) {
+    if (@website_admins) {
         require MT::Association;
         require MT::Role;
         my $user = MT->instance->user;
-        if ( $user ) {
+        if ($user) {
             my @roles = MT::Role->load_by_permission("administer_blog");
             my $role;
-            foreach my $r ( @roles ) {
+            foreach my $r (@roles) {
                 next if $r->permissions =~ m/\'administer_website\'/;
                 $role = $r;
                 last;

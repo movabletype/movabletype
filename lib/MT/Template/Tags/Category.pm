@@ -13,77 +13,98 @@ use MT::Promise qw( delay );
 use MT::Category;
 
 sub _load_sibling_categories {
-    my ($ctx, $cat, $class_type) = @_;
+    my ( $ctx, $cat, $class_type ) = @_;
     my $blog_id = $cat->blog_id;
-    my $r = MT::Request->instance;
-    my $cats = $r->stash('__cat_cache_'.$blog_id.'_'.$cat->parent);
+    my $r       = MT::Request->instance;
+    my $cats    = $r->stash( '__cat_cache_' . $blog_id . '_' . $cat->parent );
     return $cats if $cats;
 
     my $class = MT->model($class_type);
-    my @cats = $class->load({blog_id => $blog_id, parent => $cat->parent},
-                            {'sort' => 'label', direction => 'ascend'});
-    $r->stash('__cat_cache_'.$blog_id.'_'.$cat->parent, \@cats);
+    my @cats  = $class->load(
+        { blog_id => $blog_id, parent    => $cat->parent },
+        { 'sort'  => 'label',  direction => 'ascend' }
+    );
+    $r->stash( '__cat_cache_' . $blog_id . '_' . $cat->parent, \@cats );
     \@cats;
 }
 
 sub _get_category_context {
     my ($ctx) = @_;
-  
+
     my $tag = $ctx->stash('tag');
 
     # Get our hands on the category for the current context
     # Either in MTCategories, a Category Archive Template
     # Or the category for the current entry
-    my $cat = $ctx->stash('category') ||
-        $ctx->stash('archive_category');
+    my $cat = $ctx->stash('category')
+        || $ctx->stash('archive_category');
 
-    if (!defined $cat) { 
-    
+    if ( !defined $cat ) {
+
         # No category found so far, test the entry
-        if ($ctx->stash('entry')) {
+        if ( $ctx->stash('entry') ) {
             $cat = $ctx->stash('entry')->category;
 
             # Return empty string if entry has no category
             # as the tag has been used in the correct context
             # but there is no category to work with
-            return '' if (!defined $cat);
-        } else {
-            return $ctx->error(MT->translate("MT[_1] must be used in a [_2] context", $tag, $tag =~ m/folder/ig ? 'folder' : 'category'));
+            return '' if ( !defined $cat );
+        }
+        else {
+            return $ctx->error(
+                MT->translate(
+                    "MT[_1] must be used in a [_2] context",
+                    $tag,
+                    $tag =~ m/folder/ig ? 'folder' : 'category'
+                )
+            );
         }
     }
     return $cat;
 }
 
 sub _sort_cats {
-    my ($ctx, $sort_method, $sort_order, $cats) = @_;
+    my ( $ctx, $sort_method, $sort_order, $cats ) = @_;
     my $tag = $ctx->stash('tag');
 
     # If sort_method is defined
-    if (defined $sort_method) {
+    if ( defined $sort_method ) {
         my $package = $sort_method;
 
         # Check if it has a package name
-        if ($package =~ /::/) {
+        if ( $package =~ /::/ ) {
 
             # Extract the package name
             $package =~ s/::[^(::)]+$//;
 
             # Make sure it's loaded
-            eval (qq(use $package;));
-            if (my $err = $@) {
-                return $ctx->error(MT->translate("Cannot find package [_1]: [_2]", $package, $err));
+            eval(qq(use $package;));
+            if ( my $err = $@ ) {
+                return $ctx->error(
+                    MT->translate(
+                        "Cannot find package [_1]: [_2]",
+                        $package, $err
+                    )
+                );
             }
         }
 
         # Sort the categories based on sort_method
-        eval ("\@\$cats = sort $sort_method \@\$cats");
-        if (my $err = $@) {
-            return $ctx->error(MT->translate("Error sorting [_2]: [_1]", $err,$tag =~ m/folder/ig ? 'folders' : 'categories'));
+        eval("\@\$cats = sort $sort_method \@\$cats");
+        if ( my $err = $@ ) {
+            return $ctx->error(
+                MT->translate(
+                    "Error sorting [_2]: [_1]",
+                    $err, $tag =~ m/folder/ig ? 'folders' : 'categories'
+                )
+            );
         }
-    } else {
-        if (lc $sort_order eq 'descend') {
+    }
+    else {
+        if ( lc $sort_order eq 'descend' ) {
             @$cats = sort { $b->label cmp $a->label } @$cats;
-        } else {
+        }
+        else {
             @$cats = sort { $a->label cmp $b->label } @$cats;
         }
     }
@@ -153,25 +174,28 @@ offer conditionals for odd, even, first, last, and counter.
 =cut
 
 sub _hdlr_categories {
-    my($ctx, $args, $cond) = @_;
-    my (%terms, %args);
-    $ctx->set_blog_load_context($args, \%terms, \%args)
-        or return $ctx->error($ctx->errstr);
+    my ( $ctx, $args, $cond ) = @_;
+    my ( %terms, %args );
+    $ctx->set_blog_load_context( $args, \%terms, \%args )
+        or return $ctx->error( $ctx->errstr );
     require MT::Placement;
     $args{'sort'} = 'label';
-    $args{'direction'} = lc ($args->{sort_order} || '') eq 'descend' ? 'descend' : 'ascend';
+    $args{'direction'}
+        = lc( $args->{sort_order} || '' ) eq 'descend' ? 'descend' : 'ascend';
 
     my $class_type = $args->{class_type} || 'category';
     my $class = MT->model($class_type);
-    my $entry_class = MT->model(
-        $class_type eq 'category' ? 'entry' : 'page');
+    my $entry_class
+        = MT->model( $class_type eq 'category' ? 'entry' : 'page' );
     my %counts;
-    my $count_tag = $class_type eq 'category' ? 'CategoryCount'
-                  :                             'FolderCount'
-                  ;
+    my $count_tag
+        = $class_type eq 'category'
+        ? 'CategoryCount'
+        : 'FolderCount';
     my $uncompiled = $ctx->stash('uncompiled') || '';
     my $count_all = 0;
-    if (!$args->{show_empty} || $uncompiled =~ /<\$?mt:?$count_tag/i) {
+
+    if ( !$args->{show_empty} || $uncompiled =~ /<\$?mt:?$count_tag/i ) {
         $count_all = 1;
     }
 
@@ -179,52 +203,52 @@ sub _hdlr_categories {
     ## with the category in context in the most efficient manner.
     ## If we can determine counts will be gathered for all categories,
     ## a 'count_group_by' request is done for MT::Placement to fetch counts
-    ## with a single query (storing them in %counts). 
+    ## with a single query (storing them in %counts).
     ## Otherwise, counts are collected on an as-needed basis, using the
     ## 'entry_count' method in MT::Category.
     my $counts_fetched = 0;
     my $entry_count_of = sub {
-          my $cat = shift;
-          return delay(sub{$cat->entry_count})
-              unless $count_all;
-          return $cat->entry_count(defined $counts{$cat->id} ? $counts{$cat->id} : 0)
-              if $counts_fetched;
-          return $cat->cache_property(
-              'entry_count',
-              sub{
-                  # issue a single count_group_by for all categories
-                  my $cnt_iter = MT::Placement->count_group_by(
-                      {%terms},
-                      {
-                          group => ['category_id'],
-                          join  => $entry_class->join_on(
-                              undef,
-                              {
-                                  id     => \'=placement_entry_id',
-                                  status => MT::Entry::RELEASE(),
-                              }
-                          ),
-                      }
-                  ); 
-                  while (my ($count, $cat_id) = $cnt_iter->()) {
-                      $counts{$cat_id} = $count;
-                  }
-                  $counts_fetched = 1;
-                  $counts{$cat->id};
-              }
+        my $cat = shift;
+        return delay( sub { $cat->entry_count } )
+            unless $count_all;
+        return $cat->entry_count(
+            defined $counts{ $cat->id } ? $counts{ $cat->id } : 0 )
+            if $counts_fetched;
+        return $cat->cache_property(
+            'entry_count',
+            sub {
+
+                # issue a single count_group_by for all categories
+                my $cnt_iter = MT::Placement->count_group_by(
+                    {%terms},
+                    {   group => ['category_id'],
+                        join  => $entry_class->join_on(
+                            undef,
+                            {   id     => \'=placement_entry_id',
+                                status => MT::Entry::RELEASE(),
+                            }
+                        ),
+                    }
+                );
+                while ( my ( $count, $cat_id ) = $cnt_iter->() ) {
+                    $counts{$cat_id} = $count;
+                }
+                $counts_fetched = 1;
+                $counts{ $cat->id };
+            }
         );
     };
 
-    my $iter = $class->load_iter(\%terms, \%args);
-    my $res = '';
+    my $iter    = $class->load_iter( \%terms, \%args );
+    my $res     = '';
     my $builder = $ctx->stash('builder');
-    my $tokens = $ctx->stash('tokens');
-    my $glue = $args->{glue};
+    my $tokens  = $ctx->stash('tokens');
+    my $glue    = $args->{glue};
     ## In order for this handler to double as the handler for
     ## <MTArchiveList archive_type="Category">, it needs to support
     ## the <$MTArchiveLink$> and <$MTArchiveTitle$> tags
     local $ctx->{inside_mt_categories} = 1;
-    my $i = 0;
+    my $i   = 0;
     my $cat = $iter->();
     if ( !$args->{show_empty} ) {
         while ( defined $cat && !$entry_count_of->($cat) ) {
@@ -233,7 +257,7 @@ sub _hdlr_categories {
     }
     my $n = $args->{lastn};
     my $vars = $ctx->{__stash}{vars} ||= {};
-    while (defined($cat)) {
+    while ( defined($cat) ) {
         $i++;
         my $next_cat = $iter->();
         if ( !$args->{show_empty} ) {
@@ -242,27 +266,33 @@ sub _hdlr_categories {
             }
         }
         my $last;
-        $last = 1 if $n && ($i >= $n);
+        $last = 1 if $n && ( $i >= $n );
         $last = 1 unless defined $next_cat;
 
         local $ctx->{__stash}{category} = $cat;
         local $ctx->{__stash}{entries};
         local $ctx->{__stash}{category_count};
         local $ctx->{__stash}{blog_id} = $cat->blog_id;
-        local $ctx->{__stash}{blog} = MT::Blog->load($cat->blog_id);
-        local $ctx->{__stash}{folder_header} = ($i == 1) if $class_type ne 'category';
-        local $ctx->{__stash}{folder_footer} = ($last) if $class_type ne 'category';
-        local $vars->{__first__} = $i == 1;
-        local $vars->{__last__} = $last;
-        local $vars->{__odd__} = ($i % 2) == 1;
-        local $vars->{__even__} = ($i % 2) == 0;
+        local $ctx->{__stash}{blog}    = MT::Blog->load( $cat->blog_id );
+        local $ctx->{__stash}{folder_header} = ( $i == 1 )
+            if $class_type ne 'category';
+        local $ctx->{__stash}{folder_footer} = ($last)
+            if $class_type ne 'category';
+        local $vars->{__first__}   = $i == 1;
+        local $vars->{__last__}    = $last;
+        local $vars->{__odd__}     = ( $i % 2 ) == 1;
+        local $vars->{__even__}    = ( $i % 2 ) == 0;
         local $vars->{__counter__} = $i;
         $ctx->{__stash}{category_count} = $entry_count_of->($cat);
-        defined(my $out = $builder->build($ctx, $tokens,
-            { %$cond,
-              ArchiveListHeader => $i == 1,
-              ArchiveListFooter => $last }))
-            or return $ctx->error( $builder->errstr );
+        defined(
+            my $out = $builder->build(
+                $ctx, $tokens,
+                {   %$cond,
+                    ArchiveListHeader => $i == 1,
+                    ArchiveListFooter => $last
+                }
+            )
+        ) or return $ctx->error( $builder->errstr );
         $res .= $glue if defined $glue && length($res) && length($out);
         $res .= $out;
         last if $last;
@@ -363,33 +393,41 @@ counted and displayed.
 =cut
 
 sub _hdlr_category_prevnext {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $class_type = $args->{class_type} || 'category';
-    my $class = MT->model($class_type);
-    my $e = $ctx->stash('entry');
-    my $tag = $ctx->stash('tag');
-    my $step = $tag =~ m/Next/i ? 1 : -1;
-    my $cat = $e ?
-        $e->category ?
-            $e->category
-            : ($ctx->stash('category') || $ctx->stash('archive_category'))
-        : ($ctx->stash('category') || $ctx->stash('archive_category'));
-    return $ctx->error(MT->translate(
-        "You used an [_1] tag outside of the proper context.",
-        "<MT$tag>" )) if !defined $cat;
+    my $class      = MT->model($class_type);
+    my $e          = $ctx->stash('entry');
+    my $tag        = $ctx->stash('tag');
+    my $step       = $tag =~ m/Next/i ? 1 : -1;
+    my $cat
+        = $e
+        ? $e->category
+            ? $e->category
+            : ( $ctx->stash('category') || $ctx->stash('archive_category') )
+        : ( $ctx->stash('category') || $ctx->stash('archive_category') );
+    return $ctx->error(
+        MT->translate(
+            "You used an [_1] tag outside of the proper context.", "<MT$tag>"
+        )
+    ) if !defined $cat;
     require MT::Placement;
     my $needs_entries;
     my $uncompiled = $ctx->stash('uncompiled') || '';
-    $needs_entries = $class_type eq 'category' ?
-        (($uncompiled =~ /<MT:?Entries/i) ? 1 : 0) :
-        (($uncompiled =~ /<MT:?Pages/i) ? 1 : 0);
+    $needs_entries
+        = $class_type eq 'category'
+        ? ( ( $uncompiled =~ /<MT:?Entries/i ) ? 1 : 0 )
+        : ( ( $uncompiled =~ /<MT:?Pages/i ) ? 1 : 0 );
     my $blog_id = $cat->blog_id;
-    my $cats = _load_sibling_categories($ctx, $cat, $class_type);
+    my $cats = _load_sibling_categories( $ctx, $cat, $class_type );
 
     # Get the sorting info
-    my $sort_method  = $args->{sort_method} || $ctx->stash('subCatsSortMethod');
-    my $sort_order   = $args->{sort_order}  || $ctx->stash('subCatsSortOrder') || 'ascend';
-    my $sort_by      = $args->{sort_by}     || $ctx->stash('subCatsSortBy')    || 'label';
+    my $sort_method = $args->{sort_method}
+        || $ctx->stash('subCatsSortMethod');
+    my $sort_order 
+        = $args->{sort_order}
+        || $ctx->stash('subCatsSortOrder')
+        || 'ascend';
+    my $sort_by = $args->{sort_by} || $ctx->stash('subCatsSortBy') || 'label';
     my $custom_order;
     if ( $sort_by eq 'user_custom' ) {
         undef $sort_by;
@@ -397,11 +435,11 @@ sub _hdlr_category_prevnext {
     }
     $sort_by = 'label' unless $class->has_column($sort_by);
     $sort_by ||= 'label';
-    if ( $sort_method ) {
-        $cats = _sort_cats($ctx, $sort_method, $sort_order, $cats)
-            or return $ctx->error($ctx->errstr);
+    if ($sort_method) {
+        $cats = _sort_cats( $ctx, $sort_method, $sort_order, $cats )
+            or return $ctx->error( $ctx->errstr );
     }
-    elsif ( $custom_order ) {
+    elsif ($custom_order) {
         my $blog = $ctx->stash('blog');
         my $meta = $class_type . '_order';
         my $text = $blog->$meta || '';
@@ -413,7 +451,7 @@ sub _hdlr_category_prevnext {
         @$cats = reverse @$cats if $sort_order eq 'descend';
     }
 
-    my ($pos, $idx);
+    my ( $pos, $idx );
     $idx = 0;
     foreach (@$cats) {
         $pos = $idx, last if $_->id == $cat->id;
@@ -422,31 +460,41 @@ sub _hdlr_category_prevnext {
     return '' unless defined $pos;
     $pos += $step;
     while ( $pos >= 0 && $pos < scalar @$cats ) {
-        if (!exists $cats->[$pos]->{_placement_count}) {
+        if ( !exists $cats->[$pos]->{_placement_count} ) {
             if ($needs_entries) {
                 require MT::Entry;
-                my @entries = MT::Entry->load({ blog_id => $blog_id,
-                                            status => MT::Entry::RELEASE() },
-                            { 'join' => [ 'MT::Placement', 'entry_id',
-                                        { category_id => $cat->id } ],
-                              'sort' => 'authored_on',
-                              direction => 'descend', });
-                $cats->[$pos]->{_entries} = \@entries;
+                my @entries = MT::Entry->load(
+                    {   blog_id => $blog_id,
+                        status  => MT::Entry::RELEASE()
+                    },
+                    {   'join' => [
+                            'MT::Placement', 'entry_id',
+                            { category_id => $cat->id }
+                        ],
+                        'sort'    => 'authored_on',
+                        direction => 'descend',
+                    }
+                );
+                $cats->[$pos]->{_entries}         = \@entries;
                 $cats->[$pos]->{_placement_count} = scalar @entries;
-            } else {
-                $cats->[$pos]->{_placement_count} =
-                    MT::Placement->count({ category_id => $cats->[$pos]->id });
+            }
+            else {
+                $cats->[$pos]->{_placement_count} = MT::Placement->count(
+                    { category_id => $cats->[$pos]->id } );
             }
         }
         $pos += $step, next
             unless $cats->[$pos]->{_placement_count} || $args->{show_empty};
         local $ctx->{__stash}{category} = $cats->[$pos];
-        local $ctx->{__stash}{entries} = $cats->[$pos]->{_entries} if $needs_entries;
-        local $ctx->{__stash}{category_count} = $cats->[$pos]->{_placement_count};
-        local $ctx->{__stash}{'subCatsSortOrder'}   = $sort_order;
-        local $ctx->{__stash}{'subCatsSortMethod'}  = $sort_method;
-        local $ctx->{__stash}{'subCatsSortBy'}      = $custom_order ? 'user_custom' : $sort_by;
-        return $ctx->slurp($args, $cond);
+        local $ctx->{__stash}{entries}  = $cats->[$pos]->{_entries}
+            if $needs_entries;
+        local $ctx->{__stash}{category_count}
+            = $cats->[$pos]->{_placement_count};
+        local $ctx->{__stash}{'subCatsSortOrder'}  = $sort_order;
+        local $ctx->{__stash}{'subCatsSortMethod'} = $sort_method;
+        local $ctx->{__stash}{'subCatsSortBy'}
+            = $custom_order ? 'user_custom' : $sort_by;
+        return $ctx->slurp( $args, $cond );
     }
     return '';
 }
@@ -502,12 +550,12 @@ category attribute with square brackets:
 =cut
 
 sub _hdlr_sub_categories {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $class_type = $args->{class_type} || 'category';
     my $class = MT->model($class_type);
-    my $entry_class = MT->model(
-        $class_type eq 'category' ? 'entry' : 'page');
+    my $entry_class
+        = MT->model( $class_type eq 'category' ? 'entry' : 'page' );
 
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
@@ -520,14 +568,16 @@ sub _hdlr_sub_categories {
     #   sort_method ::= method name (e.g. package::method)
     #
     # sort_method takes precedence
-    my $sort_order  = $args->{sort_order} || 'ascend';
-    my $sort_by     = $args->{sort_by} || 'label';
+    my $sort_order = $args->{sort_order} || 'ascend';
+    my $sort_by    = $args->{sort_by}    || 'label';
     my $sort_method = $args->{sort_method};
 
-    return $ctx->error( MT->translate(
-        'Can\'t use sort_by and sort_method together in [_1]',
-        $ctx->stash('tag'),
-    )) if ( $sort_method && $sort_by );
+    return $ctx->error(
+        MT->translate(
+            'Can\'t use sort_by and sort_method together in [_1]',
+            $ctx->stash('tag'),
+        )
+    ) if ( $sort_method && $sort_by );
     my $custom_order;
     if ( $sort_by eq 'user_custom' ) {
         undef $sort_by;
@@ -536,31 +586,41 @@ sub _hdlr_sub_categories {
     $sort_by = 'label' unless $class->has_column($sort_by);
 
     # Store the tokens for recursion
-    $ctx->stash('subCatTokens', $tokens);
+    $ctx->stash( 'subCatTokens', $tokens );
     my $current_cat;
     my @cats;
-    if ($args->{top}) {
-        @cats = $class->load({
-            blog_id => $ctx->stash('blog_id'),
-            parent  => '0'
-        }, {
-            'sort'    => $sort_by,
-            direction => $sort_order,
-        });
+    if ( $args->{top} ) {
+        @cats = $class->load(
+            {   blog_id => $ctx->stash('blog_id'),
+                parent  => '0'
+            },
+            {   'sort'    => $sort_by,
+                direction => $sort_order,
+            }
+        );
     }
     else {
+
         # Use explicit category or category context
-        if ($args->{category}) {
+        if ( $args->{category} ) {
+
             # user specified category; list from this category down
-            ($current_cat) = $ctx->cat_path_to_category($args->{category}, $ctx->stash('blog_id'), $class_type);
-        } else {
-            $current_cat = $ctx->stash('category') || $ctx->stash('archive_category');
+            ($current_cat)
+                = $ctx->cat_path_to_category( $args->{category},
+                $ctx->stash('blog_id'), $class_type );
+        }
+        else {
+            $current_cat = $ctx->stash('category')
+                || $ctx->stash('archive_category');
         }
         if ($current_cat) {
             if ($include_current) {
-                # If we're to include it, just use it to seed the category list
+
+               # If we're to include it, just use it to seed the category list
                 @cats = ($current_cat);
-            } else {
+            }
+            else {
+
                 # Otherwise, use its children
                 @cats = $current_cat->children_categories;
             }
@@ -569,11 +629,11 @@ sub _hdlr_sub_categories {
     return '' unless @cats;
 
     my $cats;
-    if ( $sort_method ) {
-        $cats = _sort_cats($ctx, $sort_method, $sort_order, \@cats)
-            or return $ctx->error($ctx->errstr);
+    if ($sort_method) {
+        $cats = _sort_cats( $ctx, $sort_method, $sort_order, \@cats )
+            or return $ctx->error( $ctx->errstr );
     }
-    elsif ( $custom_order ) {
+    elsif ($custom_order) {
         my $blog = $ctx->stash('blog');
         my $meta = $class_type . '_order';
         my $text = $blog->$meta || '';
@@ -587,21 +647,22 @@ sub _hdlr_sub_categories {
 
     # Init variables
     my $count = 0;
-    my $res = '';
+    my $res   = '';
 
     # Be sure the regular MT tags know we're in a category context
-    local $ctx->{inside_mt_categories} = 1;
-    local $ctx->{__stash}{'subCatsSortOrder'}   = $sort_order;
-    local $ctx->{__stash}{'subCatsSortMethod'}  = $sort_method;
-    local $ctx->{__stash}{'subCatsSortBy'}      = $custom_order ? 'user_custom' : $sort_by;
+    local $ctx->{inside_mt_categories}         = 1;
+    local $ctx->{__stash}{'subCatsSortOrder'}  = $sort_order;
+    local $ctx->{__stash}{'subCatsSortMethod'} = $sort_method;
+    local $ctx->{__stash}{'subCatsSortBy'}
+        = $custom_order ? 'user_custom' : $sort_by;
 
     # Loop through the immediate children (or the current cat,
     # depending on the arguments
-    while (my $cat = shift @$cats) {
-        next if (!defined $cat);
-        local $ctx->{__stash}{'category'} = $cat;
+    while ( my $cat = shift @$cats ) {
+        next if ( !defined $cat );
+        local $ctx->{__stash}{'category'}      = $cat;
         local $ctx->{__stash}{'subCatIsFirst'} = !$count;
-        local $ctx->{__stash}{'subCatIsLast'} = !scalar @$cats;
+        local $ctx->{__stash}{'subCatIsLast'}  = !scalar @$cats;
         local $ctx->{__stash}{'folder_header'} = !$count
             if $class_type ne 'category';
         local $ctx->{__stash}{'folder_footer'} = !scalar @$cats
@@ -629,8 +690,8 @@ sub _hdlr_sub_categories {
             }
         );
 
-        defined (my $out = $builder->build($ctx, $tokens, $cond))
-            or return $ctx->error($ctx->errstr);
+        defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
+            or return $ctx->error( $ctx->errstr );
 
         $res .= $out;
         $count++;
@@ -652,13 +713,13 @@ C<E<lt>mt:SubCategories top="1"E<gt>>.
 =cut
 
 sub _hdlr_top_level_categories {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     # Unset the normaly hiding places for categories so
     # MTSubCategories doesn't pick them up
-    local $ctx->{__stash}{'category'} = undef;
+    local $ctx->{__stash}{'category'}         = undef;
     local $ctx->{__stash}{'archive_category'} = undef;
-    local $args->{top} = 1;
+    local $args->{top}                        = 1;
 
     # Call MTSubCategories
     &_hdlr_sub_categories;
@@ -681,23 +742,23 @@ B<Example:>
 =cut
 
 sub _hdlr_parent_category {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
 
     # Get the current category
     my $cat = _get_category_context($ctx);
-    return if !defined($cat) && defined($ctx->errstr);
-    return '' if ($cat eq '');
+    return if !defined($cat) && defined( $ctx->errstr );
+    return '' if ( $cat eq '' );
 
     # The category must have a parent, otherwise return empty string
     my $parent = $cat->parent_category or return '';
 
     # Setup the context and let 'er rip
     local $ctx->{__stash}->{category} = $parent;
-    defined (my $out = $builder->build($ctx, $tokens, $cond))
-        or return $ctx->error($ctx->errstr);
+    defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
+        or return $ctx->error( $ctx->errstr );
 
     $out;
 }
@@ -730,33 +791,33 @@ current category in the list.
 =cut
 
 sub _hdlr_parent_categories {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
 
     # Get the arguments
     my $exclude_current = $args->{'exclude_current'};
-    my $glue = $args->{'glue'};
+    my $glue            = $args->{'glue'};
 
     # Get the current category
-    defined (my $cat = _get_category_context($ctx))
-        or return $ctx->error($ctx->errstr);
-    return '' if ($cat eq '');
+    defined( my $cat = _get_category_context($ctx) )
+        or return $ctx->error( $ctx->errstr );
+    return '' if ( $cat eq '' );
 
     my $res = '';
 
     # Put together the list of parent categories
     # including the current one unless instructed otherwise
     my @cats = $cat->parent_categories;
-    @cats = ($cat, @cats) unless ($exclude_current);
+    @cats = ( $cat, @cats ) unless ($exclude_current);
 
     # Start from the top and work our way down
-    while (my $c = pop @cats) {
+    while ( my $c = pop @cats ) {
         local $ctx->{__stash}->{category} = $c;
-        defined (my $out = $builder->build($ctx, $tokens, $cond))
-            or return $ctx->error($ctx->errstr);
-        if ($args->{sub_cats_path_hack} && $out !~ /\w/) {
+        defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
+            or return $ctx->error( $ctx->errstr );
+        if ( $args->{sub_cats_path_hack} && $out !~ /\w/ ) {
             $out = 'cat-' . $c->id;
         }
         $res .= $glue if defined $glue && length($res) && length($out);
@@ -777,28 +838,28 @@ the current category.
 =cut
 
 sub _hdlr_top_level_parent {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
 
     # Get the current category
-    defined (my $cat = _get_category_context($ctx))
-        or return $ctx->error($ctx->errstr);
-    return '' if ($cat eq '');
+    defined( my $cat = _get_category_context($ctx) )
+        or return $ctx->error( $ctx->errstr );
+    return '' if ( $cat eq '' );
 
     my $out = "";
 
     # Get the list of parents
-    my @parents = ($cat, $cat->parent_categories);
+    my @parents = ( $cat, $cat->parent_categories );
 
     # If there are any
     # Pop the top one of the list
-    if (scalar @parents) {
+    if ( scalar @parents ) {
         $cat = pop @parents;
         local $ctx->{__stash}->{category} = $cat;
-        defined($out = $builder->build($ctx, $tokens, $cond))
-            or return $ctx->error($ctx->errstr);
+        defined( $out = $builder->build( $ctx, $tokens, $cond ) )
+            or return $ctx->error( $ctx->errstr );
     }
 
     $out;
@@ -842,23 +903,23 @@ and they should behave just as they do with the original tag.
 =cut
 
 sub _hdlr_entries_with_sub_categories {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
-    my $cat = $ctx->stash('category') 
-         || $ctx->stash('archive_category');
+    my $cat = $ctx->stash('category')
+        || $ctx->stash('archive_category');
 
     my $save_entries = defined $ctx->stash('archive_category');
     my $saved_stash_entries;
 
-    if (defined $cat) {
+    if ( defined $cat ) {
         $saved_stash_entries = $ctx->{__stash}{entries} if $save_entries;
         delete $ctx->{__stash}{entries};
     }
 
     local $args->{include_subcategories} = 1;
-    local $args->{category} ||= ['OR', [$cat]] if defined $cat;
-    my $res = $ctx->invoke_handler('entries', $args, $cond);
-    $ctx->{__stash}{entries} = $saved_stash_entries 
+    local $args->{category} ||= [ 'OR', [$cat] ] if defined $cat;
+    my $res = $ctx->invoke_handler( 'entries', $args, $cond );
+    $ctx->{__stash}{entries} = $saved_stash_entries
         if $save_entries && $saved_stash_entries;
     $res;
 }
@@ -921,31 +982,36 @@ This tag has been deprecated in favor of L<IfCategory>.
 =cut
 
 sub _hdlr_if_category {
-    my ($ctx, $args, $cond) = @_;
-    my $e = $ctx->stash('entry');
-    my $tag = lc $ctx->stash('tag');
+    my ( $ctx, $args, $cond ) = @_;
+    my $e             = $ctx->stash('entry');
+    my $tag           = lc $ctx->stash('tag');
     my $entry_context = $tag =~ m/(entry|page)if(category|folder)/;
     return $ctx->_no_entry_error() if $entry_context && !$e;
     my $name = $args->{name} || $args->{label};
-    my $primary = $args->{type} && ($args->{type} eq 'primary');
-    my $secondary = $args->{type} && ($args->{type} eq 'secondary');
-    $entry_context ||= ($primary || $secondary);
-    my $cat = $entry_context ? $e->category : ($ctx->stash('category') || $ctx->stash('archive_category'));
-    if (!$cat && $e && !$entry_context) {
-        $cat = $e->category;
+    my $primary   = $args->{type} && ( $args->{type} eq 'primary' );
+    my $secondary = $args->{type} && ( $args->{type} eq 'secondary' );
+    $entry_context ||= ( $primary || $secondary );
+    my $cat
+        = $entry_context
+        ? $e->category
+        : ( $ctx->stash('category') || $ctx->stash('archive_category') );
+
+    if ( !$cat && $e && !$entry_context ) {
+        $cat           = $e->category;
         $entry_context = 1;
     }
     my $cats;
-    if ($cat && ($primary || !$entry_context)) {
-        $cats = [ $cat ];
-    } elsif ($e) { 
+    if ( $cat && ( $primary || !$entry_context ) ) {
+        $cats = [$cat];
+    }
+    elsif ($e) {
         $cats = $e->categories;
     }
-    if ($secondary && $cat) {
+    if ( $secondary && $cat ) {
         my @cats = grep { $_->id != $cat->id } @$cats;
         $cats = \@cats;
     }
-    if (!defined $name) {
+    if ( !defined $name ) {
         return @$cats ? 1 : 0;
     }
     foreach my $cat (@$cats) {
@@ -997,12 +1063,12 @@ Returns true if the current category has a sub-category.
 =cut
 
 sub _hdlr_has_sub_categories {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     # Get the current category context
-    defined (my $cat = _get_category_context($ctx)) 
-        or return $ctx->error($ctx->errstr);
-    return if ($cat eq '');
+    defined( my $cat = _get_category_context($ctx) )
+        or return $ctx->error( $ctx->errstr );
+    return if ( $cat eq '' );
 
     # Return the number of children for the category
     my @children = $cat->children_categories;
@@ -1035,12 +1101,12 @@ the root.
 =cut
 
 sub _hdlr_has_parent_category {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
 
     # Get the current category
-    defined (my $cat = _get_category_context($ctx))
-        or return $ctx->error($ctx->errstr);
-    return 0 if ($cat eq '');
+    defined( my $cat = _get_category_context($ctx) )
+        or return $ctx->error( $ctx->errstr );
+    return 0 if ( $cat eq '' );
 
     # Return the parent of the category
     return $cat->parent_category ? 1 : 0;
@@ -1100,19 +1166,22 @@ B<Example:>
 =cut
 
 sub _hdlr_is_ancestor {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
 
     # Get the current category
-    defined (my $cat = _get_category_context($ctx)) or
-        return $ctx->error($ctx->errstr);
-    return if ($cat eq '');
+    defined( my $cat = _get_category_context($ctx) )
+        or return $ctx->error( $ctx->errstr );
+    return if ( $cat eq '' );
 
     # Get the possible child category
     my $blog_id = $ctx->stash('blog_id');
-    my $iter = MT::Category->load_iter({ blog_id => $blog_id,
-                                         label => $args->{'child'} }) || undef;
-    while (my $child = $iter->()) {
-        if ($cat->is_ancestor($child)) {
+    my $iter    = MT::Category->load_iter(
+        {   blog_id => $blog_id,
+            label   => $args->{'child'}
+        }
+    ) || undef;
+    while ( my $child = $iter->() ) {
+        if ( $cat->is_ancestor($child) ) {
             $iter->end;
             return 1;
         }
@@ -1150,19 +1219,22 @@ B<Example:>
 =cut
 
 sub _hdlr_is_descendant {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
 
     # Get the current category
-    defined (my $cat = _get_category_context($ctx)) or
-        return $ctx->error($ctx->errstr);
-    return if ($cat eq '');
+    defined( my $cat = _get_category_context($ctx) )
+        or return $ctx->error( $ctx->errstr );
+    return if ( $cat eq '' );
 
     # Get the possible parent category
     my $blog_id = $ctx->stash('blog_id');
-    my $iter = MT::Category->load_iter({ blog_id => $blog_id,
-                                         label => $args->{'parent'} });
-    while (my $parent = $iter->()) {
-        if ($cat->is_descendant($parent)) {
+    my $iter    = MT::Category->load_iter(
+        {   blog_id => $blog_id,
+            label   => $args->{'parent'}
+        }
+    );
+    while ( my $parent = $iter->() ) {
+        if ( $cat->is_descendant($parent) ) {
             $iter->end;
             return 1;
         }
@@ -1192,19 +1264,20 @@ If specified, this string is placed in between each result from the loop.
 =cut
 
 sub _hdlr_entry_categories {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $cats = $e->categories;
     return '' unless $cats && @$cats;
     my $builder = $ctx->stash('builder');
-    my $tokens = $ctx->stash('tokens');
-    my $res = '';
-    my $glue = $args->{glue};
+    my $tokens  = $ctx->stash('tokens');
+    my $res     = '';
+    my $glue    = $args->{glue};
     local $ctx->{inside_mt_categories} = 1;
+
     for my $cat (@$cats) {
         local $ctx->{__stash}->{category} = $cat;
-        defined(my $out = $builder->build($ctx, $tokens, $cond))
+        defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $glue if defined $glue && length($res) && length($out);
         $res .= $out;
@@ -1226,19 +1299,19 @@ All categories can be listed using L<EntryCategories> loop tag.
 =cut
 
 sub _hdlr_entry_additional_categories {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $cats = $e->categories;
     return '' unless $cats && @$cats;
     my $builder = $ctx->stash('builder');
-    my $tokens = $ctx->stash('tokens');
-    my $res = '';
-    my $glue = $args->{glue};
+    my $tokens  = $ctx->stash('tokens');
+    my $res     = '';
+    my $glue    = $args->{glue};
     for my $cat (@$cats) {
-        next if $e->category && ($cat->label eq $e->category->label);
+        next if $e->category && ( $cat->label eq $e->category->label );
         local $ctx->{__stash}->{category} = $cat;
-        defined(my $out = $builder->build($ctx, $tokens, $cond))
+        defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $glue if defined $glue && length($res) && length($out);
         $res .= $out if length($out);
@@ -1262,10 +1335,13 @@ B<Example:>
 
 sub _hdlr_category_id {
     my ($ctx) = @_;
-    my $cat = ($ctx->stash('category') || $ctx->stash('archive_category'))
-        or return $ctx->error(MT->translate(
+    my $cat = ( $ctx->stash('category') || $ctx->stash('archive_category') )
+        or return $ctx->error(
+        MT->translate(
             "You used an [_1] tag outside of the proper context.",
-            '<$MT'.$ctx->stash('tag').'$>'));
+            '<$MT' . $ctx->stash('tag') . '$>'
+        )
+        );
     return $cat->id;
 }
 
@@ -1295,15 +1371,22 @@ B<Example:>
 =cut
 
 sub _hdlr_category_label {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $class_type = $args->{class_type} || 'category';
     my $e = $ctx->stash('entry');
-    my $cat = ($ctx->stash('category') || $ctx->stash('archive_category'))
-        || (($e = $ctx->stash('entry')) && $e->category)
-        or return (defined($args->{default}) ? $args->{default} : 
-                    $ctx->error(MT->translate(
-                           "You used an [_1] tag outside of the proper context.",
-                           '<$MT'.$ctx->stash('tag').'$>')));
+    my $cat
+        = ( $ctx->stash('category') || $ctx->stash('archive_category') )
+        || ( ( $e = $ctx->stash('entry') ) && $e->category )
+        or return (
+        defined( $args->{default} )
+        ? $args->{default}
+        : $ctx->error(
+            MT->translate(
+                "You used an [_1] tag outside of the proper context.",
+                '<$MT' . $ctx->stash('tag') . '$>'
+            )
+        )
+        );
     my $label = $cat->label;
     $label = '' unless defined $label;
     return $label;
@@ -1338,20 +1421,28 @@ B<Example:>
 =cut
 
 sub _hdlr_category_basename {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $class_type = $args->{class_type} || 'category';
     my $e = $ctx->stash('entry');
-    my $cat = ($ctx->stash('category') || $ctx->stash('archive_category'))
-        || (($e = $ctx->stash('entry')) && $e->category)
-        or return (defined($args->{default}) ? $args->{default} : 
-                    $ctx->error(MT->translate(
-                           "You used an [_1] tag outside of the proper context.",
-                           '<$MT'.$ctx->stash('tag').'$>')));
+    my $cat
+        = ( $ctx->stash('category') || $ctx->stash('archive_category') )
+        || ( ( $e = $ctx->stash('entry') ) && $e->category )
+        or return (
+        defined( $args->{default} )
+        ? $args->{default}
+        : $ctx->error(
+            MT->translate(
+                "You used an [_1] tag outside of the proper context.",
+                '<$MT' . $ctx->stash('tag') . '$>'
+            )
+        )
+        );
     my $basename = $cat->basename || '';
-    if (my $sep = $args->{separator}) {
-        if ($sep eq '-') {
+    if ( my $sep = $args->{separator} ) {
+        if ( $sep eq '-' ) {
             $basename =~ s/_/-/g;
-        } elsif ($sep eq '_') {
+        }
+        elsif ( $sep eq '_' ) {
             $basename =~ s/-/_/g;
         }
     }
@@ -1372,10 +1463,13 @@ B<Example:>
 
 sub _hdlr_category_desc {
     my ($ctx) = @_;
-    my $cat = ($ctx->stash('category') || $ctx->stash('archive_category'))
-        or return $ctx->error(MT->translate(
+    my $cat = ( $ctx->stash('category') || $ctx->stash('archive_category') )
+        or return $ctx->error(
+        MT->translate(
             "You used an [_1] tag outside of the proper context.",
-            '<$MT'.$ctx->stash('tag').'$>'));
+            '<$MT' . $ctx->stash('tag') . '$>'
+        )
+        );
     return defined $cat->description ? $cat->description : '';
 }
 
@@ -1392,19 +1486,26 @@ B<Example:>
 =cut
 
 sub _hdlr_category_archive {
-    my ($ctx, $args) = @_;
-    my $cat = ($ctx->stash('category') || $ctx->stash('archive_category'))
-        or return $ctx->error(MT->translate(
+    my ( $ctx, $args ) = @_;
+    my $cat = ( $ctx->stash('category') || $ctx->stash('archive_category') )
+        or return $ctx->error(
+        MT->translate(
             "You used an [_1] tag outside of the proper context.",
-            '<$MTCategoryArchiveLink$>' ));
-    my $curr_at = $ctx->{current_archive_type} || $ctx->{archive_type} || 'Category';
+            '<$MTCategoryArchiveLink$>'
+        )
+        );
+    my $curr_at 
+        = $ctx->{current_archive_type}
+        || $ctx->{archive_type}
+        || 'Category';
 
     my $blog = $ctx->stash('blog');
     return '' unless $blog || $curr_at eq 'Category';
     if ( $curr_at ne 'Category' ) {
+
         # Check if "Category" archive is published
-        my $at = $blog->archive_type;
-        my @at = split /,/, $at;
+        my $at      = $blog->archive_type;
+        my @at      = split /,/, $at;
         my $cat_arc = 0;
         for (@at) {
             if ( 'Category' eq $_ ) {
@@ -1412,15 +1513,18 @@ sub _hdlr_category_archive {
                 last;
             }
         }
-        return $ctx->error(MT->translate(
-            "[_1] cannot be used without publishing Category archive.",
-            '<$MTCategoryArchiveLink$>' )) unless $cat_arc;
+        return $ctx->error(
+            MT->translate(
+                "[_1] cannot be used without publishing Category archive.",
+                '<$MTCategoryArchiveLink$>'
+            )
+        ) unless $cat_arc;
     }
 
     my $arch = $blog->archive_url;
     $arch .= '/' unless $arch =~ m!/$!;
-    $arch = $arch . archive_file_for(undef, $blog, 'Category', $cat);
-    $arch = MT::Util::strip_index($arch, $blog) unless $args->{with_index};
+    $arch = $arch . archive_file_for( undef, $blog, 'Category', $cat );
+    $arch = MT::Util::strip_index( $arch, $blog ) unless $args->{with_index};
     $arch;
 }
 
@@ -1439,14 +1543,17 @@ B<Example:>
 =cut
 
 sub _hdlr_category_count {
-    my ($ctx, $args, $cond) = @_;
-    my $cat = ($ctx->stash('category') || $ctx->stash('archive_category'))
-        or return $ctx->error(MT->translate(
+    my ( $ctx, $args, $cond ) = @_;
+    my $cat = ( $ctx->stash('category') || $ctx->stash('archive_category') )
+        or return $ctx->error(
+        MT->translate(
             "You used an [_1] tag outside of the proper context.",
-            '<$MT' . $ctx->stash('tag') . '$>'));
+            '<$MT' . $ctx->stash('tag') . '$>'
+        )
+        );
     my $count = $ctx->stash('category_count');
     $count = $cat->entry_count unless defined $count;
-    return $ctx->count_format($count, $args);
+    return $ctx->count_format( $count, $args );
 }
 
 ###########################################################################
@@ -1498,34 +1605,35 @@ Or more simply:
 =cut
 
 sub _hdlr_sub_cats_recurse {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $class_type = $args->{class_type} || 'category';
     my $class = MT->model($class_type);
-    my $entry_class = MT->model(
-        $class_type eq 'category' ? 'entry' : 'page');
-  
+    my $entry_class
+        = MT->model( $class_type eq 'category' ? 'entry' : 'page' );
+
     # Make sure were in the right context
     # mostly to see if we have anything to actually build
-    my $tokens = $ctx->stash('subCatTokens') 
+    my $tokens = $ctx->stash('subCatTokens')
         or return $ctx->error(
-            MT->translate("[_1] used outside of [_2]",
-              $class_type eq 'category'
-              ? (qw(MTSubCatRecurse MTSubCategories))
-              : (qw(MTSubFolderRecurse MTSubFolders))
-            )
+        MT->translate(
+            "[_1] used outside of [_2]",
+            $class_type eq 'category'
+            ? (qw(MTSubCatRecurse MTSubCategories))
+            : (qw(MTSubFolderRecurse MTSubFolders))
+        )
         );
     my $builder = $ctx->stash('builder');
-  
+
     my $cat = $ctx->stash('category');
-  
+
     # Get the depth info
     my $max_depth = $args->{max_depth};
     my $depth = $ctx->stash('subCatsDepth') || 0;
 
     # Get the sorting info
-    my $sort_method  = $ctx->stash('subCatsSortMethod');
-    my $sort_order   = $ctx->stash('subCatsSortOrder');
-    my $sort_by      = $ctx->stash('subCatsSortBy');
+    my $sort_method = $ctx->stash('subCatsSortMethod');
+    my $sort_order  = $ctx->stash('subCatsSortOrder');
+    my $sort_by     = $ctx->stash('subCatsSortBy');
     my $custom_order;
     if ( $sort_by eq 'user_custom' ) {
         undef $sort_by;
@@ -1535,15 +1643,15 @@ sub _hdlr_sub_cats_recurse {
     $sort_by ||= 'label';
 
     # If we're too deep, return an emtry string because we're done
-    return '' if ($max_depth && $depth >= $max_depth);
+    return '' if ( $max_depth && $depth >= $max_depth );
 
     my @cats = $cat->children_categories;
     my $cats;
-    if ( $sort_method ) {
-        $cats = _sort_cats($ctx, $sort_method, $sort_order, \@cats)
-            or return $ctx->error($ctx->errstr);
+    if ($sort_method) {
+        $cats = _sort_cats( $ctx, $sort_method, $sort_order, \@cats )
+            or return $ctx->error( $ctx->errstr );
     }
-    elsif ( $custom_order ) {
+    elsif ($custom_order) {
         my $blog = $ctx->stash('blog');
         my $meta = $class_type . '_order';
         my $text = $blog->$meta || '';
@@ -1557,40 +1665,50 @@ sub _hdlr_sub_cats_recurse {
 
     # Init variables
     my $count = 0;
-    my $res = '';
+    my $res   = '';
 
     # Loop through each immediate child, incrementing the depth by 1
-    while (my $c = shift @$cats) {
-        next if (!defined $c);
-        local $ctx->{__stash}{'category'} = $c;
-        local $ctx->{__stash}{'subCatIsFirst'} = !$count;
-        local $ctx->{__stash}{'subCatIsLast'} = !scalar @$cats;
-        local $ctx->{__stash}{'subCatsSortOrder'}   = $sort_order;
-        local $ctx->{__stash}{'subCatsSortMethod'}  = $sort_method;
-        local $ctx->{__stash}{'subCatsSortBy'}      = $custom_order ? 'user_custom' : $sort_by;
+    while ( my $c = shift @$cats ) {
+        next if ( !defined $c );
+        local $ctx->{__stash}{'category'}          = $c;
+        local $ctx->{__stash}{'subCatIsFirst'}     = !$count;
+        local $ctx->{__stash}{'subCatIsLast'}      = !scalar @$cats;
+        local $ctx->{__stash}{'subCatsSortOrder'}  = $sort_order;
+        local $ctx->{__stash}{'subCatsSortMethod'} = $sort_method;
+        local $ctx->{__stash}{'subCatsSortBy'}
+            = $custom_order ? 'user_custom' : $sort_by;
 
-        local $ctx->{__stash}{'subCatsDepth'} = $depth + 1;
+        local $ctx->{__stash}{'subCatsDepth'}      = $depth + 1;
         local $ctx->{__stash}{vars}->{'__depth__'} = $depth + 1;
-        local $ctx->{__stash}{'folder_header'} = !$count
+        local $ctx->{__stash}{'folder_header'}     = !$count
             if $class_type ne 'category';
         local $ctx->{__stash}{'folder_footer'} = !scalar @$cats
             if $class_type ne 'category';
 
         local $ctx->{__stash}{'category_count'};
 
-        local $ctx->{__stash}{'entries'} = 
-            delay(sub { my @args = ({ blog_id => $ctx->stash('blog_id'),
-                                 status => MT::Entry::RELEASE() },
-                               { 'join' => [ 'MT::Placement', 'entry_id',
-                                             { category_id => $c->id } ],
-                                 'sort' => 'authored_on',
-                                 direction => 'descend', });
+        local $ctx->{__stash}{'entries'} = delay(
+            sub {
+                my @args = (
+                    {   blog_id => $ctx->stash('blog_id'),
+                        status  => MT::Entry::RELEASE()
+                    },
+                    {   'join' => [
+                            'MT::Placement', 'entry_id',
+                            { category_id => $c->id }
+                        ],
+                        'sort'    => 'authored_on',
+                        direction => 'descend',
+                    }
+                );
 
-                   my @entries = $entry_class->load(@args); 
-                   \@entries });
+                my @entries = $entry_class->load(@args);
+                \@entries;
+            }
+        );
 
-        defined (my $out = $builder->build($ctx, $tokens))
-            or return $ctx->error($ctx->errstr);
+        defined( my $out = $builder->build( $ctx, $tokens ) )
+            or return $ctx->error( $ctx->errstr );
 
         $res .= $out;
         $count++;
@@ -1632,17 +1750,18 @@ The category "Bar" in a category "Foo" C<E<lt>$mt:SubCategoryPath$E<gt>> becomes
 =cut
 
 sub _hdlr_sub_category_path {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $builder = $ctx->stash('builder');
-    my $dir = '';
-    if ($args->{separator}) {
+    my $dir     = '';
+    if ( $args->{separator} ) {
         $dir = "separator='$args->{separator}'";
     }
-    my $tokens  = $builder->compile($ctx, "<MTCategoryBasename $dir>");
+    my $tokens = $builder->compile( $ctx, "<MTCategoryBasename $dir>" );
+
     # unfortunately, there's no way to apply a filter that would
     # take the output of the dirify step and, if it were blank,
-    # use instead some other property of the category (such as the 
+    # use instead some other property of the category (such as the
     # category ID). this hack tells parent_categories to do that
     # to the output of its contents.
     $args->{'sub_cats_path_hack'} = 1;
@@ -1672,12 +1791,12 @@ B<Example:>
 =cut
 
 sub _hdlr_blog_category_count {
-    my ($ctx, $args, $cond) = @_;
-    my (%terms, %args);
-    $ctx->set_blog_load_context($args, \%terms, \%args)
-        or return $ctx->error($ctx->errstr);
-    my $count = MT::Category->count(\%terms, \%args);
-    return $ctx->count_format($count, $args);
+    my ( $ctx, $args, $cond ) = @_;
+    my ( %terms, %args );
+    $ctx->set_blog_load_context( $args, \%terms, \%args )
+        or return $ctx->error( $ctx->errstr );
+    my $count = MT::Category->count( \%terms, \%args );
+    return $ctx->count_format( $count, $args );
 }
 
 ###########################################################################
@@ -1711,7 +1830,7 @@ All categories can be listed using L<EntryCategories> loop tag.
 =cut
 
 sub _hdlr_entry_category {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $cat = $e->category;

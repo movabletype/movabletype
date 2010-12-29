@@ -12,7 +12,7 @@ use base qw( MT::Auth::OpenID );
 sub url_for_userid {
     my $class = shift;
     my ($uid) = @_;
-    
+
     return "http://$uid.vox.com/";
 }
 

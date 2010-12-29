@@ -11,47 +11,48 @@ use base qw( MT::Object );
 use MT::Util qw( ts2epoch epoch2ts offset_time );
 
 # use constant is slow
-sub INFO ()     { 1 }
-sub WARNING ()  { 2 }
-sub ERROR ()    { 4 }
-sub SECURITY () { 8 }
-sub DEBUG ()    { 16 }
+sub INFO ()     {1}
+sub WARNING ()  {2}
+sub ERROR ()    {4}
+sub SECURITY () {8}
+sub DEBUG ()    {16}
 
 use Exporter;
 *import = \&Exporter::import;
 our @EXPORT_OK = qw( INFO WARNING ERROR SECURITY DEBUG );
-our %EXPORT_TAGS = (constants => [ @EXPORT_OK ]);
+our %EXPORT_TAGS = ( constants => [@EXPORT_OK] );
 
 use MT::Blog;
 
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id' => 'integer not null auto_increment',
-        'message' => 'text',
-        'ip' => 'string(50)',
-        'blog_id' => 'integer',
-        'author_id' => 'integer',
-        'level' => 'integer',
-        'category' => 'string(255)',
-        'metadata' => 'string(255)',
-    },
-    indexes => {
-        created_on => 1,
-        blog_id => 1,
-        level => 1,
-    },
-    defaults => {
-        blog_id => 0,
-        author_id => 0,
-        level => 1,
-    },
-    child_of => 'MT::Blog',
-    datasource => 'log',
-    audit => 1,
-    primary_key => 'id',
-    class_column => 'class',
-    class_type => 'system',
-});
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'        => 'integer not null auto_increment',
+            'message'   => 'text',
+            'ip'        => 'string(50)',
+            'blog_id'   => 'integer',
+            'author_id' => 'integer',
+            'level'     => 'integer',
+            'category'  => 'string(255)',
+            'metadata'  => 'string(255)',
+        },
+        indexes => {
+            created_on => 1,
+            blog_id    => 1,
+            level      => 1,
+        },
+        defaults => {
+            blog_id   => 0,
+            author_id => 0,
+            level     => 1,
+        },
+        child_of     => 'MT::Blog',
+        datasource   => 'log',
+        audit        => 1,
+        primary_key  => 'id',
+        class_column => 'class',
+        class_type   => 'system',
+    }
+);
 
 sub class_label {
     return MT->translate('Log message');
@@ -64,23 +65,25 @@ sub class_label_plural {
 sub list_props {
     return {
         created_on => {
-            auto    => 1,
-            label   => 'Created on',
+            auto         => 1,
+            label        => 'Created on',
             filter_label => 'Date Created',
-            order   => 100,
-            display => 'force',
-            raw     => sub {
+            order        => 100,
+            display      => 'force',
+            raw          => sub {
                 my $prop = shift;
                 my ( $obj, $app, $opts ) = @_;
-                my $ts = $obj->created_on;
+                my $ts   = $obj->created_on;
                 my $blog = $opts->{blog};
 
                 ## All Log records are saved with GMT, so do trick here.
-                my $epoch = ts2epoch( undef, $ts, 1 ); # just get epoch with "no_offset" option
-                $epoch = offset_time( $epoch, $blog ); # from GMT to Blog( or system ) Timezone
-                return epoch2ts( $blog, $epoch, 1 );   # back to timestamp
+                my $epoch = ts2epoch( undef, $ts, 1 )
+                    ;    # just get epoch with "no_offset" option
+                $epoch = offset_time( $epoch, $blog )
+                    ;    # from GMT to Blog( or system ) Timezone
+                return epoch2ts( $blog, $epoch, 1 );    # back to timestamp
             },
-       },
+        },
         message => {
             auto    => 1,
             label   => 'Message',
@@ -89,20 +92,20 @@ sub list_props {
             html    => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
-                my $msg  = $obj->message;
+                my $msg = $obj->message;
                 my $desc;
                 if ( 'MT::Log' eq ref $obj ) {
-                    $desc = MT::Util::encode_html($obj->metadata) || '';
+                    $desc = MT::Util::encode_html( $obj->metadata ) || '';
                 }
                 else {
                     $desc = $obj->description;
                 }
                 $desc = $desc->() if ref $desc eq 'CODE';
-                $desc = '' if $msg eq $desc;
+                $desc = ''        if $msg      eq $desc;
                 $desc = MT::Util::encode_html($desc);
                 $msg  = MT::Util::encode_html($msg);
                 return $desc
-                  ? qq{
+                    ? qq{
                     <div class="log-message can-select">
                       <a href="#" class="toggle-link detail-link">$msg</a>
                       <div class="log-metadata detail">
@@ -110,7 +113,7 @@ sub list_props {
                       </div>
                     </div>
                 }
-                  : qq{
+                    : qq{
                     <div class="log-message can-select">$msg</div>
                 };
             },
@@ -140,8 +143,8 @@ sub list_props {
             display               => 'none',
             base                  => '__virtual.single_select',
             single_select_options => sub {
-                my $prop = shift;
-                my $app = shift;
+                my $prop  = shift;
+                my $app   = shift;
                 my $terms = {};
                 if ( my $blog_id = $app->param('blog_id') ) {
                     my $blog = MT->model('blog')->load($blog_id);
@@ -150,8 +153,8 @@ sub list_props {
                     }
                     else {
                         my $blogs = $blog->blogs;
-                        $terms->{blog_id} =
-                          [ map { $_->id } ( $blog, @$blogs ) ];
+                        $terms->{blog_id}
+                            = [ map { $_->id } ( $blog, @$blogs ) ];
                     }
                 }
                 my $iter = MT->model('log')->count_group_by(
@@ -250,19 +253,19 @@ sub list_props {
             display => 'none',
         },
         ip => {
-            auto    => 1,
-            label   => 'IP',
+            auto         => 1,
+            label        => 'IP',
             filter_label => 'IP Address',
         },
         id => {
-            base    => '__virtual.id',
+            base            => '__virtual.id',
             label_via_param => sub {
-                my $prop = shift;
-                my ( $app ) = @_;
-                my $id = $app->param('filter_val');
-                return MT->translate( 'Showing only ID: [_1]',  $id);
+                my $prop  = shift;
+                my ($app) = @_;
+                my $id    = $app->param('filter_val');
+                return MT->translate( 'Showing only ID: [_1]', $id );
             },
-            display => 'none',
+            display         => 'none',
             filter_editable => 0,
         },
     };
@@ -272,9 +275,7 @@ sub system_filters {
     return {
         show_only_errors => {
             label => 'Show only errors',
-            items => [
-                { type => 'level', args => { value => ERROR() }},
-            ],
+            items => [ { type => 'level', args => { value => ERROR() } }, ],
         },
     };
 }
@@ -284,7 +285,7 @@ sub init {
     $log->SUPER::init(@_);
     my @ts = gmtime(time);
     my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
-        $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
+        $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
     $log->created_on($ts);
     $log->modified_on($ts);
     $log;
@@ -293,14 +294,14 @@ sub init {
 sub description {
     my $log = shift;
     my $msg = '';
-    if ($log->message =~ m/\n/) {
+    if ( $log->message =~ m/\n/ ) {
         $msg = $log->message;
     }
-    if (defined $log->metadata && ($log->metadata ne '')) {
+    if ( defined $log->metadata && ( $log->metadata ne '' ) ) {
         $msg .= "\n\n" if $msg ne '';
         $msg .= $log->metadata;
     }
-    if ($msg ne '') {
+    if ( $msg ne '' ) {
         require MT::Util;
         $msg = MT::Util::encode_html($msg);
     }
@@ -308,10 +309,10 @@ sub description {
 }
 
 sub metadata_object {
-    my $log = shift;
+    my $log   = shift;
     my $class = $log->metadata_class;
     return undef unless $class;
-    my $id = int($log->metadata);
+    my $id = int( $log->metadata );
     return undef unless $id;
     eval "require $class;" or return undef;
     $class->load($id);
@@ -320,28 +321,30 @@ sub metadata_object {
 sub metadata_class {
     my $log = shift;
     my $pkg = ref $log || $log;
-    if ($pkg =~ m/::Log::/) {
+    if ( $pkg =~ m/::Log::/ ) {
         $pkg =~ s/::Log::/::/;
         $pkg;
-    } else {
+    }
+    else {
         undef;
     }
 }
 
 sub to_hash {
-    my $log = shift;
+    my $log  = shift;
     my $hash = $log->SUPER::to_hash(@_);
-    $hash->{"log.level_" . $log->level} = 1 if $log->level;
-    $hash->{"log.class_" . $log->class} = 1 if $log->class;
-    $hash->{"log.category_" . $log->category} = 1 if $log->category;
+    $hash->{ "log.level_" . $log->level }       = 1 if $log->level;
+    $hash->{ "log.class_" . $log->class }       = 1 if $log->class;
+    $hash->{ "log.category_" . $log->category } = 1 if $log->category;
     $hash->{'log.description'} = $log->description;
-    if (my $obj = $log->metadata_object) {
+    if ( my $obj = $log->metadata_object ) {
         my $obj_hash = $obj->to_hash;
         $hash->{"log.$_"} = $obj_hash->{$_} foreach keys %$obj_hash;
     }
-    if ($log->author_id) {
+    if ( $log->author_id ) {
         require MT::Author;
-        if (my $auth = MT::Author->load($log->author_id)) {
+        if ( my $auth = MT::Author->load( $log->author_id ) ) {
+
             # prefix these hash keys with "log" since this
             # log record may also refer to an entry/comment that
             # has an associated author/commenter record and that
@@ -359,19 +362,18 @@ package MT::Log::Page;
 
 our @ISA = qw( MT::Log );
 
-__PACKAGE__->install_properties({
-    class_type => 'page',
-});
+__PACKAGE__->install_properties( { class_type => 'page', } );
 
 sub class_label { MT->translate("Pages") }
 
 sub description {
     my $log = shift;
     my $msg;
-    if (my $entry = $log->metadata_object) {
+    if ( my $entry = $log->metadata_object ) {
         $msg = $entry->to_hash->{'entry.text_html'};
-    } else {
-        $msg = MT->translate('Page # [_1] not found.', $log->metadata);
+    }
+    else {
+        $msg = MT->translate( 'Page # [_1] not found.', $log->metadata );
     }
 
     $msg;
@@ -381,19 +383,18 @@ package MT::Log::Entry;
 
 our @ISA = qw( MT::Log );
 
-__PACKAGE__->install_properties({
-    class_type => 'entry',
-});
+__PACKAGE__->install_properties( { class_type => 'entry', } );
 
 sub class_label { MT->translate("Entries") }
 
 sub description {
     my $log = shift;
     my $msg;
-    if (my $entry = $log->metadata_object) {
+    if ( my $entry = $log->metadata_object ) {
         $msg = $entry->to_hash->{'entry.text_html'};
-    } else {
-        $msg = MT->translate('Entry # [_1] not found.', $log->metadata);
+    }
+    else {
+        $msg = MT->translate( 'Entry # [_1] not found.', $log->metadata );
     }
 
     $msg;
@@ -403,9 +404,7 @@ package MT::Log::Comment;
 
 our @ISA = qw( MT::Log );
 
-__PACKAGE__->install_properties({
-    class_type => 'comment',
-});
+__PACKAGE__->install_properties( { class_type => 'comment', } );
 
 sub class_label { MT->translate("Comments") }
 
@@ -415,8 +414,9 @@ sub description {
     my $msg;
     if ($cmt) {
         $msg = $cmt->to_hash->{'comment.text_html'};
-    } else {
-        $msg = MT->translate("Comment # [_1] not found.", $log->metadata);
+    }
+    else {
+        $msg = MT->translate( "Comment # [_1] not found.", $log->metadata );
     }
     $msg;
 }
@@ -425,21 +425,20 @@ package MT::Log::TBPing;
 
 our @ISA = qw( MT::Log );
 
-__PACKAGE__->install_properties({
-    class_type => 'ping',
-});
+__PACKAGE__->install_properties( { class_type => 'ping', } );
 
 sub class_label { MT->translate("TrackBacks") }
 
 sub description {
-    my $log = shift;
-    my $id = int($log->metadata);
+    my $log  = shift;
+    my $id   = int( $log->metadata );
     my $ping = $log->metadata_object;
     my $msg;
     if ($ping) {
         $msg = $ping->to_hash->{'tbping.excerpt_html'};
-    } else {
-        $msg = MT->translate("TrackBack # [_1] not found.", $log->metadata);
+    }
+    else {
+        $msg = MT->translate( "TrackBack # [_1] not found.", $log->metadata );
     }
     $msg;
 }

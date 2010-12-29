@@ -9,37 +9,44 @@ use strict;
 
 sub new {
     my $class = shift;
-    my $cfg = MT->config;
+    my $cfg   = MT->config;
 
-    if (my @servers = $cfg->MemcachedServers) {
+    if ( my @servers = $cfg->MemcachedServers ) {
         my $driver_class = $cfg->MemcachedDriver;
         eval "require $driver_class;";
         my $ns = $cfg->MemcachedNamespace;
         return bless {
-            memcached => $driver_class->new({
-                servers => \@servers,
-                ( $ns ? ( namespace => $ns ) : () ),
-                ( $driver_class eq 'Cache::Memcached' ? ( debug => 0 ) : () ),
-            })
+            memcached => $driver_class->new(
+                {   servers => \@servers,
+                    ( $ns ? ( namespace => $ns ) : () ),
+                    (   $driver_class eq 'Cache::Memcached'
+                        ? ( debug => 0 )
+                        : ()
+                    ),
+                }
+            )
         }, $class;
-    } else {
-        return bless { }, $class;
+    }
+    else {
+        return bless {}, $class;
     }
 }
 
 {
-my $Is_Available;
-sub is_available {
-    return $Is_Available if defined $Is_Available;
-    my $class = shift;
-    my @servers = MT->config->MemcachedServers;
-    my $driver_class = MT->config->MemcachedDriver;
-    $Is_Available = @servers > 0 && eval "require $driver_class;" ? 1 : 0;
-    return $Is_Available;
-}
+    my $Is_Available;
+
+    sub is_available {
+        return $Is_Available if defined $Is_Available;
+        my $class        = shift;
+        my @servers      = MT->config->MemcachedServers;
+        my $driver_class = MT->config->MemcachedDriver;
+        $Is_Available = @servers > 0 && eval "require $driver_class;" ? 1 : 0;
+        return $Is_Available;
+    }
 }
 
 our $Instance;
+
 sub instance {
     return $Instance ||= shift->new;
 }
@@ -47,7 +54,7 @@ sub instance {
 sub cleanup {
     undef $Instance;
     my $driver_class = MT->config->MemcachedDriver;
-    if ($driver_class->can('disconnect_all')) {
+    if ( $driver_class->can('disconnect_all') ) {
         $driver_class->disconnect_all;
     }
 }
@@ -61,7 +68,7 @@ sub DESTROY { }
 
 sub AUTOLOAD {
     my $cache = shift;
-    (my $method = our $AUTOLOAD) =~ s/^.*:://;
+    ( my $method = our $AUTOLOAD ) =~ s/^.*:://;
     return unless $cache->{memcached};
     return $cache->{memcached}->$method(@_);
 }

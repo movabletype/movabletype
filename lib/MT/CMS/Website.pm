@@ -10,11 +10,11 @@ use MT::CMS::Blog;
 
 sub edit {
     my $cb = shift;
-    my ($app, $id, $obj, $param) = @_;
+    my ( $app, $id, $obj, $param ) = @_;
 
-    my $q = $app->param;
-    my $cfg = $app->config;
-    my $blog = $obj || $app->blog;
+    my $q       = $app->param;
+    my $cfg     = $app->config;
+    my $blog    = $obj || $app->blog;
     my $blog_id = $id;
 
     return $app->return_to_dashboard( redirect => 1 )
@@ -28,7 +28,7 @@ sub edit {
         $param->{need_full_rebuild}  = 1 if $q->param('need_full_rebuild');
         $param->{need_index_rebuild} = 1 if $q->param('need_index_rebuild');
         $param->{show_ip_info} = $cfg->ShowIPInformation;
-        $param->{use_plugins} = $cfg->UsePlugins;
+        $param->{use_plugins}  = $cfg->UsePlugins;
 
         my $lang = $obj->language || 'en';
         $lang = 'en' if lc($lang) eq 'en-us' || lc($lang) eq 'en_us';
@@ -38,14 +38,14 @@ sub edit {
         $param->{system_allow_comments} = $cfg->AllowComments;
         $param->{system_allow_pings}    = $cfg->AllowPings;
         $param->{tk_available}          = eval { require MIME::Base64; 1; }
-          && eval { require LWP::UserAgent; 1 };
-        $param->{'auto_approve_commenters'} =
-          !$obj->manual_approve_commenters;
+            && eval { require LWP::UserAgent; 1 };
+        $param->{'auto_approve_commenters'}
+            = !$obj->manual_approve_commenters;
         $param->{identity_system}     = $app->config('IdentitySystem');
         $param->{handshake_return}    = $app->base . $app->mt_uri;
         $param->{"moderate_comments"} = $obj->moderate_unreg_comments;
         $param->{ "moderate_comments_"
-              . ( $obj->moderate_unreg_comments || 0 ) } = 1;
+                . ( $obj->moderate_unreg_comments || 0 ) } = 1;
         $param->{ "moderate_pings_" . ( $obj->moderate_pings || 0 ) } = 1;
 
         if ( $output eq 'cfg_prefs.tmpl' ) {
@@ -57,22 +57,31 @@ sub edit {
             $param->{ 'language_' . $lang } = 1;
 
             if ( $obj->cc_license ) {
-                $param->{cc_license_name} =
-                  MT::Util::cc_name( $obj->cc_license );
-                $param->{cc_license_image_url} =
-                  MT::Util::cc_image( $obj->cc_license );
-                $param->{cc_license_url} =
-                  MT::Util::cc_url( $obj->cc_license );
+                $param->{cc_license_name}
+                    = MT::Util::cc_name( $obj->cc_license );
+                $param->{cc_license_image_url}
+                    = MT::Util::cc_image( $obj->cc_license );
+                $param->{cc_license_url}
+                    = MT::Util::cc_url( $obj->cc_license );
             }
             $param->{'use_revision'} = ( $obj->use_revision || 0 );
             require MT::PublishOption;
-            if ( $app->model('template')->exist(
-                    { blog_id => $blog->id, build_type => MT::PublishOption::DYNAMIC() })
-              || $app->model('templatemap')->exist(
-                    { blog_id => $blog->id, build_type => MT::PublishOption::DYNAMIC() }) )
+            if ($app->model('template')->exist(
+                    {   blog_id    => $blog->id,
+                        build_type => MT::PublishOption::DYNAMIC()
+                    }
+                )
+                || $app->model('templatemap')->exist(
+                    {   blog_id    => $blog->id,
+                        build_type => MT::PublishOption::DYNAMIC()
+                    }
+                )
+                )
             {
                 $param->{dynamic_enabled} = 1;
-                $param->{warning_include} = 1 unless $blog->include_system eq 'php' || $blog->include_system eq '' ;
+                $param->{warning_include} = 1
+                    unless $blog->include_system eq 'php'
+                        || $blog->include_system eq '';
             }
             eval "require List::Util; require Scalar::Util;";
             unless ($@) {
@@ -84,10 +93,11 @@ sub edit {
             if ( $blog->include_cache ) {
                 $param->{include_cache} = 1;
             }
-            $param->{'max_revisions_entry'} =
-              ( $obj->max_revisions_entry || $MT::Revisable::MAX_REVISIONS );
-            $param->{'max_revisions_template'} =
-              ( $obj->max_revisions_template || $MT::Revisable::MAX_REVISIONS );
+            $param->{'max_revisions_entry'} = ( $obj->max_revisions_entry
+                    || $MT::Revisable::MAX_REVISIONS );
+            $param->{'max_revisions_template'}
+                = (    $obj->max_revisions_template
+                    || $MT::Revisable::MAX_REVISIONS );
         }
         elsif ( $output eq 'cfg_entry.tmpl' ) {
             ## load entry preferences for new/edit entry page of the blog
@@ -95,66 +105,71 @@ sub edit {
             %$param = ( %$param, %$pref_param );
             $pref_param = $app->load_entry_prefs( { type => 'page' } );
             %$param = ( %$param, %$pref_param );
-            $param->{ 'sort_order_posts_'
-                  . ( $obj->sort_order_posts || 0 ) } = 1;
+            $param->{ 'sort_order_posts_' . ( $obj->sort_order_posts || 0 ) }
+                = 1;
             $param->{ 'status_default_' . $obj->status_default } = 1
-              if $obj->status_default;
+                if $obj->status_default;
             $param->{ 'allow_comments_default_'
-                  . ( $obj->allow_comments_default || 0 ) } = 1;
-            $param->{system_allow_pings} =
-              $cfg->AllowPings && $blog->allow_pings;
+                    . ( $obj->allow_comments_default || 0 ) } = 1;
+            $param->{system_allow_pings}
+                = $cfg->AllowPings && $blog->allow_pings;
             $param->{system_allow_comments} = $cfg->AllowComments
-              && ( $blog->allow_reg_comments
+                && ( $blog->allow_reg_comments
                 || $blog->allow_unreg_comments );
             my $replace_fields = $blog->smart_replace_fields || '';
             my @replace_fields = split( /,/, $replace_fields );
+
             foreach my $fld (@replace_fields) {
                 $param->{ 'nwc_' . $fld } = 1;
             }
-            $param->{ 'nwc_smart_replace_' . ( $blog->smart_replace || 0 ) } = 1;
-            $param->{ 'nwc_replace_none' } = ( $blog->smart_replace || 0 ) == 2;
-            $param->{'max_revisions_entry'} = ( $obj->max_revisions_entry || $MT::Revisable::MAX_REVISIONS );
-            $param->{'max_revisions_template'} = ( $obj->max_revisions_template || $MT::Revisable::MAX_REVISIONS );
+            $param->{ 'nwc_smart_replace_' . ( $blog->smart_replace || 0 ) }
+                = 1;
+            $param->{'nwc_replace_none'} = ( $blog->smart_replace || 0 ) == 2;
+            $param->{'max_revisions_entry'} = ( $obj->max_revisions_entry
+                    || $MT::Revisable::MAX_REVISIONS );
+            $param->{'max_revisions_template'}
+                = (    $obj->max_revisions_template
+                    || $MT::Revisable::MAX_REVISIONS );
         }
         elsif ( $output eq 'cfg_web_services.tmpl' ) {
-            $param->{system_disabled_notify_pings} =
-              $cfg->DisableNotificationPings;
-            $param->{system_allow_outbound_pings} =
-              $cfg->OutboundTrackbackLimit eq 'any';
+            $param->{system_disabled_notify_pings}
+                = $cfg->DisableNotificationPings;
+            $param->{system_allow_outbound_pings}
+                = $cfg->OutboundTrackbackLimit eq 'any';
             my %selected_pings = map { $_ => 1 }
-              split ',', ($obj->update_pings || '');
+                split ',', ( $obj->update_pings || '' );
             my $pings = $app->registry('ping_servers');
             my @pings;
             push @pings,
-              {
+                {
                 key   => $_,
                 label => $pings->{$_}->{label},
                 exists( $selected_pings{$_} ) ? ( selected => 1 ) : (),
-              } foreach keys %$pings;
+                } foreach keys %$pings;
             $param->{pings_loop} = \@pings;
         }
         elsif ( $output eq 'cfg_feedback.tmpl' ) {
-            $param->{email_new_comments_1} =
-              ( $obj->email_new_comments || 0 ) == 1;
-            $param->{email_new_comments_2} =
-              ( $obj->email_new_comments || 0 ) == 2;
+            $param->{email_new_comments_1}
+                = ( $obj->email_new_comments || 0 ) == 1;
+            $param->{email_new_comments_2}
+                = ( $obj->email_new_comments || 0 ) == 2;
             $param->{nofollow_urls}     = $obj->nofollow_urls;
             $param->{follow_auth_links} = $obj->follow_auth_links;
             $param->{ 'sort_order_comments_'
-                  . ( $obj->sort_order_comments || 0 ) } = 1;
+                    . ( $obj->sort_order_comments || 0 ) } = 1;
             $param->{global_sanitize_spec} = $cfg->GlobalSanitizeSpec;
-            $param->{ 'sanitize_spec_' . ( $obj->sanitize_spec ? 1 : 0 ) } =
-              1;
+            $param->{ 'sanitize_spec_' . ( $obj->sanitize_spec ? 1 : 0 ) }
+                = 1;
             $param->{sanitize_spec_manual} = $obj->sanitize_spec
-              if $obj->sanitize_spec;
+                if $obj->sanitize_spec;
             $param->{allow_comments} = $blog->allow_reg_comments
-              || $blog->allow_unreg_comments;
-            $param->{use_comment_confirmation} =
-              defined $blog->use_comment_confirmation
-              ? $blog->use_comment_confirmation
-              : 0;
+                || $blog->allow_unreg_comments;
+            $param->{use_comment_confirmation}
+                = defined $blog->use_comment_confirmation
+                ? $blog->use_comment_confirmation
+                : 0;
             $param->{system_allow_comments} = $cfg->AllowComments
-              && ( $blog->allow_reg_comments
+                && ( $blog->allow_reg_comments
                 || $blog->allow_unreg_comments );
             my @cps = MT->captcha_providers;
 
@@ -168,13 +183,13 @@ sub edit {
             $param->{email_new_pings_1} = ( $obj->email_new_pings || 0 ) == 1;
             $param->{email_new_pings_2} = ( $obj->email_new_pings || 0 ) == 2;
             $param->{nofollow_urls}     = $obj->nofollow_urls;
-            $param->{system_allow_selected_pings} =
-              $cfg->OutboundTrackbackLimit eq 'selected';
-            $param->{system_allow_outbound_pings} =
-              $cfg->OutboundTrackbackLimit eq 'any';
-            $param->{system_allow_local_pings} =
-                 ( $cfg->OutboundTrackbackLimit eq 'local' )
-              || ( $cfg->OutboundTrackbackLimit eq 'any' );
+            $param->{system_allow_selected_pings}
+                = $cfg->OutboundTrackbackLimit eq 'selected';
+            $param->{system_allow_outbound_pings}
+                = $cfg->OutboundTrackbackLimit eq 'any';
+            $param->{system_allow_local_pings}
+                = ( $cfg->OutboundTrackbackLimit eq 'local' )
+                || ( $cfg->OutboundTrackbackLimit eq 'any' );
 
             my $threshold = $obj->junk_score_threshold || 0;
             $threshold = '+' . $threshold if $threshold > 0;
@@ -183,25 +198,26 @@ sub edit {
             $param->{auto_delete_junk}     = $obj->junk_folder_expiry;
         }
         elsif ( $output eq 'cfg_registration.tmpl' ) {
-            $param->{commenter_authenticators} =
-              $obj->commenter_authenticators;
+            $param->{commenter_authenticators}
+                = $obj->commenter_authenticators;
             my $registration = $cfg->CommenterRegistration;
             if ( $registration->{Allow} ) {
-                $param->{registration} =
-                  $blog->allow_commenter_regist ? 1 : 0;
+                $param->{registration}
+                    = $blog->allow_commenter_regist ? 1 : 0;
             }
             else {
                 $param->{system_disallow_registration} = 1;
             }
-            $param->{allow_reg_comments} = $blog->allow_reg_comments;
-            $param->{allow_unreg_comments} = $blog->allow_unreg_comments;
+            $param->{allow_reg_comments}     = $blog->allow_reg_comments;
+            $param->{allow_unreg_comments}   = $blog->allow_unreg_comments;
             $param->{require_typekey_emails} = $obj->require_typekey_emails;
         }
         elsif ( $output eq 'cfg_plugin.tmpl' ) {
             $app->add_breadcrumb( $app->translate('Plugin Settings') );
             $param->{blog_view} = 1;
             require MT::CMS::Plugin;
-            MT::CMS::Plugin::build_plugin_table( $app,
+            MT::CMS::Plugin::build_plugin_table(
+                $app,
                 param => $param,
                 scope => 'blog:' . $blog_id
             );
@@ -212,44 +228,48 @@ sub edit {
         }
 
         ( my $offset = $obj->server_offset ) =~ s![-\.]!_!g;
-        $offset =~ s!_0+$!!; # fix syntax highlight ->!
+        $offset =~ s!_0+$!!;    # fix syntax highlight ->!
         $param->{ 'server_offset_' . $offset } = 1;
         if ( $output eq 'cfg_feedback.tmpl' ) {
             ## Load text filters.
-            $param->{text_filters_comments} =
-              $app->load_text_filters( $obj->convert_paras_comments,
+            $param->{text_filters_comments}
+                = $app->load_text_filters( $obj->convert_paras_comments,
                 'comment' );
         }
         elsif ( $output eq 'cfg_entry.tmpl' ) {
             ## Load text filters.
-            $param->{text_filters} =
-              $app->load_text_filters( $obj->convert_paras, 'entry' );
+            $param->{text_filters}
+                = $app->load_text_filters( $obj->convert_paras, 'entry' );
         }
         $param->{nav_config} = 1;
         $param->{error} = $app->errstr if $app->errstr;
-    } else {
+    }
+    else {
         $app->add_breadcrumb( $app->translate('New Website') );
         ( my $tz = $cfg->DefaultTimezone ) =~ s![-\.]!_!g;
-        $tz =~ s!_00$!!; # fix syntax highlight ->!
+        $tz =~ s!_00$!!;    # fix syntax highlight ->!
         $param->{ 'server_offset_' . $tz } = 1;
-        $param->{'can_edit_config'}        = $app->can_do('edit_new_blog_config');
-        $param->{'can_set_publish_paths'}  = $app->can_do('set_new_blog_publish_paths');
+        $param->{'can_edit_config'} = $app->can_do('edit_new_blog_config');
+        $param->{'can_set_publish_paths'}
+            = $app->can_do('set_new_blog_publish_paths');
 
-        $param->{languages} = MT::I18N::languages_list( $app, MT->config->DefaultLanguage );
+        $param->{languages}
+            = MT::I18N::languages_list( $app, MT->config->DefaultLanguage );
     }
 
     if ( !$param->{id} ) {
-        if ( !$param->{site_path} )
-        {
+        if ( !$param->{site_path} ) {
             my $cwd = $app->document_root;
-            $cwd = File::Spec->catdir($cwd, 'WEBSITE-NAME'); # for including the end of directory separator
-            $cwd =~ s!WEBSITE-NAME\z!!;                      # canonpath() remove it
+            $cwd = File::Spec->catdir( $cwd, 'WEBSITE-NAME' )
+                ;    # for including the end of directory separator
+            $cwd =~ s!WEBSITE-NAME\z!!;    # canonpath() remove it
             $cwd =~ s!([\\/])cgi(?:-bin)?([\\/].*)?$!$1!;
             $cwd =~ s!([\\/])mt[\\/]?$!$1!i;
             $param->{site_path} = $param->{suggested_site_path} = $cwd;
-        } else {
-            $param->{site_path} =
-              File::Spec->catdir( $param->{site_path}, 'WEBSITE-NAME' );
+        }
+        else {
+            $param->{site_path}
+                = File::Spec->catdir( $param->{site_path}, 'WEBSITE-NAME' );
         }
     }
 
@@ -259,10 +279,11 @@ sub edit {
             $param->{suggested_site_url} =~ s!/cgi(?:-bin)?(/.*)?$!/!;
             $param->{suggested_site_url} =~ s!/mt/?$!/!i;
             $param->{suggested_site_url} .= 'WEBSITE-NAME/';
-            $param->{site_url}           = $param->{suggested_site_url};
-        } else {
+            $param->{site_url} = $param->{suggested_site_url};
+        }
+        else {
             $param->{site_url} .= '/'
-              unless $param->{site_url} =~ /\/$/;
+                unless $param->{site_url} =~ /\/$/;
             $param->{site_url} .= 'WEBSITE-NAME/';
         }
         $param->{screen_class} = "settings-screen";
@@ -280,8 +301,7 @@ sub post_delete {
     my ( $eh, $app, $obj ) = @_;
 
     $app->log(
-        {
-            message => $app->translate(
+        {   message => $app->translate(
                 "Website '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
@@ -291,12 +311,12 @@ sub post_delete {
         }
     );
     require MT::CMS::User;
-    MT::CMS::User::_delete_pseudo_association($app, undef, $obj->id);
+    MT::CMS::User::_delete_pseudo_association( $app, undef, $obj->id );
 }
 
 sub can_view {
     my ( $eh, $app, $id ) = @_;
-    if ( $id ) {
+    if ($id) {
         return $app->can_do('open_blog_config_screen');
     }
     else {
@@ -309,8 +329,8 @@ sub can_save {
     my $perms = $app->permissions;
     if ($id) {
         return $app->can_do('edit_website_config')
-               || ( $app->param('cfg_screen')
-                    && $app->param('cfg_screen') eq 'cfg_publish_profile');
+            || ( $app->param('cfg_screen')
+            && $app->param('cfg_screen') eq 'cfg_publish_profile' );
     }
     else {
         return $app->can_do('create_new_website');
@@ -318,7 +338,7 @@ sub can_save {
 }
 
 sub dialog_select_website {
-    my $app = shift;
+    my $app  = shift;
     my $user = $app->user;
 
     my $favorites = $app->param('select_favorites');
@@ -329,13 +349,13 @@ sub dialog_select_website {
     if ($favorites) {
         my $auth = $app->user or return;
         if ( my @favs = @{ $auth->favorite_websites || [] } ) {
-            $terms = {
-                id => { not => \@favs },
-            };
+            $terms = { id => { not => \@favs }, };
         }
         $confirm_js = 'saveFavorite';
     }
-    if ( !$user->is_superuser && !$user->permissions(0)->can_do('edit_templates') ) {
+    if (   !$user->is_superuser
+        && !$user->permissions(0)->can_do('edit_templates') )
+    {
         use MT::Permission;
         $args->{join} = MT::Permission->join_on( 'blog_id',
             { author_id => $user->id } );
@@ -349,8 +369,7 @@ sub dialog_select_website {
     };
 
     $app->listing(
-        {
-            type     => 'website',
+        {   type     => 'website',
             code     => $hasher,
             template => 'dialog/select_weblog.tmpl',
             terms    => $terms,
@@ -370,11 +389,12 @@ sub dialog_select_website {
                 panel_first      => 1,
                 panel_last       => 1,
                 list_noncron     => 1,
-                return_url       => $app->base . $app->uri . '?'
-                  . ( $app->param('return_args') || '' ),
-                confirm_js => $confirm_js,
-                idfield    => ( $app->param('idfield') || '' ),
-                namefield  => ( $app->param('namefield') || '' ),
+                return_url       => $app->base
+                    . $app->uri . '?'
+                    . ( $app->param('return_args') || '' ),
+                confirm_js  => $confirm_js,
+                idfield     => ( $app->param('idfield') || '' ),
+                namefield   => ( $app->param('namefield') || '' ),
                 search_type => "website",
             },
         }
@@ -386,8 +406,8 @@ sub dialog_move_blogs {
 
     my $blog_id = $app->param('blog_id');
 
-    my $terms = { };
-    my $args  = { };
+    my $terms = {};
+    my $args  = {};
     $terms->{id} = { not => $blog_id } if $blog_id;
     $terms->{class} = 'website';
 
@@ -400,8 +420,7 @@ sub dialog_move_blogs {
     my @id = $app->param('id');
     my $ids = join ',', @id;
     $app->listing(
-        {
-            type     => 'website',
+        {   type     => 'website',
             code     => $hasher,
             template => 'dialog/move_blogs.tmpl',
             terms    => $terms,
@@ -415,12 +434,12 @@ sub dialog_move_blogs {
                 panel_description => $app->translate("Description"),
                 panel_type        => 'blog',
                 panel_multi       => 0,
-                panel_searchable => 1,
-                panel_first      => 1,
-                panel_last       => 1,
-                list_noncron     => 1,
-                return_url       => $app->param('return_args'),
-                blog_ids         => $ids,
+                panel_searchable  => 1,
+                panel_first       => 1,
+                panel_last        => 1,
+                list_noncron      => 1,
+                return_url        => $app->param('return_args'),
+                blog_ids          => $ids,
             },
         }
     );
@@ -431,29 +450,31 @@ sub move_blogs {
     return unless $app->validate_magic;
 
     my $website_class = $app->model('website');
-    my $ids = $app->param('ids');
-    my $website = $website_class->load($ids)
-        or return $app->error($app->translate('Can\'t load website #[_1].', $ids));
+    my $ids           = $app->param('ids');
+    my $website       = $website_class->load($ids)
+        or return $app->error(
+        $app->translate( 'Can\'t load website #[_1].', $ids ) );
 
     my $blog_class = $app->model('blog');
-    my $blog_ids = $app->param('blog_ids');
-    my @id = split ',', $blog_ids;
+    my $blog_ids   = $app->param('blog_ids');
+    my @id         = split ',', $blog_ids;
     foreach my $id (@id) {
         my $blog = $blog_class->load($id)
-            or return $app->error($app->translate('Can\'t load blog #[_1].', $id));
+            or return $app->error(
+            $app->translate( 'Can\'t load blog #[_1].', $id ) );
         my $old_website = $blog->website;
 
-        $website->add_blog( $blog );
+        $website->add_blog($blog);
         $blog->save
             or return $app->error( $blog->errstr );
 
-        $app->run_callbacks( 'post_move_blog', { website => $old_website, blog => $blog } );
+        $app->run_callbacks( 'post_move_blog',
+            { website => $old_website, blog => $blog } );
 
         $app->log(
-            {
-                message => $app->translate(
+            {   message => $app->translate(
                     "Blog '[_1]' (ID:[_2]) moved from '[_3]' to '[_4]' by '[_5]'",
-                    $blog->name, $blog->id, $old_website->name,
+                    $blog->name,    $blog->id, $old_website->name,
                     $website->name, $app->user->name
                 ),
                 level    => MT::Log::INFO(),
@@ -471,11 +492,11 @@ sub build_website_table {
     my $app = shift;
     my (%args) = @_;
 
-    my $website_class    = $app->model('website');
+    my $website_class = $app->model('website');
     my $tbp_class     = $app->model('ping');
-    my $blog_class   = $app->model('blog');
+    my $blog_class    = $app->model('blog');
     my $comment_class = $app->model('comment');
-    my $page_class = $app->model('page');
+    my $page_class    = $app->model('page');
 
     my $iter;
     if ( $args{load_args} ) {
@@ -505,58 +526,64 @@ sub build_website_table {
             site_url    => $blog->site_url
         };
 
-        if ($app->mode ne 'dialog_select_website') {
+        if ( $app->mode ne 'dialog_select_website' ) {
             $row->{num_blogs} = (
                   $blog_count
                 ? $blog_count->{$blog_id}
-                : $blog_count->{$blog_id} = $blog_class->count(
-                    { parent_id => $blog_id }
+                : $blog_count->{$blog_id}
+                    = $blog_class->count( { parent_id => $blog_id } )
                 )
-            )
-            || 0;
+                || 0;
 
             # we should use count by group here...
             $row->{num_comments} = (
                   $comment_count
                 ? $comment_count->{$blog_id}
                 : $comment_count->{$blog_id} = $comment_class->count(
-                    { blog_id => $blog_id, junk_status => MT::Comment::NOT_JUNK() }
+                    {   blog_id     => $blog_id,
+                        junk_status => MT::Comment::NOT_JUNK()
+                    }
                 )
-              )
-              || 0;
+                )
+                || 0;
             $row->{num_pings} = (
-                $ping_count ? $ping_count->{$blog_id} : $ping_count->{$blog_id} =
-                  MT::TBPing->count(
-                    { blog_id => $blog_id, junk_status => MT::TBPing::NOT_JUNK() }
-                  )
-            ) || 0;
+                  $ping_count
+                ? $ping_count->{$blog_id}
+                : $ping_count->{$blog_id} = MT::TBPing->count(
+                    {   blog_id     => $blog_id,
+                        junk_status => MT::TBPing::NOT_JUNK()
+                    }
+                )
+                )
+                || 0;
             $row->{num_authors} = 0;
             if ( $author->is_superuser ) {
-                $row->{can_edit_entries}       = 1;
-                $row->{can_edit_pages}         = 1;
-                $row->{can_edit_templates}     = 1;
-                $row->{can_edit_config}        = 1;
-                $row->{can_set_publish_paths}  = 1;
-                $row->{can_list_blogs}         = 1;
+                $row->{can_edit_entries}      = 1;
+                $row->{can_edit_pages}        = 1;
+                $row->{can_edit_templates}    = 1;
+                $row->{can_edit_config}       = 1;
+                $row->{can_set_publish_paths} = 1;
+                $row->{can_list_blogs}        = 1;
             }
             else {
                 my $perms = $author->permissions($blog_id);
-                $row->{can_edit_entries}       = $perms->can_do('create_post');
-                $row->{can_edit_pages}         = $perms->can_do('manage_pages');
-                $row->{can_edit_templates}     = $perms->can_do('edit_templates');
-                $row->{can_edit_config}        = $perms->can_do('edit_config');
-                $row->{can_set_publish_paths}  = $perms->can_do('set_publish_paths');
-                $row->{can_list_blogs}         = $perms->can_do('open_blog_listing_screen');
+                $row->{can_edit_entries}   = $perms->can_do('create_post');
+                $row->{can_edit_pages}     = $perms->can_do('manage_pages');
+                $row->{can_edit_templates} = $perms->can_do('edit_templates');
+                $row->{can_edit_config}    = $perms->can_do('edit_config');
+                $row->{can_set_publish_paths}
+                    = $perms->can_do('set_publish_paths');
+                $row->{can_list_blogs}
+                    = $perms->can_do('open_blog_listing_screen');
             }
 
             $row->{num_pages} = (
                   $page_count
                 ? $page_count->{$blog_id}
-                : $page_count->{$blog_id} = $page_class->count(
-                    { blog_id => $blog_id }
+                : $page_count->{$blog_id}
+                    = $page_class->count( { blog_id => $blog_id } )
                 )
-              )
-              || 0;
+                || 0;
         }
         $row->{object} = $blog;
         push @data, $row;
@@ -583,19 +610,13 @@ sub cms_pre_load_filtered_list {
 
     require MT::Permission;
     my $iter = MT::Permission->load_iter(
-        [
-            {
-                author_id => $user->id,
-            },
+        [   { author_id => $user->id, },
             '-and',
-            [
-                {
-                    blog_id => 0,
+            [   {   blog_id     => 0,
                     permissions => { like => '%edit_templates%' },
                 },
                 '-or',
-                {
-                    blog_id => { not => 0 },
+                {   blog_id     => { not => 0 },
                     permissions => { not => 'comment' },
                 }
             ]
@@ -605,14 +626,16 @@ sub cms_pre_load_filtered_list {
     my $blog_ids;
     while ( my $perm = $iter->() ) {
         if ( !$perm->blog_id ) {
+
             # User has system.edit_template
             $blog_ids = undef;
             last;
         }
-        my $website = MT->model('website')->load($perm->blog_id);
+        my $website = MT->model('website')->load( $perm->blog_id );
         if ( $website && $website->class eq 'website' ) {
-            push @$blog_ids, $perm->blog_id
-        } elsif ( $website && $website->class eq 'blog' ) {
+            push @$blog_ids, $perm->blog_id;
+        }
+        elsif ( $website && $website->class eq 'blog' ) {
             push @$blog_ids, $website->website->id;
         }
     }

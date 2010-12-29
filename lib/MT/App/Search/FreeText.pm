@@ -10,19 +10,19 @@ use strict;
 use base qw( MT::App::Search );
 use MT::ObjectDriver::SQL qw( :constants );
 
-sub id { 'new_search' }
+sub id {'new_search'}
 
 sub query_parse {
     my $app = shift;
-    my ( %columns ) = @_;
+    my (%columns) = @_;
 
     my @column_names = keys %columns;
 
     my $args = {
-      'freetext' => {
-        columns       => \@column_names,
-        search_string => $app->{search_string}
-      }
+        'freetext' => {
+            columns       => \@column_names,
+            search_string => $app->{search_string}
+        }
     };
     { args => $args };
 }

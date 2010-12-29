@@ -43,57 +43,69 @@ Specifies the sort order. Recognized values are "ascend" (default) and
 =cut
 
 sub _hdlr_pings {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     require MT::Trackback;
     require MT::TBPing;
-    my($tb, $cat);
+    my ( $tb, $cat );
     my $blog = $ctx->stash('blog');
-    $ctx->nofollowfy_on($args) if ($blog->nofollow_urls);
+    $ctx->nofollowfy_on($args) if ( $blog->nofollow_urls );
 
-    if (my $e = $ctx->stash('entry')) {
+    if ( my $e = $ctx->stash('entry') ) {
         $tb = $e->trackback;
         return '' unless $tb;
-    } elsif ($cat = $ctx->stash('archive_category')) {
-        $tb = MT::Trackback->load({ category_id => $cat->id });
-        return '' unless $tb;
-    } elsif (my $cat_name = $args->{category}) {
-        $cat = MT::Category->load({ label => $cat_name,
-                                    blog_id => $ctx->stash('blog_id') })
-            or return $ctx->error(MT->translate("No such category '[_1]'", $cat_name));
-        $tb = MT::Trackback->load({ category_id => $cat->id });
+    }
+    elsif ( $cat = $ctx->stash('archive_category') ) {
+        $tb = MT::Trackback->load( { category_id => $cat->id } );
         return '' unless $tb;
     }
-    my $res = '';
+    elsif ( my $cat_name = $args->{category} ) {
+        $cat = MT::Category->load(
+            {   label   => $cat_name,
+                blog_id => $ctx->stash('blog_id')
+            }
+            )
+            or return $ctx->error(
+            MT->translate( "No such category '[_1]'", $cat_name ) );
+        $tb = MT::Trackback->load( { category_id => $cat->id } );
+        return '' unless $tb;
+    }
+    my $res     = '';
     my $builder = $ctx->stash('builder');
-    my $tokens = $ctx->stash('tokens');
-    my (%terms, %args);
-    $ctx->set_blog_load_context($args, \%terms, \%args)
-        or return $ctx->error($ctx->errstr);
-    $terms{tb_id} = $tb->id if $tb;
+    my $tokens  = $ctx->stash('tokens');
+    my ( %terms, %args );
+    $ctx->set_blog_load_context( $args, \%terms, \%args )
+        or return $ctx->error( $ctx->errstr );
+    $terms{tb_id}   = $tb->id if $tb;
     $terms{visible} = 1;
-    $args{'sort'} = 'created_on';
+    $args{'sort'}   = 'created_on';
     $args{'direction'} = $args->{sort_order} || 'ascend';
-    if (my $limit = $args->{lastn}) {
+
+    if ( my $limit = $args->{lastn} ) {
         $args{direction} = $args->{sort_order} || 'descend';
         $args{limit} = $limit;
     }
-    my @pings = MT::TBPing->load(\%terms, \%args);
+    my @pings = MT::TBPing->load( \%terms, \%args );
     my $count = 0;
-    my $max = scalar @pings;
-    my $vars = $ctx->{__stash}{vars} ||= {};
+    my $max   = scalar @pings;
+    my $vars  = $ctx->{__stash}{vars} ||= {};
     for my $ping (@pings) {
         $count++;
-        local $ctx->{__stash}{ping} = $ping;
-        local $ctx->{__stash}{blog} = $ping->blog;
-        local $ctx->{__stash}{blog_id} = $ping->blog_id;
+        local $ctx->{__stash}{ping}     = $ping;
+        local $ctx->{__stash}{blog}     = $ping->blog;
+        local $ctx->{__stash}{blog_id}  = $ping->blog_id;
         local $ctx->{current_timestamp} = $ping->created_on;
-        local $vars->{__first__} = $count == 1;
-        local $vars->{__last__} = ($count == ($max));
-        local $vars->{__odd__} = ($count % 2) == 1;
-        local $vars->{__even__} = ($count % 2) == 0;
+        local $vars->{__first__}        = $count == 1;
+        local $vars->{__last__}    = ( $count == ($max) );
+        local $vars->{__odd__}     = ( $count % 2 ) == 1;
+        local $vars->{__even__}    = ( $count % 2 ) == 0;
         local $vars->{__counter__} = $count;
-        my $out = $builder->build($ctx, $tokens, { %$cond,
-            PingsHeader => $count == 1, PingsFooter => ($count == $max) });
+        my $out = $builder->build(
+            $ctx, $tokens,
+            {   %$cond,
+                PingsHeader => $count == 1,
+                PingsFooter => ( $count == $max )
+            }
+        );
         return $ctx->error( $builder->errstr ) unless defined $out;
         $res .= $out;
     }
@@ -143,17 +155,17 @@ B<Example:>
 =cut
 
 sub _hdlr_pings_sent {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $builder = $ctx->stash('builder');
-    my $tokens = $ctx->stash('tokens');
-    my $res = '';
-    my $pings = $e->pinged_url_list;
+    my $tokens  = $ctx->stash('tokens');
+    my $res     = '';
+    my $pings   = $e->pinged_url_list;
     for my $url (@$pings) {
-        $ctx->stash('ping_sent_url', $url);
-        defined(my $out = $builder->build($ctx, $tokens, $cond))
-            or return $ctx->error($builder->errstr);
+        $ctx->stash( 'ping_sent_url', $url );
+        defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
+            or return $ctx->error( $builder->errstr );
         $res .= $out;
     }
     $res;
@@ -181,18 +193,18 @@ B<Example:>
 =cut
 
 sub _hdlr_ping_entry {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $ping = $ctx->stash('ping')
         or return $ctx->_no_ping_error();
     require MT::Trackback;
-    my $tb = MT::Trackback->load($ping->tb_id);
+    my $tb = MT::Trackback->load( $ping->tb_id );
     return '' unless $tb;
     return '' unless $tb->entry_id;
-    my $entry = MT::Entry->load($tb->entry_id)
+    my $entry = MT::Entry->load( $tb->entry_id )
         or return '';
     local $ctx->{__stash}{entry} = $entry;
     local $ctx->{current_timestamp} = $entry->authored_on;
-    $ctx->stash('builder')->build($ctx, $ctx->stash('tokens'), $cond);
+    $ctx->stash('builder')->build( $ctx, $ctx->stash('tokens'), $cond );
 }
 
 ###########################################################################
@@ -205,12 +217,13 @@ and the MT installation (does not test for an entry context).
 =cut
 
 sub _hdlr_if_pings_allowed {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
-    my $cfg = $ctx->{config};
-    if ($blog->allow_pings && $cfg->AllowPings) {
+    my $cfg  = $ctx->{config};
+    if ( $blog->allow_pings && $cfg->AllowPings ) {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -225,16 +238,17 @@ and the entry (if one is in context) and the MT installation.
 =cut
 
 sub _hdlr_if_pings_accepted {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
-    my $cfg = $ctx->{config};
+    my $cfg  = $ctx->{config};
     my $accepted;
     my $entry = $ctx->stash('entry');
     $accepted = 1 if $blog->allow_pings && $cfg->AllowPings;
-    $accepted = 0 if $entry && !$entry->allow_pings;
+    $accepted = 0 if $entry             && !$entry->allow_pings;
     if ($accepted) {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -251,17 +265,19 @@ enabled or pings exist for the entry in context.
 =cut
 
 sub _hdlr_if_pings_active {
-    my ($ctx, $args, $cond) = @_;
-    my $blog = $ctx->stash('blog');
-    my $cfg = $ctx->{config};
+    my ( $ctx, $args, $cond ) = @_;
+    my $blog  = $ctx->stash('blog');
+    my $cfg   = $ctx->{config};
     my $entry = $ctx->stash('entry');
     my $active;
     $active = 1 if $cfg->AllowPings && $blog->allow_pings;
-    $active = 0 if $entry && !$entry->allow_pings;
+    $active = 0 if $entry           && !$entry->allow_pings;
     $active = 1 if !$active && $entry && $entry->ping_count;
+
     if ($active) {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -276,11 +292,12 @@ all incoming pings by default.
 =cut
 
 sub _hdlr_if_pings_moderated {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
-    if ($blog->moderate_pings) {
+    if ( $blog->moderate_pings ) {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -296,14 +313,15 @@ Deprecated in favor of L<IfPingsAccepted>.
 =cut
 
 sub _hdlr_entry_if_allow_pings {
-    my ($ctx, $args, $cond) = @_;
-    my $entry = $ctx->stash('entry');
-    my $blog = $ctx->stash('blog');
-    my $cfg = $ctx->{config};
+    my ( $ctx, $args, $cond ) = @_;
+    my $entry               = $ctx->stash('entry');
+    my $blog                = $ctx->stash('blog');
+    my $cfg                 = $ctx->{config};
     my $blog_pings_accepted = 1 if $cfg->AllowPings && $blog->allow_pings;
-    if ($blog_pings_accepted && $entry->allow_pings) {
+    if ( $blog_pings_accepted && $entry->allow_pings ) {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -360,7 +378,7 @@ B<Example:>
 =cut
 
 sub _hdlr_ping_title {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     $ctx->sanitize_on($args);
     my $ping = $ctx->stash('ping')
         or return $ctx->_no_ping_error();
@@ -403,7 +421,7 @@ B<Example:>
 =cut
 
 sub _hdlr_ping_url {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     $ctx->sanitize_on($args);
     my $ping = $ctx->stash('ping')
         or return $ctx->_no_ping_error();
@@ -425,7 +443,7 @@ B<Example:>
 =cut
 
 sub _hdlr_ping_excerpt {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     $ctx->sanitize_on($args);
     my $ping = $ctx->stash('ping')
         or return $ctx->_no_ping_error();
@@ -447,7 +465,7 @@ B<Example:>
 =cut
 
 sub _hdlr_ping_blog_name {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     $ctx->sanitize_on($args);
     my $ping = $ctx->stash('ping')
         or return $ctx->_no_ping_error();
@@ -520,7 +538,7 @@ B<Example:>
 =cut
 
 sub _hdlr_ping_date {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $p = $ctx->stash('ping')
         or return $ctx->_no_ping_error();
     $args->{ts} = $p->created_on;
@@ -550,16 +568,16 @@ currently in context.
 =cut
 
 sub _hdlr_blog_ping_count {
-    my ($ctx, $args, $cond) = @_;
-    my (%terms, %args);
-    $ctx->set_blog_load_context($args, \%terms, \%args)
-        or return $ctx->error($ctx->errstr);
+    my ( $ctx, $args, $cond ) = @_;
+    my ( %terms, %args );
+    $ctx->set_blog_load_context( $args, \%terms, \%args )
+        or return $ctx->error( $ctx->errstr );
     $terms{visible} = 1;
     require MT::Trackback;
     require MT::TBPing;
-    my $count = MT::Trackback->count(undef,
-        { 'join' => MT::TBPing->join_on('tb_id', \%terms, \%args) });
-    return $ctx->count_format($count, $args);
+    my $count = MT::Trackback->count( undef,
+        { 'join' => MT::TBPing->join_on( 'tb_id', \%terms, \%args ) } );
+    return $ctx->count_format( $count, $args );
 }
 
 ###########################################################################
@@ -572,11 +590,11 @@ context.
 =cut
 
 sub _hdlr_entry_ping_count {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $count = $e->ping_count;
-    return $ctx->count_format($count, $args);
+    return $ctx->count_format( $count, $args );
 }
 
 ###########################################################################
@@ -590,12 +608,12 @@ an empty string.
 =cut
 
 sub _hdlr_entry_tb_link {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $tb = $e->trackback
         or return '';
-    my $cfg = $ctx->{config};
+    my $cfg  = $ctx->{config};
     my $path = $ctx->cgi_path;
     $path . $cfg->TrackbackScript . '/' . $tb->id;
 }
@@ -629,35 +647,38 @@ unnecessary.
 =cut
 
 sub _hdlr_entry_tb_data {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     return '' unless $e->allow_pings;
     my $blog = $ctx->stash('blog');
-    my $cfg = $ctx->{config};
+    my $cfg  = $ctx->{config};
     return '' unless $blog->allow_pings && $cfg->AllowPings;
     my $tb = $e->trackback or return '';
     return '' if $tb->is_disabled;
     my $path = $ctx->cgi_path;
     $path .= $cfg->TrackbackScript . '/' . $tb->id;
     my $url;
-    if (my $at = $ctx->{current_archive_type} || $ctx->{archive_type}) {
+
+    if ( my $at = $ctx->{current_archive_type} || $ctx->{archive_type} ) {
         $url = $e->archive_url($at);
-        $url .= '#entry-' . sprintf("%06d", $e->id)
+        $url .= '#entry-' . sprintf( "%06d", $e->id )
             unless $at eq 'Individual';
-    } else {
+    }
+    else {
         $url = $e->permalink;
-        $url = MT::Util::strip_index($url, $ctx->stash('blog')) unless $args->{with_index};
+        $url = MT::Util::strip_index( $url, $ctx->stash('blog') )
+            unless $args->{with_index};
     }
     my $rdf = '';
-    my $comment_wrap = defined $args->{comment_wrap} ?
-        $args->{comment_wrap} : 1;
+    my $comment_wrap
+        = defined $args->{comment_wrap} ? $args->{comment_wrap} : 1;
     $rdf .= "<!--\n" if $comment_wrap;
     ## SGML comments cannot contain double hyphens, so we convert
     ## any double hyphens to single hyphens.
     my $strip_hyphen = sub {
         return unless defined $_[0];
-        (my $s = $_[0]) =~ tr/\-//s;
+        ( my $s = $_[0] ) =~ tr/\-//s;
         $s;
     };
     $rdf .= <<RDF;
@@ -690,7 +711,7 @@ If not TrackBack is not enabled for the entry, this outputs an empty string.
 =cut
 
 sub _hdlr_entry_tb_id {
-    my($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $tb = $e->trackback
@@ -711,19 +732,25 @@ B<Example:>
 =cut
 
 sub _hdlr_category_tb_link {
-    my($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $cat = $ctx->stash('category') || $ctx->stash('archive_category');
-    if (!$cat) {
+    if ( !$cat ) {
         my $cat_name = $args->{category}
-            or return $ctx->error(MT->translate("<\$MTCategoryTrackbackLink\$> must be used in the context of a category, or with the 'category' attribute to the tag."));
-        $cat = MT::Category->load({ label => $cat_name,
-                                    blog_id => $ctx->stash('blog_id') })
-            or return $ctx->error("No such category '$cat_name'");
+            or return $ctx->error(
+            MT->translate(
+                "<\$MTCategoryTrackbackLink\$> must be used in the context of a category, or with the 'category' attribute to the tag."
+            )
+            );
+        $cat = MT::Category->load(
+            {   label   => $cat_name,
+                blog_id => $ctx->stash('blog_id')
+            }
+        ) or return $ctx->error("No such category '$cat_name'");
     }
     require MT::Trackback;
-    my $tb = MT::Trackback->load({ category_id => $cat->id })
+    my $tb = MT::Trackback->load( { category_id => $cat->id } )
         or return '';
-    my $cfg = $ctx->{config};
+    my $cfg  = $ctx->{config};
     my $path = $ctx->cgi_path;
     return $path . $cfg->TrackbackScript . '/' . $tb->id;
 }
@@ -743,7 +770,7 @@ B<Example:>
 =cut
 
 sub _hdlr_category_tb_count {
-    my($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $cat = $ctx->stash('category') || $ctx->stash('archive_category');
     return 0 unless $cat;
     require MT::Trackback;
@@ -751,7 +778,7 @@ sub _hdlr_category_tb_count {
     return 0 unless $tb;
     require MT::TBPing;
     my $count = MT::TBPing->count( { tb_id => $tb->id, visible => 1 } );
-    return $ctx->count_format($count || 0, $args);
+    return $ctx->count_format( $count || 0, $args );
 }
 
 1;

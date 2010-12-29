@@ -12,53 +12,50 @@ use MT::Util qw( weaken );
 
 use MT::Blog;
 
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id' => 'integer not null auto_increment',
-        'blog_id' => 'integer not null',
-        'label' => 'string(100) not null',
-        'author_id' => 'integer',
-        'ping_urls' => 'text',
-        'description' => 'text',
-        'parent' => 'integer',
-        'allow_pings' => 'boolean',
-        'basename' => 'string(255)',
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'          => 'integer not null auto_increment',
+            'blog_id'     => 'integer not null',
+            'label'       => 'string(100) not null',
+            'author_id'   => 'integer',
+            'ping_urls'   => 'text',
+            'description' => 'text',
+            'parent'      => 'integer',
+            'allow_pings' => 'boolean',
+            'basename'    => 'string(255)',
 
-        'show_fields' => 'string meta',
-    },
-    indexes => {
-        blog_id => 1,
-        label => 1,
-        parent => 1,
-        blog_basename => {
-            columns => [ 'blog_id', 'basename' ],
+            'show_fields' => 'string meta',
         },
-        blog_class => {
-            columns => [ 'blog_id', 'class' ],
+        indexes => {
+            blog_id       => 1,
+            label         => 1,
+            parent        => 1,
+            blog_basename => { columns => [ 'blog_id', 'basename' ], },
+            blog_class    => { columns => [ 'blog_id', 'class' ], },
         },
-    },
-    defaults => {
-        parent => 0,
-        allow_pings => 0,
-    },
-    class_type => 'category',
-    child_of => 'MT::Blog',
-    audit => 1,
-    meta => 1,
-    child_classes => ['MT::Placement', 'MT::Trackback', 'MT::FileInfo'],
-    datasource => 'category',
-    primary_key => 'id',
-});
+        defaults => {
+            parent      => 0,
+            allow_pings => 0,
+        },
+        class_type    => 'category',
+        child_of      => 'MT::Blog',
+        audit         => 1,
+        meta          => 1,
+        child_classes => [ 'MT::Placement', 'MT::Trackback', 'MT::FileInfo' ],
+        datasource    => 'category',
+        primary_key   => 'id',
+    }
+);
 
 sub list_props {
     return {
-        label => { base => '__virtual.label' },
+        label    => { base => '__virtual.label' },
         basename => {
-            auto => 1,
+            auto  => 1,
             label => 'Basename',
-            html => sub { '' },
+            html  => sub {''},
         },
-        id    => 'ID',
+        id     => 'ID',
         parent => {
             auto  => 1,
             label => 'Parent',
@@ -69,8 +66,7 @@ sub list_props {
             bulk_html => sub {
                 my ( $prop, $objs, $app ) = @_;
                 my $count_iter = MT->model('placement')->count_group_by(
-                    {
-                        blog_id    => $app->blog->id,
+                    {   blog_id    => $app->blog->id,
                         is_primary => 1,
                     },
                     { group => ['category_id'], }
@@ -82,18 +78,19 @@ sub list_props {
                 my @out;
                 for my $obj (@$objs) {
                     my $obj_class = $obj->class;
-                    my $contents_type =
-                      $obj_class eq 'category' ? 'entry' : 'page';
+                    my $contents_type
+                        = $obj_class eq 'category' ? 'entry' : 'page';
                     my $content_class = MT->model($contents_type);
-                    my $action        = 'access_to_' . $contents_type . '_list';
-                    my $count         = $count{ $obj->id } || 0;
+                    my $action = 'access_to_' . $contents_type . '_list';
+                    my $count = $count{ $obj->id } || 0;
                     my $suffix;
                     if ( $count == 1 ) {
-                        $suffix = MT->translate( lc $content_class->class_label );
+                        $suffix
+                            = MT->translate( lc $content_class->class_label );
                     }
                     else {
-                        $suffix =
-                          MT->translate( lc $content_class->class_label_plural );
+                        $suffix = MT->translate(
+                            lc $content_class->class_label_plural );
                     }
 
                     if ( $app->can_do($action) ) {
@@ -101,7 +98,9 @@ sub list_props {
                             mode => 'list',
                             args => {
                                 _type => (
-                                    $obj_class eq 'category' ? 'entry' : 'page'
+                                    $obj_class eq 'category'
+                                    ? 'entry'
+                                    : 'page'
                                 ),
                                 filter     => $obj_class . '_id',
                                 filter_val => $obj->id,
@@ -109,25 +108,29 @@ sub list_props {
                             },
                         );
                         push @out,
-                          MT->translate( '<a href="[_1]">[_2]</a> [_3]',
-                            $uri, $count ? $count : 'No', $suffix, );
+                            MT->translate(
+                            '<a href="[_1]">[_2]</a> [_3]', $uri,
+                            $count ? $count : 'No', $suffix,
+                            );
                     }
                     else {
                         push @out,
-                          MT->translate( '[_1] [_2]', $count ? $count : 'No', $suffix, );
+                            MT->translate( '[_1] [_2]',
+                            $count ? $count : 'No', $suffix, );
                     }
                 }
                 return @out;
             },
-          },
+        },
         custom_sort => {
-            class => 'category',
+            class     => 'category',
             bulk_sort => sub {
                 my ( $prop, $objs ) = @_;
                 require MT::Category;
                 require MT::Blog;
-                my $rep  = $objs->[0] or return;
-                my $blog = MT::Blog->load({ id => $rep->blog_id }, { no_class => 1 });
+                my $rep = $objs->[0] or return;
+                my $blog = MT::Blog->load( { id => $rep->blog_id },
+                    { no_class => 1 } );
                 my $meta = $prop->class . '_order';
                 my $text = $blog->$meta || '';
                 my @cats = _sort_by_id_list(
@@ -135,8 +138,10 @@ sub list_props {
                     $objs,
                     unknown_place        => 'top',
                     secondary_sort       => 'created_on',
-                    secondary_sort_order => 'descend' );
-                @cats = grep { ref $_ } MT::Category::_flattened_category_hierarchy( \@cats );
+                    secondary_sort_order => 'descend'
+                );
+                @cats = grep { ref $_ }
+                    MT::Category::_flattened_category_hierarchy( \@cats );
                 return @cats;
             },
         },
@@ -160,7 +165,7 @@ sub contents_label_plural {
 }
 
 sub basename_prefix {
-    my $this = shift;
+    my $this   = shift;
     my ($dash) = @_;
     my $prefix = 'cat';
     if ($dash) {
@@ -179,11 +184,12 @@ sub publish_path {
     my $cat = shift;
     return $cat->{__path} if exists $cat->{__path};
     my $result = $cat->basename;
-    my $orig = $cat;
+    my $orig   = $cat;
     do {
-        $cat = $cat->parent ? __PACKAGE__->load($cat->parent) : undef;
+        $cat = $cat->parent ? __PACKAGE__->load( $cat->parent ) : undef;
         $result = join "/", $cat->basename, $result if $cat;
     } while ($cat);
+
     # caching this information may be problematic IF
     # parent category basenames are changed.
     $orig->{__path} = $result;
@@ -196,56 +202,61 @@ sub category_label_path {
     my $result = $cat->label =~ m!/! ? '[' . $cat->label . ']' : $cat->label;
     my $orig = $cat;
     do {
-        $cat = $cat->parent ? __PACKAGE__->load($cat->parent) : undef;
-        $result = join "/", ($cat->label =~ m!/! ? '[' . $cat->label . ']' : $cat->label),
-            $result if $cat;
+        $cat = $cat->parent ? __PACKAGE__->load( $cat->parent ) : undef;
+        $result = join "/",
+            ( $cat->label =~ m!/! ? '[' . $cat->label . ']' : $cat->label ),
+            $result
+            if $cat;
     } while ($cat);
+
     # caching this information may be problematic IF
     # parent category labels are changed.
     $orig->{__label_path} = $result;
 }
 
 sub cache_obj {
-    my $pkg = shift;
+    my $pkg     = shift;
     my (%param) = @_;
     my $blog_id = $param{blog_id};
     my $sess_id = 'blog:' . $blog_id;
     require MT::Session;
-    my $cat_cache = MT::Session::get_unexpired_value(60 * 60, {
-        kind => 'CC',  # category cache
-        id => $sess_id
-    });
-    if (!$cat_cache) {
+    my $cat_cache = MT::Session::get_unexpired_value(
+        60 * 60,
+        {   kind => 'CC',      # category cache
+            id   => $sess_id
+        }
+    );
+    if ( !$cat_cache ) {
         $cat_cache = new MT::Session;
         $cat_cache->kind('CC');
         $cat_cache->id($sess_id);
         $cat_cache->start(time);
-        $cat_cache->duration(time + 60 * 60);
+        $cat_cache->duration( time + 60 * 60 );
     }
     $cat_cache;
 }
 
 sub clear_cache {
-    my $pkg = shift;
-    my (%param) = @_;
+    my $pkg       = shift;
+    my (%param)   = @_;
     my $cat_cache = $pkg->cache_obj(@_);
     $cat_cache->remove;
 }
 
 sub cache {
-    my $pkg = shift;
-    my (%param) = @_;
-    my $blog_id = $param{blog_id};
-    my $sess_id = 'blog:' . $blog_id;
+    my $pkg       = shift;
+    my (%param)   = @_;
+    my $blog_id   = $param{blog_id};
+    my $sess_id   = 'blog:' . $blog_id;
     my $cat_cache = $pkg->cache_obj(@_);
-    my $data = $cat_cache->get('category_cache');
-    if (!$data) {
-        my $cat_iter = $pkg->load_iter({blog_id => $blog_id});
+    my $data      = $cat_cache->get('category_cache');
+    if ( !$data ) {
+        my $cat_iter = $pkg->load_iter( { blog_id => $blog_id } );
         $data = [];
-        while (my $cat = $cat_iter->()) {
+        while ( my $cat = $cat_iter->() ) {
             push @$data, [ $cat->id, $cat->label, $cat->parent ];
         }
-        $cat_cache->set('category_cache', $data);
+        $cat_cache->set( 'category_cache', $data );
         $cat_cache->save;
     }
     $data || [];
@@ -256,36 +267,42 @@ sub save {
     my $pkg = ref($cat);
 
     my $clear_cache;
-    if ($cat->id) {
-        my $orig_cat = $pkg->load($cat->id);
-        if (!$orig_cat || ($orig_cat->label ne $cat->label) || ($orig_cat->parent != $cat->parent)) {
+    if ( $cat->id ) {
+        my $orig_cat = $pkg->load( $cat->id );
+        if (   !$orig_cat
+            || ( $orig_cat->label ne $cat->label )
+            || ( $orig_cat->parent != $cat->parent ) )
+        {
             $clear_cache = 1;
         }
-    } else {
+    }
+    else {
+
         # new category-- invalidate any cache
         $clear_cache = 1;
     }
 
     # check that the parent is legit.
-    if ($cat->parent && $cat->parent ne '0') {
-        my $parent = $pkg->load($cat->parent);
+    if ( $cat->parent && $cat->parent ne '0' ) {
+        my $parent = $pkg->load( $cat->parent );
         $cat->parent(0) unless $parent;
     }
 
-    if ($cat->parent && $cat->parent ne '0') {
-        my $parent = $pkg->load($cat->parent);
-        if (!$parent) {
-            return $cat->error(MT->translate("Categories must exist within the same blog"))
-                if ($cat->blog_id != $parent->blog_id);
-            return $cat->error(MT->translate("Category loop detected"))
-                if ($cat->id && $cat->is_ancestor($parent));
+    if ( $cat->parent && $cat->parent ne '0' ) {
+        my $parent = $pkg->load( $cat->parent );
+        if ( !$parent ) {
+            return $cat->error(
+                MT->translate("Categories must exist within the same blog") )
+                if ( $cat->blog_id != $parent->blog_id );
+            return $cat->error( MT->translate("Category loop detected") )
+                if ( $cat->id && $cat->is_ancestor($parent) );
         }
     }
 
     $cat->SUPER::save(@_) or return;
 
     # set category basename after save, because of cat_id needed.
-    if (!defined($cat->basename) || ($cat->basename eq '')) {
+    if ( !defined( $cat->basename ) || ( $cat->basename eq '' ) ) {
         require MT::Util;
         my $name = MT::Util::make_unique_category_basename($cat);
         $cat->basename($name);
@@ -295,86 +312,87 @@ sub save {
     ## If pings are allowed on this entry, create or update
     ## the corresponding Trackback object for this entry.
     require MT::Trackback;
-    if ($cat->allow_pings) {
+    if ( $cat->allow_pings ) {
         my $tb;
-        unless ($tb = MT::Trackback->load({
-                                 category_id => $cat->id })) {
+        unless ( $tb = MT::Trackback->load( { category_id => $cat->id } ) ) {
             $tb = MT::Trackback->new;
-            $tb->blog_id($cat->blog_id);
-            $tb->category_id($cat->id);
-            $tb->entry_id(0);   ## entry_id can't be NULL
+            $tb->blog_id( $cat->blog_id );
+            $tb->category_id( $cat->id );
+            $tb->entry_id(0);    ## entry_id can't be NULL
         }
-        if (defined(my $pass = $cat->{__tb_passphrase})) {
+        if ( defined( my $pass = $cat->{__tb_passphrase} ) ) {
             $tb->passphrase($pass);
         }
-        $tb->title($cat->label);
-        $tb->description($cat->description);
-        my $blog = MT::Blog->load($cat->blog_id)
+        $tb->title( $cat->label );
+        $tb->description( $cat->description );
+        my $blog = MT::Blog->load( $cat->blog_id )
             or return;
         my $url = $blog->archive_url;
         $url .= '/' unless $url =~ m!/$!;
-        $url .= MT::Util::archive_file_for(undef, $blog,
-            'Category', $cat);
+        $url .= MT::Util::archive_file_for( undef, $blog, 'Category', $cat );
         $tb->url($url);
         $tb->is_disabled(0);
         $tb->save
-            or return $cat->error($tb->errstr);
-    } else {
+            or return $cat->error( $tb->errstr );
+    }
+    else {
         ## If there is a TrackBack item for this category, but
         ## pings are now disabled, make sure that we mark the
         ## object as disabled.
-        if (my $tb = MT::Trackback->load({
-                                  category_id => $cat->id })) {
+        if ( my $tb = MT::Trackback->load( { category_id => $cat->id } ) ) {
             $tb->is_disabled(1);
             $tb->save
-                or return $cat->error($tb->errstr);
+                or return $cat->error( $tb->errstr );
         }
     }
     if ($clear_cache) {
-        $pkg->clear_cache('blog_id' => $cat->blog_id);
+        $pkg->clear_cache( 'blog_id' => $cat->blog_id );
     }
     1;
 }
 
 sub remove {
     my $cat = shift;
-    $cat->remove_children({ key => 'category_id' });
-    if (ref $cat) {
+    $cat->remove_children( { key => 'category_id' } );
+    if ( ref $cat ) {
         my $pkg = ref($cat);
+
         # orphan my children up to the root level
         my @children = $cat->children_categories;
-        if (scalar @children) {
+        if ( scalar @children ) {
             foreach my $child (@children) {
-                $child->parent(($cat->parent) ? $cat->parent : '0');
-                $child->save or return $cat->error($child->save);
+                $child->parent( ( $cat->parent ) ? $cat->parent : '0' );
+                $child->save or return $cat->error( $child->save );
             }
-        } else {
-            $pkg->clear_cache('blog_id' => $cat->blog_id);
+        }
+        else {
+            $pkg->clear_cache( 'blog_id' => $cat->blog_id );
         }
     }
     $cat->SUPER::remove(@_);
 }
 
-
 sub _flattened_category_hierarchy {
+
     # Either the class name or a MT::Category object
-    my $cat = shift;
-    my $class = ref($cat) || $cat;
-    my @cats = ();
+    my $cat            = shift;
+    my $class          = ref($cat) || $cat;
+    my @cats           = ();
     my @flattened_cats = ();
 
     # the starting point is the category instance
-    if ( ref $cat && UNIVERSAL::isa($cat, 'MT::Category') ) {
+    if ( ref $cat && UNIVERSAL::isa( $cat, 'MT::Category' ) ) {
         @cats = ($cat);
 
         # Depth-first search time
         foreach my $c (@cats) {
+
             # Push the current category onto the list
             push @flattened_cats, $c;
 
             # If it has any children
             my @children = $c->children_categories;
-            if (scalar @children) {
+            if ( scalar @children ) {
 
                 # Indicate the start of the children
 
@@ -382,7 +400,8 @@ sub _flattened_category_hierarchy {
 
                 # Add all the kids (and their associated subcategories)
                 foreach my $kid (@children) {
-                    push @flattened_cats, ($kid->_flattened_category_hierarchy);
+                    push @flattened_cats,
+                        ( $kid->_flattened_category_hierarchy );
                 }
 
                 # Indicate the end of the children
@@ -392,13 +411,14 @@ sub _flattened_category_hierarchy {
         return @flattened_cats;
     }
 
+    if ( !ref($cat) ) {
 
-    if (!ref ($cat)) {
-        # If it is the class name (i.e. called "statically")
-        # Grab the blog_id from the parameters list and get the top level categories
+  # If it is the class name (i.e. called "statically")
+  # Grab the blog_id from the parameters list and get the top level categories
         my $blog_id = shift or return ();
 
-        @cats = $class->load({ blog_id => $blog_id }, { 'sort' => 'label' });
+        @cats
+            = $class->load( { blog_id => $blog_id }, { 'sort' => 'label' } );
     }
     else {
         @cats = @$cat;
@@ -406,31 +426,32 @@ sub _flattened_category_hierarchy {
 
     my $children = {};
     foreach my $cat (@cats) {
-        if ($cat->parent) {
-            my $list = $children->{$cat->parent} ||= [];
+        if ( $cat->parent ) {
+            my $list = $children->{ $cat->parent } ||= [];
             push @$list, $cat;
         }
     }
+
     sub __pusher {
-        my ($children, $id) = @_;
+        my ( $children, $id ) = @_;
         my $list = $children->{$id};
         return () unless $list && @$list;
         my @flat;
         push @flat, 'BEGIN_SUBCATS';
         foreach (@$list) {
             push @flat, $_;
-            if ($children->{$_->id}) {
-                push @flat, __pusher($children, $_->id);
+            if ( $children->{ $_->id } ) {
+                push @flat, __pusher( $children, $_->id );
             }
         }
         push @flat, 'END_SUBCATS';
         @flat;
     }
     foreach my $cat (@cats) {
-        if (!$cat->parent) {
+        if ( !$cat->parent ) {
             push @flattened_cats, $cat;
-            push @flattened_cats, __pusher($children, $cat->id)
-                    if $children->{$cat->id};
+            push @flattened_cats, __pusher( $children, $cat->id )
+                if $children->{ $cat->id };
         }
     }
     return @flattened_cats;
@@ -441,7 +462,7 @@ sub _sort_by_id_list {
     my @ids = split ',', $text;
     my %id_map = map { $_->id => $_ } @$objs;
     my @objs;
-    for my $id ( @ids ) {
+    for my $id (@ids) {
         push @objs, delete $id_map{$id} if $id_map{$id};
     }
     if ( scalar %id_map ) {
@@ -464,65 +485,68 @@ sub _sort_by_id_list {
 # work with folders for instance.
 sub _buildCatHier {
     my ($blog_id) = @_;
-  
+
     require MT::Request;
 
     my %children;
 
-    my $r = MT::Request->instance;
+    my $r        = MT::Request->instance;
     my $all_cats = $r->cache('sub_cats_cats');
     unless ($all_cats) {
-        $r->cache('sub_cats_cats', $all_cats = {});
+        $r->cache( 'sub_cats_cats', $all_cats = {} );
     }
     my $cats;
-    if (defined $all_cats->{$blog_id}) {
+    if ( defined $all_cats->{$blog_id} ) {
         my $children = $all_cats->{$blog_id}{'children'};
         return ($children);
     }
 
     # Start by loading all the categories for the given blog
     # and default to setting all of their parents to '0'
-  
-    my @cats = MT::Category->load({ blog_id => $blog_id });
+
+    my @cats = MT::Category->load( { blog_id => $blog_id } );
     foreach my $cat (@cats) {
-        push @{$children{($cat->parent) ? $cat->parent : '0'}}, $cat;
+        push @{ $children{ ( $cat->parent ) ? $cat->parent : '0' } }, $cat;
     }
 
-    foreach my $i (keys %children) {
-        @{$children{$i}} = sort { $a->label cmp $b->label } @{$children{$i}};
+    foreach my $i ( keys %children ) {
+        @{ $children{$i} }
+            = sort { $a->label cmp $b->label } @{ $children{$i} };
     }
 
     $all_cats->{$blog_id}{'children'} = \%children;
-    $r->cache('sub_cats_cats', $all_cats);
- 
-    (\%children);
+    $r->cache( 'sub_cats_cats', $all_cats );
+
+    ( \%children );
 }
 
 sub top_level_categories {
-    my ($class, $blog_id) = @_;
-    my @cats = $class->load({ blog_id => $blog_id, parent => '0' }, { 'sort' => 'label' });
+    my ( $class, $blog_id ) = @_;
+    my @cats = $class->load( { blog_id => $blog_id, parent => '0' },
+        { 'sort' => 'label' } );
 }
 
 sub copy_cat {
-    my $class = shift;
-    my $cat = $class->new;
+    my $class   = shift;
+    my $cat     = $class->new;
     my $old_cat = shift;
-    $cat->set_values($old_cat->column_values);
+    $cat->set_values( $old_cat->column_values );
     $cat;
 }
 
 sub parent_categories {
     my $cat = shift;
 
-    return () if (!$cat->parent_category);
-    ($cat->parent_category, $cat->parent_category->parent_categories);
+    return () if ( !$cat->parent_category );
+    ( $cat->parent_category, $cat->parent_category->parent_categories );
 }
 
 sub parent_category {
-    my $cat = shift;
+    my $cat   = shift;
     my $class = ref($cat);
-    unless ($cat->{__parent_category}) {
-        $cat->{__parent_category} = ($cat->parent) ? $class->load($cat->parent) : undef;
+    unless ( $cat->{__parent_category} ) {
+        $cat->{__parent_category}
+            = ( $cat->parent ) ? $class->load( $cat->parent ) : undef;
         weaken( $cat->{__parent_category} )
             if !MT->config->DisableObjectCache;
     }
@@ -530,14 +554,17 @@ sub parent_category {
 }
 
 sub children_categories {
-    my $cat = shift;
+    my $cat   = shift;
     my $class = ref($cat);
-    unless ($cat->{__children}) {
-        @{$cat->{__children}} = sort { $a->label cmp $b->label }
-        $class->load({ blog_id => $cat->blog_id,
-            parent => $cat->id });
+    unless ( $cat->{__children} ) {
+        @{ $cat->{__children} }
+            = sort { $a->label cmp $b->label } $class->load(
+            {   blog_id => $cat->blog_id,
+                parent  => $cat->id
+            }
+            );
     }
-    @{$cat->{__children}};
+    @{ $cat->{__children} };
 }
 
 sub is_ancestor {
@@ -555,11 +582,11 @@ sub is_ancestor {
     # as the children lists do not need to be calculated
 
     my $class = ref($cat);
-    while (my $id = $possible_child->parent) {
+    while ( my $id = $possible_child->parent ) {
         $possible_child = $class->load($id);
         return 1 if $cat->id == $possible_child->id;
     }
-  
+
     # Looks like we didn't find it
     0;
 }
@@ -572,15 +599,26 @@ sub is_descendant {
 
 sub entry_count {
     my $cat = shift;
-    $cat->cache_property('entry_count', sub {
-        require MT::Placement;
-        my $class = MT->model( $cat->class eq 'folder' ? 'page' : 'entry' );
-        my @args = ({ blog_id => $cat->blog_id,
-                      status  => $class->RELEASE() },
-                    { 'join'  => [ 'MT::Placement', 'entry_id',
-                                 { category_id => $cat->id } ] });
-        scalar $class->count(@args);
-    }, @_);
+    $cat->cache_property(
+        'entry_count',
+        sub {
+            require MT::Placement;
+            my $class
+                = MT->model( $cat->class eq 'folder' ? 'page' : 'entry' );
+            my @args = (
+                {   blog_id => $cat->blog_id,
+                    status  => $class->RELEASE()
+                },
+                {   'join' => [
+                        'MT::Placement', 'entry_id',
+                        { category_id => $cat->id }
+                    ]
+                }
+            );
+            scalar $class->count(@args);
+        },
+        @_
+    );
 }
 
 sub populate_category_hierarchy {
@@ -588,24 +626,25 @@ sub populate_category_hierarchy {
     my ( $blog_id, $parent_id, $depth ) = @_;
 
     my @cats;
+
     # sort in reverse order since we unshift objects here
     my $iter = $class->load_iter(
-        { blog_id => $blog_id, parent => $parent_id },
-        { sort => 'label', direction => 'descend' }
+        { blog_id => $blog_id, parent    => $parent_id },
+        { sort    => 'label',  direction => 'descend' }
     );
     while ( my $cat = $iter->() ) {
-        my $subcats = $class->populate_category_hierarchy( $blog_id, $cat->id, $depth + 1 );
+        my $subcats = $class->populate_category_hierarchy( $blog_id, $cat->id,
+            $depth + 1 );
         unshift @cats, @$subcats if @$subcats;
 
         my $values = $cat->get_values;
         my $fields = $cat->show_fields;
-        $values->{selected_fields} = $fields;
+        $values->{selected_fields}      = $fields;
         $values->{category_pixel_depth} = 10 * $depth;
         unshift @cats, $values;
     }
     return \@cats;
 }
-
 
 1;
 __END__

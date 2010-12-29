@@ -17,15 +17,16 @@ BEGIN {
 sub Dump {
     require YAML::Syck;
     local $YAML::Syck::ImplicitUnicode = 1;
-    YAML::Syck::Dump( shift );
+    YAML::Syck::Dump(shift);
 }
 
 sub Load {
     my ($str) = @_;
     require YAML::Syck;
     local $YAML::Syck::ImplicitUnicode = 1;
-    my ($y) = YAML::Syck::Load( $str );
+    my ($y) = YAML::Syck::Load($str);
     if ( ref($y) eq 'ARRAY' ) {
+
         # skip over non-hash elements
         shift @$y while @$y && ( ref( $y->[0] ) ne 'HASH' );
         return $y->[0] if @$y;
@@ -41,11 +42,9 @@ sub LoadFile {
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
     if ( !$fmgr->exists($file) ) {
-        return MT->error(
-            MT->translate('File not found: [_1]', $file)
-        );
+        return MT->error( MT->translate( 'File not found: [_1]', $file ) );
     }
-    my $yaml = $fmgr->get_data($file, 'output');
+    my $yaml = $fmgr->get_data( $file, 'output' );
     return MT::Util::YAML::Syck::Load($yaml);
 }
 

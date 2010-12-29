@@ -11,31 +11,30 @@ use base qw( MT::Object );
 
 # NOTE: Keep the role_mask fields defined here in sync with those in
 # MT::Permission.
-__PACKAGE__->install_properties({
-    column_defs => {
-        id           => 'integer not null auto_increment',
-        name         => 'string(255) not null',
-        description  => 'text',
-        is_system    => 'boolean',
-        role_mask    => 'integer',
-        role_mask2   => 'integer',  # for upgrades...
-        role_mask3   => 'integer',
-        role_mask4   => 'integer',
-        permissions  => 'text',
-    },
-    indexes => {
-        name => 1,
-        is_system => 1,
-        created_on => 1,
-    },
-    defaults => {
-        is_system => 0,
-    },
-    child_classes => ['MT::Association'],
-    audit => 1,
-    datasource => 'role',
-    primary_key => 'id',
-});
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            id          => 'integer not null auto_increment',
+            name        => 'string(255) not null',
+            description => 'text',
+            is_system   => 'boolean',
+            role_mask   => 'integer',
+            role_mask2  => 'integer',                        # for upgrades...
+            role_mask3  => 'integer',
+            role_mask4  => 'integer',
+            permissions => 'text',
+        },
+        indexes => {
+            name       => 1,
+            is_system  => 1,
+            created_on => 1,
+        },
+        defaults      => { is_system => 0, },
+        child_classes => ['MT::Association'],
+        audit         => 1,
+        datasource    => 'role',
+        primary_key   => 'id',
+    }
+);
 
 sub class_label {
     return MT->translate('Role');
@@ -48,13 +47,12 @@ sub class_label_plural {
 sub list_props {
     return {
         name => {
-            auto  => 1,
-            label => 'Name',
-            display => 'force',
-            order   => 100,
+            auto       => 1,
+            label      => 'Name',
+            display    => 'force',
+            order      => 100,
             sub_fields => [
-                {
-                    class => 'description',
+                {   class => 'description',
                     label => 'Description',
                 },
             ],
@@ -67,12 +65,8 @@ sub list_props {
                 else {
                     my @ids = map { $_->id } @$objs;
                     my $c_iter = MT->model('association')->count_group_by(
-                        {
-                            role_id => \@ids,
-                        },
-                        {
-                            group => [ 'role_id' ],
-                        },
+                        { role_id => \@ids, },
+                        { group   => ['role_id'], },
                     );
                     my %asc_count;
                     while ( my ( $cnt, $id ) = $c_iter->() ) {
@@ -84,13 +78,13 @@ sub list_props {
             bulk_html => sub {
                 my $prop = shift;
                 my ( $objs, $app, $opts ) = @_;
-                my $asc_count = $prop->asc_count($objs, $opts);
+                my $asc_count = $prop->asc_count( $objs, $opts );
                 my @out;
-                for my $obj ( @$objs ) {
-                    my $len = 40; ## FIXME: Hard coded
+                for my $obj (@$objs) {
+                    my $len  = 40;                  ## FIXME: Hard coded
                     my $desc = $obj->description;
                     if ( length $desc > $len ) {
-                        $desc = substr($desc, 0, $len);
+                        $desc = substr( $desc, 0, $len );
                         $desc .= '...';
                     }
                     my $url = $app->uri(
@@ -99,9 +93,10 @@ sub list_props {
                             _type   => 'role',
                             id      => $obj->id,
                             blog_id => 0,
-                    });
-                    my $cnt = $asc_count->{ $obj->id };
-                    my $name = $obj->name;
+                        }
+                    );
+                    my $cnt        = $asc_count->{ $obj->id };
+                    my $name       = $obj->name;
                     my $status_img = MT->static_path
                         . (
                         $cnt
@@ -114,9 +109,13 @@ sub list_props {
                             <img alt="$status_class" src="$status_img" />
                         </span>
                         <a href="$url">$name</a>
-                    } . ( $desc ? qq{
+                    } . (
+                        $desc
+                        ? qq{
                         <p class="description">$desc</p>
-                    } : q{} );
+                    }
+                        : q{}
+                    );
                 }
                 return @out;
             },
@@ -141,31 +140,27 @@ sub list_props {
                 my $val = $args->{value};
                 if ( $val eq 'active' ) {
                     $base_args->{joins} ||= [];
-                    push @{ $base_args->{joins} }, MT->model('association')->join_on(
+                    push @{ $base_args->{joins} },
+                        MT->model('association')->join_on(
                         undef,
-                        {
-                            id => \'is not null',
-                        },
-                        {
-                            unique => 1,
-                            type => 'left',
+                        { id => \'is not null', },
+                        {   unique    => 1,
+                            type      => 'left',
                             condition => { role_id => \'= role_id' },
                         },
-                    );
+                        );
                 }
                 else {
                     $base_args->{joins} ||= [];
-                    push @{ $base_args->{joins} }, MT->model('association')->join_on(
+                    push @{ $base_args->{joins} },
+                        MT->model('association')->join_on(
                         undef,
-                        {
-                            id => \'is null',
-                        },
-                        {
-                            unique => 1,
-                            type => 'left',
+                        { id => \'is null', },
+                        {   unique    => 1,
+                            type      => 'left',
                             condition => { role_id => \'= role_id' },
                         },
-                    );
+                        );
                 }
             },
             single_select_options => [
@@ -174,21 +169,21 @@ sub list_props {
             ],
         },
         description => {
-            auto => 1,
-            label => 'Desctription',
+            auto    => 1,
+            label   => 'Desctription',
             display => 'none',
         },
         created_on => {
-            base => '__virtual.created_on',
+            base  => '__virtual.created_on',
             order => 300,
         },
         modified_on => {
-            base => '__virtual.modified_on',
+            base    => '__virtual.modified_on',
             display => 'none',
         },
         created_by => {
-            base => '__virtual.author_name',
-            label => 'Created by',
+            base    => '__virtual.author_name',
+            label   => 'Created by',
             display => 'none',
         },
     };
@@ -199,13 +194,19 @@ sub save {
     my $res = $role->SUPER::save(@_) or return;
 
     require MT::Association;
+
     # now, update MT::Permissions to reflect role update
-    if (my $assoc_iter = MT::Association->load_iter({
-        type => [ MT::Association::USER_BLOG_ROLE(),
-                  MT::Association::GROUP_BLOG_ROLE() ],
-        role_id => $role->id,
-        })) {
-        while (my $assoc = $assoc_iter->()) {
+    if (my $assoc_iter = MT::Association->load_iter(
+            {   type => [
+                    MT::Association::USER_BLOG_ROLE(),
+                    MT::Association::GROUP_BLOG_ROLE()
+                ],
+                role_id => $role->id,
+            }
+        )
+        )
+    {
+        while ( my $assoc = $assoc_iter->() ) {
             $assoc->rebuild_permissions;
         }
     }
@@ -215,8 +216,8 @@ sub save {
 
 sub remove {
     my $role = shift;
-    if (ref $role) {
-        $role->remove_children({ key => 'role_id' }) or return;
+    if ( ref $role ) {
+        $role->remove_children( { key => 'role_id' } ) or return;
     }
     $role->SUPER::remove(@_);
 }
@@ -224,14 +225,14 @@ sub remove {
 sub load_same {
     my $class = shift;
     require MT::Permission;
-    MT::Permission::load_same($class, @_);
+    MT::Permission::load_same( $class, @_ );
 }
 
 sub load_by_permission {
     my $class = shift;
     my (@list) = @_;
     require MT::Permission;
-    MT::Permission::load_same($class, undef, undef, 0,  @list);
+    MT::Permission::load_same( $class, undef, undef, 0, @list );
 }
 
 # Lets you set a list of permissions by name.
@@ -275,37 +276,63 @@ sub create_default_roles {
     my (%param) = @_;
 
     my @default_roles = (
-        { name => MT->translate('Website Administrator'),
-          description => MT->translate('Can administer the website.'),
-          perms => ['administer_website', 'manage_member_blogs'] },
-        { name => MT->translate('Blog Administrator'),
-          description => MT->translate('Can administer the blog.'),
-          role_mask => 2**12,
-          perms => ['administer_blog'] },
-        { name => MT->translate('Editor'),
-          description => MT->translate('Can upload files, edit all entries(categories), pages(folders), tags and publish the site.'),
-          perms => ['comment', 'create_post', 'publish_post', 'edit_all_posts', 'edit_categories', 'edit_tags', 'manage_pages',
-                    'rebuild', 'upload', 'send_notifications', 'manage_feedback', 'edit_assets'], },
-        { name => MT->translate('Author'),
-          description => MT->translate('Can create entries, edit their own entries, upload files and publish.'),
-          perms => ['comment', 'create_post', 'publish_post', 'upload', 'send_notifications'], },
-        { name => MT->translate('Designer'),
-          description => MT->translate('Can edit, manage, and publish blog templates and themes.'),
-          role_mask => (2**4 + 2**7),
-          perms => ['manage_themes', 'edit_templates', 'rebuild'] },
-        { name => MT->translate('Webmaster'),
-          description => MT->translate('Can manage pages, upload files and publish blog templates.'),
-          perms => ['manage_pages', 'rebuild', 'upload'] },
-        { name => MT->translate('Contributor'),
-          description => MT->translate('Can create entries, edit their own entries, and comment.'),
-          perms => ['comment', 'create_post'], },
-        { name => MT->translate('Moderator'),
-          description => MT->translate('Can comment and manage feedback.'),
-          perms => ['comment', 'manage_feedback'], },
-        { name => MT->translate('Commenter'),
-          description => MT->translate('Can comment.'),
-          role_mask => 2**0,
-          perms => ['comment'], },
+        {   name        => MT->translate('Website Administrator'),
+            description => MT->translate('Can administer the website.'),
+            perms       => [ 'administer_website', 'manage_member_blogs' ]
+        },
+        {   name        => MT->translate('Blog Administrator'),
+            description => MT->translate('Can administer the blog.'),
+            role_mask   => 2**12,
+            perms       => ['administer_blog']
+        },
+        {   name        => MT->translate('Editor'),
+            description => MT->translate(
+                'Can upload files, edit all entries(categories), pages(folders), tags and publish the site.'
+            ),
+            perms => [
+                'comment',         'create_post',
+                'publish_post',    'edit_all_posts',
+                'edit_categories', 'edit_tags',
+                'manage_pages',    'rebuild',
+                'upload',          'send_notifications',
+                'manage_feedback', 'edit_assets'
+            ],
+        },
+        {   name        => MT->translate('Author'),
+            description => MT->translate(
+                'Can create entries, edit their own entries, upload files and publish.'
+            ),
+            perms => [
+                'comment',      'create_post',
+                'publish_post', 'upload',
+                'send_notifications'
+            ],
+        },
+        {   name        => MT->translate('Designer'),
+            description => MT->translate(
+                'Can edit, manage, and publish blog templates and themes.'),
+            role_mask => ( 2**4 + 2**7 ),
+            perms     => [ 'manage_themes', 'edit_templates', 'rebuild' ]
+        },
+        {   name        => MT->translate('Webmaster'),
+            description => MT->translate(
+                'Can manage pages, upload files and publish blog templates.'),
+            perms => [ 'manage_pages', 'rebuild', 'upload' ]
+        },
+        {   name        => MT->translate('Contributor'),
+            description => MT->translate(
+                'Can create entries, edit their own entries, and comment.'),
+            perms => [ 'comment', 'create_post' ],
+        },
+        {   name        => MT->translate('Moderator'),
+            description => MT->translate('Can comment and manage feedback.'),
+            perms       => [ 'comment', 'manage_feedback' ],
+        },
+        {   name        => MT->translate('Commenter'),
+            description => MT->translate('Can comment.'),
+            role_mask   => 2**0,
+            perms       => ['comment'],
+        },
     );
 
     require MT::Role;
@@ -313,16 +340,16 @@ sub create_default_roles {
 
     foreach my $r (@default_roles) {
         my $role = MT::Role->new();
-        $role->name($r->{name});
-        $role->description($r->{description});
+        $role->name( $r->{name} );
+        $role->description( $r->{description} );
         $role->clear_full_permissions;
-        $role->set_these_permissions($r->{perms});
-        if ($r->{name} =~ m/^System/) {
+        $role->set_these_permissions( $r->{perms} );
+        if ( $r->{name} =~ m/^System/ ) {
             $role->is_system(1);
         }
-        $role->role_mask($r->{role_mask}) if exists $r->{role_mask};
+        $role->role_mask( $r->{role_mask} ) if exists $r->{role_mask};
         $role->save
-            or return $class->error($role->errstr);
+            or return $class->error( $role->errstr );
     }
 
     1;

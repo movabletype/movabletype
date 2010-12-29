@@ -9,58 +9,51 @@ package MT::TBPing;
 use strict;
 use base qw( MT::Object MT::Scorable );
 
-sub JUNK()      { -1 }
-sub NOT_JUNK () {  1 }
+sub JUNK()      {-1}
+sub NOT_JUNK () {1}
 
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id' => 'integer not null auto_increment',
-        'blog_id' => 'integer not null',
-        'tb_id' => 'integer not null',
-        'title' => 'string(255)',
-        'excerpt' => 'text',
-        'source_url' => 'string(255)',
-        'ip' => 'string(50) not null',
-        'blog_name' => 'string(255)',
-        'visible' => 'boolean',
-        'junk_status' => 'smallint not null',
-        'last_moved_on' => 'datetime not null',
-        'junk_score' => 'float',
-        'junk_log' => 'text',
-    },
-    indexes => {
-        created_on => 1,
-        tb_visible => {
-            columns => [ 'tb_id', 'visible', 'created_on' ],
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'            => 'integer not null auto_increment',
+            'blog_id'       => 'integer not null',
+            'tb_id'         => 'integer not null',
+            'title'         => 'string(255)',
+            'excerpt'       => 'text',
+            'source_url'    => 'string(255)',
+            'ip'            => 'string(50) not null',
+            'blog_name'     => 'string(255)',
+            'visible'       => 'boolean',
+            'junk_status'   => 'smallint not null',
+            'last_moved_on' => 'datetime not null',
+            'junk_score'    => 'float',
+            'junk_log'      => 'text',
         },
-        ip => 1,
-        last_moved_on => 1, # used for junk expiration
-        # For URL lookups to aid spam filtering
-        blog_url => {
-            columns => [ 'blog_id', 'visible', 'source_url' ],
+        indexes => {
+            created_on => 1,
+            tb_visible =>
+                { columns => [ 'tb_id', 'visible', 'created_on' ], },
+            ip            => 1,
+            last_moved_on => 1,    # used for junk expiration
+                                   # For URL lookups to aid spam filtering
+            blog_url =>
+                { columns => [ 'blog_id', 'visible', 'source_url' ], },
+            blog_stat =>
+                { columns => [ 'blog_id', 'junk_status', 'created_on' ], },
+            blog_visible =>
+                { columns => [ 'blog_id', 'visible', 'created_on', 'id' ], },
+            visible_date => { columns => [ 'visible',     'created_on' ], },
+            junk_date    => { columns => [ 'junk_status', 'created_on' ], },
         },
-        blog_stat => {
-            columns => ['blog_id', 'junk_status', 'created_on'],
+        defaults => {
+            junk_status   => NOT_JUNK,
+            last_moved_on => '20000101000000',
         },
-        blog_visible => {
-            columns => ['blog_id', 'visible', 'created_on', 'id'],
-        },
-        visible_date => {
-            columns => [ 'visible', 'created_on' ],
-        },
-        junk_date => {
-            columns => [ 'junk_status', 'created_on' ],
-        },
-    },
-    defaults => {
-        junk_status => NOT_JUNK,
-        last_moved_on => '20000101000000',
-    },
-    audit => 1,
-    meta => 1,
-    datasource => 'tbping',
-    primary_key => 'id',
-});
+        audit       => 1,
+        meta        => 1,
+        datasource  => 'tbping',
+        primary_key => 'id',
+    }
+);
 
 sub class_label {
     return MT->translate('TrackBack');
@@ -73,46 +66,51 @@ sub class_label_plural {
 sub list_props {
     return {
         excerpt => {
-            label => 'Excerpt',
+            label        => 'Excerpt',
             filter_label => 'Trackback Text',
-            auto => 1,
-            display => 'force',
-            order => 100,
-            html  => sub {
+            auto         => 1,
+            display      => 'force',
+            order        => 100,
+            html         => sub {
                 my ( $prop, $obj, $app ) = @_;
-                my $text = MT::Util::remove_html($obj->excerpt);
+                my $text = MT::Util::remove_html( $obj->excerpt );
                 ## FIXME: Hard coded...
-                my $len  = 30;
+                my $len = 30;
                 if ( $len < length($text) ) {
-                    $text = substr($text, 0, $len);
+                    $text = substr( $text, 0, $len );
                     $text .= '...';
                 }
                 elsif ( !$text ) {
                     $text = '...';
                 }
-                my $id  = $obj->id;
+                my $id        = $obj->id;
                 my $edit_link = $app->uri(
                     mode => 'view',
                     args => {
                         _type   => 'ping',
                         id      => $id,
                         blog_id => $obj->blog_id,
-                });
-                my $status = $obj->is_junk      ? 'Junk'
-                           : $obj->is_published ? 'Published'
-                           :                      'Moderated';
-                my $lc_status = lc $status;
+                    }
+                );
+                my $status
+                    = $obj->is_junk      ? 'Junk'
+                    : $obj->is_published ? 'Published'
+                    :                      'Moderated';
+                my $lc_status  = lc $status;
                 my $status_img = MT->static_path . 'images/status_icons/';
-                $status_img .= $status eq 'Junk'      ? 'warning.gif'
-                             : $status eq 'Published' ? 'success.gif'
-                             :                          'draft.gif';
+                $status_img .=
+                      $status eq 'Junk'      ? 'warning.gif'
+                    : $status eq 'Published' ? 'success.gif'
+                    :                          'draft.gif';
 
                 my $blog_name = $obj->blog_name  || '';
                 my $title     = $obj->title      || '';
                 my $url       = $obj->source_url || '';
-                my $view_img = MT->static_path . 'images/status_icons/view.gif';
-                my $ping_from =
-                  MT->translate( '<a href="[_1]">Ping from: [_2] - [_3]</a>',
+                my $view_img
+                    = MT->static_path . 'images/status_icons/view.gif';
+                my $ping_from
+                    = MT->translate(
+                    '<a href="[_1]">Ping from: [_2] - [_3]</a>',
                     $edit_link, $blog_name, $title );
 
                 return qq{
@@ -130,11 +128,11 @@ sub list_props {
             },
         },
         ip => {
-            label => 'IP',
+            label        => 'IP',
             filter_label => 'IP Address',
-            auto  => 1,
-            order => 200,
-            condition => sub { MT->config->ShowIPInformation },
+            auto         => 1,
+            order        => 200,
+            condition    => sub { MT->config->ShowIPInformation },
         },
         blog_name => {
             base    => '__common.blog_name',
@@ -150,35 +148,47 @@ sub list_props {
             bulk_html   => sub {
                 my ( $prop, $objs, $app ) = @_;
                 my %tbs = map { $_->tb_id => 1 } @$objs;
-                my @tbs = MT->model('trackback')->load({ id => [ keys %tbs ] });
-                my %tb_map  = map { $_->id => $_ } @tbs;
-                my %entries = map { $_->entry_id => 1 } grep { $_->entry_id } @tbs;
-                my @entries = MT->model('entry')->load({ id => [ keys %entries ]})
+                my @tbs
+                    = MT->model('trackback')->load( { id => [ keys %tbs ] } );
+                my %tb_map = map { $_->id => $_ } @tbs;
+                my %entries
+                    = map { $_->entry_id => 1 } grep { $_->entry_id } @tbs;
+                my @entries
+                    = MT->model('entry')->load( { id => [ keys %entries ] } )
                     if scalar keys %entries;
-                my %entry_map  = map { $_->id => $_ } @entries;
-                my %categories = map { $_->category_id => 1 } grep { $_->category_id } @tbs;
-                my @categories = MT->model('category')->load({ id => [ keys %categories ]})
+                my %entry_map  = map { $_->id          => $_ } @entries;
+                my %categories = map { $_->category_id => 1 }
+                    grep { $_->category_id } @tbs;
+                my @categories
+                    = MT->model('category')
+                    ->load( { id => [ keys %categories ] } )
                     if scalar keys %categories;
-                my %category_map  = map { $_->id => $_ } @categories;
-                my ($title_col, $alt_label);
+                my %category_map = map { $_->id => $_ } @categories;
+                my ( $title_col, $alt_label );
                 my @res;
-                for my $obj ( @$objs ) {
-                    my $tb = $tb_map{$obj->tb_id};
+
+                for my $obj (@$objs) {
+                    my $tb = $tb_map{ $obj->tb_id };
                     my $obj;
                     if ( $tb->entry_id ) {
-                        $obj = $entry_map{$tb->entry_id};
+                        $obj       = $entry_map{ $tb->entry_id };
                         $title_col = 'title';
                         $alt_label = 'No title';
                     }
                     elsif ( $tb->category_id ) {
-                        $obj = $category_map{$tb->category_id};
+                        $obj       = $category_map{ $tb->category_id };
                         $title_col = 'label';
                         $alt_label = 'No label';
                     }
-                    my $title_html = MT::ListProperty::make_common_label_html($obj, $app, $title_col, $alt_label);
+                    my $title_html
+                        = MT::ListProperty::make_common_label_html( $obj,
+                        $app, $title_col, $alt_label );
                     my $type = $obj->class_type;
                     $type = 'categories' if $type eq 'category';
-                    my $img = MT->static_path . 'images/nav_icons/color/' . $type . '.gif';
+                    my $img
+                        = MT->static_path
+                        . 'images/nav_icons/color/'
+                        . $type . '.gif';
                     push @res, qq{
                         <span class="icon target-type $type">
                           <img src="$img" />
@@ -195,127 +205,115 @@ sub list_props {
             order   => 500,
         },
         modified_on => {
-            auto    => 1,
-            label   => 'Modeified on',
+            auto         => 1,
+            label        => 'Modeified on',
             filter_label => 'Date Modified',
-            display => 'none' },
+            display      => 'none'
+        },
         from => {
-            label => 'From',
+            label       => 'From',
             view_filter => [],
-            sort  => sub {
+            sort        => sub {
                 my $prop = shift;
                 my ( $terms, $args ) = @_;
                 my $dir = $args->{direction} eq 'descend' ? 'DESC' : 'ASC';
                 $args->{sort} = [
                     { column => 'blog_name', desc => $dir },
-                    { column => 'title', desc => $dir },
+                    { column => 'title',     desc => $dir },
                 ];
             },
         },
-        author_name => {
-            condition => sub {0},
-        },
+        author_name      => { condition => sub {0}, },
         source_blog_name => {
-            label => 'Source Site',
-            col   => 'blog_name',
+            label   => 'Source Site',
+            col     => 'blog_name',
             display => 'none',
-            base  => '__virtual.string',
+            base    => '__virtual.string',
         },
         source_url => {
             auto    => 1,
             label   => 'URL',
             display => 'none',
         },
-        status => {
-            base  => 'comment.status',
-        },
-        title => {
-            label => 'Source Title',
-            auto  => 1,
+        status => { base => 'comment.status', },
+        title  => {
+            label   => 'Source Title',
+            auto    => 1,
             display => 'none',
         },
         entry_id => {
-            base => '__virtual.integer',
-            label => 'Entry/Page',
-            display => 'none',
+            base            => '__virtual.integer',
+            label           => 'Entry/Page',
+            display         => 'none',
             filter_editable => 0,
-            terms => sub {
+            terms           => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
                 my $entry_id = $args->{value};
                 $db_args->{joins} ||= [];
-                push @{$db_args->{joins}}, MT->model('trackback')->join_on(
+                push @{ $db_args->{joins} }, MT->model('trackback')->join_on(
                     undef,
-                    {
-                        entry_id => $entry_id,
-                        id => \'= tbping_tb_id',
+                    {   entry_id => $entry_id,
+                        id       => \'= tbping_tb_id',
                     },
                 );
             },
             label_via_param => sub {
                 my ( $prop, $app ) = @_;
                 my $entry_id = $app->param('filter_val');
-                my $entry = MT->model('entry')->load($entry_id);
-                my $type = $entry->class eq 'entry' ? 'Entry'
-                         : $entry->class eq 'page'  ? 'Page'
-                         :                            '';
-                return MT->translate(
-                    'Trackbacks on [_1]: [_2]',
-                    $type,
-                    $entry->title,
-                );
+                my $entry    = MT->model('entry')->load($entry_id);
+                my $type
+                    = $entry->class eq 'entry' ? 'Entry'
+                    : $entry->class eq 'page'  ? 'Page'
+                    :                            '';
+                return MT->translate( 'Trackbacks on [_1]: [_2]',
+                    $type, $entry->title, );
             },
         },
         category_id => {
-            base => '__virtual.integer',
-            display => 'none',
+            base            => '__virtual.integer',
+            display         => 'none',
             filter_editable => 0,
-            filter_label => 'Category',
-            terms => sub {
+            filter_label    => 'Category',
+            terms           => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
                 my $cat_id = $args->{value};
                 $db_args->{joins} ||= [];
-                push @{$db_args->{joins}}, MT->model('trackback')->join_on(
+                push @{ $db_args->{joins} }, MT->model('trackback')->join_on(
                     undef,
-                    {
-                        category_id => $cat_id,
-                        id => \'= tbping_tb_id',
+                    {   category_id => $cat_id,
+                        id          => \'= tbping_tb_id',
                     },
                 );
             },
             label_via_param => sub {
                 my ( $prop, $app ) = @_;
                 my $cat_id = $app->param('filter_val');
-                my $cat = MT->model('category')->load($cat_id);
-                my $type = $cat->class eq 'category' ? 'Category'
-                         : $cat->class eq 'folder'   ? 'Folder'
-                         :                             '';
-                return MT->translate(
-                    'Trackbacks on [_1]: [_2]',
-                    $type,
-                    $cat->label,
-                );
+                my $cat    = MT->model('category')->load($cat_id);
+                my $type
+                    = $cat->class eq 'category' ? 'Category'
+                    : $cat->class eq 'folder'   ? 'Folder'
+                    :                             '';
+                return MT->translate( 'Trackbacks on [_1]: [_2]',
+                    $type, $cat->label, );
             },
         },
         for_current_user => {
-            label => 'For my entries',
+            label        => 'For my entries',
             filter_label => 'Trackbacks on my entries/pages',
-            singleton => 1,
-            terms => sub {
+            singleton    => 1,
+            terms        => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 my $user = MT->app->user;
                 $db_args->{joins} ||= [];
                 push @{ $db_args->{joins} }, MT->model('trackback')->join_on(
                     undef,
-                    {
-                        id       => \"= tbping_tb_id",
+                    {   id       => \"= tbping_tb_id",
                         entry_id => \"= entry_id",
                     },
-                    {
-                        join => MT->model('entry')->join_on(undef, {
-                            author_id => $user->id,
-                        }),
+                    {   join => MT->model('entry')
+                            ->join_on( undef, { author_id => $user->id, } ),
                     },
                 );
             },
@@ -329,13 +327,12 @@ sub system_filters {
     return {
         not_spam => {
             label => 'Non spam trackbacks',
-            items => [
-                { type => 'status', args => { value => 'not_junk' }, },
-            ],
+            items =>
+                [ { type => 'status', args => { value => 'not_junk' }, }, ],
         },
         not_spam_in_this_website => {
             label => 'Non spam trackbacks on this website',
-            view => 'website',
+            view  => 'website',
             items => [
                 { type => 'current_context' },
                 { type => 'status', args => { value => 'not_junk' }, },
@@ -343,48 +340,48 @@ sub system_filters {
         },
         pending => {
             label => 'Pending trackbacks',
-            items => [
-                { type => 'status', args => { value => 'moderated' }, },
-            ],
+            items =>
+                [ { type => 'status', args => { value => 'moderated' }, }, ],
         },
         published => {
             label => 'Published trackbacks',
-            items => [
-                { type => 'status', args => { value => 'approved' }, },
-            ],
+            items =>
+                [ { type => 'status', args => { value => 'approved' }, }, ],
         },
         on_my_entry => {
             label => 'Trackbacks on my entries/pages',
             items => sub {
                 my $login_user = MT->app->user;
-                [ { type => 'for_current_user' } ],
+                [ { type => 'for_current_user' } ],;
             },
         },
         in_last_7_days => {
             label => 'Trackbacks in the last 7 days',
             items => [
                 { type => 'status', args => { value => 'not_junk' }, },
-                { type => 'created_on', args => { option => 'days', days => 7 } }
+                {   type => 'created_on',
+                    args => { option => 'days', days => 7 }
+                }
             ],
         },
         spam => {
             label => 'Spam trackbacks',
-            items => [
-                { type => 'status', args => { value => 'junk' }, },
-            ],
+            items => [ { type => 'status', args => { value => 'junk' }, }, ],
         },
         _trackbacks_by_entry => {
             label => sub {
-                my $app = MT->app;
-                my $id = $app->param('filter_val');
+                my $app   = MT->app;
+                my $id    = $app->param('filter_val');
                 my $entry = MT->model('entry')->load($id);
                 return 'Trackbacks by entry: ' . $entry->title;
             },
             items => sub {
                 my $app = MT->app;
-                my $id = $app->param('filter_val');
+                my $id  = $app->param('filter_val');
                 return [
-                    { type => 'entry', args => { option => 'equal', value => $id } }
+                    {   type => 'entry',
+                        args => { option => 'equal', value => $id }
+                    }
                 ];
             },
         },
@@ -394,6 +391,7 @@ sub system_filters {
 sub is_junk {
     $_[0]->junk_status == JUNK;
 }
+
 sub is_not_junk {
     $_[0]->junk_status != JUNK;
 }
@@ -410,11 +408,15 @@ sub blog {
     my ($ping) = @_;
     my $blog = $ping->{__blog};
     unless ($blog) {
-        my $blog_id = $ping->blog_id;
+        my $blog_id    = $ping->blog_id;
         my $blog_class = MT->model('blog');
-        $blog = $blog_class->load($blog_id) or
-            return $ping->error(MT->translate(
-                "Load of blog '[_1]' failed: [_2]", $blog_id, $blog_class->errstr));   
+        $blog = $blog_class->load($blog_id)
+            or return $ping->error(
+            MT->translate(
+                "Load of blog '[_1]' failed: [_2]", $blog_id,
+                $blog_class->errstr
+            )
+            );
         $ping->{__blog} = $blog;
     }
     return $blog;
@@ -422,45 +424,47 @@ sub blog {
 
 sub parent {
     my ($ping) = @_;
-    if (my $tb = MT->model('trackback')->load($ping->tb_id)) {
-        if ($tb->entry_id) {
-            return MT->model('entry')->load($tb->entry_id);
-        } else {
-            return MT->model('category')->load($tb->category_id);
+    if ( my $tb = MT->model('trackback')->load( $ping->tb_id ) ) {
+        if ( $tb->entry_id ) {
+            return MT->model('entry')->load( $tb->entry_id );
+        }
+        else {
+            return MT->model('category')->load( $tb->category_id );
         }
     }
 }
 
 sub parent_id {
     my ($ping) = @_;
-    if (my $tb = MT->model('trackback')->load($ping->tb_id)) {
-        if ($tb->entry_id) {
-            return ('MT::Entry', $tb->entry_id);
-        } else {
-            return ('MT::Category', $tb->category_id);
+    if ( my $tb = MT->model('trackback')->load( $ping->tb_id ) ) {
+        if ( $tb->entry_id ) {
+            return ( 'MT::Entry', $tb->entry_id );
+        }
+        else {
+            return ( 'MT::Category', $tb->category_id );
         }
     }
 }
 
 sub next {
     my $ping = shift;
-    my($publish_only) = @_;
-    $publish_only = $publish_only ? {'visible' => 1} : {};
-    $ping->_nextprev('next', $publish_only);
+    my ($publish_only) = @_;
+    $publish_only = $publish_only ? { 'visible' => 1 } : {};
+    $ping->_nextprev( 'next', $publish_only );
 }
 
 sub previous {
     my $ping = shift;
-    my($publish_only) = @_;
-    $publish_only = $publish_only ? {'visible' => 1} : {};
-    $ping->_nextprev('previous', $publish_only);
+    my ($publish_only) = @_;
+    $publish_only = $publish_only ? { 'visible' => 1 } : {};
+    $ping->_nextprev( 'previous', $publish_only );
 }
 
 sub _nextprev {
-    my $obj = shift;
+    my $obj   = shift;
     my $class = ref($obj);
-    my ($direction, $publish_only) = @_;
-    return undef unless ($direction eq 'next' || $direction eq 'previous');
+    my ( $direction, $publish_only ) = @_;
+    return undef unless ( $direction eq 'next' || $direction eq 'previous' );
     my $next = $direction eq 'next';
 
     my $label = '__' . $direction;
@@ -472,17 +476,18 @@ sub _nextprev {
     # to select all entries with the same timestamp, then compare them using
     # id as a secondary sort column.
 
-    my ($id, $ts) = ($obj->id, $obj->created_on);
-    my $iter = $class->load_iter({
-        blog_id => $obj->blog_id,
-        created_on => ($next ? [ $ts, undef ] : [ undef, $ts ]),
-        %{$publish_only}
-    }, {
-        'sort' => 'created_on',
-        'direction' => $next ? 'ascend' : 'descend',
-        'range_incl' => { 'created_on' => 1 },
-        'limit' => 10,
-    });
+    my ( $id, $ts ) = ( $obj->id, $obj->created_on );
+    my $iter = $class->load_iter(
+        {   blog_id    => $obj->blog_id,
+            created_on => ( $next ? [ $ts, undef ] : [ undef, $ts ] ),
+            %{$publish_only}
+        },
+        {   'sort'      => 'created_on',
+            'direction' => $next ? 'ascend' : 'descend',
+            'range_incl' => { 'created_on' => 1 },
+            'limit'      => 10,
+        }
+    );
 
     # This selection should always succeed, but handle situation if
     # it fails by returning undef.
@@ -492,29 +497,36 @@ sub _nextprev {
     # timestamps; we will then sort those by id to find the correct
     # adjacent object.
     my @same;
-    while (my $e = $iter->()) {
+    while ( my $e = $iter->() ) {
+
         # Don't consider the object that is 'current'
         next if $e->id == $id;
         my $e_ts = $e->created_on;
-        if ($e_ts eq $ts) {
+        if ( $e_ts eq $ts ) {
+
             # An object with the same timestamp should only be
             # considered if the id is in the scope we're looking for
             # (greater than for the 'next' object; less than for
             # the 'previous' object).
             push @same, $e
-                if $next && $e->id > $id or !$next && $e->id < $id;
-        } else {
+                if $next && $e->id > $id
+                    or !$next && $e->id < $id;
+        }
+        else {
+
             # We found an object with a timestamp different than
             # the 'current' object.
-            if (!@same) {
+            if ( !@same ) {
                 push @same, $e;
+
                 # We should check to see if this new timestamped object also
                 # has entries adjacent to _it_ that have the same timestamp.
-                while (my $e = $iter->()) {
-                    push(@same, $e), next if $e->created_on eq $e_ts;
+                while ( my $e = $iter->() ) {
+                    push( @same, $e ), next if $e->created_on eq $e_ts;
                     $iter->end, last;
                 }
-            } else {
+            }
+            else {
                 $iter->end;
             }
             return $obj->{$label} = $e unless @same;
@@ -522,24 +534,31 @@ sub _nextprev {
         }
     }
     if (@same) {
+
         # If we only have 1 element in @same, return that.
         return $obj->{$label} = $same[0] if @same == 1;
+
         # Sort remaining elements in @same by id.
         @same = sort { $a->id <=> $b->id } @same;
+
         # Return front of list (smallest id) if selecting 'next'
         # object. Return tail of list (largest id) if selection 'previous'.
-        return $obj->{$label} = $same[$next ? 0 : $#same];
+        return $obj->{$label} = $same[ $next ? 0 : $#same ];
     }
     return;
 }
 
 sub junk {
     my $ping = shift;
-    if (($ping->junk_status || 0) != JUNK) {
+    if ( ( $ping->junk_status || 0 ) != JUNK ) {
         require MT::Util;
-        my @ts = MT::Util::offset_time_list(time, $ping->blog_id);
-        my $ts = sprintf("%04d%02d%02d%02d%02d%02d",
-                         $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0]);
+        my @ts = MT::Util::offset_time_list( time, $ping->blog_id );
+        my $ts = sprintf(
+            "%04d%02d%02d%02d%02d%02d",
+            $ts[5] + 1900,
+            $ts[4] + 1,
+            @ts[ 3, 2, 1, 0 ]
+        );
         $ping->last_moved_on($ts);
     }
     $ping->junk_status(JUNK);
@@ -560,9 +579,9 @@ sub approve {
 sub all_text {
     my $this = shift;
     my $text = $this->column('blog_name') || '';
-    $text .= "\n" . ($this->column('title') || '');
-    $text .= "\n" . ($this->column('source_url') || '');
-    $text .= "\n" . ($this->column('excerpt') || '');
+    $text .= "\n" . ( $this->column('title')      || '' );
+    $text .= "\n" . ( $this->column('source_url') || '' );
+    $text .= "\n" . ( $this->column('excerpt')    || '' );
     $text;
 }
 
@@ -570,11 +589,14 @@ sub to_hash {
     my $ping = shift;
     my $hash = $ping->SUPER::to_hash(@_);
     require MT::Sanitize;
-    $hash->{'tbping.excerpt_html'} = MT::Sanitize->sanitize($ping->excerpt || '');
-    $hash->{'tbping.created_on_iso'} = sub { MT::Util::ts2iso($ping->blog_id, $ping->created_on) };
-    $hash->{'tbping.modified_on_iso'} = sub { MT::Util::ts2iso($ping->blog_id, $ping->modified_on) };
+    $hash->{'tbping.excerpt_html'}
+        = MT::Sanitize->sanitize( $ping->excerpt || '' );
+    $hash->{'tbping.created_on_iso'}
+        = sub { MT::Util::ts2iso( $ping->blog_id, $ping->created_on ) };
+    $hash->{'tbping.modified_on_iso'}
+        = sub { MT::Util::ts2iso( $ping->blog_id, $ping->modified_on ) };
 
-    if (my $parent = $ping->parent) {
+    if ( my $parent = $ping->parent ) {
         my $parent_hash = $parent->to_hash;
         $hash->{"tbping.$_"} = $parent_hash->{$_} foreach keys %$parent_hash;
     }
@@ -585,16 +607,17 @@ sub to_hash {
 sub visible {
     my $ping = shift;
     return $ping->SUPER::visible unless @_;
-        
+
     ## Note transitions in visibility in the object, so that
     ## other methods can act appropriately.
     my $was_visible = $ping->SUPER::visible || 0;
     my $is_visible = shift || 0;
-        
+
     my $vis_delta = 0;
-    if (!$was_visible && $is_visible) {
+    if ( !$was_visible && $is_visible ) {
         $vis_delta = 1;
-    } elsif ($was_visible && !$is_visible) {
+    }
+    elsif ( $was_visible && !$is_visible ) {
         $vis_delta = -1;
     }
     $ping->{__changed}{visibility} = $vis_delta;

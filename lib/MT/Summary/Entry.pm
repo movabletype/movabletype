@@ -19,10 +19,19 @@ sub summarize_all_assets {
     my %args;
 
     require MT::ObjectAsset;
-    my @assets = MT::Asset->load({ class => '*' }, { join => MT::ObjectAsset->join_on(undef, {
-        asset_id => \'= asset_id', object_ds => 'entry', object_id => $entry->id })});
+    my @assets = MT::Asset->load(
+        { class => '*' },
+        {   join => MT::ObjectAsset->join_on(
+                undef,
+                {   asset_id  => \'= asset_id',
+                    object_ds => 'entry',
+                    object_id => $entry->id
+                }
+            )
+        }
+    );
 
-    return @assets ? join(',', map {$_->id} @assets) : '';
+    return @assets ? join( ',', map { $_->id } @assets ) : '';
 }
 
 1;

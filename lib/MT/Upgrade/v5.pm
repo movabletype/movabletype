@@ -10,6 +10,7 @@ use strict;
 
 sub upgrade_functions {
     return {
+
         #'v5_migrate_blog' => {
         #    version_limit => 5.0004,
         #    priority      => 3.2,
@@ -38,11 +39,11 @@ sub upgrade_functions {
         'v5_migrate_dashboard_widget_settings' => {
             version_limit => 5.0013,
             priority      => 3.3,
-            updater => {
-                type => 'author',
-                label => "Merging dashboard settings...",
+            updater       => {
+                type      => 'author',
+                label     => "Merging dashboard settings...",
                 condition => sub { $_[0]->status == 1 && $_[0]->type == 1 },
-                code          => \&_v5_migrate_dashboard,
+                code      => \&_v5_migrate_dashboard,
             },
         },
         'v5_migrate_theme_privilege' => {
@@ -53,7 +54,7 @@ sub upgrade_functions {
         'v5_migrate_blog_only' => {
             version_limit => 5.0015,
             priority      => 3.2,
-            updater => {
+            updater       => {
                 type      => 'blog',
                 label     => "Classifying blogs...",
                 condition => sub { !$_[0]->class },
@@ -92,14 +93,13 @@ sub upgrade_functions {
             version_limit => 5.0019,
             priority      => 3.1,
             updater       => {
-                type      => 'entry',
-                label     => 'Assigning ID of author for entries...',
-                code      => sub {
+                type  => 'entry',
+                label => 'Assigning ID of author for entries...',
+                code  => sub {
                     $_[0]->created_by( $_[0]->author_id )
                         if !defined $_[0]->created_by;
                 },
-                sql       =>
-                    'update mt_entry set entry_created_by = entry_author_id
+                sql => 'update mt_entry set entry_created_by = entry_author_id
                          where entry_created_by is null',
             },
         },
@@ -111,16 +111,17 @@ sub upgrade_functions {
         'v5_remove_dashboard_widget' => {
             version_limit => 5.0020,
             priority      => 3.1,
-            updater => {
-                type => 'author',
-                label => 'Removing widget from dashboard...',
+            updater       => {
+                type      => 'author',
+                label     => 'Removing widget from dashboard...',
                 condition => sub {
                     my $App = $MT::Upgrade::App;
                     my ($user) = @_;
                     if ( $user->type == MT::Author::AUTHOR() ) {
                         return 1
-                            if $App && UNIVERSAL::isa( $App, 'MT::App' )
-                            && ( $user->id == $App->user->id );
+                            if $App
+                                && UNIVERSAL::isa( $App, 'MT::App' )
+                                && ( $user->id == $App->user->id );
                     }
                     return 0;
                 },
@@ -128,10 +129,12 @@ sub upgrade_functions {
                     my ($user) = @_;
                     my $widgets = $user->widgets();
                     if ( $widgets && %$widgets ) {
-                        my @keys = qw( mt_shortcuts new_version new_user new_install );
+                        my @keys
+                            = qw( mt_shortcuts new_version new_user new_install );
                         for my $set ( keys %$widgets ) {
-                            for my $key ( @keys ) {
-                                delete $widgets->{$set}->{$key} if $widgets->{$set}->{$key};
+                            for my $key (@keys) {
+                                delete $widgets->{$set}->{$key}
+                                    if $widgets->{$set}->{$key};
                             }
                         }
                         $user->widgets($widgets);
@@ -147,47 +150,75 @@ sub upgrade_functions {
 sub _v5_migrate_blog {
     my $self = shift;
 
-    my $app = $MT::Upgrade::App;
+    my $app  = $MT::Upgrade::App;
     my $user = MT::Author->load( $app->{author}->id );
     return if $user->permissions(0)->has('administer_website');
 
     # Create generic website.
     my $class = MT->model('website');
-    return $self->error($self->translate_escape("Error loading class: [_1].", 'Website'))
+    return $self->error(
+        $self->translate_escape( "Error loading class: [_1].", 'Website' ) )
         unless $class;
 
     return if $class->count() > 0;
 
-    $self->progress($self->translate_escape('Populating generic website for current blogs...'));
+    $self->progress(
+        $self->translate_escape(
+            'Populating generic website for current blogs...')
+    );
 
-    my $website = $class->create_default_website(MT->translate('Generic Website'));
+    my $website
+        = $class->create_default_website( MT->translate('Generic Website') );
     $website->site_path('');
     $website->site_url('');
     $website->save
-        or return $self->error($self->translate_escape("Error saving record: [_1].", $website->errstr));
+        or return $self->error(
+        $self->translate_escape(
+            "Error saving record: [_1].",
+            $website->errstr
+        )
+        );
 
     # Load all blogs.
     my $blog_class = MT->model('blog');
-    return $self->error($self->translate_escape("Error loading class: [_1].", 'Blog'))
+    return $self->error(
+        $self->translate_escape( "Error loading class: [_1].", 'Blog' ) )
         unless $blog_class;
     my $iter = $blog_class->load_iter();
-    while(my $blog = $iter->()){
+    while ( my $blog = $iter->() ) {
         next if $blog->parent_id;
-        $self->progress($self->translate_escape("Migrating [_1]([_2]).", $blog->name, $blog->id));
+        $self->progress(
+            $self->translate_escape(
+                "Migrating [_1]([_2]).",
+                $blog->name, $blog->id
+            )
+        );
         $blog->class('blog');
-        $blog->parent_id($website->id);
+        $blog->parent_id( $website->id );
         $blog->save
-            or return $self->error($self->translate_escape("Error saving record: [_1].", $blog->errstr));
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $blog->errstr
+            )
+            );
     }
 
     # Grant new role to system administrator
-    $self->progress($self->translate_escape('Granting new role to system administrator...'));
+    $self->progress(
+        $self->translate_escape(
+            'Granting new role to system administrator...')
+    );
 
     my $assoc_class = MT->model('association');
-    return $self->error($self->translate_escape("Error loading class: [_1].", 'Association'))
-        unless $assoc_class;
+    return $self->error(
+        $self->translate_escape(
+            "Error loading class: [_1].", 'Association'
+        )
+    ) unless $assoc_class;
     my $role_class = MT->model('role');
-    return $self->error($self->translate_escape("Error loading class: [_1].", 'Role'))
+    return $self->error(
+        $self->translate_escape( "Error loading class: [_1].", 'Role' ) )
         unless $role_class;
     my $role = MT::Role->load_by_permission('administer_website');
     $assoc_class->link( $user => $role => $website );
@@ -199,88 +230,136 @@ sub _v5_create_new_role {
     my $self = shift;
 
     my $role_class = MT->model('role');
-    return $self->error($self->translate_escape("Error loading class: [_1].", 'Role'))
+    return $self->error(
+        $self->translate_escape( "Error loading class: [_1].", 'Role' ) )
         unless $role_class;
 
-    $self->progress($self->translate_escape('Updating existing role name...'));
+    $self->progress(
+        $self->translate_escape('Updating existing role name...') );
 
-    my $role = $role_class->load({
-        name => MT->translate('_WEBMASTER_MT4'),
-    });
-    if ( $role ) {
+    my $role
+        = $role_class->load( { name => MT->translate('_WEBMASTER_MT4'), } );
+    if ($role) {
         return if $role->has('administer_website');
         $role->name( MT->translate('Webmaster (MT4)') );
         $role->save
-            or return $self->error($self->translate_escape("Error saving record: [_1].", $role->errstr));
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $role->errstr
+            )
+            );
     }
 
-    $self->progress($self->translate_escape('Populating new role for website...'));
-    $role = $role_class->load({
-        name => MT->translate('Website Administrator'),
-    });
-    if (!$role) {
+    $self->progress(
+        $self->translate_escape('Populating new role for website...') );
+    $role = $role_class->load(
+        { name => MT->translate('Website Administrator'), } );
+    if ( !$role ) {
         $role = $role_class->new();
-        $role->name(MT->translate('Website Administrator'));
-        $role->description(MT->translate('Can administer the website.'));
+        $role->name( MT->translate('Website Administrator') );
+        $role->description( MT->translate('Can administer the website.') );
         $role->clear_full_permissions;
-        $role->set_these_permissions(['administer_website', 'manage_member_blogs']);
+        $role->set_these_permissions(
+            [ 'administer_website', 'manage_member_blogs' ] );
         $role->save
-            or return $self->error($self->translate_escape("Error saving record: [_1].", $role->errstr));
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $role->errstr
+            )
+            );
     }
 
     my $new_role = $role_class->new();
-    $new_role->name(MT->translate('Webmaster'));
-    $new_role->description(MT->translate('Can manage pages, Upload files and publish blog templates.'));
+    $new_role->name( MT->translate('Webmaster') );
+    $new_role->description(
+        MT->translate(
+            'Can manage pages, Upload files and publish blog templates.')
+    );
     $new_role->clear_full_permissions;
-    $new_role->set_these_permissions(['manage_pages', 'rebuild', 'upload']);
+    $new_role->set_these_permissions(
+        [ 'manage_pages', 'rebuild', 'upload' ] );
     $new_role->save
-        or return $self->error($self->translate_escape("Error saving record: [_1].", $new_role->errstr));
+        or return $self->error(
+        $self->translate_escape(
+            "Error saving record: [_1].",
+            $new_role->errstr
+        )
+        );
 }
 
 sub _v5_migrate_theme_privilege {
     my $self = shift;
 
     my $role_class = MT->model('role');
-    return $self->error($self->translate_escape("Error loading class: [_1].", 'Role'))
+    return $self->error(
+        $self->translate_escape( "Error loading class: [_1].", 'Role' ) )
         unless $role_class;
 
-    $self->progress($self->translate_escape('Updating existing role name...'));
-    my $role = $role_class->load({
-        name => MT->translate('Designer'),
-    });
-    if ( $role ) {
+    $self->progress(
+        $self->translate_escape('Updating existing role name...') );
+    my $role = $role_class->load( { name => MT->translate('Designer'), } );
+    if ($role) {
         return if $role->has('manage_themes');
         $role->name( MT->translate('Designer (MT4)') );
         $role->save
-            or return $self->error($self->translate_escape("Error saving record: [_1].", $role->errstr));
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $role->errstr
+            )
+            );
     }
 
-    $self->progress($self->translate_escape('Populating new role for theme...'));
+    $self->progress(
+        $self->translate_escape('Populating new role for theme...') );
     my $new_role = $role_class->new();
-    $new_role->name(MT->translate('Designer'));
-    $new_role->description(MT->translate('Can edit, manage and publish blog templates and themes.'));
+    $new_role->name( MT->translate('Designer') );
+    $new_role->description(
+        MT->translate(
+            'Can edit, manage and publish blog templates and themes.')
+    );
     $new_role->clear_full_permissions;
-    $new_role->set_these_permissions(['manage_themes', 'edit_templates', 'rebuild']);
+    $new_role->set_these_permissions(
+        [ 'manage_themes', 'edit_templates', 'rebuild' ] );
     $new_role->save
-        or return $self->error($self->translate_escape("Error saving record: [_1].", $new_role->errstr));
+        or return $self->error(
+        $self->translate_escape(
+            "Error saving record: [_1].",
+            $new_role->errstr
+        )
+        );
 }
 
 sub _v5_migrate_system_privilege {
     my $self = shift;
-    $self->progress($self->translate_escape('Assigning new system privilege for system administrator...'));
+    $self->progress(
+        $self->translate_escape(
+            'Assigning new system privilege for system administrator...')
+    );
 
     my $perm_class = MT->model('permission');
-    return $self->error($self->translate_escape("Error loading class: [_1].", 'Permission'))
-        unless $perm_class;
-    my $iter = $perm_class->load_iter({
-        blog_id => 0,
-    });
-    while(my $perm = $iter->()) {
-        if ($perm->has('administer')) {
-            $self->progress($self->translate_escape('Assigning to  [_1]...', $perm->author->name));
-            $perm->set_these_permissions(['create_website']);
+    return $self->error(
+        $self->translate_escape( "Error loading class: [_1].", 'Permission' )
+    ) unless $perm_class;
+    my $iter = $perm_class->load_iter( { blog_id => 0, } );
+    while ( my $perm = $iter->() ) {
+        if ( $perm->has('administer') ) {
+            $self->progress(
+                $self->translate_escape(
+                    'Assigning to  [_1]...',
+                    $perm->author->name
+                )
+            );
+            $perm->set_these_permissions( ['create_website'] );
             $perm->save
-                or return $self->error($self->translate_escape("Error saving record: [_1].", $perm->errstr));
+                or return $self->error(
+                $self->translate_escape(
+                    "Error saving record: [_1].",
+                    $perm->errstr
+                )
+                );
         }
     }
 }
@@ -288,26 +367,28 @@ sub _v5_migrate_system_privilege {
 sub _v5_migrate_mtview {
     my $self = shift;
 
-    $self->progress($self->translate_escape('Migrating mtview.php to MT5 style...'));
+    $self->progress(
+        $self->translate_escape('Migrating mtview.php to MT5 style...') );
 
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
 
     my $blog_class = MT->model('blog');
-    return $self->error($self->translate_escape("Error loading class: [_1].", 'Website'))
+    return $self->error(
+        $self->translate_escape( "Error loading class: [_1].", 'Website' ) )
         unless $blog_class;
 
     require File::Spec;
-    my $iter = $blog_class->load_iter({ class => 'blog' });
-    while (my $blog = $iter->()) {
+    my $iter = $blog_class->load_iter( { class => 'blog' } );
+    while ( my $blog = $iter->() ) {
         my $site_path = $blog->site_path;
-        my $mtview = File::Spec->catfile($site_path, 'mtview.php');
-        if ($fmgr->exists($mtview)) {
+        my $mtview = File::Spec->catfile( $site_path, 'mtview.php' );
+        if ( $fmgr->exists($mtview) ) {
             my $data = $fmgr->get_data($mtview);
             if ($data) {
                 $data =~ s/new MT/MT::get_instance/;
-                $fmgr->rename($mtview, $mtview.'.bak');
-                $fmgr->put_data($data, $mtview);
+                $fmgr->rename( $mtview, $mtview . '.bak' );
+                $fmgr->put_data( $data, $mtview );
             }
         }
     }
@@ -316,35 +397,52 @@ sub _v5_migrate_mtview {
 sub _v5_migrate_default_site {
     my $self = shift;
 
-    my $site_url = MT->config('DefaultSiteURL');
-    my $site_path = MT->config('DefaultSiteRoot');
+    my $site_url   = MT->config('DefaultSiteURL');
+    my $site_path  = MT->config('DefaultSiteRoot');
     my $default_id = MT->config('NewUserDefaultWebsiteId');
 
-    if ( $site_url && $site_path && !$default_id) {
-        $self->progress($self->translate_escape('Migrating DefaultSiteURL/DefaultSiteRoot to website...'));
+    if ( $site_url && $site_path && !$default_id ) {
+        $self->progress(
+            $self->translate_escape(
+                'Migrating DefaultSiteURL/DefaultSiteRoot to website...')
+        );
 
         my $class = MT->model('website');
-        return $self->error($self->translate_escape("Error loading class: [_1].", 'Website'))
-            unless $class;
+        return $self->error(
+            $self->translate_escape(
+                "Error loading class: [_1].", 'Website'
+            )
+        ) unless $class;
 
-        my $website = $class->create_default_website(MT->translate("New user's website"));
+        my $website = $class->create_default_website(
+            MT->translate("New user's website") );
         $website->site_path($site_path);
         $website->site_url($site_url);
         $website->save
-            or return $self->error($self->translate_escape("Error saving record: [_1].", $website->errstr));
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $website->errstr
+            )
+            );
 
-        MT->config('NewUserDefaultWebsiteId', $website->id, 1);
-        MT->config('DefaultSiteURL', undef, 1);
-        MT->config('DefaultSiteRoot', undef, 1);
+        MT->config( 'NewUserDefaultWebsiteId', $website->id, 1 );
+        MT->config( 'DefaultSiteURL',          undef,        1 );
+        MT->config( 'DefaultSiteRoot',         undef,        1 );
 
         # Grant new role to system administrator
-        my $app = $MT::Upgrade::App;
-        my $user = MT::Author->load( $app->{author}->id );
+        my $app         = $MT::Upgrade::App;
+        my $user        = MT::Author->load( $app->{author}->id );
         my $assoc_class = MT->model('association');
-        return $self->error($self->translate_escape("Error loading class: [_1].", 'Association'))
-            unless $assoc_class;
+        return $self->error(
+            $self->translate_escape(
+                "Error loading class: [_1].",
+                'Association'
+            )
+        ) unless $assoc_class;
         my $role_class = MT->model('role');
-        return $self->error($self->translate_escape("Error loading class: [_1].", 'Role'))
+        return $self->error(
+            $self->translate_escape( "Error loading class: [_1].", 'Role' ) )
             unless $role_class;
         my $role = MT::Role->load_by_permission('administer_website');
         $assoc_class->link( $user => $role => $website );
@@ -358,20 +456,30 @@ sub _v5_migrate_dashboard {
 
     my $new_widgets;
     my @keys = keys %$conf;
-    foreach my $key ( @keys ) {
+    foreach my $key (@keys) {
         my @widget_keys = keys %{ $conf->{$key} };
-        foreach my $widget ( @widget_keys ) {
+        foreach my $widget (@widget_keys) {
             if ( $widget eq 'mt_shortcuts' ) {
                 next;
-            } elsif ( $widget eq 'this_is_you-1' || $widget eq 'new_install' || $widget eq 'new_user' ) {
-                $new_widgets->{'dashboard:user:'.$user->id}->{$widget}->{order} = $conf->{$key}->{$widget}->{order};
-                $new_widgets->{'dashboard:user:'.$user->id}->{$widget}->{set} = 'main';
+            }
+            elsif ($widget eq 'this_is_you-1'
+                || $widget eq 'new_install'
+                || $widget eq 'new_user' )
+            {
+                $new_widgets->{ 'dashboard:user:' . $user->id }->{$widget}
+                    ->{order} = $conf->{$key}->{$widget}->{order};
+                $new_widgets->{ 'dashboard:user:' . $user->id }->{$widget}
+                    ->{set} = 'main';
                 next;
-            } elsif ( $widget eq 'mt_news' ) {
-                $new_widgets->{'dashboard:user:'.$user->id}->{$widget}->{order} = $conf->{$key}->{$widget}->{order};
-                $new_widgets->{'dashboard:user:'.$user->id}->{$widget}->{set} = 'sidebar';
+            }
+            elsif ( $widget eq 'mt_news' ) {
+                $new_widgets->{ 'dashboard:user:' . $user->id }->{$widget}
+                    ->{order} = $conf->{$key}->{$widget}->{order};
+                $new_widgets->{ 'dashboard:user:' . $user->id }->{$widget}
+                    ->{set} = 'sidebar';
                 next;
-            } elsif ( $widget eq 'blog_stats' && $key eq 'dashboard:system' ) {
+            }
+            elsif ( $widget eq 'blog_stats' && $key eq 'dashboard:system' ) {
                 next;
             }
             $new_widgets->{$key}->{$widget} = $conf->{$key}->{$widget};
@@ -379,22 +487,25 @@ sub _v5_migrate_dashboard {
     }
 
     # New widgets from MT5
-    $new_widgets->{'dashboard:user:'.$user->id}->{'favorite_blogs'}->{order} = 3;
-    $new_widgets->{'dashboard:user:'.$user->id}->{'favorite_blogs'}->{set} = 'main';
+    $new_widgets->{ 'dashboard:user:' . $user->id }->{'favorite_blogs'}
+        ->{order} = 3;
+    $new_widgets->{ 'dashboard:user:' . $user->id }->{'favorite_blogs'}->{set}
+        = 'main';
     $new_widgets->{'dashboard:system'}->{'recent_websites'}->{order} = 1;
-    $new_widgets->{'dashboard:system'}->{'recent_websites'}->{set} = 'main';
+    $new_widgets->{'dashboard:system'}->{'recent_websites'}->{set}   = 'main';
 
     my $class = MT->model('website');
     return unless $class;
-    my $generic_website = $class->load({
-        name => MT->translate('Generic Website')
-    });
+    my $generic_website
+        = $class->load( { name => MT->translate('Generic Website') } );
     return unless $generic_website;
 
-    $new_widgets->{'dashboard:blog:'.$generic_website->id}->{'recent_blogs'}->{order} = 1;
-    $new_widgets->{'dashboard:blog:'.$generic_website->id}->{'recent_blogs'}->{set} = 'main';
+    $new_widgets->{ 'dashboard:blog:' . $generic_website->id }
+        ->{'recent_blogs'}->{order} = 1;
+    $new_widgets->{ 'dashboard:blog:' . $generic_website->id }
+        ->{'recent_blogs'}->{set} = 'main';
 
-    $user->widgets( $new_widgets );
+    $user->widgets($new_widgets);
     $user->save;
 }
 
@@ -402,13 +513,11 @@ sub _v5_generate_websites_place_blogs {
     my $self = shift;
 
     require MT::Blog;
-    my $iter = MT::Blog->load_iter( [
-        { class => 'blog' },
-        '-and',
-        [
-            { parent_id => \'IS NULL' }, '-or', { parent_id => 0 }
+    my $iter = MT::Blog->load_iter(
+        [   { class => 'blog' },
+            '-and', [ { parent_id => \'IS NULL' }, '-or', { parent_id => 0 } ]
         ]
-    ] );
+    );
 
     my %site_urls;
     while ( my $blog = $iter->() ) {
@@ -421,27 +530,36 @@ sub _v5_generate_websites_place_blogs {
 
     return unless %site_urls;
 
-    $self->progress($self->translate_escape('Migrating existing [quant,_1,blog,blogs] into websites and its children...', scalar(keys(%site_urls))));
+    $self->progress(
+        $self->translate_escape(
+            'Migrating existing [quant,_1,blog,blogs] into websites and its children...',
+            scalar( keys(%site_urls) )
+        )
+    );
 
     my $assoc_class = MT->model('association');
-    return $self->error($self->translate_escape("Error loading class: [_1].", 'Association'))
-        unless $assoc_class;
+    return $self->error(
+        $self->translate_escape(
+            "Error loading class: [_1].", 'Association'
+        )
+    ) unless $assoc_class;
     my $role_class = MT->model('role');
-    return $self->error($self->translate_escape("Error loading class: [_1].", 'Role'))
+    return $self->error(
+        $self->translate_escape( "Error loading class: [_1].", 'Role' ) )
         unless $role_class;
     my $role = $role_class->load_by_permission('administer_website');
-    return $self->error($self->translate_escape("Error loading role: [_1].", 'administer_website'))
-        unless $role;
+    return $self->error(
+        $self->translate_escape(
+            "Error loading role: [_1].",
+            'administer_website'
+        )
+    ) unless $role;
 
     my @sysadmins = MT::Author->load(
-        {
-            type => MT::Author::AUTHOR()
-        },
-        {
-            join => MT::Permission->join_on(
+        { type => MT::Author::AUTHOR() },
+        {   join => MT::Permission->join_on(
                 'author_id',
-                {
-                    permissions => "\%'administer'\%",
+                {   permissions => "\%'administer'\%",
                     blog_id     => '0',
                 },
                 { 'like' => { 'permissions' => 1 } }
@@ -449,81 +567,120 @@ sub _v5_generate_websites_place_blogs {
         }
     );
 
-    # 1. find the shortest site_url, pick its domain and make it as a website url
-    # 2. find urls under the domain and make it children
-    # 3. find urls of that are subdomains of the domain and make it children
-    # 4. go to step 1 until everything is either a child or a website
+ # 1. find the shortest site_url, pick its domain and make it as a website url
+ # 2. find urls under the domain and make it children
+ # 3. find urls of that are subdomains of the domain and make it children
+ # 4. go to step 1 until everything is either a child or a website
 
-    my $website_class= MT->model('website');
-    return $self->error($self->translate_escape("Error loading class: [_1].", 'Website'))
+    my $website_class = MT->model('website');
+    return $self->error(
+        $self->translate_escape( "Error loading class: [_1].", 'Website' ) )
         unless $website_class;
 
     my %websites;
     while ( my @site_urls = keys %site_urls ) {
-        @site_urls = sort { length( $a ) <=> length ( $b ) } @site_urls;
+        @site_urls = sort { length($a) <=> length($b) } @site_urls;
         my $shortest = shift @site_urls;
-        my ($ssl, $domain) = $shortest =~ m!^http(s?)://(.+?)/!g;
+        my ( $ssl, $domain ) = $shortest =~ m!^http(s?)://(.+?)/!g;
         my $dot = index( $domain, '.' );
+
         # XXX: ignoring domain that starts with ".".
         if ( $dot > 0 ) {
             $domain =~ s!^(?:.*?)([^\.]+?)(\.\w+)$!$1$2!;
         }
-        my ( $subdomain, $path ) = $shortest =~ m!^https?://(.*)\.?$domain/(.*)$!;
-        my $blogs = delete $site_urls{ $shortest };
+        my ( $subdomain, $path )
+            = $shortest =~ m!^https?://(.*)\.?$domain/(.*)$!;
+        my $blogs = delete $site_urls{$shortest};
         foreach my $blog (@$blogs) {
             my $site_url = "http$ssl://$domain/";
-            my $website  = $website_class->load( { site_url => $site_url } );
-            unless ( $website ) {
+            my $website = $website_class->load( { site_url => $site_url } );
+            unless ($website) {
                 $website = $website_class->create_default_website(
-                    MT->translate('New WebSite [_1]', "http$ssl://$domain/"),
+                    MT->translate(
+                        'New WebSite [_1]', "http$ssl://$domain/"
+                    ),
                     MT->config->DefaultWebsiteTheme
                 );
-                $website->site_path($blog->site_path);
+                $website->site_path( $blog->site_path );
                 $website->site_url("http$ssl://$domain/");
                 $website->save
-                    or return $self->error($self->translate_escape("An error occured during generating a website upon upgrade: [_1]", $website->errstr));
+                    or return $self->error(
+                    $self->translate_escape(
+                        "An error occured during generating a website upon upgrade: [_1]",
+                        $website->errstr
+                    )
+                    );
 
-                foreach ( @sysadmins ) {
-                    $assoc_class->link( $_ => $role => $website ) or die $role->name . $website->name;
+                foreach (@sysadmins) {
+                    $assoc_class->link( $_ => $role => $website )
+                        or die $role->name . $website->name;
                 }
-                $self->progress($self->translate_escape('Generated a website [_1]', "http$ssl://$domain/"));
+                $self->progress(
+                    $self->translate_escape(
+                        'Generated a website [_1]',
+                        "http$ssl://$domain/"
+                    )
+                );
             }
             $path = $path . '/' if $path && $path !~ m!/$!;
             my $old_site_url = $blog->site_url;
             $blog->site_url("$subdomain/::/$path");
-            $blog->parent_id($website->id);
+            $blog->parent_id( $website->id );
 
-            # if archive_url is "under" the website url (i.e. either subdomain or path)
-            # use the new data syntax (/::/).  otherwise leave it as-is.  config screens
-            # and everything should handle both relative and absolute url correctly.
+  # if archive_url is "under" the website url (i.e. either subdomain or path)
+  # use the new data syntax (/::/).  otherwise leave it as-is.  config screens
+  # and everything should handle both relative and absolute url correctly.
             if ( my $archive_url = $blog->column('archive_url') ) {
                 if ( $archive_url =~ m!https?://(.+\.)?$domain/?(.*/?)$! ) {
                     $blog->archive_url("$1/::/$2");
                 }
             }
             $blog->save
-                or return $self->error($self->translate_escape("An error occured during migrating a blog's site_url: [_1]", $website->errstr));
-            $self->progress($self->translate_escape('Moved blog [_1] ([_2]) under website [_3]', $blog->name, $old_site_url, $domain));
+                or return $self->error(
+                $self->translate_escape(
+                    "An error occured during migrating a blog's site_url: [_1]",
+                    $website->errstr
+                )
+                );
+            $self->progress(
+                $self->translate_escape(
+                    'Moved blog [_1] ([_2]) under website [_3]',
+                    $blog->name, $old_site_url, $domain
+                )
+            );
 
             my @children = grep { $_ =~ m!https?://.+$domain/! } @site_urls;
-            foreach my $child_url ( @children )  {
-                my ( $subdomain, $path ) = $child_url =~ m!^https?://(.*)\.?$domain/(.*)$!;
-                my $child_blogs = delete $site_urls{ $child_url };
+            foreach my $child_url (@children) {
+                my ( $subdomain, $path )
+                    = $child_url =~ m!^https?://(.*)\.?$domain/(.*)$!;
+                my $child_blogs = delete $site_urls{$child_url};
                 foreach my $child (@$child_blogs) {
                     $path = $path . '/' if $path && $path !~ m!/$!;
                     my $old_site_url = $child->site_url;
                     $child->site_url("$subdomain/::/$path");
-                    $child->parent_id($website->id);
+                    $child->parent_id( $website->id );
 
                     # same here for archive_urls as is described above.
                     if ( my $archive_url = $child->column('archive_url') ) {
-                        if ( $archive_url =~ m!https?://(.+\.)?$domain/?(.*/?)$! ) {
+                        if ( $archive_url
+                            =~ m!https?://(.+\.)?$domain/?(.*/?)$! )
+                        {
                             $child->archive_url("$1/::/$2");
                         }
                     }
                     $child->save
-                        or return $self->error($self->translate_escape("An error occured during migrating a blog's site_url: [_1]", $website->errstr));
-                    $self->progress($self->translate_escape('Moved blog [_1] ([_2]) under website [_3]', $child->name, $old_site_url, $domain));
+                        or return $self->error(
+                        $self->translate_escape(
+                            "An error occured during migrating a blog's site_url: [_1]",
+                            $website->errstr
+                        )
+                        );
+                    $self->progress(
+                        $self->translate_escape(
+                            'Moved blog [_1] ([_2]) under website [_3]',
+                            $child->name, $old_site_url, $domain
+                        )
+                    );
                 }
             }
         }
@@ -544,7 +701,7 @@ sub _v5_remove_technorati {
 
     my $iter = $class->load_iter( { class => '*' } );
     while ( my $blog = $iter->() ) {
-        next unless ($blog->update_pings || '') =~ m/technorati/i;
+        next unless ( $blog->update_pings || '' ) =~ m/technorati/i;
 
         my @pings = split ',', $blog->update_pings;
         @pings = grep { $_ ne 'technorati' } @pings;
@@ -558,49 +715,38 @@ sub _v5_remove_technorati {
                 $blog->name,
                 $blog->id,
             )
-        )
+        );
     }
 }
 
 sub _v5_remove_news_widget_cache {
     my $self = shift;
     $self->progress(
-        $self->translate_escape(
-            'Expiring cached MT News widget...',
-        )
-    );
+        $self->translate_escape( 'Expiring cached MT News widget...', ) );
     my $class = MT->model('session')
         or return $self->error(
-            $self->translate_escape(
-                "Error loading class: [_1].",
-                'session'
-            ));
-    $class->remove({kind => [qw( NW LW )]});
+        $self->translate_escape( "Error loading class: [_1].", 'session' ) );
+    $class->remove( { kind => [qw( NW LW )] } );
 }
 
 sub _v5_recover_auth_type {
     my $self = shift;
     $self->progress(
-        $self->translate_escape(
-            'Recovering type of author...',
-        )
-    );
+        $self->translate_escape( 'Recovering type of author...', ) );
 
     my $authenticators = MT->registry('commenter_authenticators');
-    my @keys = keys %$authenticators;
+    my @keys           = keys %$authenticators;
     return unless @keys;
 
     my $author_class = MT->model('author')
         or return $self->error(
-            $self->translate_escape(
-                "Error loading class: [_1].",
-                'author'
-            ));
+        $self->translate_escape( "Error loading class: [_1].", 'author' ) );
 
-    my $auth_iter = $author_class->load_iter({
-        type => MT::Author::AUTHOR(),
-        auth_type => \@keys,
-    });
+    my $auth_iter = $author_class->load_iter(
+        {   type      => MT::Author::AUTHOR(),
+            auth_type => \@keys,
+        }
+    );
     while ( my $author = $auth_iter->() ) {
         $author->type( MT::Author::COMMENTER() );
         $author->save;

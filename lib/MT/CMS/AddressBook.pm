@@ -17,11 +17,11 @@ sub entry_notify {
 
     my $q        = $app->param;
     my $entry_id = $q->param('entry_id')
-      or return $app->error( $app->translate("No entry ID provided") );
+        or return $app->error( $app->translate("No entry ID provided") );
     require MT::Entry;
     require MT::Blog;
     my $entry = MT::Entry->load($entry_id)
-      or return $app->error(
+        or return $app->error(
         $app->translate( "No such entry '[_1]'", $entry_id ) );
     my $blog  = MT::Blog->load( $entry->blog_id );
     my $param = {};
@@ -34,11 +34,11 @@ sub send_notify {
     $app->validate_magic() or return;
     my $q        = $app->param;
     my $entry_id = $q->param('entry_id')
-      or return $app->error( $app->translate("No entry ID provided") );
+        or return $app->error( $app->translate("No entry ID provided") );
     require MT::Entry;
     require MT::Blog;
     my $entry = MT::Entry->load($entry_id)
-      or return $app->error( 
+        or return $app->error(
         $app->translate( "No such entry '[_1]'", $entry_id ) );
     my $blog = MT::Blog->load( $entry->blog_id );
 
@@ -46,17 +46,17 @@ sub send_notify {
     $app->blog($blog);
     my $perms = $user->permissions($blog);
     return $app->error( $app->translate("No permissions.") )
-      unless $perms->can_do('send_entry_notification');
+        unless $perms->can_do('send_entry_notification');
 
     my $author = $entry->author;
     return $app->error(
         $app->translate( "No email address for user '[_1]'", $author->name ) )
-      unless $author->email;
+        unless $author->email;
 
     my $cols = 72;
     my %params;
-    $params{blog} = $blog;
-    $params{entry} = $entry;
+    $params{blog}   = $blog;
+    $params{entry}  = $entry;
     $params{author} = $author;
 
     if ( $q->param('send_excerpt') ) {
@@ -69,12 +69,12 @@ sub send_notify {
 
     my $entry_editurl = $app->uri(
         'mode' => 'view',
-        args   => { 
+        args   => {
             '_type' => 'entry',
             blog_id => $entry->blog_id,
             id      => $entry->id,
         }
-    ); 
+    );
     if ( $entry_editurl =~ m|^/| ) {
         my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
         $entry_editurl = $blog_domain . $entry_editurl;
@@ -100,22 +100,22 @@ sub send_notify {
     }
 
     keys %$addrs
-      or return $app->error(
+        or return $app->error(
         $app->translate(
             "No valid recipients found for the entry notification.")
-      );
+        );
 
     my $body = $app->build_email( 'notify-entry.tmpl', \%params );
 
-    my $subj =
-      $app->translate( "[_1] Update: [_2]", $blog->name, $entry->title );
-    if ( $app->current_language ne 'ja' ) {    # FIXME perhaps move to MT::I18N
+    my $subj
+        = $app->translate( "[_1] Update: [_2]", $blog->name, $entry->title );
+    if ( $app->current_language ne 'ja' ) {   # FIXME perhaps move to MT::I18N
         $subj =~ s![\x80-\xFF]!!g;
     }
-    my $address =
-      defined $author->nickname
-      ? $author->nickname . ' <' . $author->email . '>'
-      : $author->email;
+    my $address
+        = defined $author->nickname
+        ? $author->nickname . ' <' . $author->email . '>'
+        : $author->email;
     my %head = (
         id      => 'notify_entry',
         To      => $address,
@@ -123,17 +123,17 @@ sub send_notify {
         Subject => $subj,
     );
     my $charset = $app->config('MailEncoding')
-      || $app->charset;
+        || $app->charset;
     $head{'Content-Type'} = qq(text/plain; charset="$charset");
     my $i = 1;
     require MT::Mail;
     MT::Mail->send( \%head, $body )
-      or return $app->error(
+        or return $app->error(
         $app->translate(
             "Error sending mail ([_1]); try another MailTransfer setting?",
             MT::Mail->errstr
         )
-      );
+        );
     delete $head{To};
 
     foreach my $email ( keys %{$addrs} ) {
@@ -142,35 +142,35 @@ sub send_notify {
             push @{ $head{Bcc} }, $email;
             if ( $i++ % 20 == 0 ) {
                 MT::Mail->send( \%head, $body )
-                  or return $app->error(
+                    or return $app->error(
                     $app->translate(
-"Error sending mail ([_1]); try another MailTransfer setting?",
+                        "Error sending mail ([_1]); try another MailTransfer setting?",
                         MT::Mail->errstr
                     )
-                  );
+                    );
                 @{ $head{Bcc} } = ();
             }
         }
         else {
             $head{To} = $email;
             MT::Mail->send( \%head, $body )
-              or return $app->error(
+                or return $app->error(
                 $app->translate(
-"Error sending mail ([_1]); try another MailTransfer setting?",
+                    "Error sending mail ([_1]); try another MailTransfer setting?",
                     MT::Mail->errstr
                 )
-              );
+                );
             delete $head{To};
         }
     }
     if ( $head{Bcc} && @{ $head{Bcc} } ) {
         MT::Mail->send( \%head, $body )
-          or return $app->error(
+            or return $app->error(
             $app->translate(
                 "Error sending mail ([_1]); try another MailTransfer setting?",
                 MT::Mail->errstr
             )
-          );
+            );
     }
     $app->redirect(
         $app->uri(
@@ -190,10 +190,10 @@ sub export {
     my $user  = $app->user;
     my $perms = $app->permissions;
     my $blog  = $app->blog
-      or return $app->error( $app->translate("Please select a blog.") );
+        or return $app->error( $app->translate("Please select a blog.") );
     return $app->permission_denied()
-      unless $user->is_superuser
-      || ( $perms && $perms->can_do('export_addressbook') );
+        unless $user->is_superuser
+            || ( $perms && $perms->can_do('export_addressbook') );
     $app->validate_magic() or return;
 
     $| = 1;
@@ -243,22 +243,20 @@ sub save_filter {
     my $url = $app->param('url');
     if ( $url && ( !is_url($url) ) ) {
         return $eh->error(
-            $app->translate(
-                "The value you entered was not a valid URL")
-        );
+            $app->translate("The value you entered was not a valid URL") );
     }
     require MT::Notification;
 
     # duplicate check
-    my $notification_iter =
-      MT::Notification->load_iter( { blog_id => $blog_id } );
+    my $notification_iter
+        = MT::Notification->load_iter( { blog_id => $blog_id } );
     while ( my $obj = $notification_iter->() ) {
         if (   ( lc( $obj->email ) eq $email )
             && ( $obj->id ne $app->param('id') ) )
         {
             return $eh->error(
                 $app->translate(
-"The e-mail address you entered is already on the Notification List for this blog."
+                    "The e-mail address you entered is already on the Notification List for this blog."
                 )
             );
         }
@@ -270,9 +268,8 @@ sub post_delete {
     my ( $eh, $app, $obj ) = @_;
 
     $app->log(
-        {
-            message => $app->translate(
-"Subscriber '[_1]' (ID:[_2]) deleted from address book by '[_3]'",
+        {   message => $app->translate(
+                "Subscriber '[_1]' (ID:[_2]) deleted from address book by '[_3]'",
                 $obj->email, $obj->id, $app->user->name
             ),
             level    => MT::Log::INFO(),
@@ -291,9 +288,11 @@ sub cms_pre_load_filtered_list {
     require MT::Permission;
     my $options_blog_ids = $load_options->{blog_ids} || undef;
     my $iter = MT::Permission->load_iter(
-        {
-            author_id => $user->id,
-            ( $options_blog_ids ? ( blog_id => $options_blog_ids ) : ( blog_id => { not => 0 }) ),
+        {   author_id => $user->id,
+            (   $options_blog_ids
+                ? ( blog_id => $options_blog_ids )
+                : ( blog_id => { not => 0 } )
+            ),
         },
     );
 

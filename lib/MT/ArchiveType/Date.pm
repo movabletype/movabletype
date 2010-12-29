@@ -27,14 +27,12 @@ sub dated_group_entries {
     }
     require MT::Entry;
     my @entries = MT::Entry->load(
-        {
-            blog_id     => $blog->id,
+        {   blog_id     => $blog->id,
             status      => MT::Entry::RELEASE(),
             authored_on => [ $start, $end ]
         },
-        {
-            range_incl  => { authored_on => 1 },
-            'sort' => 'authored_on',
+        {   range_incl  => { authored_on => 1 },
+            'sort'      => 'authored_on',
             'direction' => 'descend',
             ( $limit ? ( 'limit' => $limit ) : () ),
         }
@@ -46,7 +44,7 @@ sub dated_category_entries {
     my $obj = shift;
     my ( $ctx, $at, $cat, $ts ) = @_;
 
-    my $blog     = $ctx->stash('blog');
+    my $blog = $ctx->stash('blog');
     my ( $start, $end );
     if ($ts) {
         ( $start, $end ) = $obj->date_range($ts);
@@ -56,16 +54,14 @@ sub dated_category_entries {
         $end   = $ctx->{current_timestamp_end};
     }
     my @entries = MT::Entry->load(
-        {
-            blog_id     => $blog->id,
+        {   blog_id     => $blog->id,
             status      => MT::Entry::RELEASE(),
             authored_on => [ $start, $end ]
         },
-        {
-            range_incl => { authored_on => 1 },
+        {   range_incl => { authored_on => 1 },
             'join' =>
-              [ 'MT::Placement', 'entry_id', { category_id => $cat->id } ],
-            'sort' => 'authored_on',
+                [ 'MT::Placement', 'entry_id', { category_id => $cat->id } ],
+            'sort'      => 'authored_on',
             'direction' => 'descend',
         }
     ) or return $ctx->error("Couldn't get $at archive list");
@@ -76,7 +72,7 @@ sub dated_author_entries {
     my $obj = shift;
     my ( $ctx, $at, $author, $ts ) = @_;
 
-    my $blog     = $ctx->stash('blog');
+    my $blog = $ctx->stash('blog');
     my ( $start, $end );
     if ($ts) {
         ( $start, $end ) = $obj->date_range($ts);
@@ -86,15 +82,13 @@ sub dated_author_entries {
         $end   = $ctx->{current_timestamp_end};
     }
     my @entries = MT::Entry->load(
-        {
-            blog_id     => $blog->id,
+        {   blog_id     => $blog->id,
             author_id   => $author->id,
             status      => MT::Entry::RELEASE(),
             authored_on => [ $start, $end ]
         },
-        {
-            range_incl => { authored_on => 1 },
-            'sort' => 'authored_on',
+        {   range_incl  => { authored_on => 1 },
+            'sort'      => 'authored_on',
             'direction' => 'descend',
         }
     ) or return $ctx->error("Couldn't get $at archive list");
@@ -115,12 +109,10 @@ sub get_entry {
     }
 
     my $entry = MT->model('entry')->load(
-        {
-            blog_id => $blog_id,
+        {   blog_id => $blog_id,
             status  => MT::Entry::RELEASE()
         },
-        {
-            limit     => 1,
+        {   limit     => 1,
             'sort'    => 'authored_on',
             direction => $order,
             start_val => $ts
@@ -130,22 +122,28 @@ sub get_entry {
 }
 
 # get an entry in the next or previous archive for dated-based ArchiveType
-sub next_archive_entry     { $_[0]->adjacent_archive_entry({ %{$_[1]}, order => 'next'     }) }
-sub previous_archive_entry { $_[0]->adjacent_archive_entry({ %{$_[1]}, order => 'previous' }) }
+sub next_archive_entry {
+    $_[0]->adjacent_archive_entry( { %{ $_[1] }, order => 'next' } );
+}
+
+sub previous_archive_entry {
+    $_[0]->adjacent_archive_entry( { %{ $_[1] }, order => 'previous' } );
+}
 
 sub adjacent_archive_entry {
     my $obj = shift;
-    my ( $param ) = @_;
+    my ($param) = @_;
 
-    my $order   = ( $param->{order} eq 'previous' ) ? 'descend' : 'ascend';
-    my $cat     = $param->{category} if $obj->category_based;
-    my $author  = $param->{author}   if $obj->author_based;
+    my $order = ( $param->{order} eq 'previous' ) ? 'descend' : 'ascend';
+    my $cat    = $param->{category} if $obj->category_based;
+    my $author = $param->{author}   if $obj->author_based;
 
     my $ts      = $param->{ts};
-    my $blog_id = $param->{blog_id} || ($param->{blog} ? $param->{blog}->id : undef);
+    my $blog_id = $param->{blog_id}
+        || ( $param->{blog} ? $param->{blog}->id : undef );
 
     # if $param->{entry} given, override $ts and $blog_id.
-    if (my $e = $param->{entry}) {
+    if ( my $e = $param->{entry} ) {
         $ts      = $e->authored_on;
         $blog_id = $e->blog_id;
     }
@@ -154,17 +152,24 @@ sub adjacent_archive_entry {
 
     require MT::Entry;
     require MT::Placement;
-    my $entry = MT::Entry->load({
-        status  => MT::Entry::RELEASE(),
-        $blog_id ? ( blog_id   => $blog_id    ) : (),
-        $author  ? ( author_id => $author->id ) : (),
-    }, {
-        limit     => 1,
-        'sort'    => 'authored_on',
-        direction => $order,
-        start_val => $ts,
-        $cat     ? ( 'join'    => [ 'MT::Placement', 'entry_id', { category_id => $cat->id } ] ) : (),
-    });
+    my $entry = MT::Entry->load(
+        {   status => MT::Entry::RELEASE(),
+            $blog_id ? ( blog_id   => $blog_id )    : (),
+            $author  ? ( author_id => $author->id ) : (),
+        },
+        {   limit     => 1,
+            'sort'    => 'authored_on',
+            direction => $order,
+            start_val => $ts,
+            $cat
+            ? ( 'join' => [
+                    'MT::Placement', 'entry_id',
+                    { category_id => $cat->id }
+                ]
+                )
+            : (),
+        }
+    );
     $entry;
 }
 

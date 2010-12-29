@@ -35,7 +35,7 @@ sub select {
         $class = $pkg;
     }
     return @MT::Components if $class eq 'MT::Component';
-    return @MT::Plugins if $class eq 'MT::Plugin';
+    return @MT::Plugins    if $class eq 'MT::Plugin';
     return grep { UNIVERSAL::isa( $_, $class ) } @MT::Components;
 }
 
@@ -112,7 +112,11 @@ sub init_callbacks {
         }
         elsif ( ref $callbacks eq 'HASH' ) {
             foreach my $cbname ( keys %$callbacks ) {
-                if ( ref $callbacks->{$cbname} eq 'CODE' ||  (ref $callbacks->{$cbname} eq '' && $callbacks->{$cbname})) {
+                if (ref $callbacks->{$cbname} eq 'CODE'
+                    || ( ref $callbacks->{$cbname} eq ''
+                        && $callbacks->{$cbname} )
+                    )
+                {
                     MT->add_callback( $cbname, 5, $c, $callbacks->{$cbname} );
                 }
                 elsif ( ref $callbacks->{$cbname} eq 'HASH' ) {
@@ -121,19 +125,19 @@ sub init_callbacks {
                         $callbacks->{$cbname}{priority} || 5,
                         $c,
                         $callbacks->{$cbname}{handler}
-                          || $callbacks->{$cbname}{code}
+                            || $callbacks->{$cbname}{code}
                     );
                 }
                 elsif ( ref $callbacks->{$cbname} eq 'ARRAY' ) {
                     my $list = $callbacks->{$cbname};
                     MT->add_callback( $cbname, $_->{priority} || 5,
                         $c, $_->{handler} || $_->{code} )
-                      foreach @$list;
+                        foreach @$list;
                 }
             }
         }
     }
-    if (my $init = _getset( $c, 'init' )) {
+    if ( my $init = _getset( $c, 'init' ) ) {
         if ( !ref($init) ) {
             $init = MT->handler_to_coderef($init);
         }
@@ -150,7 +154,8 @@ sub load_registry {
     return unless -f $path;
     require MT::Util::YAML;
     my $y = eval { MT::Util::YAML::LoadFile($path) }
-        or die "Error reading $path: " . (MT::Util::YAML->errstr||$@||$!);
+        or die "Error reading $path: "
+        . ( MT::Util::YAML->errstr || $@ || $! );
     return $y;
 }
 
@@ -161,15 +166,15 @@ sub init_registry {
         return 1;
     }
 
-   # TBD: 'extends' support...
-   # if (my $ext = $r->{extends}) {
-   #     # require any other components declared here
-   #     $ext = [ $ext ] unless ref($ext) eq 'ARRAY';
-   #     foreach my $comp (@$ext) {
-   #         MT->require_component($comp)
-   #             or return $c->error("Error loading required component: $comp");
-   #     }
-   # }
+ # TBD: 'extends' support...
+ # if (my $ext = $r->{extends}) {
+ #     # require any other components declared here
+ #     $ext = [ $ext ] unless ref($ext) eq 'ARRAY';
+ #     foreach my $comp (@$ext) {
+ #         MT->require_component($comp)
+ #             or return $c->error("Error loading required component: $comp");
+ #     }
+ # }
     $c->registry($r);
 
     # map key registry elements into metadata
@@ -181,23 +186,23 @@ sub init_registry {
 }
 
 sub callbacks {
-    my $c = shift;
-    my $root_cb = _getset($c, 'callbacks') || {};
-    my $apps = _getset($c, 'applications');
-    for my $app (keys %$apps) {
+    my $c       = shift;
+    my $root_cb = _getset( $c, 'callbacks' ) || {};
+    my $apps    = _getset( $c, 'applications' );
+    for my $app ( keys %$apps ) {
         my @path = qw( applications );
         push @path, $app;
-        my $r = $c->registry( @path );
+        my $r = $c->registry(@path);
         if ($r) {
-            my $cb = _getset($r, 'callbacks') || {};
-            MT::__merge_hash($root_cb, $cb);
+            my $cb = _getset( $r, 'callbacks' ) || {};
+            MT::__merge_hash( $root_cb, $cb );
         }
     }
     return $root_cb;
 }
 
 # STUB
-sub init_app { }
+sub init_app     { }
 sub init_request { }
 
 sub on_init_app {
@@ -262,7 +267,9 @@ sub _getset {
 
             # Handle reference to another YAML file
             # (ie, app-cms.yaml/tags.yaml/etc.)
-            if ( defined($out) && !ref($out) && ( $out =~ m/^[-\w]+\.yaml$/ ) )
+            if (   defined($out)
+                && !ref($out)
+                && ( $out =~ m/^[-\w]+\.yaml$/ ) )
             {
                 my $r = $c->load_registry($out);
                 if ($r) {
@@ -293,14 +300,14 @@ sub _getset_translate {
     return $c->l10n_filter( defined $return ? $return : '' );
 }
 
-sub name { &_getset_translate }
+sub name {&_getset_translate}
 
 sub label {
     my $c = shift;
     return $c->_getset('label') || $c->name();
 }
 
-sub description { &_getset_translate }
+sub description {&_getset_translate}
 
 sub needs_upgrade {
     my $c  = shift;
@@ -370,35 +377,48 @@ sub template_paths {
 
 sub load_tmpl {
     my $c = shift;
-    my ($file, $param) = @_;
+    my ( $file, $param ) = @_;
 
     my $mt = MT->instance;
-    my $type = { 'SCALAR' => 'scalarref', 'ARRAY' => 'arrayref' }->{ ref $file }
-      || 'filename';
+    my $type
+        = { 'SCALAR' => 'scalarref', 'ARRAY' => 'arrayref' }->{ ref $file }
+        || 'filename';
 
     require MT::Template;
     my $tmpl = MT::Template->new(
         type   => $type,
         source => $file,
         path   => [ $c->template_paths ],
-        ($mt->isa('MT::App') ? ( filter => sub {
-            my ($str, $fname) = @_;
-            if ($fname) {
-                $fname = File::Basename::basename($fname);
-                $fname =~ s/\.tmpl$//;
-                $mt->run_callbacks("template_source.$fname", $mt, @_);
-            } else {
-                $mt->run_callbacks("template_source", $mt, @_);
-            }
-            return $str;
-        }) : ()),
+        (   $mt->isa('MT::App')
+            ? ( filter => sub {
+                    my ( $str, $fname ) = @_;
+                    if ($fname) {
+                        $fname = File::Basename::basename($fname);
+                        $fname =~ s/\.tmpl$//;
+                        $mt->run_callbacks( "template_source.$fname", $mt,
+                            @_ );
+                    }
+                    else {
+                        $mt->run_callbacks( "template_source", $mt, @_ );
+                    }
+                    return $str;
+                }
+                )
+            : ()
+        ),
     );
     return $c->error(
-        $mt->translate( "Loading template '[_1]' failed: [_2]", $file, MT::Template->errstr ) )
-      unless defined $tmpl;
+        $mt->translate(
+            "Loading template '[_1]' failed: [_2]", $file,
+            MT::Template->errstr
+        )
+    ) unless defined $tmpl;
     my $text = $tmpl->text;
-    if (($text =~ m/<(mt|_)_trans/i) && ($c->id)) {
-        $tmpl->text( '<__trans_section component="' . $c->id . '">' . $text . '</__trans_section>');
+    if ( ( $text =~ m/<(mt|_)_trans/i ) && ( $c->id ) ) {
+        $tmpl->text( '<__trans_section component="'
+                . $c->id . '">'
+                . $text
+                . '</__trans_section>' );
     }
     $tmpl->{__file} = $file if $type eq 'filename';
 
@@ -442,28 +462,28 @@ sub translate {
 ## Locale::Maketext::get_handle has NO second try, so we have to create all
 ## possibly modules before invoking Locale::Maketext::get_handle.
 sub _init_l10n_handle {
-    my $c = shift;
-    my ($lang) = @_;
-    my $l10n_reg = $c->registry('l10n_lexicon') || {};
+    my $c          = shift;
+    my ($lang)     = @_;
+    my $l10n_reg   = $c->registry('l10n_lexicon') || {};
     my $base_class = $c->l10n_class;
     if ( !$base_class ) {
         my $id = $c->id;
         $id =~ s/[\W]//g;
         return if $id !~ /^[a-zA-Z]/;
-        $base_class = join('::', $id, 'L10N');
+        $base_class = join( '::', $id, 'L10N' );
     }
     $c->_generate_l10n_module( $base_class, 'MT::Plugin::L10N' );
     ## we need en_us because he is the default language.
     ## TBD: ... is it truth?
     my $en_us = join '::', $base_class, 'en_us';
-    my $en_us_lexicon = $c->registry('l10n_lexicon','en_us') || {};
-    $c->_generate_l10n_module($en_us, $base_class, $en_us_lexicon);
+    my $en_us_lexicon = $c->registry( 'l10n_lexicon', 'en_us' ) || {};
+    $c->_generate_l10n_module( $en_us, $base_class, $en_us_lexicon );
     my $lang_tag = lc $lang;
     $lang_tag =~ s/-/_/g;
     if ( $lang_tag ne 'en_us' ) {
         my $lexicon = $c->registry( 'l10n_lexicon', $lang_tag );
         my $class = join '::', $base_class, $lang_tag;
-        $c->_generate_l10n_module($class, $en_us, $lexicon);
+        $c->_generate_l10n_module( $class, $en_us, $lexicon );
     }
     require Locale::Maketext;
     return Locale::Maketext::get_handle( $base_class, $lang_tag );
@@ -471,7 +491,7 @@ sub _init_l10n_handle {
 
 sub _generate_l10n_module {
     my $c = shift;
-    my ($class, $base, $lexicon) = @_;
+    my ( $class, $base, $lexicon ) = @_;
     my $got_class;
     if ( $c->id eq 'core' ) {
         eval "require $class";
@@ -493,7 +513,7 @@ sub _generate_l10n_module {
             my $file = $fmgr->get_data($path);
             eval "$file";
             $got_class = !$@ ? 1 : 0;
-            $INC{ $inc_path } = $path;
+            $INC{$inc_path} = $path;
         }
     }
     else {
@@ -501,8 +521,8 @@ sub _generate_l10n_module {
         $got_class = !$@ ? 1 : 0;
     }
 
-    if ( $got_class ) {
-        if ( !ref $lexicon) {
+    if ($got_class) {
+        if ( !ref $lexicon ) {
             $lexicon = MT->handler_to_coderef($lexicon);
         }
         if ( 'CODE' eq ref $lexicon ) {
@@ -510,7 +530,8 @@ sub _generate_l10n_module {
         }
         if ( 'HASH' eq ref $lexicon ) {
             no strict 'refs';
-            %{$class.'::Lexicon'} = ( %{$class.'::Lexicon'}, %$lexicon );
+            %{ $class . '::Lexicon' }
+                = ( %{ $class . '::Lexicon' }, %$lexicon );
         }
     }
     else {
@@ -524,7 +545,7 @@ CODE
         eval $code;
         die "Failed to make L10N handle: $code : $@" if $@;
         if ($lexicon) {
-            if ( !ref $lexicon) {
+            if ( !ref $lexicon ) {
                 $lexicon = MT->handler_to_coderef($lexicon);
             }
             if ( 'CODE' eq ref $lexicon ) {
@@ -532,7 +553,7 @@ CODE
             }
             {
                 no strict 'refs';
-                %{$class.'::Lexicon'} = ( %$lexicon );
+                %{ $class . '::Lexicon' } = (%$lexicon);
             }
         }
     }
@@ -542,6 +563,7 @@ CODE
 sub translate_templatized {
     my $c = shift;
     my ($text) = @_;
+
     # Here, the text must be handled as binary ( non utf-8 ) data,
     # because regexp for utf-8 string is too heavy.
     # things we have to do is
@@ -549,11 +571,12 @@ sub translate_templatized {
     #  * decode the strings captured by regexp
     #  * encode the translated string from translate()
     #  * decode again for return
-    $text = Encode::encode('utf8', $text)
+    $text = Encode::encode( 'utf8', $text )
         if Encode::is_utf8($text);
     my @cstack;
     while (1) {
-        $text =~ s!(<(/)?(?:_|MT)_TRANS(_SECTION)?(?:(?:\s+((?:\w+)\s*=\s*(["'])(?:(<(?:[^"'>]|"[^"]*"|'[^']*')+)?>|[^\5]+?)*?\5))+?\s*/?)?>)!
+        $text
+            =~ s!(<(/)?(?:_|MT)_TRANS(_SECTION)?(?:(?:\s+((?:\w+)\s*=\s*(["'])(?:(<(?:[^"'>]|"[^"]*"|'[^']*')+)?>|[^\5]+?)*?\5))+?\s*/?)?>)!
         my($msg, $close, $section, %args) = ($1, $2, $3);
         while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<(?:[^"'>]|"[^"]*"|'[^']*')+?>|[^\2])*?)?\2/g) {  #"
             $args{$1} = Encode::is_utf8($3) ? $3 : Encode::decode_utf8($3);
@@ -614,8 +637,8 @@ sub registry {
             $c->{__localized} = 0;
             return $c->{registry} = shift;
         }
-        my @path = @_;
-        my $r    = $c->{registry} ||= {};
+        my @path   = @_;
+        my $r      = $c->{registry} ||= {};
         my $setter = grep { ref $_ } @_;
         return undef if ( !$r && !$setter );
 
@@ -631,7 +654,7 @@ sub registry {
                 # Handle the case where an assignment
                 # is being made to a registry item. Ie
                 # $comp->registry("foo","bar","baz", { stuff => ... })
-                __deep_localize_labels($c, $p);
+                __deep_localize_labels( $c, $p );
                 $last_r->{$last_p} = $p;
                 $r = $last_r;
                 last;
@@ -647,17 +670,20 @@ sub registry {
                         if ( -f $f ) {
                             require MT::Util::YAML;
                             my $y = eval { MT::Util::YAML::LoadFile($f) }
-                                or die "Error reading $f: " . (MT::Util::YAML->errstr||$@||$!);
+                                or die "Error reading $f: "
+                                . ( MT::Util::YAML->errstr || $@ || $! );
                             if ($y) {
-                                __deep_localize_labels($c, $y) if ref $y eq 'HASH';
+                                __deep_localize_labels( $c, $y )
+                                    if ref $y eq 'HASH';
                                 $r->{$p} = $y;
                             }
                         }
-                    } elsif ($v =~ m/^\$\w+::/) {
+                    }
+                    elsif ( $v =~ m/^\$\w+::/ ) {
                         my $code = MT->handler_to_coderef($v);
-                        if (ref $code eq 'CODE') {
+                        if ( ref $code eq 'CODE' ) {
                             my $res = $code->($c);
-                            __deep_localize_labels($c, $res)
+                            __deep_localize_labels( $c, $res )
                                 if $res && ref $res eq 'HASH';
                             $r->{$p} = $res;
                         }
@@ -665,7 +691,7 @@ sub registry {
                 }
                 elsif ( ref($v) eq 'CODE' ) {
                     my $res = $v->($c);
-                    __deep_localize_labels($c, $res)
+                    __deep_localize_labels( $c, $res )
                         if $res && ref $res eq 'HASH';
                     $r->{$p} = $res;
                 }
@@ -673,11 +699,11 @@ sub registry {
                 $last_p = $p;
                 $r      = $r->{$p};
             }
-            elsif ( $setter ) {
+            elsif ($setter) {
                 $r->{$p} = {};
-                $last_r = $r;
-                $last_p = $p;
-                $r = $r->{$p};
+                $last_r  = $r;
+                $last_p  = $p;
+                $r       = $r->{$p};
             }
             else {
                 return undef;
@@ -685,7 +711,7 @@ sub registry {
         }
 
         if ( ref $r eq 'HASH' ) {
-            weaken($_->{plugin} = $c)
+            weaken( $_->{plugin} = $c )
                 for grep { ref $_ eq 'HASH' } values %$r;
         }
 

@@ -8,14 +8,15 @@ package MT::Config;
 use strict;
 use base qw( MT::Object );
 
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id' => 'integer not null auto_increment',
-        'data' => 'text',
-    },
-    primary_key => 'id',
-    datasource => 'config',
-});
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'   => 'integer not null auto_increment',
+            'data' => 'text',
+        },
+        primary_key => 'id',
+        datasource  => 'config',
+    }
+);
 
 sub class_label {
     MT->translate("Configuration");

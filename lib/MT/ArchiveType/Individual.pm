@@ -39,7 +39,7 @@ sub archive_file {
 
     my $file;
     Carp::confess("archive_file_for Individual archive needs an entry")
-      unless $entry;
+        unless $entry;
     if ($file_tmpl) {
         $ctx->{current_timestamp} = $entry->authored_on;
     }
@@ -61,18 +61,16 @@ sub archive_group_iter {
     my $obj = shift;
     my ( $ctx, $args ) = @_;
 
-    my $order =
-      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $order
+        = ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
 
     my $blog_id = $ctx->stash('blog')->id;
     require MT::Entry;
     my $iter = MT::Entry->load_iter(
-        {
-            blog_id => $blog_id,
+        {   blog_id => $blog_id,
             status  => MT::Entry::RELEASE()
         },
-        {
-            'sort'    => 'authored_on',
+        {   'sort'    => 'authored_on',
             direction => $order,
             $args->{lastn} ? ( limit => $args->{lastn} ) : ()
         }
@@ -82,7 +80,7 @@ sub archive_group_iter {
             return ( 1, entries => [$entry], entry => $entry );
         }
         undef;
-      }
+        }
 }
 
 sub dynamic_template {
@@ -91,58 +89,44 @@ sub dynamic_template {
 
 sub default_archive_templates {
     return [
-        {
-            label    => MT->translate('yyyy/mm/entry-basename.html'),
+        {   label    => MT->translate('yyyy/mm/entry-basename.html'),
             template => '%y/%m/%-f',
             default  => 1
         },
-        {
-            label    => MT->translate('yyyy/mm/entry_basename.html'),
+        {   label    => MT->translate('yyyy/mm/entry_basename.html'),
             template => '%y/%m/%f'
         },
-        {
-            label => MT->translate('yyyy/mm/entry-basename/index.html'),
+        {   label    => MT->translate('yyyy/mm/entry-basename/index.html'),
             template => '%y/%m/%-b/%i'
         },
-        {
-            label => MT->translate('yyyy/mm/entry_basename/index.html'),
+        {   label    => MT->translate('yyyy/mm/entry_basename/index.html'),
             template => '%y/%m/%b/%i'
         },
-        {
-            label    => MT->translate('yyyy/mm/dd/entry-basename.html'),
+        {   label    => MT->translate('yyyy/mm/dd/entry-basename.html'),
             template => '%y/%m/%d/%-f'
         },
-        {
-            label    => MT->translate('yyyy/mm/dd/entry_basename.html'),
+        {   label    => MT->translate('yyyy/mm/dd/entry_basename.html'),
             template => '%y/%m/%d/%f'
         },
-        {
-            label =>
-              MT->translate('yyyy/mm/dd/entry-basename/index.html'),
+        {   label    => MT->translate('yyyy/mm/dd/entry-basename/index.html'),
             template => '%y/%m/%d/%-b/%i'
         },
-        {
-            label =>
-              MT->translate('yyyy/mm/dd/entry_basename/index.html'),
+        {   label    => MT->translate('yyyy/mm/dd/entry_basename/index.html'),
             template => '%y/%m/%d/%b/%i'
         },
-        {
-            label => MT->translate(
-                'category/sub-category/entry-basename.html'),
+        {   label =>
+                MT->translate('category/sub-category/entry-basename.html'),
             template => '%-c/%-f'
         },
-        {
-            label => MT->translate(
+        {   label => MT->translate(
                 'category/sub-category/entry-basename/index.html'),
             template => '%-c/%-b/%i'
         },
-        {
-            label => MT->translate(
-                'category/sub_category/entry_basename.html'),
+        {   label =>
+                MT->translate('category/sub_category/entry_basename.html'),
             template => '%c/%f'
         },
-        {
-            label => MT->translate(
+        {   label => MT->translate(
                 'category/sub_category/entry_basename/index.html'),
             template => '%c/%b/%i'
         },

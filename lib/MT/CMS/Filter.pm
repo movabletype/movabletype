@@ -38,12 +38,12 @@ sub save {
     }
 
     require MT::ListProperty;
-    for my $item ( @$items ) {
+    for my $item (@$items) {
         my $prop = MT::ListProperty->instance( $ds, $item->{type} );
         if ( $prop->has('validate_item') ) {
             $prop->validate_item($item)
                 or return $app->json_error(
-                    MT->translate( 'Invalid filter terms: [_1]', $prop->errstr )
+                MT->translate( 'Invalid filter terms: [_1]', $prop->errstr )
                 );
         }
     }
@@ -53,8 +53,7 @@ sub save {
 
     # Search duplicate.
     if (my $dupe = $filter_class->load(
-            {
-                author_id => $app->user->id,
+            {   author_id => $app->user->id,
                 object_ds => $ds,
                 label     => $label,
                 ( $fid ? ( id => { not => $fid } ) : () ),
@@ -87,7 +86,7 @@ sub save {
             items     => $items,
         }
     );
-    $filter->modified_by($app->user->id);
+    $filter->modified_by( $app->user->id );
     $filter->save
         or return $app->json_error(
         $app->translate( 'Failed to save filter: [_1]', $filter->errstr ) );
@@ -96,7 +95,7 @@ sub save {
     if ( defined $list && !$list ) {
         my %res;
         my $filters = filters( $app, $ds, encode_html => 1 );
-        $res{id} = $filter->id;
+        $res{id}      = $filter->id;
         $res{filters} = $filters;
         return $app->json_result( \%res );
     }
@@ -116,56 +115,60 @@ sub save {
 sub delete {
     my $app          = shift;
     my $q            = $app->param;
-    my $id          = $q->param('id');
+    my $id           = $q->param('id');
     my $filter_class = MT->model('filter');
     my $filter       = $filter_class->load($id)
         or return $app->json_error( $app->translate('No such filter') );
-    my $blog_id   = $q->param('blog_id') || 0;
-    my $ds        = $q->param('datasource');
-    my $user = $app->user;
+    my $blog_id = $q->param('blog_id') || 0;
+    my $ds      = $q->param('datasource');
+    my $user    = $app->user;
     if ( $filter->author_id != $user->id && !$user->is_superuser ) {
         return $app->json_error( $app->translate('Permission denied') );
     }
     $filter->remove
         or return $app->json_error(
-    $app->translate( 'Failed to delete filter: [_1]', $filter->errstr ) );
+        $app->translate( 'Failed to delete filter: [_1]', $filter->errstr ) );
     my %res;
     my $list = $app->param('list');
     if ( defined $list && !$list ) {
         my %res;
         my $filters = filters( $app, $ds, encode_html => 1 );
-        $res{id} = $filter->id;
+        $res{id}      = $filter->id;
         $res{filters} = $filters;
         return $app->json_result( \%res );
     }
     else {
+
         # Forward to MT::Common::filterd_list
-        $app->forward( 'filtered_list' );
+        $app->forward('filtered_list');
     }
 }
 
 sub delete_filters {
     my $app = shift;
-    my $id = $app->param('id');
+    my $id  = $app->param('id');
     my @ids = split ',', $id;
-    my $res = MT->model('filter')->remove({ id => \@ids })
+    my $res = MT->model('filter')->remove( { id => \@ids } )
         or return $app->json_error(
-            MT->translate(
-                'Failed to remove filters: [_1]',
-                MT->model('filter')->errstr,
-            ));
+        MT->translate(
+            'Failed to remove filters: [_1]',
+            MT->model('filter')->errstr,
+        )
+        );
     unless ( $res > 0 ) {
         ## if $res is 0E0 ( zero but true )
-        return $app->json_error(
-            MT->translate('No such filter.',) );
+        return $app->json_error( MT->translate( 'No such filter.', ) );
     }
-    $app->forward( 'filtered_list', messages => [{
-        cls => 'success',
-        msg => MT->translate(
-            'Removed [_1] filters successfully.',
-            $res,
-        ),
-    }]);
+    $app->forward(
+        'filtered_list',
+        messages => [
+            {   cls => 'success',
+                msg => MT->translate(
+                    'Removed [_1] filters successfully.', $res,
+                ),
+            }
+        ]
+    );
 }
 
 ## Note that these filter loading methods below NOT return instances of MT::Filter class.
@@ -179,10 +182,8 @@ sub filter {
         if ( $app->user->id != $filter->author_id ) {
             return if !$app->user->is_superuser;
             my $owner = MT->model('author')->load( $filter->author_id );
-            $hash->{label} = MT->translate(
-                '[_1] ( created by [_2] )',
-                $hash->{label},
-                $owner->name, );
+            $hash->{label} = MT->translate( '[_1] ( created by [_2] )',
+                $hash->{label}, $owner->name, );
         }
         return $hash;
     }
@@ -200,12 +201,12 @@ sub system_filter {
         return unless $cond->();
     }
     if ( my $view = $sys_filter->{view} ) {
-        $view = [ $view ] unless ref $view;
+        $view = [$view] unless ref $view;
         my %view = map { $_ => 1 } @$view;
         my $blog = $app->blog;
-        return if !$blog                    && !$view{system};
-        return if  $blog &&  $blog->is_blog && !$view{blog};
-        return if  $blog && !$blog->is_blog && !$view{website};
+        return if !$blog && !$view{system};
+        return if $blog  && $blog->is_blog && !$view{blog};
+        return if $blog  && !$blog->is_blog && !$view{website};
     }
 
     my $hash = {
@@ -286,16 +287,19 @@ sub filters {
     }
 
     my @filters = ( @user_filters, @sys_filters, @legacy_filters );
-    for my $filter ( @filters ) {
+    for my $filter (@filters) {
         my $label = $filter->{label};
         if ( 'CODE' eq ref $label ) {
             $filter->{label} = $label->();
         }
         if ( $opts{encode_html} ) {
-            MT::Util::deep_do( $filter, sub {
-                my $ref = shift;
-                $$ref = MT::Util::encode_html( $$ref );
-            });
+            MT::Util::deep_do(
+                $filter,
+                sub {
+                    my $ref = shift;
+                    $$ref = MT::Util::encode_html($$ref);
+                }
+            );
         }
     }
     return \@filters;

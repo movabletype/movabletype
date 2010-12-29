@@ -182,21 +182,23 @@ BEGIN {
                                 my ($obj) = @_;
                                 my $col   = $prop->col;
                                 return $obj->$col;
-                            } unless $prop->has('raw');
+                                }
+                                unless $prop->has('raw');
                             $prop->{sort} = sub {
                                 my $prop = shift;
                                 my ( $terms, $args ) = @_;
                                 $args->{sort} = $prop->col;
                                 return;
-                            } unless $prop->has('sort');
+                                }
+                                unless $prop->has('sort');
                         }
                     },
                 },
                 hidden => {
-                    base        => '__virtual.base',
+                    base  => '__virtual.base',
                     terms => sub {
-                        my $prop   = shift;
-                        my ($args, $db_terms, $db_args) = @_;
+                        my $prop = shift;
+                        my ( $args, $db_terms, $db_args ) = @_;
                         my $col    = $prop->col or die;
                         my $option = $args->{option};
                         my $value  = $args->{value};
@@ -209,13 +211,13 @@ BEGIN {
                     },
                     filter_tmpl => '<mt:Var name="filter_form_hidden">',
                     base_type   => 'hidden',
-                    priority => 4,
+                    priority    => 4,
                 },
                 string => {
                     base      => '__virtual.base',
-                    col_class     => 'string',
-                    terms => sub {
-                        my $prop   = shift;
+                    col_class => 'string',
+                    terms     => sub {
+                        my $prop = shift;
                         my ( $args, $db_terms, $db_args ) = @_;
                         my $col    = $prop->col or die;
                         my $option = $args->{option};
@@ -239,11 +241,11 @@ BEGIN {
                             return { $col => $query };
                         }
                     },
-                    filter_tmpl => '<mt:var name="filter_form_string">',
-                    base_type   => 'string',
+                    filter_tmpl    => '<mt:var name="filter_form_string">',
+                    base_type      => 'string',
                     args_via_param => sub {
-                        my $prop  = shift;
-                        my ($app, $val) = @_;
+                        my $prop = shift;
+                        my ( $app, $val ) = @_;
                         return { option => 'equal', string => $val };
                     },
                     label_via_param => sub {
@@ -259,8 +261,9 @@ BEGIN {
                     priority => 7,
                 },
                 integer => {
-                    base        => '__virtual.base',
-                    col_class       => 'num',
+                    base      => '__virtual.base',
+                    col_class => 'num',
+
                     #sort_method => sub {
                     #    my $prop = shift;
                     #    my ( $obj_a, $obj_b ) = @_;
@@ -268,8 +271,8 @@ BEGIN {
                     #    return $obj_a->$col <=> $obj_b->$col;
                     #},
                     terms => sub {
-                        my $prop   = shift;
-                        my ($args, $db_terms, $db_args) = @_;
+                        my $prop = shift;
+                        my ( $args, $db_terms, $db_args ) = @_;
                         my $col    = $prop->col or die;
                         my $option = $args->{option};
                         my $value  = $args->{value};
@@ -277,19 +280,19 @@ BEGIN {
                         if ( 'equal' eq $option ) {
                             $query = $value;
                         }
-                        elsif ('not_equal' eq $option) {
+                        elsif ( 'not_equal' eq $option ) {
                             $query = { not => $value };
                         }
-                        elsif ('greater_than' eq $option) {
+                        elsif ( 'greater_than' eq $option ) {
                             $query = { '>' => $value };
                         }
-                        elsif ('greater_equal' eq $option) {
+                        elsif ( 'greater_equal' eq $option ) {
                             $query = { '>=' => $value };
                         }
-                        elsif ('less_than' eq $option) {
+                        elsif ( 'less_than' eq $option ) {
                             $query = { '<' => $value };
                         }
-                        elsif ('less_equal' eq $option) {
+                        elsif ( 'less_equal' eq $option ) {
                             $query = { '<=' => $value };
                         }
                         if ( $prop->is_meta ) {
@@ -300,29 +303,29 @@ BEGIN {
                         }
                     },
                     args_via_param => sub {
-                        my $prop  = shift;
-                        my ($app, $val) = @_;
+                        my $prop = shift;
+                        my ( $app, $val ) = @_;
                         return { option => 'equal', value => $val };
                     },
                     filter_tmpl => '<mt:Var name="filter_form_integer">',
                     base_type   => 'integer',
-                    priority => 4,
+                    priority    => 4,
                 },
                 float => {
                     base      => '__virtual.integer',
                     condition => sub {0},
-                    col_class     => 'num',
-                    html => sub {
+                    col_class => 'num',
+                    html      => sub {
                         my ( $prop, $obj ) = @_;
                         my $col = $prop->col;
                         return sprintf "%0.1f", $obj->$col;
                     },
-                    base_type   => 'float',
+                    base_type => 'float',
                 },
                 date => {
-                    base        => '__virtual.base',
-                    col_class   => 'date',
-                    use_future  => 0,
+                    base          => '__virtual.base',
+                    col_class     => 'date',
+                    use_future    => 0,
                     validate_item => sub {
                         my $prop   = shift;
                         my ($item) = @_;
@@ -363,10 +366,10 @@ BEGIN {
                             }
                         }
                         return 1;
-                        },
+                    },
                     terms => sub {
-                        my $prop   = shift;
-                        my ($args, $db_terms, $db_args) = @_;
+                        my $prop = shift;
+                        my ( $args, $db_terms, $db_args ) = @_;
                         my $col    = $prop->col;
                         my $option = $args->{option};
                         my $query;
@@ -379,34 +382,42 @@ BEGIN {
                         $from   =~ s/\D//g;
                         $to     =~ s/\D//g;
                         $origin =~ s/\D//g;
-                        $from .= '00000' if $from;
+                        $from .= '00000'  if $from;
                         $to   .= '235959' if $to;
+
                         if ( 'range' eq $option ) {
                             $query = [
                                 '-and',
                                 { op => '>', value => $from },
-                                { op => '<', value => $to   },
+                                { op => '<', value => $to },
                             ];
                         }
-                        elsif ('days' eq $option ) {
+                        elsif ( 'days' eq $option ) {
                             my $days   = $args->{days};
-                            my $origin = MT::Util::epoch2ts( $blog, time - $days * 60 * 60 * 24 );
+                            my $origin = MT::Util::epoch2ts( $blog,
+                                time - $days * 60 * 60 * 24 );
                             $query = [
                                 '-and',
                                 { op => '>', value => $origin },
-                                { op => '<', value => $now    },
+                                { op => '<', value => $now },
                             ];
                         }
-                        elsif ('before' eq $option ) {
-                            $query = { op => '<', value => $origin . ' 23:59:59' };
+                        elsif ( 'before' eq $option ) {
+                            $query = {
+                                op    => '<',
+                                value => $origin . ' 23:59:59'
+                            };
                         }
-                        elsif ('after' eq $option ) {
-                            $query = { op => '>', value => $origin . ' 00:00:00' };
+                        elsif ( 'after' eq $option ) {
+                            $query = {
+                                op    => '>',
+                                value => $origin . ' 00:00:00'
+                            };
                         }
-                        elsif ('future' eq $option ) {
+                        elsif ( 'future' eq $option ) {
                             $query = { op => '>', value => $now };
                         }
-                        elsif ('past' eq $option ) {
+                        elsif ( 'past' eq $option ) {
                             $query = { op => '<', value => $now };
                         }
                         if ( $prop->is_meta ) {
@@ -417,18 +428,25 @@ BEGIN {
                         }
                     },
                     args_via_param => sub {
-                        my $prop  = shift;
-                        my ($app, $val) = @_;
+                        my $prop = shift;
+                        my ( $app, $val ) = @_;
                         my $param;
                         if ( $val =~ m/\-/ ) {
                             my ( $from, $to ) = split /-/, $val;
                             $from = undef unless $from =~ m/^\d{8}$/;
-                            $to = undef unless $to =~ m/^\d{8}$/;
+                            $to   = undef unless $to   =~ m/^\d{8}$/;
                             $from =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
                             $to   =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
-                            $param = $from && $to ? { option => 'range',  from => $from, to => $to }
-                                   : $from        ? { option => 'after',  origin => $from }
-                                   :                { option => 'before', origin => $to };
+                            $param
+                                = $from && $to
+                                ? {
+                                option => 'range',
+                                from   => $from,
+                                to     => $to
+                                }
+                                : $from
+                                ? { option => 'after', origin => $from }
+                                : { option => 'before', origin => $to };
                         }
                         elsif ( $val =~ m/(\d+)days/i ) {
                             $param = { option => 'days', days => $1 };
@@ -445,11 +463,11 @@ BEGIN {
                         my $prop = shift;
                         my ( $app, $val ) = @_;
                         require MT::Util;
-                        my ($mode, $from, $to);
+                        my ( $mode, $from, $to );
                         if ( $val =~ m/\-/ ) {
                             my ( $from, $to ) = split /-/, $val;
                             $from = undef unless $from =~ m/^\d{8}$/;
-                            $to = undef unless $to =~ m/^\d{8}$/;
+                            $to   = undef unless $to   =~ m/^\d{8}$/;
                             my $format = '%x';
                             $from = MT::Util::format_ts(
                                 $format, $from . '000000',
@@ -468,7 +486,7 @@ BEGIN {
                                     $to,
                                 );
                             }
-                            elsif ( $from ) {
+                            elsif ($from) {
                                 return MT->translate(
                                     '[_1] [_2] since [_3]',
                                     $prop->datasource->class_label_plural,
@@ -489,8 +507,7 @@ BEGIN {
                             return MT->translate(
                                 '[_1] [_2] these [_3] days',
                                 $prop->datasource->class_label_plural,
-                                $prop->label,
-                                $1,
+                                $prop->label, $1,
                             );
                         }
                         elsif ( $val eq 'future' ) {
@@ -519,24 +536,33 @@ BEGIN {
                         }
                     },
                     base_type => 'date',
-                    html => sub {
+                    html      => sub {
                         my $prop = shift;
                         my ( $obj, $app, $opts ) = @_;
-                        my $ts = $prop->raw(@_) or return '';
+                        my $ts          = $prop->raw(@_) or return '';
                         my $date_format = MT::App::CMS::LISTING_DATE_FORMAT();
-                        my $blog = $opts->{blog};
-                        my $is_relative = ( $app->user->date_format || 'relative' ) eq 'relative' ? 1 : 0;
-                        return $is_relative ? MT::Util::relative_date( $ts, time, $blog )
-                                            : MT::Util::format_ts( $date_format, $ts, $blog, $app->user ? $app->user->preferred_language : undef );
+                        my $blog        = $opts->{blog};
+                        my $is_relative
+                            = ( $app->user->date_format || 'relative' ) eq
+                            'relative' ? 1 : 0;
+                        return $is_relative
+                            ? MT::Util::relative_date( $ts, time, $blog )
+                            : MT::Util::format_ts(
+                            $date_format,
+                            $ts,
+                            $blog,
+                            $app->user ? $app->user->preferred_language
+                            : undef
+                            );
                     },
-                    priority => 5,
+                    priority           => 5,
                     default_sort_order => 'descend',
                 },
                 single_select => {
                     base      => '__virtual.base',
                     sort      => 0,
                     singleton => 1,
-                    terms => sub {
+                    terms     => sub {
                         my $prop   = shift;
                         my ($args) = @_;
                         my $col    = $prop->col || $prop->type or die;
@@ -544,38 +570,47 @@ BEGIN {
                         return { $col => $value };
                     },
                     label_via_param => sub {
-                        my $prop  = shift;
-                        my ($app, $val) = @_;
+                        my $prop = shift;
+                        my ( $app, $val ) = @_;
                         my $opts = $prop->single_select_options;
-                        my ( $selected ) = grep { $_->{value} eq $val } @$opts
-                            or return $prop->error( MT->translate('Invalid parameter.'));
-                        return MT->translate( '[_1] is [_2]', $prop->label, $selected->{label});
+                        my ($selected) = grep { $_->{value} eq $val } @$opts
+                            or return $prop->error(
+                            MT->translate('Invalid parameter.') );
+                        return MT->translate( '[_1] is [_2]', $prop->label,
+                            $selected->{label} );
                     },
                     args_via_param => sub {
-                        my $prop  = shift;
-                        my ($app, $val) = @_;
+                        my $prop = shift;
+                        my ( $app, $val ) = @_;
                         return { value => $val };
                     },
-                    filter_tmpl => '<mt:Var name="filter_form_single_select">',
-                    base_type   => 'single_select',
-                    priority => 2,
+                    filter_tmpl =>
+                        '<mt:Var name="filter_form_single_select">',
+                    base_type => 'single_select',
+                    priority  => 2,
                 },
                 id => {
-                    auto      => 1,
-                    label     => 'ID',
+                    auto  => 1,
+                    label => 'ID',
                 },
                 ## translate('No Title')
                 ## translate('No Name')
                 ## translate('No Label')
                 label => {
-                    auto      => 1,
-                    label     => 'Label',
-                    display   => 'force',
+                    auto              => 1,
+                    label             => 'Label',
+                    display           => 'force',
                     alternative_label => 'No label',
                     html => \&MT::ListProperty::common_label_html,
                 },
-                title => { base => '__virtual.label', alternative_label => 'No Title', },
-                name  => { base => '__virtual.label', alternative_label => 'No Name', },
+                title => {
+                    base              => '__virtual.label',
+                    alternative_label => 'No Title',
+                },
+                name => {
+                    base              => '__virtual.label',
+                    alternative_label => 'No Name',
+                },
                 created_on => {
                     auto         => 1,
                     label        => 'Created on',
@@ -589,61 +624,76 @@ BEGIN {
                     display      => 'optional',
                 },
                 author_name => {
-                    label => 'Author',
-                    display   => 'default',
-                    base  => '__virtual.string',
-                    raw   => sub {
+                    label   => 'Author',
+                    display => 'default',
+                    base    => '__virtual.string',
+                    raw     => sub {
                         my ( $prop, $obj ) = @_;
-                        my $col = $prop->datasource->has_column('author_id') ? 'author_id' : 'created_by';
+                        my $col
+                            = $prop->datasource->has_column('author_id')
+                            ? 'author_id'
+                            : 'created_by';
                         my $author = MT->model('author')->load( $obj->$col );
-                        return $author ? ( $author->nickname || $author->name ) : MT->translate('*User deleted*');
+                        return $author
+                            ? ( $author->nickname || $author->name )
+                            : MT->translate('*User deleted*');
                     },
                     terms => sub {
-                        my $prop   = shift;
-                        my ($args, $load_terms, $load_args) = @_;
-                        my $col = $prop->datasource->has_column('author_id') ? 'author_id' : 'created_by';
-                        my $driver = $prop->datasource->driver;
-                        my $colname = $driver->dbd->db_column_name($prop->datasource->datasource, $col);
+                        my $prop = shift;
+                        my ( $args, $load_terms, $load_args ) = @_;
+                        my $col
+                            = $prop->datasource->has_column('author_id')
+                            ? 'author_id'
+                            : 'created_by';
+                        my $driver  = $prop->datasource->driver;
+                        my $colname = $driver->dbd->db_column_name(
+                            $prop->datasource->datasource, $col );
                         $prop->{col} = 'name';
                         my $name_query = $prop->super(@_);
                         $prop->{col} = 'nickname';
                         my $nick_query = $prop->super(@_);
                         $load_args->{joins} ||= [];
-                        push @{ $load_args->{joins} }, MT->model('author')->join_on(
+                        push @{ $load_args->{joins} },
+                            MT->model('author')->join_on(
                             undef,
-                            [[
-                                {
-                                    id       => \"= $colname",
-                                    %$name_query,
-                                },
-                                '-or',
-                                {
-                                    id   => \"= $colname",
-                                    %$nick_query,
-                                },
-                            ]],
+                            [   [   {   id => \"= $colname",
+                                        %$name_query,
+                                    },
+                                    '-or',
+                                    {   id => \"= $colname",
+                                        %$nick_query,
+                                    },
+                                ]
+                            ],
                             {}
-                        );
+                            );
                     },
                     bulk_sort => sub {
                         my $prop = shift;
-                        my ( $objs ) = @_;
-                        my $col = $prop->datasource->has_column('author_id') ? 'author_id' : 'created_by';
+                        my ($objs) = @_;
+                        my $col
+                            = $prop->datasource->has_column('author_id')
+                            ? 'author_id'
+                            : 'created_by';
                         my %author_id = map { $_->$col => 1 } @$objs;
-                        my @authors = MT->model('author')->load({ id => [ keys %author_id ] });
-                        my %nickname = map { $_->id => $_->nickname } @authors;
-                        return sort { $nickname{ $a->$col } cmp $nickname{ $b->$col } } @$objs;
+                        my @authors = MT->model('author')
+                            ->load( { id => [ keys %author_id ] } );
+                        my %nickname
+                            = map { $_->id => $_->nickname } @authors;
+                        return sort {
+                            $nickname{ $a->$col } cmp $nickname{ $b->$col }
+                        } @$objs;
                     },
                 },
                 tag => {
-                    base => '__virtual.string',
-                    label => 'Tag',
+                    base    => '__virtual.string',
+                    label   => 'Tag',
                     display => 'none',
-                    terms => sub {
+                    terms   => sub {
                         my $prop = shift;
                         my ( $args, $base_terms, $base_args, $opts ) = @_;
-                        my $option = $args->{option};
-                        my $query  = $args->{string};
+                        my $option  = $args->{option};
+                        my $query   = $args->{string};
                         my $blog_id = $opts->{blog_ids};
                         if ( 'contains' eq $option ) {
                             $query = { like => "%$query%" };
@@ -657,61 +707,64 @@ BEGIN {
                         elsif ( 'end' eq $option ) {
                             $query = { like => "%$query" };
                         }
-                        my $ds = $prop->object_type;
+                        my $ds           = $prop->object_type;
                         my $tagged_class = $prop->tagged_class || $ds;
-                        my $ds_join = MT->model($ds)->join_on(
+                        my $ds_join      = MT->model($ds)->join_on(
                             undef,
-                            {
-                                id => \'= objecttag_object_id',
+                            {   id => \'= objecttag_object_id',
                                 ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                                ( $tagged_class eq '*' ? () : ( class => $tagged_class )),
+                                (   $tagged_class eq '*' ? ()
+                                    : ( class => $tagged_class )
+                                ),
                             },
-                            {
-                                unique => 1,
-                                ( $tagged_class eq '*' ? ( no_class => 1 ) : ()),
+                            {   unique => 1,
+                                (   $tagged_class eq '*' ? ( no_class => 1 )
+                                    : ()
+                                ),
                             }
                         );
 
                         my $tag_ds = $prop->tag_ds || $ds;
                         $base_args->{joins} ||= [];
-                        push @{ $base_args->{joins} }, MT->model('objecttag')->join_on(
+                        push @{ $base_args->{joins} },
+                            MT->model('objecttag')->join_on(
                             undef,
-                            {
-                                object_datasource => $tag_ds,
-                            }, {
-                                fetchonly => { object_id => 1 },
+                            { object_datasource => $tag_ds, },
+                            {   fetchonly => { object_id => 1 },
                                 unique    => 1,
-                                joins => [
+                                joins     => [
                                     MT->model('tag')->join_on(
                                         undef,
-                                        {
-                                            name => $query,
+                                        {   name => $query,
                                             id   => \'= objecttag_tag_id',
                                         },
                                     ),
                                     $ds_join,
                                 ],
                             }
-                        );
+                            );
                     },
                 },
                 object_count => {
-                    base => '__virtual.integer',
-                    col_class => 'num',
+                    base               => '__virtual.integer',
+                    col_class          => 'num',
                     default_sort_order => 'descend',
-                    ref_column => 'id',
-                    raw   => sub {
+                    ref_column         => 'id',
+                    raw                => sub {
                         my $prop = shift;
                         my ( $obj, $app, $opts ) = @_;
-                        my $count_terms = $prop->has('count_terms') ? $prop->count_terms($opts) : {};
-                        my $count_args  = $prop->has('count_args')  ? $prop->count_args($opts) : {};
-                        MT->model( $prop->count_class )->count(
-                            {
-                                %$count_terms,
-                                $prop->count_col => $obj->id
-                            },
-                            $count_args,
-                        );
+                        my $count_terms
+                            = $prop->has('count_terms')
+                            ? $prop->count_terms($opts)
+                            : {};
+                        my $count_args
+                            = $prop->has('count_args')
+                            ? $prop->count_args($opts)
+                            : {};
+                        MT->model( $prop->count_class )
+                            ->count(
+                            { %$count_terms, $prop->count_col => $obj->id },
+                            $count_args, );
                     },
                     html => sub {
                         my $prop = shift;
@@ -720,31 +773,34 @@ BEGIN {
                         if ( $prop->has('list_permit_action') ) {
                             my $user = $app->user;
                             my $perm = $user->permissions(
-                                $obj->isa('MT::Blog')
-                                    ? ( $obj->id )
-                                    : $obj->has_column('blog_id')
-                                        ? $obj->blog_id
-                                        : 0
+                                  $obj->isa('MT::Blog')       ? ( $obj->id )
+                                : $obj->has_column('blog_id') ? $obj->blog_id
+                                : 0
                             );
                             return $count
-                                unless $perm->can_do($prop->list_permit_action);
+                                unless $perm->can_do(
+                                $prop->list_permit_action );
                         }
                         my $args;
                         if ( $prop->filter_type eq 'blog_id' ) {
                             $args = {
-                                _type      => $prop->list_screen || $prop->count_class,
-                                blog_id    => $obj->id,
+                                _type => $prop->list_screen
+                                    || $prop->count_class,
+                                blog_id => $obj->id,
                             };
                         }
                         else {
                             $args = {
-                                _type      => $prop->list_screen || $prop->count_class,
-                                blog_id    => ($app->blog ? $app->blog->id : 0),
-                                ( $prop->has('filter_type')
-                                    ? ( filter => $prop->filter_type,
+                                _type => $prop->list_screen
+                                    || $prop->count_class,
+                                blog_id =>
+                                    ( $app->blog ? $app->blog->id : 0 ),
+                                (   $prop->has('filter_type')
+                                    ? ( filter     => $prop->filter_type,
                                         filter_val => $obj->id,
-                                      )
-                                    : () ),
+                                        )
+                                    : ()
+                                ),
                             };
                         }
                         my $uri = $app->uri(
@@ -756,20 +812,27 @@ BEGIN {
                     bulk_sort => sub {
                         my $prop = shift;
                         my ( $objs, $opts ) = @_;
-                        my $count_terms = $prop->has('count_terms') ? $prop->count_terms($opts) : {};
-                        my $count_args  = $prop->has('count_args')  ? $prop->count_args($opts)  : {};
-                        my $iter = MT->model( $prop->count_class )->count_group_by(
+                        my $count_terms
+                            = $prop->has('count_terms')
+                            ? $prop->count_terms($opts)
+                            : {};
+                        my $count_args
+                            = $prop->has('count_args')
+                            ? $prop->count_args($opts)
+                            : {};
+                        my $iter
+                            = MT->model( $prop->count_class )->count_group_by(
                             $count_terms,
-                            {
-                                %$count_args,
-                                sort  => 'cnt',
+                            {   %$count_args,
+                                sort      => 'cnt',
                                 direction => 'descend',
-                                group => [ $prop->count_col, ],
+                                group     => [ $prop->count_col, ],
                             },
-                        );
+                            );
                         return @$objs unless $iter;
                         my @res;
                         my %obj_map = map { $_->id => $_ } @$objs;
+
                         while ( my ( $count, $id ) = $iter->() ) {
                             next unless $id;
                             push @res, delete $obj_map{$id} if $obj_map{$id};
@@ -778,54 +841,66 @@ BEGIN {
                         return reverse @res;
                     },
                     terms => 0,
-                    grep => sub {
+                    grep  => sub {
                         my $prop = shift;
                         my ( $args, $objs, $opts ) = @_;
-                        my $count_terms = $prop->has('count_terms') ? $prop->count_terms($opts) : {};
-                        my $count_args  = $prop->has('count_args')  ? $prop->count_args($opts)  : {};
-                        my $iter = MT->model( $prop->count_class )->count_group_by(
+                        my $count_terms
+                            = $prop->has('count_terms')
+                            ? $prop->count_terms($opts)
+                            : {};
+                        my $count_args
+                            = $prop->has('count_args')
+                            ? $prop->count_args($opts)
+                            : {};
+                        my $iter
+                            = MT->model( $prop->count_class )->count_group_by(
                             $count_terms,
-                            {
-                                %$count_args,
+                            {   %$count_args,
                                 direction => 'descend',
-                                group => [ $prop->count_col, ],
+                                group     => [ $prop->count_col, ],
                             },
-                        );
+                            );
                         my %map;
                         while ( my ( $count, $id ) = $iter->() ) {
                             $map{$id} = $count;
                         }
-                        my $op = $args->{option} eq 'equal'         ? '=='
-                               : $args->{option} eq 'not_equal'     ? '!='
-                               : $args->{option} eq 'greater_than'  ? '<'
-                               : $args->{option} eq 'greater_equal' ? '<='
-                               : $args->{option} eq 'less_than'     ? '>'
-                               : $args->{option} eq 'less_equal'    ? '>='
-                               :                                      '';
+                        my $op
+                            = $args->{option} eq 'equal'         ? '=='
+                            : $args->{option} eq 'not_equal'     ? '!='
+                            : $args->{option} eq 'greater_than'  ? '<'
+                            : $args->{option} eq 'greater_equal' ? '<='
+                            : $args->{option} eq 'less_than'     ? '>'
+                            : $args->{option} eq 'less_equal'    ? '>='
+                            :                                      '';
                         return @$objs unless $op;
-                        my $val = $args->{value};
-                        my $sub = eval "sub { $val $op shift }";
+                        my $val     = $args->{value};
+                        my $sub     = eval "sub { $val $op shift }";
                         my $ref_col = $prop->ref_column;
-                        return grep { $sub->( $map{$_->$ref_col} || 0 ) } @$objs;
+                        return
+                            grep { $sub->( $map{ $_->$ref_col } || 0 ) }
+                            @$objs;
                     },
                 },
             },
             __common => {
                 __legacy => {
-                    label => 'Legacy Quick Filter',
-                    priority => 1,
+                    label           => 'Legacy Quick Filter',
+                    priority        => 1,
                     filter_editable => 0,
-                    singleton => 1,
-                    terms => sub {
+                    singleton       => 1,
+                    terms           => sub {
                         my $prop = shift;
                         my ( $args, $db_terms, $db_args ) = @_;
                         my $ds         = $args->{ds};
                         my $filter_key = $args->{filter_key};
                         my $filter_val = $args->{filter_val};
-                        if ( $filter_val ) {
-                            MT->app->param('filter_val', $filter_val);
+                        if ($filter_val) {
+                            MT->app->param( 'filter_val', $filter_val );
                         }
-                        my $filter = MT->registry( applications => cms => list_filters => $ds => $filter_key )
+                        my $filter
+                            = MT->registry(
+                            applications => cms => list_filters => $ds =>
+                                $filter_key )
                             or die "No regacy filter";
                         if ( my $code = $filter->{code}
                             || MT->handler_to_coderef( $filter->{handler} ) )
@@ -837,9 +912,9 @@ BEGIN {
                     filter_tmpl => '<mt:var name="filter_form_legacy">',
                 },
                 __id => {
-                    base      => '__virtual.integer',
-                    col       => 'id',
-                    display   => 'none',
+                    base        => '__virtual.integer',
+                    col         => 'id',
+                    display     => 'none',
                     view_filter => [],
                 },
                 pack => {
@@ -848,51 +923,62 @@ BEGIN {
                     grep  => \&MT::Filter::pack_grep,
                 },
                 blog_name => {
-                    label => 'Website/Blog Name',
-                    order => 10000,
-                    display => 'default',
+                    label     => 'Website/Blog Name',
+                    order     => 10000,
+                    display   => 'default',
                     site_name => 1,
-                    view  => [ 'system', 'website' ],
+                    view      => [ 'system', 'website' ],
                     bulk_html => sub {
-                        my $prop = shift;
-                        my ( $objs ) = @_;
-                        my %blog_ids  = map { $_->blog_id => 1 } @$objs;
-                        my @blogs = MT->model('blog')->load({
-                            id => [ keys %blog_ids ],
-                        },{
-                            fetchonly => {
-                                id        => 1,
-                                name      => 1,
-                                parent_id => 1,
-                        }});
-                        my %blog_map = map { $_->id => $_ } @blogs;
-                        my %site_ids
-                            = map { $_->parent_id => 1 }
-                              grep { $_->parent_id && !$blog_map{$_->parent_id} }
-                              @blogs;
-                        my @sites = MT->model('website')->load({
-                            id => [ keys %site_ids ],
-                        }, {
-                            fetchonly => { id => 1, name => 1, },
-                        }) if keys %site_ids;
-                        my %blog_site_map = map { $_->id => $_ } ( @blogs, @sites );
+                        my $prop     = shift;
+                        my ($objs)   = @_;
+                        my %blog_ids = map { $_->blog_id => 1 } @$objs;
+                        my @blogs    = MT->model('blog')->load(
+                            { id => [ keys %blog_ids ], },
+                            {   fetchonly => {
+                                    id        => 1,
+                                    name      => 1,
+                                    parent_id => 1,
+                                }
+                            }
+                        );
+                        my %blog_map = map { $_->id        => $_ } @blogs;
+                        my %site_ids = map { $_->parent_id => 1 }
+                            grep {
+                            $_->parent_id
+                                && !$blog_map{ $_->parent_id }
+                            } @blogs;
+                        my @sites
+                            = MT->model('website')
+                            ->load( { id => [ keys %site_ids ], },
+                            { fetchonly => { id => 1, name => 1, }, } )
+                            if keys %site_ids;
+                        my %blog_site_map
+                            = map { $_->id => $_ } ( @blogs, @sites );
                         my @out;
-                        for my $obj ( @$objs ) {
+
+                        for my $obj (@$objs) {
                             if ( !$obj->blog_id ) {
                                 push @out, MT->translate('(system)');
                                 next;
                             }
-                            my $blog = $blog_site_map{$obj->blog_id};
-                            unless ( $blog ) {
-                                push @out, MT->translate('*Website/Blog deleted*');
+                            my $blog = $blog_site_map{ $obj->blog_id };
+                            unless ($blog) {
+                                push @out,
+                                    MT->translate('*Website/Blog deleted*');
                                 next;
                             }
-                            if ( ( my $site = $blog_site_map{ $blog->parent_id } ) && $prop->site_name ) {
-                                push @out, join('/', $site->name, $blog->name);
+                            if ((   my $site
+                                    = $blog_site_map{ $blog->parent_id }
+                                )
+                                && $prop->site_name
+                                )
+                            {
+                                push @out,
+                                    join( '/', $site->name, $blog->name );
                             }
                             else {
                                 push @out, $blog->name;
-                            };
+                            }
                         }
                         return @out;
                     },
@@ -903,58 +989,67 @@ BEGIN {
                         return !$app->blog || !$app->blog->is_blog;
                     },
                     bulk_sort => sub {
-                        my $prop = shift;
-                        my ( $objs ) = @_;
+                        my $prop    = shift;
+                        my ($objs)  = @_;
                         my %blog_id = map { $_->blog_id => 1 } @$objs;
-                        my @blogs = MT->model('blog')->load(
-                            { id => [ keys %blog_id ] },
-                            { no_class => 1,});
+                        my @blogs
+                            = MT->model('blog')
+                            ->load( { id => [ keys %blog_id ] },
+                            { no_class => 1, } );
                         my %blogname = map { $_->id => $_->name } @blogs;
-                        return sort { $blogname{ $a->blog_id } cmp $blogname{ $b->blog_id } } @$objs;
+                        return sort {
+                            $blogname{ $a->blog_id }
+                                cmp $blogname{ $b->blog_id }
+                        } @$objs;
                     },
                 },
                 current_user => {
-                    label => 'My Items',
-                    order => 20000,
-                    display => 'none',
-                    filter_tmpl => '',
+                    label           => 'My Items',
+                    order           => 20000,
+                    display         => 'none',
+                    filter_tmpl     => '',
                     filter_editable => 0,
-                    condition => sub {
-                        my $prop = shift;
+                    condition       => sub {
+                        my $prop  = shift;
                         my $class = $prop->datasource;
-                        return $class->has_column( 'author_id' ) || $class->has_column( 'created_by' );
+                        return $class->has_column('author_id')
+                            || $class->has_column('created_by');
                     },
                     terms => sub {
-                        my $prop   = shift;
-                        my ($args, $load_terms, $load_args) = @_;
+                        my $prop = shift;
+                        my ( $args, $load_terms, $load_args ) = @_;
                         my $app = MT->app or return;
                         my $class = $prop->datasource;
-                        my $col = $class->has_column( 'author_id' ) ? 'author_id' : 'created_by';
+                        my $col
+                            = $class->has_column('author_id')
+                            ? 'author_id'
+                            : 'created_by';
                         return { $col => $app->user->id };
                     },
-                    filter_tmpl => '',
-                    singleton => 1,
+                    filter_tmpl     => '',
+                    singleton       => 1,
                     label_via_param => sub {
-                        my $prop = shift;
+                        my $prop  = shift;
                         my $class = $prop->datasource;
-                        return MT->translate( 'My [_1]', $class->class_label_plural );
+                        return MT->translate( 'My [_1]',
+                            $class->class_label_plural );
                     },
                 },
                 current_context => {
-                    label => 'This Context Only',
-                    filter_label => 'Current Website',
-                    order => 30000,
-                    view => 'website',
-                    display => 'none',
-                    filter_tmpl => '',
+                    label           => 'This Context Only',
+                    filter_label    => 'Current Website',
+                    order           => 30000,
+                    view            => 'website',
+                    display         => 'none',
+                    filter_tmpl     => '',
                     filter_editable => 1,
-                    condition => sub {
+                    condition       => sub {
                         my $prop = shift;
                         $prop->datasource->has_column('blog_id');
                     },
                     terms => sub {
-                        my $prop   = shift;
-                        my ($args, $load_terms, $load_args, $opts) = @_;
+                        my $prop = shift;
+                        my ( $args, $load_terms, $load_args, $opts ) = @_;
                         { blog_id => $opts->{blog_id} };
                     },
                     singleton => 1,
@@ -981,54 +1076,58 @@ BEGIN {
             filter       => '$Core::MT::Filter::list_props',
         },
         system_filters => {
-            entry       => '$Core::MT::Entry::system_filters',
-            page        => '$Core::MT::Page::system_filters',
-            comment     => '$Core::MT::Comment::system_filters',
-            ping        => '$Core::MT::TBPing::system_filters',
-            tag         => '$Core::MT::Tag::system_filters',
-            asset       => '$Core::MT::Asset::system_filters',
-            author      => '$Core::MT::Author::system_filters',
-            member      => '$Core::MT::Author::member_system_filters',
-            commenter   => '$Core::MT::Author::commenter_system_filters',
-            log         => '$Core::MT::Log::system_filters',
+            entry     => '$Core::MT::Entry::system_filters',
+            page      => '$Core::MT::Page::system_filters',
+            comment   => '$Core::MT::Comment::system_filters',
+            ping      => '$Core::MT::TBPing::system_filters',
+            tag       => '$Core::MT::Tag::system_filters',
+            asset     => '$Core::MT::Asset::system_filters',
+            author    => '$Core::MT::Author::system_filters',
+            member    => '$Core::MT::Author::member_system_filters',
+            commenter => '$Core::MT::Author::commenter_system_filters',
+            log       => '$Core::MT::Log::system_filters',
         },
         listing_screens => {
             website => {
-                object_label => 'Website',
-                primary      => 'name',
-                view => 'system',
+                object_label     => 'Website',
+                primary          => 'name',
+                view             => 'system',
                 default_sort_key => 'name',
-                permission => 'access_to_website_list',
-                scope_mode => 'none',
+                permission       => 'access_to_website_list',
+                scope_mode       => 'none',
             },
             blog => {
-                object_label => 'Blog',
-                view => [qw( system website )],
-                primary => 'name',
+                object_label     => 'Blog',
+                view             => [qw( system website )],
+                primary          => 'name',
                 default_sort_key => 'name',
-                scope_mode => 'none',
-                condition => sub {
+                scope_mode       => 'none',
+                condition        => sub {
                     require MT::CMS::Blog;
                     return MT::CMS::Blog::can_view_blog_list( MT->instance );
                 },
             },
             entry => {
-                object_label  => 'Entry',
-                primary       => 'title',
+                object_label     => 'Entry',
+                primary          => 'title',
                 default_sort_key => 'authored_on',
-                permission    => "access_to_entry_list",
-                feed_link => sub {
-                    my ( $app ) = @_;
+                permission       => "access_to_entry_list",
+                feed_link        => sub {
+                    my ($app) = @_;
                     return 0 if $app->blog && !$app->blog->is_blog;
                     return 1 if $app->user->is_superuser;
 
                     if ( $app->blog ) {
-                        return 1 if $app->user->permissions($app->blog->id)->can_do('get_entry_feed');
-                    } else {
-                        my $iter = MT->model('permission')->load_iter({
-                            author_id => $app->user->id,
-                            blog_id => { not => 0 },
-                        });
+                        return 1
+                            if $app->user->permissions( $app->blog->id )
+                                ->can_do('get_entry_feed');
+                    }
+                    else {
+                        my $iter = MT->model('permission')->load_iter(
+                            {   author_id => $app->user->id,
+                                blog_id   => { not => 0 },
+                            }
+                        );
                         my $cond;
                         while ( my $p = $iter->() ) {
                             $cond = 1, last
@@ -1038,49 +1137,55 @@ BEGIN {
                     }
                     0;
                 },
-                condition => sub{
+                condition => sub {
                     my $app = MT->instance;
                     return 1 if $app->user->is_superuser;
 
                     my $blog = $app->blog;
-                    my $blog_ids = !$blog
-                        ? undef
-                        : $blog->is_blog
-                            ? [ $blog->id ]
-                            : [ map { $_->id } @{$blog->blogs} ];
+                    my $blog_ids
+                        = !$blog         ? undef
+                        : $blog->is_blog ? [ $blog->id ]
+                        :   [ map { $_->id } @{ $blog->blogs } ];
 
                     require MT::Permission;
                     my $iter = MT::Permission->load_iter(
-                        {
-                            author_id => $app->user->id,
-                            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                        {   author_id => $app->user->id,
+                            (   $blog_ids
+                                ? ( blog_id => $blog_ids )
+                                : ( blog_id => { not => 0 } )
+                            ),
                         }
                     );
 
                     my $cond;
                     while ( my $p = $iter->() ) {
                         $cond = 1, last
-                            if $p->can_do('access_to_entry_list') and $p->blog->is_blog;
+                            if $p->can_do('access_to_entry_list')
+                                and $p->blog->is_blog;
                     }
                     return $cond ? 1 : 0;
                 },
             },
             page => {
-                object_label => 'Page',
-                primary       => 'title',
+                object_label     => 'Page',
+                primary          => 'title',
                 default_sort_key => 'modified_on',
-                permission => 'access_to_page_list',
-                feed_link => sub {
-                    my ( $app ) = @_;
+                permission       => 'access_to_page_list',
+                feed_link        => sub {
+                    my ($app) = @_;
                     return 1 if $app->user->is_superuser;
 
                     if ( $app->blog ) {
-                        return 1 if $app->user->permissions($app->blog->id)->can_do('get_page_feed');
-                    } else {
-                        my $iter = MT->model('permission')->load_iter({
-                            author_id => $app->user->id,
-                            blog_id => { not => 0 },
-                        });
+                        return 1
+                            if $app->user->permissions( $app->blog->id )
+                                ->can_do('get_page_feed');
+                    }
+                    else {
+                        my $iter = MT->model('permission')->load_iter(
+                            {   author_id => $app->user->id,
+                                blog_id   => { not => 0 },
+                            }
+                        );
                         my $cond;
                         while ( my $p = $iter->() ) {
                             $cond = 1, last
@@ -1092,102 +1197,113 @@ BEGIN {
                 },
             },
             asset => {
-                object_label => 'Asset',
-                primary => 'label',
-                permission => 'access_to_asset_list',
+                object_label     => 'Asset',
+                primary          => 'label',
+                permission       => 'access_to_asset_list',
                 default_sort_key => 'created_on',
             },
             log => {
-                object_label => 'Log',
+                object_label     => 'Log',
                 default_sort_key => 'created_on',
-                primary    => 'message',
+                primary          => 'message',
                 condition        => sub {
-                    my $app = MT->instance;
-                    my $user = $app->user;
+                    my $app     = MT->instance;
+                    my $user    = $app->user;
                     my $blog_id = $app->param('blog_id');
                     return 1 if $user->is_superuser;
                     return 0 unless defined $blog_id;
 
                     my $terms;
                     push @$terms, { author_id => $user->id };
-                    if ( $blog_id ) {
-                        my $blog = MT->model('blog')->load( $blog_id );
+                    if ($blog_id) {
+                        my $blog = MT->model('blog')->load($blog_id);
                         my @blog_ids;
                         push @blog_ids, $blog_id;
                         if ( $blog && !$blog->is_blog ) {
-                            push @blog_ids, map { $_->id } @{$blog->blogs};
+                            push @blog_ids, map { $_->id } @{ $blog->blogs };
                         }
-                        push @$terms, [ '-and', {
-                            blog_id => \@blog_ids,
-                            permissions => { like => "\%'view_blog_log'\%" },
-                        }];
-                    } else {
-                        push @$terms, [ '-and',
+                        push @$terms,
                             [
-                                {
-                                    blog_id => 0,
-                                    permissions => { like => "\%'view_log'\%" },
+                            '-and',
+                            {   blog_id => \@blog_ids,
+                                permissions =>
+                                    { like => "\%'view_blog_log'\%" },
+                            }
+                            ];
+                    }
+                    else {
+                        push @$terms,
+                            [
+                            '-and',
+                            [   {   blog_id => 0,
+                                    permissions =>
+                                        { like => "\%'view_log'\%" },
                                 },
                                 '-or',
-                                {
-                                    blog_id => \' > 0',
-                                    permissions => { like => "\%'view_blog_log'\%" },
+                                {   blog_id => \' > 0',
+                                    permissions =>
+                                        { like => "\%'view_blog_log'\%" },
                                 }
                             ]
-                        ];
+                            ];
                     }
 
-                    my $cnt = MT->model('permission')->count( $terms );
+                    my $cnt = MT->model('permission')->count($terms);
                     return ( $cnt && $cnt > 0 ) ? 1 : 0;
                 },
                 feed_link => sub {
-                    my ( $app ) = @_;
+                    my ($app) = @_;
                     return 1 if $app->user->is_superuser;
                     return 1 if $app->can_do('get_all_system_feed');
-                    return 1 if $app->blog
-                        and $app->user->permissions($app->blog->id)->can_do('get_system_feed');
+                    return 1
+                        if $app->blog
+                            and $app->user->permissions( $app->blog->id )
+                            ->can_do('get_system_feed');
                     0;
                 },
-                feed_label => 'Activity Feed',
+                feed_label   => 'Activity Feed',
                 screen_label => 'Activity Log',
             },
             category => {
-                object_label => 'Category',
-                primary      => 'label',
-                template     => 'list_category.tmpl',
+                object_label          => 'Category',
+                primary               => 'label',
+                template              => 'list_category.tmpl',
                 contents_label        => 'Entry',
                 contents_label_plural => 'Entries',
-                permission => 'access_to_category_list',
-                view => 'blog',
-                scope_mode => 'this',
+                permission            => 'access_to_category_list',
+                view                  => 'blog',
+                scope_mode            => 'this',
             },
             folder => {
-                primary      => 'label',
-                object_label => 'Folder',
-                template     => 'list_category.tmpl',
+                primary               => 'label',
+                object_label          => 'Folder',
+                template              => 'list_category.tmpl',
                 contents_label        => 'Page',
                 contents_label_plural => 'Pages',
-                permission => 'access_to_folder_list',
-                view => [ 'website', 'blog' ],
-                scope_mode => 'this',
+                permission            => 'access_to_folder_list',
+                view                  => [ 'website', 'blog' ],
+                scope_mode            => 'this',
             },
             comment => {
-                object_label => 'Comment',
+                object_label     => 'Comment',
                 default_sort_key => 'comment',
-                permission => 'access_to_comment_list',
-                primary => 'comment',
-                feed_link => sub {
-                    my ( $app ) = @_;
+                permission       => 'access_to_comment_list',
+                primary          => 'comment',
+                feed_link        => sub {
+                    my ($app) = @_;
                     return 1 if $app->user->is_superuser;
 
-
                     if ( $app->blog ) {
-                        return 1 if $app->user->permissions($app->blog->id)->can_do('get_comment_feed');
-                    } else {
-                        my $iter = MT->model('permission')->load_iter({
-                            author_id => $app->user->id,
-                            blog_id => { not => 0 },
-                        });
+                        return 1
+                            if $app->user->permissions( $app->blog->id )
+                                ->can_do('get_comment_feed');
+                    }
+                    else {
+                        my $iter = MT->model('permission')->load_iter(
+                            {   author_id => $app->user->id,
+                                blog_id   => { not => 0 },
+                            }
+                        );
                         my $cond;
                         while ( my $p = $iter->() ) {
                             $cond = 1, last
@@ -1199,22 +1315,25 @@ BEGIN {
                 },
             },
             ping => {
-                primary => 'excerpt',
-                object_label => 'Trackback',
+                primary          => 'excerpt',
+                object_label     => 'Trackback',
                 default_sort_key => 'created_on',
-                permission => 'access_to_trackback_list',
-                feed_link => sub {
-                    my ( $app ) = @_;
+                permission       => 'access_to_trackback_list',
+                feed_link        => sub {
+                    my ($app) = @_;
                     return 1 if $app->user->is_superuser;
 
-
                     if ( $app->blog ) {
-                        return 1 if $app->user->permissions($app->blog->id)->can_do('get_trackback_feed');
-                    } else {
-                        my $iter = MT->model('permission')->load_iter({
-                            author_id => $app->user->id,
-                            blog_id => { not => 0 },
-                        });
+                        return 1
+                            if $app->user->permissions( $app->blog->id )
+                                ->can_do('get_trackback_feed');
+                    }
+                    else {
+                        my $iter = MT->model('permission')->load_iter(
+                            {   author_id => $app->user->id,
+                                blog_id   => { not => 0 },
+                            }
+                        );
                         my $cond;
                         while ( my $p = $iter->() ) {
                             $cond = 1, last
@@ -1226,79 +1345,81 @@ BEGIN {
                 },
             },
             author => {
-                object_label => 'Author',
-                primary      => 'name',
-                permission   => 'administer',
+                object_label     => 'Author',
+                primary          => 'name',
+                permission       => 'administer',
                 default_sort_key => 'name',
-                view         => 'system',
-                scope_mode => 'none',
+                view             => 'system',
+                scope_mode       => 'none',
             },
             commenter => {
-                primary      => 'name',
-                object_label => 'Commenter',
+                primary             => 'name',
+                object_label        => 'Commenter',
                 object_label_plural => 'Commenters',
-                object_type  => 'author',
-                permission   => 'administer',
-                default_sort_key => 'name',
-                condition => sub {
+                object_type         => 'author',
+                permission          => 'administer',
+                default_sort_key    => 'name',
+                condition           => sub {
                     return MT->config->SingleCommunity;
                 },
                 view         => 'system',
-                scope_mode => 'none',
+                scope_mode   => 'none',
                 screen_label => 'Manage Commenters',
-             },
+            },
             member => {
-                primary      => 'name',
-                object_label => 'Member',
+                primary             => 'name',
+                object_label        => 'Member',
                 object_label_plural => 'Members',
-                object_type  => 'author',
-                default_sort_key => 'name',
-                view         => [ 'blog', 'website' ],
-                scope_mode => 'none',
-                permission => {
+                object_type         => 'author',
+                default_sort_key    => 'name',
+                view                => [ 'blog', 'website' ],
+                scope_mode          => 'none',
+                permission          => {
                     permit_action => 'access_to_blog_member_list',
-                    inherit => 0,
+                    inherit       => 0,
                 },
-             },
+            },
             tag => {
                 primary      => 'name',
                 object_label => 'Tag',
-                permission => {
+                permission   => {
                     permit_action => 'access_to_tag_list',
-                    inherit => 0,
+                    inherit       => 0,
                 },
                 default_sort_key => 'name',
-                view         => [ 'blog', 'website' ],
-                scope_mode   => 'none',
+                view             => [ 'blog', 'website' ],
+                scope_mode       => 'none',
             },
             association => {
                 object_label => 'Permission',
-                object_type => 'association',
+                object_type  => 'association',
+
                 #permission => 'access_to_permission_list',
                 default_sort_key => 'created_on',
-                primary => [ 'user_name', 'role_name' ],
-                view => 'system',
+                primary          => [ 'user_name', 'role_name' ],
+                view             => 'system',
             },
             role => {
-                object_label => 'Role',
-                object_type => 'role',
-                primary    => 'name',
-                permission => 'access_to_role_list',
+                object_label     => 'Role',
+                object_type      => 'role',
+                primary          => 'name',
+                permission       => 'access_to_role_list',
                 default_sort_key => 'name',
-                view => 'system',
+                view             => 'system',
             },
             banlist => {
-                object_label => 'IP address',
+                object_label        => 'IP address',
                 object_label_plural => 'IP addresses',
-                condition => sub {
+                condition           => sub {
                     my $app = shift;
                     return 1 if MT->config->ShowIPInformation;
-                    $app->errtrans('IP Banlist is disabled by system configuration.');
+                    $app->errtrans(
+                        'IP Banlist is disabled by system configuration.');
                 },
-                primary => 'ip',
-                permission => 'access_to_banlist',
+                primary          => 'ip',
+                permission       => 'access_to_banlist',
                 default_sort_key => 'created_on',
-                screen_label => 'IP Banning Settings',
+                screen_label     => 'IP Banning Settings',
             },
             notification => {
                 object_label => 'Contact',
@@ -1314,12 +1435,12 @@ BEGIN {
                 screen_label     => 'Manage Address Book',
             },
             filter => {
-                object_label => 'Filter',
-                view => 'system',
-                permission => 'access_to_filter_list',
-                primary => 'label',
+                object_label     => 'Filter',
+                view             => 'system',
+                permission       => 'access_to_filter_list',
+                primary          => 'label',
                 default_sort_key => 'created_on',
-                scope_mode => 'none',
+                scope_mode       => 'none',
             },
         },
         summaries => {
@@ -1559,9 +1680,9 @@ BEGIN {
                     'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
             },
 
-            # 'MTNewsURL' => {
-            #     default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
-            # },
+# 'MTNewsURL' => {
+#     default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
+# },
             'LearningNewsURL' => {
                 default => 'http://learning.movabletype.org/newsbox.html',
             },
@@ -1722,12 +1843,12 @@ BEGIN {
                 default => sub { MT->app->core_parameters() },
             },
             'cms' => {
-                handler      => 'MT::App::CMS',
-                cgi_base     => 'mt',
-                page_actions => sub { MT->app->core_page_actions(@_) },
+                handler         => 'MT::App::CMS',
+                cgi_base        => 'mt',
+                page_actions    => sub { MT->app->core_page_actions(@_) },
                 content_actions => sub { MT->app->core_content_actions(@_) },
-                list_actions => sub { MT->app->core_list_actions(@_) },
-                search_apis  => sub {
+                list_actions    => sub { MT->app->core_list_actions(@_) },
+                search_apis     => sub {
                     require MT::CMS::Search;
                     return MT::CMS::Search::core_search_apis( MT->app, @_ );
                 },
@@ -1939,42 +2060,42 @@ sub load_core_tasks {
             frequency => $cfg->FuturePostFrequency * 60,    # once per minute
             code      => sub {
                 MT->instance->publisher->publish_future_posts;
-              }
+                }
         },
         'AddSummaryWatcher' => {
             label     => 'Add Summary Watcher to queue',
-            frequency => 2 * 60, # every other minute
+            frequency => 2 * 60,                          # every other minute
             code      => sub {
                 require MT::TheSchwartz;
                 require TheSchwartz::Job;
                 my $job = TheSchwartz::Job->new();
                 $job->funcname('MT::Worker::SummaryWatcher');
-                $job->uniqkey( 1 );
-                $job->priority( 4 );
+                $job->uniqkey(1);
+                $job->priority(4);
                 MT::TheSchwartz->insert($job);
             },
         },
         'JunkExpiration' => {
-            label     => 'Junk Folder Expiration',
-            frequency => 12 * 60 * 60,             # no more than every 12 hours
+            label => 'Junk Folder Expiration',
+            frequency => 12 * 60 * 60,    # no more than every 12 hours
             code      => sub {
                 require MT::JunkFilter;
                 MT::JunkFilter->task_expire_junk;
             },
         },
         'CleanTemporaryFiles' => {
-            label => 'Remove Temporary Files',
-            frequency => 60 * 60,   # once per hour
-            code => sub {
+            label     => 'Remove Temporary Files',
+            frequency => 60 * 60,                    # once per hour
+            code      => sub {
                 MT::Core->remove_temporary_files;
             },
         },
         'PurgeExpiredSessionRecords' => {
             label => 'Purge Stale Session Records',
-            frequency => 60,# * 60 * 24,   # once a day
-            code => sub {
+            frequency => 60,     # * 60 * 24,   # once a day
+            code      => sub {
                 MT::Core->purge_session_records;
-            }
+                }
         },
     };
 }
@@ -1982,15 +2103,17 @@ sub load_core_tasks {
 sub remove_temporary_files {
     require MT::Session;
 
-    my @files = MT::Session->load(
+    my @files
+        = MT::Session->load(
         { kind => 'TF', start => [ undef, time - 60 * 60 ] },
         { range => { start => 1 } } );
     my $fmgr = MT::FileMgr->new('Local');
     foreach my $f (@files) {
-        if ($fmgr->delete($f->name)) {
+        if ( $fmgr->delete( $f->name ) ) {
             $f->remove;
         }
     }
+
     # This is a silent task; no need to log removal of temporary files
     return '';
 }
@@ -2001,14 +2124,15 @@ sub purge_session_records {
     # remove expired user sessions
     my $expired = MT->config->UserSessionTimeout;
     MT::Session->remove(
-        { kind  => 'US',
-          start => [ undef, time - $expired ],
-          data  => { not_like => '%remember-%' } },
-        { range => { start => 1 } } );
+        {   kind  => 'US',
+            start => [ undef, time - $expired ],
+            data  => { not_like => '%remember-%' }
+        },
+        { range => { start => 1 } }
+    );
 
     # remove stale search cache
-    MT::Session->remove(
-        { kind => 'CS', start => [ undef, time - 60 * 60 ] },
+    MT::Session->remove( { kind => 'CS', start => [ undef, time - 60 * 60 ] },
         { range => { start => 1 } } );
 
     # remove all the other session records
@@ -2047,14 +2171,13 @@ sub load_backup_instructions {
     return MT::BackupRestore::core_backup_instructions();
 }
 
-
 sub load_core_permissions {
     return {
         'blog.administer_website' => {
-            'group'        => 'blog_admin',
-            'inherit_from' => [ 'blog.administer_blog' ],
-            'label'        => 'Manage Website',
-            'order'        => 200,
+            'group'            => 'blog_admin',
+            'inherit_from'     => ['blog.administer_blog'],
+            'label'            => 'Manage Website',
+            'order'            => 200,
             'permitted_action' => {
                 'save_all_settings_for_website' => 1,
                 'access_to_website_list'        => 1,
@@ -2123,12 +2246,12 @@ sub load_core_permissions {
             },
         },
         'blog.comment' => {
-            'group'                   => 'blog_comment',
-            'label'                   => 'Post Comments',
-            'order'                   => 100,
-            'permitted_action'        => {
-                'comment'             => 1,
-                'post_comment'        => 1,
+            'group'            => 'blog_comment',
+            'label'            => 'Post Comments',
+            'order'            => 100,
+            'permitted_action' => {
+                'comment'      => 1,
+                'post_comment' => 1,
             }
         },
         'blog.create_post' => {
@@ -2207,10 +2330,10 @@ sub load_core_permissions {
             }
         },
         'blog.edit_assets' => {
-            'group'            => 'blog_upload',
-            'inherit_from'     => ['blog.upload', 'blog.save_image_defaults'],
-            'label'            => 'Manage Assets',
-            'order'            => 300,
+            'group'        => 'blog_upload',
+            'inherit_from' => [ 'blog.upload', 'blog.save_image_defaults' ],
+            'label'        => 'Manage Assets',
+            'order'        => 300,
             'permitted_action' => {
                 'access_to_asset_list'             => 1,
                 'add_tags_to_assets'               => 1,
@@ -2521,7 +2644,7 @@ sub load_core_permissions {
             'group'        => 'sys_admin',
             'label'        => 'System Administrator',
             'inherit_from' => [
-                'system.create_blog', 'system.create_website',
+                'system.create_blog',    'system.create_website',
                 'system.edit_templates', 'system.manage_plugins',
                 'system.view_log',
             ],
@@ -2584,10 +2707,10 @@ sub load_core_permissions {
             }
         },
         'system.edit_templates' => {
-            'group'            => 'sys_admin',
-            'inherit_from'     => ['blog.edit_templates', 'blog.manage_themes'],
-            'label'            => 'Manage Templates',
-            'order'            => 250,
+            'group'        => 'sys_admin',
+            'inherit_from' => [ 'blog.edit_templates', 'blog.manage_themes' ],
+            'label'        => 'Manage Templates',
+            'order'        => 250,
             'permitted_action' => {
                 'access_to_website_list'       => 1,
                 'access_to_blog_list'          => 1,
@@ -2628,7 +2751,7 @@ sub load_core_permissions {
     };
 }
 
-sub l10n_class { 'MT::L10N' }
+sub l10n_class {'MT::L10N'}
 
 sub init_registry {
     my $c = shift;
@@ -2644,17 +2767,18 @@ sub load_archive_types {
 
 sub PerformanceLoggingPath {
     my $cfg = shift;
-    my ($path, $default);
+    my ( $path, $default );
     return $cfg->set_internal( 'PerformanceLoggingPath', @_ ) if @_;
 
-    unless ($path = $cfg->get_internal('PerformanceLoggingPath')) {
-        $path = $default = File::Spec->catdir(
-            MT->instance->static_file_path, 'support', 'logs');
+    unless ( $path = $cfg->get_internal('PerformanceLoggingPath') ) {
+        $path = $default = File::Spec->catdir( MT->instance->static_file_path,
+            'support', 'logs' );
     }
 
     # If the $path is not a writeable directory, we need to
     # do some work to see if we can create it
-    if (! (-d $path and -w $path)) {
+    if ( !( -d $path and -w $path ) ) {
+
         # Determine where MT should put its logging data.  It will be
         # the first existing and writeable directory found or created
         # between PerformanceLoggingPath configuration directive value
@@ -2665,37 +2789,50 @@ sub PerformanceLoggingPath {
         # However, we do log any such errors in the activity log to
         # notify the user that there is a problem.
 
-        my @dirs = ( $path, ( $default && $path ne $default ? ( $default ) : () ) );
-        require File::Spec;    
+        my @dirs
+            = ( $path, ( $default && $path ne $default ? ($default) : () ) );
+        require File::Spec;
         foreach my $dir (@dirs) {
             my $msg = '';
-            if (-d $dir and -w $dir) {
+            if ( -d $dir and -w $dir ) {
                 $path = $dir;
             }
-            elsif (! -e $dir) {
+            elsif ( !-e $dir ) {
                 require File::Path;
-                eval { File::Path::mkpath([$dir], 0, 0777); $path = $dir; };
+                eval { File::Path::mkpath( [$dir], 0, 0777 ); $path = $dir; };
                 if ($@) {
-                    $msg = MT->translate('Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive: [_2]', $dir, $@);
+                    $msg = MT->translate(
+                        'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive: [_2]',
+                        $dir, $@
+                    );
                 }
             }
-            elsif (-e $dir and ! -d $dir) {
-                $msg = MT->translate('Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file: [_1]', $dir);
+            elsif ( -e $dir and !-d $dir ) {
+                $msg = MT->translate(
+                    'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file: [_1]',
+                    $dir
+                );
             }
-            elsif (-e $dir and ! -w $dir) {
-                    $msg = MT->translate('Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable: [_1]', $dir);                  
+            elsif ( -e $dir and !-w $dir ) {
+                $msg = MT->translate(
+                    'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable: [_1]',
+                    $dir
+                );
             }
 
             if ($msg) {
+
                 # Issue MT log within an eval block in the
                 # event that the plugin error is happening before
                 # the database has been initialized...
                 require MT::Log;
-                MT->log({  message => $msg, 
-                            class => 'system',
-                            level => MT::Log::ERROR(),
-                           category => 'performance-log',
-                       });
+                MT->log(
+                    {   message  => $msg,
+                        class    => 'system',
+                        level    => MT::Log::ERROR(),
+                        category => 'performance-log',
+                    }
+                );
             }
             last if $path;
         }
@@ -2709,15 +2846,17 @@ sub ProcessMemoryCommand {
     my $cmd = $cfg->get_internal('ProcessMemoryCommand');
     unless ($cmd) {
         my $os = $^O;
-        if ($os eq 'darwin') {
+        if ( $os eq 'darwin' ) {
             $cmd = 'ps $$ -o rss=';
         }
-        elsif ($os eq 'linux') {
+        elsif ( $os eq 'linux' ) {
             $cmd = 'ps -p $$ -o rss=';
         }
-        elsif ($os eq 'MSWin32') {
-            $cmd = { command => q{tasklist /FI "PID eq $$" /FO TABLE /NH},
-                regex => qr/([\d,]+) K/ };
+        elsif ( $os eq 'MSWin32' ) {
+            $cmd = {
+                command => q{tasklist /FI "PID eq $$" /FO TABLE /NH},
+                regex   => qr/([\d,]+) K/
+            };
         }
     }
     return $cmd;
@@ -2763,9 +2902,10 @@ sub UserSessionCookieName {
     return $mgr->set_internal( 'UserSessionCookieName', @_ ) if @_;
     my $name = $mgr->get_internal('UserSessionCookieName');
     return $name if defined $name;
-    if ($mgr->get_internal('SingleCommunity')) {
+    if ( $mgr->get_internal('SingleCommunity') ) {
         return 'mt_blog_user';
-    } else {
+    }
+    else {
         return 'mt_blog%b_user';
     }
 }
@@ -2775,9 +2915,10 @@ sub UserSessionCookiePath {
     return $mgr->set_internal( 'UserSessionCookiePath', @_ ) if @_;
     my $path = $mgr->get_internal('UserSessionCookiePath');
     return $path if defined $path;
-    if ($mgr->get_internal('SingleCommunity')) {
+    if ( $mgr->get_internal('SingleCommunity') ) {
         return '/';
-    } else {
+    }
+    else {
         return '<$MTBlogRelativeURL$>';
     }
 }

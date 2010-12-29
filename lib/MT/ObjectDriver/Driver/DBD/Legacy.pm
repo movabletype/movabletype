@@ -17,9 +17,10 @@ use base qw();
 sub ts2db { $_[1] }
 sub db2ts { $_[1] }
 
-my %Date_Cols = map { $_ => 1 } qw( created_on modified_on children_modified_on last_moved_on );
-sub is_date_col { $Date_Cols{$_[1]} }
-sub date_cols { keys %Date_Cols }
+my %Date_Cols = map { $_ => 1 }
+    qw( created_on modified_on children_modified_on last_moved_on );
+sub is_date_col { $Date_Cols{ $_[1] } }
+sub date_cols   { keys %Date_Cols }
 
 sub sql_class {
     require MT::ObjectDriver::SQL;
@@ -31,8 +32,8 @@ sub ddl_class {
 }
 
 sub dsn_from_config {
-    my $class = shift;
-    my ($cfg) = @_;
+    my $class     = shift;
+    my ($cfg)     = @_;
     my $dbd_class = ref $class ? ref $class : $class;
     $dbd_class =~ s!.+::!!;
     my $dsn = 'dbi:' . $dbd_class;
@@ -46,12 +47,12 @@ sub new {
 
 sub db_column_name {
     my $dbd = shift;
-    my ($table, $col) = @_;
+    my ( $table, $col ) = @_;
     $table =~ s{ \A mt_ }{}xms;
-    return join('_', $table, $col);
+    return join( '_', $table, $col );
 }
 
-sub configure {}
+sub configure { }
 
 sub need_encode { 1; }
 

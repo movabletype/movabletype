@@ -6,18 +6,19 @@
 package MT::CMS::Comment;
 
 use strict;
-use MT::Util qw( remove_html format_ts relative_date encode_html break_up_text );
+use MT::Util
+    qw( remove_html format_ts relative_date encode_html break_up_text );
 use MT::I18N qw( const );
 
 sub edit {
     my $cb = shift;
-    my ($app, $id, $obj, $param) = @_;
+    my ( $app, $id, $obj, $param ) = @_;
 
-    my $q = $app->param;
+    my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
-    my $perms = $app->permissions;
-    my $blog = $app->blog;
-    my $type = $q->param('_type');
+    my $perms   = $app->permissions;
+    my $blog    = $app->blog;
+    my $type    = $q->param('_type');
 
     if ($id) {
         $param->{nav_comments} = 1;
@@ -35,46 +36,49 @@ sub edit {
         $param->{has_publish_access} = $app->can_do('edit_comment_status');
         if ( my $entry = $obj->entry ) {
             my $title_max_len = const('DISPLAY_LENGTH_EDIT_COMMENT_TITLE');
-            $param->{entry_title} =
-              ( !defined( $entry->title ) || $entry->title eq '' )
-              ? $app->translate('(untitled)')
-              : $entry->title;
-            $param->{entry_title} =
-              substr( $param->{entry_title}, 0, $title_max_len ) . '...'
-              if $param->{entry_title}
-              && length( $param->{entry_title} ) > $title_max_len;
+            $param->{entry_title}
+                = ( !defined( $entry->title ) || $entry->title eq '' )
+                ? $app->translate('(untitled)')
+                : $entry->title;
+            $param->{entry_title}
+                = substr( $param->{entry_title}, 0, $title_max_len ) . '...'
+                if $param->{entry_title}
+                    && length( $param->{entry_title} ) > $title_max_len;
             $param->{entry_permalink} = $entry->permalink;
             unless ( $param->{has_publish_access} ) {
                 $param->{has_publish_access}
                     = $app->can_do('edit_comment_status_of_own_entry') ? 1 : 0
-                        if $app->user->id == $entry->author_id;
+                    if $app->user->id == $entry->author_id;
             }
         }
         else {
             $param->{no_entry} = 1;
         }
 
-        $param->{can_delete_comment} = $param->{has_publish_access}
-            ? 1
-            : !$obj->is_published()
-                ? 1
-                : 0;
+        $param->{can_delete_comment}
+            = $param->{has_publish_access} ? 1
+            : !$obj->is_published()        ? 1
+            :                                0;
 
         $param->{comment_approved} = $obj->is_published
-          or $param->{comment_pending} = $obj->is_moderated
-          or $param->{is_junk}         = $obj->is_junk;
+            or $param->{comment_pending} = $obj->is_moderated
+            or $param->{is_junk}         = $obj->is_junk;
 
-        $param->{created_on_time_formatted} =
-          format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(), $obj->created_on(), $blog, $app->user ? $app->user->preferred_language : undef );
-        $param->{created_on_day_formatted} =
-          format_ts( MT::App::CMS::LISTING_DATE_FORMAT(), $obj->created_on(), $blog, $app->user ? $app->user->preferred_language : undef );
+        $param->{created_on_time_formatted}
+            = format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(),
+            $obj->created_on(), $blog,
+            $app->user ? $app->user->preferred_language : undef );
+        $param->{created_on_day_formatted}
+            = format_ts( MT::App::CMS::LISTING_DATE_FORMAT(),
+            $obj->created_on(), $blog,
+            $app->user ? $app->user->preferred_language : undef );
 
         $param->{approved}   = $app->param('approved');
         $param->{unapproved} = $app->param('unapproved');
         $param->{is_junk}    = $obj->is_junk;
 
         $param->{entry_class_label} = $obj->entry->class_label;
-        $param->{entry_class} = $obj->entry->class;
+        $param->{entry_class}       = $obj->entry->class;
 
         ## Load next and previous entries for next/previous links
         if ( my $next = $obj->next ) {
@@ -85,41 +89,45 @@ sub edit {
         }
         if ( $obj->junk_log ) {
             require MT::CMS::Comment;
-            MT::CMS::Comment::build_junk_table( $app, param => $param, object => $obj );
+            MT::CMS::Comment::build_junk_table(
+                $app,
+                param  => $param,
+                object => $obj
+            );
         }
 
         if ( my $cmtr_id = $obj->commenter_id ) {
             my $cmtr = $app->model('author')->load($cmtr_id);
             if ($cmtr) {
                 $param->{is_mine} = 1 if $cmtr_id == $app->user->id;
-                $param->{commenter_approved} =
-                  $cmtr->commenter_status( $obj->blog_id ) ==
-                  MT::Author::APPROVED();
-                $param->{commenter_banned} =
-                  $cmtr->commenter_status( $obj->blog_id ) ==
-                  MT::Author::BANNED();
+                $param->{commenter_approved}
+                    = $cmtr->commenter_status( $obj->blog_id )
+                    == MT::Author::APPROVED();
+                $param->{commenter_banned}
+                    = $cmtr->commenter_status( $obj->blog_id )
+                    == MT::Author::BANNED();
                 $param->{type_author} = 1
-                  if MT::Author::AUTHOR() == $cmtr->type;
+                    if MT::Author::AUTHOR() == $cmtr->type;
                 $param->{auth_icon_url} = $cmtr->auth_icon_url;
-                $param->{email} = $cmtr->email;
-                $param->{url} = $cmtr->url;
+                $param->{email}         = $cmtr->email;
+                $param->{url}           = $cmtr->url;
                 $param->{commenter_url} = $app->uri(
                     mode => 'view',
                     args => { '_type' => 'author', 'id' => $cmtr->id, }
-                  )
-                  if ( MT::Author::AUTHOR() == $cmtr->type )
-                  && $app->user->is_superuser;
+                    )
+                    if ( MT::Author::AUTHOR() == $cmtr->type )
+                    && $app->user->is_superuser;
             }
         }
         $param->{invisible_unregistered} = !$obj->visible
-          && !$obj->commenter_id;
+            && !$obj->commenter_id;
 
         $param->{search_label} = $app->translate('Comments');
         $param->{object_type}  = 'comment';
 
-        my $children =
-          build_comment_table( $app, load_args =>
-              [ { parent_id => $obj->id }, { direction => 'descend' } ] );
+        my $children = build_comment_table( $app,
+            load_args =>
+                [ { parent_id => $obj->id }, { direction => 'descend' } ] );
         $param->{object_loop} = $children if @$children;
 
         $app->load_list_actions( $type, $param );
@@ -154,19 +162,18 @@ sub edit_commenter {
     $param->{type_author} = 1
         if MT::Author::AUTHOR() == $obj->type;
 
-    $param->{can_edit_commenters} = $app->user->is_superuser
+    $param->{can_edit_commenters}
+        = $app->user->is_superuser
         ? 1
-        : $app->config->SingleCommunity
-            ? $app->blog
-                ? 0
-                : $app->user->can_do('edit_commenter_status')
-                    ? 1
-                    : 0
-            : $app->blog
-                ? $app->user->permissions($blog_id)->can_do('edit_commenter_status')
-                    ? 1
-                    : 0
-                : 0;
+        : $app->config->SingleCommunity ? $app->blog
+            ? 0
+            : $app->user->can_do('edit_commenter_status') ? 1
+        : 0
+        : $app->blog
+        ? $app->user->permissions($blog_id)->can_do('edit_commenter_status')
+            ? 1
+            : 0
+        : 0;
     1;
 }
 
@@ -188,63 +195,67 @@ sub save_commenter_perm {
         ( $id, $blog_id ) = @$id if ref $id eq 'ARRAY';
 
         my $cmntr = MT::Author->load($id)
-          or return $app->errtrans( "No such commenter [_1].", $id );
+            or return $app->errtrans( "No such commenter [_1].", $id );
         my $old_status = $cmntr->commenter_status($blog_id);
 
         if (   $action eq 'trust'
             && $cmntr->commenter_status($blog_id) != MT::Author::APPROVED() )
         {
             $cmntr->approve($blog_id) or return $app->error( $cmntr->errstr );
-            $app->log({
-                message => $app->translate(
-                    "User '[_1]' trusted commenter '[_2]'.", $author->name,
-                    $cmntr->name
-                ),
-                class => 'comment',
-                category => 'edit',
-            });
+            $app->log(
+                {   message => $app->translate(
+                        "User '[_1]' trusted commenter '[_2]'.",
+                        $author->name, $cmntr->name
+                    ),
+                    class    => 'comment',
+                    category => 'edit',
+                }
+            );
             $acted_on++;
         }
         elsif ($action eq 'ban'
             && $cmntr->commenter_status($blog_id) != MT::Author::BANNED() )
         {
             $cmntr->ban($blog_id) or return $app->error( $cmntr->errstr );
-            $app->log({
-                message => $app->translate(
-                    "User '[_1]' banned commenter '[_2]'.", $author->name,
-                    $cmntr->name
-                ),
-                class => 'comment',
-                category => 'edit',
-            });
+            $app->log(
+                {   message => $app->translate(
+                        "User '[_1]' banned commenter '[_2]'.",
+                        $author->name, $cmntr->name
+                    ),
+                    class    => 'comment',
+                    category => 'edit',
+                }
+            );
             $acted_on++;
         }
         elsif ($action eq 'unban'
             && $cmntr->commenter_status($blog_id) == MT::Author::BANNED() )
         {
             $cmntr->pending($blog_id) or return $app->error( $cmntr->errstr );
-            $app->log({
-                message => $app->translate(
-                    "User '[_1]' unbanned commenter '[_2]'.", $author->name,
-                    $cmntr->name
-                ),
-                class => 'comment',
-                category => 'edit',
-            });
+            $app->log(
+                {   message => $app->translate(
+                        "User '[_1]' unbanned commenter '[_2]'.",
+                        $author->name, $cmntr->name
+                    ),
+                    class    => 'comment',
+                    category => 'edit',
+                }
+            );
             $acted_on++;
         }
         elsif ($action eq 'untrust'
             && $cmntr->commenter_status($blog_id) == MT::Author::APPROVED() )
         {
             $cmntr->pending($blog_id) or return $app->error( $cmntr->errstr );
-            $app->log({
-                message => $app->translate(
-                    "User '[_1]' untrusted commenter '[_2]'.", $author->name,
-                    $cmntr->name
-                ),
-                class => 'comment',
-                category => 'edit',
-            });
+            $app->log(
+                {   message => $app->translate(
+                        "User '[_1]' untrusted commenter '[_2]'.",
+                        $author->name, $cmntr->name
+                    ),
+                    class    => 'comment',
+                    category => 'edit',
+                }
+            );
             $acted_on++;
         }
 
@@ -252,8 +263,7 @@ sub save_commenter_perm {
         require MT::Comment;
         my $iter = MT::Entry->load_iter(
             undef,
-            {
-                join => MT::Comment->join_on(
+            {   join => MT::Comment->join_on(
                     'entry_id', { commenter_id => $cmntr->id }
                 )
             }
@@ -392,13 +402,13 @@ sub handle_junk {
         if ( scalar @obj_ids == 1 ) {
             my $cmt_id = $obj_ids[0];
             if ( my $obj = $class->load($cmt_id) ) {
-                my $nonce =
-                  MT::Util::perl_sha1_digest_hex( $obj->id
-                      . $obj->created_on
-                      . $obj->blog_id
-                      . $app->config->SecretToken );
+                my $nonce
+                    = MT::Util::perl_sha1_digest_hex( $obj->id
+                        . $obj->created_on
+                        . $obj->blog_id
+                        . $app->config->SecretToken );
                 return $app->errtrans("Invalid request.")
-                  unless $nonce eq $req_nonce;
+                    unless $nonce eq $req_nonce;
                 my $return_args = $app->uri_params(
                     mode => 'view',
                     args => {
@@ -422,7 +432,7 @@ sub handle_junk {
         $app->validate_magic() or return;
     }
 
-    my $perms = $app->permissions;
+    my $perms        = $app->permissions;
     my $perm_checked = $app->can_do('handle_junk');
 
     foreach my $id (@ids) {
@@ -441,7 +451,7 @@ sub handle_junk {
         }
         $obj->junk;
         $app->run_callbacks( 'handle_spam', $app, $obj )
-          ;            # mv this into blk below?
+            ;          # mv this into blk below?
         $obj->save;    # (so that each cb doesn't have to save indiv'ly)
         next if $old_visible == $obj->visible;
         if ( $obj->isa('MT::TBPing') ) {
@@ -450,7 +460,7 @@ sub handle_junk {
                 $rebuild_entries{$parent_id} = 1;
             }
             else {
-                $rebuild_categories{ $parent_id } = 1;
+                $rebuild_categories{$parent_id} = 1;
 
                 # TODO: do something with this list.
             }
@@ -461,7 +471,8 @@ sub handle_junk {
     }
     $app->add_return_arg( 'junked' => 1 );
     if (%rebuild_entries) {
-        $app->rebuild_these( \%rebuild_entries, how => MT::App::CMS::NEW_PHASE() );
+        $app->rebuild_these( \%rebuild_entries,
+            how => MT::App::CMS::NEW_PHASE() );
     }
     else {
         $app->call_return;
@@ -554,12 +565,12 @@ sub do_reply {
 
     # Save requires POST
     return $app->error( $app->translate("Invalid request") )
-      if $app->request_method() ne 'POST';
+        if $app->request_method() ne 'POST';
 
     $app->validate_magic
         or return $app->error( $app->translate("Invalid request") );
 
-    my $q   = $app->param;
+    my $q = $app->param;
 
     my $param = {
         reply_to    => $q->param('reply_to'),
@@ -571,8 +582,10 @@ sub do_reply {
     return unless $comment;
 
     my $blog = $parent->blog
-            || $app->model('blog')->load($q->param('blog_id'));
-    return $app->error($app->translate('Can\'t load blog #[_1].', $q->param('blog_id'))) unless $blog;
+        || $app->model('blog')->load( $q->param('blog_id') );
+    return $app->error(
+        $app->translate( 'Can\'t load blog #[_1].', $q->param('blog_id') ) )
+        unless $blog;
 
     unless ( $app->can_do('reply_comment_from_cms') ) {
         my $user  = $app->user;
@@ -580,33 +593,39 @@ sub do_reply {
         return unless $perms;
 
         return $app->permission_denied()
-          unless $perms->can_edit_entry( $entry, $user, 1 )
-          ;    # check for publish_post
+            unless $perms->can_edit_entry( $entry, $user, 1 )
+        ;    # check for publish_post
     }
 
     require MT::Sanitize;
     my $spec = $blog->sanitize_spec
-            || $app->config->GlobalSanitizeSpec;
-    $param->{commenter_name} = MT::Sanitize->sanitize($parent->author, $spec);
-    $param->{entry_title}    = $entry->title;
-    $param->{comment_created_on} =
-      format_ts( "%Y-%m-%d %H:%M:%S", $parent->created_on, undef, $app->user ? $app->user->preferred_language : undef );
+        || $app->config->GlobalSanitizeSpec;
+    $param->{commenter_name}
+        = MT::Sanitize->sanitize( $parent->author, $spec );
+    $param->{entry_title}        = $entry->title;
+    $param->{comment_created_on} = format_ts( "%Y-%m-%d %H:%M:%S",
+        $parent->created_on, undef,
+        $app->user ? $app->user->preferred_language : undef );
     $param->{comment_text} = $parent->text;
 
     return $app->build_page( 'dialog/comment_reply.tmpl',
         { %$param, error => $app->errstr } )
-      unless $comment;
+        unless $comment;
 
     $comment->parent_id( $param->{reply_to} );
     $comment->approve;
     return $app->handle_error(
         $app->translate( "An error occurred: [_1]", $comment->errstr() ) )
-      unless $comment->save;
+        unless $comment->save;
 
     MT::Util::start_background_task(
         sub {
-            $app->rebuild_entry( Entry => $parent->entry_id, BuildDependencies => 1 )
-              or return $app->publish_error( "Publish failed: [_1]", $app->errstr );
+            $app->rebuild_entry(
+                Entry             => $parent->entry_id,
+                BuildDependencies => 1
+                )
+                or return $app->publish_error( "Publish failed: [_1]",
+                $app->errstr );
             $app->_send_comment_notification( $comment, q(), $entry,
                 $app->model('blog')->load( $param->{blog_id} ), $app->user );
         }
@@ -620,7 +639,7 @@ sub reply_preview {
 
     # Preview requires POST
     return $app->error( $app->translate("Invalid request") )
-      if $app->request_method() ne 'POST';
+        if $app->request_method() ne 'POST';
 
     $app->validate_magic or return;
 
@@ -637,26 +656,30 @@ sub reply_preview {
     return unless $comment;
 
     my $blog = $parent->blog
-            || $app->model('blog')->load($q->param('blog_id'));
-    return $app->error($app->translate('Can\'t load blog #[_1].', $q->param('blog_id'))) unless $blog;
+        || $app->model('blog')->load( $q->param('blog_id') );
+    return $app->error(
+        $app->translate( 'Can\'t load blog #[_1].', $q->param('blog_id') ) )
+        unless $blog;
 
     require MT::Sanitize;
     my $spec = $blog->sanitize_spec
-            || $app->config->GlobalSanitizeSpec;
-    $param->{commenter_name} = MT::Sanitize->sanitize($parent->author, $spec);
-    $param->{entry_title}    = $entry->title;
-    $param->{comment_created_on} =
-      format_ts( "%Y-%m-%d %H:%M:%S", $parent->created_on, undef, $app->user ? $app->user->preferred_language : undef );
-    $param->{comment_text} = MT::Sanitize->sanitize($parent->text, $spec);
+        || $app->config->GlobalSanitizeSpec;
+    $param->{commenter_name}
+        = MT::Sanitize->sanitize( $parent->author, $spec );
+    $param->{entry_title}        = $entry->title;
+    $param->{comment_created_on} = format_ts( "%Y-%m-%d %H:%M:%S",
+        $parent->created_on, undef,
+        $app->user ? $app->user->preferred_language : undef );
+    $param->{comment_text} = MT::Sanitize->sanitize( $parent->text, $spec );
 
     return $app->build_page( 'dialog/comment_reply.tmpl',
         { %$param, error => $app->errstr } )
-      unless $comment;
+        unless $comment;
 
     ## Set timestamp as we would usually do in ObjectDriver.
     my @ts = MT::Util::offset_time_list( time, $entry->blog_id );
     my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $ts[5] + 1900, $ts[4] + 1,
-      @ts[ 3, 2, 1, 0 ];
+        @ts[ 3, 2, 1, 0 ];
     $comment->created_on($ts);
     $comment->commenter_id( $app->user->id );
     $param->{'comment'} = $comment;
@@ -680,13 +703,13 @@ sub dialog_post_comment {
     my $parent_id = $app->param('reply_to');
 
     return $app->errtrans('Parent comment id was not specified.')
-      unless $parent_id;
+        unless $parent_id;
 
     my $comment_class = $app->model('comment');
     my $parent        = $comment_class->load($parent_id)
-      or return $app->errtrans('Parent comment was not found.');
+        or return $app->errtrans('Parent comment was not found.');
     return $app->errtrans("You can't reply to unapproved comment.")
-      unless $parent->is_published;
+        unless $parent->is_published;
 
     my $perms = $app->{perms};
     return unless $perms;
@@ -694,35 +717,41 @@ sub dialog_post_comment {
     my $entry_class = $app->_load_driver_for('entry');
     my $entry       = $entry_class->load( $parent->entry_id );
 
-    unless ( $app->can_do('reply_comment_from_cms') ){
+    unless ( $app->can_do('reply_comment_from_cms') ) {
         return $app->permission_denied()
-          unless $perms->can_edit_entry( $entry, $user, 1 )
-          ;    # check for publish_post
+            unless $perms->can_edit_entry( $entry, $user, 1 )
+        ;    # check for publish_post
     }
 
     my $blog = $parent->blog
-            || $app->model('blog')->load($app->param('blog_id'));
-    return $app->error($app->translate('Can\'t load blog #[_1].', $app->param('blog_id'))) unless $blog;
+        || $app->model('blog')->load( $app->param('blog_id') );
+    return $app->error(
+        $app->translate( 'Can\'t load blog #[_1].', $app->param('blog_id') ) )
+        unless $blog;
 
     require MT::Sanitize;
     my $spec = $blog->sanitize_spec
-            || $app->config->GlobalSanitizeSpec;
+        || $app->config->GlobalSanitizeSpec;
     my $param = {
         reply_to       => $parent_id,
-        commenter_name => MT::Sanitize->sanitize($parent->author, $spec),
+        commenter_name => MT::Sanitize->sanitize( $parent->author, $spec ),
         entry_title    => $entry->title,
-        comment_created_on =>
-          format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(), $parent->created_on, $blog, $app->user ? $app->user->preferred_language : undef ),
-        comment_text       => MT::Sanitize->sanitize($parent->text, $spec),
+        comment_created_on => format_ts(
+            MT::App::CMS::LISTING_DATETIME_FORMAT(),
+            $parent->created_on, $blog,
+            $app->user ? $app->user->preferred_language : undef
+        ),
+        comment_text       => MT::Sanitize->sanitize( $parent->text, $spec ),
         comment_script_url => $app->config('CGIPath')
-          . $app->config('CommentScript'),
-        return_url => $app->base . $app->uri(
+            . $app->config('CommentScript'),
+        return_url => $app->base
+            . $app->uri(
             mode => 'list',
             args => {
-                  '_type' => 'comment',
-                  blog_id => $blog->id,
-              }
-        ),
+                '_type' => 'comment',
+                blog_id => $blog->id,
+            }
+            ),
     };
 
     $app->load_tmpl( 'dialog/comment_reply.tmpl', $param );
@@ -735,7 +764,7 @@ sub can_view {
     my $obj = $objp->force() or return 0;
     require MT::Entry;
     my $entry = MT::Entry->load( $obj->entry_id )
-      or return 0;
+        or return 0;
     my $perms = $app->permissions;
     if ( $entry->author_id == $app->user->id ) {
         return $app->can_do('open_own_entry_comment_edit_screen');
@@ -751,7 +780,7 @@ sub can_save {
     return 1 if $app->user->is_superuser();
 
     return 1
-      if $app->can_do('save_existing_comment');
+        if $app->can_do('save_existing_comment');
 
     my $c = MT::Comment->load($id)
         or return 0;
@@ -760,9 +789,10 @@ sub can_save {
     }
     elsif ( $app->can_do('edit_own_entry_comment_without_status') ) {
         return ( $c->entry->author_id == $app->user->id )
-          && ( ( $c->is_junk && ( 'junk' eq $app->param('status') ) )
+            && ( ( $c->is_junk && ( 'junk' eq $app->param('status') ) )
             || ( $c->is_moderated && ( 'moderate' eq $app->param('status') ) )
-            || ( $c->is_published && ( 'publish' eq $app->param('status') ) ) );
+            || ( $c->is_published && ( 'publish'  eq $app->param('status') ) )
+            );
     }
     else {
         return 0;
@@ -787,7 +817,7 @@ sub can_delete {
     # publish_post allows entry author to delete comment.
     return 1 if $perms->can_do('delete_every_comment');
     return 1 if $perms->can_edit_entry( $entry, $author, 1 );
-    return 0 if $obj->visible;    # otherwise, visible comment can't be deleted.
+    return 0 if $obj->visible;  # otherwise, visible comment can't be deleted.
     return $perms && $perms->can_edit_entry( $entry, $author );
 }
 
@@ -801,10 +831,10 @@ sub pre_save {
             or return 1;
         require MT::Entry;
         my $entry = MT::Entry->load( $obj->entry_id )
-          or return 1;
+            or return 1;
         return 1 unless $entry->author_id == $app->user->id;
     }
-    
+
     my $status = $app->param('status');
     if ( $status eq 'publish' ) {
         $obj->approve;
@@ -834,9 +864,16 @@ sub post_save {
         return MT::Util::start_background_task(
             sub {
                 my $app = MT->instance;
-                if ( !$app->rebuild_entry( Entry => $obj->entry_id, BuildIndexes => 1 ) ) {
-                    $app->publish_error(); # logs error as well.
-                    return $eh->error( MT->translate( "Publish failed: [_1]", $app->errstr ) );
+                if (!$app->rebuild_entry(
+                        Entry        => $obj->entry_id,
+                        BuildIndexes => 1
+                    )
+                    )
+                {
+                    $app->publish_error();    # logs error as well.
+                    return $eh->error(
+                        MT->translate( "Publish failed: [_1]", $app->errstr )
+                    );
                 }
                 1;
             }
@@ -855,9 +892,8 @@ sub post_delete {
     }
 
     $app->log(
-        {
-            message => $app->translate(
-"Comment (ID:[_1]) by '[_2]' deleted by '[_3]' from entry '[_4]'",
+        {   message => $app->translate(
+                "Comment (ID:[_1]) by '[_2]' deleted by '[_3]' from entry '[_4]'",
                 $obj->id, $obj->author, $app->user->name, $title
             ),
             level    => MT::Log::INFO(),
@@ -888,13 +924,13 @@ sub build_junk_table {
     my $obj   = $args{object};
 
     if ( defined $obj->junk_score ) {
-        $param->{junk_score} =
-          ( $obj->junk_score > 0 ? '+' : '' ) . $obj->junk_score;
+        $param->{junk_score}
+            = ( $obj->junk_score > 0 ? '+' : '' ) . $obj->junk_score;
     }
     my $log = $obj->junk_log || '';
     my @log = split /\r?\n/, $log;
     my @junk;
-    for ( my $i = 0 ; $i < scalar(@log) ; $i++ ) {
+    for ( my $i = 0; $i < scalar(@log); $i++ ) {
         my $line = $log[$i];
         $line =~ s/(^\s+|\s+$)//g;
         next unless $line;
@@ -913,7 +949,7 @@ sub build_junk_table {
         $log = $line;
         $log =~ s/^[^:]+:\s*//;
         $log = encode_html($log);
-        for ( my $j = $i + 1 ; $j < scalar(@log) ; $j++ ) {
+        for ( my $j = $i + 1; $j < scalar(@log); $j++ ) {
             my $line = encode_html( $log[$j] );
             if ( $line =~ m/^\t+(.*)$/s ) {
                 $i = $j;
@@ -934,8 +970,8 @@ sub set_item_visible {
     my $perms  = $app->permissions;
     my $author = $app->user;
 
-    my $type    = $app->param('_type');
-    my $class   = $app->model($type);
+    my $type  = $app->param('_type');
+    my $class = $app->model($type);
     $app->setup_filtered_ids
         if $app->param('all_selected');
     my @obj_ids = $app->param('id');
@@ -944,13 +980,13 @@ sub set_item_visible {
         if ( scalar @obj_ids == 1 ) {
             my $cmt_id = $obj_ids[0];
             if ( my $obj = $class->load($cmt_id) ) {
-                my $nonce =
-                  MT::Util::perl_sha1_digest_hex( $obj->id
-                      . $obj->created_on
-                      . $obj->blog_id
-                      . $app->config->SecretToken );
+                my $nonce
+                    = MT::Util::perl_sha1_digest_hex( $obj->id
+                        . $obj->created_on
+                        . $obj->blog_id
+                        . $app->config->SecretToken );
                 return $app->errtrans("Invalid request.")
-                  unless $nonce eq $req_nonce;
+                    unless $nonce eq $req_nonce;
                 my $return_args = $app->uri_params(
                     mode => 'view',
                     args => {
@@ -1005,8 +1041,12 @@ sub set_item_visible {
                     if ( !$perms || $perms->blog_id != $obj->blog_id ) {
                         $perms = $author->permissions( $obj->blog_id );
                     }
-                    if ( !$app->can_do('approve_all_trackback', $perms) ) {
-                        if ( $app->can_do('approve_own_entry_trackback', $perms) ) {
+                    if ( !$app->can_do( 'approve_all_trackback', $perms ) ) {
+                        if ($app->can_do(
+                                'approve_own_entry_trackback', $perms
+                            )
+                            )
+                        {
                             return $app->errtrans(
                                 "You don't have permission to approve this trackback."
                             ) if $obj_parent->author_id != $author->id;
@@ -1024,7 +1064,7 @@ sub set_item_visible {
 
                 # TODO: Factor out permissions checking
                 my $entry = MT::Entry->load( $obj->entry_id )
-                  || return $app->error(
+                    || return $app->error(
                     $app->translate("Comment on missing entry!") );
 
                 if ( !$perms || $perms->blog_id != $obj->blog_id ) {
@@ -1035,8 +1075,9 @@ sub set_item_visible {
                         "You don't have permission to approve this comment."
                     );
                 }
-                if ( !$app->can_do('approve_all_comment', $perms) ) {
-                    if ( $app->can_do('approve_own_entry_comment', $perms) ) {
+                if ( !$app->can_do( 'approve_all_comment', $perms ) ) {
+                    if ( $app->can_do( 'approve_own_entry_comment', $perms ) )
+                    {
                         return $app->errtrans(
                             "You don't have permission to approve this comment."
                         ) if $entry->author_id != $author->id;
@@ -1049,18 +1090,19 @@ sub set_item_visible {
                 }
                 $rebuild_set{ $obj->entry_id } = $entry;
             }
-            if ( $new_visible ) {
+            if ($new_visible) {
                 $obj->approve;
             }
             else {
-                $obj->visible( $new_visible );
+                $obj->visible($new_visible);
             }
             $obj->save();
         }
     }
     my $approved_flag = ( $new_visible ? '' : 'un' ) . 'approved';
     $app->add_return_arg( $approved_flag => 1 );
-    return $app->rebuild_these( \%rebuild_set, how => MT::App::CMS::NEW_PHASE() );
+    return $app->rebuild_these( \%rebuild_set,
+        how => MT::App::CMS::NEW_PHASE() );
 }
 
 sub map_comment_to_commenter {
@@ -1071,8 +1113,8 @@ sub map_comment_to_commenter {
     for my $id (@$comments) {
         my $cmt = MT::Comment->load($id);
         if ( $cmt && $cmt->commenter_id ) {
-            $commenters{ $cmt->commenter_id . ':' . $cmt->blog_id } =
-              [ $cmt->commenter_id, $cmt->blog_id ];
+            $commenters{ $cmt->commenter_id . ':' . $cmt->blog_id }
+                = [ $cmt->commenter_id, $cmt->blog_id ];
         }
         else {
             $app->add_return_arg( 'unauth', 1 );
@@ -1116,7 +1158,8 @@ sub _prepare_reply {
     $comment->author( remove_html($nick) );
     $comment->email( remove_html( $app->user->email ) );
     $comment->text($text);
-    if (my $url = $app->user->url ) {
+
+    if ( my $url = $app->user->url ) {
         $comment->url($url);
     }
 
@@ -1162,84 +1205,89 @@ sub build_comment_table {
     my $i;
     $i = 1;
     my ( %blogs, %entries, %perms, %cmntrs );
-    my $trim_length =
-      $app->config('ShowIPInformation')
-      ? const('DISPLAY_LENGTH_EDIT_COMMENT_TEXT_SHORT')
-      : const('DISPLAY_LENGTH_EDIT_COMMENT_TEXT_LONG');
+    my $trim_length
+        = $app->config('ShowIPInformation')
+        ? const('DISPLAY_LENGTH_EDIT_COMMENT_TEXT_SHORT')
+        : const('DISPLAY_LENGTH_EDIT_COMMENT_TEXT_LONG');
     my $author_max_len = const('DISPLAY_LENGTH_EDIT_COMMENT_AUTHOR');
-    my $comment_short_len =
-      const('DISPLAY_LENGTH_EDIT_COMMENT_TEXT_BREAK_UP_SHORT');
-    my $comment_long_len =
-      const('DISPLAY_LENGTH_EDIT_COMMENT_TEXT_BREAK_UP_LONG');
+    my $comment_short_len
+        = const('DISPLAY_LENGTH_EDIT_COMMENT_TEXT_BREAK_UP_SHORT');
+    my $comment_long_len
+        = const('DISPLAY_LENGTH_EDIT_COMMENT_TEXT_BREAK_UP_LONG');
     my $title_max_len = const('DISPLAY_LENGTH_EDIT_COMMENT_TITLE');
 
     while ( my $obj = $iter->() ) {
         my $row = $obj->get_values;
         $row->{author_display} = $row->{author};
-        $row->{author_display} =
-          substr( $row->{author_display}, 0, $author_max_len ) . '...'
-          if $row->{author_display}
-          && length( $row->{author_display} ) > $author_max_len;
-        $row->{comment_short} =
-          ( substr( $obj->text(), 0, $trim_length )
-              . ( length( $obj->text ) > $trim_length ? "..." : "" ) );
-        $row->{comment_short} =
-          break_up_text( $row->{comment_short}, $comment_short_len )
-          ;    # break up really long strings
+        $row->{author_display}
+            = substr( $row->{author_display}, 0, $author_max_len ) . '...'
+            if $row->{author_display}
+                && length( $row->{author_display} ) > $author_max_len;
+        $row->{comment_short}
+            = (
+            substr( $obj->text(), 0, $trim_length )
+                . ( length( $obj->text ) > $trim_length ? "..." : "" ) );
+        $row->{comment_short}
+            = break_up_text( $row->{comment_short}, $comment_short_len )
+            ;    # break up really long strings
         $row->{comment_long} = remove_html( $obj->text );
-        $row->{comment_long} =
-          break_up_text( $row->{comment_long}, $comment_long_len )
-          ;    # break up really long strings
+        $row->{comment_long}
+            = break_up_text( $row->{comment_long}, $comment_long_len )
+            ;    # break up really long strings
 
         $row->{visible}  = $obj->visible();
         $row->{entry_id} = $obj->entry_id();
         my $blog = $blogs{ $obj->blog_id } ||= $obj->blog;
-        my $entry = $entries{ $obj->entry_id } ||=
-          $entry_pkg->load( $obj->entry_id );
+        my $entry = $entries{ $obj->entry_id }
+            ||= $entry_pkg->load( $obj->entry_id );
         unless ($entry) {
             $entry = $entry_pkg->new;
-            $entry->title( '* ' . $app->translate('Orphaned comment') . ' *' );
+            $entry->title(
+                '* ' . $app->translate('Orphaned comment') . ' *' );
         }
-        $row->{can_reply} = $author->permissions($entry->blog->id)->can_edit_entry( $entry, $author, 1 );
-        $row->{entry_class} = $entry->class;
+        $row->{can_reply} = $author->permissions( $entry->blog->id )
+            ->can_edit_entry( $entry, $author, 1 );
+        $row->{entry_class}       = $entry->class;
         $row->{entry_class_label} = $entry->class_label;
-        $row->{entry_title} = (
+        $row->{entry_title}       = (
               defined( $entry->title ) ? $entry->title
             : defined( $entry->text )  ? $entry->text
             : ''
         );
         $row->{entry_title} = $app->translate('(untitled)')
-          if $row->{entry_title} eq '';
-        $row->{entry_title} =
-          substr( $row->{entry_title}, 0, $title_max_len ) . '...'
-          if $row->{entry_title}
-          && length( $row->{entry_title} ) > $title_max_len;
+            if $row->{entry_title} eq '';
+        $row->{entry_title}
+            = substr( $row->{entry_title}, 0, $title_max_len ) . '...'
+            if $row->{entry_title}
+                && length( $row->{entry_title} ) > $title_max_len;
         $row->{commenter_id} = $obj->commenter_id() if $obj->commenter_id();
         my $cmntr;
+
         if ( $obj->commenter_id ) {
-            $cmntr = $cmntrs{ $obj->commenter_id } ||= MT::Author->load(
-                {
-                    id   => $obj->commenter_id(),
-                }
-            );
+            $cmntr = $cmntrs{ $obj->commenter_id }
+                ||= MT::Author->load( { id => $obj->commenter_id(), } );
         }
         if ($cmntr) {
             $row->{email_hidden} = $cmntr && $cmntr->is_email_hidden();
             $row->{auth_icon_url} = $cmntr->auth_icon_url;
 
             my $status = $cmntr->commenter_status( $obj->blog_id );
-            $row->{commenter_approved} =
-              ( $cmntr->commenter_status( $obj->blog_id ) ==
-                  MT::Author::APPROVED() );
-            $row->{commenter_banned} =
-              ( $cmntr->commenter_status( $obj->blog_id ) ==
-                  MT::Author::BANNED() );
+            $row->{commenter_approved}
+                = ( $cmntr->commenter_status( $obj->blog_id )
+                    == MT::Author::APPROVED() );
+            $row->{commenter_banned}
+                = ( $cmntr->commenter_status( $obj->blog_id )
+                    == MT::Author::BANNED() );
         }
         if ( my $ts = $obj->created_on ) {
-            $row->{created_on_time_formatted} =
-              format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(), $ts, $blog, $app->user ? $app->user->preferred_language : undef );
-            $row->{created_on_formatted} =
-              format_ts( MT::App::CMS::LISTING_DATE_FORMAT(), $ts, $blog, $app->user ? $app->user->preferred_language : undef );
+            $row->{created_on_time_formatted}
+                = format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(),
+                $ts, $blog,
+                $app->user ? $app->user->preferred_language : undef );
+            $row->{created_on_formatted}
+                = format_ts( MT::App::CMS::LISTING_DATE_FORMAT(),
+                $ts, $blog,
+                $app->user ? $app->user->preferred_language : undef );
 
             $row->{created_on_relative} = relative_date( $ts, time, $blog );
         }
@@ -1248,21 +1296,28 @@ sub build_comment_table {
             $row->{has_bulk_access} = 1;
         }
         else {
-            my $perms = $perms{ $obj->blog_id } ||=
-              $author->permissions( $obj->blog_id );
+            my $perms = $perms{ $obj->blog_id }
+                ||= $author->permissions( $obj->blog_id );
             $row->{has_bulk_access} = (
-                $perms 
-                && ( $app->can_do('bulk_edit_all_comments', $perms) 
-                     || ( $app->can_do('bulk_edit_own_entry_comments', $perms)
-                          && ( $author->id == $entry->author_id ) )
-                )
+                $perms
+                    && (
+                    $app->can_do( 'bulk_edit_all_comments', $perms )
+                    || ($app->can_do(
+                            'bulk_edit_own_entry_comments', $perms
+                        )
+                        && ( $author->id == $entry->author_id )
+                    )
+                    )
             );
             $row->{has_edit_access} = (
-                $perms 
-                && ( $app->can_do('open_all_comment_edit_screen', $perms) 
-                     || ( $app->can_do('open_own_entry_comment_edit_screen', $perms)
-                          && ( $author->id == $entry->author_id ) )
-                )
+                $perms
+                    && (
+                    $app->can_do( 'open_all_comment_edit_screen', $perms )
+                    || ($app->can_do( 'open_own_entry_comment_edit_screen',
+                            $perms )
+                        && ( $author->id == $entry->author_id )
+                    )
+                    )
             );
         }
         if ($blog) {
@@ -1270,8 +1325,8 @@ sub build_comment_table {
             $row->{weblog_name} = $blog->name;
         }
         else {
-            $row->{weblog_name} =
-              '* ' . $app->translate('Orphaned comment') . ' *';
+            $row->{weblog_name}
+                = '* ' . $app->translate('Orphaned comment') . ' *';
         }
         $row->{reply_count} = $class->count( { parent_id => $obj->id } );
         $row->{object} = $obj;
@@ -1285,7 +1340,7 @@ sub build_comment_table {
     $param->{comment_table}[0]{object_loop} = \@data;
     $param->{comment_table}[0]{object_type} = 'comment';
     $param->{object_loop} = $param->{comment_table}[0]{object_loop}
-      unless exists $param->{object_loop};
+        unless exists $param->{object_loop};
 
     $app->load_list_actions( 'comment', \%$param );
     \@data;
@@ -1301,36 +1356,38 @@ sub cms_pre_load_filtered_list {
 
     require MT::Permission;
     my $iter = MT::Permission->load_iter(
-        {
-            author_id => $user->id,
-            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { 'not' => 0 } ) ),
+        {   author_id => $user->id,
+            (   $blog_ids
+                ? ( blog_id => $blog_ids )
+                : ( blog_id => { 'not' => 0 } )
+            ),
         }
     );
 
-    my $args = $load_options->{args};
+    my $args    = $load_options->{args};
     my $filters = [];
     while ( my $perm = $iter->() ) {
         if ( $perm->can_do('view_all_comments') ) {
             push @$filters, '-or' if scalar @$filters;
             push @$filters, { blog_id => $perm->blog_id };
-        } elsif ( $perm->can_do('view_own_entry_comment') ) {
+        }
+        elsif ( $perm->can_do('view_own_entry_comment') ) {
             push @$filters, '-or' if scalar @$filters;
-            push @$filters, {
-                blog_id => $perm->blog_id,
+            push @$filters,
+                {
+                blog_id   => $perm->blog_id,
                 author_id => $user->id,
-            };
+                };
         }
     }
 
     if ( scalar @$filters ) {
         $args->{joins} ||= [];
-        push @{ $args->{joins} }, MT->model('entry')->join_on(
-            undef, [
-                 { id => \'=comment_entry_id', },
-                 '-and',
-                 $filters,
-            ],
-        );
+        push @{ $args->{joins} },
+            MT->model('entry')
+            ->join_on( undef,
+            [ { id => \'=comment_entry_id', }, '-and', $filters, ],
+            );
     }
 
     my $terms = $load_options->{terms} || {};

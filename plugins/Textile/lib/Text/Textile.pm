@@ -5,30 +5,33 @@ use warnings;
 
 use base 'Exporter';
 our @EXPORT_OK = qw(textile);
-our $VERSION = 2.12;
-our $debug = 0;
+our $VERSION   = 2.12;
+our $debug     = 0;
 
 sub new {
-    my $class = shift;
+    my $class   = shift;
     my %options = @_;
     $options{filters} ||= {};
     $options{charset} ||= 'iso-8859-1';
 
-    for ( qw( char_encoding do_quotes smarty_mode ) ) {
+    for (qw( char_encoding do_quotes smarty_mode )) {
         $options{$_} = 1 unless exists $options{$_};
     }
-    for ( qw( trim_spaces preserve_spaces head_offset disable_encode_entities ) ) {
+    for (
+        qw( trim_spaces preserve_spaces head_offset disable_encode_entities ))
+    {
         $options{$_} = 0 unless exists $options{$_};
     }
 
     my $self = bless \%options, $class;
-    if (exists $options{css}) {
-        $self->css($options{css});
+    if ( exists $options{css} ) {
+        $self->css( $options{css} );
     }
     $options{macros} ||= $self->default_macros();
-    if (exists $options{flavor}) {
-        $self->flavor($options{flavor});
-    } else {
+    if ( exists $options{flavor} ) {
+        $self->flavor( $options{flavor} );
+    }
+    else {
         $self->flavor('xhtml1/css');
     }
     return $self;
@@ -38,20 +41,25 @@ sub new {
 
 sub set {
     my $self = shift;
-    my $opt = shift;
-    if (ref $opt eq 'HASH') {
-        $self->set($_, $opt->{$_}) foreach %{$opt};
-    } else {
+    my $opt  = shift;
+    if ( ref $opt eq 'HASH' ) {
+        $self->set( $_, $opt->{$_} ) foreach %{$opt};
+    }
+    else {
         my $value = shift;
+
         # the following options have special set methods
         # that activate upon setting:
-        if ($opt eq 'charset') {
+        if ( $opt eq 'charset' ) {
             $self->charset($value);
-        } elsif ($opt eq 'css') {
+        }
+        elsif ( $opt eq 'css' ) {
             $self->css($value);
-        } elsif ($opt eq 'flavor') {
+        }
+        elsif ( $opt eq 'flavor' ) {
             $self->flavor($value);
-        } else {
+        }
+        else {
             $self->{$opt} = $value;
         }
     }
@@ -85,27 +93,30 @@ sub flavor {
     if (@_) {
         my $flavor = shift;
         $self->{flavor} = $flavor;
-        if ($flavor =~ m/^xhtml(\d)?(\D|$)/) {
-            if ($1 eq '2') {
-                $self->{_line_open} = '<l>';
-                $self->{_line_close} = '</l>';
-                $self->{_blockcode_open} = '<blockcode>';
+        if ( $flavor =~ m/^xhtml(\d)?(\D|$)/ ) {
+            if ( $1 eq '2' ) {
+                $self->{_line_open}       = '<l>';
+                $self->{_line_close}      = '</l>';
+                $self->{_blockcode_open}  = '<blockcode>';
                 $self->{_blockcode_close} = '</blockcode>';
-                $self->{css_mode} = 1;
-            } else {
-                # xhtml 1.x
-                $self->{_line_open} = '';
-                $self->{_line_close} = '<br />';
-                $self->{_blockcode_open} = '<pre><code>';
-                $self->{_blockcode_close} = '</code></pre>';
-                $self->{css_mode} = 1;
+                $self->{css_mode}         = 1;
             }
-        } elsif ($flavor =~ m/^html/) {
-            $self->{_line_open} = '';
-            $self->{_line_close} = '<br>';
-            $self->{_blockcode_open} = '<pre><code>';
+            else {
+
+                # xhtml 1.x
+                $self->{_line_open}       = '';
+                $self->{_line_close}      = '<br />';
+                $self->{_blockcode_open}  = '<pre><code>';
+                $self->{_blockcode_close} = '</code></pre>';
+                $self->{css_mode}         = 1;
+            }
+        }
+        elsif ( $flavor =~ m/^html/ ) {
+            $self->{_line_open}       = '';
+            $self->{_line_close}      = '<br>';
+            $self->{_blockcode_open}  = '<pre><code>';
             $self->{_blockcode_close} = '</code></pre>';
-            $self->{css_mode} = $flavor =~ m/\/css/;
+            $self->{css_mode}         = $flavor =~ m/\/css/;
         }
         $self->_css_defaults() if $self->{css_mode} && !exists $self->{css};
     }
@@ -116,12 +127,14 @@ sub css {
     my $self = shift;
     if (@_) {
         my $css = shift;
-        if (ref $css eq 'HASH') {
-            $self->{css} = $css;
+        if ( ref $css eq 'HASH' ) {
+            $self->{css}      = $css;
             $self->{css_mode} = 1;
-        } else {
+        }
+        else {
             $self->{css_mode} = $css;
-            $self->_css_defaults() if $self->{css_mode} && !exists $self->{css};
+            $self->_css_defaults()
+                if $self->{css_mode} && !exists $self->{css};
         }
     }
     return $self->{css_mode} ? $self->{css} : 0;
@@ -131,9 +144,10 @@ sub charset {
     my $self = shift;
     if (@_) {
         $self->{charset} = shift;
-        if ($self->{charset} =~ m/^utf-?8$/i) {
+        if ( $self->{charset} =~ m/^utf-?8$/i ) {
             $self->char_encoding(0);
-        } else {
+        }
+        else {
             $self->char_encoding(1);
         }
     }
@@ -193,8 +207,8 @@ sub handle_quotes {
 # a URL discovery regex. This is from Mastering Regex from O'Reilly.
 # Some modifications by Brad Choate <brad@bradchoate.com>
 use vars qw($urlre $blocktags $clstyre $clstypadre $clstyfiltre
-            $alignre $valignre $halignre $imgalignre $tblalignre
-            $codere $punct);
+    $alignre $valignre $halignre $imgalignre $tblalignre
+    $codere $punct);
 $urlre = qr{
     # Must start out right...
     (?=[a-zA-Z0-9./#])
@@ -239,11 +253,12 @@ $urlre = qr{
     )?
 }x;
 
-$punct = qr{[\!"#\$%&'()\*\+,\-\./:;<=>\?@\[\\\]\^_`{\|}\~]};
-$valignre = qr/[\-^~]/;
+$punct      = qr{[\!"#\$%&'()\*\+,\-\./:;<=>\?@\[\\\]\^_`{\|}\~]};
+$valignre   = qr/[\-^~]/;
 $tblalignre = qr/[<>=]/;
-$halignre = qr/(?:<>|[<>=])/;
-$alignre = qr/(?:$valignre|<>$valignre?|$valignre?<>|$valignre?$halignre?|$halignre?$valignre?)(?!\w)/;
+$halignre   = qr/(?:<>|[<>=])/;
+$alignre
+    = qr/(?:$valignre|<>$valignre?|$valignre?<>|$valignre?$halignre?|$halignre?$valignre?)(?!\w)/;
 $imgalignre = qr/(?:[<>]|$valignre){1,2}/;
 
 $clstypadre = qr/
@@ -342,17 +357,18 @@ sub textile {
     # have optional matches
     local $^W = 0;
 
-    if (!ref $self) {
+    if ( !ref $self ) {
+
         # oops -- procedural technique used, so make
         # set $str to $self and instantiate a new object
         # for self
-        $str = $self;
+        $str  = $self;
         $self = new Text::Textile;
     }
 
     # quick translator for abbreviated block names
     # to their tag
-    my %macros = ('bq' => 'blockquote');
+    my %macros = ( 'bq' => 'blockquote' );
 
     # an array to hold any portions of the text to be preserved
     # without further processing by Textile
@@ -369,7 +385,8 @@ sub textile {
     $str =~ s{(^|\n\n)==(.+?)==($|\n\n)}
              {$1."\n\n"._repl(\@repl, $self->format_block(text => $2))."\n\n".$3}ges;
 
-    unless ($self->{disable_html}) {
+    unless ( $self->{disable_html} ) {
+
         # preserve style, script tag contents
         $str =~ s{(<(style|script)(?:>| .+?>).*?</\2>)}{_repl(\@repl, $1)}ges;
 
@@ -380,8 +397,9 @@ sub textile {
         my $pre_start = scalar(@repl);
         $str =~ s{(<pre(?: [^>]*)?>)(.+?)(</pre>)}
                  {"\n\n"._repl(\@repl, $1.$self->encode_html($2, 1).$3)."\n\n"}ges;
+
         # fix code tags within pre blocks we just saved.
-        for (my $i = $pre_start; $i < scalar(@repl); $i++) {
+        for ( my $i = $pre_start; $i < scalar(@repl); $i++ ) {
             $repl[$i] =~ s{&lt;(/?)code(.*?)&gt;}{<$1code$2>}gs;
         }
 
@@ -403,7 +421,8 @@ sub textile {
     # lines like this are stripped from the content, and can be
     # referred to using the "link text":id_without_spaces syntax
     my %links;
-    $str =~ s{(?:\n|^) [ ]* \[ ([^ ]+?) [ ]*? (?:\( (.+?) \) )?  \] ((?:(?:ftp|https?|telnet|nntp)://|/)[^ ]+?) [ ]* (\n|$)}
+    $str
+        =~ s{(?:\n|^) [ ]* \[ ([^ ]+?) [ ]*? (?:\( (.+?) \) )?  \] ((?:(?:ftp|https?|telnet|nntp)://|/)[^ ]+?) [ ]* (\n|$)}
              {($links{$1} = {url => $3, title => $2}),"$4"}gemx;
     local $self->{links} = \%links;
 
@@ -413,16 +432,18 @@ sub textile {
 
     # split up text into paragraph blocks, capturing newlines too
     my @para = split /(\n{2,})/, $str;
-    my ($block, $bqlang, $filter, $class, $sticky, @lines,
-        $style, $stickybuff, $lang, $clear);
+    my ($block, $bqlang, $filter,     $class, $sticky,
+        @lines, $style,  $stickybuff, $lang,  $clear
+    );
 
     my $out = '';
 
     foreach my $para (@para) {
-        if ($para =~ m/^\n+$/s) {
-            if ($sticky && defined $stickybuff) {
+        if ( $para =~ m/^\n+$/s ) {
+            if ( $sticky && defined $stickybuff ) {
                 $stickybuff .= $para;
-            } else {
+            }
+            else {
                 $out .= $para;
             }
             next;
@@ -430,149 +451,183 @@ sub textile {
 
         if ($sticky) {
             $sticky++;
-        } else {
+        }
+        else {
             $block = undef;
             $class = undef;
             $style = '';
-            $lang = undef;
+            $lang  = undef;
         }
 
-        my ($id, $cite, $align, $padleft, $padright, @lines, $buffer);
+        my ( $id, $cite, $align, $padleft, $padright, @lines, $buffer );
         if ($para =~ m/^(h[1-6]|p|bq|bc|fn\d+)
                         ((?:$clstyfiltre*|$halignre)*)
                         (\.\.?)
-                        (?::(\d+|$urlre))?\ /gx) {
+                        (?::(\d+|$urlre))?\ /gx
+            )
+        {
             if ($sticky) {
-                if ($block eq 'bc') {
+                if ( $block eq 'bc' ) {
+
                     # close our blockcode section
                     $out =~ s/\n\n$//;
-                    $out .= $self->{_blockcode_close}."\n\n";
-                } elsif ($block eq 'bq') {
+                    $out .= $self->{_blockcode_close} . "\n\n";
+                }
+                elsif ( $block eq 'bq' ) {
                     $out =~ s/\n\n$//;
-                    $out .= '</blockquote>'."\n\n";
-                } elsif ($block eq 'table') {
-                    my $table_out = $self->format_table(text => $stickybuff);
+                    $out .= '</blockquote>' . "\n\n";
+                }
+                elsif ( $block eq 'table' ) {
+                    my $table_out
+                        = $self->format_table( text => $stickybuff );
                     $table_out = '' if !defined $table_out;
                     $out .= $table_out;
                     $stickybuff = undef;
-                } elsif ($block eq 'dl') {
-                    my $dl_out = $self->format_deflist(text => $stickybuff);
+                }
+                elsif ( $block eq 'dl' ) {
+                    my $dl_out = $self->format_deflist( text => $stickybuff );
                     $dl_out = '' if !defined $dl_out;
                     $out .= $dl_out;
                     $stickybuff = undef;
                 }
                 $sticky = 0;
             }
-            # block macros: h[1-6](class)., bq(class)., bc(class)., p(class).
-            #warn "paragraph: [[$para]]\n\tblock: $1\n\tparams: $2\n\tcite: $4";
+
+          # block macros: h[1-6](class)., bq(class)., bc(class)., p(class).
+          #warn "paragraph: [[$para]]\n\tblock: $1\n\tparams: $2\n\tcite: $4";
             $block = $1;
             my $params = $2;
             $cite = $4;
-            if ($3 eq '..') {
+            if ( $3 eq '..' ) {
                 $sticky = 1;
-            } else {
+            }
+            else {
                 $sticky = 0;
-                $class = undef;
+                $class  = undef;
                 $bqlang = undef;
-                $lang = undef;
-                $style = '';
+                $lang   = undef;
+                $style  = '';
                 $filter = undef;
             }
-            if ($block =~ m/^h([1-6])$/) {
-                if ($self->{head_offset}) {
-                    $block = 'h' . ($1 + $self->{head_offset});
+            if ( $block =~ m/^h([1-6])$/ ) {
+                if ( $self->{head_offset} ) {
+                    $block = 'h' . ( $1 + $self->{head_offset} );
                 }
             }
-            if ($params =~ m/($halignre+)/) {
+            if ( $params =~ m/($halignre+)/ ) {
                 $align = $1;
                 $params =~ s/$halignre+//;
             }
-            if (defined $params) {
-                if ($params =~ m/\|(.+)\|/) {
+            if ( defined $params ) {
+                if ( $params =~ m/\|(.+)\|/ ) {
                     $filter = $1;
                     $params =~ s/\|.+?\|//;
                 }
-                if ($params =~ m/{([^}]+)}/) {
+                if ( $params =~ m/{([^}]+)}/ ) {
                     $style = $1;
-                    $style =~ s/\n/ /g;
+                    $style  =~ s/\n/ /g;
                     $params =~ s/{[^}]+}//g;
                 }
-                if ($params =~ m/\(([A-Za-z0-9_\-\ ]+?)(?:\#(.+?))?\)/ ||
-                    $params =~ m/\(([A-Za-z0-9_\-\ ]+?)?(?:\#(.+?))\)/) {
-                    if ($1 || $2) {
+                if (   $params =~ m/\(([A-Za-z0-9_\-\ ]+?)(?:\#(.+?))?\)/
+                    || $params =~ m/\(([A-Za-z0-9_\-\ ]+?)?(?:\#(.+?))\)/ )
+                {
+                    if ( $1 || $2 ) {
                         $class = $1;
-                        $id = $2;
+                        $id    = $2;
                         if ($class) {
                             $params =~ s/\([A-Za-z0-9_\-\ ]+?(#.*?)?\)//g;
-                        } elsif ($id) {
+                        }
+                        elsif ($id) {
                             $params =~ s/\(#.+?\)//g;
                         }
                     }
                 }
-                if ($params =~ m/(\(+)/) {
+                if ( $params =~ m/(\(+)/ ) {
                     $padleft = length($1);
                     $params =~ s/\(+//;
                 }
-                if ($params =~ m/(\)+)/) {
+                if ( $params =~ m/(\)+)/ ) {
                     $padright = length($1);
                     $params =~ s/\)+//;
                 }
-                if ($params =~ m/\[(.+?)\]/) {
+                if ( $params =~ m/\[(.+?)\]/ ) {
                     $lang = $1;
-                    if ($block eq 'bc') {
+                    if ( $block eq 'bc' ) {
                         $bqlang = $lang;
-                        $lang = undef;
+                        $lang   = undef;
                     }
                     $params =~ s/\[.+?\]//;
                 }
             }
-            #warn "settings:\n\tblock: $block\n\tpadleft: $padleft\n\tpadright: $padright\n\tclass: $class\n\tstyle: $style\n\tid: $id\n\tfilter: $filter\n\talign: $align\n\tlang: $lang\n\tsticky: $sticky";
-            $para = substr($para, pos($para));
-        } elsif ($para =~ m/^<textile#(\d+)>$/) {
-            $buffer = $repl[$1-1];
-        } elsif ($para =~ m/^clear([<>]+)?\.$/) {
-            if ($1 eq '<') {
+
+#warn "settings:\n\tblock: $block\n\tpadleft: $padleft\n\tpadright: $padright\n\tclass: $class\n\tstyle: $style\n\tid: $id\n\tfilter: $filter\n\talign: $align\n\tlang: $lang\n\tsticky: $sticky";
+            $para = substr( $para, pos($para) );
+        }
+        elsif ( $para =~ m/^<textile#(\d+)>$/ ) {
+            $buffer = $repl[ $1 - 1 ];
+        }
+        elsif ( $para =~ m/^clear([<>]+)?\.$/ ) {
+            if ( $1 eq '<' ) {
                 $clear = 'left';
-            } elsif ($1 eq '>') {
+            }
+            elsif ( $1 eq '>' ) {
                 $clear = 'right';
-            } else {
+            }
+            else {
                 $clear = 'both';
             }
             next;
-        } elsif ($sticky && (defined $stickybuff) &&
-                 ($block eq 'table' || $block eq 'dl')) {
+        }
+        elsif ($sticky
+            && ( defined $stickybuff )
+            && ( $block eq 'table' || $block eq 'dl' ) )
+        {
             $stickybuff .= $para;
             next;
-        } elsif ($para =~ m/^(?:$halignre|$clstypadre*)*
+        }
+        elsif (
+            $para =~ m/^(?:$halignre|$clstypadre*)*
                              [\*\#]
                              (?:$halignre|$clstypadre*)*
-                             \ /x) {
+                             \ /x
+            )
+        {
+
             # '*', '#' prefix means a list
-            $buffer = $self->format_list(text => $para);
-        } elsif ($para =~ m/^(?:table(?:$tblalignre|$clstypadre*)*
+            $buffer = $self->format_list( text => $para );
+        }
+        elsif (
+            $para =~ m/^(?:table(?:$tblalignre|$clstypadre*)*
                              (\.\.?)\s+)?
-                             (?:_|$alignre|$clstypadre*)*\|/x) {
+                             (?:_|$alignre|$clstypadre*)*\|/x
+            )
+        {
+
             # handle wiki-style tables
-            if (defined $1 && ($1 eq '..')) {
-                $block = 'table';
+            if ( defined $1 && ( $1 eq '..' ) ) {
+                $block      = 'table';
                 $stickybuff = $para;
-                $sticky = 1;
+                $sticky     = 1;
                 next;
-            } else {
-                $buffer = $self->format_table(text => $para);
             }
-        } elsif ($para =~ m/^(?:dl(?:$clstyre)*(\.\.?)\s+)/) {
-            # handle definition lists
-            if (defined $1 && ($1 eq '..')) {
-                $block = 'dl';
-                $stickybuff = $para;
-                $sticky = 1;
-                next;
-            } else {
-                $buffer = $self->format_deflist(text => $para);
+            else {
+                $buffer = $self->format_table( text => $para );
             }
         }
-        if (defined $buffer) {
+        elsif ( $para =~ m/^(?:dl(?:$clstyre)*(\.\.?)\s+)/ ) {
+
+            # handle definition lists
+            if ( defined $1 && ( $1 eq '..' ) ) {
+                $block      = 'dl';
+                $stickybuff = $para;
+                $sticky     = 1;
+                next;
+            }
+            else {
+                $buffer = $self->format_deflist( text => $para );
+            }
+        }
+        if ( defined $buffer ) {
             $out .= $buffer;
             next;
         }
@@ -582,189 +637,233 @@ sub textile {
         $block ||= 'p';
 
         $buffer = '';
-        my $pre = '';
+        my $pre  = '';
         my $post = '';
 
-        if ($block eq 'bc') {
-            if ($sticky <= 1) {
+        if ( $block eq 'bc' ) {
+            if ( $sticky <= 1 ) {
                 $pre .= $self->{_blockcode_open};
                 $pre =~ s/>$//s;
                 $pre .= qq{ language="$bqlang"} if $bqlang;
                 if ($align) {
                     my $alignment = _halign($align);
-                    if ($self->{css_mode}) {
-                        if (($padleft || $padright) &&
-                            (($alignment eq 'left') || ($alignment eq 'right'))) {
-                            $style .= ';float:'.$alignment;
-                        } else {
-                            $style .= ';text-align:'.$alignment;
+                    if ( $self->{css_mode} ) {
+                        if (( $padleft || $padright )
+                            && (   ( $alignment eq 'left' )
+                                || ( $alignment eq 'right' ) )
+                            )
+                        {
+                            $style .= ';float:' . $alignment;
                         }
-                        $class .= ' '.$self->{css}{"class_align_$alignment"} || $alignment;
-                    } else {
+                        else {
+                            $style .= ';text-align:' . $alignment;
+                        }
+                        $class .= ' ' . $self->{css}{"class_align_$alignment"}
+                            || $alignment;
+                    }
+                    else {
                         $pre .= qq{ align="$alignment"} if $alignment;
                     }
                 }
-                $style .= qq{;padding-left:${padleft}em} if $padleft;
+                $style .= qq{;padding-left:${padleft}em}   if $padleft;
                 $style .= qq{;padding-right:${padright}em} if $padright;
-                $style .= qq{;clear:${clear}} if $clear;
+                $style .= qq{;clear:${clear}}              if $clear;
                 $class =~ s/^ // if $class;
                 $pre .= qq{ class="$class"} if $class;
-                $pre .= qq{ id="$id"} if $id;
+                $pre .= qq{ id="$id"}       if $id;
                 $style =~ s/^;// if $style;
                 $pre .= qq{ style="$style"} if $style;
-                $pre .= qq{ lang="$lang"} if $lang;
+                $pre .= qq{ lang="$lang"}   if $lang;
                 $pre .= '>';
-                $lang = undef;
+                $lang   = undef;
                 $bqlang = undef;
-                $clear = undef;
+                $clear  = undef;
             }
             $para =~ s{(?:^|(?<=[\s>])|([{[]))
                        ==(.+?)==
                        (?:$|([\]}])|(?=$punct{1,2}|\s))}
                       {_repl(\@repl, $self->format_block(text => $2, inline => 1, pre => $1, post => $3))}gesx;
-            $buffer .= $self->encode_html_basic($para, 1);
+            $buffer .= $self->encode_html_basic( $para, 1 );
             $buffer =~ s/&lt;textile#(\d+)&gt;/<textile#$1>/g;
-            if ($sticky == 0) {
+            if ( $sticky == 0 ) {
                 $post .= $self->{_blockcode_close};
             }
             $out .= $pre . $buffer . $post;
             next;
-        } elsif ($block eq 'bq') {
-            if ($sticky <= 1) {
+        }
+        elsif ( $block eq 'bq' ) {
+            if ( $sticky <= 1 ) {
                 $pre .= '<blockquote';
                 if ($align) {
                     my $alignment = _halign($align);
-                    if ($self->{css_mode}) {
-                        if (($padleft || $padright) &&
-                            (($alignment eq 'left') || ($alignment eq 'right'))) {
-                            $style .= ';float:'.$alignment;
-                        } else {
-                            $style .= ';text-align:'.$alignment;
+                    if ( $self->{css_mode} ) {
+                        if (( $padleft || $padright )
+                            && (   ( $alignment eq 'left' )
+                                || ( $alignment eq 'right' ) )
+                            )
+                        {
+                            $style .= ';float:' . $alignment;
                         }
-                        $class .= ' '.$self->{css}{"class_align_$alignment"} || $alignment;
-                    } else {
+                        else {
+                            $style .= ';text-align:' . $alignment;
+                        }
+                        $class .= ' ' . $self->{css}{"class_align_$alignment"}
+                            || $alignment;
+                    }
+                    else {
                         $pre .= qq{ align="$alignment"} if $alignment;
                     }
                 }
-                $style .= qq{;padding-left:${padleft}em} if $padleft;
+                $style .= qq{;padding-left:${padleft}em}   if $padleft;
                 $style .= qq{;padding-right:${padright}em} if $padright;
-                $style .= qq{;clear:${clear}} if $clear;
+                $style .= qq{;clear:${clear}}              if $clear;
                 $class =~ s/^ // if $class;
                 $pre .= qq{ class="$class"} if $class;
-                $pre .= qq{ id="$id"} if $id;
+                $pre .= qq{ id="$id"}       if $id;
                 $style =~ s/^;// if $style;
                 $pre .= qq{ style="$style"} if $style;
-                $pre .= qq{ lang="$lang"} if $lang;
-                $pre .= q{ cite="} . $self->format_url(url => $cite) . '"' if defined $cite;
+                $pre .= qq{ lang="$lang"}   if $lang;
+                $pre .= q{ cite="} . $self->format_url( url => $cite ) . '"'
+                    if defined $cite;
                 $pre .= '>';
                 $clear = undef;
             }
             $pre .= '<p>';
-        } elsif ($block =~ m/fn(\d+)/) {
+        }
+        elsif ( $block =~ m/fn(\d+)/ ) {
             my $fnum = $1;
-            $pre .= '<p';
-            $class .= ' '.$self->{css}{class_footnote} if $self->{css}{class_footnote};
+            $pre   .= '<p';
+            $class .= ' ' . $self->{css}{class_footnote}
+                if $self->{css}{class_footnote};
             if ($align) {
                 my $alignment = _halign($align);
-                if ($self->{css_mode}) {
-                    if (($padleft || $padright) &&
-                        (($alignment eq 'left') || ($alignment eq 'right'))) {
-                        $style .= ';float:'.$alignment;
-                    } else {
-                        $style .= ';text-align:'.$alignment;
+                if ( $self->{css_mode} ) {
+                    if (( $padleft || $padright )
+                        && (   ( $alignment eq 'left' )
+                            || ( $alignment eq 'right' ) )
+                        )
+                    {
+                        $style .= ';float:' . $alignment;
                     }
-                    $class .= $self->{css}{"class_align_$alignment"} || $alignment;
-                } else {
+                    else {
+                        $style .= ';text-align:' . $alignment;
+                    }
+                    $class .= $self->{css}{"class_align_$alignment"}
+                        || $alignment;
+                }
+                else {
                     $pre .= qq{ align="$alignment"};
                 }
             }
-            $style .= qq{;padding-left:${padleft}em} if $padleft;
+            $style .= qq{;padding-left:${padleft}em}   if $padleft;
             $style .= qq{;padding-right:${padright}em} if $padright;
-            $style .= qq{;clear:${clear}} if $clear;
+            $style .= qq{;clear:${clear}}              if $clear;
             $class =~ s/^ // if $class;
             $pre .= qq{ class="$class"} if $class;
-            $pre .= qq{ id="}.($self->{css}{id_footnote_prefix}||'fn').$fnum.'"';
+            $pre
+                .= qq{ id="}
+                . ( $self->{css}{id_footnote_prefix} || 'fn' )
+                . $fnum . '"';
             $style =~ s/^;// if $style;
             $pre .= qq{ style="$style"} if $style;
-            $pre .= qq{ lang="$lang"} if $lang;
+            $pre .= qq{ lang="$lang"}   if $lang;
             $pre .= '>';
-            $pre .= '<sup>'.$fnum.'</sup> ';
+            $pre .= '<sup>' . $fnum . '</sup> ';
+
             # we can close like a regular paragraph tag now
             $block = 'p';
             $clear = undef;
-        } else {
-            $pre .= '<' . ($macros{$block} || $block);
+        }
+        else {
+            $pre .= '<' . ( $macros{$block} || $block );
             if ($align) {
                 my $alignment = _halign($align);
-                if ($self->{css_mode}) {
-                    if (($padleft || $padright) &&
-                        (($alignment eq 'left') || ($alignment eq 'right'))) {
-                        $style .= ';float:'.$alignment;
-                    } else {
-                        $style .= ';text-align:'.$alignment;
+                if ( $self->{css_mode} ) {
+                    if (( $padleft || $padright )
+                        && (   ( $alignment eq 'left' )
+                            || ( $alignment eq 'right' ) )
+                        )
+                    {
+                        $style .= ';float:' . $alignment;
                     }
-                    $class .= ' '.$self->{css}{"class_align_$alignment"} || $alignment;
-                } else {
+                    else {
+                        $style .= ';text-align:' . $alignment;
+                    }
+                    $class .= ' ' . $self->{css}{"class_align_$alignment"}
+                        || $alignment;
+                }
+                else {
                     $pre .= qq{ align="$alignment"};
                 }
             }
-            $style .= qq{;padding-left:${padleft}em} if $padleft;
+            $style .= qq{;padding-left:${padleft}em}   if $padleft;
             $style .= qq{;padding-right:${padright}em} if $padright;
-            $style .= qq{;clear:${clear}} if $clear;
+            $style .= qq{;clear:${clear}}              if $clear;
             $class =~ s/^ // if $class;
             $pre .= qq{ class="$class"} if $class;
-            $pre .= qq{ id="$id"} if $id;
+            $pre .= qq{ id="$id"}       if $id;
             $style =~ s/^;// if $style;
             $pre .= qq{ style="$style"} if $style;
-            $pre .= qq{ lang="$lang"} if $lang;
-            $pre .= qq{ cite="} . $self->format_url(url => $cite) . '"' if defined $cite && $block eq 'bq'; #'
+            $pre .= qq{ lang="$lang"}   if $lang;
+            $pre .= qq{ cite="} . $self->format_url( url => $cite ) . '"'
+                if defined $cite && $block eq 'bq';    #'
             $pre .= '>';
             $clear = undef;
         }
 
-        $buffer = $self->format_paragraph(text => $para);
+        $buffer = $self->format_paragraph( text => $para );
 
-        if ($block eq 'bq') {
+        if ( $block eq 'bq' ) {
             $post .= '</p>' if $buffer !~ m/<p[ >]/;
-            if ($sticky == 0) {
+            if ( $sticky == 0 ) {
                 $post .= '</blockquote>';
             }
-        } else {
+        }
+        else {
             $post .= '</' . $block . '>';
         }
 
-        if ($buffer =~ m/$blocktags/) {
+        if ( $buffer =~ m/$blocktags/ ) {
             $buffer =~ s/^\n\n//s;
             $out .= $buffer;
-        } else {
-            $buffer = $self->format_block(text => "|$filter|".$buffer, inline => 1) if defined $filter;
+        }
+        else {
+            $buffer = $self->format_block(
+                text   => "|$filter|" . $buffer,
+                inline => 1
+            ) if defined $filter;
             $out .= $pre . $buffer . $post;
         }
     }
 
     if ($sticky) {
-        if ($block eq 'bc') {
+        if ( $block eq 'bc' ) {
+
             # close our blockcode section
-            $out .= $self->{_blockcode_close}; # . "\n\n";
-        } elsif ($block eq 'bq') {
-            $out .= '</blockquote>'; # . "\n\n";
-        } elsif (($block eq 'table') && ($stickybuff)) {
-            my $table_out = $self->format_table(text => $stickybuff);
+            $out .= $self->{_blockcode_close};    # . "\n\n";
+        }
+        elsif ( $block eq 'bq' ) {
+            $out .= '</blockquote>';              # . "\n\n";
+        }
+        elsif ( ( $block eq 'table' ) && ($stickybuff) ) {
+            my $table_out = $self->format_table( text => $stickybuff );
             $out .= $table_out if defined $table_out;
-        } elsif (($block eq 'dl') && ($stickybuff)) {
-            my $dl_out = $self->format_deflist(text => $stickybuff);
+        }
+        elsif ( ( $block eq 'dl' ) && ($stickybuff) ) {
+            my $dl_out = $self->format_deflist( text => $stickybuff );
             $out .= $dl_out if defined $dl_out;
         }
     }
 
     # cleanup-- restore preserved blocks
     my $i = scalar(@repl);
-    $out =~ s!(?:<|&lt;)textile#$i(?:>|&gt;)!$_!, $i-- while local $_ = pop @repl;
+    $out =~ s!(?:<|&lt;)textile#$i(?:>|&gt;)!$_!, $i--
+        while local $_ = pop @repl;
 
     # scan for br, hr tags that are not closed and close them
     # only for xhtml! just the common ones -- don't fret over input
     # and the like.
-    if ($self->{flavor} =~ m/^xhtml/i) {
+    if ( $self->{flavor} =~ m/^xhtml/i ) {
         $out =~ s/(<(?:img|br|hr)[^>]*?(?<!\/))>/$1 \/>/g;
     }
 
@@ -772,7 +871,7 @@ sub textile {
 }
 
 sub format_paragraph {
-    my $self = shift;
+    my $self   = shift;
     my (%args) = @_;
     my $buffer = defined $args{text} ? $args{text} : '';
 
@@ -783,20 +882,23 @@ sub format_paragraph {
                 {_repl(\@repl, $self->format_block(text => $2, inline => 1, pre => $1, post => $3))}gesx;
 
     my $tokens;
-    if ($buffer =~ m/</ && (!$self->{disable_html})) {  # optimization -- no point in tokenizing if we
-                            # have no tags to tokenize
+    if ( $buffer =~ m/</ && ( !$self->{disable_html} ) )
+    {    # optimization -- no point in tokenizing if we
+            # have no tags to tokenize
         $tokens = _tokenize($buffer);
-    } else {
-        $tokens = [['text', $buffer]];
+    }
+    else {
+        $tokens = [ [ 'text', $buffer ] ];
     }
     my $result = '';
-    foreach my $token (@{$tokens}) {
+    foreach my $token ( @{$tokens} ) {
         my $text = $token->[1];
-        if ($token->[0] eq 'tag') {
+        if ( $token->[0] eq 'tag' ) {
             $text =~ s/&(?!amp;)/&amp;/g;
             $result .= $text;
-        } else {
-            $text = $self->format_inline(text => $text);
+        }
+        else {
+            $text = $self->format_inline( text => $text );
             $result .= $text;
         }
     }
@@ -806,25 +908,31 @@ sub format_paragraph {
     $result = '';
     my $needs_closing = 0;
     foreach my $line (@lines) {
-        if (($line !~ m/($blocktags)/)
-            && (($line =~ m/^[^<]/ || $line =~ m/>[^<]/)
-                || ($line !~ m/<img /))) {
-            if ($self->{_line_open}) {
+        if (( $line !~ m/($blocktags)/ )
+            && (   ( $line =~ m/^[^<]/ || $line =~ m/>[^<]/ )
+                || ( $line !~ m/<img / ) )
+            )
+        {
+            if ( $self->{_line_open} ) {
                 $result .= "\n" if $result ne '';
                 $result .= $self->{_line_open} . $line . $self->{_line_close};
-            } else {
+            }
+            else {
                 if ($needs_closing) {
-                    $result .= $self->{_line_close} ."\n";
-                } else {
+                    $result .= $self->{_line_close} . "\n";
+                }
+                else {
                     $needs_closing = 1;
                     $result .= "\n" if $result ne '';
                 }
                 $result .= $line;
             }
-        } else {
+        }
+        else {
             if ($needs_closing) {
-                $result .= $self->{_line_close} ."\n";
-            } else {
+                $result .= $self->{_line_close} . "\n";
+            }
+            else {
                 $result .= "\n" if $result ne '';
             }
             $result .= $line;
@@ -841,7 +949,7 @@ sub format_paragraph {
     $result =~ s|<textile#$i>|$_|, $i-- while local $_ = pop @repl;
 
     # quotalize
-    if ($self->{do_quotes}) {
+    if ( $self->{do_quotes} ) {
         $result = $self->process_quotes($result);
     }
 
@@ -849,33 +957,35 @@ sub format_paragraph {
 }
 
 {
-my @qtags = (['**', 'b',      '(?<!\*)\*\*(?!\*)', '\*'],
-             ['__', 'i',      '(?<!_)__(?!_)', '_'],
-             ['??', 'cite',   '\?\?(?!\?)', '\?'],
-             ['*',  'strong', '(?<!\*)\*(?!\*)', '\*'],
-             ['_',  'em',     '(?<!_)_(?!_)', '_'],
-             ['-',  'del',    '(?<!\-)\-(?!\-)', '-'],
-             ['+',  'ins',    '(?<!\+)\+(?!\+)', '\+'],
-             ['++', 'big',    '(?<!\+)\+\+(?!\+)', '\+\+'],
-             ['--', 'small',  '(?<!\-)\-\-(?!\-)', '\-\-'],
-             ['~',  'sub',    '(?<!\~)\~(?![\\\/~])', '\~']);
+    my @qtags = (
+        [ '**', 'b',      '(?<!\*)\*\*(?!\*)',    '\*' ],
+        [ '__', 'i',      '(?<!_)__(?!_)',        '_' ],
+        [ '??', 'cite',   '\?\?(?!\?)',           '\?' ],
+        [ '*',  'strong', '(?<!\*)\*(?!\*)',      '\*' ],
+        [ '_',  'em',     '(?<!_)_(?!_)',         '_' ],
+        [ '-',  'del',    '(?<!\-)\-(?!\-)',      '-' ],
+        [ '+',  'ins',    '(?<!\+)\+(?!\+)',      '\+' ],
+        [ '++', 'big',    '(?<!\+)\+\+(?!\+)',    '\+\+' ],
+        [ '--', 'small',  '(?<!\-)\-\-(?!\-)',    '\-\-' ],
+        [ '~',  'sub',    '(?<!\~)\~(?![\\\/~])', '\~' ]
+    );
 
+    sub format_inline {
+        my $self   = shift;
+        my (%args) = @_;
+        my $text   = defined $args{text} ? $args{text} : '';
 
-sub format_inline {
-    my $self = shift;
-    my (%args) = @_;
-    my $text = defined $args{text} ? $args{text} : '';
+        my @repl;
 
-    my @repl;
+        no warnings 'uninitialized';
+        $text
+            =~ s{$codere}{_repl(\@repl, $self->format_code(text => $2.$4, lang => $1.$3))}gem;
 
-    no warnings 'uninitialized';
-    $text =~ s{$codere}{_repl(\@repl, $self->format_code(text => $2.$4, lang => $1.$3))}gem;
+        # images must be processed before encoding the text since they might
+        # have the <, > alignment specifiers...
 
-    # images must be processed before encoding the text since they might
-    # have the <, > alignment specifiers...
-
-    # !blah (alt)! -> image
-    $text =~ s!(?:^|(?<=[\s>])|([{[]))     # $1: open brace/bracket
+        # !blah (alt)! -> image
+        $text =~ s!(?:^|(?<=[\s>])|([{[]))     # $1: open brace/bracket
                \!                          # opening
                ($imgalignre?)              # $2: optional alignment
                ($clstypadre*)              # $3: optional CSS class/id
@@ -888,7 +998,7 @@ sub format_inline {
                (?:$|([\]}])|(?=$punct{1,2}|\s))# $8: closing brace/bracket
               !_repl(\@repl, $self->format_image(pre => $1, src => $5, align => $2||$4, extra => $6, url => $7, clsty => $3, post => $8))!gemx;
 
-    $text =~ s!(?:^|(?<=[\s>])|([{[]))     # $1: open brace/bracket
+        $text =~ s!(?:^|(?<=[\s>])|([{[]))     # $1: open brace/bracket
                \%                          # opening
                ($halignre?)                # $2: optional alignment
                ($clstyre*)                 # $3: optional CSS class/id
@@ -900,17 +1010,17 @@ sub format_inline {
                (?:$|([\]}])|(?=$punct{1,2}|\s))# $7: closing brace/bracket
               !_repl(\@repl, $self->format_span(pre => $1,text => $5,align => $2||$4, cite => $6, clsty => $3, post => $7))!gemx;
 
-    $text = $self->encode_html($text);
-    $text =~ s!&lt;textile#(\d+)&gt;!<textile#$1>!g;
-    $text =~ s!&amp;quot;!&#34;!g;
-    $text =~ s!&amp;(([a-z]+|#\d+);)!&$1!g;
-    $text =~ s!&quot;!"!g; #"
+        $text = $self->encode_html($text);
+        $text =~ s!&lt;textile#(\d+)&gt;!<textile#$1>!g;
+        $text =~ s!&amp;quot;!&#34;!g;
+        $text =~ s!&amp;(([a-z]+|#\d+);)!&$1!g;
+        $text =~ s!&quot;!"!g;                             #"
 
     # These create markup with entities. Do first and 'save' result for later:
     # "text":url -> hyperlink
     # links with brackets surrounding
-    my $parenre = qr/\( (?: [^()] )* \)/x;
-    $text =~ s!(
+        my $parenre = qr/\( (?: [^()] )* \)/x;
+        $text =~ s!(
                [{[]
                (?:
                    (?:"                    # quote character
@@ -939,7 +1049,7 @@ sub format_inline {
                         clsty    => defined $2 ? $2 : $5)
                 )!gemx;
 
-    $text =~ s!((?:^|(?<=[\s>\(]))         # $1: open brace/bracket
+        $text =~ s!((?:^|(?<=[\s>\(]))         # $1: open brace/bracket
                (?: (?:"                    # quote character "
                       ($clstyre*)?         # $2: optional CSS class/id
                       ([^"]+?)             # $3: link text "
@@ -965,160 +1075,173 @@ sub format_inline {
                         clsty    => defined $2 ? $2 : $5)
                 )!gemx;
 
-    if ($self->{flavor} =~ m/^xhtml2/) {
-        # citation with cite link
-        $text =~ s!(?:^|(?<=[\s>'"\(])|([{[])) # $1: open brace/bracket '
+        if ( $self->{flavor} =~ m/^xhtml2/ ) {
+
+            # citation with cite link
+            $text =~ s!(?:^|(?<=[\s>'"\(])|([{[])) # $1: open brace/bracket '
                    \?\?                        # opening '??'
                    ([^\?]+?)                   # $2: characters (can't contain '?')
                    \?\?                        # closing '??'
                    :(\d+|$urlre)               # $3: optional citation URL
                    (?:$|([\]}])|(?=$punct{1,2}|\s))# $4: closing brace/bracket
                   !_repl(\@repl, $self->format_cite(pre => $1,text => $2,cite => $3,post => $4))!gemx;
-    }
+        }
 
-    # footnotes
-    if ($text =~ m/[^ ]\[\d+\]/) {
-        my $fntag = '<sup';
-        $fntag .= ' class="'.$self->{css}{class_footnote}.'"' if $self->{css}{class_footnote};
-        $fntag .= '><a href="#'.($self->{css}{id_footnote_prefix}||'fn');
-        $text =~ s{([^ ])\[(\d+)\]}{$1$fntag$2">$2</a></sup>}g;
-    }
+        # footnotes
+        if ( $text =~ m/[^ ]\[\d+\]/ ) {
+            my $fntag = '<sup';
+            $fntag .= ' class="' . $self->{css}{class_footnote} . '"'
+                if $self->{css}{class_footnote};
+            $fntag .= '><a href="#'
+                . ( $self->{css}{id_footnote_prefix} || 'fn' );
+            $text =~ s{([^ ])\[(\d+)\]}{$1$fntag$2">$2</a></sup>}g;
+        }
 
-    # translate macros:
-    $text =~ s{(\{)(.+?)(\})}
+        # translate macros:
+        $text =~ s{(\{)(.+?)(\})}
               {$self->format_macro(pre => $1, post => $3, macro => $2)}gex;
 
-    # these were present with textile 1 and are common enough
-    # to not require macro braces...
-    # (tm) -> &trade;
-    $text =~ s{[\(\[]TM[\)\]]}{&#8482;}gi;
-    # (c) -> &copy;
-    $text =~ s{[\(\[]C[\)\]]}{&#169;}gi;
-    # (r) -> &reg;
-    $text =~ s{[\(\[]R[\)\]]}{&#174;}gi;
+        # these were present with textile 1 and are common enough
+        # to not require macro braces...
+        # (tm) -> &trade;
+        $text =~ s{[\(\[]TM[\)\]]}{&#8482;}gi;
 
-    if ($self->{preserve_spaces}) {
-        # replace two spaces with an em space
-        $text =~ s/(?<!\s)\ \ (?!=\s)/&#8195;/g;
-    }
+        # (c) -> &copy;
+        $text =~ s{[\(\[]C[\)\]]}{&#169;}gi;
 
-    my $redo = $text =~ m/[\*_\?\-\+\^\~]/;
-    my $last = $text;
-    while ($redo) {
-        # simple replacements...
-        $redo = 0;
-        foreach my $tag (@qtags) {
-            my ($f, $r, $qf, $cls) = @{$tag};
-            if ($text =~ s/(?:^|(?<=[\s>'"])|([{[])) # "' $1 - pre
+        # (r) -> &reg;
+        $text =~ s{[\(\[]R[\)\]]}{&#174;}gi;
+
+        if ( $self->{preserve_spaces} ) {
+
+            # replace two spaces with an em space
+            $text =~ s/(?<!\s)\ \ (?!=\s)/&#8195;/g;
+        }
+
+        my $redo = $text =~ m/[\*_\?\-\+\^\~]/;
+        my $last = $text;
+        while ($redo) {
+
+            # simple replacements...
+            $redo = 0;
+            foreach my $tag (@qtags) {
+                my ( $f, $r, $qf, $cls ) = @{$tag};
+                if ($text =~ s/(?:^|(?<=[\s>'"])|([{[])) # "' $1 - pre
                            $qf                       #
                            (?:($clstyre*))?          # $2 - attributes
                            ([^$cls\s].*?)            # $3 - content
                            (?<=\S)$qf                #
                            (?:$|([\]}])|(?=$punct{1,2}|\s)) # $4 - post
-                          /$self->format_tag(tag => $r, marker => $f, pre => $1, text => $3, clsty => $2, post => $4)/gemx) {
+                          /$self->format_tag(tag => $r, marker => $f, pre => $1, text => $3, clsty => $2, post => $4)/gemx
+                    )
+                {
                     $redo ||= $last ne $text;
                     $last = $text;
+                }
             }
         }
-    }
 
-    # superscript is an even simpler replacement...
-    $text =~ s/(?<!\^)\^(?!\^)(.+?)(?<!\^)\^(?!\^)/<sup>$1<\/sup>/g;
+        # superscript is an even simpler replacement...
+        $text =~ s/(?<!\^)\^(?!\^)(.+?)(?<!\^)\^(?!\^)/<sup>$1<\/sup>/g;
 
-    # ABC(Aye Bee Cee) -> acronym
-    $text =~ s{\b([A-Z][A-Za-z0-9]*?[A-Z0-9]+?)\b(?:[(]([^)]*)[)])}
+        # ABC(Aye Bee Cee) -> acronym
+        $text =~ s{\b([A-Z][A-Za-z0-9]*?[A-Z0-9]+?)\b(?:[(]([^)]*)[)])}
               {_repl(\@repl,qq{<acronym title="}.$self->encode_html_basic($2).qq{">$1</acronym>})}ge;
 
-    # ABC -> 'capped' span
-    if (my $caps = $self->{css}{class_caps}) {
-        $text =~ s/(^|[^"][>\s])  # "
+        # ABC -> 'capped' span
+        if ( my $caps = $self->{css}{class_caps} ) {
+            $text =~ s/(^|[^"][>\s])  # "
                    ((?:[A-Z](?:[A-Z0-9\.,']|\&amp;){2,}\ *)+?) # '
                    (?=[^A-Z\.0-9]|$)
                   /$1._repl(\@repl, qq{<span class="$caps">$2<\/span>})/gemx;
+        }
+
+        # nxn -> n&times;n
+        $text =~ s{((?:[0-9\.]0|[1-9]|\d['"])\ ?)x(\ ?\d)}{$1&#215;$2}g;
+
+        # translate these entities to the Unicode equivalents:
+        $text =~ s/&#133;/&#8230;/g;
+        $text =~ s/&#145;/&#8216;/g;
+        $text =~ s/&#146;/&#8217;/g;
+        $text =~ s/&#147;/&#8220;/g;
+        $text =~ s/&#148;/&#8221;/g;
+        $text =~ s/&#150;/&#8211;/g;
+        $text =~ s/&#151;/&#8212;/g;
+
+        # Restore replacements done earlier:
+        my $i = scalar(@repl);
+        $text =~ s|<textile#$i>|$_|, $i-- while local $_ = pop @repl;
+
+        # translate entities to characters for highbit stuff since
+        # we're using utf8
+        # removed for backward compatability with older versions of Perl
+        #if ($self->{charset} =~ m/^utf-?8$/i) {
+        #    # translate any unicode entities to native UTF-8
+        #    $text =~ s/\&\#(\d+);/($1 > 127) ? pack('U',$1) : chr($1)/ge;
+        #}
+
+        $text;
     }
-
-    # nxn -> n&times;n
-    $text =~ s{((?:[0-9\.]0|[1-9]|\d['"])\ ?)x(\ ?\d)}{$1&#215;$2}g;
-
-    # translate these entities to the Unicode equivalents:
-    $text =~ s/&#133;/&#8230;/g;
-    $text =~ s/&#145;/&#8216;/g;
-    $text =~ s/&#146;/&#8217;/g;
-    $text =~ s/&#147;/&#8220;/g;
-    $text =~ s/&#148;/&#8221;/g;
-    $text =~ s/&#150;/&#8211;/g;
-    $text =~ s/&#151;/&#8212;/g;
-
-    # Restore replacements done earlier:
-    my $i = scalar(@repl);
-    $text =~ s|<textile#$i>|$_|, $i-- while local $_ = pop @repl;
-
-    # translate entities to characters for highbit stuff since
-    # we're using utf8
-    # removed for backward compatability with older versions of Perl
-    #if ($self->{charset} =~ m/^utf-?8$/i) {
-    #    # translate any unicode entities to native UTF-8
-    #    $text =~ s/\&\#(\d+);/($1 > 127) ? pack('U',$1) : chr($1)/ge;
-    #}
-
-    $text;
-}
 }
 
 {
+
     # pull in charnames, but only for Perl 5.8 or later (and
     # disable strict subs for backward compatability
     my $Have_Charnames = 0;
-    if ($] >= 5.008) {
+    if ( $] >= 5.008 ) {
         eval 'use charnames qw(:full);';
         $Have_Charnames = 1;
     }
 
     sub format_macro {
-        my $self = shift;
+        my $self  = shift;
         my %attrs = @_;
         my $macro = $attrs{macro};
-        if (defined $self->{macros}->{$macro}) {
+        if ( defined $self->{macros}->{$macro} ) {
             return $self->{macros}->{$macro};
         }
 
         # handle full unicode name translation
         if ($Have_Charnames) {
+
             # charnames::vianame is only available in Perl 5.8.0 and later...
-            if (defined (my $unicode = charnames::vianame(uc($macro)))) {
-                return '&#'.$unicode.';';
+            if ( defined( my $unicode = charnames::vianame( uc($macro) ) ) ) {
+                return '&#' . $unicode . ';';
             }
         }
 
-        return $attrs{pre}.$macro.$attrs{post};
+        return $attrs{pre} . $macro . $attrs{post};
     }
 }
 
 sub format_cite {
-    my $self = shift;
+    my $self   = shift;
     my (%args) = @_;
-    my $pre  = defined $args{pre}  ? $args{pre}  : '';
-    my $text = defined $args{text} ? $args{text} : '';
-    my $post = defined $args{post} ? $args{post} : '';
-    my $cite = $args{cite};
-    _strip_borders(\$pre, \$post);
-    my $tag = $pre.'<cite';
-    if (($self->{flavor} =~ m/^xhtml2/) && defined $cite && $cite) {
-        $cite = $self->format_url(url => $cite);
+    my $pre    = defined $args{pre} ? $args{pre} : '';
+    my $text   = defined $args{text} ? $args{text} : '';
+    my $post   = defined $args{post} ? $args{post} : '';
+    my $cite   = $args{cite};
+    _strip_borders( \$pre, \$post );
+    my $tag = $pre . '<cite';
+
+    if ( ( $self->{flavor} =~ m/^xhtml2/ ) && defined $cite && $cite ) {
+        $cite = $self->format_url( url => $cite );
         $tag .= qq{ cite="$cite"};
-    } else {
+    }
+    else {
         $post .= ':';
     }
     $tag .= '>';
-    return $tag . $self->format_inline(text => $text) . '</cite>'.$post;
+    return $tag . $self->format_inline( text => $text ) . '</cite>' . $post;
 }
 
 sub format_code {
-    my $self = shift;
+    my $self   = shift;
     my (%args) = @_;
-    my $code = defined $args{text} ? $args{text} : '';
-    my $lang = $args{lang};
-    $code = $self->encode_html($code, 1);
+    my $code   = defined $args{text} ? $args{text} : '';
+    my $lang   = $args{lang};
+    $code = $self->encode_html( $code, 1 );
     $code =~ s/&lt;textile#(\d+)&gt;/<textile#$1>/g;
     my $tag = '<code';
     $tag .= " language=\"$lang\"" if $lang;
@@ -1127,24 +1250,28 @@ sub format_code {
 
 sub format_classstyle {
     my $self = shift;
-    my ($clsty, $class, $style) = @_;
+    my ( $clsty, $class, $style ) = @_;
 
-    $style = ''      if not defined $style;
-    $class =~ s/^ // if     defined $class;
+    $style = '' if not defined $style;
+    $class =~ s/^ // if defined $class;
 
-    my ($lang, $padleft, $padright, $id);
-    if ($clsty && ($clsty =~ m/{([^}]+)}/)) {
+    my ( $lang, $padleft, $padright, $id );
+    if ( $clsty && ( $clsty =~ m/{([^}]+)}/ ) ) {
         my $_style = $1;
         $_style =~ s/\n/ /g;
-        $style .= ';'.$_style;
+        $style .= ';' . $_style;
         $clsty =~ s/{[^}]+}//g;
     }
-    if ($clsty && ($clsty =~ m/\(([A-Za-z0-9_\- ]+?)(?:#(.+?))?\)/ ||
-                   $clsty =~ m/\(([A-Za-z0-9_\- ]+?)?(?:#(.+?))\)/)) {
-        if ($1 || $2) {
+    if ($clsty
+        && (   $clsty =~ m/\(([A-Za-z0-9_\- ]+?)(?:#(.+?))?\)/
+            || $clsty =~ m/\(([A-Za-z0-9_\- ]+?)?(?:#(.+?))\)/ )
+        )
+    {
+        if ( $1 || $2 ) {
             if ($class) {
                 $class = $1 . ' ' . $class;
-            } else {
+            }
+            else {
                 $class = $1;
             }
             $id = $2;
@@ -1156,118 +1283,122 @@ sub format_classstyle {
             }
         }
     }
-    if ($clsty && ($clsty =~ m/(\(+)/)) {
+    if ( $clsty && ( $clsty =~ m/(\(+)/ ) ) {
         $padleft = length($1);
         $clsty =~ s/\(+//;
     }
-    if ($clsty && ($clsty =~ m/(\)+)/)) {
+    if ( $clsty && ( $clsty =~ m/(\)+)/ ) ) {
         $padright = length($1);
         $clsty =~ s/\)+//;
     }
-    if ($clsty && ($clsty =~ m/\[(.+?)\]/)) {
+    if ( $clsty && ( $clsty =~ m/\[(.+?)\]/ ) ) {
         $lang = $1;
         $clsty =~ s/\[.+?\]//g;
     }
     my $attrs = '';
 
-    $style .= qq{;padding-left:${padleft}em} if $padleft;
+    $style .= qq{;padding-left:${padleft}em}   if $padleft;
     $style .= qq{;padding-right:${padright}em} if $padright;
     $style =~ s/^;//;
 
-    if ( $class ) {
+    if ($class) {
         $class =~ s/^ //;
         $class =~ s/ $//;
         $attrs .= qq{ class="$class"};
     }
-    $attrs .= qq{ id="$id"} if $id;
+    $attrs .= qq{ id="$id"}       if $id;
     $attrs .= qq{ style="$style"} if $style;
-    $attrs .= qq{ lang="$lang"} if $lang;
+    $attrs .= qq{ lang="$lang"}   if $lang;
     $attrs =~ s/^ //;
 
     return $attrs;
 }
 
 sub format_tag {
-    my $self = shift;
-    my (%args) = @_;
+    my $self    = shift;
+    my (%args)  = @_;
     my $tagname = $args{tag};
-    my $text  = defined $args{text}  ? $args{text}  : '';
-    my $pre   = defined $args{pre}   ? $args{pre}   : '';
-    my $post  = defined $args{post}  ? $args{post}  : '';
-    my $clsty = defined $args{clsty} ? $args{clsty} : '';
-    _strip_borders(\$pre, \$post);
-    my $tag = "<$tagname";
+    my $text    = defined $args{text} ? $args{text} : '';
+    my $pre     = defined $args{pre} ? $args{pre} : '';
+    my $post    = defined $args{post} ? $args{post} : '';
+    my $clsty   = defined $args{clsty} ? $args{clsty} : '';
+    _strip_borders( \$pre, \$post );
+    my $tag  = "<$tagname";
     my $attr = $self->format_classstyle($clsty);
     $tag .= qq{ $attr} if $attr;
     $tag .= qq{>$text</$tagname>};
 
-    return $pre.$tag.$post;
+    return $pre . $tag . $post;
 }
 
 sub format_deflist {
-    my $self = shift;
+    my $self   = shift;
     my (%args) = @_;
-    my $str = defined $args{text} ? $args{text} : '';
+    my $str    = defined $args{text} ? $args{text} : '';
     my $clsty;
     my @lines = split /\n/, $str;
-    if ($lines[0] =~ m/^(dl($clstyre*?)\.\.?(?:\ +|$))/) {
+    if ( $lines[0] =~ m/^(dl($clstyre*?)\.\.?(?:\ +|$))/ ) {
         $clsty = $2;
-        $lines[0] = substr($lines[0], length($1));
+        $lines[0] = substr( $lines[0], length($1) );
     }
 
-
-    my ($dt, $dd);
+    my ( $dt, $dd );
     my $out = '';
     foreach my $line (@lines) {
-        if ($line =~ m/^((?:$clstyre*)(?:[^\ ].*?)(?<!["'\ ])):([^\ \/].*)$/) {
-            $out .= add_term($self, $dt, $dd) if ($dt && $dd);
+        if ($line =~ m/^((?:$clstyre*)(?:[^\ ].*?)(?<!["'\ ])):([^\ \/].*)$/ )
+        {
+            $out .= add_term( $self, $dt, $dd ) if ( $dt && $dd );
             $dt = $1;
             $dd = $2;
-        } else {
+        }
+        else {
             $dd .= "\n" . $line;
         }
     }
-    $out .= add_term($self, $dt, $dd) if $dt && $dd;
+    $out .= add_term( $self, $dt, $dd ) if $dt && $dd;
 
     my $tag = '<dl';
     my $attr;
     $attr = $self->format_classstyle($clsty) if $clsty;
     $tag .= qq{ $attr} if $attr;
-    $tag .= '>'."\n";
+    $tag .= '>' . "\n";
 
-    return $tag.$out."</dl>\n";
+    return $tag . $out . "</dl>\n";
 }
 
 sub add_term {
-    my ($self, $dt, $dd) = @_;
-    my ($dtattr, $ddattr);
+    my ( $self, $dt, $dd ) = @_;
+    my ( $dtattr, $ddattr );
     my $dtlang;
-    if ($dt =~ m/^($clstyre*)/) {
+    if ( $dt =~ m/^($clstyre*)/ ) {
         my $param = $1;
         $dtattr = $self->format_classstyle($param);
-        if ($param =~ m/\[([A-Za-z]+?)\]/) {
+        if ( $param =~ m/\[([A-Za-z]+?)\]/ ) {
             $dtlang = $1;
         }
-        $dt = substr($dt, length($param));
+        $dt = substr( $dt, length($param) );
     }
-    if ($dd =~ m/^($clstyre*)/) {
+    if ( $dd =~ m/^($clstyre*)/ ) {
         my $param = $1;
+
         # if the language was specified for the term,
         # then apply it to the definition as well (unless
         # already specified of course)
-        if ($dtlang && ($param =~ m/\[([A-Za-z]+?)\]/)) {
+        if ( $dtlang && ( $param =~ m/\[([A-Za-z]+?)\]/ ) ) {
             undef $dtlang;
         }
-        $ddattr = $self->format_classstyle(($dtlang ? "[$dtlang]" : '') . $param);
-        $dd = substr($dd, length($param));
+        $ddattr = $self->format_classstyle(
+            ( $dtlang ? "[$dtlang]" : '' ) . $param );
+        $dd = substr( $dd, length($param) );
     }
     my $out = '<dt';
     $out .= qq{ $dtattr} if $dtattr;
-    $out .= '>' . $self->format_inline(text => $dt) . '</dt>' . "\n";
-    if ($dd =~ m/\n\n/) {
+    $out .= '>' . $self->format_inline( text => $dt ) . '</dt>' . "\n";
+    if ( $dd =~ m/\n\n/ ) {
         $dd = $self->textile($dd) if $dd =~ m/\n\n/;
-    } else {
-        $dd = $self->format_paragraph(text => $dd);
+    }
+    else {
+        $dd = $self->format_paragraph( text => $dd );
     }
     $out .= '<dd';
     $out .= qq{ $ddattr} if $ddattr;
@@ -1276,71 +1407,75 @@ sub add_term {
     return $out;
 }
 
-
 sub format_list {
-    my $self = shift;
+    my $self   = shift;
     my (%args) = @_;
-    my $str = defined $args{text} ? $args{text} : '';
+    my $str    = defined $args{text} ? $args{text} : '';
 
-    my %list_tags = ('*' => 'ul', '#' => 'ol');
+    my %list_tags = ( '*' => 'ul', '#' => 'ol' );
 
     my @lines = split /\n/, $str;
 
     my @stack;
     my $last_depth = 0;
-    my $item = '';
-    my $out = '';
+    my $item       = '';
+    my $out        = '';
     foreach my $line (@lines) {
         if ($line =~ m/^((?:$clstypadre*|$halignre)*)
                        ([\#\*]+)
                        ((?:$halignre|$clstypadre*)*)
-                       \ (.+)$/x) {
-            if ($item ne '') {
-                if ($item =~ m/\n/) {
-                    if ($self->{_line_open}) {
+                       \ (.+)$/x
+            )
+        {
+            if ( $item ne '' ) {
+                if ( $item =~ m/\n/ ) {
+                    if ( $self->{_line_open} ) {
                         $item =~ s/(<li[^>]*>|^)/$1$self->{_line_open}/gm;
                         $item =~ s/(\n|$)/$self->{_line_close}$1/gs;
-                    } else {
+                    }
+                    else {
                         $item =~ s/(\n)/$self->{_line_close}$1/gs;
                     }
                 }
                 $out .= $item;
                 $item = '';
             }
-            my $type = substr($2, 0, 1);
-            my $depth = length($2);
+            my $type       = substr( $2, 0, 1 );
+            my $depth      = length($2);
             my $blockparam = $1;
-            my $itemparam = $3;
+            my $itemparam  = $3;
             $line = $4;
-            my ($blockclsty, $blockalign, $blockattr, $itemattr, $itemclsty,
-                $itemalign);
-            if ($blockparam =~ m/($clstypadre+)/) {
+            my ($blockclsty, $blockalign, $blockattr,
+                $itemattr,   $itemclsty,  $itemalign
+            );
+            if ( $blockparam =~ m/($clstypadre+)/ ) {
                 $blockclsty = $1;
             }
-            if ($blockparam =~ m/($halignre+)/) {
+            if ( $blockparam =~ m/($halignre+)/ ) {
                 $blockalign = $1;
             }
-            if ($itemparam =~ m/($clstypadre+)/) {
+            if ( $itemparam =~ m/($clstypadre+)/ ) {
                 $itemclsty = $1;
             }
-            if ($itemparam =~ m/($halignre+)/) {
+            if ( $itemparam =~ m/($halignre+)/ ) {
                 $itemalign = $1;
             }
             $itemattr = $self->format_classstyle($itemclsty) if $itemclsty;
-            if ($depth > $last_depth) {
-                for (my $j = $last_depth; $j < $depth; $j++) {
+            if ( $depth > $last_depth ) {
+                for ( my $j = $last_depth; $j < $depth; $j++ ) {
                     $out .= qq{<$list_tags{$type}};
                     push @stack, $type;
                     if ($blockclsty) {
                         $blockattr = $self->format_classstyle($blockclsty);
-                        $out .= ' '.$blockattr if $blockattr;
+                        $out .= ' ' . $blockattr if $blockattr;
                     }
                     $out .= ">\n<li";
                     $out .= qq{ $itemattr} if $itemattr;
                     $out .= ">";
                 }
-            } elsif ($depth < $last_depth) {
-                for (my $j = $depth; $j < $last_depth; $j++) {
+            }
+            elsif ( $depth < $last_depth ) {
+                for ( my $j = $depth; $j < $last_depth; $j++ ) {
                     $out .= "</li>\n" if $j == $depth;
                     my $type = pop @stack;
                     $out .= qq{</$list_tags{$type}>\n</li>\n};
@@ -1350,7 +1485,8 @@ sub format_list {
                     $out .= qq{ $itemattr} if $itemattr;
                     $out .= '>';
                 }
-            } else {
+            }
+            else {
                 $out .= "</li>\n<li";
                 $out .= qq{ $itemattr} if $itemattr;
                 $out .= '>';
@@ -1358,23 +1494,24 @@ sub format_list {
             $last_depth = $depth;
         }
         $item .= "\n" if $item ne '';
-        $item .= $self->format_paragraph(text => $line);
+        $item .= $self->format_paragraph( text => $line );
     }
 
-    if ($item =~ m/\n/) {
-        if ($self->{_line_open}) {
+    if ( $item =~ m/\n/ ) {
+        if ( $self->{_line_open} ) {
             $item =~ s/(<li[^>]*>|^)/$1$self->{_line_open}/gm;
             $item =~ s/(\n|$)/$self->{_line_close}$1/gs;
-        } else {
+        }
+        else {
             $item =~ s/(\n)/$self->{_line_close}$1/gs;
         }
     }
     $out .= $item;
 
-    for (my $j = 1; $j <= $last_depth; $j++) {
+    for ( my $j = 1; $j <= $last_depth; $j++ ) {
         $out .= '</li>' if $j == 1;
         my $type = pop @stack;
-        $out .= "\n".'</'.$list_tags{$type}.'>';
+        $out .= "\n" . '</' . $list_tags{$type} . '>';
         $out .= '</li>' if $j != $last_depth;
     }
 
@@ -1382,60 +1519,62 @@ sub format_list {
 }
 
 sub format_block {
-    my $self = shift;
+    my $self   = shift;
     my (%args) = @_;
     my $str    = defined $args{text} ? $args{text} : '';
-    my $pre    = defined $args{pre}  ? $args{pre}  : '';
+    my $pre    = defined $args{pre} ? $args{pre} : '';
     my $post   = defined $args{post} ? $args{post} : '';
     my $inline = $args{inline};
-    _strip_borders(\$pre, \$post);
+    _strip_borders( \$pre, \$post );
     my ($filters) = $str =~ m/^(\|(?:(?:[a-z0-9_\-]+)\|)+)/;
+
     if ($filters) {
         my $filtreg = quotemeta($filters);
-        $str =~ s/^$filtreg//;
+        $str     =~ s/^$filtreg//;
         $filters =~ s/^\|//;
         $filters =~ s/\|$//;
         my @filters = split /\|/, $filters;
-        $str = $self->apply_filters(text => $str, filters => \@filters);
+        $str = $self->apply_filters( text => $str, filters => \@filters );
         my $count = scalar(@filters);
-        if ($str =~ s!(<p>){$count}!$1!gs) {
+        if ( $str =~ s!(<p>){$count}!$1!gs ) {
             $str =~ s!(</p>){$count}!$1!gs;
             $str =~ s!(<br( /)?>){$count}!$1!gs;
         }
     }
     if ($inline) {
+
         # strip off opening para, closing para, since we're
         # operating within an inline block
         $str =~ s/^\s*<p[^>]*>//;
         $str =~ s/<\/p>\s*$//;
     }
 
-    return $pre.$str.$post;
+    return $pre . $str . $post;
 }
 
 sub format_link {
-    my $self = shift;
-    my (%args) = @_;
-    my $text     = defined $args{text}     ? $args{text}     : '';
+    my $self     = shift;
+    my (%args)   = @_;
+    my $text     = defined $args{text} ? $args{text} : '';
     my $linktext = defined $args{linktext} ? $args{linktext} : '';
     my $title    = $args{title};
     my $url      = $args{url};
     my $clsty    = $args{clsty};
 
-    if (!defined $url || $url eq '') {
+    if ( !defined $url || $url eq '' ) {
         return $text;
     }
-    if ($self->{links} && $self->{links}{$url}) {
+    if ( $self->{links} && $self->{links}{$url} ) {
         $title ||= $self->{links}{$url}{title};
-        $url     = $self->{links}{$url}{url};
+        $url = $self->{links}{$url}{url};
     }
     $linktext =~ s/ +$//;
-    $linktext = $self->format_paragraph(text => $linktext);
-    $url = $self->format_url(linktext => $linktext, url => $url);
-    my $tag = qq{<a href="$url"};
+    $linktext = $self->format_paragraph( text => $linktext );
+    $url = $self->format_url( linktext => $linktext, url => $url );
+    my $tag  = qq{<a href="$url"};
     my $attr = $self->format_classstyle($clsty);
     $tag .= qq{ $attr} if $attr;
-    if (defined $title) {
+    if ( defined $title ) {
         $title =~ s/^\s+//;
         $tag .= qq{ title="$title"} if length($title);
     }
@@ -1445,13 +1584,13 @@ sub format_link {
 }
 
 sub format_url {
-    my $self = shift;
+    my $self   = shift;
     my (%args) = @_;
-    my $url = defined $args{url} ? $args{url} : '';
-    if ($url =~ m/^(mailto:)?([-\+\w]+\@[-\w]+(\.\w[-\w]*)+)$/) {
-        $url = 'mailto:'.$self->mail_encode($2);
+    my $url    = defined $args{url} ? $args{url} : '';
+    if ( $url =~ m/^(mailto:)?([-\+\w]+\@[-\w]+(\.\w[-\w]*)+)$/ ) {
+        $url = 'mailto:' . $self->mail_encode($2);
     }
-    if ($url !~ m{^(/|\./|\.\./|#)}) {
+    if ( $url !~ m{^(/|\./|\.\./|#)} ) {
         $url = "http://$url" if $url !~ m{^(?:https?|ftp|mailto|nntp|telnet)};
     }
     $url =~ s/&(?!amp;)/&amp;/g;
@@ -1462,217 +1601,255 @@ sub format_url {
 }
 
 sub format_span {
-    my $self = shift;
+    my $self   = shift;
     my (%args) = @_;
-    my $text = defined $args{text} ? $args{text} : '';
-    my $pre  = defined $args{pre}  ? $args{pre}  : '';
-    my $post = defined $args{post} ? $args{post} : '';
-    my $cite = defined $args{cite} ? $args{cite} : '';
-    my $align = $args{align};
-    my $clsty = $args{clsty};
-    _strip_borders(\$pre, \$post);
-    my ($class, $style);
-    my $tag  = qq{<span};
+    my $text   = defined $args{text} ? $args{text} : '';
+    my $pre    = defined $args{pre} ? $args{pre} : '';
+    my $post   = defined $args{post} ? $args{post} : '';
+    my $cite   = defined $args{cite} ? $args{cite} : '';
+    my $align  = $args{align};
+    my $clsty  = $args{clsty};
+    _strip_borders( \$pre, \$post );
+    my ( $class, $style );
+    my $tag = qq{<span};
     $style = '';
-    if (defined $align) {
-        if ($self->{css_mode}) {
+
+    if ( defined $align ) {
+        if ( $self->{css_mode} ) {
             my $alignment = _halign($align);
             $style .= qq{;float:$alignment} if $alignment;
-            $class .= ' '.$self->{css}{"class_align_$alignment"} if $alignment;
-        } else {
+            $class .= ' ' . $self->{css}{"class_align_$alignment"}
+                if $alignment;
+        }
+        else {
             my $alignment = _halign($align) || _valign($align);
             $tag .= qq{ align="$alignment"} if $alignment;
         }
     }
-    my $attr = $self->format_classstyle($clsty, $class, $style);
+    my $attr = $self->format_classstyle( $clsty, $class, $style );
     $tag .= qq{ $attr} if $attr;
-    if (defined $cite) {
+    if ( defined $cite ) {
         $cite =~ s/^://;
-        $cite = $self->format_url(url => $cite);
+        $cite = $self->format_url( url => $cite );
         $tag .= qq{ cite="$cite"};
     }
 
-    return $pre.$tag.'>'.$self->format_paragraph(text => $text).'</span>'.$post;
+    return
+          $pre 
+        . $tag . '>'
+        . $self->format_paragraph( text => $text )
+        . '</span>'
+        . $post;
 }
 
 sub format_image {
-    my $self = shift;
+    my $self   = shift;
     my (%args) = @_;
-    my $src   = defined $args{src}  ? $args{src}  : '';
-    my $pre   = defined $args{pre}  ? $args{pre}  : '';
-    my $post  = defined $args{post} ? $args{post} : '';
-    my $extra = $args{extra};
-    my $align = $args{align};
-    my $link  = $args{url};
-    my $clsty = $args{clsty};
-    _strip_borders(\$pre, \$post);
-    return $pre.'!!'.$post if length($src) == 0;
+    my $src    = defined $args{src} ? $args{src} : '';
+    my $pre    = defined $args{pre} ? $args{pre} : '';
+    my $post   = defined $args{post} ? $args{post} : '';
+    my $extra  = $args{extra};
+    my $align  = $args{align};
+    my $link   = $args{url};
+    my $clsty  = $args{clsty};
+    _strip_borders( \$pre, \$post );
+    return $pre . '!!' . $post if length($src) == 0;
     my $tag;
-    if ($self->{flavor} =~ m/^xhtml2/) {
-        my $type; # poor man's mime typing. need to extend this externally
-        if ($src =~ m/(?:\.jpeg|\.jpg)$/i) {
+
+    if ( $self->{flavor} =~ m/^xhtml2/ ) {
+        my $type;    # poor man's mime typing. need to extend this externally
+        if ( $src =~ m/(?:\.jpeg|\.jpg)$/i ) {
             $type = 'image/jpeg';
-        } elsif ($src =~ m/\.gif$/i) {
+        }
+        elsif ( $src =~ m/\.gif$/i ) {
             $type = 'image/gif';
-        } elsif ($src =~ m/\.png$/i) {
+        }
+        elsif ( $src =~ m/\.png$/i ) {
             $type = 'image/png';
-        } elsif ($src =~ m/\.tiff$/i) {
+        }
+        elsif ( $src =~ m/\.tiff$/i ) {
             $type = 'image/tiff';
         }
         $tag = qq{<object};
         $tag .= qq{ type="$type"} if $type;
         $tag .= qq{ data="$src"};
-    } else {
+    }
+    else {
         $tag = qq{<img src="$src"};
     }
-    my ($class, $style);
-    if (defined $align) {
-        if ($self->{css_mode}) {
+    my ( $class, $style );
+    if ( defined $align ) {
+        if ( $self->{css_mode} ) {
             my $alignment = _halign($align);
             $style .= qq{;float:$alignment} if $alignment;
-            $class .= ' '.$alignment if $alignment;
+            $class .= ' ' . $alignment if $alignment;
             $alignment = _valign($align);
             if ($alignment) {
-                my $imgvalign = ($alignment =~ m/(top|bottom)/ ? 'text-' . $alignment : $alignment);
+                my $imgvalign = (
+                    $alignment =~ m/(top|bottom)/
+                    ? 'text-' . $alignment
+                    : $alignment
+                );
                 $style .= qq{;vertical-align:$imgvalign} if $imgvalign;
-                $class .= ' '.$self->{css}{"class_align_$alignment"} if $alignment;
+                $class .= ' ' . $self->{css}{"class_align_$alignment"}
+                    if $alignment;
             }
-        } else {
+        }
+        else {
             my $alignment = _halign($align) || _valign($align);
             $tag .= qq{ align="$alignment"} if $alignment;
         }
     }
-    my ($pctw, $pcth, $w, $h, $alt);
-    if (defined $extra) {
+    my ( $pctw, $pcth, $w, $h, $alt );
+    if ( defined $extra ) {
         ($alt) = $extra =~ m/\(([^\)]+)\)/;
         $extra =~ s/\([^\)]+\)//;
-        my ($pct) = ($extra =~ m/(^|\s)(\d+)%(\s|$)/)[1];
-        if (!$pct) {
-            ($pctw, $pcth) = ($extra =~ m/(^|\s)(\d+)%x(\d+)%(\s|$)/)[1,2];
-        } else {
+        my ($pct) = ( $extra =~ m/(^|\s)(\d+)%(\s|$)/ )[1];
+        if ( !$pct ) {
+            ( $pctw, $pcth )
+                = ( $extra =~ m/(^|\s)(\d+)%x(\d+)%(\s|$)/ )[ 1, 2 ];
+        }
+        else {
             $pctw = $pcth = $pct;
         }
-        if (!$pctw && !$pcth) {
-            ($w,$h) = ($extra =~ m/(^|\s)(\d+|\*)x(\d+|\*)(\s|$)/)[1,2];
+        if ( !$pctw && !$pcth ) {
+            ( $w, $h )
+                = ( $extra =~ m/(^|\s)(\d+|\*)x(\d+|\*)(\s|$)/ )[ 1, 2 ];
             $w = '' if $w eq '*';
             $h = '' if $h eq '*';
-            if (!$w) {
-                ($w) = ($extra =~ m/(^|[,\s])(\d+)w([\s,]|$)/)[1];
+            if ( !$w ) {
+                ($w) = ( $extra =~ m/(^|[,\s])(\d+)w([\s,]|$)/ )[1];
             }
-            if (!$h) {
-                ($h) = ($extra =~ m/(^|[,\s])(\d+)h([\s,]|$)/)[1];
+            if ( !$h ) {
+                ($h) = ( $extra =~ m/(^|[,\s])(\d+)h([\s,]|$)/ )[1];
             }
         }
     }
     $alt = '' unless defined $alt;
-    if ($self->{flavor} !~ m/^xhtml2/) {
+    if ( $self->{flavor} !~ m/^xhtml2/ ) {
         $tag .= ' alt="' . $self->encode_html_basic($alt) . '"';
     }
-    if ($w && $h) {
-        if ($self->{flavor} !~ m/^xhtml2/) {
+    if ( $w && $h ) {
+        if ( $self->{flavor} !~ m/^xhtml2/ ) {
             $tag .= qq{ height="$h" width="$w"};
-        } else {
-            $style .= qq{;height:$h}.qq{px;width:$w}.q{px};
         }
-    } else {
-        my ($image_w, $image_h) = $self->image_size($src);
-        if (($image_w && $image_h) && ($w || $h)) {
+        else {
+            $style .= qq{;height:$h} . qq{px;width:$w} . q{px};
+        }
+    }
+    else {
+        my ( $image_w, $image_h ) = $self->image_size($src);
+        if ( ( $image_w && $image_h ) && ( $w || $h ) ) {
+
             # image size determined, but only width or height specified
-            if ($w && !$h) {
+            if ( $w && !$h ) {
+
                 # width defined, scale down height proportionately
-                $h = int($image_h * ($w / $image_w));
-            } elsif ($h && !$w) {
-                $w = int($image_w * ($h / $image_h));
+                $h = int( $image_h * ( $w / $image_w ) );
             }
-        } else {
+            elsif ( $h && !$w ) {
+                $w = int( $image_w * ( $h / $image_h ) );
+            }
+        }
+        else {
             $w = $image_w;
             $h = $image_h;
         }
-        if ($w && $h) {
-            if ($pctw || $pcth) {
-                $w = int($w * $pctw / 100);
-                $h = int($h * $pcth / 100);
+        if ( $w && $h ) {
+            if ( $pctw || $pcth ) {
+                $w = int( $w * $pctw / 100 );
+                $h = int( $h * $pcth / 100 );
             }
-            if ($self->{flavor} !~ m/^xhtml2/) {
+            if ( $self->{flavor} !~ m/^xhtml2/ ) {
                 $tag .= qq{ height="$h" width="$w"};
-            } else {
-                $style .= qq{;height:$h}.qq{px;width:$w}.q{px};
+            }
+            else {
+                $style .= qq{;height:$h} . qq{px;width:$w} . q{px};
             }
         }
     }
-    my $attr = $self->format_classstyle($clsty, $class, $style);
+    my $attr = $self->format_classstyle( $clsty, $class, $style );
     $tag .= qq{ $attr} if $attr;
-    if ($self->{flavor} =~ m/^xhtml2/) {
+    if ( $self->{flavor} =~ m/^xhtml2/ ) {
         $tag .= '><p>' . $self->encode_html_basic($alt) . '</p></object>';
-    } elsif ($self->{flavor} =~ m/^xhtml/) {
+    }
+    elsif ( $self->{flavor} =~ m/^xhtml/ ) {
         $tag .= ' />';
-    } else {
+    }
+    else {
         $tag .= '>';
     }
-    if (defined $link) {
+    if ( defined $link ) {
         $link =~ s/^://;
-        $link = $self->format_url(url => $link);
-        $tag = '<a href="'.$link.'">'.$tag.'</a>';
+        $link = $self->format_url( url => $link );
+        $tag = '<a href="' . $link . '">' . $tag . '</a>';
     }
 
-    return $pre.$tag.$post;
+    return $pre . $tag . $post;
 }
 
 sub format_table {
-    my $self = shift;
+    my $self   = shift;
     my (%args) = @_;
-    my $str = defined $args{text} ? $args{text} : '';
+    my $str    = defined $args{text} ? $args{text} : '';
 
     my @lines = split /\n/, $str;
     my @rows;
     my $line_count = scalar(@lines);
-    for (my $i = 0; $i < $line_count; $i++) {
-       if ($lines[$i] !~ m/\|\s*$/) {
-           if ($i + 1 < $line_count) {
-               $lines[$i+1] = $lines[$i] . "\n" . $lines[$i+1] if $i+1 <= $#lines;
-           } else {
-               push @rows, $lines[$i];
-           }
-       } else {
-           push @rows, $lines[$i];
-       }
+    for ( my $i = 0; $i < $line_count; $i++ ) {
+        if ( $lines[$i] !~ m/\|\s*$/ ) {
+            if ( $i + 1 < $line_count ) {
+                $lines[ $i + 1 ] = $lines[$i] . "\n" . $lines[ $i + 1 ]
+                    if $i + 1 <= $#lines;
+            }
+            else {
+                push @rows, $lines[$i];
+            }
+        }
+        else {
+            push @rows, $lines[$i];
+        }
     }
-    my ($tid, $tpadl, $tpadr, $tlang);
+    my ( $tid, $tpadl, $tpadr, $tlang );
     my $tclass = '';
     my $tstyle = '';
     my $talign = '';
-    if ($rows[0] =~ m/^table[^\.]/) {
+    if ( $rows[0] =~ m/^table[^\.]/ ) {
         my $row = $rows[0];
         $row =~ s/^table//;
         my $params = 1;
+
         # process row parameters until none are left
         while ($params) {
-            if ($row =~ m/^($tblalignre)/) {
+            if ( $row =~ m/^($tblalignre)/ ) {
+
                 # found row alignment
                 $talign .= $1;
-                $row = substr($row, length($1)) if $1;
+                $row = substr( $row, length($1) ) if $1;
                 redo if $1;
             }
-            if ($row =~ m/^($clstypadre)/) {
+            if ( $row =~ m/^($clstypadre)/ ) {
+
                 # found a class/id/style/padding indicator
                 my $clsty = $1;
-                $row = substr($row, length($clsty)) if $clsty;
-                if ($clsty =~ m/{([^}]+)}/) {
+                $row = substr( $row, length($clsty) ) if $clsty;
+                if ( $clsty =~ m/{([^}]+)}/ ) {
                     $tstyle = $1;
                     $clsty =~ s/{([^}]+)}//;
                     redo if $tstyle;
                 }
-                if ($clsty =~ m/\(([A-Za-z0-9_\- ]+?)(?:#(.+?))?\)/ ||
-                    $clsty =~ m/\(([A-Za-z0-9_\- ]+?)?(?:#(.+?))\)/) {
-                    if ($1 || $2) {
+                if (   $clsty =~ m/\(([A-Za-z0-9_\- ]+?)(?:#(.+?))?\)/
+                    || $clsty =~ m/\(([A-Za-z0-9_\- ]+?)?(?:#(.+?))\)/ )
+                {
+                    if ( $1 || $2 ) {
                         $tclass = $1;
-                        $tid = $2;
+                        $tid    = $2;
                         redo;
                     }
                 }
                 $tpadl = length($1) if $clsty =~ m/(\(+)/;
                 $tpadr = length($1) if $clsty =~ m/(\)+)/;
-                $tlang = $1 if $clsty =~ m/\[(.+?)\]/;
+                $tlang = $1         if $clsty =~ m/\[(.+?)\]/;
                 redo if $clsty;
             }
             $params = 0;
@@ -1681,172 +1858,201 @@ sub format_table {
         $rows[0] = $row;
     }
     my $out = '';
-    my @cols = split /\|/, $rows[0].' ';
-    my (@colalign, @rowspans);
+    my @cols = split /\|/, $rows[0] . ' ';
+    my ( @colalign, @rowspans );
     foreach my $row (@rows) {
-        my @cols = split /\|/, $row.' ';
+        my @cols = split /\|/, $row . ' ';
         my $colcount = $#cols;
         pop @cols;
         my $colspan = 0;
         my $row_out = '';
-        my ($rowclass, $rowid, $rowalign, $rowstyle, $rowheader);
+        my ( $rowclass, $rowid, $rowalign, $rowstyle, $rowheader );
         $cols[0] = '' if !defined $cols[0];
-        if ($cols[0] =~ m/_/) {
+        if ( $cols[0] =~ m/_/ ) {
             $cols[0] =~ s/_//g;
             $rowheader = 1;
         }
-        if ($cols[0] =~ m/{([^}]+)}/) {
+        if ( $cols[0] =~ m/{([^}]+)}/ ) {
             $rowstyle = $1;
             $cols[0] =~ s/{[^}]+}//g;
         }
-        if ($cols[0] =~ m/\(([^\#]+?)?(#(.+))?\)/) {
+        if ( $cols[0] =~ m/\(([^\#]+?)?(#(.+))?\)/ ) {
             $rowclass = $1;
-            $rowid = $3;
+            $rowid    = $3;
             $cols[0] =~ s/\([^\)]+\)//g;
         }
         $rowalign = $1 if $cols[0] =~ m/($alignre)/;
-        for (my $c = $colcount - 1; $c > 0; $c--) {
-            if ($rowspans[$c]) {
+        for ( my $c = $colcount - 1; $c > 0; $c-- ) {
+            if ( $rowspans[$c] ) {
                 $rowspans[$c]--;
                 next if $rowspans[$c] > 1;
             }
-            my ($colclass, $colid, $header, $colparams, $colpadl, $colpadr, $collang);
+            my ($colclass, $colid,   $header, $colparams,
+                $colpadl,  $colpadr, $collang
+            );
             my $colstyle = '';
             my $colalign = $colalign[$c];
-            my $col = pop @cols;
+            my $col      = pop @cols;
             $col ||= '';
             my $attrs = '';
-            if ($col =~ m/^(((_|[\/\\]\d+|$alignre|$clstypadre)+)\. )/) {
+            if ( $col =~ m/^(((_|[\/\\]\d+|$alignre|$clstypadre)+)\. )/ ) {
                 my $colparams = $2;
-                $col = substr($col, length($1));
+                $col = substr( $col, length($1) );
                 my $params = 1;
+
                 # keep processing column parameters until there
                 # are none left...
                 while ($params) {
-                    if ($colparams =~ m/^(_|$alignre)/g) {
+                    if ( $colparams =~ m/^(_|$alignre)/g ) {
+
                         # found alignment or heading indicator
                         $attrs .= $1;
-                        $colparams = substr($colparams, pos($colparams)) if $1;
+                        $colparams = substr( $colparams, pos($colparams) )
+                            if $1;
                         redo if $1;
                     }
-                    if ($colparams =~ m/^($clstypadre)/g) {
+                    if ( $colparams =~ m/^($clstypadre)/g ) {
+
                         # found a class/id/style/padding marker
                         my $clsty = $1;
-                        $colparams = substr($colparams, pos($colparams)) if $clsty;
-                        if ($clsty =~ m/{([^}]+)}/) {
+                        $colparams = substr( $colparams, pos($colparams) )
+                            if $clsty;
+                        if ( $clsty =~ m/{([^}]+)}/ ) {
                             $colstyle = $1;
                             $clsty =~ s/{([^}]+)}//;
                         }
-                        if ($clsty =~ m/\(([A-Za-z0-9_\- ]+?)(?:#(.+?))?\)/ ||
-                            $clsty =~ m/\(([A-Za-z0-9_\- ]+?)?(?:#(.+?))\)/) {
-                            if ($1 || $2) {
+                        if (   $clsty =~ m/\(([A-Za-z0-9_\- ]+?)(?:#(.+?))?\)/
+                            || $clsty
+                            =~ m/\(([A-Za-z0-9_\- ]+?)?(?:#(.+?))\)/ )
+                        {
+                            if ( $1 || $2 ) {
                                 $colclass = $1;
-                                $colid = $2;
+                                $colid    = $2;
                                 if ($colclass) {
-                                    $clsty =~ s/\([A-Za-z0-9_\- ]+?(#.*?)?\)//g;
-                                } elsif ($colid) {
+                                    $clsty
+                                        =~ s/\([A-Za-z0-9_\- ]+?(#.*?)?\)//g;
+                                }
+                                elsif ($colid) {
                                     $clsty =~ s/\(#.+?\)//g;
                                 }
                             }
                         }
-                        if ($clsty =~ m/(\(+)/) {
+                        if ( $clsty =~ m/(\(+)/ ) {
                             $colpadl = length($1);
                             $clsty =~ s/\(+//;
                         }
-                        if ($clsty =~ m/(\)+)/) {
+                        if ( $clsty =~ m/(\)+)/ ) {
                             $colpadr = length($1);
                             $clsty =~ s/\)+//;
                         }
-                        if ($clsty =~ m/\[(.+?)\]/) {
+                        if ( $clsty =~ m/\[(.+?)\]/ ) {
                             $collang = $1;
                             $clsty =~ s/\[.+?\]//;
                         }
                         redo if $clsty;
                     }
-                    if ($colparams =~ m/^\\(\d+)/) {
+                    if ( $colparams =~ m/^\\(\d+)/ ) {
                         $colspan = $1;
-                        $colparams = substr($colparams, length($1)+1);
+                        $colparams = substr( $colparams, length($1) + 1 );
                         redo if $1;
                     }
-                    if ($colparams =~ m/\/(\d+)/) {
+                    if ( $colparams =~ m/\/(\d+)/ ) {
                         $rowspans[$c] = $1 if $1;
-                        $colparams = substr($colparams, length($1)+1);
+                        $colparams = substr( $colparams, length($1) + 1 );
                         redo if $1;
                     }
                     $params = 0;
                 }
             }
-            if (length($attrs)) {
+            if ( length($attrs) ) {
                 $header = 1 if $attrs =~ m/_/;
                 $colalign = '' if $attrs =~ m/($alignre)/ && length($1);
+
                 # determine column alignment
-                if ($attrs =~ m/<>/) {
+                if ( $attrs =~ m/<>/ ) {
                     $colalign .= '<>';
-                } elsif ($attrs =~ m/</) {
+                }
+                elsif ( $attrs =~ m/</ ) {
                     $colalign .= '<';
-                } elsif ($attrs =~ m/=/) {
+                }
+                elsif ( $attrs =~ m/=/ ) {
                     $colalign = '=';
-                } elsif ($attrs =~ m/>/) {
+                }
+                elsif ( $attrs =~ m/>/ ) {
                     $colalign = '>';
                 }
-                if ($attrs =~ m/\^/) {
+                if ( $attrs =~ m/\^/ ) {
                     $colalign .= '^';
-                } elsif ($attrs =~ m/~/) {
+                }
+                elsif ( $attrs =~ m/~/ ) {
                     $colalign .= '~';
-                } elsif ($attrs =~ m/-/) {
+                }
+                elsif ( $attrs =~ m/-/ ) {
                     $colalign .= '-';
                 }
             }
             $header = 1 if $rowheader;
             $colalign[$c] = $colalign if $header;
-            $col =~ s/^ +//; $col =~ s/ +$//;
-            if (length($col)) {
+            $col =~ s/^ +//;
+            $col =~ s/ +$//;
+            if ( length($col) ) {
+
                 # create one cell tag
                 my $rowspan = $rowspans[$c] || 0;
-                my $col_out = '<' . ($header ? 'th' : 'td');
-                if (defined $colalign) {
+                my $col_out = '<' . ( $header ? 'th' : 'td' );
+                if ( defined $colalign ) {
+
                     # horizontal, vertical alignment
                     my $halign = _halign($colalign);
                     $col_out .= qq{ align="$halign"} if $halign;
                     my $valign = _valign($colalign);
                     $col_out .= qq{ valign="$valign"} if $valign;
                 }
+
                 # apply css attributes, row, column spans
-                $colstyle .= qq{;padding-left:${colpadl}em} if $colpadl;
+                $colstyle .= qq{;padding-left:${colpadl}em}  if $colpadl;
                 $colstyle .= qq{;padding-right:${colpadr}em} if $colpadr;
-                $col_out .= qq{ class="$colclass"} if $colclass;
-                $col_out .= qq{ id="$colid"} if $colid;
+                $col_out  .= qq{ class="$colclass"}          if $colclass;
+                $col_out  .= qq{ id="$colid"}                if $colid;
                 $colstyle =~ s/^;// if $colstyle;
-                $col_out .= qq{ style="$colstyle"} if $colstyle;
-                $col_out .= qq{ lang="$collang"} if $collang;
+                $col_out .= qq{ style="$colstyle"}  if $colstyle;
+                $col_out .= qq{ lang="$collang"}    if $collang;
                 $col_out .= qq{ colspan="$colspan"} if $colspan > 1;
-                $col_out .= qq{ rowspan="$rowspan"} if ($rowspan||0) > 1;
+                $col_out .= qq{ rowspan="$rowspan"} if ( $rowspan || 0 ) > 1;
                 $col_out .= '>';
+
                 # if the content of this cell has newlines OR matches
                 # our paragraph block signature, process it as a full-blown
                 # textile document
-                if (($col =~ m/\n\n/) ||
-                    ($col =~ m/^(?:$halignre|$clstypadre*)*
+                if (( $col =~ m/\n\n/ )
+                    || ($col =~ m/^(?:$halignre|$clstypadre*)*
                                 [\*\#]
-                                (?:$clstypadre*|$halignre)*\ /x)) {
+                                (?:$clstypadre*|$halignre)*\ /x
+                    )
+                    )
+                {
                     $col_out .= $self->textile($col);
-                } else {
-                    $col_out .= $self->format_paragraph(text => $col);
                 }
-                $col_out .= '</' . ($header ? 'th' : 'td') . '>';
+                else {
+                    $col_out .= $self->format_paragraph( text => $col );
+                }
+                $col_out .= '</' . ( $header ? 'th' : 'td' ) . '>';
                 $row_out = $col_out . $row_out;
                 $colspan = 0 if $colspan;
-            } else {
+            }
+            else {
                 $colspan = 1 if $colspan == 0;
                 $colspan++;
             }
         }
-        if ($colspan > 1) {
+        if ( $colspan > 1 ) {
+
             # handle the spanned column if we came up short
             $colspan--;
-            $row_out = q{<td}
-                     . ($colspan>1 ? qq{ colspan="$colspan"} : '')
-                     . qq{></td>$row_out};
+            $row_out
+                = q{<td}
+                . ( $colspan > 1 ? qq{ colspan="$colspan"} : '' )
+                . qq{></td>$row_out};
         }
 
         # build one table row
@@ -1856,7 +2062,7 @@ sub format_table {
             $out .= qq{ valign="$valign"} if $valign;
         }
         $out .= qq{ class="$rowclass"} if $rowclass;
-        $out .= qq{ id="$rowid"} if $rowid;
+        $out .= qq{ id="$rowid"}       if $rowid;
         $out .= qq{ style="$rowstyle"} if $rowstyle;
         $out .= qq{>$row_out</tr>};
     }
@@ -1865,32 +2071,36 @@ sub format_table {
     my $table = '';
     $table .= q{<table};
     if ($talign) {
-        if ($self->{css_mode}) {
+        if ( $self->{css_mode} ) {
+
             # horizontal alignment
             my $alignment = _halign($talign);
-            if ($talign eq '=') {
+            if ( $talign eq '=' ) {
                 $tstyle .= ';margin-left:auto;margin-right:auto';
-            } else {
-                $tstyle .= ';float:'.$alignment if $alignment;
             }
-            $tclass .= ' '.$alignment if $alignment;
-        } else {
+            else {
+                $tstyle .= ';float:' . $alignment if $alignment;
+            }
+            $tclass .= ' ' . $alignment if $alignment;
+        }
+        else {
             my $alignment = _halign($talign);
             $table .= qq{ align="$alignment"} if $alignment;
         }
     }
-    $tstyle .= qq{;padding-left:${tpadl}em} if $tpadl;
+    $tstyle .= qq{;padding-left:${tpadl}em}  if $tpadl;
     $tstyle .= qq{;padding-right:${tpadr}em} if $tpadr;
     $tclass =~ s/^ // if $tclass;
     $table .= qq{ class="$tclass"} if $tclass;
-    $table .= qq{ id="$tid"} if $tid;
+    $table .= qq{ id="$tid"}       if $tid;
     $tstyle =~ s/^;// if $tstyle;
     $table .= qq{ style="$tstyle"} if $tstyle;
-    $table .= qq{ lang="$tlang"} if $tlang;
-    $table .= q{ cellspacing="0"} if $tclass || $tid || $tstyle;
+    $table .= qq{ lang="$tlang"}   if $tlang;
+    $table .= q{ cellspacing="0"}  if $tclass || $tid || $tstyle;
     $table .= qq{>$out</table>};
 
-    if ($table =~ m{<tr></tr>}) {
+    if ( $table =~ m{<tr></tr>} ) {
+
         # exception -- something isn't right so return fail case
         return undef;
     }
@@ -1899,19 +2109,19 @@ sub format_table {
 }
 
 sub apply_filters {
-    my $self = shift;
+    my $self   = shift;
     my (%args) = @_;
-    my $text = $args{text};
+    my $text   = $args{text};
     return '' unless defined $text;
-    my $list = $args{filters};
+    my $list    = $args{filters};
     my $filters = $self->{filters};
-    return $text unless (ref $filters) eq 'HASH';
+    return $text unless ( ref $filters ) eq 'HASH';
 
     my $param = $self->filter_param;
-    foreach my $filter (@{$list}) {
+    foreach my $filter ( @{$list} ) {
         next unless $filters->{$filter};
-        if ((ref $filters->{$filter}) eq 'CODE') {
-            $text = $filters->{$filter}->($text, $param);
+        if ( ( ref $filters->{$filter} ) eq 'CODE' ) {
+            $text = $filters->{$filter}->( $text, $param );
         }
     }
     return $text;
@@ -1924,13 +2134,14 @@ sub apply_filters {
 
     sub encode_html {
         my $self = shift;
-        my($html, $can_double_encode) = @_;
+        my ( $html, $can_double_encode ) = @_;
         return '' unless defined $html;
         return $html if $self->{disable_encode_entities};
-        if ($Have_Entities && $self->{char_encoding}) {
+        if ( $Have_Entities && $self->{char_encoding} ) {
             $html = HTML::Entities::encode_entities($html);
-        } else {
-            $html = $self->encode_html_basic($html, $can_double_encode);
+        }
+        else {
+            $html = $self->encode_html_basic( $html, $can_double_encode );
         }
 
         return $html;
@@ -1949,12 +2160,13 @@ sub apply_filters {
 
     sub encode_html_basic {
         my $self = shift;
-        my($html, $can_double_encode) = @_;
+        my ( $html, $can_double_encode ) = @_;
         return '' unless defined $html;
         return $html unless $html =~ m/[^\w\s]/;
         if ($can_double_encode) {
             $html =~ s{&}{&amp;}g;
-        } else {
+        }
+        else {
             ## Encode any & not followed by something that looks like
             ## an entity, numeric or otherwise.
             $html =~ s/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w{1,8});)/&amp;/g;
@@ -1975,13 +2187,14 @@ sub apply_filters {
         my $self = shift;
         my ($file) = @_;
         if ($Have_ImageSize) {
-            if (-f $file) {
+            if ( -f $file ) {
                 return Image::Size::imgsize($file);
-            } else {
-                if (my $docroot = $self->docroot) {
+            }
+            else {
+                if ( my $docroot = $self->docroot ) {
                     require File::Spec;
-                    my $fullpath = File::Spec->catfile($docroot, $file);
-                    if (-f $fullpath) {
+                    my $fullpath = File::Spec->catfile( $docroot, $file );
+                    if ( -f $fullpath ) {
                         return Image::Size::imgsize($fullpath);
                     }
                 }
@@ -1993,7 +2206,7 @@ sub apply_filters {
 
 sub encode_url {
     my $self = shift;
-    my($str) = @_;
+    my ($str) = @_;
     $str =~ s!([^A-Za-z0-9_\.\-\+\&=\%;])!
          ord($1) > 255 ? '%u' . (uc sprintf("%04x", ord($1)))
                        : '%'  . (uc sprintf("%02x", ord($1)))!egx;
@@ -2003,6 +2216,7 @@ sub encode_url {
 sub mail_encode {
     my $self = shift;
     my ($addr) = @_;
+
     # granted, this is simple, but it gives off warm fuzzies
     $addr =~ s!([^\$])!
          ord($1) > 255 ? '%u' . (uc sprintf("%04x", ord($1)))
@@ -2011,6 +2225,7 @@ sub mail_encode {
 }
 
 sub process_quotes {
+
     # stub routine for now. subclass and implement.
     my $self = shift;
     my ($str) = @_;
@@ -2023,199 +2238,203 @@ sub process_quotes {
 
 sub default_macros {
     my $self = shift;
+
     # <, >, " must be html entities in the macro text since
     # those values are escaped by the time they are processed
     # for macros.
     return {
-        'c|'       => '&#162;', # CENT SIGN
-        '|c'       => '&#162;', # CENT SIGN
-        'L-'       => '&#163;', # POUND SIGN
-        '-L'       => '&#163;', # POUND SIGN
-        'Y='       => '&#165;', # YEN SIGN
-        '=Y'       => '&#165;', # YEN SIGN
-        '(c)'      => '&#169;', # COPYRIGHT SIGN
-        '&lt;&lt;' => '&#171;', # LEFT-POINTING DOUBLE ANGLE QUOTATION
-        '(r)'      => '&#174;', # REGISTERED SIGN
-        '+_'       => '&#177;', # PLUS-MINUS SIGN
-        '_+'       => '&#177;', # PLUS-MINUS SIGN
-        '&gt;&gt;' => '&#187;', # RIGHT-POINTING DOUBLE ANGLE QUOTATION
-        '1/4'      => '&#188;', # VULGAR FRACTION ONE QUARTER
-        '1/2'      => '&#189;', # VULGAR FRACTION ONE HALF
-        '3/4'      => '&#190;', # VULGAR FRACTION THREE QUARTERS
-        'A`'       => '&#192;', # LATIN CAPITAL LETTER A WITH GRAVE
-        '`A'       => '&#192;', # LATIN CAPITAL LETTER A WITH GRAVE
-        'A\''      => '&#193;', # LATIN CAPITAL LETTER A WITH ACUTE
-        '\'A'      => '&#193;', # LATIN CAPITAL LETTER A WITH ACUTE
-        'A^'       => '&#194;', # LATIN CAPITAL LETTER A WITH CIRCUMFLEX
-        '^A'       => '&#194;', # LATIN CAPITAL LETTER A WITH CIRCUMFLEX
-        'A~'       => '&#195;', # LATIN CAPITAL LETTER A WITH TILDE
-        '~A'       => '&#195;', # LATIN CAPITAL LETTER A WITH TILDE
-        'A"'       => '&#196;', # LATIN CAPITAL LETTER A WITH DIAERESIS
-        '"A'       => '&#196;', # LATIN CAPITAL LETTER A WITH DIAERESIS
-        'Ao'       => '&#197;', # LATIN CAPITAL LETTER A WITH RING ABOVE
-        'oA'       => '&#197;', # LATIN CAPITAL LETTER A WITH RING ABOVE
-        'AE'       => '&#198;', # LATIN CAPITAL LETTER AE
-        'C,'       => '&#199;', # LATIN CAPITAL LETTER C WITH CEDILLA
-        ',C'       => '&#199;', # LATIN CAPITAL LETTER C WITH CEDILLA
-        'E`'       => '&#200;', # LATIN CAPITAL LETTER E WITH GRAVE
-        '`E'       => '&#200;', # LATIN CAPITAL LETTER E WITH GRAVE
-        'E\''      => '&#201;', # LATIN CAPITAL LETTER E WITH ACUTE
-        '\'E'      => '&#201;', # LATIN CAPITAL LETTER E WITH ACUTE
-        'E^'       => '&#202;', # LATIN CAPITAL LETTER E WITH CIRCUMFLEX
-        '^E'       => '&#202;', # LATIN CAPITAL LETTER E WITH CIRCUMFLEX
-        'E"'       => '&#203;', # LATIN CAPITAL LETTER E WITH DIAERESIS
-        '"E'       => '&#203;', # LATIN CAPITAL LETTER E WITH DIAERESIS
-        'I`'       => '&#204;', # LATIN CAPITAL LETTER I WITH GRAVE
-        '`I'       => '&#204;', # LATIN CAPITAL LETTER I WITH GRAVE
-        'I\''      => '&#205;', # LATIN CAPITAL LETTER I WITH ACUTE
-        '\'I'      => '&#205;', # LATIN CAPITAL LETTER I WITH ACUTE
-        'I^'       => '&#206;', # LATIN CAPITAL LETTER I WITH CIRCUMFLEX
-        '^I'       => '&#206;', # LATIN CAPITAL LETTER I WITH CIRCUMFLEX
-        'I"'       => '&#207;', # LATIN CAPITAL LETTER I WITH DIAERESIS
-        '"I'       => '&#207;', # LATIN CAPITAL LETTER I WITH DIAERESIS
-        'D-'       => '&#208;', # LATIN CAPITAL LETTER ETH
-        '-D'       => '&#208;', # LATIN CAPITAL LETTER ETH
-        'N~'       => '&#209;', # LATIN CAPITAL LETTER N WITH TILDE
-        '~N'       => '&#209;', # LATIN CAPITAL LETTER N WITH TILDE
-        'O`'       => '&#210;', # LATIN CAPITAL LETTER O WITH GRAVE
-        '`O'       => '&#210;', # LATIN CAPITAL LETTER O WITH GRAVE
-        'O\''      => '&#211;', # LATIN CAPITAL LETTER O WITH ACUTE
-        '\'O'      => '&#211;', # LATIN CAPITAL LETTER O WITH ACUTE
-        'O^'       => '&#212;', # LATIN CAPITAL LETTER O WITH CIRCUMFLEX
-        '^O'       => '&#212;', # LATIN CAPITAL LETTER O WITH CIRCUMFLEX
-        'O~'       => '&#213;', # LATIN CAPITAL LETTER O WITH TILDE
-        '~O'       => '&#213;', # LATIN CAPITAL LETTER O WITH TILDE
-        'O"'       => '&#214;', # LATIN CAPITAL LETTER O WITH DIAERESIS
-        '"O'       => '&#214;', # LATIN CAPITAL LETTER O WITH DIAERESIS
-        'O/'       => '&#216;', # LATIN CAPITAL LETTER O WITH STROKE
-        '/O'       => '&#216;', # LATIN CAPITAL LETTER O WITH STROKE
-        'U`'       => '&#217;', # LATIN CAPITAL LETTER U WITH GRAVE
-        '`U'       => '&#217;', # LATIN CAPITAL LETTER U WITH GRAVE
-        'U\''      => '&#218;', # LATIN CAPITAL LETTER U WITH ACUTE
-        '\'U'      => '&#218;', # LATIN CAPITAL LETTER U WITH ACUTE
-        'U^'       => '&#219;', # LATIN CAPITAL LETTER U WITH CIRCUMFLEX
-        '^U'       => '&#219;', # LATIN CAPITAL LETTER U WITH CIRCUMFLEX
-        'U"'       => '&#220;', # LATIN CAPITAL LETTER U WITH DIAERESIS
-        '"U'       => '&#220;', # LATIN CAPITAL LETTER U WITH DIAERESIS
-        'Y\''      => '&#221;', # LATIN CAPITAL LETTER Y WITH ACUTE
-        '\'Y'      => '&#221;', # LATIN CAPITAL LETTER Y WITH ACUTE
-        'a`'       => '&#224;', # LATIN SMALL LETTER A WITH GRAVE
-        '`a'       => '&#224;', # LATIN SMALL LETTER A WITH GRAVE
-        'a\''      => '&#225;', # LATIN SMALL LETTER A WITH ACUTE
-        '\'a'      => '&#225;', # LATIN SMALL LETTER A WITH ACUTE
-        'a^'       => '&#226;', # LATIN SMALL LETTER A WITH CIRCUMFLEX
-        '^a'       => '&#226;', # LATIN SMALL LETTER A WITH CIRCUMFLEX
-        'a~'       => '&#227;', # LATIN SMALL LETTER A WITH TILDE
-        '~a'       => '&#227;', # LATIN SMALL LETTER A WITH TILDE
-        'a"'       => '&#228;', # LATIN SMALL LETTER A WITH DIAERESIS
-        '"a'       => '&#228;', # LATIN SMALL LETTER A WITH DIAERESIS
-        'ao'       => '&#229;', # LATIN SMALL LETTER A WITH RING ABOVE
-        'oa'       => '&#229;', # LATIN SMALL LETTER A WITH RING ABOVE
-        'ae'       => '&#230;', # LATIN SMALL LETTER AE
-        'c,'       => '&#231;', # LATIN SMALL LETTER C WITH CEDILLA
-        ',c'       => '&#231;', # LATIN SMALL LETTER C WITH CEDILLA
-        'e`'       => '&#232;', # LATIN SMALL LETTER E WITH GRAVE
-        '`e'       => '&#232;', # LATIN SMALL LETTER E WITH GRAVE
-        'e\''      => '&#233;', # LATIN SMALL LETTER E WITH ACUTE
-        '\'e'      => '&#233;', # LATIN SMALL LETTER E WITH ACUTE
-        'e^'       => '&#234;', # LATIN SMALL LETTER E WITH CIRCUMFLEX
-        '^e'       => '&#234;', # LATIN SMALL LETTER E WITH CIRCUMFLEX
-        'e"'       => '&#235;', # LATIN SMALL LETTER E WITH DIAERESIS
-        '"e'       => '&#235;', # LATIN SMALL LETTER E WITH DIAERESIS
-        'i`'       => '&#236;', # LATIN SMALL LETTER I WITH GRAVE
-        '`i'       => '&#236;', # LATIN SMALL LETTER I WITH GRAVE
-        'i\''      => '&#237;', # LATIN SMALL LETTER I WITH ACUTE
-        '\'i'      => '&#237;', # LATIN SMALL LETTER I WITH ACUTE
-        'i^'       => '&#238;', # LATIN SMALL LETTER I WITH CIRCUMFLEX
-        '^i'       => '&#238;', # LATIN SMALL LETTER I WITH CIRCUMFLEX
-        'i"'       => '&#239;', # LATIN SMALL LETTER I WITH DIAERESIS
-        '"i'       => '&#239;', # LATIN SMALL LETTER I WITH DIAERESIS
-        'n~'       => '&#241;', # LATIN SMALL LETTER N WITH TILDE
-        '~n'       => '&#241;', # LATIN SMALL LETTER N WITH TILDE
-        'o`'       => '&#242;', # LATIN SMALL LETTER O WITH GRAVE
-        '`o'       => '&#242;', # LATIN SMALL LETTER O WITH GRAVE
-        'o\''      => '&#243;', # LATIN SMALL LETTER O WITH ACUTE
-        '\'o'      => '&#243;', # LATIN SMALL LETTER O WITH ACUTE
-        'o^'       => '&#244;', # LATIN SMALL LETTER O WITH CIRCUMFLEX
-        '^o'       => '&#244;', # LATIN SMALL LETTER O WITH CIRCUMFLEX
-        'o~'       => '&#245;', # LATIN SMALL LETTER O WITH TILDE
-        '~o'       => '&#245;', # LATIN SMALL LETTER O WITH TILDE
-        'o"'       => '&#246;', # LATIN SMALL LETTER O WITH DIAERESIS
-        '"o'       => '&#246;', # LATIN SMALL LETTER O WITH DIAERESIS
-        ':-'       => '&#247;', # DIVISION SIGN
-        '-:'       => '&#247;', # DIVISION SIGN
-        'o/'       => '&#248;', # LATIN SMALL LETTER O WITH STROKE
-        '/o'       => '&#248;', # LATIN SMALL LETTER O WITH STROKE
-        'u`'       => '&#249;', # LATIN SMALL LETTER U WITH GRAVE
-        '`u'       => '&#249;', # LATIN SMALL LETTER U WITH GRAVE
-        'u\''      => '&#250;', # LATIN SMALL LETTER U WITH ACUTE
-        '\'u'      => '&#250;', # LATIN SMALL LETTER U WITH ACUTE
-        'u^'       => '&#251;', # LATIN SMALL LETTER U WITH CIRCUMFLEX
-        '^u'       => '&#251;', # LATIN SMALL LETTER U WITH CIRCUMFLEX
-        'u"'       => '&#252;', # LATIN SMALL LETTER U WITH DIAERESIS
-        '"u'       => '&#252;', # LATIN SMALL LETTER U WITH DIAERESIS
-        'y\''      => '&#253;', # LATIN SMALL LETTER Y WITH ACUTE
-        '\'y'      => '&#253;', # LATIN SMALL LETTER Y WITH ACUTE
-        'y"'       => '&#255', # LATIN SMALL LETTER Y WITH DIAERESIS
-        '"y'       => '&#255', # LATIN SMALL LETTER Y WITH DIAERESIS
-        'OE'       => '&#338;', # LATIN CAPITAL LIGATURE OE
-        'oe'       => '&#339;', # LATIN SMALL LIGATURE OE
-        '*'        => '&#2022;', # BULLET
-        'Fr'       => '&#8355;', # FRENCH FRANC SIGN
-        'L='       => '&#8356;', # LIRA SIGN
-        '=L'       => '&#8356;', # LIRA SIGN
-        'Rs'       => '&#8360;', # RUPEE SIGN
-        'C='       => '&#8364;', # EURO SIGN
-        '=C'       => '&#8364;', # EURO SIGN
-        'tm'       => '&#8482;', # TRADE MARK SIGN
-        '&lt;-'    => '&#8592;', # LEFTWARDS ARROW
-        '-&gt;'    => '&#8594;', # RIGHTWARDS ARROW
-        '&lt;='    => '&#8656;', # LEFTWARDS DOUBLE ARROW
-        '=&gt;'    => '&#8658;', # RIGHTWARDS DOUBLE ARROW
-        '=/'       => '&#8800;', # NOT EQUAL TO
-        '/='       => '&#8800;', # NOT EQUAL TO
-        '&lt;_'    => '&#8804;', # LESS-THAN OR EQUAL TO
-        '_&lt;'    => '&#8804;', # LESS-THAN OR EQUAL TO
-        '&gt;_'    => '&#8805;', # GREATER-THAN OR EQUAL TO
-        '_&gt;'    => '&#8805;', # GREATER-THAN OR EQUAL TO
-        ':('       => '&#9785;', # WHITE FROWNING FACE
-        ':)'       => '&#9786;', # WHITE SMILING FACE
-        'spade'    => '&#9824;', # BLACK SPADE SUIT
-        'club'     => '&#9827;', # BLACK CLUB SUIT
-        'heart'    => '&#9829;', # BLACK HEART SUIT
-        'diamond'  => '&#9830;', # BLACK DIAMOND SUIT
+        'c|'       => '&#162;',     # CENT SIGN
+        '|c'       => '&#162;',     # CENT SIGN
+        'L-'       => '&#163;',     # POUND SIGN
+        '-L'       => '&#163;',     # POUND SIGN
+        'Y='       => '&#165;',     # YEN SIGN
+        '=Y'       => '&#165;',     # YEN SIGN
+        '(c)'      => '&#169;',     # COPYRIGHT SIGN
+        '&lt;&lt;' => '&#171;',     # LEFT-POINTING DOUBLE ANGLE QUOTATION
+        '(r)'      => '&#174;',     # REGISTERED SIGN
+        '+_'       => '&#177;',     # PLUS-MINUS SIGN
+        '_+'       => '&#177;',     # PLUS-MINUS SIGN
+        '&gt;&gt;' => '&#187;',     # RIGHT-POINTING DOUBLE ANGLE QUOTATION
+        '1/4'      => '&#188;',     # VULGAR FRACTION ONE QUARTER
+        '1/2'      => '&#189;',     # VULGAR FRACTION ONE HALF
+        '3/4'      => '&#190;',     # VULGAR FRACTION THREE QUARTERS
+        'A`'       => '&#192;',     # LATIN CAPITAL LETTER A WITH GRAVE
+        '`A'       => '&#192;',     # LATIN CAPITAL LETTER A WITH GRAVE
+        'A\''      => '&#193;',     # LATIN CAPITAL LETTER A WITH ACUTE
+        '\'A'      => '&#193;',     # LATIN CAPITAL LETTER A WITH ACUTE
+        'A^'       => '&#194;',     # LATIN CAPITAL LETTER A WITH CIRCUMFLEX
+        '^A'       => '&#194;',     # LATIN CAPITAL LETTER A WITH CIRCUMFLEX
+        'A~'       => '&#195;',     # LATIN CAPITAL LETTER A WITH TILDE
+        '~A'       => '&#195;',     # LATIN CAPITAL LETTER A WITH TILDE
+        'A"'       => '&#196;',     # LATIN CAPITAL LETTER A WITH DIAERESIS
+        '"A'       => '&#196;',     # LATIN CAPITAL LETTER A WITH DIAERESIS
+        'Ao'       => '&#197;',     # LATIN CAPITAL LETTER A WITH RING ABOVE
+        'oA'       => '&#197;',     # LATIN CAPITAL LETTER A WITH RING ABOVE
+        'AE'       => '&#198;',     # LATIN CAPITAL LETTER AE
+        'C,'       => '&#199;',     # LATIN CAPITAL LETTER C WITH CEDILLA
+        ',C'       => '&#199;',     # LATIN CAPITAL LETTER C WITH CEDILLA
+        'E`'       => '&#200;',     # LATIN CAPITAL LETTER E WITH GRAVE
+        '`E'       => '&#200;',     # LATIN CAPITAL LETTER E WITH GRAVE
+        'E\''      => '&#201;',     # LATIN CAPITAL LETTER E WITH ACUTE
+        '\'E'      => '&#201;',     # LATIN CAPITAL LETTER E WITH ACUTE
+        'E^'       => '&#202;',     # LATIN CAPITAL LETTER E WITH CIRCUMFLEX
+        '^E'       => '&#202;',     # LATIN CAPITAL LETTER E WITH CIRCUMFLEX
+        'E"'       => '&#203;',     # LATIN CAPITAL LETTER E WITH DIAERESIS
+        '"E'       => '&#203;',     # LATIN CAPITAL LETTER E WITH DIAERESIS
+        'I`'       => '&#204;',     # LATIN CAPITAL LETTER I WITH GRAVE
+        '`I'       => '&#204;',     # LATIN CAPITAL LETTER I WITH GRAVE
+        'I\''      => '&#205;',     # LATIN CAPITAL LETTER I WITH ACUTE
+        '\'I'      => '&#205;',     # LATIN CAPITAL LETTER I WITH ACUTE
+        'I^'       => '&#206;',     # LATIN CAPITAL LETTER I WITH CIRCUMFLEX
+        '^I'       => '&#206;',     # LATIN CAPITAL LETTER I WITH CIRCUMFLEX
+        'I"'       => '&#207;',     # LATIN CAPITAL LETTER I WITH DIAERESIS
+        '"I'       => '&#207;',     # LATIN CAPITAL LETTER I WITH DIAERESIS
+        'D-'       => '&#208;',     # LATIN CAPITAL LETTER ETH
+        '-D'       => '&#208;',     # LATIN CAPITAL LETTER ETH
+        'N~'       => '&#209;',     # LATIN CAPITAL LETTER N WITH TILDE
+        '~N'       => '&#209;',     # LATIN CAPITAL LETTER N WITH TILDE
+        'O`'       => '&#210;',     # LATIN CAPITAL LETTER O WITH GRAVE
+        '`O'       => '&#210;',     # LATIN CAPITAL LETTER O WITH GRAVE
+        'O\''      => '&#211;',     # LATIN CAPITAL LETTER O WITH ACUTE
+        '\'O'      => '&#211;',     # LATIN CAPITAL LETTER O WITH ACUTE
+        'O^'       => '&#212;',     # LATIN CAPITAL LETTER O WITH CIRCUMFLEX
+        '^O'       => '&#212;',     # LATIN CAPITAL LETTER O WITH CIRCUMFLEX
+        'O~'       => '&#213;',     # LATIN CAPITAL LETTER O WITH TILDE
+        '~O'       => '&#213;',     # LATIN CAPITAL LETTER O WITH TILDE
+        'O"'       => '&#214;',     # LATIN CAPITAL LETTER O WITH DIAERESIS
+        '"O'       => '&#214;',     # LATIN CAPITAL LETTER O WITH DIAERESIS
+        'O/'       => '&#216;',     # LATIN CAPITAL LETTER O WITH STROKE
+        '/O'       => '&#216;',     # LATIN CAPITAL LETTER O WITH STROKE
+        'U`'       => '&#217;',     # LATIN CAPITAL LETTER U WITH GRAVE
+        '`U'       => '&#217;',     # LATIN CAPITAL LETTER U WITH GRAVE
+        'U\''      => '&#218;',     # LATIN CAPITAL LETTER U WITH ACUTE
+        '\'U'      => '&#218;',     # LATIN CAPITAL LETTER U WITH ACUTE
+        'U^'       => '&#219;',     # LATIN CAPITAL LETTER U WITH CIRCUMFLEX
+        '^U'       => '&#219;',     # LATIN CAPITAL LETTER U WITH CIRCUMFLEX
+        'U"'       => '&#220;',     # LATIN CAPITAL LETTER U WITH DIAERESIS
+        '"U'       => '&#220;',     # LATIN CAPITAL LETTER U WITH DIAERESIS
+        'Y\''      => '&#221;',     # LATIN CAPITAL LETTER Y WITH ACUTE
+        '\'Y'      => '&#221;',     # LATIN CAPITAL LETTER Y WITH ACUTE
+        'a`'       => '&#224;',     # LATIN SMALL LETTER A WITH GRAVE
+        '`a'       => '&#224;',     # LATIN SMALL LETTER A WITH GRAVE
+        'a\''      => '&#225;',     # LATIN SMALL LETTER A WITH ACUTE
+        '\'a'      => '&#225;',     # LATIN SMALL LETTER A WITH ACUTE
+        'a^'       => '&#226;',     # LATIN SMALL LETTER A WITH CIRCUMFLEX
+        '^a'       => '&#226;',     # LATIN SMALL LETTER A WITH CIRCUMFLEX
+        'a~'       => '&#227;',     # LATIN SMALL LETTER A WITH TILDE
+        '~a'       => '&#227;',     # LATIN SMALL LETTER A WITH TILDE
+        'a"'       => '&#228;',     # LATIN SMALL LETTER A WITH DIAERESIS
+        '"a'       => '&#228;',     # LATIN SMALL LETTER A WITH DIAERESIS
+        'ao'       => '&#229;',     # LATIN SMALL LETTER A WITH RING ABOVE
+        'oa'       => '&#229;',     # LATIN SMALL LETTER A WITH RING ABOVE
+        'ae'       => '&#230;',     # LATIN SMALL LETTER AE
+        'c,'       => '&#231;',     # LATIN SMALL LETTER C WITH CEDILLA
+        ',c'       => '&#231;',     # LATIN SMALL LETTER C WITH CEDILLA
+        'e`'       => '&#232;',     # LATIN SMALL LETTER E WITH GRAVE
+        '`e'       => '&#232;',     # LATIN SMALL LETTER E WITH GRAVE
+        'e\''      => '&#233;',     # LATIN SMALL LETTER E WITH ACUTE
+        '\'e'      => '&#233;',     # LATIN SMALL LETTER E WITH ACUTE
+        'e^'       => '&#234;',     # LATIN SMALL LETTER E WITH CIRCUMFLEX
+        '^e'       => '&#234;',     # LATIN SMALL LETTER E WITH CIRCUMFLEX
+        'e"'       => '&#235;',     # LATIN SMALL LETTER E WITH DIAERESIS
+        '"e'       => '&#235;',     # LATIN SMALL LETTER E WITH DIAERESIS
+        'i`'       => '&#236;',     # LATIN SMALL LETTER I WITH GRAVE
+        '`i'       => '&#236;',     # LATIN SMALL LETTER I WITH GRAVE
+        'i\''      => '&#237;',     # LATIN SMALL LETTER I WITH ACUTE
+        '\'i'      => '&#237;',     # LATIN SMALL LETTER I WITH ACUTE
+        'i^'       => '&#238;',     # LATIN SMALL LETTER I WITH CIRCUMFLEX
+        '^i'       => '&#238;',     # LATIN SMALL LETTER I WITH CIRCUMFLEX
+        'i"'       => '&#239;',     # LATIN SMALL LETTER I WITH DIAERESIS
+        '"i'       => '&#239;',     # LATIN SMALL LETTER I WITH DIAERESIS
+        'n~'       => '&#241;',     # LATIN SMALL LETTER N WITH TILDE
+        '~n'       => '&#241;',     # LATIN SMALL LETTER N WITH TILDE
+        'o`'       => '&#242;',     # LATIN SMALL LETTER O WITH GRAVE
+        '`o'       => '&#242;',     # LATIN SMALL LETTER O WITH GRAVE
+        'o\''      => '&#243;',     # LATIN SMALL LETTER O WITH ACUTE
+        '\'o'      => '&#243;',     # LATIN SMALL LETTER O WITH ACUTE
+        'o^'       => '&#244;',     # LATIN SMALL LETTER O WITH CIRCUMFLEX
+        '^o'       => '&#244;',     # LATIN SMALL LETTER O WITH CIRCUMFLEX
+        'o~'       => '&#245;',     # LATIN SMALL LETTER O WITH TILDE
+        '~o'       => '&#245;',     # LATIN SMALL LETTER O WITH TILDE
+        'o"'       => '&#246;',     # LATIN SMALL LETTER O WITH DIAERESIS
+        '"o'       => '&#246;',     # LATIN SMALL LETTER O WITH DIAERESIS
+        ':-'       => '&#247;',     # DIVISION SIGN
+        '-:'       => '&#247;',     # DIVISION SIGN
+        'o/'       => '&#248;',     # LATIN SMALL LETTER O WITH STROKE
+        '/o'       => '&#248;',     # LATIN SMALL LETTER O WITH STROKE
+        'u`'       => '&#249;',     # LATIN SMALL LETTER U WITH GRAVE
+        '`u'       => '&#249;',     # LATIN SMALL LETTER U WITH GRAVE
+        'u\''      => '&#250;',     # LATIN SMALL LETTER U WITH ACUTE
+        '\'u'      => '&#250;',     # LATIN SMALL LETTER U WITH ACUTE
+        'u^'       => '&#251;',     # LATIN SMALL LETTER U WITH CIRCUMFLEX
+        '^u'       => '&#251;',     # LATIN SMALL LETTER U WITH CIRCUMFLEX
+        'u"'       => '&#252;',     # LATIN SMALL LETTER U WITH DIAERESIS
+        '"u'       => '&#252;',     # LATIN SMALL LETTER U WITH DIAERESIS
+        'y\''      => '&#253;',     # LATIN SMALL LETTER Y WITH ACUTE
+        '\'y'      => '&#253;',     # LATIN SMALL LETTER Y WITH ACUTE
+        'y"'       => '&#255',      # LATIN SMALL LETTER Y WITH DIAERESIS
+        '"y'       => '&#255',      # LATIN SMALL LETTER Y WITH DIAERESIS
+        'OE'       => '&#338;',     # LATIN CAPITAL LIGATURE OE
+        'oe'       => '&#339;',     # LATIN SMALL LIGATURE OE
+        '*'        => '&#2022;',    # BULLET
+        'Fr'       => '&#8355;',    # FRENCH FRANC SIGN
+        'L='       => '&#8356;',    # LIRA SIGN
+        '=L'       => '&#8356;',    # LIRA SIGN
+        'Rs'       => '&#8360;',    # RUPEE SIGN
+        'C='       => '&#8364;',    # EURO SIGN
+        '=C'       => '&#8364;',    # EURO SIGN
+        'tm'       => '&#8482;',    # TRADE MARK SIGN
+        '&lt;-'    => '&#8592;',    # LEFTWARDS ARROW
+        '-&gt;'    => '&#8594;',    # RIGHTWARDS ARROW
+        '&lt;='    => '&#8656;',    # LEFTWARDS DOUBLE ARROW
+        '=&gt;'    => '&#8658;',    # RIGHTWARDS DOUBLE ARROW
+        '=/'       => '&#8800;',    # NOT EQUAL TO
+        '/='       => '&#8800;',    # NOT EQUAL TO
+        '&lt;_'    => '&#8804;',    # LESS-THAN OR EQUAL TO
+        '_&lt;'    => '&#8804;',    # LESS-THAN OR EQUAL TO
+        '&gt;_'    => '&#8805;',    # GREATER-THAN OR EQUAL TO
+        '_&gt;'    => '&#8805;',    # GREATER-THAN OR EQUAL TO
+        ':('       => '&#9785;',    # WHITE FROWNING FACE
+        ':)'       => '&#9786;',    # WHITE SMILING FACE
+        'spade'    => '&#9824;',    # BLACK SPADE SUIT
+        'club'     => '&#9827;',    # BLACK CLUB SUIT
+        'heart'    => '&#9829;',    # BLACK HEART SUIT
+        'diamond'  => '&#9830;',    # BLACK DIAMOND SUIT
     };
 }
 
 # "private", internal routines
 
 sub _css_defaults {
-    my $self = shift;
+    my $self         = shift;
     my %css_defaults = (
-       class_align_right => 'right',
-       class_align_left => 'left',
-       class_align_center => 'center',
-       class_align_top => 'top',
-       class_align_bottom => 'bottom',
-       class_align_middle => 'middle',
-       class_align_justify => 'justify',
-       class_caps => 'caps',
-       class_footnote => 'footnote',
-       id_footnote_prefix => 'fn',
+        class_align_right   => 'right',
+        class_align_left    => 'left',
+        class_align_center  => 'center',
+        class_align_top     => 'top',
+        class_align_bottom  => 'bottom',
+        class_align_middle  => 'middle',
+        class_align_justify => 'justify',
+        class_caps          => 'caps',
+        class_footnote      => 'footnote',
+        id_footnote_prefix  => 'fn',
     );
-    return $self->css(\%css_defaults);
+    return $self->css( \%css_defaults );
 }
 
 sub _halign {
     my ($align) = @_;
 
-    if ($align =~ m/<>/) {
+    if ( $align =~ m/<>/ ) {
         return 'justify';
-    } elsif ($align =~ m/</) {
+    }
+    elsif ( $align =~ m/</ ) {
         return 'left';
-    } elsif ($align =~ m/>/) {
+    }
+    elsif ( $align =~ m/>/ ) {
         return 'right';
-    } elsif ($align =~ m/=/) {
+    }
+    elsif ( $align =~ m/=/ ) {
         return 'center';
     }
     return '';
@@ -2224,11 +2443,13 @@ sub _halign {
 sub _valign {
     my ($align) = @_;
 
-    if ($align =~ m/\^/) {
+    if ( $align =~ m/\^/ ) {
         return 'top';
-    } elsif ($align =~ m/~/) {
+    }
+    elsif ( $align =~ m/~/ ) {
         return 'bottom';
-    } elsif ($align =~ m/-/) {
+    }
+    elsif ( $align =~ m/-/ ) {
         return 'middle';
     }
     return '';
@@ -2242,19 +2463,25 @@ sub _imgalign {
 }
 
 sub _strip_borders {
-    my ($pre, $post) = @_;
-    if (${$post} && ${$pre} && ((my $open = substr(${$pre}, 0, 1)) =~ m/[{[]/)) {
-        my $close = substr(${$post}, 0, 1);
-        if ((($open eq '{') && ($close eq '}')) ||
-            (($open eq '[') && ($close eq ']'))) {
-            ${$pre} = substr(${$pre}, 1);
-            ${$post} = substr(${$post}, 1);
-        } else {
-            $close = substr(${$post}, -1, 1) if $close !~ m/[}\]]/;
-            if ((($open eq '{') && ($close eq '}')) ||
-                (($open eq '[') && ($close eq ']'))) {
-                ${$pre} = substr(${$pre}, 1);
-                ${$post} = substr(${$post}, 0, length(${$post}) - 1);
+    my ( $pre, $post ) = @_;
+    if (   ${$post}
+        && ${$pre}
+        && ( ( my $open = substr( ${$pre}, 0, 1 ) ) =~ m/[{[]/ ) )
+    {
+        my $close = substr( ${$post}, 0, 1 );
+        if (   ( ( $open eq '{' ) && ( $close eq '}' ) )
+            || ( ( $open eq '[' ) && ( $close eq ']' ) ) )
+        {
+            ${$pre}  = substr( ${$pre},  1 );
+            ${$post} = substr( ${$post}, 1 );
+        }
+        else {
+            $close = substr( ${$post}, -1, 1 ) if $close !~ m/[}\]]/;
+            if (   ( ( $open eq '{' ) && ( $close eq '}' ) )
+                || ( ( $open eq '[' ) && ( $close eq ']' ) ) )
+            {
+                ${$pre} = substr( ${$pre}, 1 );
+                ${$post} = substr( ${$post}, 0, length( ${$post} ) - 1 );
             }
         }
     }
@@ -2262,9 +2489,9 @@ sub _strip_borders {
 }
 
 sub _repl {
-    push @{$_[0]}, $_[1];
+    push @{ $_[0] }, $_[1];
 
-    return '<textile#'.(scalar(@{$_[0]})).'>';
+    return '<textile#' . ( scalar( @{ $_[0] } ) ) . '>';
 }
 
 sub _tokenize {
@@ -2274,33 +2501,37 @@ sub _tokenize {
     my @tokens;
 
     my $depth = 6;
-    my $nested_tags = join('|', ('(?:</?[A-Za-z0-9:]+ \s? (?:[^<>]') x $depth)
-        . (')*>)' x $depth);
+    my $nested_tags
+        = join( '|', ('(?:</?[A-Za-z0-9:]+ \s? (?:[^<>]') x $depth )
+        . ( ')*>)' x $depth );
     my $match = qr/(?s: <! ( -- .*? -- \s* )+ > )|  # comment
                    (?s: <\? .*? \?> )|              # processing instruction
                    (?s: <\% .*? \%> )|              # ASP-like
                    (?:$nested_tags)|
-                   (?:$codere)/x;                   # nested tags
+                   (?:$codere)/x;    # nested tags
 
-    while ($str =~ m/($match)/g) {
+    while ( $str =~ m/($match)/g ) {
         my $whole_tag = $1;
         my $sec_start = pos $str;
         my $tag_start = $sec_start - length $whole_tag;
-        if ($pos < $tag_start) {
-            push @tokens, ['text', substr($str, $pos, $tag_start - $pos)];
+        if ( $pos < $tag_start ) {
+            push @tokens, [ 'text', substr( $str, $pos, $tag_start - $pos ) ];
         }
-        if ($whole_tag =~ m/^[[{]?\@/) {
-            push @tokens, ['text', $whole_tag];
-        } else {
+        if ( $whole_tag =~ m/^[[{]?\@/ ) {
+            push @tokens, [ 'text', $whole_tag ];
+        }
+        else {
+
             # this clever hack allows us to preserve \n within tags.
             # this is restored at the end of the format_paragraph method
             #$whole_tag =~ s/\n/\r/g;
             $whole_tag =~ s/\n/\001/g;
-            push @tokens, ['tag', $whole_tag];
+            push @tokens, [ 'tag', $whole_tag ];
         }
         $pos = pos $str;
     }
-    push @tokens, ['text', substr($str, $pos, $len - $pos)] if $pos < $len;
+    push @tokens, [ 'text', substr( $str, $pos, $len - $pos ) ]
+        if $pos < $len;
 
     return \@tokens;
 }

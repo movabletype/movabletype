@@ -8,12 +8,12 @@ package MT::Template::Tags::Filters;
 use strict;
 
 use MT;
-use MT::Util qw( start_end_day start_end_week 
-                 start_end_month week2ymd archive_file_for
-                 format_ts offset_time_list first_n_words dirify get_entry
-                 encode_html encode_js remove_html wday_from_ts days_in
-                 spam_protect encode_php encode_url decode_html encode_xml
-                 decode_xml relative_date asset_cleanup );
+use MT::Util qw( start_end_day start_end_week
+    start_end_month week2ymd archive_file_for
+    format_ts offset_time_list first_n_words dirify get_entry
+    encode_html encode_js remove_html wday_from_ts days_in
+    spam_protect encode_php encode_url decode_html encode_xml
+    decode_xml relative_date asset_cleanup );
 use MT::Request;
 use Time::Local qw( timegm timelocal );
 use MT::Promise qw( delay );
@@ -32,8 +32,8 @@ The argument for the numify attribute is the separator character to use
 =cut
 
 sub _fltr_numify {
-    my ($str, $arg, $ctx) = @_;
-    $arg = ',' if (!defined $arg) || ($arg eq '1');
+    my ( $str, $arg, $ctx ) = @_;
+    $arg = ',' if ( !defined $arg ) || ( $arg eq '1' );
     $str =~ s/(^[-+]?\d+?(?=(?>(?:\d{3})+)(?!\d))|\G\d{3}(?=\d))/$1$arg/g;
     return $str;
 }
@@ -79,12 +79,12 @@ it's not that bad.
 =cut
 
 sub _fltr_mteval {
-    my ($str, $arg, $ctx) = @_;
+    my ( $str, $arg, $ctx ) = @_;
     my $builder = $ctx->stash('builder');
-    my $tokens = $builder->compile($ctx, $str);
-    return $ctx->error($builder->errstr) unless defined $tokens;
-    my $out = $builder->build($ctx, $tokens);
-    return $ctx->error($builder->errstr) unless defined $out;
+    my $tokens = $builder->compile( $ctx, $str );
+    return $ctx->error( $builder->errstr ) unless defined $tokens;
+    my $out = $builder->build( $ctx, $tokens );
+    return $ctx->error( $builder->errstr ) unless defined $out;
     return $out;
 }
 
@@ -131,12 +131,12 @@ just use the L<Var> tag.
 =cut
 
 sub _fltr_setvar {
-    my ($str, $arg, $ctx) = @_;
+    my ( $str, $arg, $ctx ) = @_;
     if ( my $hash = $ctx->{__inside_set_hashvar} ) {
         $hash->{$arg} = $str;
     }
     else {
-        $ctx->var($arg, $str);
+        $ctx->var( $arg, $str );
     }
     return '';
 }
@@ -155,7 +155,7 @@ B<Example:>
 =cut
 
 sub _fltr_nofollowfy {
-    my ($str, $arg, $ctx) = @_;
+    my ( $str, $arg, $ctx ) = @_;
     return $str unless $arg;
     $str =~ s#<\s*a\s([^>]*\s*href\s*=[^>]*)>#
         my @attr = $1 =~ /[^=\s]*\s*=\s*"[^"]*"|[^=\s]*\s*=\s*'[^']*'|[^=\s]*\s*=[^\s]*/g;
@@ -199,8 +199,8 @@ If you want no formatting on L<EntryBody> or L<EntryMore> (extended) text, just 
 =cut
 
 sub _fltr_filters {
-    my ($str, $val, $ctx) = @_;
-    MT->apply_text_filters($str, [ split /\s*,\s*/, $val ], $ctx);
+    my ( $str, $val, $ctx ) = @_;
+    MT->apply_text_filters( $str, [ split /\s*,\s*/, $val ], $ctx );
 }
 
 ###########################################################################
@@ -216,9 +216,9 @@ B<Example:>
 =cut
 
 sub _fltr_trim_to {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     return '' if $val <= 0;
-    $str = substr($str, 0, $val) if $val < length($str);
+    $str = substr( $str, 0, $val ) if $val < length($str);
     $str;
 }
 
@@ -235,7 +235,7 @@ B<Example:>
 =cut
 
 sub _fltr_trim {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     $str =~ s/^\s+|\s+$//gs;
     $str;
 }
@@ -253,7 +253,7 @@ B<Example:>
 =cut
 
 sub _fltr_ltrim {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     $str =~ s/^\s+//s;
     $str;
 }
@@ -271,7 +271,7 @@ B<Example:>
 =cut
 
 sub _fltr_rtrim {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     $str =~ s/\s+$//s;
     $str;
 }
@@ -285,7 +285,7 @@ Decodes any HTML entities from the input.
 =cut
 
 sub _fltr_decode_html {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     MT::Util::decode_html($str);
 }
 
@@ -298,7 +298,7 @@ Removes XML encoding from the input. Strips a 'CDATA' wrapper as well.
 =cut
 
 sub _fltr_decode_xml {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     decode_xml($str);
 }
 
@@ -311,7 +311,7 @@ Removes any HTML markup from the input.
 =cut
 
 sub _fltr_remove_html {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     MT::Util::remove_html($str);
 }
 
@@ -335,9 +335,9 @@ which would translate an entry titled "Cafe" into "cafe".
 =cut
 
 sub _fltr_dirify {
-    my ($str, $val, $ctx) = @_;
-    return $str if (defined $val) && ($val eq '0');
-    MT::Util::dirify($str, $val);
+    my ( $str, $val, $ctx ) = @_;
+    return $str if ( defined $val ) && ( $val eq '0' );
+    MT::Util::dirify( $str, $val );
 }
 
 ###########################################################################
@@ -357,14 +357,14 @@ in this list.
 =cut
 
 sub _fltr_sanitize {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     my $blog = $ctx->stash('blog');
     require MT::Sanitize;
-    if ($val eq '1') {
-        $val = ($blog && $blog->sanitize_spec) ||
-                $ctx->{config}->GlobalSanitizeSpec;
+    if ( $val eq '1' ) {
+        $val = ( $blog && $blog->sanitize_spec )
+            || $ctx->{config}->GlobalSanitizeSpec;
     }
-    MT::Sanitize->sanitize($str, $val);
+    MT::Sanitize->sanitize( $str, $val );
 }
 
 ###########################################################################
@@ -376,8 +376,8 @@ Encodes any special characters into HTML entities (ie, '<' becomes '&lt;').
 =cut
 
 sub _fltr_encode_html {
-    my ($str, $val, $ctx) = @_;
-    MT::Util::encode_html($str, 1);
+    my ( $str, $val, $ctx ) = @_;
+    MT::Util::encode_html( $str, 1 );
 }
 
 ###########################################################################
@@ -390,7 +390,7 @@ if the input contains tags or HTML entities.
 =cut
 
 sub _fltr_encode_xml {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     MT::Util::encode_xml($str);
 }
 
@@ -411,7 +411,7 @@ B<Example:>
 =cut
 
 sub _fltr_encode_js {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     MT::Util::encode_js($str);
 }
 
@@ -439,8 +439,8 @@ B<Example:>
 =cut
 
 sub _fltr_encode_php {
-    my ($str, $val, $ctx) = @_;
-    MT::Util::encode_php($str, $val);
+    my ( $str, $val, $ctx ) = @_;
+    MT::Util::encode_php( $str, $val );
 }
 
 ###########################################################################
@@ -452,7 +452,7 @@ URL encodes any special characters.
 =cut
 
 sub _fltr_encode_url {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     MT::Util::encode_url($str);
 }
 
@@ -465,7 +465,7 @@ Uppercases all alphabetic characters.
 =cut
 
 sub _fltr_upper_case {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     return uc($str);
 }
 
@@ -478,7 +478,7 @@ Lowercases all alphabetic characters.
 =cut
 
 sub _fltr_lower_case {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     return lc($str);
 }
 
@@ -491,7 +491,7 @@ Removes any linefeed characters from the input.
 =cut
 
 sub _fltr_strip_linefeeds {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     $str =~ tr(\r\n)()d;
     $str;
 }
@@ -511,7 +511,7 @@ For a basename of "example", this would output: "   example".
 =cut
 
 sub _fltr_space_pad {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     sprintf "%${val}s", $str;
 }
 
@@ -530,7 +530,7 @@ For an entry id of 1023, this would output: "0000001023".
 =cut
 
 sub _fltr_zero_pad {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     sprintf "%0${val}s", $str;
 }
 
@@ -562,7 +562,7 @@ Refer to Perl's documentation for sprintf for more examples.
 =cut
 
 sub _fltr_sprintf {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     sprintf $val, $str;
 }
 
@@ -583,24 +583,25 @@ title field.
 =cut
 
 sub _fltr_regex_replace {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
+
     # This one requires an array
     return $str unless ref($val) eq 'ARRAY';
-    my $patt = $val->[0];
+    my $patt    = $val->[0];
     my $replace = $val->[1];
-    if ($patt =~ m!^(/)(.+)\1([A-Za-z]+)?$!) {
+    if ( $patt =~ m!^(/)(.+)\1([A-Za-z]+)?$! ) {
         $patt = $2;
         my $global;
-        if (my $opt = $3) {
+        if ( my $opt = $3 ) {
             $global = 1 if $opt =~ m/g/;
             $opt =~ s/[ge]+//g;
             $patt = "(?$opt)" . $patt;
         }
-        my $re = eval { qr/$patt/ };
-        if (defined $re) {
-            $replace =~ s!\\\\(\d+)!\$1!g; # for php, \\1 is how you write $1
+        my $re = eval {qr/$patt/};
+        if ( defined $re ) {
+            $replace =~ s!\\\\(\d+)!\$1!g;  # for php, \\1 is how you write $1
             $replace =~ s!/!\\/!g;
-            eval '$str =~ s/$re/' . $replace . '/' . ($global ? 'g' : '');
+            eval '$str =~ s/$re/' . $replace . '/' . ( $global ? 'g' : '' );
             if ($@) {
                 return $ctx->error("Invalid regular expression: $@");
             }
@@ -618,7 +619,7 @@ Uppercases the first letter of each word in the input.
 =cut
 
 sub _fltr_capitalize {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     $str =~ s/\b(\w+)\b/\u\L$1/g;
     return $str;
 }
@@ -632,7 +633,7 @@ Outputs the number of characters found in the input.
 =cut
 
 sub _fltr_count_characters {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     return length($str);
 }
 
@@ -649,7 +650,7 @@ B<Example:>
 =cut
 
 sub _fltr_cat {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     return $str . $val;
 }
 
@@ -662,7 +663,7 @@ Outputs the number of paragraphs found in the input.
 =cut
 
 sub _fltr_count_paragraphs {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     my @paras = split /[\r\n]+/, $str;
     return scalar @paras;
 }
@@ -676,7 +677,7 @@ Outputs the number of words found in the input.
 =cut
 
 sub _fltr_count_words {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     my @words = split /\s+/, $str;
     @words = grep /[A-Za-z0-9\x80-\xff]/, @words;
     return scalar @words;
@@ -684,7 +685,7 @@ sub _fltr_count_words {
 
 # sub _fltr_date_format {
 #     my ($str, $val, $ctx) = @_;
-#     
+#
 # }
 
 ###########################################################################
@@ -722,32 +723,50 @@ A very simple email obfuscation technique.
 =cut
 
 sub _fltr_escape {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
+
     # val can be one of: html, htmlall, url, urlpathinfo, quotes,
     # hex, hexentity, decentity, javascript, mail, nonstd
     $val = lc($val);
-    if ($val eq 'html') {
-        $str = MT::Util::encode_html($str, 1);
-    } elsif ($val eq 'htmlall') {
+    if ( $val eq 'html' ) {
+        $str = MT::Util::encode_html( $str, 1 );
+    }
+    elsif ( $val eq 'htmlall' ) {
+
         # FIXME: implementation
-    } elsif ($val eq 'url') {
+    }
+    elsif ( $val eq 'url' ) {
         $str = MT::Util::encode_url($str);
-    } elsif ($val eq 'urlpathinfo') {
+    }
+    elsif ( $val eq 'urlpathinfo' ) {
+
         # FIXME: implementation
-    } elsif ($val eq 'quotes') {
+    }
+    elsif ( $val eq 'quotes' ) {
+
         # FIXME: implementation
-    } elsif ($val eq 'hex') {
+    }
+    elsif ( $val eq 'hex' ) {
+
         # FIXME: implementation
-    } elsif ($val eq 'hexentity') {
+    }
+    elsif ( $val eq 'hexentity' ) {
+
         # FIXME: implementation
-    } elsif ($val eq 'decentity') {
+    }
+    elsif ( $val eq 'decentity' ) {
+
         # FIXME: implementation
-    } elsif ($val eq 'javascript' || $val eq 'js') {
+    }
+    elsif ( $val eq 'javascript' || $val eq 'js' ) {
         $str = MT::Util::encode_js($str);
-    } elsif ($val eq 'mail') {
+    }
+    elsif ( $val eq 'mail' ) {
         $str =~ s/\./ [DOT] /g;
         $str =~ s/\@/ [AT] /g;
-    } elsif ($val eq 'nonstd') {
+    }
+    elsif ( $val eq 'nonstd' ) {
+
         # FIXME: implementation
     }
     return $str;
@@ -770,8 +789,8 @@ value.
 =cut
 
 sub _fltr_indent {
-    my ($str, $val, $ctx) = @_;
-    if ((my $len = int($val)) > 0) {
+    my ( $str, $val, $ctx ) = @_;
+    if ( ( my $len = int($val) ) > 0 ) {
         my $space = ' ' x $len;
         $str =~ s/^/$space/mg;
     }
@@ -789,10 +808,11 @@ of the C<br> tag.
 =cut
 
 sub _fltr_nl2br {
-    my ($str, $val, $ctx) = @_;
-    if ($val eq 'xhtml') {
+    my ( $str, $val, $ctx ) = @_;
+    if ( $val eq 'xhtml' ) {
         $str =~ s/\r?\n/<br \/>/g;
-    } else {
+    }
+    else {
         $str =~ s/\r?\n/<br>/g;
     }
     return $str;
@@ -812,10 +832,11 @@ B<Example:>
 =cut
 
 sub _fltr_replace {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
+
     # This one requires an array
     return $str unless ref($val) eq 'ARRAY';
-    my $search = $val->[0];
+    my $search  = $val->[0];
     my $replace = $val->[1];
     $str =~ s/\Q$search\E/$replace/g;
     return $str;
@@ -837,7 +858,7 @@ Changing an entry title of "Hi there!" to "H i   t h e r e !".
 =cut
 
 sub _fltr_spacify {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     my @c = split //, $str;
     return join $val, @c;
 }
@@ -855,7 +876,7 @@ B<Example:>
 =cut
 
 sub _fltr_strip {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     $val = ' ' unless defined $val;
     $str =~ s/\s+/$val/g;
     return $str;
@@ -870,7 +891,7 @@ An alias for L<remove_html>. Removes all HTML markup from the input.
 =cut
 
 sub _fltr_strip_tags {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     return MT::Util::remove_html($str);
 }
 
@@ -888,8 +909,8 @@ B<Example:>
 =cut
 
 sub _fltr_default {
-    my ($str, $val, $ctx) = @_;
-    if ($str eq '') { return $val }
+    my ( $str, $val, $ctx ) = @_;
+    if ( $str eq '' ) { return $val }
     return $str;
 }
 
@@ -915,9 +936,9 @@ a text e-mail message):
 =cut
 
 sub _fltr_wrap_text {
-    my ($str, $val, $ctx) = @_;
+    my ( $str, $val, $ctx ) = @_;
     require MT::I18N::default;
-    my $ret = MT::I18N::default->wrap_text($str, $val);
+    my $ret = MT::I18N::default->wrap_text( $str, $val );
     return $ret;
 }
 

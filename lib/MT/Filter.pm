@@ -23,16 +23,14 @@ __PACKAGE__->install_properties(
         datasource  => 'filter',
         primary_key => 'id',
         audit       => 1,
-        indexes => {
-            author_id => 1,
+        indexes     => {
+            author_id   => 1,
             created_on  => 1,
             modified_on => 1,
-            label => 1,
+            label       => 1,
 
             # Load by author with ds
-            author_ds => {
-                columns => [ 'author_id', 'object_ds' ],
-            },
+            author_ds => { columns => [ 'author_id', 'object_ds' ], },
         },
     }
 );
@@ -75,16 +73,16 @@ sub class_label_plural {
 sub list_props {
     return {
         id => {
-            base  => '__virtual.id',
-            order => 100,
+            base        => '__virtual.id',
+            order       => 100,
             view_filter => 'none',
         },
         label => {
-            auto  => 1,
-            label => 'Label',
-            order => 200,
+            auto    => 1,
+            label   => 'Label',
+            order   => 200,
             display => 'force',
-            raw => sub {
+            raw     => sub {
                 MT::Util::encode_html( $_[1]->label );
             },
             html_link => sub {
@@ -101,16 +99,16 @@ sub list_props {
             },
         },
         author_name => {
-            base    => '__virtual.author_name',
-            label   => 'Author Name',
+            base         => '__virtual.author_name',
+            label        => 'Author Name',
             filter_label => 'Author',
-            display => 'default',
-            order   => 300,
+            display      => 'default',
+            order        => 300,
         },
         author_status => {
-            base    => '__virtual.single_select',
-            display => 'none',
-            label   => 'Author Status',
+            base                  => '__virtual.single_select',
+            display               => 'none',
+            label                 => 'Author Status',
             single_select_options => [
                 { label => 'Deleted Users',  value => 'deleted', },
                 { label => 'Enabled Users',  value => 'enabled', },
@@ -121,22 +119,20 @@ sub list_props {
                 my ( $args, $db_terms, $db_args ) = @_;
                 my $val = $args->{value};
                 if ( $val eq 'deleted' ) {
-                    my @all_authors = MT->model('author')->load(
-                        undef,
-                        { fetchonly => { id => 1 }, },
-                    );
-                    return {
-                        author_id => { not => [ map { $_->id } @all_authors ] },
-                    };
+                    my @all_authors = MT->model('author')
+                        ->load( undef, { fetchonly => { id => 1 }, }, );
+                    return { author_id =>
+                            { not => [ map { $_->id } @all_authors ] }, };
                 }
                 else {
-                    my $status = $val eq 'enabled' ? MT::Author::ACTIVE()
-                                                   : MT::Author::INACTIVE();
+                    my $status
+                        = $val eq 'enabled'
+                        ? MT::Author::ACTIVE()
+                        : MT::Author::INACTIVE();
                     $db_args->{joins} ||= [];
                     push @{ $db_args->{joins} }, MT->model('author')->join_on(
                         undef,
-                        {
-                            id => \'= filter_author_id',
+                        {   id     => \'= filter_author_id',
                             status => $status,
                         },
                     );
@@ -144,19 +140,22 @@ sub list_props {
             },
         },
         object_ds => {
-            base    => '__virtual.single_select',
-            label   => 'For',
+            base         => '__virtual.single_select',
+            label        => 'For',
             filter_label => 'Object',
-            display => 'force',
-            order   => 400,
-            screen_name => sub {
+            display      => 'force',
+            order        => 400,
+            screen_name  => sub {
                 my $prop = shift;
-                my ( $screen_id ) = @_;
+                my ($screen_id) = @_;
                 my $reg = MT->registry( listing_screens => $screen_id );
                 my $label = $reg->{label} || $reg->{object_label};
                 if ( !$label ) {
                     my $class = $reg->{object_type} || $screen_id;
-                    $label = $class ? MT->model($class)->class_label : $prop->class;
+                    $label
+                        = $class
+                        ? MT->model($class)->class_label
+                        : $prop->class;
                 }
                 return ref $label ? $label->() : $label;
             },
@@ -167,32 +166,32 @@ sub list_props {
             },
             bulk_sort => sub {
                 my $prop = shift;
-                my ( $objs ) = @_;
+                my ($objs) = @_;
                 return sort { $prop->html($a) cmp $prop->html($b) } @$objs;
             },
             single_select_options => sub {
-                my $prop = shift;
-                my $app = MT->app;
-                my $lists = MT->registry( 'listing_screens' );
+                my $prop  = shift;
+                my $app   = MT->app;
+                my $lists = MT->registry('listing_screens');
                 my @lists;
                 for my $key ( keys %$lists ) {
                     my $list = $lists->{$key};
                     my $cond = $list->{condition};
-                    if ( $cond ) {
-                        $cond = MT->handler_to_coderef($cond) unless ref $cond;
+                    if ($cond) {
+                        $cond = MT->handler_to_coderef($cond)
+                            unless ref $cond;
                         $cond->($app) or next;
                     }
                     push @lists, $key;
                 }
                 $app->error(undef);
                 return [
-                    sort {
-                        $a->{label} cmp $b->{label}
-                    }
-                    map {{
-                        label => $prop->screen_name($_), value => $_,
-                    }}
-                    @lists
+                    sort { $a->{label} cmp $b->{label} }
+                        map {
+                        {   label => $prop->screen_name($_),
+                            value => $_,
+                        }
+                        } @lists
                 ];
             },
         },
@@ -205,7 +204,7 @@ sub list_props {
             base  => '__virtual.modified_on',
             order => 600,
         },
-        blog_name => { view => 0 },
+        blog_name       => { view => 0 },
         current_context => { view => 0 },
     };
 }
@@ -249,7 +248,8 @@ sub load_objects {
     for my $item (@$items) {
         my $id = $item->{type};
         my $prop = MT::ListProperty->instance( $ds, $id )
-            or return $self->error( MT->translate( 'Invalid filter type [_1]:[_2]', $ds, $id ) );
+            or return $self->error(
+            MT->translate( 'Invalid filter type [_1]:[_2]', $ds, $id ) );
         $item->{prop} = $prop;
         push @items, $item;
     }
@@ -263,7 +263,8 @@ sub load_objects {
     for my $item (@items) {
         my $prop = $item->{prop};
         $prop->has('terms') or next;
-        my $filter_terms = $prop->terms( $item->{args}, $terms, $args, \%options );
+        my $filter_terms
+            = $prop->terms( $item->{args}, $terms, $args, \%options );
         if ( $filter_terms
             && ( 'HASH'  eq ref $filter_terms && scalar %$filter_terms )
             || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) )
@@ -272,8 +273,10 @@ sub load_objects {
         }
     }
     if ( scalar @additional_terms ) {
-        if ( !$terms || ( 'HASH' eq ref $terms && !scalar %$terms )
-                 || ( 'ARRAY' eq ref $terms && !scalar @$terms ) ) {
+        if (   !$terms
+            || ( 'HASH'  eq ref $terms && !scalar %$terms )
+            || ( 'ARRAY' eq ref $terms && !scalar @$terms ) )
+        {
             shift @additional_terms;
             $terms = [@additional_terms];
         }
@@ -283,18 +286,21 @@ sub load_objects {
     }
 
     my $sort_prop;
-    if ( $sort ) {
+    if ($sort) {
         $sort_prop = MT::ListProperty->instance( $ds, $sort );
-        if ( !$sort_prop || !$sort_prop->can_sort($options{scope})  ) {
-            return $self->error( MT->translate( 'Invalid sort key [_1]:[_2]', $ds, $sort ) );
+        if ( !$sort_prop || !$sort_prop->can_sort( $options{scope} ) ) {
+            return $self->error(
+                MT->translate( 'Invalid sort key [_1]:[_2]', $ds, $sort ) );
         }
     }
-    my $has_post_process
-        = scalar @grep_items
-        || ( $sort_prop && ( $sort_prop->has('sort_method')
-                             || $sort_prop->has('bulk_sort')));
-    if (!$has_post_process) {
-        $args->{limit}  = $limit if $limit;
+    my $has_post_process = scalar @grep_items
+        || (
+        $sort_prop
+        && (   $sort_prop->has('sort_method')
+            || $sort_prop->has('bulk_sort') )
+        );
+    if ( !$has_post_process ) {
+        $args->{limit}  = $limit  if $limit;
         $args->{offset} = $offset if $offset;
     }
 
@@ -307,7 +313,7 @@ sub load_objects {
         if ( $sort_result && 'ARRAY' eq ref $sort_result ) {
             return if !scalar @$sort_result;
             if ( !ref $sort_result->[0] ) {
-                @objs = $class->load({ id => $sort_result })
+                @objs = $class->load( { id => $sort_result } )
                     or return $self->error( $class->errstr );
             }
             else {
@@ -339,12 +345,14 @@ sub load_objects {
             if ( $dir && $dir eq 'descend' );
     }
 
-    if ( $has_post_process
-         && $limit
-         && $limit < scalar @objs
-       )
+    if (   $has_post_process
+        && $limit
+        && $limit < scalar @objs )
     {
-        my $max = scalar @objs < $limit + $offset ? scalar @objs  - 1 : $limit + $offset - 1;
+        my $max
+            = scalar @objs < $limit + $offset
+            ? scalar @objs - 1
+            : $limit + $offset - 1;
         @objs = @objs[ $offset .. $max ];
     }
 
@@ -352,16 +360,16 @@ sub load_objects {
 }
 
 sub count_objects {
-    my $self      = shift;
+    my $self = shift;
     my (%options) = @_;
     my ( $terms, $args ) = @options{qw( terms args )};
 
     # my $blog_id   = $options{terms}{blog_id};
-    my $ds        = $self->object_ds;
-    my $setting   = MT->registry( listing_screens => $ds ) || {};
-    my $obj_type  = $setting->{object_type} || $ds;
-    my $class     = MT->model($obj_type);
-    my $items     = $self->items;
+    my $ds       = $self->object_ds;
+    my $setting  = MT->registry( listing_screens => $ds ) || {};
+    my $obj_type = $setting->{object_type} || $ds;
+    my $class    = MT->model($obj_type);
+    my $items    = $self->items;
     require MT::ListProperty;
     my @items;
 
@@ -369,7 +377,8 @@ sub count_objects {
     for my $item (@$items) {
         my $id = $item->{type};
         my $prop = MT::ListProperty->instance( $ds, $id )
-            or return $self->error( MT->translate( 'Invalid filter type [_1]:[_2]', $ds, $id ) );
+            or return $self->error(
+            MT->translate( 'Invalid filter type [_1]:[_2]', $ds, $id ) );
         $item->{prop} = $prop;
         push @items, $item;
     }
@@ -381,9 +390,10 @@ sub count_objects {
     ## Prepare terms
     my @additional_terms;
     for my $item (@items) {
-        my $prop         = $item->{prop};
-        my $code         = $prop->has('terms') or next;
-        my $filter_terms = $prop->terms( $item->{args}, $terms, $args, \%options );
+        my $prop = $item->{prop};
+        my $code = $prop->has('terms') or next;
+        my $filter_terms
+            = $prop->terms( $item->{args}, $terms, $args, \%options );
         if ( $filter_terms
             && ( 'HASH'  eq ref $filter_terms && scalar %$filter_terms )
             || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) )
@@ -392,7 +402,8 @@ sub count_objects {
         }
     }
     if ( scalar @additional_terms ) {
-        if ( !$terms || ( 'HASH' eq ref $terms && !scalar %$terms )
+        if (   !$terms
+            || ( 'HASH'  eq ref $terms && !scalar %$terms )
             || ( 'ARRAY' eq ref $terms && !scalar @$terms ) )
         {
             shift @additional_terms;
@@ -404,7 +415,7 @@ sub count_objects {
     }
     if ( !( scalar @grep_items ) ) {
         my $count = $class->count( $terms, $args );
-        return $self->error($class->errstr) unless defined $count;
+        return $self->error( $class->errstr ) unless defined $count;
         return $count;
     }
     my @objs = $class->load( $terms, $args );
@@ -442,8 +453,13 @@ sub pack_terms {
     for my $item (@items) {
         my $prop = $item->{prop};
         $prop->has('terms') or next;
-        my $filter_terms = $prop->terms( $item->{args}, $load_terms, $load_args, $options );
-        if ( $filter_terms && ( 'HASH' eq ref $filter_terms && scalar %$filter_terms ) || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) ) {
+        my $filter_terms
+            = $prop->terms( $item->{args}, $load_terms, $load_args,
+            $options );
+        if ( $filter_terms
+            && ( 'HASH'  eq ref $filter_terms && scalar %$filter_terms )
+            || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) )
+        {
             push @terms, $op if scalar @terms > 0;
             push @terms, $filter_terms;
         }
@@ -455,8 +471,8 @@ sub pack_terms {
 sub pack_grep {
     my $prop = shift;
     my ( $args, $objs, $opts ) = @_;
-    my @objs = @$objs;
-    my $op = $args->{op} || 'and';
+    my @objs  = @$objs;
+    my $op    = $args->{op} || 'and';
     my $items = $args->{items};
     my $ds    = $prop->{class};
     my @items;
@@ -476,7 +492,7 @@ sub pack_grep {
     for my $item (@items) {
         my $prop = $item->{prop};
         $prop->has('grep') or next;
-        @objs = $prop->grep($item->{args}, \@objs, $opts);
+        @objs = $prop->grep( $item->{args}, \@objs, $opts );
     }
     return @objs;
 }

@@ -10,6 +10,7 @@ use strict;
 use base qw( MT::ErrorHandler );
 
 use vars qw( $r );
+
 sub instance {
     return $r if $r;
     $r = __PACKAGE__->new;
@@ -20,7 +21,7 @@ sub finish { undef $r }
 sub reset { $r->{__stash} = {} if $r }
 
 sub new {
-    my $req = bless { __stash => { } }, $_[0];
+    my $req = bless { __stash => {} }, $_[0];
     $req;
 }
 

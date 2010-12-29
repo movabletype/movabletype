@@ -59,9 +59,11 @@ sub cms_pre_load_filtered_list {
 
     require MT::Permission;
     my $iter = MT::Permission->load_iter(
-        {
-            author_id => $user->id,
-            ( $load_blog_ids ? ( blog_id => $load_blog_ids ) : ( blog_id => { 'not' => 0 } ) ),
+        {   author_id => $user->id,
+            (   $load_blog_ids
+                ? ( blog_id => $load_blog_ids )
+                : ( blog_id => { 'not' => 0 } )
+            ),
         }
     );
 

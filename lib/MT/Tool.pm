@@ -16,7 +16,8 @@ use Getopt::Long;
 
 sub show_help {
     my $class = shift;
-    my $help = $class->help();
+    my $help  = $class->help();
+
     # TODO: strip spaces more smartly for people who may format
     # their help() methods differently.
     $help =~ s/ ^ [\N{SPACE}]{4} //xmsg;
@@ -26,26 +27,27 @@ sub show_help {
 sub show_usage {
     my $class = shift;
     print qq{usage:  $PROGRAM_NAME },
-        join (qq{\n        $PROGRAM_NAME }, $class->usage()),
+        join( qq{\n        $PROGRAM_NAME }, $class->usage() ),
         qq{\n};
 }
 
 sub usage;
 sub help;
-sub options {}
+sub options { }
 
 sub set_up_app {
+
     # TODO: a Tool should probably be its own App, so we can use *all*
     # the MT::App infrastructure. For now fake it like rpt does.
     require MT;
     my $mt = MT->new() or die MT->errstr;
 
-    $mt->{vtbl} = { };
-    $mt->{is_admin} = 0;
-    $mt->{template_dir} = 'cms';
-    $mt->{user_class} = 'MT::Author';
+    $mt->{vtbl}                 = {};
+    $mt->{is_admin}             = 0;
+    $mt->{template_dir}         = 'cms';
+    $mt->{user_class}           = 'MT::Author';
     $mt->{plugin_template_path} = 'tmpl';
-    $mt->run_callbacks('init_app', $mt);
+    $mt->run_callbacks( 'init_app', $mt );
 
     return $mt;
 }
@@ -57,8 +59,8 @@ sub main {
 
     my $verbose;
     my $opts_good = GetOptions(
-        'help!'      => sub { $class->show_usage(); $class->show_help(); exit; },
-        'usage!'     => sub { $class->show_usage();                      exit; },
+        'help!' => sub { $class->show_usage(); $class->show_help(); exit; },
+        'usage!' => sub { $class->show_usage(); exit; },
         'verbose|v+' => \$verbose,
 
         $class->options(),
@@ -198,4 +200,3 @@ subclass L<usage> method.
 Getopt::Long
 
 =cut
-

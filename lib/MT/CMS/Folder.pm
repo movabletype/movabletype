@@ -32,8 +32,7 @@ sub pre_save {
     my ( $app, $obj ) = @_;
     my $pkg      = $app->model('folder');
     my @siblings = $pkg->load(
-        {
-            parent  => $obj->parent,
+        {   parent  => $obj->parent,
             blog_id => $obj->blog_id
         }
     );
@@ -41,7 +40,7 @@ sub pre_save {
         next if $obj->id && ( $_->id == $obj->id );
         return $eh->error(
             $app->translate(
-"The folder '[_1]' conflicts with another folder. Folders with the same parent must have unique basenames.",
+                "The folder '[_1]' conflicts with another folder. Folders with the same parent must have unique basenames.",
                 $_->label
             )
         ) if $_->basename eq $obj->basename;
@@ -55,8 +54,7 @@ sub post_save {
 
     if ( !$original->id ) {
         $app->log(
-            {
-                message => $app->translate(
+            {   message => $app->translate(
                     "Folder '[_1]' created by '[_2]'", $obj->label,
                     $app->user->name
                 ),
@@ -74,7 +72,7 @@ sub save_filter {
     my ($app) = @_;
     return $app->errtrans( "The name '[_1]' is too long!",
         $app->param('label') )
-      if ( length( $app->param('label') ) > 100 );
+        if ( length( $app->param('label') ) > 100 );
     return 1;
 }
 
@@ -82,8 +80,7 @@ sub post_delete {
     my ( $eh, $app, $obj ) = @_;
 
     $app->log(
-        {
-            message => $app->translate(
+        {   message => $app->translate(
                 "Folder '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->label, $obj->id, $app->user->name
             ),

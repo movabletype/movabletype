@@ -8,25 +8,25 @@ use strict;
 use MT;
 
 sub _default_allowed_extensions {
-    return [ qw(
-        jpg jpeg gif png js css ico flv swf
-    )];
+    return [
+        qw(
+            jpg jpeg gif png js css ico flv swf
+            )
+    ];
 }
 
 sub apply {
     my ( $element, $theme, $blog ) = @_;
     my $dirs = $element->{data} or return 1;
-    my $exts = MT->config->ThemeStaticFileExtensions || _default_allowed_extensions();
+    my $exts = MT->config->ThemeStaticFileExtensions
+        || _default_allowed_extensions();
     $exts = [ split /[\s,]+/, $exts ] if !ref $exts;
-    for my $dir ( @$dirs ) {
+    for my $dir (@$dirs) {
         next if $dir =~ /[^\w\-\.]/;
         my $src = File::Spec->catdir( $theme->path, 'blog_static', $dir );
         my $dst = File::Spec->catdir( $blog->site_path, $dir );
-        my $result = $theme->install_static_files(
-            $src,
-            $dst,
-            allow => $exts,
-        );
+        my $result
+            = $theme->install_static_files( $src, $dst, allow => $exts, );
     }
     return 1;
 }
@@ -35,16 +35,17 @@ sub export_template {
     my $app = shift;
     my ( $blog, $saved ) = @_;
     my $default = '';
-    my $dirs = defined $saved ? $saved->{static_directories}
-             :                  $default
-             ;
-    my $exts = MT->config->ThemeStaticFileExtensions || _default_allowed_extensions();
+    my $dirs
+        = defined $saved
+        ? $saved->{static_directories}
+        : $default;
+    my $exts = MT->config->ThemeStaticFileExtensions
+        || _default_allowed_extensions();
     $exts = [ split /[\s,]+/, $exts ] if !ref $exts;
     my $extlist = join( ', ', @$exts );
     return $app->load_tmpl(
         'include/theme_exporters/static_files.tmpl',
-        {
-            static_directories => $dirs,
+        {   static_directories => $dirs,
             allowed_extensions => $extlist,
         },
     );
@@ -68,22 +69,19 @@ sub finalize {
     my ( $blog, $theme_hash, $tmpdir, $setting ) = @_;
     my $sf_hash = $theme_hash->{elements}{blog_static_files}
         or return 1;
-    my $exts = MT->config->ThemeStaticFileExtensions || _default_allowed_extensions();
+    my $exts = MT->config->ThemeStaticFileExtensions
+        || _default_allowed_extensions();
     $exts = [ split /[\s,]+/, $exts ] if !ref $exts;
     my $dirs = $sf_hash->{data};
-    for my $dir ( @$dirs ) {
+    for my $dir (@$dirs) {
         next if $dir =~ /[^\w\-\.]/;
         my $src = File::Spec->catdir( $blog->site_path, $dir );
         my $dst = File::Spec->catdir( $tmpdir, 'blog_static', $dir );
         require MT::Theme;
-        my $result = MT::Theme->install_static_files(
-            $src,
-            $dst,
-            allow => $exts,
-        );
+        my $result
+            = MT::Theme->install_static_files( $src, $dst, allow => $exts, );
     }
     return 1;
 }
 
 1;
-

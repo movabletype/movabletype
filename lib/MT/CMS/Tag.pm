@@ -12,37 +12,37 @@ sub rename_tag {
     my $perms   = $app->permissions;
     my $blog_id = $app->blog->id if $app->blog;
     $app->can_do('rename_tag')
-      or return $app->permission_denied();
-    my $id        = $app->param('__id');
-    my $name      = $app->param('tag_name')
-      or return $app->error( $app->translate("New name of the tag must be specified.") );
+        or return $app->permission_denied();
+    my $id   = $app->param('__id');
+    my $name = $app->param('tag_name')
+        or return $app->error(
+        $app->translate("New name of the tag must be specified.") );
     my $obj_type  = $app->param('__type');
     my $tag_class = $app->model('tag');
     my $ot_class  = $app->model('objecttag');
     my $tag       = $tag_class->load($id)
-      or return $app->error( $app->translate("No such tag") );
-    my $tag2 =
-      $tag_class->load( { name => $name }, { binary => { name => 1 } } );
+        or return $app->error( $app->translate("No such tag") );
+    my $tag2
+        = $tag_class->load( { name => $name }, { binary => { name => 1 } } );
 
-    if ( $obj_type ) {
+    if ($obj_type) {
         my $obj_class = $app->model($obj_type);
         if ($tag2) {
             return $app->call_return if $tag->id == $tag2->id;
         }
         my $terms = { tag_id => $tag->id };
-        if ( $blog_id ) {
-            my $blog = $app->model('blog')->load( $blog_id );
+        if ($blog_id) {
+            my $blog = $app->model('blog')->load($blog_id);
             if ( $blog->is_blog ) {
                 $terms->{blog_id} = $blog_id if $blog_id;
-            } else {
+            }
+            else {
                 my @blog_ids = map { $_->id } @{ $blog->blogs };
                 $terms->{blog_id} = \@blog_ids;
             }
         }
         my $iter = $obj_class->load_iter(
-            {
-                (
-                    $obj_type =~ m/asset/i
+            {   (   $obj_type =~ m/asset/i
                     ? ( class => '*' )
                     : ( class => $obj_type )
                 )
@@ -60,7 +60,7 @@ sub rename_tag {
     }
     else {
         my $new_tag;
-        if ( $tag2 ) {
+        if ($tag2) {
             $new_tag = $tag2;
         }
         else {
@@ -68,23 +68,23 @@ sub rename_tag {
                 ( $blog_id ? ( blog_id => $blog_id ) : () ),
                 tag_id => $tag->id,
             };
-            if ( my $ot_test = $ot_class->load( $anti_ot_terms ) ) {
+            if ( my $ot_test = $ot_class->load($anti_ot_terms) ) {
                 $new_tag = $tag->clone;
                 $new_tag->name($name);
                 $new_tag->save();
             }
             else {
-                $tag->name( $name );
+                $tag->name($name);
                 $tag->save();
             }
         }
-        if ( $new_tag ) {
+        if ($new_tag) {
             my $ot_terms = {
                 ( $blog_id ? ( blog_id => $blog_id ) : () ),
                 tag_id => $tag->id,
             };
-            my @ots = $ot_class->load( $ot_terms );
-            for my $ot ( @ots ) {
+            my @ots = $ot_class->load($ot_terms);
+            for my $ot (@ots) {
                 $ot->tag_id( $new_tag->id );
                 $ot->save;
             }
@@ -98,11 +98,17 @@ sub rename_tag {
         $app->add_return_arg( renamed => 1 );
     }
     if ( $app->param('xhr') ) {
-        return $app->forward('filtered_list', { messages => 
-            [{ cls => 'success', msg => MT->translate(
-              'Tag name was successfully renamed',
-            )}],
-        })
+        return $app->forward(
+            'filtered_list',
+            {   messages => [
+                    {   cls => 'success',
+                        msg => MT->translate(
+                            'Tag name was successfully renamed',
+                        )
+                    }
+                ],
+            }
+        );
     }
     $app->call_return;
 }
@@ -113,21 +119,20 @@ sub js_tag_check {
     my $blog_id   = $app->param('blog_id');
     my $type      = $app->param('_type') || 'entry';
     my $tag_class = $app->model('tag')
-      or return $app->json_error( $app->translate("Invalid request.") );
+        or return $app->json_error( $app->translate("Invalid request.") );
     require MT::Tag;
     my $n8d = MT::Tag->normalize($name);
     return $app->json_result( { valid => 0 } )
         unless defined($n8d) && length($n8d);
 
-    my $tag =
-      $tag_class->load( { name => $name }, { binary => { name => 1 } } );
+    my $tag
+        = $tag_class->load( { name => $name }, { binary => { name => 1 } } );
     my $class = $app->model($type)
-      or $app->json_error( $app->translate("Invalid request.") );
+        or $app->json_error( $app->translate("Invalid request.") );
     if ( $tag && $blog_id ) {
         my $ot_class = $app->model('objecttag');
         my $exist    = $ot_class->exist(
-            {
-                object_datasource => $class->datasource,
+            {   object_datasource => $class->datasource,
                 blog_id           => $blog_id,
                 tag_id            => $tag->id
             }
@@ -143,15 +148,14 @@ sub js_tag_list {
     my $type    = $app->param('_type') || 'entry';
 
     my $class = $app->model($type)
-      or return $app->json_error( $app->translate("Invalid request.") );
+        or return $app->json_error( $app->translate("Invalid request.") );
     my $result;
-    if (
-        my $tag_list = MT::Tag->cache(
+    if (my $tag_list = MT::Tag->cache(
             blog_id => $blog_id,
             class   => $class,
             private => 1,
         )
-      )
+        )
     {
         $result = { tags => $tag_list };
     }
@@ -172,8 +176,8 @@ sub js_recent_entries_for_tag {
     my $obj_class    = $app->model($obj_ds) or return;
     my $tag_name     = $app->param('tag') or return;
 
-    my $tag_obj =
-      $tag_class->load( { name => $tag_name }, { binary => { name => 1 } } );
+    my $tag_obj = $tag_class->load( { name => $tag_name },
+        { binary => { name => 1 } } );
 
     if ( !$tag_obj ) {
         return $app->json_error( $app->translate("Invalid request.") );
@@ -181,26 +185,22 @@ sub js_recent_entries_for_tag {
     my $tag_id = $tag_obj->id;
 
     my @entries = $obj_class->load(
-        {
-            ( $blog_id ? ( blog_id => $blog_id ) : () ),
+        {   ( $blog_id ? ( blog_id => $blog_id ) : () ),
             status => MT::Entry::RELEASE(),
         },
-        {
-            sort      => 'authored_on',
+        {   sort      => 'authored_on',
             direction => 'descend',
             limit     => $limit,
             join      => $objtag_class->join_on(
                 'object_id',
-                {
-                    ( $blog_id ? ( blog_id => $blog_id ) : () ),
+                {   ( $blog_id ? ( blog_id => $blog_id ) : () ),
                     tag_id            => $tag_id,
                     object_datasource => $obj_ds,
                 }
             ),
         }
     );
-    my $count =
-      $obj_class->tagged_count( $tag_id,
+    my $count = $obj_class->tagged_count( $tag_id,
         { ( $blog_id ? ( blog_id => $blog_id ) : () ) } );
     require MT::Template;
     require MT::Blog;
@@ -209,18 +209,18 @@ sub js_recent_entries_for_tag {
     $ctx->stash( 'blog', MT::Blog->load($blog_id) ) if $blog_id;
     $ctx->stash( 'entries', \@entries );
     $tmpl->param( 'entry_count', scalar @entries );
-    $tmpl->param( 'script_url', $app->uri );
-    $tmpl->param( 'tag',        $tag_name );
-    $tmpl->param( 'blog_id',    $blog_id ) if $blog_id;
-    $tmpl->param( 'editable',   $app->can_do('edit_all_entries') );
-    my $html = $app->build_page( $tmpl );
+    $tmpl->param( 'script_url',  $app->uri );
+    $tmpl->param( 'tag',         $tag_name );
+    $tmpl->param( 'blog_id',     $blog_id ) if $blog_id;
+    $tmpl->param( 'editable',    $app->can_do('edit_all_entries') );
+    my $html = $app->build_page($tmpl);
     return $app->json_result( { html => $html } );
 }
 
 sub add_tags_to_entries {
     my $app = shift;
     my $xhr = $app->param('xhr');
-    my @id = $app->param('id');
+    my @id  = $app->param('id');
 
     require MT::Tag;
     my $tags      = $app->param('itemset_action_input');
@@ -230,32 +230,36 @@ sub add_tags_to_entries {
 
     require MT::Entry;
 
-    my $user  = $app->user;
-    my $perms = $app->permissions;
+    my $user        = $app->user;
+    my $perms       = $app->permissions;
     my $entry_count = 0;
     foreach my $id (@id) {
         next unless $id;
         my $entry = MT::Entry->load($id) or next;
         next
-          unless $entry
-          || $user->is_superuser
-          || $perms->can_edit_entry( $entry, $user );
+            unless $entry
+                || $user->is_superuser
+                || $perms->can_edit_entry( $entry, $user );
 
         $entry_count++;
         $entry->add_tags(@tags);
         $entry->save
-          or return $app->trans_error( "Error saving entry: [_1]",
+            or return $app->trans_error( "Error saving entry: [_1]",
             $entry->errstr );
     }
 
     $app->add_return_arg( 'saved' => 1 );
     return $xhr
-        ? { messages => [ {
-            cls => 'success',
-            msg => MT->translate(
-                'Added [_1] tags for [_2] entries successfully!',
-                scalar @tags,
-                $entry_count, )}]}
+        ? {
+        messages => [
+            {   cls => 'success',
+                msg => MT->translate(
+                    'Added [_1] tags for [_2] entries successfully!',
+                    scalar @tags, $entry_count,
+                )
+            }
+        ]
+        }
         : $app->call_return;
 }
 
@@ -278,12 +282,12 @@ sub remove_tags_from_entries {
         next unless $id;
         my $entry = MT::Entry->load($id) or next;
         next
-          unless $entry
-          || $user->is_superuser
-          || $perms->can_edit_entry( $entry, $user );
+            unless $entry
+                || $user->is_superuser
+                || $perms->can_edit_entry( $entry, $user );
         $entry->remove_tags(@tags);
         $entry->save
-          or return $app->trans_error( "Error saving entry: [_1]",
+            or return $app->trans_error( "Error saving entry: [_1]",
             $entry->errstr );
     }
 
@@ -309,8 +313,8 @@ sub add_tags_to_assets {
         my $asset = MT::Asset->load($id) or next;
         $asset->add_tags(@tags);
         $asset->save
-          or
-          return $app->trans_error( "Error saving file: [_1]", $asset->errstr );
+            or return $app->trans_error( "Error saving file: [_1]",
+            $asset->errstr );
     }
 
     $app->add_return_arg( 'saved' => 1 );
@@ -335,8 +339,8 @@ sub remove_tags_from_assets {
         my $asset = MT::Asset->load($id) or next;
         $asset->remove_tags(@tags);
         $asset->save
-          or
-          return $app->trans_error( "Error saving file: [_1]", $asset->errstr );
+            or return $app->trans_error( "Error saving file: [_1]",
+            $asset->errstr );
     }
 
     $app->add_return_arg( 'saved' => 1 );
@@ -352,8 +356,7 @@ sub post_delete {
     my ( $eh, $app, $obj ) = @_;
 
     $app->log(
-        {
-            message => $app->translate(
+        {   message => $app->translate(
                 "Tag '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
@@ -386,7 +389,7 @@ sub list_tag_for {
     my $tag_class = $app->model('tag');
     my $ot_class  = $app->model('objecttag');
     my $total = $pkg->tag_count( $blog_id ? { blog_id => $blog_ids } : undef )
-      || 0;
+        || 0;
 
     $arg{'sort'} = 'name';
     $arg{limit} = $limit + 1;
@@ -399,23 +402,22 @@ sub list_tag_for {
     }
     $arg{join} = $ot_class->join_on(
         'tag_id',
-        {
-            object_datasource => $pkg->datasource,
+        {   object_datasource => $pkg->datasource,
             ( $blog_ids ? ( blog_id => $blog_ids ) : () )
         },
-        {
-            unique => 1,
+        {   unique => 1,
             'join' => $pkg->join_on(
                 undef,
-                {
-                    id => \'= objecttag_object_id',
-                    ( $pkg =~ m/asset/i ? () : ( class => $pkg->class_type ) )
+                {   id => \'= objecttag_object_id',
+                    (   $pkg =~ m/asset/i ? () : ( class => $pkg->class_type )
+                    )
                 }
             )
         }
     );
 
-    my $data = build_tag_table( $app,
+    my $data = build_tag_table(
+        $app,
         load_args => [ \%terms, \%arg ],
         'package' => $pkg,
         param     => \%param
@@ -444,27 +446,29 @@ sub list_tag_for {
         $filter_label = $filter->{label};
     }
 
-    $param{limit}                   = $limit;
-    $param{offset}                  = $offset;
-    $param{tag_object_type}         = $params{TagObjectType};
-    $param{tag_object_label}        = $params{TagObjectLabel} || $pkg->class_label;
-    $param{tag_object_label_plural} = $params{TagObjectLabelPlural} || $pkg->class_label_plural;
-    $param{object_label}            = $tag_class->class_label;
-    $param{object_label_plural}     = $tag_class->class_label_plural;
-    $param{object_type}             = 'tag';
+    $param{limit}            = $limit;
+    $param{offset}           = $offset;
+    $param{tag_object_type}  = $params{TagObjectType};
+    $param{tag_object_label} = $params{TagObjectLabel} || $pkg->class_label;
+    $param{tag_object_label_plural} = $params{TagObjectLabelPlural}
+        || $pkg->class_label_plural;
+    $param{object_label}        = $tag_class->class_label;
+    $param{object_label_plural} = $tag_class->class_label_plural;
+    $param{object_type}         = 'tag';
 
-    my $search_types = $app->search_apis($app->blog ? 'blog' : 'system');
-    if (grep { $_->{key} eq $param{tag_object_type} } @$search_types) {
-        $param{search_type} = $param{tag_object_type};
+    my $search_types = $app->search_apis( $app->blog ? 'blog' : 'system' );
+    if ( grep { $_->{key} eq $param{tag_object_type} } @$search_types ) {
+        $param{search_type}  = $param{tag_object_type};
         $param{search_label} = $param{tag_object_label_plural};
-    } else {
-        $param{search_type} = 'entry';
+    }
+    else {
+        $param{search_type}  = 'entry';
         $param{search_label} = $app->translate("Entries");
     }
 
-    $param{list_start}   = $offset + 1;
-    $param{list_end}     = $offset + scalar @$data;
-    $param{list_total}   = $total;
+    $param{list_start} = $offset + 1;
+    $param{list_end}   = $offset + scalar @$data;
+    $param{list_total} = $total;
     $param{next_max}
         = $param{next_offset}
         ? int( $param{list_total} / $limit ) * $limit
@@ -479,8 +483,8 @@ sub list_tag_for {
     $param{saved_deleted} = $q->param('saved_deleted');
     $param{nav_tags}      = 1;
     $app->add_breadcrumb( $app->translate('Tags') );
-    $param{screen_class} = "list-tag";
-    $param{screen_id} = "list-tag";
+    $param{screen_class}   = "list-tag";
+    $param{screen_id}      = "list-tag";
     $param{listing_screen} = 1;
 
     $app->load_tmpl( 'list_tag.tmpl', \%param );
@@ -503,27 +507,26 @@ sub build_tag_table {
     }
     return [] unless $iter;
 
-    my $param   = $args{param} || {};
-    my $blog_id = $app->param('blog_id');
-    my $pkg     = $args{'package'};
+    my $param    = $args{param} || {};
+    my $blog_id  = $app->param('blog_id');
+    my $pkg      = $args{'package'};
     my $blog_ids = $app->_load_child_blog_ids($blog_id);
     push @$blog_ids, $blog_id;
 
-    my $tag_delim   = chr( $app->user->entry_prefs->{tag_delim} );
+    my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
 
     my @data;
     while ( my $tag = $iter->() ) {
         my $count = $pkg->tagged_count(
             $tag->id,
-            {
-                ( $blog_ids ? ( blog_id => $blog_ids ) : () ),
+            {   ( $blog_ids ? ( blog_id => $blog_ids ) : () ),
                 ( $pkg =~ m/asset/i ? ( class => '*' ) : () )
             }
         );
         $count ||= 0;
         my $name = $tag->name;
         if ( $name =~ m/$tag_delim/ ) {
-            $name = '"'.$name.'"';
+            $name = '"' . $name . '"';
         }
         my $row = {
             tag_id    => $tag->id,
@@ -545,17 +548,15 @@ sub cms_pre_load_filtered_list {
     my $user = $app->user;
 
     my $blog_id = $load_options->{blog_id};
-    my $terms = $load_options->{terms};
+    my $terms   = $load_options->{terms};
     delete $terms->{blog_id}
         if exists $terms->{blog_id};
     my $args = $load_options->{args};
     $args->{joins} ||= [];
 
-    push @{ $args->{joins} }, MT->model('objecttag')->join_on(
-        'tag_id',
-        { blog_id => $blog_id },
-        { unique => 1 },
-    );
+    push @{ $args->{joins} },
+        MT->model('objecttag')
+        ->join_on( 'tag_id', { blog_id => $blog_id }, { unique => 1 }, );
 }
 
 1;

@@ -12,6 +12,7 @@ use warnings;
 use base qw( Data::ObjectDriver::Driver::BaseCache );
 
 my $cache_limit;
+
 sub MAX_CACHE_SIZE () {
     return $cache_limit if defined $cache_limit;
     return $cache_limit = MT->config->ObjectCacheLimit || 1000;
@@ -20,12 +21,13 @@ sub MAX_CACHE_SIZE () {
 my %Cache;
 
 my $trigger_installed;
+
 sub init {
     my $driver = shift;
     my %param  = @_;
-    $param{cache} ||= 1; # hack
+    $param{cache} ||= 1;    # hack
 
-    unless (defined $trigger_installed) {
+    unless ( defined $trigger_installed ) {
         MT->add_callback( 'takedown', 9, undef, \&_takedown );
         $trigger_installed = 1;
     }
@@ -40,8 +42,8 @@ sub takedown {
 sub get_from_cache {
     my $driver = shift;
 
-    $driver->start_query('RAMCACHE_GET ?', \@_);
-    my $ret = $Cache{$_[0]};
+    $driver->start_query( 'RAMCACHE_GET ?', \@_ );
+    my $ret = $Cache{ $_[0] };
     $driver->end_query(undef);
 
     return if !defined $ret;
@@ -51,12 +53,12 @@ sub get_from_cache {
 sub add_to_cache {
     my $driver = shift;
 
-    if (scalar keys %Cache > MAX_CACHE_SIZE) {
+    if ( scalar keys %Cache > MAX_CACHE_SIZE ) {
         $driver->clear_cache();
     }
 
-    $driver->start_query('RAMCACHE_ADD ?', \@_);
-    my $ret = $Cache{$_[0]} = $_[1];
+    $driver->start_query( 'RAMCACHE_ADD ?', \@_ );
+    my $ret = $Cache{ $_[0] } = $_[1];
     $driver->end_query(undef);
 
     return if !defined $ret;
@@ -66,8 +68,8 @@ sub add_to_cache {
 sub update_cache {
     my $driver = shift;
 
-    $driver->start_query('RAMCACHE_SET ?', \@_);
-    my $ret = $Cache{$_[0]} = $_[1];
+    $driver->start_query( 'RAMCACHE_SET ?', \@_ );
+    my $ret = $Cache{ $_[0] } = $_[1];
     $driver->end_query(undef);
 
     return if !defined $ret;
@@ -77,8 +79,8 @@ sub update_cache {
 sub remove_from_cache {
     my $driver = shift;
 
-    $driver->start_query('RAMCACHE_DELETE ?', \@_);
-    my $ret = delete $Cache{$_[0]};
+    $driver->start_query( 'RAMCACHE_DELETE ?', \@_ );
+    my $ret = delete $Cache{ $_[0] };
     $driver->end_query(undef);
 
     return if !defined $ret;
