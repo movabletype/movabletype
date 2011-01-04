@@ -278,13 +278,11 @@ sub edit {
             $param->{suggested_site_url} = $app->base . '/';
             $param->{suggested_site_url} =~ s!/cgi(?:-bin)?(/.*)?$!/!;
             $param->{suggested_site_url} =~ s!/mt/?$!/!i;
-            $param->{suggested_site_url} .= 'WEBSITE-NAME/';
             $param->{site_url} = $param->{suggested_site_url};
         }
         else {
             $param->{site_url} .= '/'
                 unless $param->{site_url} =~ /\/$/;
-            $param->{site_url} .= 'WEBSITE-NAME/';
         }
         $param->{screen_class} = "settings-screen";
     }
