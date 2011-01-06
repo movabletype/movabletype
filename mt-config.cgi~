@@ -1,0 +1,36 @@
+## Movable Type Configuration File
+##
+## This file defines system-wide
+## settings for Movable Type. In 
+## total, there are over a hundred 
+## options, but only those 
+## critical for everyone are listed 
+## below.
+##
+## Information on all others can be 
+## found at:
+##  http://www.movabletype.org/documentation/config
+
+#======== REQUIRED SETTINGS ==========
+
+CGIPath        /cgi-bin/trunk/
+StaticWebPath  /trunk-static/
+StaticFilePath /opt/local/apache2/cgi-bin/trunk/mt-static
+
+#======== DATABASE SETTINGS ==========
+
+ObjectDriver DBI::mysql
+Database trunk
+DBUser root
+DBHost localhost
+
+#======== MAIL =======================
+    
+DefaultLanguage en-us
+ImageDriver ImageMagick
+
+DebugMode 8
+
+ShowIPInformation 1
+EnableAddressbook 1
+SingleCommunity 1
