@@ -1335,6 +1335,9 @@ function userpic_url($asset, $blog, $author) {
     }
     $basename = basename($thumb->dest());
 
+    if (DIRECTORY_SEPARATOR != '/') {
+        $image_path = str_replace(DIRECTORY_SEPARATOR, '/', $image_path);
+    }
     $support_directory_url = support_directory_url();
     $url = sprintf("%s%s/%s", $support_directory_url, $image_path, $basename);
     return $url;
@@ -1395,6 +1398,9 @@ function get_thumbnail_file($asset, $blog, $args) {
     if (!preg_match('!/$!', $base_url))
         $base_url .= '/';
 
+    if (DIRECTORY_SEPARATOR != '/') {
+        $cache_path = str_replace(DIRECTORY_SEPARATOR, '/', $cache_path);
+    }
     $thumb_url = $base_url . $cache_path . '/' . $date_stamp . '/' . $basename;
 
     return array($thumb_url, $thumb->width(), $thumb->height(), $thumb->dest());
