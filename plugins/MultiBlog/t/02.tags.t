@@ -354,3 +354,11 @@ Test site
 Foo
 --- access_overrides
 { 1 => 2 }
+
+=== mt:MultiBlogLocalBlog mode="loop"
+--- template
+<mt:MultiBlog blog_ids="1,2-3" mode="loop"><mt:BlogName />,</mt:MultiBlog>
+--- expected
+none,Test site,
+--- access_overrides
+{ 1 => 2, 2 => 2}
