@@ -158,8 +158,7 @@ abstract class MTDatabase {
             if ( empty( $incl ) ) {
                 $incl = $args['allows'];
             } else {
-                $pattern = implode( '|', $args['allows'] );
-                $incl = preg_grep( "/$pattern/", $incl );
+                $incl = array_intersect($incl, $args['allows']);
             }
         }
 
@@ -180,8 +179,7 @@ abstract class MTDatabase {
         }
 
         if ( !empty($incl) && !empty($excl) ) {
-            $pattern = implode( '|', $excl );
-            $incl = preg_grep( "/$pattern/", $incl, PREG_GREP_INVERT );
+            $incl = array_diff($incl, $excl);
             if ( empty( $incl ) ) {
                 $mt = MT::get_instance();
                 trigger_error( $mt->translate(
