@@ -101,8 +101,8 @@ abstract class MTDatabase {
                     for ($i = $matches[1]; $i <= $matches[2]; $i++) {
                         array_push( $ret, $i );
                     }
-                } else {
-                    array_push( $ret, $i );
+                } else if (ctype_digit($item)) {
+                    array_push( $ret, $item );
                 }
             }
         } elseif ( preg_match( '/\s*,\s*/', $blog_ids ) ) {
