@@ -17,6 +17,29 @@ use vars qw( @ISA %Lexicon );
 
 %Lexicon = (
 
+  '[_1] [_2] [_3]' => '[_1] が [_3] [_2]',
+  'contains' => 'を含む',
+  'does not contain' => 'を含まない',
+  '__STRING_FILTER_EQUAL' => 'である',
+  'starts with' => 'で始まる',
+  'ends with' => 'で終わる',
+  'is greater than' => 'より大きい',
+  'is greater equal' => '以上である',
+  'is less than' => 'より小さい',
+  'is less equal' => '以下である',
+  '__INTEGER_FILTER_EQUAL' => 'である',
+  '__INTEGER_FILTER_NOT_EQUAL' => 'ではない',
+  '__DATE_FILTER_FUTURE' => '今日より後',
+  'is in the range' => 'の期間内',
+  'is in the last' => '日以内',
+  'is before' => 'より前',
+  'is after' => 'より後',
+  'is before today' => '今日より前',
+  'is after today' => '今日より後',
+  '__FILTER_DATE_ORIGIN' => '[_1]',
+  '_FILTER_DATE_DAYS' => '[_1]',
+  '[_1] to [_2]' => '[_1] から [_2]',
+
 ## php/lib/MTUtil.php
 	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
 

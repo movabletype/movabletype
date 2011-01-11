@@ -527,13 +527,20 @@ BEGIN {
                     },
 
                     filter_tmpl => sub {
-                        my $prop = shift;
-                        if ( $prop->use_future ) {
-                            return '<mt:Var name="filter_form_future_date">';
-                        }
-                        else {
-                            return '<mt:Var name="filter_form_date">';
-                        }
+                        ## since __trans macro doesn't work with including itself
+                        ## recursively, so do translate by hand here.
+                        my $prop  = shift;
+                        my $label = '<mt:var name="label">';
+                        my $opts
+                            = $prop->use_future
+                            ? '<mt:var name="future_date_filter_options">'
+                            : '<mt:var name="date_filter_options">';
+                        my $contents
+                            = $prop->use_future
+                            ? '<mt:var name="future_date_filter_contents">'
+                            : '<mt:var name="date_filter_contents">';
+                        return MT->translate( '[_1] [_2] [_3]',
+                            $label, $opts, $contents );
                     },
                     base_type => 'date',
                     html      => sub {
@@ -1004,10 +1011,10 @@ BEGIN {
                     },
                 },
                 current_user => {
+                    base            => '__virtual.hidden',
                     label           => 'My Items',
                     order           => 20000,
                     display         => 'none',
-                    filter_tmpl     => '',
                     filter_editable => 0,
                     condition       => sub {
                         my $prop  = shift;
@@ -1026,7 +1033,6 @@ BEGIN {
                             : 'created_by';
                         return { $col => $app->user->id };
                     },
-                    filter_tmpl     => '',
                     singleton       => 1,
                     label_via_param => sub {
                         my $prop  = shift;

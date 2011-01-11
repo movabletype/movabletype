@@ -15,6 +15,13 @@ use vars qw( @ISA %Lexicon );
 sub ascii_only { ((ref $_[0]) || $_[0]) eq __PACKAGE__ }
 
 %Lexicon = (
+    '__STRING_FILTER_EQUAL' => 'is',
+    '__INTEGER_FILTER_EQUAL' => 'is',
+    '__INTEGER_FILTER_NOT_EQUAL' => 'is not',
+    '__DATE_FILTER_FUTURE' => 'past',
+    '__FILTER_DATE_ORIGIN' => '[_1]',
+    '_FILTER_DATE_DAYS' => '[_1] days',
+
     'AUTO DETECT' => 'Auto-detect',
     '_USER_ENABLE' => 'Enable',
     '_USER_DISABLE' => 'Disable',
