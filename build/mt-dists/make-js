@@ -21,6 +21,14 @@ $js .= `cat tmpl/cms/widget/blog_stats.tmpl`;
 $js .= `cat tmpl/cms/list_tag.tmpl`;
 $js .= `cat tmpl/cms/include/calendar.tmpl`;
 $js .= `cat tmpl/cms/include/category_selector.tmpl`;
+$js .= `cat tmpl/cms/include/asset_upload.tmpl`;
+$js .= `cat tmpl/cms/include/calendar.tmpl`;
+$js .= `cat tmpl/cms/include/category_selector.tmpl`;
+$js .= `cat tmpl/cms/list_category.tmpl`;
+$js .= `cat tmpl/cms/list_common.tmpl`;
+$js .= `cat tmpl/cms/listing/tag_list_header.tmpl`;
+$js .= `cat tmpl/cms/widget/blog_stats.tmpl`;
+
 
 my $addon_path = File::Spec->catdir( 'addons' );
 local *DH;
