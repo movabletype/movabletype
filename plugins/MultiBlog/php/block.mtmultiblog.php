@@ -69,13 +69,22 @@ function multiblog_context($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $ctx->localize($localvars);
         # Assuming multiblog context, set it.
-        if (isset($args['include_blogs']) or isset($args['exclude_blogs'])) {
-            $ctx->stash('multiblog_context', true);
-            if (isset($args['include_blogs']))
-                $ctx->stash('multiblog_include_blog_ids', $args['include_blogs']);
-            if (isset($args['exclude_blogs']))
-                $ctx->stash('multiblog_exclude_blog_ids', $args['exclude_blogs']);
-        } 
+        $stash_to_args = array(
+            'multiblog_include_blog_ids' => array(
+                'include_blogs', 'blog_ids', 'include_websites',
+            ),
+            'multiblog_exclude_blog_ids' => array(
+                'exclude_blogs',
+            ),
+        );
+        foreach ($stash_to_args as $stash_key => $args_keys) {
+            foreach ($args_keys as $k) {
+                if (isset($args[$k])) {
+                    $ctx->stash('multiblog_context', true);
+                    $ctx->stash($stash_key, $args[$k]);
+                }
+            }
+        }
         $ctx->stash('local_blog_id', $ctx->stash('blog_id'));
     } else {
         # Restore localized variables once we have content

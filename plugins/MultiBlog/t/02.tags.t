@@ -299,6 +299,15 @@ http://narnia.na/cgi-bin/mt-search.cgi?IncludeBlogs=1&amp;tag=anemones&amp;limit
 { 1 => 2 }
 
 
+=== mt:MultiBlog blog_ids="3" mode="context"
+--- template
+<mt:MultiBlog blog_ids="3" mode="context" trim="1"><mt:BlogID />:<mt:Entries glue="," sort_by="id" sort_order="ascend"><mt:EntryID /></mt:Entries></mt:MultiBlog>
+--- expected
+2:
+--- access_overrides
+{ 1 => 2 }
+
+
 === mt:MultiBlog include_blogs="all" mode="context"
 --- template
 <mt:MultiBlog include_blogs="all" mode="context" trim="1"><mt:BlogID />:<mt:Entries glue="," sort_by="id" sort_order="ascend"><mt:EntryID /></mt:Entries></mt:MultiBlog>
