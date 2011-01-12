@@ -1196,28 +1196,36 @@ jQuery('#additem').click(function() {
 
 jQuery(window).mtValidate({
   showError: function($target, $error) {
-    var $ul = jQuery('#msg-block #invalid-filter #validate-errors');
-    if ( !$ul.length ) {
-      var $block = jQuery('<div id="invalid-filter" class="msg msg-error"/>');
-      jQuery('#msg-block').append($block);
-      $ul = jQuery('<ul id="validate-errors"/>');
-      $block.append($ul);
+    var $wrapper = $target.parent('.error-wrapper');
+    if ( !$wrapper.length ) {
+      $wrapper = jQuery('<span />')
+        .addClass('error-wrapper');
+      $target.wrap($wrapper);
     }
-    $ul.append($error);
+    if ( $target.get(0) === document.activeElement )
+      $error.show();
+    else
+      $error.hide();
+    $target
+      .after($error)
+      .bind('focus', function () {
+        jQuery(this).siblings('.msg-error').show();
+      })
+      .bind('blur', function () {
+        jQuery(this).siblings('.msg-error').hide();
+      });
   },
   wrapError: function($target, msg) {
-    return jQuery('<li/>')
-      .append( jQuery('<label />')
-        .attr('for', $target.attr('id') )
-        .addClass('msg-error')
-        .text(msg) );
+    return jQuery('<span/>')
+      .addClass('msg-error')
+      .hide()
+      .text(msg);
   },
   removeError: function($target, $error) {
     $error.remove();
-    var $ul = jQuery('#msg-block #invalid-filter #validate-errors');
-    if ( !$ul.children().length ) {
-      jQuery('#msg-block #invalid-filter').remove();
-    }
+    $target
+      .unbind('focus')
+      .unbind('blur');
   },
 });
 
