@@ -248,13 +248,6 @@ tfoot .col.head{
     border-left-color: #cfd0d0;
     overflow: hidden;
 }
-.filteritem .item-label, 
-.filteritem .prop-hidden {
-    float: left;
-    line-height: 42px;
-    margin-right: 10px;
-    font-weight: bold;
-}
 .filteritem .item-content {
     line-height: 42px;
 }
@@ -280,9 +273,6 @@ tfoot .col.head{
 }
 #dialog_filter .filter:hover {
     background-color: #dcdddd;
-}
-.filter-label {
-    min-height: 20px;
 }
 .filter-ctrl {
     text-align: right;

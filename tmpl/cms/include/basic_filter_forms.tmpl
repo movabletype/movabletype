@@ -1,98 +1,97 @@
-<mt:SetVarTemplate name="filter_form_legacy">
-    <input type="text" disabled="disabled" class="prop-legacy <mt:var name="type">-label text med" value="" />
-    <input type="hidden" class="prop-legacy <mt:var name="type">-filter_key text med" value="" />
-    <input type="hidden" class="prop-legacy <mt:var name="type">-filter_val text med" value="" />
-    <input type="hidden" class="prop-legacy <mt:var name="type">-ds text med" value="" />
-</mt:SetVarTemplate>
+<mt:setvartemplate name="filter_form_legacy">
+<input type="text" disabled="disabled" class="prop-legacy <mt:var name="type">-label text med" value="" />
+<input type="hidden" class="prop-legacy <mt:var name="type">-filter_key text med" value="" />
+<input type="hidden" class="prop-legacy <mt:var name="type">-filter_val text med" value="" />
+<input type="hidden" class="prop-legacy <mt:var name="type">-ds text med" value="" />
+</mt:setvartemplate>
 
-<mt:setVarBlock name="string_options">
-    <select class="<mt:var name="type">-option">
-        <option value="contains"><__trans phrase="contains"></option>
-        <option value="not_contains"><__trans phrase="does not contain"></option>
-        <option value="equal"><__trans phrase="__STRING_FILTER_EQUAL"></option>
-        <option value="beginning"><__trans phrase="starts with"></option>
-        <option value="end"><__trans phrase="ends with"></option>
-    </select>
+<mt:setvarblock name="string_options">
+<select class="<mt:var name="type">-option">
+  <option value="contains"><__trans phrase="contains"></option>
+  <option value="not_contains"><__trans phrase="does not contain"></option>
+  <option value="equal"><__trans phrase="__STRING_FILTER_EQUAL"></option>
+  <option value="beginning"><__trans phrase="starts with"></option>
+  <option value="end"><__trans phrase="ends with"></option>
+</select>
+</mt:setvarblock>
+
+<mt:setvartemplate name="filter_form_string">
+<__trans phrase="[_1] [_2] [_3]"
+         params="<mt:var name="label">%%<mt:var name="string_options">%%
+                 <input type="text" class="prop-string <mt:var name="type">-string text med" value="" />">
+</mt:setvartemplate>
+
+<mt:setvartemplate name="filter_form_integer">
+<__trans phrase="[_1] [_2] [_3]" 
+         params="<mt:var name="label">%%
+                 <select class="<mt:var name="type">-option">
+                   <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL"></option>
+                   <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL"></option>
+                   <option value="greater_than"><__trans phrase="is greater than"></option>
+                   <option value="greater_equal"><__trans phrase="is greater equal"></option>
+                   <option value="less_than"><__trans phrase="is less than"></option>
+                   <option value="less_equal"><__trans phrase="is less equal"></option>
+                 </select>%%
+                 <input type="text" class="prop-integer <mt:var name="type">-value text num required digit" value="" />">
+</mt:setvartemplate>
+
+<mt:setvarblock name="future_date_filter_options">
+<select class="<mt:var name="type">-option filter-date">
+  <option value="range"><__trans phrase="is in the range"></option>
+  <option value="days"><__trans phrase="is in the last"></option>
+  <option value="before"><__trans phrase="is before"></option>
+  <option value="after"><__trans phrase="is after"></option>
+  <option value="future"><__trans phrase="is after today"></option>
+  <option value="past"><__trans phrase="is before today"></option>
+</select>
+</mt:setvarblock>
+
+<mt:setvarblock name="future_date_filter_contents">
+<span class="date-option">
+  <mt:setvarblock name="date_input_from"><input type="text" class="<mt:var name="type">-from text required date" /></mt:setvarblock>
+  <mt:setvarblock name="date_input_to"><input type="text" class="<mt:var name="type">-to text required date" /></mt:setvarblock>
+  <mt:setvarblock name="date_input_origin"><input type="text" class="<mt:var name="type">-origin text required date" /></mt:setvarblock>
+  <mt:setvarblock name="date_input_days"><input type="text" class="<mt:var name="type">-days text required days" /></mt:setvarblock>
+  <span class="date"><__trans phrase="__FILTER_DATE_ORIGIN" params="<mt:var name="date_input_origin">"></span>
+  <span class="range"><__trans phrase="[_1] to [_2]" params="<mt:var name="date_input_from">%%<mt:var name="date_input_to">"></span>
+  <span class="days"><__trans phrase="_FILTER_DATE_DAYS" params="<mt:var name="date_input_days">"></span>
+</span>
+</mt:setvarblock>
+
+<mt:setvarblock name="date_filter_options">
+<select class="<mt:var name="type">-option filter-date">
+  <option value="range"><__trans phrase="is in the range"></option>
+  <option value="days"><__trans phrase="is in the last"></option>
+  <option value="before"><__trans phrase="is before"></option>
+  <option value="after"><__trans phrase="is after"></option>
+</select>
+</mt:setvarblock>
+
+<mt:setvarblock name="date_filter_contents">
+<span class="date-option">
+  <mt:setvarblock name="date_input_from"><input type="text" class="<mt:var name="type">-from text required date" /></mt:setvarblock>
+  <mt:setvarblock name="date_input_to"><input type="text" class="<mt:var name="type">-to text required date" /></mt:setvarblock>
+  <mt:setvarblock name="date_input_origin"><input type="text" class="<mt:var name="type">-origin text required date" /></mt:setvarblock>
+  <mt:setvarblock name="date_input_days"><input type="text" class="<mt:var name="type">-days text required days" /></mt:setvarblock>
+  <span class="date"><__trans phrase="__FILTER_DATE_ORIGIN" params="<mt:var name="date_input_origin">"></span>
+  <span class="range"><__trans phrase="[_1] to [_2]" params="<mt:var name="date_input_from">%%<mt:var name="date_input_to">"></span>
+  <span class="days"><__trans phrase="_FILTER_DATE_DAYS" params="<mt:var name="date_input_days">"></span>
+</span>
 </mt:setVarBlock>
 
-<mt:SetVarTemplate name="filter_form_string">
-    <__trans phrase="[_1] [_2] [_3]"
-        params="<mt:var name="label">%%<mt:var name="string_options">%%
-    <input type="text" class="prop-string <mt:var name="type">-string text med" value="" />">
-</mt:SetVarTemplate>
+<mt:setvartemplate name="filter_form_single_select">
+<__trans phrase="[_1] is [_2]" 
+         params="<mt:var name="label">%%
+                 <select class="<mt:var name="type">-value">
+                 <mt:loop name="single_select_options">
+                   <option value="<mt:var name="value">"><mt:var name="label"></option>
+                 </mt:loop>
+                 </select>">
+</mt:setvartemplate>
 
-<mt:SetVarTemplate name="filter_form_integer">
-    <__trans phrase="[_1] [_2] [_3]" params="<mt:var name="label">%%
-    <select class="<mt:var name="type">-option">
-        <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL"></option>
-        <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL"></option>
-        <option value="greater_than"><__trans phrase="is greater than"></option>
-        <option value="greater_equal"><__trans phrase="is greater equal"></option>
-        <option value="less_than"><__trans phrase="is less than"></option>
-        <option value="less_equal"><__trans phrase="is less equal"></option>
-    </select>%%
-    <input type="text" class="prop-integer <mt:var name="type">-value text num required digit" value="" />">
-</mt:SetVarTemplate>
-
-
-
-    <mt:setVarBlock name="future_date_filter_options">
-        <select class="<mt:var name="type">-option filter-date">
-            <option value="range"><__trans phrase="is in the range"></option>
-            <option value="days"><__trans phrase="is in the last"></option>
-            <option value="before"><__trans phrase="is before"></option>
-            <option value="after"><__trans phrase="is after"></option>
-            <option value="future"><__trans phrase="is after today"></option>
-            <option value="past"><__trans phrase="is before today"></option>
-        </select>
-    </mt:setVarBlock>
-
-    <mt:setVarBlock name="future_date_filter_contents">
-        <span class="date-option">
-            <mt:setVarBlock name="date_input_from"><input type="text" class="<mt:var name="type">-from text required date" /></mt:setVarBlock>
-            <mt:setVarBlock name="date_input_to"><input type="text" class="<mt:var name="type">-to text required date" /></mt:setVarBlock>
-            <mt:setVarBlock name="date_input_origin"><input type="text" class="<mt:var name="type">-origin text required date" /></mt:setVarBlock>
-            <mt:setVarBlock name="date_input_days"><input type="text" class="<mt:var name="type">-days text required days" /></mt:setVarBlock>
-            <span class="date"><__trans phrase="__FILTER_DATE_ORIGIN" params="<mt:var name="date_input_origin">"></span>
-            <span class="range"><__trans phrase="[_1] to [_2]" params="<mt:var name="date_input_from">%%<mt:var name="date_input_to">"></span>
-            <span class="days"><__trans phrase="_FILTER_DATE_DAYS" params="<mt:var name="date_input_days">"></span>
-        </span>
-    </mt:setVarBlock>
-
-
-    <mt:setVarBlock name="date_filter_options">
-        <select class="<mt:var name="type">-option filter-date">
-            <option value="range"><__trans phrase="is in the range"></option>
-            <option value="days"><__trans phrase="is in the last"></option>
-            <option value="before"><__trans phrase="is before"></option>
-            <option value="after"><__trans phrase="is after"></option>
-        </select>
-    </mt:setVarBlock>
-    <mt:setVarBlock name="date_filter_contents">
-        <span class="date-option">
-            <mt:setVarBlock name="date_input_from"><input type="text" class="<mt:var name="type">-from text required date" /></mt:setVarBlock>
-            <mt:setVarBlock name="date_input_to"><input type="text" class="<mt:var name="type">-to text required date" /></mt:setVarBlock>
-            <mt:setVarBlock name="date_input_origin"><input type="text" class="<mt:var name="type">-origin text required date" /></mt:setVarBlock>
-            <mt:setVarBlock name="date_input_days"><input type="text" class="<mt:var name="type">-days text required days" /></mt:setVarBlock>
-
-            <span class="date"><__trans phrase="__FILTER_DATE_ORIGIN" params="<mt:var name="date_input_origin">"></span>
-            <span class="range"><__trans phrase="[_1] to [_2]" params="<mt:var name="date_input_from">%%<mt:var name="date_input_to">"></span>
-            <span class="days"><__trans phrase="_FILTER_DATE_DAYS" params="<mt:var name="date_input_days">"></span>
-        </span>
-    </mt:setVarBlock>
-
-<mt:SetVarTemplate name="filter_form_single_select">
-    <__trans phrase="[_1] is [_2]" params="<mt:var name="label">%%
-    <select class="<mt:var name="type">-value">
-        <mt:loop name="single_select_options">
-        <option value="<mt:var name="value">"><mt:var name="label"></option>
-        </mt:loop>
-    </select>">
-</mt:SetVarTemplate>
-
-<mt:SetVarTemplate name="filter_form_hidden">
-    <input type="hidden" class="prop-hidden <mt:var name="type">-value" value="" />
-    <input type="hidden" class="prop-hidden <mt:var name="type">-label" value="" />
-    <span class="prop-hidden <mt:var name="type">-label"><mt:var name="label"></span>
-</mt:SetVarTemplate>
+<mt:setvartemplate name="filter_form_hidden">
+<input type="hidden" class="prop-hidden <mt:var name="type">-value" value="" />
+<input type="hidden" class="prop-hidden <mt:var name="type">-label" value="" />
+<mt:var name="label">
+</mt:setvartemplate>
 
