@@ -1208,14 +1208,15 @@ jQuery(window).mtValidate({
     else
       $error.hide();
     $target.parents('.filteritem').append($error);
-  },
-  wrapError: function($target, msg) {
     var offset  = $target.offset();
     var poffset = $target.parents('.filteritem').offset();
+    $error
+      .css('left', offset.left - poffset.left + $target.width() - 5 )
+      .css('top',  offset.top  - poffset.top  - $error.height() + 3 );
+  },
+  wrapError: function($target, msg) {
     return jQuery('<span/>')
       .addClass('msg-error validate-error')
-      .css('left', offset.left - poffset.left )
-      .css('top', offset.top - poffset.top - 5 )
       .text(msg);
   },
   removeError: function($target, $error) {
