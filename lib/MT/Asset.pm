@@ -349,20 +349,30 @@ sub list_props {
 }
 
 sub system_filters {
-    my %type_filters;
+    my %filters;
+
+    # for each class
     my $types = MT::Asset->class_labels;
     foreach my $type ( keys %$types ) {
         my $asset_type = $type;
         next if $asset_type eq 'asset';
         $asset_type =~ s/^asset\.//;
-        $type_filters{$asset_type} = {
+        $filters{$asset_type} = {
             label =>
                 sub { MT::Asset->class_handler($type)->class_label_plural },
             items =>
                 [ { type => 'class', args => { value => $asset_type }, }, ],
         };
     }
-    return \%type_filters;
+
+    # for context
+    $filters{current_website} = {
+        label => 'Assets of this website',
+        items => [ { type => 'current_context' } ],
+        view  => 'website',
+    };
+
+    return \%filters;
 }
 
 require MT::Asset::Image;
