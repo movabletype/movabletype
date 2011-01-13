@@ -1196,36 +1196,35 @@ jQuery('#additem').click(function() {
 
 jQuery(window).mtValidate({
   showError: function($target, $error) {
-    var $wrapper = $target.parent('.error-wrapper');
-    if ( !$wrapper.length ) {
-      $wrapper = jQuery('<span />')
-        .addClass('error-wrapper');
-      $target.wrap($wrapper);
-    }
+    var focus = function () { $error.show() };
+    var blur  = function () { $error.hide() };
+    jQuery.data( $target.get(0), 'validate_focus', focus );
+    jQuery.data( $target.get(0), 'validate_blur',  blur );
+    $target
+      .bind('focus', focus)
+      .bind('blur', blur);
     if ( $target.get(0) === document.activeElement )
       $error.show();
     else
       $error.hide();
-    $target
-      .after($error)
-      .bind('focus', function () {
-        jQuery(this).siblings('.msg-error').show();
-      })
-      .bind('blur', function () {
-        jQuery(this).siblings('.msg-error').hide();
-      });
+    jQuery('body').append($error);
   },
   wrapError: function($target, msg) {
+    var offset = $target.offset();
     return jQuery('<span/>')
-      .addClass('msg-error')
-      .hide()
+      .addClass('msg-error validate-error')
+      .css('left', offset.left)
+      .css('top', offset.top - 5 )
+      .css('position', 'absolute' )
       .text(msg);
   },
   removeError: function($target, $error) {
     $error.remove();
+    var focus = jQuery.data( $target.get(0), 'validate_focus');
+    var blur  = jQuery.data( $target.get(0), 'validate_blur');
     $target
-      .unbind('focus')
-      .unbind('blur');
+      .unbind('focus', focus)
+      .unbind('blur', blur);
   },
 });
 
