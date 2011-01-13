@@ -279,7 +279,9 @@ sub _HashHTMLBlocks {
                     (?=\n+|\Z)  # followed by a newline or end of document
                 )
             }{
-                my $key = md5_hex($1);
+
+                my $val = Encode::is_utf8($1) ? Encode::encode_utf8($1) : $1;
+                my $key = md5_hex($val);
                 $g_html_blocks{$key} = $1;
                 "\n\n" . $key . "\n\n";
             }egmx;
