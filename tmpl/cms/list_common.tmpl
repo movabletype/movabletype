@@ -1207,15 +1207,15 @@ jQuery(window).mtValidate({
       $error.show();
     else
       $error.hide();
-    jQuery('body').append($error);
+    $target.parents('.filteritem').append($error);
   },
   wrapError: function($target, msg) {
-    var offset = $target.offset();
+    var offset  = $target.offset();
+    var poffset = $target.parents('.filteritem').offset();
     return jQuery('<span/>')
       .addClass('msg-error validate-error')
-      .css('left', offset.left)
-      .css('top', offset.top - 5 )
-      .css('position', 'absolute' )
+      .css('left', offset.left - poffset.left )
+      .css('top', offset.top - poffset.top - 5 )
       .text(msg);
   },
   removeError: function($target, $error) {
