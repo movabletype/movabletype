@@ -217,9 +217,19 @@ B<Example:>
 
 sub _fltr_trim_to {
     my ( $str, $val, $ctx ) = @_;
-    return '' if $val <= 0;
-    $str = substr( $str, 0, $val ) if $val < length($str);
-    $str;
+    my ( $len, $tail );
+    if ( $val =~ /\+/ ) {
+        ( $len, $tail ) = split /\+/, $val, 2;
+    }
+    else {
+        $len = $val;
+    }
+    return '' if $len <= 0;
+    if ( $len < length($str) ) {
+        $str = substr( $str, 0, $len );
+        $str .= $tail if $tail;
+    }
+    return $str;
 }
 
 ###########################################################################

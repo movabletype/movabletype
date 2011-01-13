@@ -602,5 +602,6 @@
 { "r" : "0", "t" : "<MTSetVarBlock name=\"foo\"><span>Foo</span></MTSetVarBlock><MTGetVar name=\"foo\" escape=\"nonstd\">", "e" : "<span>Foo</span>"}, #601
 { "r" : "1", "t" : "<MTSetVarBlock name=\"foo\"><a href=\"http://example.com/\">Example</a></MTSetVarBlock><MTGetVar name=\"foo\" nofollowfy=\"1\">", "e" : "<a href=\"http://example.com/\" rel=\"nofollow\">Example</a>"}, #602
 { "r" : "1", "t" : "<MTSetVarBlock name=\"foo\"><a href=\"http://example.com/\" rel=\"next\">Example</a></MTSetVarBlock><MTGetVar name=\"foo\" nofollowfy=\"1\">", "e" : "<a href=\"http://example.com/\" rel=\"nofollow next\">Example</a>"}, #603
-{ "r" : "1", "t" : "<MTEntries tags='@grandparent' lastn='1'><MTEntryTitle></MTEntries>", "e" : ""} #604
+{ "r" : "1", "t" : "<MTEntries tags='@grandparent' lastn='1'><MTEntryTitle></MTEntries>", "e" : ""}, #604
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle trim_to=\"6+...\"></MTEntries>", "e" : "A Rain..."} #605
 ]
