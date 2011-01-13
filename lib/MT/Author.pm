@@ -355,9 +355,9 @@ sub commenter_list_props {
 
             },
             single_select_options => [
-                { label => 'Approved Commenter', value => 'enabled', },
-                { label => 'Banned Commenter',   value => 'disabled', },
-                { label => 'Pending Commenter',  value => 'pending', },
+                { label => 'Approved', value => 'enabled', },
+                { label => 'Banned',   value => 'disabled', },
+                { label => 'Pending',  value => 'pending', },
             ],
         },
     };
