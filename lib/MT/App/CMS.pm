@@ -1531,6 +1531,10 @@ sub core_menus {
             mode  => "list",
             args  => { _type => "website" },
             view  => "system",
+            condition => sub {
+                require MT::CMS::Website;
+                return MT::CMS::Website::can_view_website_list( $app );
+            },
         },
         'website:create' => {
             label         => "New",

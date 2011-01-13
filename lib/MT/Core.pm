@@ -1103,9 +1103,12 @@ BEGIN {
                 primary          => 'name',
                 view             => 'system',
                 default_sort_key => 'name',
-                permission       => 'access_to_website_list',
-                scope_mode       => 'none',
-            },
+                scope_mode       => 'none', 
+                condition => sub {
+                    require MT::CMS::Website;
+                    return MT::CMS::Website::can_view_website_list( MT->instance );
+                },
+           },
             blog => {
                 object_label     => 'Blog',
                 view             => [qw( system website )],

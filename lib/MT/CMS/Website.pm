@@ -322,6 +322,31 @@ sub can_view {
     }
 }
 
+
+sub can_view_website_list {
+    my $app = shift;
+
+    return 1 if $app->user->is_superuser;
+    return 1 if $app->user->permissions(0)->can_do('edit_templates');
+
+    my $blog = $app->blog;
+    my $blog_ids
+        = !$blog         ? undef
+        : $blog->is_blog ? [ $blog->id ]
+        : $blog->has_blog ? [ map { $_->id } @{ $blog->blogs } ]
+        :                   undef;
+
+    require MT::Permission;
+    my $cnt = MT::Permission->count(
+        {   author_id => $app->user->id,
+            blog_id => { not => 0 },
+            permissions => { not => 'comment' },
+        }
+    );
+
+    return $cnt > 0 ? 1 : 0;
+}
+
 sub can_save {
     my ( $eh, $app, $id ) = @_;
     my $perms = $app->permissions;
