@@ -16,10 +16,12 @@ mt-static/support/logs
 mt-static/support/themes
 mt-static/support/assets_c
 mt-static/support/uploads
+mt-static/support/theme_thumbnails/
+mt-config.cgi
+
+mt-cp.cgi
 addons
 mt-static/addons
-mt-config.cgi
-mt-cp.cgi
 mt-static/plugins/FacebookCommenters
 mt-static/plugins/feeds-app-lite
 mt-static/plugins/mixiComment
@@ -28,3 +30,5 @@ mt-static/themes/tristan-blue-4.2
 plugins/FacebookCommenters
 plugins/feeds-app-lite
 plugins/mixiComment
+
+t/site/
