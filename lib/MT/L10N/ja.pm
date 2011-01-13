@@ -39,6 +39,8 @@ use vars qw( @ISA %Lexicon );
   '__FILTER_DATE_ORIGIN' => '[_1]',
   '_FILTER_DATE_DAYS' => '[_1]',
   '[_1] to [_2]' => '[_1] から [_2]',
+  '<mt:var name="[_1]"> [_2] [_3] [_4]' => '<mt:var name="[_1]"> [_2] [_4] [_3]',
+
 
 ## php/lib/MTUtil.php
 	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',

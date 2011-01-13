@@ -531,6 +531,10 @@ BEGIN {
                         ## recursively, so do translate by hand here.
                         my $prop  = shift;
                         my $label = '<mt:var name="label">';
+                        my $tmpl
+                            = $prop->use_future
+                            ? 'filter_form_future_date'
+                            : 'filter_form_date';
                         my $opts
                             = $prop->use_future
                             ? '<mt:var name="future_date_filter_options">'
@@ -539,8 +543,8 @@ BEGIN {
                             = $prop->use_future
                             ? '<mt:var name="future_date_filter_contents">'
                             : '<mt:var name="date_filter_contents">';
-                        return MT->translate( '[_1] [_2] [_3]',
-                            $label, $opts, $contents );
+                        return MT->translate( '<mt:var name="[_1]"> [_2] [_3] [_4]',
+                            $tmpl, $label, $opts, $contents );
                     },
                     base_type => 'date',
                     html      => sub {
