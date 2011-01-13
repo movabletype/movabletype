@@ -310,7 +310,6 @@ sub list_props {
             order     => 400,
         },
         category_id => {
-            label            => 'Category',
             label            => 'Primary Category',
             order            => 500,
             display          => 'default',
