@@ -422,6 +422,7 @@ function renderFilterList() {
     jQuery('input[name=filter_name]').mtUnvalidate().val('<__trans phrase="New Filter">');
     jQuery('#opener').html('<__trans phrase="New Filter">');
     jQuery('#filter_id').val('');
+    jQuery('input[name=filter_id]').val('');
     updateItemList();
     jQuery('#dialog_filter').dialog('close');
     updateFilterSaveButtons({
