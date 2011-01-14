@@ -667,14 +667,6 @@ sub system_filters {
             items => [ { type => 'status', args => { value => '4' }, }, ],
             order => 500,
         },
-        my_posts_on_this_context => {
-            label => 'My blog posts on this blog',
-            items => sub {
-                [ { type => 'current_user' }, { type => 'current_context' } ]
-                ,;
-            },
-            view => 'website',
-        },
         my_posts => {
             label => 'My Entries',
             items => sub {
