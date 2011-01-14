@@ -383,7 +383,7 @@ EOT;
     function tag($tag, $args = array()) {
         $tag = preg_replace('/^mt:?/i', '', strtolower($tag));
         if ((array_key_exists('mt' . $tag, $this->conditionals)) || (preg_match('/^if/i', $tag) || preg_match('/^has/', $tag) || preg_match('/[a-z](header|footer|previous|next)$/i', $tag))) {
-            list($hdlr) = $this->handler_for($tag);
+            list($hdlr) = $this->handler_for("mt" . $tag);
             if (!$hdlr) {
                 $fntag = 'smarty_block_mt' . $tag;
                 if (!function_exists($fntag))
