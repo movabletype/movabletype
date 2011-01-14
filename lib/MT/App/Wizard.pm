@@ -188,6 +188,11 @@ sub init_core_registry {
                 label =>
                     'This module is needed if you would like to be able to create thumbnails of uploaded images.',
             },
+            'Imager' => {
+                link => 'http://search.cpan.org/dist/Imager',
+                label =>
+                    'This module is needed if you would like to be able to create thumbnails of uploaded images.',
+            },
             'IPC::Run' => {
                 link => 'http://search.cpan.org/dist/IPC-Run',
                 label =>

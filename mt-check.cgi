@@ -400,6 +400,8 @@ my @CORE_OPT = (
 
     [ 'GD', 0, 0, translate('This module is needed if you would like to be able to create thumbnails of uploaded images.')],
 
+    [ 'Imager', 0, 0, translate('This module is needed if you would like to be able to create thumbnails of uploaded images.')],
+
     [ 'IPC::Run', 0, 0, translate('This module is needed if you would like to be able to use NetPBM as the image driver for MT.')],
 
     [ 'Storable', 0, 0, translate('Storable is optional; it is required by certain MT plugins available from third parties.')],
@@ -419,9 +421,9 @@ my @CORE_OPT = (
     [ 'Archive::Tar', 0, 0, translate('Archive::Tar is required in order to archive files in backup/restore operation.')],
 
     [ 'IO::Compress::Gzip', 0, 0, translate('IO::Compress::Gzip is required in order to compress files in backup/restore operation.')],
-        
+
     [ 'IO::Uncompress::Gunzip', 0, 0, translate('IO::Uncompress::Gunzip is required in order to decompress files in backup/restore operation.')],
-    
+
     [ 'Archive::Zip', 0, 0, translate('Archive::Zip is required in order to archive files in backup/restore operation.')],
 
     [ 'XML::SAX', 0, 0, translate('XML::SAX and/or its dependencies is required in order to restore.')],
