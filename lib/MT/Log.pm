@@ -139,6 +139,7 @@ sub list_props {
                         return MT->translate('*User deleted*');
                     }
                 }
+                return '';
             },
         },
         class => {
