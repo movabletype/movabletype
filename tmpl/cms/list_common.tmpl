@@ -1212,8 +1212,8 @@ jQuery(window).mtValidate({
     var offset  = $target.offset();
     var poffset = $target.parents('.filteritem').offset();
     $error
-      .css('left', offset.left - poffset.left + $target.width() - 5 )
-      .css('top',  offset.top  - poffset.top  - $error.height() + 3 );
+      .css('left', offset.left - poffset.left + $target.width() - 1 )
+      .css('top',  offset.top  - poffset.top  - $error.height() - 1 );
   },
   wrapError: function($target, msg) {
     return jQuery('<span/>')
