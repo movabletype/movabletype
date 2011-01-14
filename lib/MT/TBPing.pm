@@ -329,6 +329,7 @@ sub system_filters {
             label => 'Non spam trackbacks',
             items =>
                 [ { type => 'status', args => { value => 'not_junk' }, }, ],
+            order => 100,
         },
         not_spam_in_this_website => {
             label => 'Non spam trackbacks on this website',
@@ -337,16 +338,19 @@ sub system_filters {
                 { type => 'current_context' },
                 { type => 'status', args => { value => 'not_junk' }, },
             ],
+            order => 200,
         },
         pending => {
             label => 'Pending trackbacks',
             items =>
                 [ { type => 'status', args => { value => 'moderated' }, }, ],
+            order => 300,
         },
         published => {
             label => 'Published trackbacks',
             items =>
                 [ { type => 'status', args => { value => 'approved' }, }, ],
+            order => 400,
         },
         on_my_entry => {
             label => 'Trackbacks on my entries/pages',
@@ -354,6 +358,7 @@ sub system_filters {
                 my $login_user = MT->app->user;
                 [ { type => 'for_current_user' } ],;
             },
+            order => 500,
         },
         in_last_7_days => {
             label => 'Trackbacks in the last 7 days',
@@ -363,10 +368,12 @@ sub system_filters {
                     args => { option => 'days', days => 7 }
                 }
             ],
+            order => 600,
         },
         spam => {
             label => 'Spam trackbacks',
             items => [ { type => 'status', args => { value => 'junk' }, }, ],
+            order => 700,
         },
         _trackbacks_by_entry => {
             label => sub {

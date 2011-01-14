@@ -253,16 +253,19 @@ sub system_filters {
             label => 'Enabled Users',
             items =>
                 [ { type => 'status', args => { value => 'active' }, }, ],
+            order => 100,
         },
         disabled => {
             label => 'Disabled Users',
             items =>
                 [ { type => 'status', args => { value => 'disabled' }, }, ],
+            order => 200,
         },
         pending => {
             label => 'Pending Users',
             items =>
                 [ { type => 'status', args => { value => 'pending' }, }, ],
+            order => 300,
         },
     };
 }
@@ -369,16 +372,19 @@ sub commenter_system_filters {
             label => 'Enabled Commenters',
             items =>
                 [ { type => 'status', args => { value => 'enabled' }, }, ],
+            order => 100,
         },
         disabled => {
             label => 'Disabled Commenters',
             items =>
                 [ { type => 'status', args => { value => 'disabled' }, }, ],
+            order => 200,
         },
         pending => {
             label => 'Pending Commenters',
             items =>
                 [ { type => 'status', args => { value => 'pending' }, }, ],
+            order => 300,
         },
     };
 }
@@ -525,6 +531,7 @@ sub member_system_filters {
             condition => sub {
                 MT->config->SingleCommunity ? 0 : 1;
             },
+            order => 100,
         },
         external_users => {
             label     => 'Externally Authenticated Commenters',
@@ -532,6 +539,7 @@ sub member_system_filters {
             condition => sub {
                 MT->config->SingleCommunity ? 0 : 1;
             },
+            order => 200,
         },
     };
 }

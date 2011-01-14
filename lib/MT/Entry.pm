@@ -655,14 +655,17 @@ sub system_filters {
         published => {
             label => 'Published Entries',
             items => [ { type => 'status', args => { value => '2' }, }, ],
+            order => 100,
         },
         draft => {
             label => 'Unpublished Entries',
             items => [ { type => 'status', args => { value => '1' }, }, ],
+            order => 200,
         },
         future => {
             label => 'Scheduled Entries',
             items => [ { type => 'status', args => { value => '4' }, }, ],
+            order => 500,
         },
         my_posts_on_this_context => {
             label => 'My blog posts on this blog',
@@ -677,6 +680,7 @@ sub system_filters {
             items => sub {
                 [ { type => 'current_user' } ],;
             },
+            order => 1000,
         },
         commented_in_last_7_days => {
             label => 'Entries with comments in the last 7 days',
@@ -685,6 +689,7 @@ sub system_filters {
                     args => { option => 'days', days => 7 }
                 }
             ],
+            order => 1100,
         },
     };
 }

@@ -282,6 +282,7 @@ sub system_filters {
         show_only_errors => {
             label => 'Show only errors',
             items => [ { type => 'level', args => { value => ERROR() } }, ],
+            order => 200,
         },
     };
 }

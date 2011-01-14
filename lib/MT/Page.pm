@@ -114,14 +114,17 @@ sub system_filters {
         published => {
             label => 'Published Pages',
             items => [ { type => 'status', args => { value => '2' }, }, ],
+            order => 100,
         },
         draft => {
             label => 'Unpublished Pages',
             items => [ { type => 'status', args => { value => '1' }, }, ],
+            order => 200,
         },
         future => {
             label => 'Scheduled Pages',
             items => [ { type => 'status', args => { value => '4' }, }, ],
+            order => 300,
         },
         my_posts_on_this_context => {
             label => 'My Pages',
@@ -129,6 +132,7 @@ sub system_filters {
                 [ { type => 'current_user' }, { type => 'current_context' } ]
                 ,;
             },
+            order => 400,
         },
         commented_in_last_7_days => {
             label => 'Pages with comments in the last 7 days',
@@ -137,6 +141,7 @@ sub system_filters {
                     args => { option => 'days', days => 7 }
                 }
             ],
+            order => 500,
         },
     };
 }

@@ -350,6 +350,7 @@ sub list_props {
 
 sub system_filters {
     my %filters;
+    my @filters;
 
     # for each class
     my $types = MT::Asset->class_labels;
@@ -357,12 +358,24 @@ sub system_filters {
         my $asset_type = $type;
         next if $asset_type eq 'asset';
         $asset_type =~ s/^asset\.//;
-        $filters{$asset_type} = {
-            label =>
-                sub { MT::Asset->class_handler($type)->class_label_plural },
-            items =>
-                [ { type => 'class', args => { value => $asset_type }, }, ],
-        };
+        push(
+            @filters,
+            {   type  => $asset_type,
+                label => sub {
+                    MT::Asset->class_handler($type)->class_label_plural;
+                },
+                items => [
+                    { type => 'class', args => { value => $asset_type }, },
+                ],
+            }
+        );
+    }
+    @filters = sort { $a->{label}->() cmp $b->{label}->() } @filters;
+    my $order = 100;
+    for my $filter (@filters) {
+        $filter->{order} = $order;
+        $order += 100;
+        $filters{ delete $filter->{type} } = $filter;
     }
 
     # for context
@@ -370,8 +383,8 @@ sub system_filters {
         label => 'Assets of this website',
         items => [ { type => 'current_context' } ],
         view  => 'website',
+        order => 10000,
     };
-
     return \%filters;
 }
 
