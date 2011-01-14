@@ -132,9 +132,13 @@ sub list_props {
             raw         => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = shift;
-                return $obj->author_id
-                    ? MT->model('author')->load( $obj->author_id )->name
-                    : $obj->ip;
+                if ( $obj->author_id ) {
+                    if ( my $user = MT->model('author')->load( $obj->author_id ) ) {
+                        return $user->name;
+                    } else {
+                        return MT->translate('*User deleted*');
+                    }
+                }
             },
         },
         class => {
@@ -256,6 +260,7 @@ sub list_props {
             auto         => 1,
             label        => 'IP',
             filter_label => 'IP Address',
+            display      => 'default',
         },
         id => {
             base            => '__virtual.id',
