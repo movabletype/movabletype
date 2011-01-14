@@ -581,7 +581,7 @@ function removeFilter(element) {
     doApplyFilter(allpass_filter, 1);
     renderList({
       mode: 'delete_filter',
-      id: filters[index].id,
+      id: filters[index].id
     });
   }
   else {
@@ -1227,7 +1227,7 @@ jQuery(window).mtValidate({
     $target
       .unbind('focus', focus)
       .unbind('blur', blur);
-  },
+  }
 });
 
 jQuery('#apply').click(function() {

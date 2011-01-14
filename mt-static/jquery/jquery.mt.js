@@ -961,7 +961,7 @@ $.mtValidateRules = {
     },
     '.number': function ($e) {
         return /\d/.test($e.val()) && /^\d*\.?\d*$/.test($e.val());
-    },
+    }
 };
 
 $.mtValidateMessages = {
@@ -970,7 +970,7 @@ $.mtValidateMessages = {
     '.url':         'Invalid URL',
     '.required':    'This field is required',
     '.digit, .num': 'This field must be integer',
-    '.number':      'This field must be number',
+    '.number':      'This field must be number'
 };
 
 $.fn.mtValidate = function( options ) {
