@@ -1405,6 +1405,7 @@ BEGIN {
             },
             association => {
                 object_label => 'Permission',
+                object_label_plural => 'Permissions',
                 object_type  => 'association',
 
                 #permission => 'access_to_permission_list',
