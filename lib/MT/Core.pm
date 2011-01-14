@@ -310,6 +310,7 @@ BEGIN {
                     filter_tmpl => '<mt:Var name="filter_form_integer">',
                     base_type   => 'integer',
                     priority    => 4,
+                    default_sort_order => 'descend',
                 },
                 float => {
                     base      => '__virtual.integer',
@@ -602,6 +603,7 @@ BEGIN {
                 },
                 id => {
                     auto  => 1,
+                    default_sort_order => 'ascend',
                     label => 'ID',
                 },
                 ## translate('No Title')
