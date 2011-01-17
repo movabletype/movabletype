@@ -102,14 +102,6 @@ sub list_props {
         },
         created_on  => { base => 'blog.created_on' },
         modified_on => { base => 'blog.modified_on' },
-        site_url    => {
-            base         => 'blog.site_url',
-            filter_label => 'URL',
-        },
-        site_path => {
-            base         => 'blog.site_path',
-            filter_label => 'Root Path',
-        },
     };
 }
 

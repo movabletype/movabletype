@@ -249,22 +249,6 @@ sub list_props {
             label   => 'Description',
             display => 'none',
         },
-        site_url => {
-            auto         => 1,
-            label        => 'Blog URL',
-            filter_label => 'URL',
-            display      => 'none',
-            html_link    => sub {
-                my ( $prop, $obj, $app ) = @_;
-                return $obj->site_url;
-            },
-        },
-        site_path => {
-            auto         => 1,
-            label        => 'Blog root',
-            filter_label => 'Root Path',
-            display      => 'none',
-        },
         theme_id => {
             label                 => 'Theme',
             base                  => '__virtual.single_select',
