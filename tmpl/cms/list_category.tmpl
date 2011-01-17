@@ -196,7 +196,7 @@ function initItem($item) {
     .addClass('lv-'+nest.length)
     .addClass('sortable-item');
   $item.find('.item-ctrl, .edit-form').remove();
-  $item.append('<span class="item-ctrl">');
+  $item.append('<span class="item-ctrl" />');
 
   jQuery('<span class="item-action clickable"><__trans phrase="Edit"></span>')
     .appendTo($item.find('.item-ctrl'))
