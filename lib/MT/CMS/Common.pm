@@ -523,6 +523,8 @@ sub edit {
             my $data = $sess_obj->thaw_data;
             if ($data) {
                 $q->param( $_, $data->{$_} ) for keys %$data;
+                $app->delete_param('id')
+                    if defined $q->param('id') && !$q->param('id');
                 $param{'recovered_object'} = 1;
             }
             else {
