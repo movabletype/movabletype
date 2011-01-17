@@ -393,8 +393,7 @@ sub member_list_props {
     return {
         name => {
             auto         => 1,
-            label        => 'Name',
-            filter_label => 'Username',
+            label        => 'Username',
             display      => 'force',
             bulk_html    => \&_bulk_author_name_html,
             sub_fields   => [
@@ -410,8 +409,7 @@ sub member_list_props {
             order => 100,
         },
         nickname => {
-            label        => 'Nickname',
-            filter_label => 'Display Name',
+            label => 'Display Name',
             auto         => 1,
             bulk_html    => \&_nickname_bulk_html,
             order        => 200,
