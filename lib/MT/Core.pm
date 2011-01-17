@@ -421,7 +421,7 @@ BEGIN {
                         elsif ( 'past' eq $option ) {
                             $query = { op => '<', value => $now };
                         }
-                        print STDERR MT::Util::YAML::Dump( $query );
+
                         if ( $prop->is_meta ) {
                             $prop->join_meta( $db_args, $query );
                         }
