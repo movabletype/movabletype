@@ -211,14 +211,20 @@ function initItem($item) {
 
 <mt:if name="object_type" eq="category">
       jQuery.mtValidateRules['.label'] = function ($e) {
-        return hasDupe(parent, id, $e.val()) ? this.raise('Duplicated label on this level') : true;
-        };
+        if ( !$e.val().length ) return false;
+        return hasDupe(parent, id, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level">') : true;
+      };
 <mt:else>
       $form.append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_basename" class="text short basename" placeholder="<__trans phrase="Basename">" />'));
       $form.find('.basename').val($basename.text());
+      jQuery.mtValidateRules['.label'] = function ($e) {
+        if ( !$e.val().length ) return this.raise('<__trans phrase="Label is required">');
+        return true;
+      };
       jQuery.mtValidateRules['.basename'] = function ($e) {
-        return hasDupe(parent, id, null, $e.val()) ? this.raise('Duplicated basename on this level') : true;
-        };
+        if ( !$e.val().length ) return this.raise('<__trans phrase="Basename is required">');
+        return hasDupe(parent, id, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level">') : true;
+      };
 </mt:if>
 
       jQuery('<button type="submit" class="rename button"><__trans phrase="Rename"></button>')

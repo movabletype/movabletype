@@ -383,7 +383,7 @@ BEGIN {
                         $from   =~ s/\D//g;
                         $to     =~ s/\D//g;
                         $origin =~ s/\D//g;
-                        $from .= '00000'  if $from;
+                        $from .= '000000'  if $from;
                         $to   .= '235959' if $to;
 
                         if ( 'range' eq $option ) {
@@ -406,13 +406,13 @@ BEGIN {
                         elsif ( 'before' eq $option ) {
                             $query = {
                                 op    => '<',
-                                value => $origin . ' 23:59:59'
+                                value => $origin . '000000'
                             };
                         }
                         elsif ( 'after' eq $option ) {
                             $query = {
                                 op    => '>',
-                                value => $origin . ' 00:00:00'
+                                value => $origin . '235959'
                             };
                         }
                         elsif ( 'future' eq $option ) {
@@ -421,6 +421,7 @@ BEGIN {
                         elsif ( 'past' eq $option ) {
                             $query = { op => '<', value => $now };
                         }
+                        print STDERR MT::Util::YAML::Dump( $query );
                         if ( $prop->is_meta ) {
                             $prop->join_meta( $db_args, $query );
                         }

@@ -3930,6 +3930,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/footer.tmpl
 	'This is a beta version of Movable Type and is not recommended for production use.' => 'このMovable Typeはベータ版です。',
 	'http://www.movabletype.org' => 'http://www.movabletype.jp',
+	'http://plugins.movabletype.org/' => 'http://communities.movabletype.jp/plugins/',
 	'MovableType.org' => 'MovableType.jp',
 	'http://wiki.movabletype.org/' => 'http://wiki.movabletype.org/',
 	'Wiki' => 'Wiki(英語)',
