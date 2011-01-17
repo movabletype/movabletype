@@ -392,11 +392,11 @@ sub commenter_system_filters {
 sub member_list_props {
     return {
         name => {
-            auto         => 1,
-            label        => 'Username',
-            display      => 'force',
-            bulk_html    => \&_bulk_author_name_html,
-            sub_fields   => [
+            auto       => 1,
+            label      => 'Username',
+            display    => 'force',
+            bulk_html  => \&_bulk_author_name_html,
+            sub_fields => [
                 {   class   => 'userpic',
                     label   => 'Userpic',
                     display => 'optional',
@@ -409,11 +409,11 @@ sub member_list_props {
             order => 100,
         },
         nickname => {
-            label => 'Display Name',
-            auto         => 1,
-            bulk_html    => \&_nickname_bulk_html,
-            order        => 200,
-            display      => 'default',
+            label     => 'Display Name',
+            auto      => 1,
+            bulk_html => \&_nickname_bulk_html,
+            order     => 200,
+            display   => 'default',
         },
         role => {
             base    => '__virtual.single_select',
