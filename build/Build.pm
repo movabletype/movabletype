@@ -5,7 +5,7 @@
 # $Id$
 
 package Build;
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 =head1 NAME
 
@@ -14,7 +14,7 @@ Build - Movable Type build functionality
 =head1 SYNOPSIS
 
  cd $MT_DIR
- svn update
+ git pull
  perl build/exportmt.pl --help
  perl build/exportmt.pl --debug
     # --alpha=1
@@ -87,7 +87,7 @@ sub get_options {
       'notify:s'        => undef,  # Send email notification on completion.
       'pack=s'          => undef,  # Constructed at run-time.
       'plugin=s@'       => undef,  # Plugin list
-      'plugin-uri=s'    => 'http://code.sixapart.com/svn/mtplugins/trunk',
+      'plugin-uri=s'    => 'http://github.com/movabletyp',
       'prod'            => 0,  # Command-line --option alias
       'prod-dir=s'      => 'Production_Builds',
       'qa'              => 0,  # Command-line --option alias
@@ -95,6 +95,7 @@ sub get_options {
       'repo-uri=s'      => '',
       'rev!'            => 1,  # Toggle revision stamping.
       'revision=s'      => undef,  # Constructed at run-time.
+      'revision_hash=s' => undef,  # Constructed at run-time.
       'stage'           => 0,  # Command-line --option alias
       'stage-dir=s'     => '',
       'stage-uri=s'     => '',
@@ -168,7 +169,8 @@ sub setup {
     }
 
     # Grab our repository revision.
-    $self->{'revision=s'} = repo_rev();
+    $self->{'revision=s'}      = repo_rev();
+    $self->{'revision_hash=s'} = repo_rev_hash();
     # Figure out what repository to use.
     $self->set_repo();
 
@@ -193,6 +195,7 @@ sub setup {
             if( $self->{'rev!'} ) {
                 push @stamp, lc( fileparse $self->{'repo=s'} );
                 push @stamp, $self->{'revision=s'};
+                push @stamp, $self->{'revision_hash=s'};
             }
             push @stamp, sprintf(
                 '%04d%02d%02d', (localtime)[5]+1900, (localtime)[4]+1, (localtime)[3]
@@ -553,7 +556,6 @@ sub update_html {
         my $branch = $self->{'repo=s'};
         $branch =~ s!^(branches|tags)/!!;
         my $revision = $self->{'revision=s'};
-        $revision =~ s!^r!!;
 
         my $old_html = File::Spec->catdir( $self->{'stage-dir=s'}, 'build.html' );
 
@@ -642,45 +644,39 @@ sub remove_copy {
 }
 
 sub repo_rev {
-    my $revision = qx{ svn info | grep 'Last Changed Rev' };
+    my $revision = qx{ git log --pretty=format:'' | wc -l };
     chomp $revision;
-    $revision =~ s/^Last Changed Rev: (\d+)$/r$1/o;
+    $revision =~ s/\s*(.*)/r$1/;
     die( "ERROR: $revision" ) if $revision =~ /is not a working copy/;
     return $revision;
+}
+
+sub repo_rev_hash {
+    my $revision = qx{ git log -1 | grep commit };
+    chomp $revision;
+    $revision =~ s/commit (.*)/$1/;
+    die( "ERROR: $revision" ) if $revision =~ /is not a working copy/;
+    return substr( $revision, 0, 8 );
 }
 
 sub set_repo {
     my $self = shift;
 
     # Grab our repository from the environment.
-    $self->{'repo-uri=s'} = qx{ svn info | grep URL };
+    $self->{'repo-uri=s'} = qx{ git config remote.origin.url };
     chomp $self->{'repo-uri=s'};
-    $self->{'repo-uri=s'} =~ s/^URL: (.+)$/$1/o;
 
-    if( $self->{'repo-uri=s'} =~ /http.+?(branches|tags)\/([0-9A-Za-z_.-]+)/ ) {
-        # The repo is embedded in the repo uri.
-        my( $key, $val ) = ( $1, $2 );
-        $self->{'repo=s'} = join '/', $key, $val;
-    }
-
-    # Make sure that the repository actually exists.
-    if( !$self->{'debug'} && $self->{'export!'} ) {
-        require LWP::UserAgent;
-        $self->{'agent=s'} = LWP::UserAgent->new;
-        my $request = HTTP::Request->new( HEAD => $self->{'repo-uri=s'} );
-        $request->authorization_basic( $self->{'http-user=s'}, $self->{'http-pass=s'} )
-            if $self->{'http-user=s'} && $self->{'http-pass=s'};
-        my $response = $self->{'agent=s'}->request( $request );
-        die( "ERROR: The repoository '$self->{'repo-uri=s'}' can't be resolved." )
-            unless $response->is_success;
-    }
+    my $repo = qx{ git branch -r | grep origin/HEAD };
+    chomp $repo;
+    $repo =~ s/\s*origin\/HEAD -> (.*)/$1/;
+    $self->{'repo=s'} = $repo;
 }
 
 sub export {
     my $self = shift;
     return unless $self->{'export!'};
     # NOTE Subversion auto-creates the export directory.
-    $self->verbose_command( sprintf( 'svn export --quiet %s %s',
+    $self->verbose_command( sprintf( 'git clone --quiet %s %s',
         $self->{'repo-uri=s'}, $self->{'export-dir=s'}
     ));
 }
@@ -699,7 +695,7 @@ sub plugin_export {
         my $uri = "$self->{'plugin-uri=s'}/$plugin";
         my $path = "plugins/$plugin";
         $self->verbose_command(
-            sprintf( 'svn export --quiet %s %s', $uri, $path )
+            sprintf( 'git clone --quiet %s %s', $uri, $path )
         );
         die "ERROR: Plugin not exported: $uri"
             unless $self->{debug} || -d $path;
@@ -893,7 +889,7 @@ sub usage {
  Examples:
 
  cd $MT_DIR
- svn update
+ git pull
  perl build/exportmt.pl --help
  perl build/exportmt.pl --debug
     # --alpha=1

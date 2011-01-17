@@ -91,6 +91,7 @@ lib/MT.pm: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk build/mt-dist
 	sed -e 's!__PRODUCT_NAME__!$(PRODUCT_NAME)!g' \
 	    -e 's!__BUILD_ID__!$(BUILD_VERSION_ID)!g' \
 	    -e 's!__PORTAL_URL__!$(PORTAL_URL)!g' \
+	    -e 's!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
 	    lib/MT.pm.pre > lib/MT.pm
 	rm lib/MT.pm.pre
 

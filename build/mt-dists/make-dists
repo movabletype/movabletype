@@ -88,6 +88,7 @@ for my $lang (@languages) {
 
     print "---------------- Building $lang ----------------\n";
     verbose_command("$make clean");  # to clean MT.pm
+    verbose_command("$make lib/MT.pm");
     verbose_command($make);
 
     update_default_lang( $lang );
