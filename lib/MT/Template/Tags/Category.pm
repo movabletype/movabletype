@@ -583,7 +583,7 @@ sub _hdlr_sub_categories {
         undef $sort_by;
         $custom_order = 1;
     }
-    $sort_by = 'label' unless $class->has_column($sort_by);
+    $sort_by = 'label' if !$sort_by || !$class->has_column($sort_by);
 
     # Store the tokens for recursion
     $ctx->stash( 'subCatTokens', $tokens );
@@ -1639,7 +1639,7 @@ sub _hdlr_sub_cats_recurse {
         undef $sort_by;
         $custom_order = 1;
     }
-    $sort_by = 'label' unless $class->has_column($sort_by);
+    $sort_by = 'label' if !$sort_by || !$class->has_column($sort_by);
     $sort_by ||= 'label';
 
     # If we're too deep, return an emtry string because we're done
