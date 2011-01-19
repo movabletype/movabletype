@@ -2842,6 +2842,10 @@ div.template-group-content.active {
 }
 .search-replace .advanced-options {
     margin: 0;
+    border: 1px solid #adadad;
+    border-top-color: #cfd0d0;
+    border-left-color: #cfd0d0;
+    background-color: #fff;
 }
 .search-replace .advanced-options#date-range .text {
     color: #9ea1a3;

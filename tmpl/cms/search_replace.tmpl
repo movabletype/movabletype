@@ -160,7 +160,7 @@ function blurDateFields(s) {
           <li><label for="is_junk"><input type="checkbox" id="is_junk" name="is_junk" value="1"<mt:if name="is_junk"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Reported as Spam?"></label></li>
         </mt:if>
         </ul>
-        <div id="limited-fields" class="mod filteritem advanced-options"<mt:unless name="is_limited"> style="display: none;"</mt:unless>>
+        <div id="limited-fields" class="mod advanced-options"<mt:unless name="is_limited"> style="display: none;"</mt:unless>>
         <mt:if name="search_cols">
           <div id="<mt:var name="object_type">-fields">
             <ul class="multiple-selection">
@@ -171,7 +171,7 @@ function blurDateFields(s) {
           </div>
         </mt:if>
         </div>
-        <div id="date-range" class="mod filteritem advanced-options"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>>
+        <div id="date-range" class="mod advanced-options"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>>
           <input type="hidden" name="dates-disabled" id="dates-disabled" value="<mt:if name="datefrom_year">0<mt:else>1</mt:if>" />
           <label for="datefrom_year"><__trans phrase="_DATE_FROM">:</label> <input type="text" maxlength="4" value="<mt:if name="datefrom_year"><mt:var name="datefrom_year" escape="html"><mt:else>YYYY</mt:if>" name="datefrom_year" id="datefrom_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)" class="text num<mt:if name="datefrom_year"> prefilled</mt:if>" /> - <input type="text" maxlength="2" value="<mt:if name="datefrom_month"><mt:var name="datefrom_month" escape="html"><mt:else>MM</mt:if>" name="datefrom_month" id="datefrom_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)" class="text num<mt:if name="datefrom_month"> prefilled</mt:if>" /> - <input type="text" maxlength="2" value="<mt:if name="datefrom_day"><mt:var name="datefrom_day" escape="html"><mt:else>DD</mt:if>" name="datefrom_day" id="datefrom_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)" class="text num<mt:if name="datefrom_day"> prefilled</mt:if>" />
           <label for="dateto_year"><__trans phrase="_DATE_TO">:</label> <input type="text" maxlength="4" value="<mt:if name="dateto_year"><mt:var name="dateto_year" escape="html"><mt:else>YYYY</mt:if>" name="dateto_year" id="dateto_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)" class="text num<mt:if name="dateto_year"> prefilled</mt:if>" /> - <input type="text" maxlength="2" value="<mt:if name="dateto_month"><mt:var name="dateto_month" escape="html"><mt:else>MM</mt:if>" name="dateto_month" id="dateto_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)" class="text num<mt:if name="dateto_month"> prefilled</mt:if>" /> - <input type="text"  maxlength="2" value="<mt:if name="dateto_day"><mt:var name="dateto_day" escape="html"><mt:else>DD</mt:if>" name="dateto_day" id="dateto_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)" class="text num<mt:if name="dateto_day"> prefilled</mt:if>" />
