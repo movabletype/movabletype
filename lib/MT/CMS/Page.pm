@@ -29,7 +29,7 @@ sub can_delete {
     return 1 if $author->is_superuser();
     my $perms = $app->permissions;
     if ( !$perms || $perms->blog_id != $obj->blog_id ) {
-        $perms ||= $author->permissions( $obj->blog_id );
+        $perms = $author->permissions( $obj->blog_id );
     }
     return $perms && $perms->can_do('delete_page');
 }
