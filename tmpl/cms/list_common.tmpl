@@ -853,7 +853,7 @@ function renderList(mode, columns, values, limit, page ) {
           }
         }
         else {
-          line = '<td class="cb col"></td>';
+          line = '<td class="cb col"<mt:unless name="has_list_actions"> style="display: none;"</mt:unless>></td>';
         }
         for (var col = 1, col_length = objs[row].length; col < col_length; col++) {
           var col_id = return_cols[ col - 1 ];
