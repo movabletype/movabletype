@@ -4104,7 +4104,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2010 Six Apart.
+Except where otherwise noted, MT is Copyright 2001-2011 Six Apart.
 All rights reserved.
 
 =cut
