@@ -98,6 +98,13 @@ sub global_perms {
     );
 }
 
+sub _perms_from_registry {
+    my $regs = MT::Component->registry('permissions');
+    my %keys = map { $_ => 1 } map { keys %$_ } @$regs;
+    my %perms = map { $_ => MT->registry('permissions' => $_ ) } keys %keys;
+    \%perms;
+}
+
 # Legend:
 # author_id || blog_id || permissions
 #    N      ||    0    || System level privilege
@@ -116,7 +123,7 @@ sub global_perms {
     sub _all_perms {
         my ($scope) = @_;
         my @perms;
-        if ( my $perms = MT->registry("permissions") ) {
+        if ( my $perms = __PACKAGE__->_perms_from_registry() ) {
             foreach my $p (%$perms) {
                 my ( $s, $name ) = split /\./, $p;
                 next unless $s && $name;
@@ -265,7 +272,7 @@ sub global_perms {
     sub perms {
         my $pkg = shift;
         unless (@Perms) {
-            if ( my $perms = MT->registry("permissions") ) {
+            if ( my $perms = __PACKAGE__->_perms_from_registry() ) {
                 foreach my $pk (%$perms) {
                     my ( $scope, $name ) = split /\./, $pk;
                     next unless $scope && $name;
@@ -435,7 +442,7 @@ sub can_do {
 sub _confirm_action {
     my $pkg = shift;
     my ( $perm_name, $action, $permissions ) = @_;
-    $permissions ||= MT->registry('permissions');
+    $permissions ||= __PACKAGE__->_perms_from_registry();
     my $perm = $permissions->{$perm_name};
 
     ## No such permission.
@@ -677,7 +684,7 @@ sub to_hash {
 sub _load_inheritance_permissions {
     my $pkg         = shift;
     my ($perm_name) = @_;
-    my $permissions = MT->registry('permissions');
+    my $permissions = __PACKAGE__->_perms_from_registry();
     my $perms       = $pkg->_load_recursive( $perm_name, $permissions );
 
     my $hash;
@@ -695,7 +702,7 @@ sub _load_inheritance_permissions {
 sub _load_recursive {
     my $pkg = shift;
     my ( $perm_name, $permissions ) = @_;
-    $permissions ||= MT->registry('permissions');
+    $permissions ||= __PACKAGE__->_perms_from_registry();
 
     my $perms;
     push @$perms, $perm_name;
