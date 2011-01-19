@@ -113,7 +113,7 @@ MT.App = new Class( MT.App, {
                         e.getAttribute( "mt:object-plural" ),
                         false,
                         {
-                            'return_args': '__mode=list_'+e.getAttribute( "mt:object-type" )
+                            'return_args': '__mode=list&amp;_type='+e.getAttribute( "mt:object-type" )
                                 +'&amp;blog_id='+e.getAttribute( "mt:blog-id" )
                         } ) )
                     return event.stop();
