@@ -340,6 +340,7 @@ sub list_props {
             filter_editable => 0,
             order           => 500,
             display         => 'default',
+            default_sort_order => 'ascend',
             sort            => sub {
                 my $prop = shift;
                 my ( $terms, $args ) = @_;
