@@ -17,6 +17,7 @@ mt-static/support/themes
 mt-static/support/assets_c
 mt-static/support/uploads
 mt-static/support/theme_thumbnails/
+mt-static/support/theme_static/
 mt-config.cgi
 
 mt-cp.cgi
