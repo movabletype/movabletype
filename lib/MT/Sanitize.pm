@@ -38,6 +38,7 @@ my %Strip = (
     '!--' => '-->',
 );
 my $Strip_RE = join '|', map quotemeta($_), keys %Strip;
+my $InvalidAttribute_RE = qr#@{[join '|', map quotemeta("<$_"), keys %Strip]}#;
 
 sub sanitize {
     my $class = shift;
@@ -119,6 +120,7 @@ sub sanitize {
                             )
                             )
                         {
+                            next if $val =~ $InvalidAttribute_RE;
                             my $dec_val = decode_html($val);
                             if ( $attr =~ m/^(src|href|dynsrc)$/ ) {
                                 $dec_val =~ s/&#0*58(?:=;|[^0-9])/:/;

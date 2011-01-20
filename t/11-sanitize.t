@@ -6,7 +6,7 @@ use lib 't/lib';
 use lib 'lib';
 use lib 'extlib';
 
-use Test::More tests => 54;
+use Test::More tests => 58;
 
 use MT;
 use MT::Test;
@@ -108,3 +108,12 @@ is(MT::Sanitize->sanitize('<? /* ?> */ readfile("/etc/passwd") ?>'), ' */ readfi
 
 is(MT::Sanitize->sanitize("<a href='
 javascript:alert(123)'>boo</a>", 'a href'), '<a>boo</a>', '<a>boo</a>'); 
+
+### Remove template engine tag from the attribute value
+is(MT::Sanitize->sanitize(q{<a href="<?php /*">*/ echo '">' . htmlspecialchars_decode("&lt;script&gt;alert('test')&lt;/script&gt;"); ?>test</a>}, 'a href'), q{<a>*/ echo '">' . htmlspecialchars_decode("&lt;script&gt;alert('test')&lt;/script&gt;"); ?>test</a>}, 'PHP tag in the attribute');
+
+is(MT::Sanitize->sanitize(q{<a href="<% /** "> **/ some jsp code %>test</a>}, 'a href'), q{<a> **/ some jsp code %>test</a>}, 'JSP tag in the attribute');
+
+is(MT::Sanitize->sanitize(q{<a href='javascr<% "padding '>" %>ipt:alert("test");'>test</a>}, 'a href'), q{<a>" %>ipt:alert("test");'>test</a>}, 'ASP tag in the attribute');
+
+is(MT::Sanitize->sanitize(q{<a href="javascr<!--#config timefmt=' padding ">' -->ipt:alert('test');">test</a>}, 'a href'), q{<a>' -->ipt:alert('test');">test</a>}, 'SSI tag in the attribute');
