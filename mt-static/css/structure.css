@@ -91,35 +91,42 @@ pre {
 
 .sticky-label {
     display: inline-block;
-    margin-right: 10px;
-    padding: 0.2em;
-    padding-left: 0.5em;
-    background-color: #f3f3f3;
-    border-radius: 3px;
-}
-.sticky-label.required {
+    padding: 0.2em 0.5em;
     background-color: #adadad;
     color: #fff;
     font-size: 80%;
-}
-
-.selected-items .sticky-label {
-    margin: 0 10px 0.2em 0;
-    background-color: #dcdddd;
-    text-decoration: none;
-}
-.selected-items .sticky-label .remove {
-    display: inline-block;
-    padding: 0 0.3em;
-    margin-left: 0.3em;
-    background-color: #adadad;
-    color: white;
     border-radius: 3px;
     -moz-border-radius: 3px;
 }
+.sticky-label.required {
+    margin-left: 10px;
+}
+
+.sticky-label.system {
+    background-color: #7b7c7d;    
+}
+.sticky-label.website {
+    background-color: #839b5c;
+}
+.sticky-label.blog {
+    background-color: #5c909b;
+}
+
+.selected-items .sticky-label {
+    margin-bottom: 1px;
+    padding-right: 0;
+    text-decoration: none;
+}
+.selected-items .sticky-label .remove {
+    float: right;
+    padding: 0 0.3em;
+    margin: 0 0.3em;
+    background-color: #dcdddd;
+    color: #2b2b2b;
+}
 .selected-items .sticky-label .remove:hover {
-    background-color: #9ea1a3;
-    color: #f3f3f3;
+    background-color: #2b2b2b;
+    color: #fff;
 }
 
 /* -- Multiple Selection */
@@ -612,18 +619,12 @@ ul.tabs li a {
     border-top: 1px solid #9EA1A3;
 }
 
-.scope-level {
+.sticky-label.scope-level {
     margin: 5px 0;
-    padding: 0.3em 10px;
-    color: #fff;
+    padding-left: 10px;
+    font-size: 100%;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;    
-}
-.scope-level.website {
-    background-color: #839b5c;
-}
-.scope-level.blog {
-    background-color: #5c909b;
 }
 
 .scope-selector li { 
@@ -632,7 +633,7 @@ ul.tabs li a {
 }
 .scope-selector a { 
     display: block;
-    padding: 5px 15px;
+    padding: 5px 10px;
     color: #fff;
     text-decoration: none;
     white-space: nowrap;
