@@ -477,16 +477,14 @@ sub list_props {
             },
         },
         text => {
-            auto         => 1,
-            label        => 'Text',
-            filter_label => 'Comment Text',
-            display      => 'none',
+            auto    => 1,
+            label   => 'Comment Text',
+            display => 'none',
         },
         for_current_user => {
-            label        => 'For my entries',
-            filter_label => 'Comments on my entries/pages',
-            singleton    => 1,
-            terms        => sub {
+            label     => 'Comments on my entries/pages',
+            singleton => 1,
+            terms     => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 my $user = MT->app->user;
                 $db_args->{joins} ||= [];
@@ -499,10 +497,10 @@ sub list_props {
             },
         },
         email => {
-            auto         => 1,
-            display      => 'none',
-            label        => 'Email',
-            filter_label => 'Email Address',
+            auto    => 1,
+            display => 'none',
+
+            label => 'Email Address',
         },
         url => {
             auto    => 1,

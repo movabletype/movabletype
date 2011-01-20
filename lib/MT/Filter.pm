@@ -99,11 +99,10 @@ sub list_props {
             },
         },
         author_name => {
-            base         => '__virtual.author_name',
-            label        => 'Author Name',
-            filter_label => 'Author',
-            display      => 'default',
-            order        => 300,
+            base    => '__virtual.author_name',
+            label   => 'Author',
+            display => 'default',
+            order   => 300,
         },
         author_status => {
             base                  => '__virtual.single_select',
@@ -140,12 +139,11 @@ sub list_props {
             },
         },
         object_ds => {
-            base         => '__virtual.single_select',
-            label        => 'For',
-            filter_label => 'Object',
-            display      => 'force',
-            order        => 400,
-            screen_name  => sub {
+            base        => '__virtual.single_select',
+            label       => 'Object',
+            display     => 'force',
+            order       => 400,
+            screen_name => sub {
                 my $prop = shift;
                 my ($screen_id) = @_;
                 my $reg = MT->registry( listing_screens => $screen_id );

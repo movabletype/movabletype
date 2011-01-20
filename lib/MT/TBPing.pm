@@ -66,12 +66,11 @@ sub class_label_plural {
 sub list_props {
     return {
         excerpt => {
-            label        => 'Excerpt',
-            filter_label => 'Trackback Text',
-            auto         => 1,
-            display      => 'force',
-            order        => 100,
-            html         => sub {
+            label   => 'Trackback Text',
+            auto    => 1,
+            display => 'force',
+            order   => 100,
+            html    => sub {
                 my ( $prop, $obj, $app ) = @_;
                 my $text = MT::Util::remove_html( $obj->excerpt );
                 ## FIXME: Hard coded...
@@ -128,11 +127,10 @@ sub list_props {
             },
         },
         ip => {
-            label        => 'IP',
-            filter_label => 'IP Address',
-            auto         => 1,
-            order        => 200,
-            condition    => sub { MT->config->ShowIPInformation },
+            label     => 'IP Address',
+            auto      => 1,
+            order     => 200,
+            condition => sub { MT->config->ShowIPInformation },
         },
         blog_name => {
             base    => '__common.blog_name',
@@ -205,10 +203,9 @@ sub list_props {
             order   => 500,
         },
         modified_on => {
-            auto         => 1,
-            label        => 'Modeified on',
-            filter_label => 'Date Modified',
-            display      => 'none'
+            auto    => 1,
+            label   => 'Date Modified',
+            display => 'none'
         },
         from => {
             label       => 'From',
@@ -274,7 +271,7 @@ sub list_props {
             base            => '__virtual.integer',
             display         => 'none',
             filter_editable => 0,
-            filter_label    => 'Category',
+            label           => 'Category',
             terms           => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
@@ -300,10 +297,9 @@ sub list_props {
             },
         },
         for_current_user => {
-            label        => 'For my entries',
-            filter_label => 'Trackbacks on my entries/pages',
-            singleton    => 1,
-            terms        => sub {
+            label     => 'Trackbacks on my entries/pages',
+            singleton => 1,
+            terms     => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 my $user = MT->app->user;
                 $db_args->{joins} ||= [];

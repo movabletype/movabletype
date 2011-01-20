@@ -41,12 +41,11 @@ sub class_label_plural {
 sub list_props {
     return {
         email => {
-            auto         => 1,
-            label        => 'Email',
-            filter_label => 'Email Address',
-            display      => 'force',
-            order        => 100,
-            html         => sub {
+            auto    => 1,
+            label   => 'Email Address',
+            display => 'force',
+            order   => 100,
+            html    => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
                 require MT::Util;

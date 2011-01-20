@@ -65,12 +65,11 @@ sub class_label_plural {
 sub list_props {
     return {
         created_on => {
-            auto         => 1,
-            label        => 'Created on',
-            filter_label => 'Date Created',
-            order        => 100,
-            display      => 'force',
-            raw          => sub {
+            auto    => 1,
+            label   => 'Date Created',
+            order   => 100,
+            display => 'force',
+            raw     => sub {
                 my $prop = shift;
                 my ( $obj, $app, $opts ) = @_;
                 my $ts   = $obj->created_on;
@@ -133,9 +132,12 @@ sub list_props {
                 my $prop = shift;
                 my ( $obj, $app ) = shift;
                 if ( $obj->author_id ) {
-                    if ( my $user = MT->model('author')->load( $obj->author_id ) ) {
+                    if ( my $user
+                        = MT->model('author')->load( $obj->author_id ) )
+                    {
                         return $user->name;
-                    } else {
+                    }
+                    else {
                         return MT->translate('*User deleted*');
                     }
                 }
@@ -258,10 +260,9 @@ sub list_props {
             display => 'none',
         },
         ip => {
-            auto         => 1,
-            label        => 'IP',
-            filter_label => 'IP Address',
-            display      => 'default',
+            auto    => 1,
+            label   => 'IP Address',
+            display => 'default',
         },
         id => {
             base            => '__virtual.id',

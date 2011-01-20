@@ -111,12 +111,11 @@ use vars qw(@EXPORT_OK %EXPORT_TAGS);
 sub list_props {
     return {
         name => {
-            auto         => 1,
-            label        => 'Name',
-            filter_label => 'Username',
-            display      => 'force',
-            order        => 100,
-            sub_fields   => [
+            auto       => 1,
+            label      => 'Username',
+            display    => 'force',
+            order      => 100,
+            sub_fields => [
                 {   class   => 'userpic',
                     label   => 'Userpic',
                     display => 'optional',
@@ -129,12 +128,11 @@ sub list_props {
             bulk_html => \&_bulk_author_name_html,
         },
         nickname => {
-            auto         => 1,
-            label        => 'Nickname',
-            filter_label => 'Display Name',
-            display      => 'default',
-            order        => 200,
-            bulk_html    => \&_nickname_bulk_html,
+            auto      => 1,
+            label     => 'Display Name',
+            display   => 'default',
+            order     => 200,
+            bulk_html => \&_nickname_bulk_html,
         },
         entry_count => {
             label       => 'Entries',
@@ -200,11 +198,10 @@ sub list_props {
             ],
         },
         url => {
-            auto         => 1,
-            display      => 'none',
-            label        => 'URL',
-            filter_label => 'Website URL',
-            html_link    => sub {
+            auto      => 1,
+            display   => 'none',
+            label     => 'Website URL',
+            html_link => sub {
                 my ( $prop, $obj, $app ) = @_;
                 return $obj->url;
             },
@@ -238,10 +235,9 @@ sub list_props {
             },
         },
         email => {
-            auto         => 1,
-            label        => 'Email',
-            filter_label => 'Email Address',
-            display      => 'none',
+            auto    => 1,
+            label   => 'Email Address',
+            display => 'none',
         },
         id => { view => [] },
     };
@@ -274,8 +270,7 @@ sub commenter_list_props {
     return {
         name => {
             auto         => 1,
-            label        => 'Name',
-            filter_label => 'Username',
+            label    => 'Username',
             display      => 'force',
             order        => 100,
             sub_fields   => [
@@ -513,10 +508,9 @@ sub member_list_props {
             display => 'none',
         },
         email => {
-            auto         => 1,
-            label        => 'Email',
-            filter_label => 'Email Address',
-            display      => 'none',
+            auto    => 1,
+            label   => 'Email Address',
+            display => 'none',
         },
     };
 }
