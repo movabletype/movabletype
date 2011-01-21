@@ -3827,10 +3827,8 @@ sub log {
         $log->message($msg);
     }
     $log->ip( $app->remote_ip );
-    if ( !defined $log->blog_id ) {
-        if ( my $blog = $app->blog ) {
-            $log->blog_id( $blog->id );
-        }
+    if ( my $blog = $app->blog ) {
+        $log->blog_id( $blog->id );
     }
     if ( my $user = $app->user ) {
         $log->author_id( $user->id );
