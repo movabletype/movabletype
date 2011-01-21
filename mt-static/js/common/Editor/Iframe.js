@@ -25,7 +25,7 @@ Editor.Iframe = new Class( Component, {
         this.window = this.element.contentWindow;
         this.document = this.element.contentDocument || this.element.contentWindow.document;
         
-        if( defined( this.document.body.contentEditable ) )
+        if( defined( this.document.body.contentEditable ) && navigator.userAgent.indexOf("Firefox/3") == -1 )
             this.document.body.contentEditable = true;
         else
             this.document.designMode = "on";
