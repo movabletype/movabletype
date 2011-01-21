@@ -1220,7 +1220,6 @@ sub init_lang_defaults {
 
     my %lang_settings = (
         'NewsboxURL'         => 'NEWSBOX_URL',
-        'LearningNewsURL'    => 'LEARNINGNEWS_URL',
         'SupportURL'         => 'SUPPORT_URL',
         'NewsURL'            => 'NEWS_URL',
         'DefaultTimezone'    => 'DEFAULT_TIMEZONE',

@@ -314,8 +314,7 @@ sub mt_news_widget {
     my $app = shift;
     my ( $tmpl, $param ) = @_;
 
-    $param->{news_html}             = get_newsbox_content($app) || '';
-    $param->{learning_mt_news_html} = get_lmt_content($app)     || '';
+    $param->{news_html} = get_newsbox_content($app) || '';
 }
 
 sub get_newsbox_content {
@@ -323,15 +322,6 @@ sub get_newsbox_content {
     my $newsbox_url = $app->config('NewsboxURL');
     if ( $newsbox_url && $newsbox_url ne 'disable' ) {
         return MT::Util::get_newsbox_html( $newsbox_url, 'NW' );
-    }
-    return q();
-}
-
-sub get_lmt_content {
-    my $app         = shift;
-    my $newsbox_url = $app->config('LearningNewsURL');
-    if ( $newsbox_url && $newsbox_url ne 'disable' ) {
-        return MT::Util::get_newsbox_html( $newsbox_url, 'LW' );
     }
     return q();
 }

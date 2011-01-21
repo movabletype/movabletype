@@ -383,7 +383,7 @@ BEGIN {
                         $from   =~ s/\D//g;
                         $to     =~ s/\D//g;
                         $origin =~ s/\D//g;
-                        $from .= '000000'  if $from;
+                        $from .= '000000' if $from;
                         $to   .= '235959' if $to;
 
                         if ( 'range' eq $option ) {
@@ -545,7 +545,8 @@ BEGIN {
                             = $prop->use_future
                             ? '<mt:var name="future_date_filter_contents">'
                             : '<mt:var name="date_filter_contents">';
-                        return MT->translate( '<mt:var name="[_1]"> [_2] [_3] [_4]',
+                        return MT->translate(
+                            '<mt:var name="[_1]"> [_2] [_3] [_4]',
                             $tmpl, $label, $opts, $contents );
                     },
                     base_type => 'date',
@@ -603,9 +604,9 @@ BEGIN {
                     priority  => 2,
                 },
                 id => {
-                    auto  => 1,
+                    auto               => 1,
                     default_sort_order => 'ascend',
-                    label => 'ID',
+                    label              => 'ID',
                 },
                 ## translate('No Title')
                 ## translate('No Name')
@@ -1103,12 +1104,13 @@ BEGIN {
                 primary          => 'name',
                 view             => 'system',
                 default_sort_key => 'name',
-                scope_mode       => 'none', 
-                condition => sub {
+                scope_mode       => 'none',
+                condition        => sub {
                     require MT::CMS::Website;
-                    return MT::CMS::Website::can_view_website_list( MT->instance );
+                    return MT::CMS::Website::can_view_website_list(
+                        MT->instance );
                 },
-           },
+            },
             blog => {
                 object_label     => 'Blog',
                 view             => [qw( system website )],
@@ -1404,9 +1406,9 @@ BEGIN {
                 scope_mode       => 'none',
             },
             association => {
-                object_label => 'Permission',
+                object_label        => 'Permission',
                 object_label_plural => 'Permissions',
-                object_type  => 'association',
+                object_type         => 'association',
 
                 #permission => 'access_to_permission_list',
                 default_sort_key => 'created_on',
@@ -1697,9 +1699,9 @@ BEGIN {
 # 'MTNewsURL' => {
 #     default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
 # },
-            'LearningNewsURL' => {
-                default => 'http://learning.movabletype.org/newsbox.html',
-            },
+#            'LearningNewsURL' => {
+#                default => 'http://learning.movabletype.org/newsbox.html',
+#            },
 
             # 'HackingNewsURL' => {
             #     default => 'http://hacking.movabletype.org/newsbox.html',

@@ -33,7 +33,7 @@ sub PORTAL_URL()  {'http://www.sixapart.jp/movabletype/'}
 sub SUPPORT_URL() {'http://www.sixapart.jp/movabletype/support/'}
 sub NEWS_URL()    {'http://www.sixapart.jp/movabletype/'}
 sub NEWSBOX_URL() {'http://www.sixapart.jp/movabletype/news/newsbox.html'}
-sub LEARNINGNEWS_URL()     {'http://www.movabletype.jp/newsbox.html'}
+sub LEARNINGNEWS_URL()     {''}
 sub CATEGORY_NAME_NODASH() {1}
 sub DEFAULT_TIMEZONE()     {9}
 sub MAIL_ENCODING()        {'ISO-2022-JP'}
