@@ -4489,6 +4489,7 @@ sub _build_category_list {
             }
         }
         if ( my $fields = $obj->show_fields ) {
+            $row->{category_selected_fields} = $fields;
             my @fields = split /,/, $fields;
             $row->{category_fields} = \@fields;
         }
