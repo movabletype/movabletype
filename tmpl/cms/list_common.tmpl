@@ -860,7 +860,7 @@ function renderList(mode, columns, values, limit, page ) {
           if ( main_cols[col_id] )
               line += '<td class="col '+col_id+' '+col_classes[col_id]+'">' + objs[row][col] + '</td>';
         }
-        jQuery('<tr id="'+id+'">'+line+'</tr>').appendTo('table.listing-table tbody');
+        jQuery('<tr id="'+id+'"' + ( id ? '' : ' class="no-action"' ) + '>'+line+'</tr>').appendTo('table.listing-table tbody');
       }
       jQuery('#resultstats').remove();
       var n = columnLength();
@@ -1058,7 +1058,7 @@ function columnLength () {
 <mt:if name="has_list_actions">
 jQuery('table.listing-table tbody').selectable({
   filter: 'tr',
-  cancel: 'a, .select-all, .text, .can-select, button, pre, :input:not([name=id])',
+  cancel: 'tr.no-action, a, .select-all, .text, .can-select, button, pre, :input:not([name=id])',
   selected: function(event, ui) {
     var $checkboxes = jQuery(ui.selected).find(':checkbox');
     if ($checkboxes.attr('checked')) {
