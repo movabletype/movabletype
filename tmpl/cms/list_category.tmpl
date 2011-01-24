@@ -179,9 +179,9 @@ function createItem(id, parent, label, basename, number) {
   var line = '<span class="sort-tab"></span>';
   line += '<span class="item-label">'+label+'</span>';
   if ( basename )
-    line += '<span class="item-basename">(<span class="item-basename-text">'+basename+'</span>)</span>';
+    line += '<span class="item-basename"><span class="item-basename-text">'+basename+'</span></span>';
   line += ' <span class="item-ctrl"></span>';
-  line += ' <span class="count fr">'+number+'</span>';
+  line += ' <span class="count">'+number+'</span>';
   var $item = jQuery('<div id="'+id+'" class="'+parent+'" />').append(line);
   return $item;
 }
@@ -198,7 +198,7 @@ function initItem($item) {
   $item.find('.item-ctrl, .edit-form').remove();
   $item.append('<span class="item-ctrl" />');
 
-  jQuery('<span class="item-action clickable"><__trans phrase="Edit"></span>')
+  jQuery('<a href="#" class="item-action edit-link clickable"><__trans phrase="Edit"></a>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       var $element = jQuery(this).parent('.item-ctrl').parent('div');
@@ -257,6 +257,7 @@ function initItem($item) {
         }
       });
       $form.find('.label').focus();
+      return false;
     });
 
   jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add child item"></span>')

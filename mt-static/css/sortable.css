@@ -39,29 +39,32 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 20px;
+    width: 35px;
     height: 100%;
-    background-color: #e8ecef;
+    background: transparent url(../images/sort_handle.png) center no-repeat;
     cursor: move ! important;
 }
 
 .sortable-item .item-label, 
 .sortable-item .item-basename {
     float: left;
-    display: inline-block;
     height: 42px;
     line-height: 42px;
-    margin: 0 5px 0 20px;
+    margin: 0 5px 0 30px;
 }
 .sortable-item .item-basename {
-    margin-left: 5px;
+    margin-left: 3px;
 }
-
-.sortable-item .item-label a {
+.sortable-item .item-label a, 
+.sortable-item .item-basename-text {
+    display: inline-block;
     max-width: 15em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+.sortable-item .item-basename-text {
+    max-width: 10em;
 }
 
 .sortable-item .item-ctrl {
@@ -70,8 +73,13 @@
 .sortable-item.on .item-ctrl {
     float: left;
     display: inline-block;
-    margin-top: 10px;
+    margin: 10px 0 0 10px;
 }
+.item-ctrl .edit-link {
+    vertical-align: middle;
+}
+
+
 .sortable-item .count {
     float: right;
     height: 42px;
