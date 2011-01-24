@@ -81,7 +81,7 @@ sub is_not_junk {
 sub list_props {
     return {
         comment => {
-            label   => 'Comment',
+            label   => 'Comment Text',
             order   => 100,
             display => 'force',
             html    => sub {
@@ -423,12 +423,10 @@ sub list_props {
         },
 
         modified_on => {
-            label   => 'Modified on',
             display => 'none',
             base    => '__virtual.modified_on',
         },
         created_on => {
-            label   => 'Created on',
             display => 'none',
             base    => '__virtual.created_on',
         },

@@ -146,7 +146,7 @@ sub list_props {
             },
         },
         for_entry => {
-            label       => 'For Entries',
+            label       => 'Tags with Entries',
             display     => 'none',
             entry_class => 'entry',
             view        => 'blog',
@@ -195,7 +195,7 @@ sub list_props {
         },
         for_page => {
             base        => 'tag.for_entry',
-            label       => 'For Pages',
+            label       => 'Tags with Pages',
             entry_class => 'page',
             view        => [ 'website', 'blog' ],
         },
@@ -254,7 +254,7 @@ sub list_props {
             },
         },
         for_asset => {
-            label     => 'For Assets',
+            label     => 'Tags with Assets',
             display   => 'none',
             view      => [ 'website', 'blog' ],
             singleton => '1',

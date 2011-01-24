@@ -192,9 +192,9 @@ sub list_props {
                 return { status => $val };
             },
             single_select_options => [
-                { label => 'Active Users',   value => 'active', },
-                { label => 'Disabled Users', value => 'disabled', },
-                { label => 'Pending Users',  value => 'pending', },
+                { label => 'Active',   value => 'active', },
+                { label => 'Disabled', value => 'disabled', },
+                { label => 'Pending',  value => 'pending', },
             ],
         },
         url => {

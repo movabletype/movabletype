@@ -523,7 +523,7 @@ sub list_props {
                 { label => 'Draft',     value => 1, },
                 { label => 'Published', value => 2, },
                 { label => 'Reviewing', value => 3, },
-                { label => 'Future',    value => 4, },
+                { label => 'Scheduled', value => 4, },
                 { label => 'Junk',      value => 5, },
             ],
         },
@@ -612,9 +612,9 @@ sub list_props {
             display               => 'none',
             label                 => 'Author Status',
             single_select_options => [
-                { label => 'Deleted Users',  value => 'deleted', },
-                { label => 'Enabled Users',  value => 'enabled', },
-                { label => 'Disabled Users', value => 'disabled', },
+                { label => 'Deleted',  value => 'deleted', },
+                { label => 'Enabled',  value => 'enabled', },
+                { label => 'Disabled', value => 'disabled', },
             ],
             terms => sub {
                 my $prop = shift;

@@ -335,9 +335,9 @@ sub list_props {
                 }
             },
             single_select_options => [
-                { label => 'Deleted Users',  value => 'deleted', },
-                { label => 'Enabled Users',  value => 'active', },
-                { label => 'Disabled Users', value => 'disabled', },
+                { label => 'Deleted',  value => 'deleted', },
+                { label => 'Enabled',  value => 'active', },
+                { label => 'Disabled', value => 'disabled', },
             ],
         },
     };
