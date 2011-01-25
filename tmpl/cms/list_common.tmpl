@@ -1552,6 +1552,8 @@ function doForMarked(formid, action, singlar, plural, phrase, xhr) {
   $form.find('input[name=__mode]').val(mode);
   if ( xhr )
     renderList(params);
+  else if ( opt['dialog'] )
+    jQuery.fn.mtDialog.open(ScriptURI + '?' + $form.serialize());
   else
     $form.submit();
 }
