@@ -2400,7 +2400,7 @@ sub init_core_callbacks {
                     push @{ $args->{joins} },
                         MT->model('permission')->join_on(
                         undef,
-                        [   {   blog_id   => $opts->{blog_ids},
+                        [   {   blog_id   => $opts->{blog_id},
                                 author_id => { not => 0 },
                             },
                             'and',

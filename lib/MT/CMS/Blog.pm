@@ -2918,7 +2918,7 @@ SCRIPT
 
     $app->print_encode(
         $app->build_page(
-            'dialog/header.tmpl',
+            'include/header.tmpl',
             {   page_title => $app->translate("Clone Blog"),
                 html_head  => $html_head
             }
@@ -3016,33 +3016,12 @@ HTML
 
 <p><strong><__trans phrase="Finished!"></strong></p>
 
-<form method="GET">
-    <div class="actions-bar">
-        <button
-            type="submit"
-            accesskey="x"
-            class="close action mt-close-dialog-url"
-            ><__trans phrase="Close"></button>
-    </div>
-</form>
-
 </div>
-
-<script type="text/javascript">
-/* <![CDATA[ */
-jQuery(function() {
-    jQuery('button.mt-close-dialog-url').click(function() {
-        parent.jQuery.fn.mtDialog.close('$return_url');
-    });
-});
-/* ]]> */
-</script>
-
 
 HTML
     }
 
-    $app->print_encode( $app->build_page('dialog/footer.tmpl') );
+    $app->print_encode( $app->build_page('include/footer.tmpl') );
 }
 
 sub _progress {
