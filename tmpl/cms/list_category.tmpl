@@ -337,7 +337,7 @@ function addItem(parent, label) {
   }
 
   var id = 'x'+dummy;
-  var $item = createItem(id, parent, label, '', 0);
+  var $item = createItem(id, parent, label, '', '');
   initItem($item);
   $item.insertAfter(jQuery('#'+parent));
 
