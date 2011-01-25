@@ -1579,6 +1579,9 @@ sub restore_parent_ids {
         $data->{blog_id} = $new_blog->id;
         $obj->blog_id( $data->{blog_id} );
     }
+
+    # Callback for restoring ID in the filter items
+    MT->run_callbacks( 'restore_filter_item_ids', $obj, $data, $objects );
     return 1;
 }
 

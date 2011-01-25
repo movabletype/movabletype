@@ -242,6 +242,7 @@ sub start_element {
                             $objects->{"$class#$old_id"} = $obj;
                             $self->{current}             = $obj;
                             $self->{loaded}              = 1;
+                            $self->{skip}                += 1;
                         }
                     }
                 }

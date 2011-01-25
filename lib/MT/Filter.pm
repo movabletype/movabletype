@@ -35,6 +35,8 @@ __PACKAGE__->install_properties(
     }
 );
 
+MT->add_callback( 'restore_filter_item_ids', 5, undef, \&_cb_restore_ids );
+
 sub class_label {
     MT->translate("Filter");
 }
@@ -493,6 +495,37 @@ sub pack_grep {
         @objs = $prop->grep( $item->{args}, \@objs, $opts );
     }
     return @objs;
+}
+
+sub _cb_restore_ids {
+    my $cb = shift;
+    my ( $obj, $data, $objects ) = @_;
+    my $items = $obj->items;
+
+    foreach my $item ( @$items ) {
+        if ( 'category_id' eq $item->{type} ) {
+            my $old_id = $item->{args}->{value};
+            if ( exists $objects->{'MT::Category#'.$old_id} ) {
+                $item->{args}->{value} = $objects->{'MT::Category#'.$old_id}->id;
+            }
+        }
+        elsif ( 'folder_id' eq $item->{type} ) {
+            my $old_id = $item->{args}->{value};
+            if ( exists $objects->{'MT::Folder#'.$old_id} ) {
+                $item->{args}->{value} = $objects->{'MT::Folder#'.$old_id}->id;
+            }
+        }
+        elsif ( 'role' eq $item->{type} ) {
+            my $old_id = $item->{args}->{value};
+            if ( exists $objects->{'MT::Role#'.$old_id} ) {
+                $item->{args}->{value} = $objects->{'MT::Role#'.$old_id}->id;
+            }
+        }
+    }
+    $obj->items($items);
+
+    my $ser = MT::Serialize->new('MT');
+    $data->{items} = $ser->serialize( \$items );
 }
 
 1;
