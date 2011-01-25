@@ -190,7 +190,9 @@ BEGIN {
                                 $args->{sort} = $prop->col;
                                 return;
                                 }
-                                unless $prop->has('sort');
+                                unless $prop->has('sort')
+                                    || $prop->has('bulk_sort')
+                                    || $prop->has('sort_method');
                         }
                     },
                 },
