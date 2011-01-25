@@ -2998,7 +2998,7 @@ HTML
             mode => 'list',
             args => {
                 '_type' => 'blog',
-                blog_id => $new_blog->website->id
+                blog_id => ( $app->blog ? $new_blog->website->id : 0 )
             }
             );
         my $setting_url = $app->uri(
