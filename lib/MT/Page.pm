@@ -93,7 +93,7 @@ sub list_props {
             single_select_options => [
                 { label => 'Draft',     value => 1, },
                 { label => 'Published', value => 2, },
-                { label => 'Future',    value => 4, },
+                { label => 'Scheduled', value => 4, },
             ],
         },
         basename     => { base => 'entry.basename' },
