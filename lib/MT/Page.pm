@@ -111,20 +111,26 @@ sub list_props {
 
 sub system_filters {
     return {
+        current_website => {
+            label => 'Pages of This Website',
+            items => [ { type => 'current_context' } ],
+            order => 100,
+            view  => 'website',
+        },
         published => {
             label => 'Published Pages',
             items => [ { type => 'status', args => { value => '2' }, }, ],
-            order => 100,
+            order => 200,
         },
         draft => {
             label => 'Unpublished Pages',
             items => [ { type => 'status', args => { value => '1' }, }, ],
-            order => 200,
+            order => 300,
         },
         future => {
             label => 'Scheduled Pages',
             items => [ { type => 'status', args => { value => '4' }, }, ],
-            order => 300,
+            order => 400,
         },
         my_posts_on_this_context => {
             label => 'My Pages',
@@ -132,7 +138,7 @@ sub system_filters {
                 [ { type => 'current_user' }, { type => 'current_context' } ]
                 ,;
             },
-            order => 400,
+            order => 500,
         },
         commented_in_last_7_days => {
             label => 'Pages with comments in the last 7 days',
@@ -141,7 +147,7 @@ sub system_filters {
                     args => { option => 'days', days => 7 }
                 }
             ],
-            order => 500,
+            order => 600,
         },
     };
 }

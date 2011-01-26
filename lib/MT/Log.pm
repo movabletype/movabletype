@@ -280,6 +280,12 @@ sub list_props {
 
 sub system_filters {
     return {
+        current_website => {
+            label => 'Logs on This Website (Only website log)',
+            items => [ { type => 'current_context' } ],
+            order => 100,
+            view  => 'website',
+        },
         show_only_errors => {
             label => 'Show only errors',
             items => [ { type => 'level', args => { value => ERROR() } }, ],

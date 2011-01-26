@@ -345,31 +345,45 @@ sub list_props {
 
 sub system_filters {
     my %filters;
-    my @filters;
+    my @filters_to_sort;
+    my $order = 0;
 
     # for each class
+    my %ordered_types;
+    $ordered_types{$_} = $order += 100 for qw(file image audio video);
+
     my $types = MT::Asset->class_labels;
     foreach my $type ( keys %$types ) {
+
+        # Ignore parent class.
+        next if $type eq 'asset';
+
         my $asset_type = $type;
-        next if $asset_type eq 'asset';
-        $asset_type =~ s/^asset\.//;
-        push(
-            @filters,
-            {   type  => $asset_type,
-                label => sub {
-                    MT::Asset->class_handler($type)->class_label_plural;
-                },
-                items => [
-                    { type => 'class', args => { value => $asset_type }, },
-                ],
-            }
-        );
+        $asset_type = substr( $type, 6 );    # length('asset.') => 6
+
+        my $filter = {
+            label => sub {
+                MT::Asset->class_handler($type)->class_label_plural;
+            },
+            items =>
+                [ { type => 'class', args => { value => $asset_type }, }, ],
+        };
+
+        if ( my $o = $ordered_types{$asset_type} ) {
+            $filter->{order} = $o;
+            $filters{$asset_type} = $filter;
+        }
+        else {
+            $filter->{type} = $asset_type;
+            push( @filters_to_sort, $filter );
+        }
     }
-    @filters = sort { $a->{label}->() cmp $b->{label}->() } @filters;
-    my $order = 100;
-    for my $filter (@filters) {
-        $filter->{order} = $order;
+
+    @filters_to_sort
+        = sort { $a->{label}->() cmp $b->{label}->() } @filters_to_sort;
+    for my $filter (@filters_to_sort) {
         $order += 100;
+        $filter->{order} = $order;
         $filters{ delete $filter->{type} } = $filter;
     }
 
@@ -380,6 +394,7 @@ sub system_filters {
         view  => 'website',
         order => 10000,
     };
+
     return \%filters;
 }
 
