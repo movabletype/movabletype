@@ -2644,8 +2644,9 @@ sub clone {
 
     my $website = $blog->website;
     my ( $website_scheme, $website_domain )
-        = $website->site_url =~ m!(https?)://(.+/)$!;
+        = $website->site_url =~ m!^(https?)://(.+)$!;
     $param->{website_scheme} = $website_scheme;
+    $website_domain .= '/' if $website_domain !~ m!/$!;
     $param->{website_domain} = $website_domain;
 
     if ( $app->param('verify') || defined $app->param('clone') ) {
