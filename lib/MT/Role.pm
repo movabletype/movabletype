@@ -128,6 +128,7 @@ sub list_props {
             col_class   => '',
             count_class => 'association',
             count_col   => 'role_id',
+            filter_type => 'role_id',
             view_filter => [],
         },
         active_inactive => {
