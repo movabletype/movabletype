@@ -1050,11 +1050,11 @@ BEGIN {
                     },
                 },
                 current_context => {
+                    base            => '__virtual.hidden',
                     label           => 'Current Website',
                     order           => 30000,
                     view            => 'website',
                     display         => 'none',
-                    filter_tmpl     => '',
                     filter_editable => 1,
                     condition       => sub {
                         my $prop = shift;
