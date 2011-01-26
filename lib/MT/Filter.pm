@@ -523,9 +523,6 @@ sub _cb_restore_ids {
         }
     }
     $obj->items($items);
-
-    my $ser = MT::Serialize->new('MT');
-    $data->{items} = $ser->serialize( \$items );
 }
 
 1;

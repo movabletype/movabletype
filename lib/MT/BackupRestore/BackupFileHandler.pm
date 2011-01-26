@@ -485,6 +485,11 @@ sub end_element {
                     }
                 }
             }
+            elsif ( 'filter' eq $name ) {
+                my $objects  = $self->{objects};
+                # Callback for restoring ID in the filter items
+                MT->run_callbacks( 'restore_filter_item_ids', $obj, undef, $objects );
+            }
             unless ($exists) {
                 my $result;
                 if ( $obj->id ) {
