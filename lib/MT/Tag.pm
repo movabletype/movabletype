@@ -146,6 +146,7 @@ sub list_props {
             },
         },
         for_entry => {
+            base        => '__virtual.hidden',
             label       => 'Tags with Entries',
             display     => 'none',
             entry_class => 'entry',
@@ -254,6 +255,7 @@ sub list_props {
             },
         },
         for_asset => {
+            base      => '__virtual.hidden',
             label     => 'Tags with Assets',
             display   => 'none',
             view      => [ 'website', 'blog' ],

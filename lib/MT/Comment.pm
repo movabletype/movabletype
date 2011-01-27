@@ -481,7 +481,8 @@ sub list_props {
             display => 'none',
         },
         for_current_user => {
-            label     => 'Comments on my entries/pages',
+            base      => '__virtual.hidden',
+            label     => 'Comments on My Entries/Pages',
             singleton => 1,
             terms     => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
