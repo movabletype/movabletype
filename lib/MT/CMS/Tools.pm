@@ -451,7 +451,7 @@ sub cfg_system_general {
 
         my $body
             = $app->translate(
-            "This is the test email sent by your installation of Movable Type."
+            "This is the test email sent by Movable Type."
             );
 
         require MT::Mail;
