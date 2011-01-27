@@ -297,7 +297,8 @@ sub list_props {
             },
         },
         for_current_user => {
-            label     => 'Trackbacks on my entries/pages',
+            base      => '__virtual.hidden',
+            label     => 'Trackbacks on My Entries/Pages',
             singleton => 1,
             terms     => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
@@ -313,7 +314,6 @@ sub list_props {
                     },
                 );
             },
-            filter_tmpl => '',
         },
 
     };
