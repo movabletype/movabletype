@@ -245,7 +245,7 @@ sub load_config {
                 {
                     action_name   => $actions{$action},
                     action_value  => $action,
-                    blog_name     => $plugin->translate('* All websites and blogs in this system'),
+                    blog_name     => $plugin->translate(' all websites and blogs in this system'),
                     blog_id       => $id,
                     trigger_name  => $triggers{$trigger},
                     trigger_value => $trigger,
@@ -254,7 +254,7 @@ sub load_config {
                 {
                     action_name   => $actions{$action},
                     action_value  => $action,
-                    blog_name     => $plugin->translate('* All blogs in this website'),
+                    blog_name     => $plugin->translate(' all blogs in this website'),
                     blog_id       => $id,
                     trigger_name  => $triggers{$trigger},
                     trigger_value => $trigger,
