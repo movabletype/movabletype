@@ -178,3 +178,9 @@
         GradientType=0 
     );
 }
+
+/* -- Editor */
+.editor textarea {
+    overflow: auto;
+    padding: 0;
+}
