@@ -499,14 +499,66 @@ sub list_props {
         email => {
             auto    => 1,
             display => 'none',
+            label   => 'Email Address',
+            terms   => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $option = $args->{option};
+                my $query  = $args->{string};
+                if ( 'contains' eq $option ) {
+                    $query = { like => "%$query%" };
+                }
+                elsif ( 'not_contains' eq $option ) {
+                    $query = { not_like => "%$query%" };
+                }
+                elsif ( 'beginning' eq $option ) {
+                    $query = { like => "$query%" };
+                }
+                elsif ( 'end' eq $option ) {
+                    $query = { like => "%$query" };
+                }
 
-            label => 'Email Address',
-        },
-        url => {
+                my @users = MT->model('author')->load( { email => $query, },
+                    { fetchonly => { id => 1 }, } );
+                my @ids = map { $_->id } @users;
+                return [
+                    { commenter_id => \@ids },
+                    '-or',
+                    { 'email' => $query },
+                ];
+            },
+            },
+            url => {
             auto    => 1,
             display => 'none',
             label   => 'URL',
-        },
+            terms   => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $option = $args->{option};
+                my $query  = $args->{string};
+                if ( 'contains' eq $option ) {
+                    $query = { like => "%$query%" };
+                }
+                elsif ( 'not_contains' eq $option ) {
+                    $query = { not_like => "%$query%" };
+                }
+                elsif ( 'beginning' eq $option ) {
+                    $query = { like => "$query%" };
+                }
+                elsif ( 'end' eq $option ) {
+                    $query = { like => "%$query" };
+                }
+
+                my @users = MT->model('author')->load( { url => $query, },
+                    { fetchonly => { id => 1 }, } );
+                my @ids = map { $_->id } @users;
+                return [
+                    { commenter_id => \@ids },
+                    '-or', { 'url' => $query },
+                ];
+            },
+            },
         commenter_status => {
             label   => 'Commenter Status',
             display => 'none',
