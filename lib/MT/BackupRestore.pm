@@ -1028,11 +1028,19 @@ sub to_xml {
     $xml .= "<$_>" . MT::Util::encode_xml( $obj->column($_), 1 ) . "</$_>"
         foreach @elements;
     require MIME::Base64;
-    $xml .= "<$_>"
-        . MIME::Base64::encode_base64(
-        Encode::encode( MT->config->PublishCharset, $obj->column($_) ), '' )
-        . "</$_>"
-        foreach @blobs;
+    foreach my $blob_col ( @blobs ) {
+        my $val = $obj->column($blob_col);
+        if ( substr( $val, 0, 4 ) eq 'SERG' ) {
+            $xml .= "<$blob_col>"
+                . MIME::Base64::encode_base64( $val, '' )
+                . "</$blob_col>";
+        } else {
+            $xml .= "<$blob_col>"
+                . MIME::Base64::encode_base64(
+                Encode::encode( MT->config->PublishCharset, $val ), '' )
+                . "</$blob_col>";
+        }
+    }
     foreach my $meta_col (@meta) {
         my $hashref = $obj->$meta_col;
         $xml .= "<$meta_col>"

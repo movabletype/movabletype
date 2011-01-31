@@ -335,8 +335,11 @@ sub end_element {
             my $defs = $obj->column_defs;
             if ( exists( $defs->{$column_name} ) ) {
                 if ( 'blob' eq $defs->{$column_name}->{type} ) {
-                    $obj->column( $column_name,
-                        MIME::Base64::decode_base64($text) );
+                    $text = MIME::Base64::decode_base64($text);
+                    if ( substr( $text, 0, 4 ) eq 'SERG' ) {
+                        $text = MT::Serialize->unserialize($text);
+                    }
+                    $obj->$column_name( $$text );
                 }
                 else {
                     $obj->column( $column_name, _decode($text) );
