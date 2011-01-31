@@ -7,7 +7,7 @@ use warnings;
 use lib 't/lib', 'lib', 'extlib';
 use MT::Test;
 
-use Test::More tests => 251;
+use Test::More tests => 250;
 
 use_ok('MT::Bootstrap');
 use_ok('MT::ErrorHandler');
@@ -47,7 +47,6 @@ use_ok('MT::CMS::User');
 use_ok('MT::CMS::Website');
 use_ok('MT::CMS::Theme');
 use_ok('MT::CMS::Filter');
-use_ok('MT::CMS::RptLog');
 
 # Supporting applications
 use_ok('MT::App::ActivityFeeds');
