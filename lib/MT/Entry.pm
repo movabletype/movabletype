@@ -673,7 +673,7 @@ sub system_filters {
             order => 1000,
         },
         commented_in_last_7_days => {
-            label => 'Entries with comments in the last 7 days',
+            label => 'Entries Commented in the Last 7 Days',
             items => [
                 {   type => 'commented_on',
                     args => { option => 'days', days => 7 }
