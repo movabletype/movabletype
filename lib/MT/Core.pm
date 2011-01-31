@@ -714,7 +714,9 @@ BEGIN {
                             $query = { like => "%$query%" };
                         }
                         elsif ( 'not_contains' eq $option ) {
-                            $query = { not_like => "%$query%" };
+
+                            # After searching by LIKE, negate that results.
+                            $query = { like => "%$query%" };
                         }
                         elsif ( 'beginning' eq $option ) {
                             $query = { like => "$query%" };
@@ -740,10 +742,7 @@ BEGIN {
                         );
 
                         my $tag_ds = $prop->tag_ds || $ds;
-                        $base_args->{joins} ||= [];
-                        push @{ $base_args->{joins} },
-                            MT->model('objecttag')->join_on(
-                            undef,
+                        my @objecttag_terms_args = (
                             { object_datasource => $tag_ds, },
                             {   fetchonly => { object_id => 1 },
                                 unique    => 1,
@@ -757,7 +756,19 @@ BEGIN {
                                     $ds_join,
                                 ],
                             }
-                            );
+                        );
+                        if ( 'not_contains' eq $option ) {
+                            my @ids = map( $_->object_id,
+                                MT->model('objecttag')
+                                    ->load(@objecttag_terms_args) );
+                            { id => { not => \@ids } };
+                        }
+                        else {
+                            $base_args->{joins} ||= [];
+                            push @{ $base_args->{joins} },
+                                MT->model('objecttag')
+                                ->join_on( undef, @objecttag_terms_args );
+                        }
                     },
                 },
                 object_count => {
