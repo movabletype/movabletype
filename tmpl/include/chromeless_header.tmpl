@@ -54,7 +54,7 @@
 
 </head>
 
-<body <mt:if name="screen_id">id="<$mt:var name="screen_id"$>" </mt:if>class="chromeless<mt:if name="mt_debug"> debug</mt:if><mt:if name="error_page"> chromeless-wide</mt:if><mt:if name="screen_type" eq="popup-screen"> chromeless-wide</mt:if> <$mt:var name="body_class" default="dialog"$>">
+<body <mt:if name="screen_id">id="<$mt:var name="screen_id"$>" </mt:if>class="chromeless<mt:if name="mt_debug"> debug</mt:if><mt:if name="error_page"> chromeless-wide</mt:if><mt:if name="screen_type" eq="popup-screen"> chromeless-wide</mt:if><mt:if name="screen_class"> <mt:var name="screen_class"></mt:if>">
   <div id="container">
     <div id="brand">
       <span><__trans phrase="Movable Type"></span>

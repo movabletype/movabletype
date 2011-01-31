@@ -10,7 +10,6 @@ body {
     background-color: #fff;
 }
 
-
 a { 
     color: #5c909b;
 }
@@ -100,26 +99,25 @@ h3 {
     -moz-border-radius: 5px;
 }
 
-#sign-in #container, 
-#reset-password #container, 
-#change-password #container { 
+/* -- chromeless */
+.chromeless #container {
+    width: 550px;
+}
+
+/* -- sign-in */
+.sign-in #container { 
     width: 320px;
 }
 
-/* -- Wide Layout */
+/* -- chromeless-wide */
 .chromeless-wide #container {
     min-width: 360px;
+    width: auto;
     margin: 20px;
     padding: 0;
     border: 0;
     background-color: transparent;
 }
-
-/* -- Wizerd */
-.wizerd #container {
-    width: 550px;
-}
-
 
 /* - Header */
 #header {

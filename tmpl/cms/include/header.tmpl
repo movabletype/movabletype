@@ -82,7 +82,7 @@
   <mt:var name="js_include">
 
 </head>
-<body id="<$mt:var name="screen_id"$>" class="<mt:if name="scope_type" eq="user">user system<mt:else><mt:var name="scope_type"></mt:if> <mt:var name="screen_type" default="main-screen"> <mt:if name="screen_class"> <mt:var name="screen_class"></mt:if><mt:if name="new_object"> create-new</mt:if><mt:if name="mt_beta"> mt-beta</mt:if><mt:if name="related_content"> has-related-content</mt:if><mt:if name="top_nav_loop"> has-menu-nav</mt:if><mt:if name="loaded_revision"> loaded-revision</mt:if><mt:if name="edit_screen"> edit-screen</mt:if>">
+<body <mt:if name="screen_id">id="<$mt:var name="screen_id"$>" </mt:if>class="<mt:var name="screen_type" default="main-screen"> <mt:if name="scope_type" eq="user">user system<mt:else><mt:var name="scope_type"></mt:if><mt:if name="screen_class"> <mt:var name="screen_class"></mt:if><mt:if name="top_nav_loop"> has-menu-nav</mt:if><mt:if name="related_content"> has-related-content</mt:if><mt:if name="edit_screen"> edit-screen</mt:if><mt:if name="new_object"> create-new</mt:if><mt:if name="loaded_revision"> loaded-revision</mt:if><mt:if name="mt_beta"> mt-beta</mt:if>">
 
 <div id="container" class="<$mt:var name="screen_type" default="main-screen"$><mt:if name="listing_screen"> listing-screen</mt:if>">
 
