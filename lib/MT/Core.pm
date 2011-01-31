@@ -1290,6 +1290,10 @@ BEGIN {
                 permission            => 'access_to_category_list',
                 view                  => 'blog',
                 scope_mode            => 'this',
+                condition             => sub {
+                    my $app = shift;
+                    ( $app->param('_type') || '' ) ne 'filter';
+                },
             },
             folder => {
                 primary               => 'label',
@@ -1300,6 +1304,10 @@ BEGIN {
                 permission            => 'access_to_folder_list',
                 view                  => [ 'website', 'blog' ],
                 scope_mode            => 'this',
+                condition             => sub {
+                    my $app = shift;
+                    ( $app->param('_type') || '' ) ne 'filter';
+                },
             },
             comment => {
                 object_label     => 'Comment',
