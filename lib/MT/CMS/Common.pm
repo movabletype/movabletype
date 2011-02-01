@@ -721,6 +721,7 @@ sub edit {
 
     my $tmpl_file = $param{output} || "edit_${type}.tmpl";
     $param{object_type} ||= $type;
+    $param{search_label} ||= $class->class_label;
     $param{screen_id}   ||= "edit-$type";
     $param{screen_class} .= " edit-$type";
     return $app->load_tmpl( $tmpl_file, \%param );

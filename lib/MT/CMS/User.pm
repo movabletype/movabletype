@@ -50,6 +50,10 @@ sub edit {
             $param->{object_type}       = 'author';
             $param->{can_edit_username} = 1;
         }
+        else {
+            $param->{search_label} = $app->translate('Entry');
+            $param->{object_type}  = 'entry';
+        }
         $param->{status_enabled} = $obj->is_active ? 1 : 0;
         $param->{status_pending}
             = $obj->status == MT::Author::PENDING() ? 1 : 0;
