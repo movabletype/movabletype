@@ -282,13 +282,9 @@ sub edit {
                         }
                         else {
                             $include->{include_from}
-                                = $blog_id
-                                ? 'global'
-                                : 'self';
+                                = 'global';
                             $include->{include_blog_name}
-                                = $blog_id
-                                ? $app->translate('Global Template')
-                                : 'self';
+                                = $app->translate('Global Template');
                         }
                     }
                     else {
