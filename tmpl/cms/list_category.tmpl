@@ -531,9 +531,9 @@ function initMoving() {
           }
         });
 <mt:if name="object_type" eq="category">
-        jQuery('#new-label').mtValidate({ namespace: 'basename' }).focus();
+        jQuery('#new-label').focus().mtValidate({ namespace: 'basename' });
 <mt:else>
-        jQuery('#new-basename').mtValidate({ namespace: 'basename' }).focus();
+        jQuery('#new-basename').focus().mtValidate({ namespace: 'basename' });
 </mt:if>
 
       }
