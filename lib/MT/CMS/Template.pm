@@ -2080,7 +2080,7 @@ BLOG: for my $blog_id (@id) {
                 # set here, instead of below.
                 if ( my $theme = $blog->theme ) {
                     $theme->apply( $blog,
-                        { importer_filter => { template_set => 1, } } );
+                        importer_filter => { template_set => 1, } );
                 }
                 else {
                     $blog->create_default_templates( $blog->template_set
