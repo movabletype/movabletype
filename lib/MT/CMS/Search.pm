@@ -361,8 +361,7 @@ sub core_search_apis {
                     ? 'image'
                     : '*';
                 if ( !$blog_id ) {
-                    $terms->{blog_id} = '0';
-                    $args->{not}{blog_id} = 1;
+                    $terms->{blog_id} = { op => '>', value => '0' };;
                 }
                 $args->{sort}      = 'created_on';
                 $args->{direction} = 'descend';
