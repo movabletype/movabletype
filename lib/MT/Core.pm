@@ -2335,6 +2335,7 @@ sub load_core_permissions {
                 'get_trackback_feed'                      => 1,
                 'add_tags_to_entry_via_list'              => 1,
                 'remove_tags_from_entry_via_list'         => 1,
+                'edit_entry_authored_on'                  => 1,
             }
         },
         'blog.edit_all_posts' => {
@@ -2587,7 +2588,6 @@ sub load_core_permissions {
                 'bulk_edit_own_entry_trackbacks'        => 1,
                 'delete_own_entry_trackback'            => 1,
                 'delete_own_entry_comment'              => 1,
-                'edit_entry_authored_on'                => 1,
                 'edit_entry_basename'                   => 1,
                 'edit_own_entry_trackback'              => 1,
                 'edit_own_entry_trackback_status'       => 1,
