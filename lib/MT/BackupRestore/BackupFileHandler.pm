@@ -242,7 +242,8 @@ sub start_element {
                             $objects->{"$class#$old_id"} = $obj;
                             $self->{current}             = $obj;
                             $self->{loaded}              = 1;
-                            $self->{skip}                += 1;
+
+                            $self->{skip} += 1;
                         }
                     }
                 }
@@ -339,7 +340,7 @@ sub end_element {
                     if ( substr( $text, 0, 4 ) eq 'SERG' ) {
                         $text = MT::Serialize->unserialize($text);
                     }
-                    $obj->$column_name( $$text );
+                    $obj->$column_name($$text);
                 }
                 else {
                     $obj->column( $column_name, _decode($text) );
@@ -489,9 +490,11 @@ sub end_element {
                 }
             }
             elsif ( 'filter' eq $name ) {
-                my $objects  = $self->{objects};
+                my $objects = $self->{objects};
+
                 # Callback for restoring ID in the filter items
-                MT->run_callbacks( 'restore_filter_item_ids', $obj, undef, $objects );
+                MT->run_callbacks( 'restore_filter_item_ids', $obj, undef,
+                    $objects );
             }
             unless ($exists) {
                 my $result;
