@@ -1147,8 +1147,7 @@ BEGIN {
 
                     if ( $app->blog ) {
                         return 1
-                            if $app->user->permissions( $app->blog->id )
-                                ->can_do('get_entry_feed');
+                            if $app->user->can_do('get_entry_feed', at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1205,8 +1204,7 @@ BEGIN {
 
                     if ( $app->blog ) {
                         return 1
-                            if $app->user->permissions( $app->blog->id )
-                                ->can_do('get_page_feed');
+                            if $app->user->can_do('get_page_feed', at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1283,10 +1281,25 @@ BEGIN {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;
                     return 1 if $app->can_do('get_all_system_feed');
-                    return 1
-                        if $app->blog
-                            and $app->user->permissions( $app->blog->id )
-                            ->can_do('get_system_feed');
+
+                    if ( $app->blog ) {
+                        return 1
+                            if $app->user->can_do('get_system_feed', at_least_one => 1 );
+                    }
+                    else {
+                        my $iter = MT->model('permission')->load_iter(
+                            {   author_id => $app->user->id,
+                                blog_id   => { not => 0 },
+                            }
+                        );
+                        my $cond;
+                        while ( my $p = $iter->() ) {
+                            $cond = 1, last
+                                if $p->can_do('get_system_feed');
+                        }
+                        return $cond ? 1 : 0;
+                    }
+
                     0;
                 },
                 feed_label   => 'Activity Feed',
@@ -1331,8 +1344,7 @@ BEGIN {
 
                     if ( $app->blog ) {
                         return 1
-                            if $app->user->permissions( $app->blog->id )
-                                ->can_do('get_comment_feed');
+                            if $app->user->can_do('get_comment_feed', at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1343,7 +1355,7 @@ BEGIN {
                         my $cond;
                         while ( my $p = $iter->() ) {
                             $cond = 1, last
-                                if $p->can_do('get_entry_feed');
+                                if $p->can_do('get_comment_feed');
                         }
                         return $cond ? 1 : 0;
                     }
@@ -1361,8 +1373,7 @@ BEGIN {
 
                     if ( $app->blog ) {
                         return 1
-                            if $app->user->permissions( $app->blog->id )
-                                ->can_do('get_trackback_feed');
+                            if $app->user->can_do('get_trackback_feed', at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1373,7 +1384,7 @@ BEGIN {
                         my $cond;
                         while ( my $p = $iter->() ) {
                             $cond = 1, last
-                                if $p->can_do('get_entry_feed');
+                                if $p->can_do('get_trackback_feed');
                         }
                         return $cond ? 1 : 0;
                     }

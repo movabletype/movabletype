@@ -357,7 +357,7 @@ sub _feed_ping {
     require MT::Blog;
     my $blog;
 
-    # verify user has permission to view entries for given weblog
+    # verify user has permission to view pings for given weblog
     my $blog_id = $app->param('blog_id');
     if ($blog_id) {
         my $blog_ids;
@@ -430,7 +430,7 @@ sub _feed_comment {
     require MT::Blog;
     my $blog;
 
-    # verify user has permission to view entries for given weblog
+    # verify user has permission to view comments for given weblog
     my $blog_id = $app->param('blog_id');
     if ($blog_id) {
         my $blog_ids;
@@ -557,7 +557,7 @@ sub _feed_blog {
 
     my $user = $app->user;
 
-    # verify user has permission to view entries for given weblog
+    # verify user has permission to view blogs for given weblog
     my $blog_id = $app->param('blog_id');
 
     require MT::Blog;
@@ -623,7 +623,7 @@ sub _feed_system {
     my $filter     = $app->param('filter');
     my $filter_val = $app->param('filter_val');
 
-    # verify user has permission to view entries for given weblog
+    # verify user has permission to view logs for given weblog
     if ($blog_id) {
         my $blog_ids;
         my $blog = MT->model('blog')->load($blog_id)
@@ -717,7 +717,7 @@ sub _feed_page {
     require MT::Blog;
     my $blog;
 
-    # verify user has permission to view entries for given weblog
+    # verify user has permission to view pages for given weblog
     my $blog_id = $app->param('blog_id');
     if ($blog_id) {
         my $blog_ids;
