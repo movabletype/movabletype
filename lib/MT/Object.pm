@@ -227,6 +227,7 @@ sub install_properties {
             $parent_classes = [$parent_classes];
         }
         foreach my $pc (@$parent_classes) {
+            eval "require $pc;";
             my $pp = $pc->properties;
             $pp->{child_classes} ||= {};
             $pp->{child_classes}{$class} = ();
