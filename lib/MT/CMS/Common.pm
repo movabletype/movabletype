@@ -1288,8 +1288,8 @@ sub filtered_list {
     MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds,
         $app, $filter, \%count_options, \@cols );
 
-    my $count = $filter->count_objects(%count_options);
-    if ( !defined $count ) {
+    my $count_result = $filter->count_objects(%count_options);
+    if ( !defined $count_result ) {
         return $app->error(
             MT->translate(
                 "An error occured while counting objects: [_1]",
@@ -1297,6 +1297,7 @@ sub filtered_list {
             )
         );
     }
+    my ($count, $editable_count) = @$count_result;
 
     $MT::DebugMode && $debug->{section}->('count objects');
     $load_options{total} = $count;
@@ -1397,12 +1398,13 @@ sub filtered_list {
 
     require POSIX;
     my %res;
-    $res{objects}  = \@data;
-    $res{columns}  = $cols;
-    $res{count}    = $count;
-    $res{page}     = $page;
-    $res{page_max} = POSIX::ceil( $count / $limit );
-    $res{id}       = $filter_id;
+    $res{objects}        = \@data;
+    $res{columns}        = $cols;
+    $res{count}          = $count;
+    $res{editable_count} = $editable_count;
+    $res{page}           = $page;
+    $res{page_max}       = POSIX::ceil( $count / $limit );
+    $res{id}             = $filter_id;
     $res{label}    = MT::Util::encode_html( $forward_params{saved_label} )
         if $forward_params{saved_label};
     $res{filters}  = $filters;

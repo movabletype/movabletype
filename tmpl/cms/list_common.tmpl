@@ -282,6 +282,8 @@ var cols = [];
 var vals = [];
 var checked = [];
 var total = 0;
+var editable_total = 0;
+var editable_count_in_page;
 
 var filters = <mt:var name="filters">;
 var initial_filter = <mt:var name="initial_filter">;
@@ -834,6 +836,7 @@ function renderList(mode, columns, values, limit, page ) {
       var count = objs.length;
       var last = data.result.page_max;
       total = parseInt(data.result.count);
+      editable_total = parseInt(data.result.editable_count);
       var return_columns = data.result.columns.split(',');
       var return_cols = jQuery.grep( return_columns, function( val, idx ){
         return val.match(/\./);
@@ -842,10 +845,12 @@ function renderList(mode, columns, values, limit, page ) {
       jQuery('#disp_cols input.main.checkbox:checked').each(function() {
         main_cols[ jQuery(this).val() ] = 1;
       });
+      editable_count_in_page = 0;
       for (var row = 0; row < count; row++) {
         var id = objs[row][0];
         var line = '';
         if ( id ) {
+          editable_count_in_page++;
           if (checked[page] && checked[page][id]) {
             line = '<td class="cb col"<mt:unless name="has_list_actions"> style="display: none;"</mt:unless>><input type="checkbox" checked="checked" name="id" value="'+id+'" /></td>';
           } else {
@@ -1016,7 +1021,7 @@ jQuery('#row').change(function() {
 });
 
 function addSelectAll($node) {
-  if (total <= jQuery('#row').val()) {
+  if (editable_count_in_page >= editable_total) {
     return false;
   }
 
@@ -1025,8 +1030,8 @@ function addSelectAll($node) {
     .parents('tbody')
     .append('<tr class="select-all"><td class="col fullwidth-row" colspan="'+n+'"></td></tr>')
     .prepend('<tr class="select-all"><td class="col fullwidth-row" colspan="'+n+'"><input type="hidden" name="all_selected" /></td></tr>');
-  var select_text = 'Select all '+total+' items';
-  var cancel_text = 'All '+total+' items are selected';
+  var select_text = 'Select all '+editable_total+' items';
+  var cancel_text = 'All '+editable_total+' items are selected';
   jQuery('<a href="#"></a>')
     .appendTo('.select-all td')
     .text(select_text)

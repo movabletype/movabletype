@@ -240,7 +240,12 @@ sub load_objects {
     my $obj_type = $setting->{object_type} || $ds;
     my $class    = MT->model($obj_type);
     my $items    = $self->items;
-    my $total    = $options{total} ||= $self->count_objects(@_);
+    my $total    = $options{total};
+    if ( !defined($total) ) {
+        my $count_result = $self->count_objects(@_)
+            or return;
+        ($total) = @$count_result;
+    }
     my @items;
     require MT::ListProperty;
 
@@ -363,6 +368,19 @@ sub count_objects {
     my $self = shift;
     my (%options) = @_;
     my ( $terms, $args ) = @options{qw( terms args )};
+    my ( $editable_terms, $editable_args, $editable_filters )
+        = @options{qw( editable_terms editable_args editable_filters )};
+    if ( $editable_terms || $editable_args ) {
+        $editable_terms ||= $terms;
+        $editable_args  ||= $args;
+    }
+    my ( $count, $editable_count );
+
+    return $self->error(
+        MT->translate(
+            '"editable_terms" and "editable_filters" cannot be specified at the same time.'
+        )
+    ) if $editable_terms && $editable_filters;
 
     # my $blog_id   = $options{terms}{blog_id};
     my $ds       = $self->object_ds;
@@ -388,35 +406,50 @@ sub count_objects {
     my @grep_items = grep { $_->{prop}->has('grep') } @items;
 
     ## Prepare terms
-    my @additional_terms;
-    for my $item (@items) {
-        my $prop = $item->{prop};
-        my $code = $prop->has('terms') or next;
-        my $filter_terms
-            = $prop->terms( $item->{args}, $terms, $args, \%options );
-        if ( $filter_terms
-            && ( 'HASH'  eq ref $filter_terms && scalar %$filter_terms )
-            || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) )
-        {
-            push @additional_terms, ( '-and', $filter_terms );
+    my $update_terms = sub {
+        my ( $terms, $args ) = @_;
+        my @additional_terms;
+        for my $item (@items) {
+            my $prop = $item->{prop};
+            my $code = $prop->has('terms') or next;
+            my $filter_terms
+                = $prop->terms( $item->{args}, $terms, $args, \%options );
+            if ( $filter_terms
+                && ( 'HASH'  eq ref $filter_terms && scalar %$filter_terms )
+                || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) )
+            {
+                push @additional_terms, ( '-and', $filter_terms );
+            }
         }
-    }
-    if ( scalar @additional_terms ) {
-        if (   !$terms
-            || ( 'HASH'  eq ref $terms && !scalar %$terms )
-            || ( 'ARRAY' eq ref $terms && !scalar @$terms ) )
-        {
-            shift @additional_terms;
-            $terms = \@additional_terms;
+        if ( scalar @additional_terms ) {
+            if (   !$terms
+                || ( 'HASH'  eq ref $terms && !scalar %$terms )
+                || ( 'ARRAY' eq ref $terms && !scalar @$terms ) )
+            {
+                shift @additional_terms;
+                \@additional_terms;
+            }
+            else {
+                [ $terms, @additional_terms ];
+            }
         }
         else {
-            $terms = [ $terms, @additional_terms ];
+            $terms;
         }
+    };
+    $terms = $update_terms->( $terms, $args );
+    if ($editable_terms) {
+        $editable_terms = $update_terms->( $editable_terms, $editable_args );
     }
-    if ( !( scalar @grep_items ) ) {
-        my $count = $class->count( $terms, $args );
+
+    if ( !( scalar @grep_items ) && !$editable_filters ) {
+        $editable_count = $count = $class->count( $terms, $args );
+        if ($editable_terms) {
+            $editable_count = $class->count( $editable_terms, $editable_args );
+        }
+
         return $self->error( $class->errstr ) unless defined $count;
-        return $count;
+        return [ $count, $editable_count ];
     }
     my @objs = $class->load( $terms, $args );
 
@@ -425,7 +458,15 @@ sub count_objects {
         @objs = $item->{prop}->grep( $item->{args}, \@objs, \%options );
     }
 
-    return scalar @objs;
+    $editable_count = $count = scalar @objs;
+    if ($editable_filters) {
+        for my $filter (@$editable_filters) {
+            @objs = $filter->( \@objs, \%options );
+        }
+        $editable_count = scalar @objs;
+    }
+
+    [ $count, $editable_count ];
 }
 
 sub pack_terms {
