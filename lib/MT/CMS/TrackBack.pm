@@ -206,8 +206,10 @@ sub can_delete {
         return $perms->can_edit_entry( $entry, $author )
             && $perms->can_do('delete_own_entry_unpublished_trackback');
     }
-    elsif ( $tb->category_id ) {
-        $perms ||= $author->permissions( $tb->blog_id );
+    elsif ( my $category = $tb->category_id ) {
+        if ( !$perms || $perms->blog_id != $category->blog_id ) {
+            $perms = $author->permissions( $category->blog_id );
+        }
         return ( $perms && $perms->can_do('delete_category_trackback') );
     }
     return 0;

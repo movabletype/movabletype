@@ -1577,18 +1577,23 @@ sub can_view {
 }
 
 sub can_save {
-    my ( $eh, $app, $id ) = @_;
-    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
-    return ( $perms && $perms->can_edit_templates )
-        || ( !$perms && $app->user->can_edit_templates );
+    my ( $eh, $app, $obj ) = @_;
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
+
+    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
+
+    return $author->permissions($blog_id)->can_edit_templates;
 }
 
 sub can_delete {
     my ( $eh, $app, $obj ) = @_;
-    return 1 if $app->user->is_superuser();
-    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
-    return ( $perms && $perms->can_edit_templates )
-        || ( !$perms && $app->user->can_edit_templates );
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
+
+    my $blog_id = $obj->blog_id;
+
+    return $author->permissions($blog_id)->can_edit_templates;
 }
 
 sub pre_save {
