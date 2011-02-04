@@ -183,6 +183,9 @@ tfoot .col.head{
 /* -- Page Navigation */
 .indicator,
 .pagination {
+    position: absolute;
+    right: 0;
+    bottom: 0;
     height: 22px;
     line-height: 22px;
     font-family: Arial, sans-serif;
@@ -202,11 +205,6 @@ tfoot .col.head{
 .legacy.listing-table {
     border-radius: 5px;
     -moz-border-radius: 5px;
-}
-.has-filter .legacy.listing-table {
-    border-top-right-radius: 0;
-    border-top-left-radius: 0;
-    -moz-border-radius: 0 0 5px 5px;
 }
 
 .col.asset-thumbnail {
@@ -305,6 +303,14 @@ tfoot .col.head{
 }
 
 /* - Listing Panel */
+#modal-search {
+    margin-bottom: 10px;
+}
+.listing.selector {
+    position: relative;
+    margin-bottom: 30px;
+    padding-bottom: 25px;
+}
 .panel-header {
     position: relative;
     padding: 10px 0;
