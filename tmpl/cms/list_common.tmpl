@@ -1003,9 +1003,9 @@ jQuery('#reset-display-options').click(function() {
 
 function toggleSubField (obj) {
   if ( jQuery(obj).attr('checked') )
-    jQuery( '.' + jQuery(obj).val() ).show();
+    jQuery( '#listing-table .' + jQuery(obj).val() ).show();
   else
-    jQuery( '.' + jQuery(obj).val() ).hide();
+    jQuery( '#listing-table .' + jQuery(obj).val() ).hide();
 }
 
 jQuery('#row').change(function() {
