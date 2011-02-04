@@ -55,9 +55,8 @@
 <script type="text/javascript">
     /* <![CDATA[ */
     // show the close button if error is in modal or popup
-    if ( window != window.opener )
-        document.getElementById("close-button").className = "close action primary button";
-        document.getElementById("goback-button").className = "hidden";
+    if ( window != window.parent || window.opener )
+        document.getElementById("close-button").className = "close action button";
     /* ]]> */
 </script>
 </mt:setvarblock>
