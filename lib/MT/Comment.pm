@@ -341,6 +341,7 @@ sub list_props {
             order           => 500,
             display         => 'default',
             default_sort_order => 'ascend',
+            filter_tmpl     => '<mt:Var name="filter_form_hidden">',
             sort            => sub {
                 my $prop = shift;
                 my ( $terms, $args ) = @_;
@@ -412,13 +413,20 @@ sub list_props {
                 my $app      = shift;
                 my $entry_id = $app->param('filter_val');
                 my $entry    = MT->model('entry')->load($entry_id);
-                return MT->translate(
+                my $label = MT->translate(
                     'Comments on [_1]: [_2]',
                     $entry->class eq 'entry'
                     ? MT->translate('Entry')
                     : MT->translate('Page'),
                     $entry->title,
                 );
+                $prop->{filter_label} = $label;
+                $label;
+            },
+            args_via_param => sub {
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                return { option => 'equal', value => $val };
             },
         },
 
