@@ -267,12 +267,20 @@ sub bulk_update {
         $obj->remove;
         $deletes++;
     }
+
+    my $rebuild_url = $app->uri(
+        mode => 'rebuild_confirm',
+        args => { blog_id => $blog_id, }
+    );
+    my $rebuild_open
+        = qq!window.open('$rebuild_url', 'rebuild_blog_$blog_id', 'width=400,height=400,resizable=yes');!;
+
     push @messages,
         {
         cls => 'info',
         msg => MT->translate(
-            '[_1] has been successfully updated. ( [_2] new, [_3] updates and [_4] deletes.)',
-            $class->class_label_plural, $creates, $updates, $deletes,
+            'Your changes have been made (added [_1], edited [_2] and deleted [_3]). <a onclick="[_4]" class="mt-rebuild">Publish your site</a> to see these changes take effect.',
+            $creates, $updates, $deletes, $rebuild_open
         ),
         };
 
