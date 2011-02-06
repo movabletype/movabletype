@@ -273,13 +273,13 @@ sub bulk_update {
         args => { blog_id => $blog_id, }
     );
     my $rebuild_open
-        = qq!window.open('$rebuild_url', 'rebuild_blog_$blog_id', 'width=400,height=400,resizable=yes');!;
+        = qq!window.open('$rebuild_url', 'rebuild_blog_$blog_id', 'width=400,height=400,resizable=yes'); return false;!;
 
     push @messages,
         {
         cls => 'info',
         msg => MT->translate(
-            'Your changes have been made (added [_1], edited [_2] and deleted [_3]). <a onclick="[_4]" class="mt-rebuild">Publish your site</a> to see these changes take effect.',
+            'Your changes have been made (added [_1], edited [_2] and deleted [_3]). <a href="#" onclick="[_4]" class="mt-rebuild">Publish your site</a> to see these changes take effect.',
             $creates, $updates, $deletes, $rebuild_open
         ),
         };
