@@ -308,21 +308,24 @@ function handleMessages( data ) {
 }
 
 function showMessage( content, cls ){
+  var error_block;
   if ( typeof content == 'object' ) {
     jQuery('#msg-block').append(
-      jQuery('<div>')
+      error_block = jQuery('<div>')
         .attr('class', 'msg msg-' + cls )
         .append(content)
         .append('<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />')
-    )
+    );
   }
   else {
     jQuery('#msg-block').append(
-      '<div class="msg msg-' + cls + '">'
-      + content
-      + '<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />'
-      + '</div>');
+      error_block = jQuery('<div>')
+        .attr('class', 'msg msg-' + cls )
+        .append(content)
+        .append('<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />')
+    );
   }
+  return error_block;
 }
 
 function loginAgain(fn) {
@@ -906,7 +909,6 @@ function renderList(mode, columns, values, limit, page ) {
           new_filter: 0
         });
       }
-      jQuery('#filter-detail').find('input:visible').mtUnvalidate();
 
       if (!jQuery('#msg-block .msg-error').length) {
         jQuery('#dialog_save_filter').dialog('close');
@@ -936,7 +938,7 @@ function renderList(mode, columns, values, limit, page ) {
 jQuery.fn.mtRenderList = renderList;
 
 function itemValues() {
-  var $items = jQuery('#filter-detail .filteritem');
+  var $items = jQuery('#filter-detail .filteritem:not(.error)');
   vals = [];
   $items.each(function() {
     var data = {};
@@ -1239,10 +1241,29 @@ jQuery(window).mtValidate({
   }
 });
 
+var validateErrorMessage;
+function validateFilterDetails () {
+  if ( validateErrorMessage ) {
+    validateErrorMessage.remove();
+  }
+  var errors = 0;
+  jQuery('div#filter-detail div.filteritem').each( function () {
+    if ( !jQuery(this).find('input:visible').mtValidate() ) {
+      errors++;
+      jQuery(this).addClass('error');
+    }
+    else {
+      jQuery(this).removeClass('error');
+    }
+  })
+  if ( errors ) {
+    validateErrorMessage = showMessage( trans('[_1] Filter Items have errors', errors ), 'error' );
+  }
+  return errors ? false : true;
+}
+
 jQuery('#apply').click(function() {
-  var $inputs = jQuery('#filter-detail').find('input:visible');
-  if ( !$inputs.mtValidate() ) return false;
-  jQuery('#msg-block .msg-error').remove();
+  validateFilterDetails();
   jQuery('input[name=filter_id]').val('');
   itemValues()
   renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
@@ -1250,9 +1271,7 @@ jQuery('#apply').click(function() {
 });
 
 jQuery('#save').click(function() {
-  var $inputs = jQuery('#filter-detail').find('input:visible');
-  if ( !$inputs.mtValidate() ) return false;
-  jQuery('#msg-block .msg-error').remove();
+  validateFilterDetails();
   if (jQuery('#filter_id').val()) {
     // Overwrite current filter.
     jQuery('input[name=filter_name]').val(jQuery('#filter_name').val());
@@ -1287,9 +1306,7 @@ jQuery('#save').click(function() {
 });
 
 jQuery('#saveas').click(function() {
-  var $inputs = jQuery('#filter-detail').find('input:visible');
-  if ( !$inputs.mtValidate() ) return false;
-  jQuery('#msg-block .msg-error').remove();
+  validateFilterDetails();
   jQuery('input[name=filter_name]').mtUnvalidate().val(jQuery('#opener').text());
   jQuery('input[name=filter_id]').val('');
   jQuery('#dialog_save_filter')
