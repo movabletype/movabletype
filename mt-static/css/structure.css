@@ -2539,7 +2539,6 @@ input#system_performance_logging_threshold {
 }
 #list-plugins .plugin-name {
     border: none;
-    /*font-size: 14px;*/
     margin: 0;
 }
 #list-plugins .plugin-name a,
@@ -2558,7 +2557,6 @@ input#system_performance_logging_threshold {
     position: absolute;
     top: 10px;
     right: 10px;
-    /*font-size: 11px;*/
 }
 #list-plugins .plugin-status a.button {
     margin: -3px 0 0 5px;
@@ -2598,10 +2596,15 @@ input#system_performance_logging_threshold {
 
 #list-plugins .setting-advanced { 
     display: none;
+    margin: 10px 0 20px 1.2em;
+}
+
+#list-plugins .config li ul {
+    margin: 10px 0 0 1.2em;
 }
 
 #list-plugins #plugin_control .actions-bar { 
-    text-align: center;
+    margin-bottom: 10px;
 }
 
 #list-plugins #plugin_control .actions-bar button { 
