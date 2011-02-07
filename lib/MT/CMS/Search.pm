@@ -453,7 +453,18 @@ sub core_search_apis {
                     my $perm = $author->permissions($blog_id);
                     return $perm->can_do('search_authors');
                 }
-                return 0;
+                else {
+                    my $cnt = MT->model('permission')->count(
+                        {   blog_id     => \'> 0',
+                            author_id   => $author->id,
+                            permissions => [
+                                { like => "\%'administer_blog'\%" },
+                                { like => "\%'manage_users'\%" },
+                            ],
+                        },
+                    );
+                    return ( $cnt && $cnt > 0 ) ? 1 : 0;
+                }
             },
             'search_cols' => {
                 'name'     => sub { $app->translate('Username') },
@@ -959,18 +970,20 @@ sub do_search_replace {
                     );
                 }
                 else {
+                    if ( $class->has_column('blog_id') ) {
 
-                    # Get an iter for each accessible blog
-                    my @perms = $app->model('permission')->load(
-                        { blog_id => '0', author_id => $author->id },
-                        { not => { blog_id => 1 } },
-                    );
-                    if (@perms) {
-                        my @blog_terms;
-                        push( @blog_terms,
-                            { blog_id => $_->blog_id, }, '-or' )
-                            foreach @perms;
-                        push @terms, \@blog_terms if @blog_terms;
+                        # Get an iter for each accessible blog
+                        my @perms = $app->model('permission')->load(
+                            { blog_id => '0', author_id => $author->id },
+                            { not => { blog_id => 1 } },
+                        );
+                        if (@perms) {
+                            my @blog_terms;
+                            push( @blog_terms,
+                                { blog_id => $_->blog_id, }, '-or' )
+                                foreach @perms;
+                            push @terms, \@blog_terms if @blog_terms;
+                        }
                     }
                     @streams = (
                         { iter => $class->load_iter( \@terms, \%args ) } );
