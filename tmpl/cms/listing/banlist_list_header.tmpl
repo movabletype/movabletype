@@ -1,5 +1,5 @@
-<mt:setvarblock name="system_msg">
-<mt:if name="error">
+<mt:setvarblock name="system_msg" append="1">
+<mt:if name="request.error">
   <mtapp:statusmsg
      id="generic-error"
      class="error"
@@ -7,7 +7,7 @@
     <mt:var name="error">
   </mtapp:statusmsg>
 </mt:if>
-<mt:if name="saved">
+<mt:if name="request.saved">
   <mtapp:statusmsg
      id="saved"
      class="success"
@@ -15,7 +15,7 @@
     <__trans phrase="You have added [_1] to your list of banned IP addresses." params="<mt:var name="saved" escape="html" escape="html">">
   </mtapp:statusmsg>
 </mt:if>
-<mt:if name="saved_deleted">
+<mt:if name="request.saved_deleted">
   <mtapp:statusmsg
      id="saved-deleted"
      class="success"

@@ -747,11 +747,21 @@ sub list {
     $param{list_type} = $type;
     my @messages;
 
-    my @components = map { $_->{id} }
-        grep {
+    my @list_components
+        = grep {
                $_->registry( list_properties => $type )
             || $_->registry( listing_screens => $type )
         } MT::Component->select;
+
+    my @list_headers;
+    push @list_headers, File::Spec->catfile(
+        MT->config->TemplatePath, $app->{template_dir}, 'listing', $type . '_list_header.tmpl'
+    );
+    for my $c (@list_components) {
+        my $f = File::Spec->catfile( $c->path, 'tmpl', 'listing',
+            $type . '_list_header.tmpl' );
+        push @list_headers, $f if -e $f;
+    }
 
     my $screen_settings = MT->registry( listing_screens => $type )
         or return $app->error(
@@ -1072,7 +1082,7 @@ sub list {
     $param{filter_types}     = \@filter_types;
     $param{object_type}      = $type;
     $param{page_title}       = $screen_settings->{screen_label};
-    $param{list_components}  = \@components;
+    $param{list_headers}     = \@list_headers;
     $param{build_user_menus} = $screen_settings->{has_user_properties};
     $param{use_filters}      = 1;
     $param{use_actions}      = 1;
