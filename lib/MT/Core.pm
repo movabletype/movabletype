@@ -1062,7 +1062,15 @@ BEGIN {
                 },
                 current_context => {
                     base            => '__virtual.hidden',
-                    label           => 'Current Website',
+                    label => sub {
+                        my $prop = shift;
+                        my ($settings) = @_;
+                        return MT->translate(
+                            '[_1] of this Website',
+                            $settings->{object_label_plural}
+                                || $prop->datasource->class_label_plural,
+                        );
+                        },
                     order           => 30000,
                     view            => 'website',
                     display         => 'none',

@@ -1014,17 +1014,17 @@ sub list {
             : (
             defined $a->filter_label
             ? ( ref $a->filter_label
-                ? $a->filter_label->()
+                ? $a->filter_label->($screen_settings)
                 : $a->filter_label
                 )
-            : ( ref $a->label ? $a->label->() : $a->label )
+            : ( ref $a->label ? $a->label->($screen_settings) : $a->label )
             ) cmp(
             defined $b->filter_label
             ? ( ref $b->filter_label
-                ? $b->filter_label->()
+                ? $b->filter_label->($screen_settings)
                 : $b->filter_label
                 )
-            : ( ref $b->label ? $b->label->() : $b->label )
+            : ( ref $b->label ? $b->label->($screen_settings) : $b->label )
             );
         }
         grep { $_->can_filter($scope) } values %$list_props;
