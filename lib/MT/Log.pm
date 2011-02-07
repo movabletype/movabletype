@@ -143,7 +143,22 @@ sub list_props {
                 }
                 return '';
             },
-        },
+            sort => sub {
+                my $prop = shift;
+                my ( $terms, $args ) = @_;
+                $args->{joins} ||= [];
+                push @{ $args->{joins} }, MT->model('author')->join_on(
+                    undef, undef,
+                    {   sort      => 'nickname',
+                        condition => { id => \'= log_author_id', },
+                        direction => ( $args->{direction} || 'ascend' ),
+                        type      => 'left',
+                    },
+                );
+                $args->{sort} = [];
+                return;
+            },
+            },
         class => {
             label                 => 'Class',
             col                   => 'class',
