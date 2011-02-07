@@ -88,7 +88,10 @@ pre {
     width: 45px;
     height: 45px;
 }
-
+.asset-thumb.asset-type-icon {
+    border: 0;
+    background: none;
+}
 .sticky-label {
     display: inline-block;
     padding: 0.2em 0.5em;
