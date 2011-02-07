@@ -75,15 +75,16 @@ sub list_props {
                 $link . '&filter=current_context';
             },
         },
-        member_count => {
-            base      => 'blog.member_count',
-            html_link => sub {
-                my $prop = shift;
-                my ( $obj, $app ) = @_;
-                my $link = $prop->super(@_);
-                $link . '&filter=current_context';
-            },
-        },
+        # not in use in 5.1
+        # member_count => {
+        #     base      => 'blog.member_count',
+        #     html_link => sub {
+        #         my $prop = shift;
+        #         my ( $obj, $app ) = @_;
+        #         my $link = $prop->super(@_);
+        #         $link . '&filter=current_context';
+        #     },
+        # },
         theme_id => {
             base                  => 'blog.theme_id',
             single_select_options => sub {

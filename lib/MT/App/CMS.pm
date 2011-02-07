@@ -1526,14 +1526,14 @@ sub core_menus {
         },
 
         'website:manage' => {
-            label => "Manage",
-            order => 100,
-            mode  => "list",
-            args  => { _type => "website" },
-            view  => "system",
+            label     => "Manage",
+            order     => 100,
+            mode      => "list",
+            args      => { _type => "website" },
+            view      => "system",
             condition => sub {
                 require MT::CMS::Website;
-                return MT::CMS::Website::can_view_website_list( $app );
+                return MT::CMS::Website::can_view_website_list($app);
             },
         },
         'website:create' => {
@@ -2408,8 +2408,19 @@ sub init_core_callbacks {
                         ],
                         { unique => 1, },
                         );
+                    push @{ $args->{joins} },
+                        MT->model('association')->join_on(
+                        undef,
+                        [   { blog_id => $opts->{blog_id}, },
+                            '-or',
+                            { blog_id => \' is null', },
+                        ],
+                        {   type      => 'left',
+                            condition => { author_id => \'= author_id', },
+                            unique    => 1,
+                        },
+                        );
                 }
-
             },
 
             # website callbacks
