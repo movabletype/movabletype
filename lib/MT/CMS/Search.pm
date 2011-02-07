@@ -436,7 +436,10 @@ sub core_search_apis {
                             : ( blog_id => \'> 0' )
                         ),
                         author_id   => $author->id,
-                        permissions => { like => "\%'administer_blog'\%" },
+                        permissions => [
+                            { like => "\%'administer_blog'\%" },
+                            { like => "\%'manage_users'\%" },
+                        ],
                     },
                 );
 
