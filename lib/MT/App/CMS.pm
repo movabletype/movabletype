@@ -516,6 +516,7 @@ sub core_content_actions {
                 class         => 'icon-create',
                 label         => 'Grant Permission',
                 mode          => 'dialog_select_assoc_type',
+                return_args   => 1,
                 permit_action => 'create_any_association',
                 order         => 100,
                 dialog        => 1,
