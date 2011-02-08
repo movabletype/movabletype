@@ -3022,7 +3022,7 @@ HTML
         <button
             type="submit"
             accesskey="x"
-            class="close action mt-close-dialog-url"
+            class="close action primary button mt-close-dialog-url"
             ><__trans phrase="Close"></button>
     </div>
 </form>
