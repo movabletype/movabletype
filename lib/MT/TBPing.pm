@@ -196,6 +196,40 @@ sub list_props {
                 }
                 @res;
             },
+            sort => sub {
+                my $prop = shift;
+                my ( $terms, $args ) = @_;
+                $args->{joins} ||= [];
+                push @{ $args->{joins} },
+                    MT->model('trackback')->join_on(
+                        undef, undef,
+                        {
+                            condition => { id => \'= tbping_tb_id' },
+                            type => 'Left',
+                        },
+
+                    ),
+                    MT->model('entry')->join_on(
+                        undef, undef,
+                        {   sort      => 'title',
+                            condition => { id => \'= trackback_entry_id', },
+                            direction => ( $args->{direction} || 'ascend' ),
+                            type      => 'left',
+                        },
+                    ),
+                    MT->model('category')->join_on(
+                        undef, undef,
+                        {   sort      => 'label',
+                            condition => { id => \'= trackback_category_id', },
+                            direction => ( $args->{direction} || 'ascend' ),
+                            type      => 'left',
+                        },
+                    );
+
+
+                $args->{sort} = [];
+                return;
+            },
         },
         created_on => {
             base    => '__virtual.created_on',
