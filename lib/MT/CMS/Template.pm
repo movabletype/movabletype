@@ -248,8 +248,19 @@ sub edit {
                                 id      => $other->id
                             }
                         );
+                        $include->{can_link} = $app->user->is_superuser
+                            || $app->user->permissions(0)
+                            ->can_do('edit_templates')
+                            ? 1
+                            : $other->blog_id
+                            ? $app->user->permissions( $other->blog_id )
+                            ->can_do('edit_templates') 
+                                ? 1 
+                                : 0
+                            : 0;
 
-         # Try to compile template module if using MTInclude in this template.
+                        # Try to compile template module
+                        # if using MTInclude in this template.
                         $other->compile;
                         if ( $other->{errors} && @{ $other->{errors} } ) {
                             $param->{error} = $app->translate(
@@ -281,8 +292,7 @@ sub edit {
                             }
                         }
                         else {
-                            $include->{include_from}
-                                = 'global';
+                            $include->{include_from} = 'global';
                             $include->{include_blog_name}
                                 = $app->translate('Global Template');
                         }

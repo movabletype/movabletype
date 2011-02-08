@@ -156,7 +156,11 @@
   <mt:setvarblock name="include_scope_type"><mt:if name="include_from" eq="self"><mt:var name="scope_type"><mt:else><mt:var name="include_from"></mt:if></mt:setvarblock>
     <li>
   <mt:if name="include_link">
+    <mt:if name="can_link">
       <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></a>
+    <mt:else>
+      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></span>
+    </mt:if>
       <mt:if name="include_from" ne="self"><span class="include-from">(<mt:var name="include_blog_name">)</span></mt:if>
   <mt:else>
       <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
