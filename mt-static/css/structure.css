@@ -1408,7 +1408,7 @@ fieldset {
 }
 
 
-/* - Lisiting */
+/* - Listing */
 /* -- List Asset (legacy) */
 #asset-listing-table .asset-thumb a span {
     display: none;
@@ -1435,7 +1435,13 @@ fieldset {
 .list-revision-dialog tr.current-revision { 
     background-color: #f2f2b0 ! important;
 }
-
+.list-revision-dialog .col.datetime {
+    width: 25%;
+}
+.list-revision-dialog .col.status, 
+.list-revision-dialog .col.created-by {
+    width: 15%;
+}
 
 /* - Edit Screen */
 /* - Edit Comment, Ping, Author & Entry */
