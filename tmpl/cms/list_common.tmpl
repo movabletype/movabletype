@@ -1250,10 +1250,10 @@ function validateFilterDetails () {
   jQuery('div#filter-detail div.filteritem').each( function () {
     if ( !jQuery(this).find('input:visible').mtValidate() ) {
       errors++;
-      jQuery(this).addClass('error');
+      jQuery(this).addClass('highlight');
     }
     else {
-      jQuery(this).removeClass('error');
+      jQuery(this).removeClass('highlight');
     }
   })
   if ( errors ) {
