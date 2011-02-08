@@ -305,7 +305,7 @@ function handleMessages( data, additional_class ) {
   for ( var i=0; i < messages.length; i++ ) {
     var msg   = messages[i];
     var class = msg.cls;
-    if ( additional_class ) class += ' ' + additionl_class;
+    if ( additional_class ) class += ' ' + additional_class;
     showMessage(msg.msg, class);
   }
   return true;
