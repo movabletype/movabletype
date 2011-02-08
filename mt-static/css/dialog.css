@@ -173,53 +173,6 @@ body.has-dialog {
 .dialog #comments-form #comment .entry-title {
     font-weight: bold;
 }
-
-.dialog #comments-form #comment-reply-field {
-    margin-bottom: 0;
-}
 .dialog #comments-form #comment-reply-field #comment-reply {
-    width: 100%;
-    height: 12em;
-    background-color: #fff;
-}
-.dialog #comments-form #comment-preview #reply-body {
-    height: 12em;
-    padding: 8px;
-    border: 1px solid #c8c2be;
-    overflow: auto;
-    overflow-x: hidden;
-    overflow-y: auto;
-    background-color: #fff;
-    -moz-border-radius: 3px;
-    -khtml-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
-}
-.dialog #comments-form #comment-preview .intro { 
-    color: #7b7c7d;
-    display: block;
-    font-weight: bold;
-    margin-top: 3px;
-}
-.dialog #comments-form .asset-meta {
-    margin-bottom: 8px;
-}
-
-.dialog #comments-form.preview #comment-reply-field {
-    display: none;
-}
-.dialog #comments-form #comment-preview {
-    display: none;
-}
-.dialog #comments-form.preview #comment-preview {
-    display: block;
-}
-.dialog #comments-form.preview #preview-comment-action {
-    display: none;
-}
-.dialog #comments-form #re-edit-comment-action {
-    display: none;
-}
-.dialog #comments-form.preview #re-edit-comment-action {
-    display: inline;
+    margin-bottom: 30px;
 }
