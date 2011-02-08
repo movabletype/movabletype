@@ -411,11 +411,12 @@ sub member_list_props {
             display   => 'default',
         },
         role => {
-            base    => '__virtual.single_select',
-            label   => 'Roles',
-            order   => 300,
-            display => 'default',
-            html    => sub {
+            base      => '__virtual.single_select',
+            label     => 'Roles',
+            order     => 300,
+            display   => 'default',
+            sort_view => [],
+            html      => sub {
                 my ( $prop, $obj ) = @_;
                 my $blog_id = MT->app->blog->id;
                 my @roles   = MT->model('role')->load(
@@ -453,7 +454,7 @@ sub member_list_props {
                 return [ map { { label => $_->name, value => $_->id } }
                         @roles ];
             },
-        },
+            },
         entry_count => {
             base        => '__virtual.object_count',
             view        => [ 'blog', 'website' ],
