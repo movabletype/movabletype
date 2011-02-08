@@ -66,8 +66,9 @@ parameters:
 <mt:if name="object_loop">
         <tbody>
         <mt:loop name="object_loop">
+          <mt:unless name="disabled">
           <tr id="<mt:var name="panel_type">-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-            <td class="col cb"><input type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" <mt:if name="disabled">disabled="disabled"</mt:if> /></td>
+            <td class="col cb"><input type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" /></td>
             <td class="col panel-label"><label><mt:var name="label" escape="html"></label></td>
             <td class="col panel-description">
             <mt:ignore><!-- No, the duplicate escape modifiers below is not a typo. --></mt:ignore>
@@ -78,7 +79,7 @@ parameters:
         <mt:if name="blogs">
         <mt:loop name="blogs">
           <tr id="<mt:var name="panel_type">-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-            <td class="col cb"><input type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" <mt:if name="disabled">disabled="disabled"</mt:if> /></td>
+            <td class="col cb"><input type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" /></td>
             <td class="col panel-label sub-label"><label><mt:var name="label" escape="html"></label></td>
             <td class="col panel-description">
             <mt:Ignore><!-- No, the duplicate escape modifiers below is not a typo. --></mt:Ignore>
@@ -88,6 +89,7 @@ parameters:
           </tr>
         </mt:loop>
         </mt:if>
+          </mt:unless>
         </mt:loop>
         </tbody>
 
