@@ -292,9 +292,11 @@ var currentPage = 1;
 var magic_token = '<mt:var name="magic_token">';
 var inputCount = 0;
 
-function handleMessages( data ) {
+function handleMessages( data, additional_class ) {
   if ( data.error ) {
-    showMessage( data.error, 'error');
+    var error_cls = 'error';
+    if ( additional_class ) error_cls += ' ' + additional_class;
+    showMessage( data.error, error_cls);
     return false;
   }
   if ( !data.result ) return false;
@@ -302,7 +304,9 @@ function handleMessages( data ) {
   if ( !data.result.messages ) return true;
   for ( var i=0; i < messages.length; i++ ) {
     var msg   = messages[i];
-    showMessage(msg.msg, msg.cls);
+    var class = msg.cls;
+    if ( additional_class ) class += ' ' + additionl_class;
+    showMessage(msg.msg, class);
   }
   return true;
 }
@@ -815,7 +819,7 @@ function renderList(mode, columns, values, limit, page ) {
 
   jQuery('.indicator, #listing-table-overlay').show();
   jQuery('div.pagination').hide();
-
+  jQuery('#msg-block div.msg-error.filtered-list-msg').remove()
   jQuery.ajax({
     type: 'POST',
     url: '<mt:var name="script_url">',
@@ -826,7 +830,7 @@ function renderList(mode, columns, values, limit, page ) {
           return false;
       }
 
-      if ( !handleMessages(data) ) return;
+      if ( !handleMessages(data, 'filtered-list-msg' ) ) return;
 <mt:if name="config.debugmode">
       if (data.result.debug) {
         jQuery('#listing-debug-block').text(data.result.debug);
