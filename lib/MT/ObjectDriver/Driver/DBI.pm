@@ -622,7 +622,7 @@ sub prepare_statement {
             }
         }
 
-        $stmt->{joins} = $join_stmt->{joins}
+        $stmt->{joins} = [ @{ $stmt->{joins} || [] }, @{$join_stmt->{joins} || []} ]
             if $join_stmt->{joins};
 
         if ( $j_args->{type} ) {

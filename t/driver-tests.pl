@@ -1429,7 +1429,7 @@ sub left_join_multi : Tests(1) {
     are_objects(\@data, [ $apple, $microsoft ], 'Left join with complex conditions');
 }
 
-sub left_join_multi_joins : Tests(1) {
+sub left_join_multi_joins : Tests(2) {
     my $self = shift;
     $self->make_pc_data();
 
@@ -1448,6 +1448,30 @@ sub left_join_multi_joins : Tests(1) {
         }
     );
     are_objects(\@data, [ $apple, $microsoft ], 'Left join with complex conditions');
+
+    my @data2 = Foo->load(
+        {},
+        {   joins => [
+                [   'Bar', undef,
+                    { status => 1 },
+                    {   type      => 'left',
+                        condition => 'foo_id',
+                        to        => 'foo',
+                    }
+                ],
+                [   'Baz', undef,
+                    { bar_id => \'is null' },
+                    {   type      => 'left',
+                        condition => 'bar_id',
+                        to        => 'bar',
+                    }
+                ],
+            ],
+            sort => 'id',
+            order => 'ascend',
+        }
+    );
+    are_objects(\@data2, [ $microsoft ], 'Multiple left join with complex conditions');
 }
 
 
@@ -1459,7 +1483,7 @@ sub clean_db : Test(teardown) {
 package main;
 use MT::Test;
 
-Test::Class->runtests('Test::GroupBy', 'Test::Search', 'Test::Classy', 'Test::Joins', +137);
+Test::Class->runtests('Test::GroupBy', 'Test::Search', 'Test::Classy', 'Test::Joins', 'Test::TypedJoin', +137);
 
 my($foo, @foo, @bar);
 my($tmp, @tmp);
