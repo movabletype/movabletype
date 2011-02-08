@@ -443,6 +443,7 @@ sub list_props {
                         $id
                     )
                     );
+                return if !$app->blog || $app->blog->id != $cat->blog_id;
                 return MT->translate( 'Entries from category: [_1]',
                     $cat->label, );
             },

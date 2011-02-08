@@ -848,7 +848,6 @@ sub list {
         my @vals = $app->param('filter_val');
         my @items;
         my @labels;
-        my $invalid_param_filter = 0;
         for my $col (@cols) {
             my $val = shift @vals;
             if ( my $prop = $list_props->{$col} ) {
@@ -856,30 +855,32 @@ sub list {
                 if ( $prop->has('args_via_param') ) {
                     $args = $prop->args_via_param( $app, $val );
                     if ( !$args ) {
-                        push @messages,
-                            {
-                            cls => 'alert',
-                            msg => MT->translate(
-                                q{Invalid filter: [_1]},
-                                $prop->errstr
-                            )
-                            };
-                        $invalid_param_filter = 1;
+                        if ( my $errstr = $prop->errstr ) {
+                            push @messages,
+                                {
+                                cls => 'alert',
+                                msg => MT->translate(
+                                    q{Invalid filter: [_1]},
+                                    $errstr
+                                )
+                                };
+                        }
                         next;
                     }
                 }
                 if ( $prop->has('label_via_param') ) {
                     $label = $prop->label_via_param( $app, $val );
                     if ( !$label ) {
-                        push @messages,
-                            {
-                            cls => 'alert',
-                            msg => MT->translate(
-                                q{Invalid filter: [_1]},
-                                $prop->errstr
-                            )
-                            };
-                        $invalid_param_filter = 1;
+                        if ( my $errstr = $prop->errstr ) {
+                            push @messages,
+                                {
+                                cls => 'alert',
+                                msg => MT->translate(
+                                    q{Invalid filter: [_1]},
+                                    $errstr,
+                                )
+                                };
+                        }
                         next;
                     }
                 }
@@ -896,14 +897,17 @@ sub list {
                     cls => 'alert invalid-filter',
                     msg => MT->translate( q{Invalid filter: [_1]}, $col, )
                     };
-                $invalid_param_filter = 1;
             }
         }
-        $initial_filter = {
-            label => join( ', ', @labels ),
-            items => \@items,
-            }
-            unless $invalid_param_filter;
+        if ( scalar @items ) {
+            $initial_filter = {
+                label => join( ', ', @labels ),
+                items => \@items,
+            };
+        }
+        else {
+            $initial_filter = undef;
+        }
     }
     elsif ($initial_sys_filter) {
         require MT::CMS::Filter;
