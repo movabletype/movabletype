@@ -818,7 +818,7 @@ sub core_list_actions {
                 order         => 110,
                 code          => "${pkg}Comment::handle_junk",
                 permit_action => {
-                    permit_action => 'edit_all_trackbacks',
+                    permit_action => 'edit_all_trackbacks,edit_own_entry_trackback_status',
                     include_all   => 1,
                 },
                 condition => sub {
@@ -830,7 +830,7 @@ sub core_list_actions {
                 order         => 120,
                 code          => "${pkg}Comment::not_junk",
                 permit_action => {
-                    permit_action => 'edit_all_trackbacks',
+                    permit_action => 'edit_all_trackbacks,edit_own_entry_trackback_status',
                     include_all   => 1,
                 },
                 condition => sub {
@@ -933,7 +933,7 @@ sub core_list_actions {
                 order         => 110,
                 code          => "${pkg}Comment::handle_junk",
                 permit_action => {
-                    permit_action => 'edit_all_comments',
+                    permit_action => 'edit_all_comments,edit_own_entry_comment_status',
                     include_all   => 1,
                 },
                 condition => sub {
@@ -945,7 +945,7 @@ sub core_list_actions {
                 order         => 120,
                 code          => "${pkg}Comment::not_junk",
                 permit_action => {
-                    permit_action => 'edit_all_comments',
+                    permit_action => 'edit_all_comments,edit_own_entry_comment_status',
                     include_all   => 1,
                 },
                 condition => sub {

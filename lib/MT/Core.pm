@@ -2611,6 +2611,7 @@ sub load_core_permissions {
                 'edit_entry_basename'                   => 1,
                 'edit_own_entry_trackback'              => 1,
                 'edit_own_entry_trackback_status'       => 1,
+                'edit_own_entry_comment_status'         => 1,
                 'edit_own_published_entry'              => 1,
                 'edit_trackback_status'                 => 1,
                 'edit_trackback_status_via_notify_mail' => 1,

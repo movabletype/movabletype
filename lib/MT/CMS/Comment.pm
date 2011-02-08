@@ -432,13 +432,13 @@ sub handle_junk {
         $app->validate_magic() or return;
     }
 
-    my $perms        = $app->permissions;
     my $perm_checked = $app->can_do('handle_junk');
 
     foreach my $id (@ids) {
         next unless $id;
 
         my $obj = $class->load($id) or die "No $class $id";
+        my $perms = $app->user->permissions($obj->blog_id);
         my $old_visible = $obj->visible || 0;
         unless ($perm_checked) {
             if ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Entry') ) {
@@ -482,8 +482,6 @@ sub handle_junk {
 sub not_junk {
     my $app = shift;
 
-    my $perms = $app->permissions;
-
     my @ids = $app->param("id");
     my @item_loop;
     my $i     = 0;
@@ -497,6 +495,7 @@ sub not_junk {
         next unless $id;
         my $obj = $class->load($id)
             or next;
+        my $perms = $app->user->permissions( $obj->blog_id );
         unless ($perm_checked) {
             if ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Entry') ) {
                 next if $obj->parent->author_id != $app->user->id;
