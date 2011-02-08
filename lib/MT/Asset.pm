@@ -259,6 +259,7 @@ sub list_props {
             tagged_class => '*',
         },
         except_userpic => {
+            base      => '__virtual.hidden',
             label     => 'Except Userpic',
             display   => 'none',
             view      => 'system',
