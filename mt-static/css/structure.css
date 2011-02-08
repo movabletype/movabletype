@@ -1432,9 +1432,6 @@ fieldset {
     margin-bottom: 0;
     padding: 0;
 }
-.list-revision-dialog tr.current-revision { 
-    background-color: #f2f2b0 ! important;
-}
 .list-revision-dialog .col.datetime {
     width: 25%;
 }

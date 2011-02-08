@@ -27,7 +27,7 @@
   </tfoot>
   <tbody>
 </mt:if>
-    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if><mt:if name="is_current"> current-revision</mt:if>">
+    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if><mt:if name="is_current"> current-revision highlight</mt:if>">
       <td class="col datetime"><span class="revision-datetime"><a class="revision-number" href="javascript:void(0);" onclick="javascript:<$mt:var name="rev_js"$>;"><mt:date ts="$created_on" format="%Y-%m-%d %H:%M:%S"></a></span></td>
       <td class="col note"><span class="revision-note"><mt:var name="description" escape="html"></span></td>
     <mt:if name="object_type" like="(entry|page)">
