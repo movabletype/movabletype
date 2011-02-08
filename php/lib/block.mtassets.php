@@ -66,4 +66,3 @@ function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
     return $content;
 }
 ?>
-

@@ -25,4 +25,3 @@ function smarty_function_mtpagerlink($args, &$ctx) {
     return $link;
 }
 ?>
-

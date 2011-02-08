@@ -27,4 +27,3 @@ function smarty_function_mtpreviouslink($args, &$ctx) {
     return $link;
 }
 ?>
-

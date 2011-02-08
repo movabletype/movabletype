@@ -17,4 +17,3 @@ function smarty_block_mtifcurrentpage($args, $content, &$ctx, &$repeat) {
     }
 }
 ?>
-

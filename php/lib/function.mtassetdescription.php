@@ -12,4 +12,3 @@ function smarty_function_mtassetdescription($args, &$ctx) {
     return $asset->asset_description;
 }
 ?>
-

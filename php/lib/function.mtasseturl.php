@@ -29,4 +29,3 @@ function smarty_function_mtasseturl($args, &$ctx) {
     return $url;
 }
 ?>
-

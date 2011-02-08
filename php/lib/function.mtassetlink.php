@@ -23,4 +23,3 @@ function smarty_function_mtassetlink($args, &$ctx) {
         $asset->asset_file_name);
 }
 ?>
-

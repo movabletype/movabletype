@@ -12,4 +12,3 @@ function smarty_function_mtassetid($args, &$ctx) {
     return $asset->asset_id;
 }
 ?>
-

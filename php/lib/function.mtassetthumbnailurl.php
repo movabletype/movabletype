@@ -19,4 +19,3 @@ function smarty_function_mtassetthumbnailurl($args, &$ctx) {
     return $thumb;
 }
 ?>
-

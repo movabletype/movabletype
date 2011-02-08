@@ -13,4 +13,3 @@ function smarty_function_mttotalpages($args, &$ctx) {
     return ceil( $count / $limit );
 }
 ?>
-

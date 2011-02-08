@@ -13,4 +13,3 @@ function smarty_function_mtauthorrank($args, &$ctx) {
     );
 }
 ?>
-

@@ -11,4 +11,3 @@ function smarty_function_mtcurrentpage($args, &$ctx) {
     return $limit ? $offset / $limit + 1 : 1;
 }
 ?>
-

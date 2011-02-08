@@ -18,4 +18,3 @@ function smarty_function_mtassetaddedby($args, &$ctx) {
     return $author->name;
 }
 ?>
-

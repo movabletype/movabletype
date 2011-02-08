@@ -26,4 +26,3 @@ function smarty_function_mtcaptchafields($args, &$ctx) {
     }
 }
 ?>
-

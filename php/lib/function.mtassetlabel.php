@@ -12,4 +12,3 @@ function smarty_function_mtassetlabel($args, &$ctx) {
     return $asset->asset_label;
 }
 ?>
-

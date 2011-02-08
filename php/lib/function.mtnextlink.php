@@ -24,4 +24,3 @@ function smarty_function_mtnextlink($args, &$ctx) {
     return $link;
 }
 ?>
-

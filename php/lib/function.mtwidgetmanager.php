@@ -44,4 +44,3 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
     return '';
 }
 ?>
-

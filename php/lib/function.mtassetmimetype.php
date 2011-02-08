@@ -12,4 +12,3 @@ function smarty_function_mtassetmimetype($args, &$ctx) {
     return $asset->asset_mime_type;
 }
 ?>
-

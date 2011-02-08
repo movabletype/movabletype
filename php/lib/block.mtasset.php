@@ -23,4 +23,3 @@ function smarty_block_mtasset($args, $content, &$ctx, &$repeat) {
     return $content;
 }
 ?>
-

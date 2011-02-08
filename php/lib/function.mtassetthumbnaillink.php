@@ -34,4 +34,3 @@ function smarty_function_mtassetthumbnaillink($args, &$ctx) {
         $thumb_h);
 }
 ?>
-

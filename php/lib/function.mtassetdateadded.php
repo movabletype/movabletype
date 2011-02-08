@@ -13,4 +13,3 @@ function smarty_function_mtassetdateadded($args, &$ctx) {
     return $ctx->_hdlr_date($args, $ctx);
 }
 ?>
-

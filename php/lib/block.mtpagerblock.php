@@ -51,4 +51,3 @@ function smarty_block_mtpagerblock($args, $content, &$ctx, &$repeat) {
     return $content;
 }
 ?>
-

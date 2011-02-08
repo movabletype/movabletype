@@ -12,4 +12,3 @@ function smarty_function_mtassetfileext($args, &$ctx) {
     return $asset->asset_file_ext;
 }
 ?>
-

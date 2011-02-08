@@ -46,4 +46,3 @@ function smarty_function_mtassetproperty($args, &$ctx) {
     }
 }
 ?>
-
