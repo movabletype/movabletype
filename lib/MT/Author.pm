@@ -415,7 +415,7 @@ sub member_list_props {
             label     => 'Roles',
             order     => 300,
             display   => 'default',
-            sort_view => [],
+            view_sort => [],
             html      => sub {
                 my ( $prop, $obj ) = @_;
                 my $blog_id = MT->app->blog->id;
