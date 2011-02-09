@@ -304,9 +304,9 @@ function handleMessages( data, additional_class ) {
   if ( !data.result.messages ) return true;
   for ( var i=0; i < messages.length; i++ ) {
     var msg   = messages[i];
-    var class = msg.cls;
-    if ( additional_class ) class += ' ' + additional_class;
-    showMessage(msg.msg, class);
+    var cls = msg.cls;
+    if ( additional_class ) cls += ' ' + additional_class;
+    showMessage(msg.msg, cls);
   }
   return true;
 }
