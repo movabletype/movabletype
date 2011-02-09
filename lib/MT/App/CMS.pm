@@ -4644,7 +4644,10 @@ sub setup_filtered_ids {
         $app, $filter, $opts, [] );
     my $objs = $filter->load_objects(%$opts)
         or die $filter->errstr;
-    $app->param( 'id', map { $_->id } @$objs );
+    my %data = ( objects => [ map( [ $_->id ], @$objs ) ] );
+    MT->run_callbacks( 'cms_filtered_list_param.' . $ds, $app, \%data,
+        $objs );
+    $app->param( 'id', map( $_->[0], @{ $data{objects} } ) );
 }
 
 1;
