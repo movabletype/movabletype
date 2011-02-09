@@ -83,13 +83,13 @@
 </mt:setvartemplate>
 
 <mt:setvartemplate name="filter_form_single_select">
-<__trans phrase="[_1] is [_2]" 
+<__trans phrase="[_1] [_3] [_2]" 
          params="<mt:var name="label">%%
                  <select class="<mt:var name="type">-value">
                  <mt:loop name="single_select_options">
                    <option value="<mt:var name="value">"><mt:var name="label"></option>
                  </mt:loop>
-                 </select>">
+                 </select>%%<mt:var name="verb">">
 </mt:setvartemplate>
 
 <mt:setvartemplate name="filter_form_hidden">

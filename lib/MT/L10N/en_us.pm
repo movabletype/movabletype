@@ -21,6 +21,7 @@ sub ascii_only { ((ref $_[0]) || $_[0]) eq __PACKAGE__ }
     '__DATE_FILTER_FUTURE' => 'past',
     '__FILTER_DATE_ORIGIN' => '[_1]',
     '_FILTER_DATE_DAYS' => '[_1] days',
+    '__SELECT_FILTER_VERB' => 'is',
 
     'AUTO DETECT' => 'Auto-detect',
     '_USER_ENABLE' => 'Enable',

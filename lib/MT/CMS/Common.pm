@@ -720,9 +720,9 @@ sub edit {
     }
 
     my $tmpl_file = $param{output} || "edit_${type}.tmpl";
-    $param{object_type} ||= $type;
+    $param{object_type}  ||= $type;
     $param{search_label} ||= $class->class_label;
-    $param{screen_id}   ||= "edit-$type";
+    $param{screen_id}    ||= "edit-$type";
     $param{screen_class} .= " edit-$type";
     return $app->load_tmpl( $tmpl_file, \%param );
 }
@@ -747,16 +747,15 @@ sub list {
     $param{list_type} = $type;
     my @messages;
 
-    my @list_components
-        = grep {
+    my @list_components = grep {
                $_->registry( list_properties => $type )
             || $_->registry( listing_screens => $type )
-        } MT::Component->select;
+    } MT::Component->select;
 
     my @list_headers;
-    push @list_headers, File::Spec->catfile(
-        MT->config->TemplatePath, $app->{template_dir}, 'listing', $type . '_list_header.tmpl'
-    );
+    push @list_headers,
+        File::Spec->catfile( MT->config->TemplatePath, $app->{template_dir},
+        'listing', $type . '_list_header.tmpl' );
     for my $c (@list_components) {
         my $f = File::Spec->catfile( $c->path, 'tmpl', 'listing',
             $type . '_list_header.tmpl' );
@@ -860,8 +859,7 @@ sub list {
                                 {
                                 cls => 'alert',
                                 msg => MT->translate(
-                                    q{Invalid filter: [_1]},
-                                    $errstr
+                                    q{Invalid filter: [_1]}, $errstr
                                 )
                                 };
                         }
@@ -876,8 +874,7 @@ sub list {
                                 {
                                 cls => 'alert',
                                 msg => MT->translate(
-                                    q{Invalid filter: [_1]},
-                                    $errstr,
+                                    q{Invalid filter: [_1]}, $errstr,
                                 )
                                 };
                         }
@@ -1003,7 +1000,9 @@ sub list {
             label                 => $_->filter_label || $_->label,
             field                 => $_->filter_tmpl,
             single_select_options => $_->single_select_options($app),
-            singleton             => $_->singleton ? 1
+            verb                  => defined $_->verb ? $_->verb
+            : $app->translate('__SELECT_FILTER_VERB'),
+            singleton => $_->singleton ? 1
             : $_->has('filter_editable') ? !$_->filter_editable
             : 0,
             editable => $_->has('filter_editable') ? $_->filter_editable : 1,
@@ -1311,7 +1310,7 @@ sub filtered_list {
             )
         );
     }
-    my ($count, $editable_count) = @$count_result;
+    my ( $count, $editable_count ) = @$count_result;
 
     $MT::DebugMode && $debug->{section}->('count objects');
     $load_options{total} = $count;
@@ -1419,7 +1418,7 @@ sub filtered_list {
     $res{page}           = $page;
     $res{page_max}       = POSIX::ceil( $count / $limit );
     $res{id}             = $filter_id;
-    $res{label}    = MT::Util::encode_html( $forward_params{saved_label} )
+    $res{label} = MT::Util::encode_html( $forward_params{saved_label} )
         if $forward_params{saved_label};
     $res{filters}  = $filters;
     $res{messages} = \@messages;

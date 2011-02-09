@@ -18,6 +18,7 @@ use vars qw( @ISA %Lexicon );
 %Lexicon = (
 
   '[_1] [_2] [_3]' => '[_1] が [_3] [_2]',
+  '[_1] [_3] [_2]' => '[_1] [_3] [_2]',
   'contains' => 'を含む',
   'does not contain' => 'を含まない',
   '__STRING_FILTER_EQUAL' => 'である',
@@ -40,6 +41,7 @@ use vars qw( @ISA %Lexicon );
   '_FILTER_DATE_DAYS' => '[_1]',
   '[_1] to [_2]' => '[_1] から [_2]',
   '<mt:var name="[_1]"> [_2] [_3] [_4]' => '<mt:var name="[_1]"> [_2] [_4] [_3]',
+  '__SELECT_FILTER_VERB' => 'が',
 
 
 ## php/lib/MTUtil.php

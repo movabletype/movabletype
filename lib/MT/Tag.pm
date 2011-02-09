@@ -179,8 +179,9 @@ sub list_props {
             base                  => '__virtual.single_select',
             label                 => 'Private',
             display               => 'none',
+            verb                  => ' ',
             single_select_options => [
-                { label => 'Is Private',  value => 1, },
+                { label => 'Private', value => 1, },
                 { label => 'Not Private', value => 0, },
             ],
         },
