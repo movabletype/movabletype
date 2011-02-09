@@ -98,7 +98,8 @@ lib/MT.pm: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk build/mt-dist
 php/mt.php: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk
 	mv php/mt.php php/mt.php.pre
 	sed -e 's!__PRODUCT_NAME__!$(PRODUCT_NAME)!g' \
-	php/mt.php.pre > php/mt.php
+	    -e 's!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
+	    php/mt.php.pre > php/mt.php
 	rm php/mt.php.pre
 
 mt-check.cgi: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk
