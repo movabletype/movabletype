@@ -90,6 +90,7 @@ pre {
     background: none;
 }
 
+/* -- Sticky Label */
 .sticky-label {
     display: inline-block;
     padding: 0.2em 0.5em;
@@ -99,7 +100,8 @@ pre {
     border-radius: 3px;
     -moz-border-radius: 3px;
 }
-.sticky-label.required {
+.sticky-label.required, 
+.sticky-label.inuse-userpic {
     margin-left: 10px;
 }
 
