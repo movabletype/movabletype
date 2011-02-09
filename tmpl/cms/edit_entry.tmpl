@@ -1236,8 +1236,9 @@
         jQuery('input#revision-note').toggle();
     });
 
-    jQuery('select#status').change(function() {
-        var selectedStatus = jQuery(this).val();
+    jQuery('select#status').change( setSaveButtonText );
+    function setSaveButtonText () {
+        var selectedStatus = jQuery('select#status').val();
         if (selectedStatus == 2) {
             jQuery('button.publish').text('<mt:var name="publish_button_text">');
             jQuery('button.publish').attr('title', '<mt:var name="publish_button_title">');
@@ -1248,7 +1249,8 @@
             jQuery('button.publish').text('<mt:var name="draft_button_text">');
             jQuery('button.publish').attr('title', '<mt:var name="draft_button_title">');
         }
-    });
+    }
+    setSaveButtonText();
 
     jQuery('button.mt-<mt:var name="object_type">-listing-form-action').mtDoPluginAction({
         id: 'entry_form',
