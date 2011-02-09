@@ -2309,6 +2309,7 @@ input#system_performance_logging_threshold {
 #list-plugins .plugin-status a.button {
     margin: -3px 0 0 5px;
     text-align: center;
+    min-width: 45px;
 }
 #list-plugins .plugin-content {
     display: none;
@@ -2345,7 +2346,7 @@ input#system_performance_logging_threshold {
     margin: 10px 0 0 1.2em;
 }
 #list-plugins #plugin_control .actions-bar { 
-    margin-bottom: 10px;
+    text-align: center;
 }
 #list-plugins #plugin_control .actions-bar button { 
     margin: 0;
