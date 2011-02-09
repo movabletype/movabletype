@@ -13,7 +13,7 @@ use warnings;
 
 use base qw( MT::Plugin );
 
-our $VERSION = '2.1';
+our $VERSION = '2.2';
 my $plugin  = MT::Plugin::MultiBlog->new({
     id          =>  'multiblog',
     name        =>  'MultiBlog',

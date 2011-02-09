@@ -10,15 +10,18 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '5.04');
-define('VERSION_ID', '5.04');
-define('PRODUCT_VERSION', '5.04');
+define('VERSION', '5.1');
+define('PRODUCT_VERSION', '5.1');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
     $PRODUCT_NAME = 'Movable Type';
-
 define('PRODUCT_NAME', $PRODUCT_NAME);
+
+$PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
+if ( $PRODUCT_VERSION_ID == '__PRODUCT_' . 'VERSION_ID__' )
+    $PRODUCT_VERSION_ID = PRODUCT_VERSION;
+define('VERSION_ID', $PRODUCT_VERSION_ID);
 
 global $Lexicon;
 $Lexicon = array();

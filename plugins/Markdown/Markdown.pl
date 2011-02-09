@@ -14,7 +14,7 @@ use bytes;
 
 use Digest::MD5 qw(md5_hex);
 use vars qw($VERSION);
-$VERSION = '1.0.1';
+$VERSION = '1.02';
 # Tue 14 Dec 2004
 
 ## Disabled; causes problems under Perl 5.6.1:
