@@ -1676,18 +1676,20 @@ fieldset {
 #edit-page #basename { 
     width: 180px;
 }
-#entry-publishing-widget .save-action {
-    width: 114px;
-    margin-right: 10px;
+#entry-publishing-widget .actions-bar {
+    overflow: hidden;
+}
+#entry-publishing-widget .save-action, 
+#entry-publishing-widget .preview-action {
+    float: left;
+    width: 115px;
 }
 #entry-publishing-widget .preview-action {
-    width: 114px;
-}
-#entry-publishing-widget .actions-bar {
-    margin-top: 20px;
+    float: right;
 }
 #entry-publishing-widget .actions-bar .button {
     width: 100%;
+    margin: 0;
 }
 #entry-publishing-widget .delete-action {
     margin-top: 5px;

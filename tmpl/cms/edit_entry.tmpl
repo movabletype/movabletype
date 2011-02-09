@@ -432,8 +432,8 @@
      label_class="top-label"
      help_page="entries"
      help_section="date">
-    <div class="date-time-fields<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>">
-      <input type="text" id="created-on" class="text date text-date" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" /> @ <input type="text" class="text time" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>" />
+    <div class="date-time-fields">
+      <input type="text" id="created-on" class="text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" /> @ <input type="text" class="text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>" />
     </div>
   </mtapp:setting>
 
@@ -477,27 +477,28 @@
   </mtapp:setting>
 </mt:if>
 
-  <div class="actions-bar line">
-    <div class="save-action unit size1of2">
-    <button
-       name="status"
-       type="submit"
-       title="<mt:var name="button_title">"
-       class="publish action primary button">
-      <mt:var name="button_text">
-    </button>
+  <div class="actions-bar">
+    <div class="save-action">
+      <button
+         name="status"
+         type="submit"
+         title="<mt:var name="button_title">"
+         class="publish action primary button">
+        <mt:var name="button_text">
+      </button>
     </div>
-    <div class="preview-action unit size1of2">
-    <button
-       name="preview_entry"
-       type="submit"
-       accesskey="v"
-       title="<mt:var name="preview_button_title">"
-       class="preview action button">
-      <__trans phrase="Preview">
-    </button>
+    <div class="preview-action">
+      <button
+         name="preview_entry"
+         type="submit"
+         accesskey="v"
+         title="<mt:var name="preview_button_title">"
+         class="preview action button">
+        <__trans phrase="Preview">
+      </button>
     </div>
   </div>
+
 <mt:if name="can_publish_post">
   <mt:if name="id">
   <div class="delete-action">
