@@ -206,6 +206,8 @@ abstract class MTDatabase {
                 return " > 0";
             } elseif (isset($args['blog_id']) && is_numeric($args['blog_id'])) {
                 return " = " . $args['blog_id'];
+            } elseif (isset($args['include_blogs'])) {
+                return " = 0";
             } else {
                 $mt = MT::get_instance();
                 $ctx = $mt->context();

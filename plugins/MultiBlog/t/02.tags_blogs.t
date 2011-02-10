@@ -21,7 +21,7 @@ my $app = MT->instance;
 my $blog_id = 2;
 
 my $plugin = $app->component('MultiBlog');
-$plugin->set_config_value( 'default_access_allowed', '0', 'system' );
+my $default_access_allowed = 0;
 
 # Settings:
 #   Blog ID => Permission
@@ -135,6 +135,14 @@ SKIP:
             : $default_access_overrides;
         $plugin->set_config_value( 'access_overrides', $overrides, 'system' );
 
+        my $allowed
+            = defined( $block->default_access_allowed )
+            ? $block->default_access_allowed
+            : $default_access_allowed;
+        chomp($allowed);
+        $plugin->set_config_value( 'default_access_allowed', $allowed,
+            'system' );
+
         my $tmpl = $app->model('template')->new;
         $tmpl->text( $block->template );
         my $ctx = $tmpl->context;
@@ -215,6 +223,14 @@ SKIP:
             $plugin->set_config_value( 'access_overrides', $overrides,
                 'system' );
 
+            my $allowed
+                = defined( $block->default_access_allowed )
+                ? $block->default_access_allowed
+                : $default_access_allowed;
+            chomp($allowed);
+            $plugin->set_config_value( 'default_access_allowed', $allowed,
+                'system' );
+
             open2( my $php_in, my $php_out, 'php -q' );
             print $php_out &php_test_script( $block->template, $block->text );
             close $php_out;
@@ -246,3 +262,14 @@ __END__
 --- expected
 --- access_overrides
 { 1 => 1, 2 => 2, 3 => 2}
+
+=== mt:Blogs
+--- template
+<mt:Blogs include_blogs="1,3" class="*">
+<mt:BlogID />
+</mt:Blogs>
+--- expected
+--- default_access_allowed
+0
+--- access_overrides
+{ 1 => 0, 2 => 0, 3 => 0}
