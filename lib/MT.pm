@@ -2668,6 +2668,9 @@ sub init_commenter_authenticators {
     my $app = $self->app;
     my $blog = $app->blog if $app->isa('MT::App');
     foreach my $auth ( keys %$auths ) {
+        delete $Commenter_Auth{$auth}, next
+            if $auths->{$auth}->{disable};
+
         if ( my $c = $auths->{$auth}->{condition} ) {
             $c = $self->handler_to_coderef($c);
             if ($c) {
@@ -2737,6 +2740,7 @@ sub core_commenter_authenticators {
             logo              => 'images/comment/signin_vox.png',
             logo_small        => 'images/comment/vox_logo.png',
             order             => 12,
+            disable           => 1,
         },
         'Google' => {
             label      => 'Google',
