@@ -974,7 +974,9 @@ sub do_search_replace {
 
                         # Get an iter for each accessible blog
                         my @perms = $app->model('permission')->load(
-                            { blog_id => '0', author_id => $author->id },
+                            {   blog_id   => { not => 0 },
+                                author_id => $author->id
+                            },
                         );
                         if (@perms) {
                             my @blog_terms;
