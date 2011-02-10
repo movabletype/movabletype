@@ -226,8 +226,8 @@ function init() {
 
 <mt:setvarblock name="jq_js_include" append="1">
     init();
-    jQuery('button.save').submit(function () {
-        $("input:checked").each(function(){
+    jQuery('form#role').submit(function () {
+        jQuery("input:checked").each(function(){
             this.disabled = false;
         });
     });
