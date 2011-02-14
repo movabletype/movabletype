@@ -40,9 +40,13 @@ function smarty_compiler_defun($tag_args, &$compiler) {
 
 /* create code for closing a function definition and calling said function */ 
 function smarty_compiler_defun_close($tag_args, &$compiler) { 
+    $tag_attrs = $compiler->_parse_attrs($tag_args); 
     list($name, $attrs, $open_tag_args, $func_key) = array_pop($compiler->_tag_stack); 
     if ($name!='defun') $compiler->_syntax_error("unexpected {/defun}"); 
-    return " \$this->_tpl_vars = \$_fun_tpl_vars; }} " . $func_key . smarty_compiler_fun($open_tag_args, $compiler); 
+    $result =  " \$this->_tpl_vars = \$_fun_tpl_vars; }} " . $func_key;
+    if ( !isset($tag_attrs['fun']) || '0' !== $compiler->_dequote($tag_attrs['fun']) )
+        $result .= smarty_compiler_fun($open_tag_args, $compiler); 
+    return $result;
 } 
 
 $this->register_compiler_function('/defun', 'smarty_compiler_defun_close'); 

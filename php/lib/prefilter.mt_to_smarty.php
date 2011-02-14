@@ -159,6 +159,11 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                 $conditional = 0;
             }
 
+            if ( $mttag == 'mtsetvartemplate' )
+                $_call_func = false;
+            else
+                $_call_func = true;
+
             // force the elements in $vars to always to act like a function
             if ($open == '$') {
                 $open = '';
@@ -178,7 +183,8 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                     array_push($tokenstack, $tokname);
                 } else {
                     $tokname = array_pop($tokenstack);
-                    $smart_source .= $ldelim.'/defun'.$rdelim;
+                    $_tag_args = $_call_func ? '' : ' fun="0"';
+                    $smart_source .= $ldelim.'/defun'.$_tag_args.$rdelim;
                 }
             }
 
