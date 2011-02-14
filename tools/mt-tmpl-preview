@@ -18,7 +18,7 @@ use MT::Util;
 use MT::Template;
 use MT::Entry;
 
-$SIG{__WARN__} = sub {};
+# $SIG{__WARN__} = sub {};
 
 my $mt = MT->new();
 
@@ -42,6 +42,9 @@ if (!$blog) {
 my $ctx = MT::Template::Context->new;
 my $builder = MT::Builder->new;
 my $tokens = $builder->compile($ctx, $template);
+warn "Compile error: ".$builder->errstr if $builder->errstr;
+exit 2 unless defined $tokens;
+
 $ctx->{archive_type} = 'Individual';
 $ctx->stash('blog',$blog);
 $ctx->stash('blog_id',$blog->id);
@@ -54,6 +57,7 @@ my $out = $builder->build($ctx, $tokens, {});
 warn "Builder error: ".$builder->errstr if $builder->errstr;
 warn "Context error: ".$ctx->errstr if $ctx->errstr;
 
+exit 2 unless defined $out;
 if ($out =~ m!</head>!) {
     my $site_url = $blog->site_url;
     if ($out !~ m/<base /) {
@@ -62,3 +66,4 @@ if ($out =~ m!</head>!) {
 }
 
 print $out if defined $out;
+exit 0;
