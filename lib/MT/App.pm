@@ -414,7 +414,7 @@ sub listing {
                 }
             }
             $param->{$_} = $search_param->{$_} for keys %$search_param;
-            $param->{limit_none} = 1;
+            $no_limit = $param->{limit_none} = 1;
         }
     }
     else {
