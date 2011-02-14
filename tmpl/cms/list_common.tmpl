@@ -1164,7 +1164,7 @@ function filterItem(type, datepicker_off) {
       }).end()
       .find('.date').datepicker({
         dateFormat: 'yy-mm-dd',
-        dayNamesMin: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+        dayNamesMin: [<__trans phrase="_LOCALE_CALENDAR_HEADER_">],
         monthNames: ['-01','-02','-03','-04','-05','-06','-07','-08','-09','-10','-11','-12'],
         showMonthAfterYear: true,
         prevText: '&lt;',
@@ -1625,7 +1625,7 @@ jQuery('.filtertype .plus').live('click', function() {
   }).end()
   .find('.date').datepicker({
       dateFormat: 'yy-mm-dd',
-      dayNamesMin: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+      dayNamesMin: [<__trans phrase="_LOCALE_CALENDAR_HEADER_">],
       monthNames: ['-01','-02','-03','-04','-05','-06','-07','-08','-09','-10','-11','-12'],
       showMonthAfterYear: true,
       prevText: '&lt;',

@@ -42,6 +42,7 @@ use vars qw( @ISA %Lexicon );
   '[_1] to [_2]' => '[_1] から [_2]',
   '<mt:var name="[_1]"> [_2] [_3] [_4]' => '<mt:var name="[_1]"> [_2] [_4] [_3]',
   '__SELECT_FILTER_VERB' => 'が',
+  '_LOCALE_CALENDAR_HEADER_' => "'日', '月', '火', '水', '木', '金', '土'",
 
 
 ## php/lib/MTUtil.php
