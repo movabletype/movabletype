@@ -173,7 +173,7 @@ sub init_request {
     if ( $app->run_callbacks( 'search_blog_list', $app, $list, \$processed ) )
     {
         if ($processed) {
-            $app->{searchparam}{IncludeBlogs} = keys %$list
+            $app->{searchparam}{IncludeBlogs} = [ keys %$list ]
                 if ( $list && %$list );
         }
         else {
