@@ -4279,7 +4279,8 @@ B<Example:> Passing Parameters to a Template Module
                         }
                     }
                     else {
-                        $ttl = time - MT::Util::ts2epoch( undef, $latest );
+                        $ttl = time - MT::Util::ts2epoch( undef, $latest, 1 );
+                        $ttl = 1 if $ttl == 0;    # edited just now.
                     }
                 }
             }

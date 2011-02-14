@@ -2736,6 +2736,8 @@ sub delete {
     }
 
     if ( $app->config('RebuildAtDelete') ) {
+        $app->run_callbacks('pre_build');
+
         if ($can_background) {
             my $res = MT::Util::start_background_task(
                 sub {
