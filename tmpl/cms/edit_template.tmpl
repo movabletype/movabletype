@@ -16,7 +16,8 @@
 </mt:if>
 </mt:setvarblock>
 
-<mt:setvarblock name="html_title"><mt:if name="id"><mt:if name="name"><mt:var name="name" escape="html"><mt:else><mt:var name="template_name"></mt:if> - <__trans phrase="Edit Template"><mt:else><__trans phrase="Create Template"></mt:if></mt:setvarblock>
+<mt:setvarblock name="html_title"><mt:if name="id"><mt:if name="name"><mt:var name="name" escape="html"><mt:else><mt:var name="template_name"></mt:if> - <mt:if name="template_group" eq="widget"><__trans phrase="Edit Widget"><mt:else><__trans phrase="Edit Template"></mt:if><mt:else><mt:if name="template_group" eq="widget"><__trans phrase="Create Widget"><mt:else><__trans phrase="Create Template"></mt:if></mt:if></mt:setvarblock>
+
 <mt:var name="position_actions_bottom" value="1">
 <mt:setvarblock name="system_msg">
 <mt:unless name="recovered_object">
