@@ -44,7 +44,7 @@ function smarty_function_mtvar($args, &$ctx) {
         $name = $matches[1];
         $br = $matches[2];
         $ref = $matches[3];
-        if (preg_match('/^\\\\\$(.+)/', $ref, $ref_matches)) {
+        if (preg_match('/^\$(.+)/', $ref, $ref_matches)) {
             $ref = $vars[$ref_matches[1]];
             if (!isset($ref))
                 $ref = chr(0);
