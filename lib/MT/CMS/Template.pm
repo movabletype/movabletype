@@ -1115,9 +1115,23 @@ sub preview {
         if ($tparams) {
             $ctx->var( $_, $tparams->{$_} ) for keys %$tparams;
         }
+
+        my $cat;
+        if ( $archiver->category_based ) {
+            $cat = MT->model('category')->load(
+                { blog_id => $blog_id, },
+                {   sort      => 'id',
+                    direction => 'ascend',
+                }
+            );
+            $ctx->stash( 'archive_category', $cat );
+        }
+
         my @entries
-            = create_preview_content( $app, $blog, $archiver->entry_class,
-            10 );
+            = create_preview_content( $app, $blog, $archiver->entry_class, 10,
+            $cat );
+        $ctx->stash( 'entries', \@entries );
+
         if ( $archiver->date_based ) {
             $ctx->{current_timestamp}     = $entries[0]->authored_on;
             $ctx->{current_timestamp_end} = $entries[$#entries]->authored_on;
@@ -1125,15 +1139,6 @@ sub preview {
         if ( $archiver->author_based ) {
             $ctx->stash( 'author', $app->user );
         }
-        my $cat;
-        if ( $archiver->category_based ) {
-            $cat = new MT::Category;
-            $cat->label( $app->translate("Preview") );
-            $cat->basename("preview");
-            $cat->parent(0);
-            $ctx->stash( 'archive_category', $cat );
-        }
-        $ctx->stash( 'entries', \@entries );
 
         my $file
             = MT->publisher->archive_file_for( $entries[0], $blog,
@@ -1287,17 +1292,23 @@ sub preview {
 }
 
 sub create_preview_content {
-    my ( $app, $blog, $type, $number ) = @_;
+    my ( $app, $blog, $type, $number, $cat ) = @_;
 
     my $blog_id     = $blog->id;
     my $entry_class = $app->model($type);
-    my @obj         = $entry_class->load(
+    my $cat_args
+        = $cat
+        ? { join => MT->model('placement')
+            ->join_on( 'id', { category_id => $cat->id } ) }
+        : {};
+    my @obj = $entry_class->load(
         {   blog_id => $blog_id,
             status  => MT::Entry::RELEASE()
         },
         {   limit => $number || 1,
             direction => 'descend',
-            'sort'    => 'authored_on'
+            'sort'    => 'authored_on',
+            %$cat_args,
         }
     );
     unless (@obj) {
