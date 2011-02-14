@@ -52,7 +52,7 @@ class CaptchaFactory {
     private function __construct() { }
 
     public static function get_provider($provider) {
-        if (empty($provider))
+        if ( empty($provider) || 'none' == strtolower($provider) )
             return null;
         if (!isset(CaptchaFactory::$_captcha_providers[$provider])) {
             require_once('class.exception.php');
@@ -64,7 +64,7 @@ class CaptchaFactory {
         if (!empty($instance) and $instance instanceof CaptchaProvider)
             CaptchaFactory::$_providers[$provider] = $instance;
 
-        
+
         return CaptchaFactory::$_providers[$provider]; 
     }
 
