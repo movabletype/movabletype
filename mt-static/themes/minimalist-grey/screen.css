@@ -290,8 +290,8 @@ a:hover {
 #content .widget-powered .widget-content {
     margin-top: 15px;
     margin-bottom: 15px;
-    border: 1px solid #767676;
-    background-color: #5d5d5d;
+    border: 1px solid #7b7c7d;
+    background-color: #2b2b2b;
 } 
 
 .widget-header {
@@ -322,7 +322,7 @@ a:hover {
 
 .widget-powered .widget-content a {
     display: block;
-    background: url(mt-powered.png) no-repeat 50% 50%;
+    background: url(../../images/bug-pbmt-black.png) no-repeat 50% 50%;
 }
 
 .widget-powered .widget-content img {
