@@ -1,3 +1,20 @@
+<mt:if name="request.not_refreshed">
+    <mtapp:statusmsg
+        id="not-refreshed"
+        class="error">
+        <__trans phrase="Some templates were not refreshed.">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:if name="request.not_deleted">
+    <mt:if name="object_type" eq="website">
+        <mtapp:statusmsg
+            id="not-deleted"
+            class="error">
+            <__trans phrase="Some websites were not deleted. You need to delete blogs under the website first.">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:if>
+
 <mt:setvarblock name="action_buttons">
 <mt:if name="is_administrator">
   <button
