@@ -1093,6 +1093,7 @@ fieldset {
 /* - Actions Bar */
 .actions-bar { 
     position: relative;
+    min-height: 22px;
     margin: 10px 0 30px; 
 }
 .actions-bar-top {
