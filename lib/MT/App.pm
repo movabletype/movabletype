@@ -3177,9 +3177,19 @@ sub load_widgets {
         = $app->filter_conditional_list( $reg_widgets, $page, $scope );
     my $all_widgets;
     foreach my $widget ( keys %$reg_widgets ) {
-        $all_widgets->{$widget} = $reg_widgets->{$widget}
-            if ( !defined $reg_widgets->{$widget}->{view} )
-            || ( $reg_widgets->{$widget}->{view} eq $scope_type );
+        if ( my $widget_view = $reg_widgets->{$widget}->{view} ) {
+            if ( 'ARRAY' eq ref $widget_view ) {
+                next
+                    unless ( scalar grep { $_ eq $scope_type } @$widget_view );
+            }
+            else {
+                next if $scope_type ne $widget_view;
+            }
+            $all_widgets->{$widget} = $reg_widgets->{$widget}
+        }
+        else {
+            $all_widgets->{$widget} = $reg_widgets->{$widget}
+        }
     }
 
     my @loop;
@@ -3421,9 +3431,15 @@ sub load_widget_list {
             # don't allow multiple widgets
             next if exists $in_use{$id};
         }
-        next
-            unless ( ( !defined $w->{view} )
-            || ( $w->{view} eq $scope_type ) );
+        if ( my $widget_view = $w->{view} ) {
+            if ( 'ARRAY' eq ref $widget_view ) {
+                next
+                    unless ( scalar grep { $_ eq $scope_type } @$widget_view );
+            }
+            else {
+                next if $scope_type ne $widget_view;
+            }
+        }
 
         $w->{id} = $id;
         push @$widgets, $w;
