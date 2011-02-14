@@ -1893,6 +1893,7 @@ PERMCHECK: {
         my $id    = $1;
         my $entry = MT::Entry->load($id)
             or next;
+        my $old_status = $entry->status;
         my $orig_obj = $entry->clone;
         if ( $perms->can_edit_entry( $entry, $this_author ) ) {
             my $author_id = $q->param( 'author_id_' . $id );
@@ -1954,6 +1955,20 @@ PERMCHECK: {
                 $entry->errstr
             )
             );
+
+        # If Status was changed from PUBLISH to others,
+        # Let's remove archive files.
+        if ( ( $entry->status || 0 ) != MT::Entry::RELEASE() && $old_status == MT::Entry::RELEASE() && $app->config('DeleteFilesAtRebuild') ) {
+            if ( my $blog = $entry->blog ) {
+                my $archive_type = 'entry' eq $type ? 'Individual' : 'Page';
+                my $file = archive_file_for( $entry, $blog, $archive_type );
+                $app->publisher->remove_entry_archive_file(
+                    Entry       => $entry,
+                    ArchiveType => $archive_type,
+                );
+            }
+        }
+
         my $cat_id = $q->param("category_id_$id");
         my $place  = MT::Placement->load(
             {   entry_id   => $id,
