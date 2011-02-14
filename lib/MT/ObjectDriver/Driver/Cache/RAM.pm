@@ -28,7 +28,7 @@ sub init {
     $param{cache} ||= 1;    # hack
 
     unless ( defined $trigger_installed ) {
-        MT->add_callback( 'takedown', 9, undef, \&_takedown );
+        MT->add_callback( 'take_down', 9, undef, \&_takedown );
         $trigger_installed = 1;
     }
 

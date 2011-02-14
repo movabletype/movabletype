@@ -774,7 +774,7 @@ sub init {
 
     if ( $MT::DebugMode & 128 ) {
         MT->add_callback( 'pre_run',  1, $app, sub { $app->pre_run_debug } );
-        MT->add_callback( 'takedown', 1, $app, sub { $app->post_run_debug } );
+        MT->add_callback( 'take_down', 1, $app, sub { $app->post_run_debug } );
     }
     $app->{vtbl} = $app->registry("methods");
     $app->init_request(@_);
