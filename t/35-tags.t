@@ -150,6 +150,8 @@ $entry = $db->fetch_entry(1);
 
 $suite = load_tests();
 
+set_error_handler('error_handler');
+
 run($ctx, $suite);
 
 function run(&$ctx, $suite) {
@@ -210,12 +212,14 @@ function cleanup($tmpl) {
 }
 
 function build(&$ctx, $tmpl) {
+    global $error_messages;
+    $error_messages = array();
     if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
         ob_start();
         $ctx->_eval('?>' . $_var_compiled);
         $_contents = ob_get_contents();
         ob_end_clean();
-        return $_contents;
+        return join('', $error_messages) . $_contents;
     } else {
         return $ctx->error("Error compiling template module '$module'");
     }
@@ -234,6 +238,13 @@ function ok($str, $that, $test_num) {
              "#     expected: $that\n".
              "#          got: $str\n";
         return false;
+    }
+}
+
+function error_handler($errno, $errstr, $errfile, $errline) {
+    global $error_messages;
+    if ($errno & (E_ALL ^ E_NOTICE)) {
+        array_push($error_messages, $errstr . "\n");
     }
 }
 
