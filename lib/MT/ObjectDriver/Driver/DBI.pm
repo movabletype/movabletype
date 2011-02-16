@@ -636,6 +636,7 @@ sub prepare_statement {
             my $to_table = $driver->table_for($to_class);
             my $j_table  = $driver->table_for($j_class);
             if ( 'HASH' eq ref $cond ) {
+                my $dbh = $driver->rw_handle;
                 foreach my $cond_col ( keys %$cond ) {
                     my $col = $driver->_decorate_column_name( $j_class,
                         $cond_col );
@@ -645,7 +646,7 @@ sub prepare_statement {
                         $condition = $$condition;
                     }
                     else {
-                        $condition = " = $condition";
+                        $condition = ' = ' . $dbh->quote($condition);
                     }
                     $cond_query .= " $col " . $condition;
                 }
