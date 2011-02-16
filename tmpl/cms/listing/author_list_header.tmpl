@@ -39,7 +39,8 @@
     <mt:if name="request.error">
         <mtapp:statusmsg
             id="error"
-            class="error">
+            class="error"
+            can_close="0">
             <__trans phrase="An error occured during synchronization.  See the <a href='[_1]'>activity log</a> for detailed information." params="<mt:var name="script_url">?__mode=view_log">
         </mtapp:statusmsg>
     </mt:if>

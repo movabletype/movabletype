@@ -8,7 +8,9 @@ jQuery(window).bind('listReady', function() {
     <mt:if name="request.saved">
         <mtapp:statusmsg
             id="saved"
-            class="success" rebuild="all">
+            class="success"
+            rebuild="all"
+            can_close="0">
             <__trans phrase="Your changes have been saved.">
         </mtapp:statusmsg>
     </mt:if>

@@ -316,18 +316,26 @@ function showMessage( content, cls ){
   if ( typeof content == 'object' ) {
     jQuery('#msg-block').append(
       error_block = jQuery('<div>')
-        .attr('class', 'msg msg-' + cls )
-        .append(content)
-        .append('<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />')
+      .attr('class', 'msg msg-' + cls )
+      .append(
+        jQuery('<p />')
+          .attr('class', 'msg-text')
+          .append(content)
+          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>')
+      )
     );
   }
   else {
     jQuery('#msg-block').append(
-      error_block = jQuery('<div>')
-        .attr('class', 'msg msg-' + cls )
-        .append(content)
-        .append('<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />')
-    );
+      error_block = jQuery('<div />')
+      .attr('class', 'msg msg-' + cls )
+      .append(
+        jQuery('<p />')
+          .attr('class', 'msg-text')
+          .append(content)
+          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>')
+      )
+    ); 
   }
   return error_block;
 }

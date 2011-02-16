@@ -3262,7 +3262,7 @@ sub _hdlr_app_statusmsg {
     my $close = '';
     if ( $id && ( $args->{can_close} || ( !exists $args->{can_close} ) ) ) {
         $close
-            = qq{<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />};
+            = qq{<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>};
     }
     $id    = defined $id    ? qq{ id="$id"}      : "";
     $class = defined $class ? qq{msg msg-$class} : "msg";
@@ -3415,7 +3415,8 @@ sub _hdlr_app_listing {
         return $ctx->build(
             qq{<mtapp:statusmsg
             id="zero-state"
-            class="info zero-state">
+            class="info zero-state"
+            can_close="0">
             $msg
             </mtapp:statusmsg>}
         );

@@ -15,8 +15,7 @@
 <mt:if name="uninstalled_theme_name">
   <mtapp:statusmsg
      id="theme_uninstalled"
-     class="success"
-     can_close="1">
+     class="success">
     <__trans phrase="Theme [_1] has been uninstalled." params="<mt:var name="uninstalled_theme_name">" escape="html">
   </mtapp:statusmsg>
 </mt:if>
@@ -25,15 +24,14 @@
      id="theme_applied"
      class="success"
      rebuild="all"
-     can_close="1">
+     can_close="0">
     <__trans phrase="Theme [_1] has been applied." params="<mt:var name="current_theme_name">" escape="html">
   </mtapp:statusmsg>
 </mt:if>
 <mt:if name="warning_on_apply">
   <mtapp:statusmsg
      id="theme_warning"
-     class="alert"
-     can_close="1">
+     class="alert">
     <__trans phrase="Some error occured while applying theme."> <a href="<mt:var name="script_url">?__mode=list&amp;_type=log&blog_id=<mt:var name="blog_id">"><__trans phrase="see more detail."></a>
   </mtapp:statusmsg>
 </mt:if>
@@ -42,7 +40,7 @@
      id="theme_applied"
      class="success"
      rebuild="all"
-     can_close="1">
+     can_close="0">
      <__trans phrase="You have successfully refreshed your templates." escape="html">
   </mtapp:statusmsg>
 </mt:if>
@@ -142,7 +140,7 @@
          id="saved-added"
          class="error"
          can_close="0">
-        <p><__trans phrase="This theme cannot be applied to the website due to [_1] errors" params="<mt:var name="error_count">"></p>
+        <__trans phrase="This theme cannot be applied to the website due to [_1] errors" params="<mt:var name="error_count">">
       </mtapp:statusmsg>
       <ul>
       <mt:loop name="errors">
@@ -158,7 +156,7 @@
          id="saved-added"
          class="alert"
          can_close="0">
-        <p><__trans phrase="Portions of this theme cannot be applied to the website. [_1] elements will be skipped." params="<mt:var name="warning_count">"></p>
+        <__trans phrase="Portions of this theme cannot be applied to the website. [_1] elements will be skipped." params="<mt:var name="warning_count">">
       </mtapp:statusmsg>
       <ul>
       <mt:loop name="warnings">

@@ -68,7 +68,8 @@
 <mt:else>
     <mtapp:statusmsg
         id="zero-state"
-        class="info zero-state">
+        class="info zero-state"
+        can_close="0">
         <__trans phrase="No blogs could be found. [_1]" params="<mt:if name="can_create_blog"><a href="<mt:var name="script_url">?__mode=view&amp;_type=blog&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Create New"></a></mt:if>">
     </mtapp:statusmsg>
 </mt:if>

@@ -52,9 +52,10 @@
 <mt:include name="dialog/header.tmpl">
 <mt:if name="error">
 <mtapp:statusmsg
-    id="generic-error"
-    class="error">
-    <mt:var name="error">
+   id="generic-error"
+   class="error"
+   can_close="0">
+  <mt:var name="error">
 </mtapp:statusmsg>
 </mt:if>
 <div id="<mt:var name="name" escape="html">-panel" class="hidden panel">

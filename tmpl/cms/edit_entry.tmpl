@@ -116,7 +116,8 @@
   <mtapp:statusmsg    
      id="saved-comment"
      class="success"
-     rebuild="all">
+     rebuild="all"
+     can_close="0">
     <__trans phrase="Your changes to the comment have been saved.">
   </mtapp:statusmsg>
 </mt:if>
@@ -141,7 +142,8 @@
 <mt:if name="recovered_failed">
   <mtapp:statusmsg    
      id="recovered-failed"
-     class="error">
+     class="error"
+     can_close="0">
   <mt:if name="object_type" eq="entry">
     <__trans phrase="An error occurred while trying to recover your saved entry.">
   <mt:else>
@@ -187,7 +189,8 @@
 <mt:if name="error">
   <mtapp:statusmsg
      id="generic-error"
-     class="error">
+     class="error"
+     can_close="0">
     <mt:var name="error">
   </mtapp:statusmsg>
 </mt:if>
@@ -1036,8 +1039,8 @@
 <mt:if name="junk_log_loop">
   <mtapp:statusmsg
      id="junk-message"
-     can_close="0"
-     class="alert">
+     class="alert"
+     can_close="0">
   <mt:if name="status_review">
     <__trans phrase="This post was held for review, due to spam filtering.">
   <mt:else>

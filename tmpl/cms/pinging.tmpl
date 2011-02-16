@@ -1,5 +1,5 @@
 <mt:setvar name="page_title" value="<__trans phrase="Trackback">">
-<$mt:setvar name="screen_class" value="pinging-screen"$>
+<mt:setvar name="screen_class" value="pinging-screen">
 <mt:include name="include/header.tmpl">
 
 <script type="text/javascript">
@@ -12,15 +12,15 @@ setTimeout('doRedirect()', 1000);
 </script>
 
 <mtapp:statusmsg
-    id="pinging"
-    can_close="0"
-    class="info">
-    <__trans phrase="Pinging sites...">
-    <ul>
-    <mt:loop name="url_list">
-        <li><mt:var name="url" escape="html"></li>
-    </mt:loop>
-    </ul>
+   id="pinging"
+   class="info"
+   can_close="0">
+  <__trans phrase="Pinging sites...">
+  <ul>
+  <mt:loop name="url_list">
+    <li><mt:var name="url" escape="html"></li>
+  </mt:loop>
+  </ul>
 </mtapp:statusmsg>
 
 <mt:include name="include/footer.tmpl">

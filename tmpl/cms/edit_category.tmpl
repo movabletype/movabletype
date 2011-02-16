@@ -5,7 +5,8 @@
 <mt:if name="error">
   <mtapp:statusmsg
      id="generic-error"
-     class="error">
+     class="error"
+     can_close="0">
     <mt:var name="error">
   </mtapp:statusmsg>
 </mt:if>
@@ -13,7 +14,8 @@
   <mtapp:statusmsg
      id="saved"
      class="success"
-     rebuild="all">
+     rebuild="all"
+     can_close="0">
     <__trans phrase="Your changes have been saved.">
   </mtapp:statusmsg>
 </mt:if>
