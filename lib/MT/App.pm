@@ -531,6 +531,10 @@ sub listing {
             my $row = $obj->get_values();
             $hasher->( $obj, $row ) if $hasher;
 
+            if ( $obj->errstr ) {
+                return $app->error( $obj->errstr );
+            }
+
             #$app->run_callbacks( 'app_listing_'.$app->mode,
             #                     $app, $obj, $row );
             push @data, $row;
