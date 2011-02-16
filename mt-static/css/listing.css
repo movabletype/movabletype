@@ -65,7 +65,7 @@
 }
 
 .col.head { 
-    padding: 0;
+    padding: 0 0 0 8px;
     border-width: 0 0 1px 1px;
     background-color: #dcdddd;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
@@ -107,17 +107,15 @@ tfoot .col.head{
     position: relative;
 }
 .col-label {
-    display: block;
-    padding: 7px 8px;
-}
-.sort-link {
+    display: inline-block;
+    width: 95%;
+    padding: 7px 0;
+    line-height: 1;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 .sorted .sort-link {
-    width: auto;
-    margin-right: 18px;
-    padding-right: 0;
+    width: 80%;
 }
 .sm {
     position: absolute;
