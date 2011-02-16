@@ -508,6 +508,7 @@ sub init_data {
     $chuckd->is_superuser(1);
     $chuckd->save()
       or die "Couldn't save author record 2: " . $chuckd->errstr;
+    $chuckd->set_score( 'unit test', MT::Author->load(1), 2, 1 );
 
     my $bobd = MT::Author->new();
     $bobd->set_values(
