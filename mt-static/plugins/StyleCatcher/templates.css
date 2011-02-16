@@ -84,8 +84,8 @@ a {
 #categories-wrapper {
     position: relative;
     float: left;
-    width: 140px;
-    margin-right: -140px;
+    width: 160px;
+    margin-right: -160px;
     z-index: 2;
 }
 
@@ -122,7 +122,7 @@ a {
 #templates-wrapper #selected-category-title, 
 #templates-wrapper .scrollbox { 
     margin-right: 299px;
-    margin-left: 150px;
+    margin-left: 175px;
 }
 
 #categories-wrapper .scrollbox { 
