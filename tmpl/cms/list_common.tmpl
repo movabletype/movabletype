@@ -932,7 +932,7 @@ function renderList(mode, columns, values, limit, page ) {
       }
       jQuery(window).trigger('listReady');
     },
-    error: function(xhr, status) {
+    error: function(xhr, status, error) {
       if ( this_request != request_id ) {
           return false;
       }
@@ -941,8 +941,12 @@ function renderList(mode, columns, values, limit, page ) {
           renderList(mode, columns, values, limit, page);
         });
       }
-      else
-        alert('Ajax error: ' + status);
+      else if ( xhr.status == 0 ) {
+        // Maybe this is user abort. do nothing.
+      }
+      else {
+        alert('Ajax error: ' + xhr.status + ': ' + status);
+      }
     }
   });
 }
