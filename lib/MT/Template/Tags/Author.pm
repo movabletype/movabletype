@@ -459,11 +459,13 @@ AUTHOR: while ($next) {
             my @tmp;
             my $i = 0;
             while ( my ( $score, $object_id ) = $scores->() ) {
-                next if $score_offset && ( $i + 1 ) < $score_offset;
-                push @tmp, delete $a{$object_id} if exists $a{$object_id};
-                $scores->end, last unless %a;
                 $i++;
-                $scores->end, last if $score_limit && $i >= $score_limit;
+                next if $score_offset && ( $i - 1 ) < $score_offset;
+                push @tmp, delete $a{$object_id} if exists $a{$object_id};
+                if ( !%a || ( $score_limit && $i >= $score_limit ) ) {
+                    $scores->end;
+                    last;
+                }
             }
             @authors = @tmp;
         }
@@ -487,11 +489,13 @@ AUTHOR: while ($next) {
             my @tmp;
             my $i = 0;
             while ( my ( $score, $object_id ) = $scores->() ) {
-                next if $score_offset && ( $i + 1 ) < $score_offset;
-                push @tmp, delete $a{$object_id} if exists $a{$object_id};
-                $scores->end, last unless %a;
                 $i++;
-                $scores->end, last if $score_limit && $i >= $score_limit;
+                next if $score_offset && ( $i - 1 ) < $score_offset;
+                push @tmp, delete $a{$object_id} if exists $a{$object_id};
+                if ( !%a || ( $score_limit && $i >= $score_limit ) ) {
+                    $scores->end;
+                    last;
+                }
             }
             @authors = @tmp;
         }

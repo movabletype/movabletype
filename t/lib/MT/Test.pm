@@ -487,6 +487,8 @@ sub init_data {
 #    $blog->create_default_templates('mt_blog');
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
+    MT::Author->load(1)->set_score( 'unit test', MT::Author->load(1), 1, 1 );
+
     require MT::Entry;
     require MT::Author;
     my $chuckd = MT::Author->new();
@@ -524,6 +526,7 @@ sub init_data {
     $bobd->type( MT::Author::AUTHOR() );
     $bobd->id(3);
     $bobd->save() or die "Couldn't save author record 3: " . $bobd->errstr;
+    $bobd->set_score( 'unit test', MT::Author->load(1), 3, 1 );
 
     my $johnd = MT::Author->new();
     $johnd->set_values(

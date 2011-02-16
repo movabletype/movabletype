@@ -606,5 +606,7 @@
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle trim_to=\"6+...\"></MTEntries>", "e" : "A Rain..."}, #605
 { "r" : "1", "t" : "<MTAuthors id=\"2\"><MTAuthorScore namespace='unit test'></MTAuthors>", "e" : "2"}, #606
 { "r" : "1", "t" : "<MTAuthors id=\"2\"><MTAuthorScoreAvg namespace='unit test'></MTAuthors>", "e" : "2.00"}, #607
-{ "r" : "1", "t" : "<MTAuthors id=\"2\"><MTAuthorScoreCount namespace='unit test'></MTAuthors>", "e" : "1"} #608
+{ "r" : "1", "t" : "<MTAuthors id=\"2\"><MTAuthorScoreCount namespace='unit test'></MTAuthors>", "e" : "1"}, #608
+{ "r" : "1", "t" : "<mt:Authors need_entry='0' namespace='unit test' sort_by='score' offset='1'><mt:AuthorName>,</mt:Authors>", "e" : "Chuck D,Melody,"}, #609
+{ "r" : "1", "t" : "<mt:Authors need_entry='0' namespace='unit test' sort_by='score' offset='2'><mt:AuthorName>,</mt:Authors>", "e" : "Melody,"} #610
 ]
