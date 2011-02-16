@@ -31,7 +31,7 @@
     margin: 0;
 }
 
-.msg .mt-close-msg { 
+.msg-error .mt-close-msg { 
     display: none;
 }
 
