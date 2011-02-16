@@ -3664,7 +3664,7 @@ sub show_login {
         $app->{login_again} = 1;
         return $app->show_error( { error => 'Unauthorized', status => 401 } );
     }
-    return $app->SUPER::show_login;
+    return $app->SUPER::show_login(@_);
 }
 
 sub load_default_entry_prefs {
