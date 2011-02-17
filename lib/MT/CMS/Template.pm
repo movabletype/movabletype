@@ -248,14 +248,15 @@ sub edit {
                                 id      => $other->id
                             }
                         );
-                        $include->{can_link} = $app->user->is_superuser
+                        $include->{can_link}
+                            = $app->user->is_superuser
                             || $app->user->permissions(0)
                             ->can_do('edit_templates')
                             ? 1
                             : $other->blog_id
                             ? $app->user->permissions( $other->blog_id )
-                            ->can_do('edit_templates') 
-                                ? 1 
+                            ->can_do('edit_templates')
+                                ? 1
                                 : 0
                             : 0;
 

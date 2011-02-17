@@ -205,6 +205,7 @@ sub list_props {
             list_screen        => 'comment',
             list_permit_action => 'access_to_comment_list',
         },
+
         # not in use in 5.1
         # member_count => {
         #     label              => 'Members',

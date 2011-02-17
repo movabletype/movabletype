@@ -445,7 +445,8 @@ sub count_objects {
     if ( !( scalar @grep_items ) && !$editable_filters ) {
         $editable_count = $count = $class->count( $terms, $args );
         if ($editable_terms) {
-            $editable_count = $class->count( $editable_terms, $editable_args );
+            $editable_count
+                = $class->count( $editable_terms, $editable_args );
         }
 
         return $self->error( $class->errstr ) unless defined $count;
@@ -543,23 +544,26 @@ sub _cb_restore_ids {
     my ( $obj, $data, $objects ) = @_;
     my $items = $obj->items;
 
-    foreach my $item ( @$items ) {
+    foreach my $item (@$items) {
         if ( 'category_id' eq $item->{type} ) {
             my $old_id = $item->{args}->{value};
-            if ( exists $objects->{'MT::Category#'.$old_id} ) {
-                $item->{args}->{value} = $objects->{'MT::Category#'.$old_id}->id;
+            if ( exists $objects->{ 'MT::Category#' . $old_id } ) {
+                $item->{args}->{value}
+                    = $objects->{ 'MT::Category#' . $old_id }->id;
             }
         }
         elsif ( 'folder_id' eq $item->{type} ) {
             my $old_id = $item->{args}->{value};
-            if ( exists $objects->{'MT::Folder#'.$old_id} ) {
-                $item->{args}->{value} = $objects->{'MT::Folder#'.$old_id}->id;
+            if ( exists $objects->{ 'MT::Folder#' . $old_id } ) {
+                $item->{args}->{value}
+                    = $objects->{ 'MT::Folder#' . $old_id }->id;
             }
         }
         elsif ( 'role' eq $item->{type} ) {
             my $old_id = $item->{args}->{value};
-            if ( exists $objects->{'MT::Role#'.$old_id} ) {
-                $item->{args}->{value} = $objects->{'MT::Role#'.$old_id}->id;
+            if ( exists $objects->{ 'MT::Role#' . $old_id } ) {
+                $item->{args}->{value}
+                    = $objects->{ 'MT::Role#' . $old_id }->id;
             }
         }
     }

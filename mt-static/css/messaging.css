@@ -2,7 +2,8 @@
 .msg { 
     position: relative;
     margin: 10px 0;
-    padding: 0.8em;
+    padding: 0.5em 0.75em;
+    line-height: 1;
     background-repeat: no-repeat;
     background-position: 8px center;
     border-radius: 3px;
@@ -30,9 +31,7 @@
     margin: 0;
 }
 
-.msg-error img.mt-close-msg, 
-.insert-asset-dialog .msg img.mt-close-msg, 
-.zero-state img.mt-close-msg { 
+.msg-error .mt-close-msg { 
     display: none;
 }
 
@@ -43,10 +42,6 @@
     border: 0;
     background-color: transparent;
     color: #c60;
-}
-
-.error-field input[type="text"] { 
-    border-color: red;
 }
 
 /* -- for Permission Message */

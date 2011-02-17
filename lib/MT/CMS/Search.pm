@@ -361,7 +361,7 @@ sub core_search_apis {
                     ? 'image'
                     : '*';
                 if ( !$blog_id ) {
-                    $terms->{blog_id} = { op => '>', value => '0' };;
+                    $terms->{blog_id} = { op => '>', value => '0' };
                 }
                 $args->{sort}      = 'created_on';
                 $args->{direction} = 'descend';
@@ -429,17 +429,12 @@ sub core_search_apis {
             'condition' => sub {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
+                return 0 if !$blog_id;
 
                 my $cnt = MT->model('permission')->count(
-                    {   (     ($blog_id)
-                            ? ( blog_id => $blog_id )
-                            : ( blog_id => \'> 0' )
-                        ),
+                    {   blog_id     => $blog_id,
                         author_id   => $author->id,
-                        permissions => [
-                            { like => "\%'administer_blog'\%" },
-                            { like => "\%'manage_users'\%" },
-                        ],
+                        permissions => { like => "\%'manage_users'\%" },
                     },
                 );
 
@@ -449,22 +444,10 @@ sub core_search_apis {
             'handler'    => '$Core::MT::CMS::User::build_author_table',
             'perm_check' => sub {
                 return 1 if $author->is_superuser;
-                if ($blog_id) {
-                    my $perm = $author->permissions($blog_id);
-                    return $perm->can_do('search_authors');
-                }
-                else {
-                    my $cnt = MT->model('permission')->count(
-                        {   blog_id     => \'> 0',
-                            author_id   => $author->id,
-                            permissions => [
-                                { like => "\%'administer_blog'\%" },
-                                { like => "\%'manage_users'\%" },
-                            ],
-                        },
-                    );
-                    return ( $cnt && $cnt > 0 ) ? 1 : 0;
-                }
+                return 0 if !$blog_id;
+
+                my $perm = $author->permissions($blog_id);
+                return $perm->can_do('search_authors');
             },
             'search_cols' => {
                 'name'     => sub { $app->translate('Username') },
@@ -601,7 +584,11 @@ sub can_search_replace {
         );
 
         my $cond;
+        # An user who has only 'manage_users' permission can't do search.
+        my $restrict_manage_users = MT::Permission->new;
+        $restrict_manage_users->restrictions('manage_users');
         while ( my $p = $iter->() ) {
+            $p->add_restrictions($restrict_manage_users);
             $cond = 1, last
                 if $p->can_do('use_tools:search');
         }

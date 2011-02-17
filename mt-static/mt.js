@@ -1081,7 +1081,7 @@ Datasource = new Class(Object, {
         if (!this.element) return;
         jQuery('div.msg').remove();
         if (jQuery(html).hasClass('msg')) {
-            jQuery('table.list-heading').hide();
+            jQuery(this.element).find('table.list-heading').hide();
             jQuery(this.element).append(html);
         } else {
             jQuery(this.element).find('table.list-heading').show();
@@ -2893,7 +2893,7 @@ function showMsg(message, id, type, rebuild, blogID) {
         DOM.addClassName(msg, 'msg');
         DOM.addClassName(msg, 'msg-'+type);
     }
-    msg.innerHTML = message + '<img alt="'+ trans('Close') + '" src="' + StaticURI + 'images/icon_close.png" class="mt-close-msg" />';
+    msg.innerHTML = message + '<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon">' + trans('Close') + '</span>';
     if (rebuild == 'all')
         msg.innerHTML += ' ' + trans('[_1]Publish[_2] your site to see these changes take effect.', '<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild(\''+blogID+'\');">', '</a>');
     if (rebuild == 'index')

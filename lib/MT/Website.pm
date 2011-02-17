@@ -75,6 +75,7 @@ sub list_props {
                 $link . '&filter=current_context';
             },
         },
+
         # not in use in 5.1
         # member_count => {
         #     base      => 'blog.member_count',

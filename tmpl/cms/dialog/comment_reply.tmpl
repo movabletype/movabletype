@@ -17,7 +17,8 @@ parent.jQuery.fn.mtDialog.close( null, function () {
 <mt:if name="error">
     <mtapp:statusmsg
         id="generic-error"
-        class="error">
+        class="error"
+        can_close="0">
         <mt:var name="error" escape="html">
     </mtapp:statusmsg>
 </mt:if>

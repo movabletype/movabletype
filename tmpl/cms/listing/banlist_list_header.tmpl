@@ -10,16 +10,14 @@
 <mt:if name="request.saved">
   <mtapp:statusmsg
      id="saved"
-     class="success"
-     can_close="1">
+     class="success">
     <__trans phrase="You have added [_1] to your list of banned IP addresses." params="<mt:var name="saved" escape="html" escape="html">">
   </mtapp:statusmsg>
 </mt:if>
 <mt:if name="request.saved_deleted">
   <mtapp:statusmsg
      id="saved-deleted"
-     class="success"
-     can_close="1">
+     class="success">
     <__trans phrase="You have successfully deleted the selected IP addresses from the list.">
   </mtapp:statusmsg>
 </mt:if>
@@ -53,7 +51,41 @@
     jQuery.mtValidateRules['.ipaddress'] = function( $e ){
         return /^(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])$/.test($e.val()) };
     jQuery.mtValidateMessages['.ipaddress'] = '<__trans phrase="Invalid IP address.">';
-    jQuery().mtValidate({ namespace: 'ipban' });
+    jQuery().mtValidate({
+        namespace: 'ipban',
+        showError: function($target, $error) {
+          var focus = function () { $error.show() };
+          var blur  = function () { $error.hide() };
+          jQuery.data( $target.get(0), 'validate_focus', focus );
+          jQuery.data( $target.get(0), 'validate_blur',  blur );
+          $target
+            .bind('focus', focus)
+            .bind('blur', blur);
+          if ( $target.get(0) === document.activeElement )
+            $error.show();
+          else
+            $error.hide();
+          $target.parents('form').append($error);
+          var offset  = $target.offset();
+          var poffset = $target.parents('form').offset();
+          $error
+            .css('left', ( offset.left - poffset.left + $target.width() - 1 ) )
+            .css( 'top', ( offset.top  - poffset.top  - $error.height() - 1 ) );
+        },
+        wrapError: function($target, msg) {
+          return jQuery('<span/>')
+            .addClass('msg-error validate-error')
+            .text(msg);
+        },
+        removeError: function($target, $error) {
+          $error.remove();
+          var focus = jQuery.data( $target.get(0), 'validate_focus');
+          var blur  = jQuery.data( $target.get(0), 'validate_blur');
+          $target
+            .unbind('focus', focus)
+            .unbind('blur', blur);
+        }
+    });
 
     function openCreateMode () {
         jQuery('#content-actions').hide();

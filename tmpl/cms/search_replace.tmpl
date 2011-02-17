@@ -227,8 +227,8 @@ function blurDateFields(s) {
   <mtapp:statusmsg
      id="replace-count"
      class="success"
-     can_close="1"
-     rebuild="all">
+     rebuild="all"
+     can_close="0">
     <__trans phrase="Successfully replaced [quant,_1,record,records]." params="<mt:var name="replace_count">">
   </mtapp:statusmsg>
 </mt:if>
@@ -236,8 +236,7 @@ function blurDateFields(s) {
 <mt:if name="have_more">
   <mtapp:statusmsg
      id="have-more-count"
-     class="success"
-     can_close="0">
+     class="success">
     <__trans phrase="Showing first [_1] results." params="<mt:var name="limit" escape="html">"> <a href="javascript:void(0)" onclick="return unLimit('all'); return false"><__trans phrase="Show all matches"></a>
   </mtapp:statusmsg>
 <mt:else>
@@ -245,8 +244,7 @@ function blurDateFields(s) {
     <mt:if name="have_results">
   <mtapp:statusmsg
      id="result-count"
-     class="success"
-     can_close="0">
+     class="success">
     <__trans phrase="[quant,_1,result,results] found" params="<mt:var name="count_matches">">
   </mtapp:statusmsg>
     </mt:if>

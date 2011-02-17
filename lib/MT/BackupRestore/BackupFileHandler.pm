@@ -247,12 +247,14 @@ sub start_element {
                         }
                     }
                 }
+
                 unless ($obj) {
                     $obj = $class->new;
                 }
                 unless ( $obj->id ) {
 
-              # Pass through even if an blog doesn't restore the parent object
+                    # Pass through even if an blog doesn't restore
+                    # the parent object
                     my $success
                         = $obj->restore_parent_ids( \%column_data, $objects );
                     if ( $success || ( !$success && 'blog' eq $name ) ) {
@@ -363,8 +365,9 @@ sub end_element {
             my $old_id = $obj->id;
             unless (
                 (      ( 'author' eq $name )
-                    || ( 'template' eq $name )
-                    || ( 'filter'   eq $name )
+                    || ( 'template'   eq $name )
+                    || ( 'filter'     eq $name )
+                    || ( 'plugindata' eq $name )
                 )
                 && ( exists $self->{loaded} )
                 )
@@ -495,6 +498,27 @@ sub end_element {
                 # Callback for restoring ID in the filter items
                 MT->run_callbacks( 'restore_filter_item_ids', $obj, undef,
                     $objects );
+            }
+            elsif ( 'plugindata' eq $name ) {
+
+                # Skipping System level plugindata
+                # when it was found in the database.
+
+                if ( $obj->key !~ /^configuration:blog:(\d+)$/i ) {
+                    if ( my $obj
+                        = MT->model('plugindata')
+                        ->load( { key => $obj->key, } ) )
+                    {
+                        $exists = 1;
+                        $self->{callback}->("\n");
+                        $self->{callback}->(
+                            MT->translate(
+                                "The system level setting for plugin '[_1]' has already existed.",
+                                $obj->plugin
+                            )
+                        );
+                    }
+                }
             }
             unless ($exists) {
                 my $result;

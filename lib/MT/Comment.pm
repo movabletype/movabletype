@@ -334,15 +334,15 @@ sub list_props {
             order => 400,
         },
         entry => {
-            label           => 'Entry/Page',
-            base            => '__virtual.integer',
-            col_class       => 'string',
-            filter_editable => 0,
-            order           => 500,
-            display         => 'default',
+            label              => 'Entry/Page',
+            base               => '__virtual.integer',
+            col_class          => 'string',
+            filter_editable    => 0,
+            order              => 500,
+            display            => 'default',
             default_sort_order => 'ascend',
-            filter_tmpl     => '<mt:Var name="filter_form_hidden">',
-            sort            => sub {
+            filter_tmpl        => '<mt:Var name="filter_form_hidden">',
+            sort               => sub {
                 my $prop = shift;
                 my ( $terms, $args ) = @_;
                 $args->{joins} ||= [];
@@ -413,7 +413,7 @@ sub list_props {
                 my $app      = shift;
                 my $entry_id = $app->param('filter_val');
                 my $entry    = MT->model('entry')->load($entry_id);
-                my $label = MT->translate(
+                my $label    = MT->translate(
                     'Comments on [_1]: [_2]',
                     $entry->class eq 'entry'
                     ? MT->translate('Entry')
@@ -535,8 +535,8 @@ sub list_props {
                     { 'email' => $query },
                 ];
             },
-            },
-            url => {
+        },
+        url => {
             auto    => 1,
             display => 'none',
             label   => 'URL',
@@ -566,7 +566,7 @@ sub list_props {
                     '-or', { 'url' => $query },
                 ];
             },
-            },
+        },
         commenter_status => {
             label   => 'Commenter Status',
             display => 'none',

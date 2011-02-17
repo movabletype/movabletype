@@ -819,8 +819,9 @@ sub core_list_actions {
                 order         => 110,
                 code          => "${pkg}Comment::handle_junk",
                 permit_action => {
-                    permit_action => 'edit_all_trackbacks,edit_own_entry_trackback_status',
-                    include_all   => 1,
+                    permit_action =>
+                        'edit_all_trackbacks,edit_own_entry_trackback_status',
+                    include_all => 1,
                 },
                 condition => sub {
                     return $app->mode ne 'view';
@@ -831,8 +832,9 @@ sub core_list_actions {
                 order         => 120,
                 code          => "${pkg}Comment::not_junk",
                 permit_action => {
-                    permit_action => 'edit_all_trackbacks,edit_own_entry_trackback_status',
-                    include_all   => 1,
+                    permit_action =>
+                        'edit_all_trackbacks,edit_own_entry_trackback_status',
+                    include_all => 1,
                 },
                 condition => sub {
                     return $app->mode ne 'view';
@@ -934,8 +936,9 @@ sub core_list_actions {
                 order         => 110,
                 code          => "${pkg}Comment::handle_junk",
                 permit_action => {
-                    permit_action => 'edit_all_comments,edit_own_entry_comment_status',
-                    include_all   => 1,
+                    permit_action =>
+                        'edit_all_comments,edit_own_entry_comment_status',
+                    include_all => 1,
                 },
                 condition => sub {
                     return $app->mode ne 'view';
@@ -946,8 +949,9 @@ sub core_list_actions {
                 order         => 120,
                 code          => "${pkg}Comment::not_junk",
                 permit_action => {
-                    permit_action => 'edit_all_comments,edit_own_entry_comment_status',
-                    include_all   => 1,
+                    permit_action =>
+                        'edit_all_comments,edit_own_entry_comment_status',
+                    include_all => 1,
                 },
                 condition => sub {
                     return $app->mode ne 'view';
@@ -1123,8 +1127,15 @@ sub core_list_actions {
                 code          => "${pkg}Comment::trust_commenter",
                 permit_action => 'access_to_all_commenter_list',
                 condition     => sub {
-                    return 0 if $app->blog;
-                    return $app->user->is_superuser ? 1 : 0;
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+                    return
+                          $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog ? 1
+                        :              0;
                 },
             },
             'untrust' => {
@@ -1133,8 +1144,15 @@ sub core_list_actions {
                 code          => "${pkg}Comment::untrust_commenter",
                 permit_action => 'access_to_all_commenter_list',
                 condition     => sub {
-                    return 0 if $app->blog;
-                    return $app->user->is_superuser ? 1 : 0;
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+                    return
+                          $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog ? 1
+                        :              0;
                 },
             },
             'ban' => {
@@ -1143,8 +1161,15 @@ sub core_list_actions {
                 code          => "${pkg}Comment::ban_commenter",
                 permit_action => 'access_to_all_commenter_list',
                 condition     => sub {
-                    return 0 if $app->blog;
-                    return $app->user->is_superuser ? 1 : 0;
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+                    return
+                          $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog ? 1
+                        :              0;
                 },
             },
             'unban' => {
@@ -1153,8 +1178,15 @@ sub core_list_actions {
                 code          => "${pkg}Comment::unban_commenter",
                 permit_action => 'access_to_all_commenter_list',
                 condition     => sub {
-                    return 0 if $app->blog;
-                    return $app->user->is_superuser ? 1 : 0;
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+                    return
+                          $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog ? 1
+                        :              0;
                 },
             },
         },
@@ -3664,7 +3696,7 @@ sub show_login {
         $app->{login_again} = 1;
         return $app->show_error( { error => 'Unauthorized', status => 401 } );
     }
-    return $app->SUPER::show_login;
+    return $app->SUPER::show_login(@_);
 }
 
 sub load_default_entry_prefs {

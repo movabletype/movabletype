@@ -24,7 +24,6 @@
   <mt:if name="autosaved_object_exists">
   <mtapp:statusmsg
      id="autosaved-object-exists"
-     can_close="1"
      class="info">
     <__trans phrase="A saved version of this [_1] was auto-saved [_3]. <a href="[_2]">Recover auto-saved content</a>" params="<mt:var name="object_label">%%<mt:var name="script_url">?__mode=view&amp;_type=template&amp;&amp;_recover=1&amp;blog_id=<mt:var name="blog_id" escape="url"><mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if>%%<mt:If name="blog_id"><mt:date ts="$autosaved_object_ts" relative="1" offset_blog_id="<$mt:var name="blog_id"$>"></mt:If>">
   </mtapp:statusmsg>
@@ -40,7 +39,8 @@
 <mt:if name="recovered_failed">
   <mtapp:statusmsg
      id="recovered-failed"
-     class="error">
+     class="error"
+     can_close="0">
     <__trans phrase="An error occurred while trying to recover your saved [_1]." params="<mt:var name="object_label">">
   </mtapp:statusmsg>
 </mt:if>
@@ -55,7 +55,8 @@
   <mt:if name="error">
   <mtapp:statusmsg
      id="generic-error"
-     class="error">
+     class="error"
+     can_close="0">
     <__trans phrase="Your changes have been saved.">
       <mt:var name="error">
   </mtapp:statusmsg>
@@ -79,7 +80,8 @@
   <mt:if name="error">
   <mtapp:statusmsg
      id="generic-error"
-     class="error">
+     class="error"
+     can_close="0">
     <mt:var name="error">
   </mtapp:statusmsg>
   </mt:if>

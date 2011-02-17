@@ -26,7 +26,7 @@ class Entry extends BaseObject
     }
 
     public function categories() {
-        $places = $this->placement(true);
+        $places = $this->placement();
         if (empty($places))
             return null;
 

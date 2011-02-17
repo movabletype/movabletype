@@ -316,18 +316,26 @@ function showMessage( content, cls ){
   if ( typeof content == 'object' ) {
     jQuery('#msg-block').append(
       error_block = jQuery('<div>')
-        .attr('class', 'msg msg-' + cls )
-        .append(content)
-        .append('<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />')
+      .attr('class', 'msg msg-' + cls )
+      .append(
+        jQuery('<p />')
+          .attr('class', 'msg-text')
+          .append(content)
+          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>')
+      )
     );
   }
   else {
     jQuery('#msg-block').append(
-      error_block = jQuery('<div>')
-        .attr('class', 'msg msg-' + cls )
-        .append(content)
-        .append('<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />')
-    );
+      error_block = jQuery('<div />')
+      .attr('class', 'msg msg-' + cls )
+      .append(
+        jQuery('<p />')
+          .attr('class', 'msg-text')
+          .append(content)
+          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>')
+      )
+    ); 
   }
   return error_block;
 }
@@ -924,7 +932,7 @@ function renderList(mode, columns, values, limit, page ) {
       }
       jQuery(window).trigger('listReady');
     },
-    error: function(xhr, status) {
+    error: function(xhr, status, error) {
       if ( this_request != request_id ) {
           return false;
       }
@@ -933,8 +941,12 @@ function renderList(mode, columns, values, limit, page ) {
           renderList(mode, columns, values, limit, page);
         });
       }
-      else
-        alert('Ajax error: ' + status);
+      else if ( xhr.status == 0 ) {
+        // Maybe this is user abort. do nothing.
+      }
+      else {
+        alert('Ajax error: ' + xhr.status + ': ' + status);
+      }
     }
   });
 }

@@ -9,7 +9,8 @@
 <mt:if name="missing_db">
   <mtapp:statusmsg
      id="missing-db"
-     class="error">
+     class="error"
+     can_close="0">
     <__trans phrase="The following Perl modules are required in order to make a database connection.  Movable Type requires a database in order to store your blog's data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the 'Retry' button.">
   </mtapp:statusmsg>
 </mt:if>
@@ -22,7 +23,8 @@
 <mt:if name="required">
   <mtapp:statusmsg
      id="required"
-     class="error">
+     class="error"
+     can_close="0">
     <__trans phrase="One or more Perl modules required by Movable Type could not be found.">
   </mtapp:statusmsg>
   <p><__trans phrase="The following Perl modules are required for Movable Type to run properly. Once you have met these requirements, click the 'Retry' button to re-test for these packages."></p>

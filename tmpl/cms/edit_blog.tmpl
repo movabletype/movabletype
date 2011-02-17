@@ -6,17 +6,19 @@
 <mt:setvarblock name="system_msg">
     <mt:if name="error">
         <mtapp:statusmsg
-            id="generic-error"
-            class="error">
-            <mt:var name="error">
+           id="generic-error"
+           class="error"
+           can_close="0">
+          <mt:var name="error">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="saved">
         <mtapp:statusmsg
-            id="saved"
-            class="success"
-            rebuild="all">
-            <__trans phrase="Your blog configuration has been saved.">
+           id="saved"
+           class="success"
+           rebuild="all"
+           can_close="0">
+          <__trans phrase="Your blog configuration has been saved.">
         </mtapp:statusmsg>
     </mt:if>
 </mt:setvarblock>

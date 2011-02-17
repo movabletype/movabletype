@@ -36,7 +36,8 @@
     <mt:if name="request.not_refreshed">
         <mtapp:statusmsg
             id="not-refreshed"
-            class="error">
+            class="error"
+            can_close="0">
             <__trans phrase="Some templates were not refreshed.">
         </mtapp:statusmsg>
     </mt:if>
@@ -44,7 +45,8 @@
         <mt:if name="object_type" eq="website">
             <mtapp:statusmsg
                 id="not-deleted"
-                class="error">
+                class="error"
+                can_close="0">
                 <__trans phrase="Some websites were not deleted. You need to delete blogs under the website first.">
             </mtapp:statusmsg>
         </mt:if>

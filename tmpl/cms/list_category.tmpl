@@ -223,6 +223,7 @@ function initItem($item) {
       };
       jQuery.mtValidateRules['.basename'] = function ($e) {
         if ( !$e.val().length ) return this.raise('<__trans phrase="Basename is required">');
+        if ( $e.val().match(/\W/) ) return this.raise('<__trans phrase="Invalid Basename">');
         return hasDupe(parent, id, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level">') : true;
       };
 </mt:if>

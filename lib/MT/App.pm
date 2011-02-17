@@ -531,6 +531,10 @@ sub listing {
             my $row = $obj->get_values();
             $hasher->( $obj, $row ) if $hasher;
 
+            if ( $obj->errstr ) {
+                return $app->error( $obj->errstr );
+            }
+
             #$app->run_callbacks( 'app_listing_'.$app->mode,
             #                     $app, $obj, $row );
             push @data, $row;
@@ -773,8 +777,9 @@ sub init {
     $app->run_callbacks( 'init_app', $app, @_ );
 
     if ( $MT::DebugMode & 128 ) {
-        MT->add_callback( 'pre_run',  1, $app, sub { $app->pre_run_debug } );
-        MT->add_callback( 'take_down', 1, $app, sub { $app->post_run_debug } );
+        MT->add_callback( 'pre_run', 1, $app, sub { $app->pre_run_debug } );
+        MT->add_callback( 'take_down', 1, $app,
+            sub { $app->post_run_debug } );
     }
     $app->{vtbl} = $app->registry("methods");
     $app->init_request(@_);
@@ -3180,15 +3185,16 @@ sub load_widgets {
         if ( my $widget_view = $reg_widgets->{$widget}->{view} ) {
             if ( 'ARRAY' eq ref $widget_view ) {
                 next
-                    unless ( scalar grep { $_ eq $scope_type } @$widget_view );
+                    unless ( scalar grep { $_ eq $scope_type }
+                    @$widget_view );
             }
             else {
                 next if $scope_type ne $widget_view;
             }
-            $all_widgets->{$widget} = $reg_widgets->{$widget}
+            $all_widgets->{$widget} = $reg_widgets->{$widget};
         }
         else {
-            $all_widgets->{$widget} = $reg_widgets->{$widget}
+            $all_widgets->{$widget} = $reg_widgets->{$widget};
         }
     }
 
@@ -3434,7 +3440,8 @@ sub load_widget_list {
         if ( my $widget_view = $w->{view} ) {
             if ( 'ARRAY' eq ref $widget_view ) {
                 next
-                    unless ( scalar grep { $_ eq $scope_type } @$widget_view );
+                    unless ( scalar grep { $_ eq $scope_type }
+                    @$widget_view );
             }
             else {
                 next if $scope_type ne $widget_view;

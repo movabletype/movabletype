@@ -224,7 +224,8 @@ function activatePlugin(flag, plugin_sig) {
             <mt:if name="plugin_compat_errors">
                 <mtapp:statusmsg
                     id="plugin-compact-errors"
-                    class="error">
+                    class="error"
+                    can_close="0">
                     <__trans phrase="This plugin has not been upgraded to support Movable Type [_1]. As such, it may not be completely functional." params="<mt:var name="mt_version" regex_replace="/\..*$/":"">"><br />
                     <ul>
                     <mt:loop name="plugin_compat_errors">
@@ -238,7 +239,8 @@ function activatePlugin(flag, plugin_sig) {
         <mt:if name="plugin_error">
                 <mtapp:statusmsg
                     id="plugin-error"
-                    class="error">
+                    class="error"
+                    can_close="0">
                     <__trans phrase="Plugin error:"><br /><code style="white-space: pre"><mt:var name="plugin_error"></code>
                 </mtapp:statusmsg>
         </mt:if>
@@ -368,13 +370,15 @@ function activatePlugin(flag, plugin_sig) {
     <mt:if name="blog_view">
         <mtapp:statusmsg
             id="no-plugin"
-            class="info">
+            class="info"
+            can_close="0">
             <__trans phrase="No plugins with blog-level configuration settings are installed.">
         </mtapp:statusmsg>
     <mt:else>
         <mtapp:statusmsg
             id="no-plugin"
-            class="info">
+            class="info"
+            can_close="0">
             <__trans phrase="No plugins with configuration settings are installed.">
         </mtapp:statusmsg>
     </mt:if>

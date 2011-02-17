@@ -1061,7 +1061,7 @@ BEGIN {
                     },
                 },
                 current_context => {
-                    base            => '__virtual.hidden',
+                    base  => '__virtual.hidden',
                     label => sub {
                         my $prop = shift;
                         my ($settings) = @_;
@@ -1070,7 +1070,7 @@ BEGIN {
                             $settings->{object_label_plural}
                                 || $prop->datasource->class_label_plural,
                         );
-                        },
+                    },
                     order           => 30000,
                     view            => 'website',
                     display         => 'none',
@@ -1155,7 +1155,8 @@ BEGIN {
 
                     if ( $app->blog ) {
                         return 1
-                            if $app->user->can_do('get_entry_feed', at_least_one => 1 );
+                            if $app->user->can_do( 'get_entry_feed',
+                                    at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1212,7 +1213,8 @@ BEGIN {
 
                     if ( $app->blog ) {
                         return 1
-                            if $app->user->can_do('get_page_feed', at_least_one => 1 );
+                            if $app->user->can_do( 'get_page_feed',
+                                    at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1292,7 +1294,8 @@ BEGIN {
 
                     if ( $app->blog ) {
                         return 1
-                            if $app->user->can_do('get_system_feed', at_least_one => 1 );
+                            if $app->user->can_do( 'get_system_feed',
+                                    at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1331,6 +1334,7 @@ BEGIN {
                 primary               => 'label',
                 object_label          => 'Folder',
                 template              => 'list_category.tmpl',
+                search_type           => 'page',
                 contents_label        => 'Page',
                 contents_label_plural => 'Pages',
                 permission            => 'access_to_folder_list',
@@ -1352,7 +1356,8 @@ BEGIN {
 
                     if ( $app->blog ) {
                         return 1
-                            if $app->user->can_do('get_comment_feed', at_least_one => 1 );
+                            if $app->user->can_do( 'get_comment_feed',
+                                    at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1381,7 +1386,8 @@ BEGIN {
 
                     if ( $app->blog ) {
                         return 1
-                            if $app->user->can_do('get_trackback_feed', at_least_one => 1 );
+                            if $app->user->can_do( 'get_trackback_feed',
+                                    at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1449,7 +1455,7 @@ BEGIN {
                 object_label        => 'Permission',
                 object_label_plural => 'Permissions',
                 object_type         => 'association',
-
+                search_type         => 'author',
                 #permission => 'access_to_permission_list',
                 default_sort_key => 'created_on',
                 primary          => [ 'user_name', 'role_name' ],
@@ -1458,6 +1464,7 @@ BEGIN {
             role => {
                 object_label     => 'Role',
                 object_type      => 'role',
+                search_type      => 'author',
                 primary          => 'name',
                 permission       => 'access_to_role_list',
                 default_sort_key => 'name',
@@ -1568,7 +1575,7 @@ BEGIN {
             'DefaultLanguage'       => { default => 'en_US', },
             'LocalPreviews'         => { default => 0 },
             'DefaultCommenterAuth' =>
-                { default => 'MovableType,LiveJournal,Vox' },
+                { default => 'MovableType,LiveJournal' },
             'TemplatePath' => {
                 default => 'tmpl',
                 path    => 1,

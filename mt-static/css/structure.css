@@ -1438,9 +1438,11 @@ fieldset {
 .list-revision-dialog .col.datetime {
     width: 25%;
 }
-.list-revision-dialog .col.status, 
-.list-revision-dialog .col.created-by {
+.list-revision-dialog .col.status {
     width: 15%;
+}
+.list-revision-dialog .col.created-by {
+    width: 18%;
 }
 
 /* - Edit Screen */

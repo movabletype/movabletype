@@ -190,7 +190,7 @@ sub _perms_from_registry {
             my @newperms;
             for my $p ( split ',', $more ) {
                 $p =~ s/'(.+)'/$1/;
-                next if $perms->has($p);
+                next if $perms->is_restricted($p);
                 push @newperms, $p;
             }
             return unless @newperms;

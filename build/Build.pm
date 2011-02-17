@@ -82,6 +82,7 @@ sub get_options {
       'ldap'            => 0,  # Use LDAP (and don't initialize the database).
       'lang=s'          => $ENV{BUILD_LANGUAGE} || 'en_US',  # de,es,en_US,fr,ja,nl
       'language=s@'     => undef,  # Constructed below.
+      'lang-stamp!'     => 1,  # Toggle language stampimg
       'local'           => 0,  # Command-line --option alias
       'make'            => 0,  # Command-line --option alias for simple legacy `make`
       'notify:s'        => undef,  # Send email notification on completion.
@@ -191,7 +192,8 @@ sub setup {
         }
         # Add repo, date and ldap to the stamp if we are not production.
         unless( $self->{'prod'} ) {
-            push @stamp, $self->{'short-lang=s'};
+            push @stamp, $self->{'short-lang=s'}
+                if $self->{'lang-stamp!'};
             if( $self->{'rev!'} ) {
                 push @stamp, lc( fileparse $self->{'repo=s'} );
                 push @stamp, $self->{'revision=s'};
@@ -214,7 +216,8 @@ sub setup {
     # Set the full name to use for the distribution (e.g. MT-3.3b1-fr-r12345-20061225).
     $self->{'export-dir=s'} = "$self->{'pack=s'}-$self->{'stamp=s'}";
     # Name the exported directory (and archive) with the language.
-    $self->{'export-dir=s'} .= "-$self->{'short-lang=s'}" if $self->{'prod'};
+    $self->{'export-dir=s'} .= "-$self->{'short-lang=s'}"
+        if $self->{'prod'} || $self->{'alpha=s'} || $self->{'beta=s'} || $self->{'rc=s'};
 }
 
 sub make {
