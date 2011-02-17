@@ -38,7 +38,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__', 'MT',
-        '5.1',             '__PRODUCT_VERSION_ID__',
+        '5.1',              '__PRODUCT_VERSION_ID__',
         '__PORTAL_URL__'
         );
 
@@ -2668,9 +2668,6 @@ sub init_commenter_authenticators {
     my $app = $self->app;
     my $blog = $app->blog if $app->isa('MT::App');
     foreach my $auth ( keys %$auths ) {
-        delete $Commenter_Auth{$auth}, next
-            if $auths->{$auth}->{disable};
-
         if ( my $c = $auths->{$auth}->{condition} ) {
             $c = $self->handler_to_coderef($c);
             if ($c) {
@@ -2683,15 +2680,28 @@ sub init_commenter_authenticators {
 
 sub commenter_authenticator {
     my $self = shift;
-    my ($key) = @_;
+    my ( $key, %param ) = @_;
     %Commenter_Auth or $self->init_commenter_authenticators();
+
+    return q()
+        if ( !defined %Commenter_Auth
+        || !exists $Commenter_Auth{$key}
+        || ( $Commenter_Auth{$key}->{disable} && !$param{force} ) );
     return $Commenter_Auth{$key};
 }
 
 sub commenter_authenticators {
     my $self = shift;
+    my (%param) = @_;
     %Commenter_Auth or $self->init_commenter_authenticators();
-    return values %Commenter_Auth;
+    my %auths = %Commenter_Auth;
+    if ( !$param{force} ) {
+        foreach my $auth ( keys %auths ) {
+            delete $auths{$auth} if $auths{$auth}->{disable};
+        }
+    }
+
+    return values %auths;
 }
 
 sub _commenter_auth_params {

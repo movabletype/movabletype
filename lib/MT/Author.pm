@@ -1317,7 +1317,7 @@ sub auth_icon_url {
         return $static_path . 'images/comment/mt_logo.png';
     }
 
-    my $authenticator = MT->commenter_authenticator($auth_type);
+    my $authenticator = MT->commenter_authenticator($auth_type, force => 1);
     return q() unless $authenticator;
     return q() unless exists $authenticator->{$size};
 
