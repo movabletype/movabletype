@@ -1127,8 +1127,15 @@ sub core_list_actions {
                 code          => "${pkg}Comment::trust_commenter",
                 permit_action => 'access_to_all_commenter_list',
                 condition     => sub {
-                    return 0 if $app->blog;
-                    return $app->user->is_superuser ? 1 : 0;
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+                    return
+                          $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog ? 1
+                        :              0;
                 },
             },
             'untrust' => {
@@ -1137,8 +1144,15 @@ sub core_list_actions {
                 code          => "${pkg}Comment::untrust_commenter",
                 permit_action => 'access_to_all_commenter_list',
                 condition     => sub {
-                    return 0 if $app->blog;
-                    return $app->user->is_superuser ? 1 : 0;
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+                    return
+                          $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog ? 1
+                        :              0;
                 },
             },
             'ban' => {
@@ -1147,8 +1161,15 @@ sub core_list_actions {
                 code          => "${pkg}Comment::ban_commenter",
                 permit_action => 'access_to_all_commenter_list',
                 condition     => sub {
-                    return 0 if $app->blog;
-                    return $app->user->is_superuser ? 1 : 0;
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+                    return
+                          $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog ? 1
+                        :              0;
                 },
             },
             'unban' => {
@@ -1157,8 +1178,15 @@ sub core_list_actions {
                 code          => "${pkg}Comment::unban_commenter",
                 permit_action => 'access_to_all_commenter_list',
                 condition     => sub {
-                    return 0 if $app->blog;
-                    return $app->user->is_superuser ? 1 : 0;
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+                    return
+                          $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog ? 1
+                        :              0;
                 },
             },
         },
