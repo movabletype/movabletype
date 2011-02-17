@@ -1277,7 +1277,22 @@ sub backup_terms_args {
     my $class = shift;
     my ($blog_ids) = @_;
 
-    return { terms => undef, args => undef };
+    if ( defined($blog_ids) && scalar(@$blog_ids) ) {
+        my @terms;
+        foreach my $id (@$blog_ids) {
+            push @terms, '-or' if @terms;
+            push @terms, { key => { like => "configuration:blog:$id%" } };
+        }
+        push @terms, '-or' if @terms;
+        push @terms, { key => { not_like => "%blog:%" } };
+        return {
+            terms => \@terms,
+            args  => undef
+        };
+    }
+    else {
+        return { terms => undef, args => undef };
+    }
 }
 
 sub restore_parent_ids {
