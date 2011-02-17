@@ -150,18 +150,18 @@ sub init_core_registry {
             'LWP::UserAgent' => {
                 link => 'http://search.cpan.org/dist/LWP',
                 label =>
-                    'This module is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.',
+                    'This module is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.',
             },
             'HTML::Parser' => {
                 link => 'http://search.cpan.org/dist/HTML-Parser',
                 label =>
-                    'HTML::Parser is optional; It is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.',
+                    'HTML::Parser is optional; It is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.',
             },
             'SOAP::Lite' => {
                 link    => 'http://search.cpan.org/dist/SOAP-Lite',
                 version => 0.50,
                 label =>
-                    'This module is needed if you wish to use the MT XML-RPC server implementation.',
+                    'This module is needed if you want to use the MT XML-RPC server implementation.',
             },
             'File::Temp' => {
                 link => 'http://search.cpan.org/dist/File-Temp',
@@ -211,7 +211,7 @@ sub init_core_registry {
             'Crypt::SSLeay' => {
                 link => 'http://search.cpan.org/dist/Crypt-SSLeay',
                 label =>
-                    'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.',
+                    'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support.',
             },
             'Cache::File' => {
                 link => 'http://search.cpan.org/dist/Cache/lib/Cache/File.pm',

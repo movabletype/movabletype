@@ -329,7 +329,7 @@ HTML
         print_encode( trans_templ(<<HTML) );
 <div id="header"><h1 id="brand"><span><__trans phrase="Movable Type System Check"> [mt-check.cgi]</span></h1></div>
 <div id="content">
-<p class="msg msg-info"><__trans phrase="You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator."></p>
+<p class="msg msg-info"><__trans phrase="You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator."></p>
 </div>
 </body></html>
 HTML
@@ -351,7 +351,7 @@ HTML
 <div id="header"><h1 id="brand"><span><__trans phrase="Movable Type System Check"> [mt-check.cgi]</span></h1></div>
 
 <div id="content">
-<p class="msg msg-info"><__trans phrase="The mt-check.cgi script provides you with information on your system's configuration and determines whether you have all of the components you need to run Movable Type."></p>
+<p class="msg msg-info"><__trans phrase="The mt-check.cgi script provides you with information about your system's configuration and determines whether you have all of the components you need to run Movable Type."></p>
 HTML
 }
 
@@ -384,11 +384,11 @@ my @CORE_DATA = (
 my @CORE_OPT = (
     [ 'HTML::Entities', 0, 0, translate('HTML::Entities is needed to encode some characters, but this feature can be turned off using the NoHTMLEntities option in the configuration file.') ],
 
-    [ 'LWP::UserAgent', 0, 0, translate('LWP::UserAgent is optional; It is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.') ],
+    [ 'LWP::UserAgent', 0, 0, translate('LWP::UserAgent is optional; It is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.') ],
 
-    [ 'HTML::Parser', 0, 0, translate('HTML::Parser is optional; It is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.') ],
+    [ 'HTML::Parser', 0, 0, translate('HTML::Parser is optional; It is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.') ],
 
-    [ 'SOAP::Lite', 0.50, 0, translate('SOAP::Lite is optional; It is needed if you wish to use the MT XML-RPC server implementation.') ],
+    [ 'SOAP::Lite', 0.50, 0, translate('SOAP::Lite is optional; It is needed if you want to use the MT XML-RPC server implementation.') ],
 
     [ 'File::Temp', 0, 0, translate('File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.') ],
 
@@ -404,11 +404,11 @@ my @CORE_OPT = (
 
     [ 'IPC::Run', 0, 0, translate('This module is needed if you would like to be able to use NetPBM as the image driver for MT.')],
 
-    [ 'Storable', 0, 0, translate('Storable is optional; it is required by certain MT plugins available from third parties.')],
+    [ 'Storable', 0, 0, translate('Storable is optional; It is required by certain MT plugins available from third parties.')],
 
-    [ 'Crypt::DSA', 0, 0, translate('Crypt::DSA is optional; if it is installed, comment registration sign-ins will be accelerated.')],
+    [ 'Crypt::DSA', 0, 0, translate('Crypt::DSA is optional; If it is installed, comment registration sign-ins will be accelerated.')],
 
-    [ 'Crypt::SSLeay', 0, 0, translate('This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.')],
+    [ 'Crypt::SSLeay', 0, 0, translate('This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support.')],
 
     [ 'Cache::File', 0, 0, translate('Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan as OpenID.')],
 
@@ -426,13 +426,13 @@ my @CORE_OPT = (
 
     [ 'Archive::Zip', 0, 0, translate('Archive::Zip is required in order to archive files in backup/restore operation.')],
 
-    [ 'XML::SAX', 0, 0, translate('XML::SAX and/or its dependencies is required in order to restore.')],
+    [ 'XML::SAX', 0, 0, translate('XML::SAX and its dependencies are required in order to restore a backup created in a backup/restore operation.')],
 
     [ 'Digest::SHA1', 0, 0, translate('Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.')],
-    [ 'Mail::Sendmail', 0, 0, translate('Mail::Sendmail is required for sending mail via SMTP Server.')],
-    [ 'Safe', 0, 0, translate('This module is used in test attribute of MTIf conditional tag.')],
+    [ 'Mail::Sendmail', 0, 0, translate('Mail::Sendmail is required in order to send mail via an SMTP Server.')],
+    [ 'Safe', 0, 0, translate('This module is used in a test attribute for the MT:If conditional tag.')],
     [ 'Digest::MD5', 0, 0, translate('This module is used by the Markdown text filter.')],
-    [ 'Text::Balanced', 0, 0, translate('This module is required in mt-search.cgi if you are running Movable Type on Perl older than Perl 5.8.') ],
+    [ 'Text::Balanced', 0, 0, translate('This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.') ],
     [ 'XML::Parser', 0, 0, translate('This module required for action streams.')],
 
 );
@@ -497,7 +497,7 @@ local *FH;
 if (open(FH, ">$TMP")) {
     close FH;
     unlink($TMP);
-    print_encode( trans_templ('    <li><__trans phrase="(Probably) Running under cgiwrap or suexec"></li>' . "\n") );
+    print_encode( trans_templ('    <li><__trans phrase="(Probably) running under cgiwrap or suexec"></li>' . "\n") );
 }
 
 print_encode( "\n\n</ul>\n" );
@@ -564,7 +564,7 @@ MSG
     if ($data) {
         if (!$view) {
         print_encode( trans_templ(<<MSG) );
-        <p class="msg msg-info"><__trans phrase="Some of the following modules are required by the various data storage options in Movable Type. In order run the system, your server needs to have DBI and at least one of the other modules installed."></p>
+        <p class="msg msg-info"><__trans phrase="Some of the following modules are required by databases supported by Movable Type. Your server must have DBI and at least one of these related modules installed for proper operation of Movable Type."></p>
 
 MSG
         }

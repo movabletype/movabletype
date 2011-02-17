@@ -82,7 +82,7 @@ $Lexicon_ja = array(
 ## php/lib/function.mtauthordisplayname.php
 
 ## php/lib/function.mtremotesigninlink.php
-	'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'ブログでTypeKey認証を有効にしていないので、MTRemoteSignInLinkは利用できません。',
+	'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can not be used.' => 'ブログでTypeKey認証を有効にしていないので、MTRemoteSignInLinkは利用できません。',
 
 ## php/lib/captcha_lib.php
 	'Captcha' => 'Captcha',

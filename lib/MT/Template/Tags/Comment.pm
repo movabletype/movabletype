@@ -1988,7 +1988,7 @@ sub _hdlr_remote_sign_in_link {
     my $auths = $blog->commenter_authenticators;
     return $ctx->error(
         MT->translate(
-            "TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can't be used."
+            "TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can not be used."
         )
     ) if $auths !~ /TypeKey/;
 
