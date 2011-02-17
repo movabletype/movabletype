@@ -1455,7 +1455,7 @@ BEGIN {
                 object_label        => 'Permission',
                 object_label_plural => 'Permissions',
                 object_type         => 'association',
-
+                search_type         => 'author',
                 #permission => 'access_to_permission_list',
                 default_sort_key => 'created_on',
                 primary          => [ 'user_name', 'role_name' ],
@@ -1464,6 +1464,7 @@ BEGIN {
             role => {
                 object_label     => 'Role',
                 object_type      => 'role',
+                search_type      => 'author',
                 primary          => 'name',
                 permission       => 'access_to_role_list',
                 default_sort_key => 'name',
