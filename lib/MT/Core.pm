@@ -1573,7 +1573,7 @@ BEGIN {
             'DefaultLanguage'       => { default => 'en_US', },
             'LocalPreviews'         => { default => 0 },
             'DefaultCommenterAuth' =>
-                { default => 'MovableType,LiveJournal,Vox' },
+                { default => 'MovableType,LiveJournal' },
             'TemplatePath' => {
                 default => 'tmpl',
                 path    => 1,

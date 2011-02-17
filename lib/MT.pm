@@ -2683,7 +2683,7 @@ sub commenter_authenticator {
     my ( $key, %param ) = @_;
     %Commenter_Auth or $self->init_commenter_authenticators();
 
-    return q()
+    return
         if ( !defined %Commenter_Auth
         || !exists $Commenter_Auth{$key}
         || ( $Commenter_Auth{$key}->{disable} && !$param{force} ) );
