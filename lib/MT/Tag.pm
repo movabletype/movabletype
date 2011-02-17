@@ -181,7 +181,7 @@ sub list_props {
             display               => 'none',
             verb                  => ' ',
             single_select_options => [
-                { label => 'Private', value => 1, },
+                { label => 'Private',     value => 1, },
                 { label => 'Not Private', value => 0, },
             ],
         },

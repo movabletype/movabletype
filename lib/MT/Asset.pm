@@ -52,24 +52,30 @@ sub list_props {
             order   => 100,
         },
         label => {
-            auto    => 1,
-            label   => 'Label',
-            order   => 200,
-            display => 'force',
-            bulk_html    => sub {
+            auto      => 1,
+            label     => 'Label',
+            order     => 200,
+            display   => 'force',
+            bulk_html => sub {
                 my $prop = shift;
                 my ( $objs, $app ) = @_;
-                my @userpics = MT->model('objecttag')->load({
-                    blog_id           => 0,
-                    object_datasource => 'asset',
-                    object_id         => [ map { $_->id } @$objs ],
-                }, {
-                    fetchonly => { object_id => 1 },
-                    join => MT->model('tag')->join_on( undef, { name => '@userpic', id => \'= objecttag_tag_id' }),
-                });
+                my @userpics = MT->model('objecttag')->load(
+                    {   blog_id           => 0,
+                        object_datasource => 'asset',
+                        object_id         => [ map { $_->id } @$objs ],
+                    },
+                    {   fetchonly => { object_id => 1 },
+                        join      => MT->model('tag')->join_on(
+                            undef,
+                            {   name => '@userpic',
+                                id   => \'= objecttag_tag_id'
+                            }
+                        ),
+                    }
+                );
                 my %is_userpic = map { $_->object_id => 1 } @userpics;
                 my @rows;
-                for my $obj ( @$objs ) {
+                for my $obj (@$objs) {
                     my $id = $obj->id;
                     my $label
                         = MT::Util::remove_html( $obj->label
@@ -95,7 +101,10 @@ sub list_props {
                     my $file_path = $obj->file_path;
                     ## FIXME: Hardcoded
                     my $thumb_size = 45;
-                    my $userpic_sticker = $is_userpic{$obj->id} ? q{<span class="inuse-userpic sticky-label">Userpic</span>} : '';
+                    my $userpic_sticker
+                        = $is_userpic{ $obj->id }
+                        ? q{<span class="inuse-userpic sticky-label">Userpic</span>}
+                        : '';
 
                     if ( $file_path && $fmgr->exists($file_path) ) {
                         my $img
@@ -124,26 +133,28 @@ sub list_props {
                                 (   $thumbnail_url, $thumbnail_width,
                                     $thumbnail_height
                                     )
-                                    = $obj->thumbnail_url( Width => $thumb_size,
-                                    );
+                                    = $obj->thumbnail_url(
+                                    Width => $thumb_size, );
                             }
                             elsif ( $orig_height > $thumb_size ) {
                                 (   $thumbnail_url, $thumbnail_width,
                                     $thumbnail_height
                                     )
-                                    = $obj->thumbnail_url( Height => $thumb_size,
-                                    );
+                                    = $obj->thumbnail_url(
+                                    Height => $thumb_size, );
                             }
                             else {
                                 (   $thumbnail_url, $thumbnail_width,
                                     $thumbnail_height
-                                ) = ( $obj->url, $orig_width, $orig_height );
+                                    )
+                                    = ( $obj->url, $orig_width,
+                                    $orig_height );
                             }
 
-                            my $thumbnail_width_offset
-                                = int( ( $thumb_size - $thumbnail_width ) / 2 );
-                            my $thumbnail_height_offset
-                                = int( ( $thumb_size - $thumbnail_height ) / 2 );
+                            my $thumbnail_width_offset = int(
+                                ( $thumb_size - $thumbnail_width ) / 2 );
+                            my $thumbnail_height_offset = int(
+                                ( $thumb_size - $thumbnail_height ) / 2 );
 
                             push @rows, qq{
                                 <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker

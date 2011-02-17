@@ -269,11 +269,11 @@ sub system_filters {
 sub commenter_list_props {
     return {
         name => {
-            auto         => 1,
-            label    => 'Username',
-            display      => 'force',
-            order        => 100,
-            sub_fields   => [
+            auto       => 1,
+            label      => 'Username',
+            display    => 'force',
+            order      => 100,
+            sub_fields => [
                 {   class   => 'userpic',
                     label   => 'Userpic',
                     display => 'optional',
@@ -454,7 +454,7 @@ sub member_list_props {
                 return [ map { { label => $_->name, value => $_->id } }
                         @roles ];
             },
-            },
+        },
         entry_count => {
             base        => '__virtual.object_count',
             view        => [ 'blog', 'website' ],
@@ -1317,7 +1317,7 @@ sub auth_icon_url {
         return $static_path . 'images/comment/mt_logo.png';
     }
 
-    my $authenticator = MT->commenter_authenticator($auth_type, force => 1);
+    my $authenticator = MT->commenter_authenticator( $auth_type, force => 1 );
     return q() unless $authenticator;
     return q() unless exists $authenticator->{$size};
 

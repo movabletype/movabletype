@@ -158,7 +158,7 @@ sub list_props {
                 $args->{sort} = [];
                 return;
             },
-            },
+        },
         class => {
             label                 => 'Class',
             col                   => 'class',

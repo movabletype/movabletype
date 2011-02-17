@@ -1186,7 +1186,7 @@ PERMCHECK: {
             if $app->param('confirm_js');
 
         $params->{build_compose_menus} = 0;
-        $params->{build_user_menus} = 0;
+        $params->{build_user_menus}    = 0;
 
         $app->load_tmpl( 'dialog/create_association.tmpl', $params );
     }
@@ -1209,7 +1209,8 @@ PERMCHECK: {
 
     my $params;
 
-    $params->{return_args} = $app->param('return_args') || '__mode=list&_type=association&blog_id=0';
+    $params->{return_args} = $app->param('return_args')
+        || '__mode=list&_type=association&blog_id=0';
 
     my $group = MT->registry( 'object_types', 'group' );
     $params->{has_group} = $group ? 1 : 0;

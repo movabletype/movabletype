@@ -1061,7 +1061,7 @@ BEGIN {
                     },
                 },
                 current_context => {
-                    base            => '__virtual.hidden',
+                    base  => '__virtual.hidden',
                     label => sub {
                         my $prop = shift;
                         my ($settings) = @_;
@@ -1070,7 +1070,7 @@ BEGIN {
                             $settings->{object_label_plural}
                                 || $prop->datasource->class_label_plural,
                         );
-                        },
+                    },
                     order           => 30000,
                     view            => 'website',
                     display         => 'none',
@@ -1155,7 +1155,8 @@ BEGIN {
 
                     if ( $app->blog ) {
                         return 1
-                            if $app->user->can_do('get_entry_feed', at_least_one => 1 );
+                            if $app->user->can_do( 'get_entry_feed',
+                                    at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1212,7 +1213,8 @@ BEGIN {
 
                     if ( $app->blog ) {
                         return 1
-                            if $app->user->can_do('get_page_feed', at_least_one => 1 );
+                            if $app->user->can_do( 'get_page_feed',
+                                    at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1292,7 +1294,8 @@ BEGIN {
 
                     if ( $app->blog ) {
                         return 1
-                            if $app->user->can_do('get_system_feed', at_least_one => 1 );
+                            if $app->user->can_do( 'get_system_feed',
+                                    at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1352,7 +1355,8 @@ BEGIN {
 
                     if ( $app->blog ) {
                         return 1
-                            if $app->user->can_do('get_comment_feed', at_least_one => 1 );
+                            if $app->user->can_do( 'get_comment_feed',
+                                    at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1381,7 +1385,8 @@ BEGIN {
 
                     if ( $app->blog ) {
                         return 1
-                            if $app->user->can_do('get_trackback_feed', at_least_one => 1 );
+                            if $app->user->can_do( 'get_trackback_feed',
+                                    at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
