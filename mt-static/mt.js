@@ -1081,7 +1081,7 @@ Datasource = new Class(Object, {
         if (!this.element) return;
         jQuery('div.msg').remove();
         if (jQuery(html).hasClass('msg')) {
-            jQuery('table.list-heading').hide();
+            jQuery(this.element).find('table.list-heading').hide();
             jQuery(this.element).append(html);
         } else {
             jQuery(this.element).find('table.list-heading').show();
