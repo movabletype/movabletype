@@ -1334,6 +1334,7 @@ BEGIN {
                 primary               => 'label',
                 object_label          => 'Folder',
                 template              => 'list_category.tmpl',
+                search_type           => 'page',
                 contents_label        => 'Page',
                 contents_label_plural => 'Pages',
                 permission            => 'access_to_folder_list',
