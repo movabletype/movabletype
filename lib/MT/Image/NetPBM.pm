@@ -161,7 +161,7 @@ sub convert {
 
 sub _find_pbm {
     my $image = shift;
-    return $image->{__pbm_path} if $image->{__pbm_path};
+    return $image->{__pbm_path} if ref $image and $image->{__pbm_path};
     my @NetPBM = qw( /usr/local/netpbm/bin /usr/local/bin /usr/bin );
     my $pbm;
     for my $path ( MT->config->NetPBMPath, @NetPBM ) {
@@ -174,7 +174,7 @@ sub _find_pbm {
             "You do not have a valid path to the NetPBM tools on your machine."
         )
     ) unless $pbm;
-    $image->{__pbm_path} = $pbm;
+    $image->{__pbm_path} = $pbm if ref $image;
 }
 
 1;
