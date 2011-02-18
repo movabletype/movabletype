@@ -2169,7 +2169,24 @@ ul#asset-list .asset-type-video {
 }
 
 /* - Preview */
-body.preview-screen {
+.preview-content {
+    margin: 1.2em 0;
+}
+.preview-title, 
+.preview-body, 
+.preview-more {
+    margin: 30px 0;
+}
+.preview-title {
+    font-size: 130%;
+    font-weight: bold;
+}
+.preview-more {
+    padding-top: 30px;
+    border-top: 5px solid #dcdddd;
+}
+
+.preview-screen {
     overflow: hidden;
 }
 .preview-screen #preview-layout {
@@ -2196,6 +2213,7 @@ body.preview-screen {
 }
 .preview-screen .preview-content { 
     height: 100%;
+    margin: 0;
     padding: 0;
 }
 .preview-screen .preview-content iframe {
