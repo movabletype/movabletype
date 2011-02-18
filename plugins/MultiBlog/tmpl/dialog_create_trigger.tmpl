@@ -4,29 +4,6 @@
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
-
-<style type="text/css">
-/* some styles here to resize/position the blog listing */
-#blog-panel div.selector .list-data-wrapper {
-    height: 240px;
-}
-.dialog .actions-bar form.multiblog-trigger {
-    width: 450px;
-    margin: 0;
-    padding: 0;
-    float: left;
-    text-align: left;
-}
-.dialog .actions-bar form.multiblog-trigger fieldset {
-    margin: 0;
-    padding: 0;
-}
-.dialog #options {
-    clear: both;
-    padding-top: 10px;
-}
-</style>
-
 <script type="text/javascript">
 /* <![CDATA[ */
 var dialog;
@@ -75,23 +52,23 @@ TC.attachLoadEvent( init );
 /* ]]> */
 </script>
 </mt:setvarblock>
+
 <mt:setvarblock name="after_listing_panel">
-<div id="options">
-    <form class="multiblog-trigger" method="<mt:var name="script_url">" method="post" target="_top">
-        <mt:var name="trigger_caption">
-        <select name="multiblog_blog_trigger" size="1">
-            <mt:loop name="multiblog_trigger_loop">
-            <option value="<mt:var name="trigger_key">"><mt:var name="trigger_name"></option>
-            </mt:loop>
-        </select>
-        <select name="multiblog_blog_action" size="1">
-        <mt:loop name="multiblog_action_loop">
-        <option value="<mt:var name="action_id">"><mt:var name="action_name"></option>
-        </mt:loop>
-        </select>
-    </form>
-</div>
+<form class="multiblog-trigger" method="<mt:var name="script_url">" method="post" target="_top">
+  <mt:var name="trigger_caption">
+  <select name="multiblog_blog_trigger" size="1">
+  <mt:loop name="multiblog_trigger_loop">
+    <option value="<mt:var name="trigger_key">"><mt:var name="trigger_name"></option>
+  </mt:loop>
+  </select>
+  <select name="multiblog_blog_action" size="1">
+  <mt:loop name="multiblog_action_loop">
+    <option value="<mt:var name="action_id">"><mt:var name="action_name"></option>
+  </mt:loop>
+  </select>
+</form>
 </mt:setvarblock>
+
 <mt:include name="dialog/header.tmpl">
 
 <div class="modal_width" id="select-weblog-dialog">

@@ -120,7 +120,11 @@ parameters:
     </form>
     <div class="pagination"></div>
   </div>
-  <$mt:var name="after_listing_panel"$>
+  <mt:if name="after_listing_panel">
+  <div class="listing-panel-options">
+    <mt:var name="after_listing_panel">
+  </div>
+  </mt:if>
   <div class="actions-bar actions-bar-bottom">
     <form action="" method="get" onsubmit="return false" onclick="window.focus();">
     <mt:if name="panel_last">
