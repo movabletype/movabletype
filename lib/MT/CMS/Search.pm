@@ -734,7 +734,7 @@ sub do_search_replace {
     {
         s!\D!!g if $_;
     }
-    if ($is_dateranged) {
+    if ( $is_dateranged && $datefrom_year ) {
         $datefrom = sprintf( "%04d%02d%02d",
             $datefrom_year, $datefrom_month, $datefrom_day );
         $dateto = sprintf( "%04d%02d%02d",
@@ -753,7 +753,7 @@ sub do_search_replace {
             }
         }
     }
-    elsif ( $from && $to ) {
+    elsif ( $is_dateranged && $from && $to ) {
         $is_dateranged = 1;
         s!\D!!g foreach ( $from, $to );
         $datefrom = substr( $from, 0, 8 );
@@ -1183,6 +1183,8 @@ sub do_search_replace {
             = $datefrom =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
         ( $dateto_year, $dateto_month, $dateto_day )
             = $dateto =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
+        $from = sprintf "%s-%s-%s", $datefrom_year, $datefrom_month, $datefrom_day;
+        $to   = sprintf "%s-%s-%s", $dateto_year, $dateto_month, $dateto_day;
     }
 
     my %res = (
@@ -1214,9 +1216,11 @@ sub do_search_replace {
         replace            => $replace,
         do_replace         => $do_replace,
         case               => $case,
+        from               => $from,
         datefrom_year      => $datefrom_year,
         datefrom_month     => $datefrom_month,
         datefrom_day       => $datefrom_day,
+        to                 => $to,
         dateto_year        => $dateto_year,
         dateto_month       => $dateto_month,
         dateto_day         => $dateto_day,
