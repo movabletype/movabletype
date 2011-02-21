@@ -2573,12 +2573,6 @@ div.template-group-content.active {
     border-left-color: #cfd0d0;
     background-color: #fff;
 }
-.search-replace .advanced-options#date-range .text {
-    color: #9ea1a3;
-}
-.search-replace .advanced-options#date-range .text.prefilled {
-    color: #2b2b2b;
-}
 .search-replace .actions-bar {
     margin: 20px 0 10px;
 }
