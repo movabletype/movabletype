@@ -660,6 +660,9 @@ function renderColumns( col, chk ) {
       .filter(':visible:first')
       .addClass('first-visible-child');
   });
+  // Re-render the table for IE.
+  if ( window.navigator.userAgent.match(/MSIE/) )
+    jQuery('table.listing-table').insertAfter('#listing-table-overlay');
 }
 
 function saveChecked(page) {
