@@ -142,7 +142,7 @@ sub list_props {
         },
         object_ds => {
             base        => '__virtual.single_select',
-            label       => 'Object',
+            label       => 'System Object',
             display     => 'force',
             order       => 400,
             screen_name => sub {
