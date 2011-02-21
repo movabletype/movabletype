@@ -158,7 +158,6 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
               <mt:if name="editable"><option value="<mt:var name="type">"><mt:var name="label"></option></mt:if>
             </mt:loop>
             </select>
-            <button type="button" id="additem" class="button"><__trans phrase="Add"></button>
           </div>
           <div id="filter-action" class="mod">
             <button type="submit" id="apply" class="button action primary"><__trans phrase="Apply"></button>
@@ -1189,7 +1188,7 @@ function filterItem(type, datepicker_off) {
   return $item;
 }
 
-jQuery('#additem').click(function() {
+jQuery('#item_list').change(function() {
   var type = jQuery('#item_list').val();
   if ( !type ) return false;
   var $item = filterItem(type);
@@ -1220,6 +1219,7 @@ jQuery('#additem').click(function() {
   }
   updateItemList();
   updateFilterSaveButtons({ allpass: false });
+  return false;
 });
 
 jQuery(window).mtValidate({
