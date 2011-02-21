@@ -18,7 +18,7 @@ use MT;
 
 use vars qw( @Img @drivers $TESTS_FOR_EACH );
 BEGIN {
-    $TESTS_FOR_EACH = 25;
+    $TESTS_FOR_EACH = 26;
 
     @Img = (
         [ 'test.gif', 400, 300 ],
@@ -46,12 +46,14 @@ for my $rec (@Img) {
     for my $driver (@drivers) {
         note( "----Test $driver for file $img_file" );
         $cfg->ImageDriver($driver);
+        MT::Image->error('');
         my $img = MT::Image->new( Filename => $img_file );
+        note( MT::Image->errstr ) if MT::Image->errstr;
 SKIP : {
         skip("no $driver for image $img_file", $TESTS_FOR_EACH) unless $img;
         $tested++;
         isa_ok($img, 'MT::Image::' . $driver, "driver for $img_file");
-        note( MT::Image->errstr ) if MT::Image->errstr;
+        ok( eval 'MT::Image::' . $driver . '->load_driver()', 'Also can load driver via class method' );
         is($img->{width},  $img_width,  "$driver says $img_filename is $img_width px wide");
         is($img->{height}, $img_height, "$driver says $img_filename is $img_height px high");
         my($w, $h) = $img->get_dimensions();
