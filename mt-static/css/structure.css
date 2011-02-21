@@ -2176,16 +2176,12 @@ ul#asset-list .asset-type-video {
 .preview-body, 
 .preview-more {
     margin: 30px 0;
+    line-height: 1.5;
 }
 .preview-title {
     font-size: 130%;
     font-weight: bold;
 }
-.preview-more {
-    padding-top: 30px;
-    border-top: 5px solid #dcdddd;
-}
-
 .preview-screen {
     overflow: hidden;
 }
