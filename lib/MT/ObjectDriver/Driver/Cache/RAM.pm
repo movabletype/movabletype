@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use base qw( Data::ObjectDriver::Driver::BaseCache );
+use MT::Util qw( weaken );
 
 my $cache_limit;
 
@@ -43,11 +44,10 @@ sub get_from_cache {
     my $driver = shift;
 
     $driver->start_query( 'RAMCACHE_GET ?', \@_ );
-    my $ret = $Cache{ $_[0] };
     $driver->end_query(undef);
 
-    return if !defined $ret;
-    return $ret;
+    return if !defined $Cache{$_[0]};
+    return $Cache{$_[0]};
 }
 
 sub add_to_cache {
@@ -58,22 +58,24 @@ sub add_to_cache {
     }
 
     $driver->start_query( 'RAMCACHE_ADD ?', \@_ );
-    my $ret = $Cache{ $_[0] } = $_[1];
+    $Cache{$_[0]} = $_[1];
+    weaken $Cache{$_[0]};
     $driver->end_query(undef);
 
-    return if !defined $ret;
-    return $ret;
+    return if !defined $Cache{$_[0]};
+    return $Cache{$_[0]};
 }
 
 sub update_cache {
     my $driver = shift;
 
     $driver->start_query( 'RAMCACHE_SET ?', \@_ );
-    my $ret = $Cache{ $_[0] } = $_[1];
+    $Cache{$_[0]} = $_[1];
+    weaken $Cache{$_[0]};
     $driver->end_query(undef);
 
-    return if !defined $ret;
-    return $ret;
+    return if !defined $Cache{$_[0]};
+    return $Cache{$_[0]};
 }
 
 sub remove_from_cache {
