@@ -12,11 +12,8 @@
 <mt:else>
   <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/main.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
 </mt:unless>
-  <!--[if lte IE 7]>
+  <!--[if IE]>
   <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
-  <![endif]-->
-  <!--[if lte IE 6]>
-  <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie6.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
   <![endif]-->
 <mt:if name="local_lang_id" ne="en-us">
   <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version_id" escape="url">" />
@@ -50,11 +47,6 @@
   <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/tableselect.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <!--[if lte IE 6]>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.bgiframe.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.exfixed.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.pngfix.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <![endif]-->
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 <mt:else>
@@ -62,11 +54,6 @@
   <script type="text/javascript" src="<$mt:var name="static_uri"$>js/mt_core_compact.js?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.json.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <!--[if lte IE 6]>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.bgiframe.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.exfixed.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.pngfix.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <![endif]-->
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.min.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 </mt:unless>
