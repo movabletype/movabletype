@@ -1303,17 +1303,17 @@ fieldset {
     font-weight: bold;
 }
 
-.blog-stats-widget .content {
+.object-list-widget .content {
     padding: 0 10px 10px;
     padding-left: 22px;
     background-repeat: no-repeat;
     background-position: 8px 16px;
     overflow: hidden;
 }
-.blog-stats-widget .content p {
+.object-list-widget .content p {
     margin-bottom: .5em;
 }
-.blog-stats-widget .content .meta {
+.object-list-widget .content .meta {
     color: #9ea1a3;
 }
 .blog-stats-widget-panel .view-all {
@@ -1322,6 +1322,9 @@ fieldset {
 }
 
 /* --- Blog Stats: Comments */
+#comment-panel .content {
+    padding-top: 10px;
+}
 .blog-stats-widget .comment-status-publish {
     background-image: url(../images/status_icons/success.gif);
 }
