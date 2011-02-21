@@ -817,7 +817,9 @@ ul.tabs li a {
     background-image: url(../images/nav-icon-view.png);
 }
 #cms-search a {
+    position: static;
     background-image: url(../images/search-submit.png);
+    border: 0;
 }
 #menu-bar-icons li.active a, 
 #menu-bar-icons li a:hover { 

@@ -34,11 +34,15 @@ $.mtMenu = function(options) {
     };
     var opts = $.extend(defaults, options);
     $('.top-menu > div a').after('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
-    $('.top-menu .toggle-button').click(function(event) {
-        $(this).parents('li.top-menu').toggleClass('top-menu-open active');
-        $(this).parents('li.top-menu').find('.sub-menu').toggle();
-        event.preventDefault();
-    });
+    $('.top-menu .toggle-button')
+        .mousedown(function(event) {
+            $(this).parents('li.top-menu').toggleClass('top-menu-open active');
+            $(this).parents('li.top-menu').find('.sub-menu').toggle();
+            return false;
+        })
+        .click(function(event) {
+            return false;            
+        });
 };
 
 
@@ -58,44 +62,21 @@ $.mtSelector = function(options) {
     $('#user-dashboard > em').prepend('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
     $('#current-website > em').prepend('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
 
-    $('#selector-nav-list li .toggle-button ').click(function(event) {
-        $(this).parent('em').parents('#selector-nav').toggleClass('show-selector active');
-        event.preventDefault();
-    });
-    $(document).click(function(event) {
+    $('#selector-nav-list li .toggle-button ')
+        .mousedown(function(event) {
+            $(this).parent('em').parents('#selector-nav').toggleClass('show-selector active');
+            return false;
+        })
+        .click(function(event) {
+            return false;
+        });
+    $(document).mousedown(function(event) {
         if ($(event.target).parents('#selector-nav').length == 0) {
             $('#selector-nav').removeClass('show-selector active');
         }
     });
     if (!$.support.style && !$.support.objectAll) {
         if ($.fn.bgiframe) $('div.selector').bgiframe();
-    }
-};
-
-/*
- * mtFavActions
- *
- * Usage:
- *   jQuery.mtFavActions();
- *
- */
-$.mtFavActions = function(options) {
-    var defaults = {
-        arrow_image: StaticURI+'images/arrow-down-gray.gif'
-    };
-    var opts = $.extend(defaults, options);
-    $('.fav-actions-nav li > em').append('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
-    $('.fav-actions-nav .toggle-button').click(function(event) {
-        $(this).parents('li').toggleClass('active').find('.fav-actions').toggleClass('hidden');
-        event.preventDefault();
-    });
-    $(document).click(function(event) {
-        if ($(event.target).parents('.fav-actions-nav').length == 0) {
-            $('.fav-actions').addClass('hidden').parent('li').removeClass('active');
-        }
-    });
-    if (!$.support.style && !$.support.objectAll) {
-        if ($.fn.bgiframe) $('.fav-action').bgiframe();
     }
 };
 
@@ -107,18 +88,19 @@ $.mtFavActions = function(options) {
  *
  */
 $.mtCMSSearch = function(options) {
-    $('#cms-search > a').click(function(event) {
-        $('#cms-search').toggleClass('active').find('#search-form').toggleClass('hidden');
-        event.preventDefault();
-    });
-    $(document).click(function(event) {
+    $('#cms-search > a')
+        .mousedown(function(event) {
+            $('#cms-search').toggleClass('active').find('#search-form').toggleClass('hidden');
+            return false;
+        })
+        .click(function(event) {
+            return false;
+        });
+    $(document).mousedown(function(event) {
         if ($(event.target).parents('#cms-search').length == 0) {
             $('#search-form').addClass('hidden').parent('#cms-search').removeClass('active');
         }
     });
-    if (!$.support.style && !$.support.objectAll) {
-        if ($.fn.bgiframe) $('.fav-action').bgiframe();
-    }
 };
 
 /*
@@ -852,13 +834,17 @@ $.fn.mtToggleField = function(options) {
         var $field = $(this);
         if (opts.default_hide)
             $field.find('.'+opts.detail_class).hide();
-        $field.find('.'+opts.click_class).click(function(event) {
-            $field.toggleClass('active').find('.'+opts.detail_class).toggle();
-            event.preventDefault();
-        });
+        $field.find('.'+opts.click_class)
+            .mousedown(function(event) {
+                $field.toggleClass('active').find('.'+opts.detail_class).toggle();
+                return false;
+            })
+            .click(function(event) {
+                return false;
+            });
 
         if (opts.hide_clicked) {
-            $(document).click(function(event) {
+            $(document).mousedown(function(event) {
                 if ($(event.target).parents('.active').length == 0) {
                     $field.removeClass('active').find('.'+opts.detail_class).hide();
                 }
