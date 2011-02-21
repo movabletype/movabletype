@@ -1330,12 +1330,6 @@ fieldset {
 }
 
 /* --- Blog Stats: Entries */
-.blog-stats-widget .entry h4 a {
-    color: #2b2b2b;
-}
-.blog-stats-widget .entry h4 a:hover {
-    color: #5c909b;
-}
 .blog-stats-widget .entry-status-publish {
     background-image: url(../images/status_icons/success.gif);
 }
