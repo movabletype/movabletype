@@ -175,6 +175,7 @@ sub _find_pbm {
         )
     ) unless $pbm;
     $image->{__pbm_path} = $pbm if ref $image;
+    $pbm;
 }
 
 1;
