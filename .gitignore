@@ -33,3 +33,4 @@ plugins/feeds-app-lite
 plugins/mixiComment
 
 t/site/
+t/db/mt.db
