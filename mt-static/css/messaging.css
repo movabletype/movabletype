@@ -46,11 +46,7 @@
 
 /* -- for Permission Message */
 .msg .detail { 
-    margin: 10px 0 0 10px;
-}
-
-.msg.active .title .detail-link { 
-    display: none;
+    margin: 10px 0 0;
 }
 
 /* - for Widget Content */
@@ -77,8 +73,9 @@ p.zero-state {
 }
 
 /* - Junk Message */
-#junk-message .detail {
-    margin: 8px 0 0;
+#junk-message .junk-score {
+    font-weight: bold;
+    margin: 0 0 0.5em;
 }
 
 /* - Debug Panel Messages */

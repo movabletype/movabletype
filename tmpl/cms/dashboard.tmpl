@@ -1,43 +1,47 @@
 <mt:if name="scope_type" like="(blog|website)">
-    <mt:setvarblock name="html_title"><__trans phrase="Dashboard"></mt:setvarblock>
-    <mt:setvarblock name="page_title"><$mt:var name="blog_name" escape="html"$></mt:setvarblock>
+  <mt:setvarblock name="html_title"><__trans phrase="Dashboard"></mt:setvarblock>
+  <mt:setvarblock name="page_title"><$mt:var name="blog_name" escape="html"$></mt:setvarblock>
 <mt:else name="scope_type" eq="system">
-    <mt:setvarblock name="page_title"><__trans phrase="System Overview"></mt:setvarblock>
+  <mt:setvarblock name="page_title"><__trans phrase="System Overview"></mt:setvarblock>
 <mt:else>
-    <mt:setvarblock name="html_title"><__trans phrase="Dashboard"></mt:setvarblock>
-    <mt:setvarblock name="page_title"><__trans phrase="Hi, [_1]" params="<mt:var name="author_display_name" escape="html" escape="html">"></mt:setvarblock>
+  <mt:setvarblock name="html_title"><__trans phrase="Dashboard"></mt:setvarblock>
+  <mt:setvarblock name="page_title"><__trans phrase="Hi, [_1]" params="<mt:var name="author_display_name" escape="html" escape="html">"></mt:setvarblock>
 </mt:if>
 <mt:setvarblock name="html_head" append="1">
-    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
 </mt:setvarblock>
 
 <mt:setvartemplate name="select_widget_form">
 <mt:var name="widget_options" value="0">
 <mt:setvarblock name="add_widget_form">
 <form method="POST" action="<mt:var name="script_url">" class="listing">
-    <input type="hidden" name="__mode" value="update_widget_prefs" />
-    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-    <input type="hidden" name="widget_action" value="add" />
-    <input type="hidden" name="widget_scope" value="<mt:var name="widget_scope" escape="html">" />
-    <input type="hidden" name="widget_set" value="<mt:var name="set">" />
-    <div class="actions-bar buttons">
-        <div class="actions-bar-inner pkg actions">
-            <select name="widget_id">
-                <option value=""><__trans phrase="Select a Widget..."></option>
-<mt:loop name="all_widget_loop"><mt:if name="widget_set"><mt:if name="widget_set" eq="$set"><mt:var name="widget_options" value="1">
-                <option value="<mt:var name="widget_id" escape="html">"><mt:var name="widget_label" escape="html"></option>
-</mt:if><mt:else><mt:var name="widget_options" value="1">
-                <option value="<mt:var name="widget_id" escape="html">"><mt:var name="widget_label" escape="html"></option>
-</mt:if></mt:loop>
-            </select>
-            <button
-               type="submit"
-               class="button">
-              <__trans phrase="Add">
-            </button>
-        </div>
-    </div>
+  <input type="hidden" name="__mode" value="update_widget_prefs" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="widget_action" value="add" />
+  <input type="hidden" name="widget_scope" value="<mt:var name="widget_scope" escape="html">" />
+  <input type="hidden" name="widget_set" value="<mt:var name="set">" />
+  <div class="actions-bar buttons">
+    <select name="widget_id">
+      <option value=""><__trans phrase="Select a Widget..."></option>
+    <mt:loop name="all_widget_loop">
+    <mt:if name="widget_set">
+      <mt:if name="widget_set" eq="$set">
+      <mt:var name="widget_options" value="1">
+      <option value="<mt:var name="widget_id" escape="html">"><mt:var name="widget_label" escape="html"></option>
+      </mt:if>
+    <mt:else>
+      <mt:var name="widget_options" value="1">
+      <option value="<mt:var name="widget_id" escape="html">"><mt:var name="widget_label" escape="html"></option>
+    </mt:if>
+    </mt:loop>
+    </select>
+    <button
+       type="submit"
+       class="button">
+      <__trans phrase="Add">
+    </button>
+  </div>
 </form>
 </mt:setvarblock>
 <mt:if name="widget_options"><mt:var name="add_widget_form"></mt:if>
@@ -45,57 +49,51 @@
 
 <mt:setvarblock name="related_content">
 <div id="widget-container-sidebar">
-<mt:section id="sidebar" class="widget-container"><mt:var name="sidebar"></mt:section>
+  <mt:section id="sidebar" class="widget-container"><mt:var name="sidebar"></mt:section>
 </div>
-<$mt:var name="select_widget_form" set="sidebar"$>
+<mt:var name="select_widget_form" set="sidebar">
 </mt:setvarblock>
+
 <mt:setvarblock name="system_msg">
-    <div id="msg-block">
-    <mt:if name="saved">
-        <mtapp:statusmsg
-            id="saved"
-            class="info">
-            <__trans phrase="Your Dashboard has been updated.">
-        </mtapp:statusmsg>
-    </mt:if>
-    <mt:if name="permission">
-        <mtapp:statusmsg
-            id="permissions"
-            class="error"
-            can_close="0">
-            <__trans phrase="You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.">
-        </mtapp:statusmsg>
-    </mt:if>
-
-    <mt:unless name="has_uploads_path">
-        <mtapp:statusmsg
-            id="permission-error"
-            class="info"
-            can_close="0">
-            <div class="title"><__trans phrase="Support directory is not writable."> <a href="#" class="detail-link"><__trans phrase="Detail"></a></div>
-            <div class="detail">
-                <p><__trans phrase="Movable Type was unable to write to its 'support' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it." params="<mt:var name="support_path">"></p>
-            </div>
-        </mtapp:statusmsg>
-    </mt:unless>
-
-    <mt:unless name="can_use_userpic">
-        <div id="userpic" class="permission-error msg msg-info">
-            <div class="title"><__trans phrase="Image::Magick is not configured."> <a href="#" class="detail-link"><__trans phrase="Detail"></a></div>
-            <div class="detail">
-                <p><__trans phrase="Image::Magick is either not present on your server or incorrectly configured. Due to that, you will not be able to use Movable Type's userpics feature. If you wish to use that feature, please install Image::Magick or use an alternative image driver."></p>
-            </div>
-        </div>
-    </mt:unless>
-
+<mt:if name="saved">
+  <mtapp:statusmsg
+     id="saved"
+     class="info">
+    <__trans phrase="Your Dashboard has been updated.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="permission">
+  <mtapp:statusmsg
+     id="permissions"
+     class="error"
+     can_close="0">
+    <__trans phrase="You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:unless name="has_uploads_path">
+  <div id="permission-error" class="msg msg-info">
+    <p class="msg-text"><__trans phrase="Support directory is not writable."> <a href="#" class="detail-link"><__trans phrase="Detail"></a></p>
+    <div class="detail">
+      <p class="msg-text"><__trans phrase="Movable Type was unable to write to its 'support' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it." params="<mt:var name="support_path">"></p>
     </div>
+  </div>
+</mt:unless>
+<mt:unless name="can_use_userpic">
+  <div id="userpic" class="permission-error msg msg-info">
+    <p class="msg-text"><__trans phrase="Image::Magick is not configured."> <a href="#" class="detail-link"><__trans phrase="Detail"></a></p>
+    <div class="detail">
+      <p class="msg-text"><__trans phrase="Image::Magick is either not present on your server or incorrectly configured. Due to that, you will not be able to use Movable Type's userpics feature. If you wish to use that feature, please install Image::Magick or use an alternative image driver."></p>
+    </div>
+  </div>
+</mt:unless>
 </mt:setvarblock>
+
 <mt:include name="include/header.tmpl">
 
 <div id="widget-container-main">
-<mt:section id="main" class="widget-container"><mt:var name="main"></mt:section>
+  <mt:section id="main" class="widget-container"><mt:var name="main"></mt:section>
 </div>
-<$mt:var name="select_widget_form" set="main"$>
+<mt:var name="select_widget_form" set="main">
 
 <script type="text/javascript">
 /* <![CDATA[ */
