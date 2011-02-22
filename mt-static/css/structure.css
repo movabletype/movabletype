@@ -40,7 +40,7 @@ pre {
 
 /* - Component */
 .hint { 
-    max-width: 75%;
+    width: 75%;
     color: #a3a3a2;
     font-size: 95%;
     font-style: Italic;
@@ -1037,9 +1037,6 @@ fieldset {
     padding: 10px 0 0;
     margin: 0 0 10px;
 }
-.field-header {
-    color: #2b2b2b;
-}
 .field-left-label .field-header {
     float: left;
     width: 14em;
@@ -1050,7 +1047,7 @@ fieldset {
     margin-left: 15.5em;
 }
 .field-top-label .field-header {
-    margin-bottom: 3px;
+    margin-bottom: 5px;
 }
 .field-inline, 
 .field-inline .field-header, 
@@ -1071,6 +1068,9 @@ fieldset {
 }
 .field .hint {
     margin-top: 5px;
+}
+.field-top-label .hint {
+    width: 100%;
 }
 #display_image-field { 
     margin-top: 0;
