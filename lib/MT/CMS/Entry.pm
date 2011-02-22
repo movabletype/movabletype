@@ -1903,27 +1903,26 @@ PERMCHECK: {
         if ( $perms->can_edit_entry( $entry, $this_author, 1 ) )
         {    ## can he/she change status?
             $entry->status( scalar $q->param( 'status_' . $id ) );
-            my $co = $q->param( 'created_on_' . $id );
-            unless ( $co
-                =~ m!(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})(?::(\d{2}))?! )
-            {
+
+            my $date_closure = sub {
+                my ( $val, $col, $name ) = @_;
+                unless ( $val =~ m!(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})(?::(\d{2}))?! ) {
+                    return $app->error(
+                        $app->translate(
+                            "Invalid date '[_1]'; $name dates must be in the format YYYY-MM-DD HH:MM:SS.",
+                            $val
+                        )
+                    );
+                }
+                my $s = $6 || 0;
+
+                # Emit an error message if the date is bogus.
                 return $app->error(
                     $app->translate(
-                        "Invalid date '[_1]'; authored on dates must be in the format YYYY-MM-DD HH:MM:SS.",
-                        $co
+                        "Invalid date '[_1]'; $name dates should be real dates.",
+                        $val
                     )
-                );
-            }
-            my $s = $6 || 0;
-
-            # Emit an error message if the date is bogus.
-            return $app->error(
-                $app->translate(
-                    "Invalid date '[_1]'; authored on dates should be real dates.",
-                    $co
-                )
-                )
-                if $s > 59
+                ) if $s > 59
                     || $s < 0
                     || $5 > 59
                     || $5 < 0
@@ -1935,10 +1934,15 @@ PERMCHECK: {
                     || ( MT::Util::days_in( $2, $1 ) < $3
                         && !MT::Util::leap_day( $0, $1, $2 ) );
 
-            # FIXME: Should be assigning the publish_date field here
-            my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
-                $s;
-            $entry->authored_on($ts);
+                # FIXME: Should be assigning the publish_date field here
+                my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5, $s;
+                $entry->$col($ts);
+            };
+
+            my $co = $q->param( 'created_on_' . $id );
+            $date_closure->( $co, 'authored_on', 'authored on' ) or return;
+            $co = $q->param( 'modified_on_' . $id );
+            $date_closure->( $co, 'modified_on', 'modified on' ) or return;
         }
         $app->run_callbacks( 'cms_pre_save.' . $type,
             $app, $entry, $orig_obj )
@@ -2329,6 +2333,16 @@ sub build_entry_table {
                 = format_ts( $datetime_format, $ts, $obj->blog,
                 $app->user ? $app->user->preferred_language : undef );
             $row->{created_on_relative}
+                = relative_date( $ts, time, $obj->blog );
+        }
+        if ( my $ts = $obj->modified_on ) {
+            $row->{modified_on_formatted}
+                = format_ts( $date_format, $ts, $obj->blog,
+                $app->user ? $app->user->preferred_language : undef );
+            $row->{modified_on_time_formatted}
+                = format_ts( $datetime_format, $ts, $obj->blog,
+                $app->user ? $app->user->preferred_language : undef );
+            $row->{modified_on_relative}
                 = relative_date( $ts, time, $obj->blog );
         }
         my $author = $obj->author;
