@@ -1,6 +1,9 @@
 .listing {
     margin-bottom: 50px;
 }
+#spam-log-listing {
+    margin-bottom: 0;
+}
 
 #filter-header,
 .listing-table-block {

@@ -39,6 +39,25 @@
     <mt:var name="error">
   </mtapp:statusmsg>
 </mt:if>
+<mt:if name="editing_other_profile">
+  <mt:if name="status_pending">
+    <mtapp:statusmsg
+       id="user-pending"
+       class="alert"
+       can_close="0">
+      <__trans phrase="This user was classified as pending.">
+    </mtapp:statusmsg>
+  <mt:else>
+    <mt:unless name="status_enabled">
+    <mtapp:statusmsg
+       id="user-disabled"
+       class="alert"
+       can_close="0">
+      <__trans phrase="This user was classified as disabled.">
+    </mtapp:statusmsg>
+    </mt:unless>
+  </mt:if>
+</mt:if>
 </mt:setvarblock>
 
 <mt:setvarblock name="html_head" append="1">
@@ -160,15 +179,6 @@ TC.attachLoadEvent(init);
   <h2><__trans phrase="Profile"></h2>
   <fieldset id="author-profile-settings">
   <mt:if name="editing_other_profile">
-    <mt:if name="editing_other_profile">
-      <mt:if name="status_pending">
-        <mt:setvar name="user_status" value="user-status-pending">
-      <mt:else>
-        <mt:unless name="status_enabled">
-          <mt:setvar name="user_status" value="user-status-disabled">
-        </mt:unless>
-      </mt:if>
-    </mt:if>
 
     <mtapp:setting
        id="status"

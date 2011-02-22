@@ -47,7 +47,6 @@
 /* -- for Permission Message */
 .msg .detail { 
     margin: 10px 0 0 10px;
-    color: #7b7c7d;
 }
 
 .msg.active .title .detail-link { 
@@ -77,6 +76,10 @@ p.zero-state {
     font-size: 95%;
 }
 
+/* - Junk Message */
+#junk-message .detail {
+    margin: 8px 0 0;
+}
 
 /* - Debug Panel Messages */
 .debug-panel { 

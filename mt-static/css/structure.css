@@ -1453,51 +1453,12 @@ fieldset {
     position: relative;
     padding: 10px 0 10px;
 }
-.edit-comment .comment-status-unapproved,
-.edit-ping .ping-status-unapproved,
-.edit-author .user-status-pending, 
-.edit-comment .comment-status-spam,
-.edit-ping .ping-status-spam,
-.edit-author .user-status-disabled,
-.edit-group .group-status-disabled {
-    background-color: #fef263;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -khtml-border-radius: 5px;
-    -webkit-border-radius: 5px;
-}
-#junk-message {
-    padding-top: 26px;
-    padding-bottom: 10px;
-    background-position: 12px 20px;
-}
-.edit-comment .comment-spam-info,
-.edit-ping .ping-spam-info,
-.edit-entry .entry-spam-info {
-    position: absolute;
-    top: 15px;
-    right: 10px;
-}
-.edit-comment #spam-details-toggle,
-.edit-ping #spam-details-toggle,
-.edit-entry #spam-details-toggle {
-    background: url(../images/spinner-right.gif) no-repeat left center;
-    padding-left: 11px;
-}
-.edit-comment #spam-details-toggle.active,
-.edit-ping #spam-details-toggle.active,
-.edit-entry #spam-details-toggle.active {
-    background-image: url(../images/spinner-bottom.gif);
-}
 #comment-feedback-rating, 
 #ping-feedback-rating { 
     margin-top: 10px;
 }
 #status-field .listing { 
     margin-bottom: 0;
-}
-.listing .spam-log-listing-table { 
-    width: 98%;
 }
 
 /* -- Editor */

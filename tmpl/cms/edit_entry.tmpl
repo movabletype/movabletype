@@ -194,6 +194,39 @@
     <mt:var name="error">
   </mtapp:statusmsg>
 </mt:if>
+<mt:if name="junk_log_loop">
+  <div id="junk-message" class="msg msg-alert">
+    <p class="msg-text">
+    <mt:if name="status_review">
+      <__trans phrase="This post was held for review, due to spam filtering."> <a href="#" class="detail-link"><__trans phrase="Details"></a>
+    <mt:else>
+      <__trans phrase="This post was classified as spam."> <a href="#" class="detail-link"><__trans phrase="Details"></a>
+    </mt:if>
+    </p>
+    <div id="entry-feedback-rating" class="detail">
+      <div id="spam-log-listing" class="listing">
+        <table class="legacy spam-log-listing-table listing-table">
+          <thead>
+            <tr>
+              <th id="jl-test" class="col head"><span class="col-label"><__trans phrase="Test"></span></th>
+              <th id="jl-score" class="col head"><span class="col-label"><__trans phrase="Score"></span></th>
+              <th id="jl-results" class="col head"><span class="col-label"><__trans phrase="Results"></span></th>
+            </tr>
+          </thead>
+          <tbody>
+          <mt:loop name="junk_log_loop">
+            <tr class="<mt:if name="__odd__">odd</mt:if>">
+              <td class="col"><mt:var name="test" escape="html"></td>
+              <td class="col"><mt:var name="score"></td>
+              <td class="col"><mt:var name="log"></td>
+            </tr>
+          </mt:loop>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</mt:if>
 </div>
 </mt:setvarblock>
 
@@ -1033,46 +1066,7 @@
 </mt:setvarblock>
 </mt:unless>
 
-
 <mt:include name="include/header.tmpl" id="header_include">
-
-<mt:if name="junk_log_loop">
-  <mtapp:statusmsg
-     id="junk-message"
-     class="alert"
-     can_close="0">
-  <mt:if name="status_review">
-    <__trans phrase="This post was held for review, due to spam filtering.">
-  <mt:else>
-    <__trans phrase="This post was classified as spam.">
-  </mt:if>
-    <div class="entry-spam-info">
-      <a href="javascript:void(0)" onclick="toggleHidden('entry-feedback-rating'); toggleActive('spam-details-toggle'); return true" id="spam-details-toggle"><__trans phrase="Spam Details"></a>
-    </div>
-    <div id="entry-feedback-rating" class="hidden">
-      <div id="spam-log-listing" class="listing">
-        <table class="spam-log-listing-table" cellspacing="0">
-          <thead>
-            <tr>
-              <th id="jl-test"><__trans phrase="Test"></th>
-              <th id="jl-score"><__trans phrase="Score"></th>
-              <th id="jl-results"><__trans phrase="Results"></th>
-            </tr>
-          </thead>
-          <tbody>
-          <mt:loop name="junk_log_loop">
-            <tr valign="top" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-              <td><mt:var name="test" escape="html"></td>
-              <td><mt:var name="score"></td>
-              <td><mt:var name="log"></td>
-            </tr>
-          </mt:loop>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </mtapp:statusmsg>
-</mt:if>
 
 <div id="sortable" class="sortable">
 <mt:loop id="content_fields" name="field_loop">
