@@ -2089,7 +2089,7 @@ abstract class MTDatabase {
 
         if (isset($args['sort_by']) && ('score' == $args['sort_by'])) {
             $authors_tmp = array();
-            $order = 'asc';
+            $order = 'desc';
             if (isset($args['sort_order']))
                 $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
             foreach ($authors as $a) {
