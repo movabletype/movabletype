@@ -1344,8 +1344,8 @@ sub is_valid_url {
     return '' if ( $url =~ /[ \"]/ );
 
     # help fat-finger typists.
-    $url =~ s,http;//,http://,;
-    $url =~ s,http//,http://,;
+    $url =~ s,(https?);//,$1://,;
+    $url =~ s,(https?)//,$1://,;
 
     $url = "http://$url" unless ( $url =~ m,https?://, );
 
@@ -1365,7 +1365,7 @@ sub is_valid_url {
 sub is_url {
     my ($url) = @_;
 
-    return $url =~ /s?https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+/;
+    return $url =~ /^s?https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+/;
 }
 
 sub discover_tb {
@@ -2424,7 +2424,7 @@ sub sanitize_embed {
     foreach my $d (@domains) {
         unless ( $d =~ m/$re/ ) {
             my $err = MT->translate( "Invalid domain: '[_1]'", $d );
-            return $eh->error($err) if $err;
+            return $eh->error($err) if $err && $eh;
             die $err;
         }
     }

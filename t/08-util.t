@@ -27,7 +27,7 @@ use strict;
 my $mt = MT->new;
 $mt->config('NoHTMLEntities', 1);
 
-BEGIN { plan tests => 204 };
+BEGIN { plan tests => 208 };
 
 is(substr_wref("Sabado", 0, 3), "Sab"); #1
 is(substr_wref("S&agrave;bado", 0, 3), "S&agrave;b"); #2
@@ -330,8 +330,13 @@ is(is_valid_email('foo:bar@example.com'), '0', 'is_valid_email() for invalid val
 is(is_valid_url('http://www.example.com/'), 'http://www.example.com/', 'is_valid_url() normal url');
 is(is_valid_url('http;//www.example.com/'), 'http://www.example.com/', 'is_valid_url() fixing typo (1)');
 is(is_valid_url('http//www.example.com/'), 'http://www.example.com/', 'is_valid_url() fixing typo (2');
-is(is_valid_url('ftp://www.example.com/'), 'ftp://www.example.com/', 'is_valid_url() for ftp');
+#is(is_valid_url('ftp://www.example.com/'), 'ftp://www.example.com/', 'is_valid_url() for ftp'); # Not support.
+is(is_valid_url('https://www.example.com/'), 'https://www.example.com/', 'is_valid_url() ssl');
+is(is_valid_url('https;//www.example.com/'), 'https://www.example.com/', 'is_valid_url() fixing typo(3)');
+is(is_valid_url('http://www.example.com:8080/'), 'http://www.example.com:8080/', 'is_valid_url() port');
 ok(is_url('http://www.example.com/?foo=bar&baz=10%'), 'is_url() normal url');
+ok(is_url('https://www.example.com/?foo=bar&baz=10%'), 'is_url() ssl');
+ok(is_url('http://www.example.com:8080/?foo=bar&baz=10%'), 'is_url() port');
 ok(! is_url('not a url'), 'is_url() not a url');
 ok(! is_url('not http://_'), 'is_url() invalid url');
 
@@ -460,6 +465,7 @@ while (my($env, $expected) = each(%accept_languages)) {
     is(browser_language(), $expected, "browser_language() for \"$env\"");
 }
 
+MT->config('EmbedDomainWhitelist', 'example.com');
 my $taint_embed = <<__HTML__;
 Content
 <a href="http://example.com/foo.html" onclick="alert('test');">Foo</a>
