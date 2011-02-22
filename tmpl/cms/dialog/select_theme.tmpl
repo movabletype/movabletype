@@ -38,7 +38,7 @@ function init() {    // setup
 <div id="available-themes" class="select-theme">
 <mt:loop name="theme_loop">
     <div id="theme-<mt:var name="id">" class="theme<mt:if name="current"> current-theme</mt:if>">
-        <div class="theme-thumbnail picture small">
+        <div class="theme-thumbnail thumbnail picture small">
             <a href="javascript:returnSelectedTheme(1,'<mt:var name="theme_id">')">
                 <img alt="<$mt:var name="label" escape="html"$>" src="<mt:var name="thumbnail_url">" />
             </a>
@@ -47,7 +47,7 @@ function init() {    // setup
             <h2 class="theme-title"><mt:var name="label"></h2>
             <p class="theme-description description"><mt:var name="description"></p>
             <span class="action-link">
-                <a href="javascript:returnSelectedTheme(1,'<mt:var name="theme_id">')"><__trans phrase="Apply"></a>
+                <a href="javascript:returnSelectedTheme(1,'<mt:var name="theme_id">')"><__trans phrase="Select"></a>
             </span>
         </div>
     </div>
@@ -58,9 +58,10 @@ function init() {    // setup
     <button
         type="submit"
         accesskey="x"
-        class="cancel action mt-close-dialog"
-        title="<__trans phrase="Cancel (x)">"
-        ><__trans phrase="Cancel"></button>
+        class="cancel action button mt-close-dialog"
+        title="<__trans phrase="Cancel (x)">">
+      <__trans phrase="Cancel">
+    </button>
 </div>
 
 <script type="text/javascript">
