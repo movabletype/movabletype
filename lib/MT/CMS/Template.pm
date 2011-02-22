@@ -211,142 +211,158 @@ sub edit {
                     next unless $mod;
                     next if $mod =~ /^\$.*/;
                     my $type = $attr->{widget} ? 'widget' : 'custom';
-                    my $inc_blog_id
-                        = $tag->[1]->{global} ? 0
-                        : $tag->[1]->{blog_id} ? [ $tag->[1]->{blog_id}, 0 ]
-                        : $tag->[1]->{parent} ? $obj->blog
-                            ? $obj->blog->website->id
-                            : 0
-                        : [ $obj->blog_id, 0 ];
-
-                    my $mod_id
-                        = $mod . "::"
-                        . (
-                        ref $inc_blog_id ? $inc_blog_id->[0] : $inc_blog_id );
-                    next if exists $seen{$type}{$mod_id};
-                    $seen{$type}{$mod_id} = 1;
-                    my $other = MT::Template->load(
-                        {   blog_id => $inc_blog_id,
-                            name    => $mod,
-                            type    => $type,
-                        },
-                        {   limit => 1,
-                            ref $inc_blog_id
-                            ? ( sort      => 'blog_id',
-                                direction => 'descend',
-                                )
-                            : ()
-                        }
-                    );
-
-                    if ($other) {
-                        $include->{include_link} = $app->mt_uri(
-                            mode => 'view',
-                            args => {
-                                blog_id => $other->blog_id || 0,
-                                '_type' => 'template',
-                                id      => $other->id
-                            }
-                        );
-                        $include->{can_link}
-                            = $app->user->is_superuser
-                            || $app->user->permissions(0)
-                            ->can_do('edit_templates')
-                            ? 1
-                            : $other->blog_id
-                            ? $app->user->permissions( $other->blog_id )
-                            ->can_do('edit_templates')
-                                ? 1
-                                : 0
-                            : 0;
-
-                        # Try to compile template module
-                        # if using MTInclude in this template.
-                        $other->compile;
-                        if ( $other->{errors} && @{ $other->{errors} } ) {
-                            $param->{error} = $app->translate(
-                                "One or more errors were found in included template module ([_1]).",
-                                $other->name
-                            );
-                            $param->{error} .= "<ul>\n";
-                            foreach my $err ( @{ $other->{errors} } ) {
-                                $param->{error}
-                                    .= "<li>"
-                                    . MT::Util::encode_html( $err->{message} )
-                                    . "</li>\n";
-                            }
-                            $param->{error} .= "</ul>\n";
-                        }
-
-                        if ( $other->blog_id ) {
-                            if ( $other->blog_id eq $blog_id ) {
-                                $include->{include_from}      = 'self';
-                                $include->{include_blog_name} = 'self';
-                            }
-                            else {
-                                $include->{include_from}
-                                    = $other->blog->is_blog
-                                    ? 'blog'
-                                    : 'website';
-                                $include->{include_blog_name}
-                                    = $other->blog->name;
-                            }
-                        }
-                        else {
-                            $include->{include_from}
-                                = $blog_id
-                                ? 'global'
-                                : 'self';
-                            $include->{include_blog_name}
-                                = $blog_id
-                                ? $app->translate('Global Template')
-                                : 'self';
-                        }
+                    if (   $tag->[1]->{blog_id}
+                        && $tag->[1]->{blog_id} =~ m/^\$/ )
+                    {
+                        $include->{include_from} = 'error';
+                        $include->{include_blog_name}
+                            = $app->translate('Unknown blog');
                     }
                     else {
-                        my $target_blog_id
-                            = ref $inc_blog_id
+                        my $inc_blog_id
+                            = $tag->[1]->{global}
+                            ? 0
+                            : $tag->[1]->{blog_id}
+                            ? [ $tag->[1]->{blog_id}, 0 ]
+                            : $tag->[1]->{parent} ? $obj->blog
+                                ? $obj->blog->website->id
+                                : 0
+                            : [ $obj->blog_id, 0 ];
+
+                        my $mod_id
+                            = $mod . "::"
+                            . (
+                            ref $inc_blog_id
                             ? $inc_blog_id->[0]
-                            : $inc_blog_id;
-                        $include->{create_link} = $app->mt_uri(
-                            mode => 'view',
-                            args => {
-                                blog_id => $target_blog_id,
-                                '_type' => 'template',
-                                type    => $type,
+                            : $inc_blog_id );
+                        next if exists $seen{$type}{$mod_id};
+                        $seen{$type}{$mod_id} = 1;
+
+                        my $other = MT::Template->load(
+                            {   blog_id => $inc_blog_id,
                                 name    => $mod,
+                                type    => $type,
+                            },
+                            {   limit => 1,
+                                ref $inc_blog_id
+                                ? ( sort      => 'blog_id',
+                                    direction => 'descend',
+                                    )
+                                : ()
                             }
                         );
 
-                        my $target_blog;
-                        $target_blog
-                            = MT->model('blog')->load($target_blog_id)
-                            if $target_blog_id;
+                        if ($other) {
+                            $include->{include_link} = $app->mt_uri(
+                                mode => 'view',
+                                args => {
+                                    blog_id => $other->blog_id || 0,
+                                    '_type' => 'template',
+                                    id      => $other->id
+                                }
+                            );
+                            $include->{can_link}
+                                = $app->user->is_superuser
+                                || $app->user->permissions(0)
+                                ->can_do('edit_templates')
+                                ? 1
+                                : $other->blog_id
+                                ? $app->user->permissions( $other->blog_id )
+                                ->can_do('edit_templates')
+                                    ? 1
+                                    : 0
+                                : 0;
 
-                        if ($target_blog_id) {
-                            if ($target_blog) {
-                                $include->{include_from}
-                                    = $target_blog->id eq $blog_id ? 'self'
-                                    : $target_blog->is_blog ? 'blog'
-                                    :                         'website';
-                                $include->{include_blog_name}
-                                    = $target_blog->name;
+                            # Try to compile template module
+                            # if using MTInclude in this template.
+                            $other->compile;
+                            if ( $other->{errors} && @{ $other->{errors} } ) {
+                                $param->{error} = $app->translate(
+                                    "One or more errors were found in included template module ([_1]).",
+                                    $other->name
+                                );
+                                $param->{error} .= "<ul>\n";
+                                foreach my $err ( @{ $other->{errors} } ) {
+                                    $param->{error}
+                                        .= "<li>"
+                                        . MT::Util::encode_html(
+                                        $err->{message} )
+                                        . "</li>\n";
+                                }
+                                $param->{error} .= "</ul>\n";
+                            }
+
+                            if ( $other->blog_id ) {
+                                if ( $other->blog_id eq $blog_id ) {
+                                    $include->{include_from}      = 'self';
+                                    $include->{include_blog_name} = 'self';
+                                }
+                                else {
+                                    $include->{include_from}
+                                        = $other->blog->is_blog
+                                        ? 'blog'
+                                        : 'website';
+                                    $include->{include_blog_name}
+                                        = $other->blog->name;
+                                }
                             }
                             else {
-                                $include->{include_from} = 'error';
+                                $include->{include_from}
+                                    = $blog_id
+                                    ? 'global'
+                                    : 'self';
                                 $include->{include_blog_name}
-                                    = $app->translate('Invalid Blog');
+                                    = $blog_id
+                                    ? $app->translate('Global Template')
+                                    : 'self';
                             }
                         }
                         else {
-                            $include->{include_from}
-                                = !$blog_id
-                                ? 'self'
-                                : 'global';
-                            $include->{include_blog_name}
-                                = !$blog_id
-                                ? 'self'
-                                : $app->translate('Global Template');
+                            my $target_blog_id
+                                = ref $inc_blog_id
+                                ? $inc_blog_id->[0]
+                                : $inc_blog_id;
+                            $include->{create_link} = $app->mt_uri(
+                                mode => 'view',
+                                args => {
+                                    blog_id => $target_blog_id,
+                                    '_type' => 'template',
+                                    type    => $type,
+                                    name    => $mod,
+                                }
+                            );
+
+                            my $target_blog;
+                            $target_blog
+                                = MT->model('blog')->load($target_blog_id)
+                                if $target_blog_id;
+
+                            if ($target_blog_id) {
+                                if ($target_blog) {
+                                    $include->{include_from}
+                                        = $target_blog->id eq $blog_id
+                                        ? 'self'
+                                        : $target_blog->is_blog ? 'blog'
+                                        :                         'website';
+                                    $include->{include_blog_name}
+                                        = $target_blog->name;
+                                }
+                                else {
+                                    $include->{include_from} = 'error';
+                                    $include->{include_blog_name}
+                                        = $app->translate('Invalid Blog');
+                                }
+                            }
+                            else {
+                                $include->{include_from}
+                                    = !$blog_id
+                                    ? 'self'
+                                    : 'global';
+                                $include->{include_blog_name}
+                                    = !$blog_id
+                                    ? 'self'
+                                    : $app->translate('Global Template');
+                            }
                         }
                     }
                     if ( $type eq 'widget' ) {
@@ -356,6 +372,7 @@ sub edit {
                         push @includes, $include;
                     }
                 }
+
                 push @{ $param->{include_loop} }, @includes if @includes;
                 push @{ $param->{widget_loop} },  @widgets  if @widgets;
             }
