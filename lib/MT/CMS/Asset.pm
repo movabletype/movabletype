@@ -181,6 +181,7 @@ sub dialog_list_asset {
     elsif ( $filter eq 'userpic' ) {
         $class_filter = 'image';
         $terms{created_by} = $app->param('filter_val');
+        $terms{blog_id} = 0;
 
         my $tag = MT::Tag->load( { name => '@userpic' },
             { binary => { name => 1 } } );
