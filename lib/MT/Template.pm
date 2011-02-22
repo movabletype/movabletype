@@ -142,7 +142,8 @@ sub new_file {
         $tmpl->text($contents);
         return $tmpl;
     }
-    return;    # load_file errror;
+    return $pkg->trans_error( "File not found: [_1]", $file )
+        ;    # load_file errror;
 }
 
 sub new_string {
