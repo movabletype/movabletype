@@ -501,13 +501,15 @@ EOT;
 
     function count_format($count, $args) {
         $phrase = '';
-        if ($count == 0) {
-            $phrase = array_key_exists('none', $args) ? $args['none'] :
-                (array_key_exists('plural', $args) ? $args['plural'] : '');
-        } elseif ($count == 1) {
-            $phrase = array_key_exists('singular', $args) ? $args['singular'] : '';
-        } elseif ($count > 1) {
-            $phrase = array_key_exists('plural', $args) ? $args['plural'] : '';
+        if (! empty($args)) {
+            if ($count == 0) {
+                $phrase = array_key_exists('none', $args) ? $args['none'] :
+                    (array_key_exists('plural', $args) ? $args['plural'] : '');
+            } elseif ($count == 1) {
+                $phrase = array_key_exists('singular', $args) ? $args['singular'] : '';
+            } elseif ($count > 1) {
+                $phrase = array_key_exists('plural', $args) ? $args['plural'] : '';
+            }
         }
         if ($phrase == '')
             return $count;
