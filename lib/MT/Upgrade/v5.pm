@@ -142,6 +142,57 @@ sub upgrade_functions {
                 },
             },
         },
+        'v5_make_blog_category_and_folder_order' => {
+            version_limit => 5.0023,
+            priority      => 3.2,
+            updater       => {
+                type  => 'blog',
+                label => 'Ordering Categories and Folders of Blogs...',
+                code  => sub {
+                    my ($blog) = @_;
+                    my @cats = MT->model('category')->load(
+                        { blog_id => $blog->id, },
+                        {   sort       => 'label',
+                            direction  => 'ascend',
+                            fetch_only => { id => 1 },
+                        }
+                    );
+                    my $order = join ',', ( map { $_->id } @cats );
+                    $blog->category_order($order);
+                    my @folders = MT->model('folder')->load(
+                        { blog_id => $blog->id, },
+                        {   sort       => 'label',
+                            direction  => 'ascend',
+                            fetch_only => { id => 1 },
+                        }
+                    );
+                    my $folder_order = join ',', ( map { $_->id } @folders );
+                    $blog->folder_order($folder_order);
+                    $blog->save;
+                },
+            },
+        },
+        'v5_make_website_category_order' => {
+            version_limit => 5.0023,
+            priority      => 3.2,
+            updater       => {
+                type  => 'website',
+                label => 'Ordering Folders of Websites...',
+                code  => sub {
+                    my ($site) = @_;
+                    my @folders = MT->model('folder')->load(
+                        { blog_id => $site->id, },
+                        {   sort       => 'label',
+                            direction  => 'ascend',
+                            fetch_only => { id => 1 },
+                        }
+                    );
+                    my $folder_order = join ',', ( map { $_->id } @folders );
+                    $site->folder_order($folder_order);
+                    $site->save;
+                },
+            },
+        },
     };
 }
 
