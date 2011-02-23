@@ -1267,7 +1267,14 @@ sub _hdlr_entry_categories {
     my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $cats = $e->categories;
+    my $cats;
+    if ( 'primary' eq lc $args->{type} ) {
+        $cats = [ $e->category ]
+            if $e->category;
+    }
+    else {
+        $cats = $e->categories;
+    }
     return '' unless $cats && @$cats;
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
@@ -1283,6 +1290,35 @@ sub _hdlr_entry_categories {
         $res .= $out;
     }
     $res;
+}
+
+
+###########################################################################
+
+=head2 EntryPrimaryCategory
+
+This block tag that can be used to set the primary category of the entry
+in context. Must be used in an entry context (entry archive or L<Entries> loop).
+
+All categories can be listed using L<EntryCategories> loop tag.
+
+=for tags entries, categories
+
+=cut
+
+sub _hdlr_entry_primary_category {
+    my ( $ctx, $args, $cond ) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    my $cat = $e->category;
+    return '' unless $cat;
+    my $builder = $ctx->stash('builder');
+    my $tokens  = $ctx->stash('tokens');
+    local $ctx->{inside_mt_categories} = 1;
+    local $ctx->{__stash}->{category} = $cat;
+    defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
+        or return $ctx->error( $builder->errstr );
+    $out;
 }
 
 ###########################################################################

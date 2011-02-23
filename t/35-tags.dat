@@ -70,8 +70,8 @@
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTrackbackData></MTEntries>", "e" : "<!--\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:trackback=\"http://madskills.com/public/xml/rss/module/trackback/\"\n         xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n<rdf:Description\n    rdf:about=\"http://narnia.na/nana/archives/1978/01/a-rainy-day.html\"\n    trackback:ping=\"http://narnia.na/cgi-bin/mt-tb.cgi/1\"\n    dc:title=\"A Rainy Day\"\n    dc:identifier=\"http://narnia.na/nana/archives/1978/01/a-rainy-day.html\"\n    dc:subject=\"\"\n    dc:description=\"A story of a stroll.\"\n    dc:creator=\"Chucky Dee\"\n    dc:date=\"1978-01-31T07:45:00-03:30\" />\n</rdf:RDF>\n-->\n"}, #69
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryLink archive_type=\"Individual\"></MTEntries>", "e" : "http://narnia.na/nana/archives/1978/01/a-rainy-day.html"}, #70
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryPermalink archive_type=\"Individual\"></MTEntries>", "e" : "http://narnia.na/nana/archives/1978/01/a-rainy-day.html"}, #71
-{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryCategory></MTEntries>", "e" : ""}, #72
-{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryCategories><MTCategoryLabel></MTEntryCategories></MTEntries>", "e" : ""}, #73
+{ "r" : "1", "t" : "<MTEntries id=\"6\"><MTEntryCategory></MTEntries>", "e" : "foo"}, #72
+{ "r" : "1", "t" : "<MTEntries id=\"6\"><MTEntryCategories><MTCategoryLabel></MTEntryCategories></MTEntries>", "e" : "foo"}, #73
 { "r" : "0", "t" : "<MTTypeKeyToken>", "e" : "token"}, #74 TBD
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTRemoteSignInLink></MTEntries>", "e" : "https://www.typekey.com/t/typekey/login?&amp;lang=en_US&amp;t=token&amp;v=1.1&amp;_return=http://narnia.na/cgi-bin/mt-comments.cgi%3f__mode=handle_sign_in%26key=TypeKey%26static=0%26entry_id=1"}, #75
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTRemoteSignOutLink></MTEntries>", "e" : "http://narnia.na/cgi-bin/mt-comments.cgi?__mode=handle_sign_in&amp;static=0&amp;logout=1&amp;entry_id=1"}, #76
@@ -608,5 +608,7 @@
 { "r" : "1", "t" : "<MTAuthors id=\"2\"><MTAuthorScoreAvg namespace='unit test'></MTAuthors>", "e" : "2.00"}, #607
 { "r" : "1", "t" : "<MTAuthors id=\"2\"><MTAuthorScoreCount namespace='unit test'></MTAuthors>", "e" : "1"}, #608
 { "r" : "1", "t" : "<mt:Authors need_entry='0' namespace='unit test' sort_by='score' offset='1'><mt:AuthorName>,</mt:Authors>", "e" : "Chuck D,Melody,"}, #609
-{ "r" : "1", "t" : "<mt:Authors need_entry='0' namespace='unit test' sort_by='score' offset='2'><mt:AuthorName>,</mt:Authors>", "e" : "Melody,"} #610
+{ "r" : "1", "t" : "<mt:Authors need_entry='0' namespace='unit test' sort_by='score' offset='2'><mt:AuthorName>,</mt:Authors>", "e" : "Melody,"}, #610
+{ "r" : "1", "t" : "<MTEntries id=\"6\"><MTEntryPrimaryCategory><MTCategoryLabel></MTEntryPrimaryCategory></MTEntries>", "e" : "foo"}, #611
+{ "r" : "1", "t" : "<MTEntries id=\"6\"><MTEntryCategories type=\"primary\"><MTCategoryLabel></MTEntryCategories></MTEntries>", "e" : "foo"} #612
 ]

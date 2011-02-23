@@ -232,6 +232,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Category::_hdlr_is_descendant',
             EntryCategories =>
                 '$Core::MT::Template::Tags::Category::_hdlr_entry_categories',
+            EntryPrimaryCategory =>
+                '$Core::MT::Template::Tags::Category::_hdlr_entry_primary_category',
             EntryAdditionalCategories =>
                 '$Core::MT::Template::Tags::Category::_hdlr_entry_additional_categories',
 
