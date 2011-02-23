@@ -1078,7 +1078,7 @@ sub list {
     $param{filters}          = $json->encode($filters);
     $param{initial_filter}   = $json->encode($initial_filter);
     $param{allpass_filter}   = $json->encode($allpass_filter);
-    $param{messages}         = $json->encode( \@messages );
+    $param{system_messages}  = $json->encode( \@messages );
     $param{filters_raw}      = $filters;
     $param{default_sort_key} = $default_sort;
     $param{list_columns}     = \@list_columns;
