@@ -40,6 +40,18 @@
     vertical-align: top;
     word-wrap: break-word;
 }
+.col.head { 
+    padding: 0 0 0 8px;
+    border-width: 0 0 1px 1px;
+    background-color: #dcdddd;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
+    background: -moz-linear-gradient(top, #f3f3f3 0%, #dcdddd 100%);
+    font-size: 11px;
+    font-weight: bold;
+    text-shadow: rgb(248,251,248) 0 1px 0;
+    white-space: nowrap;
+    vertical-align: middle;
+}
 .col a { 
     color: #274a78;
 }
@@ -55,29 +67,18 @@
 }
 .col.cb { 
     width: 2.6em;
+    padding-right: 8px;
     text-align: center;
 }
 .col.si,
 .col.view {
     width: 4em;
+    padding-right: 8px;
     text-align: center;
 }
 .col.primary { 
     width: auto;
     min-width: 15%;
-}
-
-.col.head { 
-    padding: 0 0 0 8px;
-    border-width: 0 0 1px 1px;
-    background-color: #dcdddd;
-    background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
-    background: -moz-linear-gradient(top, #f3f3f3 0%, #dcdddd 100%);
-    font-size: 11px;
-    font-weight: bold;
-    text-shadow: rgb(248,251,248) 0 1px 0;
-    white-space: nowrap;
-    vertical-align: middle;
 }
 thead .col.head.first-child {
     border-top-left-radius: 5px;
