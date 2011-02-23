@@ -167,9 +167,10 @@ function handleMessages( data ) {
     var text  = msg.msg;
     var cls   = msg.cls;
     jQuery('#msg-block').append(
-      '<div class="msg msg-' + cls + '">'
+      '<div class="msg msg-' + cls + '"><p class="msg-text">'
       + text
-      + '<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />'
+      + '</p>'
+      + '<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>'
       + '</div>');
   }
   return true;
