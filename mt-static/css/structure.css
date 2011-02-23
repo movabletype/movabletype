@@ -1136,16 +1136,20 @@ fieldset {
 .widget-no-header .widget-header { 
     display: none;
 }
-.widget-label h2,
-.widget-label h3,
-.widget-label h4,
-.widget-label h5, 
-.widget-label h6 {
+.widget-header h2,
+.widget-header h3,
+.widget-header h4,
+.widget-header h5, 
+.widget-header h6 {
     margin: 0;
     font-size: 100%;
     font-weight: bold;
 }
-.tabbed .widget-label h2 {
+.tabbed .widget-label h2, 
+.tabbed .widget-label h3, 
+.tabbed .widget-label h4, 
+.tabbed .widget-label h5, 
+.tabbed .widget-label h6 {
     display: none;
 }
 .widget-action {
@@ -1775,7 +1779,7 @@ fieldset {
 }
 .category-toggle-link {
     position: absolute;
-    top: 8px;
+    top: 5px;
     right: 10px;
 }
 .edit-page .add-category-toggle-link {
