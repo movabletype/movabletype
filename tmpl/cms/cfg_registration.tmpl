@@ -68,6 +68,9 @@
   <mtapp:setting
      id="setting-auth-status"
      label="<__trans phrase="Authentication Methods">">
+  <mt:unless name="openid_enabled">
+    <p class="alert-warning-inline icon-left icon-warning"><__trans phrase="The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing."></p>
+  </mt:unless>
   <mt:unless name="commenter_authenticators">
     <mt:if name="allow_reg_comments">
       <mt:unless name="allow_unreg_comments">
@@ -95,18 +98,11 @@
       <li><input type="<mt:if name="label">checkbox<mt:else>hidden</mt:if>" id="enabled_<mt:var name="key" escape="html">" name="enabled_<mt:var name="key" escape="html">" value="1"<mt:if name="enabled"> checked="checked"</mt:if><mt:if name="disabled"> disabled="disabled"</mt:if> /> <label for="enabled_<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label><mt:if name="disabled"> (<mt:var name="disabled_reason" default="<__trans phrase="One or more Perl modules may be missing to use this authentication method.">">)</mt:if></li>
     </mt:if>
   </mt:loop>
+  <mt:unless name="typekey_enabled">
+      <li><input type="checkbox" disabled="disabled"> TypePad (<a href="<mt:var name="script_url">?__mode=cfg_web_services&amp;blog_id=<mt:var name="blog_id" escape="url">"><__trans phrase="Setup TypePad token"></a>)</li>
+  </mt:unless>
     </ul>
   </mt:if>
-  
-  <mt:unless name="typekey_enabled">
-    <div><a href="<mt:var name="script_url">?__mode=cfg_web_services&amp;blog_id=<mt:var name="blog_id" escape="url">"><__trans phrase="Setup TypePad authentication"></a> <__trans phrase="on the Web Services Settings page."></div>
-  </mt:unless>
-  <mt:unless name="openid_enabled">
-    <p>
-      <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="OpenID providers disabled">" width="9" height="9" />
-      <span class="alert-warning-inline"><__trans phrase="The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing."></span>
-    </p>
-  </mt:unless>
   </mtapp:setting>
 
   <mt:setvarblock name="action_buttons">

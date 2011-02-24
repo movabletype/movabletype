@@ -46,10 +46,7 @@ pre {
     font-style: Italic;
 }
 
-.alert-warning-inline { 
-    margin: 5px 0 0;
-    color: #f39800;
-}
+.alert-warning-inline, 
 .alert-warning-inline a { 
     color: #f39800;
 }
