@@ -1873,7 +1873,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] is not a hash.' => '[_1] ist kein Hash-Wert.',
 	'No [_1] could be found.' => 'Keine [_1] gefunden.',
 	'records' => 'Einträge',
-	'No template to include specified' => 'Keine einzubindende Vorlage angegeben',
+	'No template to include was specified' => 'Keine einzubindende Vorlage angegeben',
 	'Recursion attempt on [_1]: [_2]' => 'Rekursionsversuch bei [_1]: [_2]',
 	'Can\'t find included template [_1] \'[_2]\'' => 'Kann verwendete Vorlage [_1] &#8222;[_1]&#8220; nicht finden',
 	'Writing to \'[_1]\' failed: [_2]' => '&#8222;[_1]&#8220; konnte nicht beschrieben werden: [_2]',
@@ -3901,7 +3901,7 @@ use vars qw( @ISA %Lexicon );
 	'View page' => 'Seite ansehen',
 	'No entries could be found.' => 'Keine Einträge gefunden.',
 	'<a href="[_1]">Create an entry</a> now.' => 'Jetzt <a href="[_1]">einen Eintrag schreiben</a>.',
-	'No page could be found. <a href="[_1]">Create a page</a> now.' => 'Keine Seiten gefunden. Jetzt <a href="[_1]">eine Seite anlegen</a>.',
+	'No pages could be found. <a href="[_1]">Create a page</a> now.' => 'Keine Seiten gefunden. Jetzt <a href="[_1]">eine Seite anlegen</a>.',
 	'to republish' => 'zur erneuten Veröffentlichung',
 
 ## tmpl/cms/include/feed_link.tmpl
@@ -4550,7 +4550,7 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,comment,comments]' => '[quant,_1,Kommentar,Kommentare]',
 	'No website could be found. [_1]' => 'Keine Website gefunden. [_1]',
 	'Create a new' => 'Neu anlegen',
-	'No blog could be found.' => 'Keine Blogs gefunden.',
+	'No blogs could be found.' => 'Keine Blogs gefunden.',
 
 ## tmpl/cms/widget/mt_news.tmpl
 	'News' => 'Neues',

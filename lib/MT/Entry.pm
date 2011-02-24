@@ -652,29 +652,29 @@ sub list_props {
 sub system_filters {
     return {
         published => {
-            label => 'Published Entries',
+            label => 'Published entries',
             items => [ { type => 'status', args => { value => '2' }, }, ],
             order => 100,
         },
         draft => {
-            label => 'Unpublished Entries',
+            label => 'Unpublished entries',
             items => [ { type => 'status', args => { value => '1' }, }, ],
             order => 200,
         },
         future => {
-            label => 'Scheduled Entries',
+            label => 'Scheduled entries',
             items => [ { type => 'status', args => { value => '4' }, }, ],
             order => 500,
         },
         my_posts => {
-            label => 'My Entries',
+            label => 'My entries',
             items => sub {
                 [ { type => 'current_user' } ],;
             },
             order => 1000,
         },
         commented_in_last_7_days => {
-            label => 'Entries Commented in the Last 7 Days',
+            label => 'Entries commented on in the last 7 days',
             items => [
                 {   type => 'commented_on',
                     args => { option => 'days', days => 7 }

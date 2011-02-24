@@ -31,7 +31,7 @@ $VERSION = '0.35';
       $Is_Disrec{$1} = 1;
     }
   }
-  die "No tags read??" unless $count;
+  die "No tags read?" unless $count;
 }
 #----------------------------------------------------------------------
 

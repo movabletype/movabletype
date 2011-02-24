@@ -353,13 +353,13 @@ sub list_props {
 sub system_filters {
     return {
         not_spam => {
-            label => 'Non spam trackbacks',
+            label => 'Non-spam trackbacks',
             items =>
                 [ { type => 'status', args => { value => 'not_junk' }, }, ],
             order => 100,
         },
         not_spam_in_this_website => {
-            label => 'Non spam trackbacks on this website',
+            label => 'Non-spam trackbacks on this website',
             view  => 'website',
             items => [
                 { type => 'current_context' },

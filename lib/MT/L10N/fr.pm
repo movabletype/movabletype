@@ -1873,7 +1873,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] is not a hash.' => '[_1] n\'est pas un hash',
 	'No [_1] could be found.' => 'Il n\'y a pas de [_1] trouvés.',
 	'records' => 'enregistrements',
-	'No template to include specified' => 'Aucun gabarit spécifié pour inclusion',
+	'No template to include was specified' => 'Aucun gabarit spécifié pour inclusion',
 	'Recursion attempt on [_1]: [_2]' => 'Tentative de récursion sur [_1]: [_2]',
 	'Can\'t find included template [_1] \'[_2]\'' => 'Impossible de trouver le gabarit inclus [_1] \'[_2]\'',
 	'Writing to \'[_1]\' failed: [_2]' => 'Ecriture sur\'[_1]\' a échoué: [_2]',
@@ -3903,7 +3903,7 @@ use vars qw( @ISA %Lexicon );
 	'View page' => 'Afficher une page',
 	'No entries could be found.' => 'Aucune note n\'a été trouvée.',
 	'<a href="[_1]">Create an entry</a> now.' => '<a href="[_1]">Créer une note</a> maintenant.',
-	'No page could be found. <a href="[_1]">Create a page</a> now.' => 'Aucune page n\'a été trouvée. <a href="[_1]">Créer une page</a> maintenant.',
+	'No pages could be found. <a href="[_1]">Create a page</a> now.' => 'Aucune page n\'a été trouvée. <a href="[_1]">Créer une page</a> maintenant.',
 	'to republish' => 'pour republier',
 
 ## tmpl/cms/include/feed_link.tmpl
@@ -4553,7 +4553,7 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,comment,comments]' => '[quant,_1,commentaire,commentaires]',
 	'No website could be found. [_1]' => 'Aucun site web trouvé. [_1]',
 	'Create a new' => 'Créer',
-	'No blog could be found.' => 'Aucun blog trouvé.',
+	'No blogs could be found.' => 'Aucun blog trouvé.',
 
 ## tmpl/cms/widget/mt_news.tmpl
 	'News' => 'Actualité',

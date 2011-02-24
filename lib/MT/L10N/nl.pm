@@ -1873,7 +1873,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] is not a hash.' => '[_1] is geen hash.',
 	'No [_1] could be found.' => '[_1] werden niet gevonden',
 	'records' => 'records',
-	'No template to include specified' => 'Geen sjabloon opgegeven om te includeren',
+	'No template to include was specified' => 'Geen sjabloon opgegeven om te includeren',
 	'Recursion attempt on [_1]: [_2]' => 'Recursiepoging op [_1]: [_2]',
 	'Can\'t find included template [_1] \'[_2]\'' => 'Kan geincludeerd sjabloon niet vinden: [_1] \'[_2]\'',
 	'Writing to \'[_1]\' failed: [_2]' => 'Schrijven naar \'[_1]\' mislukt: [_2]',
@@ -3902,7 +3902,7 @@ use vars qw( @ISA %Lexicon );
 	'View page' => 'Pagina bekijken',
 	'No entries could be found.' => 'Geen berichten gevonden.',
 	'<a href="[_1]">Create an entry</a> now.' => 'Nu <a href="[_1]">een bericht aanmaken</a>.',
-	'No page could be found. <a href="[_1]">Create a page</a> now.' => 'Er werden geen pagina\'s gevonden. Nu <a href="[_1]">een pagina aanmaken</a>.',
+	'No pages could be found. <a href="[_1]">Create a page</a> now.' => 'Er werden geen pagina\'s gevonden. Nu <a href="[_1]">een pagina aanmaken</a>.',
 	'to republish' => 'om opnieuw te publiceren',
 
 ## tmpl/cms/include/feed_link.tmpl
@@ -4551,7 +4551,7 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,comment,comments]' => '[quant,_1,reactie,reacties]',
 	'No website could be found. [_1]' => 'Geen website gevonden. [_1]',
 	'Create a new' => 'Aanmaken',
-	'No blog could be found.' => 'Geen blog gevonden.',
+	'No blogs could be found.' => 'Geen blog gevonden.',
 
 ## tmpl/cms/widget/mt_news.tmpl
 	'News' => 'Nieuws',

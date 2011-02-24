@@ -4096,7 +4096,7 @@ B<Example:> Passing Parameters to a Template Module
             : $arg->{file}       ? _include_file(@_)
             : $arg->{name}       ? _include_name(@_)
             : $ctx->error(
-            MT->translate('No template to include specified') );
+            MT->translate('No template to include was specified') );
 
         return $out;
     }

@@ -246,19 +246,19 @@ sub list_props {
 sub system_filters {
     return {
         enabled => {
-            label => 'Enabled Users',
+            label => 'Enabled users',
             items =>
                 [ { type => 'status', args => { value => 'active' }, }, ],
             order => 100,
         },
         disabled => {
-            label => 'Disabled Users',
+            label => 'Disabled users',
             items =>
                 [ { type => 'status', args => { value => 'disabled' }, }, ],
             order => 200,
         },
         pending => {
-            label => 'Pending Users',
+            label => 'Pending users',
             items =>
                 [ { type => 'status', args => { value => 'pending' }, }, ],
             order => 300,

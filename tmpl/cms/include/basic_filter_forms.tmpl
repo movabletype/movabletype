@@ -27,9 +27,9 @@
                    <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL"></option>
                    <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL"></option>
                    <option value="greater_than"><__trans phrase="is greater than"></option>
-                   <option value="greater_equal"><__trans phrase="is greater or equal to"></option>
+                   <option value="greater_equal"><__trans phrase="is greater than or equal to"></option>
                    <option value="less_than"><__trans phrase="is less than"></option>
-                   <option value="less_equal"><__trans phrase="is less or equal to"></option>
+                   <option value="less_equal"><__trans phrase="is less than or equal to"></option>
                  </select>%%
                  <input type="text" class="prop-integer <mt:var name="type">-value text num required digit" value="" />">
 </mt:setvartemplate>
@@ -37,8 +37,8 @@
 <mt:setvartemplate name="filter_form_future_date">
   <mt:setvarblock name="future_date_filter_options">
   <select class="<mt:var name="type">-option filter-date">
-    <option value="range"><__trans phrase="is in the range"></option>
-    <option value="days"><__trans phrase="is in the last"></option>
+    <option value="range"><__trans phrase="is between"></option>
+    <option value="days"><__trans phrase="is within the last"></option>
     <option value="before"><__trans phrase="is before"></option>
     <option value="after"><__trans phrase="is after"></option>
     <option value="future"><__trans phrase="is after now"></option>
@@ -53,7 +53,7 @@
     <mt:setvarblock name="date_input_origin"><input type="text" class="<mt:var name="type">-origin text required date" /></mt:setvarblock>
     <mt:setvarblock name="date_input_days"><input type="text" class="<mt:var name="type">-days text required days" /></mt:setvarblock>
     <span class="date"><__trans phrase="__FILTER_DATE_ORIGIN" params="<mt:var name="date_input_origin">"></span>
-    <span class="range"><__trans phrase="[_1] to [_2]" params="<mt:var name="date_input_from">%%<mt:var name="date_input_to">"></span>
+    <span class="range"><__trans phrase="[_1] and [_2]" params="<mt:var name="date_input_from">%%<mt:var name="date_input_to">"></span>
     <span class="days"><__trans phrase="_FILTER_DATE_DAYS" params="<mt:var name="date_input_days">"></span>
   </span>
   </mt:setvarblock>
@@ -62,8 +62,8 @@
 <mt:setvartemplate name="filter_form_date">
   <mt:setvarblock name="date_filter_options">
   <select class="<mt:var name="type">-option filter-date">
-    <option value="range"><__trans phrase="is in the range"></option>
-    <option value="days"><__trans phrase="is in the last"></option>
+    <option value="range"><__trans phrase="is between"></option>
+    <option value="days"><__trans phrase="is within the last"></option>
     <option value="before"><__trans phrase="is before"></option>
     <option value="after"><__trans phrase="is after"></option>
   </select>
@@ -76,7 +76,7 @@
     <mt:setvarblock name="date_input_origin"><input type="text" class="<mt:var name="type">-origin text required date" /></mt:setvarblock>
     <mt:setvarblock name="date_input_days"><input type="text" class="<mt:var name="type">-days text required days" /></mt:setvarblock>
     <span class="date"><__trans phrase="__FILTER_DATE_ORIGIN" params="<mt:var name="date_input_origin">"></span>
-    <span class="range"><__trans phrase="[_1] to [_2]" params="<mt:var name="date_input_from">%%<mt:var name="date_input_to">"></span>
+    <span class="range"><__trans phrase="[_1] and [_2]" params="<mt:var name="date_input_from">%%<mt:var name="date_input_to">"></span>
     <span class="days"><__trans phrase="_FILTER_DATE_DAYS" params="<mt:var name="date_input_days">"></span>
   </span>
   </mt:setvarblock>

@@ -8,7 +8,7 @@
 function smarty_block_mtcommenteruserpicasset($args, $content, &$ctx, &$repeat) {
     $comment = $ctx->stash('comment');
     if (!$comment) {
-        return $ctx->error("No comment available");
+        return $ctx->error("No comments available");
     }
     $cmntr = $ctx->stash('commenter');
     if (!$cmntr) return '';

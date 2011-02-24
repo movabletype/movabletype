@@ -602,19 +602,19 @@ sub list_props {
                 }
             },
             single_select_options => [
-                {   label => 'Deleted Users/Deleted Commenters',
+                {   label => 'Deleted users/Deleted commenters',
                     value => 'deleted',
                 },
-                {   label => 'Enabled Users/Enabled Commenters',
+                {   label => 'Enabled users/Enabled commenters',
                     value => 'enabled',
                 },
-                {   label => 'Disabled Users/Banned Commenters',
+                {   label => 'Disabled users/Banned commenters',
                     value => 'disabled',
                 },
-                {   label => 'Pending Users/Pending Commenters',
+                {   label => 'Pending users/Pending commenters',
                     value => 'pending',
                 },
-                { label => 'Anonymous Commenters', value => 'anonymous', },
+                { label => 'Anonymous commenters', value => 'anonymous', },
             ],
         },
     };
@@ -623,13 +623,13 @@ sub list_props {
 sub system_filters {
     return {
         not_spam => {
-            label => 'Non spam comments',
+            label => 'Non-spam comments',
             items =>
                 [ { type => 'status', args => { value => 'not_junk' }, }, ],
             order => 100,
         },
         not_spam_in_this_website => {
-            label => 'Non spam comments on this website',
+            label => 'Non-spam comments on this website',
             view  => 'website',
             items => [
                 { type => 'current_context' },

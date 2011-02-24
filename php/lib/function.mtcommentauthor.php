@@ -8,7 +8,7 @@
 function smarty_function_mtcommentauthor($args, &$ctx) {
     $c = $ctx->stash('comment');
     if (!$c)
-        return $ctx->error("No comment available");
+        return $ctx->error("No comments available");
     $a = isset($c->comment_author) ? $c->comment_author : '';
     if ($c->comment_commenter_id) {
         $commenter = $ctx->stash('commenter');

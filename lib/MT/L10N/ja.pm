@@ -1957,7 +1957,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] is not a hash.' => '[_1]はハッシュではありません。',
 	'No [_1] could be found.' => '[_1]が見つかりません。',
 	'records' => 'オブジェクト',
-	'No template to include specified' => 'インクルードするテンプレートが見つかりませんでした。',
+	'No template to include was specified' => 'インクルードするテンプレートが見つかりませんでした。',
 	'Recursion attempt on [_1]: [_2]' => '[_1]でお互いがお互いを参照している状態になっています: [_2]',
 	'Can\'t find included template [_1] \'[_2]\'' => '「[_2]」という[_1]テンプレートが見つかりませんでした。',
 	'Error in [_1] [_2]: [_3]' => '[_1]「[_2]」でエラーが発生しました: [_3]',
@@ -3924,7 +3924,7 @@ use vars qw( @ISA %Lexicon );
 	'View page' => 'ウェブページを表示',
 	'No entries could be found.' => '記事がありません。',
 	'<a href="[_1]">Create an entry</a> now.' => '<a href="[_1]">記事を作成</a>する。',
-	'No page could be found. <a href="[_1]">Create a page</a> now.' => 'ウェブページが見つかりませんでした。<a href="[_1]">ウェブページの作成</a>',
+	'No pages could be found. <a href="[_1]">Create a page</a> now.' => 'ウェブページが見つかりませんでした。<a href="[_1]">ウェブページの作成</a>',
 
 ## tmpl/cms/include/feed_link.tmpl
 	'Activity Feed' => 'ログフィード',
@@ -4569,7 +4569,7 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,comment,comments]' => 'コメント[quant,_1,件,件]',
 	'No website could be found. [_1]' => 'ウェブサイトがありません。[_1]',
 	'Create a new' => '新規作成',
-	'No blog could be found.' => 'ブログがありません。',
+	'No blogs could be found.' => 'ブログがありません。',
 
 ## tmpl/cms/widget/mt_news.tmpl
 	'News' => 'ニュース',
