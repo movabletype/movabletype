@@ -1346,13 +1346,43 @@ sub left_join_hashed_condition : Tests(1) {
                 {
                     type => 'left',
                     condition => {
-                        foo_id => 'foo_id',
+                        foo_id => \'= foo_id',
                     }
                 },
             ],
         }
     );
     are_objects(\@data, [ $nextstep ], 'Left join with hashed condition');
+
+}
+
+sub left_join_hashed_scalar_condition : Tests(1) {
+    my $self = shift;
+    $self->make_pc_data();
+
+    my $osx = Foo->load(1);
+
+    my @data = Foo->load(
+        {
+        },
+        {
+            join => [
+                'Bar',
+                undef,
+                {
+                    id => \'is not null',
+                },
+                {
+                    type => 'left',
+                    condition => {
+                        foo_id => \'= foo_id',
+                        name   => 'Snow Leopard',
+                    }
+                },
+            ],
+        }
+    );
+    are_objects(\@data, [ $osx ], 'Left join with hashed scalar condition');
 
 }
 
