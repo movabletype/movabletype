@@ -831,8 +831,19 @@ var editor = CodeMirror.fromTextArea('text', {
     indentUnit: 0,
     passDelay: 20,
     height: "550px",
-    lang: "<mt:var name="language_tag">"
+    lang: "<mt:var name="language_tag">",
 });
+
+var timer = setTimeout( 'editor_onload()', 500 );
+
+function editor_onload() {
+    window.clearTimeout(timer);
+    if ( editor.editor ) {
+        jQuery('#syntax<mt:var name="disp_prefs_syntax" default="on">').click();
+    } else {
+        timer = setTimeout( 'editor_onload()', 500 );
+    }
+}
 
 function syncEditor() {
     var wrapper = editor.wrapping;
@@ -842,6 +853,22 @@ function syncEditor() {
         jQuery('#text').val(editor.getCode());
     }
 }
+
+function saveTemplatePrefs( sync ) {
+  jQuery.ajax({
+    type: 'POST',
+    async: false,
+    url: '<mt:var name="script_url">',
+    dataType: 'json',
+    data: {
+      __mode: 'save_template_prefs',
+      blog_id: <mt:var name="blog_id">,
+      syntax_highlight: sync,
+      magic_token: '<mt:var name="magic_token">'
+    }
+  });
+}
+
 /* ]]> */
 </script>
 <mt:setvarblock name="jq_js_include" append="1">
@@ -865,17 +892,22 @@ function syncEditor() {
         var wrapper = editor.wrapping;
         jQuery('#syntaxon, #syntaxoff').removeClass('active');
         var id = jQuery(this).addClass('active').attr('id');
+        var syntax;
         if (id == 'syntaxon') {
             jQuery('#text').hide();
             jQuery(wrapper).show();
+            syntax = 'on';
         } else {
             jQuery('#text').show();
             jQuery(wrapper).hide();
+            syntax = 'off';
         }
+        saveTemplatePrefs( syntax );
         return false;
     });
     jQuery(window).bind('pre_autosave', function(){
         syncEditor();
     });
+
 </mt:setvarblock>
 <mt:include name="include/footer.tmpl">

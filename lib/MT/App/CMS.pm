@@ -179,6 +179,7 @@ sub core_methods {
         'do_export_theme'         => "${pkg}Theme::do_export",
         'pinged_urls'             => "${pkg}Entry::pinged_urls",
         'save_entry_prefs'        => "${pkg}Entry::save_entry_prefs",
+        'save_template_prefs'     => "${pkg}Template::save_template_prefs",
         'save_favorite_blogs'     => "${pkg}Blog::save_favorite_blogs",
         'folder_add'              => "${pkg}Category::category_add",
         'category_add'            => "${pkg}Category::category_add",
@@ -3799,6 +3800,9 @@ sub load_template_prefs {
     for my $p (@p) {
         if ( $p =~ m/^(.+?):(\d+)$/ ) {
             $param{ 'disp_prefs_height_' . $1 } = $2;
+        }
+        if ( $p =~ m/^(.+?):(\w+)$/ ) {
+            $param{ 'disp_prefs_' . $1 } = $2;
         }
     }
     \%param;

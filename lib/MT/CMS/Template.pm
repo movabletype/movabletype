@@ -3052,4 +3052,34 @@ sub restore_widgetmanagers {
     }
 }
 
+sub save_template_prefs {
+    my $app     = shift;
+    my $blog_id = $app->param('blog_id');
+    my $perms = $app->user->permissions( $blog_id )
+        or return $app->error( $app->translate("No permissions") );
+    $app->validate_magic() or return;
+
+    my $prefs = $perms->template_prefs || '';
+    my $highlight = $app->param('syntax_highlight');
+    if ( defined $highlight ) {
+        my ($pref_highlight) = $prefs =~ m/\bsyntax:(\w+)\b/;
+        $pref_highlight ||= '';
+        if ( $highlight ne $pref_highlight ) {
+            if ( $prefs =~ m/\bsyntax\b/ ) {
+                $prefs =~ s/\bsyntax(:\w+)\b/syntax:$highlight/;
+            }
+            else {
+                $prefs = 'syntax:' . $highlight . ',' . $prefs;
+            }
+        }
+    }
+    $perms->template_prefs($prefs);
+    $perms->save
+        or return $app->error(
+        $app->translate( "Saving permissions failed: [_1]", $perms->errstr )
+        );
+    $app->send_http_header("text/json");
+    return "true";
+}
+
 1;
