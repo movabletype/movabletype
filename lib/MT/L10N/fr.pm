@@ -2946,7 +2946,7 @@ use vars qw( @ISA %Lexicon );
 	'Your blog preferences have been saved.' => 'Les préférences de votre blog ont été enregistrées.',
 	'User Registration' => 'Enregistrement utilisateur',
 	'Allow registration for this website.' => 'Permettre les enregistrements pour ce site web.',
-	'Registration Not Enabled' => 'Enregistrement non activé',
+	'Registration not enabled' => 'Enregistrement non activé',
 	'Note: Registration is currently disabled at the system level.' => 'Remarque : L\'enregistrement est actuellement désactivé pour tout le système.',
 	'Allow visitors to register as members of this website using one of the Authentication Methods selected below.' => 'Permettre aux visiteurs de s\'enregistrer en tant que membre de ce site en utilisant les méthodes d\'authentification sélectionnées ci-dessous.',
 	'Authentication Methods' => 'Méthode d\'authentification',

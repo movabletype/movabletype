@@ -2946,7 +2946,7 @@ use vars qw( @ISA %Lexicon );
 	'Your blog preferences have been saved.' => 'ブログの設定を保存しました。',
 	'User Registration' => 'ユーザー登録',
 	'Allow registration for this website.' => 'ウェブサイトへの登録を許可します。',
-	'Registration Not Enabled' => 'ユーザー登録は無効です。',
+	'Registration not enabled' => 'ユーザー登録は無効です。',
 	'Note: Registration is currently disabled at the system level.' => '注:ユーザー登録は現在システムレベルで無効となっています。',
 	'Allow visitors to register as members of this website using one of the Authentication Methods selected below.' => 'ウェブサイトの訪問者が、以下で選択した認証方式でユーザー登録することを許可する',
 	'Authentication Methods' => '認証方式',
