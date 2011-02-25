@@ -1,15 +1,23 @@
 <mtapp:listing id="default_folders" loop="folders" hide_pager="1" show_actions="0" type="category">
-<mt:if __first__>
+<mt:if name="__first__">
+
+<mt:setvarblock name="table_header">
+  <tr>
+    <th class="col head cb"><span class="col-label"><input type="checkbox" name="id-head" value="all" class="select" /></span></th>
+    <th class="col head display-name"><span class="col-label"><__trans phrase="Folder Name"></span></th>
+    <th class="col head path primary"><span class="col-label"><__trans phrase="Path"></span></th>
+  </tr>
+</mt:setvarblock>
+
   <thead>
-    <tr>
-      <th class="col cb"><span class="col-label"><input type="checkbox" name="id-head" value="all" class="select" /></span></th>
-      <th class="col display-name"><span class="col-label"><__trans phrase="Folder Name"></span></th>
-      <th class="col path primary"><span class="col-label"><__trans phrase="Path"></span></th>
-    </tr>
+    <mt:var name="table_header">
   </thead>
+  <tfoot>
+    <mt:var name="table_header">
+  </tfoot>
   <tbody>
 </mt:if>
-    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+    <tr class="<mt:if name="__odd__">odd</mt:if>">
       <td class="col cb">
         <input
            type="checkbox"
