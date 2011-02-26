@@ -2945,7 +2945,7 @@ use vars qw( @ISA %Lexicon );
 	'Your blog preferences have been saved.' => 'Uw blogvoorkeuren zijn opgeslagen.',
 	'User Registration' => 'Gebruikersregistratie',
 	'Allow registration for this website.' => 'Registratie toestaan op deze website',
-	'Registration not enabled' => 'Registratie niet ingeschakeld',
+	'Registration Not Enabled' => 'Registratie niet ingeschakeld',
 	'Note: Registration is currently disabled at the system level.' => 'Opmerking: Registratie is momenteel uitgeschakeld op systeemniveau',
 	'Allow visitors to register as members of this website using one of the Authentication Methods selected below.' => 'Laat bezoekers to zich te registreren als lid van deze website via één van de hieronder geselecteerde authenticatiemethodes.',
 	'Authentication Methods' => 'Methodes voor authenticatie',

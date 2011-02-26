@@ -112,28 +112,28 @@ sub list_props {
 sub system_filters {
     return {
         current_website => {
-            label => 'Pages in this website',
+            label => 'Pages in This Website',
             items => [ { type => 'current_context' } ],
             order => 100,
             view  => 'website',
         },
         published => {
-            label => 'Published pages',
+            label => 'Published Pages',
             items => [ { type => 'status', args => { value => '2' }, }, ],
             order => 200,
         },
         draft => {
-            label => 'Unpublished pages',
+            label => 'Unpublished Pages',
             items => [ { type => 'status', args => { value => '1' }, }, ],
             order => 300,
         },
         future => {
-            label => 'Scheduled pages',
+            label => 'Scheduled Pages',
             items => [ { type => 'status', args => { value => '4' }, }, ],
             order => 400,
         },
         my_posts_on_this_context => {
-            label => 'My pages',
+            label => 'My Pages',
             items => sub {
                 [ { type => 'current_user' }, { type => 'current_context' } ]
                 ,;

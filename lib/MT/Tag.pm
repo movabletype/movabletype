@@ -283,19 +283,19 @@ sub list_props {
 sub system_filters {
     return {
         entry => {
-            label => 'Tags for entry',
+            label => 'Tags for Entry',
             view  => ['blog'],
             items => [ { type => 'for_entry', } ],
             order => 100,
         },
         page => {
-            label => 'Tags for page',
+            label => 'Tags for Page',
             view  => [ 'website', 'blog' ],
             items => [ { type => 'for_page', } ],
             order => 200,
         },
         asset => {
-            label => 'Tags for asset',
+            label => 'Tags for Asset',
             view  => [ 'website', 'blog' ],
             items => [ { type => 'for_asset', } ],
             order => 300,

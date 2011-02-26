@@ -296,7 +296,7 @@ sub list_props {
 sub system_filters {
     return {
         current_website => {
-            label => 'Logs on this website',
+            label => 'Logs on This Website',
             items => [ { type => 'current_context' } ],
             order => 100,
             view  => 'website',

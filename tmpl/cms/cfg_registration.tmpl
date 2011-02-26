@@ -36,7 +36,7 @@
      label="<__trans phrase="User Registration">"
      hint="<__trans phrase="Allow registration for this website.">">
   <mt:if name="system_disallow_registration">
-    <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Registration not enabled">" width="9" height="9" />
+    <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Registration Not Enabled">" width="9" height="9" />
     <span class="alert-warning-inline"><__trans phrase="Note: Registration is currently disabled at the system level."></span>
   </mt:if>
     <p><input type="checkbox" id="allow_commenter_regist" name="allow_commenter_regist" value="1"<mt:if name="allow_commenter_regist"> checked="checked"</mt:if> class="cb" /> <label for="allow_commenter_regist"><__trans phrase="Allow visitors to register as members of this website using one of the Authentication Methods selected below."></label></p>
