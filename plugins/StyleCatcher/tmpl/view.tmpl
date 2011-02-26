@@ -63,7 +63,7 @@
         }
 
         <mt:if name="auto_fetch">
-        getStyles();
+        getStyles(null, '<mt:var name="auto_fetch" remove_html="1" encode_js="1">');
         </mt:if>
     }
 
