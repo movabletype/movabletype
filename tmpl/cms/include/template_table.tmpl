@@ -128,7 +128,7 @@
         <mt:loop name="archive_types">
           <mt:loop name="archive_tmpl_loop">
             <mt:if name="selected">
-          <li><mt:var name="name" escape="html"><mt:var name="build_type" value="$map_build_type"></li>
+          <li><mt:if name="map_is_preferred"><img src="<mt:var name="static_uri">images/status_icons/success.gif" alt="<__trans phrase="TemplateMap is Preferred">" width="9" height="9" /><mt:Else>&nbsp;</mt:if><mt:var name="name" escape="html"><mt:var name="build_type" value="$map_build_type"></li>
             </mt:if>
           </mt:loop>
         </mt:loop>
