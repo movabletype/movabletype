@@ -138,25 +138,12 @@ function showPage(id) {
 
     var preview;
     if (asset.preview_url) {
-        preview = "<img src=\"" + asset.preview_url + "\" class=\"preview\" />";
+        preview = "<div class=\"asset-preview-image picture small\"><img src=\"" + asset.preview_url + "\" class=\"preview\" /></div>";
     } else {
-        ext = asset.ext;
-        var icons = ("doc,eps,fla,gif,jpg,mp3,mpg,pdf,png,ppt,psd,txt,xls,zip");
-        var icon_array = icons.split(",");
-        for (var loop=0; loop < icon_array.length; loop++) {
-            if (ext == icon_array[loop]){
-                asset.ext = ext;
-                break;
-            } else {
-                asset.ext = "default";
-            }
-        }
-        var noPreview = trans('No Preview Available');
-        var clickToSee = trans('View uploaded file');
+        var noPreview = trans('No Preview Available.');
         preview = ""
-        + "<div class=\"asset-icon asset-icon-" + asset.ext + "\">"
-        + "<strong>" + noPreview + "</strong>"
-        + "<a href=\"" + asset.url.encodeHTML() + "\" target=\"view_uploaded\">" + clickToSee + "</a>"
+        + "<div class=\"msg msg-error\">"
+        + "<p class=\"msg-text\">" + noPreview + "</p>" 
         + "</div>";
     }
     var labelDims = trans('Dimensions');
@@ -169,7 +156,7 @@ function showPage(id) {
         metadata = ""
     };
     var labelFileName = trans('File Name');
-    detail.innerHTML = "<div class=\"asset-preview-image picture small\">" + preview + "</div>"
+    detail.innerHTML = preview 
         + "<ul>"
         + "<li class=\"asset-preview-title\"><strong>" + labelFileName + "</strong>: " + asset['file_name'] + "</li>"
         + metadata
