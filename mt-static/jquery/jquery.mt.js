@@ -867,59 +867,57 @@ $.mtValidator = function ( options, ns ) {
     this.namespace = ns;
 };
 
-$.extend( $.mtValidator, {
-    prototype: {
-        options: {},
-        validateElement: function ( $elem, val ) {
-            var validator  = this;
-            var rules = $.mtValidateRules;
-            validator.error  = false;
-            validator.errstr = undefined;
-            $.each ( rules, function( selector, fn ) {
-                if ( $elem.is(selector) ) {
-                    var fn = rules[selector];
-                    validator.error  = false;
-                    validator.errstr = undefined;
-                    validator.test   = fn;
-                    var res = validator.test($elem);
-                    if ( validator.error || !res ) {
-                        if ( !validator.errstr ) {
-                            validator.raise(
-                                $.mtValidateMessages[selector]
-                                || 'Invalid value'
-                            );
-                        }
-                        return false;
+$.extend( $.mtValidator.prototype, {
+    options: {},
+    validateElement: function ( $elem, val ) {
+        var validator  = this;
+        var rules = $.mtValidateRules;
+        validator.error  = false;
+        validator.errstr = undefined;
+        $.each ( rules, function( selector, fn ) {
+            if ( $elem.is(selector) ) {
+                var fn = rules[selector];
+                validator.error  = false;
+                validator.errstr = undefined;
+                validator.test   = fn;
+                var res = validator.test($elem);
+                if ( validator.error || !res ) {
+                    if ( !validator.errstr ) {
+                        validator.raise(
+                            $.mtValidateMessages[selector]
+                            || 'Invalid value'
+                        );
                     }
+                    return false;
                 }
-            });
-            return !validator.error;
-        },
-        raise: function (msg) {
-            this.error  = true;
-            this.errstr = this.trans(msg || 'Invalid value');
-            return false;
-        },
-        trans: function (msg) {
-            return ( 'function' == typeof window.trans ) ? trans(msg) : msg;
-        },
-        validClass: 'valid',
-        errorClass: 'error',
-        wrapError: function ( $target, msg ) {
-            return $('<label/>')
-                .attr('for', $target.attr('id') )
-                .addClass('msg-error')
-                .text(msg);
-        },
-        updateError: function( $target, $error_block, msg ) {
-            $error_block.text(msg);
-        },
-        showError: function ( $target, $error_block ) {
-            $target.after($error_block);
-        },
-        removeError: function( $target, $error_block ) {
-            $error_block.remove();
-        }
+            }
+        });
+        return !validator.error;
+    },
+    raise: function (msg) {
+        this.error  = true;
+        this.errstr = this.trans(msg || 'Invalid value');
+        return false;
+    },
+    trans: function (msg) {
+        return ( 'function' == typeof window.trans ) ? trans(msg) : msg;
+    },
+    validClass: 'valid',
+    errorClass: 'error',
+    wrapError: function ( $target, msg ) {
+        return $('<label/>')
+            .attr('for', $target.attr('id') )
+            .addClass('msg-error')
+            .text(msg);
+    },
+    updateError: function( $target, $error_block, msg ) {
+        $error_block.text(msg);
+    },
+    showError: function ( $target, $error_block ) {
+        $target.after($error_block);
+    },
+    removeError: function( $target, $error_block ) {
+        $error_block.remove();
     }
 });
 
@@ -959,84 +957,82 @@ $.mtValidateMessages = {
     '.number':      'This field must be number'
 };
 
-$.fn.mtValidate = function( options ) {
-    options = $.extend({}, options);
-    var ns = options.namespace || 'default';
-    var validator = $.mtValidators[ns];
-    if ( !validator ) {
-        validator = $.mtValidators[ns] = new $.mtValidator(options, ns);
-    }
-    this.each( function () {
-//        validator.elements;
-        $.data( this, 'mtValidator', ns );
-    });
-    return this.mtValid();
-};
-
-$.fn.mtValidator = function() {
-    var ns = $.data( this.get(0), 'mtValidator' );
-    return $.mtValidators[ns];
-}
-
-$.fn.mtValid = function() {
-    var errors = 0;
-    var successes = 0;
-    this.each( function () {
-        var $this = $(this);
-        var validator = $this.mtValidator();
-        if ( !validator ) return true;
-        var $current_error = $.data( this, 'mtValidateError' );
-        var res = validator.validateElement($this);
-        if ( res ) {
-            successes++;
-            if ( $current_error ) {
-                validator.removeError( $this, $current_error );
-            }
-            $.data( this, 'mtValidateError', null );
-            $.data( this, 'mtValidateLastError', null );
-            $this.addClass( validator.validClass );
-            $this.removeClass( validator.errorClass );
+$.fn.extend({
+    mtValidate: function( options ) {
+        options = $.extend({}, options);
+        var ns = options.namespace || 'default';
+        var validator = $.mtValidators[ns];
+        if ( !validator ) {
+            validator = $.mtValidators[ns] = new $.mtValidator(options, ns);
         }
-        else {
-            errors++;
-            var msg = validator.errstr;
-            if ( $current_error ) {
-                var last_error = $.data( this, 'mtValidateLastError' );
-                if ( last_error != msg ) {
-                    validator.updateError( $this, $current_error, msg );
+        this.each( function () {
+            $.data( this, 'mtValidator', ns );
+        });
+        return this.mtValid();
+    },
+    mtValidator: function() {
+        var ns = $.data( this.get(0), 'mtValidator' );
+        return $.mtValidators[ns];
+    },
+    mtValid: function() {
+        var errors = 0;
+        var successes = 0;
+        this.each( function () {
+            var $this = $(this);
+            var validator = $this.mtValidator();
+            if ( !validator ) return true;
+            var $current_error = $.data( this, 'mtValidateError' );
+            var res = validator.validateElement($this);
+            if ( res ) {
+                successes++;
+                if ( $current_error ) {
+                    validator.removeError( $this, $current_error );
                 }
+                $.data( this, 'mtValidateError', null );
+                $.data( this, 'mtValidateLastError', null );
+                $this.addClass( validator.validClass );
+                $this.removeClass( validator.errorClass );
             }
             else {
-                var $error_block = validator.wrapError( $this, msg );
-                validator.showError( $this, $error_block );
-                $.data( this, 'mtValidateError', $error_block );
+                errors++;
+                var msg = validator.errstr;
+                if ( $current_error ) {
+                    var last_error = $.data( this, 'mtValidateLastError' );
+                    if ( last_error != msg ) {
+                        validator.updateError( $this, $current_error, msg );
+                    }
+                }
+                else {
+                    var $error_block = validator.wrapError( $this, msg );
+                    validator.showError( $this, $error_block );
+                    $.data( this, 'mtValidateError', $error_block );
+                    $.data( this, 'mtValidateLastError', msg );
+                }
                 $.data( this, 'mtValidateLastError', msg );
+                $this.addClass( validator.errorClass );
+                $this.removeClass( validator.validClass );
             }
-            $.data( this, 'mtValidateLastError', msg );
-            $this.addClass( validator.errorClass );
-            $this.removeClass( validator.validClass );
-        }
-    });
-    return errors == 0;
-}
-
-$.fn.mtUnvalidate = function() {
-    this.each( function () { 
-        var validator = $(this).mtValidator();
-        if ( validator ) {
-            var $current_error = $.data( this, 'mtValidateError' );
-            if ( $current_error ) {
-                validator.removeError( $(this), $current_error );
+        });
+        return errors == 0;
+    },
+    mtUnvalidate: function() {
+        this.each( function () { 
+            var validator = $(this).mtValidator();
+            if ( validator ) {
+                var $current_error = $.data( this, 'mtValidateError' );
+                if ( $current_error ) {
+                    validator.removeError( $(this), $current_error );
+                }
+                $.data( this, 'mtValidator', null );
+                $.data( this, 'mtValidateError', null );
+                $.data( this, 'mtValidateLastError', null );
+                $(this).removeClass( validator.errorClass );
+                $(this).removeClass( validator.validClass );
             }
-            $.data( this, 'mtValidator', null );
-            $.data( this, 'mtValidateError', null );
-            $.data( this, 'mtValidateLastError', null );
-            $(this).removeClass( validator.errorClass );            
-            $(this).removeClass( validator.validClass );            
-        }
-    })
-    return this;
-};
+        });
+        return this;
+    }
+});
 
 $('input, textarea').live('keyup focusin focusout', function () {
     var ns = $.data( this, 'mtValidator' );
