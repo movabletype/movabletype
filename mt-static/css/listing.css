@@ -76,6 +76,9 @@
     padding-right: 8px;
     text-align: center;
 }
+.col.template-name {
+    width: 20%;
+}
 .col.primary { 
     width: auto;
     min-width: 15%;

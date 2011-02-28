@@ -179,6 +179,15 @@
     );
 }
 
+#installed-widgets > .widget-header {
+    filter: progid:DXImageTransform.Microsoft.gradient( 
+        startColorstr='#adadad', 
+        endColorstr='#7b7c7d', 
+        GradientType=0 
+    );
+}
+
+
 /* -- Editor */
 .editor textarea {
     overflow: auto;
