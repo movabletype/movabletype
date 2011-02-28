@@ -199,7 +199,7 @@ function initItem($item) {
   $item.find('.item-ctrl, .edit-form').remove();
   $item.append('<span class="item-ctrl" />');
 
-  jQuery('<a href="#" class="item-action edit-link clickable"><__trans phrase="Edit"></a>')
+  jQuery('<a href="#" class="item-action edit-link clickable"><__trans phrase="Rename"></a>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       var $element = jQuery(this).parent('.item-ctrl').parent('div');
