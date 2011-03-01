@@ -75,7 +75,7 @@
   <mt:setvarblock name="table_header">
     <tr>
       <th class="col head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-      <th class="col head template-name<mt:if name="template_type" like="(email|module|widget|system)"> primary</mt:if>"><span class="col-label"><__trans phrase="Name"></span></th>
+      <th class="col head template-name<mt:unless name="template_type" like="(index|archive)"> primary</mt:unless>"><span class="col-label"><__trans phrase="Name"></span></th>
     <mt:if name="template_type" eq="index">
       <th class="col head output-file primary"><span class="col-label"><__trans phrase="Output File"></span></th>
     </mt:if>
