@@ -250,7 +250,8 @@ function setLicense() {
         <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
       </div>
     </mt:if>
-      <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none"><__trans phrase="Note: Changing your [_1] root requires a complete publish of your site." params="<mt:var name="object_label" capitalize="1">"></p>
+      <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none"><__trans phrase="Warning: Changing the [_1] root requires a complete publish of your site." params="<mt:var name="object_label" capitalize="1">"></p>
+
       <div class="hint relative-site_path-hint">
         <__trans phrase="The path where your index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog">
       </div>
