@@ -414,11 +414,13 @@ sub save_widgetset {
 sub save {
     my $tmpl     = shift;
     my $existing = MT::Template->load(
-        { name => $tmpl->name, blog_id => $tmpl->blog_id } );
-    if (   $existing
-        && ( !$tmpl->id || ( $tmpl->id && ( $existing->id ne $tmpl->id ) ) )
-        && ( $existing->type eq $tmpl->type ) )
-    {
+        {   ( $tmpl->id ? ( id => { not => $tmpl->id } ) : () ),
+            name    => $tmpl->name,
+            blog_id => $tmpl->blog_id,
+            type    => $tmpl->type,
+        }
+    );
+    if ($existing) {
         my $scope;
         if ( $tmpl->blog_id ) {
             my $blog = $tmpl->blog;
