@@ -1590,7 +1590,7 @@ sub unpack_revision {
             $cat = MT::Category->lookup( $primary->[0] );
             my $cats = MT::Category->lookup_multi(
                 [ map { $_->[0] } @$rev_cats ] );
-            my @cats = sort { $a->label cmp $b->label } grep {defined} @$cats;
+            @cats = sort { $a->label cmp $b->label } grep {defined} @$cats;
             $obj->{__missing_cats_rev} = 1
                 if scalar(@cats) != scalar(@$cats);
         }
