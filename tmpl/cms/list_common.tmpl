@@ -525,9 +525,8 @@ function openFilterRenameField() {
         // Not modified.
         return $handle.find('.cancel').click();
     }
-    if ( !jQuery('#filter_' + fid).mtValidate({
-      namespace: 'filterName'
-    }) ) return false;
+    if ( !jQuery('#filter_' + fid).mtValidate('filterName') )
+        return false;
 
     renameFilter(index, fid, name);
     return false;
@@ -1158,6 +1157,7 @@ function dateOption($node) {
   default:
     type = 'range';
   }
+
   $node.parent('.item-content').find('input').mtUnvalidate();
   $node.parent('.item-content').find('.date-option span').hide();
   $node.parent('.item-content').find('.date-option .'+type).show();
@@ -1261,6 +1261,7 @@ jQuery(window).mtValidate({
 });
 
 var validateErrorMessage;
+
 function validateFilterDetails () {
   if ( validateErrorMessage ) {
     validateErrorMessage.remove();
@@ -1362,9 +1363,8 @@ jQuery('#dialog_save_filter').dialog({
 });
 
 jQuery('#save-filter').click(function() {
-  if ( !jQuery('input[name=filter_name]').mtValidate({
-    namespace: 'filterName'
-  }) ) return false;
+  if ( !jQuery('input[name=filter_name]').mtValidate('filterName') )
+    return false;
   var name = jQuery('input[name=filter_name]').val();
   itemValues();
   jQuery(window).one('listReady', function() {

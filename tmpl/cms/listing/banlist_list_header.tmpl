@@ -102,7 +102,7 @@
     }
 
     jQuery('#submit-ipban').click(function() {
-        if ( !jQuery('#ip-address').mtValidate({ namespace: 'ipban' }) )
+        if ( !jQuery('#ip-address').mtValidate('ipban') )
             return false;
         renderList({
             __mode: 'save',

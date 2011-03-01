@@ -862,9 +862,33 @@ $.fn.mtToggleField = function(options) {
  *
  */
 
-$.mtValidator = function ( options, ns ) {
-    $.extend( this, options );
-    this.namespace = ns;
+var mtValidators = {};
+
+$.mtValidator = function ( ns, options ) {
+    if ( this instanceof $.mtValidator ) {
+        // called as constructor
+        var obj = mtValidators[ns] || this;
+        if ( !options ) {
+            return obj;
+        }
+        $.extend( obj, options );
+        obj.namespace = ns;
+        return mtValidators[ns] = obj;
+    }
+    else {
+        // called as function
+        if ( typeof ns == 'object' ) {
+            options = ns;
+            ns = 'default';
+        }
+        if ( !ns ) {
+            ns = 'default';
+        }
+        if ( !options && mtValidators[ns] ) {
+            return mtValidators[ns];
+        }
+        return new $.mtValidator(ns, options);
+    }
 };
 
 $.extend( $.mtValidator.prototype, {
@@ -921,7 +945,6 @@ $.extend( $.mtValidator.prototype, {
     }
 });
 
-$.mtValidators = [];
 $.mtValidateRules = {
     '.date': function ($e) {
         return !$e.val() || /^\d{4}\-\d{2}\-\d{2}$/.test($e.val());
@@ -958,21 +981,15 @@ $.mtValidateMessages = {
 };
 
 $.fn.extend({
-    mtValidate: function( options ) {
-        options = $.extend({}, options);
-        var ns = options.namespace || 'default';
-        var validator = $.mtValidators[ns];
-        if ( !validator ) {
-            validator = $.mtValidators[ns] = new $.mtValidator(options, ns);
-        }
+    mtValidate: function( ns ) {
         this.each( function () {
-            $.data( this, 'mtValidator', ns );
+            $.data( this, 'mtValidator', ns || 'default' );
         });
         return this.mtValid();
     },
     mtValidator: function() {
         var ns = $.data( this.get(0), 'mtValidator' );
-        return $.mtValidators[ns];
+        return $.mtValidator(ns);
     },
     mtValid: function() {
         var errors = 0;

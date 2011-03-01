@@ -54,7 +54,6 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery(window).mtValidate({ namespace: 'notification' });
 
     var current_edit = 0;
     var old_note_email = '';
@@ -119,8 +118,8 @@
         // if not in noteList and not in range of noteList notes, check with server.
         var $note_email = jQuery('#note-email-' + id);
         var $note_url   = jQuery('#note-url-' + id);
-        if ( !$note_email.val() || !$note_email.mtValidate({ namespace: 'notification' }) ) return false;
-        if ( $note_url.val() && !$note_url.mtValidate({ namespace: 'notification' }) ) return false;
+        if ( !$note_email.val() || !$note_email.mtValidate('notification') ) return false;
+        if ( $note_url.val() && !$note_url.mtValidate('notification') ) return false;
         var new_note_email = $note_email.val();
         var new_note_url = $note_url.val();
         if ((old_note_email == new_note_email) && (old_note_url == new_note_url)) {
@@ -164,7 +163,7 @@
     }
 
     jQuery('#submit-new-contact').click(function() {
-        if ( !jQuery('#create-inline-notification input').mtValidate({ namespace: 'notification' }) )
+        if ( !jQuery('#create-inline-notification input').mtValidate('notification') )
             return false;
         renderList({
             __mode: 'save',
