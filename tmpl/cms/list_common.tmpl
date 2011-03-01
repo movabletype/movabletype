@@ -1541,7 +1541,10 @@ function doForMarked(formid, action, singlar, plural, phrase, xhr) {
     params['items'] = items;
   }
 
- if (opt['continue_prompt']) {
+  if (opt['no_prompt']) {
+      // Do always.
+  }
+  else if (opt['continue_prompt']) {
     if (!confirm(opt['continue_prompt'])) {
       return false;
     }

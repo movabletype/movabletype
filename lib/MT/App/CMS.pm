@@ -657,6 +657,7 @@ sub core_list_actions {
                 label         => "Batch Edit Entries",
                 code          => "${pkg}Entry::open_batch_editor",
                 order         => 500,
+                no_prompt     => 1,
                 permit_action => {
                     permit_action => 'open_batch_entry_editor_via_list',
                     include_all   => 1,
