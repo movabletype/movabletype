@@ -49,6 +49,8 @@ $multiblog_orig_handlers['mtpings']
     = $ctx->add_container_tag('pings', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtblogs']
     = $ctx->add_container_tag('blogs', 'multiblog_block_wrapper');
+$multiblog_orig_handlers['mtwebsites']
+    = $ctx->add_container_tag('websites', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mttags']
     = $ctx->add_container_tag('tags', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtinclude']

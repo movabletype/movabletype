@@ -51,6 +51,7 @@ my $plugin  = MT::Plugin::MultiBlog->new({
                 Pages => 'MultiBlog::preprocess_native_tags',
                 Folders => 'MultiBlog::preprocess_native_tags',
                 Blogs => 'MultiBlog::preprocess_native_tags',
+                Websites => 'MultiBlog::preprocess_native_tags',
                 Assets => 'MultiBlog::preprocess_native_tags',
                 Comments => 'MultiBlog::preprocess_native_tags',
                 Pings => 'MultiBlog::preprocess_native_tags',
