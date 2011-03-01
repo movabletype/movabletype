@@ -49,8 +49,8 @@
     font-size: 11px;
     font-weight: bold;
     text-shadow: rgb(248,251,248) 0 1px 0;
-    white-space: nowrap;
     vertical-align: middle;
+    word-wrap: normal;
 }
 .col a { 
     color: #274a78;
@@ -118,6 +118,7 @@ tfoot .col.head{
     width: 95%;
     padding: 7px 0;
     line-height: 1;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -180,17 +181,20 @@ tfoot .col.head{
     list-style-type: disc;
     margin: 0 0 0 1.2em;
 }
+.col .archive-path-item, 
 .col .archive-publishing-method-item {
-    list-style-type: none;
+    list-style-position: inside;
     margin: 0;
 }
-
-.col .archive-publishing-method-item {
-    white-space: nowrap;
+.col .archive-path-item {
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+    word-wrap: normal;
 }
-
+.col .archive-publishing-method-item {
+    list-style-type: none;
+}
 /* -- List Actions */ 
 .list-actions {
     float: left;

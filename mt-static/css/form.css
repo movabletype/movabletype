@@ -94,6 +94,7 @@ select {
     border: 1px solid #adadad;
     font-size: 12px;
     box-shadow: 0 1px 0 #f3f3f3;
+    white-space: nowrap;
     -webkit-box-shadow: 0 1px 0 #f3f3f3;
     -moz-box-shadow: 0 1px 0 #f3f3f3;
 }
