@@ -945,6 +945,52 @@ $.extend( $.mtValidator.prototype, {
     }
 });
 
+// Install default validators.
+$.mtValidator('simple', {});
+$.mtValidator('default', {
+    wrapError: function ( $target, msg ) {
+        return $('<label style="position: absolute;" />')
+            .attr('for', $target.attr('id') )
+            .addClass('msg-error validate-error')
+            .text(msg);
+    },
+    showError: function( $target, $error_block ) {
+        var focus = function () { $error_block.show(); };
+        var blur  = function () { $error_block.hide(); };
+        jQuery.data( $target.get(0), 'validate_focus', focus );
+        jQuery.data( $target.get(0), 'validate_blur',  blur );
+        $target
+            .bind('focus', focus)
+            .bind('blur', blur);
+        if ( $target.get(0) === document.activeElement )
+            $error_block.show();
+        else
+            $error_block.hide();
+        if ( !$target.parent('.validate-error-wrapper').length ) {
+            $target
+                .wrap('<span class="validate-error-wrapper" style="position: relative; white-space: nowrap;"></span>')
+                .after($error_block);
+        }
+        $error_block
+            .css('left', $target.width() )
+            .css('top',   -1 * $target.height() );
+    },
+    removeError: function( $target, $error_block ) {
+        $error_block.remove();
+        var focus = jQuery.data( $target.get(0), 'validate_focus');
+        var blur  = jQuery.data( $target.get(0), 'validate_blur');
+        $target
+            .unbind('focus', focus)
+            .unbind('blur', blur);
+    }
+});
+
+$.mtValidator('dialog', {
+    showError: function( $target, $error_block ) {
+        $target.parents('div.ui-dialog').find('div.dialog-msg-block').append($error_block);
+    },
+});
+
 $.mtValidateRules = {
     '.date': function ($e) {
         return !$e.val() || /^\d{4}\-\d{2}\-\d{2}$/.test($e.val());

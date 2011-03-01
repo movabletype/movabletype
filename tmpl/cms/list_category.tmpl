@@ -212,7 +212,7 @@ function initItem($item) {
 
 <mt:if name="object_type" eq="category">
       jQuery.mtValidateRules['.label'] = function ($e) {
-        if ( !$e.val().length ) return false;
+        if ( !$e.val().length ) return this.raise('<__trans phrase="Label is requried">');
         return hasDupe(parent, id, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level">') : true;
       };
 <mt:else>
@@ -231,9 +231,9 @@ function initItem($item) {
 
       jQuery('<button type="submit" class="rename button"><__trans phrase="Rename"></button>')
         .bind('click', function() {
-          if ( !$element.find('input.label').mtValidate('basename') ) return false;
+          if ( !$element.find('input.label').mtValidate() ) return false;
 <mt:if name="object_type" eq="folder">
-          if ( !$element.find('input.basename').mtValidate('basename') ) return false;
+          if ( !$element.find('input.basename').mtValidate() ) return false;
           $basename.text( $element.find('input.basename').val() );
 </mt:if>
           $label.text( $element.find('input.label').val() );
@@ -488,7 +488,7 @@ function initMoving() {
           .unbind('click')
           .bind( 'click', function(){
 <mt:if name="object_type" eq="category">
-            if ( jQuery('#new-label').mtValidate('basename') ) {
+            if ( jQuery('#new-label').mtValidate() ) {
               var $label = $item.find('.item-label a').length ? $item.find('.item-label a') : $item.find('.item-label');
               $label.text( jQuery('#new-label').val() );
               _stop();
@@ -496,7 +496,7 @@ function initMoving() {
 
             }
 <mt:else>
-            if ( jQuery('#new-basename').mtValidate('basename') ) {
+            if ( jQuery('#new-basename').mtValidate() ) {
               var $basename = $item.find('.item-basename-text');
               $basename.text( jQuery('#new-basename').val() );
               _stop();
@@ -533,9 +533,9 @@ function initMoving() {
           }
         });
 <mt:if name="object_type" eq="category">
-        jQuery('#new-label').focus().mtValidate('basename');
+        jQuery('#new-label').focus().mtValidate();
 <mt:else>
-        jQuery('#new-basename').focus().mtValidate('basename');
+        jQuery('#new-basename').focus().mtValidate();
 </mt:if>
 
       }

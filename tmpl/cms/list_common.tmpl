@@ -205,7 +205,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 
 <div id="dialog_save_filter" class="dialog">
   <form method="post">
-    <div id="dialog-msg-block"></div>
+    <div class="dialog-msg-block"></div>
     <mtapp:setting
        id="filter-label"
        label="<__trans phrase="Filter Label">"
@@ -231,6 +231,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 </div>
 
 <div id="dialog_filter">
+  <div class="dialog-msg-block"></div>
   <div id="create-new-link">
     <a href="#" id="new_filter" class="icon-left-wide addnew apply-link"><__trans phrase="Create New"></a>
   </div>
@@ -525,7 +526,7 @@ function openFilterRenameField() {
         // Not modified.
         return $handle.find('.cancel').click();
     }
-    if ( !jQuery('#filter_' + fid).mtValidate('filterName') )
+    if ( !jQuery('#filter_' + fid).mtValidate('dialog') )
         return false;
 
     renameFilter(index, fid, name);
@@ -1225,41 +1226,6 @@ jQuery('#item_list').change(function() {
   return false;
 });
 
-jQuery(window).mtValidate({
-  showError: function($target, $error) {
-    var focus = function () { $error.show() };
-    var blur  = function () { $error.hide() };
-    jQuery.data( $target.get(0), 'validate_focus', focus );
-    jQuery.data( $target.get(0), 'validate_blur',  blur );
-    $target
-      .bind('focus', focus)
-      .bind('blur', blur);
-    if ( $target.get(0) === document.activeElement )
-      $error.show();
-    else
-      $error.hide();
-    $target.parents('.filteritem').append($error);
-    var offset  = $target.offset();
-    var poffset = $target.parents('.filteritem').offset();
-    $error
-      .css('left', offset.left - poffset.left + $target.width() - 1 )
-      .css('top',  offset.top  - poffset.top  - $error.height() - 1 );
-  },
-  wrapError: function($target, msg) {
-    return jQuery('<span/>')
-      .addClass('msg-error validate-error')
-      .text(msg);
-  },
-  removeError: function($target, $error) {
-    $error.remove();
-    var focus = jQuery.data( $target.get(0), 'validate_focus');
-    var blur  = jQuery.data( $target.get(0), 'validate_blur');
-    $target
-      .unbind('focus', focus)
-      .unbind('blur', blur);
-  }
-});
-
 var validateErrorMessage;
 
 function validateFilterDetails () {
@@ -1363,7 +1329,7 @@ jQuery('#dialog_save_filter').dialog({
 });
 
 jQuery('#save-filter').click(function() {
-  if ( !jQuery('input[name=filter_name]').mtValidate('filterName') )
+  if ( !jQuery('input[name=filter_name]').mtValidate('dialog') )
     return false;
   var name = jQuery('input[name=filter_name]').val();
   itemValues();
