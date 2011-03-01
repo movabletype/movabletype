@@ -95,6 +95,13 @@
   <mtApp:PageActions>
 </mt:setvarblock>
 
+<mt:setvarblock name="object_nav">
+<ul class="object-nav">
+  <li id="previous-link"><mt:if name="previous_entry_id"><a href="<mt:var name="script_url">?__mode=view&amp;_type=asset&amp;id=<mt:var name="previous_entry_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">">&lsaquo; <__trans phrase="Prev"></a><mt:else><span>&lsaquo; <__trans phrase="Prev"></span></mt:if></li>
+  <li id="next-link"><mt:if name="next_entry_id"><a href="<mt:var name="script_url">?__mode=view&amp;_type=asset&amp;id=<mt:var name="next_entry_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">"><__trans phrase="Next"> &rsaquo;</a><mt:else><span><__trans phrase="Next"> &rsaquo;</span></mt:if></li>
+</ul>
+</mt:setvarblock>
+
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/focus.js"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/tagcomplete.js"></script>
