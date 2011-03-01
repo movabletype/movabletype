@@ -419,9 +419,16 @@ sub save {
         && ( !$tmpl->id || ( $tmpl->id && ( $existing->id ne $tmpl->id ) ) )
         && ( $existing->type eq $tmpl->type ) )
     {
+        my $scope;
+        if ( $tmpl->blog_id ) {
+            my $blog = $tmpl->blog;
+            $scope = lc $blog->class_label;
+        } else {
+            $scope = MT->translate('system');
+        }
         return $tmpl->error(
             MT->translate(
-                'Template with the same name already exists in this blog.')
+                'Template name must be unique within this [_1].', $scope)
         );
     }
 
