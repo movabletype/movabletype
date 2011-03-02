@@ -900,7 +900,6 @@ $.extend( $.mtValidator.prototype, {
         validator.errstr = undefined;
         $.each ( rules, function( selector, fn ) {
             if ( $elem.is(selector) ) {
-                var fn = rules[selector];
                 validator.error  = false;
                 validator.errstr = undefined;
                 validator.test   = fn;
