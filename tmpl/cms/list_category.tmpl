@@ -416,6 +416,7 @@ function initMoving() {
       original_class = $item.attr('class');
       var id = $item.attr('id');
       var count = jQuery('.'+id).hide().length;
+      $item.find('.item-basename').hide();
       if (count) {
         var label = (count == 1)
           ? '<mt:var name="object_label" lower_case="1" escape="js">'
@@ -434,7 +435,7 @@ function initMoving() {
       }
       function _stop() {
         $item.find('.with').remove();
-        $item.find('.plus, .delete').show();
+        $item.find('.item-basename, .plus, .delete').show();
         $item.attr('class', place);
         initItem($item);
         var $last = $item;
