@@ -481,7 +481,7 @@ function open_dialog(href, opts) {
             .addClass('loading')
             .appendTo($('.mt-dialog'));
     }
-    if (navigator.userAgent.indexOf("Firefox/3") == -1) {
+    if (navigator.userAgent.indexOf("Gecko/") == -1) {
         $('body').addClass('has-dialog');
     }
     $('.mt-dialog').show();
