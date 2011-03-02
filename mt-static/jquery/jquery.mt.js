@@ -950,7 +950,7 @@ $.mtValidator('default', {
     wrapError: function ( $target, msg ) {
         return $('<label style="position: absolute;" />')
             .attr('for', $target.attr('id') )
-            .addClass('msg-error validate-error')
+            .addClass('msg-error msg-balloon validate-error')
             .text(msg);
     },
     showError: function( $target, $error_block ) {
@@ -985,6 +985,12 @@ $.mtValidator('default', {
 });
 
 $.mtValidator('dialog', {
+    wrapError: function ( $target, msg ) {
+        return $('<label/>')
+            .attr('for', $target.attr('id') )
+            .addClass('msg-error dialog-msg-error')
+            .text(msg);
+    },
     showError: function( $target, $error_block ) {
         $target.parents('div.ui-dialog').find('div.dialog-msg-block').append($error_block);
     },
