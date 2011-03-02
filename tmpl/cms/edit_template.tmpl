@@ -865,7 +865,7 @@ function saveTemplatePrefs( sync ) {
     dataType: 'json',
     data: {
       __mode: 'save_template_prefs',
-      blog_id: <mt:var name="blog_id">,
+      blog_id: <mt:if name="blog_id"><mt:var name="blog_id"><mt:else>0</mt:if>,
       syntax_highlight: sync,
       magic_token: '<mt:var name="magic_token">'
     }
