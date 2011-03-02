@@ -1236,10 +1236,10 @@ function validateFilterDetails () {
   jQuery('div#filter-detail div.filteritem').each( function () {
     if ( !jQuery(this).find('input:visible').mtValidate() ) {
       errors++;
-      jQuery(this).addClass('highlight');
+      jQuery(this).addClass('highlight error');
     }
     else {
-      jQuery(this).removeClass('highlight');
+      jQuery(this).removeClass('highlight error');
     }
   })
   if ( errors ) {
