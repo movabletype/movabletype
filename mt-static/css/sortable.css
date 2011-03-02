@@ -46,7 +46,8 @@
 }
 
 .sortable-item .item-label, 
-.sortable-item .item-basename {
+.sortable-item .item-basename, 
+.sortable-item .with {
     float: left;
     height: 42px;
     line-height: 42px;
@@ -78,7 +79,6 @@
 .item-ctrl .edit-link {
     vertical-align: middle;
 }
-
 
 .sortable-item .count {
     float: right;
