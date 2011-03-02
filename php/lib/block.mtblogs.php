@@ -8,6 +8,15 @@
 function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $ctx->localize(array('_blogs', '_blogs_counter', 'blog', 'blog_id'));
+        if (!(
+            isset($args['include_blogs']) ||
+            isset($args['include_websites']) ||
+            isset($args['blog_ids']) ||
+            isset($args['site_ids']) ||
+            isset($args['blog_id']) # in smarty_block_mtblogparentwebsite
+        )) {
+            $args['include_blogs'] = 'all';
+        }
         $blogs = $ctx->mt->db()->fetch_blogs($args);
         $ctx->stash('_blogs', $blogs);
         $counter = 0;
