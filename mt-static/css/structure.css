@@ -597,7 +597,7 @@ ul.tabs li a {
 /* -- Selector Nav */
 #selector-nav { 
     position: relative;
-    z-index: 100;
+    z-index: 500;
 }
 .scope {
     display: inline-block;
@@ -740,6 +740,7 @@ ul.tabs li a {
 /* ---- Favorite Action */
 .fav-actions-nav { 
     position: relative;
+    z-index: 600;
     float: right;
 }
 .fav-actions-nav .action.button {
@@ -838,7 +839,7 @@ ul.tabs li a {
     position: absolute;
     top: 29px;
     right: -10px;
-    z-index: 250;
+    z-index: 500;
     padding: 8px;
     border-top: 1px solid #9ea1a3;
     background-color: #7b7c7d;
@@ -1616,7 +1617,7 @@ fieldset {
     min-width: 200px;
     max-width: 100%;
     position: absolute;
-    z-index: 100;
+    z-index: 50;
     border: 1px solid #c0c6c9;
     background-color: #f3f3f3;
 }

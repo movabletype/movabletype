@@ -988,7 +988,7 @@ $.mtValidator('dialog', {
     wrapError: function ( $target, msg ) {
         return $('<label/>')
             .attr('for', $target.attr('id') )
-            .addClass('msg-error dialog-msg-error')
+            .addClass('msg msg-error dialog-msg-error')
             .text(msg);
     },
     showError: function( $target, $error_block ) {
