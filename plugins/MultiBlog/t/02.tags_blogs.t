@@ -147,7 +147,7 @@ SKIP:
         $tmpl->text( $block->template );
         my $ctx = $tmpl->context;
 
-        my $blog = MT::Blog->load($blog_id);
+        my $blog = MT::Blog->load( $block->blog_id || $blog_id );
         $ctx->stash( 'blog',          $blog );
         $ctx->stash( 'blog_id',       $blog->id );
         $ctx->stash( 'local_blog_id', $blog->id );
@@ -161,7 +161,7 @@ SKIP:
 };
 
 sub php_test_script {
-    my ( $template, $text ) = @_;
+    my ( $template, $blog_id, $text ) = @_;
     $text ||= '';
 
     my $test_script = <<PHP;
@@ -188,8 +188,8 @@ $mt->init_plugins();
 $db = $mt->db();
 $ctx =& $mt->context();
 
-$ctx->stash('blog_id', 2);
-$ctx->stash('local_blog_id', 2);
+$ctx->stash('blog_id', $blog_id);
+$ctx->stash('local_blog_id', $blog_id);
 $blog = $db->fetch_blog(2);
 $ctx->stash('blog', $blog);
 
@@ -232,7 +232,9 @@ SKIP:
                 'system' );
 
             open2( my $php_in, my $php_out, 'php -q' );
-            print $php_out &php_test_script( $block->template, $block->text );
+            print $php_out &php_test_script( $block->template,
+                $block->blog_id || $blog_id,
+                $block->text );
             close $php_out;
             my $php_result = do { local $/; <$php_in> };
             $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
@@ -263,7 +265,7 @@ __END__
 --- access_overrides
 { 1 => 1, 2 => 2, 3 => 2}
 
-=== mt:Blogs
+=== mt:Blogs with blog_ids and class="*" (Default access: denied)
 --- template
 <mt:Blogs include_blogs="1,3" class="*">
 <mt:BlogID />
@@ -273,3 +275,27 @@ __END__
 0
 --- access_overrides
 { 1 => 0, 2 => 0, 3 => 0}
+
+=== mt:Blogs with no attributes (Default access: denied)
+--- template
+<mt:Blogs>
+<mt:BlogID />
+</mt:Blogs>
+--- expected
+--- default_access_allowed
+0
+--- access_overrides
+{ 1 => 0, 2 => 0, 3 => 0}
+
+=== mt:Websites without attributes (Default access: denied)
+--- template
+<mt:Websites>
+<mt:WebsiteID />
+</mt:Websites>
+--- expected
+--- default_access_allowed
+0
+--- access_overrides
+{ 1 => 0, 2 => 0, 3 => 0}
+--- blog_id
+1
