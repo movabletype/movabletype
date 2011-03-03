@@ -53,7 +53,6 @@ sub list_props {
         basename => {
             auto  => 1,
             label => 'Basename',
-            html  => sub {''},
         },
         id     => 'ID',
         parent => {

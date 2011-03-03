@@ -48,23 +48,23 @@
 </div>
 
 <div id="dialog-change-basename" class="dialog" style="display: none;">
+  <div class="dialog-msg-block"></div>
 <mt:if name="object_type" eq="category">
   <p><__trans phrase="Can't move to the level where the exists same label. Please enter new label which is unique in this level."></p>
   <mtapp:setting
      id="new-label"
      label="<__trans phrase="Label">"
      label_class="top-label">
-    <input type="text" id="new-label" class="text full">
+    <input type="text" id="new-label" class="text full required">
   </mtapp:setting>
-<mt:else>
+</mt:if>
   <p><__trans phrase="Can't move to the level where the exists same basename. Please enter new basename which is unique in this level."></p>
   <mtapp:setting
      id="new-basename"
      label="<__trans phrase="Basename">"
      label_class="top-label">
-    <input type="text" id="new-basename" class="text full">
+    <input type="text" id="new-basename" class="text full required">
   </mtapp:setting>
-</mt:if>
   <div class="dialog actions-bar">
     <button
        type="submit"
@@ -209,6 +209,8 @@ function initItem($item) {
       var $form = jQuery('<div class="mod edit-form"/>')
         .append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short label" placeholder="<__trans phrase="Label">" />'));
       $form.find('.label').val($label.text());
+      $form.append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_basename" class="text short basename" placeholder="<__trans phrase="Basename">" />'));
+      $form.find('.basename').val($basename.text());
 
 <mt:if name="object_type" eq="category">
       jQuery.mtValidateRules['.label'] = function ($e) {
@@ -216,26 +218,22 @@ function initItem($item) {
         return hasDupe(parent, id, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level">') : true;
       };
 <mt:else>
-      $form.append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_basename" class="text short basename" placeholder="<__trans phrase="Basename">" />'));
-      $form.find('.basename').val($basename.text());
       jQuery.mtValidateRules['.label'] = function ($e) {
         if ( !$e.val().length ) return this.raise('<__trans phrase="Label is required">');
         return true;
       };
+</mt:if>
       jQuery.mtValidateRules['.basename'] = function ($e) {
         if ( !$e.val().length ) return this.raise('<__trans phrase="Basename is required">');
         if ( $e.val().match(/\W/) ) return this.raise('<__trans phrase="Invalid Basename">');
         return hasDupe(parent, id, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level">') : true;
       };
-</mt:if>
 
       jQuery('<button type="submit" class="rename button"><__trans phrase="Rename"></button>')
         .bind('click', function() {
           if ( !$element.find('input.label').mtValidate() ) return false;
-<mt:if name="object_type" eq="folder">
           if ( !$element.find('input.basename').mtValidate() ) return false;
           $basename.text( $element.find('input.basename').val() );
-</mt:if>
           $label.text( $element.find('input.label').val() );
           $children.show();
           initItem($item);
@@ -314,25 +312,17 @@ function hasDupe( parent, id, label, basename ) {
         dupe = true;
         return false;
       }
-<mt:else>
+</mt:if>
       var sibling_basename = jQuery(this).find('.item-basename-text').text();
       if ( ( basename && sibling_basename == basename ) ) {
         dupe = true;
         return false;
       }
-</mt:if>
   });
   return dupe;
 }
 
-
 function addItem(parent, label) {
-  jQuery('#msg-block').empty();
-  if (label == '') {
-    jQuery('#msg-block').append('<div class="msg msg-error">'+trans('label is empty.', label)+'</div>');
-    return false;
-  }
-
   if (hasDupe( parent, 0, label) ) {
     jQuery('#msg-block').append('<div class="msg msg-error">'+trans("[_1] '[_2]' already exists.", '<mt:var name="object_label">', label)+'</div>');
     return false;
@@ -465,7 +455,8 @@ function initMoving() {
 
       if (
 <mt:if name="object_type" eq="category">
-        hasDupe(place, id, $item.find('.item-label').text() )
+        hasDupe( place, id, $item.find('.item-label').text() )
+        || hasDupe( place, id, null, $item.find('.item-basename-text').text() )
 <mt:else>
         hasDupe(place, id, null, $item.find('.item-basename-text').text() )
 </mt:if>
@@ -477,18 +468,17 @@ function initMoving() {
         jQuery.mtValidateRules['#new-label'] = function ($e) {
           return hasDupe(place, id, $e.val()) ? this.raise('Duplicated label on this level') : true;
         };
-<mt:else>
-        jQuery.mtValidateRules['#new-basename'] = function ($e) {
-          return hasDupe(place, id, null, $e.val()) ? this.raise('Duplicated basename on this basename') : true;
-        };
 </mt:if>
+        jQuery.mtValidateRules['#new-basename'] = function ($e) {
+          return hasDupe(place, id, null, $e.val()) ? this.raise('Duplicated basename on this level') : true;
+        };
         jQuery('#new-label').val($item.find('.item-label').text())
         jQuery('#new-basename').val($item.find('.item-basename-text').text())
         jQuery('#change-and-move')
           .unbind('click')
           .bind( 'click', function(){
 <mt:if name="object_type" eq="category">
-            if ( jQuery('#new-label').mtValidate() ) {
+            if ( jQuery('#new-label').mtValidate('dialog') && jQuery('#new-basename').mtValidate('dialog') ) {
               var $label = $item.find('.item-label a').length ? $item.find('.item-label a') : $item.find('.item-label');
               $label.text( jQuery('#new-label').val() );
               _stop();
@@ -496,12 +486,11 @@ function initMoving() {
 
             }
 <mt:else>
-            if ( jQuery('#new-basename').mtValidate() ) {
+            if ( jQuery('#new-basename').mtValidate('dialog') ) {
               var $basename = $item.find('.item-basename-text');
               $basename.text( jQuery('#new-basename').val() );
               _stop();
               jQuery('#dialog-change-basename').dialog('close');
-
             }
 </mt:if>
             return false;
@@ -528,16 +517,12 @@ function initMoving() {
           resizable: false,
           draggable: false,
           closeOnEscape: false,
-          open: function(){
-            jQuery('input[type=text]').focus();
-          }
         });
 <mt:if name="object_type" eq="category">
-        jQuery('#new-label').focus().mtValidate();
+        jQuery('#new-label, #new-basename').mtValidate('dialog');
 <mt:else>
-        jQuery('#new-basename').focus().mtValidate();
+        jQuery('#new-basename').mtValidate('dialog');
 </mt:if>
-
       }
       else {
         _stop();
