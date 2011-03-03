@@ -80,9 +80,9 @@
 </mt:unless>
 <mt:unless name="can_use_userpic">
   <div id="userpic" class="permission-error msg msg-info">
-    <p class="msg-text"><__trans phrase="Image::Magick is not configured."> <a href="#" class="detail-link"><__trans phrase="Detail"></a></p>
+    <p class="msg-text"><__trans phrase="ImageDriver is not configured."> <a href="#" class="detail-link"><__trans phrase="Detail"></a></p>
     <div class="detail">
-      <p class="msg-text"><__trans phrase="Image::Magick is either not present on your server or incorrectly configured. Due to that, you will not be able to use Movable Type's userpics feature. If you wish to use that feature, please install Image::Magick or use an alternative image driver."></p>
+      <p class="msg-text"><__trans phrase="ImageDriver is either not present on your server or incorrectly configured. It is required to use the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager and configure the ImageDriver configuration directive."></p>
     </div>
   </div>
 </mt:unless>
