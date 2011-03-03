@@ -108,7 +108,7 @@ function setLicense() {
        hint="<__trans phrase="Name your blog. The name can be changed at any time.">"
        help_page="blog_settings_general"
        help_section="blog_name">
-      <input type="text" name="name" id="name" class="text" value="<mt:var name="name" escape="html">" />
+      <input type="text" name="name" id="name" class="text required" value="<mt:var name="name" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -222,7 +222,7 @@ function setLicense() {
       </div>
     <mt:else>
       <div class="site-url content-path">
-        <input type="text" name="site_url" id="site_url" value="<mt:var name="site_url" escape="html" default="$suggested_site_url">" class="text website-url-field mt-edit-field" />
+        <input type="text" name="site_url" id="site_url" value="<mt:var name="site_url" escape="html" default="$suggested_site_url">" class="text website-url-field mt-edit-field required" />
       </div>
     </mt:if>
       <p class="alert-warning-inline icon-left icon-warning" id="site_url-warning" style="display: none"><__trans phrase="Warning: Changing the [_1] URL can result in breaking all the links in your blog." params="<mt:var name="object_label" capitalize="1">"></p>
@@ -240,11 +240,11 @@ function setLicense() {
        help_page="blog_settings_publishing"
        help_section="site_root">
       <div class="relative-site_path content-path">
-        <span class="website-path"><mt:var name="website_path"></span><span class="extra-path"><input type="text" name="site_path" id="site_path" value="<mt:if name="is_blog"><mt:unless name="site_path_absolute"><mt:var name="site_path" escape="html" default="$suggested_site_path"></mt:unless><mt:else><mt:var name="site_path" escape="html" default="$suggested_site_path"></mt:if>" class="<mt:if name="is_blog"> blog-path-text path<mt:else> mt-edit-field website-path-field</mt:if> hide-input" /></span>
+        <span class="website-path"><mt:var name="website_path"></span><span class="extra-path"><input type="text" name="site_path" id="site_path" value="<mt:if name="is_blog"><mt:unless name="site_path_absolute"><mt:var name="site_path" escape="html" default="$suggested_site_path"></mt:unless><mt:else><mt:var name="site_path" escape="html" default="$suggested_site_path"></mt:if>" class="<mt:if name="is_blog"> blog-path-text path<mt:else> mt-edit-field website-path-field required</mt:if> hide-input" /></span>
       </div>
     <mt:if name="is_blog">
       <div class="absolute-site_path content-path">
-        <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" size="50" class="text blog-path-text hide-input" />
+        <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" size="50" class="text blog-path-text hide-input required" />
       </div>
       <div class="use-absolute option">
         <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
@@ -325,10 +325,10 @@ function setLicense() {
          help_page="blog_settings_publishing"
          help_section="archive_path">
         <div class="relative-site_path content-path">
-          <span class="website-path"><mt:var name="website_path"></span><span class="extra-path"><input type="text" name="archive_path" id="archive_path" value="<mt:unless name="archive_path_absolute"><mt:var name="archive_path" escape="html"></mt:unless>" class="blog-path-text blog-path-text path<mt:unless name="enable_archive_paths"> show-input</mt:unless>" /></span>
+          <span class="website-path"><mt:var name="website_path"></span><span class="extra-path"><input type="text" name="archive_path" id="archive_path" value="<mt:unless name="archive_path_absolute"><mt:var name="archive_path" escape="html"></mt:unless>" class="blog-path-text blog-path-text path<mt:unless name="enable_archive_paths"> show-input</mt:unless> required" /></span>
         </div>
         <div class="absolute-site_path content-path">
-          <input type="text" name="archive_path_absolute" id="archive_path_absolute" value="<mt:if name="archive_path_absolute"><mt:var name="archive_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="blog-path-text<mt:unless name="enable_archive_paths"> show-input</mt:unless>" />
+          <input type="text" name="archive_path_absolute" id="archive_path_absolute" value="<mt:if name="archive_path_absolute"><mt:var name="archive_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="blog-path-text<mt:unless name="enable_archive_paths"> show-input</mt:unless> required" />
         </div>
         <div class="use-absolute option">
           <input type="checkbox" name="use_absolute_archive" id="use_absolute_archive" value="1"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
@@ -480,23 +480,13 @@ function setLicense() {
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('input#enable_archive_paths').click(function() {
         jQuery('div#enable_archive_paths_prefs').toggleClass('hidden');
-
-        if ( $(this).checked ) {
-            jQuery('div#enable_archive_paths_prefs').find(':input').each(function() {
-                jQuery(this).removeClass('ignore-validate');
-            });
-        } else {
-            jQuery('div#enable_archive_paths_prefs').find(':input').each(function() {
-                jQuery(this).addClass('ignore-validate');
-            });
-        }
     });
 
     function is_valid_url(url_){
         return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ ) ? true : false;
     }
     function is_valid_path(path_){
-        var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
+        var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, ""); //"
         str = encodeURI(str);
         if (str.indexOf('%') != -1) {
             return false;
@@ -517,114 +507,73 @@ function setLicense() {
         }
         return false;
     }
-    jQuery.validator.addMethod('url', function(value, element) {
-        return is_valid_url('<mt:var name="website_url">'+value);
-    });
-    jQuery.validator.addMethod('site_url', function(value, element) {
-        var base = '<mt:var name="website_scheme">://<mt:var name="website_domain">';
-        var chk = jQuery(element).parents().find('.url-field:first').find(':checkbox:checked');
-        var subdomain = jQuery(element).parents().find('.url-field:first').find('.blog-subdomain-text');
-        if ( chk.length && subdomain.val().length) {
-            base = '<mt:var name="website_scheme">://'+subdomain.val()+'.<mt:var name="website_domain">';
-        }
-        return is_valid_url(base + element.value);
-    });
-    jQuery.validator.addMethod('path', function(value, element) {
-        return is_valid_path(value);
-    });
-    jQuery.validator.addMethod('absolute_path', function(value, element) {
-        return is_valid_absolute_path(value);
-    });
-    jQuery('#cfg_form').validate({
-        ignore: '.ignore-validate',
-        rules: {
-            name: 'required',
-            server_offset: 'required',
-            <mt:if name="is_blog">
-            site_url_path: 'site_url',
-            </mt:if>
-            site_url: {
-                required: true,
-                'url': true
-            },
-            site_path: {
-                <mt:unless name="is_blog">required: true,</mt:unless>
-                path: true
-            },
-            <mt:if name="is_blog">site_path_absolute: {
-                required: '#use_absolute:checked',
-                absolute_path: true
-            },</mt:if>
-            archive_url_path: {
-                required: function(element) {
-                    if (jQuery('#enable_archive_paths:checked').length) {
-                        return element.value.length;
-                    }
-                    return true;
-                },
-                site_url: true
-            },
-            archive_path: {
-                required: function(element) {
-                    if ( jQuery('#enable_archive_paths:checked').length && !jQuery('#use_absolute_archive:checked').length ) {
-                        return element.value.length;
-                    }
-                    return true;
-                },
-                path: function(element) {
-                    if ( jQuery('#enable_archive_paths:checked').length && !jQuery('#use_absolute_archive:checked').length ) {
-                        return is_valid_path(element.value);
-                    }
-                    return true;
-                }
-            },
-            archive_path_absolute: {
-                required: function(element) {
-                    if ( jQuery('#enable_archive_paths:checked').length && jQuery('#use_absolute_archive:checked').length ) {
-                        return is_valid_absolute_path(element.value);
-                    }
-                    return true;
-                },
-                absolute_path: function(element) {
-                    if ( jQuery('#enable_archive_paths:checked').length && jQuery('#use_absolute_archive:checked').length ) {
-                        return is_valid_absolute_path(element.value);
-                    }
-                    return true;
-                }
+
+    jQuery.mtValidateAddRules({
+<mt:if name="is_blog">
+        "#site_url_path": function($e) {
+            var base = '<mt:var name="website_scheme">://<mt:var name="website_domain">';
+            var chk = jQuery($e).parents().find('.url-field:first').find(':checkbox:checked');
+            var subdomain = jQuery($e).parents().find('.url-field:first').find('.blog-subdomain-text');
+            if ( chk.length && subdomain.val().length) {
+                base = '<mt:var name="website_scheme">://'+subdomain.val()+'.<mt:var name="website_domain">';
             }
+            return is_valid_url(base + $e.val());
         },
-        messages: {
-            name: '<__trans phrase="You must set your Blog Name." escape="singlequotes">',
-            server_offset: '<__trans phrase="You did not select a time zone." escape="singlequotes">',
-            site_url: '<__trans phrase="You must set a valid URL." escape="singlequotes">',
-            site_url_path: '<__trans phrase="You must set a valid URL." escape="singlequotes">',
-            site_path: {
-                required: '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
-                path: '<__trans phrase="You must set a valid Local file Path." escape="singlequotes">'
-            },
-            site_path_absolute: {
-                required: '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
-                absolute_path: '<__trans phrase="You must set a valid Loca file Path." escape="singlequotes">'
-            },
-            archive_url_path: {
-                required:  '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
-                site_path: '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">'
-            },
-            archive_path: {
-                required: '<__trans phrase="You must set Local Archive Path." escape="singlequotes">',
-                path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
-            },
-            archive_path_absolute: {
-                required: '<__trans phrase="You must set Local Archive Path." escape="singlequotes">',
-                absolute_path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
+        "#site_path_absolute": function($e) {
+            return is_valid_absolute_path($e.val());
+        },
+</mt:if>
+        "#archive_url_path": function($e) {
+            var base = '<mt:var name="website_scheme">://<mt:var name="website_domain">';
+            var chk = jQuery($e).parents().find('.url-field:first').find(':checkbox:checked');
+            var subdomain = jQuery($e).parents().find('.url-field:first').find('.blog-subdomain-text');
+            if ( chk.length && subdomain.val().length) {
+                base = '<mt:var name="website_scheme">://'+subdomain.val()+'.<mt:var name="website_domain">';
             }
+            return is_valid_url(base + $e.val());
         },
-        errorClass: "msg-error",
-        errorPlacement: function(error, element) {
-            element.parents('div.field').addClass('error-field');
-            error.removeAttr('generated').insertAfter(element);
+        "#site_url": function($e) {
+            return is_valid_url('<mt:var name="website_url">' + $e.val());
+        },
+        "#site_path": function($e) {
+            return is_valid_path($e.val());
+        },
+        "#archive_path": function ($e) {
+            if ( jQuery('#enable_archive_paths:checked').length && !jQuery('#use_absolute_archive:checked').length ) {
+                if ( !$e.val().length ) return false;
+                if ( !is_valid_path($e.val()) ) return false;
+            }
+            return true;
+        },
+        "#archive_path_absolute": function ($e) {
+            if ( jQuery('#enable_archive_paths:checked').length && jQuery('#use_absolute_archive:checked').length ) {
+                if ( !is_valid_absolute_path($e.val()) ) return false;
+            }
+            return true;
         }
     });
+
+    jQuery.mtValidateAddMessages({
+        "#name.required": '<__trans phrase="You must set your Blog Name." escape="singlequotes">',
+        "#server_offset.required": '<__trans phrase="You did not select a time zone." escape="singlequotes">',
+        "#site_url": '<__trans phrase="You must set a valid URL." escape="singlequotes">',
+        "#site_url_path": '<__trans phrase="You must set a valid URL." escape="singlequotes">',
+        "#site_path.required": '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
+        "#site_path.path": '<__trans phrase="You must set a valid Local file Path." escape="singlequotes">',
+        "#site_path_absolute.required": '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
+        "#site_path_absolute": '<__trans phrase="You must set a valid Loca file Path." escape="singlequotes">',
+        "#archive_url_path.required": '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
+        "#archive_url_path": '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
+        "#archive_path.required": '<__trans phrase="You must set Local Archive Path." escape="singlequotes">',
+        "#archive_path": '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
+        "#archive_path_absolute.required": '<__trans phrase="You must set Local Archive Path." escape="singlequotes">',
+        "#archive_path_absolute": '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
+    });
+
+    jQuery('#cfg_form').submit( function () {
+        if ( !jQuery(this).find('input:visible').mtValidate('simple') ) return false;
+    });
+
     jQuery.mtEditSiteUrl({
         edit: '<__trans phrase="Edit">'
     });
@@ -633,16 +582,6 @@ function setLicense() {
     jQuery.mtUseSubdomain();
     jQuery.mtEditSitePath();
     jQuery.mtUseAbsolute();
-
-    if ( jQuery('input#enable_archive_paths:checked').length ) {
-        jQuery('#archive_url_path').removeClass('ignore-validate');
-        jQuery('#archive_path').removeClass('ignore-validate');
-        jQuery('#archive_path_absolute').removeClass('ignore-validate');
-    } else {
-        jQuery('#archive_url_path').addClass('ignore-validate');
-        jQuery('#archive_path').addClass('ignore-validate');
-        jQuery('#archive_path_absolute').addClass('ignore-validate');
-    }
 </mt:if>
 </mt:setvarblock>
 <mt:include name="include/footer.tmpl">

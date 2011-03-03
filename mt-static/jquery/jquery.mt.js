@@ -909,7 +909,8 @@ $.extend( $.mtValidator.prototype, {
                 if ( validator.error || !res ) {
                     if ( !validator.errstr ) {
                         validator.raise(
-                            $.mtValidateMessages[selector]
+                            $.mtValidateMessages['#' + $elem.attr('id') + selector]
+                            || $.mtValidateMessages[selector]
                             || 'Invalid value'
                         );
                     }
@@ -995,7 +996,7 @@ $.mtValidator('dialog', {
     },
     showError: function( $target, $error_block ) {
         $target.parents('div.ui-dialog').find('div.dialog-msg-block').append($error_block);
-    },
+    }
 });
 
 $.mtValidateRules = {
@@ -1022,6 +1023,14 @@ $.mtValidateRules = {
     '.number': function ($e) {
         return /\d/.test($e.val()) && /^\d*\.?\d*$/.test($e.val());
     }
+};
+
+$.mtValidateAddRules = function ( rules ) {
+    $.mtValidateRules = $.extend( $.mtValidateRules, rules );        
+};
+
+$.mtValidateAddMessages = function ( rules ) {
+    $.mtValidateMessages = $.extend( $.mtValidateMessages, rules );        
 };
 
 $.mtValidateMessages = {
