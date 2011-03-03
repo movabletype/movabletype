@@ -683,8 +683,12 @@ function renderNestedList() {
           renderNestedList();
         });
       }
-      else
-        alert('Ajax error: ' + status);
+      else if ( xhr.status == 0 ) {
+        // Maybe this is user abort. do nothing.
+      }
+      else {
+        alert('Ajax error: ' + xhr.status + ': ' + status);
+      }
     }
   });
 }
