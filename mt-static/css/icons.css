@@ -24,7 +24,6 @@
     background-image: url(../images/status_icons/icon-remove.png);    
 }
 .action-icon {
-    vertical-align: middle;
     border-radius: 9px;
     -moz-border-radius: 9px;
 }

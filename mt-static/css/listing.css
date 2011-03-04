@@ -41,6 +41,7 @@
     word-wrap: break-word;
 }
 .col.head { 
+    position: relative;
     padding: 0 0 0 8px;
     border-width: 0 0 1px 1px;
     background-color: #dcdddd;
@@ -259,14 +260,16 @@ tfoot .col.head{
 .filteritem {
     position: relative;
     margin: 0 10px;
-    padding: 0 10px;
     background-color: #fff;
     border: 1px solid #adadad;
     border-top-color: #cfd0d0;
     border-left-color: #cfd0d0;
 }
 .filteritem .item-content {
-    line-height: 42px;
+    padding: 10px;
+}
+.filteritem .item-ctrl {
+    margin-left: 10px;
 }
 
 /* - Select Filter */

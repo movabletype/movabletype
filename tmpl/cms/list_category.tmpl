@@ -180,7 +180,7 @@ function createItem(id, parent, label, basename, number) {
   var line = '<span class="sort-tab"></span>';
   line += '<span class="item-label">'+label+'</span>';
   if ( basename )
-    line += '<span class="item-basename"><span class="item-basename-text">'+basename+'</span></span>';
+    line += '<span class="item-basename">(<span class="item-basename-text">'+basename+'</span>)</span>';
   line += ' <span class="item-ctrl"></span>';
   line += ' <span class="count">'+number+'</span>';
   var $item = jQuery('<div id="'+id+'" class="'+parent+'" />').append(line);
@@ -206,7 +206,7 @@ function initItem($item) {
       var $label = $element.find('.item-label a').length ? $element.find('.item-label a') : $element.find('.item-label');
       var $basename = $element.find('.item-basename-text');
       var $children = $element.children().hide();
-      var $form = jQuery('<div class="mod edit-form"/>')
+      var $form = jQuery('<div class="edit-form"/>')
         .append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short label" placeholder="<__trans phrase="Label">" />'));
       $form.find('.label').val($label.text());
       $form.append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_basename" class="text short basename" placeholder="<__trans phrase="Basename">" />'));
@@ -260,7 +260,7 @@ function initItem($item) {
       return false;
     });
 
-  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add child item"></span>')
+  jQuery('<span class="item-action plus clickable action-icon"><img alt="<__trans phrase="Add child item">" src="<mt:var name="static_uri">images/status_icons/icon-plus.png"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       jQuery('.add-form').remove();
@@ -288,7 +288,7 @@ function initItem($item) {
       jQuery('.button').button();
     });
 
-  jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon"><__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">"></span>')
+  jQuery('<span class="item-action delete clickable action-icon"><img alt="<__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">">" src="<mt:var name="static_uri">images/status_icons/icon-delete.png" /></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       var id = jQuery(this).parents('.sortable-item').attr('id');
