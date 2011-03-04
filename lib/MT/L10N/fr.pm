@@ -3054,7 +3054,7 @@ use vars qw( @ISA %Lexicon );
 	'Add' => 'Ajouter',
 	'Your Dashboard has been updated.' => 'Votre tableau de bord a été mis à jour.',
 	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'Vous avez essayé d\'accéder à une fonctionnalité à laquelle vous n\'avez pas le droit. Si vous pensez que cette erreur n\'est pas normale contactez votre administrateur système.',
-	'Support directory is not writable.' => 'Le répertoire support n\'est pas ouvert en écriture.',
+	'The support directory is not writable.' => 'Le répertoire support n\'est pas ouvert en écriture.',
 	'Detail' => 'Détail',
 	'Movable Type was unable to write to its \'support\' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.' => 'Movable Type n\'a pas pu écrire dans son répertoire \'support\'. Merci de créer un répertoire à cet endroit : [_1], et de lui ajouter des droits qui permettent au serveur web d\'écrire dedans.',
 	'Image::Magick is not configured.' => 'Image::Magick n\'est pas configuré.',

@@ -72,7 +72,7 @@
 </mt:if>
 <mt:unless name="has_uploads_path">
   <div id="permission-error" class="msg msg-info">
-    <p class="msg-text"><__trans phrase="Support directory is not writable."> <a href="#" class="detail-link"><__trans phrase="Detail"></a></p>
+    <p class="msg-text"><__trans phrase="The support directory is not writable."> <a href="#" class="detail-link"><__trans phrase="Details"></a></p>
     <div class="detail">
       <p class="msg-text"><__trans phrase="Movable Type was unable to write to its 'support' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it." params="<mt:var name="support_path">"></p>
     </div>
@@ -80,7 +80,7 @@
 </mt:unless>
 <mt:unless name="can_use_userpic">
   <div id="userpic" class="permission-error msg msg-info">
-    <p class="msg-text"><__trans phrase="ImageDriver is not configured."> <a href="#" class="detail-link"><__trans phrase="Detail"></a></p>
+    <p class="msg-text"><__trans phrase="ImageDriver is not configured."> <a href="#" class="detail-link"><__trans phrase="Details"></a></p>
     <div class="detail">
       <p class="msg-text"><__trans phrase="An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly."></p>
     </div>

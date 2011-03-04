@@ -3053,7 +3053,7 @@ use vars qw( @ISA %Lexicon );
 	'Add' => 'Hinzufügen',
 	'Your Dashboard has been updated.' => 'Übersichtsseite aktualisiert.',
 	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'Sie haben für die gewünschte Funktion keine Berechtigung. Bei Fragen wenden Sie sich bitte an Ihren Systemadministrator.',
-	'Support directory is not writable.' => 'Das Support-Verzeichnis ist nicht beschreibbar.',
+	'The support directory is not writable.' => 'Das Support-Verzeichnis ist nicht beschreibbar.',
 	'Detail' => 'Anmerkung',
 	'Movable Type was unable to write to its \'support\' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.' => 'Movable Type kann auf den Ordner &#8222;support&#8220; nicht schreibend zugreifen. Legen Sie unter [_1] ein solches Verzeichnis an und stellen Sie sicher, daß der Webserver über Schreibrechte für diesen Ordner verfügt.',
 	'Image::Magick is not configured.' => 'Image::Magick ist nocht nicht konfiguriert.',

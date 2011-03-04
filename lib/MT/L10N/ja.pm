@@ -3053,7 +3053,7 @@ use vars qw( @ISA %Lexicon );
 	'Select a Widget...' => 'ウィジェットの選択...',
 	'Add' => '追加',
 	'Your Dashboard has been updated.' => 'ダッシュボードを更新しました。',
-	'Support directory is not writable.' => 'supportディレクトリに書き込めません。',
+	'The support directory is not writable.' => 'supportディレクトリに書き込めません。',
 	'Detail' => '詳細',
 	'Movable Type was unable to write to its \'support\' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.' => 'supportディレクトリに書き込みできません。[_1]にディレクトリを作成して、ウェブサーバーから書き込みできるパーミッションを与えてください。',
 	'Image::Magick is not configured.' => 'Image::Magickが設定されていません。',

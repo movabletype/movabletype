@@ -3054,7 +3054,7 @@ use vars qw( @ISA %Lexicon );
 	'Add' => 'Toevoegen',
 	'Your Dashboard has been updated.' => 'Uw dashboard is bijgewerkt.',
 	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'U heeft geprobeerd een optie te gebruiken waar u niet voldoende rechten voor heeft.  Als u gelooft dat u deze boodschap onterecht te zien krijgt, contacteer dan uw systeembeheerder.',
-	'Support directory is not writable.' => 'Support map is niet beschrijfbaar',
+	'The support directory is not writable.' => 'Support map is niet beschrijfbaar',
 	'Detail' => 'Detail',
 	'Movable Type was unable to write to its \'support\' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.' => 'Movable Type was niet in staat om te schrijven in de \'support\' map.  Gelieve een map aan te maken in deze locatie: [_1] en er genoeg permissies aan toe te kennen zodat de webserver er in kan schrijven.',
 	'Image::Magick is not configured.' => 'Image::Magick is niet geconfigureerd.',
