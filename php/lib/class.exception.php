@@ -86,8 +86,8 @@ function default_exception_handler ($e) {
         echo "503 Service Unavailable\n\n";
 
         if ( $e->is_debug() ) {
-            echo "Error:\n". $e->getMessage() ."\n";
-            echo "StackTrace:\n".$e->getTraceAsString()."\n";
+            echo "Error:\n". htmlspecialchars( $e->getMessage() ) ."\n";
+            echo "StackTrace:\n".htmlspecialchars( $e->getTraceAsString() ) . "\n";
         }
         exit;
     }
