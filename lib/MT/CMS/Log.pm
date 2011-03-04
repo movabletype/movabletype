@@ -552,14 +552,14 @@ sub cms_pre_load_filtered_list {
     my $user = $app->user;
     return if $user->is_superuser;
 
-    my $blog_ids = $load_options->{blog_ids};
+    my $options_blog_ids = $load_options->{blog_ids};
 
     require MT::Permission;
     my $iter = MT::Permission->load_iter(
         {   author_id   => $user->id,
             permissions => { like => '%view_blog_log%' },
-            (   $blog_ids
-                ? ( blog_id => $blog_ids )
+            (   $options_blog_ids
+                ? ( blog_id => $options_blog_ids )
                 : ( blog_id => { 'not' => 0 } )
             ),
         },
