@@ -52,7 +52,12 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 <mt:if name="open_dialog">
-jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=<mt:var name="dialog_mode">&amp;<mt:var name="dialog_params">'); 
+jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=<mt:var name="dialog_mode">&amp;<mt:var name="dialog_params">');
+<mt:else>
+if (window.top && (window.top.location != window.location)) {
+   alert("hoge");
+    window.top.location.href = window.location;
+}
 </mt:if>
 <mt:unless name="delayed_bootstrap">
 App.bootstrapInline( false );
