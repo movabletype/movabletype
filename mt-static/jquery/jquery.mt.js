@@ -931,10 +931,12 @@ $.extend( $.mtValidator.prototype, {
     validClass: 'valid',
     errorClass: 'error',
     wrapError: function ( $target, msg ) {
-        return $('<label/>')
-            .attr('for', $target.attr('id') )
-            .addClass('msg-error')
-            .text(msg);
+        return $('<div />').append(
+            $('<label/>')
+                .attr('for', $target.attr('id') )
+                .addClass('validate-error msg-error')
+                .text(msg)
+            );
     },
     updateError: function( $target, $error_block, msg ) {
         $error_block.text(msg);
@@ -1026,11 +1028,11 @@ $.mtValidateRules = {
 };
 
 $.mtValidateAddRules = function ( rules ) {
-    $.mtValidateRules = $.extend( $.mtValidateRules, rules );        
+    $.mtValidateRules = $.extend( $.mtValidateRules, rules );
 };
 
 $.mtValidateAddMessages = function ( rules ) {
-    $.mtValidateMessages = $.extend( $.mtValidateMessages, rules );        
+    $.mtValidateMessages = $.extend( $.mtValidateMessages, rules );
 };
 
 $.mtValidateMessages = {
