@@ -415,9 +415,7 @@ sub list_props {
                 my $entry    = MT->model('entry')->load($entry_id);
                 my $label    = MT->translate(
                     'Comments on [_1]: [_2]',
-                    $entry->class eq 'entry'
-                    ? MT->translate('Entry')
-                    : MT->translate('Page'),
+                    $entry->class_label,
                     $entry->title,
                 );
                 $prop->{filter_label} = $label;

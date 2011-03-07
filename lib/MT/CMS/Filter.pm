@@ -127,7 +127,7 @@ sub delete {
     }
     $filter->remove
         or return $app->json_error(
-        $app->translate( 'Failed to delete filter: [_1]', $filter->errstr ) );
+        $app->translate( 'Failed to delete filter(s): [_1]', $filter->errstr ) );
     my %res;
     my $list = $app->param('list');
     if ( defined $list && !$list ) {
@@ -151,13 +151,13 @@ sub delete_filters {
     my $res = MT->model('filter')->remove( { id => \@ids } )
         or return $app->json_error(
         MT->translate(
-            'Failed to remove filters: [_1]',
+            'Failed to delete filter(s): [_1]',
             MT->model('filter')->errstr,
         )
         );
     unless ( $res > 0 ) {
         ## if $res is 0E0 ( zero but true )
-        return $app->json_error( MT->translate( 'No such filter.', ) );
+        return $app->json_error( MT->translate( 'No such filter', ) );
     }
     $app->forward(
         'filtered_list',
@@ -246,7 +246,7 @@ sub legacy_filter {
                     filter_key => $legacy_id,
                     ds         => $type,
                     filter_val => ( $app->param('filter_val') || '' ),
-                    label      => "( $label )"
+                    label      => "($label)"
                 },
             }
         ],

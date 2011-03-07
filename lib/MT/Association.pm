@@ -256,7 +256,7 @@ sub list_props {
                 my ( $prop, $app, $val ) = @_;
                 my $role = MT->model('role')->load($val)
                     or return $prop->error(
-                    MT->translate('Invalid parameter.') );
+                    MT->translate('Invalid parameter') );
                 return MT->translate( 'Permissions with role: [_1]',
                     $role->name, );
             },

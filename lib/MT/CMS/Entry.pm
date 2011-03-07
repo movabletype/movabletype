@@ -1910,8 +1910,8 @@ PERMCHECK: {
                 unless ( $val =~ m!(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})(?::(\d{2}))?! ) {
                     return $app->error(
                         $app->translate(
-                            "Invalid date '[_1]'; $name dates must be in the format YYYY-MM-DD HH:MM:SS.",
-                            $val
+                            "Invalid date '[_1]'; [_2] dates must be in the format YYYY-MM-DD HH:MM:SS.",
+                            $val, $name
                         )
                     );
                 }
@@ -1920,8 +1920,8 @@ PERMCHECK: {
                 # Emit an error message if the date is bogus.
                 return $app->error(
                     $app->translate(
-                        "Invalid date '[_1]'; $name dates should be real dates.",
-                        $val
+                        "Invalid date '[_1]'; [_2] dates should be real dates.",
+                        $val, $name
                     )
                 ) if $s > 59
                     || $s < 0
@@ -1941,9 +1941,9 @@ PERMCHECK: {
             };
 
             my $co = $q->param( 'created_on_' . $id );
-            $date_closure->( $co, 'authored_on', 'authored on' ) or return;
+            $date_closure->( $co, MT->translate('authored_on'), MT->translate('authored on') ) or return;
             $co = $q->param( 'modified_on_' . $id );
-            $date_closure->( $co, 'modified_on', 'modified on' ) or return;
+            $date_closure->( $co, MT->translate('modified_on'), MT->translate('modified on') ) or return;
         }
         $app->run_callbacks( 'cms_pre_save.' . $type,
             $app, $entry, $orig_obj )

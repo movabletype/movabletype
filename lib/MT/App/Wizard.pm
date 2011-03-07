@@ -255,7 +255,7 @@ sub init_core_registry {
             'Digest::SHA1' => {
                 link => 'http://search.cpan.org/dist/Digest-SHA1',
                 label =>
-                    'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.',
+                    'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.',
             },
             'Mail::Sendmail' => {
                 link => 'http://search.cpan.org/dist/Mail-Sendmail',
@@ -265,7 +265,7 @@ sub init_core_registry {
             'Safe' => {
                 link => 'http://search.cpan.org/dist/Safe',
                 label =>
-                    'This module is used in test attribute of MTIf conditional tag.',
+                    'This module is used in a test attribute for the MTIf conditional tag.',
             },
             'Digest::MD5' => {
                 link  => 'http://search.cpan.org/dist/Digest-MD5',
@@ -274,7 +274,7 @@ sub init_core_registry {
             'Text::Balanced' => {
                 link => 'http://search.cpan.org/dist/Text-Balanced',
                 label =>
-                    'This module is required in mt-search.cgi if you are running Movable Type on Perl older than Perl 5.8.',
+                    'This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.',
             },
             'XML::Parser' => {
                 link  => 'http://search.cpan.org/dist/Text-Balanced',

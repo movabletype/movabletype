@@ -177,7 +177,7 @@ sub list_props {
         status => {
             base    => '__virtual.single_select',
             display => 'none',
-            label   => 'Status',
+            label   => '__AUTHOR_STATUS',
             col     => 'status',
             terms   => sub {
                 my $prop = shift;

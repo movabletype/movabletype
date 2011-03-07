@@ -1123,7 +1123,7 @@ PERMCHECK: {
                 panel_title       => $app->translate("Select Roles"),
                 panel_label       => $app->translate("Role Name"),
                 items_prompt      => $app->translate("Roles Selected"),
-                search_label      => $app->translate(""),
+                search_label      => "",
                 panel_description => $app->translate("Description"),
             },
         };

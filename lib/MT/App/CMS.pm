@@ -3391,7 +3391,7 @@ sub build_user_menus {
         || $app->param('author_id')
         || $login_user->id;
     my $menu_user = MT->model('author')->load($user_id)
-        or return $app->errtrans('Invalid params');
+        or return $app->errtrans('Invalid parameter');
     $param->{user_menu_id} ||= $user_id;
     $param->{user_menu_user} = $menu_user;
     my $active = $param->{active_user_menu};
