@@ -1,13 +1,23 @@
 <mt:setvar name="edit_button_value" value="<__trans phrase="Return to the compose screen">">
 <mt:setvar name="edit_button_title" value="<__trans phrase="Return to the compose screen (e)">">
 <mt:if name="object_type" eq="entry">
+  <if name="status" eq="2">
+  <mt:setvar name="save_button_value" value="<__trans phrase="Publish this entry">">
+  <mt:setvar name="save_button_title" value="<__trans phrase="Publish this entry (s)">">
+  <mt:else>
   <mt:setvar name="save_button_value" value="<__trans phrase="Save this entry">">
   <mt:setvar name="save_button_title" value="<__trans phrase="Save this entry (s)">">
+  </mt:if>
   <mt:setvar name="edit_button_value" value="<__trans phrase="Re-Edit this entry">">
   <mt:setvar name="edit_button_title" value="<__trans phrase="Re-Edit this entry (e)">">
 <mt:else>
+  <mt:if name="status" eq="2">
+  <mt:setvar name="save_button_value" value="<__trans phrase="Publish this page">">
+  <mt:setvar name="save_button_title" value="<__trans phrase="Publish this page (s)">">
+  <mt:else>
   <mt:setvar name="save_button_value" value="<__trans phrase="Save this page">">
   <mt:setvar name="save_button_title" value="<__trans phrase="Save this page (s)">">
+  </mt:if>
   <mt:setvar name="edit_button_value" value="<__trans phrase="Re-Edit this page">">
   <mt:setvar name="edit_button_title" value="<__trans phrase="Re-Edit this page (e)">">
 </mt:if>
@@ -97,7 +107,7 @@
         <mt:loop name="entry_loop">
           <input type="hidden" name="<$mt:var name="data_name" escape="html"$>" value="<$mt:var name="data_value" escape="html"$>" />
         </mt:loop>
-
+        
           <mt:setvarblock name="action_buttons">
           <button
              mt:mode="save_entry"
@@ -121,7 +131,6 @@
           </button>
           </mt:setvarblock>
           <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
-
         </form>
       </td>
     </tr>

@@ -1249,7 +1249,8 @@ sub _build_entry_preview {
     }
     $param{id} = $id if $id;
     $param{new_object} = $param{id} ? 0 : 1;
-    $param{title} = $entry->title;
+    $param{title}      = $entry->title;
+    $param{status}     = $entry->status;
     my $cols = $entry_class->column_names;
 
     for my $col (@$cols) {
