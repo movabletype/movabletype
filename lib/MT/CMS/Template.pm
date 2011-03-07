@@ -2885,14 +2885,12 @@ sub list_widget {
     }
     my $blog_id = $q->param('blog_id') || 0;
 
-    my $param = {};
     my $widget_loop = &build_template_table(
         $app,
         load_args => [
             { type => 'widget', blog_id => $blog_id ? [ $blog_id, 0 ] : 0 },
             { sort => 'name', direction => 'ascend' }
         ],
-        param => $param,
     );
 
     my $iter
@@ -2929,8 +2927,7 @@ sub list_widget {
         @widget_loop = @$widget_loop;
     }
 
-    $param = {
-        %$param,
+    my $param = {
         @widgetmanagers ? ( object_loop  => \@widgetmanagers ) : (),
         @widget_loop    ? ( widget_table => \@widget_loop )    : (),
         object_type         => "template",
