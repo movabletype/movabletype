@@ -260,7 +260,7 @@ function initItem($item) {
       return false;
     });
 
-  jQuery('<span class="item-action plus clickable action-icon"><img alt="<__trans phrase="Add child item">" src="<mt:var name="static_uri">images/status_icons/icon-plus.png"></span>')
+  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add child item"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       jQuery('.add-form').remove();
@@ -288,7 +288,7 @@ function initItem($item) {
       jQuery('.button').button();
     });
 
-  jQuery('<span class="item-action delete clickable action-icon"><img alt="<__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">">" src="<mt:var name="static_uri">images/status_icons/icon-delete.png" /></span>')
+  jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon"><__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       var id = jQuery(this).parents('.sortable-item').attr('id');

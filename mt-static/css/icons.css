@@ -3,16 +3,16 @@
 
 .icon16 {
     display: inline-block;
-    width: 0px;
-    height: 18px;
-    padding-left: 18px;
+    width: 1px;
+    height: 16px;
+    padding-left: 15px;
     overflow: hidden;
     background-color: transparent;
     background-repeat: no-repeat;
     background-position: center;
 }
 .icon-delete {
-    background: transparent url(../images/delete.gif) center top no-repeat;
+    background-image: url(../images/status_icons/icon-delete.png);
 }
 .icon-plus {
     background-image: url(../images/status_icons/icon-plus.png);
@@ -24,8 +24,9 @@
     background-image: url(../images/status_icons/icon-remove.png);    
 }
 .action-icon {
-    border-radius: 9px;
-    -moz-border-radius: 9px;
+    border-radius: 8px;
+    -moz-border-radius: 8px;
+    vertical-align: middle;
 }
 .action-icon:hover {
     background-color: #c0c6c9;
