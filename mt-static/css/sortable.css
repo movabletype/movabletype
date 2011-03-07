@@ -38,6 +38,7 @@
 .sortable-item {
    padding: 10px;
 }
+
 .sort-tab {
     display: block;
     position: absolute;
@@ -58,7 +59,6 @@
     float: left;
     height: 22px;
     line-height: 22px;
-    /* outline: 1px solid pink; */
 }
 .sortable-item .item-label, 
 .sortable-item .item-basename {
@@ -91,6 +91,10 @@
     color: #f3f3f3;
     border-radius: 3px;
 }
+.edit-form .text {
+    margin-right: 5px;
+}
+
 #root .ui-state-highlight {
     position: relative;
     z-index: 100;
@@ -99,7 +103,7 @@
     border-top: 2px solid #adadad;
 }
 
-
+/* - Target Marker */
 #root .target {
     position: relative;
     display: inline-block;

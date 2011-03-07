@@ -23,14 +23,14 @@
 .edit-screen .text {
     width: 100%;
 }
-.short,
-.password {
-    width: 200px;
+.text.short,
+.text.password {
+    width: 180px;
 }
-.med {
+.text.med {
     width: 50%;
 }
-.full {
+.text.full {
     width: 100%;
     max-width: 100%;
 }
