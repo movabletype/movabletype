@@ -29,6 +29,11 @@
        ScriptBaseURI = '<$mt:var name="script_base_url"$>';
        StaticURI = '<$mt:var name="static_uri"$>';
        HelpBaseURI = '<$mt:var name="help_url"$>';
+<mt:unless name="open_dialog">
+  if (window.top && (window.top.location != window.location)) {
+    window.top.location.href = window.location;
+  }
+</mt:unless>
   /* ]]> */
 </script>
 <mt:unless name="optimize_ui">
