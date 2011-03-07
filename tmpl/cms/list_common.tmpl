@@ -1328,6 +1328,12 @@ jQuery('#dialog_save_filter').dialog({
   minHeight: 100
 });
 
+// When the enter key is pressed, click the primary button instead of submitting.
+jQuery('#dialog_save_filter form').submit(function() {
+  jQuery('button.primary', this).click();
+  return false;
+});
+
 jQuery('#save-filter').click(function() {
   if ( !jQuery('input[name=filter_name]').mtValidate('dialog') )
     return false;
