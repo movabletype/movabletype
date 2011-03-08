@@ -736,7 +736,7 @@ sub __deep_localize_labels {
             __deep_localize_labels( $c, $hash->{$k} );
         }
         else {
-            next unless $k =~ m/(?:\b|_)label\b/;
+            next unless $k =~ m/(?:\b|_)(?:hint|label)\b/;
             if ( !ref( my $label = $hash->{$k} ) ) {
                 $hash->{$k} = sub { $c->translate($label) };
             }
