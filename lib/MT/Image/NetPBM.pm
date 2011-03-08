@@ -150,8 +150,8 @@ sub convert {
         '|', @quant, \@out, \$out, \$err )
         or return $image->error(
         MT->translate(
-            "Converting from [_1] to [_2] failed: [_3]",
-            $type, $outtype, $err
+            "Converting image to [_1] failed: [_2]",
+            $outtype, $err
         )
         );
     $image->{data} = $out;

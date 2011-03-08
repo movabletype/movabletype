@@ -1632,24 +1632,22 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Core.pm
 	'This is usually \'localhost\'.' => '通常「localhost」のままで構いません。',
 	'The physical file path for your SQLite database. ' => 'SQLiteのデータベースファイルのパス',
-	'[_1] in [_2]: [_3]' => '', # Translate - New
-	'option is required' => '', # Translate - New
-	'[_1] [_2] between [_3] and [_4]' => '', # Translate - New
-	'[_1] [_2] since [_3]' => '', # Translate - New
-	'[_1] [_2] or before [_3]' => '', # Translate - New
-	'[_1] [_2] these [_3] days' => '', # Translate - New
-	'[_1] [_2] futere' => '', # Translate - New
-	'[_1] [_2] past' => '', # Translate - New
+	'[_1] in [_2]: [_3]' => '[_2]に \'[_3]\' を含む[_1]',
+	'option is required' => '条件は必須です。',
+	'[_1] [_2] between [_3] and [_4]' => '[_2]が[_3]から[_4]の期間内の[_1]',
+	'[_1] [_2] since [_3]' => '[_2]が[_3]より後の[_1]',
+	'[_1] [_2] or before [_3]' => '[_2]が[_3]より前の[_1]',
+	'[_1] [_2] these [_3] days' => '[_2]が[_3]日以内の[_1]',
+	'[_1] [_2] futere' => '[_2]が未来の日付である[_1]',
+	'[_1] [_2] past' => '[_2]が過去の日付である[_1]',
 	'<mt:var name="[_1]"> [_2] [_3] [_4]' => '<mt:var name="[_1]"> [_2] [_4] [_3]',
-	'[_1] is [_2]' => '', # Translate - New
-	'No Label' => '名前がありません。', # Translate - Case
 	'*User deleted*' => '*削除されました*',
-	'(system)' => '', # Translate - New
-	'*Website/Blog deleted*' => '', # Translate - New
+	'(system)' => 'システム',
+	'*Website/Blog deleted*' => '*削除されました*',
 	'My [_1]' => '自分の[_1]',
-	'[_1] of this Website' => 'ウェブサイト[_1]', # Translate - Case
-	'IP Banlist is disabled by system configuration.' => '', # Translate - New
-	'Address Book is disabled by system configuration.' => '', # Translate - New
+	'[_1] of this Website' => 'ウェブサイトの[_1]',
+	'IP Banlist is disabled by system configuration.' => '禁止IPアドレスの管理は、設定により無効にされています。',
+	'Address Book is disabled by system configuration.' => 'アドレス帳の管理は、設定により無効にされています。',
 	'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive: [_2]' => 'パフォーマンスログを出力するディレクトリ「[_1]」を作成できませんでした。ディレクトリを書き込み可能に設定するか、または書き込みできる場所をPerformanceLoggingPathディレクティブで指定してください。: [_2]',
 	'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file: [_1]' => 'パフォーマンスログを出力できませんでした。PerformanceLoggingPathにはファイルではなくディレクトリへのパスを指定してください。',
 	'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable: [_1]' => 'パフォーマンスをログを出力できませんでした。PerformanceLoggingPathにディレクトリがありますが、書き込みできません。',
@@ -1663,18 +1661,18 @@ use vars qw( @ISA %Lexicon );
 	'Database Path' => 'データベースのパス',
 	'Database Port' => 'データベースポート',
 	'Database Socket' => 'データベースソケット',
-	'ID' => '', # Translate - New
-	'Date Created' => '', # Translate - New
-	'Date Modified' => '', # Translate - New
-	'Legacy Quick Filter' => '', # Translate - New
-	'Website/Blog Name' => '', # Translate - New
-	'My Items' => '', # Translate - New
-	'Log' => '', # Translate - New
+	'ID' => 'ID',
+	'Date Created' => '作成日',
+	'Date Modified' => '更新日',
+	'Legacy Quick Filter' => 'クイックフィルタ',
+	'Website/Blog Name' => 'Website/Blog Name', #TBD
+	'My Items' => '私のアイテム',
+	'Log' => 'ログ',
 	'Activity Feed' => 'ログフィード',
 	'Folder' => 'フォルダ',
 	'Trackback' => 'トラックバック',
-	'Manage Commenters' => '', # Translate - New
-	'Member' => '', # Translate - New
+	'Manage Commenters' => 'コメント投稿者の管理',
+	'Member' => 'メンバー',
 	'Permission' => '権限',
 	'IP Banning Settings' => '禁止IPアドレスの設定',
 	'Contact' => '連絡先',
@@ -1780,9 +1778,9 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Entry.pm
 	'NONE' => 'なし', # Translate - Case
-	'[_1] ( id:[_2] ) not exists.' => '', # Translate - New
-	'Entries from category: [_1]' => '', # Translate - New
-	'Entries by [_1]' => '', # Translate - New
+	'[_1] ( id:[_2] ) not exists.' => '[_1] ( id:[_2] ) が見つかりません。',
+	'Entries from category: [_1]' => 'カテゴリ \'[_1]\'のブログ記事',
+	'Entries by [_1]' => '[_1]のブログ記事',
 	'record does not exist.' => 'ブログがありません。',
 	'Draft' => '下書き',
 	'Review' => '承認待ち',
@@ -1795,19 +1793,19 @@ use vars qw( @ISA %Lexicon );
 	'Accept Trackbacks' => 'トラックバックを許可',
 	'Publish Date' => '公開日',
 	'Link' => 'リンク',
-	'Primary Category' => '', # Translate - New
+	'Primary Category' => 'メインカテゴリ',
 	'-' => '-',
 	'Published' => '公開',
-	'Reviewing' => '', # Translate - New
+	'Reviewing' => '承認待ち',
 	'Scheduled' => '日時指定',
 	'Junk' => 'スパム',
-	'Date Commented' => '', # Translate - New
-	'Author ID' => '', # Translate - New
-	'My Entries' => '', # Translate - New
-	'Published Entries' => '', # Translate - New
-	'Unpublished Entries' => '', # Translate - New
-	'Scheduled Entries' => '', # Translate - New
-	'Entries Commented on in the Last 7 Days' => '', # Translate - New
+	'Date Commented' => 'コメント日',
+	'Author ID' => 'ユーザーID',
+	'My Entries' => '自分のブログ記事',
+	'Published Entries' => '公開されているブログ記事',
+	'Unpublished Entries' => '未公開のブログ記事',
+	'Scheduled Entries' => '日時指定されているブログ記事',
+	'Entries Commented on in the Last 7 Days' => '最近7日間以内にコメントされたブログ記事',
 
 ## lib/MT/FileMgr/DAV.pm
 	'DAV connection failed: [_1]' => 'DAV connectionに失敗しました: [_1]',
@@ -1828,12 +1826,12 @@ use vars qw( @ISA %Lexicon );
 	'SFTP put failed: [_1]' => 'SFTPでPUTに失敗しました: [_1]',
 
 ## lib/MT/Filter.pm
-	'Filters' => '', # Translate - New
-	'Invalid filter type [_1]:[_2]' => '', # Translate - New
-	'Invalid sort key [_1]:[_2]' => '', # Translate - New
-	'"editable_terms" and "editable_filters" cannot be specified at the same time.' => '', # Translate - New
-	'Deleted Users' => '', # Translate - New
-	'System Object' => '', # Translate - New
+	'Filters' => 'フィルタ',
+	'Invalid filter type [_1]:[_2]' => '不正なフィルタタイプです。[_1]:[_2]',
+	'Invalid sort key [_1]:[_2]' => '不正ななソートキーです。[_1]:[_2]',
+	'"editable_terms" and "editable_filters" cannot be specified at the same time.' => '"editable_terms"と"editable_filters"は、同時に指定できません。',
+	'Deleted Users' => '削除されたユーザー',
+	'System Object' => 'システムオブジェクト',
 
 ## lib/MT/Folder.pm
 
@@ -1842,7 +1840,7 @@ use vars qw( @ISA %Lexicon );
 	'IP Bans' => '禁止IPリスト',
 
 ## lib/MT/Image.pm
-	'Invalid Image Driver [_1]' => '', # Translate - New
+	'Invalid Image Driver [_1]' => '不正なイメージドライバーです:[_1]',
 	'Saving [_1] failed: Invalid image file format.' => '[_1]を保存できませんでした: 画像ファイルフォーマットが不正です。',
 	'File size exceeds maximum allowed: [_1] > [_2]' => 'ファイルのサイズ制限を超えています。([_1] > [_2])',
 
@@ -1859,12 +1857,11 @@ use vars qw( @ISA %Lexicon );
 	'Converting image to [_1] failed: [_2]' => '画像を[_1]に変換できませんでした: [_2]',
 
 ## lib/MT/Image/Imager.pm
-	'Can\'t load Imager: [_1]' => '', # Translate - New
+	'Can\'t load Imager: [_1]' => 'Imagerをロードできません: [_1]',
 
 ## lib/MT/Image/NetPBM.pm
 	'Can\'t load IPC::Run: [_1]' => 'IPC::Runをロードできません: [_1]',
 	'Cropping to [_1]x[_1] failed: [_2]' => '[_1]x[_1]にトリミングできませんでした: [_2]',
-	'Converting from [_1] to [_2] failed: [_3]' => '', # Translate - New
 	'You do not have a valid path to the NetPBM tools on your machine.' => 'NetPBMツールへのパスが正しく設定されていません。',
 
 ## lib/MT/Import.pm
@@ -1908,21 +1905,21 @@ use vars qw( @ISA %Lexicon );
 	'Composite score: [_1]' => '合計点: [_1]',
 
 ## lib/MT/ListProperty.pm
-	'Failed to init auto list property [_1].[_2]: Cannot find definition of column [_3].' => '', # Translate - New
-	'Failed to init auto list property [_1].[_2]: unsupported column type.' => '', # Translate - New
+	'Failed to init auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'リストプロパティの初期化に失敗しました: [_3]というカラムは見つかりません。',
+	'Failed to init auto list property [_1].[_2]: unsupported column type.' => 'リストプロパティの初期化に失敗しました: 未サポートのカラム型です。',
 
 ## lib/MT/Log.pm
 	'Log message' => 'ログ',
 	'Log messages' => 'ログ',
-	'Showing only ID: [_1]' => '', # Translate - New
+	'Showing only ID: [_1]' => 'ID:[_1]のログ',
 	'Page # [_1] not found.' => 'ID:[_1]のウェブページが見つかりませんでした。',
 	'Entry # [_1] not found.' => 'ID:[_1]のブログ記事が見つかりませんでした。',
 	'Comment # [_1] not found.' => 'ID:[_1]のコメントが見つかりませんでした。',
 	'TrackBack # [_1] not found.' => 'ID:[_1]のトラックバックが見つかりませんでした。',
-	'Message' => '', # Translate - New
-	'By' => '', # Translate - New
-	'Class' => '', # Translate - New
-	'Level' => 'レベル', # Translate - Case
+	'Message' => 'ログ',
+	'By' => 'ユーザー',
+	'Class' => '分類',
+	'Level' => 'レベル',
 	'Security' => 'セキュリティ',
 	'Warning' => '警告',
 	'Information' => '情報',
@@ -1932,7 +1929,7 @@ use vars qw( @ISA %Lexicon );
 	'Not debug' => 'デバッグを含まない',
 	'Debug/error' => 'デバッグ/エラー',
 	'Metadata' => 'メタデータ',
-	'Logs on This Website' => '', # Translate - New
+	'Logs on This Website' => 'ウェブサイトのログ',
 	'Show only errors' => 'エラーだけを表示',
 
 ## lib/MT/Mail.pm
@@ -1962,15 +1959,15 @@ use vars qw( @ISA %Lexicon );
 	'Tag Placements' => 'タグの関連付け',
 
 ## lib/MT/Page.pm
-	'Pages in folder: [_1]' => '', # Translate - New
+	'Pages in folder: [_1]' => 'フォルダ \'[_1]\'に含まれるページ',
 	'Load of blog failed: [_1]' => 'ブログをロードできませんでした: [_1]',
-	'(root)' => '', # Translate - New
-	'My Pages' => '', # Translate - New
-	'Pages in This Website' => '', # Translate - New
-	'Published Pages' => '', # Translate - New
-	'Unpublished Pages' => '', # Translate - New
-	'Scheduled Pages' => '', # Translate - New
-	'Pages with comments in the last 7 days' => '', # Translate - New
+	'(root)' => '(root)',
+	'My Pages' => '自分のウェブページ',
+	'Pages in This Website' => 'ウェブサイトのウェブページ',
+	'Published Pages' => '公開されているウェブページ',
+	'Unpublished Pages' => '未公開のウェブページ',
+	'Scheduled Pages' => '日時指定されているウェブページ',
+	'Pages with comments in the last 7 days' => '最近7日間以内にコメントされたウェブページ',
 
 ## lib/MT/Permission.pm
 
@@ -2014,9 +2011,9 @@ use vars qw( @ISA %Lexicon );
 	'Moderator' => 'モデレータ',
 	'Can comment and manage feedback.' => 'コメントを投稿し、コメントやトラックバックを管理できます。',
 	'Can comment.' => 'コメントを投稿できます。',
-	'Active/Inactive' => '', # Translate - New
-	'Inactive' => '', # Translate - New
-	'Desctription' => '', # Translate - New
+	'Active/Inactive' => '利用状況',
+  '__ROLE_ACTIVE' => '利用されている',
+	'__ROLE_INACTIVE' => '利用されていない',
 
 ## lib/MT/Scorable.pm
 	'Object must be saved first.' => 'オブジェクトが保存されていません。',
@@ -2028,33 +2025,30 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/TBPing.pm
 	'TrackBack' => 'トラックバック',
-	'<a href="[_1]">Ping from: [_2] - [_3]</a>' => '', # Translate - New
-	'Trackbacks on [_1]: [_2]' => '', # Translate - New
-	'Trackback Text' => 'トラックバックの本文', # Translate - Case
+	'<a href="[_1]">Ping from: [_2] - [_3]</a>' => '<a href="[_1]">[_2] - [_3]からのトラックバック</a>',
+	'Trackbacks on [_1]: [_2]' => '[_1] \'[_2]\'のトラックバック',
+	'Trackback Text' => 'トラックバックの本文',
 	'Target' => '送信先',
 	'From' => '送信元',
 	'Source Site' => '送信元のサイト',
 	'Source Title' => '送信元記事のタイトル',
-	'Trackbacks on My Entries/Pages' => '自分のブログ記事/ウェブページへのトラックバック', # Translate - Case
-	'Non-spam trackbacks' => 'スパムでないトラックバック', # Translate - Case
-	'Non-spam trackbacks on this website' => 'ウェブサイトのスパムでないトラックバック', # Translate - Case
-	'Pending trackbacks' => '保留中のトラックバック', # Translate - Case
-	'Published trackbacks' => '公開されているトラックバック', # Translate - Case
-	'Trackbacks on my entries/pages' => '自分のブログ記事/ウェブページへのトラックバック', # Translate - Case
-	'Trackbacks in the last 7 days' => '最近7日間以内のトラックバック', # Translate - Case
-	'Spam trackbacks' => 'スパムトラックバック', # Translate - Case
+	'Trackbacks on My Entries/Pages' => '自分のブログ記事/ウェブページへのトラックバック',
+	'Non-spam trackbacks' => 'スパムでないトラックバック',
+	'Non-spam trackbacks on this website' => 'ウェブサイトのスパムでないトラックバック',
+	'Pending trackbacks' => '保留中のトラックバック',
+	'Published trackbacks' => '公開されているトラックバック',
+	'Trackbacks on my entries/pages' => '自分のブログ記事/ウェブページへのトラックバック',
+	'Trackbacks in the last 7 days' => '最近7日間以内のトラックバック',
+	'Spam trackbacks' => 'スパムトラックバック',
 
 ## lib/MT/Tag.pm
 	'Tag must have a valid name' => 'タグの名前が不正です。',
 	'This tag is referenced by others.' => 'このタグは他のタグから参照されています。',
-	'Tags with Entries' => 'ブログ記事のタグ', # Translate - Case
-	'Private' => '', # Translate - New
-	'Not Private' => '', # Translate - New
-	'Tags with Pages' => 'ウェブページのタグ', # Translate - Case
-	'Tags with Assets' => 'アイテムのタグ', # Translate - Case
-	'Tags for Entry' => '', # Translate - New
-	'Tags for Page' => '', # Translate - New
-	'Tags for Asset' => '', # Translate - New
+	'Tags with Entries' => 'ブログ記事のタグ',
+	'Private' => 'プライベート',
+	'Not Private' => 'プライベートではない',
+	'Tags with Pages' => 'ウェブページのタグ',
+	'Tags with Assets' => 'アイテムのタグ',
 
 ## lib/MT/TaskMgr.pm
 	'Unable to secure lock for executing system tasks. Make sure your TempDir location ([_1]) is writable.' => 'タスクを実行するために必要なロックを獲得できませんでした。TempDir([_1])に書き込みできるかどうか確認してください。',
@@ -2067,7 +2061,7 @@ use vars qw( @ISA %Lexicon );
 	'File not found: [_1]' => 'ファイルが見つかりません: [_1]',
 	'Error reading file \'[_1]\': [_2]' => 'ファイル: [_1]を読み込めませんでした: [_2]',
 	'Publish error in template \'[_1]\': [_2]' => 'テンプレート「[_1]」の再構築中にエラーが発生しました: [_2]',
-	'Template name must be unique within this [_1].' => '', # Translate - New
+	'Template name must be unique within this [_1].' => 'テンプレート名は[_1]で一意でなければなりません。',
 	'You cannot use a [_1] extension for a linked file.' => '[_1]をリンクファイルの拡張子に使うことはできません。',
 	'Opening linked file \'[_1]\' failed: [_2]' => 'リンクファイル\'[_1]\'を開けませんでした: [_2]',
 	'Index' => 'インデックス',
@@ -2080,7 +2074,7 @@ use vars qw( @ISA %Lexicon );
 	'Widget' => 'ウィジェット',
 	'Output File' => '出力ファイル名',
 	'Template Text' => 'テンプレート本文',
-	'Rebuild with Indexes' => 'インデックスの歳構築',
+	'Rebuild with Indexes' => 'インデックスの再構築',
 	'Dynamicity' => 'ダイナミック',
 	'Build Type' => '構築タイプ',
 	'Interval' => '間隔',
@@ -2145,7 +2139,7 @@ use vars qw( @ISA %Lexicon );
 	'MT[_1] must be used in a [_2] context' => 'MT[_1]は[_2]のコンテキスト外部では利用できません。',
 	'Cannot find package [_1]: [_2]' => '[_1]というパッケージが見つかりませんでした: [_2]',
 	'Error sorting [_2]: [_1]' => '[_2]の並べ替えでエラーが発生しました: [_1]',
-	'Can\'t use sort_by and sort_method together in [_1]' => '', # Translate - New
+	'Can\'t use sort_by and sort_method together in [_1]' => 'sort_byとsort_methodは同時に利用できません。',
 	'[_1] cannot be used without publishing Category archive.' => 'カテゴリアーカイブを公開していないので[_1]は使えません。',
 	'[_1] used outside of [_2]' => '[_1]を[_2]の外部で利用しようとしました。',
 
@@ -2191,7 +2185,7 @@ use vars qw( @ISA %Lexicon );
 	'Failed to load theme [_1].' => '[_1]テーマの読込に失敗しました。',
 	'A fatal error occurred while applying element [_1]: [_2].' => '項目「[_1]」を適用する際に、重大なエラーが発生しました: [_2]',
 	'An error occurred while applying element [_1]: [_2].' => '項目「[_1]」を適用する際に、エラーが発生しました: [_2]',
-	'Failed to copy file [_1]:[_2]' => '', # Translate - New
+	'Failed to copy file [_1]:[_2]' => '[_1]のコピーに失敗しました: [_2]',
 	'Component \'[_1]\' version [_2] or greater is needed to use this theme, but is not installed.' => 'このテーマには、次の項目の指定のバージョン以上が必要です。: [_1]: バージョン[_2]以上',
 	'Component \'[_1]\' version [_2] or greater is needed to use this theme, but the installed version is [_3].' => 'このテーマには、次の項目の指定のバージョン以上が必要です。: [_1]: バージョン[_2]以上 (インストール済みのバージョンは[_3])',
 	'Element \'[_1]\' cannot be applied because [_2]' => '次の項目が適用できません: [_1] (原因: [_2])',
@@ -2366,9 +2360,9 @@ use vars qw( @ISA %Lexicon );
 	'Classifying blogs...' => 'ブログを分類しています...',
 	'Rebuilding permissions...' => '権限を再構築しています...',
 	'Assigning ID of author for entries...' => '記事に作成者のIDを設定しています...',
-	'Removing widget from dashboard...' => '', # Translate - New
-	'Ordering Categories and Folders of Blogs...' => '', # Translate - New
-	'Ordering Folders of Websites...' => '', # Translate - New
+	'Removing widget from dashboard...' => 'ダッシュボードからウィジェットを削除しています...',
+	'Ordering Categories and Folders of Blogs...' => 'ブログのカテゴリとフォルダの順番を設定しています...',
+	'Ordering Folders of Websites...' => 'ウェブサイトのフォルダの順番を設定しています...',
 
 ## lib/MT/Util.pm
 	'moments from now' => '今から',
@@ -2434,11 +2428,11 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Website.pm
 
 ## lib/MT/Worker/Publish.pm
-	'Error rebuilding file [_1]:[_2]' => '', # Translate - New
+	'Error rebuilding file [_1]:[_2]' => '[_1]の再構築中にエラーが発生しました: [_2]',
 	'-- set complete ([quant,_1,file,files] in [_2] seconds)' => '-- 完了 ([_1]ファイル - [_2]秒)',
 
 ## lib/MT/Worker/Sync.pm
-	"Error during rsync of files in [_1]:\n" => "", # Translate - New
+	"Error during rsync of files in [_1]:\n" => "ファイル\'[_1]\'のrsync中にエラーが発生しました: ",
 	'Synchrnizing Files Done' => 'ファイルを同期しました。',
 	'Done syncing files to [_1] ([_2])' => '[_1]へファイルを同期しました。([_2])',
 
@@ -2467,9 +2461,9 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/jquery/jquery.mt.js
 
 ## mt-static/js/assetdetail.js
-	'No Preview Available.' => '', # Translate - New
-	'Dimensions' => '', # Translate - New
-	'File Name' => '', # Translate - New
+	'No Preview Available.' => 'プレビューは利用できません。',
+	'Dimensions' => '大きさ',
+	'File Name' => 'ファイル名',
 
 ## mt-static/js/dialog.js
 	'(None)' => '(なし)',
@@ -2502,11 +2496,11 @@ use vars qw( @ISA %Lexicon );
 	'The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\'?' => 'タグ\'[_2]\'はすでに存在します。\'[_1]\'を\'[_2]\'に統合してもよろしいですか? ',
 	'The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\' across all weblogs?' => 'タグ\'[_2]\'はすでに存在します。\'[_1]\'を\'[_2]\'に統合してもよろしいですか?',
 	'Loading...' => 'ロード中...',
-	'First' => '', # Translate - New
-	'Prev' => '', # Translate - New
+	'First' => '最初',
+	'Prev' => '前',
 	'[_1] &ndash; [_2] of [_3]' => '[_1] &ndash; [_2] / [_3]',
 	'[_1] &ndash; [_2]' => '[_1] &ndash; [_2]',
-	'Last' => '', # Translate - New
+	'Last' => '最後',
 
 ## themes/classic_blog/templates/about_this_page.mtml
 

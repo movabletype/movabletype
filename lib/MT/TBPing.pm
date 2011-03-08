@@ -290,10 +290,7 @@ sub list_props {
                 my ( $prop, $app ) = @_;
                 my $entry_id = $app->param('filter_val');
                 my $entry    = MT->model('entry')->load($entry_id);
-                my $type
-                    = $entry->class eq 'entry' ? 'Entry'
-                    : $entry->class eq 'page'  ? 'Page'
-                    :                            '';
+                my $type     = $entry->class_label || '';
                 return MT->translate( 'Trackbacks on [_1]: [_2]',
                     $type, $entry->title, );
             },
