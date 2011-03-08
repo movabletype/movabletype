@@ -4,9 +4,7 @@
 <mt:include name="include/header.tmpl" force_header="1">
 
 <div class="import-process">
-
-<div id="progress-bar"><img src="<mt:var name="static_uri">images/indeterminate-progress-bar.gif" alt="" height="24" width="124" /></div>
-
-<pre><__trans phrase="Importing entries into blog">
-<mt:if name="import_as_me"><__trans phrase="Importing entries as user '[_1]'" params="<mt:var name="author_name" escape="html" escape="html">"><mt:else><__trans phrase="Creating new users for each user found in the blog"></mt:if>
+  <div id="progressbar" class="progressbar indeterminate"></div>
+  <pre class="progress-log"><__trans phrase="Importing entries into blog">
+  <mt:if name="import_as_me"><__trans phrase="Importing entries as user '[_1]'" params="<mt:var name="author_name" escape="html" escape="html">"><mt:else><__trans phrase="Creating new users for each user found in the blog"></mt:if>
 

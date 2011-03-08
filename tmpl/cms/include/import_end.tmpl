@@ -1,9 +1,9 @@
-</pre>
+  </pre>
 </div>
 
 <script type="text/javascript">
 /* <![CDATA[ */
-var progress = getByID("progress-bar");
+var progress = getByID("progressbar");
 if (progress) {
     progress.style.display = "none";
 }
@@ -11,12 +11,18 @@ if (progress) {
 </script>
 
 <mt:if name="import_success">
-<p><strong><__trans phrase="All data imported successfully!"></strong></p>
+<h2><__trans phrase="All data imported successfully!"></h2>
 <mt:unless name="import_upload">
 <p><__trans phrase="Make sure that you remove the files that you imported from the 'import' folder, so that if/when you run the import process again, those files will not be re-imported."></p>
 </mt:unless>
 <mt:else>
-<p><strong><__trans phrase="An error occurred during the import process: [_1]. Please check your import file." params="<mt:var name="error">"></strong></p>
+<mtapp:statusmsg
+   id="error"
+   class="error"
+   can_close="0">
+  <__trans phrase="An error occurred during the import process: [_1]. Please check your import file." params="<mt:var name="error">">
+  <mt:var name="error">
+</mtapp:statusmsg>
 </mt:if>
 
 <mt:include name="include/footer.tmpl">

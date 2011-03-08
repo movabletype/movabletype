@@ -14,7 +14,5 @@ function progress(str, id) {
 <mt:include name="dialog/header.tmpl">
 
 <div class="modal_width dialog import-process">
-
-<div id="progress-bar"><img src="<mt:var name="static_uri">images/indeterminate-progress-bar.gif" alt="" height="24" width="124" /></div>
-
-<pre><mt:var name="name" escape="html">
+  <div id="progressbar" class="progressbar indeterminate"></div>
+  <pre><mt:var name="name" escape="html">
