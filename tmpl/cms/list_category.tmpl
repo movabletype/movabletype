@@ -416,12 +416,11 @@ function initMoving() {
       original_class = $item.attr('class');
       var id = $item.attr('id');
       var count = jQuery('.'+id).hide().length;
-      $item.find('.item-basename').hide();
       if (count) {
         var label = (count == 1)
           ? '<mt:var name="object_label" lower_case="1" escape="js">'
           : '<mt:var name="object_label_plural" lower_case="1" escape="js">';
-        jQuery('<span class="with"> + '+count+' '+label+' </span>').insertAfter($item.find('.item-label'));
+        jQuery('<span class="with"> + '+count+' '+label+' </span>').insertAfter($item.find('.item-basename'));
       }
       $item.find('.item-ctrl').hide();
     },
