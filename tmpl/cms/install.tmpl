@@ -69,7 +69,6 @@ div.warning#version-warning {
     <mt:if name="auth_mode_ldap">
       <p><__trans phrase="To proceed, you must authenticate properly with your LDAP server."></p>
     </mt:if>
-      <fieldset>
     <mt:if name="auth_mode_mt">
       <mtapp:setting
          id="admin_username"
@@ -97,6 +96,8 @@ div.warning#version-warning {
     
       <mtapp:setting
          id="use_system_email"
+         lebel="<__trans phrase="System Email">"
+         label_class="no-header"
          hint="<__trans phrase="The email address used in the From: header of each email sent from the system.">"
          show_hint="1">
         <input type="checkbox" name="use_system_email" <mt:if name="use_system_email">checked="checked"</mt:if> id="use_system_email" />
@@ -157,8 +158,6 @@ div.warning#version-warning {
         <input type="password" id="admin_password" class="text password" name="admin_password" />
       </mtapp:setting>
     </mt:if>
-    
-      </fieldset>
     
       <div class="actions-bar">
         <input type="hidden" name="continue" value="1" />

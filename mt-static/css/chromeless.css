@@ -202,6 +202,8 @@ h3 {
     padding: 10px;
     background-color: #fbfbfb;
     height: 200px;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
 }
 
 .upgrade #progressbar { 
@@ -270,6 +272,11 @@ ul#profile-data li {
 }
 #db_hint p {
     margin-bottom: 3px;
+}
+
+/* -- Complete */
+#config_settings {
+    margin-bottom: 10px;
 }
 
 /* - Publush */

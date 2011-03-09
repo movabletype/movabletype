@@ -53,7 +53,6 @@
 </mt:if>
 
   <div id="db_settings" <mt:if name="success"> style="display: none;"</mt:if>>
-    <fieldset>
       <mtapp:setting
          id="dbtype"
          label="<__trans phrase="Database Type">"
@@ -82,6 +81,7 @@
         <mtapp:setting
            id="<mt:var name="id">"
            label="<mt:var name="label">"
+           label_class="top-label"
            hint="<mt:var name="hint">"
            show_hint="<mt:var name="show_hint" default="0">">
         <mt:if name="element" eq="select">
@@ -106,7 +106,8 @@
         <mt:loop name="advanced_loop">
           <mtapp:setting
              id="<mt:var name="id">"
-             label="<mt:var name="label">">
+             label="<mt:var name="label">"
+             label_class="top-label">
             <input type="<mt:var name="type">" name="<mt:var name="id">" class="<mt:var name="type"><mt:if name="type" eq="text"> full</mt:if>" value="<mt:if name="$id"><mt:var name="$id"><mt:else><mt:var name="default" escape="html"></mt:if>" />
           </mtapp:setting>
         </mt:loop>
@@ -170,7 +171,6 @@
         </button>
       </div>
     </mt:if>
-    </fieldset>
   </div>
 </form>
 <script type="text/javascript">

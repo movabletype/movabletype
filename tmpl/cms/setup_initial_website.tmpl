@@ -46,7 +46,8 @@
       <mtapp:setting
          id="website_theme"
          label="<__trans phrase="Theme">"
-         hint="<__trans phrase="Select the theme you wish to use for this new website.">">
+         hint="<__trans phrase="Select the theme you wish to use for this new website.">"
+         label_class="top-label">
         <select name="website_theme">
         <mt:loop name="theme_loop">
           <option value="<mt:var name="key" escape="html">"<mt:if name="website_theme"><mt:if name="key" eq="$website_theme"> selected="selected"</mt:if><mt:else><mt:if name="key" eq="$config.DefaultWebsiteTheme"> selected="selected"</mt:if></mt:if>><mt:var name="label" escape="html"></option>

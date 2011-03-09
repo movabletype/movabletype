@@ -37,7 +37,8 @@ fieldset {
     margin-left: 0;
 }
 .field .hint {
-    margin-top: 5px;
+    margin: 5px 0 0;
+    font-size: 90%;
 }
 .field-top-label .hint {
     width: 100%;
