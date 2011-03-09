@@ -202,6 +202,10 @@ tfoot .col.head{
 }
 
 /* -- Page Navigation */
+.listing .actions-bar {
+    min-height: 22px;
+}
+
 .indicator,
 .pagination {
     position: absolute;

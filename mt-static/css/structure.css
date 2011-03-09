@@ -21,7 +21,7 @@ a:active {
 }
 
 h2, h3, h4, h5, h6 {
-    margin: 1em 0 0.5em;
+    margin: 1em 0;
     font-weight: bold;
 }
 h2 {
@@ -199,13 +199,9 @@ pre {
     padding-left: 15px;
     background: transparent;
     text-decoration: none;
-    background: transparent url(../images/arrow/spinner-right.png) no-repeat left center;
 }
 .toggle-link:hover {
     text-decoration: underline;
-}
-.active .toggle-link {
-    background-image: url(../images/arrow/spinner-bottom.png);
 }
 .detail {
     clear: both;
@@ -648,9 +644,9 @@ ul.tabs li a {
     position: relative;
     top: 50%;
     float: left;
-    width: 18px;
-    height: 18px;
-    border: 0;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #c0c6c9;
     margin: -9px 10px 0 0;
     border-radius: 3px;
     -moz-border-radius: 3px;
@@ -1025,51 +1021,7 @@ ul.tabs li a {
     text-decoration: underline;
 }
 
-
 /* - Fields */
-fieldset { 
-    margin-bottom: 3em;
-}
-.field {
-    overflow: hidden;
-    padding: 10px 0 0;
-    margin: 0 0 10px;
-}
-.field-left-label .field-header {
-    float: left;
-    width: 14em;
-    padding-right: 0.25em;
-    text-align: right;
-}
-.field-left-label .field-content {
-    margin-left: 15.5em;
-}
-.field-top-label .field-header {
-    margin-bottom: 5px;
-}
-.field-inline, 
-.field-inline .field-header, 
-.field-inline .field-content { 
-    display: inline;
-}
-.field-inline { 
-    margin-right: 10px;
-}
-.field-content-text {
-    padding-top: 5px;
-}
-.field-no-header .field-header {
-    display: none;
-}
-.field-no-header .field-content {
-    margin-left: 0;
-}
-.field .hint {
-    margin-top: 5px;
-}
-.field-top-label .hint {
-    width: 100%;
-}
 #display_image-field { 
     margin-top: 0;
 }
@@ -1093,11 +1045,7 @@ fieldset {
 /* - Actions Bar */
 .actions-bar { 
     position: relative;
-    min-height: 22px;
-    margin: 10px 0 30px; 
-}
-.actions-bar-top {
-    margin-bottom: 10px;
+    margin: 10px 0;
 }
 .widget .actions-bar {
     margin-bottom: 0;
@@ -2200,7 +2148,7 @@ ul#asset-list .asset-type-video {
     text-align: center;
     padding: 0 3px;
     margin: 0 3px 0 0;
-    background: #333 url('../images/buttons/button-primary.gif') repeat-x center center;
+    background: #333 url(../images/buttons/button-primary.gif) repeat-x center center;
     color: #fff !important;
     font-weight: bold;
 }
@@ -2275,7 +2223,7 @@ input#system_performance_logging_threshold {
 #list-plugins .plugin-name .plugin-name-disabled {
     display: block;
     padding: 10px 10px 10px 35px;
-    background: url('../images/plugin-error.gif') no-repeat 10px 10px;
+    background: url(../images/plugin-error.gif) no-repeat 10px 10px;
     outline: 0;
 }
 #list-plugins .plugin-name a:hover {
@@ -2556,17 +2504,21 @@ div.template-group-content.active {
     text-align: right;
 }
 .display-options .toggle-link {
-    padding: 0.3em 0.5em;
+    position: relative;
+    padding: 0.3em 25px 0.3em 0.5em;
+    border: 1px solid #c0c6c9;
     background: #f3f3f3;
     border-radius: 3px;
     -moz-border-radius: 3px;
 }
 .display-options.active .toggle-link {
-    background: #c0c6c9;
-    color: #fff;
+    border-bottom: 0;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     -moz-border-radius: 3px 3px 0 0;
+}
+.display-options .toggle-button {
+    width: 18px;
 }
 .display-options-detail {
     display: none;

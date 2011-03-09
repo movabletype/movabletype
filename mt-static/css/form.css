@@ -1,4 +1,47 @@
-/* Style for Form Element */
+/* - Fields */
+fieldset { 
+    margin-bottom: 3em;
+}
+.field {
+    overflow: hidden;
+    padding: 0;
+    margin: 0 0 20px;
+}
+.field-left-label .field-header {
+    float: left;
+    width: 14em;
+    padding-right: 0.25em;
+    text-align: right;
+}
+.field-left-label .field-content {
+    margin-left: 15.5em;
+}
+.field-top-label .field-header {
+    margin-bottom: 5px;
+}
+.field-inline, 
+.field-inline .field-header, 
+.field-inline .field-content { 
+    display: inline;
+}
+.field-inline { 
+    margin-right: 10px;
+}
+.field-content-text {
+    padding-top: 5px;
+}
+.field-no-header .field-header {
+    display: none;
+}
+.field-no-header .field-content {
+    margin-left: 0;
+}
+.field .hint {
+    margin-top: 5px;
+}
+.field-top-label .hint {
+    width: 100%;
+}
 
 /* - Input */
 .text {

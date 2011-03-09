@@ -1046,14 +1046,9 @@
       <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-assets" value="assets"<mt:if name="disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" /> <__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></label></li>
     </ul>
   </mtapp:setting>
-
-  <mtapp:setting
-     id="reset_display_options"
-     label="<__trans phrase="Reset display options">"
-     label_class="display-options"
-     show_label="0">
+  <div class="actions-bar actions-bar-bottom">
     <a href="javascript:void(0)" onclick="return setDefaultFieldGroup();" title="<__trans phrase="Reset display options to blog defaults">" ><__trans phrase="Reset defaults"></a>
-  </mtapp:setting>
+  </div>
 </div>
 </mt:setvarblock>
 
