@@ -185,9 +185,7 @@ sub js_recent_entries_for_tag {
     my $tag_id = $tag_obj->id;
 
     my @entries = $obj_class->load(
-        {   ( $blog_id ? ( blog_id => $blog_id ) : () ),
-            status => MT::Entry::RELEASE(),
-        },
+        { ( $blog_id ? ( blog_id => $blog_id ) : () ), },
         {   sort      => 'authored_on',
             direction => 'descend',
             limit     => $limit,
