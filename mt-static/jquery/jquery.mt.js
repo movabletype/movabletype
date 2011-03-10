@@ -972,9 +972,9 @@ $.mtValidator('default', {
             $error_block.hide();
         if ( !$target.parent('.validate-error-wrapper').length ) {
             $target
-                .wrap('<span class="validate-error-wrapper" style="position: relative; white-space: nowrap;"></span>')
-                .after($error_block);
+                .wrap('<span class="validate-error-wrapper" style="position: relative; white-space: nowrap;"></span>');
         }
+        $target.after($error_block);
         $error_block
             .css('left', $target.width() )
             .css('top',   -1 * $target.height() );
