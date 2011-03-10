@@ -52,7 +52,7 @@ sub preprocess_native_tags {
         || $args->{include_websites}
         || $args->{blog_id}
         || $args->{blog_ids}
-        || grep($_ eq $tag, 'blogs', 'websites');
+        || grep( $_ eq $tag, 'blogs', 'websites' );
     my $excl = $args->{exclude_blogs} || $args->{exclude_websites};
     for ( $incl, $excl ) {
         next unless $_;
