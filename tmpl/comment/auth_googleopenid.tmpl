@@ -5,18 +5,17 @@
   <input type="hidden" name="entry_id" value="<mt:var name="entry_id" escape="html">" />
   <input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
   <input type="hidden" name="key" value="Google" />
-  <fieldset>
-    <mtapp:setting
-       id="GoogleOpenId_display"
-       hint="<__trans phrase="Sign in using your Gmail account">">
-      <p><__trans phrase="Sign in to Movable Type with your[_1] Account[_2]" params='<br /><strong style="font-size:16px;"><img alt="Google" src="<mt:var name="static_uri">images/comment/google_transparent.gif" />%%</strong>'></p>
-    </mtapp:setting>
-    <div class="actions-bar actions-bar-login">
-      <button
-         type="submit"
-         class="sign-in action primary button">
-        <__trans phrase="Sign in">
-      </button>
-    </div>
-  </fieldset>
+  <mtapp:setting
+     id="GoogleOpenId_display"
+     label="<__trans phrase="Sign in using your Gmail account">"
+     label_class="no-header">
+    <p><__trans phrase="Sign in to Movable Type with your[_1] Account[_2]" params='<br /><strong style="font-size:16px;"><img alt="Google" src="<mt:var name="static_uri">images/comment/google_transparent.gif" />%%</strong>'></p>
+  </mtapp:setting>
+  <div class="actions-bar actions-bar-login">
+    <button
+       type="submit"
+       class="sign-in action primary button">
+      <__trans phrase="Sign in">
+    </button>
+  </div>
 </form>

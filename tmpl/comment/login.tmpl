@@ -5,7 +5,8 @@
 <mt:if name="auth_loop">
 <mtapp:setting
    id="comment_signin_options"
-   label="<__trans phrase="Sign in using">...">
+   label="<__trans phrase="Sign in using">..."
+   label_class="top-label">
   <select name="auth_options" id="auth_options" class="full">
   <mt:if name="enabled_MovableType">
     <option value="<mt:var name="default_id" escape="html">"><mt:var name="default_signin" escape="html"></option>
