@@ -44,7 +44,7 @@
                     </li>
                     <li>
     <mt:if name="can_access_to_comment_list">
-                        <a href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="website_id">&amp;filter_key=my_posts_on_this_context"><__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="website_comment_count">"></a>
+                        <a href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="website_id">&amp;filter_key=comments_on_my_entry"><__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="website_comment_count">"></a>
     <mt:else>
                         <__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="website_comment_count">">
     </mt:if>
@@ -114,7 +114,7 @@
                 <ul id="blog-<mt:var name="blog_id">-control" class="blog-control">
                     <li>
     <mt:if name="can_access_to_entry_list">
-                        <a href="<mt:var name="script_url">?__mode=list&amp;_type=entry&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=my_posts_on_this_context"><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="blog_entry_count">"></a>
+                        <a href="<mt:var name="script_url">?__mode=list&amp;_type=entry&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=my_posts"><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="blog_entry_count">"></a>
     <mt:else>
                         <__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="blog_entry_count">">
     </mt:if>
@@ -128,7 +128,7 @@
                     </li>
                     <li>
     <mt:if name="can_access_to_comment_list">
-                        <a href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=my_posts_on_this_context"><__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="blog_comment_count">"></a>
+                        <a href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=comments_on_my_entry"><__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="blog_comment_count">"></a>
     <mt:else>
                         <__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="blog_comment_count">">
     </mt:if>
