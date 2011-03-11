@@ -129,6 +129,7 @@
             <a href="<$mt:var name="blog_url" escape="html"$>" title="<__trans phrase="View Site">" target="<__trans phrase="_external_link_target">"><span><__trans phrase="View [_1]" params="<mt:var name="scope_type" capitalize="1">"></span></a>
           <!-- /View Link --></li>
       </mt:if>
+      <mt:if name="can_search_replace">
           <li id="cms-search" class="nav-link">
             <a href="#"><span><__trans phrase="Search"><mt:if name="search_label"> <mt:var name="search_label"><mt:else> <__trans phrase="Entries"></mt:if></span></a>
             <div id="search-form" class="search-form hidden">
@@ -146,6 +147,7 @@
               </form>
             </div>
           <!-- Serarch --></li>
+      </mt:if>
         </ul>
 
       <mt:if name="blog_id">

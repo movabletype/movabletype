@@ -2764,7 +2764,8 @@ sub set_default_tmpl_params {
             = $param->{can_create_post}
             || $param->{can_edit_all_entries}
             || $param->{can_publish_post};
-        $param->{can_search_replace} = $param->{can_edit_all_posts};
+        require MT::CMS::Search;
+        $param->{can_search_replace} = MT::CMS::Search::can_search_replace($app);
         $param->{can_edit_authors}   = $param->{can_administer_blog};
         $param->{can_access_assets} 
             = $param->{can_create_post}
