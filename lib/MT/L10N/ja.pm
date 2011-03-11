@@ -808,7 +808,7 @@ use vars qw( @ISA %Lexicon );
 	'Could not authenticate using the credentials provided: [_1].' => '提供されている手段による認証ができません: [_1]',
 	'Both passwords must match.' => 'パスワードが一致しません。',
 	'You must supply a password.' => 'パスワードを設定してください。',
-	'The \'Publishing Path\' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click \'Finish Install\' again.' => '\'公開パス\'にウェブサーバーから書き込めません。公開パスの書き込み権限を、正しく設定してから再度、インストールボタンをクリックしてください。',
+	'The \'Publishing Path\' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click \'Finish Install\' again.' => '\'ウェブサイトパス\'にウェブサーバーから書き込めません。ウェブサイトパスの書き込み権限を、正しく設定してから再度、インストールボタンをクリックしてください。',
 	'Invalid session.' => 'セッションが不正です。',
 	'No permissions. Please contact your administrator for upgrading Movable Type.' => '権限がありません。Movable Typeのアップグレードを管理者に依頼してください。',
 	'Movable Type has been upgraded to version [_1].' => 'Movable Typeをバージョン[_1]にアップグレードしました。',
@@ -1842,6 +1842,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/IPBanList.pm
 	'IP Ban' => '禁止IPリスト',
 	'IP Bans' => '禁止IPリスト',
+  'IP addresses' => 'IPアドレス',
 
 ## lib/MT/Image.pm
 	'Invalid Image Driver [_1]' => '不正なイメージドライバーです:[_1]',
@@ -2007,9 +2008,9 @@ use vars qw( @ISA %Lexicon );
 	'Can upload files, edit all entries(categories), pages(folders), tags and publish the site.' => 'ファイルをアップロードし、ブログ記事(カテゴリ)、ウェブページ(フォルダ)、タグを編集して公開できます。',
 	'Can create entries, edit their own entries, upload files and publish.' => '記事を作成し、各自の記事の編集とファイルのアップロード、およびそれらを公開できます。',
 	'Designer' => 'デザイナ',
-	'Can edit, manage, and publish blog templates and themes.' => 'テンプレートとテーマの編集し、管理し、それらを公開できます。',
+	'Can edit, manage, and publish blog templates and themes.' => 'テンプレートとテーマの編集と管理、及びそれらの公開ができます。',
 	'Webmaster' => 'ウェブマスター',
-	'Can manage pages, upload files and publish blog templates.' => 'ページを管理し、ファイルをアップロードし、ブログテンプレートを公開できます。',
+	'Can manage pages, upload files and publish blog templates.' => 'ページの管理、ファイルのアップロード、ブログテンプレートを公開できます。',
 	'Contributor' => 'ライター',
 	'Can create entries, edit their own entries, and comment.' => '記事の作成、各自の記事とコメントを編集できます。',
 	'Moderator' => 'モデレータ',

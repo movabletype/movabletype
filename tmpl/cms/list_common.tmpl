@@ -883,7 +883,7 @@ function renderList(mode, columns, values, limit, page ) {
       jQuery('#resultstats').remove();
       var n = columnLength();
       if (count == 0) {
-        var message = trans('No [_1] could be found.', '<mt:var name="object_label" lower_case="1" escape="js">');
+        var message = trans('No [_1] could be found.', '<mt:if name="zero_state"><mt:var name="zero_state" escape="js"><mt:else><mt:var name="object_label" lower_case="1" escape="js"></mt:if>');
         jQuery('<td class="col fullwidth-row" colspan="'+n+'">'+message+'</tr>').appendTo('table.listing-table tbody');
       }
       renderPagination(count, limit, page, last, total);

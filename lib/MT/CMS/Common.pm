@@ -970,6 +970,8 @@ sub list {
                     };
             }
         }
+        use Data::Dumper;
+        print STDERR "zero:" . Dumper($prop) . "\n";
         push @list_columns,
             {
             id        => $prop->id,
@@ -1052,7 +1054,8 @@ sub list {
         label => MT->translate(
             'All [_1]',
             $screen_settings->{object_label_plural}
-                || $obj_class->class_label_plural
+            ? MT->translate( $screen_settings->{object_label_plural} )
+            : $obj_class->class_label_plural
         ),
         items    => [],
         id       => '_allpass',
@@ -1102,8 +1105,12 @@ sub list {
     $param{container_label_plural}
         = $screen_settings->{container_label_plural}
         || $obj_class->container_label_plural;
+    $param{zero_state}
+        = $screen_settings->{zero_state}
+        ? $app->translate( $screen_settings->{zero_state} )
+        : '',
 
-    my $s_type = $screen_settings->{search_type} || $obj_type;
+        my $s_type = $screen_settings->{search_type} || $obj_type;
     if ( my $search_apis = $app->registry( search_apis => $s_type ) ) {
         $param{search_type}  = $s_type;
         $param{search_label} = $search_apis->{label};
