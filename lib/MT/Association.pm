@@ -183,7 +183,7 @@ sub list_props {
             },
         },
         blog_name => {
-            label   => 'Site',
+            label   => 'Website/Blog Name',
             base    => '__virtual.string',
             display => 'default',
             order   => 300,

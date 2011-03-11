@@ -163,7 +163,7 @@ sub list_props {
             },
         },
         entry_count => {
-            label              => 'Entries',
+            label              => '__ENTRY_COUNT',
             order              => 300,
             base               => '__virtual.object_count',
             display            => 'default',
@@ -174,7 +174,7 @@ sub list_props {
             list_permit_action => 'access_to_entry_list',
         },
         page_count => {
-            label              => 'Pages',
+            label              => '__PAGE_COUNT',
             order              => 400,
             base               => '__virtual.object_count',
             display            => 'default',
@@ -185,7 +185,7 @@ sub list_props {
             list_permit_action => 'access_to_page_list',
         },
         asset_count => {
-            label              => 'Assets',
+            label              => '__ASSET_COUNT',
             order              => 500,
             base               => '__virtual.object_count',
             count_class        => 'asset',
@@ -196,7 +196,7 @@ sub list_props {
             list_permit_action => 'access_to_asset_list',
         },
         comment_count => {
-            label              => 'Comments',
+            label              => '__COMMENT_COUNT',
             order              => 600,
             base               => '__virtual.object_count',
             count_class        => 'comment',

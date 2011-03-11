@@ -1115,6 +1115,10 @@ use vars qw( @ISA %Lexicon );
 	'Failed to apply theme [_1]: [_2]' => '[_1]テーマの適用に失敗しました: [_2]',
 	'Members' => 'メンバー',
 	'Theme' => 'テーマ',
+	'__ENTRY_COUNT' => 'ブログ記事数',
+	'__PAGE_COUNT' => 'ウェブページ数',
+	'__ASSET_COUNT' => 'アイテム数',
+	'__COMMENT_COUNT' => 'コメント数',
 
 ## lib/MT/Bootstrap.pm
 
@@ -1665,7 +1669,7 @@ use vars qw( @ISA %Lexicon );
 	'Date Created' => '作成日',
 	'Date Modified' => '更新日',
 	'Legacy Quick Filter' => 'クイックフィルタ',
-	'Website/Blog Name' => 'Website/Blog Name', #TBD
+	'Website/Blog Name' => 'ウェブサイト/ブログ',
 	'My Items' => '私のアイテム',
 	'Log' => 'ログ',
 	'Activity Feed' => 'ログフィード',
@@ -1806,6 +1810,7 @@ use vars qw( @ISA %Lexicon );
 	'Unpublished Entries' => '未公開のブログ記事',
 	'Scheduled Entries' => '日時指定されているブログ記事',
 	'Entries Commented on in the Last 7 Days' => '最近7日間以内にコメントされたブログ記事',
+	'__PING_COUNT' => 'トラックバック数',
 
 ## lib/MT/FileMgr/DAV.pm
 	'DAV connection failed: [_1]' => 'DAV connectionに失敗しました: [_1]',
@@ -2426,6 +2431,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while publishing scheduled entries: [_1]' => '日時指定されたブログ記事の再構築中にエラーが発生しました: [_1]',
 
 ## lib/MT/Website.pm
+	'__BLOG_COUNT' => 'ブログ数',
 
 ## lib/MT/Worker/Publish.pm
 	'Error rebuilding file [_1]:[_2]' => '[_1]の再構築中にエラーが発生しました: [_2]',
@@ -4275,7 +4281,7 @@ use vars qw( @ISA %Lexicon );
 	'My Filters' => '自分のフィルタ',
 	'Built in Filters' => 'クイックフィルタ',
 	'Remove item' => 'フィルタ項目を削除する',
-	'Unknown Filter' => '不明なのフィルタ',
+	'Unknown Filter' => '無名のフィルタ',
 	'act upon' => '対象に',
 	'Are you sure you want to remove the filter \'[_1]\'?' => 'フィルタ\'\_1]\'を削除してよろしいですか?',
 	'Label "[_1]" is already in use.' => '"[_1]というラベルは既に使用されています。"',

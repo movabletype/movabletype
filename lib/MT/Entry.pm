@@ -462,7 +462,7 @@ sub list_props {
         comment_count => {
             auto      => 1,
             display   => 'default',
-            label     => 'Comments',
+            label     => '__COMMENT_COUNT',
             order     => 800,
             html_link => sub {
                 my $prop = shift;
@@ -482,7 +482,7 @@ sub list_props {
         ping_count => {
             auto      => 1,
             display   => 'optional',
-            label     => 'Trackbacks',
+            label     => '__PING_COUNT',
             order     => 900,
             html_link => sub {
                 my $prop = shift;
