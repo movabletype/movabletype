@@ -965,7 +965,7 @@ sub list {
                     display => $cols{ $id . '.' . $sub->{class} }
                         || $sub->{display} eq 'default',
                     class      => $sub->{class},
-                    label      => $sub->{label},
+                    label      => $app->translate( $sub->{label} ),
                     is_default => $sub->{display} eq 'default' ? 1 : 0,
                     };
             }
