@@ -979,13 +979,12 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Association.pm
 	'Association' => '関連付け',
 	'Associations' => '関連付け',
-	'Permissions with role: [_1]' => '[_1]の権限', # TBD
+	'Permissions with role: [_1]' => '[_1]の権限',
 	'Permissions for [_1]' => '[_1]の権限',
 	'association' => '関連付け',
 	'associations' => '関連付け',
 	'Role' => 'ロール',
 	'Role Detail' => 'ロールの詳細',
-	'Site' => '', # JK
 
 ## lib/MT/AtomServer.pm
 	'[_1]: Entries' => '[_1]: ブログ記事一覧',
@@ -1026,7 +1025,7 @@ use vars qw( @ISA %Lexicon );
 	'Users' => 'ユーザー',
 	'The approval could not be committed: [_1]' => '公開できませんでした: [_1]',
 	'Userpic' => 'プロフィール画像',
-	'User Info' => '詳細情報', # TBD
+	'User Info' => '詳細情報',
 	'Created by' => '作成者',
 	'__AUTHOR_STATUS' => '状態',
 	'Active' => '有効',
@@ -1327,7 +1326,7 @@ use vars qw( @ISA %Lexicon );
 	'Failed to delete filter(s): [_1]' => 'フィルタの削除に失敗しました:[_1]',
 	'Removed [_1] filters successfully.' => '[_1]のフィルタを削除しました。',
 	'[_1] ( created by [_2] )' => '作成:[_2] - [_1]',
-	'(Legacy) ' => '(レガシー)', #TBD?
+	'(Legacy) ' => '(レガシー)',
 
 ## lib/MT/CMS/Folder.pm
 	'The folder \'[_1]\' conflicts with another folder. Folders with the same parent must have unique basenames.' => '\'[_1]\'は他のフォルダと衝突しています。同じ階層にあるフォルダの名前(ベースネーム)は一意でなければなりません。',
