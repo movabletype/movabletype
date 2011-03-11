@@ -15,36 +15,6 @@
    class="button mt-delete-items">
   <__trans phrase="Delete">
 </button>
-<mt:unless name="filter_spam">
-  <mt:if name="state_editable">
-<button
-   onclick="doItemsAreJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="comment" escape="js">', '<__trans phrase="comments" escape="js">'); return false;"
-   accesskey="j"
-   title="<__trans phrase="Report selected comments as Spam (j)">"
-   class="button">
-  <__trans phrase="Spam">
-</button>
-  </mt:if>
-<mt:else>
-  <mt:if name="state_editable">
-<button
-   onclick="doItemsAreNotJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="comment" escape="js">', '<__trans phrase="comments" escape="js">'); return false;"
-   accesskey="j"
-   title="<__trans phrase="Report selected comments as Not Spam and Publish (j)">"
-   class="button">
-  <__trans phrase="Not Spam">
-</button>
-  </mt:if>
-  <mt:if name="can_empty_junk">
-<button
-   mt:command="submit"
-   mt:mode="empty_junk"
-   mt:confirm-msg="<__trans phrase="Are you sure you want to remove all comments reported as spam?">"
-   title="<__trans phrase="Delete all comments reported as Spam">"
-   class="button"><__trans phrase="Empty">
-</button>
-  </mt:if>
-</mt:unless>
 </mt:setvarblock>
 
 <mtapp:listing id="comment-listing">
