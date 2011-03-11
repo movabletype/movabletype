@@ -118,6 +118,13 @@
         </form>
       </td>
     </tr>
+<mt:if name="use_virtual_cat">
+    <tr>
+      <td>
+<__trans phrase="This preview is now running with virtual category. this can be a reason of unexpected error or broken preview. You can avoid this situation by creating any category on this blog.">
+      </td>
+    </tr>
+</mt:if>
     <tr>
       <td id="template-preview-content" class="preview-content">
         <iframe id="frame" frameborder="0" scrolling="auto" src="<$mt:var name="preview_url"$>?<mt:date format="%H%M%S">" onclick="return TC.stopEvent(event);"></iframe>
