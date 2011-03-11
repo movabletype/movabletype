@@ -963,12 +963,12 @@ use vars qw( @ISA %Lexicon );
 	'Error cropping image: [_1]' => '画像をトリミングできませんでした: [_1]',
 	'Error scaling image: [_1]' => '画像のサイズを変更できませんでした: [_1]',
 	'Error converting image: [_1]' => '画像を変換できませんでした: [_1]',
-	'Error creating thumbnail file: [_1]' => 'サムネールを作成できませんでした: [_1]',
+	'Error creating thumbnail file: [_1]' => 'サムネイルを作成できませんでした: [_1]',
 	'%f-thumb-%wx%h-%i%x' => '%f-thumb-%wx%h-%i%x',
 	'Can\'t load image #[_1]' => 'ID:[_1]の画像をロードできませんでした。',
 	'View image' => '表示',
 	'Permission denied setting image defaults for blog #[_1]' => 'ブログ(ID:[_1])に画像に関する既定値を保存する権限がありません。',
-	'Thumbnail image for [_1]' => '[_1]のサムネール画像',
+	'Thumbnail image for [_1]' => '[_1]のサムネイル画像',
 	'Invalid basename \'[_1]\'' => 'ファイル名\'[_1]\'は不正です。',
 	'Error writing to \'[_1]\': [_2]' => '\'[_1]\'に書き込めませんでした: [_2]',
 	'Popup Page for [_1]' => '[_1]のポップアップページ',
@@ -1777,7 +1777,7 @@ use vars qw( @ISA %Lexicon );
 	'Subscribe Verify' => '購読の確認',
 
 ## lib/MT/Entry.pm
-	'NONE' => 'なし', # Translate - Case
+	'NONE' => 'なし',
 	'[_1] ( id:[_2] ) not exists.' => '[_1] ( id:[_2] ) が見つかりません。',
 	'Entries from category: [_1]' => 'カテゴリ \'[_1]\'のブログ記事',
 	'Entries by [_1]' => '[_1]のブログ記事',
@@ -2874,7 +2874,7 @@ use vars qw( @ISA %Lexicon );
 	'Entry Fields' => '記事フィールド',
 	'_USAGE_ENTRYPREFS' => 'ブログ記事の編集画面で表示する項目のセットを選択してください。',
 	'Page Fields' => 'ページフィールド',
-	'Punctuation Replacement Setting' => '', # Translate - New
+	'Punctuation Replacement Setting' => 'Word特有の文字を置き換える',
 	'Replace UTF-8 characters frequently used by word processors with their more common web equivalents.' => 'ワープロソフトで使われるUTF-8文字を対応する表示可能な文字に置き換えます。',
 	'Punctuation Replacement' => '句読点置き換え',
 	'No substitution' => '置き換えない',
@@ -3040,23 +3040,23 @@ use vars qw( @ISA %Lexicon );
 	'Publishing Paths' => '公開パス',
 	'[_1] URL' => '[_1]URL',
 	'Use subdomain' => 'サブドメインの利用',
-	'Warning: Changing the [_1] URL can result in breaking all the links in your blog.' => '', # Translate - New
+	'Warning: Changing the [_1] URL can result in breaking all the links in your [_1].' => '警告:[_1]URLを変更すると[_1]内の全てのリンクがリンク切れとなることがあります。',
 	'The URL of your blog. Exclude the filename (i.e. index.html). End with \'/\'. Example: http://www.example.com/blog/' => 'ブログを公開するURLです。ファイル名(index.htmlなど)は含めず、末尾は\'/\'で終わります。例: http://www.example.com/blog/',
 	'The URL of your website. Exclude the filename (i.e. index.html).  End with \'/\'. Example: http://www.example.com/' => 'ウェブサイトを公開するURLです。ファイル名(index.htmlなど)は含めず、末尾は\'/\'で終わります。 例: http://www.example.com/',
 	'[_1] Root' => '[_1]パス',
-	'Use absolute path' => '', # Translate - New
-	'Warning: Changing the [_1] root requires a complete publish of your site.' => '', # Translate - New
-	'The path where your index files will be published. Do not end with \'/\' or \'\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog' => '', # Translate - New
-	'The path where your index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\' for Windows) is preferred.  Do not end with \'/\' or \'\'. Example: /home/mt/public_html or C:\www\public_html' => '', # Translate - New
+	'Use absolute path' => '絶対パスの利用',
+	'Warning: Changing the [_1] root requires a complete publish of your [_1].' => '警告:[_1]パスを変更した場合には[_1]の再構築が必要です。',
+	'The path where your index files will be published. Do not end with \'/\' or \'\\\'.  Example: /home/mt/public_html/blog or C:\\www\\public_html\\blog' => 'インデックスファイルが公開されるパスです。末尾には\'/\'や\'\\\'を含めません。',
+	'The path where your index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\\\' for Windows) is preferred.  Do not end with \'/\' or \'\\\'. Example: /home/mt/public_html or C:\\www\\public_html' => 'インデックスファイルが公開されるパスです。絶対パス(Linuxの時は\'/\'、Windowsの時は\'C:\\\'などで始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。末尾には\'/\'や\'\\\'を含めません。例: /home/melody/public_html/blogやC:\\www\\public_html\\blog',
 	'Advanced Archive Publishing' => '高度な公開の設定',
 	'Select this option only if you need to publish your archives outside of your Blog Root.' => 'アーカイブをサイトパス以外で公開するときにこのオプションを選択してください。',
 	'Publish archives outside of Blog Root' => 'アーカイブをブログパスとは別のパスで公開する',
 	'Archive URL' => 'アーカイブURL',
-	'The URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => '', # Translate - New
+	'The URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => 'ブログのアーカイブのURLです。例: http://www.example.com/blog/archives/',
 	'Warning: Changing the archive URL can result in breaking all the links in your blog.' => '警告: アーカイブURLを変更することでブログ上のすべてのリンクがリンク切れとなる場合があります。',
 	'Warning: Changing the archive path can result in breaking all the links in your blog.' => '警告: アーカイブパスを変更するとブログ上のすべてのリンクがリンク切れとなる場合があります。',
-	'The path where your archives section index files will be published. Do not end with \'/\' or \'\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog' => '', # Translate - New
-	'The path where your archives section index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\' for Windows) is preferred. Do not end with \'/\' or \'\'. Example: /home/mt/public_html or C:\www\public_html' => '', # Translate - New
+	'The path where your archives section index files will be published. Do not end with \'/\' or \'\\\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog' => 'アーカイブのインデックスファイルが公開されるパスです。ウェブサイトからの相対パスを指定します。末尾には\'/\'や\'\\\'を含めません。',
+	'The path where your archives section index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\\\' for Windows) is preferred. Do not end with \'/\' or \'\\\'. Example: /home/mt/public_html or C:\www\public_html' => 'アーカイブのインデックスファイルが公開されるパスです。絶対パス(Linuxの時は\'/\'、Windowsの時は\'C:\\\'などで始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。末尾には\'/\'や\'\\\'を含めません。例: /home/melody/public_html/blogやC:\\www\\public_html\\blog',
 	'Dynamic Publishing Options' => 'ダイナミックパブリッシング設定',
 	'Enable dynamic cache' => 'キャッシュする',
 	'Enable conditional retrieval' => '条件付き取得を有効にする',
@@ -3083,12 +3083,11 @@ use vars qw( @ISA %Lexicon );
 	'Number of revisions per template' => 'テンプレート更新履歴数:',
 	'You must set your Blog Name.' => 'ブログ名を設定してください。',
 	'You did not select a time zone.' => 'タイムゾーンが選択されていません。',
-	'You must set a valid URL.' => '', # Translate - New
-	'You must set your Local file Path.' => '', # Translate - New
-	'You must set a valid Local file Path.' => '', # Translate - New
-	'You must set a valid Loca file Path.' => '', # Translate - New
+	'You must set a valid URL.' => '有効なURLを指定してください。',
+	'You must set your Local file Path.' => 'ファイルパスを指定する必要があります。',
+	'You must set a valid Local file Path.' => '有効なファイルパスを指定してください。',
 	'You must set a valid Archive URL.' => '有効なアーカイブURLを指定してください。',
-	'You must set Local Archive Path.' => 'アーカイブパスを指定する必要があります。',
+	'You must set your Local Archive Path.' => 'アーカイブパスを指定する必要があります。',
 	'You must set a valid Local Archive Path.' => '有効なアーカイブパスを指定してください。',
 
 ## tmpl/cms/cfg_registration.tmpl
@@ -3099,16 +3098,16 @@ use vars qw( @ISA %Lexicon );
 	'Registration Not Enabled' => 'ユーザー登録は無効です。',
 	'Note: Registration is currently disabled at the system level.' => '注:ユーザー登録は現在システムレベルで無効となっています。',
 	'Allow visitors to register as members of this website using one of the Authentication Methods selected below.' => 'ウェブサイトの訪問者が、以下で選択した認証方式でユーザー登録することを許可する',
-	'New Created User' => '', # Translate - New
-	'Select a role that you want assigned to users that are created in the future.' => '', # Translate - New
-	'(No role selected)' => '', # Translate - New
+	'New Created User' => '新規ユーザー',
+	'Select a role that you want assigned to users that are created in the future.' => 'これから作成されるユーザーに割り当てられるロールを選択します。',
+	'(No role selected)' => '(ロールが選択されていません)',
 	'Authentication Methods' => '認証方式',
 	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'OpenIDを利用するのに必要なPerlモジュール(Digest::SHA1)がありません。',
-	'Please select authentication methods to accept comments.' => '', # Translate - New
+	'Please select authentication methods to accept comments.' => 'コメント投稿者の認証方式を選択してください。',
 	'Require E-mail Address for Comments via TypePad' => 'TypePad経由のコメントにメールアドレスを要求する',
 	'Visitors must allow their TypePad account to share their e-mail address when commenting.' => 'ビジターはコメント時にメールアドレスを共有するのにTypePadアカウントが許可されています。',
 	'One or more Perl modules may be missing to use this authentication method.' => '認証を利用するのに必要なPerlモジュールが見つかりませんでした。',
-	'Setup TypePad token' => '', # Translate - New
+	'Setup TypePad token' => 'TypePadの設定',
 
 ## tmpl/cms/cfg_system_general.tmpl
 	'A test email was sent.' => 'テストメールが送信されました。',
@@ -3120,7 +3119,7 @@ use vars qw( @ISA %Lexicon );
 	'Values other than zero provide additional diagnostic information for troubleshooting problems with your Movable Type installation.  More information is available in the <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Debug Mode documentation</a>.' => '開発者向けの設定です。0以外の数字を設定すると、Movable Typeのデバックメッセージを表示します。詳しくは<a href="http://www.movabletype.jp/documentation/appendices/config-directives/debugmode.html">ドキュメントを参照</a>してください。',
 	'Performance Logging' => 'パフォーマンスログ',
 	'Turn on performance logging, which will report any system event that takes the number of seconds specified by Logging Threshold.' => 'パフォーマンスログを有効にして、ログ閾値で設定した秒数より時間のかかる処理をログに記録します。',
-	'Turn on performance logging' => '', # Translate - New
+	'Turn on performance logging' => 'パフォーマンスログを有効にする',
 	'Log Path' => 'ログパス',
 	'The filesystem directory where performance logs are written.  The web server must have write permission in this directory.' => 'パフォーマンスログを書き出すフォルダです。ウェブサーバーから書き込み可能な場所を指定してください。',
 	'Logging Threshold' => 'ログ閾値',
@@ -3209,21 +3208,21 @@ use vars qw( @ISA %Lexicon );
 	'The support directory is not writable.' => 'supportディレクトリに書き込めません。',
 	'Details' => '詳細',
 	'Movable Type was unable to write to its \'support\' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.' => 'supportディレクトリに書き込みできません。[_1]にディレクトリを作成して、ウェブサーバーから書き込みできるパーミッションを与えてください。',
-	'ImageDriver is not configured.' => '', # Translate - New
-	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => '', # Translate - New
+	'ImageDriver is not configured.' => 'イメージドライバーが設定されていません。',
+	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'ImageDriverに設定された画像処理ツールが存在しないかまたは正しく設定されていないため、Movable Typeのユーザー画像機能を利用できません。この機能を利用するには、Image::Magick、NetPBM、GD、Imagerのいずれかをインストールする必要があります。',
 
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
 	'Confirm Publishing Configuration' => '公開設定',
 	'Site Path' => 'サイトパス',
 	'Parent Website' => '上位ウェブサイト',
 	'Please choose parent website.' => '上位ウェブサイトを選択してください。',
-	'Enter the new URL of your public blog. End with \'/\'. Example: http://www.example.com/weblog/' => '', # Translate - New
+	'Enter the new URL of your public blog. End with \'/\'. Example: http://www.example.com/weblog/' => '新しいブログURLを入力してください。末尾は\'/\'で終わります。例: http://www.example.com/blog/',
 	'Blog Root' => 'ブログパス',
-	'Enter the new path where your main index file will be located. Do not end with \'/\' or \'\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog' => '', # Translate - New
-	'Enter the new path where your main index files will be located. An absolute path (starting with \'/\' for Linux or \'C:\' for Windows) is preferred.  Do not end with \'/\' or \'\'. Example: /home/mt/public_html or C:\www\public_html' => '', # Translate - New
-	'Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => '', # Translate - New
-	'Enter the new path where your archives section index files will be published. Do not end with \'/\' or \'\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog' => '', # Translate - New
-	'Enter the new path where your archives section index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\' for Windows) is preferred. Do not end with \'/\' or \'\'. Example: /home/mt/public_html or C:\www\public_html' => '', # Translate - New
+	'Enter the new path where your main index file will be located. Do not end with \'/\' or \'\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog' => 'インデックスファイルが公開される新しいブログパスを入力してください。ウェブサイトからの相対パスを指定します。末尾には\'/\'や\'\\\'を含めません。',
+	'Enter the new path where your main index files will be located. An absolute path (starting with \'/\' for Linux or \'C:\' for Windows) is preferred.  Do not end with \'/\' or \'\'. Example: /home/mt/public_html or C:\www\public_html' => 'インデックスファイルが公開される新しいブログパスを入力してください。絶対パス(Linuxの時は\'/\'、Windowsの時は\'C:\\\'などで始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。末尾には\'/\'や\'\\\'を含めません。例: /home/melody/public_html/blogやC:\\www\\public_html\\blog',
+	'Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => '新しいブログのアーカイブURLを入力してください。例: http://www.example.com/blog/archives/',
+	'Enter the new path where your archives section index files will be published. Do not end with \'/\' or \'\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog' => 'アーカイブのインデックスファイルが公開されるパスを入力してください。ウェブサイトからの相対パスを指定します。末尾には\'/\'や\'\\\'を含めません。',
+	'Enter the new path where your archives section index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\' for Windows) is preferred. Do not end with \'/\' or \'\'. Example: /home/mt/public_html or C:\www\public_html' => 'アーカイブのインデックスファイルが公開されるパスを入力してください。絶対パス(Linuxの時は\'/\'、Windowsの時は\'C:\\\'などで始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。末尾には\'/\'や\'\\\'を含めません。例: /home/melody/public_html/blogやC:\\www\\public_html\\blog',
 	'Continue' => '次へ',
 	'Continue (s)' => '次へ (s)',
 	'Back (b)' => '戻る (b)',
@@ -3287,7 +3286,6 @@ use vars qw( @ISA %Lexicon );
 	'Entries/Pages' => '記事/ページ',
 	'Categories/Folders' => 'カテゴリ/フォルダ',
 	'Confirm' => '確認',
-	'You must set your Local Archive Path.' => '', # Translate - New
 
 ## tmpl/cms/dialog/comment_reply.tmpl
 	'Reply to comment' => 'コメントに返信',
@@ -3339,17 +3337,17 @@ use vars qw( @ISA %Lexicon );
 	'Publish all templates dynamically.' => 'すべてのテンプレートをダイナミックパブリッシングします。',
 	'Dynamic Archives Only' => 'アーカイブのみダイナミックパブリッシング',
 	'Publish all Archive templates dynamically. Immediately publish all other templates statically.' => 'アーカイブテンプレートをすべてダイナミックパブリッシングします。他のテンプレートはスタティックパブリッシングします。',
-	'This new publishing profile will update your publishing settings.' => '', # Translate - New
+	'This new publishing profile will update your publishing settings.' => '公開プロファイルの設定内容を使って、すべてのテンプレートの設定を更新します。',
 	'Are you sure you wish to continue?' => '続けてもよろしいですか?',
 
 ## tmpl/cms/dialog/recover.tmpl
-	'Reset Password' => '', # Translate - New
+	'Reset Password' => 'パスワードのリセット',
 	'The email address provided is not unique.  Please enter your username.' => '同じメールアドレスを持っているユーザーがいます。ユーザー名を入力してください。',
 	'An email with a link to reset your password has been sent to your email address ([_1]).' => '「[_1]」にパスワードをリセットするためのリンクを含むメールを送信しました。',
 	'Back (x)' => '戻る (x)',
 	'Sign in to Movable Type (s)' => 'Movable Type にサインイン (s)',
 	'Sign in to Movable Type' => 'Movable Type にサインイン',
-	'Reset (s)' => '', # Translate - New
+	'Reset (s)' => 'リセット (s)',
 
 ## tmpl/cms/dialog/refresh_templates.tmpl
 	'Refresh Global Templates' => 'グローバルテンプレートを初期化',
@@ -3393,12 +3391,12 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/dialog/select_association_type.tmpl
 	'Grant website permission to a user' => 'ユーザーにウェブサイトの権限を割り当てる',
 	'Grant blog permission to a user' => 'ユーザーにブログの権限を割り当てる',
-	'Grant website permission to a group' => '', # Translate - New
-	'Grant blog permission to a group' => '', # Translate - New
+	'Grant website permission to a group' => 'グループにウェブサイトの権限を割り当てる',
+	'Grant blog permission to a group' => 'グループにブログの権限を割り当てる',
 
 ## tmpl/cms/dialog/select_theme.tmpl
 	'Select Personal blog theme' => '個人用ブログテーマの選択',
-	'Select' => '', # Translate - New
+	'Select' => '選択',
 
 ## tmpl/cms/dialog/theme_element_detail.tmpl
 
@@ -3424,8 +3422,8 @@ use vars qw( @ISA %Lexicon );
 	'Edit Profile' => 'ユーザー情報の編集',
 	'This profile has been updated.' => 'ユーザー情報を更新しました。',
 	'A new password has been generated and sent to the email address [_1].' => '新しいパスワードが作成され、メールアドレス[_1]に送信されました。',
-	'This user was classified as pending.' => '', # Translate - New
-	'This user was classified as disabled.' => '', # Translate - New
+	'This user was classified as pending.' => 'このユーザーは保留中にされています。',
+	'This user was classified as disabled.' => 'このユーザーは無効にされています。',
 	'User properties' => 'ユーザー属性',
 	'Your web services password is currently' => 'Webサービスのパスワード',
 	'_WARNING_PASSWORD_RESET_SINGLE' => '[_1]のパスワードを再設定しようとしています。新しいパスワードはランダムに生成され、ユーザーにメールで送信されます。続行しますか?',
@@ -3459,7 +3457,7 @@ use vars qw( @ISA %Lexicon );
 	'Default text formatting filter when creating new entries and new pages.' => 'ブログ記事とウェブページを作成する際のテキスト形式を指定します。',
 	'(Use Website/Blog Default)' => '(ウェブサイト/ブログの既定値を利用)',
 	'Date Format' => '日付',
-	'Default date formatting in the Movable Type interface.' => '', # Translate - New
+	'Default date formatting in the Movable Type interface.' => '管理画面で使用する日付の表示フォーマットです。',
 	'Relative' => '経過',
 	'Full' => '年月日',
 	'Tag Delimiter' => 'タグの区切り',
@@ -3481,9 +3479,9 @@ use vars qw( @ISA %Lexicon );
 	'Blog Theme' => 'ブログテーマ',
 	'Select the theme you wish to use for this blog.' => 'このブログで利用するテーマを選択してください。',
 	'Name your blog. The blog name can be changed at any time.' => 'ブログ名を付けてください。この名前はいつでも変更できます。',
-	'Enter the URL of your Blog. Exclude the filename (i.e. index.html). Example: http://www.example.com/weblog/' => '', # Translate - New
-	'The path where your index files will be located. Do not end with \'/\' or \'\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog' => '', # Translate - New
-	'The path where your index files will be located. An absolute path (starting with \'/\' for Linux or \'C:\' for Windows) is preferred.  Do not end with \'/\' or \'\'. Example: /home/mt/public_html or C:\www\public_html' => '', # Translate - New
+	'Enter the URL of your Blog. Exclude the filename (i.e. index.html). Example: http://www.example.com/weblog/' => 'ブログを公開するURLを入力してください。ファイル名(index.htmlなど)は含めず、末尾は\'/\'で終わります。例: http://www.example.com/blog/',
+	'The path where your index files will be located. Do not end with \'/\' or \'\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog' => 'インデックスファイルが公開されるパスを入力してください。ウェブサイトからの相対パスを指定します。末尾には\'/\'や\'\\\'を含めません。',
+	'The path where your index files will be located. An absolute path (starting with \'/\' for Linux or \'C:\' for Windows) is preferred.  Do not end with \'/\' or \'\'. Example: /home/mt/public_html or C:\www\public_html' => 'インデックスファイルが公開されるパスを入力してください。絶対パス(Linuxの時は\'/\'、Windowsの時は\'C:\\\'などで始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。末尾には\'/\'や\'\\\'を含めません。例: /home/melody/public_html/blogやC:\\www\\public_html\\blog',
 	'Select your timezone from the pulldown menu.' => 'プルダウンメニューからタイムゾーンを選択してください。',
 	'If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.' => 'グローバルなDefaultLanguage設定と異なる言語を選んだ場合、グローバルテンプレートの名称が異なるため、テンプレート内で読み込むモジュール名の変更が必要な場合があります。',
 	'Create Blog (s)' => 'ブログを作成 (s)',
@@ -3509,7 +3507,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/edit_comment.tmpl
 	'The comment has been approved.' => 'コメントを公開しました。',
-	'This comment was classified as spam.' => '', # Translate - New
+	'This comment was classified as spam.' => 'このコメントはスパムと判定されました。',
 	'Total Feedback Rating: [_1]' => '最終レーティング: [_1]',
 	'Test' => 'テスト',
 	'Score' => 'スコア',
@@ -3518,7 +3516,7 @@ use vars qw( @ISA %Lexicon );
 	'comment' => 'コメント',
 	'comments' => 'コメント',
 	'Delete this comment (x)' => 'コメントを削除 (x)',
-	'Ban This IP Address' => '', # Translate - New
+	'Ban This IP Address' => 'このIPアドレスを禁止',
 	'Manage Comments' => 'コメントの管理',
 	'_external_link_target' => '_blank',
 	'View [_1] comment was left on' => 'コメントされた[_1]を表示',
@@ -3551,7 +3549,7 @@ use vars qw( @ISA %Lexicon );
 	'Date this comment was made' => 'このコメントの投稿日',
 	'View all comments created on this day' => 'この日に投稿されたすべてのコメントを見る',
 	'IP Address of the commenter' => 'コメント投稿者のIPアドレス',
-	'View all comments from this IP Address' => 'このIPアドレスからのすべてのコメントを見る', # Translate - Case
+	'View all comments from this IP Address' => 'このIPアドレスからのすべてのコメントを見る',
 	'Fulltext of the comment entry' => 'コメントの本文',
 	'Responses to this comment' => 'このコメントに返信する',
 
@@ -3575,9 +3573,9 @@ use vars qw( @ISA %Lexicon );
 	'View all comments with this name' => 'この名前のすべてのコメントを見る',
 	'Identity' => 'ID',
 	'The Identity of the commenter' => 'コメント投稿者の証明',
-	'The Email Address of the commenter' => '', # Translate - New
+	'The Email Address of the commenter' => 'コメント投稿者のメールアドレス',
 	'Withheld' => '公開しない',
-	'The Website URL of the commenter' => '', # Translate - New
+	'The Website URL of the commenter' => 'コメント投稿者のウェブサイトのURL',
 	'The trusted status of the commenter' => 'コメント投稿者の承認状況',
 	'Authenticated' => '認証済み',
 
@@ -3631,7 +3629,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] - Edited by [_2]' => '編集: [_2] - [_1]',
 	'Publish this [_1]' => '[_1]の公開',
 	'Draft this [_1]' => '[_1]の下書き',
-	'Schedule' => '', # Translate - New
+	'Schedule' => '保存',
 	'Update' => '更新',
 	'Update this [_1]' => '[_1]の更新',
 	'Unpublish this [_1]' => '[_1]の公開取り消し',
@@ -3673,7 +3671,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/edit_entry_batch.tmpl
 	'Save these [_1] (s)' => '[_1]の保存',
-	'Published Date' => '', # Translate - New
+	'Published Date' => '公開日',
 
 ## tmpl/cms/edit_folder.tmpl
 	'Edit Folder' => 'フォルダの編集',
@@ -3686,7 +3684,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/edit_ping.tmpl
 	'Edit Trackback' => 'トラックバックの編集',
 	'The TrackBack has been approved.' => 'トラックバックを公開しました。',
-	'This trackback was classified as spam.' => '', # Translate - New
+	'This trackback was classified as spam.' => 'このトラックバックはスパムと判定されました。',
 	'Save changes to this TrackBack (s)' => 'トラックバックへの変更を保存 (s)',
 	'Delete this TrackBack (x)' => 'トラックバックを削除 (x)',
 	'Ban This IP' => 'このIPを禁止',
@@ -3712,8 +3710,8 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/edit_role.tmpl
 	'Edit Role' => 'ロールの編集',
-	'Association (1)' => '', # Translate - New
-	'Associations ([_1])' => '', # Translate - New
+	'Association (1)' => '権限 (1)',
+	'Associations ([_1])' => '権限 ([_1])',
 	'You have changed the privileges for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.' => 'このロールの権限を変更しました。これによって、このロールに関連付けられているユーザーの権限も変化します。このロールに異なる名前を付けて保存したほうがいいかもしれません。このロールに関連付けられているユーザーの権限が変更されていることに注意してください。',
 	'Role Details' => 'ロールの詳細',
 	'System' => 'システム',
@@ -3792,7 +3790,7 @@ use vars qw( @ISA %Lexicon );
 	'Name your website. The website name can be changed at any time.' => 'ウェブサイト名。ウェブサイト名はいつでも変更できます。',
 	'Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/weblog/' => 'ウェブサイトを公開するURLを入力してください。ファイル名(index.htmlなど)は含めないでください。例: http://www.example.com/',
 	'Website Root' => 'ウェブサイトパス',
-	'Enter the path where your main index file will be located. An absolute path (starting with \'/\' for Linux or \'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/weblog or C:\www\public_html' => '', # Translate - New
+	'Enter the path where your main index file will be located. An absolute path (starting with \'/\' for Linux or \'C:\\\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/weblog or C:\\www\\public_html' => 'インデックスファイルが公開されるパスを入力してください。絶対パス(Linuxの時は\'/\'、Windowsの時は\'C:\\\'などで始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。末尾には\'/\'や\'\\\'を含めません。例: /home/melody/public_html/blogやC:\\www\\public_html\\blog',
 	'Create Website (s)' => 'ウェブサイト作成',
 	'You did not select a timezone.' => 'タイムゾーンが選択されていません。',
 
@@ -3898,7 +3896,7 @@ use vars qw( @ISA %Lexicon );
 	'Center Text' => 'テキスト中央揃え',
 	'Right Align Text' => 'テキスト右揃え',
 	'Insert File' => 'ファイルの挿入',
-	'Check Spelling' => '', # Translate - New
+	'Check Spelling' => 'スペルチェック',
 	'WYSIWYG Mode' => 'WYSIWYGモード',
 	'HTML Mode' => 'HTMLモード',
 
@@ -3917,7 +3915,7 @@ use vars qw( @ISA %Lexicon );
 	'Created By' => '作成者',
 	'Created On' => '作成日',
 	'Asset Missing' => 'アイテムなし',
-	'No thumbnail image' => 'サムネール画像がありません。',
+	'No thumbnail image' => 'サムネイル画像がありません。',
 
 ## tmpl/cms/include/asset_upload.tmpl
 	'Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]\'s publishing paths[_3] and republish your [_1].' => 'ファイルのアップロードができるように、[_1]を再構築する必要があります。[_2]公開パスの設定[_3]して、[_1]を再構築してください。',
@@ -3928,7 +3926,7 @@ use vars qw( @ISA %Lexicon );
 	'Choose Folder' => 'フォルダの選択',
 	'Upload (s)' => 'アップロード (s)',
 	'Upload' => 'アップロード',
-	'[_1] contains an invalid character as directory name: [_2]' => '', # Translate - New
+	'[_1] contains an invalid character as directory name: [_2]' => '[_1]のディレクトリ名として正しくない文字が含まれています: [_2]',
 
 ## tmpl/cms/include/author_table.tmpl
 	'Enable selected users (e)' => '選択したユーザーを有効化 (e)',
@@ -3959,18 +3957,18 @@ use vars qw( @ISA %Lexicon );
 	'__INTEGER_FILTER_EQUAL' => 'である',
 	'__INTEGER_FILTER_NOT_EQUAL' => 'ではない',
 	'is greater than' => 'より大きい',
-	'is greater than or equal to' => '', # Translate - New
+	'is greater than or equal to' => '以上',
 	'is less than' => 'より小さい',
-	'is less than or equal to' => '', # Translate - New
-	'is between' => '', # Translate - New
-	'is within the last' => '', # Translate - New
+	'is less than or equal to' => '以下',
+	'is between' => 'の期間内',
+	'is within the last' => '日以内',
 	'is before' => 'より前',
 	'is after' => 'より後',
-	'is after now' => '', # Translate - New
-	'is before now' => '', # Translate - New
-	'__FILTER_DATE_ORIGIN' => '[_1]',
-	'[_1] and [_2]' => '', # Translate - New
-	'_FILTER_DATE_DAYS' => '[_1]',
+	'is after now' => 'が今日より前',
+	'is before now' => 'が今日より後',
+	'__FILTER_DATE_ORIGIN' => 'が[_1]',
+	'[_1] and [_2]' => 'が[_1] から [_2]',
+	'_FILTER_DATE_DAYS' => 'が[_1]',
 	'[_1] [_3] [_2]' => '[_1] [_3] [_2]',
 
 ## tmpl/cms/include/blog_table.tmpl
@@ -3979,7 +3977,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] Name' => '[_1]名',
 
 ## tmpl/cms/include/calendar.tmpl
-	'_LOCALE_WEEK_START' => '0', # Translate - New
+	'_LOCALE_WEEK_START' => '0',
 	'S|M|T|W|T|F|S' => '日|月|火|水|木|金|土',
 	'January' => '1月',
 	'Febuary' => '2月',
@@ -4106,8 +4104,8 @@ use vars qw( @ISA %Lexicon );
 	'View Site' => 'サイトの表示',
 	'Search (q)' => '検索 (q)',
 	'Create New' => '新規作成',
-	'Select an action' => '', # Translate - New
-	'This website was created during the upgrade from a previous version of Movable Type. \'Site Root\' and \'Site URL\' are left blank to retain \'Publishing Paths\' compatibility for blogs that were created in a previous version. You can post and publish on existing blogs, but you cannot publish this website itself because of the blank \'Site Root\' and \'Site URL\'.' => '', # Translate - New
+	'Select an action' => 'アクションを選択',
+	'This website was created during the upgrade from a previous version of Movable Type. \'Site Root\' and \'Site URL\' are left blank to retain \'Publishing Paths\' compatibility for blogs that were created in a previous version. You can post and publish on existing blogs, but you cannot publish this website itself because of the blank \'Site Root\' and \'Site URL\'.' => 'このウェブサイトは、以前のバージョンのMovable Typeからのバージョンアップ時に作成されました。バージョンアップ前に作成されたブログの公開設定の互換性を保持するために、ウェブサイトのサイト URLとサイトパスは空白になっています。そのため、既存のブログに投稿、公開はできますが、ウェブサイト自体にコンテンツを投稿することはできません。',
 	'from Revision History' => '履歴データ',
 
 ## tmpl/cms/include/import_end.tmpl
@@ -4244,50 +4242,46 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/list_category.tmpl
 	'Manage [_1]' => '[_1]の管理',
 	'Top Level' => 'ルート',
-	'[_1] label' => '', # Translate - New
-	'Indicator' => '', # Translate - New
-	'Can\'t move to the level where the exists same label. Please enter new label which is unique in this level.' => '', # Translate - New
-	'Can\'t move to the level where the exists same basename. Please enter new basename which is unique in this level.' => '', # Translate - New
-	'Change and move' => '', # Translate - New
+	'[_1] label' => '[_1]名',
+	'Indicator' => 'インジケータ',
+	'Change and move' => '変更して移動',
 	'Rename' => '名前を変更',
-	'Label is requried' => '', # Translate - New
-	'Duplicated label on this level' => '', # Translate - New
-	'Label is required' => '', # Translate - New
-	'Basename is required' => '', # Translate - New
-	'Invalid Basename' => '', # Translate - New
-	'Duplicated basename on this level' => '', # Translate - New
-	'Add child item' => '', # Translate - New
-	'Remove [_1]' => '', # Translate - New
-	'[_1] \'[_2]\' already exists.' => '', # Translate - New
-	'Are you sure you want to remove [_1] [_2]?' => '', # Translate - New
-	'Are you sure you want to remove [_1] [_2] with [_3] sub [_4]?' => '', # Translate - New
+	'Label is required.' => '名前は必須です。',
+	'Duplicated label on this level.' => '名前が同一階層内で重複しています。',
+	'Basename is required.' => '出力ファイル名/フォルダ名は必須です。',
+	'Invalid Basename.' => '不正な出力ファイル名/フォルダ名です。',
+	'Duplicated basename on this level.' => '出力ファイル名/フォルダ名が同一階層内で重複しています。',
+	'Add child [_1]' => 'サブ[_1]を追加する',
+	'Remove [_1]' => '[_1]を削除する',
+	'[_1] \'[_2]\' already exists.' => '\'[_2]\'という[_1]は既に存在します。',
+	'Are you sure you want to remove [_1] [_2]?' => '[_1]\'[_2]\'を削除してよろしいですか?',
+	'Are you sure you want to remove [_1] [_2] with [_3] sub [_4]?' => '[_3]個のサブ[_4]を含む[_1]\'[_2]\'を削除してよろしいですか?',
+	'Alert' => '警告',
 
 ## tmpl/cms/list_common.tmpl
-	'<mt:var name="confirm_msg">' => '', # Translate - New
-	'Show' => '', # Translate - New
-	'25 rows' => '', # Translate - New
-	'50 rows' => '', # Translate - New
-	'100 rows' => '', # Translate - New
-	'200 rows' => '', # Translate - New
-	'Column' => '', # Translate - New
-	'<mt:var name="js_message">' => '', # Translate - New
-	'Filter:' => '', # Translate - New
-	'Select Filter...' => '', # Translate - New
-	'Remove Filter' => 'フィルタしない', # Translate - Case
-	'Select Filter Item...' => '', # Translate - New
+	'Show' => '表示件数',
+	'25 rows' => '25件',
+	'50 rows' => '50件',
+	'100 rows' => '100件',
+	'200 rows' => '200件',
+	'Column' => '表示項目',
+	'Filter:' => 'フィルタ:',
+	'Select Filter...' => 'フィルタを変更する...',
+	'Remove Filter' => 'フィルタしない',
+	'Select Filter Item...' => 'フィルタ項目を選択してください',
 	'Apply' => '適用',
-	'Save As' => '', # Translate - New
-	'Filter Label' => '', # Translate - New
-	'My Filters' => '', # Translate - New
-	'Built in Filters' => '', # Translate - New
-	'Remove item' => '', # Translate - New
-	'Unknown Filter' => '', # Translate - New
-	'act upon' => '', # Translate - New
-	'Are you sure you want to remove the filter \'[_1]\'?' => '', # Translate - New
-	'Label "[_1]" is already in use.' => '', # Translate - New
-	'[_1]-[_2] of [_3]' => '', # Translate - New
-	'[_1] Filter Items have errors' => '', # Translate - New
-	'[_1] - Filter [_2]' => '', # Translate - New
+	'Save As' => '別名で保存',
+	'Filter Label' => 'フィルタ名',
+	'My Filters' => '自分のフィルタ',
+	'Built in Filters' => 'クイックフィルタ',
+	'Remove item' => 'フィルタ項目を削除する',
+	'Unknown Filter' => '不明なのフィルタ',
+	'act upon' => '対象に',
+	'Are you sure you want to remove the filter \'[_1]\'?' => 'フィルタ\'\_1]\'を削除してよろしいですか?',
+	'Label "[_1]" is already in use.' => '"[_1]というラベルは既に使用されています。"',
+	'[_1]-[_2] of [_3]' => '[_1] - [_2] / [_3] 件',
+	'[_1] Filter Items have errors.' => '[_1]個のフィルタ項目にエラーがあります。',
+	'[_1] - Filter [_2]' => '[_1] - フィルタ [_2]',
 
 ## tmpl/cms/list_entry.tmpl
 	'Entries Feed' => 'ブログ記事フィード',
@@ -4315,7 +4309,7 @@ use vars qw( @ISA %Lexicon );
 	'Select A User:' => 'ユーザーを選択:',
 	'User Search...' => 'ユーザーを検索',
 	'Recent Users...' => '最近のユーザー',
-	'Select...' => '', # Translate - New
+	'Select...' => '選択してください',
 
 ## tmpl/cms/list_template.tmpl
 	'Manage [_1] Templates' => '[_1]テンプレートの管理',
@@ -4331,14 +4325,14 @@ use vars qw( @ISA %Lexicon );
 	'[_1] Themes' => '[_1]テーマの一覧',
 	'All Themes' => 'テーマの一覧',
 	'_THEME_DIRECTORY_URL' => 'http://communities.movabletype.jp/themes/',
-	'Find Themes' => '', # Translate - New
+	'Find Themes' => 'テーマを探す',
 	'Theme [_1] has been uninstalled.' => 'テーマ "[_1]"をアンインストールしました。',
 	'Theme [_1] has been applied.' => 'テーマ "[_1]"を適用しました。',
 	'Some error occured while applying theme.' => 'テーマの適用中にエラーがありました。',
 	'see more detail.' => 'エラーの詳細',
 	'Failed' => '失敗',
 	'[quant,_1,warning,warnings]' => '警告: [quant,_1,,,]',
-	'Reapply' => '', # Translate - New
+	'Reapply' => '再適用',
 	'In Use' => '利用中',
 	'Uninstall' => 'アンインストール',
 	'Author: ' => '作者: ',
@@ -4351,7 +4345,7 @@ use vars qw( @ISA %Lexicon );
 	'Theme Information' => 'テーマ情報',
 	'No themes are installed.' => 'テーマがインストールされていません。',
 	'Current Theme' => '現在のテーマ',
-	'Available Themes' => '', # Translate - New
+	'Available Themes' => '利用可能なテーマ',
 	'Themes for Both Blogs and Websites' => 'ウェブサイト、およびブログ用のテーマ',
 	'Themes for Blogs' => 'ブログ用テーマ',
 	'Themes for Websites' => 'ウェブサイト用テーマ',
@@ -4365,7 +4359,7 @@ use vars qw( @ISA %Lexicon );
 	'<strong>&lt;$MTWidgetSet name=&quot;Name of the Widget Set&quot;$&gt;</strong>' => '<strong>&lt;$MTWidgetSet name=&quot;ウィジェットセットの名前&quot;$&gt;</strong>',
 	'Your changes to the widget set have been saved.' => 'ウィジェットセットへの変更を保存しました。',
 	'You have successfully deleted the selected widget set(s) from your blog.' => '選択されたウィジェットセットを削除しました。',
-	'No widget sets could be found.' => 'ウィジェットセットが見つかりませんでした。', # Translate - Case
+	'No widget sets could be found.' => 'ウィジェットセットが見つかりませんでした。',
 	'Create widget template' => 'ウィジェットテンプレートの作成',
 
 ## tmpl/cms/listing/asset_list_header.tmpl
@@ -4387,7 +4381,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/listing/banlist_list_header.tmpl
 	'You have added [_1] to your list of banned IP addresses.' => '禁止IPリストに[_1]を追加しました。',
 	'You have successfully deleted the selected IP addresses from the list.' => 'リストから選択したIPアドレスを削除しました。',
-	'Invalid IP address.' => '', # Translate - New
+	'Invalid IP address.' => '不正なIPアドレスです。',
 
 ## tmpl/cms/listing/blog_list_header.tmpl
 	'You have successfully deleted the website from the Movable Type system.' => 'システムからウェブサイトの削除が完了しました。',
@@ -4402,8 +4396,8 @@ use vars qw( @ISA %Lexicon );
 	'The selected comment(s) has been reported as spam.' => '選択したコメントをスパムとして報告しました。',
 	'The selected comment(s) has been recovered from spam.' => '選択したコメントをスパムから戻しました。',
 	'The selected comment(s) has been deleted from the database.' => '選択したコメントをデータベースから削除しました。',
-	'One or more comments you selected were submitted by an unauthenticated commenter. These commenters cannot be banned or trusted.' => '選択したコメントの中に匿名のコメントが含まれています。これらのコメント投稿者は禁止したり承認したりできません。', # Translate - Case
-	'No comments appear to be spam.' => '', # Translate - New
+	'One or more comments you selected were submitted by an unauthenticated commenter. These commenters cannot be banned or trusted.' => '選択したコメントの中に匿名のコメントが含まれています。これらのコメント投稿者は禁止したり承認したりできません。',
+	'No comments appear to be spam.' => 'スパムコメントはありません。',
 
 ## tmpl/cms/listing/entry_list_header.tmpl
 
@@ -4473,17 +4467,17 @@ use vars qw( @ISA %Lexicon );
 	'Publish Again' => '再構築しなおす',
 
 ## tmpl/cms/preview_entry.tmpl
-	'Preview [_1] Content' => '', # Translate - New
+	'Preview [_1] Content' => '[_1]のプレビュー',
 	'Return to the compose screen' => '作成画面に戻る',
 	'Return to the compose screen (e)' => '作成画面に戻る',
-	'Save this entry' => '', # Translate - New
-	'Save this entry (s)' => '', # Translate - New
-	'Re-Edit this entry' => '', # Translate - New
-	'Re-Edit this entry (e)' => '', # Translate - New
-	'Save this page' => '', # Translate - New
-	'Save this page (s)' => '', # Translate - New
-	'Re-Edit this page' => '', # Translate - New
-	'Re-Edit this page (e)' => '', # Translate - New
+	'Save this entry' => 'このブログ記事を保存する',
+	'Save this entry (s)'  => 'このブログ記事を保存する (s)',
+	'Re-Edit this entry' => 'このブログ記事を編集する',
+	'Re-Edit this entry (e)' => 'このブログ記事を編集する (e)',
+	'Save this page' => 'このウェブページを保存する',
+	'Save this page (s)' => 'このウェブページを保存する (s)',
+	'Re-Edit this page' => 'このウェブページを編集する',
+	'Re-Edit this page (e)' => 'このウェブページを編集する (e)',
 
 ## tmpl/cms/preview_strip.tmpl
 	'You are previewing the entry entitled &ldquo;[_1]&rdquo;' => 'プレビュー中: 記事「[_1]」',
@@ -4492,20 +4486,20 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/preview_template_strip.tmpl
 	'You are previewing the template named &ldquo;[_1]&rdquo;' => 'テンプレート「[_1]」をプレビューしています。',
 	'(Publish time: [_1] seconds)' => '(処理時間: [_1]秒)',
-	'Save this template (s)' => '', # Translate - New
-	'Save this template' => '', # Translate - New
-	'Re-Edit this template (e)' => '', # Translate - New
-	'Re-Edit this template' => '', # Translate - New
+	'Save this template (s)' => 'このテンプレートを保存する',
+	'Save this template' => 'このテンプレートを保存する (s)',
+	'Re-Edit this template (e)' => 'このテンプレートを編集する',
+	'Re-Edit this template' => 'このテンプレートを編集する (s)',
 
 ## tmpl/cms/rebuilding.tmpl
 	'Publishing...' => '再構築中...',
 	'Publishing [_1]...' => '[_1] を再構築中...',
-	'Publishing <em>[_1]</em>...' => '', # Translate - New
+	'Publishing <em>[_1]</em>...' => '<em>[_1]</em> を再構築中...',
 	'Publishing [_1] [_2]...' => '[_1] [_2] を再構築中...',
 	'Publishing [_1] dynamic links...' => '[_1] のダイナミックリンクを再構築中...',
 	'Publishing [_1] archives...' => '[_1]アーカイブを再構築中...',
 	'Publishing [_1] templates...' => '[_1]テンプレートを再構築中...',
-	'Complete [_1]%' => '', # Translate - New
+	'Complete [_1]%' => '[_1]% 終了',
 
 ## tmpl/cms/recover_password_result.tmpl
 	'Recover Passwords' => 'パスワード再設定',
@@ -4546,9 +4540,8 @@ use vars qw( @ISA %Lexicon );
 	'_DATE_FROM' => '開始日',
 	'_DATE_TO' => '終了日',
 	'Submit search (s)' => '検索 (s)',
-	'<__trans phrase="Search">' => '', # Translate - New
-	'Search For' => '', # Translate - New
-	'Replace With' => '置き換えるパス', # Translate - Case
+	'Search For' => '検索',
+	'Replace With' => '置き換えるパス',
 	'Replace Checked' => '選択したものを対象に置換',
 	'Successfully replaced [quant,_1,record,records].' => '[quant,_1,件,件]のデータを置き換えました。',
 	'Showing first [_1] results.' => '最初の[_1]件の結果を表示します。',
@@ -4716,7 +4709,7 @@ use vars qw( @ISA %Lexicon );
 	'Your last entry was [_1] in <a href="[_2]">[_3]</a>.' => '最後にブログ記事を書いたのは[_1]です(ブログ: <a href="[_2]">[_3]</a>)',
 	'You have <a href="[_1]">[quant,_2,draft,drafts]</a>.' => '下書きが<a href="[_1]">[quant,_2,件,件]</a>あります。',
 	'You have [quant,_1,draft,drafts].' => '下書きが[quant,_1,件,件]あります。',
-	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a>, <a href="[_3]">[quant,_4,page,pages]</a> with <a href="[_5]">[quant,_6,comment,comments]</a>.' => '', # Translate - New
+	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a>, <a href="[_3]">[quant,_4,page,pages]</a> with <a href="[_5]">[quant,_6,comment,comments]</a>.' => '記事が<a href="[_1]">[quant,_2,件,件]</a>、ページが<a href="[_3]">[quant,_4,件,件]</a>、コメントが<a href="[_5]">[quant,_6,件,件]</a>あります。',
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a>, <a href="[_3]">[quant,_4,page,pages]</a> with [quant,_5,comment,comments].' => '記事が<a href="[_1]">[quant,_2,件,件]</a>、ページが<a href="[_3]">[quant,_4,件,件]</a>、コメント[quant,_5,件,件]あります。',
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a>, [quant,_3,page,pages] with <a href="[_4]">[quant,_5,comment,comments]</a>.' => '記事が<a href="[_1]">[quant,_2,件,件]</a>、ページが[quant,_3,件,件]、コメントが<a href="[_4]">[quant,_5,件,件]</a>あります。',
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a>, [quant,_3,page,pages] with [quant,_4,comment,comments].' => '記事が<a href="[_1]">[quant,_2,件,件]</a>、ページが[quant,_3,件,件]、コメントが[quant,_4,件,件]あります。',
@@ -4776,7 +4769,7 @@ use vars qw( @ISA %Lexicon );
 	'Turn on OpenID for your Yahoo! Japan account now' => 'Yahoo! JAPANのOpenIDを取得してください。',
 
 ## tmpl/comment/error.tmpl
-	'Back (s)' => '', # Translate - New
+	'Back (s)' => '戻る (s)',
 
 ## tmpl/comment/login.tmpl
 	'Sign in to comment' => 'サインインしてください',
@@ -4943,7 +4936,5 @@ use vars qw( @ISA %Lexicon );
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'ウィザードで新しく構成ファイルを作るときは、現在の構成ファイルを別の場所に移動してこのページを更新してください。',
 
 );
-
-## New words: 1823
 
 1;

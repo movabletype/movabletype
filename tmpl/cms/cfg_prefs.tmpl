@@ -225,7 +225,7 @@ function setLicense() {
         <input type="text" name="site_url" id="site_url" value="<mt:var name="site_url" escape="html" default="$suggested_site_url">" class="text website-url-field mt-edit-field required" />
       </div>
     </mt:if>
-      <p class="alert-warning-inline icon-left icon-warning" id="site_url-warning" style="display: none"><__trans phrase="Warning: Changing the [_1] URL can result in breaking all the links in your blog." params="<mt:var name="object_label" capitalize="1">"></p>
+      <p class="alert-warning-inline icon-left icon-warning" id="site_url-warning" style="display: none"><__trans phrase="Warning: Changing the [_1] URL can result in breaking all the links in your [_1]." params="<mt:var name="object_label" capitalize="1">%%"></p>
     <mt:if name="is_blog">
       <div class="hint"><__trans phrase="The URL of your blog. Exclude the filename (i.e. index.html). End with '/'. Example: http://www.example.com/blog/"></div>
     <mt:else>
@@ -250,7 +250,7 @@ function setLicense() {
         <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
       </div>
     </mt:if>
-      <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none"><__trans phrase="Warning: Changing the [_1] root requires a complete publish of your site." params="<mt:var name="object_label" capitalize="1">"></p>
+      <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none"><__trans phrase="Warning: Changing the [_1] root requires a complete publish of your [_1]." params="<mt:var name="object_label" capitalize="1">"></p>
 
       <div class="hint relative-site_path-hint">
         <__trans phrase="The path where your index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog">
@@ -561,12 +561,12 @@ function setLicense() {
         "#site_path.required": '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
         "#site_path.path": '<__trans phrase="You must set a valid Local file Path." escape="singlequotes">',
         "#site_path_absolute.required": '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
-        "#site_path_absolute": '<__trans phrase="You must set a valid Loca file Path." escape="singlequotes">',
+        "#site_path_absolute": '<__trans phrase="You must set a valid Local file Path." escape="singlequotes">',
         "#archive_url_path.required": '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
         "#archive_url_path": '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
-        "#archive_path.required": '<__trans phrase="You must set Local Archive Path." escape="singlequotes">',
+        "#archive_path.required": '<__trans phrase="You must set your Local Archive Path." escape="singlequotes">',
         "#archive_path": '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
-        "#archive_path_absolute.required": '<__trans phrase="You must set Local Archive Path." escape="singlequotes">',
+        "#archive_path_absolute.required": '<__trans phrase="You must set your Local Archive Path." escape="singlequotes">',
         "#archive_path_absolute": '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
     });
 
