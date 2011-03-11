@@ -15,37 +15,6 @@
    class="button mt-delete-trachbacks">
   <__trans phrase="Delete">
 </button>
-<mt:unless name="filter_spam">
-  <mt:if name="state_editable">
-<button
-   onclick="doItemsAreJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack" escape="js">', '<__trans phrase="TrackBacks" escape="js">'); return false;"
-   accesskey="j"
-   title="<__trans phrase="Report selected [_1] as Spam (j)" params="<$mt:var name="object_label_plural"$>">"
-   class="button">
-  <__trans phrase="Spam">
-</button>
-  </mt:if>
-<mt:else>
-  <mt:if name="state_editable">
-<button
-   onclick="doItemsAreNotJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack" escape="js">', '<__trans phrase="TrackBacks" escape="js">'); return false;"
-   accesskey="j"
-   title="<__trans phrase="Report selected [_1] as Not Spam and Publish (j)" params="<$mt:var name="object_label_plural"$>">"
-   class="button">
-  <__trans phrase="Not Spam">
-</button>
-  </mt:if>
-  <mt:if name="can_empty_junk">
-<button
-   mt:command="submit"
-   mt:mode="empty_junk"
-   mt:confirm-msg="<__trans phrase="Are you sure you want to remove all TrackBacks reported as spam?">"
-   title="<__trans phrase="Deletes all [_1] reported as Spam" params="<$mt:var name="object_label_plural"$>">"
-   class="button">
-  <__trans phrase="Empty">
-</button>
-  </mt:if>
-</mt:unless>
 </mt:setvarblock>
 
 <mtapp:listing>
