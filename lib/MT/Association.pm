@@ -271,7 +271,7 @@ sub list_props {
                 my ( $prop, $app, $val ) = @_;
                 my $author = MT->model('author')->load($val)
                     or return $prop->error(
-                    MT->translate('Invalid parameter.') );
+                    MT->translate('Invalid parameter') );
                 my $label = MT->translate( 'Permissions for [_1]',
                     $author->nickname, );
                 return $label;
@@ -280,7 +280,7 @@ sub list_props {
                 my ( $prop, $app, $val ) = @_;
                 my $author = MT->model('author')->load($val)
                     or return $prop->error(
-                    MT->translate('Invalid parameter.') );
+                    MT->translate('Invalid parameter') );
                 my $label = MT->translate( 'Permissions for [_1]',
                     $author->nickname, );
                 return {
