@@ -81,7 +81,7 @@ sub is_not_junk {
 sub list_props {
     return {
         comment => {
-            label   => 'Comment Text',
+            label   => 'Comment',
             order   => 100,
             display => 'force',
             html    => sub {
