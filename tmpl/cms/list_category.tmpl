@@ -648,7 +648,7 @@ function fixZeroStateMessage () {
     jQuery('<p id="zero-state-message">'+message+'</p>').appendTo('#root');
   }
   else
-    jQuery('#zero-state-message').hide();
+    jQuery('#zero-state-message').remove();
 }
 
 function renderNestedList() {
