@@ -750,6 +750,9 @@ sub list {
     my @list_components = grep {
                $_->registry( list_properties => $type )
             || $_->registry( listing_screens => $type )
+            || $_->registry( list_actions    => $type )
+            || $_->registry( content_actions => $type )
+            || $_->registry( system_filters  => $type )
     } MT::Component->select;
 
     my @list_headers;
