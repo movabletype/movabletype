@@ -479,8 +479,9 @@ sub core_content_actions {
                 label       => 'Delete all Spam trackbacks',
                 return_args => 1,
                 order       => 100,
-                confirm_msg =>
-                    'Are you sure you want to remove all trackbacks reported as spam?',
+                confirm_msg => sub {
+                    $app->translate('Are you sure you want to remove all trackbacks reported as spam?');
+                },
                 permit_action => {
                     include_all => 1,
                     permit_action =>
@@ -495,8 +496,9 @@ sub core_content_actions {
                 label       => 'Delete all Spam comments',
                 return_args => 1,
                 order       => 100,
-                confirm_msg =>
-                    'Are you sure you want to remove all comments reported as spam?',
+                confirm_msg => sub {
+                    MT->translate('Are you sure you want to remove all comments reported as spam?');
+                },
                 permit_action => {
                     include_all => 1,
                     permit_action =>
@@ -548,8 +550,9 @@ sub core_content_actions {
                 label => 'Clear Activity Log',
                 mode  => 'reset_log',
                 order => 100,
-                confirm_msg =>
-                    'Are you sure you want to reset the activity log?',
+                confirm_msg => sub {
+                    MT->translate('Are you sure you want to reset the activity log?');
+                },
                 permit_action => {
                     permit_action => 'reset_blog_log',
                     include_all   => 1,

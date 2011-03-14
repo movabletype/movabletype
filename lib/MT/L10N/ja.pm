@@ -704,6 +704,7 @@ use vars qw( @ISA %Lexicon );
 	'Asset' => 'アイテム',
 	'Website' => 'ウェブサイト',
 	'Profile' => 'ユーザー情報',
+	'Are you sure you want to remove all trackbacks reported as spam?' => 'スパムとして報告したすべてのトラックバックを削除しますか?',
 
 ## lib/MT/App/Comments.pm
 	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => '\'[_1]\' (ID:[_2])にブログ\'[_3]\'(ID:[_2])へのコメント権限を与えられませんでした。コメント権限を与えるためのロールが見つかりません。',
@@ -1650,6 +1651,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] [_2] futere' => '[_2]が未来の日付である[_1]',
 	'[_1] [_2] past' => '[_2]が過去の日付である[_1]',
 	'<mt:var name="[_1]"> [_2] [_3] [_4]' => '<mt:var name="[_1]"> [_2] [_4] [_3]',
+	'Invalid parameter.' => '不正なパラメータです。',
 	'[_1] [_3] [_2]' => '[_1] [_3] [_2]',
 	'No Label' => '名前がありません。',
 	'*User deleted*' => '*削除されました*',
@@ -1804,7 +1806,6 @@ use vars qw( @ISA %Lexicon );
 	'Publish Date' => '公開日',
 	'Link' => 'リンク',
 	'Primary Category' => 'メインカテゴリ',
-	'-' => '-',
 	'__PING_COUNT' => 'トラックバック数',
 	'Published' => '公開',
 	'Reviewing' => '承認待ち',
@@ -4265,7 +4266,6 @@ use vars qw( @ISA %Lexicon );
 	'Alert' => '警告',
 
 ## tmpl/cms/list_common.tmpl
-	'<mt:var name="confirm_msg">' => '<mt:var name="confirm_msg">',
 	'Show' => '表示件数',
 	'25 rows' => '25件',
 	'50 rows' => '50件',

@@ -304,7 +304,7 @@ sub list_props {
         blog_name => {
             base => '__common.blog_name',
             label =>
-                sub { MT->app->blog ? 'Blog Name' : 'Website/Blog Name' },
+                sub { MT->app->blog ? MT->translate('Blog Name') : MT->translate('Website/Blog Name') },
             display   => 'default',
             site_name => sub { MT->app->blog ? 0 : 1 },
             order     => 400,
