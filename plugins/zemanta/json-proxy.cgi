@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 # Zemanta plugin for Movable Type
-# Created by Tomaz Solc <tomaz@zemanta.com> Copyright (c) 2009 Zemanta Ltd.
+# Created by Tomaz Solc <tomaz@zemanta.com> Copyright (c) 2011 Zemanta Ltd.
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2, as

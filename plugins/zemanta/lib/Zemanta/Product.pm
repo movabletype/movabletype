@@ -1,6 +1,6 @@
 # Zemanta plugin for Movable Type
-# Created by Tomaz Solc <tomaz@zemanta.com> Copyright (c) 2009 Zemanta Ltd.
-#
+# Created by Tomaz Solc <tomaz@zemanta.com> Copyright (c) 2011 Zemanta Ltd.
+# 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2, as
 # published by the Free Software Foundation
@@ -22,23 +22,23 @@ use strict;
 use MT::Log;
 
 sub new {
-    my $class = shift;
+	my $class = shift;
 
-    my $product = {};
-    bless $product, $class;
+	my $product = {};
+	bless $product, $class;
 
-    return $product;
+	return $product;
 }
 
 sub log_error {
-    my $product = shift;
-    my ( $msg, $level ) = @_;
-    chomp($msg);
+	my $product = shift;
+	my ($msg, $level) = @_;
+	chomp($msg);
 
-    my $log = MT::Log->new();
-    $log->message($msg);
-    $log->level( $level or 4 );
-    $log->save or die $log->errstr;
+	my $log = MT::Log->new();
+	$log->message( $msg );
+	$log->level( $level or 4 );
+	$log->save or die $log->errstr;
 }
 
 sub set_automatic_apikey {

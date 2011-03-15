@@ -1,5 +1,5 @@
 # Zemanta plugin for Movable Type
-# Created by Tomaz Solc <tomaz@zemanta.com> Copyright (c) 2009 Zemanta Ltd.
+# Created by Tomaz Solc <tomaz@zemanta.com> Copyright (c) 2011 Zemanta Ltd.
 # 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2, as
@@ -40,7 +40,7 @@ unless( $product ) {
 
 # Versions ending with "c" are shipped in standalone packages on 
 # movabletype.org (the suffix is added by the build.sh script)
-our $VERSION = '0.8';
+our $VERSION = '0.83';
 
 my $DESCRIPTION = <<END
 <p>Zemanta is a powerful authoring assistance tool that will save you time, make your posts more compelling, boost your discoverability by search engines, increase your content's visibility among syndicators, and inspire you to write more informed posts.</p>
@@ -240,10 +240,11 @@ sub edit_entry {
 	my $checked = $param->{disp_prefs_show_zemanta} ? ' checked="checked"' : '';
 
 	my $disp_prefs_html = $disp_prefs_node->innerHTML();
+	my $onclick = $MT::VERSION < 5.1 ? 'onclick="setCustomFields(); return true"' : '';
 	$disp_prefs_html =~ s#</ul>#<li><label><input 	type="checkbox" name="custom_prefs" 
 							id="custom-prefs-zemanta"
 							value="zemanta"
-							onclick="setCustomFields(); return true"
+							$onclick
 							class="cb"
 							$checked/> Zemanta</label></li></ul>#;
 	$disp_prefs_node->innerHTML($disp_prefs_html);
