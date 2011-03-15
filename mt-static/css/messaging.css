@@ -9,11 +9,16 @@
     border-radius: 3px;
     -moz-border-radius: 3px;
 }
+.msg.full {
+    margin: 0;
+    border-radius: 0;
+    -moz-border-radius: 0;
+}
 .msg-success { 
     background-color: #cee4ae;
 }
 .msg-alert, 
-.msg.warning { 
+.msg-warning { 
     background-color: #fef263;
 }
 .msg-error { 
@@ -94,6 +99,7 @@ p.zero-state {
     border-radius: 3px;
     -moz-border-radius: 3px;    
 }
+
 /* - Debug Panel Messages */
 .debug-panel { 
     position: absolute;
