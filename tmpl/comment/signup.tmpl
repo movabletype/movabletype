@@ -14,6 +14,7 @@
 <mtapp:setting
    id="nickname"
    label="<__trans phrase="Display Name">"
+   label_class="top-label"
    required="1"
    hint="<__trans phrase="The name appears on your comment.">">
   <input type="text" name="nickname" id="nickname" class="text full" value="<mt:var name="nickname" escape="html">" />
@@ -21,6 +22,7 @@
 <mtapp:setting
    id="email"
    label="<__trans phrase="Email Address">"
+   label_class="top-label"
    required="1"
    hint="<__trans phrase="Your email address.">">
   <input type="text" name="email" id="email" class="text full" value="<mt:var name="email" escape="html">" />
@@ -37,6 +39,7 @@
   <mtapp:setting
      id="username"
      label="<__trans phrase="Username">"
+     label_class="top-label"
      required="1"
      hint="<__trans phrase="Your login name.">">
     <input type="text" name="username" id="username" class="text full" value="<mt:var name="username" escape="html">" />
@@ -47,6 +50,7 @@
   <mtapp:setting
      id="password"
      label="<__trans phrase="Initial Password">"
+     label_class="top-label"
      required="1"
      hint="<__trans phrase="Select a password for yourself.">">
     <input type="password" name="password" id="password" class="text password" value="" />
@@ -54,6 +58,7 @@
   <mtapp:setting
      id="pass_verify"
      label="<__trans phrase="Password Confirm">"
+     label_class="top-label"
      required="1"
      hint="<__trans phrase="Repeat the password for confirmation.">">
     <input type="password" name="pass_verify" id="pass_verify" class="text password" value="" />
@@ -76,6 +81,7 @@
   <mtapp:setting
      id="external_username"
      label="<__trans phrase="Username">"
+     label_class="top-label"
      required="1"
      hint="<__trans phrase="Your login name.">">
     <input type="text" name="username" id="username" class="text full" value="<mt:var name="username" escape="html">" />
@@ -93,6 +99,7 @@
   <mtapp:setting
      id="$field_id"
      label="$name"
+     label_class="top-label"
      hint="$description"
      shown="$show_field"
      show_hint="$show_hint"

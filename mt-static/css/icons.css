@@ -3,9 +3,9 @@
 
 .icon16 {
     display: inline-block;
-    width: 1px;
-    height: 16px;
-    padding-left: 15px;
+    width: 16px;
+    height: 0px;
+    padding-top: 16px;
     overflow: hidden;
     background-color: transparent;
     background-repeat: no-repeat;

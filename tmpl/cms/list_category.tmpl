@@ -50,7 +50,6 @@
 <div id="dialog-change-basename" class="dialog" style="display: none;">
   <div class="dialog-msg-block"></div>
 <mt:if name="object_type" eq="category">
-  <p><__trans phrase="Can't move to the level where the exists same label. Please enter new label which is unique in this level."></p>
   <mtapp:setting
      id="new-label"
      label="<__trans phrase="Label">"
@@ -58,10 +57,9 @@
     <input type="text" id="new-label" class="text full required">
   </mtapp:setting>
 </mt:if>
-  <p><__trans phrase="Can't move to the level where the exists same basename. Please enter new basename which is unique in this level."></p>
   <mtapp:setting
      id="new-basename"
-     label="<__trans phrase="Basename">"
+     label="<__trans phrase="_CATEGORY_BASENAME">"
      label_class="top-label">
     <input type="text" id="new-basename" class="text full required">
   </mtapp:setting>
@@ -214,19 +212,19 @@ function initItem($item) {
 
 <mt:if name="object_type" eq="category">
       jQuery.mtValidateRules['.label'] = function ($e) {
-        if ( !$e.val().length ) return this.raise('<__trans phrase="Label is requried">');
-        return hasDupe(parent, id, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level">') : true;
+        if ( !$e.val().length ) return this.raise('<__trans phrase="Label is required.">');
+        return hasDupe(parent, id, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level.">') : true;
       };
 <mt:else>
       jQuery.mtValidateRules['.label'] = function ($e) {
-        if ( !$e.val().length ) return this.raise('<__trans phrase="Label is required">');
+        if ( !$e.val().length ) return this.raise('<__trans phrase="Label is required.">');
         return true;
       };
 </mt:if>
       jQuery.mtValidateRules['.basename'] = function ($e) {
-        if ( !$e.val().length ) return this.raise('<__trans phrase="Basename is required">');
-        if ( $e.val().match(/[^\w\-]/) ) return this.raise('<__trans phrase="Invalid Basename">');
-        return hasDupe(parent, id, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level">') : true;
+        if ( !$e.val().length ) return this.raise('<__trans phrase="Basename is required.">');
+        if ( $e.val().match(/[^\w\-]/) ) return this.raise('<__trans phrase="Invalid Basename.">');
+        return hasDupe(parent, id, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level.">') : true;
       };
 
       jQuery('<button type="submit" class="rename button"><__trans phrase="Rename"></button>')
@@ -260,7 +258,7 @@ function initItem($item) {
       return false;
     });
 
-  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add child item"></span>')
+  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add child [_1]" params="<mt:var name="object_label">"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       jQuery('.add-form').remove();
@@ -466,11 +464,11 @@ function initMoving() {
         initItem($item);
 <mt:if name="object_type" eq="category">
         jQuery.mtValidateRules['#new-label'] = function ($e) {
-          return hasDupe(place, id, $e.val()) ? this.raise('Duplicated label on this level') : true;
+          return hasDupe(place, id, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level.">') : true;
         };
 </mt:if>
         jQuery.mtValidateRules['#new-basename'] = function ($e) {
-          return hasDupe(place, id, null, $e.val()) ? this.raise('Duplicated basename on this level') : true;
+          return hasDupe(place, id, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level.">') : true;
         };
         jQuery('#new-label').val($item.find('.item-label').text())
         jQuery('#new-basename').val($item.find('.item-basename-text').text())
@@ -509,7 +507,7 @@ function initMoving() {
             jQuery('#dialog-change-basename').dialog('close');
           });
         jQuery('#dialog-change-basename').dialog({
-          title: 'Alert',
+          title: trans('Alert'),
           dialogClass: 'alert',
           autoOpen: true,
           width: 450,

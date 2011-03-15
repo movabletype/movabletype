@@ -183,7 +183,7 @@ sub list_props {
             },
         },
         blog_name => {
-            label   => 'Site',
+            label   => 'Website/Blog Name',
             base    => '__virtual.string',
             display => 'default',
             order   => 300,
@@ -256,7 +256,7 @@ sub list_props {
                 my ( $prop, $app, $val ) = @_;
                 my $role = MT->model('role')->load($val)
                     or return $prop->error(
-                    MT->translate('Invalid parameter.') );
+                    MT->translate('Invalid parameter') );
                 return MT->translate( 'Permissions with role: [_1]',
                     $role->name, );
             },
@@ -271,7 +271,7 @@ sub list_props {
                 my ( $prop, $app, $val ) = @_;
                 my $author = MT->model('author')->load($val)
                     or return $prop->error(
-                    MT->translate('Invalid parameter.') );
+                    MT->translate('Invalid parameter') );
                 my $label = MT->translate( 'Permissions for [_1]',
                     $author->nickname, );
                 return $label;
@@ -280,7 +280,7 @@ sub list_props {
                 my ( $prop, $app, $val ) = @_;
                 my $author = MT->model('author')->load($val)
                     or return $prop->error(
-                    MT->translate('Invalid parameter.') );
+                    MT->translate('Invalid parameter') );
                 my $label = MT->translate( 'Permissions for [_1]',
                     $author->nickname, );
                 return {

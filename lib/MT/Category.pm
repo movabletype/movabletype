@@ -61,7 +61,7 @@ sub list_props {
         },
         entry_count => {
             base      => '__virtual.integer',
-            label     => 'Entry count',
+            label     => 'Entries',
             bulk_html => sub {
                 my ( $prop, $objs, $app ) = @_;
                 my $count_iter = MT->model('placement')->count_group_by(
@@ -74,23 +74,27 @@ sub list_props {
                 while ( my ( $count, $cat_id ) = $count_iter->() ) {
                     $count{$cat_id} = $count;
                 }
+                my %labels = (
+                    'category' => {
+                        'singular' => 'entry',
+                        'plural'   => 'entries',
+                    },
+                    'folder' => {
+                        'singular' => 'page',
+                        'plural'   => 'pages',
+                        ,
+                    },
+                );
                 my @out;
                 for my $obj (@$objs) {
                     my $obj_class = $obj->class;
                     my $contents_type
                         = $obj_class eq 'category' ? 'entry' : 'page';
-                    my $content_class = MT->model($contents_type);
-                    my $action = 'access_to_' . $contents_type . '_list';
-                    my $count = $count{ $obj->id } || 0;
-                    my $suffix;
-                    if ( $count == 1 ) {
-                        $suffix
-                            = MT->translate( lc $content_class->class_label );
-                    }
-                    else {
-                        $suffix = MT->translate(
-                            lc $content_class->class_label_plural );
-                    }
+                    my $action   = 'access_to_' . $contents_type . '_list';
+                    my $count    = $count{ $obj->id } || 0;
+                    my $singular = $labels{$obj_class}{singular};
+                    my $plural   = $labels{$obj_class}{plural};
+                    my $negative = "No $plural";
 
                     if ( $app->can_do($action) ) {
                         my $uri = $app->uri(
@@ -106,16 +110,16 @@ sub list_props {
                                 blog_id    => $obj->blog_id,
                             },
                         );
-                        push @out,
-                            MT->translate(
-                            '<a href="[_1]">[_2]</a> [_3]', $uri,
-                            $count ? $count : 'No', $suffix,
-                            );
+                        push @out, "<a href=\"$uri\">"
+                            . MT->translate(
+                            "[quant,_1,$singular,$plural,$negative]", $count )
+                            . "</a>";
                     }
                     else {
                         push @out,
-                            MT->translate( '[_1] [_2]',
-                            $count ? $count : 'No', $suffix, );
+                            MT->translate(
+                            "[quant,_1,$singular,$plural,$negative]",
+                            $count );
                     }
                 }
                 return @out;

@@ -17,7 +17,7 @@
     <mt:setvarblock name="content_header">
     <ul id="content-actions" class="action-link-list">
     <mt:loop name-"content_actions">
-      <li><a href="<mt:var name="url">" class="icon-left<mt:if name"class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"<mt:if name="id">id=<mt:var name="id"></mt:if><mt:if name="confirm_msg"> onclick="return confirm('<__trans phrase="<mt:var name="confirm_msg">">')"</mt:if>><mt:var name="label"></a></li>
+      <li><a href="<mt:var name="url">" class="icon-left<mt:if name"class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"<mt:if name="id">id=<mt:var name="id"></mt:if><mt:if name="confirm_msg"> onclick="return confirm('<mt:var name="confirm_msg" escape="js">')"</mt:if>><mt:var name="label"></a></li>
     </mt:loop>
     </ul>
     </mt:setvarblock>
@@ -883,7 +883,7 @@ function renderList(mode, columns, values, limit, page ) {
       jQuery('#resultstats').remove();
       var n = columnLength();
       if (count == 0) {
-        var message = trans('No [_1] could be found.', '<mt:var name="object_label" lower_case="1" escape="js">');
+        var message = trans('No [_1] could be found.', '<mt:if name="zero_state"><mt:var name="zero_state" escape="js"><mt:else><mt:var name="object_label" lower_case="1" escape="js"></mt:if>');
         jQuery('<td class="col fullwidth-row" colspan="'+n+'">'+message+'</tr>').appendTo('table.listing-table tbody');
       }
       renderPagination(count, limit, page, last, total);

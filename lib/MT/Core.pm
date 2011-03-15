@@ -592,8 +592,15 @@ BEGIN {
                         my ($selected) = grep { $_->{value} eq $val } @$opts
                             or return $prop->error(
                             MT->translate('Invalid parameter.') );
-                        return MT->translate( '[_1] is [_2]', $prop->label,
-                            $selected->{label} );
+                        return MT->translate(
+                            '[_1] [_3] [_2]',
+                            $prop->label,
+                            $selected->{label},
+                            (   defined $prop->verb
+                                ? $prop->verb
+                                : $app->translate('__SELECT_FILTER_VERB')
+                            )
+                        );
                     },
                     args_via_param => sub {
                         my $prop = shift;
@@ -1156,7 +1163,7 @@ BEGIN {
                     if ( $app->blog ) {
                         return 1
                             if $app->user->can_do( 'get_entry_feed',
-                                    at_least_one => 1 );
+                            at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1214,7 +1221,7 @@ BEGIN {
                     if ( $app->blog ) {
                         return 1
                             if $app->user->can_do( 'get_page_feed',
-                                    at_least_one => 1 );
+                            at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1295,7 +1302,7 @@ BEGIN {
                     if ( $app->blog ) {
                         return 1
                             if $app->user->can_do( 'get_system_feed',
-                                    at_least_one => 1 );
+                            at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1357,7 +1364,7 @@ BEGIN {
                     if ( $app->blog ) {
                         return 1
                             if $app->user->can_do( 'get_comment_feed',
-                                    at_least_one => 1 );
+                            at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1387,7 +1394,7 @@ BEGIN {
                     if ( $app->blog ) {
                         return 1
                             if $app->user->can_do( 'get_trackback_feed',
-                                    at_least_one => 1 );
+                            at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1456,6 +1463,7 @@ BEGIN {
                 object_label_plural => 'Permissions',
                 object_type         => 'association',
                 search_type         => 'author',
+
                 #permission => 'access_to_permission_list',
                 default_sort_key => 'created_on',
                 primary          => [ 'user_name', 'role_name' ],
@@ -1473,6 +1481,7 @@ BEGIN {
             banlist => {
                 object_label        => 'IP address',
                 object_label_plural => 'IP addresses',
+                zero_state          => 'IP address',
                 condition           => sub {
                     my $app = shift;
                     return 1 if MT->config->ShowIPInformation;

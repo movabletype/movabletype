@@ -78,7 +78,7 @@ my $cgi = new CGI;
 my $view = $cgi->param("view");
 my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
-$version ||= '5.1b2';
+$version ||= '5.1b3';
 
 my ($mt, $LH);
 my $lang = $cgi->param("language") || $cgi->param("__lang");
@@ -428,9 +428,9 @@ my @CORE_OPT = (
 
     [ 'XML::SAX', 0, 0, translate('XML::SAX and its dependencies are required in order to restore a backup created in a backup/restore operation.')],
 
-    [ 'Digest::SHA1', 0, 0, translate('Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.')],
+    [ 'Digest::SHA1', 0, 0, translate('Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.')],
     [ 'Mail::Sendmail', 0, 0, translate('Mail::Sendmail is required in order to send mail via an SMTP Server.')],
-    [ 'Safe', 0, 0, translate('This module is used in a test attribute for the MT:If conditional tag.')],
+    [ 'Safe', 0, 0, translate('This module is used in a test attribute for the MTIf conditional tag.')],
     [ 'Digest::MD5', 0, 0, translate('This module is used by the Markdown text filter.')],
     [ 'Text::Balanced', 0, 0, translate('This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.') ],
     [ 'XML::Parser', 0, 0, translate('This module required for action streams.')],

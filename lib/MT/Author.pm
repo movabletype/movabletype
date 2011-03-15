@@ -135,7 +135,7 @@ sub list_props {
             bulk_html => \&_nickname_bulk_html,
         },
         entry_count => {
-            label       => 'Entries',
+            label       => '__ENTRY_COUNT',
             display     => 'default',
             order       => 300,
             base        => '__virtual.object_count',
@@ -146,7 +146,7 @@ sub list_props {
         },
         comment_count => {
             base        => 'author.entry_count',
-            label       => 'Comments',
+            label       => '__COMMENT_COUNT',
             display     => 'default',
             order       => 400,
             count_class => 'comment',
@@ -177,7 +177,7 @@ sub list_props {
         status => {
             base    => '__virtual.single_select',
             display => 'none',
-            label   => 'Status',
+            label   => '__AUTHOR_STATUS',
             col     => 'status',
             terms   => sub {
                 my $prop = shift;

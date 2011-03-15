@@ -304,7 +304,7 @@ sub list_props {
         blog_name => {
             base => '__common.blog_name',
             label =>
-                sub { MT->app->blog ? 'Blog Name' : 'Website/Blog Name' },
+                sub { MT->app->blog ? MT->translate('Blog Name') : MT->translate('Website/Blog Name') },
             display   => 'default',
             site_name => sub { MT->app->blog ? 0 : 1 },
             order     => 400,
@@ -462,7 +462,7 @@ sub list_props {
         comment_count => {
             auto      => 1,
             display   => 'default',
-            label     => 'Comments',
+            label     => '__COMMENT_COUNT',
             order     => 800,
             html_link => sub {
                 my $prop = shift;
@@ -482,7 +482,7 @@ sub list_props {
         ping_count => {
             auto      => 1,
             display   => 'optional',
-            label     => 'Trackbacks',
+            label     => '__PING_COUNT',
             order     => 900,
             html_link => sub {
                 my $prop = shift;

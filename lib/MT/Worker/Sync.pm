@@ -98,7 +98,7 @@ sub work {
                 # TBD: notification to administrator
                 # At the very least, log to MT activity log.
                 my $errmsg
-                    = MT->translate("Error during rsync of files in $file:\n")
+                    = MT->translate("Error during rsync of files in [_1]:\n", $file)
                     . "Command (exit code $res): $cmd";
                 MT::TheSchwartz->debug($errmsg);
                 require MT::Log;

@@ -174,6 +174,13 @@ the address you provided is correct and belongs to you.',
     '_THEME_AUTHOR' => 'Author',
     '_FILTER_FUTURE' => 'Future',
     '_LOCALE_CALENDAR_HEADER_' => "'S', 'M', 'T', 'W', 'T', 'F', 'S'",
+    '__AUTHOR_STATUS' => 'Status',
+    '__BLOG_COUNT' => 'Blogs',
+    '__ENTRY_COUNT' => 'Entries',
+    '__PAGE_COUNT' => 'Pages',
+    '__ASSET_COUNT' => 'Assets',
+    '__COMMENT_COUNT' => 'Comments',
+    '__PING_COUNT' => 'Trackbacks',
 );
 
 1;
