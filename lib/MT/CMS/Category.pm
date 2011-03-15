@@ -590,6 +590,15 @@ sub move_category {
         );
 }
 
+sub template_param_list {
+    my ( $cb, $app, $param, $tmpl ) = @_;
+    my $blog = $app->blog or return;
+    $param->{basename_limit} = $blog->basename_limit || 30; #FIXME: hardcoded.
+    my $type = $app->param('_type');
+    my $class = MT->model($type);
+    $param->{basename_prefix} = $class->basename_prefix;
+}
+
 sub pre_load_filtered_list {
     my ( $cb, $app, $filter, $opts, $cols ) = @_;
     delete $opts->{limit};

@@ -320,6 +320,32 @@ function hasDupe( parent, id, label, basename ) {
   return dupe;
 }
 
+function makeBasename( parent, id, label ) {
+  var limit = <mt:var name="basename_limit" />;
+  var basename = dirify( label ).substr( 0, limit );
+  var prefix
+  if ( !basename.length ) basename = '<mt:var name="basename_prefix">';
+  var $parent = jQuery('#' + parent);
+  $parent.attr('class').match(/lv-(\w+)/);
+  var parent_level = parseInt(RegExp.$1);
+  if ( isNaN(parent_level) ) parent_level = -1;
+  var level = parent_level + 1;
+
+  var max = -1;
+  var re = new RegExp( '^' + basename + '(<mt:unless name="config.CategoryNameNodash">\-</mt:unless>([1-9][0-9]*))?$' );
+  jQuery('.' + parent + '.lv-' + level).each( function () {
+    if ( id && id == jQuery(this).attr('id') ) return true;
+    var sibling_basename = jQuery(this).find('.item-basename-text').text();
+    if ( sibling_basename.match(re) ) {
+      var num = parseInt(RegExp.$1) || 0;
+      if ( max < num ) max = num;
+    }
+    return true;
+  });
+  max++;
+  return max > 0 ? basename <mt:unless name="config.CategoryNameNodash">+ '-' </mt:unless>+ max : basename;
+}
+
 function addItem(parent, label) {
   if (hasDupe( parent, 0, label) ) {
     jQuery('#msg-block').append('<div class="msg msg-error">'+trans("[_1] '[_2]' already exists.", '<mt:var name="object_label">', label)+'</div>');
@@ -327,7 +353,8 @@ function addItem(parent, label) {
   }
 
   var id = 'x'+dummy;
-  var $item = createItem(id, parent, label, '', '');
+  var basename = makeBasename(parent, id, label);
+  var $item = createItem(id, parent, label, basename, '');
   initItem($item);
   $item.insertAfter(jQuery('#'+parent));
 

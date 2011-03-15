@@ -2532,12 +2532,16 @@ sub init_core_callbacks {
             $pkg . 'post_save.category'   => "${pfx}Category::post_save",
             $pkg . 'save_filter.category' => "${pfx}Category::save_filter",
             $pkg . 'post_delete.category' => "${pfx}Category::post_delete",
+            'list_template_param.category' =>
+                "${pfx}Category::template_param_list",
             $pkg
                 . 'pre_load_filtered_list.category' =>
                 "${pfx}Category::pre_load_filtered_list",
             $pkg
                 . 'filtered_list_param.category' =>
                 "${pfx}Category::filtered_list_param",
+            'list_template_param.folder' =>
+                "${pfx}Category::template_param_list",
             $pkg
                 . 'pre_load_filtered_list.folder' =>
                 "${pfx}Category::pre_load_filtered_list",
