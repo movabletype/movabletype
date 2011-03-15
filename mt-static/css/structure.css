@@ -1954,35 +1954,35 @@ ul#asset-list .asset-type-video {
     -moz-border-radius: 5px;
 }
 #template-options-header {
-    padding: 10px 0;
+    overflow: hidden;
 }
-#template-options.active #template-options-header {
+.active #template-options-header {
     margin-bottom: 10px;
 }
-#template-options #template-options-header h3 {
+.template-options-toggle {
+    float: left;
+    height: 30xp;
+    line-height: 30px;
     margin: 0;
-    text-shadow: none;
 }
-#template-options #template-options-header h3 a {
+.template-options-toggle a {
     background: url(../images/arrow/spinner-right.png) no-repeat left center;
-    color: #7B7C7D;
-    text-decoration: none;
-}
-#template-options #template-options-header h3 a:hover { 
-    text-decoration: underline;
-}
-#template-options.active #template-options-header h3 a {
-    background-image: url(../images/arrow/spinner-bottom.png);
-}
-#template-options .template-options-summary {
     color: #2b2b2b;
-    text-align: right;
 }
-#template-options.active .template-options-summary, 
-#template-options #template-options-content {
+.active .template-options-toggle a {
+     background-image: url(../images/arrow/spinner-bottom.png);
+}
+.template-options-summary {
+    float: right;
+    height: 30xp;
+    line-height: 30px;
+    color: #2b2b2b;
+}
+.active .template-options-summary, 
+#template-options-content {
     display: none;
 }
-#template-options.active #template-options-content {
+.active #template-options-content {
     display: block;
 }
 
@@ -2128,7 +2128,6 @@ ul#asset-list .asset-type-video {
     height: 100%;
     border: 0;
 }
-
 
 /* - Settings */
 #system-check iframe {
