@@ -22,9 +22,7 @@
   <mt:setvarblock name="table_header">
     <tr>
       <th class="col head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-    <mt:unless name="tab_junk">
       <th class="col head status si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
-    </mt:unless>
     <mt:unless name="view_expanded">
       <th class="col head comment primary"><span class="col-label"><__trans phrase="Comment"></span></th>
     </mt:unless>
@@ -66,11 +64,9 @@
         &nbsp;
       </mt:if>
       </td>
-    <mt:unless name="tab_junk">
       <td class="col si <mt:if name="visible">status-publish<mt:elseif name="junk_status" eq="-1">status-spam<mt:else>status-pending</mt:if>">
         <img src="<mt:var name="static_uri">images/spacer.gif" alt="" class="status-icon" width="9" height="9" />
       </td>
-    </mt:unless>
       <td class="col comment"<mt:if name="view_expanded"> colspan="<mt:unless name="is_blog"><mt:if name="show_ip_info">5<mt:else>4</mt:if><mt:else><mt:if name="show_ip_info">4<mt:else>3</mt:if></mt:unless>"<mt:else><mt:if name="mode_view_commenter"> colspan="2"</mt:if><mt:if name="mode_view_entry"> colspan="2"</mt:if></mt:if>>
       <mt:if name="view_expanded">
         <mt:var name="comment_long" escape="html">
@@ -104,9 +100,7 @@
     </tr>
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave" <mt:if name="visible"> onmouseover="show('replyto_<mt:var name="id" escape="js">');" onmouseout="hide('replyto_<mt:var name="id" escape="js">');"</mt:if>>
       <td class="col">&nbsp;</td>
-    <mt:unless name="tab_junk">
       <td class="col">&nbsp;</td>
-    </mt:unless>
   </mt:if>
     <mt:unless name="mode_view_commenter">
       <td class="col commenter status-<mt:if name="commenter_approved">trusted<mt:else><mt:if name="commenter_banned">banned<mt:else>authenticated</mt:if></mt:if>">
