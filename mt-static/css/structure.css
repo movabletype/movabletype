@@ -1964,6 +1964,7 @@ ul#asset-list .asset-type-video {
     height: 30xp;
     line-height: 30px;
     margin: 0;
+    font-weight: bold;
 }
 .template-options-toggle a {
     background: url(../images/arrow/spinner-right.png) no-repeat left center;
@@ -1976,7 +1977,8 @@ ul#asset-list .asset-type-video {
     float: right;
     height: 30xp;
     line-height: 30px;
-    color: #2b2b2b;
+    color: #7b7c7d;
+    font-size: 90%;
 }
 .active .template-options-summary, 
 #template-options-content {
