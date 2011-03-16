@@ -598,9 +598,11 @@ function toggleCache(id) {
         <a href="javascript:void(0);" class="icon-left" onclick="return toggleActive('template-options');"><__trans phrase="Template Options"></a>
       </div>
       <div class="template-options-summary">
-      <mt:if name="has_outfile">
+      <mt:unless name="new_object">
+        <mt:if name="has_outfile">
         <__trans phrase="Output file: <strong>[_1]</strong>" params="<mt:var name="outfile" escape="html" escape="html">">
-      </mt:if>
+        </mt:if>
+      </mt:unless>
       <mt:if name="enabled_archive_types">
         <__trans phrase="Enabled Mappings: [_1]" params="<mt:var name="enabled_archive_types">">
       </mt:if>
