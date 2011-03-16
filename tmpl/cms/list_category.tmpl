@@ -174,6 +174,29 @@ function handleMessages( data ) {
   return true;
 }
 
+function fixInteractions( options ) {
+  var defaults = {
+    sortable: true,
+    closeInlineForms: true,
+  };
+  var opts = jQuery.extend(defaults, options);
+  if ( opts.closeInlineForms ) {
+    jQuery('div.edit-form button.cancel').click();
+    jQuery('div.add-form button.cancel').click();      
+  }
+
+  if ( opts.sortable ) {
+    jQuery('.sort-tab').show();
+  }
+  else {
+    jQuery('.sort-tab').hide();
+  }
+}
+
+jQuery('div#area-action input[name=category_label]').focus( function() {
+  fixInteractions();
+});
+
 function createItem(id, parent, label, basename, number) {
   var line = '<span class="sort-tab"></span>';
   line += '<span class="item-label">'+label+'</span>';
@@ -200,6 +223,9 @@ function initItem($item) {
   jQuery('<a href="#" class="item-action edit-link clickable"><__trans phrase="Rename"></a>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
+      fixInteractions({
+        sortable: false
+      });
       var $element = jQuery(this).parent('.item-ctrl').parent('div');
       var $label = $element.find('.item-label a').length ? $element.find('.item-label a') : $element.find('.item-label');
       var $basename = $element.find('.item-basename-text');
@@ -209,7 +235,6 @@ function initItem($item) {
       $form.find('.label').val($label.text());
       $form.append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_basename" class="text short basename" placeholder="<__trans phrase="Basename">" />'));
       $form.find('.basename').val($basename.text());
-
 <mt:if name="object_type" eq="category">
       jQuery.mtValidateRules['.label'] = function ($e) {
         if ( !$e.val().length ) return this.raise('<__trans phrase="Label is required.">');
@@ -231,6 +256,7 @@ function initItem($item) {
         .bind('click', function() {
           if ( !$element.find('input.label').mtValidate() ) return false;
           if ( !$element.find('input.basename').mtValidate() ) return false;
+          fixInteractions({ closeInlineForms: false });
           $basename.text( $element.find('input.basename').val() );
           $label.text( $element.find('input.label').val() );
           $children.show();
@@ -240,9 +266,7 @@ function initItem($item) {
         .appendTo($form);
       jQuery('<button type="button" class="cancel button"><__trans phrase="Cancel"></button>')
         .bind('click', function() {
-          jQuery('#msg-block').empty();
-          jQuery(this).parent('.add-form').remove();
-          jQuery('.sort-tab').show();
+          fixInteractions({ closeInlineForms: false });
           $children.show();
           initItem($item);
         })
@@ -261,8 +285,7 @@ function initItem($item) {
   jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add child [_1]" params="<mt:var name="object_label">"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
-      jQuery('.add-form').remove();
-      jQuery('.sort-tab').hide();
+      fixInteractions({ sortable: false });
       var $element = jQuery(this).parent('.item-ctrl').parent('div');
       var parent = $element.attr('id');
       var $form = jQuery('<div class="mod add-form"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">" />\n</div>');
@@ -272,15 +295,15 @@ function initItem($item) {
           var label = jQuery(this).parent('.add-form').find('input').val();
           if ( addItem(parent, label) ) {
               jQuery(this).parent('.add-form').remove();
-              jQuery('.sort-tab').show();
+              fixInteractions({ closeInlineForms: false });
           }
         })
         .appendTo($form);
       jQuery('<button type="button" class="cancel button"><__trans phrase="Cancel"></button>')
         .bind('click', function() {
+            fixInteractions({ closeInlineForms: false });
             jQuery('#msg-block').empty();
             jQuery(this).parent('.add-form').remove();
-            jQuery('.sort-tab').show();
         })
         .appendTo($form);
       jQuery('.button').button();
@@ -289,6 +312,7 @@ function initItem($item) {
   jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon"><__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
+      fixInteractions();
       var id = jQuery(this).parents('.sortable-item').attr('id');
       removeItems(id);
     });
@@ -724,6 +748,7 @@ jQuery('.add').click(function() {
   // sort of hack to do HTML escape.
   label = jQuery('<div />').text(label).html();
   if ( addItem(parent, label) ) {
+    fixInteractions();
     jQuery(this).parent('#area-action').find('input').val('');
   }
   return false;
