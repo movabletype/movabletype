@@ -111,7 +111,7 @@ use vars qw( @ISA %Lexicon );
 	'Error compiling widgetset [_1]' => 'ウィジェットセット[_1]をコンパイルできませんでした。',
 
 ## php/lib/mtdb.base.php
-	'The attribute exclude_blogs denies all incllude_blogs.' => 'include_blogs属性で指定されたブログがexclude_blogs属性で全て除外されています。',
+	'The attribute exclude_blogs denies all include_blogs.' => 'include_blogs属性で指定されたブログがexclude_blogs属性で全て除外されています。',
 
 ## php/mt.php
 	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
@@ -1224,7 +1224,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/CMS/Category.pm
 	'The [_1] must be given a name!' => '[_1]には名前が必要です。',
 	'Failed to update [_1]: some of [_2] were changed after you opened this screen.' => 'いくつかの[_2]がすでに更新されていたため、[_1]の更新に失敗しました。',
-	'Tried to update [_1]([_2]), but the object not found.' => '[_1]([_2])が見つからないため、更新ができません。',
+	'Tried to update [_1]([_2]), but the object was not found.' => '[_1]([_2])が見つからないため、更新ができません。',
 	'Your changes have been made (added [_1], edited [_2] and deleted [_3]). <a href="#" onclick="[_4]" class="mt-rebuild">Publish your site</a> to see these changes take effect.' => '変更を保存しました。(追加:[_1]件, 更新:[_2]件, 削除:[_3]件) 変更を有効にするには<a href="#" onclick="[_4]" class="mt-rebuild">再構築</a>をしてください。',
 	'Add a [_1]' => '[_1]を追加しました。',
 	'No label' => '名前がありません。',
@@ -1648,7 +1648,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] [_2] since [_3]' => '[_2]が[_3]より後の[_1]',
 	'[_1] [_2] or before [_3]' => '[_2]が[_3]より前の[_1]',
 	'[_1] [_2] these [_3] days' => '[_2]が[_3]日以内の[_1]',
-	'[_1] [_2] futere' => '[_2]が未来の日付である[_1]',
+	'[_1] [_2] future' => '[_2]が未来の日付である[_1]',
 	'[_1] [_2] past' => '[_2]が過去の日付である[_1]',
 	'<mt:var name="[_1]"> [_2] [_3] [_4]' => '<mt:var name="[_1]"> [_2] [_4] [_3]',
 	'Invalid parameter.' => '不正なパラメータです。',
@@ -1790,7 +1790,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Entry.pm
 	'NONE' => 'なし',
-	'[_1] ( id:[_2] ) not exists.' => '[_1] ( id:[_2] ) が見つかりません。',
+	'[_1] ( id:[_2] ) does not exists.' => '[_1] ( id:[_2] ) が見つかりません。',
 	'Entries from category: [_1]' => 'カテゴリ \'[_1]\'のブログ記事',
 	'Entries by [_1]' => '[_1]のブログ記事',
 	'record does not exist.' => 'ブログがありません。',
@@ -1806,6 +1806,7 @@ use vars qw( @ISA %Lexicon );
 	'Publish Date' => '公開日',
 	'Link' => 'リンク',
 	'Primary Category' => 'メインカテゴリ',
+	'-' => '-',
 	'__PING_COUNT' => 'トラックバック数',
 	'Published' => '公開',
 	'Reviewing' => '承認待ち',
@@ -4502,6 +4503,7 @@ use vars qw( @ISA %Lexicon );
 	'Save this template' => 'このテンプレートを保存する (s)',
 	'Re-Edit this template (e)' => 'このテンプレートを編集する',
 	'Re-Edit this template' => 'このテンプレートを編集する (s)',
+	'This preview is now running with virtual category. this can be a reason of unexpected error or broken preview. You can avoid this situation by creating any category on this blog.' => 'カテゴリーが存在しないため、仮のカテゴリーを利用してプレビューを作成しています。カテゴリーを作成することで正しいプレビューを利用できます。',
 
 ## tmpl/cms/rebuilding.tmpl
 	'Publishing...' => '再構築中...',

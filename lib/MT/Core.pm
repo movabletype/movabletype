@@ -516,7 +516,7 @@ BEGIN {
                         }
                         elsif ( $val eq 'future' ) {
                             return MT->translate(
-                                '[_1] [_2] futere',
+                                '[_1] [_2] future',
                                 $prop->datasource->class_label_plural,
                                 $prop->label,
                             );

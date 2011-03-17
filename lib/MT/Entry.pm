@@ -438,7 +438,7 @@ sub list_props {
                 my $cat   = MT->model('category')->load($id)
                     or return $prop->error(
                     MT->translate(
-                        '[_1] ( id:[_2] ) not exists.',
+                        '[_1] ( id:[_2] ) does not exists.',
                         $prop->datasource->container_label,
                         $id
                     )
