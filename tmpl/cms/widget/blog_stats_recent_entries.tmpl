@@ -35,8 +35,8 @@
     <mt:else>
       <mt:setvarblock name="entry_author"><mt:entryauthorusername escape="html"></mt:setvarblock>
     </mt:if>
-    <mt:if tag="entryprimarycategory">
-      <__trans phrase="Posted by [_1] [_2] in [_3]" params="<mt:var name="entry_author">%%<mt:entrydate relative="1">%%<mt:entryprimarycategory><mt:if name="editable"><a href="<mt:var name="script_url">?__mode=list&amp;_type=entry&amp;blog_id=<mt:blogid>&amp;filter=category_id&amp;filter_val=<mt:categoryid>"><mt:categorylabel escape="html"></a><mt:else><mtcategorylabel escape="html"></mt:if></mt:entryprimarycategory>">
+    <mt:if tag="EntryCategory">
+      <__trans phrase="Posted by [_1] [_2] in [_3]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>%%<MTEntryCategories glue=", "><MTIf name="editable"><a href="<mt:var name="script_url">?__mode=list&amp;_type=entry&amp;blog_id=<$MTBlogID$>&amp;filter=category_id&amp;filter_val=<$MTCategoryID$>"><$MTCategoryLabel escape="html"$></a><MTElse><$MTCategoryLabel escape="html"$></MTIf></MTEntryCategories>">
     <mt:else>
       <__trans phrase="Posted by [_1] [_2]" params="<mt:var name="entry_author">%%<mt:entrydate relative="1">">
     </mt:if>
