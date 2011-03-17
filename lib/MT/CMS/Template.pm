@@ -2957,6 +2957,7 @@ sub list_widget {
     $app->load_list_actions( 'template', $widget_actions );
     $param->{ 'widget_' . $_ } = $widget_actions->{$_}
         for keys %$widget_actions;
+    $param->{page_actions}  = $app->page_actions('list_widget');
     $app->load_tmpl( 'list_widget.tmpl', $param );
 }
 
