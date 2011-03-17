@@ -311,6 +311,7 @@ sub list_props {
         },
         category_id => {
             label            => 'Primary Category',
+            filter_label     => 'Category',
             order            => 500,
             display          => 'default',
             base             => '__virtual.single_select',
@@ -425,7 +426,6 @@ sub list_props {
                     {   category_id => $cat_id,
                         entry_id    => \'= entry_id',
                         blog_id     => $blog_id,
-                        is_primary  => 1,
                     },
                     { unique => 1, },
                 );
