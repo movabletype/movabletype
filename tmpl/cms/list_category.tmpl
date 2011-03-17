@@ -127,7 +127,7 @@ function loginAgain(fn) {
               data: {
                 __mode: 'login_json',
                 username: dialog.find('#username').val(),
-                password: dialog.find('#password').val(),
+                password: dialog.find('#password').val()
               },
               success: function(data) {
                 jQuery.fn.mtDialog.close();
@@ -177,7 +177,7 @@ function handleMessages( data ) {
 function fixInteractions( options ) {
   var defaults = {
     sortable: true,
-    closeInlineForms: true,
+    closeInlineForms: true
   };
   var opts = jQuery.extend(defaults, options);
   if ( opts.closeInlineForms ) {
@@ -565,7 +565,7 @@ function initMoving() {
           modal: true,
           resizable: false,
           draggable: false,
-          closeOnEscape: false,
+          closeOnEscape: false
         });
 <mt:if name="object_type" eq="category">
         jQuery('#new-label, #new-basename').mtValidate('dialog');
