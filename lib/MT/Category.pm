@@ -65,10 +65,8 @@ sub list_props {
             bulk_html => sub {
                 my ( $prop, $objs, $app ) = @_;
                 my $count_iter = MT->model('placement')->count_group_by(
-                    {   blog_id    => $app->blog->id,
-                        is_primary => 1,
-                    },
-                    { group => ['category_id'], }
+                    { blog_id => $app->blog->id, },
+                    { group   => ['category_id'], }
                 );
                 my %count;
                 while ( my ( $count, $cat_id ) = $count_iter->() ) {
@@ -124,7 +122,7 @@ sub list_props {
                 }
                 return @out;
             },
-        },
+            },
         custom_sort => {
             class     => 'category',
             bulk_sort => sub {
