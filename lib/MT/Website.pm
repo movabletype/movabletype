@@ -44,6 +44,16 @@ sub list_props {
             count_col   => 'parent_id',
             filter_type => 'blog_id',
             list_screen => 'blog',
+            count_terms => sub {
+                my @perms = MT->model('permission')->load(
+                    {   author_id   => MT->instance->user->id,
+                        permissions => { not => 'comment' },
+                    },
+                    { 'fetchonly' => ['blog_id'], },
+                );
+
+                return { id => [ map( $_->blog_id, @perms ) ] };
+            },
         },
         page_count => {
             base      => 'blog.page_count',
