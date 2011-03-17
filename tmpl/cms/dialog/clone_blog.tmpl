@@ -489,8 +489,8 @@
 
       // Clear errors
       $form.find('label.msg-error').each( function () {
-          $(this).parents('div.field').removeClass('error-field');
-          $(this).remove();
+          jQuery(this).parents('div.field').removeClass('error-field');
+          jQuery(this).remove();
       });
 
       var $element = $form.find('#blog-name');
@@ -584,10 +584,13 @@
   }
 
   function is_valid_url(url_){
+      if (url_.indexOf(' ') != -1) {
+          return false;
+      }
       return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
   }
   function is_valid_path(path_){
-      var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
+      var str = path_.replace(/["%<>\[\\\]\^`{\|}~]/g, "");
       str = encodeURI(str);
       if (str.indexOf('%') != -1) {
           return false;
@@ -609,7 +612,7 @@
   }
 
   function show_error(error, field_id, $element) {
-      var label = $("<label />")
+      var label = jQuery("<label />")
           .attr({"for": field_id})
           .addClass('msg-error')
           .html(error);
@@ -820,10 +823,13 @@
 
     <mt:unless name="verify">
     function is_valid_url(url_){
+        if (url_.indexOf(' ') != -1) {
+            return false;
+        }
         return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
     }
     function is_valid_path(path_){
-        var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
+        var str = path_.replace(/["%<>\[\\\]\^`{\|}~]/g, "");
         str = encodeURI(str);
         if (str.indexOf('%') != -1) {
             return false;

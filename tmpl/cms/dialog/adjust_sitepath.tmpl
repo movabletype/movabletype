@@ -29,7 +29,7 @@ function changeParent (ws) {
     jQuery('.parent_site_path_'+blog_id).text(new_path);
 
     var ids = [ 'site', 'archive' ];
-    $.each(ids,  function () {
+    jQuery.each(ids,  function () {
         var obj = jQuery('#'+this+'_path'+blog_id+'-field');
         if ( obj.find('.use-absolute').hasClass('default-absolute') ) {
             obj.find('.use-absolute :checkbox').attr('checked', 'checked');
@@ -289,10 +289,13 @@ function init() {
 <script type="text/javascript">
 /* <![CDATA[ */
     function is_valid_url(url_){
+        if (url_.indexOf(' ') != -1) {
+            return false;
+        }
         return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
     }
     function is_valid_path(path_){
-        var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
+        var str = path_.replace(/["%<>\[\\\]\^`{\|}~]/g, "");
         str = encodeURI(str);
         if (str.indexOf('%') != -1) {
             return false;
@@ -441,6 +444,7 @@ function init() {
         messages: {
 <mt:loop name="website_loop">
             site_url_<mt:var name="id" escape="html">: {
+                site_url: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
                 required: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
                 url: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">'
             },
