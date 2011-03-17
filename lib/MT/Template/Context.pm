@@ -494,7 +494,7 @@ sub set_blog_load_context {
             @blog_ids = grep { !$exc_ids{$_} } @$term_ids;
             return $ctx->error(
                 MT->translate(
-                    "The attribute exclude_blogs denies all incllude_blogs."
+                    "The attribute exclude_blogs denies all include_blogs."
                 )
             ) unless @blog_ids;
 
