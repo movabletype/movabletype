@@ -415,7 +415,6 @@ sub count {
 sub execute {
     my $app = shift;
     my ( $terms, $args ) = @_;
-
     my $class = $app->model( $app->{searchparam}{Type} )
         or return $app->errtrans( 'Unsupported type: [_1]',
         encode_html( $app->{searchparam}{Type} ) );
@@ -981,6 +980,8 @@ sub _query_parse_core {
     my $rvalue = sub {
         my $val = $_[1];
         $val =~ s/\\([^\\])/$1/g;
+        $val =~ s/%/\\%/;
+
         my %rvalues = (
             REQUIREDlike   => { like     => '%' . $val . '%' },
             REQUIRED1      => $val,
