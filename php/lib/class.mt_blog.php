@@ -84,9 +84,9 @@ class Blog extends BaseObject
         }
         else {
             preg_match('/^(https?):\/\/(.+)\/$/', $site->blog_site_url, $matches);
-            if ( count($matches > 1 ) ) {
+            if ( count($matches) > 1 ) {
                 $site_url = preg_split( '/\/::\//', $this->blog_site_url );
-                if ( count($site_url > 0 ) )
+                if ( count($site_url) > 0 )
                     $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
                 else
                     $path = $site->blog_site_url . $this->blog_site_url;
@@ -117,9 +117,9 @@ class Blog extends BaseObject
                 $this->site_url();
             else {
                 preg_match('/^(https?):\/\/(.+)\/$/', $site->blog_site_url, $matches);
-                if ( count($matches > 1 ) ) {
+                if ( count($matches) > 1 ) {
                     $site_url = preg_split( '/\/::\//', $this->blog_archive_url );
-                    if ( count($site_url > 0 ) )
+                    if ( count($site_url) > 0 )
                         $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
                     else
                         $path = $site->blog_site_url . $this->blog_archive_url;
