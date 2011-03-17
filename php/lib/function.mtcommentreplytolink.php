@@ -17,12 +17,11 @@ function smarty_function_mtcommentreplytolink($args, &$ctx) {
     $onclick = $args['onclick'];
     $onclick or $onclick = "mtReplyCommentOnClick(%d, '%s')";
 
-    if ($comment->comment_commenter_id &&
-        $author = $ctx->mt->db()->fetch_author($comment->comment_commenter_id)) {
-        $comment_author = $author->author_nickname;
-    }
-    else {
-        $comment_author = $comment->comment_author;
+    $comment_author = $comment->comment_author;
+    if ($comment->comment_commenter_id ) {
+        $cmtr = $comment->commenter();
+        if ( !empty( $cmtr ) )
+            $comment_author = $cmtr->nickname;
     }
     require_once("MTUtil.php");
     $comment_author = encode_html(encode_js($comment_author));

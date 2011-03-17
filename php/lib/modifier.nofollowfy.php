@@ -27,7 +27,7 @@ function smarty_modifier_nofollowfy($str, $arg = 1) {
         $comment = $ctx->stash('comment');
         if ($comment->comment_commenter_id) {
             // is an authenticated comment
-            $auth = $ctx->mt->db()->fetch_author($comment->comment_commenter_id);
+            $auth = $comment->commenter();
             if ($auth && $blog->blog_follow_auth_links)
                 return $str;
         }
