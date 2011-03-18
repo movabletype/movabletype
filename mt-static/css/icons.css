@@ -96,6 +96,9 @@
 .icon-share { background-image: url(../images/status_icons/share.gif);}
 .icon-spam { background-image: url(../images/status_icons/warning.gif); }
 
+.icon-spinner { background-image: url(../images/arrow/spinner-right.png); }
+.active .icon-spinner { background-image: url(../images/arrow/spinner-bottom.png); }
+
 .edit-template .global-tmpl { background-image: url(../images/template/global.png); }
 .edit-template .website-tmpl { background-image: url(../images/template/website.png); }
 .edit-template .blog-tmpl { background-image: url(../images/template/blog.png); }

@@ -106,7 +106,7 @@ sub list_props {
                 return $desc
                     ? qq{
                     <div class="log-message can-select">
-                      <a href="#" class="toggle-link detail-link">$msg</a>
+                      <a href="#" class="toggle-link icon-left icon-spinner detail-link">$msg</a>
                       <div class="log-metadata detail">
                         <pre>$desc</pre>
                       </div>

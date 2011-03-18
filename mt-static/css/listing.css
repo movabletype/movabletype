@@ -53,9 +53,6 @@
     vertical-align: middle;
     word-wrap: normal;
 }
-.col a { 
-    color: #274a78;
-}
 .col.num { 
     width: 7em;
 }
