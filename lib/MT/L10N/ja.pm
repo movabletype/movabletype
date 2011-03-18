@@ -3512,7 +3512,7 @@ use vars qw( @ISA %Lexicon );
 	'Trackback URLs' => 'トラックバックURL',
 	'Enter the URL(s) of the websites that you would like to send a TrackBack to each time you create an entry in this category. (Separate URLs with a carriage return.)' => 'このカテゴリでブログ記事を作成したときにトラックバックを送信したいウェブサイトのURLを入力してください。',
 	'Save changes to this category (s)' => 'カテゴリへの変更を保存 (s)',
-
+	'Please enter a valid basename.' => '有効な出力ファイル/フォルダ名を入力してください。',
 ## tmpl/cms/edit_comment.tmpl
 	'The comment has been approved.' => 'コメントを公開しました。',
 	'This comment was classified as spam.' => 'このコメントはスパムと判定されました。',
@@ -3798,6 +3798,8 @@ use vars qw( @ISA %Lexicon );
 	'Enter the path where your main index file will be located. An absolute path (starting with \'/\' for Linux or \'C:\\\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/weblog or C:\\www\\public_html' => 'インデックスファイルが公開されるパスを入力してください。絶対パス(Linuxの時は\'/\'、Windowsの時は\'C:\\\'などで始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。末尾には\'/\'や\'\\\'を含めません。例: /home/melody/public_html/blogやC:\\www\\public_html\\blog',
 	'Create Website (s)' => 'ウェブサイト作成',
 	'You did not select a timezone.' => 'タイムゾーンが選択されていません。',
+	'This field is required.' => 'このフィールドは必須です。',
+	'Please enter a valid URL.' => '正しいURLを入力してください。',
 
 ## tmpl/cms/edit_widget.tmpl
 	'Edit Widget Set' => 'ウィジェットセットの編集',
