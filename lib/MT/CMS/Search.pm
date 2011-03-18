@@ -1160,7 +1160,7 @@ sub do_search_replace {
         else {
             $param{results_template}
                 = _default_results_table_template( $app, $type, 1,
-                $class->class_label_plural );
+                lc $class->class_label_plural );
         }
     }
     else {
@@ -1175,7 +1175,7 @@ sub do_search_replace {
         else {
             $param{results_template}
                 = _default_results_table_template( $app, $type, 0,
-                $class->class_label_plural );
+                lc $class->class_label_plural );
         }
     }
     if ($is_dateranged) {
