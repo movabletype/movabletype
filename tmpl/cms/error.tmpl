@@ -17,6 +17,7 @@
 </mtapp:statusmsg>
 
 <mt:setvarblock name="action_buttons">
+<mt:unless var="hide_goback_button">
 <button
    id="goback-button"
    onclick="<mt:var name="goback">"
@@ -25,6 +26,7 @@
    class="goback action primary button">
   <mt:var name="value">
 </button>
+</mt:unless>
 <mt:if name="button_loop">
 <mt:loop name="button_loop">
 <button
@@ -55,12 +57,8 @@
 <script type="text/javascript">
     /* <![CDATA[ */
     // show the close button if error is in modal or popup
-    if ( window != window.parent || window.opener ) {
+    if ( window != window.parent || window.opener )
         document.getElementById("close-button").className = "close action button";
-        <mt:if var="hide_goback_button">
-        document.getElementById("goback-button").className = "hidden";
-        </mt:if>
-    }
     /* ]]> */
 </script>
 </mt:setvarblock>
