@@ -2721,6 +2721,7 @@ sub show_error {
             : 'history.back()';
         $param->{value} ||= $app->{value} || $app->translate("Back");
     }
+    $param->{hide_goback_button} = $app->{hide_goback_button} || 0;
     local $param->{error} = $error;
     $tmpl->param($param);
     $app->run_callbacks( 'template_param.error', $app, $tmpl->param, $tmpl );

@@ -1115,8 +1115,7 @@ sub backup_download {
     my $temp_dir  = $app->config('TempDir');
     my $newfilename;
 
-    $app->{goback} = $app->uri(
-        mode => 'start_backup', args => { blog_id => $blog_id, } );
+    $app->{hide_goback_button} = 1;
 
     if ( defined($assetname) ) {
         my $sess = MT::Session->load( { kind => 'BU', name => $assetname } );
