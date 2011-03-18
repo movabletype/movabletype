@@ -126,7 +126,7 @@ abstract class MTDatabase {
                     array_push($ret, $b->id);
                 }
             }
-        } elseif (preg_match('/^\d$/', $blog_ids)) {
+        } elseif (ctype_digit($blog_ids)) {
             array_push( $ret, $blog_ids);
         }
         return $ret;
