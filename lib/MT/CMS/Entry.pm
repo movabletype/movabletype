@@ -366,9 +366,10 @@ sub edit {
 
     ## Now load user's preferences and customization for new/edit
     ## entry page.
+    my $pref_param;
     if ($perms) {
         my $prefs_type = $type . '_prefs';
-        my $pref_param = $app->load_entry_prefs(
+        $pref_param = $app->load_entry_prefs(
             { type => $type, prefs => $perms->$prefs_type } );
         %$param = ( %$param, %$pref_param );
         $param->{disp_prefs_bar_colspan} = $param->{new_object} ? 1 : 2;
@@ -532,6 +533,21 @@ sub edit {
 
     $param->{object_type}  = $type;
     $param->{object_label} = $class->class_label;
+
+    my @ordered = qw( title text tags excerpt keywords );
+    if ( $pref_param ) {
+        if ( my $disp_field = $pref_param->{disp_prefs_custom_fields} ) {
+            my %order;
+            my $i;
+            foreach ( @$disp_field ) {
+                $order{$_->{name}} = $i++;
+            }
+            @ordered = sort {
+                $order{$a} <=> $order{$b}
+            } @ordered;
+        }
+    }
+
     $param->{field_loop} ||= [
         map {
             {   field_name => $_,
@@ -542,8 +558,9 @@ sub edit {
                 : $param->{"disp_prefs_show_$_"},
                 field_label => $app->translate( ucfirst($_) ),
             }
-            } qw( title text tags excerpt keywords )
+            } @ordered
     ];
+
     $param->{quickpost_js} = MT::CMS::Entry::quickpost_js( $app, $type );
     if ( 'page' eq $type ) {
         $param->{search_label} = $app->translate('pages');
