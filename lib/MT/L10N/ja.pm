@@ -4336,6 +4336,7 @@ use vars qw( @ISA %Lexicon );
 	'Find Themes' => 'テーマを探す',
 	'Theme [_1] has been uninstalled.' => 'テーマ "[_1]"をアンインストールしました。',
 	'Theme [_1] has been applied.' => 'テーマ "[_1]"を適用しました。',
+ 'Theme [_1] has been applied (<a href="[_2]">[quant,_3,warning,warnings]</a>).' => 'テーマ "[_1]"を適用しました(<a href="[_2]">[quant,_3,つの警告,つの警告]</a>)。',
 	'Some error occured while applying theme.' => 'テーマの適用中にエラーがありました。',
 	'see more detail.' => 'エラーの詳細',
 	'Failed' => '失敗',
