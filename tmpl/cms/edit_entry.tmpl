@@ -365,7 +365,6 @@
 <mtapp:widget
    id="entry-publishing-widget"
    label="<__trans phrase="Publishing">">
-
 <mt:if name="new_object">
   <mt:if name="can_publish_post">
     <mt:if name="status_publish">
@@ -480,10 +479,7 @@
      help_page="entries">
   <mt:if name="can_publish_post">
     <span class="basename">
-    <input type="text" name="basename" id="basename" class="text full" value="<$mt:var name="basename" escape="html"$>" />
-    <mt:if name="object_type" eq="page">
-    <span class="file-extension"><mt:var name="file_extension" escape="html"></span>
-    </mt:if>
+    <input type="text" name="basename" id="basename" class="text full" value="<$mt:var name="basename" escape="html"$>" /><mt:if name="object_type" eq="page"><span class="file-extension"><mt:var name="file_extension" escape="html"></span></mt:if>
     </span>
     <mt:if name="object_type" eq="entry">
       <p class="alert-warning-inline" id="basename-warning" style="display: none">
