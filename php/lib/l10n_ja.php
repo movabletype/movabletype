@@ -102,10 +102,11 @@ $Lexicon_ja = array(
 	'Error compiling widgetset [_1]' => 'ウィジェットセット[_1]をコンパイルできませんでした。',
 
 ## php/lib/mtdb.base.php
-	'The attribute exclude_blogs denies all incllude_blogs.' => 'include_blogs属性で指定されたブログがexclude_blogs属性で全て除外されています。',
+	'The attribute exclude_blogs denies all include_blogs.' => 'include_blogs属性で指定されたブログがexclude_blogs属性で全て除外されています。',
 
 ## php/mt.php
 	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
+
 );
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_ja;

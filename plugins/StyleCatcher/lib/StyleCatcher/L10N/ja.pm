@@ -17,16 +17,11 @@ use vars qw( %Lexicon );
 
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'mt-staticディレクトリが見つかりませんでした。StaticFilePathを設定してください。',
+	'Permission Denied.' => '権限がありません。',
 	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => '[_1] フォルダが作成できません。\'themes\' フォルダが書き込み可能か確認してください。',
 	'Successfully applied new theme selection.' => '新しいテーマを適用しました。',
 	'Invalid URL: [_1]' => 'URLが不正です: [_1]',
 	'(Untitled)' => '(タイトルなし)',
-
-## plugins/StyleCatcher/config.yaml
-	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'StyleCatcherを使うと、ウェブサイトやブログのスタイルを探して、数クリックで変更することができます。',
-	'MT 4 Style Library' => 'MT 4 スタイルライブラリ',
-	'A collection of styles compatible with Movable Type 4 default templates.' => 'Movable Type 4のデフォルトテンプレートと互換性のあるスタイルです。',
-	'Styles' => 'スタイル',
 
 ## plugins/StyleCatcher/tmpl/view.tmpl
 	'Select a [_1] Style' => '[_1]スタイルの選択',
@@ -57,6 +52,7 @@ use vars qw( %Lexicon );
 	'More Styles' => 'その他のスタイル',
 	'Selected Design' => '選択されたデザイン',
 	'Layout' => 'レイアウト',
+
 );
 
 1;
