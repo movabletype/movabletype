@@ -973,8 +973,6 @@ sub list {
                     };
             }
         }
-        use Data::Dumper;
-        print STDERR "zero:" . Dumper($prop) . "\n";
         push @list_columns,
             {
             id        => $prop->id,
