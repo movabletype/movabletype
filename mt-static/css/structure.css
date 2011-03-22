@@ -11,7 +11,7 @@ body {
 }
 
 a { 
-    color: #5c909b;
+    color: #507ea4;
     outline: 0;
 }
 a:hover, 
@@ -207,6 +207,11 @@ pre {
     top: 50%;
     right: 10px;
     margin-top: -9px;
+}
+
+/* -- Open Dialog Link */
+.open-dialog-link {
+    color: #7b7c7d;
 }
 
 /* -- Progress Bar */
@@ -888,17 +893,6 @@ ul.tabs li a {
     font-weight: bold;
     text-shadow: #f8fbf8 0 1px 0;
 }
-.sub-menu-link { 
-    color: #7b7c7d;
-    text-decoration: none;
-}
-.sub-menu-link:active, 
-.sub-menu-link:hover { 
-    background-color: #e7e7eb;
-}
-.sub-menu-link.current { 
-    background-color: #dcdddd;
-}
 .top-menu div { 
     position: relative;
     border-style: solid solid none;
@@ -912,6 +906,13 @@ ul.tabs li a {
 }
 .current .sub-menu { 
     display: block;
+}
+.sub-menu-link:hover { 
+    background-color: #e7e7eb;
+}
+.sub-menu-link.current { 
+    background-color: #dcdddd;
+    color: #2b2b2b;
 }
 .menu-nav, 
 .top-menu.first-child.last-child div { 

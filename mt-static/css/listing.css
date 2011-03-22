@@ -42,8 +42,9 @@
 }
 .col.head { 
     position: relative;
-    padding: 0 0 0 8px;
+    padding: 0;
     border-width: 0 0 1px 1px;
+    line-height: 1;
     background-color: #dcdddd;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
     background: -moz-linear-gradient(top, #f3f3f3 0%, #dcdddd 100%);
@@ -65,7 +66,6 @@
 }
 .col.cb { 
     width: 2.6em;
-    padding-right: 8px;
     text-align: center;
 }
 .col.si,
@@ -101,10 +101,18 @@ tfoot .col.head{
     border-left: 0;
 }
 .col.head a {
+    display: block;
+    width: 100%;
+    color: #7b7c7d;
+    text-decoration: none;
+}
+.col.head a {
+    width: 100%;
+    color: #7b7c7d;
     text-decoration: none;
 }
 .col.sorted { 
-    background-color: #f3f3f3;
+    background-color: #dcdddd;
     background: -webkit-gradient(linear, left top, left bottom, from(#dcdddd), to(#f3f3f3));
     background: -moz-linear-gradient(top, #dcdddd 0%, #f3f3f3 100%);
 }
@@ -114,14 +122,18 @@ tfoot .col.head{
 .col-label {
     display: inline-block;
     width: 95%;
+    margin-left: 5px;
     padding: 7px 0;
-    line-height: 1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.sorted .sort-link {
-    width: 80%;
+.col.head a:hover .col-label {
+    color: #2b2b2b;
+}
+.sorted .col-label {
+    color: #2b2b2b;
+    width: 75%;
 }
 .sm {
     position: absolute;

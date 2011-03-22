@@ -66,16 +66,6 @@ body.has-dialog {
     line-height: 1;
 }
 
-.dialog .field-top-label {
-    margin-bottom: .75em;
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.dialog .field-top-label  .field-header {
-    margin-bottom: .25em;
-}
-
 .dialog .view-site-link {
     float: right;
     margin: 4px 2px 0 4px;
