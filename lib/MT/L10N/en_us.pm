@@ -181,6 +181,8 @@ the address you provided is correct and belongs to you.',
     '__ASSET_COUNT' => 'Assets',
     '__COMMENT_COUNT' => 'Comments',
     '__PING_COUNT' => 'Trackbacks',
+    '__ROLE_ACTIVE' => 'Active',
+    '__ROLE_INACTIVE' => 'Inactive',
 );
 
 1;

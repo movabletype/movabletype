@@ -186,7 +186,7 @@ abstract class MTDatabase {
             if ( empty( $incl ) ) {
                 $mt = MT::get_instance();
                 trigger_error( $mt->translate(
-                        "The attribute exclude_blogs denies all incllude_blogs."
+                        "The attribute exclude_blogs denies all include_blogs."
                 ) );
             } else {
                 $incl = array_values( $incl );

@@ -72,17 +72,6 @@ sub list_props {
                 while ( my ( $count, $cat_id ) = $count_iter->() ) {
                     $count{$cat_id} = $count;
                 }
-                my %labels = (
-                    'category' => {
-                        'singular' => 'entry',
-                        'plural'   => 'entries',
-                    },
-                    'folder' => {
-                        'singular' => 'page',
-                        'plural'   => 'pages',
-                        ,
-                    },
-                );
                 my @out;
                 for my $obj (@$objs) {
                     my $obj_class = $obj->class;
@@ -90,9 +79,9 @@ sub list_props {
                         = $obj_class eq 'category' ? 'entry' : 'page';
                     my $action   = 'access_to_' . $contents_type . '_list';
                     my $count    = $count{ $obj->id } || 0;
-                    my $singular = $labels{$obj_class}{singular};
-                    my $plural   = $labels{$obj_class}{plural};
-                    my $negative = "No $plural";
+                    my $phrase = $obj_class eq 'category'
+                        ? MT->translate('[quant,_1,entry,entries,No entries]', $count )
+                        : MT->translate('[quant,_1,page,pages,No pages]', $count );
 
                     if ( $app->can_do($action) ) {
                         my $uri = $app->uri(
@@ -109,15 +98,11 @@ sub list_props {
                             },
                         );
                         push @out, "<a href=\"$uri\">"
-                            . MT->translate(
-                            "[quant,_1,$singular,$plural,$negative]", $count )
+                            . $phrase
                             . "</a>";
                     }
                     else {
-                        push @out,
-                            MT->translate(
-                            "[quant,_1,$singular,$plural,$negative]",
-                            $count );
+                        push @out, $phrase;
                     }
                 }
                 return @out;

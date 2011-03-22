@@ -888,8 +888,8 @@ sub dialog_select_author {
                 items_prompt  => $app->translate("Selected author"),
                 search_prompt => $app->translate(
                     "Type a username to filter the choices below."),
-                panel_label       => $app->translate("Username"),
-                panel_description => $app->translate("Display Name"),
+                panel_label       => $app->translate('Username'),
+                panel_description => $app->translate('Display Name'),
                 panel_type        => 'author',
                 panel_multi       => defined $app->param('multi')
                 ? $app->param('multi')

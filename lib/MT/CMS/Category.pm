@@ -229,7 +229,7 @@ sub bulk_update {
             exists $old_objects{ $obj->{id} }
                 or return $app->json_error(
                 $app->translate(
-                    'Tried to update [_1]([_2]), but the object not found.',
+                    'Tried to update [_1]([_2]), but the object was not found.',
                     $model, $obj->{id},
                 )
                 );
