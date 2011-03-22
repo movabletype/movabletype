@@ -513,7 +513,7 @@ sub end_element {
                         $self->{callback}->("\n");
                         $self->{callback}->(
                             MT->translate(
-                                "The system level setting for plugin '[_1]' has already existed.  Skipped the record.",
+                                "The system level settings for plugin '[_1]' already exist.  Skipping this record.",
                                 $obj->plugin
                             )
                         );
