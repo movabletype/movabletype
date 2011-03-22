@@ -260,6 +260,7 @@ sub export {
     }
     return unless scalar @templates;
 
+    require MT::PublishOption;
     my $data = {};
     for my $t (@templates) {
         my $type = _type($t);
@@ -268,6 +269,8 @@ sub export {
         if ( $type eq 'index' ) {
             $this->{outfile}    = $t->outfile;
             $this->{rebuild_me} = $t->rebuild_me;
+            $this->{build_type} = $t->build_type
+                if $t->build_type != MT::PublishOption::ONDEMAND();
         }
         if ( $type eq 'archive' || $type eq 'individual' || $type eq 'page' )
         {
@@ -279,6 +282,10 @@ sub export {
                 my $map_data = {
                     archive_type => $map->archive_type,
                     preferred    => $map->is_preferred,
+                    (   $map->build_type != MT::PublishOption::ONDEMAND()
+                        ? ( build_type => $map->build_type )
+                        : ()
+                    ),
                 };
                 $map_data->{file_template} = $map->file_template
                     if $map->file_template;
