@@ -127,7 +127,7 @@ sub list_props {
                     ? MT::Util::relative_date( $ts, time, $blog )
                     : MT::Util::format_ts( $date_format, $ts, $blog,
                     $app->user ? $app->user->preferred_language : undef );
-
+                my $edit_str = MT->translate('Edit');
                 my $reply_link;
                 if ( $app->user->permissions( $obj->blog->id )
                         ->can_do('reply_comment_from_cms')
@@ -151,7 +151,7 @@ sub list_props {
                     );
                     my $reply_str = MT->translate('Reply');
                     $reply_link
-                        = qq{<a href="$reply_url" class="reply-link mt-open-dialog">$reply_str</a>};
+                        = qq{<a href="$reply_url" class="reply action-link open-dialog-link mt-open-dialog">$reply_str</a>};
                 }
 
                 return qq{
@@ -160,7 +160,8 @@ sub list_props {
                     </span>
                     <p class="comment-text content-text">$text</p>
                     <div class="item-ctrl">
-                      <a href="$link">$date</a>
+                      <span class="date">$date</span>
+                      <a href="$link" class="edit action-link">$edit_str</a>
                       $reply_link
                     </div>
                 };

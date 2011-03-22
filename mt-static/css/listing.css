@@ -181,9 +181,8 @@ tfoot .col.head{
 .col .userpic .icon {
     margin: 0;
 }
-.col .reply-link {
-    margin-left: 15px;
-    color: #2b2b2b;
+.col .item-ctrl .action-link {
+    margin-right: 5px;
 }
 .col .role-item, 
 .col .archive-path-item, 
