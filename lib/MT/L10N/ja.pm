@@ -4306,6 +4306,8 @@ use vars qw( @ISA %Lexicon );
 	'[_1] Filter Items have errors' => '[_1] フィルター項目にエラーがあります。',
 	'[_1] - Filter [_2]' => '[_1] - フィルタ [_2]',
   'Select Filter' => 'フィルタを選択',
+  'Select all [_1] items' => '全[_1]件を選択する',
+  'All [_1] items are selected' => '全[_1]件が選択されています',
 
 ## tmpl/cms/list_entry.tmpl
 	'Entries Feed' => 'ブログ記事フィード',

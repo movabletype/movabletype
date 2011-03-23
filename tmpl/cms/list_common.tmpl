@@ -1046,8 +1046,8 @@ function addSelectAll($node) {
     .parents('tbody')
     .append('<tr class="select-all"><td class="col fullwidth-row" colspan="'+n+'"></td></tr>')
     .prepend('<tr class="select-all"><td class="col fullwidth-row" colspan="'+n+'"><input type="hidden" name="all_selected" /></td></tr>');
-  var select_text = 'Select all '+editable_total+' items';
-  var cancel_text = 'All '+editable_total+' items are selected';
+  var select_text = trans('Select all [_1] items', editable_total);
+  var cancel_text = trans('All [_1] items are selected', editable_total);
   jQuery('<a href="#"></a>')
     .appendTo('.select-all td')
     .text(select_text)
