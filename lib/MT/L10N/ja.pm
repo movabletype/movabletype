@@ -2474,6 +2474,13 @@ use vars qw( @ISA %Lexicon );
 	'Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.' => 'Templateメソッドは実装されていません。',
 
 ## mt-static/jquery/jquery.mt.js
+	'Invalid date format' => '日付の入力フォーマットが正しくありません',
+	'Invalid mail address' => 'メールアドレスのフォーマットが正しくありません',
+	'Invalid URL' => 'URLのフォーマットが正しくありません',
+	'This field is required' => 'このフィールドは必須です。',
+	'This field must be integer' => 'このフィールドには整数の値を入力して下さい',
+	'This field must be number' => 'このフィールドには数値を入力して下さい',
+
 
 ## mt-static/js/assetdetail.js
 	'No Preview Available.' => 'プレビューは利用できません。',
