@@ -1041,7 +1041,6 @@ use vars qw( @ISA %Lexicon );
 	'Disabled Users' => '無効なユーザー',
 	'Pending Users' => '保留中のユーザー',
 	'Status' => 'ステータス',
-	'Approved' => '公開',
 	'Banned' => '禁止',
 	'Enabled Commenters' => '有効なコメント投稿者',
 	'Disabled Commenters' => '無効なコメント投稿者',
@@ -1049,6 +1048,7 @@ use vars qw( @ISA %Lexicon );
 	'MT Users' => 'MTユーザー',
 	'MT Native Users' => 'Movable Type認証ユーザー',
 	'Externally Authenticated Commenters' => '外部サービスで認証されたコメント投稿者',
+  '__COMMENTER_APPROVED' => '承認',
 
 ## lib/MT/BackupRestore.pm
 	'Backing up [_1] records:' => '[_1]レコードをバックアップしています:',
@@ -1603,6 +1603,7 @@ use vars qw( @ISA %Lexicon );
 	'Commenter' => 'コメント投稿者',
 	'Load of entry \'[_1]\' failed: [_2]' => 'ブログ記事\'[_1]\'をロードできませんでした: [_1]',
 	'Entry/Page' => 'ブログ記事/ウェブページ',
+	'Approved' => '公開',
 	'Unapproved' => '未公開',
 	'Not spam' => 'スパムではない',
 	'Reported as spam' => 'スパム',

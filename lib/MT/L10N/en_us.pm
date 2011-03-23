@@ -183,6 +183,7 @@ the address you provided is correct and belongs to you.',
     '__PING_COUNT' => 'Trackbacks',
     '__ROLE_ACTIVE' => 'Active',
     '__ROLE_INACTIVE' => 'Inactive',
+    '__COMMENTER_APPROVED' => 'Approved',
 );
 
 1;

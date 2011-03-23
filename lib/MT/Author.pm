@@ -353,7 +353,7 @@ sub commenter_list_props {
 
             },
             single_select_options => [
-                { label => 'Approved', value => 'enabled', },
+                { label => '__COMMENTER_APPROVED', value => 'enabled', },
                 { label => 'Banned',   value => 'disabled', },
                 { label => 'Pending',  value => 'pending', },
             ],
