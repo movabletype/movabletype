@@ -69,7 +69,7 @@ jQuery(function() {
     jQuery('a.mt-open-dialog').mtDialog();
     jQuery('a.mt-rebuild').mtRebuild(<mt:if name="blog_id">{blog_id: '<$mt:var name="blog_id"$>'}</mt:if>);
     jQuery('.mt-close-msg').live('click', function() {
-        jQuery(this).parent('div.msg').remove();
+        jQuery(this).parents('div.msg').remove();
     });
     jQuery('input.mt-edit-field').mtEditInput({
         edit: '<__trans phrase="Edit">'
