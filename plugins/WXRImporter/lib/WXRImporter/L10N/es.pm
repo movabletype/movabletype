@@ -11,12 +11,17 @@ use vars qw( %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
+## plugins/WXRImporter/config.yaml
+	'Import WordPress exported RSS into MT.' => 'Importar WordPress exported RSS hacia MT.',
+	'"WordPress eXtended RSS (WXR)"' => '"WordPress eXtended RSS (WXR)"', # Translate - New
+	'"Download WP attachments via HTTP."' => '"Descargar los adjuntos de WP vía HTTP."', # Translate - New
+
 ## plugins/WXRImporter/lib/WXRImporter/Import.pm
 
 ## plugins/WXRImporter/lib/WXRImporter/WXRHandler.pm
 	'File is not in WXR format.' => 'El fichero no está en el formato WXR.',
-	'Creating new tag (\'[_1]\')...' => 'Creando nueva etiqueta (\'[_1]\')...', # Translate - New
-	'Saving tag failed: [_1]' => 'Fallo al guardar la etiqueta: [_1]', # Translate - New
+	'Creating new tag (\'[_1]\')...' => 'Creando nueva etiqueta (\'[_1]\')...',
+	'Saving tag failed: [_1]' => 'Fallo al guardar la etiqueta: [_1]',
 	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'Se encontró un duplicado del fichero multimedia (\'[_1]\'). Ignorado.',
 	'Saving asset (\'[_1]\')...' => 'Guardando elemento (\'[_1]\')...',
 	' and asset will be tagged (\'[_1]\')...' => ' y el elemento será etiquetado (\'[_1]\')...',
@@ -30,11 +35,6 @@ use vars qw( %Lexicon );
 	'Download attachments' => 'Descargar adjuntos',
 	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'Necesita el uso de una tarea del cron para descargar los adjuntos de un blog de WordPress en segundo plano.',
 	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Descargar adjuntos (imágenes y ficheros) de un blog importado de WordPress.',
-
-## plugins/WXRImporter/WXRImporter.pl
-	'Import WordPress exported RSS into MT.' => 'Importar WordPress exported RSS hacia MT.',
-	'WordPress eXtended RSS (WXR)' => 'RSS Extendido de WordPress (WXR)',
-	'Download WP attachments via HTTP.' => 'Descargar adjuntos de WP vía HTTP.'
 );
 
 1;

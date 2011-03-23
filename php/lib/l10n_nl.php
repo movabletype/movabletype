@@ -77,6 +77,9 @@ $Lexicon_nl = array(
 	'entry' => 'bericht',
 	'Entry' => 'Bericht',
 
+## php/lib/function.mtinclude.php
+	'\'parent\' modifier cannot be used with \'[_1]\'' => '\'parent\' modifier kan niet worden gebruikt met \'[_1]\'', # Translate - New
+
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
 
@@ -85,13 +88,18 @@ $Lexicon_nl = array(
 
 ## php/lib/function.mtsetvar.php
 
+## php/lib/function.mttagsearchlink.php
+	'Invalid [_1] parameter.' => 'Ongeldige [_1] parameter',
+
 ## php/lib/function.mtvar.php
 	'\'[_1]\' is not a valid function for a hash.' => '\'[_1]\' is geen geldige functie voor een hash.',
 	'\'[_1]\' is not a valid function for an array.' => '\'[_1]\' is geen geldige functie voor een array.',
 
 ## php/lib/function.mtwidgetmanager.php
-	'Error: widgetset [_1] is empty.' => 'Fout: widgetset [_1] is leeg',
 	'Error compiling widgetset [_1]' => 'Fout bij het compileren van widgetset [_1]',
+
+## php/lib/mtdb.base.php
+	'The attribute exclude_blogs denies all incllude_blogs.' => 'Het attribuut exclude_blogs overtreft alle include_blogs', # Translate - New
 
 ## php/lib/MTUtil.php
 	'userpic-[_1]-%wx%h%x' => 'gebruikersafbeelding-[_1]-%wx%h%x',

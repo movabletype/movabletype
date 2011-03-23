@@ -13,15 +13,22 @@ use vars qw( %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
+## plugins/StyleCatcher/config.yaml
+	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'StyleCatcher le permite navegar fácilmente por los estilos y aplicarlos en el blog con un par de clics.',
+	'MT 4 Style Library' => 'Librería de estilos de MT 4',
+	'A collection of styles compatible with Movable Type 4 default templates.' => 'Una colección de estilos compatible con las plantillas predefinidas de Movable Type.',
+	'Styles' => 'Estilos',
+
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'No se encontró el directorio mt-static. Por favor, configure el \'StaticFilePath\' para continuar.',
+	'Permission Denied.' => 'Permiso denegado.', # Translate - Case
 	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'No se pudo crear el directorio [_1] - Compruebe que el servidor web puede escribir en la carpeta \'themes\'.',
 	'Successfully applied new theme selection.' => 'Se aplicó con éxito la nueva selección de estilo.',
 	'Invalid URL: [_1]' => 'URL no válida: [_1]',
-	'(Untitled)' => '(sin título)', # Translate - Case
+	'(Untitled)' => '(sin título)',
 
 ## plugins/StyleCatcher/tmpl/view.tmpl
-	'Select a [_1] Style' => 'Seleccionar un estilo de [_1]', # Translate - New
+	'Select a [_1] Style' => 'Seleccionar un estilo de [_1]',
 	'3-Columns, Wide, Thin, Thin' => '3 columnas, ancha, delgada, delgada',
 	'3-Columns, Thin, Wide, Thin' => '3 columnas, delgada, ancha, delgada',
 	'3-Columns, Thin, Thin, Wide' => '3 columnas, delgada, delgada, ancha',
@@ -49,12 +56,6 @@ use vars qw( %Lexicon );
 	'More Styles' => 'Más estilos',
 	'Selected Design' => 'Diseño seleccionado',
 	'Layout' => 'Disposición',
-
-## plugins/StyleCatcher/config.yaml
-	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'StyleCatcher le permite navegar fácilmente por los estilos y aplicarlos en el blog con un par de clics.', # Translate - New
-	'MT 4 Style Library' => 'Librería de estilos de MT 4',
-	'A collection of styles compatible with Movable Type 4 default templates.' => 'Una colección de estilos compatible con las plantillas predefinidas de Movable Type.',
-	'Styles' => 'Estilos',
 );
 
 1;

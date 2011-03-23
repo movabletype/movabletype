@@ -11,12 +11,17 @@ use vars qw( %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
+## plugins/WXRImporter/config.yaml
+	'Import WordPress exported RSS into MT.' => 'Importer depuis WordPress exported RSS vers MT',
+	'"WordPress eXtended RSS (WXR)"' => '"WordPress eXtended RSS (WXR)"', # Translate - New
+	'"Download WP attachments via HTTP."' => '"Télécharger les pièces jointes WP via HTTP."', # Translate - New
+
 ## plugins/WXRImporter/lib/WXRImporter/Import.pm
 
 ## plugins/WXRImporter/lib/WXRImporter/WXRHandler.pm
 	'File is not in WXR format.' => 'Le fichier n\'est pas dans le format WXR.',
-	'Creating new tag (\'[_1]\')...' => 'Création d\'un nouveau tag (\'[_1]\')...', # Translate - New
-	'Saving tag failed: [_1]' => 'L\'enregistrement du tag a échoué : [_1]', # Translate - New
+	'Creating new tag (\'[_1]\')...' => 'Création d\'un nouveau tag (\'[_1]\')...',
+	'Saving tag failed: [_1]' => 'L\'enregistrement du tag a échoué : [_1]',
 	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'L\'élément  (\'[_1]\') a été trouvé en double. Abandon.',
 	'Saving asset (\'[_1]\')...' => 'Enregistrement de l\'élément (\'[_1]\')...',
 	' and asset will be tagged (\'[_1]\')...' => ' et l\'élément sera taggué (\'[_1]\')...',
@@ -30,11 +35,6 @@ use vars qw( %Lexicon );
 	'Download attachments' => 'Télécharger les fichiers attachés',
 	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'L\'utilisation d\'un cron job est requis pour télécharger en arrière plan les fichiers attachés à un blog WordPress.',
 	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Télécharger les fichiers attachés d\'un blog WordPress (images et autres documents).',
-
-## plugins/WXRImporter/WXRImporter.pl
-	'Import WordPress exported RSS into MT.' => 'Importer depuis WordPress exported RSS vers MT',
-	'WordPress eXtended RSS (WXR)' => 'WordPress eXtended RSS (WXR)',
-	'Download WP attachments via HTTP.' => 'Télécharger tous les fichiers attachés à un blog WordPress par HTTP',
 );
 
 1;

@@ -13,15 +13,22 @@ use vars qw( %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
+## plugins/StyleCatcher/config.yaml
+	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'Mit StyleCatchter können Sie spielend leicht neue Designvorlagen für Ihre Blogs finden und mit wenigen Klicks direkt installieren. ',
+	'MT 4 Style Library' => 'MT 4-Designs',
+	'A collection of styles compatible with Movable Type 4 default templates.' => 'Mit den Standardvorlagen von MT 3.3+  kompatible Designvorlagen',
+	'Styles' => 'Designs',
+
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'Ihr mt-static-Ordner konnte nicht gefunden werden. Bitte konfigurieren Sie \'StaticFilePath\' um fortzufahren.',
+	'Permission Denied.' => 'Zugriff verweigert.', # Translate - Case
 	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Konnte den Ordner [_1] nicht anlegen. Stellen Sie sicher, daß der Webserver Schreibrechte auf dem \'themes\'-Ordner hat.',
 	'Successfully applied new theme selection.' => 'Neue Themenauswahl erfolgreich angewendet.',
 	'Invalid URL: [_1]' => 'Ungültige URL: [_1]',
-	'(Untitled)' => '(ohne Überschrift)', # Translate - Case # OK
+	'(Untitled)' => '(ohne Überschrift)',
 
 ## plugins/StyleCatcher/tmpl/view.tmpl
-	'Select a [_1] Style' => '[_1]-Stil wählen', # Translate - New # OK
+	'Select a [_1] Style' => '[_1]-Stil wählen',
 	'3-Columns, Wide, Thin, Thin' => 'Dreispaltig: breit - schmal - schmal',
 	'3-Columns, Thin, Wide, Thin' => 'Dreispaltig: schmal - breit - schmal',
 	'3-Columns, Thin, Thin, Wide' => 'Dreispaltig: schmal - schmal - breit',
@@ -49,12 +56,6 @@ use vars qw( %Lexicon );
 	'More Styles' => 'Weitere Designs',
 	'Selected Design' => 'Gewähltes Design',
 	'Layout' => 'Layout',
-
-## plugins/StyleCatcher/config.yaml
-	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'Mit StyleCatchter können Sie spielend leicht neue Designvorlagen für Ihre Blogs finden und mit wenigen Klicks direkt installieren. ', # Translate - New # OK
-	'MT 4 Style Library' => 'MT 4-Designs',
-	'A collection of styles compatible with Movable Type 4 default templates.' => 'Mit den Standardvorlagen von MT 3.3+  kompatible Designvorlagen',
-	'Styles' => 'Designs',
 	);
 
 1;

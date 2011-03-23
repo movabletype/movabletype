@@ -11,12 +11,17 @@ use vars qw( %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
+## plugins/WXRImporter/config.yaml
+	'Import WordPress exported RSS into MT.' => 'Aus WordPress exportiertes RSS in Movable Type importieren',
+	'"WordPress eXtended RSS (WXR)"' => '"WordPress eXtended RSS (WXR)"', # Translate - New # OK
+	'"Download WP attachments via HTTP."' => 'WordPress-Anhänge via HTTP herunterladen.', # Translate - New # OK
+
 ## plugins/WXRImporter/lib/WXRImporter/Import.pm
 
 ## plugins/WXRImporter/lib/WXRImporter/WXRHandler.pm
 	'File is not in WXR format.' => 'Datei ist nicht im WXR-Format.',
-	'Creating new tag (\'[_1]\')...' => 'Lege neuen Tag (\'[_1]\') an...', # Translate - New # OK
-	'Saving tag failed: [_1]' => 'Speichern des Tags fehlgeschlagen: [_1]', # Translate - New # OK
+	'Creating new tag (\'[_1]\')...' => 'Lege neuen Tag (\'[_1]\') an...',
+	'Saving tag failed: [_1]' => 'Speichern des Tags fehlgeschlagen: [_1]',
 	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'Doppeltes Asset (\'[_1]\') gefunden. Überspringe...',
 	'Saving asset (\'[_1]\')...' => 'Speichere Asset (\'[_1]\')...',
 	' and asset will be tagged (\'[_1]\')...' => ' und tagge Asset (\'[_1]\')...',
@@ -30,11 +35,6 @@ use vars qw( %Lexicon );
 	'Download attachments' => 'Anhänge herunterladen',
 	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'Lädt Anhänge von Wordpress-Blogs im Hintergrund herunter. Cronjob erforderlich.',
 	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Anhänge (Bilder und Dateien) des importierten Wordpress-Blogs herunterladen.',
-
-## plugins/WXRImporter/WXRImporter.pl
-	'Import WordPress exported RSS into MT.' => 'Aus WordPress exportiertes RSS in Movable Type importieren',
-	'WordPress eXtended RSS (WXR)' => 'WordPress eXtended RSS (WXR)',
-	'Download WP attachments via HTTP.' => 'WP-Anhänge per HTTP herunterladen',
 );
 
 1;
