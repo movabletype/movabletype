@@ -4295,6 +4295,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1]-[_2] of [_3]' => '[_1] - [_2] / [_3] 件',
 	'[_1] Filter Items have errors' => '[_1] フィルター項目にエラーがあります。',
 	'[_1] - Filter [_2]' => '[_1] - フィルタ [_2]',
+  'Select Filter' => 'フィルタを選択',
 
 ## tmpl/cms/list_entry.tmpl
 	'Entries Feed' => 'ブログ記事フィード',
