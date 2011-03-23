@@ -356,12 +356,12 @@ function makeBasename( parent, id, label ) {
   var level = parent_level + 1;
 
   var max = -1;
-  var re = new RegExp( '^' + basename + '(<mt:unless name="config.CategoryNameNodash">\-</mt:unless>([1-9][0-9]*))?$' );
+  var re = new RegExp( '^' + basename + '(<mt:unless name="config.CategoryNameNodash">\\-</mt:unless>([1-9][0-9]*))?$' );
   jQuery('.' + parent + '.lv-' + level).each( function () {
     if ( id && id == jQuery(this).attr('id') ) return true;
     var sibling_basename = jQuery(this).find('.item-basename-text').text();
     if ( sibling_basename.match(re) ) {
-      var num = parseInt(RegExp.$1) || 0;
+      var num = parseInt(RegExp.$2) || 0;
       if ( max < num ) max = num;
     }
     return true;
