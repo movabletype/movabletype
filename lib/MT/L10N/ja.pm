@@ -3122,6 +3122,7 @@ use vars qw( @ISA %Lexicon );
 	'Visitors must allow their TypePad account to share their e-mail address when commenting.' => 'ビジターはコメント時にメールアドレスを共有するのにTypePadアカウントが許可されています。',
 	'One or more Perl modules may be missing to use this authentication method.' => '認証を利用するのに必要なPerlモジュールが見つかりませんでした。',
 	'Setup TypePad token' => 'TypePadの設定',
+  'Select role' => 'ロール選択',
 
 ## tmpl/cms/cfg_system_general.tmpl
 	'A test email was sent.' => 'テストメールが送信されました。',
