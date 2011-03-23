@@ -1095,8 +1095,9 @@ sub list {
     $param{use_actions}      = 1;
     $param{object_label}     = $screen_settings->{object_label}
         || $obj_class->class_label;
-    $param{object_label_plural} = $app->translate( $screen_settings->{object_label_plural} )
-        || $obj_class->class_label_plural;
+    $param{object_label_plural} = $screen_settings->{object_label_plural}
+        ? $app->translate( $screen_settings->{object_label_plural} )
+        : $obj_class->class_label_plural;
     $param{contents_label} = $screen_settings->{contents_label}
         || $obj_class->contents_label;
     $param{contents_label_plural} = $screen_settings->{contents_label_plural}
