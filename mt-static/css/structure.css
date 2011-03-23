@@ -162,19 +162,19 @@ pre {
     height: 100%;
     background-color: #f3f3f3;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
-    background: -moz-linear-gradient(top, #f3f3f3, #dcdddd);
+    background: -moz-linear-gradient(top, #f3f3f3 0%, #dcdddd 100%);
     border-left: 1px solid #c0c6c9;
     text-align: center;
 }
 .toggle-button:hover {
     background-color: #fafafa;
     background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e9eaea));
-    background: -moz-linear-gradient(top, #fafafa, #e9eaea);
+    background: -moz-linear-gradient(top, #fafafa 0%, #e9eaea 100%);
 }
 .active .toggle-button {
     background-color: #dcdddd;
     background: -webkit-gradient(linear, left top, left bottom, from(#dcdddd), to(#f3f3f3));
-    background: -moz-linear-gradient(top, #dcdddd, #f3f3f3));
+    background: -moz-linear-gradient(top, #dcdddd 0%, #f3f3f3 100%);
 }
 .toggle-button img {
     position: absolute;
@@ -229,7 +229,7 @@ pre {
     height:100%;
     background-color: #dcdddd;
     background: -webkit-gradient(linear, left top, left bottom, from(#58bee3), to(#32789e));
-    background: -moz-linear-gradient(top, #58bee3, #32789e);
+    background: -moz-linear-gradient(top, #58bee3 0%, #32789e 100%);
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
     -moz-border-radius: 5px 0 0 5px;
@@ -741,28 +741,30 @@ ul.tabs li a {
     z-index: 600;
     float: right;
 }
-.fav-actions-nav .action.button {
+.fav-actions-nav .action.button, 
+.fav-actions-nav .toggle-button {
     border-color: #f8b500;
     background-color: #ffd900;
     background: -webkit-gradient(linear, left top, left bottom, from(#ffd900), to(#f8b500));
-    background: -moz-linear-gradient(top, #ffd900, #f8b500);
+    background: -moz-linear-gradient(top, #ffd900 0%, #f8b500 100%);
     color: #2b2b2b;
     text-shadow: none;    
     box-shadow: 1px 1px 2px #666;
     -webkit-box-shadow: 1px 1px 2px #666;
     -moz-box-shadow: 1px 1px 2px #666;
 }
-.fav-actions-nav .action.button:hover {
+.fav-actions-nav .action.button:hover, 
+.fav-actions-nav .toggle-button:hover {
     border-color: #c89932;
     background-color: #ffdd1a;
     background: -webkit-gradient(linear, left top, left bottom, from(#ffdd1a), to(#ffbf13));
-    background: -moz-linear-gradient(top, #ffdd1a, #ffbf13);
+    background: -moz-linear-gradient(top, #ffdd1a 0%, #ffbf13 100%);
 }
 .fav-actions-nav .action.button:active, 
 .fav-actions-nav.active .toggle-button {
     background-color: #c89932;
     background: -webkit-gradient(linear, left top, left bottom, from(#ffbf13), to(#ffdd1a));
-    background: -moz-linear-gradient(top, #ffbf13, #ffdd1a);
+    background: -moz-linear-gradient(top, #ffbf13 0%, #ffdd1a 100%);
 }
 .fav-actions { 
     border: 1px solid #adadad;
@@ -888,7 +890,7 @@ ul.tabs li a {
 .current .top-menu-link { 
     background-color: #f3f3f3;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
-    background: -moz-linear-gradient(top, #f3f3f3, #dcdddd));
+    background: -moz-linear-gradient(top, #f3f3f3 0%, #dcdddd 100%);
     color: #2b2b2b;
     font-weight: bold;
     text-shadow: #f8fbf8 0 1px 0;
@@ -1072,7 +1074,7 @@ ul.tabs li a {
     padding: 5px 8px 5px 10px;
     background-color: #dcdddd;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
-    background: -moz-linear-gradient(top, #f3f3f3, #dcdddd);
+    background: -moz-linear-gradient(top, #f3f3f3 0%, #dcdddd 100%);
     border-top-right-radius: 5px;
     border-top-left-radius: 5px;
     -moz-border-radius: 5px 5px 0 0;
@@ -1487,7 +1489,7 @@ ul.tabs li a {
 .sort-enabled:hover .field-header {
     background-color: #dcdddd;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
-    background: -moz-linear-gradient(top, #f3f3f3, #dcdddd);
+    background: -moz-linear-gradient(top, #f3f3f3 0%, #dcdddd 100%);
     border-bottom: 1px solid #c0c6c9;
 }
 .sort-enabled .field-content {

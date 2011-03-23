@@ -262,22 +262,29 @@ select {
 }
 
 /* -- Split Button */
-.split .action.button {
+.split .button {
     float: left;
-    line-height: 16px;
+    height: 20px;
+    line-height: 20px;
     margin: 0;
-    padding: 0.2em 0.6em;
+    padding: 0 0.6em;
     font-size: 13px;
     font-weight: bold;
     -moz-border-radius: 3px 0 0 3px;
     border-top-right-radius: 0; 
     border-bottom-right-radius: 0;
 }
-.split .action.toggle-button {
-    width: 16px;
-    height: 16px;
-    padding-right: 0.2em;
-    padding-left: 0.2em;
+.split .toggle-button {
+    display: block;
+    float: left;
+    position: relative;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+    line-height: 20px;
+    border-width: 1px;
+    border-style: solid;
     -moz-border-radius: 0 3px 3px 0;
     border-radius: 3px;
     border-top-left-radius: 0; 
