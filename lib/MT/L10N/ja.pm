@@ -1747,6 +1747,7 @@ use vars qw( @ISA %Lexicon );
 	'Create Websites' => 'ウェブサイトの作成',
 	'Manage Plugins' => 'プラグインの管理',
 	'View System Activity Log' => 'システムログの閲覧',
+	'IP addresses' => 'IPアドレス',
 
 ## lib/MT/DefaultTemplates.pm
 	'Archive Index' => 'アーカイブインデックス',
