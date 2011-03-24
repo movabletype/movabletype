@@ -1089,7 +1089,7 @@ use vars qw( @ISA %Lexicon );
 	'Tag \'[_1]\' exists in the system.' => '\'[_1]\'というタグはすでに存在します。',
 	'[_1] records restored...' => '[_1]件復元されました...',
 	'The role \'[_1]\' has been renamed to \'[_2]\' because a role with the same name already exists.' => 'ロール「[_1]」はすでに存在するため、「[_2]」という名前に変わりました。',
-	'The system level setting for plugin \'[_1]\' has already existed.  Skipped the record.' => '[_1]のシステムのプラグイン設定はすでに存在しています。このレコードはスキップします。',
+  'The system level settings for plugin \'[_1]\' already exist.  Skipping this record.' => '[_1]のシステムのプラグイン設定はすでに存在しています。このレコードはスキップします。',
 
 ## lib/MT/BackupRestore/ManifestFileHandler.pm
 
@@ -3946,7 +3946,7 @@ use vars qw( @ISA %Lexicon );
 	'Choose Folder' => 'フォルダの選択',
 	'Upload (s)' => 'アップロード (s)',
 	'Upload' => 'アップロード',
-	'[_1] contains an invalid character as directory name: [_2]' => '[_1]のディレクトリ名として正しくない文字が含まれています: [_2]',
+  '[_1] contains a character that is invalid when used in a directory name: [_2]' => '[_1]のディレクトリ名として正しくない文字が含まれています: [_2]',
 
 ## tmpl/cms/include/author_table.tmpl
 	'Enable selected users (e)' => '選択したユーザーを有効化 (e)',
