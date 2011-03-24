@@ -1043,16 +1043,12 @@ ul.tabs li a {
 
 
 /* - Actions Bar */
-.actions-bar { 
-    position: relative;
-    margin: 10px 0;
-}
 .widget .actions-bar {
     margin-bottom: 0;
 }
 .plugin-actions { 
-    margin-top: 15px;
-    text-align: right;
+    float: right;
+    margin: 3px 0 0;
 }
 
 /* -- Auto save message */
