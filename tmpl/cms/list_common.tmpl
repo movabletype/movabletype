@@ -124,12 +124,9 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 
       <div id="actions-bar-top" class="actions-bar actions-bar-top line">
 <mt:if name="use_actions">
-        <div class="list-actions">
-          <mt:var name="button_actions">
-          <mt:include name="include/itemset_action_widget.tmpl">
-        </div>
+        <span class="button-actions actions"><mt:var name="button_actions"></span>
+        <span class="plugin-actions actions"><mt:include name="include/itemset_action_widget.tmpl"></span>
 </mt:if>
-
         <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
         <div class="pagination"></div>
       </div>
@@ -176,10 +173,8 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 
       <div id="actions-bar-bottom" class="actions-bar actions-bar-bottom line">
 <mt:if name="use_actions">
-        <div class="list-actions">
-          <mt:var name="button_actions">
-          <mt:include name="include/itemset_action_widget.tmpl">
-        </div>
+        <span class="button-actions actions"><mt:var name="button_actions"></span>
+        <span class="plugin-actions actions"><mt:include name="include/itemset_action_widget.tmpl"></span>
 </mt:if>
         <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
         <div class="pagination"></div>
