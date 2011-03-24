@@ -313,9 +313,24 @@ if (!$view) {
             ul.version {
                 margin-bottom: 0;
             }
+
+            textarea.exception {
+                background-color: #ffa4ae;
+                width: 100%;
+                height: 9.0em;
+                overflow: scroll;
+                display: none;
+            }
         //-->
     </style>
-
+    <script type="text/javascript">
+        function showException(i) {
+            var exception = document.getElementById("exception-" + i);
+            exception.setAttribute("style", "display: block;");
+            var toggler = document.getElementById("exception-toggle-" + i);
+            toggler.setAttribute("style", "display: none;");
+        }
+    </script>
 </head>
 
 HTML
@@ -533,6 +548,7 @@ if ($mt) {
 @DATA = @CORE_DATA unless @DATA;
 @OPT  = @CORE_OPT  unless @OPT;
 
+my $i = 0;
 for my $list (\@REQ, \@DATA, \@OPT) {
     my $data = ($list == \@DATA);
     my $req = ($list == \@REQ);
@@ -584,14 +600,22 @@ MSG
             ($ver ? " (version &gt;= $ver)" : "") . "</h3>" );
         eval("use $mod" . ($ver ? " $ver;" : ";"));
         if ($@) {
+            my $exception = $@;
             $is_good = 0 if $req;
             my $msg = $ver ?
                       trans_templ(qq{<p class="msg warning"><__trans phrase="Either your server does not have [_1] installed, the version that is installed is too old, or [_1] requires another module that is not installed." params="$mod"> }) :
                       trans_templ(qq{<p class="msg warning"><__trans phrase="Your server does not have [_1] installed, or [_1] requires another module that is not installed." params="$mod"> });
             print_encode( $desc );
-            print_encode(  trans_templ(qq{ <__trans phrase="Please consult the installation instructions for help in installing [_1]." params="$mod"></p>\n\n}) );
             print_encode(  $msg );
+            print_encode(  trans_templ(qq{ <__trans phrase="Please consult the installation instructions for help in installing [_1]." params="$mod">}) );
+            if ( $exception ) {
+                print_encode( qq{<a id="exception-toggle-$i" href="#" onclick="showException($i); return false;">} );
+                print_encode( translate('Details') );
+                print_encode( qq{</a>} );
+            }
+            print_encode(  trans_templ(qq{ </p>\n\n}) );
             print_encode(  "\n\n" );
+            print_encode( qq{<textarea id="exception-$i" class="exception" readonly="readonly">$exception</textarea>}) if $exception;
         } else {
             if ($data) {
                 $dbi_is_okay = 1 if $mod eq 'DBI';
@@ -609,6 +633,7 @@ MSG
             print_encode(  trans_templ(qq{<p class="installed"><__trans phrase="Your server has [_1] installed (version [_2])." params="$mod%%} . $mod->VERSION . qq{"></p>\n\n}) );
         }
         print_encode(  "</div>\n" ) if $mod =~ m/^DBD::/;
+        $i++;
     }
     $is_good &= $got_one_data if $data;
     print_encode( "\n\t</div>\n\n" );
