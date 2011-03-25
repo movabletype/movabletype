@@ -12,7 +12,7 @@
 <mt:include name="include/header.tmpl">
 <mt:include name="include/basic_filter_forms.tmpl">
 
-<div class="line">
+<div class="listing line">
   <div class="unit size1of1">
     <form id="<mt:var name="object_type">-listing-form" method="POST">
       <input type="hidden" name="__mode" value="" />
@@ -24,8 +24,10 @@
       <mt:if name="return_args"><input type="hidden" name="return_args" value="<mt:var name="return_args">" /></mt:if>
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
 
-      <div class="actions-bar actions-bar-top">
-        <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
+      <div id="actions-bar-top" class="actions-bar actions-bar-top line">
+        <div class="button-actions actions">
+          <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
+        </div>        
       </div>
 
       <div id="area-action" class="mod sortable-header">
@@ -38,8 +40,10 @@
 
       <div id="root" class="sortable"></div>
 
-      <div class="actions-bar actions-bar-top">
-        <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
+      <div id="actions-bar-bottom" class="actions-bar actions-bar-bottom line">
+        <div class="button-actions actions">
+          <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
+        </div>        
       </div>
 
     </form>
