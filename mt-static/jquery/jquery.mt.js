@@ -922,11 +922,8 @@ $.extend( $.mtValidator.prototype, {
     },
     raise: function (msg) {
         this.error  = true;
-        this.errstr = this.trans(msg || 'Invalid value');
+        this.errstr = msg || trans('Invalid value');
         return false;
-    },
-    trans: function (msg) {
-        return ( 'function' == typeof window.trans ) ? trans(msg) : msg;
     },
     validClass: 'valid',
     errorClass: 'error',
@@ -1036,12 +1033,12 @@ $.mtValidateAddMessages = function ( rules ) {
 };
 
 $.mtValidateMessages = {
-    '.date':        'Invalid date format',
-    '.email':       'Invalid mail address',
-    '.url':         'Invalid URL',
-    '.required':    'This field is required',
-    '.digit, .num': 'This field must be integer',
-    '.number':      'This field must be number'
+    '.date':        trans('Invalid date format'),
+    '.email':       trans('Invalid mail address'),
+    '.url':         trans('Invalid URL'),
+    '.required':    trans('This field is required'),
+    '.digit, .num': trans('This field must be integer'),
+    '.number':      trans('This field must be number')
 };
 
 $.fn.extend({
