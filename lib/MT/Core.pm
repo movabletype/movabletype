@@ -1354,7 +1354,7 @@ BEGIN {
             },
             comment => {
                 object_label     => 'Comment',
-                default_sort_key => 'comment',
+                default_sort_key => 'created_on',
                 permission       => 'access_to_comment_list',
                 primary          => 'comment',
                 feed_link        => sub {
