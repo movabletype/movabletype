@@ -580,7 +580,9 @@ function setLicense() {
 
 <mt:if name="is_blog">
     jQuery.mtUseSubdomain();
-    jQuery.mtEditSitePath();
+    jQuery.mtEditSitePath({
+        edit: '<__trans phrase="Edit">'
+    });
     jQuery.mtUseAbsolute();
 </mt:if>
 </mt:setvarblock>

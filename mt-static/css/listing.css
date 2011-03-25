@@ -102,11 +102,7 @@ tfoot .col.head{
 }
 .col.head a {
     display: block;
-    width: 100%;
-    color: #7b7c7d;
-    text-decoration: none;
-}
-.col.head a {
+    position: relative;
     width: 100%;
     color: #7b7c7d;
     text-decoration: none;
@@ -120,7 +116,7 @@ tfoot .col.head{
     position: relative;
 }
 .col-label {
-    display: inline-block;
+    display: block;
     width: 95%;
     margin-left: 5px;
     padding: 7px 0;
@@ -213,18 +209,19 @@ tfoot .col.head{
 .listing .actions-bar {
     min-height: 22px;
 }
-
-.indicator,
-.pagination {
-    position: absolute;
-    right: 0;
-    bottom: 0;
+.listing .button-actions, 
+.listing .plugin-actions {
+    float: left;
+    margin: 8px 10px 8px 0;
+}
+.pagination, 
+.indicator {
+    float: right;
     height: 22px;
+    margin: 8px 0;
     line-height: 22px;
     font-family: Arial, sans-serif;
-    vertical-align: middle;
-    text-align: right;
-    overflow: auto;
+    font-size: 12px;
 }
 .pagenav, 
 .current-rows {

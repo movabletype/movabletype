@@ -116,17 +116,7 @@ sub list_props {
                     :                      'Unapproved';
                 my $lc_status_class = lc $status_class;
 
-                my $ts          = $obj->created_on;
-                my $date_format = MT::App::CMS::LISTING_DATE_FORMAT();
                 my $blog        = $app ? $app->blog : undef;
-                my $is_relative = 1;
-                ## TBD: should do like this...
-                ## my $is_relative = $app->user->date_type eq 'relative' ? 1 : 0;
-                my $date
-                    = $is_relative
-                    ? MT::Util::relative_date( $ts, time, $blog )
-                    : MT::Util::format_ts( $date_format, $ts, $blog,
-                    $app->user ? $app->user->preferred_language : undef );
                 my $edit_str = MT->translate('Edit');
                 my $reply_link;
                 if ( $app->user->permissions( $obj->blog->id )
@@ -160,17 +150,10 @@ sub list_props {
                     </span>
                     <p class="comment-text content-text">$text</p>
                     <div class="item-ctrl">
-                      <span class="date">$date</span>
                       <a href="$link" class="edit action-link">$edit_str</a>
                       $reply_link
                     </div>
                 };
-            },
-            sort => sub {
-                my $prop = shift;
-                my ( $terms, $args ) = @_;
-                $args->{sort} = 'created_on';
-                return;
             },
             default_sort_order => 'descend',
         },
@@ -324,6 +307,10 @@ sub list_props {
                 };
             },
         },
+        created_on => {
+            order => 250,
+            base  => '__virtual.created_on',
+        },
         ip => {
             auto      => 1,
             order     => 300,
@@ -432,10 +419,6 @@ sub list_props {
         modified_on => {
             display => 'none',
             base    => '__virtual.modified_on',
-        },
-        created_on => {
-            display => 'none',
-            base    => '__virtual.created_on',
         },
         status => {
             label   => 'Status',

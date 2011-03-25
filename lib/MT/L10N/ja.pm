@@ -1089,7 +1089,7 @@ use vars qw( @ISA %Lexicon );
 	'Tag \'[_1]\' exists in the system.' => '\'[_1]\'というタグはすでに存在します。',
 	'[_1] records restored...' => '[_1]件復元されました...',
 	'The role \'[_1]\' has been renamed to \'[_2]\' because a role with the same name already exists.' => 'ロール「[_1]」はすでに存在するため、「[_2]」という名前に変わりました。',
-	'The system level setting for plugin \'[_1]\' has already existed.  Skipped the record.' => '[_1]のシステムのプラグイン設定はすでに存在しています。このレコードはスキップします。',
+  'The system level settings for plugin \'[_1]\' already exist.  Skipping this record.' => '[_1]のシステムのプラグイン設定はすでに存在しています。このレコードはスキップします。',
 
 ## lib/MT/BackupRestore/ManifestFileHandler.pm
 
@@ -1298,8 +1298,8 @@ use vars qw( @ISA %Lexicon );
 	'No such [_1].' => '[_1]が存在しません。',
 	'Same Basename has already been used. You should use an unique basename.' => 'ファイル名はすでに使用されています。一意の名前を指定してください。',
 	'Your blog has not been configured with a site path and URL. You cannot publish entries until these are defined.' => 'サイトパスとサイトURLを設定していません。設定するまで公開できません。',
-	'Invalid date \'[_1]\'; authored on dates must be in the format YYYY-MM-DD HH:MM:SS.' => '\'[_1]\'は不正な日付です。YYYY-MM-DD HH:MM:SSの形式で入力してください。',
-	'Invalid date \'[_1]\'; authored on dates should be real dates.' => '\'[_1]\'は不正な日付です。正しい日付を入力してください。',
+	'Invalid date \'[_1]\'; published on dates must be in the format YYYY-MM-DD HH:MM:SS.' => '\'[_1]\'は不正な日付です。YYYY-MM-DD HH:MM:SSの形式で入力してください。',
+	'Invalid date \'[_1]\'; published on dates should be real dates.' => '\'[_1]\'は不正な日付です。正しい日付を入力してください。',
 	'[_1] \'[_2]\' (ID:[_3]) added by user \'[_4]\'' => '[_4]が[_1]「[_2]」(ID:[_3])を追加しました。',
 	'[_1] \'[_2]\' (ID:[_3]) edited and its status changed from [_4] to [_5] by user \'[_6]\'' => '[_6]が[_1]「[_2]」(ID:[_3])を更新し、公開の状態を[_4]から[_5]に変更しました。',
 	'[_1] \'[_2]\' (ID:[_3]) edited by user \'[_4]\'' => '[_4]が[_1]「[_2]」(ID:[_3])を更新しました。',
@@ -1747,6 +1747,7 @@ use vars qw( @ISA %Lexicon );
 	'Create Websites' => 'ウェブサイトの作成',
 	'Manage Plugins' => 'プラグインの管理',
 	'View System Activity Log' => 'システムログの閲覧',
+	'IP addresses' => 'IPアドレス',
 
 ## lib/MT/DefaultTemplates.pm
 	'Archive Index' => 'アーカイブインデックス',
@@ -2474,6 +2475,13 @@ use vars qw( @ISA %Lexicon );
 	'Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.' => 'Templateメソッドは実装されていません。',
 
 ## mt-static/jquery/jquery.mt.js
+	'Invalid date format' => '日付の入力フォーマットが正しくありません',
+	'Invalid mail address' => 'メールアドレスのフォーマットが正しくありません',
+	'Invalid URL' => 'URLのフォーマットが正しくありません',
+	'This field is required' => 'このフィールドは必須です。',
+	'This field must be integer' => 'このフィールドには整数の値を入力して下さい',
+	'This field must be number' => 'このフィールドには数値を入力して下さい',
+
 
 ## mt-static/js/assetdetail.js
 	'No Preview Available.' => 'プレビューは利用できません。',
@@ -3492,10 +3500,12 @@ use vars qw( @ISA %Lexicon );
 	'Blog Theme' => 'ブログテーマ',
 	'Select the theme you wish to use for this blog.' => 'このブログで利用するテーマを選択してください。',
 	'Name your blog. The blog name can be changed at any time.' => 'ブログ名を付けてください。この名前はいつでも変更できます。',
-	'Enter the URL of your Blog. Exclude the filename (i.e. index.html). Example: http://www.example.com/weblog/' => 'ブログを公開するURLを入力してください。ファイル名(index.htmlなど)は含めず、末尾は\'/\'で終わります。例: http://www.example.com/blog/',
+	'Enter the URL of your Blog. Exclude the filename (i.e. index.html). Example: http://www.example.com/blog/' => 'ブログを公開するURLを入力してください。ファイル名(index.htmlなど)は含めず、末尾は\'/\'で終わります。例: http://www.example.com/blog/',
 	'Select your timezone from the pulldown menu.' => 'プルダウンメニューからタイムゾーンを選択してください。',
 	'If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.' => 'グローバルなDefaultLanguage設定と異なる言語を選んだ場合、グローバルテンプレートの名称が異なるため、テンプレート内で読み込むモジュール名の変更が必要な場合があります。',
 	'Create Blog (s)' => 'ブログを作成 (s)',
+	'The path where your index files will be located. Do not end with \'/\' or \'\\\'.  Example: /home/mt/public_html/blog or C:\\www\\public_html\\blog' => 'インデックスファイルを配置するパスを入力してください。例: /home/mt/public_html/weblogやC:\\www\\public_html\\blog',
+  'The path where your index files will be located. An absolute path (starting with \'/\' for Linux or \'C:\\\' for Windows) is preferred.  Do not end with \'/\' or \'\\\'. Example: /home/mt/public_html or C:\\www\\public_html' => 'インデックスファイルが公開されるパスを入力してください。絶対パス(Linuxの時は\'/\'、Windowsの時は\'C:\\\'などで始まる)を推奨します。末尾には\'/\'や\'\\\'を含めません。例: /home/melody/public_html/blogやC:\\www\\public_html\\blog',
 
 ## tmpl/cms/edit_category.tmpl
 	'Edit Category' => 'カテゴリの編集',
@@ -3936,7 +3946,7 @@ use vars qw( @ISA %Lexicon );
 	'Choose Folder' => 'フォルダの選択',
 	'Upload (s)' => 'アップロード (s)',
 	'Upload' => 'アップロード',
-	'[_1] contains an invalid character as directory name: [_2]' => '[_1]のディレクトリ名として正しくない文字が含まれています: [_2]',
+  '[_1] contains a character that is invalid when used in a directory name: [_2]' => '[_1]のディレクトリ名として正しくない文字が含まれています: [_2]',
 
 ## tmpl/cms/include/author_table.tmpl
 	'Enable selected users (e)' => '選択したユーザーを有効化 (e)',
@@ -4296,6 +4306,8 @@ use vars qw( @ISA %Lexicon );
 	'[_1] Filter Items have errors' => '[_1] フィルター項目にエラーがあります。',
 	'[_1] - Filter [_2]' => '[_1] - フィルタ [_2]',
   'Select Filter' => 'フィルタを選択',
+  'Select all [_1] items' => '全[_1]件を選択する',
+  'All [_1] items are selected' => '全[_1]件が選択されています',
 
 ## tmpl/cms/list_entry.tmpl
 	'Entries Feed' => 'ブログ記事フィード',
@@ -4588,6 +4600,10 @@ use vars qw( @ISA %Lexicon );
 	'Memcache Server is [_1].' => 'Memcacheサーバーは[_1]です。',
 	'Server Model' => 'サーバーモデル',
 	'Movable Type could not find the script named \'mt-check.cgi\'. To resolve this issue, ensure that the mt-check.cgi script exists and that the CheckScript configuration parameter (if it is necessary) references it properly.' => 'mt-check.cgiが見つかりませんでした。mt-check.cgiが存在すること、名前を変えた場合は構成ファイルのCheckScriptディレクティブに名前を指定してください。',
+  'configured' => '有効',
+  'disabled' => '無効',
+  'available' => '利用可能',
+  'unavailable' => '利用不可',
 
 ## tmpl/cms/theme_export_replace.tmpl
 	'Export theme folder already exists \'[_1]\'. You can overwrite a existing theme, or cancel to change the Basename?' => 'テーマをエクスポートするフォルダ([_1])は既に存在します。上書き保存するか、キャンセルして出力ファイル名を変更してください。',

@@ -110,6 +110,9 @@ sub import_contents {
                     ## entries using the created on timestamp, and the import file
                     ## tells us not to import an entry with the meta-tag "NO ENTRY".
                     my $no_save = 0;
+                    
+                    # remember which of the defaults were overrided, so no farther override will accour
+                    my $defaults_overrided = '';
 
                     ## Handle all meta-data: author, category, title, date.
                     my $i = -1;
@@ -260,6 +263,7 @@ sub import_contents {
                         elsif ( $key eq 'ALLOW COMMENTS' ) {
                             $val = 0 unless $val;
                             $entry->allow_comments($val);
+                            $defaults_overrided .= ',ALLOW COMMENTS';
                         }
                         elsif ( $key eq 'CONVERT BREAKS' ) {
                             $val = 0 unless $val;
@@ -273,6 +277,7 @@ sub import_contents {
                                 )
                             ) unless $val eq 0 || $val eq 1;
                             $entry->allow_pings($val);
+                            $defaults_overrided .= ',ALLOW PINGS';
                         }
                         elsif ( $key eq 'NO ENTRY' ) {
                             $no_save++;
@@ -466,15 +471,17 @@ sub import_contents {
 
                     ## If an entry has comments listed along with it, set
                     ## allow_comments to 1 no matter what the default is.
-                    if ( @comments && !$entry->allow_comments ) {
+                    if ( @comments && !$entry->allow_comments && ( $defaults_overrided !~ m/ALLOW COMMENTS/ ) ) {
                         $entry->allow_comments(1);
                     }
 
                     ## If an entry has TrackBack pings listed along with it,
                     ## set allow_pings to 1 no matter what the default is.
                     if (@pings) {
-                        $entry->allow_pings(1);
-
+                    	if ( $defaults_overrided !~ m/ALLOW PINGS/ ) {
+                        	$entry->allow_pings(1);
+						}
+						
                         ## If the entry has TrackBack pings, we need to make sure
                         ## that an MT::Trackback object is created. To do that, we
                         ## need to make sure that $entry->save is called.
