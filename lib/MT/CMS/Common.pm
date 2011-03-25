@@ -1051,11 +1051,12 @@ sub list {
 
     require MT::CMS::Filter;
     my $filters = MT::CMS::Filter::filters( $app, $type, encode_html => 1 );
+
     my $allpass_filter = {
         label => MT->translate(
             'All [_1]',
             $screen_settings->{object_label_plural}
-            ? MT->translate( $screen_settings->{object_label_plural} )
+            ? $screen_settings->{object_label_plural}
             : $obj_class->class_label_plural
         ),
         items    => [],
@@ -1095,8 +1096,9 @@ sub list {
     $param{use_actions}      = 1;
     $param{object_label}     = $screen_settings->{object_label}
         || $obj_class->class_label;
-    $param{object_label_plural} = $screen_settings->{object_label_plural}
-        ? $app->translate( $screen_settings->{object_label_plural} )
+    $param{object_label_plural}
+        = $screen_settings->{object_label_plural}
+        ? $screen_settings->{object_label_plural}
         : $obj_class->class_label_plural;
     $param{contents_label} = $screen_settings->{contents_label}
         || $obj_class->contents_label;
