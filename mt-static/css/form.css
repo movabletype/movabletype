@@ -158,13 +158,11 @@ select {
 /* - Button */ 
 .button { 
     cursor: pointer;
-    line-height: 1.3;
     overflow: visible;
     display: inline-block;
-    position: relative;
     outline: none;
     margin-right: 5px;
-    padding: 3px 0.5em 2px;
+    padding: 3px 0.5em;
     border: 1px solid #adadad;
     background-color: #f3f3f3;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
@@ -174,11 +172,16 @@ select {
     font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
     text-align: center;
     text-decoration: none;
+    vertical-align: middle;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     border-radius: 3px;
     -moz-border-radius: 3px;
     -webkit-box-shadow: 0 1px 0 #f3f3f3;
     -moz-box-shadow: 0 1px 0 #f3f3f3;
     box-shadow: 0 1px 0 #f3f3f3;
+    
 }
 .button:hover {
     border-color: #7b7c7d;
@@ -263,7 +266,6 @@ select {
 /* -- Split Button */
 .split .button {
     float: left;
-    height: 20px;
     line-height: 20px;
     margin: 0;
     padding: 0 0.6em;

@@ -249,7 +249,7 @@ var line = '<th class="col head cb"<mt:unless name="has_list_actions"> style="di
 var table = jQuery('table.listing-table')[0];
 var col_classes = {};
 <mt:loop name="list_columns">
-line += '<th class="col head <mt:var name="id"><mt:if name="primary"> primary</mt:if><mt:if name="col_class"> <mt:var name="col_class"></mt:if>"><div><mt:if name="sortable"><a href="#<mt:var name="id">" class="sort-link"><span class="col-label"><mt:var name="label"></span></a><mt:else><span class="col-label"><mt:var name="label"></span></mt:if></div></th>';
+line += '<th class="col head <mt:var name="id"><mt:if name="primary"> primary</mt:if><mt:if name="col_class"> <mt:var name="col_class"></mt:if>"><mt:if name="sortable"><a href="#<mt:var name="id">" class="sort-link"><span class="col-label"><mt:var name="label"></span></a><mt:else><span class="col-label"><mt:var name="label"></span></mt:if></th>';
 <mt:if name="default_sort_order" eq="descend">
 jQuery.data(table, '<mt:var name="id">', 'desc');
 <mt:else>
@@ -694,7 +694,7 @@ function renderPagination(count, limit, page, last, total) {
       .append('<span class="pagenav to-start disabled">&lsaquo; <__trans phrase="Prev"></span>');
   }
   var end = (page == last) ? total : start+limit-1;
-  var page_status = trans('[_1]-[_2] of [_3]', start, end, total);
+  var page_status = trans('[_1] - [_2] of [_3]', start, end, total);
 
   $e.append('<span class="current-rows">'+page_status+'</span>')
   if (uselast) {
@@ -1124,7 +1124,7 @@ jQuery('table.listing-table thead a, tfoot a').click(function() {
     jQuery('table.listing-table thead th, tfoot th').removeClass('sorted').find('span.sm').remove();
     $th.addClass('sorted');
     url.match(/#(.*)/);
-    jQuery('<span class="sm '+jQuery.data(table, RegExp.$1)+'"></span>').appendTo($th.find('div'));
+    jQuery('<span class="sm '+jQuery.data(table, RegExp.$1)+'"></span>').appendTo($th.find('.sort-link'));
   }
   checked = [];
   renderColumns();

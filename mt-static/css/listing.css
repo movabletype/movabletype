@@ -102,11 +102,7 @@ tfoot .col.head{
 }
 .col.head a {
     display: block;
-    width: 100%;
-    color: #7b7c7d;
-    text-decoration: none;
-}
-.col.head a {
+    position: relative;
     width: 100%;
     color: #7b7c7d;
     text-decoration: none;
@@ -120,7 +116,7 @@ tfoot .col.head{
     position: relative;
 }
 .col-label {
-    display: inline-block;
+    display: block;
     width: 95%;
     margin-left: 5px;
     padding: 7px 0;
