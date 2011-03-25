@@ -1579,35 +1579,37 @@ sub save {
             )
         {
             $param{error} = $app->translate(
-                "Invalid date '[_1]'; authored on dates must be in the format YYYY-MM-DD HH:MM:SS.",
+                "Invalid date '[_1]'; published on dates must be in the format YYYY-MM-DD HH:MM:SS.",
                 $ao
             );
         }
-        my $s = $6 || 0;
-        $param{error}
-            = $app->translate(
-            "Invalid date '[_1]'; authored on dates should be real dates.",
-            $ao )
-            if (
-               $s > 59
-            || $s < 0
-            || $5 > 59
-            || $5 < 0
-            || $4 > 23
-            || $4 < 0
-            || $2 > 12
-            || $2 < 1
-            || $3 < 1
-            || ( MT::Util::days_in( $2, $1 ) < $3
-                && !MT::Util::leap_day( $0, $1, $2 ) )
-            );
+        unless ( $param{error} ) {
+            my $s = $6 || 0;
+            $param{error}
+                = $app->translate(
+                "Invalid date '[_1]'; published on dates should be real dates.",
+                $ao )
+                if (
+                   $s > 59
+                || $s < 0
+                || $5 > 59
+                || $5 < 0
+                || $4 > 23
+                || $4 < 0
+                || $2 > 12
+                || $2 < 1
+                || $3 < 1
+                || ( MT::Util::days_in( $2, $1 ) < $3
+                    && !MT::Util::leap_day( $0, $1, $2 ) )
+                );
+        }
         $param{return_args} = $app->param('return_args');
         return $app->forward( "view", \%param ) if $param{error};
         if ( $obj->authored_on ) {
             $previous_old = $obj->previous(1);
             $next_old     = $obj->next(1);
         }
-        my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5, $s;
+        my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5, ( $6 || 0 );
         $obj->authored_on($ts);
     }
     my $is_new = $obj->id ? 0 : 1;
