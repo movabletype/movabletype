@@ -28,7 +28,7 @@ our @EXPORT_OK
     epoch2ts ts2epoch escape_unicode unescape_unicode
     sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
-    extract_url_path break_up_text dir_separator deep_do );
+    extract_url_path break_up_text dir_separator deep_do deep_copy );
 
 {
     my $Has_Weaken;
@@ -2587,6 +2587,35 @@ sub deep_do {
     }
 }
 
+sub deep_copy {
+    my ( $limit, $depth ) = @_[ 1, 2 ];
+    $depth ||= 0;
+    if ( defined($limit) && $depth >= $limit ) {
+        return $_[0];
+    }
+
+    my $ref = ref $_[0];
+    if ( !$ref ) {
+        $_[0];
+    }
+    elsif ( $ref eq 'HASH' ) {
+        my $hash = $_[0];
+        +{
+            map( ( $_ => deep_copy( $hash->{$_}, $limit, $depth + 1 ) ),
+                keys(%$hash) )
+        };
+    }
+    elsif ( $ref eq 'ARRAY' ) {
+        [ map( deep_copy( $_, $limit, $depth + 1 ), @{ $_[0] } ) ];
+    }
+    elsif ( $ref eq 'SCALAR' ) {
+        \${ $_[0] };
+    }
+    else {
+        $_[0];
+    }
+}
+
 1;
 
 __END__
@@ -2780,6 +2809,11 @@ for MT to render json strings properly.
 =head2 dir_separator
 
 Returns the character of directory separator.
+
+=head2 deep_copy($value, $limit)
+
+Returns the value recursively copied from I<value>.
+If I<limit> is specified, this subroutine is not recursively copied from it.
 
 =head1 AUTHOR & COPYRIGHTS
 
