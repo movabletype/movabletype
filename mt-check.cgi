@@ -214,13 +214,29 @@ if (!$view) {
             body {
                 position: relative;
                 min-height: 100%;
-                line-height: 1.3;
+                line-height: 1.2;
                 margin: 0;
                 padding: 0;
                 color: #2b2b2b;
-                background-color: #f8fbf8;
-                font-size: 12px;
+                background-color: #fffffc;
+                font-size: 13px;
                 font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
+            }
+
+            a { 
+                color: #507ea4;
+                outline: 0;
+            }
+            a:hover, 
+            a:active { 
+                color: #839b5c;
+                text-decoration: none;
+            }
+            .toggle-link { 
+                display: inline-block;
+                margin-left: 15px;
+                background: transparent;
+                color: #7b7c7d;
             }
 
             #header {
@@ -251,7 +267,6 @@ if (!$view) {
                 color: #F8FBF8;
 
             }
-
             h2 {
                 margin-top: 2em;
                 margin-bottom: .5em;
@@ -261,7 +276,6 @@ if (!$view) {
             h2#system-info {
                 margin-top: 1em;
             }
-
             h3 {
                 font-size: 16px;
                 margin-bottom: 0px;
@@ -275,16 +289,14 @@ if (!$view) {
                 margin-left: 45px;
             }
 
-            .msg {
+            .msg { 
                 position: relative;
                 margin: 10px 0;
-                padding: 0.8em;
+                padding: 0.5em 0.75em;
                 background-repeat: no-repeat;
                 background-position: 8px center;
             }
-            .msg-error, 
-            .msg-alert, 
-            .warning {
+            .msg-warning {
                 background-color: #fef263;
             }
             .msg-info {
@@ -294,7 +306,7 @@ if (!$view) {
                 margin-top: 50px;
                 padding-left: 20px;
                 background-color: #cee4ae;
-                background-position: 12px .75em;
+                background-position: 12px 0.75em;
             }
             .msg-success h2 {
                 margin-top: 5px;
@@ -303,23 +315,36 @@ if (!$view) {
             .msg-success p {
                 font-size: 13px;
             }
+            .msg-text { 
+                margin: 0;
+            }
+            .msg textarea {
+                display: none;
+                width: 100%;
+                max-width: 100%;
+                min-height: 150px;
+                max-height: 500px;
+                padding: 0.2em 0.25em;
+                margin: 10px 0 0;
+                border: 1px solid #c0c6c9;
+                overflow: auto;
+                font-family: monospace;
+                font-size: 95%;
+                background-color: #f3f3f3;
+                color: #7b7c7d;
+                box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+            }
 
             .installed {
-                color: #9EA1A3;
+                color: #9ea1a3;
                 padding-top: 0px;
                 margin-top: 0px;
             }
 
             ul.version {
                 margin-bottom: 0;
-            }
-
-            textarea.exception {
-                background-color: #ffa4ae;
-                width: 100%;
-                height: 9.0em;
-                overflow: scroll;
-                display: none;
             }
         //-->
     </style>
@@ -344,7 +369,9 @@ HTML
         print_encode( trans_templ(<<HTML) );
 <div id="header"><h1 id="brand"><span><__trans phrase="Movable Type System Check"> [mt-check.cgi]</span></h1></div>
 <div id="content">
-<p class="msg msg-info"><__trans phrase="You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator."></p>
+<div class="msg msg-info">
+<p class="msg-text"><__trans phrase="You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator."></p>
+</div>
 </div>
 </body></html>
 HTML
@@ -355,7 +382,9 @@ HTML
         print_encode( trans_templ(<<HTML) );
 <div id="header"><h1 id="brand"><span><__trans phrase="Movable Type System Check"> [mt-check.cgi]</span></h1></div>
 <div id="content">
-<p class="msg msg-info"><__trans phrase="The MT-Check report is disabled when Movable Type has a valid configuration file (mt-config.cgi)"></p>
+<div class="msg msg-info">
+<p class="meg-text"><__trans phrase="The MT-Check report is disabled when Movable Type has a valid configuration file (mt-config.cgi)"></p>
+</div>
 </div>
 </body></html>
 HTML
@@ -366,7 +395,9 @@ HTML
 <div id="header"><h1 id="brand"><span><__trans phrase="Movable Type System Check"> [mt-check.cgi]</span></h1></div>
 
 <div id="content">
-<p class="msg msg-info"><__trans phrase="The mt-check.cgi script provides you with information about your system's configuration and determines whether you have all of the components you need to run Movable Type."></p>
+<div class="msg msg-info">
+<p class="msg-text"><__trans phrase="The mt-check.cgi script provides you with information about your system's configuration and determines whether you have all of the components you need to run Movable Type."></p>
+</div>
 HTML
 }
 
@@ -470,7 +501,7 @@ my $ver = ref($^V) eq 'version' ? $^V->normal : ( $^V ? join('.', unpack 'C*', $
 my $perl_ver_check = '';
 if ($] < 5.008001) {  # our minimal requirement for support
     $perl_ver_check = <<EOT;
-<p class="msg warning"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.8.1"></p>
+<div class="msg msg-warning"><p class="msg-text"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.8.1"></p></div>
 EOT
 }
 
@@ -603,29 +634,29 @@ MSG
             my $exception = $@;
             $is_good = 0 if $req;
             my $msg = $ver ?
-                      trans_templ(qq{<p class="msg warning"><__trans phrase="Either your server does not have [_1] installed, the version that is installed is too old, or [_1] requires another module that is not installed." params="$mod"> }) :
-                      trans_templ(qq{<p class="msg warning"><__trans phrase="Your server does not have [_1] installed, or [_1] requires another module that is not installed." params="$mod"> });
+                      trans_templ(qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="Either your server does not have [_1] installed, the version that is installed is too old, or [_1] requires another module that is not installed." params="$mod"> }) :
+                      trans_templ(qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="Your server does not have [_1] installed, or [_1] requires another module that is not installed." params="$mod"> });
             print_encode( $desc );
             print_encode(  $msg );
             print_encode(  trans_templ(qq{ <__trans phrase="Please consult the installation instructions for help in installing [_1]." params="$mod">}) );
             if ( $exception ) {
-                print_encode( qq{<a id="exception-toggle-$i" href="#" onclick="showException($i); return false;">} );
+                print_encode( qq{<a id="exception-toggle-$i" class="toggle-link" href="#" onclick="showException($i); return false;">} );
                 print_encode( translate('Details') );
                 print_encode( qq{</a>} );
             }
-            print_encode(  trans_templ(qq{ </p>\n\n}) );
-            print_encode(  "\n\n" );
+            print_encode( qq{</p>} );
             print_encode( qq{<textarea id="exception-$i" class="exception" readonly="readonly">$exception</textarea>}) if $exception;
+            print_encode( qq{</div>} );
         } else {
             if ($data) {
                 $dbi_is_okay = 1 if $mod eq 'DBI';
                 if ($mod eq 'DBD::mysql') {
                     if ($DBD::mysql::VERSION == 3.0000) {
-                        print_encode(  trans_templ(qq{<p class="msg warning"><__trans phrase="The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the current release available from CPAN."></p>}) );
+                        print_encode(  trans_templ(qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the current release available from CPAN."></p></div>}) );
                     }
                 }
                 if (!$dbi_is_okay) {
-                    print_encode(  trans_templ(qq{<p class="msg warning"><__trans phrase="The $mod is installed properly, but requires an updated DBI module. Please see note above regarding the DBI module requirements."></p>}) );
+                    print_encode(  trans_templ(qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="The $mod is installed properly, but requires an updated DBI module. Please see note above regarding the DBI module requirements."></p></div>}) );
                 } else {
                     $got_one_data = 1 if $mod ne 'DBI';
                 }
