@@ -83,18 +83,10 @@
 /* - listing.css */
 /* -- Table Header */
 .col.head {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#f3f3f3', 
-        endColorstr='#dcdddd', 
-        GradientType=0 
-    );
+    background: #f3f3f3 url(../../images/widget/widget-header.png) left bottom repeat-x;
 }
 .col.head.sorted {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#dcdddd', 
-        endColorstr='#f3f3f3', 
-        GradientType=0 
-    );
+    background: #dcdddd url(../../images/widget/widget-header-active.png) left bottom repeat-x;
 }
 
 /* - structure.css */
@@ -113,12 +105,17 @@
         GradientType=0 
     );
 }
+.active .toggle-button, 
 .toggle-button:active {
     filter: progid:DXImageTransform.Microsoft.gradient( 
         startColorstr='#dcdddd', 
         endColorstr='#f3f3f3', 
         GradientType=0 
     );
+}
+
+.sub-menu { 
+    position: relative;
 }
 
 /* -- Progress Bar */

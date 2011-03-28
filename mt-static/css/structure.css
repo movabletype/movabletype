@@ -1451,7 +1451,7 @@ ul.tabs li a {
     border-radius: 0;
 }
 .editor textarea {
-    padding: 10px;
+    padding: 0;
 }
 
 /* -- Edit Entry, Page */
