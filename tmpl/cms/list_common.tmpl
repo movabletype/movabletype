@@ -283,8 +283,17 @@ var current_id = initial_filter.id;
 var currentPage = 1;
 var magic_token = '<mt:var name="magic_token">';
 var inputCount = 0;
+var initial_load = true;
 
 function handleMessages( data, additional_class ) {
+  if ( initial_load ) {
+    initial_load = false;
+  }
+  else {
+    jQuery('#msg-block .msg-success').remove();
+    jQuery('#msg-container .msg-success').remove();
+  }
+
   if ( data.error ) {
     var error_cls = 'error';
     if ( additional_class ) error_cls += ' ' + additional_class;
@@ -327,7 +336,7 @@ function showMessage( content, cls ){
           .append(content)
           .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>')
       )
-    ); 
+    );
   }
   return error_block;
 }
@@ -571,8 +580,9 @@ function renameFilter(index, fid, name) {
           renameFilter(index, fid, name);
         });
       }
-      else
-        alert('Ajax error: ' + status);
+      else {
+        alert( trans('Communication Error ([_1])', xhr.status) );
+      }
     }
   });
 }
@@ -616,8 +626,9 @@ function removeFilter(element) {
             removeFilter(element);
           });
         }
-        else
-          alert('Ajax error: ' + status);
+        else {
+          alert( trans('Communication Error ([_1])', xhr.status) );
+        }
       }
     });
   }
@@ -758,8 +769,9 @@ function saveListPrefs() {
           renderList(mode, columns, values, limit, page);
         });
       }
-      else
-        alert('Ajax error: ' + status);
+      else {
+        alert( trans('Communication Error ([_1])', xhr.status) );
+      }
     }
   });
 }
@@ -939,7 +951,7 @@ function renderList(mode, columns, values, limit, page ) {
         // Maybe this is user abort. do nothing.
       }
       else {
-        alert('Ajax error: ' + xhr.status + ': ' + status);
+        alert( trans('Communication Error ([_1])', xhr.status) );
       }
     }
   });

@@ -15,8 +15,7 @@
         <mtapp:statusmsg
             id="saved"
             class="success"
-            rebuild="$rebuild"
-            can_close="0">
+            rebuild="$rebuild">
             <__trans phrase="Your changes have been saved.">
         </mtapp:statusmsg>
     </mt:if>
@@ -24,8 +23,7 @@
         <mtapp:statusmsg
             id="saved-deleted"
             class="success"
-            rebuild="$rebuild"
-            can_close="0">
+            rebuild="$rebuild">
             <mt:if name="object_type" eq="entry">
                 <__trans phrase="The entry has been deleted from the database.">
             <mt:else>
