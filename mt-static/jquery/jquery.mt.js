@@ -217,7 +217,6 @@ $.mtUseAbsolute = function() {
         }
     });
     $checkboxes.click(function() {
-        jQuery('#'+$(this).parents().find('form').attr('id')).validate().resetForm();
         if (this.checked) {
             var $obj = $(this).attr('checked', true).parents('.field-content');
             $obj.find('.relative-site_path').hide();
