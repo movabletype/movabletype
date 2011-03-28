@@ -41,11 +41,10 @@
     word-wrap: break-word;
 }
 .col.head { 
-    position: relative;
     padding: 0;
     border-width: 0 0 1px 1px;
     line-height: 1;
-    background-color: #dcdddd;
+    background-color: #f3f3f3;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
     background: -moz-linear-gradient(top, #f3f3f3 0%, #dcdddd 100%);
     font-size: 11px;
@@ -66,6 +65,8 @@
 }
 .col.cb { 
     width: 2.6em;
+    padding-left: 0;
+    padding-right: 0;
     text-align: center;
 }
 .col.si,

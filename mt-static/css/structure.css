@@ -1071,7 +1071,7 @@ ul.tabs li a {
 .widget-header { 
     position: relative;
     padding: 5px 8px 5px 10px;
-    background-color: #dcdddd;
+    background-color: #f3f3f3;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
     background: -moz-linear-gradient(top, #f3f3f3 0%, #dcdddd 100%);
     border-top-right-radius: 5px;
