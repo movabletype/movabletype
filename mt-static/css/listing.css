@@ -201,6 +201,9 @@ tfoot .col.head{
 .col .archive-publishing-method-item {
     list-style-type: none;
 }
+.col .log-metadata pre {
+    white-space: normal;
+}
 /* -- List Actions */ 
 .list-actions {
     float: left;
