@@ -904,8 +904,7 @@ $.extend( $.mtValidator.prototype, {
             if ( $elem.is(selector) ) {
                 validator.error  = false;
                 validator.errstr = undefined;
-                validator.test   = fn;
-                var res = validator.test($elem);
+                var res = fn.apply(validator, [$elem]);
                 if ( validator.error || !res ) {
                     if ( !validator.errstr ) {
                         validator.raise(
