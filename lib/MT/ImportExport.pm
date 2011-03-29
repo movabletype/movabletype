@@ -134,6 +134,7 @@ sub import_contents {
                                 $author = MT::Author->new;
                                 $author->created_by( $parent_author->id );
                                 $author->name($val);
+                                $author->nickname($val);
                                 $author->email('');
                                 $author->type(MT::Author::AUTHOR);
                                 $author->auth_type(
@@ -171,7 +172,7 @@ sub import_contents {
                                 my $perms = MT::Permission->new;
                                 $perms->blog_id($blog_id);
                                 $perms->author_id( $author->id );
-                                $perms->can_create_post(1);
+                                $perms->can_create_post(0);
                                 if ( $perms->save ) {
                                     $cb->( MT->translate("ok") . "\n" );
                                 }
@@ -496,7 +497,19 @@ sub import_contents {
                                 encode_html( $entry->title )
                             )
                         );
-                        if ( $entry->save ) {
+                        my $perm_obj = $author->permissions( $blog_id );
+                        my $create_perm = $perm_obj->can_create_post;
+                        if (not $create_perm) {
+                        	$perm_obj->can_create_post(1);
+                        	$perm_obj->save;
+                        }
+                        my $ret = $entry->save;
+                        if (not $create_perm) {
+    	                    $perm_obj->can_create_post(0);
+	                        $perm_obj->save;
+                        }
+
+                        if ( $ret ) {
                             $cb->( MT->translate( "ok (ID [_1])", $entry->id )
                                     . "\n" );
                         }
