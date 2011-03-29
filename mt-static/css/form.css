@@ -164,6 +164,7 @@ select {
     margin-right: 5px;
     padding: 3px 0.5em;
     border: 1px solid #adadad;
+    line-height: 1.2;
     background-color: #f3f3f3;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
     background: -moz-linear-gradient(top, #f3f3f3 0%, #dcdddd 100%);

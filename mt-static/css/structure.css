@@ -1143,7 +1143,6 @@ ul.tabs li a {
 }
 
 /* -- Favorite Website, Blog Widget */
-/* --- on User Dashboard --- */
 #favorite_blogs .widget-header { 
     padding-bottom: 0;
 }
@@ -1154,52 +1153,52 @@ ul.tabs li a {
     margin-bottom: 0;
     width: 100%;
 }
+.favorite-blogs-widget .widget-content { 
+    padding-right: 0;
+}
 .blog-name {
     margin-top: 0;
 }
-
-/* --- on System, Website Dashboard --- */
 .favorite-blogs-widget .blog-container { 
     max-height: 455px;
-    margin-right: -10px;
     overflow: auto;
 }
 .favorite-blogs-widget .blog-content { 
     position: relative;
-    margin-bottom: 30px;
+    margin: 0 10px 0 0;
+    padding: 10px;
     overflow: hidden;
+}
+.favorite-blogs-widget .thumbnail {
+    margin-bottom: 0;
 }
 .favorite-blogs-widget .blog-meta { 
     margin-right: 120px;
-    margin-left: 110px;
-    font-size: 90%;
+    margin-left: 135px;
 }
 .favorite-blogs-widget .blog-name {
     margin-bottom: 3px;
-    font-size: 115%;
-}
-.favorite-blogs-widget .blog-name a { 
-    color: #2b2b2b;
-}
-.favorite-blogs-widget .blog-name .parent, 
-.favorite-blogs-widget .blog-name .parent a { 
-    color: #7b7c7d;
-}
-.favorite-blogs-widget .blog-name .parent a:hover {  
-    color: #2b2b2b;
 }
 .favorite-blogs-widget .blog-link { 
     margin-bottom: 10px;
     overflow: hidden;
+    font-size: 85%;
+    text-overflow: ellipsis;
+    white-space: pre;
+}
+.favorite-blogs-widget .blog-link a { 
+    color: #7b7c7d;
 }
 .favorite-blogs-widget .blog-description { 
     margin-bottom: 10px;
+    font-size: 90%;
 }
 .favorite-blogs-widget .blog-control li { 
     display: inline;
     margin-left: 5px;
     padding-right: 5px;
     border-right: 1px solid #c0c6c9;
+    font-size: 85%;
 }
 .favorite-blogs-widget .blog-control li.first-child { 
     margin-left: 0;
@@ -1210,12 +1209,12 @@ ul.tabs li a {
 }
 .favorite-blogs-widget .blog-action {
     position: absolute;
-    top: 5px;
+    top: 10px;
     right: 10px;
 }
 .favorite-blogs-widget .blog-action a.button {
-    width: 80px;
-    text-align: center;
+    width: 100px;
+    margin: 0;
 }
 .favorite-blogs-widget .select-website, 
 .favorite-blogs-widget .select-blog { 
