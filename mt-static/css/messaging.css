@@ -89,6 +89,7 @@ p.zero-state {
     background-color: #2b2b2b;
     color: #f3f3f3;
     font-size: 95%;
+    font-weight: normal;
     opacity: 0.8;
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
