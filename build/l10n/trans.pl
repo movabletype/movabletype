@@ -127,31 +127,34 @@ do {
                      $trans = $conv{$args{phrase}};
                      $is_used{$args{phrase}} = 1;
                 }
-                $trans =~ s/([^\\]?)'/$1\\'/g;
-                $args{phrase} =~ s/([^\\])'/$1\\'/g;
+#                $trans =~ s/([^\\]?)'/$1\\'/g;
+#                $args{phrase} =~ s/([^\\])'/$1\\'/g;
                 $args{phrase} =~ s/^'/\\'/;
                 $args{phrase} =~ s/\\"/"/g;
 		
                 unless ($phrase{$args{phrase}}) {
                     $phrase{$args{phrase}} = 1;
-                    
-                    my $q = "'";
+
+                    my $qs = "'";
+                    my $qe = "'";
                     if ($args{phrase} =~ /\\n/) {
-                       $q = '"';
+                       $qs = 'q{';
+                       $qe = '}';
                     }
-                    if ($args{phrase} =~ /[^\\]'/) {
-                       $q = '"';
+                    if ($args{phrase} =~ /[^\\]'/ || $trans =~ /[^\\]'/  ) {
+                       $qs = 'q{';
+                       $qe = '}';
                     }
 
                     if ($trans) {
                         utf8::decode($trans) if !utf8::is_utf8($trans);
-                        printf "\t$q%s$q => '%s',\n", $args{phrase}, $trans; # Print out translation if there was an existing one
+                        printf "\t$qs%s$qe => $qs%s$qe,\n", $args{phrase}, $trans; # Print out translation if there was an existing one
                     } else {
                         $trans = $lconv{lc $args{phrase}};
-			$trans =~ s/([^\\]?)'/$1\\'/g;
-			my $reason = $trans?'Case':'New'; # Really new translation or just different case
+#                        $trans =~ s/([^\\]?)'/$1\\'/g;
+                        my $reason = $trans?'Case':'New'; # Really new translation or just different case
                         utf8::decode($trans) if !utf8::is_utf8($trans);
-                        printf "\t$q%s$q => '%s', # Translate - $reason\n", $args{phrase}, $trans; # Print out translation if there was an existing one based on the lowercase string, empty otherwise
+                        printf "\t$qs%s$qe => $qs%s$qe, # Translate - $reason\n", $args{phrase}, $trans; # Print out translation if there was an existing one based on the lowercase string, empty otherwise
                     }
                 }
             }
@@ -161,7 +164,7 @@ do {
             my $p = $1;
             while ($p =~ /"((?:[^"\\]+|\\.)*)"|'((?:[^'\\]+|\\.)*)'/gs) {
                 $args{'phrase'} .= ($1 || $2);
-            }          
+            }
             my $trans = '';
             $args{phrase} =~ s/([^\\]?)'/$1\\'/g;
             $args{phrase} =~ s/['"]\s*.\s*\n\s*['"]//gs;
@@ -290,7 +293,7 @@ foreach my $p (keys %conv) {
         }
         my $q = "'";
         if ($p =~ /\\[a-z]/) {
-            $q = '"';    
+            $q = '"';
         }
         $trans =~ s/([^\\])'/$1\\'/g;
 	printf "\t$q%s$q => '%s',\n", $p, '';#$trans;
