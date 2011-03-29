@@ -78,7 +78,7 @@ sub get_syscheck_content {
 
         # allowed html
         my $spec
-            = '* style class id,ul,li,div,span,br,h2,h3,strong,code,blockquote,p';
+            = '* style class id,ul,li,div,span,br,h2,h3,strong,code,blockquote,p,textarea';
         $result = Encode::decode_utf8($result) if !Encode::is_utf8($result);
         $result = MT::Sanitize->sanitize( $result, $spec );
     }
