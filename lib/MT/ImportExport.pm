@@ -134,7 +134,6 @@ sub import_contents {
                                 $author = MT::Author->new;
                                 $author->created_by( $parent_author->id );
                                 $author->name($val);
-                                $author->nickname($val);
                                 $author->email('');
                                 $author->type(MT::Author::AUTHOR);
                                 $author->auth_type(
