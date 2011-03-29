@@ -4312,7 +4312,7 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want to remove the filter \'[_1]\'?' => 'フィルタ\'\_1]\'を削除してよろしいですか?',
 	'Label "[_1]" is already in use.' => '"[_1]というラベルは既に使用されています。"',
 	'Communication Error ([_1])' => '通信エラー ([_1])',
-	'[_1] - [_2] of [_3]' => '[_1] - [_2] の [_3]',
+	'[_1] - [_2] of [_3]' => '[_1] - [_2] / [_3]',
 	'Select all [_1] items' => '全[_1]件を選択する',
 	'All [_1] items are selected' => '全[_1]件が選択されています',
 	'[_1] Filter Items have errors' => '[_1] フィルター項目にエラーがあります。',
