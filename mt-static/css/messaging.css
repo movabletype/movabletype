@@ -4,8 +4,6 @@
     margin: 10px 0;
     padding: 0.5em 0.75em;
     line-height: 1;
-    background-repeat: no-repeat;
-    background-position: 8px center;
     border-radius: 3px;
     -moz-border-radius: 3px;
 }
@@ -28,8 +26,9 @@
     background-color: #e6eae3;
 }
 .msg-publishing { 
-    padding-left: 40px;
-    background-image: url(../images/ani-rebuild.gif);
+    margin: 15px 0 0;
+    padding: 0.8em 0 0.8em 25px;
+    background: transparent url(../images/ani-rebuild.gif) left center no-repeat;
 }
 
 .msg-text { 
