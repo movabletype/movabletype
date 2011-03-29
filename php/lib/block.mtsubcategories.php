@@ -23,7 +23,7 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
         # sort_method takes precedence
         $sort_order = isset($args['sort_order']) ? $args['sort_order'] : 'ascend';
         $sort_method = $args['sort_method'];
-        $sort_by = isset($args['sort_by']) ? $args['sort_by'] : 'label';
+        $sort_by = isset($args['sort_by']) ? $args['sort_by'] : 'user_custom';
 
         # Store the tokens for recursion
         $ctx->stash('subCatTokens', $token_fn);

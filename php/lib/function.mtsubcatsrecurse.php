@@ -22,7 +22,7 @@ function smarty_function_mtsubcatsrecurse($args, &$ctx) {
     $sort_method = $ctx->stash('subCatsSortMethod');
     $sort_order = $ctx->stash('subCatsSortOrder');
     $sort_by = $ctx->stash('subCatsSortBy');
-    $sort_by or $sort_by = 'label';
+    $sort_by or $sort_by = 'user_custom';
 
     # Get the class info
     $class = 'category';
