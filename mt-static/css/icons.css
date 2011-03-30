@@ -33,42 +33,42 @@
 }
 
 .icon-left {
-    padding-left: 11px;
+    padding-left: 14px;
     background-repeat: no-repeat;
     background-position: left center;
 }
 .icon-right {
-    padding-right: 11px;
+    padding-right: 14px;
     background-repeat: no-repeat;
     background-position: right center;
 }
 .icon-mini-left {
-    padding-left: 13px;
+    padding-left: 12px;
     background-repeat: no-repeat;
     background-position: left center;
 }
 .icon-mini-right {
-    padding-right: 13px;
+    padding-right: 12px;
     background-repeat: no-repeat;
     background-position: right center;
 }
 .icon-left-wide {
-    padding-left: 15px;
+    padding-left: 18px;
     background-repeat: no-repeat;
     background-position: left center;
 }
 .icon-right-wide {
-    padding-right: 15px;
+    padding-right: 18px;
     background-repeat: no-repeat;
     background-position: right center;
 }
 .icon-left-xwide {
-    padding-left: 20px;
+    padding-left: 22px;
     background-repeat: no-repeat;
     background-position: left center;
 }
 .icon-right-xwide {
-    padding-right: 20px;
+    padding-right: 22px;
     background-repeat: no-repeat;
     background-position: right center;
 }

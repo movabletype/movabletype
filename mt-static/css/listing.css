@@ -259,12 +259,21 @@ tfoot .col.head{
     -moz-border-radius: 5px 5px 0 0;
 }
 .filter-header #allpass-filter {
-    color: #C53D43;
+    display: inline-block;
+    margin-left: 8px;
+    color: #c53d43;
     font-size: 87%;
 }
 .filter-header .toggle-button {
     border-top-right-radius: 5px;
     -moz-border-radius: 0 5px 0 0;
+}
+.filter-header .current-filter {
+    background-image: url(../images/filter-list.png);
+    text-decoration: none;
+}
+.filter-header .current-filter:hover {
+    border-bottom: 0;
 }
 #filter-detail {
     border: solid #c0c6c9;
