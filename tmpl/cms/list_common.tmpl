@@ -1633,6 +1633,10 @@ jQuery(window).bind('listReady', function(){
   });
 });
 
+jQuery(window).bind('listReady', function() {
+    jQuery('a.mt-open-dialog').mtDialog();
+})
+
 function updateItemList () {
   var list = jQuery('#item_list');
   list.find('option').removeAttr('disabled');
