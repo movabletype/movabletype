@@ -220,6 +220,7 @@ sub bulk_update {
             delete $obj->{id};
             $new_obj->set_values($obj);
             $new_obj->blog_id($blog_id);
+            $new_obj->author_id($app->user->id);
             push @objects, $new_obj;
             push @creates, $new_obj;
             $new_obj->{tmp_id} = $tmp_id;
