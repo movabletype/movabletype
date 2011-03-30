@@ -317,6 +317,9 @@ tfoot .col.head{
     padding: 0.3em 0.5em;
     background-color: #f9f9f9;
 }
+#dialog_filter .filter:hover {
+    background-color: #f3f3f3;
+}
 #dialog_filter .apply-link, 
 #dialog_filter .item-ctrl {
     display: inline-block;
