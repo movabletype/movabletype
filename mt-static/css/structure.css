@@ -212,6 +212,11 @@ pre {
 /* -- Open Dialog Link */
 .open-dialog-link {
     color: #7b7c7d;
+    text-decoration: none;
+    border-bottom: 1px dotted;
+}
+.open-dialog-link:hover {
+    border-bottom: 0;
 }
 
 /* -- Progress Bar */

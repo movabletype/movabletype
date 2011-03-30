@@ -2625,7 +2625,22 @@ sub build_email {
             $tmpl->param( $p, $param->{$p} );
         }
     }
-    return $mt->build_page_in_mem( $tmpl, $param );
+
+    my $out = $mt->build_page_in_mem( $tmpl, $param );
+
+    require MT::Log;
+    $mt->log(
+        {   message => $mt->translate(
+                "Error during building email: [_1]",
+                $mt->errstr
+            ),
+            class    => 'system',
+            category => 'email',
+            level    => MT::Log::ERROR(),
+        }
+    ) unless defined $out;
+
+    $out;
 }
 
 sub get_next_sched_post_for_user {

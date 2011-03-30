@@ -259,12 +259,21 @@ tfoot .col.head{
     -moz-border-radius: 5px 5px 0 0;
 }
 .filter-header #allpass-filter {
-    color: #C53D43;
+    display: inline-block;
+    margin-left: 8px;
+    color: #c53d43;
     font-size: 87%;
 }
 .filter-header .toggle-button {
     border-top-right-radius: 5px;
     -moz-border-radius: 0 5px 0 0;
+}
+.filter-header .current-filter {
+    background-image: url(../images/filter-list.png);
+    text-decoration: none;
+}
+.filter-header .current-filter:hover {
+    border-bottom: 0;
 }
 #filter-detail {
     border: solid #c0c6c9;
@@ -273,10 +282,10 @@ tfoot .col.head{
 .filteritem {
     position: relative;
     margin: 0 10px;
-    background-color: #fff;
     border: 1px solid #adadad;
     border-top-color: #cfd0d0;
     border-left-color: #cfd0d0;
+    background-color: #fff;
 }
 .filteritem .item-content {
     padding: 10px;
@@ -293,27 +302,43 @@ tfoot .col.head{
 }
 #create-new-link {
     padding: 0.5em 0.3em;
-    border-bottom: 1px solid #c0c6c9;
 }
 #create-new-link a {
-    color: #2b2b2b;
+    color: #7b7c7d;
+}
+#dialog_filter .filter-list-block {
+    margin-top: 15px;
+}
+#dialog_filter .filter-list-label {
+    margin: 0 0 5px;
 }
 #dialog_filter .filter {
-    margin: 0;
+    margin-bottom:1px;
     padding: 0.3em 0.5em;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
 }
 #dialog_filter .filter:hover {
     background-color: #dcdddd;
 }
-.filter-ctrl {
-    text-align: right;
-    height: 20px;
-}
-.filter-ctrl a {
+#dialog_filter .apply-link, 
+#dialog_filter .item-ctrl {
     display: inline-block;
+    height: 22px;
+    line-height: 22px;
+}
+#dialog_filter .apply-link {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+#dialog_filter .item-ctrl {
+    text-align: right;
+}
+#dialog_filter .item-ctrl a {
     vertical-align: middle;
+    margin-left: 5px;
+    color: #7b7c7d;
 }
 .tool-link {
     margin: 0 0 0 0.5em;
