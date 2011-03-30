@@ -163,30 +163,9 @@ sub import_contents {
                                     );
                                 }
                                 $authors{$val} = $author;
-                                $cb->(
-                                    MT->translate(
-                                        "Assigning permissions for new user..."
-                                    )
-                                );
-                                my $perms = MT::Permission->new;
-                                $perms->blog_id($blog_id);
-                                $perms->author_id( $author->id );
-                                $perms->can_create_post(0);
-                                if ( $perms->save ) {
-                                    $cb->( MT->translate("ok") . "\n" );
-                                }
-                                else {
-                                    $cb->( MT->translate("failed") . "\n" );
-                                    return __PACKAGE__->error(
-                                        MT->translate(
-                                            "Saving permission failed: [_1]",
-                                            $perms->errstr
-                                        )
-                                    );
-                                }
                             }
                             $author_id = $author->id;
-                            $entry->author_id( $author->id );
+                            $entry->author_id( $author_id );
                         }
                         elsif ($key eq 'CATEGORY'
                             || $key eq 'PRIMARY CATEGORY' )
@@ -496,19 +475,7 @@ sub import_contents {
                                 encode_html( $entry->title )
                             )
                         );
-                        my $perm_obj = $author->permissions( $blog_id );
-                        my $create_perm = $perm_obj->can_create_post;
-                        if (not $create_perm) {
-                        	$perm_obj->can_create_post(1);
-                        	$perm_obj->save;
-                        }
-                        my $ret = $entry->save;
-                        if (not $create_perm) {
-    	                    $perm_obj->can_create_post(0);
-	                        $perm_obj->save;
-                        }
-
-                        if ( $ret ) {
+                        if ( $entry->save ) {
                             $cb->( MT->translate( "ok (ID [_1])", $entry->id )
                                     . "\n" );
                         }
