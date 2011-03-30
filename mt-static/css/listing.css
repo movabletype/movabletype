@@ -315,10 +315,9 @@ tfoot .col.head{
 #dialog_filter .filter {
     margin-bottom:1px;
     padding: 0.3em 0.5em;
-    background-color: #f9f9f9;
 }
 #dialog_filter .filter:hover {
-    background-color: #f3f3f3;
+    background-color: #dcdddd;
 }
 #dialog_filter .apply-link, 
 #dialog_filter .item-ctrl {
