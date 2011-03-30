@@ -313,12 +313,9 @@ tfoot .col.head{
     margin: 0 0 5px;
 }
 #dialog_filter .filter {
-    margin: 0;
+    margin-bottom:1px;
     padding: 0.3em 0.5em;
-    border: 1px solid #adadad;
-    border-top-color: #cfd0d0;
-    border-left-color: #cfd0d0;
-    background-color: #fff;
+    background-color: #f9f9f9;
 }
 #dialog_filter .apply-link, 
 #dialog_filter .item-ctrl {
