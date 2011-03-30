@@ -1280,7 +1280,7 @@ jQuery('#save').click(function() {
     jQuery('input[name=filter_name]').mtUnvalidate().val(temp);
     jQuery('input[name=filter_id]').val('');
     jQuery('#dialog_save_filter').dialog({
-      title: 'Save Filter',
+      title: trans('Save Filter'),
       dialogClass: 'save',
       width: 450,
       modal: true,
@@ -1301,7 +1301,7 @@ jQuery('#saveas').click(function() {
   jQuery('input[name=filter_id]').val('');
   jQuery('#dialog_save_filter')
     .dialog({
-      title: 'Save As Filter',
+      title: trans('Save As Filter'),
       dialogClass: 'save',
       width: 450,
       modal: true,
@@ -1315,7 +1315,7 @@ jQuery('#saveas').click(function() {
 
 jQuery('#dialog_filter').dialog({
     autoOpen: false,
-    title: '<__trans phrase="Select Filter">',
+    title: trans('Select Filter'),
     width: 380,
     resizable: false
 });

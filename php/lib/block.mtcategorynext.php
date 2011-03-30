@@ -84,7 +84,7 @@ function _catx_load_categories(&$ctx, $cat, $class, $args) {
         $sort_order = $ctx_sort_order;
     }
 
-    $sort_by = "label";
+    $sort_by = "user_custom";
     $ctx_sort_by = $ctx->stash('subCatsSortBy');
     if ( isset($args['sort_by']) ) {
         $sort_by = $args['sort_by'];

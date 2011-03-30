@@ -1645,7 +1645,7 @@ abstract class MTDatabase {
         } else {
             $sort_order = '';
         }
-        $sort_by = 'category_label';
+        $sort_by = 'user_custom';
         if ( isset($args['sort_by']) ) {
             $sort_by = strtolower($args['sort_by']);
             if ( 'user_custom' != $sort_by ) {
@@ -1659,7 +1659,7 @@ abstract class MTDatabase {
                         $sort_by  = 'category_'.$sort_by;
                     }
                 } else {
-                    $sort_by = 'category_label';
+                    $sort_by = 'user_custom';
                 }
            }
         }
@@ -1752,6 +1752,8 @@ abstract class MTDatabase {
                     }
                 } catch (Exception $e) {
                 }
+            } else {
+                
             }
 
             $id_list = array();

@@ -427,19 +427,14 @@ sub _hdlr_category_prevnext {
         = $args->{sort_order}
         || $ctx->stash('subCatsSortOrder')
         || 'ascend';
-    my $sort_by = $args->{sort_by} || $ctx->stash('subCatsSortBy') || 'label';
-    my $custom_order;
-    if ( $sort_by eq 'user_custom' ) {
-        undef $sort_by;
-        $custom_order = 1;
-    }
-    $sort_by = 'label' unless $class->has_column($sort_by);
-    $sort_by ||= 'label';
+    my $sort_by = $args->{sort_by} || $ctx->stash('subCatsSortBy') || 'user_custom';
+    $sort_by = 'user_custom' if 'user_custom' ne $sort_by || !$class->has_column($sort_by);
+    $sort_by ||= 'user_csutom';
     if ($sort_method) {
         $cats = _sort_cats( $ctx, $sort_method, $sort_order, $cats )
             or return $ctx->error( $ctx->errstr );
     }
-    elsif ($custom_order) {
+    elsif ('user_custom' eq $sort_by) {
         my $blog = $ctx->stash('blog');
         my $meta = $class_type . '_order';
         my $text = $blog->$meta || '';
@@ -492,8 +487,7 @@ sub _hdlr_category_prevnext {
             = $cats->[$pos]->{_placement_count};
         local $ctx->{__stash}{'subCatsSortOrder'}  = $sort_order;
         local $ctx->{__stash}{'subCatsSortMethod'} = $sort_method;
-        local $ctx->{__stash}{'subCatsSortBy'}
-            = $custom_order ? 'user_custom' : $sort_by;
+        local $ctx->{__stash}{'subCatsSortBy'} = $sort_by;
         return $ctx->slurp( $args, $cond );
     }
     return '';
@@ -569,7 +563,7 @@ sub _hdlr_sub_categories {
     #
     # sort_method takes precedence
     my $sort_order = $args->{sort_order} || 'ascend';
-    my $sort_by    = $args->{sort_by}    || 'label';
+    my $sort_by    = $args->{sort_by}    || 'user_custom';
     my $sort_method = $args->{sort_method};
 
     return $ctx->error(
@@ -578,12 +572,7 @@ sub _hdlr_sub_categories {
             $ctx->stash('tag'),
         )
     ) if ( $sort_method && $sort_by );
-    my $custom_order;
-    if ( $sort_by eq 'user_custom' ) {
-        undef $sort_by;
-        $custom_order = 1;
-    }
-    $sort_by = 'label' if !$sort_by || !$class->has_column($sort_by);
+    $sort_by = 'user_custom' if 'user_custom' ne $sort_by && !$class->has_column($sort_by);
 
     # Store the tokens for recursion
     $ctx->stash( 'subCatTokens', $tokens );
@@ -594,7 +583,7 @@ sub _hdlr_sub_categories {
             {   blog_id => $ctx->stash('blog_id'),
                 parent  => '0'
             },
-            {   'sort'    => $sort_by,
+            {   ( ( 'user_custom' eq $sort_by ) ? ( sort => 'label' ) : ( sort => $sort_by ) ),
                 direction => $sort_order,
             }
         );
@@ -633,7 +622,7 @@ sub _hdlr_sub_categories {
         $cats = _sort_cats( $ctx, $sort_method, $sort_order, \@cats )
             or return $ctx->error( $ctx->errstr );
     }
-    elsif ($custom_order) {
+    elsif ('user_custom' eq $sort_by) {
         my $blog = $ctx->stash('blog');
         my $meta = $class_type . '_order';
         my $text = $blog->$meta || '';
@@ -653,8 +642,7 @@ sub _hdlr_sub_categories {
     local $ctx->{inside_mt_categories}         = 1;
     local $ctx->{__stash}{'subCatsSortOrder'}  = $sort_order;
     local $ctx->{__stash}{'subCatsSortMethod'} = $sort_method;
-    local $ctx->{__stash}{'subCatsSortBy'}
-        = $custom_order ? 'user_custom' : $sort_by;
+    local $ctx->{__stash}{'subCatsSortBy'} = $sort_by;
 
     # Loop through the immediate children (or the current cat,
     # depending on the arguments
@@ -1669,14 +1657,9 @@ sub _hdlr_sub_cats_recurse {
     # Get the sorting info
     my $sort_method = $ctx->stash('subCatsSortMethod');
     my $sort_order  = $ctx->stash('subCatsSortOrder');
-    my $sort_by     = $ctx->stash('subCatsSortBy');
-    my $custom_order;
-    if ( $sort_by eq 'user_custom' ) {
-        undef $sort_by;
-        $custom_order = 1;
-    }
-    $sort_by = 'label' if !$sort_by || !$class->has_column($sort_by);
-    $sort_by ||= 'label';
+    my $sort_by     = $ctx->stash('subCatsSortBy') || 'user_custom';
+    $sort_by = 'user_custom' if 'user_custom' ne $sort_by && !$class->has_column($sort_by);
+    $sort_by ||= 'user_custom';
 
     # If we're too deep, return an emtry string because we're done
     return '' if ( $max_depth && $depth >= $max_depth );
@@ -1687,7 +1670,7 @@ sub _hdlr_sub_cats_recurse {
         $cats = _sort_cats( $ctx, $sort_method, $sort_order, \@cats )
             or return $ctx->error( $ctx->errstr );
     }
-    elsif ($custom_order) {
+    elsif ('user_custom' eq $sort_by) {
         my $blog = $ctx->stash('blog');
         my $meta = $class_type . '_order';
         my $text = $blog->$meta || '';
@@ -1711,8 +1694,7 @@ sub _hdlr_sub_cats_recurse {
         local $ctx->{__stash}{'subCatIsLast'}      = !scalar @$cats;
         local $ctx->{__stash}{'subCatsSortOrder'}  = $sort_order;
         local $ctx->{__stash}{'subCatsSortMethod'} = $sort_method;
-        local $ctx->{__stash}{'subCatsSortBy'}
-            = $custom_order ? 'user_custom' : $sort_by;
+        local $ctx->{__stash}{'subCatsSortBy'} = $sort_by;
 
         local $ctx->{__stash}{'subCatsDepth'}      = $depth + 1;
         local $ctx->{__stash}{vars}->{'__depth__'} = $depth + 1;

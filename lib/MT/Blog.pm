@@ -1141,6 +1141,16 @@ sub clone_with_children {
                     $cat->save or die $cat->errstr;
                 }
             }
+
+            # reconstruct the category order
+            $new_blog->category_order(
+                join(
+                    ',',
+                    map( $cat_map{$_},
+                        split( /,/, ( $blog->category_order || '' ) ) )
+                )
+            );
+
             $callback->(
                 $state . " "
                     . MT->translate( "[_1] records processed.", $counter ),
@@ -1311,6 +1321,16 @@ sub clone_with_children {
                 $cat->save or die $cat->errstr;
             }
         }
+
+        # reconstruct the category order
+        $new_blog->category_order(
+            join(
+                ',',
+                map( $cat_map{$_},
+                    split( /,/, ( $blog->category_order || '' ) ) )
+            )
+        );
+
         $callback->(
             $state . " "
                 . MT->translate( "[_1] records processed.", $counter ),

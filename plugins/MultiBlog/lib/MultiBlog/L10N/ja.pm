@@ -16,6 +16,7 @@ use vars qw( %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
+
 ## plugins/MultiBlog/lib/MultiBlog.pm
 	'Restoring MultiBlog rebuild trigger for blog #[_1]...' => 'マルチブログの再構築により、てブログ(#[_1])をリストアしています...',
 
@@ -51,7 +52,7 @@ use vars qw( %Lexicon );
 	'Allow' => '許可',
 	'Disallow' => '許可しない',
 	'MTMultiBlog tag default arguments' => 'MTMultiBlogタグの既定の属性:',
-	'Enables use of the MTMultiBlog tag without include_blogs/exclude_blogs attributes. Comma-separated BlogIDs or \'all\' (include_blogs only) are acceptable values.' => 'include_blogs/exclude_blogs属性なしでMTMultiBlogタグを使用できるようにします。カンマで区切ったブログID、または「all」(include_blogs のみ)が指定できます。',
+	q{Enables use of the MTMultiBlog tag without include_blogs/exclude_blogs attributes. Comma-separated BlogIDs or 'all' (include_blogs only) are acceptable values.} => q{include_blogs/exclude_blogs属性なしでMTMultiBlogタグを使用できるようにします。カンマで区切ったブログID、または「all」(include_blogs のみ)が指定できます。},
 	'Include blogs' => '含めるブログ',
 	'Exclude blogs' => '除外するブログ',
 	'Rebuild Triggers' => '再構築トリガー',

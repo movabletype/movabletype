@@ -31,7 +31,7 @@ use vars qw( %Lexicon );
 	'Saving page (\'[_1]\')...' => 'ウェブページ(\'[_1]\')を保存しています...',
 
 ## plugins/WXRImporter/tmpl/options.tmpl
-	'Before you import WordPress posts to Movable Type, we recommend that you <a href=\'[_1]\'>configure your blog\'s publishing paths</a> first.' => 'WordPressからMovable Typeへインポートする前に、まず<a href=\'[_1]\'>ブログ公開パスを設定</a>してください。',
+	q{Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your blog's publishing paths</a> first.} => q{WordPressからMovable Typeへインポートする前に、まず<a href='[_1]'>ブログ公開パスを設定</a>してください。},
 	'Upload path for this WordPress blog' => 'WordPressブログのアップロードパス',
 	'Replace with' => '置き換えるパス',
 	'Download attachments' => 'Attachmentのダウンロード',
