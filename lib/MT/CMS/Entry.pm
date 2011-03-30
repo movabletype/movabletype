@@ -1555,6 +1555,7 @@ sub save {
         my %param = ();
         $param{error}       = $app->errstr;
         $param{return_args} = $app->param('return_args');
+        $app->param('reedit', 1);
         return $app->forward( "view", \%param );
     }
 
