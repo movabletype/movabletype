@@ -225,7 +225,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 <div id="dialog_filter">
   <div class="dialog-msg-block"></div>
   <div id="create-new-link">
-    <a href="#" id="new_filter" class="icon-left-wide addnew apply-link"><__trans phrase="Create New"></a>
+    <a href="#" id="new_filter" class="icon-mini-left addnew"><__trans phrase="Create New"></a>
   </div>
   <div id="dialog_filter_content"></div>
 </div>
@@ -394,7 +394,7 @@ function renderFilterList() {
   if ( has_user_filter ) {
     jQuery('<div class="filter-list-block">')
       .append(
-        jQuery('<h3 />').text('<__trans phrase="My Filters">'))
+        jQuery('<h3 class="filter-list-label" />').text('<__trans phrase="My Filters">'))
       .append(
         jQuery('<ul id="user-filters" class="editable" />'))
       .appendTo('#dialog_filter_content');
@@ -402,7 +402,7 @@ function renderFilterList() {
   if ( has_sys_filter ) {
     jQuery('<div class="filter-list-block">')
       .append(
-        jQuery('<h3 />').text('<__trans phrase="Built in Filters">'))
+        jQuery('<h3 class="filter-list-label" />').text('<__trans phrase="Built in Filters">'))
       .append(
         jQuery('<ul id="built-in-filters" />'))
       .appendTo('#dialog_filter_content');
@@ -414,7 +414,7 @@ function renderFilterList() {
       var line = '<span class="filter-label unit size2of3"><a href="#'+i+'" class="apply-link '
         + ( filter.can_save ? 'user-filter' : 'system-filter' )
         + '">'+filter.label+'</a></span>'
-        + '<span class="filter-ctrl unit size1of3" style="display: none;"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Rename"></a><a href="#'+i+'" class="delete-link tool-link icon16 icon-delete"><__trans phrase="Delete"></a></span>';
+        + '<span class="item-ctrl unit size1of3" style="display: none;"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Rename"></a><a href="#'+i+'" class="delete-link action-icon icon16 icon-delete"><__trans phrase="Delete"></a></span>';
       jQuery('<li class="filter line" />').append(line).appendTo('#user-filters');
     }
     else {
@@ -426,10 +426,10 @@ function renderFilterList() {
   }
   jQuery('.filter').hover(
     function () {
-      jQuery(this).find('.filter-ctrl:not(:has(.save))').show();
+      jQuery(this).find('.item-ctrl:not(:has(.save))').show();
     },
     function () {
-      jQuery(this).find('.filter-ctrl:not(:has(.save))').hide();
+      jQuery(this).find('.item-ctrl:not(:has(.save))').hide();
     }
   );
   jQuery('#new_filter').click(function() {
@@ -515,7 +515,7 @@ function openFilterRenameField() {
   var index = RegExp.$1;
   var fid = filters[index].id;
   var $label = $this.parents('.filter').children('.filter-label');
-  var $handle = $this.parents('.filter').children('.filter-ctrl');
+  var $handle = $this.parents('.filter').children('.item-ctrl');
   var text = $label.find('.apply-link').hide().text();
   jQuery('<input type="text" id="filter_'+fid+'" class="text full rename-filter-input" />')
     .val(text)
@@ -544,7 +544,7 @@ function cancelFilterRenameField() {
   jQuery('.filter-label')
     .find('.apply-link:hidden').show().end()
     .find('input').remove();
-  jQuery('.filter-ctrl')
+  jQuery('.item-ctrl')
     .find('a.save, a.cancel').remove().end()
     .find('a:hidden').css('display','inline-block');
   return false;
@@ -1632,6 +1632,10 @@ jQuery(window).bind('listReady', function(){
     toggleSubField(this);
   });
 });
+
+jQuery(window).bind('listReady', function() {
+    jQuery('a.mt-open-dialog').mtDialog();
+})
 
 function updateItemList () {
   var list = jQuery('#item_list');
