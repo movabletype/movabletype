@@ -1116,4 +1116,10 @@ $('input, textarea').live('keyup focusin focusout', function () {
     $(this).mtValid();
 });
 
+$('select').live('change', function () {
+    var ns = $.data( this, 'mtValidator' );
+    if ( !ns ) return true;
+    $(this).mtValid();
+});
+
 })(jQuery);
