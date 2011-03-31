@@ -1516,9 +1516,14 @@ sub _init_plugins_core {
                         next;
                     }
 
-                    opendir SUBDIR, $plugin_full_path;
-                    my @plugins = readdir SUBDIR;
-                    closedir SUBDIR;
+					my @plugins;
+                    if (opendir my $subdir, $plugin_full_path) {
+                    	@plugins = readdir $subdir;
+                    	closedir $subdir;
+                    }
+                    else {
+                    	warn "Can not read directory: $plugin_full_path";
+                    }
                     for my $plugin (@plugins) {
                         next if $plugin !~ /\.pl$/;
                         my $plugin_file
