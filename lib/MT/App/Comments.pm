@@ -985,6 +985,8 @@ sub post {
 
         $app->run_callbacks( 'api_post_save.comment',
             $app, $comment, $commenter );
+        $entry->modified_on( epoch2ts( $blog, time ) );
+        $entry->save;
 
         $app->log(
             {   message => $app->translate(
