@@ -955,9 +955,9 @@ use vars qw( @ISA %Lexicon );
 	'Pixel height' => '幅 (px)',
 	'Except Userpic' => 'プロフィール画像を除外する',
 	'Author Status' => 'ユーザーの状態',
-	'Deleted' => '削除されている',
-	'Enabled' => '利用可能',
-	'Disabled' => '利用不可',
+	'Deleted' => '削除済み',
+	'Enabled' => '有効',
+	'Disabled' => '無効',
 	'Assets of this website' => 'ウェブサイトのアイテム',
 
 ## lib/MT/Asset/Audio.pm
