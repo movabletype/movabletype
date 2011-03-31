@@ -163,7 +163,8 @@ sub list_props {
             },
         },
         entry_count => {
-            label              => '__ENTRY_COUNT',
+            label              => 'Entries',
+            filter_label       => '__ENTRY_COUNT',
             order              => 300,
             base               => '__virtual.object_count',
             display            => 'default',
@@ -174,7 +175,8 @@ sub list_props {
             list_permit_action => 'access_to_entry_list',
         },
         page_count => {
-            label              => '__PAGE_COUNT',
+            label              => 'Pages',
+            filter_label       => '__PAGE_COUNT',
             order              => 400,
             base               => '__virtual.object_count',
             display            => 'default',
@@ -185,7 +187,8 @@ sub list_props {
             list_permit_action => 'access_to_page_list',
         },
         asset_count => {
-            label              => '__ASSET_COUNT',
+            label              => 'Assets',
+            filter_label       => '__ASSET_COUNT',
             order              => 500,
             base               => '__virtual.object_count',
             count_class        => 'asset',
@@ -196,7 +199,8 @@ sub list_props {
             list_permit_action => 'access_to_asset_list',
         },
         comment_count => {
-            label              => '__COMMENT_COUNT',
+            label              => 'Comments',
+            filter_label       => '__COMMENT_COUNT',
             order              => 600,
             base               => '__virtual.object_count',
             count_class        => 'comment',
@@ -1587,9 +1591,6 @@ sub smart_replace_fields {
     my $val = $blog->nwc_replace_field;
     return defined($val) ? $val : MT->config->NwcReplaceField;
 }
-
-#trans('blog')
-#trans('blogs')
 
 sub apply_theme {
     my $blog = shift;

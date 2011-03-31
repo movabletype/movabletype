@@ -36,15 +36,16 @@ sub list_props {
         id         => { base => 'blog.id', },
         name       => { base => 'blog.name', },
         blog_count => {
-            label       => '__BLOG_COUNT',
-            order       => 200,
-            base        => '__virtual.object_count',
-            display     => 'default',
-            count_class => 'blog',
-            count_col   => 'parent_id',
-            filter_type => 'blog_id',
-            list_screen => 'blog',
-            count_terms => sub {
+            label        => 'Blogs',
+            filter_label => '__BLOG_COUNT',
+            order        => 200,
+            base         => '__virtual.object_count',
+            display      => 'default',
+            count_class  => 'blog',
+            count_col    => 'parent_id',
+            filter_type  => 'blog_id',
+            list_screen  => 'blog',
+            count_terms  => sub {
                 my @perms = MT->model('permission')->load(
                     {   author_id   => MT->instance->user->id,
                         permissions => { not => 'comment' },

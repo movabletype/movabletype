@@ -1622,6 +1622,7 @@ use vars qw( @ISA %Lexicon );
 	'Comments on my entries/pages' => '自分のブログ記事/ウェブページへのコメント',
 	'Comments in the last 7 days' => '最近7日間以内のコメント',
 	'Spam comments' => 'スパムコメント',
+	'__ANONYMOUS_COMMENTER' => '匿名ユーザー',
 
 ## lib/MT/Compat/v3.pm
 	'uses: [_1], should use: [_2]' => '[_1]は[_2]に直してください。',

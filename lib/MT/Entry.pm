@@ -460,11 +460,12 @@ sub list_props {
             order => 700,
         },
         comment_count => {
-            auto      => 1,
-            display   => 'default',
-            label     => '__COMMENT_COUNT',
-            order     => 800,
-            html_link => sub {
+            auto         => 1,
+            display      => 'default',
+            label        => 'Comments',
+            filter_label => '__COMMENT_COUNT',
+            order        => 800,
+            html_link    => sub {
                 my $prop = shift;
                 my ( $obj, $app, $opts ) = @_;
                 return unless $app->can_do('access_to_comment_list');
@@ -480,11 +481,12 @@ sub list_props {
             },
         },
         ping_count => {
-            auto      => 1,
-            display   => 'optional',
-            label     => '__PING_COUNT',
-            order     => 900,
-            html_link => sub {
+            auto         => 1,
+            display      => 'optional',
+            label        => 'Trackbacks',
+            filter_label => '__PING_COUNT',
+            order        => 900,
+            html_link    => sub {
                 my $prop = shift;
                 my ( $obj, $app, $opts ) = @_;
                 return unless $app->can_do('access_to_trackback_list');
