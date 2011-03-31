@@ -2027,7 +2027,8 @@ use vars qw( @ISA %Lexicon );
 	'Can comment and manage feedback.' => 'コメントを投稿し、コメントやトラックバックを管理できます。',
 	'Can comment.' => 'コメントを投稿できます。',
 	'Active/Inactive' => '利用状況',
-	'__ROLE_ACTIVE' => '利用されている',
+	'__ROLE_STATUS' => '利用状況',
+	'__ROLE_ACTIVE' => '利用中',
 	'__ROLE_INACTIVE' => '利用されていない',
 
 ## lib/MT/Scorable.pm
