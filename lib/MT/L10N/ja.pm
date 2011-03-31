@@ -1195,7 +1195,7 @@ use vars qw( @ISA %Lexicon );
 	'Finished!' => '完了しました。',
 	'General Settings' => '全般設定',
 	'Plugin Settings' => 'プラグイン設定',
-	'New Blog' => '新しいブログ',
+	'New Blog' => 'ブログを作成',
 	'Can\'t load template #[_1].' => 'テンプレート: [_1]をロードできませんでした。',
 	'index template \'[_1]\'' => 'インデックステンプレート「[_1]」',
 	'[_1] \'[_2]\'' => '[_1]「[_2]」',
