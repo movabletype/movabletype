@@ -294,7 +294,7 @@ sub edit {
                 { class => '*' },
                 {   join => MT::ObjectAsset->join_on(
                         undef,
-                        {   asset_id  => \'= asset_id',
+                        {   asset_id  => \'= asset_id', # coloring editors hack'
                             object_ds => 'entry',
                             object_id => $id
                         }
