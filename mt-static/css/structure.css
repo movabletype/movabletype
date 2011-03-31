@@ -194,10 +194,20 @@ pre {
 }
 
 /* -- Toggle Link */
-.toggle-link { 
+.toggle-link, 
+.detail-link { 
     display: inline-block;
+    cursor: pointer;
     background: transparent;
     color: #7b7c7d;
+    text-decoration: underline;
+}
+.toggle-link:hover, 
+.toggle-link:active, 
+.detail-link:hover, 
+.detail-link:active { 
+    color: #839b5c;
+    text-decoration: none;
 }
 .detail {
     clear: both;
@@ -2382,6 +2392,17 @@ input#system_performance_logging_threshold {
 }
 #select-personal-blog-theme .theme .theme-meta { 
     margin: 15px 0 15px 135px;
+}
+
+/* -- System Info */
+
+.exception {
+    height: 100px;
+    margin: 5px 0 0;
+    font-family: monospace;
+    font-size: 95%;
+    background-color: #f3f3f3;
+    color: #7b7c7d;
 }
 
 /* -- Edit Author */
