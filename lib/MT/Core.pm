@@ -646,10 +646,11 @@ BEGIN {
                     display => 'optional',
                 },
                 author_name => {
-                    label   => 'Author',
-                    display => 'default',
-                    base    => '__virtual.string',
-                    raw     => sub {
+                    label        => 'Author',
+                    filter_label => 'Author Name',
+                    display      => 'default',
+                    base         => '__virtual.string',
+                    raw          => sub {
                         my ( $prop, $obj ) = @_;
                         my $col
                             = $prop->datasource->has_column('author_id')
