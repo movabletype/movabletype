@@ -4587,7 +4587,7 @@ use vars qw( @ISA %Lexicon );
 	'_DATE_TO' => '終了日',
 	'Submit search (s)' => '検索 (s)',
 	'Search For' => '検索',
-	'Replace With' => '置き換えるパス',
+	'Replace With' => '置換',
 	'Replace Checked' => '選択したものを対象に置換',
 	'Successfully replaced [quant,_1,record,records].' => '[quant,_1,件,件]のデータを置き換えました。',
 	'Showing first [_1] results.' => '最初の[_1]件の結果を表示します。',
