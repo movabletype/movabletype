@@ -185,6 +185,7 @@ the address you provided is correct and belongs to you.',
     '__ROLE_ACTIVE' => 'In Use',
     '__ROLE_INACTIVE' => 'Not in Use',
     '__COMMENTER_APPROVED' => 'Approved',
+    '__ANONYMOUS_COMMENTER' => 'Anonymous',
 );
 
 1;
