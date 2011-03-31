@@ -2679,42 +2679,40 @@ sub get_next_sched_post_for_user {
     return $next_sched_utc;
 }
 
-our %Commenter_Auth;
+our $Commenter_Auth;
 
 sub init_commenter_authenticators {
     my $self = shift;
     my $auths = $self->registry("commenter_authenticators") || {};
-    %Commenter_Auth = %$auths;
+    $Commenter_Auth = { %$auths };
     my $app = $self->app;
     my $blog = $app->blog if $app->isa('MT::App');
     foreach my $auth ( keys %$auths ) {
         if ( my $c = $auths->{$auth}->{condition} ) {
             $c = $self->handler_to_coderef($c);
             if ($c) {
-                delete $Commenter_Auth{$auth} unless $c->($blog);
+                delete $Commenter_Auth->{$auth} unless $c->($blog);
             }
         }
     }
-    $Commenter_Auth{$_}{key} ||= $_ for keys %Commenter_Auth;
+    $Commenter_Auth->{$_}{key} ||= $_ for keys %$Commenter_Auth;
 }
 
 sub commenter_authenticator {
     my $self = shift;
     my ( $key, %param ) = @_;
-    %Commenter_Auth or $self->init_commenter_authenticators();
+    $Commenter_Auth or $self->init_commenter_authenticators();
 
     return
-        if ( !defined %Commenter_Auth
-        || !exists $Commenter_Auth{$key}
-        || ( $Commenter_Auth{$key}->{disable} && !$param{force} ) );
-    return $Commenter_Auth{$key};
+        if ( !exists $Commenter_Auth->{$key} || ( $Commenter_Auth->{$key}->{disable} && !$param{force} ) );
+    return $Commenter_Auth->{$key};
 }
 
 sub commenter_authenticators {
     my $self = shift;
     my (%param) = @_;
-    %Commenter_Auth or $self->init_commenter_authenticators();
-    my %auths = %Commenter_Auth;
+    $Commenter_Auth or $self->init_commenter_authenticators();
+    my %auths = %$Commenter_Auth;
     if ( !$param{force} ) {
         foreach my $auth ( keys %auths ) {
             delete $auths{$auth} if $auths{$auth}->{disable};
