@@ -12,7 +12,7 @@ use base 'MT::App';
 use MT::Comment;
 use MT::I18N qw( wrap_text );
 use MT::Util
-    qw( remove_html encode_html encode_url decode_url is_valid_email is_valid_url is_url escape_unicode format_ts encode_js );
+    qw( remove_html encode_html encode_url decode_url is_valid_email is_valid_url is_url escape_unicode format_ts encode_js epoch2ts );
 use MT::Entry qw(:constants);
 use MT::Author;
 use MT::JunkFilter qw(:constants);
@@ -1891,6 +1891,7 @@ sub save_commenter_profile {
     $cmntr->url( $param{url} )           if $param{url};
     $cmntr->set_password( $param{password} )
         if $param{password} && !$param{external_auth};
+    $cmntr->modified_on( epoch2ts( undef, time ) );
     if ( $cmntr->save ) {
         $app->run_callbacks( 'api_post_save.author', $app, $cmntr,
             $original );
