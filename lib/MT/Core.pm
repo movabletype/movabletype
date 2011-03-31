@@ -1483,6 +1483,8 @@ BEGIN {
             banlist => {
                 object_label        => 'IP address',
                 object_label_plural => 'IP addresses',
+                action_label        => 'IP address',
+                action_label_plural => 'IP addresses',
                 zero_state          => 'IP address',
                 condition           => sub {
                     my $app = shift;
