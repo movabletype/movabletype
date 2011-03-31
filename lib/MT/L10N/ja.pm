@@ -402,12 +402,12 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/new-ping.mtml
 	q{An unapproved TrackBack has been posted on your blog '[_1]', for entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{ブログ '[_1]' のブログ記事 '[_3]' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはブログに表示されません。},
 	q{An unapproved TrackBack has been posted on your blog '[_1]', for page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{ブログ '[_1]' のウェブページ '[_3]' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはブログに表示されません。},
-	q{An unapproved TrackBack has been posted on your website '[_1]', for page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{ウェブサイト '[_1]' のウェブページ '[_3]' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはウェブサイトに表示されません。},
 	q{An unapproved TrackBack has been posted on your blog '[_1]', for category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{ブログ '[_1]' のカテゴリ '[_3]' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはブログに表示されません。},
+	q{An unapproved TrackBack has been posted on your website '[_1]', for page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{ウェブサイト '[_1]' のウェブページ '[_3]' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはウェブサイトに表示されません。},
 	q{A new TrackBack has been posted on your blog '[_1]', on entry #[_2] ([_3]).} => q{ブログ '[_1]' のブログ記事 '[_3]' (ID:[_2]) に新しいトラックバックがあります。},
 	q{A new TrackBack has been posted on your blog '[_1]', on page #[_2] ([_3]).} => q{ブログ '[_1]' のウェブページ '[_3]' (ID:[_2]) に新しいトラックバックがあります。},
-	q{A new TrackBack has been posted on your website '[_1]', on page #[_2] ([_3]).} => q{ウェブサイト '[_1]' のウェブページ '[_3]' (ID:[_2]) に新しいトラックバックがあります。},
 	q{A new TrackBack has been posted on your blog '[_1]', on category #[_2] ([_3]).} => q{ブログ '[_1]' のカテゴリ '[_3]' (ID:[_2]) に新しいトラックバックがあります。},
+	q{A new TrackBack has been posted on your website '[_1]', on page #[_2] ([_3]).} => q{ウェブサイト '[_1]' のウェブページ '[_3]' (ID:[_2]) に新しいトラックバックがあります。},
 	'Excerpt' => '概要',
 	'Title' => 'タイトル',
 	'Blog' => 'ブログ',
@@ -526,6 +526,7 @@ use vars qw( @ISA %Lexicon );
 	'Plugin error: [_1] [_2]' => 'プラグインでエラーが発生しました: [_1] [_2]',
 	'Load of blog \'[_1]\' failed: [_2]' => 'ブログ(ID:[_1])をロードできませんでした: [_2]',
 	'Loading template \'[_1]\' failed.' => 'テンプレート「[_1]」のロードに失敗しました。',
+	'Error during building email: [_1]' => 'メールの再構築中にエラーが発生しました: [_1]',
 	'http://www.movabletype.org/documentation/' => 'http://www.movabletype.jp/documentation/',
 	'An error occurred: [_1]' => 'エラーが発生しました: [_1]',
 	'OpenID' => 'OpenID',
@@ -989,7 +990,9 @@ use vars qw( @ISA %Lexicon );
 	'Permissions for [_1]' => '[_1]の権限',
 	'association' => '関連付け',
 	'associations' => '関連付け',
+	'User Name' => 'ユーザー名',
 	'Role' => 'ロール',
+	'Role Name' => 'ロール名',
 	'Role Detail' => 'ロールの詳細',
 	'Website/Blog Name' => 'ウェブサイト/ブログ',
 	'__WEBSITE_BLOG_NAME' => 'ウェブサイト/ブログ名',
@@ -1037,7 +1040,7 @@ use vars qw( @ISA %Lexicon );
 	'__ENTRY_COUNT' => 'ブログ記事数',
 	'__COMMENT_COUNT' => 'コメント数',
 	'Created by' => '作成者',
-	'__AUTHOR_STATUS' => '状態',
+	'Status' => 'ステータス',
 	'Active' => '有効',
 	'Pending' => '保留中',
 	'Website URL' => 'ウェブサイトURL',
@@ -1045,7 +1048,6 @@ use vars qw( @ISA %Lexicon );
 	'Enabled Users' => '有効なユーザー',
 	'Disabled Users' => '無効なユーザー',
 	'Pending Users' => '保留中のユーザー',
-	'Status' => 'ステータス',
 	'__COMMENTER_APPROVED' => '承認',
 	'Banned' => '禁止',
 	'Enabled Commenters' => '有効なコメント投稿者',
@@ -1119,8 +1121,6 @@ use vars qw( @ISA %Lexicon );
 	'Cloning TrackBack pings for blog...' => 'トラックバックを複製しています...',
 	'Cloning templates for blog...' => 'テンプレートを複製しています...',
 	'Cloning template maps for blog...' => 'テンプレートマップを複製しています...',
-	'blog' => 'ブログ',
-	'blogs' => 'ブログ',
 	'Failed to load theme [_1]: [_2]' => '[_1]テーマの読込に失敗しました: [_2]',
 	'Failed to apply theme [_1]: [_2]' => '[_1]テーマの適用に失敗しました: [_2]',
 	'__PAGE_COUNT' => 'ウェブページ数',
@@ -1566,7 +1566,6 @@ use vars qw( @ISA %Lexicon );
 	'Select Users' => 'ユーザーを選択',
 	'Users Selected' => '選択されたユーザー',
 	'Select Roles' => 'ロールを選択',
-	'Role Name' => 'ロール名',
 	'Roles Selected' => '選択されたロール',
 	'Grant Permissions' => '権限の付与',
 	'You cannot delete your own association.' => '自分の関連付けは削除できません。',
@@ -1611,11 +1610,7 @@ use vars qw( @ISA %Lexicon );
 	'Reported as spam' => 'スパム',
 	'Comments on My Entries/Pages' => '自分のブログ記事/ウェブページへのコメント',
 	'Commenter Status' => 'コメント投稿者の状態',
-	'Deleted Users/Deleted Commenters' => '削除されたユーザー/コメント投稿者',
-	'Enabled Users/Enabled Commenters' => '有効なユーザー・コメント投稿者',
-	'Disabled Users/Banned Commenters' => '無効なユーザー・コメント投稿者',
-	'Pending Users/Pending Commenters' => '保留中のユーザー・コメント投稿者',
-	'Anonymous Commenters' => '匿名ユーザー',
+	'__ANONYMOUS_COMMENTER' => '匿名ユーザー',
 	'Non-spam comments' => 'スパムでないコメント',
 	'Non-spam comments on this website' => 'ウェブサイトのスパムでないコメント',
 	'Pending comments' => '保留中のコメント',
@@ -1623,7 +1618,6 @@ use vars qw( @ISA %Lexicon );
 	'Comments on my entries/pages' => '自分のブログ記事/ウェブページへのコメント',
 	'Comments in the last 7 days' => '最近7日間以内のコメント',
 	'Spam comments' => 'スパムコメント',
-	'__ANONYMOUS_COMMENTER' => '匿名ユーザー',
 
 ## lib/MT/Compat/v3.pm
 	'uses: [_1], should use: [_2]' => '[_1]は[_2]に直してください。',
@@ -1681,6 +1675,7 @@ use vars qw( @ISA %Lexicon );
 	'ID' => 'ID',
 	'Date Created' => '作成日',
 	'Date Modified' => '更新日',
+	'Author Name' => 'ユーザー名',
 	'Legacy Quick Filter' => 'クイックフィルタ',
 	'My Items' => '私のアイテム',
 	'Log' => 'ログ',
@@ -1855,6 +1850,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/IPBanList.pm
 	'IP Ban' => '禁止IPリスト',
 	'IP Bans' => '禁止IPリスト',
+	'IP addresses' => 'IPアドレス',
 
 ## lib/MT/Image.pm
 	'Invalid Image Driver [_1]' => '不正なイメージドライバーです:[_1]',
@@ -1895,8 +1891,6 @@ use vars qw( @ISA %Lexicon );
 	'Need either ImportAs or ParentAuthor' => '「自分のブログ記事としてインポートする」か「ブログ記事の著者を変更しない」のどちらかを選択してください。',
 	'Creating new user (\'[_1]\')...' => 'ユーザー([_1])を作成しています...',
 	'Saving user failed: [_1]' => 'ユーザーを作成できませんでした: [_1]',
-	'Assigning permissions for new user...' => '作成されたユーザーに権限を設定しています...',
-	'Saving permission failed: [_1]' => '権限を設定できませんでした: [_1]',
 	'Creating new category (\'[_1]\')...' => 'カテゴリ([_1])を作成しています...',
 	'Saving category failed: [_1]' => 'カテゴリを保存できませんでした: [_1]',
 	'Invalid status value \'[_1]\'' => '状態[_1]は正しくありません。',
@@ -2028,7 +2022,6 @@ use vars qw( @ISA %Lexicon );
 	'Moderator' => 'モデレータ',
 	'Can comment and manage feedback.' => 'コメントを投稿し、コメントやトラックバックを管理できます。',
 	'Can comment.' => 'コメントを投稿できます。',
-	'Active/Inactive' => '利用状況',
 	'__ROLE_STATUS' => '利用状況',
 	'__ROLE_ACTIVE' => '利用中',
 	'__ROLE_INACTIVE' => '利用されていない',
@@ -2099,7 +2092,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Template/Context.pm
 	'The attribute exclude_blogs cannot take \'[_1]\' for a value.' => 'exclude_blogs属性には\'[_1]\'を設定できません。',
-	'The attribute include_blogs is ignored when exclude_blogs is used in the same mt:Entries tag.' => '', # Translate - New English Check
+	'When the same blog IDs are simultaneously listed in the include_blogs and exclude_blogs attributes, those blogs are excluded.' => 'include_blogs属性とexclude_blogs属性に同じブログIDが指定されています。',
 	'You used an \'[_1]\' tag outside of the context of a author; perhaps you mistakenly placed it outside of an \'MTAuthors\' container?' => '[_1]をコンテキスト外で利用しようとしています。MTAuthorsコンテナタグの外部で使っていませんか?',
 	'You used an \'[_1]\' tag outside of the context of an entry; perhaps you mistakenly placed it outside of an \'MTEntries\' container?' => '[_1]をコンテキスト外で利用しようとしています。MTEntriesコンテナタグの外部で使っていませんか?',
 	'You used an \'[_1]\' tag outside of the context of the website; perhaps you mistakenly placed it outside of an \'MTWebsites\' container?' => '[_1]をコンテキスト外で利用しようとしています。MTWebsitesコンテナタグの外部で使っていませんか?',
@@ -4535,7 +4528,7 @@ use vars qw( @ISA %Lexicon );
 	'Save this template' => 'このテンプレートを保存する (s)',
 	'Re-Edit this template (e)' => 'このテンプレートを編集する',
 	'Re-Edit this template' => 'このテンプレートを編集する (s)',
-	'This preview is now running with virtual category. this can be a reason of unexpected error or broken preview. You can avoid this situation by creating any category on this blog.' => 'カテゴリーが存在しないため、仮のカテゴリーを利用してプレビューを作成しています。カテゴリーを作成することで正しいプレビューを利用できます。',
+	'There are no categories in this blog.  Limited preview of category archive templates is possible with a virtual category displayed.  Normal, non-preview output cannot be generated by this template unless at least one category is created.' => 'このブログにはカテゴリが存在しないため、仮カテゴリーを利用しています。正しいプレビューを表示したい場合は、カテゴリを作成して下さい。',
 
 ## tmpl/cms/rebuilding.tmpl
 	'Publishing...' => '再構築中...',
@@ -5134,6 +5127,8 @@ use vars qw( @ISA %Lexicon );
 	' and asset will be tagged (\'[_1]\')...' => 'アイテムにタグ([_1])を付けています...',
 	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'ブログ記事「[_1]」は既にインポートされているのでスキップします。',
 	'Saving page (\'[_1]\')...' => 'ウェブページ(\'[_1]\')を保存しています...',
+	'Assigning permissions for new user...' => '新しいユーザーに権限を追加しています...',
+	'Saving permission failed: [_1]' => '権限の保存中にエラーが発生しました: [_1]',
 
 ## plugins/WXRImporter/tmpl/options.tmpl
 	q{Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your blog's publishing paths</a> first.} => q{WordPressからMovable Typeへインポートする前に、まず<a href='[_1]'>ブログ公開パスを設定</a>してください。},
