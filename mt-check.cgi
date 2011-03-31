@@ -232,9 +232,9 @@ if (!$view) {
                 color: #839b5c;
                 text-decoration: none;
             }
-            .toggle-link { 
+            .detail-link { 
                 display: inline-block;
-                margin-left: 15px;
+                margin-left: 5px;
                 background: transparent;
                 color: #7b7c7d;
             }
@@ -322,8 +322,7 @@ if (!$view) {
                 display: none;
                 width: 100%;
                 max-width: 100%;
-                min-height: 150px;
-                max-height: 500px;
+                height: 100px;
                 padding: 0.2em 0.25em;
                 margin: 10px 0 0;
                 border: 1px solid #c0c6c9;
@@ -640,12 +639,12 @@ MSG
             print_encode(  $msg );
             print_encode(  trans_templ(qq{ <__trans phrase="Please consult the installation instructions for help in installing [_1]." params="$mod">}) );
             if ( $exception ) {
-                print_encode( qq{<span class="toggle-link"><a id="exception-toggle-$i" href="#" onclick="showException($i); return false;">} );
+                print_encode( qq{ <span class="detail-link"><a id="exception-toggle-$i" href="#" onclick="showException($i); return false;">} );
                 print_encode( translate('Details') );
                 print_encode( qq{</a></span>} );
             }
             print_encode( qq{</p>} );
-            print_encode( qq{<textarea id="exception-$i" class="exception" readonly="readonly">$exception</textarea>}) if $exception;
+            print_encode( qq{<textarea id="exception-$i" class="exception text full" readonly="readonly">$exception</textarea>}) if $exception;
             print_encode( qq{</div>} );
         } else {
             if ($data) {
