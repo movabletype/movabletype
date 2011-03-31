@@ -992,6 +992,7 @@ use vars qw( @ISA %Lexicon );
 	'Role' => 'ロール',
 	'Role Detail' => 'ロールの詳細',
 	'Website/Blog Name' => 'ウェブサイト/ブログ',
+	'__WEBSITE_BLOG_NAME' => 'ウェブサイト/ブログ名',
 
 ## lib/MT/AtomServer.pm
 	'[_1]: Entries' => '[_1]: ブログ記事一覧',

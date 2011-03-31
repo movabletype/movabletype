@@ -958,6 +958,7 @@ BEGIN {
                 },
                 blog_name => {
                     label     => 'Website/Blog Name',
+                    filter_label => '__WEBSITE_BLOG_NAME',
                     order     => 10000,
                     display   => 'default',
                     site_name => 1,

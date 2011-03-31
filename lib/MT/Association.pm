@@ -56,6 +56,7 @@ sub list_props {
     return {
         user_name => {
             label   => 'User',
+            filter_label => 'User Name',
             base    => '__virtual.string',
             display => 'force',
             order   => 100,
@@ -104,6 +105,7 @@ sub list_props {
         },
         role_name => {
             label      => 'Role',
+            filter_label => 'Role Name',
             display    => 'force',
             order      => 200,
             base       => '__virtual.string',
@@ -184,6 +186,7 @@ sub list_props {
         },
         blog_name => {
             label   => 'Website/Blog Name',
+            filter_label => '__WEBSITE_BLOG_NAME',
             base    => '__virtual.string',
             display => 'default',
             order   => 300,
