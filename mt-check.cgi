@@ -232,7 +232,7 @@ if (!$view) {
                 color: #839b5c;
                 text-decoration: none;
             }
-            .detail-link { 
+            .toggle-link { 
                 display: inline-block;
                 margin-left: 5px;
                 background: transparent;
@@ -639,7 +639,7 @@ MSG
             print_encode(  $msg );
             print_encode(  trans_templ(qq{ <__trans phrase="Please consult the installation instructions for help in installing [_1]." params="$mod">}) );
             if ( $exception ) {
-                print_encode( qq{ <span class="detail-link"><a id="exception-toggle-$i" href="#" onclick="showException($i); return false;">} );
+                print_encode( qq{ <span class="toggle-link detail-link"><a id="exception-toggle-$i" href="#" onclick="showException($i); return false;">} );
                 print_encode( translate('Details') );
                 print_encode( qq{</a></span>} );
             }

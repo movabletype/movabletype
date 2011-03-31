@@ -194,8 +194,7 @@ pre {
 }
 
 /* -- Toggle Link */
-.toggle-link, 
-.detail-link { 
+.toggle-link { 
     display: inline-block;
     cursor: pointer;
     background: transparent;
@@ -203,9 +202,7 @@ pre {
     text-decoration: underline;
 }
 .toggle-link:hover, 
-.toggle-link:active, 
-.detail-link:hover, 
-.detail-link:active { 
+.toggle-link:active { 
     color: #839b5c;
     text-decoration: none;
 }
