@@ -470,7 +470,9 @@ sub save {
     elsif ( $type eq 'author' ) {
 
         # Delete the author's userpic thumb (if any); it'll be regenerated.
-        if ( $original->userpic_asset_id != $obj->userpic_asset_id ) {
+        if (   $original->userpic_asset_id
+            && $original->userpic_asset_id != $obj->userpic_asset_id )
+        {
             my $thumb_file = $original->userpic_file();
             my $fmgr       = MT::FileMgr->new('Local');
             if ( $fmgr->exists($thumb_file) ) {
