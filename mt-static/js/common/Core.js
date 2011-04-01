@@ -878,36 +878,45 @@ extend( Date.prototype, {
 
 /* enumerable interface */
 
+window.CompatibleEnumerator = new Class( Object, {
+    init: function( a ) {
+        this.data = a;
+        this.index = 0;
+    },
+
+
+    atEnd: function() {
+        return this.index >= this.data.length ? true : false;
+    },
+
+
+    item: function() {
+        return this.atEnd() ? undefined : this.data[ this.index ];
+    },
+
+
+    moveFirst: function() {
+        this.index = 0;
+        return this.item();
+    },
+
+
+    moveNext: function() {
+        this.index++;
+        return this.item();
+    }
+} );
 if( !defined( window.Enumerator ) ) {
-    window.Enumerator = new Class( Object, {
-        init: function( a ) {
-            this.data = a;
-            this.index = 0;
-        },
-        
-        
-        atEnd: function() {
-            return this.index >= this.data.length ? true : false;
-        },
-        
-        
-        item: function() {
-            return this.atEnd() ? undefined : this.data[ this.index ];
-        },
-        
-        
-        moveFirst: function() {
-            this.index = 0;
-            return this.item();
-        },
-        
-        
-        moveNext: function() {
-            this.index++;
-            return this.item();
-        }
-    } );
+    window.Enumerator = window.CompatibleEnumerator;
 }
+window.EnumeratorFactory = function(collection) {
+    try {
+        return new window.Enumerator(collection);
+    }
+    catch (e) {
+        return new window.CompatibleEnumerator(collection);
+    }
+};
 
 
 /* ajax */
