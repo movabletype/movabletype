@@ -19,7 +19,7 @@ sub edit {
 
     # Load permissions from registry
     my $registered_perms;
-    my $perms = $app->registry('permissions');
+    my $perms = $app->model('permission')->perms_from_registry;
     my %user_perms;
 
     if ($id) {
@@ -177,7 +177,7 @@ sub edit_role {
 
     # Load permissions from registry
     my $registered_perms;
-    my $perms = $app->registry('permissions');
+    my $perms = $app->model('permission')->perms_from_registry;
     for my $perm ( values %$perms ) {
         $perm->{can_do} = 0;
     }
