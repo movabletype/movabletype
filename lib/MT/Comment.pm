@@ -278,7 +278,7 @@ sub list_props {
                 $status_img = qq{<img src="$status_url" />};
 
                 $auth_img = $static;
-                if ( $commenter->auth_type eq 'MT' ) {
+                if ( $commenter->auth_type eq 'MT' || $commenter->auth_type eq 'LDAP' ) {
                     $auth_img .= 'images/comment/mt_logo.png';
                     $auth_label = 'Movable Type';
                 }

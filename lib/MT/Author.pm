@@ -603,7 +603,7 @@ sub _bulk_author_name_html {
         my $lc_status_label = lc $status_label;
         my $auth_img        = MT->static_path;
         my $auth_label;
-        if ( $obj->auth_type eq 'MT' ) {
+        if ( $obj->auth_type eq 'MT' || $obj->auth_type eq 'LDAP' ) {
             $auth_img .= 'images/comment/mt_logo.png';
             $auth_label = 'Movable Type';
         }
