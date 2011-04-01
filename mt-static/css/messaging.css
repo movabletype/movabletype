@@ -77,9 +77,6 @@ p.zero-state {
 .dialog-msg-error {
     display: block;
 }
-.validate-error-wrapper {
-    z-index: 200;
-}
 .validate-error {
     display: inline-block;
     line-height: 1.3;

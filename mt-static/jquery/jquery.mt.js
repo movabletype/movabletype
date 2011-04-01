@@ -972,7 +972,8 @@ $.mtValidator('default', {
         $target.after($error_block);
         $error_block
             .css('left', $target.width() )
-            .css('top',   -1 * $target.height() );
+            .css('top',   -1 * $target.height() )
+            .css('z-index', 200);
     },
     removeError: function( $target, $error_block ) {
         $error_block.remove();
