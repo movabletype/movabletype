@@ -155,9 +155,10 @@ function handleMessages( data ) {
   jQuery('#msg-block').empty();
   if ( data.error ) {
     jQuery('#msg-block').append(
-      '<div class="msg msg-error">'
+      '<div class="msg msg-error"><p class="msg-text">'
       + data.error
-      + '<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />'
+      + '</p>'
+      + '<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>'
       + '</div>');
     return false;
   }
