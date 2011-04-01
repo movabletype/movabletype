@@ -235,11 +235,11 @@ sub export_template {
         my $type = $tmpl->type;
         return
               $known_section{$type} ? $type
-            : $type eq 'custom' ? 'module'
-            : $type eq 'individual'
-            ? ( $tmpl->identifier eq 'page' ? 'page' : 'individual' )
-            : $type eq 'page' ? 'page'
-            :                   'system';
+            : $type eq 'custom'     ? 'module'
+            : $type eq 'individual' ? ( $tmpl->identifier eq 'page' ? 'page' : 'individual' )
+            : $type eq 'page'       ? 'page'
+            : $type eq 'category'   ? 'archive'
+            :                         'system';
     }
 }
 
