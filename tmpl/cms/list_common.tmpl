@@ -1252,7 +1252,7 @@ jQuery('#apply').click(function() {
 
 jQuery('#save').click(function() {
   validateFilterDetails();
-  if (jQuery('#filter_id').val()) {
+  if (jQuery('#filter_id').val() && jQuery('#filter_id').val().match(/^[1-9][0-9]*$/) ) {
     // Overwrite current filter.
     jQuery('input[name=filter_name]').val(jQuery('#filter_name').val());
     jQuery('input[name=filter_id]').val(jQuery('#filter_id').val());
