@@ -42,7 +42,7 @@ use vars qw( %Lexicon );
 
 ## plugins/TypePadAntiSpam/tmpl/system.tmpl
 	'API Key' => 'APIキー',
-	'To enable this plugin, you\'ll need a free TypePad AntiSpam API key. You can <strong>get your free API key at [_1]antispam.typepad.com[_2]</strong>. Once you have your key, return to this page and enter it in the field below.' => 'このプラグインを利用するには、TypePad AntiSpam APIキー(無償)が必要です。APIキーは<strong>[_1]antispam.typepad.com[_2]</strong>から無償で取得できます。取得したら、このページに戻ってキーを入力してください。詳しくは<a href="http://antispam.typepad.jp/info/how-to-get-api-key.html" target="_blank">こちら</a>。',
+	q{To enable this plugin, you'll need a free TypePad AntiSpam API key. You can <strong>get your free API key at [_1]antispam.typepad.com[_2]</strong>. Once you have your key, return to this page and enter it in the field below.} => q{このプラグインを利用するには、TypePad AntiSpam APIキー(無償)が必要です。APIキーは<strong>[_1]antispam.typepad.com[_2]</strong>から無償で取得できます。取得したら、このページに戻ってキーを入力してください。詳しくは<a href="http://antispam.typepad.jp/info/how-to-get-api-key.html" target="_blank">こちら</a>。},
 	'Service Host' => 'サービスのホスト',
 	'The default service host for TypePad AntiSpam is api.antispam.typepad.com. You should only change this if you are using a different service that is compatible with the TypePad AntiSpam API.' => 'TypePad AntiSpamの既定のホストはapi.antispam.typepad.comです。TypePad AntiSpam APIと互換性を持つ他のサービスを利用する場合に限って、この設定を変更してください。',
 

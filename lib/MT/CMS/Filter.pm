@@ -236,18 +236,20 @@ sub legacy_filter {
     }
     my $label = $legacy_filter->{label};
     $label = $label->() if 'CODE' eq ref $label;
+    my $args = {
+        filter_key => $legacy_id,
+        ds         => $type,
+        filter_val => ( $app->param('filter_val') || '' ),
+    };
+    $args->{label} = "($label)";
+
     my $hash = {
         id     => $legacy_id,
         label  => '(Legacy) ' . $label,
         legacy => 1,
         items  => [
             {   type => '__legacy',
-                args => {
-                    filter_key => $legacy_id,
-                    ds         => $type,
-                    filter_val => ( $app->param('filter_val') || '' ),
-                    label      => "($label)"
-                },
+                args => $args
             }
         ],
         can_edit   => 0,

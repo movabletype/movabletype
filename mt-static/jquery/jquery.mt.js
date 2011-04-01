@@ -217,7 +217,6 @@ $.mtUseAbsolute = function() {
         }
     });
     $checkboxes.click(function() {
-        jQuery('#'+$(this).parents().find('form').attr('id')).validate().resetForm();
         if (this.checked) {
             var $obj = $(this).attr('checked', true).parents('.field-content');
             $obj.find('.relative-site_path').hide();
@@ -904,8 +903,7 @@ $.extend( $.mtValidator.prototype, {
             if ( $elem.is(selector) ) {
                 validator.error  = false;
                 validator.errstr = undefined;
-                validator.test   = fn;
-                var res = validator.test($elem);
+                var res = fn.apply(validator, [$elem]);
                 if ( validator.error || !res ) {
                     if ( !validator.errstr ) {
                         validator.raise(
@@ -974,7 +972,8 @@ $.mtValidator('default', {
         $target.after($error_block);
         $error_block
             .css('left', $target.width() )
-            .css('top',   -1 * $target.height() );
+            .css('top',   -1 * $target.height() )
+            .css('z-index', 200);
     },
     removeError: function( $target, $error_block ) {
         $error_block.remove();
@@ -1113,6 +1112,12 @@ $.fn.extend({
 });
 
 $('input, textarea').live('keyup focusin focusout', function () {
+    var ns = $.data( this, 'mtValidator' );
+    if ( !ns ) return true;
+    $(this).mtValid();
+});
+
+$('select').live('change', function () {
     var ns = $.data( this, 'mtValidator' );
     if ( !ns ) return true;
     $(this).mtValid();

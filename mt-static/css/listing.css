@@ -41,11 +41,10 @@
     word-wrap: break-word;
 }
 .col.head { 
-    position: relative;
     padding: 0;
     border-width: 0 0 1px 1px;
     line-height: 1;
-    background-color: #dcdddd;
+    background-color: #f3f3f3;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
     background: -moz-linear-gradient(top, #f3f3f3 0%, #dcdddd 100%);
     font-size: 11px;
@@ -66,6 +65,8 @@
 }
 .col.cb { 
     width: 2.6em;
+    padding-left: 0;
+    padding-right: 0;
     text-align: center;
 }
 .col.si,
@@ -200,6 +201,9 @@ tfoot .col.head{
 .col .archive-publishing-method-item {
     list-style-type: none;
 }
+.col .log-metadata pre {
+    white-space: normal;
+}
 /* -- List Actions */ 
 .list-actions {
     float: left;
@@ -255,12 +259,21 @@ tfoot .col.head{
     -moz-border-radius: 5px 5px 0 0;
 }
 .filter-header #allpass-filter {
-    color: #C53D43;
+    display: inline-block;
+    margin-left: 8px;
+    color: #c53d43;
     font-size: 87%;
 }
 .filter-header .toggle-button {
     border-top-right-radius: 5px;
     -moz-border-radius: 0 5px 0 0;
+}
+.filter-header .current-filter {
+    background-image: url(../images/filter-list.png);
+    text-decoration: none;
+}
+.filter-header .current-filter:hover {
+    border-bottom: 0;
 }
 #filter-detail {
     border: solid #c0c6c9;
@@ -269,10 +282,10 @@ tfoot .col.head{
 .filteritem {
     position: relative;
     margin: 0 10px;
-    background-color: #fff;
     border: 1px solid #adadad;
     border-top-color: #cfd0d0;
     border-left-color: #cfd0d0;
+    background-color: #fff;
 }
 .filteritem .item-content {
     padding: 10px;
@@ -282,37 +295,70 @@ tfoot .col.head{
 }
 
 /* - Select Filter */
+#dialog_filter {
+    padding: 0 0 10px 10px;
+}
 #dialog_filter_content {
     max-height: 420px;
     padding-top: 0;
     overflow: auto;
 }
-#create-new-link {
-    padding: 0.5em 0.3em;
-    border-bottom: 1px solid #c0c6c9;
+#dialog_filter .filter-list-block {
+    margin-top: 15px;
 }
-#create-new-link a {
-    color: #2b2b2b;
+#dialog_filter .filter-list-label {
+    margin: 0 0 5px;
 }
+
+/* -- filter List */
 #dialog_filter .filter {
-    margin: 0;
-    padding: 0.3em 0.5em;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
+    margin: 0 10px 1px 0;
+    padding: 0 5px;
 }
 #dialog_filter .filter:hover {
-    background-color: #dcdddd;
+    background-color: #e7e7eb;
 }
-.filter-ctrl {
+#dialog_filter .filter.edit-mode {
+    padding: 0;
+}
+#dialog_filter .filter.edit-mode:hover {
+    background-color: transparent;
+}
+#dialog_filter .apply-link, 
+#dialog_filter .item-ctrl {
+    height: 23px;
+    line-height: 23px;
+}
+#dialog_filter .apply-link {
+    display: block;
+    text-decoration: none;
+}
+.filter-label .apply-link {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+#dialog_filter .item-ctrl {
+    display: none;
     text-align: right;
-    height: 20px;
 }
-.filter-ctrl a {
+#dialog_filter .filter:hover .item-ctrl {
     display: inline-block;
-    vertical-align: middle;
 }
-.tool-link {
+#dialog_filter .edit-mode .item-ctrl {
+    display: inline-block;
+    text-align: left;
+}
+#dialog_filter .item-ctrl a {
+    margin-left: 5px;
+}
+#dialog_filter .tool-link {
     margin: 0 0 0 0.5em;
+    vertical-align: top;
+}
+#dialog_filter .rename-link {
+    color: #7b7c7d;
 }
 
 /* - Asset Preview */

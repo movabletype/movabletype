@@ -47,7 +47,7 @@ sub _decoder {
 sub start_element {
     my $self   = shift;
     my $data   = shift;
-    my $plugin = MT->component('WXRImporter/WXRImporter.pl');
+    my $plugin = MT->component('WXRImporter');
 
     my $name   = $data->{LocalName};
     my $prefix = $data->{Prefix};
@@ -236,7 +236,7 @@ sub _update_blog {
 sub _create_category {
     my $self   = shift;
     my $data   = shift;
-    my $plugin = MT->component('WXRImporter/WXRImporter.pl');
+    my $plugin = MT->component('WXRImporter');
 
     my $cb   = $self->{callback};
     my $blog = $self->{blog};
@@ -323,7 +323,7 @@ sub _create_category {
 sub _create_tag {
     my $self   = shift;
     my $data   = shift;
-    my $plugin = MT->component('WXRImporter/WXRImporter.pl');
+    my $plugin = MT->component('WXRImporter');
 
     my $cb   = $self->{callback};
     my $blog = $self->{blog};
@@ -419,7 +419,7 @@ sub _create_item {
 sub _create_asset {
     my $self     = shift;
     my ($hashes) = @_;
-    my $plugin   = MT->component('WXRImporter/WXRImporter.pl');
+    my $plugin   = MT->component('WXRImporter');
 
     my $blog = $self->{blog};
     my $cb   = $self->{callback};
@@ -594,7 +594,7 @@ sub _create_asset {
 sub _create_post {
     my $self = shift;
     my ( $class_type, $hashes ) = @_;
-    my $plugin = MT->component('WXRImporter/WXRImporter.pl');
+    my $plugin = MT->component('WXRImporter');
 
     my $blog = $self->{blog};
     my $cb   = $self->{callback};
@@ -922,7 +922,7 @@ sub _create_post {
 sub _get_author_id {
     my $self = shift;
     my ( $cb, $value ) = @_;
-    my $plugin = MT->component('WXRImporter/WXRImporter.pl');
+    my $plugin = MT->component('WXRImporter');
 
     my $author = $self->{author};
     unless ($author) {

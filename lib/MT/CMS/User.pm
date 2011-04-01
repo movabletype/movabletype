@@ -66,7 +66,7 @@ sub edit {
             unless exists $param->{langauges};
         eval { require MT::Image; MT::Image->new or die; };
         $param->{can_use_userpic} = $@ ? 0 : 1;
-        $param->{date_format} = $app->user->date_format || 'relative';
+        $param->{date_format} = $obj->date_format || 'relative';
     }
     else {
         if ( $app->config->ExternalUserManagement ) {
@@ -1102,28 +1102,24 @@ PERMCHECK: {
                 panel_title       => $app->translate("Select Website"),
                 panel_label       => $app->translate("Website Name"),
                 items_prompt      => $app->translate("Websites Selected"),
-                search_label      => $app->translate("Search Websites"),
                 panel_description => $app->translate("Description"),
             },
             'blog' => {
                 panel_title       => $app->translate("Select Blogs"),
                 panel_label       => $app->translate("Blog Name"),
                 items_prompt      => $app->translate("Blogs Selected"),
-                search_label      => $app->translate("Search Blogs"),
                 panel_description => $app->translate("Description"),
             },
             'author' => {
                 panel_title       => $app->translate("Select Users"),
                 panel_label       => $app->translate("Username"),
                 items_prompt      => $app->translate("Users Selected"),
-                search_label      => $app->translate("Search Users"),
                 panel_description => $app->translate("Name"),
             },
             'role' => {
                 panel_title       => $app->translate("Select Roles"),
                 panel_label       => $app->translate("Role Name"),
                 items_prompt      => $app->translate("Roles Selected"),
-                search_label      => "",
                 panel_description => $app->translate("Description"),
             },
         };

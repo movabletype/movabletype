@@ -41,7 +41,7 @@ class CacheMemcached extends BaseCache {
 
     # param: $server = hostname:portno
     private function _connect($server) {
-        list ($host, $port) = split(":", $server);
+        list ($host, $port) = explode(":", $server);
         if ($host == '') {
             require_once('class.exception.php');
             throw new MTConfigException("Can't connect to memcached server. (" . $server . ")");

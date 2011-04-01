@@ -294,7 +294,7 @@ sub edit {
                 { class => '*' },
                 {   join => MT::ObjectAsset->join_on(
                         undef,
-                        {   asset_id  => \'= asset_id',
+                        {   asset_id  => \'= asset_id', # coloring editors hack'
                             object_ds => 'entry',
                             object_id => $id
                         }
@@ -1555,6 +1555,7 @@ sub save {
         my %param = ();
         $param{error}       = $app->errstr;
         $param{return_args} = $app->param('return_args');
+        $app->param('reedit', 1);
         return $app->forward( "view", \%param );
     }
 

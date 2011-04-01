@@ -20,14 +20,15 @@ use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
                  epoch2ts ts2epoch escape_unicode unescape_unicode
                  sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
                  weaken log_time make_string_csv browser_language sanitize_embed
-                 extract_url_path break_up_text dir_separator deep_do );
+                 extract_url_path break_up_text dir_separator deep_do
+                 deep_copy );
 use MT::I18N qw( encode_text );
 use strict;
 
 my $mt = MT->new;
 $mt->config('NoHTMLEntities', 1);
 
-BEGIN { plan tests => 208 };
+BEGIN { plan tests => 221 };
 
 is(substr_wref("Sabado", 0, 3), "Sab"); #1
 is(substr_wref("S&agrave;bado", 0, 3), "S&agrave;b"); #2
@@ -498,4 +499,38 @@ ok(dir_separator(), 'dir_separator()');
     }, $sub);
     is_deeply([sort(grep($_, @members))], ['Bar', 'Baz', 'Foo'], 'result of deep_do()');
     is($counter, 4, 'a subroutine called 4 times in deep_do()');
+}
+
+
+{
+    # deep copied (simple data)
+    foreach my $data (1, \1, [1], {1=>1}, sub{}) {
+        my $copied = deep_copy($data, 1);
+        is_deeply($data, $copied, 'deep copied:' . (ref $data || $data));
+    }
+}
+
+{
+    # deep copied (complex data)
+    my $data   = [1, \2, {3 => 4, 5 => {6 => 7}}, [8, 9]];
+    my $copied = deep_copy($data, 2);
+    is_deeply($data, $copied, 'deep copied complex data');
+
+    $data->[0] += 1;
+    ok($data->[0] != $copied->[0], 'deep copied: depth: 1');
+
+    $data->[2]{3} += 1;
+    ok($data->[2]{3} != $copied->[2]{3}, 'deep copied: depth: 2');
+
+    $data->[2]{5}{6} += 1;
+    ok($data->[2]{5}{6} == $copied->[2]{5}{6}, 'not deep copied: depth: 3');
+}
+
+{
+    # shallow copied
+    my $data   = [1, \2, {3 => 4, 5 => {6 => 7}}, [8, 9]];
+    my $copied = deep_copy($data, 0);
+    is_deeply($data, $copied, 'shallow copied complex data');
+    $data->[0]  += 1;
+    ok($data->[0] = $copied->[0], 'not deep copied');
 }

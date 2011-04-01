@@ -220,6 +220,7 @@ sub bulk_update {
             delete $obj->{id};
             $new_obj->set_values($obj);
             $new_obj->blog_id($blog_id);
+            $new_obj->author_id($app->user->id);
             push @objects, $new_obj;
             push @creates, $new_obj;
             $new_obj->{tmp_id} = $tmp_id;
@@ -445,6 +446,10 @@ sub can_save {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
+    unless ( ref $obj ) {
+        $obj = MT->model('category')->load($obj)
+            or return;
+    }
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
 
     return $author->permissions($blog_id)->can_do('save_category');
@@ -455,6 +460,10 @@ sub can_delete {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
+    unless ( ref $obj ) {
+        $obj = MT->model('category')->load($obj)
+            or return;
+    }
     my $blog_id = $obj->blog_id;
 
     return $author->permissions($blog_id)->can_do('delete_category');

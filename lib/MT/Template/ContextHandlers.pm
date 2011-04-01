@@ -1224,6 +1224,8 @@ sub check_page {
 package MT::Template::Tags::Core;
 use strict;
 
+use MT::Util qw(deep_copy);
+
 sub _math_operation {
     my ( $ctx, $op, $lvalue, $rvalue ) = @_;
     return $lvalue
@@ -2435,6 +2437,8 @@ sub _hdlr_set_var {
     elsif ( $existing ne '' && ( my $op = $args->{op} ) ) {
         $val = _math_operation( $ctx, $op, $existing, $val );
     }
+
+    $val = deep_copy($val, MT->config->DeepCopyRecursiveLimit);
 
     if ( defined $key ) {
         $data ||= {};

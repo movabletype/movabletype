@@ -4,6 +4,7 @@ description: '<__trans phrase="Import WordPress exported RSS into MT.">'
 author_name: "Six Apart, Ltd."
 author_link: http://www.sixapart.com/
 l10n_class: WXRImporter::L10N
+id: WXRImporter
 
 import_formats:
   import_wxr:

@@ -78,7 +78,7 @@ sub get_syscheck_content {
 
         # allowed html
         my $spec
-            = '* style class id,ul,li,div,span,br,h2,h3,strong,code,blockquote,p';
+            = '* style class id,ul,li,div,span,br,h2,h3,strong,code,blockquote,p,textarea';
         $result = Encode::decode_utf8($result) if !Encode::is_utf8($result);
         $result = MT::Sanitize->sanitize( $result, $spec );
     }
@@ -1958,6 +1958,7 @@ sub dialog_adjust_sitepath {
     my $blog_class = $app->model('blog');
     my @blogs      = $blog_class->load( { id => \@blog_ids } );
     my ( @blogs_loop, @website_loop );
+    my $param = {};
 
     foreach my $blog (@blogs) {
         if ( $blog->is_blog() ) {
@@ -1996,7 +1997,7 @@ sub dialog_adjust_sitepath {
                 $params->{old_archive_url_subdomain} = $subdomain;
                 $params->{old_archive_url_path}      = $raw_archive_url[1];
             }
-            $params->{enabled_archives} = 1
+            $param->{enabled_archives} = 1
                 if $params->{old_archive_url}
                     || $params->{old_archive_url_subdomain}
                     || $params->{old_archive_url_path}
@@ -2027,14 +2028,13 @@ sub dialog_adjust_sitepath {
             };
     }
 
-    my $param = { blogs_loop => \@blogs_loop, tmp_dir => $tmp_dir };
-    $param->{error}          = $error         if $error;
-    $param->{restore_upload} = $uploaded      if $uploaded;
-    $param->{asset_ids}      = $asset_ids     if $asset_ids;
-    $param->{website_loop}   = \@website_loop if @website_loop;
-    $param->{all_websites}   = \@all_websites if @all_websites;
-    $param->{path_separator} = MT::Util->dir_separator;
-
+    $param = { blogs_loop => \@blogs_loop, tmp_dir => $tmp_dir, %$param };
+    $param->{error}            = $error         if $error;
+    $param->{restore_upload}   = $uploaded      if $uploaded;
+    $param->{asset_ids}        = $asset_ids     if $asset_ids;
+    $param->{website_loop}     = \@website_loop if @website_loop;
+    $param->{all_websites}     = \@all_websites if @all_websites;
+    $param->{path_separator}   = MT::Util->dir_separator;
     for my $key (
         qw(files assets last redirect is_dirty is_asset objects_json deferred_json)
         )
