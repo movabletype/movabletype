@@ -295,16 +295,13 @@ tfoot .col.head{
 }
 
 /* - Select Filter */
+#dialog_filter {
+    padding: 0 0 10px 10px;
+}
 #dialog_filter_content {
     max-height: 420px;
     padding-top: 0;
     overflow: auto;
-}
-#create-new-link {
-    padding: 0.5em 0.3em;
-}
-#create-new-link a {
-    color: #7b7c7d;
 }
 #dialog_filter .filter-list-block {
     margin-top: 15px;
@@ -312,36 +309,56 @@ tfoot .col.head{
 #dialog_filter .filter-list-label {
     margin: 0 0 5px;
 }
+
+/* -- filter List */
 #dialog_filter .filter {
-    margin-bottom:1px;
-    padding: 0.3em 0.5em;
+    margin: 0 10px 1px 0;
+    padding: 0 5px;
 }
 #dialog_filter .filter:hover {
-    background-color: #dcdddd;
+    background-color: #e7e7eb;
+}
+#dialog_filter .filter.edit-mode {
+    padding: 0;
+}
+#dialog_filter .filter.edit-mode:hover {
+    background-color: transparent;
 }
 #dialog_filter .apply-link, 
 #dialog_filter .item-ctrl {
-    display: inline-block;
-    height: 22px;
-    line-height: 22px;
+    height: 23px;
+    line-height: 23px;
 }
 #dialog_filter .apply-link {
     display: block;
+    text-decoration: none;
+}
+.filter-label .apply-link {
     width: 100%;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 #dialog_filter .item-ctrl {
+    display: none;
     text-align: right;
 }
-#dialog_filter .item-ctrl a {
-    vertical-align: middle;
-    margin-left: 5px;
-    color: #7b7c7d;
+#dialog_filter .filter:hover .item-ctrl {
+    display: inline-block;
 }
-.tool-link {
+#dialog_filter .edit-mode .item-ctrl {
+    display: inline-block;
+    text-align: left;
+}
+#dialog_filter .item-ctrl a {
+    margin-left: 5px;
+}
+#dialog_filter .tool-link {
     margin: 0 0 0 0.5em;
+    vertical-align: top;
+}
+#dialog_filter .rename-link {
+    color: #7b7c7d;
 }
 
 /* - Asset Preview */

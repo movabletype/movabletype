@@ -203,7 +203,6 @@ pre {
 }
 .toggle-link:hover, 
 .toggle-link:active { 
-    color: #839b5c;
     text-decoration: none;
 }
 .detail {
@@ -218,9 +217,9 @@ pre {
 
 /* -- Open Dialog Link */
 .open-dialog-link {
+    border-bottom: 1px dotted;
     color: #7b7c7d;
     text-decoration: none;
-    border-bottom: 1px dotted;
 }
 .open-dialog-link:hover {
     border-bottom: 0;
