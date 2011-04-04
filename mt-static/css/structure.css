@@ -1174,6 +1174,9 @@ ul.tabs li a {
     max-height: 455px;
     overflow: auto;
 }
+.favorite-blogs-widget .msg {
+    margin-right: 10px;
+}
 .favorite-blogs-widget .blog-content { 
     position: relative;
     margin: 0 10px 0 0;
