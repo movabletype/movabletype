@@ -308,8 +308,9 @@ sub list_props {
             },
         },
         created_on => {
-            order => 250,
-            base  => '__virtual.created_on',
+            order   => 250,
+            base    => '__virtual.created_on',
+            display => 'default',
         },
         ip => {
             auto      => 1,
