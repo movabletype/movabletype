@@ -129,7 +129,8 @@ sub list_props {
                 my $detail = $role->permissions;
                 if ( defined $detail ) {
                     my @perms = map { $_ =~ s/'//g; $_; } split ',', $detail;
-                    my $all_perms = MT->registry('permissions');
+                    my $all_perms
+                        = MT->model('permission')->perms_from_registry;
                     my @permhashes
                         = map { $all_perms->{ 'blog.' . $_ } } @perms;
                     $detail = join ', ', (

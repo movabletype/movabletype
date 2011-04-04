@@ -145,6 +145,9 @@ select {
 .col select {
     width: 100%;
 }
+select.error {
+    border-color: #c53d43;
+}
 
 #notification-listing-table input[type="text"], 
 .batch-edit input[type="text"] { 

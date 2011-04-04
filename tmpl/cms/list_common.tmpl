@@ -1204,7 +1204,7 @@ jQuery('#item_list').change(function() {
   jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item"></span>')
     .insertAfter($item)
     .bind('click', function() {
-      jQuery(this).parent('.filteritem').find('input').mtUnvalidate().end().remove();
+      resetFilterDetails();
       updateItemList();
       updateFilterSaveButtons();
     });
@@ -1240,6 +1240,18 @@ function validateFilterDetails () {
     validateErrorMessage = showMessage( trans('[_1] Filter Items have errors', errors ), 'error' );
   }
   return errors ? false : true;
+}
+
+function resetFilterDetails() {
+  if ( validateErrorMessage ) {
+    validateErrorMessage.remove();
+  }
+  validateErrorMessage = false;
+  jQuery('div#filter-detail div.filteritem')
+    .find('input, select')
+    .mtUnvalidate()
+    .end()
+    .remove();
 }
 
 jQuery('#apply').click(function() {
@@ -1393,7 +1405,7 @@ function addItems(items, op) {
       jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item"></span>')
         .insertAfter($item)
         .bind('click', function() {
-          jQuery(this).parent('.filteritem').find('input').mtUnvalidate().end().remove();
+          resetFilterDetails();
           updateItemList();
           updateFilterSaveButtons();
         });
@@ -1438,7 +1450,7 @@ function applyFilter(index, no_render) {
 function doApplyFilter(filter, no_render) {
   jQuery('#filter_name').val('');
   jQuery('#filter_id').val('');
-  jQuery('.filteritem').remove();
+  resetFilterDetails();
   var name = filter.label;
   addItems(filter.items);
   jQuery('#opener').html(name);
@@ -1588,7 +1600,7 @@ jQuery('.actions-bar a.button').click(function() {
 });
 
 jQuery('.filtertype .minus').live('click', function() {
-  jQuery(this).parents('.filtertype').find('input').mtUnvalidate().end().remove();
+  resetFilterDetails();
 });
 
 jQuery('.filtertype .plus').live('click', function() {

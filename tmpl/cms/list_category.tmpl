@@ -27,7 +27,7 @@
       <div id="actions-bar-top" class="actions-bar actions-bar-top line">
         <div class="button-actions actions">
           <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
-        </div>        
+        </div>
       </div>
 
       <div id="area-action" class="mod sortable-header">
@@ -43,7 +43,7 @@
       <div id="actions-bar-bottom" class="actions-bar actions-bar-bottom line">
         <div class="button-actions actions">
           <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
-        </div>        
+        </div>
       </div>
 
     </form>
@@ -155,9 +155,10 @@ function handleMessages( data ) {
   jQuery('#msg-block').empty();
   if ( data.error ) {
     jQuery('#msg-block').append(
-      '<div class="msg msg-error">'
+      '<div class="msg msg-error"><p class="msg-text">'
       + data.error
-      + '<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />'
+      + '</p>'
+      + '<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>'
       + '</div>');
     return false;
   }
@@ -258,8 +259,7 @@ function initItem($item) {
 
       jQuery('<button type="submit" class="rename button"><__trans phrase="Rename"></button>')
         .bind('click', function() {
-          if ( !$element.find('input.label').mtValidate() ) return false;
-          if ( !$element.find('input.basename').mtValidate() ) return false;
+          if ( !$element.find('input.label, input.basename').mtValidate() ) return false;
           fixInteractions({ closeInlineForms: false });
           $basename.text( $element.find('input.basename').val() );
           $label.text( $element.find('input.label').val() );
@@ -375,11 +375,15 @@ function makeBasename( parent, id, label ) {
 }
 
 function addItem(parent, label) {
-  if (hasDupe( parent, 0, label) ) {
-    jQuery('#msg-block').append('<div class="msg msg-error">'+trans("[_1] '[_2]' already exists.", '<mt:var name="object_label">', label)+'</div>');
+  jQuery('#msg-block .additem-error').remove();
+  if ( hasDupe( parent, 0, label) ) {
+    jQuery('#msg-block').append('<div class="msg msg-error additem-error">'+trans("[_1] '[_2]' already exists.", '<mt:var name="object_label">', label)+'</div>');
     return false;
   }
-
+  if ( !label.length ) {
+    jQuery('#msg-block').append('<div class="msg msg-error additem-error">'+trans("Label is required.")+'</div>');
+    return false;
+  }
   var id = 'x'+dummy;
   var basename = makeBasename(parent, id, label);
   var $item = createItem(id, parent, label, basename, '');

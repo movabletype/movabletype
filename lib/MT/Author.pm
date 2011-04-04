@@ -213,7 +213,7 @@ sub list_props {
             singleton             => 0,
             single_select_options => sub {
                 my $prop  = shift;
-                my $perms = MT->registry('permissions');
+                my $perms = MT->model('permission')->perms_from_registry;
                 my @perms
                     = map { { label => $perms->{$_}{label}, value => $_ } }
                     sort { $perms->{$a}{order} <=> $perms->{$b}{order} }
@@ -603,7 +603,7 @@ sub _bulk_author_name_html {
         my $lc_status_label = lc $status_label;
         my $auth_img        = MT->static_path;
         my $auth_label;
-        if ( $obj->auth_type eq 'MT' ) {
+        if ( $obj->auth_type eq 'MT' || $obj->auth_type eq 'LDAP' ) {
             $auth_img .= 'images/comment/mt_logo.png';
             $auth_label = 'Movable Type';
         }
@@ -878,7 +878,7 @@ sub can_edit_entry {
 sub is_superuser {
     my $author = shift;
     if (@_) {
-        my $perms      = MT->registry('permissions');
+        my $perms      = MT->model('permission')->perms_from_registry;
         my $admin_perm = $perms->{'system.administer'};
         $author->permissions(0)->can_administer(@_);
         if ( $_[0] ) {

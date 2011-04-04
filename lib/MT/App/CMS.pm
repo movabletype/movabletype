@@ -2165,7 +2165,6 @@ sub core_menus {
                 my $user    = $app->user;
                 my $blog_id = $app->param('blog_id');
                 return 1 if $user->is_superuser;
-                return 0 unless defined $blog_id;
 
                 my $terms;
                 push @$terms, { author_id => $user->id };

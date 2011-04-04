@@ -46,7 +46,7 @@
 <mt:unless name="dialog">
 <button
    id="close-button"
-   onclick="if ( window.opener ) { window.close(); } else { parent.jQuery.fn.mtDialog.close(); }"
+   onclick="if ( window.opener || is_toplevel_new_window() ) { window.close(); } else { parent.jQuery.fn.mtDialog.close(); }"
    type="submit"
    accesskey="x"
    class="close action button hidden"
@@ -55,9 +55,15 @@
 </button>
 </mt:unless>
 <script type="text/javascript">
+    function is_toplevel_new_window() {
+        return (window == window.parent)
+            && (window == window.top)
+            && (! window.opener)
+            && (history.length == 1);
+    }
     /* <![CDATA[ */
     // show the close button if error is in modal or popup
-    if ( window != window.parent || window.opener )
+    if ( window != window.parent || window.opener || is_toplevel_new_window() )
         document.getElementById("close-button").className = "close action button";
     /* ]]> */
 </script>
