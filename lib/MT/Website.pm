@@ -45,6 +45,10 @@ sub list_props {
             filter_type => 'blog_id',
             list_screen => 'blog',
             count_terms => sub {
+                my $prop = shift;
+                my ($opts) = @_;
+                return {}
+                    if MT->app->user->is_superuser;
                 my @perms = MT->model('permission')->load(
                     {   author_id   => MT->instance->user->id,
                         permissions => { not => 'comment' },
