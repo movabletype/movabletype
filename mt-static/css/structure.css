@@ -793,13 +793,16 @@ ul.tabs li a {
 }
 .fav-action-link { 
     display: block;
-    padding: 3px 5px;
-    color: #7b7c7d;
+    padding: 3px 7px;
     text-decoration: none;
 }
 .fav-action-link:hover { 
-    color: #2b2b2b;
-    text-decoration: underline;
+    background-color: #e7e7eb;
+}
+.fav-action.last-child .fav-action-link { 
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    -moz-border-radius: 0 0 3px 3px;    
 }
 
 /* ---- Nav Icons */
