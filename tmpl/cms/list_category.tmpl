@@ -375,11 +375,15 @@ function makeBasename( parent, id, label ) {
 }
 
 function addItem(parent, label) {
-  if (hasDupe( parent, 0, label) ) {
-    jQuery('#msg-block').append('<div class="msg msg-error">'+trans("[_1] '[_2]' already exists.", '<mt:var name="object_label">', label)+'</div>');
+  jQuery('#msg-block .additem-error').remove();
+  if ( hasDupe( parent, 0, label) ) {
+    jQuery('#msg-block').append('<div class="msg msg-error additem-error">'+trans("[_1] '[_2]' already exists.", '<mt:var name="object_label">', label)+'</div>');
     return false;
   }
-
+  if ( !label.length ) {
+    jQuery('#msg-block').append('<div class="msg msg-error additem-error">'+trans("Label is required.")+'</div>');
+    return false;
+  }
   var id = 'x'+dummy;
   var basename = makeBasename(parent, id, label);
   var $item = createItem(id, parent, label, basename, '');
