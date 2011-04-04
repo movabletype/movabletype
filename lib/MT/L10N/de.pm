@@ -400,7 +400,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/new-ping.mtml
 	'An unapproved TrackBack has been posted on your blog \'[_1]\', for entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'Ein noch nicht freigeschaltetes TrackBack  ist zu Eintrag  #[_2] ([_3]) in Ihrem Blog \'[_1]\' eingegangen. Schalten Sie das TrackBack  frei, um es auf Ihrer Website erscheinen zu lassen.',
-	'An unapproved TrackBack has been posted on your blog \'[_1]\', for page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'Ein noch nicht freigeschaltetes TrackBack ist zur Seite  #[_2] ([_3]) in Ihrem Blog \'[_1}\' eingegangen. Schalten Sie das TrackBack frei, um es auf Ihrer Website erscheinen zu lassen.',
+	'An unapproved TrackBack has been posted on your blog \'[_1]\', for page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'Ein noch nicht freigeschaltetes TrackBack ist zur Seite  #[_2] ([_3]) in Ihrem Blog \'[_1]\' eingegangen. Schalten Sie das TrackBack frei, um es auf Ihrer Website erscheinen zu lassen.',
 	'An unapproved TrackBack has been posted on your website \'[_1]\', for page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'Ein noch nicht freigeschalteters TrackBack ist zur Seite  #[_2] ([_3]) auf Ihrer Website \'[_1]\' eingegangen. Schalten Sie das TrackBack frei, um es auf Ihrer Website erscheinen zu lassen.',
 	'An unapproved TrackBack has been posted on your blog \'[_1]\', for category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'Ein noch nicht freigeschaltetes TrackBack ist zur Kategorie  #[_2] ([_3]) in Ihrem Blog \'[_1]\' eingegangen. Schalten Sie das TrackBack frei, um es auf Ihrer Website erscheinen zu lassen.',
 	'A new TrackBack has been posted on your blog \'[_1]\', on entry #[_2] ([_3]).' => 'Zu Eintrag #[_2] ([_3]) ist ein neues TrackBack auf Ihrem Blog \'[_1]\' erschienen.',
@@ -4733,7 +4733,7 @@ use vars qw( @ISA %Lexicon );
 	'Your last entry was [_1] in <a href="[_2]">[_3]</a>.' => 'Ihr letzter Eintrag war [_1] auf <a href="[_2]">[_3]</a>.',
 	'You have <a href="[_1]">[quant,_2,draft,drafts]</a>.' => 'Sie haben <a href="[_1]>[quant,_2,Entwurf,Entwürfe]</a>.',
 	'You have [quant,_1,draft,drafts].' => 'Sie haben [quant,_1,Entwurf,Entwürfe].',
-	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a>, <a href="[_3]">[quant,_4,page,pages]</a> with <a href="[_5]">[quant,_6,comment,comments]</a>.' => 'Soe haben <a href="[_1]">[_quant,_2,Eintrag,Einträge]</a> und <a href="[_3]">[quant,_4,Seite,Seiten]</a> mit <a href="[_5]">[quant,_6,Kommentar,Kommentaren]</a>.',
+	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a>, <a href="[_3]">[quant,_4,page,pages]</a> with <a href="[_5]">[quant,_6,comment,comments]</a>.' => 'Soe haben <a href="[_1]">[quant,_2,Eintrag,Einträge]</a> und <a href="[_3]">[quant,_4,Seite,Seiten]</a> mit <a href="[_5]">[quant,_6,Kommentar,Kommentaren]</a>.',
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a>, <a href="[_3]">[quant,_4,page,pages]</a> with [quant,_5,comment,comments].' => 'Sie haben <a href="[_1]">[quant,_2,Eintrag,Einträge]</a> und <a href="[_3]">[quant,_4,Seite,Seiten]</a> mit [quant,_5,Kommentar,Kommentaren] geschrieben.',
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a>, [quant,_3,page,pages] with <a href="[_4]">[quant,_5,comment,comments]</a>.' => 'Sie haben <a href="[_1]">[quant,_2,Eintrag,Einträge]</a> und [quant,_3,Seite,Seiten] mit <a href="[_4]">[quant,_5,Kommentar,Kommentaren]</a> geschrieben.',
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a>, [quant,_3,page,pages] with [quant,_4,comment,comments].' => 'Sie haben <a href="[_1]">[quant,_2,Eintrag,Einträge]</a>  und [quant,_3,Seite,Seiten] mit [quant,_4,Kommentar,Kommentaren] geschrieben.',
@@ -5066,7 +5066,7 @@ false">Inhalt bearbeiten</a>
 	'Please ensure all required fields have been filled in.' => 'Bitte füllen Sie alle erforderlichen Felder aus.',
 	'The template tag \'[_1]\' is an invalid tag name.' => '\'[_1]\' ist ein ungültiger Befehlsname.',
 	'The template tag \'[_1]\' is already in use.' => 'Vorlagenbefehl \'[_1]\' bereits vorhanden',
-	'The basename \'[_1]\' is already in use. It must be unique within this [_2].' => 'Der Basisname \'[_1}\' wird bereits verwendent. Er muss auf dieser [_2] eindeutig sein.',
+	'The basename \'[_1]\' is already in use. It must be unique within this [_2].' => 'Der Basisname \'[_1]\' wird bereits verwendent. Er muss auf dieser [_2] eindeutig sein.',
 	'You must select other type if object is the comment.' => 'Wählen Sie einen anderen Typ, wenn sich das Feld auf Kommentare bezieht.',
 	'type' => 'Typ',
 	'Customize the forms and fields for entries, pages, folders, categories, and users, storing exactly the information you need.' => 'Speichern Sie genau die Informationen, die Sie möchten, indem Sie die Formulare und Felder von Einträgen, Seiten, Ordnern, Kategorien und Benutzerkonten frei anpassen.',

@@ -4306,7 +4306,7 @@ use vars qw( @ISA %Lexicon );
 	'Remove item' => 'フィルタ項目を削除する',
 	'Unknown Filter' => '無名のフィルタ',
 	'act upon' => '対象に',
-	'Are you sure you want to remove the filter \'[_1]\'?' => 'フィルタ\'\_1]\'を削除してよろしいですか?',
+	'Are you sure you want to remove the filter \'[_1]\'?' => 'フィルタ\'[_1]\'を削除してよろしいですか?',
 	'Label "[_1]" is already in use.' => '"[_1]というラベルは既に使用されています。"',
 	'Communication Error ([_1])' => '通信エラー ([_1])',
 	'[_1] - [_2] of [_3]' => '[_1] - [_2] / [_3]',
