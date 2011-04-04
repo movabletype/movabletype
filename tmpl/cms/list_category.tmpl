@@ -27,7 +27,7 @@
       <div id="actions-bar-top" class="actions-bar actions-bar-top line">
         <div class="button-actions actions">
           <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
-        </div>        
+        </div>
       </div>
 
       <div id="area-action" class="mod sortable-header">
@@ -43,7 +43,7 @@
       <div id="actions-bar-bottom" class="actions-bar actions-bar-bottom line">
         <div class="button-actions actions">
           <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
-        </div>        
+        </div>
       </div>
 
     </form>
@@ -259,8 +259,7 @@ function initItem($item) {
 
       jQuery('<button type="submit" class="rename button"><__trans phrase="Rename"></button>')
         .bind('click', function() {
-          if ( !$element.find('input.label').mtValidate() ) return false;
-          if ( !$element.find('input.basename').mtValidate() ) return false;
+          if ( !$element.find('input.label, input.basename').mtValidate() ) return false;
           fixInteractions({ closeInlineForms: false });
           $basename.text( $element.find('input.basename').val() );
           $label.text( $element.find('input.label').val() );
