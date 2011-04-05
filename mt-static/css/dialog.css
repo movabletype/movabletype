@@ -17,12 +17,10 @@ body.has-dialog {
 .ui-dialog {
     position: absolute;
     border: 1px solid #adadad;
-    background-color: #f3f3f3;
+    background-color: #fffffc;
     box-shadow: #2b2b2b 0 3px 10px;
     -webkit-box-shadow: #2b2b2b 0 3px 10px;
     -moz-box-shadow: #2b2b2b 0 3px 10px;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
 }
 
 .mt-dialog {
