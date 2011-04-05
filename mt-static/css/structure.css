@@ -208,12 +208,6 @@ pre {
 .detail {
     clear: both;
 }
-.close-link { 
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    margin-top: -9px;
-}
 
 /* -- Open Dialog Link */
 .open-dialog-link {
