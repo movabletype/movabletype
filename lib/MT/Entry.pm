@@ -70,7 +70,7 @@ __PACKAGE__->install_properties(
             },
             'convert_breaks' => {
                 type       => 'string',
-                size       => 30,
+                size       => 60,
                 label      => 'Format',
                 revisioned => 1
             },
