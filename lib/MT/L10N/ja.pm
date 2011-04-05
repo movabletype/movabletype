@@ -2931,7 +2931,7 @@ use vars qw( @ISA %Lexicon );
 	'More Aggressive' => 'より厳しく',
 	q{Apply 'nofollow' to URLs} => q{URLのnofollow指定},
 	q{If enabled, all URLs in comments and TrackBacks will be assigned a 'nofollow' link relation.} => q{コメントとトラックバックに含まれるすべてのURLにnofollowを設定する},
-	q{\'nofollow' exception for trusted commenters} => q{nofollow除外},
+	q{'nofollow' exception for trusted commenters} => q{nofollow除外},
 	q{Do not add the 'nofollow' attribute when a comment is submitted by a trusted commenter.} => q{承認されたコメント投稿者のコメントにはnofollowを適用しない},
 	'Comment Settings' => 'コメント設定',
 	'Note: Commenting is currently disabled at the system level.' => '注: コメントは現在システムレベルで無効になっています。',
