@@ -445,9 +445,12 @@ function renderFilterList() {
     return false;
   });
   jQuery('#dialog_filter .delete-link').click(function() {
-    var label = jQuery(this).parents('.filter').find('.apply-link').text();
+    var $this = jQuery(this);
+    var label = $this.parents('.filter').find('.apply-link').text();
     var message = trans("Are you sure you want to remove the filter '[_1]'?", label);
     if (confirm(message)) {
+      $this.parents('.filter').find('.item-ctrl').hide();
+      $this.parents('.filter').find('.filter-label').hide().after( jQuery('<img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" />') );
       removeFilter(this);
     }
     return false;
@@ -518,7 +521,8 @@ function openFilterRenameField() {
     }
     if ( !jQuery('#filter_' + fid).mtValidate('dialog') )
         return false;
-
+    $this.parents('.filter').find('.item-ctrl').hide();
+    $this.parents('.filter').find('input').hide().after( jQuery('<img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" />') );
     renameFilter(index, fid, name);
     return false;
   }).appendTo($handle);
