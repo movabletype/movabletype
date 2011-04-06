@@ -1283,7 +1283,7 @@ BEGIN {
                                         { like => "\%'view_log'\%" },
                                 },
                                 '-or',
-                                {   blog_id => \' > 0',
+                                {   blog_id => \' > 0', #baka editors ',
                                     permissions =>
                                         { like => "\%'view_blog_log'\%" },
                                 }
