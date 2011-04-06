@@ -5209,7 +5209,7 @@ use vars qw( @ISA %Lexicon );
 	'Only applied when no other links are present in message of feedback.' => '他にはリンクが含まれていない場合に適用されます。',
 	'Exclude URLs from comments published within last [_1] days.' => '過去[_1]日間に公開されたコメントのURLを除外',
 	'Email Memory' => 'メールアドレスを記憶',
-	'Credit feedback rating when previously published comments are found matching on the &quot;Email&quot; address' => 'すでに公開済みの&quot;メールアドレス&quot;を含むコメントトラックバックを好評価します。',
+	'Credit feedback rating when previously published comments are found matching on the &quot;Email&quot; address' => 'すでに公開済みの&quot;メールアドレス&quot;を含むコメントを好評価します。',
 	'Exclude Email addresses from comments published within last [_1] days.' => '過去[_1]日間に公開されたコメントからメールアドレスを除外',
 
 ## plugins/spamlookup/tmpl/word_config.tmpl
