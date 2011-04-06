@@ -6111,7 +6111,7 @@ Zoekbasis: [_2] ",
 
 ## plugins/Motion/templates/Motion/actions_local.mtml
 	'[_1] commented on [_2]' => '[_1] reageerde op [_2]',
-	'[_1] favorited [_2]' => '[1] markeerde [_2] als favoriet',
+	'[_1] favorited [_2]' => '[_1] markeerde [_2] als favoriet',
 	'No recent actions.' => 'Geen recente acties.',
 
 ## plugins/Motion/templates/Motion/actions.mtml
@@ -6310,7 +6310,7 @@ Zoekbasis: [_2] ",
 ## plugins/Motion/templates/Motion/widget_tag_cloud.mtml
 
 ## plugins/Motion/templates/Motion/widget_user_archives.mtml
-	'Recenty entries from [_1]' => 'Recente berichten van [_]',
+	'Recenty entries from [_1]' => 'Recente berichten van [_1]',
 
 ## plugins/Motion/tmpl/edit_linkpost.tmpl
 

@@ -133,7 +133,7 @@ sub list_props {
         },
         active_inactive => {
             base    => '__virtual.single_select',
-            label   => 'Active/Inactive',
+            label   => '__ROLE_STATUS',
             display => 'none',
             terms   => sub {
                 my $prop = shift;

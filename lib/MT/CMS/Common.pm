@@ -1102,6 +1102,10 @@ sub list {
         = $screen_settings->{object_label_plural}
         ? $screen_settings->{object_label_plural}
         : $obj_class->class_label_plural;
+    $param{action_label}     = $screen_settings->{action_label}
+        if $screen_settings->{action_label};
+    $param{action_label_plural} = $screen_settings->{action_label_plural}
+        if $screen_settings->{action_label_plural};
     $param{contents_label} = $screen_settings->{contents_label}
         || $obj_class->contents_label;
     $param{contents_label_plural} = $screen_settings->{contents_label_plural}

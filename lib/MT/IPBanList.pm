@@ -64,6 +64,8 @@ sub list_props {
     };
 }
 
+#trans('IP addresses')
+
 1;
 __END__
 

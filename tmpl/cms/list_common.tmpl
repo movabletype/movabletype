@@ -1581,8 +1581,8 @@ function doForMarked(formid, action, singlar, plural, phrase, xhr) {
 
 jQuery('button.mt-<mt:var name="object_type">-listing-form-action').click(function() {
   var id = '<mt:var name="object_type">-listing-form';
-  var singlar = '<mt:var name="object_label" lower_case="1" escape="js">';
-  var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
+  var singlar = '<mt:if name="action_label"><mt:var name="action_label"><mt:else><mt:var name="object_label" lower_case="1" escape="js"></mt:if>';
+  var plural = '<mt:if name="action_label_plural"><mt:var name="action_label_plural"><mt:else><mt:var name="object_label_plural" lower_case="1" escape="js"></mt:if>';
   var phrase = '<__trans phrase="act upon" escape="js">';
   doForMarked(id, 'itemset_action', singlar, plural, phrase);
   return false;
@@ -1592,8 +1592,8 @@ jQuery('.actions-bar a.button').click(function() {
   jQuery(this).attr('href').match(/#(.*)/);
   var action = RegExp.$1;
   var id = '<mt:var name="object_type">-listing-form';
-  var singlar = '<mt:var name="object_label" lower_case="1" escape="js">';
-  var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
+  var singlar = '<mt:if name="action_label"><mt:var name="action_label"><mt:else><mt:var name="object_label" lower_case="1" escape="js"></mt:if>';
+  var plural = '<mt:if name="action_label_plural"><mt:var name="action_label_plural"><mt:else><mt:var name="object_label_plural" lower_case="1" escape="js"></mt:if>';
   var phrase = messages[action];
   doForMarked(id, action, singlar, plural, phrase);
   return false;
