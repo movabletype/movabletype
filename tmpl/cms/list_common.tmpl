@@ -423,7 +423,7 @@ function renderFilterList() {
   jQuery('#new_filter').click(function() {
     jQuery('#filter-detail').show().parent('#filter').addClass('active');
     jQuery('#item_list').attr('selectedIndex', 0);
-    jQuery('.filteritem').remove();
+    resetFilterDetails();
     jQuery('input[name=filter_name]').mtUnvalidate().val('<__trans phrase="New Filter">');
     jQuery('#opener').html('<__trans phrase="New Filter">');
     jQuery('#filter_id').val('');
@@ -1242,6 +1242,18 @@ function validateFilterDetails () {
   return errors ? false : true;
 }
 
+function resetFilterDetails() {
+  if ( validateErrorMessage ) {
+    validateErrorMessage.remove();
+  }
+  validateErrorMessage = false;
+  jQuery('div#filter-detail div.filteritem')
+    .find('input, select')
+    .mtUnvalidate()
+    .end()
+    .remove();
+}
+
 jQuery('#apply').click(function() {
   validateFilterDetails();
   jQuery('input[name=filter_id]').val('');
@@ -1438,7 +1450,7 @@ function applyFilter(index, no_render) {
 function doApplyFilter(filter, no_render) {
   jQuery('#filter_name').val('');
   jQuery('#filter_id').val('');
-  jQuery('.filteritem').remove();
+  resetFilterDetails();
   var name = filter.label;
   addItems(filter.items);
   jQuery('#opener').html(name);
