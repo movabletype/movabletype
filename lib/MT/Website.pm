@@ -36,7 +36,8 @@ sub list_props {
         id         => { base => 'blog.id', },
         name       => { base => 'blog.name', },
         blog_count => {
-            label       => '__BLOG_COUNT',
+            label        => 'Blogs',
+            filter_label => '__BLOG_COUNT',
             order       => 200,
             base        => '__virtual.object_count',
             display     => 'default',

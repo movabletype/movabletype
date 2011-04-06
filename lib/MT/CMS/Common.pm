@@ -470,7 +470,9 @@ sub save {
     elsif ( $type eq 'author' ) {
 
         # Delete the author's userpic thumb (if any); it'll be regenerated.
-        if ( $original->userpic_asset_id != $obj->userpic_asset_id ) {
+        if (   $original->userpic_asset_id
+            && $original->userpic_asset_id != $obj->userpic_asset_id )
+        {
             my $thumb_file = $original->userpic_file();
             my $fmgr       = MT::FileMgr->new('Local');
             if ( $fmgr->exists($thumb_file) ) {
@@ -1100,6 +1102,10 @@ sub list {
         = $screen_settings->{object_label_plural}
         ? $screen_settings->{object_label_plural}
         : $obj_class->class_label_plural;
+    $param{action_label}     = $screen_settings->{action_label}
+        if $screen_settings->{action_label};
+    $param{action_label_plural} = $screen_settings->{action_label_plural}
+        if $screen_settings->{action_label_plural};
     $param{contents_label} = $screen_settings->{contents_label}
         || $obj_class->contents_label;
     $param{contents_label_plural} = $screen_settings->{contents_label_plural}

@@ -5087,7 +5087,7 @@ false">Inhalt bearbeiten</a>
 	'Please ensure all required fields have been filled in.' => 'Bitte füllen Sie alle erforderlichen Felder aus.',
 	'The template tag \'[_1]\' is an invalid tag name.' => '\'[_1]\' ist ein ungültiger Befehlsname.',
 	'The template tag \'[_1]\' is already in use.' => 'Vorlagenbefehl \'[_1]\' bereits vorhanden',
-	'The basename \'[_1]\' is already in use. It must be unique within this [_2].' => 'Der Basisname \'[_1}\' wird bereits verwendent. Er muss auf dieser [_2] eindeutig sein.',
+	'The basename \'[_1]\' is already in use. It must be unique within this [_2].' => 'Der Basisname \'[_1]\' wird bereits verwendent. Er muss auf dieser [_2] eindeutig sein.',
 	'You must select other type if object is the comment.' => 'Wählen Sie einen anderen Typ, wenn sich das Feld auf Kommentare bezieht.',
 	'type' => 'Typ',
 	'Customize the forms and fields for entries, pages, folders, categories, and users, storing exactly the information you need.' => 'Speichern Sie genau die Informationen, die Sie möchten, indem Sie die Formulare und Felder von Einträgen, Seiten, Ordnern, Kategorien und Benutzerkonten frei anpassen.',

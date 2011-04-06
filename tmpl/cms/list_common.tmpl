@@ -423,7 +423,7 @@ function renderFilterList() {
   jQuery('#new_filter').click(function() {
     jQuery('#filter-detail').show().parent('#filter').addClass('active');
     jQuery('#item_list').attr('selectedIndex', 0);
-    jQuery('.filteritem').remove();
+    resetFilterDetails();
     jQuery('input[name=filter_name]').mtUnvalidate().val('<__trans phrase="New Filter">');
     jQuery('#opener').html('<__trans phrase="New Filter">');
     jQuery('#filter_id').val('');
@@ -445,9 +445,12 @@ function renderFilterList() {
     return false;
   });
   jQuery('#dialog_filter .delete-link').click(function() {
-    var label = jQuery(this).parents('.filter').find('.apply-link').text();
+    var $this = jQuery(this);
+    var label = $this.parents('.filter').find('.apply-link').text();
     var message = trans("Are you sure you want to remove the filter '[_1]'?", label);
     if (confirm(message)) {
+      $this.parents('.filter').find('.item-ctrl').hide();
+      $this.parents('.filter').find('.filter-label').hide().after( jQuery('<img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" />') );
       removeFilter(this);
     }
     return false;
@@ -518,7 +521,8 @@ function openFilterRenameField() {
     }
     if ( !jQuery('#filter_' + fid).mtValidate('dialog') )
         return false;
-
+    $this.parents('.filter').find('.item-ctrl').hide();
+    $this.parents('.filter').find('input').hide().after( jQuery('<img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" />') );
     renameFilter(index, fid, name);
     return false;
   }).appendTo($handle);
@@ -1154,8 +1158,8 @@ function dateOption($node) {
   }
 
   $node.parent('.item-content').find('input').mtUnvalidate();
-  $node.parent('.item-content').find('.date-option span').hide();
-  $node.parent('.item-content').find('.date-option .'+type).show();
+  $node.parent('.item-content').find('.date-options span.date-option').hide();
+  $node.parent('.item-content').find('.date-option.'+type).show();
 }
 
 function filterItem(type, datepicker_off) {
@@ -1204,7 +1208,7 @@ jQuery('#item_list').change(function() {
   jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item"></span>')
     .insertAfter($item)
     .bind('click', function() {
-      resetFilterDetails();
+      jQuery(this).parent('.filteritem').find('input').mtUnvalidate().end().remove();
       updateItemList();
       updateFilterSaveButtons();
     });
@@ -1405,7 +1409,7 @@ function addItems(items, op) {
       jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item"></span>')
         .insertAfter($item)
         .bind('click', function() {
-          resetFilterDetails();
+          jQuery(this).parent('.filteritem').find('input').mtUnvalidate().end().remove();
           updateItemList();
           updateFilterSaveButtons();
         });
@@ -1581,8 +1585,8 @@ function doForMarked(formid, action, singlar, plural, phrase, xhr) {
 
 jQuery('button.mt-<mt:var name="object_type">-listing-form-action').click(function() {
   var id = '<mt:var name="object_type">-listing-form';
-  var singlar = '<mt:var name="object_label" lower_case="1" escape="js">';
-  var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
+  var singlar = '<mt:if name="action_label"><mt:var name="action_label"><mt:else><mt:var name="object_label" lower_case="1" escape="js"></mt:if>';
+  var plural = '<mt:if name="action_label_plural"><mt:var name="action_label_plural"><mt:else><mt:var name="object_label_plural" lower_case="1" escape="js"></mt:if>';
   var phrase = '<__trans phrase="act upon" escape="js">';
   doForMarked(id, 'itemset_action', singlar, plural, phrase);
   return false;
@@ -1592,15 +1596,15 @@ jQuery('.actions-bar a.button').click(function() {
   jQuery(this).attr('href').match(/#(.*)/);
   var action = RegExp.$1;
   var id = '<mt:var name="object_type">-listing-form';
-  var singlar = '<mt:var name="object_label" lower_case="1" escape="js">';
-  var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
+  var singlar = '<mt:if name="action_label"><mt:var name="action_label"><mt:else><mt:var name="object_label" lower_case="1" escape="js"></mt:if>';
+  var plural = '<mt:if name="action_label_plural"><mt:var name="action_label_plural"><mt:else><mt:var name="object_label_plural" lower_case="1" escape="js"></mt:if>';
   var phrase = messages[action];
   doForMarked(id, action, singlar, plural, phrase);
   return false;
 });
 
 jQuery('.filtertype .minus').live('click', function() {
-  resetFilterDetails();
+  jQuery(this).parents('.filtertype').find('input').mtUnvalidate().end().remove();
 });
 
 jQuery('.filtertype .plus').live('click', function() {

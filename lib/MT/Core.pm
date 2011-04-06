@@ -646,10 +646,11 @@ BEGIN {
                     display => 'optional',
                 },
                 author_name => {
-                    label   => 'Author',
-                    display => 'default',
-                    base    => '__virtual.string',
-                    raw     => sub {
+                    label        => 'Author',
+                    filter_label => 'Author Name',
+                    display      => 'default',
+                    base         => '__virtual.string',
+                    raw          => sub {
                         my ( $prop, $obj ) = @_;
                         my $col
                             = $prop->datasource->has_column('author_id')
@@ -957,6 +958,7 @@ BEGIN {
                 },
                 blog_name => {
                     label     => 'Website/Blog Name',
+                    filter_label => '__WEBSITE_BLOG_NAME',
                     order     => 10000,
                     display   => 'default',
                     site_name => 1,
@@ -1283,7 +1285,7 @@ BEGIN {
                                         { like => "\%'view_log'\%" },
                                 },
                                 '-or',
-                                {   blog_id => \' > 0',
+                                {   blog_id => \' > 0', #baka editors ',
                                     permissions =>
                                         { like => "\%'view_blog_log'\%" },
                                 }
@@ -1481,6 +1483,8 @@ BEGIN {
             banlist => {
                 object_label        => 'IP address',
                 object_label_plural => 'IP addresses',
+                action_label        => 'IP address',
+                action_label_plural => 'IP addresses',
                 zero_state          => 'IP address',
                 condition           => sub {
                     my $app = shift;

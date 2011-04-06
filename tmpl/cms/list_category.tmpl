@@ -28,6 +28,7 @@
         <div class="button-actions actions">
           <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
         </div>
+        <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
       </div>
 
       <div id="area-action" class="mod sortable-header">
@@ -44,11 +45,11 @@
         <div class="button-actions actions">
           <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
         </div>
+        <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
       </div>
 
     </form>
   </div>
-  <p id="indicator"><img src="<mt:var name="static_uri">images/indicator-login.gif" alt="<__trans phrase="Indicator">" /><p>
 </div>
 
 <div id="dialog-change-basename" class="dialog" style="display: none;">
@@ -84,7 +85,7 @@
 </div>
 
 <mt:setvarblock name="jq_js_include" append="1">
-jQuery('p#indicator')
+jQuery('div.indicator')
   .hide()
   .bind('ajaxStart', function() {
     jQuery(this).show();

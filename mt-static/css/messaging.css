@@ -30,13 +30,15 @@
     padding: 0.8em 0 0.8em 25px;
     background: transparent url(../images/ani-rebuild.gif) left center no-repeat;
 }
-
 .msg-text { 
     margin: 0;
 }
 
-.msg-error .mt-close-msg { 
-    display: none;
+.close-link { 
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    margin-top: -8px;
 }
 
 /* -- for Permission Message */

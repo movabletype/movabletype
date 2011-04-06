@@ -444,7 +444,7 @@ sub import_contents {
                     }
 
                     ## If the entry has TrackBack pings, we need to make sure
-                	## that an MT::Trackback object is created. To do that, we
+                    ## that an MT::Trackback object is created. To do that, we
                     ## need to make sure that $entry->save is called.
                     if (@pings) {
                         $no_save = 0;
@@ -554,11 +554,21 @@ sub import_contents {
 
                     ## Save pings.
                     if (@pings) {
-                        my $tb = $entry->trackback
-                            or return __PACKAGE__->error(
-                            MT->translate(
-                                "Entry has no MT::Trackback object!")
-                            );
+                        my $tb;
+                        unless ( $tb = $entry->trackback ) {
+                            $tb = MT->model('trackback')->new;
+                            $tb->blog_id( $entry->blog_id );
+                            $tb->entry_id( $entry->id );
+                            $tb->category_id(0);    ## category_id can't be NULL
+                            $tb->title( $entry->title );
+                            $tb->description( $entry->get_excerpt );
+                            $tb->url( $entry->permalink );
+                            $tb->is_disabled(0);
+                            $tb->save
+                                or return __PACKAGE__->error( $tb->errstr );
+                            $entry->trackback($tb);
+                        }
+
                         for my $ping (@pings) {
                             $ping->tb_id( $tb->id );
                             $cb->(

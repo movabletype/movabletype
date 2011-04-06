@@ -29,6 +29,8 @@ use vars qw( %Lexicon );
 	' and asset will be tagged (\'[_1]\')...' => 'アイテムにタグ([_1])を付けています...',
 	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'ブログ記事「[_1]」は既にインポートされているのでスキップします。',
 	'Saving page (\'[_1]\')...' => 'ウェブページ(\'[_1]\')を保存しています...',
+	'Assigning permissions for new user...' => '新しいユーザーに権限を追加しています...',
+	'Saving permission failed: [_1]' => '権限の保存中にエラーが発生しました: [_1]',
 
 ## plugins/WXRImporter/tmpl/options.tmpl
 	q{Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your blog's publishing paths</a> first.} => q{WordPressからMovable Typeへインポートする前に、まず<a href='[_1]'>ブログ公開パスを設定</a>してください。},

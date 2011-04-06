@@ -135,24 +135,26 @@ sub list_props {
             bulk_html => \&_nickname_bulk_html,
         },
         entry_count => {
-            label       => '__ENTRY_COUNT',
-            display     => 'default',
-            order       => 300,
-            base        => '__virtual.object_count',
-            col_class   => 'num',
-            count_class => 'entry',
-            count_col   => 'author_id',
-            filter_type => 'author_id',
+            label        => 'Entries',
+            filter_label => '__ENTRY_COUNT',
+            display      => 'default',
+            order        => 300,
+            base         => '__virtual.object_count',
+            col_class    => 'num',
+            count_class  => 'entry',
+            count_col    => 'author_id',
+            filter_type  => 'author_id',
         },
         comment_count => {
-            base        => 'author.entry_count',
-            label       => '__COMMENT_COUNT',
-            display     => 'default',
-            order       => 400,
-            count_class => 'comment',
-            count_col   => 'commenter_id',
-            filter_type => 'commenter_id',
-            raw         => sub {
+            base         => 'author.entry_count',
+            label        => 'Comments',
+            filter_label => '__COMMENT_COUNT',
+            display      => 'default',
+            order        => 400,
+            count_class  => 'comment',
+            count_col    => 'commenter_id',
+            filter_type  => 'commenter_id',
+            raw          => sub {
                 my ( $prop, $obj ) = @_;
                 MT->model( $prop->count_class )
                     ->count( { commenter_id => $obj->id } );
@@ -177,7 +179,7 @@ sub list_props {
         status => {
             base    => '__virtual.single_select',
             display => 'none',
-            label   => '__AUTHOR_STATUS',
+            label   => 'Status',
             col     => 'status',
             terms   => sub {
                 my $prop = shift;
