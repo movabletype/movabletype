@@ -1158,8 +1158,8 @@ function dateOption($node) {
   }
 
   $node.parent('.item-content').find('input').mtUnvalidate();
-  $node.parent('.item-content').find('.date-option span').hide();
-  $node.parent('.item-content').find('.date-option .'+type).show();
+  $node.parent('.item-content').find('.date-options span.date-option').hide();
+  $node.parent('.item-content').find('.date-option.'+type).show();
 }
 
 function filterItem(type, datepicker_off) {
