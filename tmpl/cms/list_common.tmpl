@@ -449,8 +449,8 @@ function renderFilterList() {
     var label = $this.parents('.filter').find('.apply-link').text();
     var message = trans("Are you sure you want to remove the filter '[_1]'?", label);
     if (confirm(message)) {
-      $this.parents('.filter').find('.item-ctrl').hide();
-      $this.parents('.filter').find('.filter-label').hide().after( jQuery('<img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" />') );
+      $this.parents('.filter').addClass('edit-mode').find('.item-ctrl').hide();
+      $this.parents('.filter').find('.filter-label').hide().after( jQuery('<span class="indicator"><img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></span>') );
       removeFilter(this);
     }
     return false;
@@ -517,12 +517,13 @@ function openFilterRenameField() {
     var name = jQuery('#filter_'+fid).val();
     if (name == text) {
         // Not modified.
-        return $handle.find('.cancel').click();
+        $handle.find('.cancel').click();
+        return false;
     }
     if ( !jQuery('#filter_' + fid).mtValidate('dialog') )
         return false;
     $this.parents('.filter').find('.item-ctrl').hide();
-    $this.parents('.filter').find('input').hide().after( jQuery('<img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" />') );
+    $this.parents('.filter').find('input').hide().after( jQuery('<span class="indicator"><img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></span>') );
     renameFilter(index, fid, name);
     return false;
   }).appendTo($handle);
