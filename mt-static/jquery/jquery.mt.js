@@ -925,6 +925,7 @@ $.extend( $.mtValidator.prototype, {
     },
     validClass: 'valid',
     errorClass: 'error',
+    doFocus: true,
     wrapError: function ( $target, msg ) {
         return $('<div />').append(
             $('<label/>')
@@ -982,7 +983,8 @@ $.mtValidator('default', {
         $target
             .unbind('focus', focus)
             .unbind('blur', blur);
-    }
+    },
+    doFocus: false
 });
 
 $.mtValidator('dialog', {
@@ -1051,9 +1053,12 @@ $.fn.extend({
         var ns = $.data( this.get(0), 'mtValidator' );
         return $.mtValidator(ns);
     },
-    mtValid: function() {
+    mtValid: function(opts) {
         var errors = 0;
+        var error_elements = [];
         var successes = 0;
+        var defaults = { focus: true };
+        opts = $.extend( defaults, opts );
         this.each( function () {
             var $this = $(this);
             var validator = $this.mtValidator();
@@ -1072,6 +1077,8 @@ $.fn.extend({
             }
             else {
                 errors++;
+                if ( validator.doFocus )
+                    error_elements.push($this);
                 var msg = validator.errstr;
                 if ( $current_error ) {
                     var last_error = $.data( this, 'mtValidateLastError' );
@@ -1090,6 +1097,9 @@ $.fn.extend({
                 $this.removeClass( validator.validClass );
             }
         });
+        if ( opts.focus && error_elements.length ) {
+            error_elements[0].focus();
+        }
         return errors == 0;
     },
     mtUnvalidate: function() {
@@ -1114,13 +1124,13 @@ $.fn.extend({
 $('input, textarea').live('keyup focusin focusout', function () {
     var ns = $.data( this, 'mtValidator' );
     if ( !ns ) return true;
-    $(this).mtValid();
+    $(this).mtValid({ focus: false });
 });
 
 $('select').live('change', function () {
     var ns = $.data( this, 'mtValidator' );
     if ( !ns ) return true;
-    $(this).mtValid();
+    $(this).mtValid({ focus: false });
 });
 
 })(jQuery);
