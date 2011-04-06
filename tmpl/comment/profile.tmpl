@@ -13,7 +13,8 @@
 <mt:if name="saved">
     <mtapp:statusmsg
         id="saved"
-        class="success">
+        class="success"
+        can_close="0">
         <mt:var name="saved">
     </mtapp:statusmsg>
 </mt:if>
@@ -31,8 +32,7 @@
         label="<__trans phrase="Username">"
         hint="<__trans phrase="Your login name.">"
         label_class="top-label">
-        <span name="name" id="name"><mt:var name="name" escape="html"></span>
-        <input type="hidden" name="name" class="text full" value="<mt:var name="name" escape="html">" />
+        <input type="text" name="name" class="text full disabled" readonly="readonly" value="<mt:var name="name" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -41,7 +41,7 @@
         label_class="top-label"
         required="1"
         hint="<__trans phrase="The name appears on your comment.">">
-        <input type="text" name="nickname" id="nickname" class="ti" value="<mt:var name="nickname" escape="html">" />
+        <input type="text" name="nickname" id="nickname" class="text full" value="<mt:var name="nickname" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -50,7 +50,7 @@
         label_class="top-label"
         required="$email_required"
         hint="<__trans phrase="Your email address.">">
-        <input type="text" name="email" id="email" class="ti" value="<mt:var name="email" escape="html">" />
+        <input type="text" name="email" id="email" class="text full" value="<mt:var name="email" escape="html">" />
     </mtapp:setting>
 
 <mt:if name="auth_mode_mt">
@@ -59,7 +59,7 @@
         label="<__trans phrase="New Password">"
         label_class="top-label"
         hint="<__trans phrase="Select a password for yourself.">">
-        <input type="password" name="password" id="password" class="pw" value="" />
+        <input type="password" name="password" id="password" class="text password" value="" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -67,7 +67,7 @@
         label="<__trans phrase="Confirm Password">"
         label_class="top-label"
         hint="<__trans phrase="Repeat the password for confirmation.">">
-        <input type="password" name="pass_verify" id="pass_verify" class="pw" value="" />
+        <input type="password" name="pass_verify" id="pass_verify" class="text password" value="" />
     </mtapp:setting>
 
 <mt:else>
@@ -79,7 +79,7 @@
         label="<__trans phrase="Website URL">"
         label_class="top-label"
         hint="<__trans phrase="The URL of your website. (Optional)">">
-        <input type="text" name="url" id="url" class="ti" value="<mt:var name="url" escape="html">"  />
+        <input type="text" name="url" id="url" class="text full" value="<mt:var name="url" escape="html">"  />
     </mtapp:setting>
 
     <mt:Loop name="field_loop">
@@ -89,12 +89,14 @@
         </mt:If>
         <!-- start-customfield_<$mt:Var name="basename"$> -->
         <mtapp:setting
-        id="$field_id"
-        label="$name"
-        hint="$description"
-        shown="$show_field"
-        show_hint="$show_hint"
-        required="$required">
+            id="$field_id"
+            label="$name"
+            label_class="top-label"
+            hint="$description"
+            shown="$show_field"
+            show_hint="$show_hint"
+            required="$required"
+            content_class="$content_class">
 
         <$mt:Var name="field_html"$>
 
@@ -102,14 +104,22 @@
         <!-- end-customfield_<$mt:Var name="basename"$> -->
     </mt:Loop>
 
-<p><input type="submit" name="submit" id="save-button" class="ti" accesskey="s" value="<__trans phrase="Save">" /></p>
+    <div class="actions-bar actions-bar-login">
+        <button
+            type="submit"
+            accesskey="s"
+            title="<__trans phrase="Save (s)">"
+            class="save action primary button">
+          <__trans phrase="Save">
+        </button>
+    </div>
 
 </form>
 
 <mt:if name="entry_url">
-<p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<mt:var name="entry_url" escape="html">#_login"></p>
+<p class="auth-option-info"><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<mt:var name="entry_url" escape="html">#_login"></p>
 <mt:elseif name="return_url">
-<p><__trans phrase="Return to the <a href="[_1]">original page</a>." params="<mt:var name="return_url" escape="html">#_login"></p>
+<p class="auth-option-info"><__trans phrase="Return to the <a href="[_1]">original page</a>." params="<mt:var name="return_url" escape="html">#_login"></p>
 </mt:else></mt:if>
 
 <mt:include name="include/chromeless_footer.tmpl">

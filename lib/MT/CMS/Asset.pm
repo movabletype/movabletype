@@ -12,7 +12,8 @@ use MT::Util qw( epoch2ts encode_url format_ts relative_date );
 sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
-
+    my $user = $app->user;
+    my $perms = $app->permissions;
     if ($id) {
         my $asset_class = $app->model('asset');
         $param->{asset}        = $obj;
@@ -76,6 +77,7 @@ sub edit {
         $param->{related} = \@related if @related;
 
         my @appears_in;
+        my $appears_in_uneditables = 0;
         my $place_class = $app->model('objectasset');
         my $place_iter  = $place_class->load_iter(
             {   blog_id => $obj->blog_id || 0,
@@ -87,6 +89,10 @@ sub edit {
             next unless $entry_class->isa('MT::Entry');
             my $entry = $entry_class->load( $place->object_id )
                 or next;
+            if ( !$perms->can_edit_entry($entry, $user) ) {
+                $appears_in_uneditables++;
+                next;
+            }
             my %entry_data = (
                 id    => $place->object_id,
                 class => $entry->class_type,
@@ -109,12 +115,10 @@ sub edit {
             }
             push @appears_in, \%entry_data;
         }
-        if ( 11 == @appears_in ) {
-            pop @appears_in;
-            $param->{appears_in_more} = 1;
-        }
         $param->{appears_in} = \@appears_in if @appears_in;
-
+        $param->{appears_in_uneditables} = $appears_in_uneditables;
+        $param->{show_appears_in_widget} = scalar @appears_in
+            || $appears_in_uneditables;
         my $prev_asset = $obj->nextprev(
             direction => 'previous',
             terms     => { class => '*', blog_id => $obj->blog_id },

@@ -632,7 +632,7 @@ sub _v5_generate_websites_place_blogs {
     while ( my @site_urls = keys %site_urls ) {
         @site_urls = sort { length($a) <=> length($b) } @site_urls;
         my $shortest = shift @site_urls;
-        my ( $ssl, $domain ) = $shortest =~ m!^http(s?)://(.+?)/!g;
+        my ( $ssl, $domain ) = $shortest =~ m!^http(s?)://(.+?)(/|$)!gi;
         my $dot = index( $domain, '.' );
 
         # XXX: ignoring domain that starts with ".".

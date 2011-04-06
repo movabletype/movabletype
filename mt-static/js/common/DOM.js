@@ -570,7 +570,7 @@ extend( DOM, {
         var es = parentDocument.getElementsByTagName( "iframe" );
         //% for( var i = 0; i < es.length; i++ ) {
         //%     var e = es[ i ];
-        for( var en = new Enumerator( es ); !en.atEnd(); en.moveNext() ) {
+        for( var en = EnumeratorFactory( es ); !en.atEnd(); en.moveNext() ) {
             var e = en.item();
             try {
                 var d = e.contentDocument || e.contentWindow.document;
@@ -586,7 +586,7 @@ extend( DOM, {
         var filtered = [];
         //% for( var i = 0; i < es.length; i++ ) {
         //%     var e = es[ i ];
-        for( var en = new Enumerator( es ); !en.atEnd(); en.moveNext() ) {
+        for( var en = EnumeratorFactory( es ); !en.atEnd(); en.moveNext() ) {
             var e = en.item();
             if( DOM.hasClassName( e, cn ) )
                 filtered.push( e );
@@ -603,7 +603,7 @@ extend( DOM, {
         var f = [];
         //% for( var i = 0; i < es.length; i++ ) {
         //%     var e = es[ i ];
-        for( var en = new Enumerator( es ); !en.atEnd(); en.moveNext() ) {
+        for( var en = EnumeratorFactory( es ); !en.atEnd(); en.moveNext() ) {
             var e = en.item();
             if( !e )
                 continue;
@@ -623,7 +623,7 @@ extend( DOM, {
         tn = tn.toLowerCase();
         //% for( var i = 0; i < es.length; i++ ) {
         //%    var e = es[ i ];
-        for( var en = new Enumerator( es ); !en.atEnd(); en.moveNext() ) {
+        for( var en = EnumeratorFactory( es ); !en.atEnd(); en.moveNext() ) {
             var e = en.item();
             if( e.tagName && e.tagName.toLowerCase() == tn )
                 f.push( e );
@@ -932,7 +932,7 @@ extend( DOM, {
         var es = DOM.getAncestors( ev.target, true );
         //% for( var i = 0; i < es.length; i++ ) {
         //%     var e = es[ i ];
-        for( var en = new Enumerator( es ); !en.atEnd(); en.moveNext() ) {
+        for( var en = EnumeratorFactory( es ); !en.atEnd(); en.moveNext() ) {
             var e = en.item();
             try {
                 var v = e.getAttribute ? e.getAttribute( a ) : null;

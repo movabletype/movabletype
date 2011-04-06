@@ -98,7 +98,7 @@ sub global_perms {
     );
 }
 
-sub _perms_from_registry {
+sub perms_from_registry {
     my $regs = MT::Component->registry('permissions');
     my %keys = map { $_ => 1 } map { keys %$_ } @$regs;
     my %perms = map { $_ => MT->registry('permissions' => $_ ) } keys %keys;
@@ -123,7 +123,7 @@ sub _perms_from_registry {
     sub _all_perms {
         my ($scope) = @_;
         my @perms;
-        if ( my $perms = __PACKAGE__->_perms_from_registry() ) {
+        if ( my $perms = __PACKAGE__->perms_from_registry() ) {
             foreach my $p (%$perms) {
                 my ( $s, $name ) = split /\./, $p;
                 next unless $s && $name;
@@ -272,7 +272,7 @@ sub _perms_from_registry {
     sub perms {
         my $pkg = shift;
         unless (@Perms) {
-            if ( my $perms = __PACKAGE__->_perms_from_registry() ) {
+            if ( my $perms = __PACKAGE__->perms_from_registry() ) {
                 foreach my $pk (%$perms) {
                     my ( $scope, $name ) = split /\./, $pk;
                     next unless $scope && $name;
@@ -442,7 +442,7 @@ sub can_do {
 sub _confirm_action {
     my $pkg = shift;
     my ( $perm_name, $action, $permissions ) = @_;
-    $permissions ||= __PACKAGE__->_perms_from_registry();
+    $permissions ||= __PACKAGE__->perms_from_registry();
     my $perm = $permissions->{$perm_name};
 
     ## No such permission.
@@ -684,7 +684,7 @@ sub to_hash {
 sub _load_inheritance_permissions {
     my $pkg         = shift;
     my ($perm_name) = @_;
-    my $permissions = __PACKAGE__->_perms_from_registry();
+    my $permissions = __PACKAGE__->perms_from_registry();
     my $perms       = $pkg->_load_recursive( $perm_name, $permissions );
 
     my $hash;
@@ -702,7 +702,7 @@ sub _load_inheritance_permissions {
 sub _load_recursive {
     my $pkg = shift;
     my ( $perm_name, $permissions ) = @_;
-    $permissions ||= __PACKAGE__->_perms_from_registry();
+    $permissions ||= __PACKAGE__->perms_from_registry();
 
     my $perms;
     push @$perms, $perm_name;

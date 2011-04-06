@@ -1191,7 +1191,7 @@ sub backup_download {
                 category => 'restore'
             }
         );
-        unlink $fname;
+        MT::FileMgr::Local->delete($fname);
     }
     else {
         $app->errtrans('Specified file was not found.');
@@ -1958,6 +1958,7 @@ sub dialog_adjust_sitepath {
     my $blog_class = $app->model('blog');
     my @blogs      = $blog_class->load( { id => \@blog_ids } );
     my ( @blogs_loop, @website_loop );
+    my $param = {};
 
     foreach my $blog (@blogs) {
         if ( $blog->is_blog() ) {
@@ -1996,7 +1997,7 @@ sub dialog_adjust_sitepath {
                 $params->{old_archive_url_subdomain} = $subdomain;
                 $params->{old_archive_url_path}      = $raw_archive_url[1];
             }
-            $params->{enabled_archives} = 1
+            $param->{enabled_archives} = 1
                 if $params->{old_archive_url}
                     || $params->{old_archive_url_subdomain}
                     || $params->{old_archive_url_path}
@@ -2027,14 +2028,13 @@ sub dialog_adjust_sitepath {
             };
     }
 
-    my $param = { blogs_loop => \@blogs_loop, tmp_dir => $tmp_dir };
-    $param->{error}          = $error         if $error;
-    $param->{restore_upload} = $uploaded      if $uploaded;
-    $param->{asset_ids}      = $asset_ids     if $asset_ids;
-    $param->{website_loop}   = \@website_loop if @website_loop;
-    $param->{all_websites}   = \@all_websites if @all_websites;
-    $param->{path_separator} = MT::Util->dir_separator;
-
+    $param = { blogs_loop => \@blogs_loop, tmp_dir => $tmp_dir, %$param };
+    $param->{error}            = $error         if $error;
+    $param->{restore_upload}   = $uploaded      if $uploaded;
+    $param->{asset_ids}        = $asset_ids     if $asset_ids;
+    $param->{website_loop}     = \@website_loop if @website_loop;
+    $param->{all_websites}     = \@all_websites if @all_websites;
+    $param->{path_separator}   = MT::Util->dir_separator;
     for my $key (
         qw(files assets last redirect is_dirty is_asset objects_json deferred_json)
         )

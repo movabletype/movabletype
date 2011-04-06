@@ -90,7 +90,7 @@ sub api_call {
 	}
 
 	my $status = $1;
-	unless($status == 'ok') {
+	unless($status eq 'ok') {
 		$product->log_error(
 				"Zemanta API method $method returned " .
 				"status '$status'" );

@@ -972,7 +972,8 @@ $.mtValidator('default', {
         $target.after($error_block);
         $error_block
             .css('left', $target.width() )
-            .css('top',   -1 * $target.height() );
+            .css('top',   -1 * $target.height() )
+            .css('z-index', 200);
     },
     removeError: function( $target, $error_block ) {
         $error_block.remove();
@@ -1111,6 +1112,12 @@ $.fn.extend({
 });
 
 $('input, textarea').live('keyup focusin focusout', function () {
+    var ns = $.data( this, 'mtValidator' );
+    if ( !ns ) return true;
+    $(this).mtValid();
+});
+
+$('select').live('change', function () {
     var ns = $.data( this, 'mtValidator' );
     if ( !ns ) return true;
     $(this).mtValid();

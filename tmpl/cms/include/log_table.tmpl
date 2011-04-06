@@ -21,9 +21,10 @@
     <tr class="<mt:if name="log_detail">log-detail-parent </mt:if><mt:if name="__odd__">odd<mt:else>even</mt:if>"<mt:if name="log_detail"> id="log-detail-parent-<$mt:var name="id"$>"</mt:if>>
       <td class="col log-message">
       <mt:if name="log_detail">
-        <span class="toggle-button" title="<__trans phrase="Show Datail">"><img alt="<__trans phrase="Show Datail">" src="<mt:var name="static_uri">/images/spinner-big-bottom.gif" /></span>
+         <span class="toggle-link icon-left icon-spinner detail-link"><mt:var name="log_message" escape="html"></span>
+      <mt:else>
+        <mt:var name="log_message" escape="html"> 
       </mt:if>
-        <mt:var name="log_message" escape="html">
       <mt:if name="system_overview_nav">
         <mt:if name="log_ip"> (<__trans phrase="IP: [_1]" params="<$mt:var name="log_ip"$>">)</mt:if>
       </mt:if>
