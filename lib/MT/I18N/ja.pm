@@ -67,12 +67,14 @@ my @ENCODINGS_ENCODE = qw( euc-jp shiftjis 7bit-jis iso-2022-jp
     iso-2022-jp-1 jis0201-raw jis0208-raw
     jis0212-raw cp932 Macjapanese );
 
-no warnings 'redefine';
-*MT::I18N::encode_text    = \&encode_text_ja;
-*MT::I18N::guess_encoding = \&guess_encoding_ja;
-*MT::I18N::wrap_text      = \&wrap_text_ja;
-*MT::I18N::first_n        = \&first_n_ja;
-*MT::I18N::first_n_text   = \&first_n_ja;
+{
+	no warnings 'redefine';
+	*MT::I18N::encode_text    = \&encode_text_ja;
+	*MT::I18N::guess_encoding = \&guess_encoding_ja;
+	*MT::I18N::wrap_text      = \&wrap_text_ja;
+	*MT::I18N::first_n        = \&first_n_ja;
+	*MT::I18N::first_n_text   = \&first_n_ja;
+}
 
 sub encode_text_ja {
     return __PACKAGE__->encode_text_encode(@_);
