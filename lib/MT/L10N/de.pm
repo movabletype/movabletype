@@ -4047,7 +4047,6 @@ use vars qw( @ISA %Lexicon );
 	'Nov' => 'Nov',
 	'Dec' => 'Dez',
 	'OK' => 'OK',
-	'[_1:calMonth] [_2:calYear]' => '[_1:calMonth] [_2:calYear]',
 
 ## tmpl/cms/include/category_selector.tmpl
 	'Add sub category' => 'Unterkategorie hinzufügen',

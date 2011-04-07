@@ -4049,7 +4049,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Nov' => 'Nov.',
 	'Dec' => 'Dic.',
 	'OK' => 'Aceptar',
-	'[_1:calMonth] [_2:calYear]' => '[_1:calMonth] [_2:calYear]',
 
 ## tmpl/cms/include/category_selector.tmpl
 	'Add sub category' => 'Añadir sub categoría',
