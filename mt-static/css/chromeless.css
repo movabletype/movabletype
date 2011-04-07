@@ -198,6 +198,9 @@ ul#profile-data li {
     display: block;
     margin-top: 5px;
 }
+#userpic-preview {
+    margin-bottom: 10px;
+}
 .mt-profile-edit form {
     margin-bottom: .75em;
 }
