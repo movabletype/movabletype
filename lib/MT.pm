@@ -644,8 +644,6 @@ sub run_callback {
 
     $cb->error();    # reset the error string
     my $result = eval {
-
-        # line __LINE__ __FILE__
         $cb->invoke(@args);
     };
     if ( my $err = $@ ) {
@@ -967,23 +965,23 @@ sub init_config {
 
         my $first_write = !-f $log_file;
 
-        local *PERFLOG;
-        open PERFLOG, ">>$log_file";
+        open my $PERFLOG, ">>", $log_file 
+        	or (warn("Failed to open preflog $longfile"), return);
         require Fcntl;
-        flock( PERFLOG, Fcntl::LOCK_EX() );
+        flock( $PERFLOG, Fcntl::LOCK_EX() );
 
         if ($first_write) {
             require Config;
             my ( $osname, $osvers )
                 = ( $Config::Config{osname}, $Config::Config{osvers} );
-            print PERFLOG "# Operating System: $osname/$osvers\n";
-            print PERFLOG "# Platform: $^O\n";
+            print $PERFLOG "# Operating System: $osname/$osvers\n";
+            print $PERFLOG "# Platform: $^O\n";
             my $ver
                 = ref($^V) eq 'version'
                 ? $^V->normal
                 : ( $^V ? join( '.', unpack 'C*', $^V ) : $] );
-            print PERFLOG "# Perl Version: $ver\n";
-            print PERFLOG "# Web Server: $ENV{SERVER_SOFTWARE}\n";
+            print $PERFLOG "# Perl Version: $ver\n";
+            print $PERFLOG "# Web Server: $ENV{SERVER_SOFTWARE}\n";
             require MT::Object;
             my $driver = MT::Object->driver;
 
@@ -993,35 +991,35 @@ sub init_config {
                     my $dbname = $dbh->get_info(17);    # SQL_DBMS_NAME
                     my $dbver  = $dbh->get_info(18);    # SQL_DBMS_VER
                     if ( $dbname && $dbver ) {
-                        print PERFLOG "# Database: $dbname/$dbver\n";
+                        print $PERFLOG "# Database: $dbname/$dbver\n";
                     }
                 }
             }
             my ( $drname, $drh ) = each %DBI::installed_drh;
-            print PERFLOG "# Database Library: DBI/"
+            print $PERFLOG "# Database Library: DBI/"
                 . $DBI::VERSION
                 . "; DBD/"
                 . $drh->{Version} . "\n";
             if ( $ENV{MOD_PERL} ) {
-                print PERFLOG "# App Mode: mod_perl\n";
+                print $PERFLOG "# App Mode: mod_perl\n";
             }
             elsif ( $ENV{FAST_CGI} ) {
-                print PERFLOG "# App Mode: FastCGI\n";
+                print $PERFLOG "# App Mode: FastCGI\n";
             }
             else {
-                print PERFLOG "# App Mode: CGI\n";
+                print $PERFLOG "# App Mode: CGI\n";
             }
         }
 
         if ($memory) {
-            print PERFLOG $timer->dump_line( "mem_start=$memory_start",
+            print $PERFLOG $timer->dump_line( "mem_start=$memory_start",
                 "mem_end=$memory" );
         }
         else {
-            print PERFLOG $timer->dump_line();
+            print $PERFLOG $timer->dump_line();
         }
 
-        close PERFLOG;
+        close $PERFLOG;
     }
 }
 
