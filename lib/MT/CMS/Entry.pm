@@ -1961,9 +1961,9 @@ PERMCHECK: {
             };
 
             my $co = $q->param( 'created_on_' . $id );
-            $date_closure->( $co, MT->translate('authored_on'), MT->translate('authored on') ) or return;
+            $date_closure->( $co, 'authored_on', MT->translate('authored on') ) or return;
             $co = $q->param( 'modified_on_' . $id );
-            $date_closure->( $co, MT->translate('modified_on'), MT->translate('modified on') ) or return;
+            $date_closure->( $co, 'modified_on', MT->translate('modified on') ) or return;
         }
         $app->run_callbacks( 'cms_pre_save.' . $type,
             $app, $entry, $orig_obj )
