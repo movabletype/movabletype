@@ -69,7 +69,7 @@ jQuery(function() {
      show_hint="1"
      help_page="blog_settings_general"
      help_section="website_name">
-    <input type="text" name="name" id="name" class="text" value="<mt:var name="name" escape="html">" />
+    <input type="text" name="name" id="name" class="text required" value="<mt:var name="name" escape="html">" />
   </mtapp:setting>
   <mtapp:setting
      id="website_url"
@@ -78,7 +78,7 @@ jQuery(function() {
      show_hint="1"
      help_page="blog_settings_publishing"
      help_section="website_url">
-    <input type="text" name="site_url" id="site_url" class="text" value="<mt:var name="site_url"  escape="html">" />
+    <input type="text" name="site_url" id="site_url" class="text required" value="<mt:var name="site_url"  escape="html">" />
   </mtapp:setting>
   <mtapp:setting
      id="website_path"
@@ -87,7 +87,7 @@ jQuery(function() {
      show_hint="1"
      help_page="blog_settings_publishing"
      help_section="website_root">
-    <input type="text" name="site_path" id="site_path" class="text" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" />
+    <input type="text" name="site_path" id="site_path" class="text required" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" />
   </mtapp:setting>
   <mtapp:setting
      id="server_offset"
@@ -174,39 +174,29 @@ jQuery(function() {
         }
         return true;
     }
-    jQuery.validator.addMethod('url', function(value, element) {
-        return is_valid_url('<mt:var name="website_url">'+value);
-    });
-    jQuery.validator.addMethod('path', function(value, element) {
-        return is_valid_path(value);
-    });
-    jQuery('#new_website_form').validate({
-        rules: {
-            name: 'required',
-            server_offset: 'required',
-            site_url: {
-                required: true,
-                'url': true
-            },
-            site_path: {
-                required: true,
-                path: true
-            }
+
+    jQuery.mtValidateAddRules({
+        '#site_url': function ($e) {
+            return is_valid_url($e.val()) ? true : false;
         },
-        messages: {
-            name: '<__trans phrase="This field is required." escape="singlequotes">',
-            server_offset: '<__trans phrase="You did not select a timezone." escape="singlequotes">',
-            site_url: '<__trans phrase="Please enter a valid URL." escape="singlequotes">',
-            site_path: {
-                required: '<__trans phrase="This field is required." escape="singlequotes">',
-                path: '<__trans phrase="Please enter a valid site path." escape="singlequotes">'
-            }
+        '#site_path': function ($e) {
+            return is_valid_path($e.val()) ? true : false;
         },
-        errorClass: "msg-error",
-        errorPlacement: function(error, element) {
-            element.parents('div.field').addClass('error-field');
-            error.removeAttr('generated').insertAfter(element);
+        '#server_offset': function ($e) {
+            return $e.val() !== '';
         }
+    });
+
+    jQuery.mtValidateAddMessages({
+        '#name.required': '<__trans phrase="This field is required." escape="singlequotes">',
+        '#site_url': '<__trans phrase="Please enter a valid URL." escape="singlequotes">',
+        '#site_path': '<__trans phrase="Please enter a valid site path." escape="singlequotes">',
+        '#site_path.required': '<__trans phrase="This field is required." escape="singlequotes">',
+        '#server_offset': '<__trans phrase="You did not select a timezone." escape="singlequotes">'
+    });
+
+    jQuery('form#new_website_form').submit( function () {
+        return jQuery(this).find('input, select').mtValidate('simple') ? true : false;
     });
 });
 /* ]]> */
