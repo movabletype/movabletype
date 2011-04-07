@@ -575,7 +575,7 @@ sub _hdlr_sub_categories {
     $sort_by = 'user_custom' if 'user_custom' ne $sort_by && !$class->has_column($sort_by);
 
     # Store the tokens for recursion
-    $ctx->stash( 'subCatTokens', $tokens );
+    local $ctx->{__stash}{subCatTokens} = $tokens;
     my $current_cat;
     my @cats;
     if ( $args->{top} ) {
