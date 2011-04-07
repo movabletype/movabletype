@@ -36,7 +36,7 @@
        id="name"
        label="<__trans phrase="Widget Set Name">"
        label_class="no-header">
-      <input type="text" name="name" id="name" class="text full title" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Widget Set Name">" />
+      <input type="text" name="name" id="name" class="text full title required" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Widget Set Name">" />
     </mtapp:setting>
 
     <mt:setvarblock name="action_buttons">
@@ -99,29 +99,14 @@
   </form>
 </div>
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('#manager').validate({
-        rules: {
-            name: 'required'
-        },
-        messages: {
-            name: '<__trans phrase="You must set Widget Set Name." escape="js">'
-        },
-        errorClass: "msg-error",
-        errorPlacement: function(error, element) {
-            element.parents('div.field').addClass('error-field');
-            error.removeAttr('generated').insertAfter(element);
-        }
-    });
-
     jQuery(' #installed-column-items, #available-column-items ').sortable({
         connectWith: '.connectSortable',
         placeholder: 'placeholder',
         distance: 3,
         cursor: 'move',
         forcePlaceholderSize: true,
-        tolerance: 'pointer' 
+        tolerance: 'pointer'
     }).disableSelection();
-
 
     jQuery('button.save').click( function () {
         var data = [];
@@ -132,6 +117,15 @@
             }
         });
         jQuery('form#manager input[name=modules]').val( data.toString() );
+    });
+
+    jQuery.mtValidateAddMessages({
+        '#name.required': '<__trans phrase="You must set Widget Set Name." escape="js">'
+    });
+
+    jQuery('#manager').submit( function () {
+        if ( !jQuery(this).find('input, select').mtValidate('simple') )
+            return false;
     });
 </mt:setvarblock>
 

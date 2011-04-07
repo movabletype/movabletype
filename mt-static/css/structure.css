@@ -75,6 +75,9 @@ pre {
     right: 0;
     bottom: 0;
 }
+#userpic-preview {
+    margin-bottom: 10px;
+}
 .thumbnail {
     background: #f3f3f3 url(../images/thumbnail-bg.png) repeat top left;
 }
@@ -224,8 +227,8 @@ pre {
     height: 2em;
     border: 1px solid #c0c6c9;
     background: #fff;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
 }
 .progressbar.indeterminate {
     background: #c0c6c9 url(../images/progress-bar-indeterminate.gif) repeat;

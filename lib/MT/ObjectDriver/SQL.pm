@@ -387,6 +387,30 @@ sub as_limit {
 
 sub add_freetext_where {0}
 
+sub as_aggregate {
+    my $stmt = shift;
+    my ($set) = @_;
+
+    if ( my $attribute = $stmt->$set() ) {
+        my $elements
+            = ( ref($attribute) eq 'ARRAY' ) ? $attribute : [$attribute];
+        foreach (@$elements) {
+            # Remove column alias                                                                                       
+            if ( $_->{column} =~ /^([\w_\-\.]+\(.+\))+\s+AS\s+.+$/ ) {
+                $_->{column} = $1;
+            }
+        }
+        return
+            uc($set) . ' BY '
+            . join( ', ',
+            map { $_->{column} . ( $_->{desc} ? ( ' ' . $_->{desc} ) : '' ) }
+                @$elements )
+            . "\n";
+    }
+
+    return '';
+}
+
 1;
 __END__
 

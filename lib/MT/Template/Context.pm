@@ -375,21 +375,6 @@ sub set_blog_load_context {
         $blog_ids = join ",", @ids;
     }
 
-    # Find blog_id which belongs to the specified websites
-    if (   $col eq 'blog_id'
-        && ( $attr->{site_ids} || $attr->{include_websites} )
-        && 'all' ne lc $blog_ids )
-    {
-        my @blogs = MT::Blog->load(
-            {   (     ( 'ARRAY' eq ref $blog_ids )
-                    ? ( 'id' => \@$blog_ids )
-                    : ( 'id' => $blog_ids )
-                ),
-            }
-        );
-        $blog_ids = [ map { $_->id } @blogs ] if @blogs;
-    }
-
     # If no blog IDs specified, use the current blog
     if ( !$blog_ids ) {
         if ( my $blog = $ctx->stash('blog') ) {

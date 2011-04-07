@@ -3807,11 +3807,13 @@ sub _hdlr_app_action_bar {
         ? ''
         : qq{\n        <mt:include name="include/pagination.tmpl" bar_position="$pos">};
     my $buttons = $ctx->var('action_buttons') || '';
+    my $buttons_html = $buttons =~ /\S/ ? qq{<span class="button-actions actions">$buttons</span>} : '';
+
     return $ctx->build(<<EOT);
 $form_id
 <div id="actions-bar-$pos" class="actions-bar actions-bar-$pos">
     $pager
-    <span class="button-actions actions">$buttons</span>
+    $buttons_html
     <span class="plugin-actions actions">
 <mt:include name="include/itemset_action_widget.tmpl">
     </span>

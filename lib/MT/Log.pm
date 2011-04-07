@@ -150,7 +150,7 @@ sub list_props {
                 push @{ $args->{joins} }, MT->model('author')->join_on(
                     undef, undef,
                     {   sort      => 'nickname',
-                        condition => { id => \'= log_author_id', }, #baka editors ',
+                        condition => { id => \'= log_author_id', },
                         direction => ( $args->{direction} || 'ascend' ),
                         type      => 'left',
                     },
