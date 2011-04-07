@@ -1337,7 +1337,7 @@ sub init_plugins {
         my ($plugin) = @_;
         if ( ref $plugin eq 'HASH' ) {
             require MT::Plugin;
-            $plugin = new MT::Plugin($plugin);
+            $plugin = MT::Plugin->new($plugin);
         }
         $plugin->{name} ||= $plugin_sig;
         $plugin->{plugin_sig} = $plugin_sig;
@@ -1374,6 +1374,102 @@ sub init_plugins {
         1;
     }
 
+    sub __load_plugin {
+        my ( $mt, $timer, $PluginSwitch, $use_plugins, $plugin, $sig ) = @_;
+        die "Bad plugin filename '$plugin'"
+            if ( $plugin !~ /^([-\\\/\@\:\w\.\s~]+)$/ );
+        local $plugin_sig      = $sig;
+        local $plugin_registry = {};
+        if (!$use_plugins
+            || ( exists $PluginSwitch->{$plugin_sig}
+                && !$PluginSwitch->{$plugin_sig} )
+            )
+        {
+            $Plugins{$plugin_sig}{full_path}
+                = $plugin_full_path;
+            $Plugins{$plugin_sig}{enabled} = 0;
+            return 0;
+        }
+        return 0 if exists $Plugins{$plugin_sig};
+        $Plugins{$plugin_sig}{full_path} = $plugin_full_path;
+        $timer->pause_partial if $timer;
+        eval "# line " . __LINE__ . " " . __FILE__
+            . "\nrequire '$plugin';";
+        $timer->mark( "Loaded plugin " . $sig ) if $timer;
+        if ($@) {
+            $Plugins{$plugin_sig}{error} = $@;
+
+            # Issue MT log within another eval block in the
+            # event that the plugin error is happening before
+            # the database has been initialized...
+            eval {
+                require MT::Log;
+                $mt->log(
+                    {   message => $mt->translate(
+                            "Plugin error: [_1] [_2]",
+                            $plugin,
+                            $Plugins{$plugin_sig}{error}
+                        ),
+                        class    => 'system',
+                        category => 'plugin',
+                        level    => MT::Log::ERROR()
+                    }
+                );
+            };
+            return 0;
+        }
+        else {
+            if ( my $obj = $Plugins{$plugin_sig}{object} ) {
+                $obj->init_callbacks();
+            }
+            else {
+
+                # A plugin did not register itself, so
+                # create a dummy plugin object which will
+                # cause it to show up in the plugin listing
+                # by it's filename.
+                MT->add_plugin( {} );
+            }
+        }
+        $Plugins{$plugin_sig}{enabled} = 1;
+        return 1;
+    };
+    
+    sub __load_plugin_with_yaml {
+        my ($use_plugins, $PluginSwitch, $plugin_dir) = @_;
+        my $pclass
+            = $plugin_dir =~ m/\.pack$/
+            ? 'MT::Component'
+            : 'MT::Plugin';
+        
+        # Don't process disabled plugin config.yaml files.
+        if ($pclass eq 'MT::Plugin'
+            && (!$use_plugins
+                || ( exists $PluginSwitch->{$plugin_dir}
+                    && !$PluginSwitch->{$plugin_dir} )
+            )
+            )
+        {
+            $Plugins{$plugin_dir}{full_path} = $plugin_full_path;
+            $Plugins{$plugin_dir}{enabled} = 0;
+            return;
+        }
+        return if exists $Plugins{$plugin_dir};
+        my $id = lc $plugin_dir;
+        $id =~ s/\.\w+$//;
+        my $p = $pclass->new(
+            {   id       => $id,
+                path     => $plugin_full_path,
+                envelope => $plugin_envelope
+            }
+        );
+        
+        # rebless? based on config?
+        local $plugin_sig = $plugin_dir;
+        MT->add_plugin($p);
+        $p->init_callbacks();
+    }
+    
     sub _init_plugins_core {
         my $mt = shift;
         my ( $PluginSwitch, $use_plugins, $PluginPaths ) = @_;
@@ -1386,156 +1482,60 @@ sub init_plugins {
         foreach my $PluginPath (@$PluginPaths) {
             my $plugin_lastdir = $PluginPath;
             $plugin_lastdir =~ s![\\/]$!!;
-            $plugin_lastdir =~ s!.*[\\/]!!;
-            local *DH;
-            if ( opendir DH, $PluginPath ) {
-                my @p = readdir DH;
-            PLUGIN:
+            $plugin_lastdir =~ s!^.*[\\/]!!;
+
+            if ( opendir my $DH, $PluginPath ) {
+                my @p = readdir $DH;
+                closedir $DH;
                 for my $plugin (@p) {
                     next if ( $plugin =~ /^\.\.?$/ || $plugin =~ /~$/ );
 
-                    my $load_plugin = sub {
-                        my ( $plugin, $sig ) = @_;
-                        die "Bad plugin filename '$plugin'"
-                            if ( $plugin !~ /^([-\\\/\@\:\w\.\s~]+)$/ );
-                        local $plugin_sig      = $sig;
-                        local $plugin_registry = {};
-                        $plugin = $1;
-                        if (!$use_plugins
-                            || ( exists $PluginSwitch->{$plugin_sig}
-                                && !$PluginSwitch->{$plugin_sig} )
-                            )
-                        {
-                            $Plugins{$plugin_sig}{full_path}
-                                = $plugin_full_path;
-                            $Plugins{$plugin_sig}{enabled} = 0;
-                            return 0;
-                        }
-                        return 0 if exists $Plugins{$plugin_sig};
-                        $Plugins{$plugin_sig}{full_path} = $plugin_full_path;
-                        $timer->pause_partial if $timer;
-                        eval "# line " . __LINE__ . " " . __FILE__
-                            . "\nrequire '$plugin';";
-                        $timer->mark( "Loaded plugin " . $sig ) if $timer;
-                        if ($@) {
-                            $Plugins{$plugin_sig}{error} = $@;
-
-                            # Issue MT log within another eval block in the
-                            # event that the plugin error is happening before
-                            # the database has been initialized...
-                            eval {
-
-                                # line __LINE__ __FILE__
-                                require MT::Log;
-                                $mt->log(
-                                    {   message => $mt->translate(
-                                            "Plugin error: [_1] [_2]",
-                                            $plugin,
-                                            $Plugins{$plugin_sig}{error}
-                                        ),
-                                        class    => 'system',
-                                        category => 'plugin',
-                                        level    => MT::Log::ERROR()
-                                    }
-                                );
-                            };
-                            return 0;
-                        }
-                        else {
-                            if ( my $obj = $Plugins{$plugin_sig}{object} ) {
-                                $obj->init_callbacks();
-                            }
-                            else {
-
-                                # A plugin did not register itself, so
-                                # create a dummy plugin object which will
-                                # cause it to show up in the plugin listing
-                                # by it's filename.
-                                MT->add_plugin( {} );
-                            }
-                        }
-                        $Plugins{$plugin_sig}{enabled} = 1;
-                        return 1;
-                    };
                     $plugin_full_path
                         = File::Spec->catfile( $PluginPath, $plugin );
                     if ( -f $plugin_full_path ) {
                         $plugin_envelope = $plugin_lastdir;
-                        $load_plugin->( $plugin_full_path, $plugin )
+                        __load_plugin($mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $plugin )
                             if $plugin_full_path =~ /\.pl$/;
+                        next;
+                    }
+                    
+                    my $plugin_dir = $plugin;
+                    $plugin_envelope = "$plugin_lastdir/" . $plugin;
+
+
+                    foreach my $lib (qw(lib extlib)) {
+                        my $plib = File::Spec->catdir( $plugin_full_path,
+                            $lib );
+                        unshift @INC, $plib if -d $plib;
+                    }
+
+                    # handle config.yaml
+                    my $yaml = File::Spec->catdir( $plugin_full_path, 'config.yaml' );
+
+                    if ( -f $yaml ) {
+                        __load_plugin_with_yaml($use_plugins, $PluginSwitch, $plugin_dir);
+                        next;
+                    }
+
+                    my @plugins;
+                    if ( opendir my $subdir, $plugin_full_path ) {
+                        @plugins = readdir $subdir;
+                        closedir $subdir;
                     }
                     else {
-                        my $plugin_dir = $plugin;
-                        $plugin_envelope = "$plugin_lastdir/" . $plugin;
-
-                        # handle config.yaml
-                        my $yaml = File::Spec->catdir( $plugin_full_path,
-                            'config.yaml' );
-
-                        foreach my $lib (qw(lib extlib)) {
-                            my $plib = File::Spec->catdir( $plugin_full_path,
-                                $lib );
-                            unshift @INC, $plib if -d $plib;
-                        }
-
-                        if ( -f $yaml ) {
-                            my $pclass
-                                = $plugin_dir =~ m/\.pack$/
-                                ? 'MT::Component'
-                                : 'MT::Plugin';
-
-                            # Don't process disabled plugin config.yaml files.
-                            if ($pclass eq 'MT::Plugin'
-                                && (!$use_plugins
-                                    || ( exists $PluginSwitch->{$plugin_dir}
-                                        && !$PluginSwitch->{$plugin_dir} )
-                                )
-                                )
-                            {
-                                $Plugins{$plugin_dir}{full_path}
-                                    = $plugin_full_path;
-                                $Plugins{$plugin_dir}{enabled} = 0;
-                                next;
-                            }
-                            next if exists $Plugins{$plugin_dir};
-                            my $id = lc $plugin_dir;
-                            $id =~ s/\.\w+$//;
-                            my $p = $pclass->new(
-                                {   id       => $id,
-                                    path     => $plugin_full_path,
-                                    envelope => $plugin_envelope
-                                }
+                        warn "Can not read directory: $plugin_full_path";
+                    }
+                    for my $plugin (@plugins) {
+                        next if $plugin !~ /\.pl$/;
+                        my $plugin_file
+                            = File::Spec->catfile( $plugin_full_path, $plugin );
+                        if ( -f $plugin_file ) {
+                            __load_plugin(
+                                $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $plugin_dir . '/' . $plugin
                             );
-
-                            # rebless? based on config?
-                            local $plugin_sig = $plugin_dir;
-                            MT->add_plugin($p);
-                            $p->init_callbacks();
-                            next;
-                        }
-
-                        my @plugins;
-                        if ( opendir my $subdir, $plugin_full_path ) {
-                            @plugins = readdir $subdir;
-                            closedir $subdir;
-                        }
-                        else {
-                            warn "Can not read directory: $plugin_full_path";
-                        }
-                        for my $plugin (@plugins) {
-                            next if $plugin !~ /\.pl$/;
-                            my $plugin_file
-                                = File::Spec->catfile( $plugin_full_path,
-                                $plugin );
-                            if ( -f $plugin_file ) {
-                                $load_plugin->(
-                                    $plugin_file, $plugin_dir . '/' . $plugin
-                                );
-                            }
                         }
                     }
                 }
-                closedir DH;
             }
         }
 
@@ -1558,9 +1558,9 @@ sub find_addons {
 
     unless (%addons) {
         my $addon_path = File::Spec->catdir( $MT_DIR, 'addons' );
-        local *DH;
-        if ( opendir DH, $addon_path ) {
-            my @p = readdir DH;
+        if ( opendir my $DH, $addon_path ) {
+            my @p = readdir $DH;
+            closedir $DH;
             foreach my $p (@p) {
                 next if $p eq '.' || $p eq '..';
                 my $full_path = File::Spec->catdir( $addon_path, $p );
@@ -2033,14 +2033,14 @@ sub supported_languages {
     my @dirs = ( $lib, $extlib );
     my %langs;
     for my $dir (@dirs) {
-        opendir DH, $dir or next;
-        for my $f ( readdir DH ) {
+        opendir my $DH, $dir or next;
+        for my $f ( readdir $DH ) {
             my ($tag) = $f =~ /^(\w+)\.pm$/;
             next unless $tag;
             my $lh = MT::L10N->get_handle($tag);
             $langs{ $lh->language_tag } = $lh->language_name;
         }
-        closedir DH;
+        closedir $DH;
     }
     \%langs;
 }
@@ -3360,9 +3360,9 @@ Adds an entry to the application's log table. Also writes message to
 STDERR which is typically routed to the web server's error log.
 Examples:
 
-	$mt->log('I would like you to know');
-	$mt->log( { message => 'that this is important', level => MT::Log::ERROR() } );
-	# can also use metadata, category, blog_id, author_id and ip
+    $mt->log('I would like you to know');
+    $mt->log( { message => 'that this is important', level => MT::Log::ERROR() } );
+    # can also use metadata, category, blog_id, author_id and ip
 
 =head2 $mt->server_path, $mt->mt_dir
 
@@ -3558,6 +3558,9 @@ Returns the active MT::L10N language instance for the active language.
 Adds the plugin described by $plugin to the list of plugins displayed
 on the welcome page. The argument should be an object of the
 I<MT::Plugin> class.
+
+This function can be used only while MT is loading addons/plugins,
+to instruct MT to load sub-addons/plugins.
 
 =head2 MT->all_text_filters
 
