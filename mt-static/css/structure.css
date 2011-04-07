@@ -224,8 +224,8 @@ pre {
     height: 2em;
     border: 1px solid #c0c6c9;
     background: #fff;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
 }
 .progressbar.indeterminate {
     background: #c0c6c9 url(../images/progress-bar-indeterminate.gif) repeat;

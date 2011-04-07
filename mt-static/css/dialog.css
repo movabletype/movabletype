@@ -12,12 +12,19 @@ body.has-dialog {
     height: 200%;
 }
 
+#mt-dialog-iframe {
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+
 /* - Dialog Block */
 .mt-dialog, 
 .ui-dialog {
     position: absolute;
-    border: 1px solid #adadad;
+    border: 1px solid #c0c6c9;
     background-color: #fffffc;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
     box-shadow: #2b2b2b 0 3px 10px;
     -webkit-box-shadow: #2b2b2b 0 3px 10px;
     -moz-box-shadow: #2b2b2b 0 3px 10px;
