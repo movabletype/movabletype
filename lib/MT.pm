@@ -587,7 +587,7 @@ sub add_callback {
     require MT::Callback;
     $CallbacksEnabled{$meth} = 1;
     ## push @{$Plugins{$plugin_sig}{callbacks}}, "$meth Callback" if $plugin_sig;
-    my $cb = new MT::Callback(
+    my $cb = MT::Callback->new(
         plugin   => $plugin,
         code     => $code,
         priority => $priority,
@@ -966,7 +966,7 @@ sub init_config {
         my $first_write = !-f $log_file;
 
         open my $PERFLOG, ">>", $log_file 
-        	or (warn("Failed to open preflog $longfile"), return);
+            or (warn("Failed to open preflog $log_file"), return);
         require Fcntl;
         flock( $PERFLOG, Fcntl::LOCK_EX() );
 
@@ -997,9 +997,7 @@ sub init_config {
             }
             my ( $drname, $drh ) = each %DBI::installed_drh;
             print $PERFLOG "# Database Library: DBI/"
-                . $DBI::VERSION
-                . "; DBD/"
-                . $drh->{Version} . "\n";
+                . $DBI::VERSION . "; DBD/" . $drh->{Version} . "\n";
             if ( $ENV{MOD_PERL} ) {
                 print $PERFLOG "# App Mode: mod_perl\n";
             }
@@ -1282,14 +1280,11 @@ sub upload_file_to_sync {
     $base_url =~ s!^https?://[^/]+!!;
     my $fi = MT::FileInfo->load( { blog_id => $blog_id, url => $base_url } );
     if ( !$fi ) {
-        $fi = new MT::FileInfo;
+        $fi = MT::FileInfo->new();
         $fi->blog_id($blog_id);
         $fi->url($base_url);
-        $fi->file_path($file);
     }
-    else {
-        $fi->file_path($file);
-    }
+    $fi->file_path($file);
     $fi->save;
 
     require MT::TheSchwartz;
@@ -1336,7 +1331,7 @@ sub init_plugins {
 		my ($plugin) = @_;
 		if ( ref $plugin eq 'HASH' ) {
 			require MT::Plugin;
-			$plugin = new MT::Plugin($plugin);
+			$plugin = MT::Plugin->new($plugin);
 		}
 		$plugin->{name} ||= $plugin_sig;
 		$plugin->{plugin_sig} = $plugin_sig;
