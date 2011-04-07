@@ -220,12 +220,15 @@ tfoot .col.head{
 }
 .pagination, 
 .indicator {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+}
+.pagination, 
+.actions-bar .indicator {
     float: right;
     height: 22px;
     margin: 8px 0;
     line-height: 22px;
-    font-family: Arial, sans-serif;
-    font-size: 12px;
 }
 .pagenav, 
 .current-rows {
@@ -325,7 +328,8 @@ tfoot .col.head{
     background-color: transparent;
 }
 #dialog_filter .apply-link, 
-#dialog_filter .item-ctrl {
+#dialog_filter .item-ctrl, 
+#dialog_filter .indicator {
     height: 23px;
     line-height: 23px;
 }
@@ -360,7 +364,9 @@ tfoot .col.head{
 #dialog_filter .rename-link {
     color: #7b7c7d;
 }
-
+#dialog_filter .indicator {
+    margin-left: 5px;
+}
 /* - Asset Preview */
 .col .asset-preview {
     display: none;

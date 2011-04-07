@@ -472,6 +472,10 @@ strong {
     display: inline;
     margin-right: 10px;
 }
+.widget-archive-category ul li, 
+.widget-pages ul li {
+    display: list-item;
+}
 
 .widget-tag-cloud .rank-1  { font-size: 1.75em; }
 .widget-tag-cloud .rank-2  { font-size: 1.75em; }

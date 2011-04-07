@@ -98,7 +98,7 @@ $Lexicon_fr = array(
 	'Error compiling widgetset [_1]' => 'Erreur de compilation du groupe de widget [_1]',
 
 ## php/lib/mtdb.base.php
-	'The attribute exclude_blogs denies all incllude_blogs.' => 'L\'attribut exclude_blogs ignore tous les incllude_blogs.', # Translate - New
+	'The attribute exclude_blogs denies all include_blogs.' => 'L\'attribut exclude_blogs nie include_blogs.', # Translate - New
 
 ## php/lib/MTUtil.php
 	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',

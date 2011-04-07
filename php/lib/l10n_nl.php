@@ -99,7 +99,7 @@ $Lexicon_nl = array(
 	'Error compiling widgetset [_1]' => 'Fout bij het compileren van widgetset [_1]',
 
 ## php/lib/mtdb.base.php
-	'The attribute exclude_blogs denies all incllude_blogs.' => 'Het attribuut exclude_blogs overtreft alle include_blogs', # Translate - New
+	'The attribute exclude_blogs denies all include_blogs.' => 'Het attribuut exclude_blogs overtreft alle include_blogs', # Translate - New
 
 ## php/lib/MTUtil.php
 	'userpic-[_1]-%wx%h%x' => 'gebruikersafbeelding-[_1]-%wx%h%x',

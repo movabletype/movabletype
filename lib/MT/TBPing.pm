@@ -367,7 +367,7 @@ sub system_filters {
         pending => {
             label => 'Pending trackbacks',
             items =>
-                [ { type => 'status', args => { value => 'moderated' }, }, ],
+                [ { type => 'status', args => { value => 'pending' }, }, ],
             order => 300,
         },
         published => {

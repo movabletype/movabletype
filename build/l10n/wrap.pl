@@ -56,7 +56,7 @@ while (<>) {
         next if ($_ =~ /^\s*$/);
         print $l;
     }
-    if (/^[#\s]+'(.+)' => '(.*)',($|\s*\#)/) { # Now also reads empty/to be translated strings
+    if (/^[#\s]+['|q{](.+)['|}] => ['|q{](.*)['|}],($|\s*\#)/) { # Now also reads empty/to be translated strings
         my $base = $1; 
         my $trans = $2;
         if ( !exists($conv{$base}) && !exists($pgconv{$base}) ) {

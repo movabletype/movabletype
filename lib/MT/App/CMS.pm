@@ -3841,7 +3841,7 @@ sub _parse_entry_prefs {
                     push @$fields, { name => $def };
                 }
                 if ( lc($p) eq 'advanced' ) {
-                    foreach my $def (qw(excerpt feedback)) {
+                    foreach my $def (qw(excerpt feedback keywords)) {
                         $param->{ $prefix . 'disp_prefs_show_' . $def } = 1;
                         push @$fields, { name => $def };
                     }
