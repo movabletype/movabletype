@@ -2542,7 +2542,7 @@ div.template-group-content.active {
     border-left-color: #cfd0d0;
     background-color: #fff;
 }
-.search-replace .actions-bar {
+#search-bar .actions-bar {
     margin: 20px 0 10px;
 }
 .search-replace .listing {

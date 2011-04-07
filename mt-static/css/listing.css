@@ -63,17 +63,15 @@
 .col.target { 
     width: 25%;
 }
-.col.cb { 
+.col.cb, 
+.col.si { 
     width: 2.6em;
     padding-left: 0;
     padding-right: 0;
     text-align: center;
 }
-.col.si,
 .col.view {
     width: 4em;
-    padding-right: 8px;
-    text-align: center;
 }
 .col.template-name {
     width: 18%;
