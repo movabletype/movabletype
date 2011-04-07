@@ -927,12 +927,10 @@ $.extend( $.mtValidator.prototype, {
     errorClass: 'error',
     doFocus: true,
     wrapError: function ( $target, msg ) {
-        return $('<div />').append(
-            $('<label/>')
-                .attr('for', $target.attr('id') )
-                .addClass('validate-error msg-error')
-                .text(msg)
-            );
+        return $('<label/>')
+            .attr('for', $target.attr('id') )
+            .addClass('validate-error msg-error')
+            .text(msg);
     },
     updateError: function( $target, $error_block, msg ) {
         $error_block.text(msg);
@@ -946,7 +944,19 @@ $.extend( $.mtValidator.prototype, {
 });
 
 // Install default validators.
-$.mtValidator('simple', {});
+$.mtValidator('simple', {
+    wrapError: function ( $target, msg ) {
+        return $('<div />').append(
+            $('<label/>')
+                .attr('for', $target.attr('id') )
+                .addClass('validate-error msg-error')
+                .text(msg)
+            );
+    },
+    updateError: function( $target, $error_block, msg ) {
+        $error_block.find('label.msg-error').text(msg);
+    }
+});
 $.mtValidator('default', {
     wrapError: function ( $target, msg ) {
         return $('<label style="position: absolute;" />')
