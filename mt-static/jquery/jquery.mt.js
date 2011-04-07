@@ -81,29 +81,6 @@ $.mtSelector = function(options) {
 };
 
 /*
- * mtCMSSearch
- *
- * Usage:
- *   jQuery.mtCMSSearch();
- *
- */
-$.mtCMSSearch = function(options) {
-    $('#cms-search > a')
-        .mousedown(function(event) {
-            $('#cms-search').toggleClass('active').find('#search-form').toggleClass('hidden');
-            return false;
-        })
-        .click(function(event) {
-            return false;
-        });
-    $(document).mousedown(function(event) {
-        if ($(event.target).parents('#cms-search').length == 0) {
-            $('#search-form').addClass('hidden').parent('#cms-search').removeClass('active');
-        }
-    });
-};
-
-/*
  * mtUseSubdmain
  *
  * Usage:
