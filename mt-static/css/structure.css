@@ -735,8 +735,8 @@ ul.tabs li a {
 /* --- Menu Bar list */
 #menu-bar-nav { 
     position: absolute;
-    top: 6px;
-    right: 20px;
+    top: 5px;
+    right: 0;
     z-index: 500;
 }
 #menu-bar-nav a { 
@@ -746,6 +746,7 @@ ul.tabs li a {
 /* ---- Favorite Action */
 .fav-actions-nav { 
     position: relative;
+    top: 1px;
     z-index: 600;
     float: right;
 }
@@ -805,7 +806,8 @@ ul.tabs li a {
 /* ---- Nav Icons */
 #menu-bar-icons { 
     float: right;
-    margin: 0 0 0 8px;
+    height: 24px;
+    margin: 0 15px 0 8px;
 }
 #menu-bar-icons li { 
     display: inline;
@@ -846,24 +848,26 @@ ul.tabs li a {
 }
 
 /* --- Menu bar Search */
-.search-form { 
+#basic-search { 
     position: absolute;
-    top: 29px;
-    right: -10px;
+    top: 30px;
+    right: 15px;
     z-index: 500;
     padding: 8px;
-    border-top: 1px solid #9ea1a3;
-    background-color: #7b7c7d;
+    background-color: #9ea1a3;
     text-align: right;
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
     -moz-border-radius: 0 0 5px 5px;
 }
-.search-form .button {
+#basic-search .text, 
+#basic-search .button {
     margin: 0;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;    
 }
 #basic-search .search-query {
-    outline: 0;
     width: 200px;
 }
 

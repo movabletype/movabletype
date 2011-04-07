@@ -3081,7 +3081,7 @@ que la dirección provista es correcta y le pertenece.',
 	q{The URL of your website. Exclude the filename (i.e. index.html).  End with '/'. Example: http://www.example.com/} => q{La URL del sitio web. Excluya el nombre del fichero (p.e. index.html). Finalice con '/'. Ejemplo: http://www.ejemplo.com/},
 	'[_1] Root' => 'Raíz de [_1]',
 	'Use absolute path' => 'Usar ruta absoluta',
-	'Warning: Changing the [_1] root requires a complete publish of your [_1].' => 'Aviso: La modificación de la raíz del [_] requiere una publicación completa del [_1].',
+	'Warning: Changing the [_1] root requires a complete publish of your [_1].' => 'Aviso: La modificación de la raíz del [_1] requiere una publicación completa del [_1].',
 	q{The path where your index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{La ruta de publicación de los ficheros índice. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog}, # Translate - New
 	q{The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{La ruta de publicación de los ficheros índice. Se recomienda una ruta absoluta (que en Linux comienza con '/' y en Windows con 'C:\'). No terminar con '/' o '\'. Ejemplo: /home/mt/public_html o C:\www\public_html}, # Translate - New
 	'Advanced Archive Publishing' => 'Publicación avanzada de archivos',
@@ -4049,7 +4049,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Nov' => 'Nov.',
 	'Dec' => 'Dic.',
 	'OK' => 'Aceptar',
-	'[_1:calMonth] [_2:calYear]' => '[_1:calMonth] [_2:calYear]',
 
 ## tmpl/cms/include/category_selector.tmpl
 	'Add sub category' => 'Añadir sub categoría',

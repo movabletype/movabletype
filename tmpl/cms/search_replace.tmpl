@@ -147,7 +147,7 @@ function blurDateFields(s) {
            label="<__trans phrase="Search">"
            label_class="top-label"
            help_section="search-alt">
-          <input type="text" name="search" id="search" class="text query full" value="<mt:var name="search" escape="html">" />
+          <input type="text" name="search" id="search" class="text query" value="<mt:var name="search" escape="html">" />
         </mtapp:setting>
         <ul id="search-bar-advanced-search" class="multiple-selection">
           <li><label for="case"><input type="checkbox" id="case" name="case" value="1"<mt:if name="case"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Case Sensitive"></label></li>
@@ -197,7 +197,7 @@ function blurDateFields(s) {
            label="<__trans phrase="Search For">"
            label_class="top-label"
            help_section="search-alt">
-          <input type="text" name="search-alt" id="search-alt" class="text query full disabled" disabled value="<mt:var name="search" escape="html">" readonly="readonly" />
+          <input type="text" name="search-alt" id="search-alt" class="text query disabled" disabled value="<mt:var name="search" escape="html">" readonly="readonly" />
         </mtapp:setting>
         <!-- Replace -->
         <mtapp:setting
@@ -205,7 +205,7 @@ function blurDateFields(s) {
            label="<__trans phrase="Replace With">"
            label_class="top-label"
            help_section="replace">
-          <textarea name="replace" id="replace" class="text full low"><mt:var name="replace" escape="html"></textarea>
+          <textarea name="replace" id="replace" class="text low"><mt:var name="replace" escape="html"></textarea>
         </mtapp:setting>
         <div class="actions-bar">
           <button

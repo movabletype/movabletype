@@ -65,7 +65,6 @@ jQuery(function() {
     jQuery.mtAddEdgeClass();
     jQuery.mtMenu();
     jQuery.mtSelector();
-    jQuery.mtCMSSearch();
     jQuery('a.mt-open-dialog').mtDialog();
     jQuery('a.mt-rebuild').mtRebuild(<mt:if name="blog_id">{blog_id: '<$mt:var name="blog_id"$>'}</mt:if>);
     jQuery('.mt-close-msg').live('click', function() {
@@ -76,7 +75,7 @@ jQuery(function() {
     });
     jQuery('div.has-option').mtCheckboxOption();
     jQuery('.msg, .display-options').mtToggleField();
-    jQuery('.fav-actions-nav').mtToggleField({hide_clicked: true});
+    jQuery('.fav-actions-nav, #cms-search').mtToggleField({hide_clicked: true});
     jQuery('input.text-date').datepicker({
         dateFormat: 'yy-mm-dd',
         dayNamesMin: [<__trans phrase="_LOCALE_CALENDAR_HEADER_">],
