@@ -114,7 +114,7 @@ sub archive_group_iter {
             {   blog_id => $blog->id,
                 status  => MT::Entry::RELEASE()
             },
-            {   group => ["extract(year from authored_on)"],
+            {   group => ["extract(year from authored_on) AS year"],
                 sort  => [
                     {   column => "extract(year from authored_on)",
                         desc   => $order

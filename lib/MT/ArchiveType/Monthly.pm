@@ -98,8 +98,8 @@ sub archive_group_iter {
         },
         {   ( $ts && $tsend ? ( range_incl => { authored_on => 1 } ) : () ),
             group => [
-                "extract(year from authored_on)",
-                "extract(month from authored_on)"
+                "extract(year from authored_on) AS year",
+                "extract(month from authored_on) AS month"
             ],
             $args->{lastn} ? ( limit => $args->{lastn} ) : (),
             sort => [
