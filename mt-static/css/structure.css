@@ -427,7 +427,7 @@ ul.tabs li a {
 .has-related-content #content-body {
     margin-right: 220px;
 }
-#dashboard #content-body, 
+#dashboard.has-related-content #content-body, 
 .edit-screen #content-body {
     margin-right: 280px;
 }
@@ -441,7 +441,7 @@ ul.tabs li a {
     width: 200px;
     margin-right: -220px;
 }
-#dashboard #related-content, 
+#dashboard.has-related-content #related-content, 
 .edit-screen #related-content {
     width: 260px;
     margin-right: -280px;
