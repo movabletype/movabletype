@@ -270,9 +270,11 @@ select.error {
 /* -- Split Button */
 .split .button {
     float: left;
-    line-height: 20px;
+    min-width: 6.5em;
+    height: 22px;
     margin: 0;
     padding: 0 0.6em;
+    line-height: 22px;
     font-size: 13px;
     font-weight: bold;
     -moz-border-radius: 3px 0 0 3px;
