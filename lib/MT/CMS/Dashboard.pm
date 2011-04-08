@@ -836,6 +836,11 @@ sub _build_favorite_websites_data {
     # Make object_loop data
     require MT::Permission;
 
+    # Sort by recently access
+    my $i;
+    my %sorted = map{ $_ => $i++ } @fav_websites;
+    @websites = sort { ( $sorted{$a->id} || 0 ) <=> ( $sorted{$b->id} || 0 ) } @websites;
+
     my @param;
     foreach my $website (@websites) {
         my $row;
@@ -963,6 +968,12 @@ sub _build_favorite_blogs_data {
 
     # Make object_loop data
     require MT::Permission;
+
+    # Sort by recently access
+    my $i;
+    my %sorted = map{ $_ => $i++ } @fav_blogs;
+    @blogs = sort { ( $sorted{$a->id} || 0 ) <=> ( $sorted{$b->id} || 0 ) } @blogs;
+
 
     my @param;
     foreach my $blog (@blogs) {

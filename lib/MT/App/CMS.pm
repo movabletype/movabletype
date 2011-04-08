@@ -2989,6 +2989,15 @@ sub build_blog_selector {
         my @sites = $website_class->load( \%terms, \%args );
         push @websites, @sites;
     }
+
+    if ( @fav_websites ) {
+        my $i;
+        my %sorted = map{ $_ => $i++ } @fav_websites;
+        foreach ( @websites ) {
+            $sorted{$_->id} = scalar @websites if !exists $sorted{$_->id};
+        }
+        @websites = sort { ( $sorted{$a->id} || 0 ) <=> ( $sorted{$b->id} || 0 ) } @websites;
+    }
     unshift @websites, $blog->website if $blog && $blog->is_blog;
 
 # Special case. If this user can access 3 websites or smaller then load those websites.
@@ -3001,6 +3010,7 @@ sub build_blog_selector {
     # Build selector data
     my @website_data;
     if (@websites) {
+
         for my $ws (@websites) {
             next unless $ws;
 
@@ -3057,6 +3067,11 @@ sub build_blog_selector {
 
     my @blog_data;
     if (@blogs) {
+
+        my $i;
+        my %sorted = map{ $_ => $i++ } @fav_blogs;
+        @blogs = sort { ( $sorted{$a->id} || 0 ) <=> ( $sorted{$b->id} || 0 ) } @blogs;
+
         foreach $b (@blogs) {
             if ( $blog && $blog->is_blog && $blog->id == $b->id ) {
                 $param->{curr_blog_id}   = $b->id;
