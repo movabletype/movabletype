@@ -1550,48 +1550,49 @@ sub init_plugins {
 
 }
 
-my %addons;
+my $addons;
 
 sub find_addons {
     my $mt = shift;
     my ($type) = @_;
 
-    unless (%addons) {
+    unless ($addons) {
+        $addons = {};
         my $addon_path = File::Spec->catdir( $MT_DIR, 'addons' );
+        my @p;
         if ( opendir my $DH, $addon_path ) {
-            my @p = readdir $DH;
+            @p = readdir $DH;
             closedir $DH;
-            foreach my $p (@p) {
-                next if $p eq '.' || $p eq '..';
-                my $full_path = File::Spec->catdir( $addon_path, $p );
-                if ( -d $full_path ) {
-                    if ( $p =~ m/^(.+)\.(\w+)$/ ) {
-                        my $label = $1;
-                        my $id    = lc $1;
-                        my $type  = $2;
-                        if ( $type eq 'pack' ) {
-                            $label .= ' Pack';
-                        }
-                        elsif ( $type eq 'theme' ) {
-                            $label .= ' Theme';
-                        }
-                        elsif ( $type eq 'plugin' ) {
-                            $label .= ' Plugin';
-                        }
-                        push @{ $addons{$type} },
-                            {
-                            label    => $label,
-                            id       => $id,
-                            envelope => 'addons/' . $p . '/',
-                            path     => $full_path,
-                            };
-                    }
+        }
+        foreach my $p (@p) {
+            next if $p eq '.' || $p eq '..';
+            my $full_path = File::Spec->catdir( $addon_path, $p );
+            next unless -d $full_path;
+            if ( $p =~ m/^(.+)\.(\w+)$/ ) {
+                my $label = $1;
+                my $id    = lc $1;
+                my $type  = $2;
+                if ( $type eq 'pack' ) {
+                    $label .= ' Pack';
                 }
+                elsif ( $type eq 'theme' ) {
+                    $label .= ' Theme';
+                }
+                elsif ( $type eq 'plugin' ) {
+                    $label .= ' Plugin';
+                }
+                push @{ $addons->{$type} },
+                    {
+                    label    => $label,
+                    id       => $id,
+                    envelope => 'addons/' . $p . '/',
+                    path     => $full_path,
+                    };
             }
         }
     }
     if ($type) {
-        my $addons = $addons{$type} ||= [];
+        my $addons = $addons->{$type} ||= [];
         return $addons;
     }
     return 1;
@@ -1942,20 +1943,9 @@ sub update_ping_list {
         my @cstack;
         my ($text) = @_;
 
-        # Here, the text must be handled as binary ( non utf-8 ) data,
-        # because regexp for utf-8 string is too heavy.
-        # things we have to do is
-        #  * encode $text before parse
-        #  * decode the strings captured by regexp
-        #  * encode the translated string from translate()
-        #  * decode again for return
-        $text = Encode::encode( 'utf8', $text )
-            if Encode::is_utf8($text);
-        while (1) {
-            return '' unless $text;
-            $text
-                =~ s!(<(/)?(?:_|MT)_TRANS(_SECTION)?(?:(?:\s+((?:\w+)\s*=\s*(["'])(?:(<(?:[^"'>]|"[^"]*"|'[^']*')+)?>|[^\5]+?)*?\5))+?\s*/?)?>)!
-            my($msg, $close, $section, %args) = ($1, $2, $3);
+		my $filter = sub {
+            my($msg, $close, $section) = @_;
+            my %args;
             while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<(?:[^"'>]|"[^"]*"|'[^']*')+?>|[^\2])*?)?\2/g) {  #"
                 $args{$1} = Encode::decode_utf8($3);
             }
@@ -1997,7 +1987,38 @@ sub update_ping_list {
                     if Encode::is_utf8($translation);
                 $translation;
             }
-            !igem or last;
+		};
+
+        # Here, the text must be handled as binary ( non utf-8 ) data,
+        # because regexp for utf-8 string is too heavy.
+        # things we have to do is
+        #  * encode $text before parse
+        #  * decode the strings captured by regexp
+        #  * encode the translated string from translate()
+        #  * decode again for return
+        $text = Encode::encode( 'utf8', $text )
+            if Encode::is_utf8($text);
+        while (1) {
+            return '' unless $text;
+            # we are trying to capture:
+            # <__trans phrase="Close">
+            # <__trans phrase="[_1]: [_2]" params="<$MTBlogName encode_html="1"$>%%<$MTGetVar name="page_title"$>">
+            # <__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<$MTEntryLink$>">
+            $text =~ s!
+            	(
+					<(/)?
+					(?:_|MT|mt)_(?:TRANS|trans)(_SECTION|_section)?
+					(?:
+						(?:\s+
+							(?:\w+)\s*=\s*(["'])  # this is capture 4
+							(?:<(?:[^"'>]|"[^"]*"|'[^']*')+?>|[^\4])*?
+							\4
+						)+?
+						\s*/?
+					)?
+                	>
+                )!
+            $filter->($1, $2, $3)!gemx or last;
         }
         $text = Encode::decode_utf8($text)
             unless Encode::is_utf8($text);
@@ -3445,6 +3466,16 @@ The ID of the blog for which you would like to send the pings.
 
 Either this or C<Blog> is required.
 
+=item * OldStatus
+
+Optional, can contain the previous status of the entry. if the entry
+was already released, don't send update to all the blogs that track
+this blog, only to trackbacks register on this entry
+
+=item * Entry
+
+An I<MT::Entry> object corresponding to the entry that was updated 
+
 =back
 
 =head2 $mt->ping_and_save( %args )
@@ -3453,7 +3484,8 @@ Handles the task of issuing any pending ping operations for a given
 entry and then saving that entry back to the database.
 
 The I<%args> hash should contain an element named C<Entry> that is a
-reference to a L<MT::Entry> object.
+reference to a L<MT::Entry> object, and other elements as needed by the 
+ping function
 
 =head2 $mt->needs_ping(%param)
 
