@@ -249,6 +249,7 @@ sub dialog_list_asset {
         if $app->can_do('upload');
     my ( $ext_from, $ext_to )
         = ( $app->param('ext_from'), $app->param('ext_to') );
+
     $app->listing(
         {   terms    => \%terms,
             args     => \%args,
@@ -273,7 +274,7 @@ sub dialog_list_asset {
                 search_label     => MT::Asset->class_label_plural,
                 search_type      => 'asset',
                 class_loop       => \@class_loop,
-                can_delete_files => $app->can_do('delete_asset_file'),
+                can_delete_files => $app->can_do('delete_asset_file') ? 1 : 0,
                 nav_assets       => 1,
                 panel_searchable => 1,
                 saved_deleted    => $app->param('saved_deleted') ? 1 : 0,
