@@ -25,9 +25,9 @@ body.has-dialog {
     background-color: #fffffc;
     border-radius: 5px;
     -moz-border-radius: 5px;
-    box-shadow: #2b2b2b 0 3px 10px;
-    -webkit-box-shadow: #2b2b2b 0 3px 10px;
-    -moz-box-shadow: #2b2b2b 0 3px 10px;
+    box-shadow: 0 3px 10px #2b2b2b;
+    -webkit-box-shadow: 0 3px 10px #2b2b2b;
+    -moz-box-shadow: 0 3px 10px #2b2b2b;
 }
 
 .mt-dialog {
