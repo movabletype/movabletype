@@ -9,7 +9,11 @@ function smarty_function_mtentryauthordisplayname($args, &$ctx) {
     // status: complete
     // parameters: none
     $entry = $ctx->stash('entry');
-    $author = $entry->author()->nickname;
-    return $author;
+    if ( !empty($entry) ) {
+        $author = $entry->author()->nickname;
+        return $author;
+    } else {
+        return '';
+    }
 }
 ?>
