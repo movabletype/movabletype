@@ -3445,7 +3445,15 @@ The ID of the blog for which you would like to send the pings.
 
 Either this or C<Blog> is required.
 
-=back
+=item * OldStatus
+
+Optional, can contain the previous status of the entry. if the entry
+was already released, don't send update to all the blogs that track
+this blog, only to trackbacks register on this entry.
+
+=item * Entry
+
+An I<MT::Entry> object corresponding to the entry that was updated.
 
 =head2 $mt->ping_and_save( %args )
 
@@ -3453,7 +3461,8 @@ Handles the task of issuing any pending ping operations for a given
 entry and then saving that entry back to the database.
 
 The I<%args> hash should contain an element named C<Entry> that is a
-reference to a L<MT::Entry> object.
+reference to a L<MT::Entry> object, and other elements as needed by the
+ping function.
 
 =head2 $mt->needs_ping(%param)
 
