@@ -15,6 +15,7 @@ __PACKAGE__->install_properties(
             'image_width'  => 'integer meta',
             'image_height' => 'integer meta',
         },
+        child_of => [ 'MT::Blog', 'MT::Website', ],
     }
 );
 

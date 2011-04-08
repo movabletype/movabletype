@@ -9,7 +9,8 @@ package MT::Asset::Audio;
 use strict;
 use base qw( MT::Asset );
 
-__PACKAGE__->install_properties( { class_type => 'audio', } );
+__PACKAGE__->install_properties(
+    { class_type => 'audio', child_of => [ 'MT::Blog', 'MT::Website' ], } );
 
 # List of supported file extensions (to aid the stock 'can_handle' method.)
 sub extensions {
