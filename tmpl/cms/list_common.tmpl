@@ -1266,6 +1266,9 @@ jQuery('#apply').click(function() {
   renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
   return false;
 });
+jQuery('<mt:var name="object_type">-listing-form').submit(function() {
+  return jQuery('#apply').click();
+});
 
 jQuery('#save').click(function() {
   validateFilterDetails();
