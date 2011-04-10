@@ -682,7 +682,10 @@ BEGIN {
                             [   [   {   id => \"= $colname",
                                         %$name_query,
                                     },
-                                    '-or',
+                                    (   $args->{'option'} eq 'not_contains'
+                                        ? '-and'
+                                        : '-or'
+                                    ),
                                     {   id => \"= $colname",
                                         %$nick_query,
                                     },
