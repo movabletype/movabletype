@@ -538,9 +538,12 @@ sub edit {
     if ( $pref_param ) {
         if ( my $disp_field = $pref_param->{disp_prefs_custom_fields} ) {
             my %order;
-            my $i;
+            my $i = 1;
             foreach ( @$disp_field ) {
                 $order{$_->{name}} = $i++;
+            }
+            foreach ( @ordered ) {
+                $order{$_} = $i++ if !$order{$_}
             }
             @ordered = sort {
                 $order{$a} <=> $order{$b}
