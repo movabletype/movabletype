@@ -45,7 +45,10 @@ pre {
     font-size: 95%;
     font-style: Italic;
 }
-
+.alert-warning-inline {
+    margin: 5px 0 0;
+    font-size: 95%;
+}
 .alert-warning-inline, 
 .alert-warning-inline a { 
     color: #f39800;
