@@ -810,7 +810,7 @@ que la dirección provista es correcta y le pertenece.',
 	'This module accelerates comment registration sign-ins.' => 'Este módulo acelera el registro de identificación en los comentarios.',
 	'This module is needed to enable comment registration.' => 'Este módulo es necesario para habilitar el registro en los comentarios.',
 	'This module enables the use of the Atom API.' => 'Este módulo permite el uso del interfaz (API) de Atom.',
-	'This module is required in order to use memcached as caching mechanism used by Movable Type.' => 'Este módulo es necesario utilizar memcached como mecanismo de caché.', # Translate - New
+	'This module is required in order to use memcached as caching mechanism used by Movable Type.' => 'Este módulo es necesario utilizar memcached como mecanismo de caché.',
 	'This module is required in order to archive files in backup/restore operation.' => 'Este módulo es necesario para archivar ficheros en las operaciones de copias de seguridad y restauración.',
 	'This module is required in order to compress files in backup/restore operation.' => 'Este módulo es ncesario para comprimir ficheros en operaciones de copias de seguridad y restauración.',
 	'This module is required in order to decompress files in backup/restore operation.' => 'Este módulo es neesario para descomprimir ficheros en las operaciones de copia de seguridad y restauración.',
@@ -956,9 +956,12 @@ que la dirección provista es correcta y le pertenece.',
 	'Permissions for [_1]' => 'Permisos de [_1]',
 	'association' => 'Asociación',
 	'associations' => 'Asociaciones',
+	'User Name' => 'Nombre', # Translate - New
 	'Role' => 'Rol',
+	'Role Name' => 'Nombre del rol',
 	'Role Detail' => 'Detalles del rol',
 	'Website/Blog Name' => 'Website/Blog Name',
+	'__WEBSITE_BLOG_NAME' => 'Nombre del sitio/blog', # Translate - New
 
 ## lib/MT/AtomServer.pm
 	'[_1]: Entries' => '[_1]: Entradas',
@@ -990,7 +993,7 @@ que la dirección provista es correcta y le pertenece.',
 	'__ENTRY_COUNT' => 'Entradas',
 	'__COMMENT_COUNT' => 'Comentarios',
 	'Created by' => 'Creado por',
-	'__AUTHOR_STATUS' => 'Estado',
+	'Status' => 'Estado',
 	'Active' => 'Activo',
 	'Pending' => 'Pendiente',
 	'Website URL' => 'URL del sitio',
@@ -998,7 +1001,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Enabled Users' => 'Usuarios habilitados',
 	'Disabled Users' => 'Usuarios deshabilitados',
 	'Pending Users' => 'Usuarios pendientes',
-	'Status' => 'Estado',
 	'__COMMENTER_APPROVED' => 'Aprobado',
 	'Banned' => 'Bloqueado',
 	'Enabled Commenters' => 'Comentaristas habilitados',
@@ -1085,8 +1087,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Cloning TrackBack pings for blog...' => 'Clonando pings de TrackBack para el blog...',
 	'Cloning templates for blog...' => 'Clonando plantillas para el blog...',
 	'Cloning template maps for blog...' => 'Clonando mapas de plantillas para el blog...',
-	'blog' => 'Blog',
-	'blogs' => 'blogs',
 	'Failed to load theme [_1]: [_2]' => 'Fallo al cargar tema [_1]: [_2]',
 	'Failed to apply theme [_1]: [_2]' => 'Fallo al aplicar tema [_1]: [_2]',
 	'__PAGE_COUNT' => 'Páginas',
@@ -1279,8 +1279,8 @@ que la dirección provista es correcta y le pertenece.',
 	'No such [_1].' => 'No existe [_1].',
 	'Same Basename has already been used. You should use an unique basename.' => 'Ya se ha utilizado el mismo nombre base. Debe usar un nombre base único.',
 	'Your blog has not been configured with a site path and URL. You cannot publish entries until these are defined.' => 'Su blog no tiene configurados la URL y la raíz del sitio. No puede publicar entradas hasta que no estén definidos.',
-	'Invalid date \'[_1]\'; published on dates must be in the format YYYY-MM-DD HH:MM:SS.' => 'Fecha no válida \'[_1]\'; las fechas de publicación deben estar en el formato AAAA-MM-DD HH:MM:SS.', # Translate - New
-	'Invalid date \'[_1]\'; published on dates should be real dates.' => 'Fecha no válida \'[_1]\'; la fecha de publicación debe ser una fecha real.', # Translate - New
+	'Invalid date \'[_1]\'; published on dates must be in the format YYYY-MM-DD HH:MM:SS.' => 'Fecha no válida \'[_1]\'; las fechas de publicación deben estar en el formato AAAA-MM-DD HH:MM:SS.',
+	'Invalid date \'[_1]\'; published on dates should be real dates.' => 'Fecha no válida \'[_1]\'; la fecha de publicación debe ser una fecha real.',
 	'[_1] \'[_2]\' (ID:[_3]) added by user \'[_4]\'' => '[_1] \'[_2]\' (ID:[_3]) added by user \'[_4]\'',
 	'[_1] \'[_2]\' (ID:[_3]) edited and its status changed from [_4] to [_5] by user \'[_6]\'' => '[_1] \'[_2]\' (ID:[_3]) editado y cambió su estado desde [_4] a [_5] al usuario \'[_6]\'',
 	'[_1] \'[_2]\' (ID:[_3]) edited by user \'[_4]\'' => '[_1] \'[_2]\' (ID:[_3]) editado por el usuario \'[_4]\'',
@@ -1542,7 +1542,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Select Users' => 'Seleccionar usuarios',
 	'Users Selected' => 'Usuarios seleccionados',
 	'Select Roles' => 'Seleccionar roles',
-	'Role Name' => 'Nombre del rol',
 	'Roles Selected' => 'Roles seleccionados',
 	'Grant Permissions' => 'Otorgar permisos',
 	'You cannot delete your own association.' => 'No puede borrar sus propias asociaciones.',
@@ -1580,11 +1579,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Reported as spam' => 'Marcado como spam',
 	'Comments on My Entries/Pages' => 'Comentarios en mis entradas/páginas',
 	'Commenter Status' => 'Estado comentarista',
-	'Deleted Users/Deleted Commenters' => 'Usuarios borrados/Comentaristas borrados',
-	'Enabled Users/Enabled Commenters' => 'Usuarios activos/Comentaristas activos',
-	'Disabled Users/Banned Commenters' => 'Usuarios deshabilitados/Comentaristas bloqueados',
-	'Pending Users/Pending Commenters' => 'Usuarios pendientes/Comentaristas pendientes',
-	'Anonymous Commenters' => 'Comentaristas anónimos',
+	'__ANONYMOUS_COMMENTER' => 'Anónimo', # Translate - New
 	'Non-spam comments' => 'Comentarios que no son spam',
 	'Non-spam comments on this website' => 'Comentarios no spam en este sitio web',
 	'Pending comments' => 'Comentarios pendientes',
@@ -1649,6 +1644,7 @@ que la dirección provista es correcta y le pertenece.',
 	'ID' => 'ID',
 	'Date Created' => 'Fecha de creación',
 	'Date Modified' => 'Fecha de modificación',
+	'Author Name' => 'Nombre autor', # Translate - New
 	'Legacy Quick Filter' => 'Filtro rápido antiguo',
 	'My Items' => 'Mis elementos',
 	'Log' => 'Histórico',
@@ -1815,7 +1811,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Invalid filter type [_1]:[_2]' => 'Tipo de filtro no válido [_1]:[_2]',
 	'Invalid sort key [_1]:[_2]' => 'Clave de ordenación no válida [_1]:[_2]',
 	'"editable_terms" and "editable_filters" cannot be specified at the same time.' => 'No pueden utilizarse al mismo tiempo "editable_terms" y "editable_filters".',
-	'Deleted Users' => 'Usuarios borrados',
 	'System Object' => 'Objeto del sistema',
 
 ## lib/MT/Folder.pm
@@ -1861,7 +1856,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Saving entry failed: [_1]' => 'Fallo guardando entrada: [_1]',
 	'Creating new comment (from \'[_1]\')...' => 'Creando nuevo comentario (de \'[_1]\')...',
 	'Saving comment failed: [_1]' => 'Fallo guardando comentario: [_1]',
-	'Entry has no MT::Trackback object!' => '¡La entrada no tiene objeto MT::Trackback!',
 	'Creating new ping (\'[_1]\')...' => 'Creando nuevo ping (\'[_1]\')...',
 	'Saving ping failed: [_1]' => 'Fallo guardando ping: [_1]',
 	'Export failed on entry \'[_1]\': [_2]' => 'Fallo de exportación en la entrada \'[_1]\': [_2]',
@@ -1879,6 +1873,7 @@ que la dirección provista es correcta y le pertenece.',
 ## lib/MT/IPBanList.pm
 	'IP Ban' => 'Bloqueo de IP',
 	'IP Bans' => 'Bloqueos de IP',
+	'IP addresses' => 'Dirección IP', # Translate - New
 
 ## lib/MT/JunkFilter.pm
 	'Action: Junked (score below threshold)' => 'Acción: Basura (puntuación bajo nivel)',
@@ -1987,7 +1982,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Missing configuration file. Maybe you forgot to move mt-config.cgi-original to mt-config.cgi?' => 'Archivo de configuración no encontrado. ¿Quizás olvidó renombrar mt-config.cgi-original a mt-config.cgi?',
 	'Plugin error: [_1] [_2]' => 'Error en la extensión: [_1] [_2]',
 	'Loading template \'[_1]\' failed.' => 'Fallo cargando la plantilla \'[_1]\'.',
-	'Error during building email: [_1]' => 'Error construyendo el correo: [_1]', # Translate - New
+	'Error during building email: [_1]' => 'Error construyendo el correo: [_1]',
 	'http://www.movabletype.org/documentation/' => 'http://www.movabletype.org/documentation/',
 	'OpenID' => 'OpenID',
 	'LiveJournal' => 'LiveJournal',
@@ -2029,7 +2024,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Moderator' => 'Moderador',
 	'Can comment and manage feedback.' => 'Puede comentar y administrar las respuestas.',
 	'Can comment.' => 'Puede comentar.',
-	'Active/Inactive' => 'Activo/Inactivo',
+	'__ROLE_STATUS' => 'Estado', # Translate - New
 	'__ROLE_ACTIVE' => 'Activo',
 	'__ROLE_INACTIVE' => 'Inactivo',
 
@@ -2102,7 +2097,7 @@ que la dirección provista es correcta y le pertenece.',
 
 ## lib/MT/Template/Context.pm
 	'The attribute exclude_blogs cannot take \'[_1]\' for a value.' => 'El atributo exclude_blogs no puede tener el valor \'[_1]\'.',
-	'When the same blog IDs are simultaneously listed in the include_blogs and exclude_blogs attributes, those blogs are excluded.' => 'Si hay identificadores de blogs listados a la vez en los atributos de include_blogs y exclude_blogs, se excluirá a dichos blogs.', # Translate - New
+	'When the same blog IDs are simultaneously listed in the include_blogs and exclude_blogs attributes, those blogs are excluded.' => 'Si hay identificadores de blogs listados a la vez en los atributos de include_blogs y exclude_blogs, se excluirá a dichos blogs.',
 	'You used an \'[_1]\' tag outside of the context of a author; perhaps you mistakenly placed it outside of an \'MTAuthors\' container?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un autor; ¿quizás la situó por error fuera de un contenedor \'MTAuthors\'?',
 	'You used an \'[_1]\' tag outside of the context of an entry; perhaps you mistakenly placed it outside of an \'MTEntries\' container?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de una entrada; ¿quizás la puso por error fuera de un contenedor \'MTEntries\'?',
 	'You used an \'[_1]\' tag outside of the context of the website; perhaps you mistakenly placed it outside of an \'MTWebsites\' container?' => '¿Ha utilizado una etiqueta \'[_1]\' fuera del contexto de un sitio web; quizás la situó incorrectamente fuera de un contenedor \'MTWebsites\'?',
@@ -2480,13 +2475,13 @@ que la dirección provista es correcta y le pertenece.',
 	'Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.' => 'Los métodos de las plantillas no están implementados, debido a las diferencias entre Blogger API y Movable Type API.',
 
 ## mt-static/jquery/jquery.mt.js
-	'Invalid value' => 'Valor no válido', # Translate - New
-	'Invalid date format' => 'Formato de fecha no válido Invalid date format', # Translate - New
-	'Invalid mail address' => 'Dirección de fecha no válida', # Translate - New
-	'Invalid URL' => 'URL no válida', # Translate - New
-	'This field is required' => 'Este campo es obligatorio', # Translate - New
-	'This field must be integer' => 'Este campo debe ser un entero', # Translate - New
-	'This field must be number' => 'Este campo debe ser un número', # Translate - New
+	'Invalid value' => 'Valor no válido',
+	'Invalid date format' => 'Formato de fecha no válido Invalid date format',
+	'Invalid mail address' => 'Dirección de fecha no válida',
+	'Invalid URL' => 'URL no válida',
+	'This field is required' => 'Este campo es obligatorio',
+	'This field must be integer' => 'Este campo debe ser un entero',
+	'This field must be number' => 'Este campo debe ser un número',
 
 ## mt-static/jquery/jquery.mt.min.js
 
@@ -2510,7 +2505,7 @@ que la dirección provista es correcta y le pertenece.',
 	'remove' => 'borrar',
 	'enable' => 'habilitar',
 	'disable' => 'deshabilitar',
-	'publish' => 'Publicar', # Translate - Case
+	'publish' => 'Publicar',
 	'You did not select any [_1] to [_2].' => 'No seleccionó ninguna [_1] sobre la que [_2].',
 	'Are you sure you want to [_2] this [_1]?' => '¿Está seguro de que desea [_2] esta [_1]?',
 	'Are you sure you want to [_3] the [_1] selected [_2]?' => '¿Está seguro de que desea [_3] el/los [_1] seleccionado/s [_2]?',
@@ -2610,12 +2605,10 @@ que la dirección provista es correcta y le pertenece.',
 ## themes/classic_blog/templates/signin.mtml
 
 ## themes/classic_blog/templates/syndication.mtml
-	q{Subscribe to this blog's feed} => q{Suscribirse a este blog (XML)},
 
 ## themes/classic_blog/templates/tag_cloud.mtml
 
 ## themes/classic_blog/templates/technorati_search.mtml
-	q{<a href='http://www.technorati.com/'>Technorati</a> search} => q{Búsqueda en <a href='http://www.technorati.com/'>Technorati</a>},
 
 ## themes/classic_blog/templates/trackbacks.mtml
 
@@ -2680,7 +2673,6 @@ que la dirección provista es correcta y le pertenece.',
 ## themes/classic_website/templates/tag_cloud.mtml
 
 ## themes/classic_website/templates/technorati_search.mtml
-	q{<a href='http://www.technorati.com/'>Technorati</a> search} => q{Búsqueda en <a href='http://www.technorati.com/'>Technorati</a>},
 
 ## themes/classic_website/templates/trackbacks.mtml
 
@@ -2768,12 +2760,10 @@ que la dirección provista es correcta y le pertenece.',
 ## themes/pico/templates/signin.mtml
 
 ## themes/pico/templates/syndication.mtml
-	q{Subscribe to this blog's feed} => q{Suscribirse a este blog (XML)},
 
 ## themes/pico/templates/tag_cloud.mtml
 
 ## themes/pico/templates/technorati_search.mtml
-	q{<a href='http://www.technorati.com/'>Technorati</a> search} => q{Búsqueda en <a href='http://www.technorati.com/'>Technorati</a>},
 
 ## themes/pico/templates/trackbacks.mtml
 
@@ -2935,7 +2925,7 @@ que la dirección provista es correcta y le pertenece.',
 	'More Aggressive' => 'Más agresivo',
 	q{Apply 'nofollow' to URLs} => q{Aplicar 'nofollow' a las URLs},
 	q{If enabled, all URLs in comments and TrackBacks will be assigned a 'nofollow' link relation.} => q{Si está activado, se asignará un atributo 'nofollow' a los enlaces de todas las URLs en los comentarios y en los Trackbacks.},
-	q{\'nofollow' exception for trusted commenters} => q{Excepción 'nofollow' para los comentaristas de confianza.},
+	q{\'nofollow' exception for trusted commenters} => q{Excepción 'nofollow' para los comentaristas de confianza.}, # Translate - Case
 	q{Do not add the 'nofollow' attribute when a comment is submitted by a trusted commenter.} => q{No añade el atributo 'nofollow' cuando la respuesta es enviada por un comentarista de confianza.},
 	'Comment Settings' => 'Configuración de comentarios',
 	'Note: Commenting is currently disabled at the system level.' => 'Nota: Los comentarios están actualmente desactivados a nivel de sistema.',
@@ -3082,8 +3072,8 @@ que la dirección provista es correcta y le pertenece.',
 	'[_1] Root' => 'Raíz de [_1]',
 	'Use absolute path' => 'Usar ruta absoluta',
 	'Warning: Changing the [_1] root requires a complete publish of your [_1].' => 'Aviso: La modificación de la raíz del [_1] requiere una publicación completa del [_1].',
-	q{The path where your index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{La ruta de publicación de los ficheros índice. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog}, # Translate - New
-	q{The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{La ruta de publicación de los ficheros índice. Se recomienda una ruta absoluta (que en Linux comienza con '/' y en Windows con 'C:\'). No terminar con '/' o '\'. Ejemplo: /home/mt/public_html o C:\www\public_html}, # Translate - New
+	q{The path where your index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{La ruta de publicación de los ficheros índice. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog},
+	q{The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{La ruta de publicación de los ficheros índice. Se recomienda una ruta absoluta (que en Linux comienza con '/' y en Windows con 'C:\'). No terminar con '/' o '\'. Ejemplo: /home/mt/public_html o C:\www\public_html},
 	'Advanced Archive Publishing' => 'Publicación avanzada de archivos',
 	'Select this option only if you need to publish your archives outside of your Blog Root.' => 'Seleccione esta opción solo si necesita publicar sus archivos fuera de la raíz de su sitio.',
 	'Publish archives outside of Blog Root' => 'Publicar archivos fuera de la raíz del sitio.',
@@ -3091,8 +3081,8 @@ que la dirección provista es correcta y le pertenece.',
 	'The URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => 'La URL de la sección de archivos de tu blog. Ejemplo: http://www.ejemplo.com/blog/archivos/',
 	'Warning: Changing the archive URL can result in breaking all the links in your blog.' => 'Aviso: La modificación de la URL de archivos pueden romper todos los enlaces en el blog.',
 	'Warning: Changing the archive path can result in breaking all the links in your blog.' => 'Aviso: La modificación de la ruta de los archivos puede romper todos los enlaces en su blog.',
-	q{The path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{La ruta de publicación de los ficheros índice de la sección de archivos. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog}, # Translate - New
-	q{The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{La ruta de publicación de los ficheros índice de la sección de archivos. Se recomienda una ruta absoluta (que en Linux comienza con '/' y en Windows con 'C:\'. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html o C:\www\public_html}, # Translate - New
+	q{The path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{La ruta de publicación de los ficheros índice de la sección de archivos. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog},
+	q{The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{La ruta de publicación de los ficheros índice de la sección de archivos. Se recomienda una ruta absoluta (que en Linux comienza con '/' y en Windows con 'C:\'. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html o C:\www\public_html},
 	'Dynamic Publishing Options' => 'Opciones de la publiación dinámica',
 	'Enable dynamic cache' => 'Activar caché dinámica',
 	'Enable conditional retrieval' => 'Activar recuperación condicional',
@@ -3252,13 +3242,13 @@ que la dirección provista es correcta y le pertenece.',
 	'Site Path' => 'Ruta del sitio',
 	'Parent Website' => 'Sitio web padre',
 	'Please choose parent website.' => 'Por favor, seleccione el sitio web padre',
-	q{Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/weblog/} => q{Introduzca la nueva URL del blog público, terminada en '/'. Ejemplo: http://www.ejemplo.com/weblog/},
+	q{Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/blog/} => q{Introduzca la URL para el blog público. Terminar con '/'. Ejemplo: http://www.ejemplo.com/blog/}, # Translate - New
 	'Blog Root' => 'Raíz del blog',
-	q{Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Introduzca la ruta de localización del fichero índice principal. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog}, # Translate - New
-	q{Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{Introduzca la ruta de localización del fichero índice principal. Se recomienda una ruta absoluta (que en Linux comienza con '/' y en Windows con 'C:\'). No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog}, # Translate - New
+	q{Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Introduzca la ruta de localización del fichero índice principal. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog/ o C:\www\public_html\blog},
+	q{Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{Introduzca la ruta de localización del fichero índice principal. Se recomienda una ruta absoluta (que en Linux comienza con '\' y en Windows con 'C:\'). No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog/ o C:\www\public_html\blog},
 	'Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => 'Introduzca la nueva URL de la sección de archivos del blog. Ejemplo: http://www.ejemplo.com/blog/archivos/',
-	q{Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Introduzca la ruta de localización de los ficheros índice de la sección de archivos. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog}, # Translate - New
-	q{Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{Introduzca la ruta de localización de los ficheros índice de la sección de archivos. Se recomienda una ruta absoluta (que en Linux comienza con '/' y en Windows con 'C:\'). No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog}, # Translate - New
+	q{Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Introduzca la ruta de localización de los ficheros índice de la sección de archivos. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog/ o C:\www\public_html\blog},
+	q{Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{Introduzca la ruta de localización de los ficheros índice de la sección de archivos. Se recomienda una ruta absoluta (que en Linux comienza con '\' y en Windows con 'C:\'). No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog/ o C:\www\public_html\blog},
 	'Continue' => 'Continuar',
 	'Continue (s)' => 'Continuar (s)',
 	'Back (b)' => 'Volver (b)',
@@ -3317,11 +3307,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Exclude Trackbacks' => 'Excluir trackbacks',
 	'Exclude Categories/Folders' => 'Excluir categorías/carpetas',
 	'Clone' => 'Clonar',
-	q{Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/weblog/} => q{Introduzca la nueva URL del blog público, terminada en '/'. Ejemplo: http://www.ejemplo.com/weblog/},
-	q{Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Introduzca la ruta de localización del fichero índice principal. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog/ o C:\www\public_html\blog}, # Translate - New
-	q{Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{Introduzca la ruta de localización del fichero índice principal. Se recomienda una ruta absoluta (que en Linux comienza con '\' y en Windows con 'C:\'). No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog/ o C:\www\public_html\blog}, # Translate - New
-	q{Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Introduzca la ruta de localización de los ficheros índice de la sección de archivos. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog/ o C:\www\public_html\blog}, # Translate - New
-	q{Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{Introduzca la ruta de localización de los ficheros índice de la sección de archivos. Se recomienda una ruta absoluta (que en Linux comienza con '\' y en Windows con 'C:\'). No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog/ o C:\www\public_html\blog}, # Translate - New
 	'Mark the settings that you want cloning to skip' => 'Marque las opciones que desee ignorar en la clonación',
 	'Entries/Pages' => 'Entradas/páginas',
 	'Categories/Folders' => 'Categorías/carpetas',
@@ -3447,9 +3432,7 @@ que la dirección provista es correcta y le pertenece.',
 	'[_1] - Created by [_2]' => '[_1] - Creado por [_2]',
 	'[_1] - Modified by [_2]' => '[_1] - Modificado por [_2]',
 	'Appears in...' => 'Aparece en...',
-	'Show all entries' => 'Mostrar todas las categorías',
-	'Show all pages' => 'Mostrar todas las páginas',
-	'This asset has not been used.' => 'Este fichero multimedia no se ha utilizado.',
+	'This asset has been used by other users.' => 'Este fichero multimedia ha sido utilizado por otros usuarios.', # Translate - New
 	'Related Assets' => 'Ficheros multimedia relacionados',
 	'[_1] is missing' => '[_1] no existe',
 	'Embed Asset' => 'Embeber fichero multimedia',
@@ -3519,9 +3502,9 @@ que la dirección provista es correcta y le pertenece.',
 	'Blog Theme' => 'Tema del blog',
 	'Select the theme you wish to use for this blog.' => 'Seleccione el tema que desea usar en este blog.',
 	'Name your blog. The blog name can be changed at any time.' => 'Nombre del blog. Se puede modificar en cualquier momento.',
-	'Enter the URL of your Blog. Exclude the filename (i.e. index.html). Example: http://www.example.com/blog/' => 'Introduzca la URL del blog. No incluya el nombre del fichero (p.e. index.html) Ejemplo: http://www.ejemplo.com/blog/', # Translate - New
-	q{The path where your index files will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{La ruta de localización de los ficheros índice. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog}, # Translate - New
-	q{The path where your index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{La ruta de localización de los ficheros índice. Se recomienda una ruta absolut (que en Linux comienza con '/' y en Windows con 'C:\'). No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog}, # Translate - New
+	'Enter the URL of your Blog. Exclude the filename (i.e. index.html). Example: http://www.example.com/blog/' => 'Introduzca la URL del blog. No incluya el nombre del fichero (p.e. index.html) Ejemplo: http://www.ejemplo.com/blog/',
+	q{The path where your index files will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{La ruta de localización de los ficheros índice. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog},
+	q{The path where your index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{La ruta de localización de los ficheros índice. Se recomienda una ruta absolut (que en Linux comienza con '/' y en Windows con 'C:\'). No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog},
 	'Select your timezone from the pulldown menu.' => 'Seleccione su zona horaria en el menú desplegable.',
 	'If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.' => 'Si desea un idioma diferente del idioma predefinido a nivel de sistema, deberá cambiar los nombres de los módulos en ciertas plantillas para incluir otros módulos globales.',
 	'Create Blog (s)' => 'Crear blog (s)',
@@ -3828,14 +3811,14 @@ que la dirección provista es correcta y le pertenece.',
 	'Website Theme' => 'Tema del sitio web',
 	'Select the theme you wish to use for this website.' => 'Seleccione el tema que desea usar en este sitio web.',
 	'Name your website. The website name can be changed at any time.' => 'Nombre del sitio web. Puede modificarlo en cualquier momento.',
-	'Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/weblog/' => 'Introduzca la URL del sitio web. Excluya el nombre del fichero (p.e. index.html). Ejemplo: http://www.ejemplo.com/weblog/',
+	'Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/' => 'Introduzca la URL del sitio web. Excluya el nombre del fichero (i.e. index.html). Ejemplo: http://www.ejemplo.com/', # Translate - New
 	'Website Root' => 'Raíz del sitio web',
-	q{Enter the path where your main index file will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/weblog or C:\www\public_html} => q{La ruta de localización de los ficheros índice. Se recomienda una ruta absolut (que en Linux comienza con '/' y en Windows con 'C:\'), pero también puede usar una ruta relativa al directorio de Movable Type. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog}, # Translate - New
+	q{Enter the path where your main index file will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/ or C:\www\public_html} => q{Introduzca la ruta de publicación del fichero índice principal. Se recomienda una ruta principal (que en Linux comienza con '/' y en Windows con 'C:\') pero también puede utilizar una ruta relativa al directorio de Movable Type. Ejemplo :/home/melody/public_html/ o C:\www\public_html}, # Translate - New
 	'Create Website (s)' => 'Crear sitio web (s)',
 	'This field is required.' => 'Este campo es obligatorio.',
-	'You did not select a timezone.' => 'No seleccionó ninguna zona horaria.',
 	'Please enter a valid URL.' => 'Por favor, introduzca una URL válida.',
 	'Please enter a valid site path.' => 'Por favor, introduzca una ruta de sitio válida.',
+	'You did not select a timezone.' => 'No seleccionó ninguna zona horaria.',
 
 ## tmpl/cms/edit_widget.tmpl
 	'Edit Widget Set' => 'Editar widgets',
@@ -3866,10 +3849,9 @@ que la dirección provista es correcta y le pertenece.',
 	'Destination' => 'Destino',
 	'Select How to get theme.' => 'Seleccione cómo obtener el tema.',
 	'Setting for [_1]' => 'Configuración para [_1]',
-	'You must set Theme Name.' => 'Debe indicar el nombre del tema.',
 	'Basename may only contain letters, numbers, and the dash or underscore character. The basename must begin with a letter.' => 'El nombre base solo puede contener letras, números, y el guión o guión bajo. El nombre base debe comenzar con una letra.',
 	q{Cannot install new theme with existing (and protected) theme's basename.} => q{No se pudo instalar el nuevo tema con el nombre base existeinte (y protegido) del tema.},
-	'You must set Author Name.' => 'Debe indicar el nombre del autor.',
+	'You must set Theme Name.' => 'Debe indicar el nombre del tema.',
 	'Theme version may only contain letters, numbers, and the dash or underscore character.' => 'La versión del tema solo puede contener letras, números y el guión o guión bajo.',
 
 ## tmpl/cms/export.tmpl
@@ -4021,35 +4003,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Delete selected [_1] (x)' => 'Borrar [_1] seleccionados (x)',
 	'[_1] Name' => 'Nombre de [_1]',
 
-## tmpl/cms/include/calendar.tmpl
-	'_LOCALE_WEEK_START' => '0', # Translate - New
-	'S|M|T|W|T|F|S' => 'L|M|X|J|V|S|D',
-	'January' => 'Enero',
-	'Febuary' => 'Febrero',
-	'March' => 'Marzo',
-	'April' => 'Abril',
-	'May' => 'Mayo',
-	'June' => 'Junio',
-	'July' => 'Julio',
-	'August' => 'Agosto',
-	'September' => 'Septiembre',
-	'October' => 'Octubre',
-	'November' => 'Noviembre',
-	'December' => 'Diciembre',
-	'Jan' => 'Ene.',
-	'Feb' => 'Feb.',
-	'Mar' => 'Mar.',
-	'Apr' => 'Abr.',
-	'_SHORT_MAY' => 'May.',
-	'Jun' => 'Jun.',
-	'Jul' => 'Jul.',
-	'Aug' => 'Ago.',
-	'Sep' => 'Sep.',
-	'Oct' => 'Oct.',
-	'Nov' => 'Nov.',
-	'Dec' => 'Dic.',
-	'OK' => 'Aceptar',
-
 ## tmpl/cms/include/category_selector.tmpl
 	'Add sub category' => 'Añadir sub categoría',
 	'Add sub folder' => 'Añadir sub carpeta',
@@ -4172,6 +4125,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Sorry, there were no results for your search. Please try searching again.' => 'Lo siento, no se encontraron resultados para la búsqueda. Por favor, intente buscar de nuevo.',
 	'Sorry, there is no data for this object set.' => 'Lo siento, no hay datos para este conjunto de objetos.',
 	'OK (s)' => 'Aceptar (s)',
+	'OK' => 'Aceptar',
 
 ## tmpl/cms/include/login_mt.tmpl
 	'Remember me?' => '¿Recordarme?',
@@ -4179,7 +4133,6 @@ que la dirección provista es correcta y le pertenece.',
 ## tmpl/cms/include/log_table.tmpl
 	'No log records could be found.' => 'No se encontraron registros.',
 	'_LOG_TABLE_BY' => 'Por',
-	'Show Datail' => 'Mostrar detalle',
 	'IP: [_1]' => 'IP: [_1]',
 
 ## tmpl/cms/include/member_table.tmpl
@@ -4271,13 +4224,11 @@ que la dirección provista es correcta y le pertenece.',
 	'The initial account name is required.' => 'Se necesita el nombre de la cuenta inicial.',
 	'The display name is required.' => 'El nombre público es obligatorio.',
 	'The e-mail address is required.' => 'La dirección de correo electrónico es necesaria.',
-	'Password recovery word/phrase is required.' => 'Se necesita la palabra/frase de recuperación de contraseña.',
 
 ## tmpl/cms/list_category.tmpl
 	'Manage [_1]' => 'Administrar [_1]',
 	'Top Level' => 'Raíz',
 	'[_1] label' => 'Etiqueta de [_1]',
-	'Indicator' => 'Indicador',
 	'Change and move' => 'Cambiar y trasladar',
 	'Rename' => 'Renombrar',
 	'Label is required.' => 'La etiqueta es obligatoria.',
@@ -4309,20 +4260,19 @@ que la dirección provista es correcta y le pertenece.',
 	'Filter Label' => 'Filtrar etiqueta',
 	'My Filters' => 'Mis filtros',
 	'Built in Filters' => 'Filtros de serie',
-	q{_LOCALE_CALENDAR_HEADER_} => q{'D', 'L', 'M', 'X', 'J', 'V', 'S', 'D'},
 	'Remove item' => 'Borrar elemento',
 	'Unknown Filter' => 'Filtro desconocido',
 	'act upon' => 'actuar sobre',
 	'Are you sure you want to remove the filter \'[_1]\'?' => '¿Está seguro de que desea borrar el filtro \'[_1]\'?',
 	'Label "[_1]" is already in use.' => 'La etiqueta "[_1]" ya está en uso.',
-	'Communication Error ([_1])' => 'Error de comunicacionesr ([_1])', # Translate - New
-	'[_1] - [_2] of [_3]' => '[_1] - [_2] de [_3]', # Translate - New
-	'Select all [_1] items' => 'Seleccionar los [_1] elementos', # Translate - New
-	'All [_1] items are selected' => 'Todos los [_1] elementos están seleccionados', # Translate - New
+	'Communication Error ([_1])' => 'Error de comunicacionesr ([_1])',
+	'[_1] - [_2] of [_3]' => '[_1] - [_2] de [_3]',
+	'Select all [_1] items' => 'Seleccionar los [_1] elementos',
+	'All [_1] items are selected' => 'Todos los [_1] elementos están seleccionados',
 	'[_1] Filter Items have errors' => '[_1] elementos de filtro tienen errores',
 	'[_1] - Filter [_2]' => '[_1] - Filtro [_2]',
-	'Save Filter' => 'Guardar filtro', # Translate - New
-	'Save As Filter' => 'Guardar como filtro', # Translate - New
+	'Save Filter' => 'Guardar filtro',
+	'Save As Filter' => 'Guardar como filtro',
 	'Select Filter' => 'Seleccionar filtro',
 
 ## tmpl/cms/list_entry.tmpl
@@ -4535,7 +4485,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Save this template' => 'Guardar plantilla',
 	'Re-Edit this template (e)' => 'Re-editar plantilla (e)',
 	'Re-Edit this template' => 'Re-editar plantilla',
-	'There are no categories in this blog.  Limited preview of category archive templates is possible with a virtual category displayed.  Normal, non-preview output cannot be generated by this template unless at least one category is created.' => 'No hay categorías en este blog. La vista previa de plantillas de archivo de categorías es posible mediante una categoría virtual. La salida normal, que no es vista previa, no puede generarse mediante esta plantilla a menos que cree una categoría.', # Translate - New
+	'There are no categories in this blog.  Limited preview of category archive templates is possible with a virtual category displayed.  Normal, non-preview output cannot be generated by this template unless at least one category is created.' => 'No hay categorías en este blog. La vista previa de plantillas de archivo de categorías es posible mediante una categoría virtual. La salida normal, que no es vista previa, no puede generarse mediante esta plantilla a menos que cree una categoría.',
 
 ## tmpl/cms/rebuilding.tmpl
 	'Publishing...' => 'Publicando...',
@@ -4604,6 +4554,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Finish install' => 'Finalizar instalación',
 	'The website name is required.' => 'El nombre del sitio web es obligatorio.',
 	'The website URL is required.' => 'La URL del sitio web es obligatoria.',
+	'Your website URL is not valid.' => 'La URL del sitio web no es válida.', # Translate - New
 	'The publishing path is required.' => 'La ruta de publicación es obligatoria.',
 	'The timezone is required.' => 'La zona horaria es obligatoria.',
 
@@ -4683,6 +4634,10 @@ que la dirección provista es correcta y le pertenece.',
 	'Loading recent entries...' => 'Cargando entradas recientes',
 	'Jan.' => 'Ene.',
 	'Feb.' => 'Feb.',
+	'March' => 'Marzo',
+	'April' => 'Abril',
+	'May' => 'Mayo',
+	'June' => 'Junio',
 	'July.' => 'Jul.',
 	'Aug.' => 'Ago.',
 	'Sept.' => 'Sep.',
@@ -4740,7 +4695,6 @@ que la dirección provista es correcta y le pertenece.',
 
 ## tmpl/cms/widget/new_user.tmpl
 	q{Welcome to Movable Type, the world's most powerful blogging, publishing and social media platform:} => q{Bienvenido a Movable Type, la plataforma de blogs, publicación y social media más potente del mundo:},
-	q{Whether you're new to Movable Type or using it for the first time, learn more about what this tool can do for you.} => q{Tanto si es la primera vez que usa Movable Type, como si ya es un usuario con experiencia, aprenda qué es lo que puede hacer esta herramienta por usted.},
 
 ## tmpl/cms/widget/new_version.tmpl
 	q{What's new in Movable Type [_1]} => q{Novedades en Movable Type [_1]},
@@ -4988,13 +4942,13 @@ que la dirección provista es correcta y le pertenece.',
 	'Welcome to our new website!' => '¡Bienvenido a nuestro nuevo sitio!',
 	'_PWT_HOME_BODY' => '_PWT_HOME_BODY',
 	'Create a blog as a part of structured website. This works best with Professional Website theme.' => 'Crear un blog como parte de la estructura de un sitio web. Funciona mejor con el tema Sitio Web Profesional.',
+	'Not Required' => 'No obligatorio',
 	'Are you sure you want to delete the selected CustomFields?' => '¿Está seguro de que desea borrar los campos personalizados seleccionados?',
 	'Photo' => 'Foto',
 	'Embed' => 'Embeber',
 	'Custom Fields' => 'Campos personalizados',
 	'Field' => 'Campo',
 	'Template tag' => 'Etiqueta de plantilla',
-	'Not Required' => 'No obligatorio',
 	'Updating Universal Template Set to Professional Website set...' => 'Actualizar el conjuntto de plantillas Universal al conjunto Sitio Web Profesional...',
 	'Migrating CustomFields type...' => 'Migrando tipo de Campos Personalizados...',
 	'Professional Styles' => 'Estilos Profesionales',
@@ -5021,6 +4975,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Please enter all allowable options for this field as a comma delimited list' => 'Por favor, introduzca todas las opciones permitidas a este campo en forma de lista de elementos separados por comas',
 	'Exclude Custom Fields' => 'Excluir campos personalizados',
 	'[_1] Fields' => 'Campos de [_1]',
+	'blog' => 'Blog',
 	'website' => 'sitio web',
 	'Edit Field' => 'Editar campo',
 	'Invalid date \'[_1]\'; dates must be in the format YYYY-MM-DD HH:MM:SS.' => 'Fecha no válida \'[_1]\'; las fechas deben estar en el formato YYYY-MM-DD HH:MM:SS.',
@@ -5167,7 +5122,6 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Commercial.pack/templates/professional/blog/signin.mtml
 
 ## addons/Commercial.pack/templates/professional/blog/syndication.mtml
-	q{Subscribe to this blog's feed} => q{Suscribirse a este blog (XML)},
 
 ## addons/Commercial.pack/templates/professional/blog/tag_cloud.mtml
 
@@ -5231,7 +5185,6 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Commercial.pack/templates/professional/website/signin.mtml
 
 ## addons/Commercial.pack/templates/professional/website/syndication.mtml
-	q{Subscribe to this website's feed} => q{Suscribirse a la sindicación de este sitio web},
 
 ## addons/Commercial.pack/templates/professional/website/tag_cloud.mtml
 
@@ -5340,7 +5293,7 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Community.pack/lib/MT/App/Community.pm
 	'No login form template defined' => 'No hay ninguna plantilla de formulario definida',
 	'Before you can sign in, you must authenticate your email address. <a href="[_1]">Click here</a> to resend the verification email.' => 'Antes de que pueda iniciar una sesión, debe autentificar su dirección de correo. <a href="[_1]">Haga clic aquí</a> para reenviar el correo de verificación.',
-	'(No email address)' => '(Sin dirección de correo)', # Translate - New
+	'(No email address)' => '(Sin dirección de correo)',
 	'Your confirmation have expired. Please register again.' => 'Su confirmación ha caducado. Por favor, regístrese de nuevo.',
 	'User \'[_1]\' (ID:[_2]) has been successfully registered.' => 'El usuario \'[_1]\' (ID:[_2]) se registró con éxito.',
 	'Thanks for the confirmation.  Please sign in.' => 'Gracias por la confirmación. Por favor, inicie la sesión.',
@@ -5457,7 +5410,6 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Community.pack/templates/blog/sidebar.mtml
 
 ## addons/Community.pack/templates/blog/syndication.mtml
-	q{Subscribe to this blog's feed} => q{Suscribirse a este blog (XML)},
 
 ## addons/Community.pack/templates/blog/tag_cloud.mtml
 
@@ -5511,7 +5463,6 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Community.pack/templates/forum/entry_detail.mtml
 
 ## addons/Community.pack/templates/forum/entry_form.mtml
-	q{You don't have permission to post.} => q{No tiene permisos para publicar.},
 	'Topic' => 'Tema',
 	'Select Forum...' => 'Seleccionar foro...',
 	'Forum' => 'Foro',
@@ -5647,7 +5598,6 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Community.pack/templates/global/register_form.mtml
 
 ## addons/Community.pack/templates/global/register_notification_email.mtml
-	q{This email is to notify you that a new user has successfully registered on the blog '[_1]'. Listed below you will find some useful information about this new user.} => q{Este correo electrónico es una notificaión  para informarle que un nuevo usuario ha sido enregistrado con succeso en el blog '[_1]'. Abajo usted encontratá enumeradas algunas informaciones útiles sobre este nuevo usuario.},
 
 ## addons/Community.pack/templates/global/search.mtml
 
@@ -5704,6 +5654,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Members of group: [_1]' => 'Miembros del grupo: [_1]',
 	'Advanced Pack' => 'Advanced Pack',
 	'User/Group' => 'Usuario/Grupo',
+	'User/Group Name' => 'Nombre del usuario/grupo', # Translate - New
 	'__GROUP_MEMBER_COUNT' => 'Miembros',
 	'My Groups' => 'Mis grupos',
 	'Group Name' => 'Nombre del grupo',
@@ -5743,8 +5694,7 @@ que la dirección provista es correcta y le pertenece.',
 	'LDAP groups synchronized with existing groups.' => 'Grupos LDAP sincronizados con los grupos existentes.',
 	'Information about the following groups was modified:' => 'Se ha modificado la información de los siguientes grupos:',
 	'No LDAP group was found using the filter provided.' => 'No se han encontrado grupos LDAP usando el filtro indicado.',
-	"The filter used to search for groups was: [_1]\nSearch base: [_2]" => "El filtro usado para buscar grupos era: [_1]
-Búsqueda base: [_2]",
+	'The filter used to search for groups was: \'[_1]\'. Search base was: \'[_2]\'' => 'El filtro utilizado para la búsqueda de grupos era: \'[_1]\'. La búsqueda base eras: \'[_2]\'', # Translate - New
 	'(none)' => '(ninguno)',
 	'The following groups were deleted:' => 'Los siguientes grupos han sido borrados:',
 	'Failed to create a new group: [_1]' => 'Falló la creación de un nuevo grupo: [_1]',
@@ -5958,7 +5908,6 @@ Búsqueda base: [_2]",
 	'You successfully enabled the selected group(s).' => 'Habilitó con éxito los grupos seleccionados.',
 	'You successfully deleted the groups from the Movable Type system.' => 'Borró con éxito los grupos del sistema Movable Type.',
 	q{You successfully synchronized the groups' information with the external directory.} => q{Sincronizó con éxito la información de los grupos con el directorio externo.},
-	q{An error occured during synchronization.  See the <a href='[_1]'>activity log</a> for detailed information.} => q{Ocurrió un error durante la sincronización. Para información más detallada, consulte el <a href='[_1]'>registro de actividad</a>.},
 
 ## addons/Enterprise.pack/tmpl/listing/group_member_list_header.tmpl
 	'You successfully deleted the users.' => 'Borró los usuarios con éxito.',
@@ -6308,11 +6257,9 @@ Búsqueda base: [_2]",
 	'Recenty entries from [_1]' => 'Entradas recientes de [_1]',
 
 ## plugins/Motion/tmpl/edit_linkpost.tmpl
-	q{(delimited by '[_1]')} => q{(separado por '[_1]')},
 
 ## plugins/Motion/tmpl/edit_videopost.tmpl
 	'Embed code' => 'Embeber código',
-	q{(delimited by '[_1]')} => q{(separado por '[_1]')},
 
 ## plugins/MultiBlog/lib/MultiBlog.pm
 	'Restoring MultiBlog rebuild trigger for blog #[_1]...' => 'Restaurando MultiBlog el inductor de reconstrucción en el blog #[_1]...',
@@ -6538,6 +6485,7 @@ Búsqueda base: [_2]",
 	' and asset will be tagged (\'[_1]\')...' => ' y el elemento será etiquetado (\'[_1]\')...',
 	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'Se encontró un duplicado de la entrada (\'[_1]\'). Ignorada.',
 	'Saving page (\'[_1]\')...' => 'Guardando página (\'[_1]\')...',
+	'Entry has no MT::Trackback object!' => '¡La entrada no tiene objeto MT::Trackback!',
 	'Assigning permissions for new user...' => 'Asignar permisos al nuevo usuario...',
 	'Saving permission failed: [_1]' => 'Fallo guardando permisos: [_1]',
 
@@ -6552,6 +6500,6 @@ Búsqueda base: [_2]",
 
 );
 
-## New words: 174
+## New words: 63
 
 1;
