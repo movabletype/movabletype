@@ -5,19 +5,24 @@ fieldset {
 .field {
     overflow: hidden;
     padding: 0;
-    margin: 0 0 20px;
+    margin: 0 0 15px;
 }
 .field-left-label .field-header {
     float: left;
-    width: 14em;
-    padding-right: 0.25em;
+    width: 11em;
+    margin-left: 1em;
+    padding: 0.5em 0;
     text-align: right;
 }
 .field-left-label .field-content {
-    margin-left: 15.5em;
+    margin-left: 13.5em;
+    padding: 0.5em 0;
 }
 .field-top-label .field-header {
     margin-bottom: 5px;
+}
+.field-top-label .field-content {
+    margin: 3px;
 }
 .field-inline, 
 .field-inline .field-header, 
