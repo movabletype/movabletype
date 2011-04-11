@@ -70,7 +70,7 @@ __PACKAGE__->install_properties(
         },
         meta          => 1,
         summary       => 1,
-        child_classes => [ 'MT::Permission', 'MT::Association' ],
+        child_classes => [ 'MT::Permission', 'MT::Association', 'MT::Filter' ],
         datasource    => 'author',
         primary_key   => 'id',
         audit         => 1,
