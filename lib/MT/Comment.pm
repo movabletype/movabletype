@@ -206,7 +206,11 @@ sub list_props {
                 );
                 my $commenter = MT->model('author')->load($id);
 
-                if ( !$commenter ) {
+                if ( $commenter ) {
+                    $name ||= $commenter->name || '(' . MT->translate('Registered User') . ')';
+                }
+                else {
+                    $name ||= '(' . MT->translate('__ANONYMOUS_COMMENTER') . ')';
                     $link = $app->uri(
                         mode => 'search_replace',
                         args => {
