@@ -19,7 +19,6 @@ $js .= `cat mt-static/js/assetdetail.js`;
 $js .= `cat tmpl/cms/edit_template.tmpl`;
 $js .= `cat tmpl/cms/edit_entry.tmpl`;
 $js .= `cat tmpl/cms/include/asset_upload.tmpl`;
-$js .= `cat tmpl/cms/include/calendar.tmpl`;
 $js .= `cat tmpl/cms/include/category_selector.tmpl`;
 $js .= `cat tmpl/cms/list_category.tmpl`;
 $js .= `cat tmpl/cms/list_common.tmpl`;
