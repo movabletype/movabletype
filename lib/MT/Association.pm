@@ -213,9 +213,7 @@ sub list_props {
                         mode => 'dashboard',
                         args => { blog_id => $obj->blog_id, },
                     );
-                    push @outs, qq{
-                        <a href="$dashboard_url">$name</a>
-                    };
+                    push @outs, $name;
                 }
                 @outs;
             },
