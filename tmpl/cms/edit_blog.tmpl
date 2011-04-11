@@ -202,6 +202,9 @@ function init() {
     jQuery.mtUseAbsolute();
 
     function is_valid_url(url_){
+        if (url_.indexOf(' ') != -1) {
+            return false;
+        }
         return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
     }
     function is_valid_path(path_){

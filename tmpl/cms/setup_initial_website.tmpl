@@ -163,6 +163,9 @@ jQuery(function() {
         return jQuery(this).find('input, select').mtValidate('simple') ? true : false;
     });
     function is_valid_url(url_){
+        if (url_.indexOf(' ') != -1) {
+            return false;
+        }
         return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
     }
 

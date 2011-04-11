@@ -507,7 +507,7 @@
       if (str.match(/\.\./)) {
           return false;
       }
-      if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) { 
+      if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
           return false;
       }
 
@@ -521,6 +521,9 @@
   }
 
   function is_valid_url(url_){
+      if (url_.indexOf(' ') != -1) {
+          return false;
+      }
       return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ ) ? true : false;
   }
 
