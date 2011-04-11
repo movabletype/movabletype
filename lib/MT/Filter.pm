@@ -111,7 +111,6 @@ sub list_props {
             display               => 'none',
             label                 => 'Author Status',
             single_select_options => [
-                { label => 'Deleted',  value => 'deleted', },
                 { label => 'Enabled',  value => 'enabled', },
                 { label => 'Disabled', value => 'disabled', },
             ],
