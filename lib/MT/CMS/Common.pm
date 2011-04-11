@@ -279,6 +279,12 @@ sub save {
         }
     }
 
+    if ( $type eq 'notification' ) {
+        if ( defined $obj->blog_id ) {
+            delete $values{'blog_id'};
+        }
+    }
+
     delete $values{'id'} if exists( $values{'id'} ) && !$values{'id'};
     $obj->set_values( \%values );
 
