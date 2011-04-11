@@ -673,6 +673,8 @@ ul.tabs li a {
     left: 10px;
     min-width: 320px;
     max-width: 100%;
+    border: 1px solid #adadad;
+    border-top: 0;
     background-color: #f3f3f3;
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
@@ -790,7 +792,6 @@ ul.tabs li a {
     box-shadow: 0 5px 8px #9ea1a3;
     -webkit-box-shadow: 0 5px 8px #9ea1a3;
     -moz-box-shadow: 0 5px 8px #9ea1a3;
-    opacity: 0.96;
 }
 .fav-action {
     margin: 0;
@@ -999,7 +1000,6 @@ ul.tabs li a {
     border-top-right-radius: 5px;
     border-bottom-right-radius: 0;
 }
-
 
 /* - Content Header */
 #content-header {
