@@ -11,7 +11,8 @@ body {
 }
 
 a { 
-    color: #5c909b;
+    color: #507ea4;
+    outline: 0;
 }
 a:hover, 
 a:active { 

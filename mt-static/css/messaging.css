@@ -1,4 +1,4 @@
-/* - Status Message */
+/* Status Message */
 .msg { 
     position: relative;
     margin: 10px 0;
@@ -41,7 +41,7 @@
     margin-top: -8px;
 }
 
-/* -- for Permission Message */
+/* - for Permission Message */
 .msg .detail { 
     margin: 10px 0 0;
 }
@@ -62,7 +62,6 @@ p.zero-state {
     -webkit-border-radius: 0;
     border-radius: 0;
 }
-
 #is-generic-website p { 
     margin: 0 auto;
     padding: 0 20px;
@@ -107,7 +106,6 @@ p.zero-state {
     background-color: #f6bfbc;
     text-align: left;
 }
-
 .debug-panel h3 { 
     padding: 5px;
     font-size: 12px;
@@ -116,7 +114,13 @@ p.zero-state {
     color: #f8fbf8;
     text-shadow: none;
 }
-
+.debug-panel-inner {
+    padding: 5px;
+    font-family: 'Andale Mono', monospace;
+    font-size: 10px;
+    max-height: 200px;
+    overflow: auto;
+}
 .debug-panel-inner li {
     margin: 0;
     padding: 0.2em 0.5em;
@@ -125,12 +129,4 @@ p.zero-state {
 
 .debug-panel-inner li:hover {
     background-color: #f2a0a1;
-}
-
-.debug-panel-inner {
-    padding: 5px;
-    font-family: 'Andale Mono', monospace;
-    font-size: 10px;
-    max-height: 200px;
-    overflow: auto;
 }
