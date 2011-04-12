@@ -75,7 +75,7 @@
     <mt:unless name="hide_entries_col">
       <td class="col entries">
       <mt:if name="entry_count">
-        <a href="<mt:var name="script_url">?__mode=<mt:if name="blog_id"><mt:var name="mode"><mt:else>search_replace&amp;_type=entry</mt:if>&amp;blog_id=<mt:if name="blog_id"><mt:var name="blog_id"><mt:else>0</mt:if>&amp;filter=author_id&amp;filter_val=<mt:var name="id">"><mt:var name="entry_count"></a>
+        <a href="<mt:var name="script_url">?__mode=<mt:if name="blog_id"><mt:var name="mode"><mt:else>list&amp;_type=entry</mt:if>&amp;blog_id=<mt:if name="blog_id"><mt:var name="blog_id"><mt:else>0</mt:if>&amp;filter=author_id&amp;filter_val=<mt:var name="id">"><mt:var name="entry_count"></a>
       <mt:else>
         &nbsp;
       </mt:if>
