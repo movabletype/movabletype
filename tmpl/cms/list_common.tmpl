@@ -112,8 +112,8 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
   <mt:if name="button_actions">
         <div class="button-actions actions"><mt:var name="button_actions"></div>
   </mt:if>
-  <mt:if name="has_pulldown_actions">
-        <div class="plugin-actions actions"><mt:include name="include/itemset_action_widget.tmpl"></div>
+  <mt:if name="has_list_actions">
+    <mt:include name="include/itemset_action_widget.tmpl">
   </mt:if>
 </mt:if>
         <div class="indicator"><img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /> <__trans phrase="Loading..."></div>
