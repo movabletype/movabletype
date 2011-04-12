@@ -234,11 +234,6 @@ sub list_props {
             display => 'none',
             label   => 'Description',
         },
-        file_path => {
-            auto    => 1,
-            display => 'none',
-            label   => 'Upload Destination',
-        },
         file_name => {
             auto    => 1,
             display => 'none',
