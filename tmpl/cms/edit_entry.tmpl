@@ -645,9 +645,7 @@
         <a href="<mt:CGIPath><mt:AdminScript>?__mode=view&_type=asset&blog_id=<mt:var name="blog_id">&id=<mt:var name="asset_id">" class="asset-title">
           <mt:var name="asset_name">
         </a>
-        <a href="javascript:removeAssetFromList(<mt:var name="asset_id">)" title="<__trans phrase="Remove this asset.">" class="remove-asset">
-          <span><__trans phrase="Remove"></span>
-        </a>
+        <a href="javascript:removeAssetFromList(<mt:var name="asset_id">)" title="<__trans phrase="Remove this asset.">" class="remove-asset icon-remove icon16 action-icon"><__trans phrase="Remove"></a>
       <mt:if name="asset_thumb">
         <img id="list-image-<mt:var name="asset_id">" class="list-image" src="<mt:var name="asset_thumb">" style="display:none" /> 
       </mt:if>

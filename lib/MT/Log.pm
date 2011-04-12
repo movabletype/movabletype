@@ -472,6 +472,16 @@ sub description {
     $msg;
 }
 
+# Hint for tranlsate
+# trans('blog'); 
+# trans('website');
+# trans('search');
+# trans('author');
+# trans('ping');
+# trans('theme');
+# trans('folder');
+# trans('plugin');
+
 1;
 __END__
 

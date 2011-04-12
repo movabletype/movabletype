@@ -9,6 +9,13 @@
   <mt:include name="$object_listing" component="$__value__">
 </mt:loop>
 
+<mt:setvarblock name="list_actions">
+        <div class="button-actions actions">
+          <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
+        </div>
+        <div class="indicator"><img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /> <__trans phrase="Loading..."></div>
+</mt:setvarblock>
+
 <mt:include name="include/header.tmpl">
 <mt:include name="include/basic_filter_forms.tmpl">
 
@@ -25,10 +32,7 @@
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
 
       <div id="actions-bar-top" class="actions-bar actions-bar-top line">
-        <div class="button-actions actions">
-          <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
-        </div>
-        <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
+        <mt:var name="list_actions">
       </div>
 
       <div id="area-action" class="mod sortable-header">
@@ -42,10 +46,7 @@
       <div id="root" class="sortable"></div>
 
       <div id="actions-bar-bottom" class="actions-bar actions-bar-bottom line">
-        <div class="button-actions actions">
-          <button type="button" class="save action primary button disabled" disabled="disabled"><__trans phrase="Save Changes"></button>
-        </div>
-        <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
+        <mt:var name="list_actions">
       </div>
 
     </form>

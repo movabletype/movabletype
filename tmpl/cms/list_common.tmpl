@@ -107,6 +107,19 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
     </mt:setvarblock>
 </mt:if>
 
+<mt:setvarblock name="list_actions">
+<mt:if name="use_actions">
+  <mt:if name="button_actions">
+        <div class="button-actions actions"><mt:var name="button_actions"></div>
+  </mt:if>
+  <mt:if name="has_pulldown_actions">
+        <div class="plugin-actions actions"><mt:include name="include/itemset_action_widget.tmpl"></div>
+  </mt:if>
+</mt:if>
+        <div class="indicator"><img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /> <__trans phrase="Loading..."></div>
+        <div class="pagination"></div>
+</mt:setvarblock>
+
 <mt:include name="include/header.tmpl">
 <mt:include name="include/basic_filter_forms.tmpl">
 
@@ -123,13 +136,9 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
 
       <div id="actions-bar-top" class="actions-bar actions-bar-top line">
-<mt:if name="use_actions">
-        <div class="button-actions actions"><mt:var name="button_actions"></div>
-        <div class="plugin-actions actions"><mt:include name="include/itemset_action_widget.tmpl"></div>
-</mt:if>
-        <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
-        <div class="pagination"></div>
+        <mt:var name="list_actions">
       </div>
+
 <mt:if name="use_filters">
       <div id="filter" class="filter-block">
         <div id="filter-header">
@@ -153,6 +162,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
             </mt:loop>
             </select>
           </div>
+
           <div id="filter-action" class="mod">
             <button type="submit" id="apply" class="button action primary"><__trans phrase="Apply"></button>
             <button type="button" id="save" class="button action"><__trans phrase="Save"></button>
@@ -172,15 +182,8 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
       </div>
 
       <div id="actions-bar-bottom" class="actions-bar actions-bar-bottom line">
-<mt:if name="use_actions">
-        <div class="button-actions actions"><mt:var name="button_actions"></div>
-        <div class="plugin-actions actions"><mt:include name="include/itemset_action_widget.tmpl"></div>
-</mt:if>
-        <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
-        <div class="pagination"></div>
+        <mt:var name="list_actions">
       </div>
-
-
 
     </form>
 
@@ -1266,7 +1269,8 @@ jQuery('#apply').click(function() {
   renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
   return false;
 });
-jQuery('#<mt:var name="object_type">-listing-form').submit(function() {
+
+jQuery('#<mt:var name="object_type">-listing-form').bind('submit.as_apply', function() {
   jQuery('#apply').click();
   return false;
 });
@@ -1584,8 +1588,9 @@ function doForMarked(formid, action, singlar, plural, phrase, xhr) {
     renderList(params);
   else if ( opt['dialog'] )
     jQuery.fn.mtDialog.open(ScriptURI + '?' + $form.serialize());
-  else
-    $form.submit();
+  else {
+    $form.unbind('submit.as_apply').submit();
+  }
 }
 
 jQuery('button.mt-<mt:var name="object_type">-listing-form-action').click(function() {

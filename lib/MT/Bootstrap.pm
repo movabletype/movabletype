@@ -166,7 +166,9 @@ sub import {
                         if ( my $touched
                             = MT::Touch->latest_touch( 0, 'config' ) )
                         {
-                            $touched = MT::Util::ts2epoch( undef, $touched );
+                            # Should get UNIX epoch with no_offset flag,
+                            # since MT::Touch uses gmtime always.
+                            $touched = MT::Util::ts2epoch( undef, $touched, 1 );
                             if ( $touched > $app->{fcgi_startup_time} ) {
                                 last;
                             }

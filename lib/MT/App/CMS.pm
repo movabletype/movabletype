@@ -2753,6 +2753,9 @@ sub set_default_tmpl_params {
         $param->{author_name}           = $auth->name;
         $param->{author_display_name}   = $auth->nickname || $auth->name;
 
+        my $date_format = $auth->date_format || 'relative';
+        $param->{ "dates_" . $date_format } = 1;
+
         if ( my ($url) = $auth->userpic_url( Width => 36, Height => 36 ) ) {
             $param->{author_userpic_url} = $url;
         }
@@ -3602,9 +3605,6 @@ sub list_pref {
     }
     if ( $list_pref->{view} ) {
         $list_pref->{ "view_" . $list_pref->{view} } = 1;
-    }
-    if ( $list_pref->{dates} ) {
-        $list_pref->{ "dates_" . $list_pref->{dates} } = 1;
     }
     if ( $list_pref->{bar} ) {
         if ( lc $list_pref->{bar} eq 'both' ) {

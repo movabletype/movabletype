@@ -382,7 +382,8 @@ sub do_signup {
         }
     );
 
-    my $entry = MT::Entry->load( $param->{entry_id} );
+    my $entry = MT::Entry->load( $param->{entry_id} )
+        if ( $param->{entry_id} );
     if ($entry) {
         my $entry_url = $entry->permalink;
         $app->build_page( 'signup_thanks.tmpl',
@@ -407,7 +408,8 @@ sub _send_signup_confirmation {
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
-    my $entry = MT::Entry->load($entry_id);
+    my $entry = MT::Entry->load($entry_id)
+        if $entry_id;
     my $author = $entry ? $entry->author : q();
 
     my $token = $app->make_magic_token;

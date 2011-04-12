@@ -162,6 +162,7 @@ jQuery(function() {
         if ( jQuery('#website_form > input[name=back]').val() > 0 ) return true;
         return jQuery(this).find('input, select').mtValidate('simple') ? true : false;
     });
+
     function is_valid_url(url_){
         if (url_.indexOf(' ') != -1) {
             return false;
@@ -169,19 +170,36 @@ jQuery(function() {
         return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
     }
 
+    function is_valid_path(path_){
+        var str = path_.replace(/["%<>\[\\\]\^`{\|}~]/g, "");
+        str = encodeURI(str);
+        if (str.indexOf('%') != -1) {
+            return false;
+        }
+        if (str.match(/\.\./)) {
+            return false;
+        }
+        return true;
+    }
+
     jQuery.mtValidateAddRules({
         '#website_url': function ($e) {
             return is_valid_url($e.val()) ? true : false;
+        },
+        '#website_path': function ($e) {
+            return is_valid_path($e.val()) ? true : false;
         },
         '#website_timezone': function ($e) {
             return $e.val() > 1 ? true : false;
         }
     });
+
     jQuery.mtValidateAddMessages({
         '#website_name': '<__trans phrase="The website name is required." escape="singlequotes">',
         '#website_url.required': '<__trans phrase="The website URL is required." escape="singlequotes">',
         '#website_url#website_url': '<__trans phrase="Your website URL is not valid." escape="singlequotes">',
-        '#website_path': '<__trans phrase="The publishing path is required." escape="singlequotes">',
+        '#website_path.required': '<__trans phrase="The publishing path is required." escape="singlequotes">',
+        '#website_path#website_path': '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">',
         '#website_timezone': '<__trans phrase="The timezone is required." escape="singlequotes">'
     });
 
