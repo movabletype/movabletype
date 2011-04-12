@@ -2336,6 +2336,12 @@ input#system_performance_logging_threshold {
 }
 
 /* -- Theme Setting */
+#list-themes .theme-group { 
+    margin-bottom: 25px;
+}
+#list-themes .theme-group-name { 
+    margin: 0 0 10px;
+}
 #list-themes .theme { 
     position: relative;
     clear: both;
@@ -2345,11 +2351,18 @@ input#system_performance_logging_threshold {
     border: 1px solid #c0c6c9;
     background-color: #fff;
 }
+#list-themes .theme.first-child {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    -moz-border-radius: 5px 5px 0 0;
+}
+#list-themes .theme.last-child {
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    -moz-border-radius: 0 0 5px 5px;
+}
 #list-themes .theme-expanded { 
     background-color: #f9f9f9;
-}
-#list-themes .current-theme { 
-    margin-bottom: 15px;
 }
 #list-themes .theme-status { 
     position: absolute;
