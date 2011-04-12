@@ -933,7 +933,6 @@ use vars qw( @ISA %Lexicon );
 	'string(255)' => 'string(255)',
 	'Label' => 'Naam',
 	'Type' => 'Type',
-	'Upload Destination' => 'Uploadbestemming',
 	'Filename' => 'Bestandsnaam',
 	'File Extension' => 'Bestandsextensie',
 	'Pixel width' => 'Breedte in pixels',
@@ -955,12 +954,12 @@ use vars qw( @ISA %Lexicon );
 	'Permissions for [_1]' => 'Permissies voor [_1]',
 	'association' => 'associatie',
 	'associations' => 'associaties',
-	'User Name' => 'Gebruikersnaam', # Translate - New
+	'User Name' => 'Gebruikersnaam',
 	'Role' => 'Rol',
 	'Role Name' => 'Naam rol',
 	'Role Detail' => 'Details rol',
 	'Website/Blog Name' => 'Website/Blognaam',
-	'__WEBSITE_BLOG_NAME' => 'Website/Blognaam', # Translate - New
+	'__WEBSITE_BLOG_NAME' => 'Website/Blognaam',
 
 ## lib/MT/AtomServer.pm
 	'[_1]: Entries' => '[_1]: Berichten',
@@ -1286,9 +1285,7 @@ use vars qw( @ISA %Lexicon );
 	'Saving placement failed: [_1]' => 'Plaatsing opslaan mislukt: [_1]',
 	'Invalid date \'[_1]\'; [_2] dates must be in the format YYYY-MM-DD HH:MM:SS.' => 'Ongeldige datum \'[_1]\'; [_2] datums moeten volgend formaat hebben JJJJ-MM-DD UU:MM:SS.',
 	'Invalid date \'[_1]\'; [_2] dates should be real dates.' => 'Ongeldige datum \'[_1]\'; [_2] datums moeten echte datums zijn.',
-	'authored_on' => 'geschreven_op',
 	'authored on' => 'geschreven op',
-	'modified_on' => 'gewijzigd_op',
 	'modified on' => 'gewijzigd op',
 	'Saving entry \'[_1]\' failed: [_2]' => 'Bericht \'[_1]\' opslaan mislukt: [_2]',
 	'Removing placement failed: [_1]' => 'Plaatsing verwijderen mislukt: [_1]',
@@ -1564,6 +1561,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Comment.pm
 	'Comment' => 'Reactie',
 	'Search other comments from this anonymous commenter' => 'Andere reacties van deze anonieme reageerder zoeken',
+	'__ANONYMOUS_COMMENTER' => 'Anoniem',
 	'Search other comments from this deleted commenter' => 'Andere reacties van deze verwijderde reageerder zoeken',
 	'(Deleted)' => '(Verwijderd)',
 	'Edit this [_1] commenter.' => 'Bewerk deze [_1] reageerder',
@@ -1578,7 +1576,6 @@ use vars qw( @ISA %Lexicon );
 	'Reported as spam' => 'Gerapporteerd als spam',
 	'Comments on My Entries/Pages' => 'Reacties op mijn berichten/pagina\'s',
 	'Commenter Status' => 'Status reageerder',
-	'__ANONYMOUS_COMMENTER' => 'Anoniem', # Translate - New
 	'Non-spam comments' => 'Non-spam reacties',
 	'Non-spam comments on this website' => 'Non-spam reacties op deze website',
 	'Pending comments' => 'Te modereren reacties',
@@ -1643,7 +1640,7 @@ use vars qw( @ISA %Lexicon );
 	'ID' => 'ID',
 	'Date Created' => 'Datum aangemaakt',
 	'Date Modified' => 'Datum gewijzigd',
-	'Author Name' => 'Auteursnaam', # Translate - New
+	'Author Name' => 'Auteursnaam',
 	'Legacy Quick Filter' => 'Verouderde snelfilter',
 	'My Items' => 'Mijn items',
 	'Log' => 'Log',
@@ -1653,6 +1650,7 @@ use vars qw( @ISA %Lexicon );
 	'Manage Commenters' => 'Reageerders beheren',
 	'Member' => 'Lid',
 	'Permission' => 'Permissie',
+	'IP addresses' => 'IP adressen',
 	'IP Banning Settings' => 'IP-verbanningsinstellingen',
 	'Contact' => 'Contact',
 	'Manage Address Book' => 'Adresboek beheren',
@@ -1872,7 +1870,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/IPBanList.pm
 	'IP Ban' => 'IP ban',
 	'IP Bans' => 'IP bans',
-	'IP addresses' => 'IP adressen', # Translate - New
 
 ## lib/MT/JunkFilter.pm
 	'Action: Junked (score below threshold)' => 'Handeling: Verworpen (score onder drempel)',
@@ -1893,6 +1890,14 @@ use vars qw( @ISA %Lexicon );
 	'Entry # [_1] not found.' => 'Bericht # [_1] niet gevonden.',
 	'Comment # [_1] not found.' => 'Reactie # [_1] niet gevonden.',
 	'TrackBack # [_1] not found.' => 'TrackBack # [_1] niet gevonden.',
+	'blog' => 'blog',
+	'website' => 'website',
+	'search' => 'zoek', # Translate - Case
+	'author' => 'auteur', # Translate - Case
+	'ping' => 'ping', # Translate - New
+	'theme' => 'thema', # Translate - Case
+	'folder' => 'map', # Translate - Case
+	'plugin' => 'plugin', # Translate - New
 	'Message' => 'Boodschap',
 	'By' => 'Door',
 	'Class' => 'Klasse',
@@ -2023,7 +2028,7 @@ use vars qw( @ISA %Lexicon );
 	'Moderator' => 'Moderator',
 	'Can comment and manage feedback.' => 'Kan reageren en feedback beheren',
 	'Can comment.' => 'Kan reageren.',
-	'__ROLE_STATUS' => 'Status', # Translate - New
+	'__ROLE_STATUS' => 'Status',
 	'__ROLE_ACTIVE' => 'Actief',
 	'__ROLE_INACTIVE' => 'Gedeactiveerd',
 
@@ -2924,7 +2929,7 @@ use vars qw( @ISA %Lexicon );
 	'More Aggressive' => 'Aggressiever',
 	q{Apply 'nofollow' to URLs} => q{Toepassen van 'nofollow' op URLs},
 	q{If enabled, all URLs in comments and TrackBacks will be assigned a 'nofollow' link relation.} => q{Indien ingeschakeld krijgen alle URLs in reacties en TrackBacks automatisch de 'nofollow' linkrelatie.},
-	q{\'nofollow' exception for trusted commenters} => q{'nofollow' uitzondering voor vertrouwde reageerders}, # Translate - Case
+	q{'nofollow' exception for trusted commenters} => q{'nofollow' uitzondering voor vertrouwde reageerders}, # Translate - New
 	q{Do not add the 'nofollow' attribute when a comment is submitted by a trusted commenter.} => q{Voeg het 'nofollow' attribuut niet toe wanneer een reactie afkomstig is van een vertrouwde reageerder.},
 	'Comment Settings' => 'Instellingen voor reacties',
 	'Note: Commenting is currently disabled at the system level.' => 'Opmerking: reacties zijn momenteel uitgeschakeld op het systeemniveau.',
@@ -3242,7 +3247,7 @@ use vars qw( @ISA %Lexicon );
 	'Site Path' => 'Sitepad',
 	'Parent Website' => 'Moederwebsite',
 	'Please choose parent website.' => 'Gelieve de moederwebsite te kiezen',
-	q{Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/blog/} => q{Vul de nieuwe URL in van uw publieke blog.  Eindig met '/'/.  Voorbeeld: http://www.voorbeeld.com}, # Translate - New
+	q{Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/blog/} => q{Vul de nieuwe URL in van uw publieke blog.  Eindig met '/'/.  Voorbeeld: http://www.voorbeeld.com},
 	'Blog Root' => 'Blogroot',
 	q{Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Vul het pad in waar het hoofdindexbestand van uw blog gepubliceerd zal worden. Een absoluut pad (beginnend met '/' voor Linux of 'C:' voor Windows) geniet de voorkeur. Gelieve niet af te sluiten met '/' of '\'. Voorbeeld /home/mt/public_html of C:\www\public_html},
 	q{Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{Vul het nieuwe pad in waar uw hoofdindexbestanden zich zullen bevinden.  Een absoluut pad (beginnend met '/' op Linux of 'C:' op Windows) verdient de voorkeur.  Sluit niet af met '/' of '\'. Voorbeeld: /home/mt/public_html of C:\www\public_html},
@@ -3432,7 +3437,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] - Created by [_2]' => '[_1] - aangemaakt door [_2]',
 	'[_1] - Modified by [_2]' => '[_1] - aangepast door [_2]',
 	'Appears in...' => 'Komt voor in...',
-	'This asset has been used by other users.' => 'Dit mediabestand werd ook gebruikt door andere gebruikers.', # Translate - New
+	'This asset has been used by other users.' => 'Dit mediabestand werd ook gebruikt door andere gebruikers.',
 	'Related Assets' => 'Gerelateerde mediabestanden',
 	'[_1] is missing' => '[_1] ontbreekt',
 	'Embed Asset' => 'Mediabestand embedden',
@@ -3728,7 +3733,6 @@ use vars qw( @ISA %Lexicon );
 	'Category no longer exists' => 'Categorie bestaat niet meer',
 	'View all TrackBacks on this category' => 'Alle TrackBacks op deze categorie bekijken',
 	'View all TrackBacks created on this day' => 'Bekijk alle TrackBacks aangemaakt op deze dag',
-	'IP' => 'IP',
 	'View all TrackBacks from this IP address' => 'Alle TrackBacks van dit IP adres bekijken',
 	'TrackBack Text' => 'TrackBack-tekst',
 	'Excerpt of the TrackBack entry' => 'Uittreksel van het TrackBackbericht',
@@ -3813,9 +3817,9 @@ use vars qw( @ISA %Lexicon );
 	'Website Theme' => 'Thema website',
 	'Select the theme you wish to use for this website.' => 'Selecteer het thema dat u wenst te gebruiken voor deze website',
 	'Name your website. The website name can be changed at any time.' => 'Geef uw website een naam.  De naam van de website kan op elk moment aangepast worden.',
-	'Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/' => 'Vul de URL in van uw website.  Laat de bestandsnaam (bv. index.html) weg.  Voorbeeld: http://www.voorbeeld.com', # Translate - New
+	'Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/' => 'Vul de URL in van uw website.  Laat de bestandsnaam (bv. index.html) weg.  Voorbeeld: http://www.voorbeeld.com',
 	'Website Root' => 'Website root',
-	q{Enter the path where your main index file will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/ or C:\www\public_html} => q{Vul het pad in waar uw hoofdindexbestand zich zal bevinden.  Een absoluut pad (beginnend met '/' voor Linux of 'C:\' voor Windows) verdient de voorkeur, maar u kunt ook een pad gebruiker relatief aan de Movable Type map.  Voorbeeld: /home/melody/public_html/ of C:\www\public_html}, # Translate - New
+	q{Enter the path where your main index file will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/ or C:\www\public_html} => q{Vul het pad in waar uw hoofdindexbestand zich zal bevinden.  Een absoluut pad (beginnend met '/' voor Linux of 'C:\' voor Windows) verdient de voorkeur, maar u kunt ook een pad gebruiker relatief aan de Movable Type map.  Voorbeeld: /home/melody/public_html/ of C:\www\public_html},
 	'Create Website (s)' => 'Website aanmaken (s)',
 	'This field is required.' => 'Dit veld is verplicht',
 	'Please enter a valid URL.' => 'Gelieve een geldige URL in te vullen.',
@@ -3945,6 +3949,7 @@ use vars qw( @ISA %Lexicon );
 	'No thumbnail image' => 'Geen thumbnail',
 
 ## tmpl/cms/include/asset_upload.tmpl
+	'Upload Destination' => 'Uploadbestemming',
 	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{Voor u een bestand kunt uploaden, moet u eerst uw [_1] publiceren.  [_2]Configureer de publicatiepaden van uw [_1][_3] en herpubliceer uw [_1].},
 	'Your system or [_1] administrator needs to publish the [_1] before you can upload files. Please contact your system or [_1] administrator.' => 'Uw systeem of [_1] beheerder moet de [_1] publiceren voor u bestanden kunt uploaden.  Gelieve de beheerder van uw systeem of [_1] te contacteren.',
 	q{Asset file('[_1]') has been uploaded.} => q{Mediabestand ('[_1]') geupload.},
@@ -4556,7 +4561,7 @@ use vars qw( @ISA %Lexicon );
 	'Finish install' => 'Installatie afronden',
 	'The website name is required.' => 'De naam van de website is vereist.',
 	'The website URL is required.' => 'De URL van de website is vereist.',
-	'Your website URL is not valid.' => 'De URL van uw website is ongeldig.', # Translate - New
+	'Your website URL is not valid.' => 'De URL van uw website is ongeldig.',
 	'The publishing path is required.' => 'Het publicatiepad is vereist',
 	'The timezone is required.' => 'De tijdzone is vereist',
 
@@ -5006,8 +5011,6 @@ use vars qw( @ISA %Lexicon );
 	q{Please enter all allowable options for this field as a comma delimited list} => q{Gelieve alle toegestane waarden voor dit veld in te vullen als een lijst gescheiden door komma's},
 	'Exclude Custom Fields' => 'Extra velden negeren',
 	'[_1] Fields' => 'Velden bij [_1]',
-	'blog' => 'blog',
-	'website' => 'website',
 	'Edit Field' => 'Veld bewerken',
 	'Invalid date \'[_1]\'; dates must be in the format YYYY-MM-DD HH:MM:SS.' => 'Ongeldige datum \'[_1]\'; datums moeten in het formaat YYYY-MM-DD HH:MM:SS staan.',
 	'Invalid date \'[_1]\'; dates should be real dates.' => 'Ongeldige datum \'[_1]\'; datums moeten echte datums zijn.',
@@ -5016,6 +5019,8 @@ use vars qw( @ISA %Lexicon );
 	'Please ensure all required fields have been filled in.' => 'Kijk na of alle verplichte velden ingevuld zijn.',
 	'The template tag \'[_1]\' is an invalid tag name.' => 'Sjabloontag \'[_1]\' is een ongeldige tagnaam.',
 	'The template tag \'[_1]\' is already in use.' => 'De sjabloontag \'[_1]\' is al in gebruik.',
+	'blog and the system' => 'blog en het systeem', # Translate - New
+	'website and the system' => 'website en het systeem', # Translate - New
 	'The basename \'[_1]\' is already in use. It must be unique within this [_2].' => 'De basisnaam \'[_1]\' is al in gebruik.  Hij moet uniek zijn binnen deze [_2].',
 	'You must select other type if object is the comment.' => 'U moet een ander type selecteren als het object de reactie is.',
 	'type' => 'type',
@@ -5238,12 +5243,12 @@ use vars qw( @ISA %Lexicon );
 	'Edit Custom Field' => 'Gepersonaliseerd veld bewerken',
 	'Create Custom Field' => 'Gepersonaliseerd veld aanmeken',
 	'The selected fields(s) has been deleted from the database.' => 'Geselecteerd(e) veld(en) verwijderd uit de database.',
-	'You must enter information into the required fields highlighted below before the Custom Field can be created.' => 'U moet gegevens invullen inde vereiste velden die hieronder aangegeven zijn voor het gepersonaliseerde veld aangemaakt kan worden.',
-	'You must save this Custom Field before setting a default value.' => 'U moet het gepersonaliseerde veld opslaan voor u een standaardwaarde kunt instellen.',
-	'Choose the system object where this Custom Field should appear.' => 'Kies het systeemobject waarbij het gepersonaliseerde veld moet verschijnen.',
+	'You must enter information into the required fields highlighted below before the custom field can be created.' => 'U moet gegevens invullen in de vereiste velden die hieronder aangegeven zijn voor het gepersonaliseerde veld aangemaakt kan worden.', # Translate - Case
+	'You must save this custom field before setting a default value.' => 'U moet het gepersonaliseerde veld opslaan voor u een standaardwaarde kunt instellen.', # Translate - Case
+	'Choose the system object where this custom field should appear.' => 'Kies het systeemobject waarbij het gepersonaliseerde veld moet verschijnen.', # Translate - Case
 	'Required?' => 'Verplicht?',
-	'Is data entry required in this Custom Field?' => 'Moeten er gegevens ingevuld worden in dit gepersonaliseerde veld?',
-	'Must the user enter data into this Custom Field before the object may be saved?' => 'Moet de gebruiker gegevens invullen in dit gepersonaliseerde veld voor het object opgeslagen kan worden?',
+	'Is data entry required in this custom field?' => 'Moeten er gegevens ingevuld worden in dit gepersonaliseerde veld?', # Translate - Case
+	'Must the user enter data into this custom field before the object may be saved?' => 'Moet de gebruiker gegevens invullen in dit gepersonaliseerde veld voor het object opgeslagen kan worden?', # Translate - Case
 	'Default' => 'Standaard',
 	'The basename must be unique within this [_1].' => 'De basisnaam moet uniek zijn binnen deze [_1]',
 	q{Warning: Changing this field's basename may require changes to existing templates.} => q{Waarschuwing: het aanpassen van de basisnaam van deze tag vereist mogelijk aanpassingen aan bestaande sjablonen.},
@@ -5685,11 +5690,12 @@ use vars qw( @ISA %Lexicon );
 	'Members of group: [_1]' => 'Leden van groep: [_1]',
 	'Advanced Pack' => 'Advanced pack',
 	'User/Group' => 'Gebruiker/groep',
-	'User/Group Name' => 'Naam gebruiker/groep', # Translate - New
+	'User/Group Name' => 'Naam gebruiker/groep',
 	'__GROUP_MEMBER_COUNT' => 'Leden',
 	'My Groups' => 'Mijn groepen',
 	'Group Name' => 'Groepsnaam',
 	'Manage Group Members' => 'Groepsleden beheren',
+	'Group Members' => 'Groepsleden', # Translate - New
 	'Group Member' => 'Groepslid',
 	'Permissions for Users' => 'Permissies voor gebruikers',
 	'Permissions for Groups' => 'Permissies voor groepen',
@@ -5725,7 +5731,7 @@ use vars qw( @ISA %Lexicon );
 	'LDAP groups synchronized with existing groups.' => 'LDAP groepen zijn gesynchroniseerd met bestaande groepen.',
 	'Information about the following groups was modified:' => 'Informatie over volgend groepen werd bijgewerkt:',
 	'No LDAP group was found using the filter provided.' => 'Geen LDAP groep gevonden met de opgegeven filter.',
-	'The filter used to search for groups was: \'[_1]\'. Search base was: \'[_2]\'' => 'De filter die gebruikt werd om groepen te zoeken was: \'[_1]\'.  Zoekbasis was: \'[_1]\'.', # Translate - New
+	'The filter used to search for groups was: \'[_1]\'. Search base was: \'[_2]\'' => 'De filter die gebruikt werd om groepen te zoeken was: \'[_1]\'.  Zoekbasis was: \'[_1]\'.',
 	'(none)' => '(Geen)',
 	'The following groups were deleted:' => 'Volgende groepen werden verwijderd:',
 	'Failed to create a new group: [_1]' => 'Nieuwe groep aanmaken mislukt: [_1]',
@@ -6531,6 +6537,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 63
+## New words: 12
 
 1;

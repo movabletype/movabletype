@@ -78,7 +78,7 @@ $Lexicon_nl = array(
 	'Entry' => 'Bericht',
 
 ## php/lib/function.mtinclude.php
-	'\'parent\' modifier cannot be used with \'[_1]\'' => '\'parent\' modifier kan niet worden gebruikt met \'[_1]\'', # Translate - New
+	'\'parent\' modifier cannot be used with \'[_1]\'' => '\'parent\' modifier kan niet worden gebruikt met \'[_1]\'',
 
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
@@ -99,13 +99,14 @@ $Lexicon_nl = array(
 	'Error compiling widgetset [_1]' => 'Fout bij het compileren van widgetset [_1]',
 
 ## php/lib/mtdb.base.php
-	'The attribute exclude_blogs denies all include_blogs.' => 'Het attribuut exclude_blogs overtreft alle include_blogs', # Translate - New
+	'The attribute exclude_blogs denies all include_blogs.' => 'Het attribuut exclude_blogs overtreft alle include_blogs',
 
 ## php/lib/MTUtil.php
 	'userpic-[_1]-%wx%h%x' => 'gebruikersafbeelding-[_1]-%wx%h%x',
 
 ## php/mt.php
 	'Page not found - [_1]' => 'Pagina niet gevonden - [_1]',
+
 );
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_nl;

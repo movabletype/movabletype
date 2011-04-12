@@ -934,7 +934,6 @@ que la dirección provista es correcta y le pertenece.',
 	'string(255)' => 'cadena(255)',
 	'Label' => 'Título',
 	'Type' => 'Tipo',
-	'Upload Destination' => 'Destino de las transferencias',
 	'Filename' => 'Nombre del fichero',
 	'File Extension' => 'Extensión de ficheros',
 	'Pixel width' => 'Anchura px',
@@ -956,12 +955,12 @@ que la dirección provista es correcta y le pertenece.',
 	'Permissions for [_1]' => 'Permisos de [_1]',
 	'association' => 'Asociación',
 	'associations' => 'Asociaciones',
-	'User Name' => 'Nombre', # Translate - New
+	'User Name' => 'Nombre',
 	'Role' => 'Rol',
 	'Role Name' => 'Nombre del rol',
 	'Role Detail' => 'Detalles del rol',
 	'Website/Blog Name' => 'Website/Blog Name',
-	'__WEBSITE_BLOG_NAME' => 'Nombre del sitio/blog', # Translate - New
+	'__WEBSITE_BLOG_NAME' => 'Nombre del sitio/blog',
 
 ## lib/MT/AtomServer.pm
 	'[_1]: Entries' => '[_1]: Entradas',
@@ -1287,9 +1286,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Saving placement failed: [_1]' => 'Fallo guardando situación: [_1]',
 	'Invalid date \'[_1]\'; [_2] dates must be in the format YYYY-MM-DD HH:MM:SS.' => 'Fecha no válida \'[_1]\'; las fechas de [_2] deben tener el formato YYYY-MM-DD HH:MM:SS.',
 	'Invalid date \'[_1]\'; [_2] dates should be real dates.' => 'Invalid date \'[_1]\'; [_2] dates should be real dates.',
-	'authored_on' => 'creado_en',
 	'authored on' => 'creando en',
-	'modified_on' => 'modificado_en',
 	'modified on' => 'modifcado en',
 	'Saving entry \'[_1]\' failed: [_2]' => 'Fallo guardando entrada \'[_1]\': [_2]',
 	'Removing placement failed: [_1]' => 'Fallo eliminando lugar: [_1]',
@@ -1565,6 +1562,7 @@ que la dirección provista es correcta y le pertenece.',
 ## lib/MT/Comment.pm
 	'Comment' => 'Comentario',
 	'Search other comments from this anonymous commenter' => 'Buscar otros comentarios de este comentarista anónimo',
+	'__ANONYMOUS_COMMENTER' => 'Anónimo',
 	'Search other comments from this deleted commenter' => 'Buscar otros comentarios de este comentarista eliminado',
 	'(Deleted)' => '(Borrado)',
 	'Edit this [_1] commenter.' => 'Editar este comentarista [_1].',
@@ -1579,7 +1577,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Reported as spam' => 'Marcado como spam',
 	'Comments on My Entries/Pages' => 'Comentarios en mis entradas/páginas',
 	'Commenter Status' => 'Estado comentarista',
-	'__ANONYMOUS_COMMENTER' => 'Anónimo', # Translate - New
 	'Non-spam comments' => 'Comentarios que no son spam',
 	'Non-spam comments on this website' => 'Comentarios no spam en este sitio web',
 	'Pending comments' => 'Comentarios pendientes',
@@ -1644,7 +1641,7 @@ que la dirección provista es correcta y le pertenece.',
 	'ID' => 'ID',
 	'Date Created' => 'Fecha de creación',
 	'Date Modified' => 'Fecha de modificación',
-	'Author Name' => 'Nombre autor', # Translate - New
+	'Author Name' => 'Nombre autor',
 	'Legacy Quick Filter' => 'Filtro rápido antiguo',
 	'My Items' => 'Mis elementos',
 	'Log' => 'Histórico',
@@ -1654,6 +1651,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Manage Commenters' => 'Administrar comentaristas',
 	'Member' => 'Miembro',
 	'Permission' => 'permiso',
+	'IP addresses' => 'Dirección IP',
 	'IP Banning Settings' => 'Bloqueo de IPs',
 	'Contact' => 'Contacto',
 	'Manage Address Book' => 'Administración del libro de Direcciones',
@@ -1873,7 +1871,6 @@ que la dirección provista es correcta y le pertenece.',
 ## lib/MT/IPBanList.pm
 	'IP Ban' => 'Bloqueo de IP',
 	'IP Bans' => 'Bloqueos de IP',
-	'IP addresses' => 'Dirección IP', # Translate - New
 
 ## lib/MT/JunkFilter.pm
 	'Action: Junked (score below threshold)' => 'Acción: Basura (puntuación bajo nivel)',
@@ -1894,6 +1891,14 @@ que la dirección provista es correcta y le pertenece.',
 	'Entry # [_1] not found.' => 'Entrada nº [_1] no encontrada.',
 	'Comment # [_1] not found.' => 'Comentario nº [_1] no encontrado.',
 	'TrackBack # [_1] not found.' => 'TrackBack nº [_1] no encontrado.',
+	'blog' => 'Blog',
+	'website' => 'sitio web',
+	'search' => 'buscar', # Translate - Case
+	'author' => 'autor', # Translate - Case
+	'ping' => 'ping', # Translate - New
+	'theme' => 'tema', # Translate - Case
+	'folder' => 'carpeta', # Translate - Case
+	'plugin' => 'extensión', # Translate - New
 	'Message' => 'Mensaje',
 	'By' => 'Por',
 	'Class' => 'Clase',
@@ -2024,7 +2029,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Moderator' => 'Moderador',
 	'Can comment and manage feedback.' => 'Puede comentar y administrar las respuestas.',
 	'Can comment.' => 'Puede comentar.',
-	'__ROLE_STATUS' => 'Estado', # Translate - New
+	'__ROLE_STATUS' => 'Estado',
 	'__ROLE_ACTIVE' => 'Activo',
 	'__ROLE_INACTIVE' => 'Inactivo',
 
@@ -2925,7 +2930,7 @@ que la dirección provista es correcta y le pertenece.',
 	'More Aggressive' => 'Más agresivo',
 	q{Apply 'nofollow' to URLs} => q{Aplicar 'nofollow' a las URLs},
 	q{If enabled, all URLs in comments and TrackBacks will be assigned a 'nofollow' link relation.} => q{Si está activado, se asignará un atributo 'nofollow' a los enlaces de todas las URLs en los comentarios y en los Trackbacks.},
-	q{\'nofollow' exception for trusted commenters} => q{Excepción 'nofollow' para los comentaristas de confianza.}, # Translate - Case
+	q{'nofollow' exception for trusted commenters} => q{Excepción 'nofollow' para los comentaristas de confianza.}, # Translate - New
 	q{Do not add the 'nofollow' attribute when a comment is submitted by a trusted commenter.} => q{No añade el atributo 'nofollow' cuando la respuesta es enviada por un comentarista de confianza.},
 	'Comment Settings' => 'Configuración de comentarios',
 	'Note: Commenting is currently disabled at the system level.' => 'Nota: Los comentarios están actualmente desactivados a nivel de sistema.',
@@ -3242,7 +3247,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Site Path' => 'Ruta del sitio',
 	'Parent Website' => 'Sitio web padre',
 	'Please choose parent website.' => 'Por favor, seleccione el sitio web padre',
-	q{Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/blog/} => q{Introduzca la URL para el blog público. Terminar con '/'. Ejemplo: http://www.ejemplo.com/blog/}, # Translate - New
+	q{Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/blog/} => q{Introduzca la URL para el blog público. Terminar con '/'. Ejemplo: http://www.ejemplo.com/blog/},
 	'Blog Root' => 'Raíz del blog',
 	q{Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Introduzca la ruta de localización del fichero índice principal. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog/ o C:\www\public_html\blog},
 	q{Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{Introduzca la ruta de localización del fichero índice principal. Se recomienda una ruta absoluta (que en Linux comienza con '\' y en Windows con 'C:\'). No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog/ o C:\www\public_html\blog},
@@ -3432,7 +3437,7 @@ que la dirección provista es correcta y le pertenece.',
 	'[_1] - Created by [_2]' => '[_1] - Creado por [_2]',
 	'[_1] - Modified by [_2]' => '[_1] - Modificado por [_2]',
 	'Appears in...' => 'Aparece en...',
-	'This asset has been used by other users.' => 'Este fichero multimedia ha sido utilizado por otros usuarios.', # Translate - New
+	'This asset has been used by other users.' => 'Este fichero multimedia ha sido utilizado por otros usuarios.',
 	'Related Assets' => 'Ficheros multimedia relacionados',
 	'[_1] is missing' => '[_1] no existe',
 	'Embed Asset' => 'Embeber fichero multimedia',
@@ -3726,7 +3731,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Category no longer exists' => 'Ya no existe la categoría',
 	'View all TrackBacks on this category' => 'Mostrar todos los TrackBacks de esta categoría',
 	'View all TrackBacks created on this day' => 'Mostrar todos los TrackBacks creados este día',
-	'IP' => 'IP',
 	'View all TrackBacks from this IP address' => 'Mostrar todos los TrackBacks enviados desde esta dirección IP',
 	'TrackBack Text' => 'Texto del TrackBack',
 	'Excerpt of the TrackBack entry' => 'Resumen de la entrada del TrackBack',
@@ -3811,9 +3815,9 @@ que la dirección provista es correcta y le pertenece.',
 	'Website Theme' => 'Tema del sitio web',
 	'Select the theme you wish to use for this website.' => 'Seleccione el tema que desea usar en este sitio web.',
 	'Name your website. The website name can be changed at any time.' => 'Nombre del sitio web. Puede modificarlo en cualquier momento.',
-	'Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/' => 'Introduzca la URL del sitio web. Excluya el nombre del fichero (i.e. index.html). Ejemplo: http://www.ejemplo.com/', # Translate - New
+	'Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/' => 'Introduzca la URL del sitio web. Excluya el nombre del fichero (i.e. index.html). Ejemplo: http://www.ejemplo.com/',
 	'Website Root' => 'Raíz del sitio web',
-	q{Enter the path where your main index file will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/ or C:\www\public_html} => q{Introduzca la ruta de publicación del fichero índice principal. Se recomienda una ruta principal (que en Linux comienza con '/' y en Windows con 'C:\') pero también puede utilizar una ruta relativa al directorio de Movable Type. Ejemplo :/home/melody/public_html/ o C:\www\public_html}, # Translate - New
+	q{Enter the path where your main index file will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/ or C:\www\public_html} => q{Introduzca la ruta de publicación del fichero índice principal. Se recomienda una ruta principal (que en Linux comienza con '/' y en Windows con 'C:\') pero también puede utilizar una ruta relativa al directorio de Movable Type. Ejemplo :/home/melody/public_html/ o C:\www\public_html},
 	'Create Website (s)' => 'Crear sitio web (s)',
 	'This field is required.' => 'Este campo es obligatorio.',
 	'Please enter a valid URL.' => 'Por favor, introduzca una URL válida.',
@@ -3943,6 +3947,7 @@ que la dirección provista es correcta y le pertenece.',
 	'No thumbnail image' => 'Sin miniatura',
 
 ## tmpl/cms/include/asset_upload.tmpl
+	'Upload Destination' => 'Destino de las transferencias',
 	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{Antes de subir un fichero, debe publicar su [_1]. [_2]Configure las rutas de publicación[_3] de su [_1] y republique el [_1].},
 	'Your system or [_1] administrator needs to publish the [_1] before you can upload files. Please contact your system or [_1] administrator.' => 'El administrador del sistema o del [_1] debe publicar el [_1] antes de pueda subir ficheros. Por favor, contacte con el administrador del sistema o del [_1].',
 	q{Asset file('[_1]') has been uploaded.} => q{Se ha transferido un fichero multimedia ('[_1]').},
@@ -4554,7 +4559,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Finish install' => 'Finalizar instalación',
 	'The website name is required.' => 'El nombre del sitio web es obligatorio.',
 	'The website URL is required.' => 'La URL del sitio web es obligatoria.',
-	'Your website URL is not valid.' => 'La URL del sitio web no es válida.', # Translate - New
+	'Your website URL is not valid.' => 'La URL del sitio web no es válida.',
 	'The publishing path is required.' => 'La ruta de publicación es obligatoria.',
 	'The timezone is required.' => 'La zona horaria es obligatoria.',
 
@@ -4975,8 +4980,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Please enter all allowable options for this field as a comma delimited list' => 'Por favor, introduzca todas las opciones permitidas a este campo en forma de lista de elementos separados por comas',
 	'Exclude Custom Fields' => 'Excluir campos personalizados',
 	'[_1] Fields' => 'Campos de [_1]',
-	'blog' => 'Blog',
-	'website' => 'sitio web',
 	'Edit Field' => 'Editar campo',
 	'Invalid date \'[_1]\'; dates must be in the format YYYY-MM-DD HH:MM:SS.' => 'Fecha no válida \'[_1]\'; las fechas deben estar en el formato YYYY-MM-DD HH:MM:SS.',
 	'Invalid date \'[_1]\'; dates should be real dates.' => 'Fecha no válida \'[_1]\'; debe ser una fecha real.',
@@ -4985,6 +4988,8 @@ que la dirección provista es correcta y le pertenece.',
 	'Please ensure all required fields have been filled in.' => 'Por favor, asegúrese de que todos los campos se han introducido.',
 	'The template tag \'[_1]\' is an invalid tag name.' => 'La etiqueta de plantilla \'[_1]\' es un nombre de etiqueta inválido.',
 	'The template tag \'[_1]\' is already in use.' => 'La etiqueta de plantilla \'[_1]\' ya está en uso.',
+	'blog and the system' => 'blog y el sistema', # Translate - New
+	'website and the system' => 'sitio y el sistema', # Translate - New
 	'The basename \'[_1]\' is already in use. It must be unique within this [_2].' => 'El nombre base \'[_1]\' ya está en uso. Debe ser único en este [_2].',
 	'You must select other type if object is the comment.' => 'Debe seleccionar otro tipo si el objeto es un comentario.',
 	'type' => 'tipo',
@@ -5207,12 +5212,12 @@ que la dirección provista es correcta y le pertenece.',
 	'Edit Custom Field' => 'Editar campo personalizado',
 	'Create Custom Field' => 'Crear campo personalizado',
 	'The selected fields(s) has been deleted from the database.' => 'Los campos seleccionados han sido borrados de la base de datos.',
-	'You must enter information into the required fields highlighted below before the Custom Field can be created.' => 'Antes de que pueda crear el campo personalizado debe introducir la información en los campos obligatorios resaltados abajo.',
-	'You must save this Custom Field before setting a default value.' => 'Debe guardar este campo personalizado antes de indicar un valor predefinido.',
-	'Choose the system object where this Custom Field should appear.' => 'Seleccione el objeto del sistema donde aparecerá el campo personalizado.',
+	'You must enter information into the required fields highlighted below before the custom field can be created.' => 'Antes de que pueda crear el campo personalizado debe introducir la información en los campos obligatorios resaltados abajo.', # Translate - Case
+	'You must save this custom field before setting a default value.' => 'Debe guardar este campo personalizado antes de indicar un valor predefinido.', # Translate - Case
+	'Choose the system object where this custom field should appear.' => 'Seleccione el objeto del sistema donde aparecerá el campo personalizado.', # Translate - Case
 	'Required?' => '¿Obligatorio?',
-	'Is data entry required in this Custom Field?' => '¿Se necesita la introducción de datos en este campo personalizado?',
-	'Must the user enter data into this Custom Field before the object may be saved?' => '¿El usuario debe introducir datos en este campo personalizado antes de que el objeto se guarde?',
+	'Is data entry required in this custom field?' => '¿Se necesita la introducción de datos en este campo personalizado?', # Translate - Case
+	'Must the user enter data into this custom field before the object may be saved?' => '¿El usuario debe introducir datos en este campo personalizado antes de que el objeto se guarde?', # Translate - Case
 	'Default' => 'Predefinido',
 	'The basename must be unique within this [_1].' => 'El nombre base debe ser único en este [_1].',
 	q{Warning: Changing this field's basename may require changes to existing templates.} => q{Atención: Si cambia el nombre base de este campo, quizás se necesiten cambios en las plantillas existentes.},
@@ -5654,11 +5659,12 @@ que la dirección provista es correcta y le pertenece.',
 	'Members of group: [_1]' => 'Miembros del grupo: [_1]',
 	'Advanced Pack' => 'Advanced Pack',
 	'User/Group' => 'Usuario/Grupo',
-	'User/Group Name' => 'Nombre del usuario/grupo', # Translate - New
+	'User/Group Name' => 'Nombre del usuario/grupo',
 	'__GROUP_MEMBER_COUNT' => 'Miembros',
 	'My Groups' => 'Mis grupos',
 	'Group Name' => 'Nombre del grupo',
 	'Manage Group Members' => 'Administrar miembros del grupo',
+	'Group Members' => 'Miembros del grupo', # Translate - New
 	'Group Member' => 'Miembro del grupo',
 	'Permissions for Users' => 'Permisos para usuarios',
 	'Permissions for Groups' => 'Permisos para grupos',
@@ -5694,7 +5700,7 @@ que la dirección provista es correcta y le pertenece.',
 	'LDAP groups synchronized with existing groups.' => 'Grupos LDAP sincronizados con los grupos existentes.',
 	'Information about the following groups was modified:' => 'Se ha modificado la información de los siguientes grupos:',
 	'No LDAP group was found using the filter provided.' => 'No se han encontrado grupos LDAP usando el filtro indicado.',
-	'The filter used to search for groups was: \'[_1]\'. Search base was: \'[_2]\'' => 'El filtro utilizado para la búsqueda de grupos era: \'[_1]\'. La búsqueda base eras: \'[_2]\'', # Translate - New
+	'The filter used to search for groups was: \'[_1]\'. Search base was: \'[_2]\'' => 'El filtro utilizado para la búsqueda de grupos era: \'[_1]\'. La búsqueda base eras: \'[_2]\'',
 	'(none)' => '(ninguno)',
 	'The following groups were deleted:' => 'Los siguientes grupos han sido borrados:',
 	'Failed to create a new group: [_1]' => 'Falló la creación de un nuevo grupo: [_1]',
@@ -6500,6 +6506,6 @@ que la dirección provista es correcta y le pertenece.',
 
 );
 
-## New words: 63
+## New words: 12
 
 1;

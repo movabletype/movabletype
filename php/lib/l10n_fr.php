@@ -77,7 +77,7 @@ $Lexicon_fr = array(
 	'Entry' => 'Note',
 
 ## php/lib/function.mtinclude.php
-	'\'parent\' modifier cannot be used with \'[_1]\'' => 'Le modifieur \'parent\' ne peut pas être utilisé avec \'[_1]\'', # Translate - New
+	'\'parent\' modifier cannot be used with \'[_1]\'' => 'Le modifieur \'parent\' ne peut pas être utilisé avec \'[_1]\'',
 
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
@@ -98,7 +98,7 @@ $Lexicon_fr = array(
 	'Error compiling widgetset [_1]' => 'Erreur de compilation du groupe de widget [_1]',
 
 ## php/lib/mtdb.base.php
-	'The attribute exclude_blogs denies all include_blogs.' => 'L\'attribut exclude_blogs nie include_blogs.', # Translate - New
+	'The attribute exclude_blogs denies all include_blogs.' => 'L\'attribut exclude_blogs nie include_blogs.',
 
 ## php/lib/MTUtil.php
 	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',

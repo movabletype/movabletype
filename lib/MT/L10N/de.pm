@@ -932,7 +932,6 @@ use vars qw( @ISA %Lexicon );
 	'string(255)' => 'string(255)',
 	'Label' => 'Bezeichnung',
 	'Type' => 'Typ',
-	'Upload Destination' => 'Zielverzeichnis',
 	'Filename' => 'Dateiname',
 	'File Extension' => 'Dateierweiterung',
 	'Pixel width' => 'Breite in Pixeln',
@@ -954,12 +953,12 @@ use vars qw( @ISA %Lexicon );
 	'Permissions for [_1]' => 'Berechtigungen für [_1]',
 	'association' => 'Verknüpfungen',
 	'associations' => 'Verknüpfungen',
-	'User Name' => 'Benutzername', # Translate - New # OK
+	'User Name' => 'Benutzername',
 	'Role' => 'Rolle',
 	'Role Name' => 'Rollenname',
 	'Role Detail' => 'Rolle-Details',
 	'Website/Blog Name' => 'Name der Website/des Blogs',
-	'__WEBSITE_BLOG_NAME' => 'Name der Website/des Blogs', # Translate - New # OK
+	'__WEBSITE_BLOG_NAME' => 'Name der Website/des Blogs',
 
 ## lib/MT/AtomServer.pm
 	'[_1]: Entries' => '[_1]: Einträge',
@@ -1285,9 +1284,7 @@ use vars qw( @ISA %Lexicon );
 	'Saving placement failed: [_1]' => 'Beim Speichern der Platzierung ist ein Fehler aufgetreten: [_1]',
 	'Invalid date \'[_1]\'; [_2] dates must be in the format YYYY-MM-DD HH:MM:SS.' => 'Datum \'[_1]\' ungültig. [_2]-Datumsangaben müssen im Format JJJJ-MM-TT HH:MM:SS vorliegen.',
 	'Invalid date \'[_1]\'; [_2] dates should be real dates.' => 'Datum \'[_1]\' ungültig; [_2]-Daten sollten echte Daten sein.',
-	'authored_on' => 'geschrieben_am',
 	'authored on' => 'geschrieben am',
-	'modified_on' => 'bearbeitet_am',
 	'modified on' => 'bearbeitet am',
 	'Saving entry \'[_1]\' failed: [_2]' => 'Der Eintrag &#8222;[_1]&#8220; konnte nicht gespeichert werden: [_2]',
 	'Removing placement failed: [_1]' => 'Die Platzierung konnte nicht entfernt werden: [_1]',
@@ -1563,6 +1560,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Comment.pm
 	'Comment' => 'Kommentar',
 	'Search other comments from this anonymous commenter' => 'Andere Kommentare von diesem anonymen Kommentar-Autoren suchen',
+	'__ANONYMOUS_COMMENTER' => 'Anonym',
 	'Search other comments from this deleted commenter' => 'Andere Kommentare von diesem gelöschten Kommentar-Autoren suchen',
 	'(Deleted)' => '(Gelöscht)',
 	'Edit this [_1] commenter.' => 'Diesen [_1] Kommentar-Autor bearbeiten',
@@ -1577,7 +1575,6 @@ use vars qw( @ISA %Lexicon );
 	'Reported as spam' => 'Als Spam gemeldet',
 	'Comments on My Entries/Pages' => 'Kommentare zu meinen Einträgen/Seiten',
 	'Commenter Status' => 'Kommentarautoren-Status',
-	'__ANONYMOUS_COMMENTER' => 'Anonym', # Translate - New # OK
 	'Non-spam comments' => 'Gültige Kommentare',
 	'Non-spam comments on this website' => 'Gültige Kommentare auf dieser Website',
 	'Pending comments' => 'Zu moderierende Kommentare',
@@ -1642,7 +1639,7 @@ use vars qw( @ISA %Lexicon );
 	'ID' => 'ID',
 	'Date Created' => 'Angelegt',
 	'Date Modified' => 'Bearbeitet',
-	'Author Name' => 'Autorenname', # Translate - New # OK
+	'Author Name' => 'Autorenname',
 	'Legacy Quick Filter' => 'Schnellfilter (Altsystem)',
 	'My Items' => 'Meine Elemente',
 	'Log' => 'Log',
@@ -1652,6 +1649,7 @@ use vars qw( @ISA %Lexicon );
 	'Manage Commenters' => 'Kommentar-Autoren verwalten',
 	'Member' => 'Mitglied',
 	'Permission' => 'Berechtigung',
+	'IP addresses' => 'IP-Adressen',
 	'IP Banning Settings' => 'IP-Sperren-Einstellungen',
 	'Contact' => 'Kontakt',
 	'Manage Address Book' => 'Adressbuch verwalten',
@@ -1871,7 +1869,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/IPBanList.pm
 	'IP Ban' => 'IP-Sperre',
 	'IP Bans' => 'IP-Sperren',
-	'IP addresses' => 'IP-Adressen', # Translate - New # OK
 
 ## lib/MT/JunkFilter.pm
 	'Action: Junked (score below threshold)' => 'Aktion: Als Junk eingestuft (Bewertung unterschreitet Schwellenwert)',
@@ -1892,6 +1889,14 @@ use vars qw( @ISA %Lexicon );
 	'Entry # [_1] not found.' => 'Eintrag #[_1] nicht gefunden.',
 	'Comment # [_1] not found.' => 'Kommentar #[_1] nicht gefunden.',
 	'TrackBack # [_1] not found.' => 'TrackBack #[_1] nicht gefunden.',
+	'blog' => 'Blog',
+	'website' => 'Website',
+	'search' => 'suchen', # Translate - Case
+	'author' => 'Autor', # Translate - Case
+	'ping' => 'Ping', # Translate - New
+	'theme' => 'Thema', # Translate - Case
+	'folder' => 'Ordner', # Translate - Case
+	'plugin' => 'Plugin', # Translate - New
 	'Message' => 'Mitteilung',
 	'By' => 'Von',
 	'Class' => 'Typ',
@@ -2022,7 +2027,7 @@ use vars qw( @ISA %Lexicon );
 	'Moderator' => 'Moderator',
 	'Can comment and manage feedback.' => 'Kann kommentieren und Feedback verwalten',
 	'Can comment.' => 'Kann kommentieren',
-	'__ROLE_STATUS' => 'Status', # Translate - New # OK
+	'__ROLE_STATUS' => 'Status',
 	'__ROLE_ACTIVE' => 'Aktiv',
 	'__ROLE_INACTIVE' => 'Inaktiv',
 
@@ -2923,7 +2928,7 @@ use vars qw( @ISA %Lexicon );
 	'More Aggressive' => 'aggressiv',
 	q{Apply 'nofollow' to URLs} => q{'nofollow' an URLs anhängen},
 	q{If enabled, all URLs in comments and TrackBacks will be assigned a 'nofollow' link relation.} => q{Aktivieren Sie diese Option, um bei Links in Kommentaren und TrackBacks das 'nofollow'-Attribut zu setzen.},
-	q{\'nofollow' exception for trusted commenters} => q{\'nofollow' nicht für vertraute Kommentarautoren setzen}, # Translate - Case # OK
+	q{'nofollow' exception for trusted commenters} => q{'nofollow' nicht für vertraute Kommentarautoren setzen}, # Translate - New
 	q{Do not add the 'nofollow' attribute when a comment is submitted by a trusted commenter.} => q{&#8222;nofollow&#8220;-Attribut nicht in Feedback von vertrauten Autoren setzen.},
 	'Comment Settings' => 'Kommentar-Einstellungen',
 	'Note: Commenting is currently disabled at the system level.' => 'Hinweise: Die Kommentarfunktion ist derzeit für das Gesamtsystem ausgeschaltet.',
@@ -3240,7 +3245,7 @@ use vars qw( @ISA %Lexicon );
 	'Site Path' => 'Lokaler Pfad',
 	'Parent Website' => 'Übergeordnete Website',
 	'Please choose parent website.' => 'Bitte wählen Sie die übergeordnete Website.',
-	q{Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/blog/} => q{Geben Sie die neue Adresse (URL) Ihres öffentlichen Blogs mit abschließendem '/' ein. Beispiel: http://beispiel.de/blog/}, # Translate - New # OK
+	q{Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/blog/} => q{Geben Sie die neue Adresse (URL) Ihres öffentlichen Blogs mit abschließendem '/' ein. Beispiel: http://beispiel.de/blog/},
 	'Blog Root' => 'Blog-Wurzelverzeichnis',
 	q{Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Geben Sie den neuen Pfad zur Startseiten-Datei an. Verwenden Sie kein abschließendes '/' oder '\'. Beispiel: /home/mt/public_html/blog oder C:\www\public_html\blog},
 	q{Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{Geben Sie den neuen Pfad zur Startseiten-Datei an. Bitte geben Sie möglichst einen absoluten (bei Linux mit '/' oder bei Windows mit \'C:\' beginnenden) Pfad an und verwenden Sie kein abschließendes '/' oder '\'. Beispiel: /home/mt/public_html oder C:\www\public_html},
@@ -3430,7 +3435,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] - Created by [_2]' => 'Angelegt von [_2] [_1]',
 	'[_1] - Modified by [_2]' => '[_1] - Bearbeitet von [_2]',
 	'Appears in...' => 'Verwendet in...',
-	'This asset has been used by other users.' => 'Das Asset wird von anderen Benutzern verwendet.', # Translate - New # OK
+	'This asset has been used by other users.' => 'Das Asset wird von anderen Benutzern verwendet.',
 	'Related Assets' => 'Verwandte Assets',
 	'[_1] is missing' => '[_1] fehlt',
 	'Embed Asset' => 'Asset einbetten',
@@ -3724,7 +3729,6 @@ use vars qw( @ISA %Lexicon );
 	'Category no longer exists' => 'Kategorie nicht mehr vorhanden',
 	'View all TrackBacks on this category' => 'Alle TrackBacks in dieser Kategorie anzeigen',
 	'View all TrackBacks created on this day' => 'Alle TrackBacks dieses Tages anzeigen',
-	'IP' => 'IP',
 	'View all TrackBacks from this IP address' => 'Alle TrackBacks von dieser IP-Adrese anzeigen',
 	'TrackBack Text' => 'TrackBack-Text',
 	'Excerpt of the TrackBack entry' => 'TrackBack-Auszug',
@@ -3809,9 +3813,9 @@ use vars qw( @ISA %Lexicon );
 	'Website Theme' => 'Website-Thema',
 	'Select the theme you wish to use for this website.' => 'Wählen Sie das Thema, das Sie für diese Website verwenden möchten.',
 	'Name your website. The website name can be changed at any time.' => 'Wählen Sie einen Namen für Ihre Website. Sie können der Name  auch später jederzeit ändern.',
-	'Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/' => 'Geben Sie die gewünschte Adresse (URL) Ihrere Website ohne Dateinamen ein, z.B. http://beispiel.de/', # Translate - New # OK
+	'Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/' => 'Geben Sie die gewünschte Adresse (URL) Ihrere Website ohne Dateinamen ein, z.B. http://beispiel.de/',
 	'Website Root' => 'Wurzelverzeichnis der Website',
-	q{Enter the path where your main index file will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/ or C:\www\public_html} => q{Geben Sie den Pfad an, unter dem die Startseiten-Datei abgelegt werden soll. Optimal ist eine Angabe in absoluter Form, also unter Linux mit '/' oder unter Windows mit 'C:\' am Anfang, aber eine relative Angabe ist auch möglich. Beispiel: /home/melody/public_html/ oder C:\www\public_htm}, # Translate - New # OK
+	q{Enter the path where your main index file will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/ or C:\www\public_html} => q{Geben Sie den Pfad an, unter dem die Startseiten-Datei abgelegt werden soll. Optimal ist eine Angabe in absoluter Form, also unter Linux mit '/' oder unter Windows mit 'C:\' am Anfang, aber eine relative Angabe ist auch möglich. Beispiel: /home/melody/public_html/ oder C:\www\public_htm},
 	'Create Website (s)' => 'Website anlegen (s)',
 	'This field is required.' => 'Feld erforderlich.',
 	'Please enter a valid URL.' => 'Bitte geben Sie eine gültige Adresse ein.',
@@ -3941,6 +3945,7 @@ use vars qw( @ISA %Lexicon );
 	'No thumbnail image' => 'Kein Vorschaubild',
 
 ## tmpl/cms/include/asset_upload.tmpl
+	'Upload Destination' => 'Zielverzeichnis',
 	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{Veröffentlichen Sie zuerst Ihr(e) [_1], um Dateien hochladen zu können. [_2]Konfigurieren Sie die jeweiligen Veröffentlichungs-Pfade[_3] und veröffentlichen Sie die Site bzw. das Blog dann erneut. },
 	'Your system or [_1] administrator needs to publish the [_1] before you can upload files. Please contact your system or [_1] administrator.' => 'Um Dateien hochladen zu können, muss Ihr System- oder [_1]-Administrator die Site bzw. das Blog bereits veröffentlicht haben. Bitte kontaktieren Sie daher ihren System- oder [_1]-Administrator.',
 	q{Asset file('[_1]') has been uploaded.} => q{Asset-Datei (&#8222;[_1]&#8220;) hochgeladen.},
@@ -4552,7 +4557,7 @@ use vars qw( @ISA %Lexicon );
 	'Finish install' => 'Installation abschließen',
 	'The website name is required.' => 'Bitte geben Sie  den gewünschten Namen der Website ein.',
 	'The website URL is required.' => 'Bitte geben Sie die gewünschte URL der Website ein.',
-	'Your website URL is not valid.' => 'Die angegebene URL ist nicht gültig.', # Translate - New # OK
+	'Your website URL is not valid.' => 'Die angegebene URL ist nicht gültig.',
 	'The publishing path is required.' => 'Pfadangabe erforderlich.',
 	'The timezone is required.' => 'Zeitzone erforderlich.',
 
@@ -5031,8 +5036,6 @@ false">Inhalt bearbeiten</a>
 	'Please enter all allowable options for this field as a comma delimited list' => 'Bitte geben Sie alle für dieses Feld zulässigen Optionen als kommagetrennte Liste ein.',
 	'Exclude Custom Fields' => 'Eigene Felder ausschließen',
 	'[_1] Fields' => '[_1]-Felder',
-	'blog' => 'Blog',
-	'website' => 'Website',
 	'Edit Field' => 'Feld bearbeiten',
 	'Invalid date \'[_1]\'; dates must be in the format YYYY-MM-DD HH:MM:SS.' => 'Ungültige Datumsangabe \'[_1]\' - Datumsangaben müssen das Format JJJJ-MM-TT HH:MM:SS haben.',
 	'Invalid date \'[_1]\'; dates should be real dates.' => 'Ungültige Datumsangabe \'[_1]\' - Datumsangaben sollten tatsächliche Daten sein',
@@ -5041,6 +5044,8 @@ false">Inhalt bearbeiten</a>
 	'Please ensure all required fields have been filled in.' => 'Bitte füllen Sie alle erforderlichen Felder aus.',
 	'The template tag \'[_1]\' is an invalid tag name.' => '\'[_1]\' ist ein ungültiger Befehlsname.',
 	'The template tag \'[_1]\' is already in use.' => 'Vorlagenbefehl \'[_1]\' bereits vorhanden',
+	'blog and the system' => 'Blog und das system', # Translate - New
+	'website and the system' => 'Website und das System', # Translate - New
 	'The basename \'[_1]\' is already in use. It must be unique within this [_2].' => 'Der Basisname \'[_1}\' wird bereits verwendent. Er muss auf dieser [_2] eindeutig sein.',
 	'You must select other type if object is the comment.' => 'Wählen Sie einen anderen Typ, wenn sich das Feld auf Kommentare bezieht.',
 	'type' => 'Typ',
@@ -5263,12 +5268,12 @@ false">Inhalt bearbeiten</a>
 	'Edit Custom Field' => 'Eigenes Feld bearbeiten',
 	'Create Custom Field' => 'Eigenes Feld anlegen',
 	'The selected fields(s) has been deleted from the database.' => 'Gewählten Felder aus Datenbank gelöscht.',
-	'You must enter information into the required fields highlighted below before the Custom Field can be created.' => 'Bitte füllen Sie alle hervorgehobenen Felder aus.',
-	'You must save this Custom Field before setting a default value.' => 'Speichern Sie das Feld, um den Standardwert festlegen zu können.',
-	'Choose the system object where this Custom Field should appear.' => 'Wählen Sie das Systemobjekt, auf das sich dieses Feld beziehen soll.',
+	'You must enter information into the required fields highlighted below before the custom field can be created.' => 'Bitte füllen Sie alle hervorgehobenen Felder aus.', # Translate - Case
+	'You must save this custom field before setting a default value.' => 'Speichern Sie das Feld, um den Standardwert festlegen zu können.', # Translate - Case
+	'Choose the system object where this custom field should appear.' => 'Wählen Sie das Systemobjekt, auf das sich dieses Feld beziehen soll.', # Translate - Case
 	'Required?' => 'Erforderlich?',
-	'Is data entry required in this Custom Field?' => 'Muss dieses Feld ausgefüllt werden?',
-	'Must the user enter data into this Custom Field before the object may be saved?' => 'Sollen Benutzer dieses Feld ausfüllen müssen, bevor sie das Objekt speichern können?',
+	'Is data entry required in this custom field?' => 'Muss dieses Feld ausgefüllt werden?', # Translate - Case
+	'Must the user enter data into this custom field before the object may be saved?' => 'Sollen Benutzer dieses Feld ausfüllen müssen, bevor sie das Objekt speichern können?', # Translate - Case
 	'Default' => 'Standardwert',
 	'The basename must be unique within this [_1].' => 'Der Basisname muss in diesem [_1] eindeutig sein.',
 	q{Warning: Changing this field's basename may require changes to existing templates.} => q{Hinweis: Eine Änderung des Basisnamens eines Feldes kann die Bearbeitung vorhandener Vorlagen notwendig machen.},
@@ -5710,11 +5715,12 @@ false">Inhalt bearbeiten</a>
 	'Members of group: [_1]' => 'Gruppenmitglieder: [_1]',
 	'Advanced Pack' => 'Advanced-Pack',
 	'User/Group' => 'Benutzer/Gruppe',
-	'User/Group Name' => 'Benutzer-/Gruppen-Name', # Translate - New # OK
-	'__GROUP_MEMBER_COUNT' => '', # Translate - New
+	'User/Group Name' => 'Benutzer-/Gruppen-Name',
+	'__GROUP_MEMBER_COUNT' => 'Mitglieder', # Translate - New
 	'My Groups' => 'Meine Gruppen',
 	'Group Name' => 'Gruppenname',
 	'Manage Group Members' => 'Gruppenmitglieder verwalten',
+	'Group Members' => 'Gruppenmitglieder', # Translate - New
 	'Group Member' => 'Groupmember',
 	'Permissions for Users' => 'Benutzer-Berechtigungen',
 	'Permissions for Groups' => 'Gruppen-Berechtigungen',
@@ -5750,7 +5756,7 @@ false">Inhalt bearbeiten</a>
 	'LDAP groups synchronized with existing groups.' => 'LDAP-Gruppen mit vorhandenen Gruppen sychnronisiert.',
 	'Information about the following groups was modified:' => 'Folgende Gruppen wuirden bearbeitet:',
 	'No LDAP group was found using the filter provided.' => 'Keine LDAP-Gruppe mit dem angegebenen Filter gefunden.',
-	'The filter used to search for groups was: \'[_1]\'. Search base was: \'[_2]\'' => 'Für die Gruppensuche verwendeter Filter: \'[_1]\'. Suchbasis: \'[_2]\'', # Translate - New # OK
+	'The filter used to search for groups was: \'[_1]\'. Search base was: \'[_2]\'' => 'Für die Gruppensuche verwendeter Filter: \'[_1]\'. Suchbasis: \'[_2]\'',
 	'(none)' => '(Keine)',
 	'The following groups were deleted:' => 'Die folgenden Gruppen wurden gelöscht:',
 	'Failed to create a new group: [_1]' => 'Fehler beim Anlegen einer neuen Gruppe: [_1]',
@@ -6556,6 +6562,6 @@ false">Inhalt bearbeiten</a>
 
 );
 
-## New words: 67
+## New words: 16
 
 1;
