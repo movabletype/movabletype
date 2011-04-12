@@ -6517,8 +6517,17 @@ use vars qw( @ISA %Lexicon );
 	'Download attachments' => 'Télécharger les fichiers attachés',
 	q{Requires the use of a cron job to download attachments from WordPress powered blog in the background.} => q{L'utilisation d'un cron job est requis pour télécharger en arrière plan les fichiers attachés à un blog WordPress.},
 	q{Download attachments (images and files) from the imported WordPress powered blog.} => q{Télécharger les fichiers attachés d'un blog WordPress (images et autres documents).},
-
-
+	'User Name' => 'Nom d\'utilisateur', # Translate - New
+	'__WEBSITE_BLOG_NAME' => 'Nom du site web/blog', # Translate - New
+	'__ANONYMOUS_COMMENTER' => 'Anonyme', # Translate - New
+	'Author Name' => 'Nom de l\'auteur', # Translate - New
+	'IP addresses' => 'Adresses IP', # Translate - New
+	'__ROLE_STATUS' => 'Statut', # Translate - New
+	'This asset has been used by other users.' => 'Cet élément a été utilisé par d\'autres utilisateurs.', # Translate - New
+	'Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/' => 'Entrez l\'URL de votre site web. Exclure le nom de fichier (comme index.html). Exemple : http://ww.exemple.com', # Translate - New
+	'Your website URL is not valid.' => 'L\'URL du site web n\'est pas valide.', # Translate - New
+	'User/Group Name' => 'Nom d\'utilisateur/groupe', # Translate - New
+	'The filter used to search for groups was: \'[_1]\'. Search base was: \'[_2]\'' => 'Le filtre utilisé pour la recherche dans les groupes était : \'[_1]\'. La base de la recherche était : \'[_2]\'', # Translate - New
 );
 
 ## New words: 63
