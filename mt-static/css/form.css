@@ -274,7 +274,7 @@ select.error {
 /* -- Split Button */
 .split .button {
     float: left;
-    min-width: 6.5em;
+    min-width: 5.5em;
     height: 22px;
     margin: 0;
     padding: 0 0.6em;
@@ -304,6 +304,7 @@ select.error {
 .split .detail {
     display: none;
     width: 99%;
+    font-size: 90%;
 }
 
 .ui-helper-hidden-accessible {
