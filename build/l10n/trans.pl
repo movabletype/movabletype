@@ -129,7 +129,7 @@ do {
                 }
 #                $trans =~ s/([^\\]?)'/$1\\'/g;
 #                $args{phrase} =~ s/([^\\])'/$1\\'/g;
-                $args{phrase} =~ s/^'/\\'/;
+#                $args{phrase} =~ s/^'/\\'/;
                 $args{phrase} =~ s/\\"/"/g;
 		
                 unless ($phrase{$args{phrase}}) {
@@ -193,7 +193,7 @@ do {
                 printf "\t$q%s$q => $q%s$q, # Translate - $reason\n", $args{phrase}, $trans; # Print out the translation if there was an existing one based on the lowercase string, else empty
             }
         }
-        while ($text =~ /\s*(?:["'])?label(?:["'])?\s*=>\s*(["'])(.*?)([^\\])\1/gs) { 
+        while ($text =~ /\s*(?:["'])?label(?:_plural)?(?:["'])?\s*=>\s*(["'])(.*?)([^\\])\1/gs) { 
             my($msg, %args);
             my $trans = '';
             $args{phrase} = $2.$3;
@@ -249,7 +249,7 @@ do {
             }
         }
         elsif ($tmpl =~ /\.yaml$/) {
-            while ($text =~ /\s*label:\s*(.+)/g) { 
+            while ($text =~ /\s*(?:label:|label_plural:)\s*(.+)/g) { 
                 my($msg, %args);
                 my $trans = '';
                 $args{phrase} = $1;
