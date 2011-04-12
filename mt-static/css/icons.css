@@ -160,7 +160,8 @@
 .icon-mini-new-asset    { background-image: url(../images/nav_icons/mini/asset-new.gif); }
 .icon-mini-delete span  { display: none; }
 
-.listing img {
+.si img, 
+.view img  {
     background-repeat: no-repeat;
     background-position: center;
 }

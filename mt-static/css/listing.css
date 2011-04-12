@@ -228,6 +228,10 @@ tfoot .col.head{
     margin: 8px 0;
     line-height: 22px;
 }
+.actions-bar .indicator img {
+    margin-bottom: 0.2em;
+    vertical-align: bottom;
+}
 .pagenav, 
 .current-rows {
     margin: 0 0.25em;
