@@ -1854,8 +1854,8 @@ ul.tabs li a {
 }
 ul#asset-list li {
     position: relative;
-    line-height: 1.2;
     padding: 5px 0 0 18px;
+    line-height: 1.2;
     background-repeat: no-repeat;
     background-position: left center;
 }
@@ -1870,22 +1870,15 @@ ul#asset-list li a.asset-title {
 }
 ul#asset-list li a.remove-asset {
     position: absolute;
-    background: transparent url(../images/status_icons/close.gif) center no-repeat;
-    top: 50%;
     right: 0;
-    width: 10px;
-    height: 10px;
-    margin-top: -5px;
-}
-ul#asset-list li a.remove-asset span { 
-    display: none;
 }
 ul#asset-list li img.list-image {
     position: absolute;
-    left: -120px;
+    z-index: 100;
+    left: -115px;
     top: -5px;
-    padding: 8px;
-    background-color: #dcdddd;
+    padding: 5px;
+    background-color: #7b7c7d;
     border-radius: 5px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
