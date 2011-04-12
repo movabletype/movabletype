@@ -2253,16 +2253,27 @@ input#system_performance_logging_threshold {
     text-decoration: none;
 }
 #list-plugins .plugin-group {
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 #list-plugins .plugin-group-name { 
-    margin-bottom: 5px;
+    margin: 0 0 10px;
 }
 #list-plugins .plugin {
     margin-bottom: -1px;
     border: 1px solid #c0c6c9;
     background-color: #fff;
 }
+#list-plugins .plugin.first-child {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    -moz-border-radius: 5px 5px 0 0;
+}
+#list-plugins .plugin.last-child {
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    -moz-border-radius: 0 0 5px 5px;
+}
+#list-plugins .plugin:hover, 
 #list-plugins .plugin-expanded {
     background-color: #f9f9f9;
 }
@@ -2282,7 +2293,6 @@ input#system_performance_logging_threshold {
 }
 #list-plugins .plugin-name a:hover {
     display: block;
-    background-color: #f9f9f9;
 }
 #list-plugins .plugin-status {
     position: absolute;
@@ -2361,6 +2371,7 @@ input#system_performance_logging_threshold {
     border-bottom-left-radius: 5px;
     -moz-border-radius: 0 0 5px 5px;
 }
+#list-themes .theme:hover, 
 #list-themes .theme-expanded { 
     background-color: #f9f9f9;
 }
