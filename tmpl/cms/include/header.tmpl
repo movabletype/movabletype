@@ -136,7 +136,7 @@
       <mt:if name="can_search_replace">
           <li id="cms-search" class="nav-link">
             <a href="#" class="detail-link"><span><__trans phrase="Search"><mt:if name="search_label"> <mt:var name="search_label"><mt:else> <__trans phrase="Entries"></mt:if></span></a>
-            <div id="quick-search-form" class="detail search-form">
+            <div id="quick-search-form" class="detail search-form" style="display: none;">
               <form id="basic-search" class="basic-search" name="quicksearch" method="get" action="<$mt:var name="mt_url"$>">
                 <input type="hidden" name="__mode" value="search_replace" />
                 <input type="hidden" name="_type" value="<mt:if name="search_type"><mt:var name="search_type"><mt:else><mt:if name="object_type"><$mt:var name="object_type"$><mt:else>entry</mt:if></mt:if>" />
