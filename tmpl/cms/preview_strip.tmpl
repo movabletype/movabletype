@@ -1,7 +1,7 @@
 <mt:setvar name="edit_button_value" value="<__trans phrase="Return to the compose screen">">
 <mt:setvar name="edit_button_title" value="<__trans phrase="Return to the compose screen (e)">">
 <mt:if name="object_type" eq="entry">
-  <if name="status" eq="2">
+  <mt:if name="status" eq="2">
     <mt:setvar name="save_button_value" value="<__trans phrase="Publish this entry">">
     <mt:setvar name="save_button_title" value="<__trans phrase="Publish this entry (s)">">
   <mt:else>
