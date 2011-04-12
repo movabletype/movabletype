@@ -29,6 +29,7 @@ use vars qw( %Lexicon );
 	' and asset will be tagged (\'[_1]\')...' => 'アイテムにタグ([_1])を付けています...',
 	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'ブログ記事「[_1]」は既にインポートされているのでスキップします。',
 	'Saving page (\'[_1]\')...' => 'ウェブページ(\'[_1]\')を保存しています...',
+	'Entry has no MT::Trackback object!' => 'ブログ記事にトラックバックの設定がありません',
 	'Assigning permissions for new user...' => '新しいユーザーに権限を追加しています...',
 	'Saving permission failed: [_1]' => '権限の保存中にエラーが発生しました: [_1]',
 
