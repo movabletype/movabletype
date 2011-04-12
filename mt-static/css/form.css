@@ -120,22 +120,20 @@ fieldset {
     border-color: #c53d43;
     background-color: #f2b1b1;
 }
-.readonly { 
-    background-color: #dcdddd ! important;
-    color: #7b7c7d;
-}
-
 .text:focus {
     background-color: #fff;
     outline: 0;
 }
-
 .text.disabled {
     border-color: #dcdddd;
     background-color: #f3f3f3;
     box-shadow: none;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
+}
+.readonly { 
+    background-color: #dcdddd ! important;
+    color: #7b7c7d;
 }
 
 select { 
@@ -151,9 +149,10 @@ select {
     width: 100%;
 }
 select.error {
-    border-color: #c53d43;
+    border-color: #c53d43 ! important;
 }
 
+/* -- Batch Edit */
 #notification-listing-table input[type="text"], 
 .batch-edit input[type="text"] { 
     width: 100%;
@@ -194,7 +193,7 @@ select.error {
 }
 .button:hover {
     border-color: #7b7c7d;
-    color: inherit;
+    color: #2b2b2b;
     background-color: #fafafa;
     background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e9eaea));
     background: -moz-linear-gradient(top, #fafafa 0%, #e9eaea 100%);
@@ -311,9 +310,6 @@ select.error {
     position: absolute;
 }
 
-#alignment li {
-    display: inline;
-}
 #alignment .ui-button {
     width: 50px;
     margin: 0;

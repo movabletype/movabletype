@@ -1614,13 +1614,18 @@ jQuery('.actions-bar a.button').click(function() {
 });
 
 jQuery('.filtertype .minus').live('click', function() {
+  var $item = jQuery(this).parents('.filteritem');
   jQuery(this).parents('.filtertype').find('input').mtUnvalidate().end().remove();
+  if ( $item.find('.filtertype').length == 1 ) {
+    $item.find('.minus').hide();
+  }
 });
 
 jQuery('.filtertype .plus').live('click', function() {
   var op = 'and';
   jQuery(this).parents('.filteritem').addClass(op);
   var $filtertype = jQuery(this).parents('.filtertype');
+  var $filteritem = jQuery(this).parents('.filteritem');
   $filtertype.attr('class').match(/type-(\w+)/);
   var type = RegExp.$1;
   var $node = filterItem(type, true);
@@ -1641,6 +1646,7 @@ jQuery('.filtertype .plus').live('click', function() {
       prevText: '&lt;',
       nextText: '&gt;'
   });
+  $filteritem.find('.minus').show();
 });
 
 jQuery(window).bind('listReady', function(){

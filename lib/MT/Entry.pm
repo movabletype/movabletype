@@ -552,11 +552,20 @@ sub list_props {
                 my $blog = MT->app ? MT->app->blog : undef;
                 require MT::Util;
                 my $now = MT::Util::epoch2ts( $blog, time() );
+                my $from   = $args->{from}   || undef;
+                my $to     = $args->{to}     || undef;
+                my $origin = $args->{origin} || undef;
+                $from   =~ s/\D//g;
+                $to     =~ s/\D//g;
+                $origin =~ s/\D//g;
+                $from .= '000000' if $from;
+                $to   .= '235959' if $to;
+
                 if ( 'range' eq $option ) {
                     $query = [
                         '-and',
-                        { op => '>', value => $args->{from} },
-                        { op => '<', value => $args->{to} },
+                        { op => '>', value => $from },
+                        { op => '<', value => $to   },
                     ];
                 }
                 elsif ( 'days' eq $option ) {
@@ -570,10 +579,10 @@ sub list_props {
                     ];
                 }
                 elsif ( 'before' eq $option ) {
-                    $query = { op => '<', value => $args->{origin} };
+                    $query = { op => '<', value => $origin . '000000' };
                 }
                 elsif ( 'after' eq $option ) {
-                    $query = { op => '>', value => $args->{origin} };
+                    $query = { op => '>', value => $origin . '235959' };
                 }
                 elsif ( 'future' eq $option ) {
                     $query = { op => '>', value => $now };

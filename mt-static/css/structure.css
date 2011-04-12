@@ -188,11 +188,13 @@ pre {
     left: 50%;
     margin: -2px 0 0 -4px;
 }
-.filter-header .toggle-button {
-    width: 35px;
-}
 .menu-nav .toggle-button { 
     width: 20px;
+}
+.filter-header .toggle-button {
+    width: 30px;
+    border-top-right-radius: 5px;
+    -moz-border-radius: 0 5px 0 0;
 }
 .filter-header .toggle-button img, 
 .menu-nav .toggle-button img { 
@@ -2251,18 +2253,29 @@ input#system_performance_logging_threshold {
     text-decoration: none;
 }
 #list-plugins .plugin-group {
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 #list-plugins .plugin-group-name { 
-    margin-bottom: 5px;
+    margin: 0 0 10px;
 }
 #list-plugins .plugin {
     margin-bottom: -1px;
     border: 1px solid #c0c6c9;
     background-color: #fff;
 }
+#list-plugins .plugin.first-child {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    -moz-border-radius: 5px 5px 0 0;
+}
+#list-plugins .plugin.last-child {
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    -moz-border-radius: 0 0 5px 5px;
+}
+#list-plugins .plugin:hover, 
 #list-plugins .plugin-expanded {
-    background-color: #f8fbf8;
+    background-color: #f9f9f9;
 }
 #list-plugins .plugin-header { 
     position: relative;
@@ -2280,7 +2293,6 @@ input#system_performance_logging_threshold {
 }
 #list-plugins .plugin-name a:hover {
     display: block;
-    background-color: #f8fbf8;
 }
 #list-plugins .plugin-status {
     position: absolute;
@@ -2334,25 +2346,42 @@ input#system_performance_logging_threshold {
 }
 
 /* -- Theme Setting */
+#list-themes .theme-group { 
+    margin-bottom: 25px;
+}
+#list-themes .theme-group-name { 
+    margin: 0 0 10px;
+}
 #list-themes .theme { 
     position: relative;
     clear: both;
     overflow: auto;
     margin-bottom: -1px;
-    padding: 15px;
+    padding: 10px;
     border: 1px solid #c0c6c9;
     background-color: #fff;
 }
-#list-themes .theme-expanded { 
-    background-color: #f8fbf8;
+#list-themes .theme.first-child {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    -moz-border-radius: 5px 5px 0 0;
 }
-#list-themes .current-theme { 
-    margin-bottom: 15px;
+#list-themes .theme.last-child {
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    -moz-border-radius: 0 0 5px 5px;
+}
+#list-themes .theme:hover, 
+#list-themes .theme-expanded { 
+    background-color: #f9f9f9;
 }
 #list-themes .theme-status { 
     position: absolute;
     top: 10px;
     right: 10px;
+}
+#list-themes .theme-status .button { 
+    margin: 0 0 0 0.5em;
 }
 #list-themes .theme-status .alert-warning a { 
     color: #2b2b2b;
@@ -2368,14 +2397,8 @@ input#system_performance_logging_threshold {
     margin: 0 0 3px;
     font-size: 115%;
 }
-#list-themes .theme-title a { 
-    color: #2b2b2b;
-}
-#list-themes .disabled .theme-title a { 
-    color: #7b7c7d;
-}
 #list-themes .theme-author {
-    margin-bottom: 10px;
+    margin: 5px 0 10px;
 }
 #list-themes .description { 
     margin: 0;
@@ -2571,18 +2594,25 @@ div.template-group-content.active {
     padding: 0.3em 25px 0.3em 0.5em;
     border: 1px solid #c0c6c9;
     background: #f3f3f3;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
     text-decoration: none;
 }
 .display-options.active .toggle-link {
     border-bottom: 0;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-    -moz-border-radius: 3px 3px 0 0;
+    -moz-border-radius: 5px 5px 0 0;
 }
 .display-options .toggle-button {
     width: 18px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    -moz-border-radius: 0 3px 3px 0;
+}
+.display-options.active .toggle-button {
+    border-bottom-right-radius: 0;
+    -moz-border-radius: 0 5px 0 0;
 }
 .display-options-detail {
     display: none;
@@ -2590,9 +2620,9 @@ div.template-group-content.active {
     padding: 10px 10px 0;
     border: 1px solid #c0c6c9;
     text-align: left;
-    border-radius: 3px;
+    border-radius: 5px;
     border-top-right-radius: 0;
-    -moz-border-radius: 3px 0 3px 3px;
+    -moz-border-radius: 5px 0 5px 5px;
 }
 
 /* - Footer */
