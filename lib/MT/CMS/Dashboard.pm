@@ -842,6 +842,9 @@ sub _build_favorite_websites_data {
     # Sort by recently access
     my $i;
     my %sorted = map { $_ => $i++ } @fav_websites;
+    foreach ( @websites ) {
+        $sorted{$_->id} = scalar @websites if !exists $sorted{$_->id};
+    }
     @websites
         = sort { ( $sorted{ $a->id } || 0 ) <=> ( $sorted{ $b->id } || 0 ) }
         @websites;
@@ -980,6 +983,9 @@ sub _build_favorite_blogs_data {
     # Sort by recently access
     my $i;
     my %sorted = map { $_ => $i++ } @fav_blogs;
+    foreach ( @blogs ) {
+        $sorted{$_->id} = scalar @blogs if !exists $sorted{$_->id};
+    }
     @blogs
         = sort { ( $sorted{ $a->id } || 0 ) <=> ( $sorted{ $b->id } || 0 ) }
         @blogs;
