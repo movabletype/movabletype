@@ -1269,7 +1269,8 @@ jQuery('#apply').click(function() {
   renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
   return false;
 });
-jQuery('#<mt:var name="object_type">-listing-form').submit(function() {
+
+jQuery('#<mt:var name="object_type">-listing-form').bind('submit.as_apply', function() {
   jQuery('#apply').click();
   return false;
 });
@@ -1587,8 +1588,9 @@ function doForMarked(formid, action, singlar, plural, phrase, xhr) {
     renderList(params);
   else if ( opt['dialog'] )
     jQuery.fn.mtDialog.open(ScriptURI + '?' + $form.serialize());
-  else
-    $form.submit();
+  else {
+    $form.unbind('submit.as_apply').submit();
+  }
 }
 
 jQuery('button.mt-<mt:var name="object_type">-listing-form-action').click(function() {
