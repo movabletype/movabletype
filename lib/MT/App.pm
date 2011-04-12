@@ -957,7 +957,7 @@ sub init_query {
                     || ( $d eq '' )
                     || ( $d !~ m/[^\x20-\x7E]/ ) )
                 {
-                    push @param, $d if $transcode;
+                    push @param, $d;
                     next;
                 }
                 $d
