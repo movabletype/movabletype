@@ -400,7 +400,7 @@ sub split {
 
         #$tag =~ s/(^[\s,]+|[\s,]+$)//gs;
         $tag =~ s/(^\s+|\s+$)//gs;
-        $tag =~ s/\s+/ /gs;
+        #$tag =~ s/\s+/ /gs;
         my $n8d_tag = MT::Tag->normalize($tag);
         next if $n8d_tag eq '';
         push @tags, $tag if $tag ne '';
