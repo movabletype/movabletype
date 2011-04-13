@@ -932,6 +932,11 @@ ul.tabs li a {
     font-weight: bold;
     text-shadow: #f8fbf8 0 1px 0;
 }
+.current .top-menu-link:hover { 
+    background-color: #fafafa;
+    background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e9eaea));
+    background: -moz-linear-gradient(top, #fafafa 0%, #e9eaea 100%);
+}
 .top-menu div { 
     position: relative;
     border-style: solid solid none;
