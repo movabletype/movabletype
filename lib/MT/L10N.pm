@@ -7,7 +7,7 @@
 package MT::L10N;
 use strict;
 use Locale::Maketext;
-
+BEGIN { warn "l10n loaded" }
 @MT::L10N::ISA = qw( Locale::Maketext );
 @MT::L10N::Lexicon = ( _AUTO => 1, );
 

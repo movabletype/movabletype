@@ -321,7 +321,7 @@ function showMessage( content, cls ){
         jQuery('<p />')
           .attr('class', 'msg-text')
           .append(content)
-          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>')
+          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close" escape="js"></span>')
       )
     );
   }
@@ -333,7 +333,7 @@ function showMessage( content, cls ){
         jQuery('<p />')
           .attr('class', 'msg-text')
           .append(content)
-          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>')
+          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close" escape="js"></span>')
       )
     );
   }
@@ -347,7 +347,7 @@ function loginAgain(fn) {
       var dialog = jQuery('#mt-dialog-iframe').contents();
       dialog
         .find('#sign-in-button')
-          .text('<__trans phrase="Continue">')
+          .text('<__trans phrase="Continue"> escape="js"')
           .unbind()
           .click(function(){
             dialog.find('#msg-block').empty();
@@ -370,7 +370,7 @@ function loginAgain(fn) {
                 dialog.find('#password').val('');
                 dialog
                   .find('#msg-block')
-                  .append('<div class="msg msg-error"><__trans phrase="Invalid login."></div>');
+                  .append('<div class="msg msg-error"><__trans phrase="Invalid login." escape="js"></div>');
               }
             });
             return false;
@@ -392,15 +392,15 @@ function renderFilterList() {
 
   jQuery('<div class="filter-list-block">')
     .append(
-      jQuery('<h3 class="filter-list-label" />').text('<__trans phrase="My Filters">'))
+      jQuery('<h3 class="filter-list-label" />').text('<__trans phrase="My Filters"> escape="js"'))
     .append(
-      jQuery('<ul id="user-filters" class="editable"><li class="filter line"><a href="#" id="new_filter" class="icon-mini-left addnew create-new apply-link"><__trans phrase="Create New"></a></li></ul>'))
+      jQuery('<ul id="user-filters" class="editable"><li class="filter line"><a href="#" id="new_filter" class="icon-mini-left addnew create-new apply-link"><__trans phrase="Create New" escape="js"></a></li></ul>'))
     .appendTo('#dialog_filter_content');
 
   if ( has_sys_filter ) {
     jQuery('<div class="filter-list-block">')
       .append(
-        jQuery('<h3 class="filter-list-label" />').text('<__trans phrase="Built in Filters">'))
+        jQuery('<h3 class="filter-list-label" />').text('<__trans phrase="Built in Filters"> escape="js"'))
       .append(
         jQuery('<ul id="built-in-filters" />'))
       .appendTo('#dialog_filter_content');
@@ -412,7 +412,7 @@ function renderFilterList() {
       var line = '<span class="filter-label unit size2of3"><a href="#'+i+'" class="apply-link '
         + ( filter.can_save ? 'user-filter' : 'system-filter' )
         + '">'+filter.label+'</a></span>'
-        + '<span class="item-ctrl unit size1of3"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Rename"></a><a href="#'+i+'" class="delete-link action-icon icon16 icon-delete"><__trans phrase="Delete"></a></span>';
+        + '<span class="item-ctrl unit size1of3"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Rename" escape="js"></a><a href="#'+i+'" class="delete-link action-icon icon16 icon-delete"><__trans phrase="Delete" escape="js"></a></span>';
       jQuery('<li class="filter line" />').append(line).prependTo('#user-filters');
     }
     else {
@@ -426,8 +426,8 @@ function renderFilterList() {
     jQuery('#filter-detail').show().parent('#filter').addClass('active');
     jQuery('#item_list').attr('selectedIndex', 0);
     resetFilterDetails();
-    jQuery('input[name=filter_name]').mtUnvalidate().val('<__trans phrase="New Filter">');
-    jQuery('#opener').html('<__trans phrase="New Filter">');
+    jQuery('input[name=filter_name]').mtUnvalidate().val('<__trans phrase="New Filter" escape="js">');
+    jQuery('#opener').html('<__trans phrase="New Filter" escape="js">');
     jQuery('#filter_id').val('');
     jQuery('input[name=filter_id]').val('');
     updateItemList();
@@ -452,7 +452,7 @@ function renderFilterList() {
     var message = trans("Are you sure you want to remove the filter '[_1]'?", label);
     if (confirm(message)) {
       $this.parents('.filter').addClass('edit-mode').find('.item-ctrl').hide();
-      $this.parents('.filter').find('.filter-label').hide().after( jQuery('<span class="indicator"><img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></span>') );
+      $this.parents('.filter').find('.filter-label').hide().after( jQuery('<span class="indicator"><img alt="<__trans phrase="Loading..." escape="js">" src="<mt:var name="static_uri">images/indicator.white.gif" /></span>') );
       removeFilter(this);
     }
     return false;
@@ -515,7 +515,7 @@ function openFilterRenameField() {
     .val(text)
     .appendTo($label);
   $this.hide().next('.delete-link').hide();
-  jQuery('<a href="#'+fid+'" class="tool-link save button"><__trans phrase="Save"></a>').bind('click', function() {
+  jQuery('<a href="#'+fid+'" class="tool-link save button"><__trans phrase="Save" escape="js"></a>').bind('click', function() {
     var name = jQuery('#filter_'+fid).val();
     if (name == text) {
         // Not modified.
@@ -525,11 +525,11 @@ function openFilterRenameField() {
     if ( !jQuery('#filter_' + fid).mtValidate('dialog') )
         return false;
     $this.parents('.filter').find('.item-ctrl').hide();
-    $this.parents('.filter').find('input').hide().after( jQuery('<span class="indicator"><img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></span>') );
+    $this.parents('.filter').find('input').hide().after( jQuery('<span class="indicator"><img alt="<__trans phrase="Loading..." escape="js">" src="<mt:var name="static_uri">images/indicator.white.gif" /></span>') );
     renameFilter(index, fid, name);
     return false;
   }).appendTo($handle);
-  jQuery('<a href="#'+fid+'" class="tool-link cancel button"><__trans phrase="Cancel"></a>')
+  jQuery('<a href="#'+fid+'" class="tool-link cancel button"><__trans phrase="Cancel" escape="js"></a>')
     .bind('click', cancelFilterRenameField )
     .appendTo($handle);
   return false;
@@ -695,22 +695,22 @@ function renderPagination(count, limit, page, last, total) {
   currentPage = page;
 
   if (usefirst) {
-    $e.append('<a href="#" class="pagenav start">&laquo; <__trans phrase="First"></a>')
-      .append('<a href="#" class="pagenav to-start">&lsaquo; <__trans phrase="Prev"></a>');
+    $e.append('<a href="#" class="pagenav start">&laquo; <__trans phrase="First" escape="js"></a>')
+      .append('<a href="#" class="pagenav to-start">&lsaquo; <__trans phrase="Prev" escape="js"></a>');
   } else {
-    $e.append('<span class="pagenav start disabled">&laquo; <__trans phrase="First"></span>')
-      .append('<span class="pagenav to-start disabled">&lsaquo; <__trans phrase="Prev"></span>');
+    $e.append('<span class="pagenav start disabled">&laquo; <__trans phrase="First" escape="js"></span>')
+      .append('<span class="pagenav to-start disabled">&lsaquo; <__trans phrase="Prev" escape="js"></span>');
   }
   var end = (page == last) ? total : start+limit-1;
   var page_status = trans('[_1] - [_2] of [_3]', start, end, total);
 
   $e.append('<span class="current-rows">'+page_status+'</span>')
   if (uselast) {
-    $e.append('<a href="#" class="pagenav to-end"><__trans phrase="Next"> &rsaquo;</a>')
-      .append('<a href="#" class="pagenav end"><__trans phrase="Last"> &raquo;</a>');
+    $e.append('<a href="#" class="pagenav to-end"><__trans phrase="Next" escape="js"> &rsaquo;</a>')
+      .append('<a href="#" class="pagenav end"><__trans phrase="Last" escape="js"> &raquo;</a>');
   } else {
-    $e.append('<span class="pagenav to-end disabled"><__trans phrase="Next"> &rsaquo;</span>')
-      .append('<span class="pagenav end disabled"><__trans phrase="Last"> &raquo;</span>');
+    $e.append('<span class="pagenav to-end disabled"><__trans phrase="Next" escape="js"> &rsaquo;</span>')
+      .append('<span class="pagenav end disabled"><__trans phrase="Last" escape="js"> &raquo;</span>');
   }
   jQuery('a.start').click(function() {
     saveChecked(page);
@@ -1208,7 +1208,7 @@ jQuery('#item_list').change(function() {
         .attr('name', id);
     });
   jQuery('#item_list').attr('selectedIndex', 0);
-  jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item"></span>')
+  jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item" escape="js"></span>')
     .insertAfter($item)
     .bind('click', function() {
       jQuery(this).parent('.filteritem').find('input').mtUnvalidate().end().remove();
@@ -1217,7 +1217,7 @@ jQuery('#item_list').change(function() {
     });
   if ( allPass ) {
     jQuery('#filter_id').val('');
-    jQuery('#opener').text('<__trans phrase="Unknown Filter">');
+    jQuery('#opener').text('<__trans phrase="Unknown Filter" escape="js">');
     editNewFilter = 1;
     editSysFilter = 0;
     allPass       = 0;
@@ -1414,7 +1414,7 @@ function addItems(items, op) {
         .insertAfter('.selectfilter')
         .wrap($div)
         .find('.minus').hide().end();
-      jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item"></span>')
+      jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item" escape="js"></span>')
         .insertAfter($item)
         .bind('click', function() {
           jQuery(this).parent('.filteritem').find('input').mtUnvalidate().end().remove();

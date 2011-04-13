@@ -1905,6 +1905,8 @@ sub update_ping_list {
 
     sub set_language {
         my $pkg = shift;
+        local $SIG{__WARN__} = sub {};
+        #no warnings "deprecated";
         require MT::L10N;
         $LH = MT::L10N->get_handle(@_);
 
