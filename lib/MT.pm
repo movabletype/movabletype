@@ -2289,28 +2289,30 @@ sub load_tmpl {
 }
 
 sub _svn_revision {
+    my $mt = shift;
+    my $wc_base = $mt->mt_dir;
+    return unless -d File::Spec->catdir( $wc_base, '.git' );
 
-# Temporary comment out
-#    my $mt = shift;
-#    ## Ugly, but it works: find the revision number and branch name
-#    ## that we're running off of.
-#    my($rev, $branch);
-#    my $wc_base = $mt->{mt_dir};
-#    return unless -d File::Spec->catdir( $wc_base, '.svn' );
-#    if (-e $wc_base && open my $fh, '-|', "LC_ALL=en_US;export LC_ALL;/opt/local/bin/svn info $wc_base") {
-#        my $content = do { local $/ = undef; <$fh> };
-#        if ($content =~ /URL:.*\/branches\/([^\/"\n]*)/) {
-#            $branch = $1;
-#        } elsif ($content =~ /URL:.*\/trunk/) {
-#            $branch = "trunk";
-#        }
-#        if ($content =~ /Last Changed Rev: (\d+)/) {
-#            $rev = $1;
-#        }
-#        close $fh;
-#    }
-#    return { revision => $rev, branch => $branch };
-    return undef;
+    # Currently, we are on the Github.
+    eval {
+        my $revision = qx{ git log --pretty=format:'' | wc -l };
+        chomp $revision;
+        $revision =~ s/\s*(.*)/r$1/;
+
+        my $hash = qx{ git log -1 | grep commit };
+        chomp $hash;
+        if ( $hash =~ s/commit (.*)/$1/ ) {
+            $hash = substr($hash, 0, 8 );
+        }
+
+        my $branch = qx{ git branch };
+        chomp $branch;
+        if ( $branch =~ m/\*\s(.*)/ ) {
+            $branch = $1;
+        }
+
+        return { revision => "$revision-$hash", branch => $branch };
+    };
 }
 
 sub set_default_tmpl_params {
