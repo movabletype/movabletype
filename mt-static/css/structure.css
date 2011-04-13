@@ -1525,6 +1525,9 @@ ul.tabs li a {
     margin-bottom: 10px;
     padding: 5px 10px;
     border-bottom: 1px solid #fff;
+    background-image: url(../images/sort_handle.png);
+    background-repeat: no-repeat;
+    background-position: 5px center;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     -moz-border-radius: 5px 5px 0 0;
@@ -1532,11 +1535,8 @@ ul.tabs li a {
 .sort-enabled .field-header:hover {
     cursor: move;
 }
-.sort-enabled:hover .field-header {
-    background-color: #dcdddd;
-    background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
-    background: -moz-linear-gradient(top, #f3f3f3 0%, #dcdddd 100%);
-    border-bottom: 1px solid #c0c6c9;
+.sort-enabled .field-header label {
+    margin-left: 20px;
 }
 .sort-enabled .field-content {
     padding: 0 10px 10px;
