@@ -987,8 +987,8 @@ use vars qw( @ISA %Lexicon );
 	'The approval could not be committed: [_1]' => 'L\'approbation ne peut être réalisée : [_1]',
 	'Userpic' => 'Image de l\'utilisateur',
 	'User Info' => 'Infos de l\'utilisateur',
-	'__ENTRY_COUNT' => '__ENTRY_COUNT',
-	'__COMMENT_COUNT' => '__COMMENT_COUNT',
+	'__ENTRY_COUNT' => 'Nombre de notes',
+	'__COMMENT_COUNT' => 'Nombre de commentaires',
 	'Created by' => 'Créé par',
 	'Status' => 'Statut',
 	'Active' => 'Actif',
@@ -998,7 +998,7 @@ use vars qw( @ISA %Lexicon );
 	'Enabled Users' => 'Utilisateurs activés',
 	'Disabled Users' => 'Utilisateurs désactivés',
 	'Pending Users' => 'Utilisateurs en attente',
-	'__COMMENTER_APPROVED' => '__COMMENTER_APPROVED',
+	'__COMMENTER_APPROVED' => 'Approuvé',
 	'Banned' => 'Banni',
 	'Enabled Commenters' => 'Auteurs de commentaire activés',
 	'Disabled Commenters' => 'Auteurs de commentaire désactivés',
@@ -1087,8 +1087,8 @@ use vars qw( @ISA %Lexicon );
 	'Cloning template maps for blog...' => 'Clonage des tables de correspondances de gabarit du blog...',
 	'Failed to load theme [_1]: [_2]' => 'Echec lors du chargement du thème [_1] : [_2]',
 	'Failed to apply theme [_1]: [_2]' => 'Echec lors de l\'application du thème [_1] : [_2]',
-	'__PAGE_COUNT' => '__PAGE_COUNT',
-	'__ASSET_COUNT' => '__ASSET_COUNT',
+	'__PAGE_COUNT' => 'Nombre de pages',
+	'__ASSET_COUNT' => 'Nombre de éléments',
 	'Members' => 'Membres',
 	'Theme' => 'Thème',
 
@@ -1247,7 +1247,7 @@ use vars qw( @ISA %Lexicon );
 	'Load failed: [_1]' => 'Échec de chargement : [_1]',
 	'(no reason given)' => '(sans raison donnée)',
 	'New Filter' => 'Nouveau filtre',
-	'__SELECT_FILTER_VERB' => '__SELECT_FILTER_VERB',
+	'__SELECT_FILTER_VERB' => 'est',
 	'All [_1]' => 'Tous(tes) les [_1]',
 	'[_1] Feed' => 'Flux [_1]',
 	'Unknown list type' => 'Type de liste inconnue',
@@ -1774,7 +1774,7 @@ use vars qw( @ISA %Lexicon );
 	'Link' => 'Lien',
 	'Primary Category' => 'Catégorie primaire',
 	'-' => '-',
-	'__PING_COUNT' => '__PING_COUNT',
+	'__PING_COUNT' => 'Nombre de pings',
 	'Published' => 'Publié',
 	'Reviewing' => 'En cours de relecture',
 	'Scheduled' => 'Planifié',
@@ -2031,8 +2031,8 @@ use vars qw( @ISA %Lexicon );
 	'Can comment and manage feedback.' => 'Peut commenter et gérer les commentaires.',
 	'Can comment.' => 'Peut commenter.',
 	'__ROLE_STATUS' => 'Statut',
-	'__ROLE_ACTIVE' => '__ROLE_ACTIVE',
-	'__ROLE_INACTIVE' => '__ROLE_INACTIVE',
+	'__ROLE_ACTIVE' => 'En usage',
+	'__ROLE_INACTIVE' => 'Pas en usage',
 
 ## lib/MT/Scorable.pm
 	'Object must be saved first.' => 'L\'objet doit être d\'abord sauvegardé.',
@@ -2446,7 +2446,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while publishing scheduled entries: [_1]' => 'Une erreur s\'est produite en publiant les notes planifiées: [_1]',
 
 ## lib/MT/Website.pm
-	'__BLOG_COUNT' => '__BLOG_COUNT',
+	'__BLOG_COUNT' => 'Nombre de blogs',
 
 ## lib/MT/Worker/Publish.pm
 	'Error rebuilding file [_1]:[_2]' => 'Erreur lors de la reconstruction du fichier [_1]:[_2]',
@@ -2994,7 +2994,7 @@ use vars qw( @ISA %Lexicon );
 	'Disable Plugins' => 'Désactiver les plugins',
 	'Enable plugin functionality' => 'Activer la prise en charge des plugins',
 	'Enable Plugins' => 'Activer les plugins',
-	'_PLUGIN_DIRECTORY_URL' => '_PLUGIN_DIRECTORY_URL',
+	'_PLUGIN_DIRECTORY_URL' => 'http://plugins.movabletype.org',
 	'Find Plugins' => 'Trouver des plugins',
 	'Your plugin settings have been saved.' => 'Les paramètres de votre plugin ont été enregistrés.',
 	'Your plugin settings have been reset.' => 'Les paramètres de votre plugin on été réinitialisés.',
@@ -3458,7 +3458,7 @@ use vars qw( @ISA %Lexicon );
 	'This user was classified as disabled.' => 'Cet utilisateur a été marqué comme désactivé.',
 	q{User properties} => q{Propriétés de l'utilisateur},
 	'Your web services password is currently' => 'Votre mot de passe est actuellement',
-	'_WARNING_PASSWORD_RESET_SINGLE' => '_WARNING_PASSWORD_RESET_SINGLE',
+	'_WARNING_PASSWORD_RESET_SINGLE' => 'Vous êtes sur le point de réinitialiser le mot de passe pour "[_1]". Un nouveau mot de passe sera généré aléatoirement et envoyé directement à leur adresse e-mail ([_2]). Voulez-vous continuer?',
 	q{Error occurred while removing userpic.} => q{Une erreur est survenue lors du retrait de l'avatar.},
 	'_USER_STATUS_CAPTION' => 'Statut',
 	q{Status of user in the system. Disabling a user prevents that person from using the system but preserves their content and history.} => q{Statut d'un utilisateur dans le système. Désactiver un utilisateur évite que cette personne utilise le système mais garde son contenu et ses historiques.},
@@ -3977,11 +3977,11 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/backup_end.tmpl
 	'All of the data has been backed up successfully!' => 'Toutes les données ont été sauvegardées avec succès!',
-	'_BACKUP_TEMPDIR_WARNING' => '_BACKUP_TEMPDIR_WARNING',
+	'_BACKUP_TEMPDIR_WARNING' => 'Les données demandées ont été sauvegardées avec succès dans le répertoire [_1]. Assurez-vous que vous téléchargez et <strong> puis supprimer </ strong> les fichiers mentionnés ci-dessus à partir de [_1] <strong> immédiatement </ strong> car les fichiers de sauvegarde contiennent des informations sensibles.',
 	'Backup Files' => 'Fichiers de sauvegarde',
 	'Download This File' => 'Télécharger ce fichier',
 	'Download: [_1]' => 'Télécharger : [_1]',
-	'_BACKUP_DOWNLOAD_MESSAGE' => '_BACKUP_DOWNLOAD_MESSAGE',
+	'_BACKUP_DOWNLOAD_MESSAGE' => 'Téléchargement du fichier de sauvegarde démarre automatiquement en quelques secondes. Si pour quelque raison il n\'a pas, cliquez <a href="javascript:(void)" onclick="submit_form()"> ici </ a> pour commencer à télécharger manuellement. Notez que vous pouvez télécharger le fichier de sauvegarde une seule fois pour une session.',
 	'An error occurred during the backup process: [_1]' => 'Une erreur est survenue pendant la sauvegarde: [_1]',
 
 ## tmpl/cms/include/backup_start.tmpl
@@ -3990,12 +3990,12 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/basic_filter_forms.tmpl
 	'contains' => 'contient',
 	'does not contain' => 'ne contient pas',
-	'__STRING_FILTER_EQUAL' => '__STRING_FILTER_EQUAL',
+	'__STRING_FILTER_EQUAL' => 'est',
 	'starts with' => 'commence par',
 	'ends with' => 'se termine par',
 	'[_1] [_2] [_3]' => '[_1] [_2] [_3]',
-	'__INTEGER_FILTER_EQUAL' => '__INTEGER_FILTER_EQUAL',
-	'__INTEGER_FILTER_NOT_EQUAL' => '__INTEGER_FILTER_NOT_EQUAL',
+	'__INTEGER_FILTER_EQUAL' => 'est',
+	'__INTEGER_FILTER_NOT_EQUAL' => 'est',
 	'is greater than' => 'est plus grand que',
 	'is greater than or equal to' => 'est plus grand ou égal à',
 	'is less than' => 'est plus petit que',
@@ -4006,9 +4006,9 @@ use vars qw( @ISA %Lexicon );
 	'is after' => 'est après',
 	'is after now' => 'est après maintenant',
 	'is before now' => 'est avant maintenant',
-	'__FILTER_DATE_ORIGIN' => '__FILTER_DATE_ORIGIN',
+	'__FILTER_DATE_ORIGIN' => '[_1]',
 	'[_1] and [_2]' => '[_1] and [_2]',
-	'_FILTER_DATE_DAYS' => '_FILTER_DATE_DAYS',
+	'_FILTER_DATE_DAYS' => '[_1] jours',
 	'<mt:var name="label">' => '<mt:var name="label">',
 
 ## tmpl/cms/include/blog_table.tmpl
@@ -4100,7 +4100,7 @@ use vars qw( @ISA %Lexicon );
 	'Send Us Feedback' => 'Faites nous part de vos remarques',
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]',
 	'with' => 'avec',
-	'_LOCALE_CALENDAR_HEADER_' => '_LOCALE_CALENDAR_HEADER_',
+	'_LOCALE_CALENDAR_HEADER_' => "'D', 'L', 'M', 'M', 'J', 'V', 'S'",
 	'Your Dashboard' => 'Votre tableau de bord',
 
 ## tmpl/cms/include/header.tmpl
@@ -4403,7 +4403,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/list_theme.tmpl
 	'[_1] Themes' => 'Thèmes [_1]',
 	'All Themes' => 'Tous les thèmes',
-	'_THEME_DIRECTORY_URL' => '_THEME_DIRECTORY_URL',
+	'_THEME_DIRECTORY_URL' => 'http://plugins.movabletype.org',
 	'Find Themes' => 'Trouver des thèmes',
 	'Theme [_1] has been uninstalled.' => 'Le thème [_1] a été désinstallé.',
 	'Theme [_1] has been applied (<a href="[_2]">[quant,_3,warning,warnings]</a>).' => 'Le thème [_1] a été appliqué (<a href="[_2]">[quant,_3,alerte,alertes]</a>)',
@@ -4958,10 +4958,7 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Commercial.pack/config.yaml
 	'Professional designed, well structured and easily adaptable web site. You can customize default pages, footer and top navigation easily.' => 'Conçu pour les professionnels, bien structué et facilement adaptable, vous pouvez personnaliser les pages par défaut, le pied de page et la navigation facilement.',
-	'_PWT_ABOUT_BODY' => '_PWT_ABOUT_BODY',
-	'_PWT_CONTACT_BODY' => '_PWT_CONTACT_BODY',
 	'Welcome to our new website!' => 'Bienvenue sur notre nouveau site !',
-	'_PWT_HOME_BODY' => '_PWT_HOME_BODY',
 	q{Create a blog as a part of structured website. This works best with Professional Website theme.} => q{Créer un blog en tant que partie d'un site web. Cela fonctionne mieux avec un thème de sites web profeesionnels.},
 	'Not Required' => 'Non requis',
 	'Are you sure you want to delete the selected CustomFields?' => 'Êtes-vous sûr de vouloir supprimer les champs personnalisés séléctionnés ?',
@@ -5679,7 +5676,7 @@ use vars qw( @ISA %Lexicon );
 	'Advanced Pack' => 'Advanced Pack',
 	'User/Group' => 'Utilisateur/Groupe',
 	'User/Group Name' => 'Nom d\'utilisateur/groupe', # Translate - Case
-	'__GROUP_MEMBER_COUNT' => '__GROUP_MEMBER_COUNT',
+	'__GROUP_MEMBER_COUNT' => 'Nombre de membres du groupe',
 	'My Groups' => 'Mes groupes',
 	'Group Name' => 'Nom du groupe',
 	'Manage Group Members' => 'Gérer les membres du groupe',
