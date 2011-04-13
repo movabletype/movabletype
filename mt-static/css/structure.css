@@ -1430,6 +1430,11 @@ ul.tabs li a {
     width: 18%;
 }
 
+/* -- List Template (legacy) */
+.tmpl-type-name {
+    margin-bottom: 3px;
+}
+
 /* - Edit Screen */
 /* - Edit Comment, Ping, Author & Entry */
 .edit-comment #status-field,

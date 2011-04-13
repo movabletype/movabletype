@@ -75,8 +75,11 @@
 .col.view {
     width: 4em;
 }
-.col.template-name {
-    width: 18%;
+.col.output-file {
+    width: 40%;
+}
+.col.publishing-method {
+    width: 17%;
 }
 .col.primary { 
     width: auto;
@@ -181,25 +184,16 @@ tfoot .col.head{
 .col .item-ctrl .action-link {
     margin-right: 5px;
 }
-.col .role-item, 
-.col .archive-path-item, 
-.col .archive-publishing-method-item {
+.col .role-item {
     list-style-type: disc;
-    margin: 0 0 0 1.2em;
-}
-.col .archive-path-item, 
-.col .archive-publishing-method-item {
     list-style-position: inside;
-    margin: 0;
+    margin: 0 0 0 1.2em;    
 }
 .col .archive-path-item {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     word-wrap: normal;
-}
-.col .archive-publishing-method-item {
-    list-style-type: none;
 }
 .col .log-metadata pre {
     white-space: normal;
