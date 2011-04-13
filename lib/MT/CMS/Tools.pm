@@ -105,10 +105,7 @@ sub start_recover {
     my $blog_id = $app->param('blog_id');
     $param->{'blog_id'} = $blog_id;
     my $tmpl = $app->load_global_tmpl(
-        {   identifier => 'new_password_reset_form',
-            $blog_id ? ( blog_id => $app->param('blog_id') ) : ()
-        }
-    );
+        { identifier => 'new_password_reset_form', }, $blog_id );
     if ( !$tmpl ) {
         $tmpl = $app->load_tmpl('cms/dialog/recover.tmpl');
     }
@@ -309,11 +306,8 @@ sub new_password {
 
     my $blog_id = $app->param('blog_id');
     $param->{'blog_id'} = $blog_id if $blog_id;
-    my $tmpl = $app->load_global_tmpl(
-        {   identifier => 'new_password',
-            $blog_id ? ( blog_id => $app->param('blog_id') ) : ()
-        }
-    );
+    my $tmpl = $app->load_global_tmpl( { identifier => 'new_password', },
+        $blog_id );
     if ( !$tmpl ) {
         $tmpl = $app->load_tmpl('cms/dialog/new_password.tmpl');
     }
@@ -450,9 +444,7 @@ sub cfg_system_general {
         );
 
         my $body
-            = $app->translate(
-            "This is the test email sent by Movable Type."
-            );
+            = $app->translate("This is the test email sent by Movable Type.");
 
         require MT::Mail;
         MT::Mail->send( \%head, $body )
@@ -2029,12 +2021,12 @@ sub dialog_adjust_sitepath {
     }
 
     $param = { blogs_loop => \@blogs_loop, tmp_dir => $tmp_dir, %$param };
-    $param->{error}            = $error         if $error;
-    $param->{restore_upload}   = $uploaded      if $uploaded;
-    $param->{asset_ids}        = $asset_ids     if $asset_ids;
-    $param->{website_loop}     = \@website_loop if @website_loop;
-    $param->{all_websites}     = \@all_websites if @all_websites;
-    $param->{path_separator}   = MT::Util->dir_separator;
+    $param->{error}          = $error         if $error;
+    $param->{restore_upload} = $uploaded      if $uploaded;
+    $param->{asset_ids}      = $asset_ids     if $asset_ids;
+    $param->{website_loop}   = \@website_loop if @website_loop;
+    $param->{all_websites}   = \@all_websites if @all_websites;
+    $param->{path_separator} = MT::Util->dir_separator;
     for my $key (
         qw(files assets last redirect is_dirty is_asset objects_json deferred_json)
         )
