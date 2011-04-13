@@ -2073,6 +2073,9 @@ ul#asset-list .asset-type-video {
 }
 
 /* --- Edit Widget Set */
+#widget-manager {
+    margin: 15px 0;
+}
 .widget-item {
     margin-bottom: 8px;
     cursor: move;
@@ -2085,11 +2088,15 @@ ul#asset-list .asset-type-video {
     min-height: 100px;
 }
 #available-widgets {
-    margin-right: 10px;
+    margin: 0 10px 0 0;
 }
 #installed-widgets {
-    margin-left: 10px;
+    margin: 0 0 0 10px;
     background-color: #f6f6f6;
+}
+#available-widgets .widget-content, 
+#installed-widgets .widget-content {
+    padding-bottom: 0;
 }
 #installed-widgets > .widget-header {
     background-color: #adadad;

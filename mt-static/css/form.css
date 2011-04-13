@@ -21,6 +21,9 @@ fieldset {
 .field-top-label .field-header {
     margin-bottom: 5px;
 }
+.field-top-label .field-header label {
+    vertical-align: baseline;
+}
 .field-top-label .field-content {
     margin: 3px;
 }
