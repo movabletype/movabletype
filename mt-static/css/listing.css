@@ -119,8 +119,8 @@ tfoot .col.head{
     background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e9eaea));
     background: -moz-linear-gradient(top, #fafafa 0%, #e9eaea 100%);
 }
-.col.sorted, 
-.col.sorted a:hover { 
+.col.head.sorted, 
+.col.head.sorted a:hover { 
     background-color: #dcdddd;
     background: -webkit-gradient(linear, left top, left bottom, from(#dcdddd), to(#f3f3f3));
     background: -moz-linear-gradient(top, #dcdddd 0%, #f3f3f3 100%);

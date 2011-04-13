@@ -85,7 +85,11 @@
 .col.head {
     background: #f3f3f3 url(../../images/widget/widget-header.png) left bottom repeat-x;
 }
-.col.head.sorted {
+.col.head a:hover {
+    background: #fafafa url(../../images/widget/widget-header-hover.png) left bottom repeat-x;
+}
+.col.head.sorted,
+.col.head.sorted a:hover {
     background: #dcdddd url(../../images/widget/widget-header-active.png) left bottom repeat-x;
 }
 
@@ -161,17 +165,16 @@
         GradientType=0 
     );
 }
-
-/* -- Widget */
-.widget-header { 
+.current .top-menu-link:hover { 
     filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#f3f3f3', 
-        endColorstr='#dcdddd', 
+        startColorstr='#fafafa', 
+        endColorstr='#e9eaea', 
         GradientType=0 
     );
 }
 
-.sort-enabled:hover .field-header {
+/* -- Widget */
+.widget-header { 
     filter: progid:DXImageTransform.Microsoft.gradient( 
         startColorstr='#f3f3f3', 
         endColorstr='#dcdddd', 
