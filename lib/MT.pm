@@ -3205,8 +3205,8 @@ L<ERROR HANDLING> for more information.
 
 =head2 MT->new( %args )
 
-Constructs a new I<MT> instance and returns that object. Returns C<undef>
-on failure.
+Returns a I<MT> singleton instance. Returns C<undef> on failure. 
+If no active instance exists, will set that object as active instance.
 
 I<new> will also read your MT configuration file (provided that it can find it--if
 you find that it can't, take a look at the I<Config> directive, below). It
@@ -3232,6 +3232,21 @@ If you do not specify a path, I<MT> will try to find the MT directory using
 the discovered path of the MT configuration file.
 
 =back
+
+=head2 MT->instance( %args )
+
+If exists an active instance, will return it. otherwise will return
+the asked class's singleton, making it the active instance.
+
+%args are similar to C<new>
+
+=head2 MT->app( %args )
+
+An alias for the 'instance' method.
+
+=head2 $class->instance_of( %args )
+
+Similar to C<new>, but does not set the active instance
 
 =head2 $mt->init(%params)
 
@@ -3263,20 +3278,6 @@ MT::Permission->init_permissions method to establish system permissions.
 Completes the initialization of the Movable Type schema following the
 loading of plugins. After this method runs, any MT object class may
 safely be used.
-
-=head2 MT->instance
-
-MT and all it's subclasses are now singleton classes, meaning you can only
-have one instance per package. MT->instance() returns the active instance.
-MT->new() is now an alias to instance_of.
-
-=head2 MT->app
-
-An alias for the 'instance' method.
-
-=head2 $class->instance_of
-
-Returns the singleton instance of the MT subclass identified by C<$class>.
 
 =head2 $class->construct
 
@@ -3844,12 +3845,21 @@ Returns an array of directory paths where application templates exist.
 Returns the path and filename for a file found in any of the given paths.
 If the file cannot be found, it returns undef.
 
-=head2 $app->load_tmpl($file[, @params])
+=head2 $app->load_tmpl($tmpl_source[, @params][, $hashref])
 
-Loads a L<MT::Template> template using the filename specified. See the
-documentation for the C<build_page> method to learn about how templates
-are located. The optional C<@params> are passed to the L<MT::Template>
-constructor.
+Loads a L<MT::Template> template using the either a filename as tmpl_source, 
+or a reference to a string. See the documentation for the C<build_page> 
+method to learn about how templates are located. The optional C<@params> 
+are passed to the L<MT::Template> constructor. The optional C<$hashref> is added 
+to the template's context.
+
+=head2 $app->load_global_tmpl($args[, $blog_id])
+
+Loads a L<MT::Template> from the database. is $args is hashref, it is used
+as filtering terms. otherwise, it is used as template type.
+
+template is searched for the supplied blog_id and the global templates.
+if $blog_id is not supplied, it will try to retrive it from the application.
 
 =head2 $app->set_default_tmpl_params($tmpl)
 
@@ -3959,7 +3969,7 @@ C<tmpl_append>, C<tmpl_replace>, C<tmpl_select>.
 =head2 $mt->build_email($file, $param)
 
 Loads a template from the application's 'email' template directory and
-processes it as a HTML::Template. The C<$param> argument is a hash reference
+processes it as a MT::Template. The C<$param> argument is a hash reference
 of parameter data for the template. The return value is the output of the
 template.
 
@@ -4011,9 +4021,11 @@ A method that returns the MT-supplied CAPTCHA provider registry data.
 Initializes the list of installed CAPTCHA providers, drawing from
 the MT registry.
 
-=head2 $mt->effective_captcha_provider()
+=head2 $mt->effective_captcha_provider($id)
 
-Returns the Perl package name for the configured CAPTCHA provider.
+Returns the Perl package name for the specified CAPTCHA provider.
+The condition for this provider is checked and the Perl package is loaded.
+On problem with this provider, returns undef.
 
 =head2 $app->static_path()
 
@@ -4046,6 +4058,22 @@ given, the URL is appended with the given subpath. The base URL by default
 is 'http://www.movabletype.org/documentation/'. This string is passed
 through MT's localization modules, so it can be changed on a per-language
 basis. The C<$suffix> parameter, however, is always appended to this base URL.
+
+=head2 MT->portal_url
+
+Returns the home page of this MT installation.
+
+=head2 $app->support_directory_url
+
+Returns the support page of this MT application. configurable using the
+SupportDirectoryURL configuration directive, otherwise default to
+static_file_url/support/
+
+=head2 $app->support_directory_path
+
+Returns the location of the support directory for this app on the file
+system. configurable using the SupportDirectoryPath configuration directive,
+otherwise default to static_file_path/support/
 
 =head2 MT->get_timer
 
