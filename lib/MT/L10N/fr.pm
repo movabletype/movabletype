@@ -4100,7 +4100,7 @@ use vars qw( @ISA %Lexicon );
 	'Send Us Feedback' => 'Faites nous part de vos remarques',
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]',
 	'with' => 'avec',
-	'_LOCALE_CALENDAR_HEADER_' => "'S', 'M', 'T', 'W', 'T', 'F', 'S'",
+	'_LOCALE_CALENDAR_HEADER_' => '_LOCALE_CALENDAR_HEADER_',
 	'Your Dashboard' => 'Votre tableau de bord',
 
 ## tmpl/cms/include/header.tmpl

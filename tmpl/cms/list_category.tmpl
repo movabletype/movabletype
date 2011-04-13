@@ -121,7 +121,7 @@ function loginAgain(fn) {
       var dialog = jQuery('#mt-dialog-iframe').contents();
       dialog
         .find('#sign-in-button')
-          .text('<__trans phrase="Continue" escape="js">')
+          .text('<__trans phrase="Continue">')
           .unbind()
           .click(function(){
             dialog.find('#msg-block').empty();
@@ -144,7 +144,7 @@ function loginAgain(fn) {
                 dialog.find('#password').val('');
                 dialog
                   .find('#msg-block')
-                  .append('<div class="msg msg-error"><__trans phrase="Invalid login." escape="js"></div>');
+                  .append('<div class="msg msg-error"><__trans phrase="Invalid login."></div>');
               }
             });
             return false;
@@ -160,7 +160,7 @@ function handleMessages( data ) {
       '<div class="msg msg-error"><p class="msg-text">'
       + data.error
       + '</p>'
-      + '<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close" escape="js"></span>'
+      + '<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>'
       + '</div>');
     return false;
   }
@@ -175,7 +175,7 @@ function handleMessages( data ) {
       '<div class="msg msg-' + cls + '"><p class="msg-text">'
       + text
       + '</p>'
-      + '<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close" escape="js"></span>'
+      + '<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>'
       + '</div>');
   }
   return true;
@@ -227,7 +227,7 @@ function initItem($item) {
   $item.find('.item-ctrl, .edit-form').remove();
   $item.append('<span class="item-ctrl" />');
 
-  jQuery('<a href="#" class="item-action edit-link clickable"><__trans phrase="Rename" escape="js"></a>')
+  jQuery('<a href="#" class="item-action edit-link clickable"><__trans phrase="Rename"></a>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       fixInteractions({
@@ -238,28 +238,28 @@ function initItem($item) {
       var $basename = $element.find('.item-basename-text');
       var $children = $element.children().hide();
       var $form = jQuery('<div class="edit-form"/>')
-        .append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short label" placeholder="<__trans phrase="Label" escape="js">" />'));
+        .append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short label" placeholder="<__trans phrase="Label">" />'));
       $form.find('.label').val($label.text());
-      $form.append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_basename" class="text short basename" placeholder="<__trans phrase="Basename" escape="js">" />'));
+      $form.append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_basename" class="text short basename" placeholder="<__trans phrase="Basename">" />'));
       $form.find('.basename').val($basename.text());
 <mt:if name="object_type" eq="category">
       jQuery.mtValidateRules['.label'] = function ($e) {
-        if ( !$e.val().length ) return this.raise('<__trans phrase="Label is required." escape="js">');
-        return hasDupe(parent, id, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level." escape="js">') : true;
+        if ( !$e.val().length ) return this.raise('<__trans phrase="Label is required.">');
+        return hasDupe(parent, id, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level.">') : true;
       };
 <mt:else>
       jQuery.mtValidateRules['.label'] = function ($e) {
-        if ( !$e.val().length ) return this.raise('<__trans phrase="Label is required." escape="js">');
+        if ( !$e.val().length ) return this.raise('<__trans phrase="Label is required.">');
         return true;
       };
 </mt:if>
       jQuery.mtValidateRules['.basename'] = function ($e) {
-        if ( !$e.val().length ) return this.raise('<__trans phrase="Basename is required." escape="js">');
-        if ( $e.val().match(/[^\w\-]/) ) return this.raise('<__trans phrase="Invalid Basename." escape="js">');
-        return hasDupe(parent, id, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level." escape="js">') : true;
+        if ( !$e.val().length ) return this.raise('<__trans phrase="Basename is required.">');
+        if ( $e.val().match(/[^\w\-]/) ) return this.raise('<__trans phrase="Invalid Basename.">');
+        return hasDupe(parent, id, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level.">') : true;
       };
 
-      jQuery('<button type="submit" class="rename button"><__trans phrase="Rename" escape="js"></button>')
+      jQuery('<button type="submit" class="rename button"><__trans phrase="Rename"></button>')
         .bind('click', function() {
           if ( !$element.find('input.label, input.basename').mtValidate() ) return false;
           fixInteractions({ closeInlineForms: false });
@@ -270,7 +270,7 @@ function initItem($item) {
           setDirty(true);
         })
         .appendTo($form);
-      jQuery('<button type="button" class="cancel button"><__trans phrase="Cancel" escape="js"></button>')
+      jQuery('<button type="button" class="cancel button"><__trans phrase="Cancel"></button>')
         .bind('click', function() {
           fixInteractions({ closeInlineForms: false });
           $children.show();
@@ -288,15 +288,15 @@ function initItem($item) {
       return false;
     });
 
-  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add child [_1]" params="<mt:var name="object_label">" escape="js"></span>')
+  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add child [_1]" params="<mt:var name="object_label">"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       fixInteractions({ sortable: false });
       var $element = jQuery(this).parent('.item-ctrl').parent('div');
       var parent = $element.attr('id');
-      var $form = jQuery('<div class="mod add-form"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">" escape="js">" />\n</div>');
+      var $form = jQuery('<div class="mod add-form"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">" />\n</div>');
       $form.css('margin-left', (nest.length+1)*indent).insertAfter($element).find('input[name=<mt:var name="object_label" lower_case="1">_label]').focus();
-      jQuery('<button type="button" class="add button"><__trans phrase="Add" escape="js"></button>')
+      jQuery('<button type="button" class="add button"><__trans phrase="Add"></button>')
         .bind('click', function() {
           var label = jQuery(this).parent('.add-form').find('input').val();
           if ( addItem(parent, label) ) {
@@ -305,7 +305,7 @@ function initItem($item) {
           }
         })
         .appendTo($form);
-      jQuery('<button type="button" class="cancel button"><__trans phrase="Cancel" escape="js"></button>')
+      jQuery('<button type="button" class="cancel button"><__trans phrase="Cancel"></button>')
         .bind('click', function() {
             fixInteractions({ closeInlineForms: false });
             jQuery('#msg-block').empty();
@@ -315,7 +315,7 @@ function initItem($item) {
       jQuery('.button').button();
     });
 
-  jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon"><__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">" escape="js"></span>')
+  jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon"><__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       fixInteractions();
@@ -525,11 +525,11 @@ function initMoving() {
         initItem($item);
 <mt:if name="object_type" eq="category">
         jQuery.mtValidateRules['#new-label'] = function ($e) {
-          return hasDupe(place, id, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level." escape="js">') : true;
+          return hasDupe(place, id, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level.">') : true;
         };
 </mt:if>
         jQuery.mtValidateRules['#new-basename'] = function ($e) {
-          return hasDupe(place, id, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level." escape="js">') : true;
+          return hasDupe(place, id, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level.">') : true;
         };
         jQuery('#new-label').val($item.find('.item-label').text())
         jQuery('#new-basename').val($item.find('.item-basename-text').text())
