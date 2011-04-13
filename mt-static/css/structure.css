@@ -2106,9 +2106,8 @@ ul#asset-list .asset-type-video {
 }
 
 /* -- Edit Asset */
-.asset-preview-thumb {
-    min-width: 240px;
-    width: 240px;
+.asset-preview {
+    margin-bottom: 30px;
 }
 .asset-preview-thumb .thumbnail {
     display: inline-block;

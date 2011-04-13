@@ -168,7 +168,7 @@ TC.attachLoadEvent( init );
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
     <input type="hidden" name="asset_type" value="<mt:var name="asset_type" escape="html">" />
 
-    <div class="asset-preview asset-type-<mt:var name="asset_type" escape="html" lower_case="1">">
+    <div class="asset-preview asset-type-<mt:var name="asset_type" escape="html" lower_case="1"> line">
     <mt:if name="file_is_missing">
       <mtapp:statusmsg
          id="file-missing-error"
@@ -235,7 +235,6 @@ TC.attachLoadEvent( init );
            label_class="top-label"
            label="<__trans phrase="Embed Asset">">
           <input type="text" readonly="readonly" name="asset-url" id="asset-url" class="text full" value="<mt:var name="url" escape="html">" />
-          <p><a href="<mt:var name="url" encode_html="1">" target="_blank" class="view-asset-link" title="<__trans phrase="View this asset.">"><__trans phrase="View"></a></p>
         </mtapp:setting>
       </mt:unless>
     </div>
