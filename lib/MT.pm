@@ -2294,25 +2294,36 @@ sub _svn_revision {
     return unless -d File::Spec->catdir( $wc_base, '.git' );
 
     # Currently, we are on the Github.
-    eval {
-        my $revision = qx{ git log --pretty=format:'' | wc -l };
+    my $fh;
+    my $revision = '';
+    if (-e $wc_base && open my $fh, '-|', "git log --pretty=format:'' | wc -l") {
+        $revision = do { local $/ = undef; <$fh> };
         chomp $revision;
         $revision =~ s/\s*(.*)/r$1/;
+        close $fh;
+    }
 
-        my $hash = qx{ git log -1 | grep commit };
+    my $hash = '';
+    if (-e $wc_base && open my $fh, '-|', "git log -1 | grep commit") {
+        $hash = do { local $/ = undef; <$fh> };
         chomp $hash;
         if ( $hash =~ s/commit (.*)/$1/ ) {
             $hash = substr($hash, 0, 8 );
         }
+        close $fh;
+    }
 
-        my $branch = qx{ git branch };
+    my $branch = '';
+    if (-e $wc_base && open my $fh, '-|', "git branch") {
+        $branch = do { local $/ = undef; <$fh> };
         chomp $branch;
         if ( $branch =~ m/\*\s(.*)/ ) {
             $branch = $1;
         }
+        close $fh;
+    }
 
-        return { revision => "$revision-$hash", branch => $branch };
-    };
+    return { revision => "$revision-$hash", branch => $branch };
 }
 
 sub set_default_tmpl_params {
