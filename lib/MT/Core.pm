@@ -1833,7 +1833,7 @@ BEGIN {
             'AuthenticationModule'  => { default => 'MT', },
             'AuthLoginURL'          => undef,
             'AuthLogoutURL'         => undef,
-            'DefaultAssignments'    => undef,
+            'DefaultAssignments'    => { default => '' },
             'AutoSaveFrequency'     => { default => 5 },
             'FuturePostFrequency'   => { default => 1 },
             'AssetCacheDir'         => { default => 'assets_c', },
