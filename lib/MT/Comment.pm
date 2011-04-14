@@ -562,9 +562,9 @@ sub list_props {
             terms   => sub {
                 my $prop = shift;
                 my ( $args, $base_terms, $base_args, $opts, ) = @_;
-                my $val = $args->{value};
-                my $blog_id
-                    = MT->config->SingleCommunity ? 0 : $opts->{blog_ids};
+                my $val     = $args->{value};
+                my $blog_id = $opts->{blog_ids};
+                push @$blog_id, 0 if MT->config->SingleCommunity && $blog_id;
                 if ( $val eq 'deleted' ) {
                     $base_args->{joins} ||= [];
                     push @{ $base_args->{joins} },
@@ -588,13 +588,19 @@ sub list_props {
                         {   unique => 1,
                             join   => MT->model('permission')->join_on(
                                 undef,
-                                [   [   { blog_id => $blog_id },
+                                [   [   {   (   $blog_id
+                                                ? ( blog_id => $blog_id )
+                                                : ( blog_id => { '>=' => 0 } )
+                                            )
+                                        },
                                         '-or',
                                         { blog_id => \' IS NULL', }
                                     ],
                                     '-and',
-                                    [   [   {   '!author_type!'   => 1,
-                                                '!author_status!' => 1,
+                                    [   [   {   '!author_type!' =>
+                                                    MT::Author::AUTHOR(),
+                                                '!author_status!' =>
+                                                    MT::Author::ACTIVE(),
                                             },
                                             '-and',
                                             [   {   restrictions => \
@@ -609,7 +615,9 @@ sub list_props {
                                             ],
                                         ],
                                         '-or',
-                                        [   { '!author_type!' => 2, },
+                                        [   {   '!author_type!' =>
+                                                    MT::Author::COMMENTER(),
+                                            },
                                             '-and',
                                             {   permissions =>
                                                     { like => "%'comment'%" },
@@ -645,13 +653,19 @@ sub list_props {
                         {   unique => 1,
                             join   => MT->model('permission')->join_on(
                                 undef,
-                                [   [   { blog_id => $blog_id },
+                                [   [   {   (   $blog_id
+                                                ? ( blog_id => $blog_id )
+                                                : ( blog_id => { '>=' => 0 } )
+                                            )
+                                        },
                                         '-or',
                                         { blog_id => \' IS NULL', }
                                     ],
                                     '-and',
-                                    [   [   {   '!author_type!'   => 1,
-                                                '!author_status!' => 2,
+                                    [   [   {   '!author_type!' =>
+                                                    MT::Author::AUTHOR(),
+                                                '!author_status!' =>
+                                                    MT::Author::INACTIVE(),
                                             },
                                             '-or',
                                             {   restrictions =>
@@ -659,8 +673,9 @@ sub list_props {
                                             },
                                         ],
                                         '-or',
-                                        [   {   '!author_type!' => 2,
-                                                permissions     => {
+                                        [   {   '!author_type!' =>
+                                                    MT::Author::COMMENTER(),
+                                                permissions => {
                                                     not_like => "%'comment'%"
                                                 },
                                                 restrictions =>
@@ -686,19 +701,25 @@ sub list_props {
                         {   unique => 1,
                             join   => MT->model('permission')->join_on(
                                 undef,
-                                [   [   { blog_id => $blog_id },
+                                [   [   {   (   $blog_id
+                                                ? ( blog_id => $blog_id )
+                                                : ( blog_id => { '>=' => 0 } )
+                                            )
+                                        },
                                         '-or',
                                         { blog_id => \' IS NULL', }
                                     ],
                                     '-and',
-                                    [   {   '!author_type!' => 1,
+                                    [   {   '!author_type!' =>
+                                                MT::Author::AUTHOR(),
                                             '!author_status!' =>
                                                 MT::Author::PENDING(),
                                         },
                                         '-or',
-                                        {   '!author_type!' => 2,
-                                            permissions     => \' IS NULL',
-                                            restrictions    => \' IS NULL',
+                                        {   '!author_type!' =>
+                                                MT::Author::COMMENTER(),
+                                            permissions  => \' IS NULL',
+                                            restrictions => \' IS NULL',
                                         },
                                     ],
                                 ],
