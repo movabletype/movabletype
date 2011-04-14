@@ -166,7 +166,7 @@ sub list_props {
                 my $role_terms = $prop->super(@_);
                 my @roles = MT->model('role')->load( { %$role_terms, }, );
                 if ( scalar @roles < 1 ) {
-                    return { role_id => \'< 0' };
+                    return { role_id => \'< 0' }; # baka editors '};
                 }
                 return { role_id => [ map { $_->id } @roles ], };
             },
@@ -177,7 +177,7 @@ sub list_props {
                 delete $args->{sort};
                 push @{ $args->{joins} }, MT->model('role')->join_on(
                     undef,
-                    { id => \'= association_role_id', },
+                    { id => \'= association_role_id', }, # baka editors '},
                     {   sort      => 'name',
                         direction => delete $args->{direction},
                     },
