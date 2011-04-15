@@ -1493,6 +1493,47 @@ I<set_password>). This check is done by one-way encrypting I<$check_pass>,
 using the same salt used to encrypt the original password, then comparing the
 two encrypted strings for equality.
 
+=head2 $author->remove_sessions()
+
+Remove all sessions that belong to this user
+
+=head2 $author->is_email_hidden()
+
+Indicate if author's email is hidden. Hidden emails are packed to hexadecimal
+strings, should not be displayed to the public, and need to be packed before 
+use. To retrive the real email use:
+
+    $email = pack "H*", $author->email();
+
+=head2 $author->set_commenter_perm($blog_id, $action)
+
+Set commenting permissions, where $action can be 'approve', 'ban' or 'pending'.
+
+=head2 $author->commenter_status($blog_id)
+
+Get the current commenting permissions for this author. returns one of these 
+constants: C<MT::Author::BANNED> C<MT::Author::APPROVED> C<MT::Author::PENDING>
+
+=head2 $author->is_trusted($blog_id)
+
+Tests if this author is APPROVED for commenting on this blog
+
+=head2 $author->is_banned($blog_id)
+
+Tests if this author is BANNED form commenting on this blog
+
+=head2 $author->is_not_trusted($blog_id)
+
+Tests if this author is still pending approval for commenting on this blog
+
+=head2 $author->approve($blog_id), $author->pending($blog_id), $author->ban($blog_id)
+
+set the author commenting permission - approve, ban, or still pending
+
+=head2 $author->is_active()
+
+Tests if the status of this author is ACTIVE
+
 =head1 DATA ACCESS METHODS
 
 The I<MT::Author> object holds the following pieces of data. These fields can
@@ -1525,10 +1566,6 @@ The type of author record. Currently, MT stores authenticated commenters in the 
 =item * status
 
 A column that defines whether the records of an AUTHOR type are ACTIVE, INACTIVE or PENDING (constants declared in this package). 
-
-=item * commenter_status
-
-This method requires a blog id to be passed as the argument and a value of APPROVED, BANNED or PENDING (constants declared in this package) is returned.
 
 =item * email
 
