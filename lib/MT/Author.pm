@@ -1505,6 +1505,13 @@ use. To retrive the real email use:
 
     $email = pack "H*", $author->email();
 
+=head2 $author->entry_prefs([$settings])
+
+Get or set the author entry preferences. $setting, if supplied, should
+be a comma-delimited key-value pairs such as "tag_delim=44,size=3"
+
+returns a hashref containing the entry preferences.
+
 =head2 $author->set_commenter_perm($blog_id, $action)
 
 Set commenting permissions, where $action can be 'approve', 'ban' or 'pending'.
@@ -1570,6 +1577,48 @@ check or set author's permission to change site's templates
 =head2 $author->is_superuser([$bool])
 
 check or set the system-wide administrator status of this author
+
+=head2 $author->can_administer([$bool])
+
+alias for is_superuser
+
+=head2 $author->blog_perm($blog_id)
+
+Get permission object for this author and blog
+
+=head2 $author->has_perm($blog_id)
+
+check if author have any permissions at all
+
+=head2 $author->permissions([$blog])
+
+Return a L<MT::Permission> object for this author and this blog. $blog can
+be either a L<MT::Blog> object or an id of a blog. if $blog is not specifiy,
+will return the system permissions for this author.
+
+=head2 $author->role_iter($terms, $args)
+
+Returns an iterator for the roles of this author. see L<MT::Object> to learn 
+about iterators. if exist C<$terms->{blog_id}>, returns blog roles. otherwise,
+return system-wide roles.
+
+aside of C<$terms->{blog_id}>, $terms and $args are passed to 
+MT::Role->load_iter
+
+=head2 $author->blog_iter($terms, $args)
+
+Returns an iterator for the blogs of this author. see L<MT::Object> to learn 
+about iterators. if author is not superuser, retrive also the permissions 
+for each blog
+
+$terms and $args are passed to MT::Blog->load_iter
+
+=head2 $author->group_iter($terms, $args)
+
+Returns an iterator for the groups this author belongs to. see L<MT::Object> 
+to learn about iterators.
+
+$terms and $args are passed to the groups handler class's load_iter
 
 =head1 DATA ACCESS METHODS
 
