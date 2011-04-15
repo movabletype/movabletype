@@ -3217,7 +3217,7 @@ use vars qw( @ISA %Lexicon );
 	'Clear TypePad Token' => 'TypePad-Schlüssel entfernen',
 	'Please click the Save Changes button below to disable authentication.' => 'Bitte klicken Sie auf "Änderungen speichern", um die Authentifizierung abzuschalten.',
 	'TypePad is not enabled.' => 'Typepad ist nicht aktiviert.',
-	'&nbsp;or&nbsp;[_1]obtain a TypePad token[_2] from TypePad.com.' => '&nbsp;oder&nbp;[_1]TypePad-Token von TypePad.com beziehen[_2].',
+	'&nbsp;or&nbsp;[_1]obtain a TypePad token[_2] from TypePad.com.' => '&nbsp;oder&nbsp;[_1]TypePad-Token von TypePad.com beziehen[_2].',
 	q{Please click the 'Save Changes' button below to enable TypePad.} => q{Klicken Sie auf &#8222;Änderungen speichern&#8220;, um TypePad zu aktivieren.},
 	'External Notifications' => 'Externe Benachrichtigungen',
 	'Notify ping services of website updates' => 'Ping-Dienste über Aktualisierungen dieser Website benachrichtigen',
