@@ -1559,6 +1559,14 @@ check or set author's permission to create a website
 
 check or set author's permission to view the MT activity log
 
+=head2 $author->can_manage_plugins([$bool])
+
+check or set author's permission to manage plugins. (enable, disable, settings...)
+
+=head2 $author->can_edit_templates([$bool])
+
+check or set author's permission to change site's templates
+
 =head2 $author->is_superuser([$bool])
 
 check or set the system-wide administrator status of this author
