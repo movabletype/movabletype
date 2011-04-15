@@ -100,6 +100,10 @@ function multiblog_MTInclude($args, &$ctx) {
                 $args['blog_id'] or $args['blog_id'] = $ctx->mt->blog->id;
             }
         }
+        else {
+            $args['blog_id'] = $ctx->stash('local_blog_id');
+            $args['blog_id'] or $args['blog_id'] = $ctx->mt->blog->id;
+        }
     }
     global $multiblog_orig_handlers;
     $fn = $multiblog_orig_handlers['mtinclude'];
