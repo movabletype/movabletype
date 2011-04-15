@@ -1526,13 +1526,42 @@ Tests if this author is BANNED form commenting on this blog
 
 Tests if this author is still pending approval for commenting on this blog
 
-=head2 $author->approve($blog_id), $author->pending($blog_id), $author->ban($blog_id)
+=head2 $author->approve($blog_id)
 
-set the author commenting permission - approve, ban, or still pending
+approving the author for commenting
+
+=head2 $author->ban($blog_id)
+
+banning the author from commenting
+
+=head2 $author->pending($blog_id)
+
+setting the author commenting permission to still pending
 
 =head2 $author->is_active()
 
 Tests if the status of this author is ACTIVE
+
+=head2 $author->can_edit_entry($entry)
+
+Test if this author can edit this entry. C<$entry> can by a L<MT::Entry>
+object or the ID of such an object.
+
+=head2 $author->can_create_blog([$bool])
+
+check or set author's permission to create blog
+
+=head2 $author->can_create_website([$bool])
+
+check or set author's permission to create a website
+
+=head2 $author->can_view_log([$bool])
+
+check or set author's permission to view the MT activity log
+
+=head2 $author->is_superuser([$bool])
+
+check or set the system-wide administrator status of this author
 
 =head1 DATA ACCESS METHODS
 
