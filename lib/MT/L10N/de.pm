@@ -5328,7 +5328,7 @@ false">Inhalt bearbeiten</a>
 	'GlobalJavaScript' => 'GlobalJavaScript',
 	'Email verification' => 'E-Mail-Bestätigung',
 	'Registration notification' => 'Registrierungsbenachrichtigung',
-	'New entry notification' => 'Eintragsbenachrichtigung',
+	'New entry notification' => 'Neuer Eintragsbenachrichtigung',
 	'Community Styles' => 'Community-Styles',
 	'A collection of styles compatible with Community themes.' => 'Mit Community-Themen kompatible Designs',
 	'Community Blog' => 'Community-Blog',
