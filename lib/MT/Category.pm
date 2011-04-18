@@ -452,7 +452,7 @@ sub _sort_by_id_list {
         push @objs, delete $id_map{$id} if $id_map{$id};
     }
     if ( scalar %id_map ) {
-        my $sort  = $opts{secondary_sort}       || 'id';
+        my $sort  = $opts{secondary_sort}       || 'label';
         my $order = $opts{secondary_sort_order} || 'ascend';
         my $place = $opts{unknown_place}        || 'bottom';
         my @unknowns = sort { $a->$sort cmp $b->$sort } values %id_map;
