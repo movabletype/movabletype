@@ -1620,6 +1620,52 @@ to learn about iterators.
 
 $terms and $args are passed to the groups handler class's load_iter
 
+=head2 $author->group_role_iter($terms, $args)
+
+Returns an iterator for the groups and roles this author belongs to. 
+see L<MT::Object> to learn about iterators. If $terms->{blog_id} is defined,
+the function will return the author's roles and groups related to that blog.
+
+$terms and $args are passed to the groups handler class's load_iter
+
+=head2 $author->add_role($role [, $blog])
+
+Add a role to this author. $role should be a MT::Role object, and $blog,
+is supplied, should be a MT::Blog object. also, if $blog is supplied, 
+the role will be added as related to this blog. otherwise, it will be 
+added as system-wide role.
+
+=head2 $author->remove_role($role [, $blog])
+
+The inverse of add_role
+
+=head2 $author->add_group($group)
+
+Add this author to this group. $group should be a C<MT->model('group')> object
+
+=head2 $author->remove_group($group)
+
+The inverse of add_group
+
+=head2 $author->group_count()
+
+Count how many groups this author is associated with
+
+=head2 $author->add_default_roles();
+
+Add the default roles for an author. these are read from the configuration,
+under DefaultAssignments attribute, that should be a comma-delimited string
+in the format of "role_id,blog_id,role_id,blog_id"
+
+=head2 $author->auth_icon_url([$size])
+
+Returns an icon to show how this commenter is registered to the system - by
+MT account, or by external service. (for example, Facebook account, openid 
+and such) returns the icon URL, or an empty string if can't find one.
+
+If supplied, $size should contain a string describing the size, such as
+'logo' or 'logo_small' (that is the default)
+
 =head1 DATA ACCESS METHODS
 
 The I<MT::Author> object holds the following pieces of data. These fields can
