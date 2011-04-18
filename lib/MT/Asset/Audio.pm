@@ -8,6 +8,8 @@ package MT::Asset::Audio;
 
 use strict;
 use base qw( MT::Asset );
+use MT::Blog;
+use MT::Website;
 
 __PACKAGE__->install_properties(
     { class_type => 'audio', child_of => [ 'MT::Blog', 'MT::Website' ], } );

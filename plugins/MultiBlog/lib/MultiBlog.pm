@@ -77,6 +77,12 @@ sub preprocess_native_tags {
                 }
             }
         }
+        else {
+            my $local_blog_id = $ctx->stash('local_blog_id');
+            if (defined $local_blog_id) {
+                $args->{blog_id} = $ctx->stash('local_blog_id');
+            }
+        }
     }
 
     # If no include_blogs/exclude_blogs specified look for a
