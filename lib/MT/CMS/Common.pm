@@ -279,6 +279,12 @@ sub save {
         }
     }
 
+    if ( $type eq 'notification' ) {
+        if ( defined $obj->blog_id ) {
+            delete $values{'blog_id'};
+        }
+    }
+
     delete $values{'id'} if exists( $values{'id'} ) && !$values{'id'};
     $obj->set_values( \%values );
 
@@ -470,7 +476,9 @@ sub save {
     elsif ( $type eq 'author' ) {
 
         # Delete the author's userpic thumb (if any); it'll be regenerated.
-        if ( $original->userpic_asset_id != $obj->userpic_asset_id ) {
+        if (   $original->userpic_asset_id
+            && $original->userpic_asset_id != $obj->userpic_asset_id )
+        {
             my $thumb_file = $original->userpic_file();
             my $fmgr       = MT::FileMgr->new('Local');
             if ( $fmgr->exists($thumb_file) ) {
@@ -750,6 +758,9 @@ sub list {
     my @list_components = grep {
                $_->registry( list_properties => $type )
             || $_->registry( listing_screens => $type )
+            || $_->registry( list_actions    => $type )
+            || $_->registry( content_actions => $type )
+            || $_->registry( system_filters  => $type )
     } MT::Component->select;
 
     my @list_headers;
@@ -965,7 +976,7 @@ sub list {
                     display => $cols{ $id . '.' . $sub->{class} }
                         || $sub->{display} eq 'default',
                     class      => $sub->{class},
-                    label      => $sub->{label},
+                    label      => $app->translate( $sub->{label} ),
                     is_default => $sub->{display} eq 'default' ? 1 : 0,
                     };
             }
@@ -1048,11 +1059,13 @@ sub list {
 
     require MT::CMS::Filter;
     my $filters = MT::CMS::Filter::filters( $app, $type, encode_html => 1 );
+
     my $allpass_filter = {
         label => MT->translate(
             'All [_1]',
             $screen_settings->{object_label_plural}
-                || $obj_class->class_label_plural
+            ? $screen_settings->{object_label_plural}
+            : $obj_class->class_label_plural
         ),
         items    => [],
         id       => '_allpass',
@@ -1091,8 +1104,14 @@ sub list {
     $param{use_actions}      = 1;
     $param{object_label}     = $screen_settings->{object_label}
         || $obj_class->class_label;
-    $param{object_label_plural} = $screen_settings->{object_label_plural}
-        || $obj_class->class_label_plural;
+    $param{object_label_plural}
+        = $screen_settings->{object_label_plural}
+        ? $screen_settings->{object_label_plural}
+        : $obj_class->class_label_plural;
+    $param{action_label}     = $screen_settings->{action_label}
+        if $screen_settings->{action_label};
+    $param{action_label_plural} = $screen_settings->{action_label_plural}
+        if $screen_settings->{action_label_plural};
     $param{contents_label} = $screen_settings->{contents_label}
         || $obj_class->contents_label;
     $param{contents_label_plural} = $screen_settings->{contents_label_plural}
@@ -1102,8 +1121,12 @@ sub list {
     $param{container_label_plural}
         = $screen_settings->{container_label_plural}
         || $obj_class->container_label_plural;
+    $param{zero_state}
+        = $screen_settings->{zero_state}
+        ? $app->translate( $screen_settings->{zero_state} )
+        : '',
 
-    my $s_type = $screen_settings->{search_type} || $obj_type;
+        my $s_type = $screen_settings->{search_type} || $obj_type;
     if ( my $search_apis = $app->registry( search_apis => $s_type ) ) {
         $param{search_type}  = $s_type;
         $param{search_label} = $search_apis->{label};

@@ -126,8 +126,11 @@ abstract class MTDatabase {
                     array_push($ret, $b->id);
                 }
             }
-        } elseif (preg_match('/^\d$/', $blog_ids)) {
-            array_push( $ret, $blog_ids);
+        } else {
+            if ( is_numeric($blog_ids) )
+                $blog_ids = strval($blog_ids);
+            if ( ctype_digit( $blog_ids ) )
+                 array_push( $ret, $blog_ids);
         }
         return $ret;
     }
@@ -146,7 +149,6 @@ abstract class MTDatabase {
         else if (isset($args['blog_id'])) {
             $incl = $args['blog_id'];
         }
-
 
         if (isset($args['exclude_blogs']) || isset($args['exclude_websites'])) {
             $excl = $args['exclude_blogs'];
@@ -186,7 +188,7 @@ abstract class MTDatabase {
             if ( empty( $incl ) ) {
                 $mt = MT::get_instance();
                 trigger_error( $mt->translate(
-                        "The attribute exclude_blogs denies all incllude_blogs."
+                        "The attribute exclude_blogs denies all include_blogs."
                 ) );
             } else {
                 $incl = array_values( $incl );
@@ -751,7 +753,7 @@ abstract class MTDatabase {
                     }
                 } elseif ($posts = $blog->blog_entries_on_index) {
                     $args['lastn'] = $posts;
-                }            
+                }
             }
         }
 
@@ -1587,7 +1589,6 @@ abstract class MTDatabase {
 
     public function &fetch_categories($args) {
         # load categories
-
         if ($blog_filter = $this->include_exclude_blogs($args)) {
              $blog_filter = 'and category_blog_id '. $blog_filter;
         } elseif (isset($args['blog_id'])) {
@@ -1645,7 +1646,7 @@ abstract class MTDatabase {
         } else {
             $sort_order = '';
         }
-        $sort_by = 'category_label';
+        $sort_by = 'user_custom';
         if ( isset($args['sort_by']) ) {
             $sort_by = strtolower($args['sort_by']);
             if ( 'user_custom' != $sort_by ) {
@@ -1659,7 +1660,7 @@ abstract class MTDatabase {
                         $sort_by  = 'category_'.$sort_by;
                     }
                 } else {
-                    $sort_by = 'category_label';
+                    $sort_by = 'user_custom';
                 }
            }
         }
@@ -1752,6 +1753,8 @@ abstract class MTDatabase {
                     }
                 } catch (Exception $e) {
                 }
+            } else {
+                
             }
 
             $id_list = array();

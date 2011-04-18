@@ -594,13 +594,15 @@ function toggleCache(id) {
 
   <div id="template-options"<mt:if name="template_options_active"> class="active"</mt:if>>
     <div id="template-options-header" class="line">
-      <div class="unit size2of5">
-        <h3><a href="javascript:void(0);" class="icon-left-wide" onclick="return toggleActive('template-options');"><__trans phrase="Template Options"></a></h3>
+      <div class="template-options-toggle">
+        <a href="javascript:void(0);" class="icon-left icon-spinner" onclick="return toggleActive('template-options');"><__trans phrase="Template Options"></a>
       </div>
-      <div class="template-options-summary unit size3of5">
-      <mt:if name="has_outfile">
+      <div class="template-options-summary">
+      <mt:unless name="new_object">
+        <mt:if name="has_outfile">
         <__trans phrase="Output file: <strong>[_1]</strong>" params="<mt:var name="outfile" escape="html" escape="html">">
-      </mt:if>
+        </mt:if>
+      </mt:unless>
       <mt:if name="enabled_archive_types">
         <__trans phrase="Enabled Mappings: [_1]" params="<mt:var name="enabled_archive_types">">
       </mt:if>
@@ -611,7 +613,7 @@ function toggleCache(id) {
       <mtapp:setting
          id="outfile"
          label="<__trans phrase="Output File">"
-         label_class="top_label"
+         label_class="top-label"
          help_page="templates"
          help_section="output_file">
         <input type="text" name="outfile" id="outfile" class="text" tabindex="4" value="<mt:var name="outfile" escape="html">" mt:watch-change="1" />
@@ -620,7 +622,7 @@ function toggleCache(id) {
     <mt:if name="type" eq="index">
       <mtapp:setting
          label="<__trans phrase="Template Type">"
-         label_class="top_label"
+         label_class="top-label"
          id="identifier"
          help_page="templates"
          help_section="template_type">
@@ -636,7 +638,7 @@ function toggleCache(id) {
       <mtapp:setting
          id="linked_file"
          label="<__trans phrase="Link to File">"
-         label_class="top_label"
+         label_class="top-label"
          help_page="templates"
          help_section="linked_templates">
         <input type="text" name="linked_file" id="linked_file" class="text" tabindex="8" value="<mt:var name="linked_file" escape="html">" maxlength="255" mt:watch-change="1" />
@@ -648,7 +650,7 @@ function toggleCache(id) {
     <mtapp:setting
        id="archive_mapping"
        label="<__trans phrase="Archive Mapping">"
-       label_class="top_label"
+       label_class="top-label"
        content_class="field-content-text"
        show_hint="0">
       <p><a href="javascript:void(0)" onclick="return setCreateMode()" class="icon-left icon-create"><__trans phrase="Create Archive Mapping"></a></p>
@@ -682,7 +684,7 @@ function toggleCache(id) {
     <mtapp:setting
        id="build_dynamic"
        label="<__trans phrase="Publishing">"
-       label_class="top_label"
+       label_class="top-label"
        hint="$publishing_hint"
        show_hint="1"
        help_page="templates"
@@ -715,7 +717,7 @@ function toggleCache(id) {
     <mtapp:setting
        id="server_side_include"
        label="<__trans phrase="Server Side Include">"
-       label_class="top_label">
+       label_class="top-label">
       <input type="checkbox" id="server-side-include" name="include_with_ssi" value="1" onclick="toggleHidden('include_cache_path-field')"<mt:if name="include_with_ssi"> checked</mt:if> />
       <label for="server-side-include"><__trans phrase="Process as <strong>[_1]</strong> include" params="<$mt:var name="ssi_type"$>"></label>
     </mtapp:setting>
@@ -723,7 +725,7 @@ function toggleCache(id) {
     <mtapp:setting
        id="include_cache_path"
        label="<__trans phrase="Include cache path">"
-       label_class="top_label"
+       label_class="top-label"
        shown="<mt:if name="include_with_ssi">0<mt:else>1</mt:if>">
       <div class="textarea-wrapper">
         <input type="text" id="include-cache-path" name="cache_path" value="<mt:var name="cache_path" escape="html">" maxlength="255" class="full-width" mt:watch-change="1" />
@@ -735,7 +737,7 @@ function toggleCache(id) {
     <mtapp:setting
        id="caching"
        label="<__trans phrase="Module Caching">"
-       label_class="top_label">
+       label_class="top-label">
     <mt:if name="caching_disabled">
       <__trans phrase="Disabled (<a href="[_1]">change publishing settings</a>)" params="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">">
     <mt:else>
@@ -834,7 +836,7 @@ var editor = CodeMirror.fromTextArea('text', {
     indentUnit: 0,
     passDelay: 20,
     height: "550px",
-    lang: "<mt:var name="language_tag">",
+    lang: "<mt:var name="language_tag">"
 });
 
 var timer = setTimeout( 'editor_onload()', 500 );

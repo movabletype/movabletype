@@ -301,7 +301,7 @@ sub apply {
                 );
             }
             else {
-                $theme->{warning_on_apply} = 1;
+                $theme->{warning_on_apply} += 1;
                 require MT::Log;
                 my $log = MT::Log->new;
                 $log->message(

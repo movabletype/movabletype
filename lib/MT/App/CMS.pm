@@ -479,8 +479,9 @@ sub core_content_actions {
                 label       => 'Delete all Spam trackbacks',
                 return_args => 1,
                 order       => 100,
-                confirm_msg =>
-                    'Are you sure you want to remove all trackbacks reported as spam?',
+                confirm_msg => sub {
+                    $app->translate('Are you sure you want to remove all trackbacks reported as spam?');
+                },
                 permit_action => {
                     include_all => 1,
                     permit_action =>
@@ -495,8 +496,9 @@ sub core_content_actions {
                 label       => 'Delete all Spam comments',
                 return_args => 1,
                 order       => 100,
-                confirm_msg =>
-                    'Are you sure you want to remove all comments reported as spam?',
+                confirm_msg => sub {
+                    MT->translate('Are you sure you want to remove all comments reported as spam?');
+                },
                 permit_action => {
                     include_all => 1,
                     permit_action =>
@@ -548,8 +550,9 @@ sub core_content_actions {
                 label => 'Clear Activity Log',
                 mode  => 'reset_log',
                 order => 100,
-                confirm_msg =>
-                    'Are you sure you want to reset the activity log?',
+                confirm_msg => sub {
+                    MT->translate('Are you sure you want to reset the activity log?');
+                },
                 permit_action => {
                     permit_action => 'reset_blog_log',
                     include_all   => 1,
@@ -2162,7 +2165,6 @@ sub core_menus {
                 my $user    = $app->user;
                 my $blog_id = $app->param('blog_id');
                 return 1 if $user->is_superuser;
-                return 0 unless defined $blog_id;
 
                 my $terms;
                 push @$terms, { author_id => $user->id };
@@ -2529,12 +2531,16 @@ sub init_core_callbacks {
             $pkg . 'post_save.category'   => "${pfx}Category::post_save",
             $pkg . 'save_filter.category' => "${pfx}Category::save_filter",
             $pkg . 'post_delete.category' => "${pfx}Category::post_delete",
+            'list_template_param.category' =>
+                "${pfx}Category::template_param_list",
             $pkg
                 . 'pre_load_filtered_list.category' =>
                 "${pfx}Category::pre_load_filtered_list",
             $pkg
                 . 'filtered_list_param.category' =>
                 "${pfx}Category::filtered_list_param",
+            'list_template_param.folder' =>
+                "${pfx}Category::template_param_list",
             $pkg
                 . 'pre_load_filtered_list.folder' =>
                 "${pfx}Category::pre_load_filtered_list",
@@ -2747,6 +2753,9 @@ sub set_default_tmpl_params {
         $param->{author_name}           = $auth->name;
         $param->{author_display_name}   = $auth->nickname || $auth->name;
 
+        my $date_format = $auth->date_format || 'relative';
+        $param->{ "dates_" . $date_format } = 1;
+
         if ( my ($url) = $auth->userpic_url( Width => 36, Height => 36 ) ) {
             $param->{author_userpic_url} = $url;
         }
@@ -2764,7 +2773,8 @@ sub set_default_tmpl_params {
             = $param->{can_create_post}
             || $param->{can_edit_all_entries}
             || $param->{can_publish_post};
-        $param->{can_search_replace} = $param->{can_edit_all_posts};
+        require MT::CMS::Search;
+        $param->{can_search_replace} = MT::CMS::Search::can_search_replace($app);
         $param->{can_edit_authors}   = $param->{can_administer_blog};
         $param->{can_access_assets} 
             = $param->{can_create_post}
@@ -2936,7 +2946,7 @@ sub build_blog_selector {
         if !$auth->is_superuser
             && !$auth->permissions(0)->can_do('edit_templates');
     $terms{class}     = 'blog';
-    $terms{parent_id} = \">0";
+    $terms{parent_id} = \">0"; # baka editors ";
     $args{limit}      = 6;        # Don't load over 6 blogs
     my @blogs = $blog_class->load( \%terms, \%args );
 
@@ -2982,6 +2992,15 @@ sub build_blog_selector {
         my @sites = $website_class->load( \%terms, \%args );
         push @websites, @sites;
     }
+
+    if ( @fav_websites ) {
+        my $i;
+        my %sorted = map{ $_ => $i++ } @fav_websites;
+        foreach ( @websites ) {
+            $sorted{$_->id} = scalar @websites if !exists $sorted{$_->id};
+        }
+        @websites = sort { ( $sorted{$a->id} || 0 ) <=> ( $sorted{$b->id} || 0 ) } @websites;
+    }
     unshift @websites, $blog->website if $blog && $blog->is_blog;
 
 # Special case. If this user can access 3 websites or smaller then load those websites.
@@ -2994,6 +3013,7 @@ sub build_blog_selector {
     # Build selector data
     my @website_data;
     if (@websites) {
+
         for my $ws (@websites) {
             next unless $ws;
 
@@ -3050,6 +3070,11 @@ sub build_blog_selector {
 
     my @blog_data;
     if (@blogs) {
+
+        my $i;
+        my %sorted = map{ $_ => $i++ } @fav_blogs;
+        @blogs = sort { ( $sorted{$a->id} || 0 ) <=> ( $sorted{$b->id} || 0 ) } @blogs;
+
         foreach $b (@blogs) {
             if ( $blog && $blog->is_blog && $blog->id == $b->id ) {
                 $param->{curr_blog_id}   = $b->id;
@@ -3391,7 +3416,7 @@ sub build_user_menus {
         || $app->param('author_id')
         || $login_user->id;
     my $menu_user = MT->model('author')->load($user_id)
-        or return $app->errtrans('Invalid params');
+        or return $app->errtrans('Invalid parameter');
     $param->{user_menu_id} ||= $user_id;
     $param->{user_menu_user} = $menu_user;
     my $active = $param->{active_user_menu};
@@ -3580,9 +3605,6 @@ sub list_pref {
     }
     if ( $list_pref->{view} ) {
         $list_pref->{ "view_" . $list_pref->{view} } = 1;
-    }
-    if ( $list_pref->{dates} ) {
-        $list_pref->{ "dates_" . $list_pref->{dates} } = 1;
     }
     if ( $list_pref->{bar} ) {
         if ( lc $list_pref->{bar} eq 'both' ) {
@@ -3834,7 +3856,7 @@ sub _parse_entry_prefs {
                     push @$fields, { name => $def };
                 }
                 if ( lc($p) eq 'advanced' ) {
-                    foreach my $def (qw(excerpt feedback)) {
+                    foreach my $def (qw(excerpt feedback keywords)) {
                         $param->{ $prefix . 'disp_prefs_show_' . $def } = 1;
                         push @$fields, { name => $def };
                     }

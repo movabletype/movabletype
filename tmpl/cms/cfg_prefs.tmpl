@@ -225,7 +225,7 @@ function setLicense() {
         <input type="text" name="site_url" id="site_url" value="<mt:var name="site_url" escape="html" default="$suggested_site_url">" class="text website-url-field mt-edit-field required" />
       </div>
     </mt:if>
-      <p class="alert-warning-inline icon-left icon-warning" id="site_url-warning" style="display: none"><__trans phrase="Warning: Changing the [_1] URL can result in breaking all the links in your blog." params="<mt:var name="object_label" capitalize="1">"></p>
+      <p class="alert-warning-inline icon-left icon-warning" id="site_url-warning" style="display: none"><__trans phrase="Warning: Changing the [_1] URL can result in breaking all the links in your [_1]." params="<mt:var name="object_label" capitalize="1">%%"></p>
     <mt:if name="is_blog">
       <div class="hint"><__trans phrase="The URL of your blog. Exclude the filename (i.e. index.html). End with '/'. Example: http://www.example.com/blog/"></div>
     <mt:else>
@@ -244,13 +244,13 @@ function setLicense() {
       </div>
     <mt:if name="is_blog">
       <div class="absolute-site_path content-path">
-        <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" size="50" class="text blog-path-text hide-input required" />
+        <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" size="50" class="text blog-path-text hide-input" />
       </div>
       <div class="use-absolute option">
         <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
       </div>
     </mt:if>
-      <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none"><__trans phrase="Warning: Changing the [_1] root requires a complete publish of your site." params="<mt:var name="object_label" capitalize="1">"></p>
+      <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none"><__trans phrase="Warning: Changing the [_1] root requires a complete publish of your [_1]." params="<mt:var name="object_label" capitalize="1">"></p>
 
       <div class="hint relative-site_path-hint">
         <__trans phrase="The path where your index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog">
@@ -328,7 +328,7 @@ function setLicense() {
           <span class="website-path"><mt:var name="website_path"></span><span class="extra-path"><input type="text" name="archive_path" id="archive_path" value="<mt:unless name="archive_path_absolute"><mt:var name="archive_path" escape="html"></mt:unless>" class="blog-path-text blog-path-text path<mt:unless name="enable_archive_paths"> show-input</mt:unless> required" /></span>
         </div>
         <div class="absolute-site_path content-path">
-          <input type="text" name="archive_path_absolute" id="archive_path_absolute" value="<mt:if name="archive_path_absolute"><mt:var name="archive_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="blog-path-text<mt:unless name="enable_archive_paths"> show-input</mt:unless> required" />
+          <input type="text" name="archive_path_absolute" id="archive_path_absolute" value="<mt:if name="archive_path_absolute"><mt:var name="archive_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="blog-path-text<mt:unless name="enable_archive_paths"> show-input</mt:unless>" />
         </div>
         <div class="use-absolute option">
           <input type="checkbox" name="use_absolute_archive" id="use_absolute_archive" value="1"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
@@ -483,6 +483,9 @@ function setLicense() {
     });
 
     function is_valid_url(url_){
+        if (url_.indexOf(' ') != -1) {
+            return false;
+        }
         return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ ) ? true : false;
     }
     function is_valid_path(path_){
@@ -561,12 +564,12 @@ function setLicense() {
         "#site_path.required": '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
         "#site_path.path": '<__trans phrase="You must set a valid Local file Path." escape="singlequotes">',
         "#site_path_absolute.required": '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
-        "#site_path_absolute": '<__trans phrase="You must set a valid Loca file Path." escape="singlequotes">',
+        "#site_path_absolute": '<__trans phrase="You must set a valid Local file Path." escape="singlequotes">',
         "#archive_url_path.required": '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
         "#archive_url_path": '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
-        "#archive_path.required": '<__trans phrase="You must set Local Archive Path." escape="singlequotes">',
+        "#archive_path.required": '<__trans phrase="You must set your Local Archive Path." escape="singlequotes">',
         "#archive_path": '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
-        "#archive_path_absolute.required": '<__trans phrase="You must set Local Archive Path." escape="singlequotes">',
+        "#archive_path_absolute.required": '<__trans phrase="You must set your Local Archive Path." escape="singlequotes">',
         "#archive_path_absolute": '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
     });
 
@@ -580,7 +583,9 @@ function setLicense() {
 
 <mt:if name="is_blog">
     jQuery.mtUseSubdomain();
-    jQuery.mtEditSitePath();
+    jQuery.mtEditSitePath({
+        edit: '<__trans phrase="Edit">'
+    });
     jQuery.mtUseAbsolute();
 </mt:if>
 </mt:setvarblock>

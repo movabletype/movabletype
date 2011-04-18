@@ -36,7 +36,8 @@ sub list_props {
         id         => { base => 'blog.id', },
         name       => { base => 'blog.name', },
         blog_count => {
-            label       => 'Blogs',
+            label        => 'Blogs',
+            filter_label => '__BLOG_COUNT',
             order       => 200,
             base        => '__virtual.object_count',
             display     => 'default',
@@ -44,6 +45,20 @@ sub list_props {
             count_col   => 'parent_id',
             filter_type => 'blog_id',
             list_screen => 'blog',
+            count_terms => sub {
+                my $prop = shift;
+                my ($opts) = @_;
+                return {}
+                    if MT->app->user->is_superuser;
+                my @perms = MT->model('permission')->load(
+                    {   author_id   => MT->instance->user->id,
+                        permissions => { not => 'comment' },
+                    },
+                    { 'fetchonly' => ['blog_id'], },
+                );
+
+                return { id => [ map( $_->blog_id, @perms ) ] };
+            },
         },
         page_count => {
             base      => 'blog.page_count',

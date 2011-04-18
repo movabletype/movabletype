@@ -83,15 +83,6 @@
   <__trans phrase="Delete">
 </button>
 </mt:if>
-<mt:if name="is_ip_filter">
-  <mt:if name="blog_id">
-<button
-   onclick="doBanIP('<mt:var name="filter_val" escape="js">', '<mt:var name="blog_id">', '<mt:var name="magic_token">')"
-   class="action button">
-  <__trans phrase="Ban This IP Address">
-</button>
-  </mt:if>
-</mt:if>
 </mt:setvartemplate>
 
 <mt:setvarblock name="related_content">

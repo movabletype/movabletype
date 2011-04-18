@@ -769,11 +769,14 @@ sub _build_favorite_websites_data {
 
     # Append accessible websites if user has 4 or more blogs.
     if ( scalar @websites < 10 ) {
+        my $auth = $app->user or return;
         my %args;
         my %terms;
         $args{join} = MT::Permission->join_on( 'blog_id',
             { author_id => $user->id, permissions => { not => "'comment'" } }
-        );
+            )
+            if !$auth->is_superuser
+                && !$auth->permissions(0)->can_do('edit_templates');
         $args{limit}  = 10 - $fav_count;
         $terms{class} = 'website';
         $terms{id}    = { not => \@fav_websites } if $fav_count;
@@ -835,6 +838,16 @@ sub _build_favorite_websites_data {
 
     # Make object_loop data
     require MT::Permission;
+
+    # Sort by recently access
+    my $i;
+    my %sorted = map { $_ => $i++ } @fav_websites;
+    foreach ( @websites ) {
+        $sorted{$_->id} = scalar @websites if !exists $sorted{$_->id};
+    }
+    @websites
+        = sort { ( $sorted{ $a->id } || 0 ) <=> ( $sorted{ $b->id } || 0 ) }
+        @websites;
 
     my @param;
     foreach my $website (@websites) {
@@ -902,11 +915,14 @@ sub _build_favorite_blogs_data {
 
     # Append accessible blogs if favorite blogs is under 10;
     if ( scalar @blogs < 10 ) {
+        my $auth = $app->user or return;
         my %args;
         my %terms;
         $args{join} = MT::Permission->join_on( 'blog_id',
             { author_id => $user->id, permissions => { not => "'comment'" } }
-        );
+            )
+            if !$auth->is_superuser
+                && !$auth->permissions(0)->can_do('edit_templates');
         $args{limit}      = 10 - $fav_count;
         $terms{class}     = 'blog';
         $terms{parent_id} = $app->blog->id
@@ -963,6 +979,16 @@ sub _build_favorite_blogs_data {
 
     # Make object_loop data
     require MT::Permission;
+
+    # Sort by recently access
+    my $i;
+    my %sorted = map { $_ => $i++ } @fav_blogs;
+    foreach ( @blogs ) {
+        $sorted{$_->id} = scalar @blogs if !exists $sorted{$_->id};
+    }
+    @blogs
+        = sort { ( $sorted{ $a->id } || 0 ) <=> ( $sorted{ $b->id } || 0 ) }
+        @blogs;
 
     my @param;
     foreach my $blog (@blogs) {

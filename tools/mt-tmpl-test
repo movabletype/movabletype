@@ -252,7 +252,6 @@ sub main {
     if ($template_obj) {
         printf STDERR "Template: %s (#%d)\n", $template_obj->name, $template_obj->id
             if $verbose;
-
         unless (defined $archive_type) {
             # determine archive type for this template
             if ( $template_obj->type eq 'category' ) {
@@ -265,7 +264,7 @@ sub main {
                 $archive_type = 'Page';
             }
             elsif ( $template_obj->type eq 'archive' ) {
-                my $map = MT::TemplateMap->load( { template_id => $template_obj->id, is_preferred => 1 });
+                my $map = MT->model('templatemap')->load( { template_id => $template_obj->id, is_preferred => 1 });
                 $archive_type = $map->archive_type if $map;
             }
         }

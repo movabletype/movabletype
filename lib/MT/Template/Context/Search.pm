@@ -327,7 +327,7 @@ sub _hdlr_results {
 
     for ( my $i = 0; $i < $count; $i++ ) {
         $count_per_blog++;
-        $ctx->stash( $stash_key, $this_object );
+        local $ctx->{__stash}{$stash_key} = $this_object;
         local $ctx->{__stash}{blog} = $this_object->blog
             if $this_object->can('blog');
         my $ts;

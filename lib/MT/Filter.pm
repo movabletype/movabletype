@@ -111,9 +111,8 @@ sub list_props {
             display               => 'none',
             label                 => 'Author Status',
             single_select_options => [
-                { label => 'Deleted Users',  value => 'deleted', },
-                { label => 'Enabled Users',  value => 'enabled', },
-                { label => 'Disabled Users', value => 'disabled', },
+                { label => 'Enabled',  value => 'enabled', },
+                { label => 'Disabled', value => 'disabled', },
             ],
             terms => sub {
                 my $prop = shift;

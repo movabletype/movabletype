@@ -1,4 +1,56 @@
-/* Style for Form Element */
+/* - Fields */
+fieldset { 
+    margin-bottom: 3em;
+}
+.field {
+    overflow: hidden;
+    padding: 0;
+    margin: 0 0 15px;
+}
+.field-left-label .field-header {
+    float: left;
+    width: 11em;
+    margin-left: 1em;
+    padding: 0.5em 0;
+    text-align: right;
+}
+.field-left-label .field-content {
+    margin-left: 13.5em;
+    padding: 0.5em 0;
+}
+.field-top-label .field-header {
+    margin-bottom: 5px;
+}
+.field-top-label .field-header label {
+    vertical-align: baseline;
+}
+.field-top-label .field-content {
+    margin: 3px;
+}
+.field-inline, 
+.field-inline .field-header, 
+.field-inline .field-content { 
+    display: inline;
+}
+.field-inline { 
+    margin-right: 10px;
+}
+.field-content-text {
+    padding-top: 5px;
+}
+.field-no-header .field-header {
+    display: none;
+}
+.field-no-header .field-content {
+    margin-left: 0;
+}
+.field .hint {
+    margin: 5px 0 0;
+    font-size: 90%;
+}
+.field-top-label .hint {
+    width: 100%;
+}
 
 /* - Input */
 .text {
@@ -23,14 +75,14 @@
 .edit-screen .text {
     width: 100%;
 }
-.short,
-.password {
-    width: 200px;
+.text.short,
+.text.password {
+    width: 180px;
 }
-.med {
+.text.med {
     width: 50%;
 }
-.full {
+.text.full {
     width: 100%;
     max-width: 100%;
 }
@@ -71,16 +123,10 @@
     border-color: #c53d43;
     background-color: #f2b1b1;
 }
-.readonly { 
-    background-color: #dcdddd ! important;
-    color: #7b7c7d;
-}
-
 .text:focus {
     background-color: #fff;
     outline: 0;
 }
-
 .text.disabled {
     border-color: #dcdddd;
     background-color: #f3f3f3;
@@ -88,10 +134,14 @@
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
 }
+.readonly { 
+    background-color: #dcdddd ! important;
+    color: #7b7c7d;
+}
 
 select { 
     height: 1.9em;
-    border: 1px solid #adadad;
+    border: 1px solid #c0c6c9;
     font-size: 12px;
     box-shadow: 0 1px 0 #f3f3f3;
     white-space: nowrap;
@@ -101,7 +151,11 @@ select {
 .col select {
     width: 100%;
 }
+select.error {
+    border-color: #c53d43 ! important;
+}
 
+/* -- Batch Edit */
 #notification-listing-table input[type="text"], 
 .batch-edit input[type="text"] { 
     width: 100%;
@@ -114,14 +168,13 @@ select {
 /* - Button */ 
 .button { 
     cursor: pointer;
-    line-height: 1.3;
     overflow: visible;
     display: inline-block;
-    position: relative;
     outline: none;
     margin-right: 5px;
-    padding: 3px 0.5em 2px;
-    border: 1px solid #adadad;
+    padding: 3px 0.5em;
+    border: 1px solid #c0c6c9;
+    line-height: 1.2;
     background-color: #f3f3f3;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
     background: -moz-linear-gradient(top, #f3f3f3 0%, #dcdddd 100%);
@@ -131,15 +184,19 @@ select {
     text-align: center;
     text-decoration: none;
     vertical-align: middle;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     border-radius: 3px;
     -moz-border-radius: 3px;
     -webkit-box-shadow: 0 1px 0 #f3f3f3;
     -moz-box-shadow: 0 1px 0 #f3f3f3;
     box-shadow: 0 1px 0 #f3f3f3;
+    
 }
 .button:hover {
     border-color: #7b7c7d;
-    color: inherit;
+    color: #2b2b2b;
     background-color: #fafafa;
     background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e9eaea));
     background: -moz-linear-gradient(top, #fafafa 0%, #e9eaea 100%);
@@ -218,22 +275,30 @@ select {
 }
 
 /* -- Split Button */
-.split .action.button {
+.split .button {
     float: left;
-    line-height: 16px;
+    min-width: 5.5em;
+    height: 22px;
     margin: 0;
-    padding: 0.2em 0.6em;
+    padding: 0 0.6em;
+    line-height: 22px;
     font-size: 13px;
     font-weight: bold;
     -moz-border-radius: 3px 0 0 3px;
     border-top-right-radius: 0; 
     border-bottom-right-radius: 0;
 }
-.split .action.toggle-button {
-    width: 16px;
-    height: 16px;
-    padding-right: 0.2em;
-    padding-left: 0.2em;
+.split .toggle-button {
+    display: block;
+    float: left;
+    position: relative;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+    line-height: 20px;
+    border-width: 1px;
+    border-style: solid;
     -moz-border-radius: 0 3px 3px 0;
     border-radius: 3px;
     border-top-left-radius: 0; 
@@ -242,15 +307,13 @@ select {
 .split .detail {
     display: none;
     width: 99%;
+    font-size: 90%;
 }
 
 .ui-helper-hidden-accessible {
     position: absolute;
 }
 
-#alignment li {
-    display: inline;
-}
 #alignment .ui-button {
     width: 50px;
     margin: 0;

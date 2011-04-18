@@ -513,7 +513,7 @@ sub end_element {
                         $self->{callback}->("\n");
                         $self->{callback}->(
                             MT->translate(
-                                "The system level setting for plugin '[_1]' has already existed.",
+                                "The system level settings for plugin '[_1]' already exist.  Skipping this record.",
                                 $obj->plugin
                             )
                         );
@@ -576,7 +576,8 @@ sub end_document {
 }
 
 sub _decode {
-    Encode::decode_utf8( $_[0] );
+    Encode::decode_utf8( $_[0] )
+      unless Encode::is_utf8( $_[0] );
 }
 
 1;

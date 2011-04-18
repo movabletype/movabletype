@@ -138,8 +138,10 @@ class ADODB_Active_Record {
 	
 	function __wakeup()
 	{
-  		$class = get_class($this);
-  		new $class;
+   		$class = get_class($this);
+        if ( $class == 'ADODB_Active_Record' )
+            return;
+   		new $class;
 	}
 	
 	function _pluralize($table)

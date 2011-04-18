@@ -56,6 +56,7 @@ sub list_props {
     return {
         user_name => {
             label   => 'User',
+            filter_label => 'User Name',
             base    => '__virtual.string',
             display => 'force',
             order   => 100,
@@ -104,6 +105,7 @@ sub list_props {
         },
         role_name => {
             label      => 'Role',
+            filter_label => 'Role Name',
             display    => 'force',
             order      => 200,
             base       => '__virtual.string',
@@ -129,7 +131,8 @@ sub list_props {
                 my $detail = $role->permissions;
                 if ( defined $detail ) {
                     my @perms = map { $_ =~ s/'//g; $_; } split ',', $detail;
-                    my $all_perms = MT->registry('permissions');
+                    my $all_perms
+                        = MT->model('permission')->perms_from_registry;
                     my @permhashes
                         = map { $all_perms->{ 'blog.' . $_ } } @perms;
                     $detail = join ', ', (
@@ -163,7 +166,7 @@ sub list_props {
                 my $role_terms = $prop->super(@_);
                 my @roles = MT->model('role')->load( { %$role_terms, }, );
                 if ( scalar @roles < 1 ) {
-                    return { role_id => \'< 0' };
+                    return { role_id => \'< 0' }; # baka editors '};
                 }
                 return { role_id => [ map { $_->id } @roles ], };
             },
@@ -174,7 +177,7 @@ sub list_props {
                 delete $args->{sort};
                 push @{ $args->{joins} }, MT->model('role')->join_on(
                     undef,
-                    { id => \'= association_role_id', },
+                    { id => \'= association_role_id', }, # baka editors '},
                     {   sort      => 'name',
                         direction => delete $args->{direction},
                     },
@@ -183,7 +186,8 @@ sub list_props {
             },
         },
         blog_name => {
-            label   => 'Site',
+            label   => 'Website/Blog Name',
+            filter_label => '__WEBSITE_BLOG_NAME',
             base    => '__virtual.string',
             display => 'default',
             order   => 300,
@@ -209,9 +213,7 @@ sub list_props {
                         mode => 'dashboard',
                         args => { blog_id => $obj->blog_id, },
                     );
-                    push @outs, qq{
-                        <a href="$dashboard_url">$name</a>
-                    };
+                    push @outs, $name;
                 }
                 @outs;
             },
@@ -256,7 +258,7 @@ sub list_props {
                 my ( $prop, $app, $val ) = @_;
                 my $role = MT->model('role')->load($val)
                     or return $prop->error(
-                    MT->translate('Invalid parameter.') );
+                    MT->translate('Invalid parameter') );
                 return MT->translate( 'Permissions with role: [_1]',
                     $role->name, );
             },
@@ -271,7 +273,7 @@ sub list_props {
                 my ( $prop, $app, $val ) = @_;
                 my $author = MT->model('author')->load($val)
                     or return $prop->error(
-                    MT->translate('Invalid parameter.') );
+                    MT->translate('Invalid parameter') );
                 my $label = MT->translate( 'Permissions for [_1]',
                     $author->nickname, );
                 return $label;
@@ -280,7 +282,7 @@ sub list_props {
                 my ( $prop, $app, $val ) = @_;
                 my $author = MT->model('author')->load($val)
                     or return $prop->error(
-                    MT->translate('Invalid parameter.') );
+                    MT->translate('Invalid parameter') );
                 my $label = MT->translate( 'Permissions for [_1]',
                     $author->nickname, );
                 return {

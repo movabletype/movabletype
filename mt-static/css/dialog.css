@@ -1,4 +1,4 @@
-/* Body Has Dialog */
+/* Dialog */
 body.has-dialog {
     overflow: hidden;
 }
@@ -11,20 +11,23 @@ body.has-dialog {
     min-width: 960px;
     height: 200%;
 }
+#mt-dialog-iframe {
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+}
 
 /* - Dialog Block */
 .mt-dialog, 
 .ui-dialog {
     position: absolute;
-    border: 1px solid #adadad;
-    background-color: #f3f3f3;
-    box-shadow: #2b2b2b 0 3px 10px;
-    -webkit-box-shadow: #2b2b2b 0 3px 10px;
-    -moz-box-shadow: #2b2b2b 0 3px 10px;
+    border: 1px solid #c0c6c9;
+    background-color: #fffffc;
     border-radius: 5px;
     -moz-border-radius: 5px;
+    box-shadow: 0 3px 10px #2b2b2b;
+    -webkit-box-shadow: 0 3px 10px #2b2b2b;
+    -moz-box-shadow: 0 3px 10px #2b2b2b;
 }
-
 .mt-dialog {
     display: none;
     position: fixed;
@@ -42,23 +45,20 @@ body.has-dialog {
     cursor: move;
 }
 
-
-/* - Dialog Dontent */
-/* -- Layout */
+/* - Dialog Content */
 .dialog #container {
     width: 100%;
     min-width: 100%;
     margin: 0 auto;
 }
 
-
+/* -- indicator */
 .mt-dialog img {
     position: absolute;
     top: 50%;
     left: 50%;
-    margin: -33px 0 0 -33px;
+    margin: -20px 0 0 -20px;
 }
-
 .dialog .progress {
     position: absolute;
     top: 1em;
@@ -66,40 +66,25 @@ body.has-dialog {
     line-height: 1;
 }
 
-.dialog .field-top-label {
-    margin-bottom: .75em;
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.dialog .field-top-label  .field-header {
-    margin-bottom: .25em;
-}
-
 .dialog .view-site-link {
     float: right;
     margin: 4px 2px 0 4px;
 }
-
 .dialog .view-site-link img {
     background-image: url(../images/status_icons/view.gif);
 }
-
 
 /* - UI Dialog */
 .ui-dialog-titlebar {
     padding: 10px;
     line-height: 1.1;
 }
-
 .ui-dialog-buttonpane {
     padding: 1px 10px;
 }
-
 .ui-dialog-title {
     font-size: 125%;
 }
-
 .ui-dialog-titlebar-close {
     position: absolute;
     top: 8px;
@@ -111,16 +96,13 @@ body.has-dialog {
     background-position: -32px 0;
     background-repeat: no-repeat;
 }
-
 .alert .ui-dialog-titlebar-close, 
 .save .ui-dialog-titlebar-close {
     display: none;
 }
-
 .ui-dialog-titlebar-close span {
     display: none;
 }
-
 .ui-dialog-content {
     padding: 1px 10px 10px;
     overflow: auto;
@@ -139,13 +121,14 @@ body.has-dialog {
     border-radius: 5px;
     -moz-border-radius: 5px;    
 }
-
 #save_settings-field {
     background-color: #fff;
-    margin-top: 10px;
+    margin: 10px 0 0;
     padding: 10px;
 }
-
+#alignment li {
+    display: inline;
+}
 
 /* - Repry Comment */
 .dialog #comments-form #comment {
@@ -157,12 +140,9 @@ body.has-dialog {
     overflow-x: hidden;
     overflow-y: auto;
     background-color: #f3f3f3;
-    -moz-border-radius: 3px;
-    -khtml-border-radius: 3px;
-    -webkit-border-radius: 3px;
     border-radius: 3px;
+    -moz-border-radius: 3px;
 }
-
 .dialog #comments-form #comment .comment-meta {
     color: #7b7c7d;
     margin-bottom: 8px;

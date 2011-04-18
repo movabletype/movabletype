@@ -61,14 +61,12 @@ sub list_props {
         },
         entry_count => {
             base      => '__virtual.integer',
-            label     => 'Entry count',
+            label     => 'Entries',
             bulk_html => sub {
                 my ( $prop, $objs, $app ) = @_;
                 my $count_iter = MT->model('placement')->count_group_by(
-                    {   blog_id    => $app->blog->id,
-                        is_primary => 1,
-                    },
-                    { group => ['category_id'], }
+                    { blog_id => $app->blog->id, },
+                    { group   => ['category_id'], }
                 );
                 my %count;
                 while ( my ( $count, $cat_id ) = $count_iter->() ) {
@@ -79,18 +77,11 @@ sub list_props {
                     my $obj_class = $obj->class;
                     my $contents_type
                         = $obj_class eq 'category' ? 'entry' : 'page';
-                    my $content_class = MT->model($contents_type);
-                    my $action = 'access_to_' . $contents_type . '_list';
-                    my $count = $count{ $obj->id } || 0;
-                    my $suffix;
-                    if ( $count == 1 ) {
-                        $suffix
-                            = MT->translate( lc $content_class->class_label );
-                    }
-                    else {
-                        $suffix = MT->translate(
-                            lc $content_class->class_label_plural );
-                    }
+                    my $action   = 'access_to_' . $contents_type . '_list';
+                    my $count    = $count{ $obj->id } || 0;
+                    my $phrase = $obj_class eq 'category'
+                        ? MT->translate('[quant,_1,entry,entries,No entries]', $count )
+                        : MT->translate('[quant,_1,page,pages,No pages]', $count );
 
                     if ( $app->can_do($action) ) {
                         my $uri = $app->uri(
@@ -106,21 +97,17 @@ sub list_props {
                                 blog_id    => $obj->blog_id,
                             },
                         );
-                        push @out,
-                            MT->translate(
-                            '<a href="[_1]">[_2]</a> [_3]', $uri,
-                            $count ? $count : 'No', $suffix,
-                            );
+                        push @out, "<a href=\"$uri\">"
+                            . $phrase
+                            . "</a>";
                     }
                     else {
-                        push @out,
-                            MT->translate( '[_1] [_2]',
-                            $count ? $count : 'No', $suffix, );
+                        push @out, $phrase;
                     }
                 }
                 return @out;
             },
-        },
+            },
         custom_sort => {
             class     => 'category',
             bulk_sort => sub {
@@ -465,7 +452,7 @@ sub _sort_by_id_list {
         push @objs, delete $id_map{$id} if $id_map{$id};
     }
     if ( scalar %id_map ) {
-        my $sort  = $opts{secondary_sort}       || 'id';
+        my $sort  = $opts{secondary_sort}       || 'label';
         my $order = $opts{secondary_sort_order} || 'ascend';
         my $place = $opts{unknown_place}        || 'bottom';
         my @unknowns = sort { $a->$sort cmp $b->$sort } values %id_map;

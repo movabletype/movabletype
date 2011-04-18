@@ -66,9 +66,14 @@
         current_edit = 0;
     }
 
-    jQuery('#submit-ipban').click(function() {
-        if ( !jQuery('#ip-address').mtValidate() )
+    jQuery('#create-inline-ipban').submit(function() {
+        // If input has focus, jQuery.wrap() throws exception...
+        // Change focus before validate.
+        jQuery('#submit-ipban').focus();
+        if ( !jQuery('#ip-address').mtValidate() ) {
+            jQuery('#ip-address').focus();
             return false;
+        }
         renderList({
             __mode: 'save',
             _type: 'banlist',

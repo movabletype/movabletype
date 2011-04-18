@@ -25,14 +25,11 @@
      class="success"
      rebuild="all"
      can_close="0">
-    <__trans phrase="Theme [_1] has been applied." params="<mt:var name="current_theme_name">" escape="html">
-  </mtapp:statusmsg>
-</mt:if>
 <mt:if name="warning_on_apply">
-  <mtapp:statusmsg
-     id="theme_warning"
-     class="alert">
-    <__trans phrase="Some error occured while applying theme."> <a href="<mt:var name="script_url">?__mode=list&amp;_type=log&blog_id=<mt:var name="blog_id">"><__trans phrase="see more detail."></a>
+    <__trans phrase="Theme [_1] has been applied (<a href="[_2]">[quant,_3,warning,warnings]</a>)." params="<mt:var name="current_theme_name">%%<mt:var name="script_url">?__mode=list&amp;_type=log&blog_id=<mt:var name="blog_id">%%<mt:var name="warning_on_apply">">
+<mt:else>
+    <__trans phrase="Theme [_1] has been applied." params="<mt:var name="current_theme_name">" escape="html">
+</mt:if>
   </mtapp:statusmsg>
 </mt:if>
 <mt:if name="refreshed">
@@ -49,12 +46,12 @@
 
 <mt:setvartemplate name="theme_loop_tmpl">
 <mt:loop name="$loop_for">
-<script type="text/javascript">
-/* <![CDATA[ */
-    theme_ids.push('<mt:var name="id">');
-/* ]]> */
-</script>
 <div id="theme-<mt:var name="id">" class="theme<mt:if name="current"> current-theme</mt:if><mt:if name="errors"> disabled</mt:if>">
+  <script type="text/javascript">
+  /* <![CDATA[ */
+    theme_ids.push('<mt:var name="id">');
+  /* ]]> */
+  </script>
   <div class="theme-status">
   <mt:unless name="current">
     <mt:if name="errors">
@@ -95,7 +92,7 @@
   </div>
   <div class="theme-meta">
     <h3 class="theme-title">
-      <a href="#" class="theme-detail-link">
+      <a href="#" class="theme-detail-link toggle-link icon-left icon-spinner">
         <mt:var name="name" escape="html">
       <mt:if name="theme_version">
         <span class="theme-version"><mt:var name="theme_version" escape="html"></span>
@@ -199,42 +196,49 @@
 <mt:include name="include/header.tmpl">
 
 <mt:if name="blog_id">
-
 <div id="current-theme-group" class="theme-group">
-  <h2><__trans phrase="Current Theme"></h2>
-  <mt:setvar name="loop_for" value="current_theme_loop" /><mt:var name="theme_loop_tmpl">
+  <h2 class="theme-group-name"><__trans phrase="Current Theme"></h2>
+  <div class="theme-list">
+    <mt:setvar name="loop_for" value="current_theme_loop" /><mt:var name="theme_loop_tmpl">
+  </div>
 </div>
-
 <div id="<$mt:var name="scope_type"$>-theme-group" class="theme-group">
-  <h2><__trans phrase="Available Themes"></h2>
-  <mt:setvar name="loop_for" value="theme_loop" /><mt:var name="theme_loop_tmpl">
+  <h2 class="theme-group-name"><__trans phrase="Available Themes"></h2>
+  <div class="theme-list">
+    <mt:setvar name="loop_for" value="theme_loop" /><mt:var name="theme_loop_tmpl">
+  </div>
 </div>
-
 <mt:else>
   <mt:if name="both_theme_loop">
 <div id="both-theme-group" class="theme-group">
-  <h2><__trans phrase="Themes for Both Blogs and Websites"></h2>
-  <mt:setvar name="loop_for" value="both_theme_loop" /><mt:var name="theme_loop_tmpl">
+  <h2 class="theme-group-name"><__trans phrase="Themes for Both Blogs and Websites"></h2>
+  <div class="theme-list">
+    <mt:setvar name="loop_for" value="both_theme_loop" /><mt:var name="theme_loop_tmpl">
+  </div>
 </div>
   </mt:if>
   <mt:if name="blog_theme_loop">
 <div id="blog-theme-group" class="theme-group">
-  <h2><__trans phrase="Themes for Blogs"></h2>
-  <mt:setvar name="loop_for" value="blog_theme_loop" /><mt:var name="theme_loop_tmpl">
+  <h2 class="theme-group-name"><__trans phrase="Themes for Blogs"></h2>
+  <div class="theme-list">
+    <mt:setvar name="loop_for" value="blog_theme_loop" /><mt:var name="theme_loop_tmpl">
+  </div>
 </div>
   </mt:if>
   <mt:if name="website_theme_loop">
 <div id="website-theme-group" class="theme-group">
-  <h2><__trans phrase="Themes for Websites"></h2>
-  <mt:setvar name="loop_for" value="website_theme_loop" /><mt:var name="theme_loop_tmpl">
+  <h2 class="theme-group-name"><__trans phrase="Themes for Websites"></h2>
+  <div class="theme-list">
+    <mt:setvar name="loop_for" value="website_theme_loop" /><mt:var name="theme_loop_tmpl">
+  </div>
 </div>
   </mt:if>
 </mt:if>
 
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('a.theme-detail-link').click(function(event) {
-        jQuery('.theme').not(jQuery(this).parents('.theme')).removeClass('theme-expanded')
-        jQuery(this).parents('.theme').toggleClass('theme-expanded');
+        jQuery('.theme').not(jQuery(this).parents('.theme')).removeClass('theme-expanded active')
+        jQuery(this).parents('.theme').toggleClass('theme-expanded active');
         event.preventDefault();
     });
 

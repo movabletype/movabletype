@@ -70,7 +70,7 @@ __PACKAGE__->install_properties(
             },
             'convert_breaks' => {
                 type       => 'string',
-                size       => 30,
+                size       => 60,
                 label      => 'Format',
                 revisioned => 1
             },
@@ -304,13 +304,14 @@ sub list_props {
         blog_name => {
             base => '__common.blog_name',
             label =>
-                sub { MT->app->blog ? 'Blog Name' : 'Website/Blog Name' },
+                sub { MT->app->blog ? MT->translate('Blog Name') : MT->translate('Website/Blog Name') },
             display   => 'default',
             site_name => sub { MT->app->blog ? 0 : 1 },
             order     => 400,
         },
         category_id => {
             label            => 'Primary Category',
+            filter_label     => 'Category',
             order            => 500,
             display          => 'default',
             base             => '__virtual.single_select',
@@ -425,7 +426,6 @@ sub list_props {
                     {   category_id => $cat_id,
                         entry_id    => \'= entry_id',
                         blog_id     => $blog_id,
-                        is_primary  => 1,
                     },
                     { unique => 1, },
                 );
@@ -438,7 +438,7 @@ sub list_props {
                 my $cat   = MT->model('category')->load($id)
                     or return $prop->error(
                     MT->translate(
-                        '[_1] ( id:[_2] ) not exists.',
+                        '[_1] ( id:[_2] ) does not exists.',
                         $prop->datasource->container_label,
                         $id
                     )
@@ -460,11 +460,12 @@ sub list_props {
             order => 700,
         },
         comment_count => {
-            auto      => 1,
-            display   => 'default',
-            label     => 'Comments',
-            order     => 800,
-            html_link => sub {
+            auto         => 1,
+            display      => 'default',
+            label        => 'Comments',
+            filter_label => '__COMMENT_COUNT',
+            order        => 800,
+            html_link    => sub {
                 my $prop = shift;
                 my ( $obj, $app, $opts ) = @_;
                 return unless $app->can_do('access_to_comment_list');
@@ -480,11 +481,12 @@ sub list_props {
             },
         },
         ping_count => {
-            auto      => 1,
-            display   => 'optional',
-            label     => 'Trackbacks',
-            order     => 900,
-            html_link => sub {
+            auto         => 1,
+            display      => 'optional',
+            label        => 'Trackbacks',
+            filter_label => '__PING_COUNT',
+            order        => 900,
+            html_link    => sub {
                 my $prop = shift;
                 my ( $obj, $app, $opts ) = @_;
                 return unless $app->can_do('access_to_trackback_list');
@@ -550,11 +552,20 @@ sub list_props {
                 my $blog = MT->app ? MT->app->blog : undef;
                 require MT::Util;
                 my $now = MT::Util::epoch2ts( $blog, time() );
+                my $from   = $args->{from}   || undef;
+                my $to     = $args->{to}     || undef;
+                my $origin = $args->{origin} || undef;
+                $from   =~ s/\D//g;
+                $to     =~ s/\D//g;
+                $origin =~ s/\D//g;
+                $from .= '000000' if $from;
+                $to   .= '235959' if $to;
+
                 if ( 'range' eq $option ) {
                     $query = [
                         '-and',
-                        { op => '>', value => $args->{from} },
-                        { op => '<', value => $args->{to} },
+                        { op => '>', value => $from },
+                        { op => '<', value => $to   },
                     ];
                 }
                 elsif ( 'days' eq $option ) {
@@ -568,10 +579,10 @@ sub list_props {
                     ];
                 }
                 elsif ( 'before' eq $option ) {
-                    $query = { op => '<', value => $args->{origin} };
+                    $query = { op => '<', value => $origin . '000000' };
                 }
                 elsif ( 'after' eq $option ) {
-                    $query = { op => '>', value => $args->{origin} };
+                    $query = { op => '>', value => $origin . '235959' };
                 }
                 elsif ( 'future' eq $option ) {
                     $query = { op => '>', value => $now };

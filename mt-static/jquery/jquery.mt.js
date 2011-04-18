@@ -81,29 +81,6 @@ $.mtSelector = function(options) {
 };
 
 /*
- * mtCMSSearch
- *
- * Usage:
- *   jQuery.mtCMSSearch();
- *
- */
-$.mtCMSSearch = function(options) {
-    $('#cms-search > a')
-        .mousedown(function(event) {
-            $('#cms-search').toggleClass('active').find('#search-form').toggleClass('hidden');
-            return false;
-        })
-        .click(function(event) {
-            return false;
-        });
-    $(document).mousedown(function(event) {
-        if ($(event.target).parents('#cms-search').length == 0) {
-            $('#search-form').addClass('hidden').parent('#cms-search').removeClass('active');
-        }
-    });
-};
-
-/*
  * mtUseSubdmain
  *
  * Usage:
@@ -217,7 +194,6 @@ $.mtUseAbsolute = function() {
         }
     });
     $checkboxes.click(function() {
-        jQuery('#'+$(this).parents().find('form').attr('id')).validate().resetForm();
         if (this.checked) {
             var $obj = $(this).attr('checked', true).parents('.field-content');
             $obj.find('.relative-site_path').hide();
@@ -904,8 +880,7 @@ $.extend( $.mtValidator.prototype, {
             if ( $elem.is(selector) ) {
                 validator.error  = false;
                 validator.errstr = undefined;
-                validator.test   = fn;
-                var res = validator.test($elem);
+                var res = fn.apply(validator, [$elem]);
                 if ( validator.error || !res ) {
                     if ( !validator.errstr ) {
                         validator.raise(
@@ -922,18 +897,16 @@ $.extend( $.mtValidator.prototype, {
     },
     raise: function (msg) {
         this.error  = true;
-        this.errstr = this.trans(msg || 'Invalid value');
+        this.errstr = msg || trans('Invalid value');
         return false;
-    },
-    trans: function (msg) {
-        return ( 'function' == typeof window.trans ) ? trans(msg) : msg;
     },
     validClass: 'valid',
     errorClass: 'error',
+    doFocus: true,
     wrapError: function ( $target, msg ) {
         return $('<label/>')
             .attr('for', $target.attr('id') )
-            .addClass('msg-error')
+            .addClass('validate-error msg-error')
             .text(msg);
     },
     updateError: function( $target, $error_block, msg ) {
@@ -948,7 +921,19 @@ $.extend( $.mtValidator.prototype, {
 });
 
 // Install default validators.
-$.mtValidator('simple', {});
+$.mtValidator('simple', {
+    wrapError: function ( $target, msg ) {
+        return $('<div />').append(
+            $('<label/>')
+                .attr('for', $target.attr('id') )
+                .addClass('validate-error msg-error')
+                .text(msg)
+            );
+    },
+    updateError: function( $target, $error_block, msg ) {
+        $error_block.find('label.msg-error').text(msg);
+    }
+});
 $.mtValidator('default', {
     wrapError: function ( $target, msg ) {
         return $('<label style="position: absolute;" />')
@@ -970,12 +955,13 @@ $.mtValidator('default', {
             $error_block.hide();
         if ( !$target.parent('.validate-error-wrapper').length ) {
             $target
-                .wrap('<span class="validate-error-wrapper" style="position: relative; white-space: nowrap;"></span>')
-                .after($error_block);
+                .wrap('<span class="validate-error-wrapper" style="position: relative; white-space: nowrap;"></span>');
         }
+        $target.after($error_block);
         $error_block
             .css('left', $target.width() )
-            .css('top',   -1 * $target.height() );
+            .css('top',   -1 * $target.height() )
+            .css('z-index', 200);
     },
     removeError: function( $target, $error_block ) {
         $error_block.remove();
@@ -984,7 +970,8 @@ $.mtValidator('default', {
         $target
             .unbind('focus', focus)
             .unbind('blur', blur);
-    }
+    },
+    doFocus: false
 });
 
 $.mtValidator('dialog', {
@@ -1026,20 +1013,20 @@ $.mtValidateRules = {
 };
 
 $.mtValidateAddRules = function ( rules ) {
-    $.mtValidateRules = $.extend( $.mtValidateRules, rules );        
+    $.mtValidateRules = $.extend( $.mtValidateRules, rules );
 };
 
 $.mtValidateAddMessages = function ( rules ) {
-    $.mtValidateMessages = $.extend( $.mtValidateMessages, rules );        
+    $.mtValidateMessages = $.extend( $.mtValidateMessages, rules );
 };
 
 $.mtValidateMessages = {
-    '.date':        'Invalid date format',
-    '.email':       'Invalid mail address',
-    '.url':         'Invalid URL',
-    '.required':    'This field is required',
-    '.digit, .num': 'This field must be integer',
-    '.number':      'This field must be number'
+    '.date':        trans('Invalid date format'),
+    '.email':       trans('Invalid mail address'),
+    '.url':         trans('Invalid URL'),
+    '.required':    trans('This field is required'),
+    '.digit, .num': trans('This field must be integer'),
+    '.number':      trans('This field must be number')
 };
 
 $.fn.extend({
@@ -1053,9 +1040,12 @@ $.fn.extend({
         var ns = $.data( this.get(0), 'mtValidator' );
         return $.mtValidator(ns);
     },
-    mtValid: function() {
+    mtValid: function(opts) {
         var errors = 0;
+        var error_elements = [];
         var successes = 0;
+        var defaults = { focus: true };
+        opts = $.extend( defaults, opts );
         this.each( function () {
             var $this = $(this);
             var validator = $this.mtValidator();
@@ -1074,6 +1064,8 @@ $.fn.extend({
             }
             else {
                 errors++;
+                if ( validator.doFocus )
+                    error_elements.push($this);
                 var msg = validator.errstr;
                 if ( $current_error ) {
                     var last_error = $.data( this, 'mtValidateLastError' );
@@ -1092,6 +1084,9 @@ $.fn.extend({
                 $this.removeClass( validator.validClass );
             }
         });
+        if ( opts.focus && error_elements.length ) {
+            error_elements[0].focus();
+        }
         return errors == 0;
     },
     mtUnvalidate: function() {
@@ -1116,7 +1111,60 @@ $.fn.extend({
 $('input, textarea').live('keyup focusin focusout', function () {
     var ns = $.data( this, 'mtValidator' );
     if ( !ns ) return true;
-    $(this).mtValid();
+    $(this).mtValid({ focus: false });
 });
+
+$('select').live('change', function () {
+    var ns = $.data( this, 'mtValidator' );
+    if ( !ns ) return true;
+    $(this).mtValid({ focus: false });
+});
+
+/*
+ * mtPlaceholder
+ *
+ * Usage:
+ *   jQuery('[placeholder]').mtPlaceholder()
+ *
+ */
+
+$.fn.mtPlaceholder = function() {
+    if ( 'placeholder' in $('<input />').get(0) ) return this;
+    this.each( function () {
+        var that = this;
+        var $that = $(that);
+        var placeholder_text = $that.attr('placeholder');
+        var original_color = $that.css('color');
+        if ( 1 > $that.val().length ) {
+            $that
+                .val(placeholder_text)
+                .css('color', 'GrayText')
+                .attr('data-showing-placeholder', 'showing');
+        }
+        $that
+            .focus( function () {
+                if ( $that.attr('data-showing-placeholder') ) {
+                    $that
+                        .val('')
+                        .css('color', original_color)
+                        .removeAttr('data-showing-placeholder');
+                }
+            })
+            .blur( function () {
+                if ( 1 > $that.val().length) {
+                    $that.val(placeholder_text)
+                        .css('color', 'GrayText')
+                        .attr('data-showing-placeholder', 'showing');
+                }
+            })
+            .parents('form').submit( function () {
+                if ( $that.attr('data-showing-placeholder') ) {
+                    $that.removeAttr('data-showing-placeholder');
+                    $that.val('');
+                }
+            });
+    });
+    return this;
+};
 
 })(jQuery);

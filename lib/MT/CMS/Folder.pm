@@ -22,6 +22,10 @@ sub can_save {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
+    unless ( ref $obj ) {
+        $obj = MT->model('folder')->load($obj)
+            or return;
+    }
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
 
     return $author->permissions($blog_id)->can_do('save_folder');
@@ -32,6 +36,10 @@ sub can_delete {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
+    unless ( ref $obj ) {
+        $obj = MT->model('folder')->load($obj)
+            or return;
+    }
     my $blog_id = $obj->blog_id;
 
     return $author->permissions($blog_id)->can_do('delete_folder');

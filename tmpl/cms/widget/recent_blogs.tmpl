@@ -4,7 +4,7 @@
 <mt:if name="blog_object_loop">
     <div id="favorite-blog-container" class="blog-container">
     <mt:loop name="blog_object_loop">
-        <div id="blog-<mt:var name="blog_id">-content" class="blog-content">
+        <div id="blog-<mt:var name="blog_id">-content" class="blog-content<mt:if name="__odd__"> odd</mt:if>">
             <div id="blog-<mt:var name="blog_id">-theme-thumbnail" class="thumbnail picture small">
                 <img alt="" src="<mt:var name="blog_theme_thumb">" />
             </div>

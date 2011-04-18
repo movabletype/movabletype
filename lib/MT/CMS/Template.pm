@@ -1075,6 +1075,7 @@ sub preview {
     my %param;
     my $blog_path = $blog->site_path;
     my $blog_url  = $blog->site_url;
+    my $use_virtual_cat = 0;
 
     if ( ( $type eq 'custom' ) || ( $type eq 'widget' ) ) {
 
@@ -1142,6 +1143,14 @@ sub preview {
                     direction => 'ascend',
                 }
             );
+            unless ( $cat ) {
+                $use_virtual_cat = 1;
+                $cat = new MT::Category;
+                $cat->label( $app->translate("Preview") );
+                $cat->basename("preview");
+                $cat->parent(0);
+                $ctx->stash( 'archive_category', $cat );
+            }
             $ctx->stash( 'archive_category', $cat );
         }
 
@@ -1303,8 +1312,9 @@ sub preview {
             data_value => scalar $q->param($col)
             };
     }
-    $param{template_loop} = \@data;
-    $param{object_type}   = $type;
+    $param{template_loop}   = \@data;
+    $param{object_type}     = $type;
+    $param{use_virtual_cat} = $use_virtual_cat;
     $app->request( 'preview_object', $tmpl );
     return $app->load_tmpl( 'preview_template_strip.tmpl', \%param );
 }
@@ -2947,6 +2957,7 @@ sub list_widget {
     $app->load_list_actions( 'template', $widget_actions );
     $param->{ 'widget_' . $_ } = $widget_actions->{$_}
         for keys %$widget_actions;
+    $param->{page_actions}  = $app->page_actions('list_widget');
     $app->load_tmpl( 'list_widget.tmpl', $param );
 }
 

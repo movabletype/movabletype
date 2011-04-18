@@ -424,6 +424,7 @@ sub runner {
     my $plugin = shift;
     my $method = shift;
     require MultiBlog;
+    MultiBlog::init_rebuilt_cache(MT->instance);
     no strict 'refs';
     return $_->( $plugin, @_ ) if $_ = \&{"MultiBlog::$method"};
     die "Failed to find MultiBlog::$method";

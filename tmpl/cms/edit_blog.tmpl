@@ -87,7 +87,7 @@ function init() {
         show_hint="1"
         help_page="blog_settings_general"
         help_section="blog_name">
-        <input type="text" name="name" id="name" class="text" value="<mt:var name="name" escape="html">" onkeyup="dirify_blog_name(this)"/>
+        <input type="text" name="name" id="name" class="text required" value="<mt:var name="name" escape="html">" onkeyup="dirify_blog_name(this)"/>
     </mtapp:setting>
 </mt:if>
 <mt:if name="can_set_publish_paths">
@@ -95,7 +95,7 @@ function init() {
         id="site_url"
         class="url-field"
         label="<__trans phrase="Blog URL">"
-        hint="<__trans phrase="Enter the URL of your Blog. Exclude the filename (i.e. index.html). Example: http://www.example.com/weblog/">"
+        hint="<__trans phrase="Enter the URL of your Blog. Exclude the filename (i.e. index.html). Example: http://www.example.com/blog/">"
         show_hint="1"
         help_page="blog_settings_publishing"
         help_section="site_url">
@@ -117,7 +117,7 @@ function init() {
           <span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" class="blog-path-text text path" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" />
         </div>
         <div class="absolute-site_path content-path">
-          <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="blog-path-text text hide-input" />
+          <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="blog-path-text text hide-input required" />
         </div>
         <div class="use-absolute option">
             <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
@@ -202,10 +202,13 @@ function init() {
     jQuery.mtUseAbsolute();
 
     function is_valid_url(url_){
+        if (url_.indexOf(' ') != -1) {
+            return false;
+        }
         return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
     }
     function is_valid_path(path_){
-        var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
+        var str = path_.replace(/["%<>\[\\\]\^`{\|}~]/g, ""); //"
         str = encodeURI(str);
         if (str.indexOf('%') != -1) {
             return false;
@@ -224,56 +227,40 @@ function init() {
         }
         return false;
     }
-    jQuery.validator.addMethod('url', function(value, element) {
-        return is_valid_url('<mt:var name="website_domain">'+value);
-    });
-    jQuery.validator.addMethod('path', function(value, element) {
-        return is_valid_path(value);
-    });
-    jQuery.validator.addMethod('absolute_path', function(value, element) {
-        return is_valid_absolute_path(value);
-    });
-    jQuery.validator.addMethod('site_url', function(value, element) {
+
+    jQuery.mtValidateAddRules({
+      '#site_url_path': function ($e) {
         var base = '<mt:var name="website_scheme">://<mt:var name="website_domain">';
-        var chk = jQuery(element).parents().find('.url-field:first').find(':checkbox:checked');
-        var subdomain = jQuery(element).parents().find('.url-field:first').find('.blog-subdomain-text');
-        if ( chk.length && subdomain.val().length) {
-            base = '<mt:var name="website_scheme">://'+subdomain.val()+'.<mt:var name="website_domain">';
+        var $chk  = $e.parents().find('.url-field:first').find(':checkbox:checked');
+        var $subdomain = $e.parents().find('.url-field:first').find('.blog-subdomain-text');
+        if ( $chk.length && $subdomain.val().length) {
+            base = '<mt:var name="website_scheme">://' + $subdomain.val() + '.<mt:var name="website_domain">';
         }
-        return is_valid_url(base + element.value);
+        return is_valid_url(base + $e.val());
+      },
+      '#site_path': function ($e) {
+        return is_valid_path($e.val());
+      },
+      '#site_path_absolute': function ($e) {
+        if ( jQuery('#use_absolute:checked').length <= 0 ) {
+          return true;
+        }
+        return is_valid_absolute_path($e.val());
+      }
     });
-    jQuery('#cfg_form').validate({
-        ignore: '.ignore-validate',
-        rules: {
-            name: 'required',
-            server_offset: 'required',
-            site_url_path: 'site_url',
-            site_path: {
-                path: true
-            },
-            site_path_absolute: {
-                required: '#use_absolute:checked',
-                absolute_path: true
-            }
-        },
-        messages: {
-            name: '<__trans phrase="You must set your Blog Name." escape="singlequotes">',
-            server_offset: '<__trans phrase="You did not select a time zone." escape="singlequotes">',
-            site_url_path: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
-            site_path: {
-                required: '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
-                path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
-            },
-            site_path_absolute: {
-                required: '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
-                absolute_path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
-            }
-        },
-        errorClass: "msg-error",
-        errorPlacement: function(error, element) {
-            element.parents('div.field').addClass('error-field');
-            error.removeAttr('generated').insertAfter(element);
-        }
+
+    jQuery.mtValidateAddMessages({
+      '#name': '<__trans phrase="You must set your Blog Name." escape="singlequotes">',
+      '#server_offset': '<__trans phrase="You did not select a time zone." escape="singlequotes">',
+      '#site_url_path': '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
+      '#site_path.required': '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
+      '#site_path': '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">',
+      '#site_path_absolute.required': '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
+      '#site_path_absolute': '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
+    });
+
+    jQuery('#cfg_form').submit( function () {
+        if ( !jQuery(this).find('input:visible').mtValidate('simple') ) return false;
     });
 </mt:setvarblock>
 

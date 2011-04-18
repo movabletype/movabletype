@@ -575,7 +575,7 @@ class MT {
                 require_once("archive_lib.php");
                 try {
                     $archiver = ArchiverFactory::get_archiver($at);
-                } catch (Execption $e) {
+                } catch (Exception $e) {
                     // 404
                     $this->http_errr = 404;
                     header("HTTP/1.1 404 Not Found");

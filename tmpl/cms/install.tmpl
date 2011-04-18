@@ -69,14 +69,13 @@ div.warning#version-warning {
     <mt:if name="auth_mode_ldap">
       <p><__trans phrase="To proceed, you must authenticate properly with your LDAP server."></p>
     </mt:if>
-      <fieldset>
     <mt:if name="auth_mode_mt">
       <mtapp:setting
          id="admin_username"
          label="<__trans phrase="Username">"
          label_class="top-label"
          hint="<__trans phrase="The name used by this user to login.">">
-        <input type="text" id="admin_username" class="text full" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
+        <input type="text" id="admin_username" class="text full required" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
       </mtapp:setting>
     
       <mtapp:setting
@@ -84,7 +83,7 @@ div.warning#version-warning {
          label="<__trans phrase="Display Name">"
          label_class="top-label"
          hint="<__trans phrase="The name used when published.">">
-        <input type="text" name="admin_nickname" id="admin_nickname" class="text full" value="<mt:var name="admin_nickname" escape="html">" />
+        <input type="text" name="admin_nickname" id="admin_nickname" class="text full required" value="<mt:var name="admin_nickname" escape="html">" />
       </mtapp:setting>
     
       <mtapp:setting
@@ -92,11 +91,13 @@ div.warning#version-warning {
          label="<__trans phrase="Email Address">"
          label_class="top-label"
          hint="<__trans phrase="The user&rsquo;s email address.">">
-        <input type="text" id="admin_email" class="text full" name="admin_email" value="<mt:var name="admin_email" escape="html">" />
+        <input type="text" id="admin_email" class="text full required email" name="admin_email" value="<mt:var name="admin_email" escape="html">" />
       </mtapp:setting>
     
       <mtapp:setting
          id="use_system_email"
+         lebel="<__trans phrase="System Email">"
+         label_class="no-header"
          hint="<__trans phrase="The email address used in the From: header of each email sent from the system.">"
          show_hint="1">
         <input type="checkbox" name="use_system_email" <mt:if name="use_system_email">checked="checked"</mt:if> id="use_system_email" />
@@ -118,7 +119,7 @@ div.warning#version-warning {
          label="<__trans phrase="Password">"
          label_class="top-label"
          hint="<__trans phrase="Select a password for your account.">">
-        <input type="password" id="admin_password" class="text password" name="admin_password" />
+        <input type="password" id="admin_password" class="text password required" name="admin_password" />
       </mtapp:setting>
     
       <mtapp:setting
@@ -126,7 +127,7 @@ div.warning#version-warning {
          label="<__trans phrase="Confirm Password">"
          label_class="top-label"
          hint="<__trans phrase="Repeat the password for confirmation.">">
-        <input type="password" class="text password" name="admin_password_confirm" />
+        <input type="password" id="admin_password_confirm" class="text password" name="admin_password_confirm" />
       </mtapp:setting>
     </mt:if>
     
@@ -158,8 +159,6 @@ div.warning#version-warning {
       </mtapp:setting>
     </mt:if>
     
-      </fieldset>
-    
       <div class="actions-bar">
         <input type="hidden" name="continue" value="1" />
         <button
@@ -170,7 +169,7 @@ div.warning#version-warning {
           <__trans phrase="Continue">
         </button>
       </div>
-    </form>  
+    </form>
   </div>
 </div>
 
@@ -188,24 +187,21 @@ function show(id) {
 
 jQuery(function() {
     jQuery('#admin_username').focus();
-    jQuery('#install_form').validate({
-        rules: {
-            admin_username: 'required'<mt:if name="auth_mode_mt">,
-            admin_nickname: 'required',
-            admin_email: 'required',
-            hint: 'required'</mt:if>
-        },
-        messages: {
-            admin_username: '<__trans phrase="The initial account name is required." escape="singlequotes">'<mt:if name="auth_mode_mt">,
-            admin_nickname: '<__trans phrase="The display name is required." escape="singlequotes">',
-            admin_email: '<__trans phrase="The e-mail address is required." escape="singlequotes">',
-            hint: '<__trans phrase="Password recovery word/phrase is required." escape="singlequotes">'</mt:if>
-        },
-        errorClass: "msg-error",
-        errorPlacement: function(error, element) {
-            element.parents('div.field').addClass('error-field');
-            error.removeAttr('generated').insertAfter(element);
+    jQuery.mtValidateAddRules({
+        '#admin_password_confirm': function ($e) {
+            return $e.val() == jQuery('#admin_password').val() ? true : false;
         }
+    });
+    jQuery.mtValidateAddMessages({
+        '#admin_username.required': '<__trans phrase="The initial account name is required." escape="singlequotes">'
+<mt:if name="auth_mode_mt">,
+        '#admin_nickname.required': '<__trans phrase="The display name is required." escape="singlequotes">',
+        '#admin_email.required': '<__trans phrase="The e-mail address is required." escape="singlequotes">',
+        '#admin_password_confirm': '<__trans phrase="Both passwords must match." escape="singlequotes">'
+</mt:if>
+    });
+    jQuery('#install_form').submit(function() {
+        return jQuery(this).find('input, select').mtValidate('simple') ? true : false;
     });
 });
 /* ]]> */

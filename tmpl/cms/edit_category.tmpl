@@ -38,11 +38,24 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 function validate(form) {    
-    if (form.label.value.match(/\S/,''))
-        return true;
-    alert('<__trans phrase="You must specify a label for the category." escape="singlequotes">');
-    form.label.focus();
-    return false;
+    if ( !form.label.value.match(/\S/,'') ) {
+        alert('<__trans phrase="You must specify a label for the category." escape="singlequotes">');
+        form.label.focus();
+        return false;
+    }
+    if ( !form.basename.value.match(/\S/,'') ) {
+        alert('<__trans phrase="You must specify a basename for the category." escape="singlequotes">');
+        form.basename.focus();
+        return false;
+    }
+
+    if ( !(dirify(form.basename.value).match(/\S/,'')) ) {
+        alert('<__trans phrase="Please enter a valid basename." escape="singlequotes">');
+        form.basename.focus();
+        return false;
+    }
+
+    return true;
 }
 
 function toggleFile() {
@@ -87,7 +100,7 @@ TC.attachLoadEvent( init );
     <mtapp:setting
        id="label"
        label="<__trans phrase="Label">">
-      <input type="text" name="label" id="label" class="text" maxlength="100" value="<mt:var name="label" escape="html">" />
+      <input type="text" name="label" id="label" class="text label" maxlength="100" value="<mt:var name="label" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -96,7 +109,7 @@ TC.attachLoadEvent( init );
        hint="<__trans phrase="This is the basename assigned to your category.">"
        help_page="categories"
        help_section="category_basename">
-      <input type="text" name="basename" id="basename" class="mt-edit-field text" maxlength="250" value="<mt:var name="basename" escape="html">" />
+      <input type="text" name="basename" id="basename" class="mt-edit-field text basename" maxlength="250" value="<mt:var name="basename" escape="html">" />
       <p class="alert-warning-inline" id="basename-warning" style="display: none;">
         <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
         <__trans phrase="Warning: Changing this category's basename may break inbound links.">
@@ -182,5 +195,18 @@ TC.attachLoadEvent( init );
   <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 
 </form>
+
+<mt:setvarblock name="jq_js_include" append="1">
+  jQuery.mtValidateRules['.label'] = function ($e) {
+    if ( !$e.val().length ) return this.raise('Label is required.');
+    return hasDupe(parent, id, $e.val()) ? this.raise('Duplicated label on this level.') : true;
+  };
+
+  jQuery.mtValidateRules['.basename'] = function ($e) {
+    if ( !$e.val().length ) return this.raise('Basename is required.');
+    if ( $e.val().match(/[^\w\-]/) ) return this.raise('Invalid Basename.');
+    return hasDupe(parent, id, null, $e.val()) ? this.raise('Duplicated basename on this level.') : true;
+  };
+</mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">

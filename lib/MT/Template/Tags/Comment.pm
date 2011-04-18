@@ -1853,6 +1853,15 @@ sub _hdlr_blog_comment_count {
     $ctx->set_blog_load_context( $args, \%terms, \%args )
         or return $ctx->error( $ctx->errstr );
     $terms{visible} = 1;
+    require MT::Entry;
+    $args{join} =  MT::Entry->join_on(
+        undef,
+        {
+            id      => \'= comment_entry_id',
+            status  => MT::Entry::RELEASE(),
+        }, {}
+    );
+
     require MT::Comment;
     my $count = MT::Comment->count( \%terms, \%args );
     return $ctx->count_format( $count, $args );

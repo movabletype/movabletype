@@ -29,7 +29,7 @@ function changeParent (ws) {
     jQuery('.parent_site_path_'+blog_id).text(new_path);
 
     var ids = [ 'site', 'archive' ];
-    $.each(ids,  function () {
+    jQuery.each(ids,  function () {
         var obj = jQuery('#'+this+'_path'+blog_id+'-field');
         if ( obj.find('.use-absolute').hasClass('default-absolute') ) {
             obj.find('.use-absolute :checkbox').attr('checked', 'checked');
@@ -55,7 +55,9 @@ function changeParent (ws) {
 }
 
 function toggleWebsite() {
-    if (jQuery('#adjust_sitepath').valid()) {
+    var $website_configs = jQuery('#adjust_sitepath .for-website input');
+    if ($website_configs.mtValidate('simple')) {
+        $website_configs.mtUnvalidate();
         jQuery('.for-website').hide();
         jQuery('.for-blog').show();
     }
@@ -105,7 +107,8 @@ function init() {
         <h3><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</h3>
         <mtapp:setting
            id="site_url"
-           label="<__trans phrase="Site URL">">
+           label="<__trans phrase="Site URL">"
+           label_class="top-label">
         <mt:if name="old_site_url">
           <input type="hidden" name="old_site_url_<mt:var name="id" escape="html">" id="old_site_url_<mt:var name="id" escape="html">" value="<mt:var name="old_site_url" escape="html">" />
         </mt:if>
@@ -114,7 +117,8 @@ function init() {
 
         <mtapp:setting
            id="site_path"
-           label="<__trans phrase="Site Path">">
+           label="<__trans phrase="Site Path">"
+           label_class="top-label">
         <mt:if name="old_site_path">
           <input type="hidden" name="old_site_path_<mt:var name="id" escape="html">" id="old_site_path_<mt:var name="id" escape="html">" value="<mt:var name="old_site_path" escape="html">" />
         </mt:if>
@@ -134,7 +138,8 @@ function init() {
         <h3><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</h3>
         <mtapp:setting
            id="parent_id"
-           label="<__trans phrase="Parent Website">">
+           label="<__trans phrase="Parent Website">"
+           label_class="top-label">
           <select id="parent_id_<mt:var name="id">" name="parent_id_<mt:var name="id">" class="parent_website" onchange="changeParent(this)">
             <option value="0"><__trans phrase="Please choose parent website."></option>
           <mt:loop name="all_websites">
@@ -148,7 +153,8 @@ function init() {
            id="$site_url_id"
            class="url-field hidden"
            label="<__trans phrase="Blog URL">"
-           hint="<__trans phrase="Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/weblog/">"
+           label_class="top-label"
+           hint="<__trans phrase="Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/blog/">"
            show_hint="1">
         <mt:if name="old_site_url_subdomain">
           <div class="site-url content-path">
@@ -178,7 +184,8 @@ function init() {
         <mtapp:setting
            id="$site_path_id"
            class="site-path-field hidden"
-           label="<__trans phrase="Blog Root">">
+           label="<__trans phrase="Blog Root">"
+           label_class="top-label">
         <mt:if name="old_site_path">
           <input type="hidden" name="old_site_path_<mt:var name="id" escape="html">" id="old_site_path_<mt:var name="id" escape="html">" value="<mt:var name="old_site_path" escape="html">" />
         </mt:if>
@@ -202,22 +209,23 @@ function init() {
            id="$archive_url_id"
            class="url-field hidden"
            label="<__trans phrase="Archive URL">"
+           label_class="top-label"
            hint="<__trans phrase="Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/">"
            show_hint="1">
           <input type="hidden" name="old_archive_url_<mt:var name="id" escape="html">" id="old_archive_url_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_url" escape="html">" />
         <mt:if name="old_archive_url_subdomain">
           <div class="archive-url content-path">
-            <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="blog-subdomain-text text path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="website-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_path_<mt:var name="id" escape="html">" id="archive_url_<mt:var name="id" escape="html">" class="blog-url-text text path" value="<mt:var name="old_archive_url_path" escape="html">" /></span>
+            <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="blog-subdomain-text text path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="website-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_path_<mt:var name="id" escape="html">" id="archive_url_path_<mt:var name="id" escape="html">" class="blog-url-text archive-url-text text path" value="<mt:var name="old_archive_url_path" escape="html">" /></span>
           </div>
           <div class="use-subdomain option">
             <input type="checkbox" name="use_archive_subdomain_<mt:var name="id">" id="use_archive_subdomain_<mt:var name="id">" value="1" checked="checked" class="cb" /> <label for="use_archive_subdomain_<mt:var name="id">"><__trans phrase="Use subdomain"></label>
           </div>
         <mt:elseif name="old_archive_url_path">
           <div class="archive-url content-path">
-            <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="blog-subdomain-text text path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="webarchive-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_path_<mt:var name="id" escape="html">" id="archive_url_path_<mt:var name="id" escape="html">" class="blog-url-text text path" value="<mt:var name="old_archive_url_path" escape="html">" /></span>
+            <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="blog-subdomain-text text path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="webarchive-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_path_<mt:var name="id" escape="html">" id="archive_url_path_<mt:var name="id" escape="html">" class="blog-url-text archive-url-text text path" value="<mt:var name="old_archive_url_path" escape="html">" /></span>
           </div>
           <div class="use_subdomain option">
-            <input type="checkbox" name="use_subdomain_<mt:var name="id">" id="use_subdomain_<mt:var name="id">" value="1" class="cb" /> <label for="use_subdomain_<mt:var name="id">"><__trans phrase="Use subdomain"></label>
+            <input type="checkbox" name="use_archive_subdomain_<mt:var name="id">" id="use_archive_subdomain_<mt:var name="id">" value="1" class="cb" /> <label for="use_archive_subdomain_<mt:var name="id">"><__trans phrase="Use subdomain"></label>
           </div>
         <mt:elseif name="old_archive_url">
           <div class="archive-url content-path">
@@ -235,13 +243,14 @@ function init() {
         <mtapp:setting
            id="$archive_path_id"
            class="site-path-field hidden"
-           label="<__trans phrase="Archive Root">">
+           label="<__trans phrase="Archive Root">"
+           label_class="top-label">
           <input type="hidden" name="old_archive_path_<mt:var name="id" escape="html">" id="old_archive_path_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_path" escape="html">" />
           <div class="relative-site_path content-path">
-            <span class="website-path"><span class="parent_site_path_<mt:var name="id">">&nbsp;</span></span><input type="text" name="archive_path_<mt:var name="id" escape="html">" id="archive_path_<mt:var name="id" escape="html">" class="blog-path-text text path" value="<mt:unless name="archive_path_absolute"><mt:var name="old_archive_path" escape="html"></mt:unless>" />
+            <span class="website-path"><span class="parent_site_path_<mt:var name="id">">&nbsp;</span></span><input type="text" name="archive_path_<mt:var name="id" escape="html">" id="archive_path_<mt:var name="id" escape="html">" class="blog-path-text archive-path text path" value="<mt:unless name="archive_path_absolute"><mt:var name="old_archive_path" escape="html"></mt:unless>" />
           </div>
           <div class="absolute-site_path content-path">
-            <input type="text" name="archive_path_absolute_<mt:var name="id" escape="html">" id="archive_path_absolute_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_path" escape="html">" class="blog-path-text text" />
+            <input type="text" name="archive_path_absolute_<mt:var name="id" escape="html">" id="archive_path_absolute_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_path" escape="html">" class="blog-path-text archive-path text" />
           </div>
           <div class="option use-absolute<mt:if name="archive_path_absolute"> default-absolute</mt:if>">
             <input type="checkbox" name="use_absolute_archive_<mt:var name="id" escape="html">" id="use_absolute_archive_<mt:var name="id" escape="html">" value="1" class="cb"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> /> <label for="use_absolute_archive_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
@@ -289,10 +298,13 @@ function init() {
 <script type="text/javascript">
 /* <![CDATA[ */
     function is_valid_url(url_){
+        if (url_.indexOf(' ') != -1) {
+            return false;
+        }
         return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
     }
     function is_valid_path(path_){
-        var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
+        var str = path_.replace(/["%<>\[\\\]\^`{\|}~]/g, "");
         str = encodeURI(str);
         if (str.indexOf('%') != -1) {
             return false;
@@ -313,178 +325,122 @@ function init() {
 <mt:setvarblock name="jq_js_include" append="1">
     init();
 
-    jQuery.validator.addMethod('site_url', function(value, element) {
-        rex = RegExp("site_url_path_([0-9]+)");
-        parent_url = '';
-        if (element.name.match(rex)) {
-            b_id = RegExp.$1;
-
-            if ( jQuery('#use_subdomain_'+b_id+':checked').length ) {
-                parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
-                parent_url += jQuery('input#site_url_subdomain_'+b_id).val();
-                parent_url += '.';
-                parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
-            } else {
-                parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
-                parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
-            }
-        }
-        if (parent_url == '' && value == '')
-            return false;
-
-        return is_valid_url(parent_url + value);
-    });
-
-    jQuery.validator.addMethod('site_path', function(value, element) {
-        rex = RegExp("site_path_([0-9]+)");
-        parent_path = '';
-        if (element.name.match(rex)) {
-            b_id = RegExp.$1;
-            parent_path = jQuery('.parent_site_path_'+b_id).text();
-        }
-        if (parent_path == '' && value == '')
-            return false;
-
-        return is_valid_path(parent_path + value);
-    });
-    jQuery.validator.addMethod('url', function(value, element) {
-        return is_valid_url(value);
-    });
-    jQuery.validator.addMethod('absolute_path', function(value, element) {
-        return is_valid_absolute_path(value);
-    });
-    jQuery.validator.addMethod('not_absolute_path', function(value, element) {
-        return !is_valid_absolute_path(value);
-    });
-    jQuery.validator.addMethod('archive_url', function(value, element) {
-        rex = RegExp("archive_url_path_([0-9]+)");
-        parent_url = '';
-        if (element.name.match(rex)) {
-            b_id = RegExp.$1;
-
-            if ( jQuery('#use_archive_subdomain_'+b_id+':checked').length ) {
-                parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
-                parent_url += jQuery('input#archive_url_subdomain_'+b_id).val();
-                parent_url += '.';
-                parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
-            } else {
-                parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
-                parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
-            }
-        }
-        if (parent_url == '' && value == '')
-            return false;
-
-        return is_valid_url(parent_url + value);
-    });
-
-    jQuery('#adjust_sitepath').validate({
-        ignore: '.ignore-validate',
-        rules: {
-<mt:loop name="website_loop">
-            site_url_<mt:var name="id" escape="html">: {
-                required: true,
-                url: true
-            },
-            site_path_<mt:var name="id" escape="html">: {
-                required: true,
-                site_path: true
-            }<mt:unless name="__last__">,<mt:else><mt:if name="blogs_loop">,</mt:if></mt:unless>
-</mt:loop>
-<mt:loop name="blogs_loop">
-            site_path_<mt:var name="id" escape="html">: {
-                not_absolute_path: true
-            },
-            site_url_path_<mt:var name="id" escape="html">: 'site_url',
-            site_path_absolute_<mt:var name="id" escape="html">: {
-                absolute_path: function(element) {
-                    if ( jQuery('#use_absolute_<mt:var name="id" escape="html">:checked').length &&
-                         !jQuery('#site_path_absolute_<mt:var name="id" escape="html">:hidden').length  ) {
-                        return is_valid_absolute_path(element.value);
-                    }
-                    return true;
-                }
-            },
-    <mt:if name="enabled_archives">
-            archive_url_path_<mt:var name="id" escape="html">: {
-                required: true,
-                archive_url: true
-            },
-            archive_path_<mt:var name="id" escape="html">: {
-                site_path: function(element) {
-                    if ( !jQuery('#use_absolute_archive_<mt:var name="id" escape="html">:checked').length ) {
-                        return is_valid_path(element.value);
-                    }
-                    return false;
-                },
-                not_absolute_path: function(element) {
-                    if ( !jQuery('#use_absolute_archive_<mt:var name="id" escape="html">:checked').length ) {
-                        return !is_valid_absolute_path(element.value);
-                    }
-                    return false;
-                }
-            },
-            archive_path_absolute_<mt:var name="id" escape="html">: {
-                absolute_path: function(element) {
-                    if ( jQuery('#use_absolute_archive_<mt:var name="id" escape="html">:checked').length ) {
-                        return is_valid_absolute_path(element.value);
-                    }
-                    return true;
-                }
-            },
-    </mt:if>
-            parent_id_<mt:var name="id">: {
-                min: 1
-            }<mt:unless name="__last__">,</mt:unless>
-</mt:loop>
+    jQuery.mtValidateAddRules({
+        // Website paths
+        '.website-url-text': function ($e) {
+            return is_valid_url($e.val());
         },
-        messages: {
-<mt:loop name="website_loop">
-            site_url_<mt:var name="id" escape="html">: {
-                required: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
-                url: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">'
-            },
-            site_path_<mt:var name="id" escape="html">: {
-                required: '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
-                site_path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
-            }<mt:unless name="__last__">,<mt:else><mt:if name="blogs_loop">,</mt:if></mt:unless>
-</mt:loop>
-<mt:loop name="blogs_loop">
-            site_url_path_<mt:var name="id" escape="html">: {
-                site_url: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">'
-            },
-            site_path_<mt:var name="id" escape="html">: {
-                not_absolute_path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
-            },
-            site_path_absolute_<mt:var name="id" escape="html">: {
-                required: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">',
-                absolute_path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
-            },
-    <mt:if name="enabled_archives">
-            archive_url_path_<mt:var name="id" escape="html">: {
-                required: '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
-                archive_url: '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">'
-            },
-            archive_path_<mt:var name="id" escape="html">: {
-                required: '<__trans phrase="You must set Local Archive Path." escape="singlequotes">',
-                site_path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
-                not_absolute_path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
-            },
-            archive_path_absolute_<mt:var name="id" escape="html">: {
-                required: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
-                absolute_path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
-            },
-    </mt:if>
-            parent_id_<mt:var name="id">: {
-                min: '<__trans phrase="You must select a parent website." escape="singlequotes">'
-            }<mt:unless name="__last__">,</mt:unless>
-</mt:loop>
+        '.website-path-text': function ($e) {
+            var rex = RegExp("site_path_([0-9]+)");
+            var parent_path = '';
+            if ($e.attr('name').match(rex)) {
+                var b_id = RegExp.$1;
+                parent_path = jQuery('.parent_site_path_'+b_id).text();
+            }
+            if (parent_path == '' && $e.val() == '')
+                return false;
+            return is_valid_path(parent_path + $e.val());
         },
-        errorClass: "msg-error",
-        errorPlacement: function(error, element) {
-            element.parents('div.field').addClass('error-field');
-            error.removeAttr('generated').insertAfter(element);
+        // Blog paths
+        '.relative-site_path .blog-path-text': function ($e) {
+            return !is_valid_absolute_path($e.val());   // IS IT OK?
+        },
+        '.site-url .blog-url-text': function ($e) {
+            var value = $e.val();
+            var rex = RegExp("site_url_path_([0-9]+)");
+            var parent_url = '';
+            if ($e.attr('name').match(rex)) {
+                var b_id = RegExp.$1;
+                if ( jQuery('#use_subdomain_'+b_id+':checked').length ) {
+                    parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
+                    parent_url += jQuery('input#site_url_subdomain_'+b_id).val();
+                    parent_url += '.';
+                    parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
+                } else {
+                    parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
+                    parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
+                }
+            }
+            if (parent_url == '' && value == '')
+                return false;
+            return is_valid_url(parent_url + value);
+        },
+        '.absolute-site_path .blog-path-text': function ($e) {
+            var rex = RegExp("site_url_path_([0-9]+)");
+            var parent_url = '';
+            if ($e.attr('name').match(rex)) {
+                var b_id = RegExp.$1;
+                if ( jQuery('#use_absolute_' + b_id + ':checked').length &&
+                     !jQuery('#site_path_absolute_' + b_id + ':hidden').length  ) {
+                    return is_valid_absolute_path($e.val());
+                }
+            }
+            return $e.val().length;
+        },
+    <mt:if name="enabled_archives">
+        '.archive-url-text': function ($e) {
+            var rex = RegExp("archive_url_path_([0-9]+)");
+            var parent_url = '';
+            if ($e.attr('name').match(rex)) {
+                var b_id = RegExp.$1;
+                if ( jQuery('#use_archive_subdomain_'+b_id+':checked').length ) {
+                    parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
+                    parent_url += jQuery('input#archive_url_subdomain_'+b_id).val();
+                    parent_url += '.';
+                    parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
+                } else {
+                    parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
+                    parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
+                }
+            }
+            if (parent_url == '' && $e.val() == '')
+                return false;
+            return is_valid_url(parent_url + $e.val());
+        },
+        '.relative-site_path .archive-path': function ($e) {
+            var value = $e.val();
+            var rex = RegExp("site_url_path_([0-9]+)");
+            var parent_url = '';
+            if ($e.attr('name').match(rex)) {
+                var b_id = RegExp.$1;
+                if ( !jQuery('#use_absolute_archive_'+b_id+':checked').length ) {
+                    return is_valid_path(value)
+                        && !is_valid_absolute_path(value);
+                }
+            }
+            return true;
+        },
+        '.absolute-site_path .archive-path': function ($e) {
+            var value = $e.val();
+            var rex = RegExp("site_url_path_([0-9]+)");
+            var parent_url = '';
+            if ($e.attr('name').match(rex)) {
+                var b_id = RegExp.$1;
+                if ( jQuery('#use_absolute_archive_'+b_id+':checked').length ) {
+                    return is_valid_absolute_path(value);
+                }
+            }
+            return $e.val().length;
+        },
+    </mt:if>
+        '.parent_website': function ($e) {
+            return $e.val() > 0;
         }
+    });
+
+    jQuery.mtValidateAddMessages({
+        '.website-url-text': '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
+        '.website-path-text': '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">',
+        '.site-url .blog-url-text': '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
+        '.absolute-site_path .blog-path-text': '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">',
+        '.archive-url-text': '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
+        '.relative-site_path .archive-path': '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
+        '.absolute-site_path .archive-path': '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
+        '.parent_website': '<__trans phrase="You must select a parent website." escape="singlequotes">'
+    });
+
+    jQuery('#adjust_sitepath').submit( function () {
+        if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') ) return false;
     });
 
     jQuery('.website-path-text').change( function () {

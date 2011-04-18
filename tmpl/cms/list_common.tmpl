@@ -16,8 +16,8 @@
   <mt:if name="content_actions">
     <mt:setvarblock name="content_header">
     <ul id="content-actions" class="action-link-list">
-    <mt:loop name-"content_actions">
-      <li><a href="<mt:var name="url">" class="icon-left<mt:if name"class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"<mt:if name="id">id=<mt:var name="id"></mt:if><mt:if name="confirm_msg"> onclick="return confirm('<__trans phrase="<mt:var name="confirm_msg">">')"</mt:if>><mt:var name="label"></a></li>
+    <mt:loop name="content_actions">
+      <li><a href="<mt:var name="url">" class="icon-left<mt:if name"class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"<mt:if name="id">id=<mt:var name="id"></mt:if><mt:if name="confirm_msg"> onclick="return confirm('<mt:var name="confirm_msg" escape="js">')"</mt:if>><mt:var name="label"></a></li>
     </mt:loop>
     </ul>
     </mt:setvarblock>
@@ -44,8 +44,7 @@
   <mtapp:setting
      id="per_page"
      label="<__trans phrase="_DISPLAY_OPTIONS_SHOW">"
-     label_class="no-header">
-    <__trans phrase="Show">
+     label_class="top-label">
     <select id="row" name="limit">
       <option value="25"<mt:if name="limit_25"> selected="selected"</mt:if>><__trans phrase="25 rows"></option>
       <option value="50"<mt:if name="limit_50"> selected="selected"</mt:if>><__trans phrase="50 rows"></option>
@@ -84,12 +83,9 @@
     </mt:loop>
     </ul>
   </mtapp:setting>
-  <mtapp:setting
-     id="reset_display_options"
-     label="<__trans phrase="Reset display options">"
-     label_class="display-options"
-     show_label="0">
+  <div class="actions-bar actions-bar-bottom">
     <a href="#" id="reset-display-options"><__trans phrase="Reset defaults"></a>
+  </div>
   </mtapp:setting>
 </div>
 </mt:setvarblock>
@@ -110,6 +106,19 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
     </mt:setvarblock>
 </mt:if>
 
+<mt:setvarblock name="list_actions">
+<mt:if name="use_actions">
+  <mt:if name="button_actions">
+        <div class="button-actions actions"><mt:var name="button_actions"></div>
+  </mt:if>
+  <mt:if name="has_list_actions">
+    <mt:include name="include/itemset_action_widget.tmpl">
+  </mt:if>
+</mt:if>
+        <div class="indicator"><img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /> <__trans phrase="Loading..."></div>
+        <div class="pagination"></div>
+</mt:setvarblock>
+
 <mt:include name="include/header.tmpl">
 <mt:include name="include/basic_filter_forms.tmpl">
 
@@ -126,23 +135,16 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
 
       <div id="actions-bar-top" class="actions-bar actions-bar-top line">
-<mt:if name="use_actions">
-        <div class="list-actions">
-          <mt:var name="button_actions">
-          <mt:include name="include/itemset_action_widget.tmpl">
-        </div>
-</mt:if>
-
-        <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
-        <div class="pagination"></div>
+        <mt:var name="list_actions">
       </div>
+
 <mt:if name="use_filters">
       <div id="filter" class="filter-block">
         <div id="filter-header">
           <input type="hidden" id="filter_name" value="" />
           <input type="hidden" id="filter_id" value="" />
           <div class="mod filter-header">
-            <__trans phrase="Filter:"> <a href="#" id="opener"><__trans phrase="Select Filter..."></a>
+            <__trans phrase="Filter:"> <a href="#" id="opener" class="open-dialog-link current-filter icon-right-wide"><__trans phrase="Select Filter..."></a>
             <a href="#" id="allpass-filter">[ <__trans phrase="Remove Filter"> ]</a>
             <a href="#" id="toggle-filter-detail" class="toggle-button detail-link">
               <img src="<$mt:var name="static_uri"$>images/arrow/arrow-toggle-big.png" />
@@ -159,6 +161,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
             </mt:loop>
             </select>
           </div>
+
           <div id="filter-action" class="mod">
             <button type="submit" id="apply" class="button action primary"><__trans phrase="Apply"></button>
             <button type="button" id="save" class="button action"><__trans phrase="Save"></button>
@@ -178,17 +181,8 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
       </div>
 
       <div id="actions-bar-bottom" class="actions-bar actions-bar-bottom line">
-<mt:if name="use_actions">
-        <div class="list-actions">
-          <mt:var name="button_actions">
-          <mt:include name="include/itemset_action_widget.tmpl">
-        </div>
-</mt:if>
-        <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
-        <div class="pagination"></div>
+        <mt:var name="list_actions">
       </div>
-
-
 
     </form>
 
@@ -232,9 +226,6 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 
 <div id="dialog_filter">
   <div class="dialog-msg-block"></div>
-  <div id="create-new-link">
-    <a href="#" id="new_filter" class="icon-left-wide addnew apply-link"><__trans phrase="Create New"></a>
-  </div>
   <div id="dialog_filter_content"></div>
 </div>
 
@@ -257,7 +248,7 @@ var line = '<th class="col head cb"<mt:unless name="has_list_actions"> style="di
 var table = jQuery('table.listing-table')[0];
 var col_classes = {};
 <mt:loop name="list_columns">
-line += '<th class="col head <mt:var name="id"><mt:if name="primary"> primary</mt:if><mt:if name="col_class"> <mt:var name="col_class"></mt:if>"><div><mt:if name="sortable"><a href="#<mt:var name="id">" class="sort-link col-label"><mt:var name="label"></a><mt:else><span class="col-label"><mt:var name="label"></span></mt:if></div></th>';
+line += '<th class="col head <mt:var name="id"><mt:if name="primary"> primary</mt:if><mt:if name="col_class"> <mt:var name="col_class"></mt:if>"><mt:if name="sortable"><a href="#<mt:var name="id">" class="sort-link"><span class="col-label"><mt:var name="label" escape="js"></span><span class="sm"></span></a><mt:else><span class="col-label"><mt:var name="label" escape="js"></span></mt:if></th>';
 <mt:if name="default_sort_order" eq="descend">
 jQuery.data(table, '<mt:var name="id">', 'desc');
 <mt:else>
@@ -270,7 +261,7 @@ jQuery(line).appendTo('table.listing-table thead tr, table.listing-table tfoot t
 
 var filter_types = {};
 <mt:loop name="filter_types">
-filter_types['<mt:var name="type">'] = '<div class="filtertype type-<mt:var name="type"><mt:unless name="editable"> no-edit</mt:unless><mt:if name="base_type"> base-<mt:var name="base_type"></mt:if>"><div class="item-content"><mt:var name="field" mteval="1" regex_replace="/\n*/g":""><mt:unless name="singleton"><span class="item-ctrl"><span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add"></span><span class="item-action minus clickable icon-minus icon16 action-icon"><__trans phrase="Remove"></span></span></mt:unless></div></div>';
+filter_types['<mt:var name="type">'] = '<div class="filtertype type-<mt:var name="type"><mt:unless name="editable"> no-edit</mt:unless><mt:if name="base_type"> base-<mt:var name="base_type"></mt:if>"><div class="item-content"><mt:var name="field" mteval="1" regex_replace="/\n*/g":"" escape="js"><mt:unless name="singleton"><span class="item-ctrl"><span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add" escape="js"></span><span class="item-action minus clickable icon-minus icon16 action-icon"><__trans phrase="Remove" escape="js"></span></span></mt:unless></div></div>';
 </mt:loop>
 
 jQuery('#filter_types').hide();
@@ -291,8 +282,17 @@ var current_id = initial_filter.id;
 var currentPage = 1;
 var magic_token = '<mt:var name="magic_token">';
 var inputCount = 0;
+var initial_load = true;
 
 function handleMessages( data, additional_class ) {
+  if ( initial_load ) {
+    initial_load = false;
+  }
+  else {
+    jQuery('#msg-block .msg-success').remove();
+    jQuery('#msg-container .msg-success').remove();
+  }
+
   if ( data.error ) {
     var error_cls = 'error';
     if ( additional_class ) error_cls += ' ' + additional_class;
@@ -321,7 +321,7 @@ function showMessage( content, cls ){
         jQuery('<p />')
           .attr('class', 'msg-text')
           .append(content)
-          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>')
+          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close" escape="js"></span>')
       )
     );
   }
@@ -333,9 +333,9 @@ function showMessage( content, cls ){
         jQuery('<p />')
           .attr('class', 'msg-text')
           .append(content)
-          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>')
+          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close" escape="js"></span>')
       )
-    ); 
+    );
   }
   return error_block;
 }
@@ -347,7 +347,7 @@ function loginAgain(fn) {
       var dialog = jQuery('#mt-dialog-iframe').contents();
       dialog
         .find('#sign-in-button')
-          .text('<__trans phrase="Continue">')
+          .text('<__trans phrase="Continue" escape="js">')
           .unbind()
           .click(function(){
             dialog.find('#msg-block').empty();
@@ -370,7 +370,7 @@ function loginAgain(fn) {
                 dialog.find('#password').val('');
                 dialog
                   .find('#msg-block')
-                  .append('<div class="msg msg-error"><__trans phrase="Invalid login."></div>');
+                  .append('<div class="msg msg-error"><__trans phrase="Invalid login." escape="js"></div>');
               }
             });
             return false;
@@ -390,18 +390,17 @@ function renderFilterList() {
       has_sys_filter++;
   }
 
-  if ( has_user_filter ) {
-    jQuery('<div class="filter-list-block">')
-      .append(
-        jQuery('<h3 />').text('<__trans phrase="My Filters">'))
-      .append(
-        jQuery('<ul id="user-filters" class="editable" />'))
-      .appendTo('#dialog_filter_content');
-  }
+  jQuery('<div class="filter-list-block">')
+    .append(
+      jQuery('<h3 class="filter-list-label" />').text('<__trans phrase="My Filters" escape="js">'))
+    .append(
+      jQuery('<ul id="user-filters" class="editable"><li class="filter line"><a href="#" id="new_filter" class="icon-mini-left addnew create-new apply-link"><__trans phrase="Create New" escape="js"></a></li></ul>'))
+    .appendTo('#dialog_filter_content');
+
   if ( has_sys_filter ) {
     jQuery('<div class="filter-list-block">')
       .append(
-        jQuery('<h3 />').text('<__trans phrase="Built in Filters">'))
+        jQuery('<h3 class="filter-list-label" />').text('<__trans phrase="Built in Filters" escape="js">'))
       .append(
         jQuery('<ul id="built-in-filters" />'))
       .appendTo('#dialog_filter_content');
@@ -413,8 +412,8 @@ function renderFilterList() {
       var line = '<span class="filter-label unit size2of3"><a href="#'+i+'" class="apply-link '
         + ( filter.can_save ? 'user-filter' : 'system-filter' )
         + '">'+filter.label+'</a></span>'
-        + '<span class="filter-ctrl unit size1of3" style="display: none;"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Rename"></a><a href="#'+i+'" class="delete-link tool-link icon16 icon-delete"><__trans phrase="Delete"></a></span>';
-      jQuery('<li class="filter line" />').append(line).appendTo('#user-filters');
+        + '<span class="item-ctrl unit size1of3"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Rename" escape="js"></a><a href="#'+i+'" class="delete-link action-icon icon16 icon-delete"><__trans phrase="Delete" escape="js"></a></span>';
+      jQuery('<li class="filter line" />').append(line).prependTo('#user-filters');
     }
     else {
       var line = '<span class="filter-label"><a href="#'+i+'" class="apply-link '
@@ -423,20 +422,12 @@ function renderFilterList() {
       jQuery('<li class="filter line" />').append(line).appendTo('#built-in-filters');
     }
   }
-  jQuery('.filter').hover(
-    function () {
-      jQuery(this).find('.filter-ctrl:not(:has(.save))').show();
-    },
-    function () {
-      jQuery(this).find('.filter-ctrl:not(:has(.save))').hide();
-    }
-  );
   jQuery('#new_filter').click(function() {
     jQuery('#filter-detail').show().parent('#filter').addClass('active');
     jQuery('#item_list').attr('selectedIndex', 0);
-    jQuery('.filteritem').remove();
-    jQuery('input[name=filter_name]').mtUnvalidate().val('<__trans phrase="New Filter">');
-    jQuery('#opener').html('<__trans phrase="New Filter">');
+    resetFilterDetails();
+    jQuery('input[name=filter_name]').mtUnvalidate().val('<__trans phrase="New Filter" escape="js">');
+    jQuery('#opener').html('<__trans phrase="New Filter" escape="js">');
     jQuery('#filter_id').val('');
     jQuery('input[name=filter_id]').val('');
     updateItemList();
@@ -456,9 +447,12 @@ function renderFilterList() {
     return false;
   });
   jQuery('#dialog_filter .delete-link').click(function() {
-    var label = jQuery(this).parents('.filter').find('.apply-link').text();
+    var $this = jQuery(this);
+    var label = $this.parents('.filter').find('.apply-link').text();
     var message = trans("Are you sure you want to remove the filter '[_1]'?", label);
     if (confirm(message)) {
+      $this.parents('.filter').addClass('edit-mode').find('.item-ctrl').hide();
+      $this.parents('.filter').find('.filter-label').hide().after( jQuery('<span class="indicator"><img alt="<__trans phrase="Loading..." escape="js">" src="<mt:var name="static_uri">images/indicator.white.gif" /></span>') );
       removeFilter(this);
     }
     return false;
@@ -510,29 +504,32 @@ function updateFilterSaveButtons ( opts ){
 function openFilterRenameField() {
   cancelFilterRenameField();
   var $this = jQuery(this);
+  $this.parents('.filter').addClass('edit-mode');
   $this.attr('href').match(/#(.*)/);
   var index = RegExp.$1;
   var fid = filters[index].id;
   var $label = $this.parents('.filter').children('.filter-label');
-  var $handle = $this.parents('.filter').children('.filter-ctrl');
+  var $handle = $this.parents('.filter').children('.item-ctrl');
   var text = $label.find('.apply-link').hide().text();
   jQuery('<input type="text" id="filter_'+fid+'" class="text full rename-filter-input" />')
     .val(text)
     .appendTo($label);
   $this.hide().next('.delete-link').hide();
-  jQuery('<a href="#'+fid+'" class="tool-link save button"><__trans phrase="Save"></a>').bind('click', function() {
+  jQuery('<a href="#'+fid+'" class="tool-link save button"><__trans phrase="Save" escape="js"></a>').bind('click', function() {
     var name = jQuery('#filter_'+fid).val();
     if (name == text) {
         // Not modified.
-        return $handle.find('.cancel').click();
+        $handle.find('.cancel').click();
+        return false;
     }
     if ( !jQuery('#filter_' + fid).mtValidate('dialog') )
         return false;
-
+    $this.parents('.filter').find('.item-ctrl').hide();
+    $this.parents('.filter').find('input').hide().after( jQuery('<span class="indicator"><img alt="<__trans phrase="Loading..." escape="js">" src="<mt:var name="static_uri">images/indicator.white.gif" /></span>') );
     renameFilter(index, fid, name);
     return false;
   }).appendTo($handle);
-  jQuery('<a href="#'+fid+'" class="tool-link cancel button"><__trans phrase="Cancel"></a>')
+  jQuery('<a href="#'+fid+'" class="tool-link cancel button"><__trans phrase="Cancel" escape="js"></a>')
     .bind('click', cancelFilterRenameField )
     .appendTo($handle);
   return false;
@@ -540,12 +537,13 @@ function openFilterRenameField() {
 
 function cancelFilterRenameField() {
   jQuery('.rename-filter-input').mtUnvalidate();
+  jQuery('.filter').removeClass('edit-mode');
   jQuery('.filter-label')
     .find('.apply-link:hidden').show().end()
     .find('input').remove();
-  jQuery('.filter-ctrl')
+  jQuery('.item-ctrl')
     .find('a.save, a.cancel').remove().end()
-    .find('a:hidden').css('display','inline-block');
+    .find('a:hidden').css('display','inline-block')
   return false;
 }
 
@@ -579,8 +577,9 @@ function renameFilter(index, fid, name) {
           renameFilter(index, fid, name);
         });
       }
-      else
-        alert('Ajax error: ' + status);
+      else {
+        alert( trans('Communication Error ([_1])', xhr.status) );
+      }
     }
   });
 }
@@ -624,8 +623,9 @@ function removeFilter(element) {
             removeFilter(element);
           });
         }
-        else
-          alert('Ajax error: ' + status);
+        else {
+          alert( trans('Communication Error ([_1])', xhr.status) );
+        }
       }
     });
   }
@@ -695,22 +695,22 @@ function renderPagination(count, limit, page, last, total) {
   currentPage = page;
 
   if (usefirst) {
-    $e.append('<a href="#" class="pagenav start">&laquo; <__trans phrase="First"></a>')
-      .append('<a href="#" class="pagenav to-start">&lsaquo; <__trans phrase="Prev"></a>');
+    $e.append('<a href="#" class="pagenav start">&laquo; <__trans phrase="First" escape="js"></a>')
+      .append('<a href="#" class="pagenav to-start">&lsaquo; <__trans phrase="Prev" escape="js"></a>');
   } else {
-    $e.append('<span class="pagenav start disabled">&laquo; <__trans phrase="First"></span>')
-      .append('<span class="pagenav to-start disabled">&lsaquo; <__trans phrase="Prev"></span>');
+    $e.append('<span class="pagenav start disabled">&laquo; <__trans phrase="First" escape="js"></span>')
+      .append('<span class="pagenav to-start disabled">&lsaquo; <__trans phrase="Prev" escape="js"></span>');
   }
   var end = (page == last) ? total : start+limit-1;
-  var page_status = trans('[_1]-[_2] of [_3]', start, end, total);
+  var page_status = trans('[_1] - [_2] of [_3]', start, end, total);
 
   $e.append('<span class="current-rows">'+page_status+'</span>')
   if (uselast) {
-    $e.append('<a href="#" class="pagenav to-end"><__trans phrase="Next"> &rsaquo;</a>')
-      .append('<a href="#" class="pagenav end"><__trans phrase="Last"> &raquo;</a>');
+    $e.append('<a href="#" class="pagenav to-end"><__trans phrase="Next" escape="js"> &rsaquo;</a>')
+      .append('<a href="#" class="pagenav end"><__trans phrase="Last" escape="js"> &raquo;</a>');
   } else {
-    $e.append('<span class="pagenav to-end disabled"><__trans phrase="Next"> &rsaquo;</span>')
-      .append('<span class="pagenav end disabled"><__trans phrase="Last"> &raquo;</span>');
+    $e.append('<span class="pagenav to-end disabled"><__trans phrase="Next" escape="js"> &rsaquo;</span>')
+      .append('<span class="pagenav end disabled"><__trans phrase="Last" escape="js"> &raquo;</span>');
   }
   jQuery('a.start').click(function() {
     saveChecked(page);
@@ -766,8 +766,9 @@ function saveListPrefs() {
           renderList(mode, columns, values, limit, page);
         });
       }
-      else
-        alert('Ajax error: ' + status);
+      else {
+        alert( trans('Communication Error ([_1])', xhr.status) );
+      }
     }
   });
 }
@@ -886,7 +887,7 @@ function renderList(mode, columns, values, limit, page ) {
       jQuery('#resultstats').remove();
       var n = columnLength();
       if (count == 0) {
-        var message = trans('No [_1] could be found.', '<mt:var name="object_label" lower_case="1" escape="js">');
+        var message = trans('No [_1] could be found.', '<mt:if name="zero_state"><mt:var name="zero_state" escape="js"><mt:else><mt:var name="object_label" lower_case="1" escape="js"></mt:if>');
         jQuery('<td class="col fullwidth-row" colspan="'+n+'">'+message+'</tr>').appendTo('table.listing-table tbody');
       }
       renderPagination(count, limit, page, last, total);
@@ -947,7 +948,7 @@ function renderList(mode, columns, values, limit, page ) {
         // Maybe this is user abort. do nothing.
       }
       else {
-        alert('Ajax error: ' + xhr.status + ': ' + status);
+        alert( trans('Communication Error ([_1])', xhr.status) );
       }
     }
   });
@@ -1049,8 +1050,8 @@ function addSelectAll($node) {
     .parents('tbody')
     .append('<tr class="select-all"><td class="col fullwidth-row" colspan="'+n+'"></td></tr>')
     .prepend('<tr class="select-all"><td class="col fullwidth-row" colspan="'+n+'"><input type="hidden" name="all_selected" /></td></tr>');
-  var select_text = 'Select all '+editable_total+' items';
-  var cancel_text = 'All '+editable_total+' items are selected';
+  var select_text = trans('Select all [_1] items', editable_total);
+  var cancel_text = trans('All [_1] items are selected', editable_total);
   jQuery('<a href="#"></a>')
     .appendTo('.select-all td')
     .text(select_text)
@@ -1129,10 +1130,10 @@ jQuery('table.listing-table thead a, tfoot a').click(function() {
       $order.removeClass('asc').addClass('desc');
     }
   } else {
-    jQuery('table.listing-table thead th, tfoot th').removeClass('sorted').find('span.sm').remove();
-    $th.addClass('sorted');
+    jQuery('table.listing-table thead th, tfoot th').removeClass('sorted').find('span.sm').removeClass('asc desc');
+    $th.addClass('sorted').find('span.sm').remove();
     url.match(/#(.*)/);
-    jQuery('<span class="sm '+jQuery.data(table, RegExp.$1)+'"></span>').appendTo($th.find('div'));
+    jQuery('<span class="sm '+jQuery.data(table, RegExp.$1)+'"></span>').appendTo($th.find('.sort-link'));
   }
   checked = [];
   renderColumns();
@@ -1160,8 +1161,8 @@ function dateOption($node) {
   }
 
   $node.parent('.item-content').find('input').mtUnvalidate();
-  $node.parent('.item-content').find('.date-option span').hide();
-  $node.parent('.item-content').find('.date-option .'+type).show();
+  $node.parent('.item-content').find('.date-options span.date-option').hide();
+  $node.parent('.item-content').find('.date-option.'+type).show();
 }
 
 function filterItem(type, datepicker_off) {
@@ -1180,7 +1181,7 @@ function filterItem(type, datepicker_off) {
       .find('.date').datepicker({
         dateFormat: 'yy-mm-dd',
         dayNamesMin: [<__trans phrase="_LOCALE_CALENDAR_HEADER_">],
-        monthNames: ['-01','-02','-03','-04','-05','-06','-07','-08','-09','-10','-11','-12'],
+        monthNames: ['- 01','- 02','- 03','- 04','- 05','- 06','- 07','- 08','- 09','- 10','- 11','- 12'],
         showMonthAfterYear: true,
         prevText: '&lt;',
         nextText: '&gt;',
@@ -1207,7 +1208,7 @@ jQuery('#item_list').change(function() {
         .attr('name', id);
     });
   jQuery('#item_list').attr('selectedIndex', 0);
-  jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item"></span>')
+  jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item" escape="js"></span>')
     .insertAfter($item)
     .bind('click', function() {
       jQuery(this).parent('.filteritem').find('input').mtUnvalidate().end().remove();
@@ -1216,7 +1217,7 @@ jQuery('#item_list').change(function() {
     });
   if ( allPass ) {
     jQuery('#filter_id').val('');
-    jQuery('#opener').text('<__trans phrase="Unknown Filter">');
+    jQuery('#opener').text('<__trans phrase="Unknown Filter" escape="js">');
     editNewFilter = 1;
     editSysFilter = 0;
     allPass       = 0;
@@ -1248,6 +1249,18 @@ function validateFilterDetails () {
   return errors ? false : true;
 }
 
+function resetFilterDetails() {
+  if ( validateErrorMessage ) {
+    validateErrorMessage.remove();
+  }
+  validateErrorMessage = false;
+  jQuery('div#filter-detail div.filteritem')
+    .find('input, select')
+    .mtUnvalidate()
+    .end()
+    .remove();
+}
+
 jQuery('#apply').click(function() {
   validateFilterDetails();
   jQuery('input[name=filter_id]').val('');
@@ -1256,9 +1269,14 @@ jQuery('#apply').click(function() {
   return false;
 });
 
+jQuery('#<mt:var name="object_type">-listing-form').bind('submit.as_apply', function() {
+  jQuery('#apply').click();
+  return false;
+});
+
 jQuery('#save').click(function() {
   validateFilterDetails();
-  if (jQuery('#filter_id').val()) {
+  if (jQuery('#filter_id').val() && jQuery('#filter_id').val().match(/^[1-9][0-9]*$/) ) {
     // Overwrite current filter.
     jQuery('input[name=filter_name]').val(jQuery('#filter_name').val());
     jQuery('input[name=filter_id]').val(jQuery('#filter_id').val());
@@ -1276,7 +1294,7 @@ jQuery('#save').click(function() {
     jQuery('input[name=filter_name]').mtUnvalidate().val(temp);
     jQuery('input[name=filter_id]').val('');
     jQuery('#dialog_save_filter').dialog({
-      title: 'Save Filter',
+      title: trans('Save Filter'),
       dialogClass: 'save',
       width: 450,
       modal: true,
@@ -1297,7 +1315,7 @@ jQuery('#saveas').click(function() {
   jQuery('input[name=filter_id]').val('');
   jQuery('#dialog_save_filter')
     .dialog({
-      title: 'Save As Filter',
+      title: trans('Save As Filter'),
       dialogClass: 'save',
       width: 450,
       modal: true,
@@ -1311,7 +1329,7 @@ jQuery('#saveas').click(function() {
 
 jQuery('#dialog_filter').dialog({
     autoOpen: false,
-    title: 'Select Filter',
+    title: trans('Select Filter'),
     width: 380,
     resizable: false
 });
@@ -1326,6 +1344,12 @@ jQuery('#dialog_save_filter').dialog({
   dialogClass: 'save',
   width: 450,
   minHeight: 100
+});
+
+// When the enter key is pressed, click the primary button instead of submitting.
+jQuery('#dialog_save_filter form').submit(function() {
+  jQuery('button.primary', this).click();
+  return false;
 });
 
 jQuery('#save-filter').click(function() {
@@ -1390,7 +1414,7 @@ function addItems(items, op) {
         .insertAfter('.selectfilter')
         .wrap($div)
         .find('.minus').hide().end();
-      jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item"></span>')
+      jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item" escape="js"></span>')
         .insertAfter($item)
         .bind('click', function() {
           jQuery(this).parent('.filteritem').find('input').mtUnvalidate().end().remove();
@@ -1438,7 +1462,7 @@ function applyFilter(index, no_render) {
 function doApplyFilter(filter, no_render) {
   jQuery('#filter_name').val('');
   jQuery('#filter_id').val('');
-  jQuery('.filteritem').remove();
+  resetFilterDetails();
   var name = filter.label;
   addItems(filter.items);
   jQuery('#opener').html(name);
@@ -1563,14 +1587,15 @@ function doForMarked(formid, action, singlar, plural, phrase, xhr) {
     renderList(params);
   else if ( opt['dialog'] )
     jQuery.fn.mtDialog.open(ScriptURI + '?' + $form.serialize());
-  else
-    $form.submit();
+  else {
+    $form.unbind('submit.as_apply').submit();
+  }
 }
 
 jQuery('button.mt-<mt:var name="object_type">-listing-form-action').click(function() {
   var id = '<mt:var name="object_type">-listing-form';
-  var singlar = '<mt:var name="object_label" lower_case="1" escape="js">';
-  var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
+  var singlar = '<mt:if name="action_label"><mt:var name="action_label"><mt:else><mt:var name="object_label" lower_case="1" escape="js"></mt:if>';
+  var plural = '<mt:if name="action_label_plural"><mt:var name="action_label_plural"><mt:else><mt:var name="object_label_plural" lower_case="1" escape="js"></mt:if>';
   var phrase = '<__trans phrase="act upon" escape="js">';
   doForMarked(id, 'itemset_action', singlar, plural, phrase);
   return false;
@@ -1580,21 +1605,26 @@ jQuery('.actions-bar a.button').click(function() {
   jQuery(this).attr('href').match(/#(.*)/);
   var action = RegExp.$1;
   var id = '<mt:var name="object_type">-listing-form';
-  var singlar = '<mt:var name="object_label" lower_case="1" escape="js">';
-  var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
+  var singlar = '<mt:if name="action_label"><mt:var name="action_label"><mt:else><mt:var name="object_label" lower_case="1" escape="js"></mt:if>';
+  var plural = '<mt:if name="action_label_plural"><mt:var name="action_label_plural"><mt:else><mt:var name="object_label_plural" lower_case="1" escape="js"></mt:if>';
   var phrase = messages[action];
   doForMarked(id, action, singlar, plural, phrase);
   return false;
 });
 
 jQuery('.filtertype .minus').live('click', function() {
+  var $item = jQuery(this).parents('.filteritem');
   jQuery(this).parents('.filtertype').find('input').mtUnvalidate().end().remove();
+  if ( $item.find('.filtertype').length == 1 ) {
+    $item.find('.minus').hide();
+  }
 });
 
 jQuery('.filtertype .plus').live('click', function() {
   var op = 'and';
   jQuery(this).parents('.filteritem').addClass(op);
   var $filtertype = jQuery(this).parents('.filtertype');
+  var $filteritem = jQuery(this).parents('.filteritem');
   $filtertype.attr('class').match(/type-(\w+)/);
   var type = RegExp.$1;
   var $node = filterItem(type, true);
@@ -1610,11 +1640,12 @@ jQuery('.filtertype .plus').live('click', function() {
   .find('.date').datepicker({
       dateFormat: 'yy-mm-dd',
       dayNamesMin: [<__trans phrase="_LOCALE_CALENDAR_HEADER_">],
-      monthNames: ['-01','-02','-03','-04','-05','-06','-07','-08','-09','-10','-11','-12'],
+      monthNames: ['- 01','- 02','- 03','- 04','- 05','- 06','- 07','- 08','- 09','- 10','- 11','- 12'],
       showMonthAfterYear: true,
       prevText: '&lt;',
       nextText: '&gt;'
   });
+  $filteritem.find('.minus').show();
 });
 
 jQuery(window).bind('listReady', function(){
@@ -1622,6 +1653,10 @@ jQuery(window).bind('listReady', function(){
     toggleSubField(this);
   });
 });
+
+jQuery(window).bind('listReady', function() {
+    jQuery('a.action-link.mt-open-dialog').mtDialog();
+})
 
 function updateItemList () {
   var list = jQuery('#item_list');

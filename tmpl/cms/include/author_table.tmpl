@@ -1,9 +1,9 @@
 <mt:if name="entry_type" eq="page">
   <mt:setvar name="type_label" value="<__trans phrase="Pages">">
-  <mt:setvar name="mode" value="list_page">
+  <mt:setvar name="mode" value="list&amp;_type=page">
 <mt:else>
   <mt:setvar name="type_label" value="<__trans phrase="Entries">">
-  <mt:setvar name="mode" value="list_entry">
+  <mt:setvar name="mode" value="list&amp;_type=entry">
 </mt:if>
 
 <mt:setvarblock name="action_buttons">
@@ -75,7 +75,7 @@
     <mt:unless name="hide_entries_col">
       <td class="col entries">
       <mt:if name="entry_count">
-        <a href="<mt:var name="script_url">?__mode=<mt:if name="blog_id"><mt:var name="mode"><mt:else>search_replace</mt:if>&amp;blog_id=<mt:if name="blog_id"><mt:var name="blog_id"><mt:else>0</mt:if>&amp;filter=author_id&amp;filter_val=<mt:var name="id">&amp;_type=entry"><mt:var name="entry_count"></a>
+        <a href="<mt:var name="script_url">?__mode=<mt:if name="blog_id"><mt:var name="mode"><mt:else>list&amp;_type=entry</mt:if>&amp;blog_id=<mt:if name="blog_id"><mt:var name="blog_id"><mt:else>0</mt:if>&amp;filter=author_id&amp;filter_val=<mt:var name="id">"><mt:var name="entry_count"></a>
       <mt:else>
         &nbsp;
       </mt:if>

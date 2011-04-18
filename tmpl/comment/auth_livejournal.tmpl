@@ -4,22 +4,21 @@
   <input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
   <input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
   <input type="hidden" name="key" value="LiveJournal" />
-  <fieldset>
-    <mtapp:setting
-       id="livejournal_display"
-       class="has-auth-icon"
-       label="<__trans phrase="Your LiveJournal Username">">
-      <input type="text" name="openid_userid" class="text full" style="background-image: url(<mt:var name="static_uri">images/comment/livejournal_logo.png);" />
-    </mtapp:setting>
-    <div class="actions-bar actions-bar-login">
-      <button
-         type="submit"
-         accesskey="s"
-         title="<__trans phrase="Sign In (s)">"
-         class="sign-in action primary button">
-        <__trans phrase="Sign in">
-      </button>
-    </div>
-    <div class="auth-option-info"><img src="<mt:var name="static_uri">images/comment/blue_moreinfo.png"> <a href="http://www.livejournal.com/"><__trans phrase="Learn more about LiveJournal."></a></div>
-  </fieldset>
+  <mtapp:setting
+     id="livejournal_display"
+     class="has-auth-icon"
+     label="<__trans phrase="Your LiveJournal Username">"
+     label_class="top-label">
+    <input type="text" name="openid_userid" class="text full" style="background-image: url(<mt:var name="static_uri">images/comment/livejournal_logo.png);" />
+  </mtapp:setting>
+  <div class="actions-bar actions-bar-login">
+    <button
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Sign In (s)">"
+       class="sign-in action primary button">
+      <__trans phrase="Sign in">
+    </button>
+  </div>
+  <div class="auth-option-info"><img src="<mt:var name="static_uri">images/comment/blue_moreinfo.png"> <a href="http://www.livejournal.com/"><__trans phrase="Learn more about LiveJournal."></a></div>
 </form>

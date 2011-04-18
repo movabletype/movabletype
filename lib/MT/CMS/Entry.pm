@@ -294,7 +294,7 @@ sub edit {
                 { class => '*' },
                 {   join => MT::ObjectAsset->join_on(
                         undef,
-                        {   asset_id  => \'= asset_id',
+                        {   asset_id  => \'= asset_id', # coloring editors hack'
                             object_ds => 'entry',
                             object_id => $id
                         }
@@ -366,9 +366,10 @@ sub edit {
 
     ## Now load user's preferences and customization for new/edit
     ## entry page.
+    my $pref_param;
     if ($perms) {
         my $prefs_type = $type . '_prefs';
-        my $pref_param = $app->load_entry_prefs(
+        $pref_param = $app->load_entry_prefs(
             { type => $type, prefs => $perms->$prefs_type } );
         %$param = ( %$param, %$pref_param );
         $param->{disp_prefs_bar_colspan} = $param->{new_object} ? 1 : 2;
@@ -532,6 +533,24 @@ sub edit {
 
     $param->{object_type}  = $type;
     $param->{object_label} = $class->class_label;
+
+    my @ordered = qw( title text tags excerpt keywords );
+    if ( $pref_param ) {
+        if ( my $disp_field = $pref_param->{disp_prefs_custom_fields} ) {
+            my %order;
+            my $i = 1;
+            foreach ( @$disp_field ) {
+                $order{$_->{name}} = $i++;
+            }
+            foreach ( @ordered ) {
+                $order{$_} = $i++ if !$order{$_}
+            }
+            @ordered = sort {
+                $order{$a} <=> $order{$b}
+            } @ordered;
+        }
+    }
+
     $param->{field_loop} ||= [
         map {
             {   field_name => $_,
@@ -542,8 +561,9 @@ sub edit {
                 : $param->{"disp_prefs_show_$_"},
                 field_label => $app->translate( ucfirst($_) ),
             }
-            } qw( title text tags excerpt keywords )
+            } @ordered
     ];
+
     $param->{quickpost_js} = MT::CMS::Entry::quickpost_js( $app, $type );
     if ( 'page' eq $type ) {
         $param->{search_label} = $app->translate('pages');
@@ -1249,7 +1269,8 @@ sub _build_entry_preview {
     }
     $param{id} = $id if $id;
     $param{new_object} = $param{id} ? 0 : 1;
-    $param{title} = $entry->title;
+    $param{title}      = $entry->title;
+    $param{status}     = $entry->status;
     my $cols = $entry_class->column_names;
 
     for my $col (@$cols) {
@@ -1537,6 +1558,7 @@ sub save {
         my %param = ();
         $param{error}       = $app->errstr;
         $param{return_args} = $app->param('return_args');
+        $app->param('reedit', 1);
         return $app->forward( "view", \%param );
     }
 
@@ -1561,35 +1583,37 @@ sub save {
             )
         {
             $param{error} = $app->translate(
-                "Invalid date '[_1]'; authored on dates must be in the format YYYY-MM-DD HH:MM:SS.",
+                "Invalid date '[_1]'; published on dates must be in the format YYYY-MM-DD HH:MM:SS.",
                 $ao
             );
         }
-        my $s = $6 || 0;
-        $param{error}
-            = $app->translate(
-            "Invalid date '[_1]'; authored on dates should be real dates.",
-            $ao )
-            if (
-               $s > 59
-            || $s < 0
-            || $5 > 59
-            || $5 < 0
-            || $4 > 23
-            || $4 < 0
-            || $2 > 12
-            || $2 < 1
-            || $3 < 1
-            || ( MT::Util::days_in( $2, $1 ) < $3
-                && !MT::Util::leap_day( $0, $1, $2 ) )
-            );
+        unless ( $param{error} ) {
+            my $s = $6 || 0;
+            $param{error}
+                = $app->translate(
+                "Invalid date '[_1]'; published on dates should be real dates.",
+                $ao )
+                if (
+                   $s > 59
+                || $s < 0
+                || $5 > 59
+                || $5 < 0
+                || $4 > 23
+                || $4 < 0
+                || $2 > 12
+                || $2 < 1
+                || $3 < 1
+                || ( MT::Util::days_in( $2, $1 ) < $3
+                    && !MT::Util::leap_day( $0, $1, $2 ) )
+                );
+        }
         $param{return_args} = $app->param('return_args');
         return $app->forward( "view", \%param ) if $param{error};
         if ( $obj->authored_on ) {
             $previous_old = $obj->previous(1);
             $next_old     = $obj->next(1);
         }
-        my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5, $s;
+        my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5, ( $6 || 0 );
         $obj->authored_on($ts);
     }
     my $is_new = $obj->id ? 0 : 1;
@@ -1909,8 +1933,8 @@ PERMCHECK: {
                 unless ( $val =~ m!(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})(?::(\d{2}))?! ) {
                     return $app->error(
                         $app->translate(
-                            "Invalid date '[_1]'; $name dates must be in the format YYYY-MM-DD HH:MM:SS.",
-                            $val
+                            "Invalid date '[_1]'; [_2] dates must be in the format YYYY-MM-DD HH:MM:SS.",
+                            $val, $name
                         )
                     );
                 }
@@ -1919,8 +1943,8 @@ PERMCHECK: {
                 # Emit an error message if the date is bogus.
                 return $app->error(
                     $app->translate(
-                        "Invalid date '[_1]'; $name dates should be real dates.",
-                        $val
+                        "Invalid date '[_1]'; [_2] dates should be real dates.",
+                        $val, $name
                     )
                 ) if $s > 59
                     || $s < 0
@@ -1940,9 +1964,9 @@ PERMCHECK: {
             };
 
             my $co = $q->param( 'created_on_' . $id );
-            $date_closure->( $co, 'authored_on', 'authored on' ) or return;
+            $date_closure->( $co, 'authored_on', MT->translate('authored on') ) or return;
             $co = $q->param( 'modified_on_' . $id );
-            $date_closure->( $co, 'modified_on', 'modified on' ) or return;
+            $date_closure->( $co, 'modified_on', MT->translate('modified on') ) or return;
         }
         $app->run_callbacks( 'cms_pre_save.' . $type,
             $app, $entry, $orig_obj )

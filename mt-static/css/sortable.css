@@ -1,3 +1,4 @@
+/* Sortable Content */
 .sortable-header {
     border: solid #c0c6c9;
     border-width: 1px;
@@ -29,11 +30,69 @@
     border-top-color: #cfd0d0;
     border-left-color: #cfd0d0;
     background-color: #fff;
-    overflow: hidden;
+}
+.sortable-item:after,
+.add-form:after {
+    content:'';
+    display:block;
+    clear:both;
 }
 .sortable-item {
-   padding: 0 10px;
+   padding: 10px;
 }
+.sortable-item .item-label, 
+.sortable-item .item-basename, 
+.sortable-item .with,
+.sortable-item .item-ctrl, 
+.sortable-item .count, 
+.sortable-item .with {
+    float: left;
+    height: 22px;
+    line-height: 22px;
+}
+.sortable-item .item-label, 
+.sortable-item .item-basename {
+    margin: 0 5px 0 30px;
+}
+.sortable-item .item-basename {
+    margin-left: 3px;
+}
+.sortable-item .item-label a, 
+.sortable-item .item-basename-text {
+    max-width: 12em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-wrap: normal;
+}
+.sortable-item .item-ctrl {
+    display: none;
+    margin-left: 10px;
+}
+.sortable-item.on .item-ctrl {
+    display: inline-block;
+}
+.sortable-item .count {
+    float: right;
+}
+.sortable-item .with {
+    padding: 0 5px;
+    background-color: #7b7c7d;
+    color: #f3f3f3;
+    border-radius: 3px;
+}
+.edit-form .text {
+    margin-right: 5px;
+}
+#root .ui-state-highlight {
+    position: relative;
+    z-index: 100;
+    height: 35px;
+    margin: 5px -10px;
+    border-top: 2px solid #adadad;
+}
+
+/* - Sort Handle */
 .sort-tab {
     display: block;
     position: absolute;
@@ -45,61 +104,12 @@
     cursor: move ! important;
 }
 
-.sortable-item .item-label, 
-.sortable-item .item-basename, 
-.sortable-item .with {
-    float: left;
-    height: 42px;
-    line-height: 42px;
-    margin: 0 5px 0 30px;
-}
-.sortable-item .item-basename {
-    margin-left: 3px;
-}
-.sortable-item .item-label a, 
-.sortable-item .item-basename-text {
-    display: inline-block;
-    max-width: 15em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.sortable-item .item-basename-text {
-    max-width: 10em;
-}
-
-.sortable-item .item-ctrl {
-    display: none;
-}
-.sortable-item.on .item-ctrl {
-    float: left;
-    display: inline-block;
-    margin: 10px 0 0 10px;
-}
-.item-ctrl .edit-link {
-    vertical-align: middle;
-}
-
-.sortable-item .count {
-    float: right;
-    height: 42px;
-    line-height: 42px;
-}
-
-#root .ui-state-highlight {
-    position: relative;
-    z-index: 100;
-    height: 35px;
-    margin: 5px -10px;
-    border-top: 2px solid #adadad;
-}
-
+/* - Target Marker */
 #root .target {
     position: relative;
     display: inline-block;
     height: 100%;
 }
-
 #root .marker {
     position: absolute;
     top: -7px;
@@ -107,8 +117,4 @@
     width: 20px;
     height: 10px;
     background: transparent url(../images/arrow-target-mark.png) center bottom no-repeat;
-}
-
-.add-form {
-    padding-left: 30px;
 }

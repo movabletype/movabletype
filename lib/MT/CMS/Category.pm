@@ -220,6 +220,7 @@ sub bulk_update {
             delete $obj->{id};
             $new_obj->set_values($obj);
             $new_obj->blog_id($blog_id);
+            $new_obj->author_id($app->user->id);
             push @objects, $new_obj;
             push @creates, $new_obj;
             $new_obj->{tmp_id} = $tmp_id;
@@ -229,7 +230,7 @@ sub bulk_update {
             exists $old_objects{ $obj->{id} }
                 or return $app->json_error(
                 $app->translate(
-                    'Tried to update [_1]([_2]), but the object not found.',
+                    'Tried to update [_1]([_2]), but the object was not found.',
                     $model, $obj->{id},
                 )
                 );
@@ -445,6 +446,10 @@ sub can_save {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
+    unless ( ref $obj ) {
+        $obj = MT->model('category')->load($obj)
+            or return;
+    }
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
 
     return $author->permissions($blog_id)->can_do('save_category');
@@ -455,6 +460,10 @@ sub can_delete {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
+    unless ( ref $obj ) {
+        $obj = MT->model('category')->load($obj)
+            or return;
+    }
     my $blog_id = $obj->blog_id;
 
     return $author->permissions($blog_id)->can_do('delete_category');
@@ -588,6 +597,15 @@ sub move_category {
             $class->class_label, $cat->errstr
         )
         );
+}
+
+sub template_param_list {
+    my ( $cb, $app, $param, $tmpl ) = @_;
+    my $blog = $app->blog or return;
+    $param->{basename_limit} = $blog->basename_limit || 30; #FIXME: hardcoded.
+    my $type = $app->param('_type');
+    my $class = MT->model($type);
+    $param->{basename_prefix} = $class->basename_prefix;
 }
 
 sub pre_load_filtered_list {

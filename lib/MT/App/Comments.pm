@@ -12,7 +12,7 @@ use base 'MT::App';
 use MT::Comment;
 use MT::I18N qw( wrap_text );
 use MT::Util
-    qw( remove_html encode_html encode_url decode_url is_valid_email is_valid_url is_url escape_unicode format_ts encode_js );
+    qw( remove_html encode_html encode_url decode_url is_valid_email is_valid_url is_url escape_unicode format_ts encode_js epoch2ts );
 use MT::Entry qw(:constants);
 use MT::Author;
 use MT::JunkFilter qw(:constants);
@@ -382,7 +382,8 @@ sub do_signup {
         }
     );
 
-    my $entry = MT::Entry->load( $param->{entry_id} );
+    my $entry = MT::Entry->load( $param->{entry_id} )
+        if ( $param->{entry_id} );
     if ($entry) {
         my $entry_url = $entry->permalink;
         $app->build_page( 'signup_thanks.tmpl',
@@ -407,7 +408,8 @@ sub _send_signup_confirmation {
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
-    my $entry = MT::Entry->load($entry_id);
+    my $entry = MT::Entry->load($entry_id)
+        if $entry_id;
     my $author = $entry ? $entry->author : q();
 
     my $token = $app->make_magic_token;
@@ -985,6 +987,8 @@ sub post {
 
         $app->run_callbacks( 'api_post_save.comment',
             $app, $comment, $commenter );
+        $entry->modified_on( epoch2ts( $blog, time ) );
+        $entry->save;
 
         $app->log(
             {   message => $app->translate(
@@ -1891,6 +1895,7 @@ sub save_commenter_profile {
     $cmntr->url( $param{url} )           if $param{url};
     $cmntr->set_password( $param{password} )
         if $param{password} && !$param{external_auth};
+    $cmntr->modified_on( epoch2ts( undef, time ) );
     if ( $cmntr->save ) {
         $app->run_callbacks( 'api_post_save.author', $app, $cmntr,
             $original );

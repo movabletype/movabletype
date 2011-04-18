@@ -43,23 +43,20 @@
   </ul>
 </mtapp:widget>
 
+<mt:if name="show_appears_in_widget">
 <mtapp:widget
    id="appears-in"
    label="<__trans phrase="Appears in...">">
-<mt:if name="appears_in">
   <ul>
   <mt:loop name="appears_in">
     <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="class">&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;id=<mt:var name="id" escape="url">" class="icon-left icon-<mt:var name="class" lower_case="1">"><mt:var name="title" escape="html" default="..."></a></li>
   </mt:loop>
   </ul>
-  <mt:if name="appears_in_more">
-    <p><a href="<mt:var name="script_url">?__mode=list&amp;_type=entry&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;filter=asset_id&amp;filter_val=<mt:var name="id" escape="url">"><__trans phrase="Show all entries"></a></p>
-    <p><a href="<mt:var name="script_url">?__mode=list&amp;_type=page&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;filter=asset_id&amp;filter_val=<mt:var name="id" escape="url">"><__trans phrase="Show all pages"></a></p>
+  <mt:if name="appears_in_uneditables">
+    <span class="hint"><__trans phrase="This asset has been used by other users."></span>
   </mt:if>
-<mt:else>
-  <span class="hint"><__trans phrase="This asset has not been used."></span>
-</mt:if>
 </mtapp:widget>
+</mt:if>
 
 <mt:if name="related">
   <mtapp:widget
@@ -171,7 +168,7 @@ TC.attachLoadEvent( init );
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
     <input type="hidden" name="asset_type" value="<mt:var name="asset_type" escape="html">" />
 
-    <div class="asset-preview asset-type-<mt:var name="asset_type" escape="html" lower_case="1">">
+    <div class="asset-preview asset-type-<mt:var name="asset_type" escape="html" lower_case="1"> line">
     <mt:if name="file_is_missing">
       <mtapp:statusmsg
          id="file-missing-error"
@@ -238,7 +235,6 @@ TC.attachLoadEvent( init );
            label_class="top-label"
            label="<__trans phrase="Embed Asset">">
           <input type="text" readonly="readonly" name="asset-url" id="asset-url" class="text full" value="<mt:var name="url" escape="html">" />
-          <p><a href="<mt:var name="url" encode_html="1">" target="_blank" class="view-asset-link" title="<__trans phrase="View this asset.">"><__trans phrase="View"></a></p>
         </mtapp:setting>
       </mt:unless>
     </div>

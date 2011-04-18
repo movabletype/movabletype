@@ -516,7 +516,7 @@ BEGIN {
                         }
                         elsif ( $val eq 'future' ) {
                             return MT->translate(
-                                '[_1] [_2] futere',
+                                '[_1] [_2] future',
                                 $prop->datasource->class_label_plural,
                                 $prop->label,
                             );
@@ -592,8 +592,15 @@ BEGIN {
                         my ($selected) = grep { $_->{value} eq $val } @$opts
                             or return $prop->error(
                             MT->translate('Invalid parameter.') );
-                        return MT->translate( '[_1] is [_2]', $prop->label,
-                            $selected->{label} );
+                        return MT->translate(
+                            '[_1] [_3] [_2]',
+                            $prop->label,
+                            $selected->{label},
+                            (   defined $prop->verb
+                                ? $prop->verb
+                                : $app->translate('__SELECT_FILTER_VERB')
+                            )
+                        );
                     },
                     args_via_param => sub {
                         my $prop = shift;
@@ -639,10 +646,11 @@ BEGIN {
                     display => 'optional',
                 },
                 author_name => {
-                    label   => 'Author',
-                    display => 'default',
-                    base    => '__virtual.string',
-                    raw     => sub {
+                    label        => 'Author',
+                    filter_label => 'Author Name',
+                    display      => 'default',
+                    base         => '__virtual.string',
+                    raw          => sub {
                         my ( $prop, $obj ) = @_;
                         my $col
                             = $prop->datasource->has_column('author_id')
@@ -674,7 +682,10 @@ BEGIN {
                             [   [   {   id => \"= $colname",
                                         %$name_query,
                                     },
-                                    '-or',
+                                    (   $args->{'option'} eq 'not_contains'
+                                        ? '-and'
+                                        : '-or'
+                                    ),
                                     {   id => \"= $colname",
                                         %$nick_query,
                                     },
@@ -950,6 +961,7 @@ BEGIN {
                 },
                 blog_name => {
                     label     => 'Website/Blog Name',
+                    filter_label => '__WEBSITE_BLOG_NAME',
                     order     => 10000,
                     display   => 'default',
                     site_name => 1,
@@ -1156,7 +1168,7 @@ BEGIN {
                     if ( $app->blog ) {
                         return 1
                             if $app->user->can_do( 'get_entry_feed',
-                                    at_least_one => 1 );
+                            at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1214,7 +1226,7 @@ BEGIN {
                     if ( $app->blog ) {
                         return 1
                             if $app->user->can_do( 'get_page_feed',
-                                    at_least_one => 1 );
+                            at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1295,7 +1307,7 @@ BEGIN {
                     if ( $app->blog ) {
                         return 1
                             if $app->user->can_do( 'get_system_feed',
-                                    at_least_one => 1 );
+                            at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1347,7 +1359,7 @@ BEGIN {
             },
             comment => {
                 object_label     => 'Comment',
-                default_sort_key => 'comment',
+                default_sort_key => 'created_on',
                 permission       => 'access_to_comment_list',
                 primary          => 'comment',
                 feed_link        => sub {
@@ -1357,7 +1369,7 @@ BEGIN {
                     if ( $app->blog ) {
                         return 1
                             if $app->user->can_do( 'get_comment_feed',
-                                    at_least_one => 1 );
+                            at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1387,7 +1399,7 @@ BEGIN {
                     if ( $app->blog ) {
                         return 1
                             if $app->user->can_do( 'get_trackback_feed',
-                                    at_least_one => 1 );
+                            at_least_one => 1 );
                     }
                     else {
                         my $iter = MT->model('permission')->load_iter(
@@ -1456,6 +1468,7 @@ BEGIN {
                 object_label_plural => 'Permissions',
                 object_type         => 'association',
                 search_type         => 'author',
+
                 #permission => 'access_to_permission_list',
                 default_sort_key => 'created_on',
                 primary          => [ 'user_name', 'role_name' ],
@@ -1473,6 +1486,9 @@ BEGIN {
             banlist => {
                 object_label        => 'IP address',
                 object_label_plural => 'IP addresses',
+                action_label        => 'IP address',
+                action_label_plural => 'IP addresses',
+                zero_state          => 'IP address',
                 condition           => sub {
                     my $app = shift;
                     return 1 if MT->config->ShowIPInformation;
@@ -1707,15 +1723,16 @@ BEGIN {
                 type    => 'ARRAY',
                 default => 'feed results_feed.tmpl',
             },
-            'SearchSortBy'          => undef,
-            'SearchSortOrder'       => { default => 'ascend', },
-            'SearchNoOverride'      => { default => 'SearchMaxResults', },
-            'SearchResultDisplay'   => { alias => 'ResultDisplay', },
-            'SearchExcerptWords'    => { alias => 'ExcerptWords', },
-            'SearchDefaultTemplate' => { alias => 'DefaultTemplate', },
-            'SearchMaxResults'      => { alias => 'MaxResults', },
-            'SearchAltTemplate'     => { alias => 'AltTemplate' },
-            'SearchPrivateTags'     => { default => 0 },
+            'SearchSortBy'           => undef,
+            'SearchSortOrder'        => { default => 'ascend', },
+            'SearchNoOverride'       => { default => 'SearchMaxResults', },
+            'SearchResultDisplay'    => { alias => 'ResultDisplay', },
+            'SearchExcerptWords'     => { alias => 'ExcerptWords', },
+            'SearchDefaultTemplate'  => { alias => 'DefaultTemplate', },
+            'SearchMaxResults'       => { alias => 'MaxResults', },
+            'SearchAltTemplate'      => { alias => 'AltTemplate' },
+            'SearchPrivateTags'      => { default => 0 },
+            'DeepCopyRecursiveLimit' => { default => 2 },
             'RegKeyURL' =>
                 { default => 'http://www.typekey.com/extras/regkeys.txt', },
             'IdentitySystem' =>
@@ -1816,7 +1833,7 @@ BEGIN {
             'AuthenticationModule'  => { default => 'MT', },
             'AuthLoginURL'          => undef,
             'AuthLogoutURL'         => undef,
-            'DefaultAssignments'    => undef,
+            'DefaultAssignments'    => { default => '' },
             'AutoSaveFrequency'     => { default => 5 },
             'FuturePostFrequency'   => { default => 1 },
             'AssetCacheDir'         => { default => 'assets_c', },

@@ -52,7 +52,7 @@ sub preprocess_native_tags {
         || $args->{include_websites}
         || $args->{blog_id}
         || $args->{blog_ids}
-        || grep($_ eq $tag, 'blogs', 'websites');
+        || grep( $_ eq $tag, 'blogs', 'websites' );
     my $excl = $args->{exclude_blogs} || $args->{exclude_websites};
     for ( $incl, $excl ) {
         next unless $_;
@@ -212,8 +212,24 @@ sub post_entry_pub {
     }
 }
 
+sub init_rebuilt_cache {
+    my ($app) = @_;
+    $app->request( 'multiblog_rebuilt', {} );
+}
+
+sub is_first_rebuild {
+    my ( $app, $blog_id, $action ) = @_;
+    my $rebuilt = $app->request('multiblog_rebuilt') || {};
+    return if exists $rebuilt->{"$blog_id,$action"};
+    $rebuilt->{"$blog_id,$action"} = 1;
+    $app->request( 'multiblog_rebuilt', $rebuilt );
+}
+
 sub perform_mb_action {
     my ( $app, $blog_id, $action ) = @_;
+
+    # Don't rebuild the same thing twice in a same runner
+    return unless is_first_rebuild( $app, $blog_id, $action );
 
     # If the action we are performing starts with ri
     # we rebuild indexes for the given blog_id

@@ -283,19 +283,19 @@ sub list_props {
 sub system_filters {
     return {
         entry => {
-            label => 'Tags for Entry',
+            label => 'Tags with Entries',
             view  => ['blog'],
             items => [ { type => 'for_entry', } ],
             order => 100,
         },
         page => {
-            label => 'Tags for Page',
+            label => 'Tags with Pages',
             view  => [ 'website', 'blog' ],
             items => [ { type => 'for_page', } ],
             order => 200,
         },
         asset => {
-            label => 'Tags for Asset',
+            label => 'Tags with Assets',
             view  => [ 'website', 'blog' ],
             items => [ { type => 'for_asset', } ],
             order => 300,
@@ -400,7 +400,7 @@ sub split {
 
         #$tag =~ s/(^[\s,]+|[\s,]+$)//gs;
         $tag =~ s/(^\s+|\s+$)//gs;
-        $tag =~ s/\s+/ /gs;
+        #$tag =~ s/\s+/ /gs;
         my $n8d_tag = MT::Tag->normalize($tag);
         next if $n8d_tag eq '';
         push @tags, $tag if $tag ne '';

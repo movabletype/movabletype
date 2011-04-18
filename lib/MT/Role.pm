@@ -133,7 +133,7 @@ sub list_props {
         },
         active_inactive => {
             base    => '__virtual.single_select',
-            label   => 'Active/Inactive',
+            label   => '__ROLE_STATUS',
             display => 'none',
             terms   => sub {
                 my $prop = shift;
@@ -165,13 +165,13 @@ sub list_props {
                 }
             },
             single_select_options => [
-                { label => 'Active',   value => 'active', },
-                { label => 'Inactive', value => 'inactive', },
+                { label => '__ROLE_ACTIVE',   value => 'active', },
+                { label => '__ROLE_INACTIVE', value => 'inactive', },
             ],
         },
         description => {
             auto    => 1,
-            label   => 'Desctription',
+            label   => 'Description',
             display => 'none',
         },
         created_on => {

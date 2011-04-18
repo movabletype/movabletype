@@ -1120,8 +1120,10 @@ function category_label_path($cat) {
 
 function cat_path_to_category($path, $blogs = null, $class = 'category') {
     $mt = MT::get_instance();
-    if (!$blogs)
-        $blogs = array('include_blogs' => $mt->blog_id());
+    if (!$blogs) {
+        $ctx = $mt->context();
+        $blogs = array('include_blogs' => $ctx->stash('blog_id'));
+    }
     if (!is_array($blogs))
         $blogs = array($blogs);
     $mtdb =& $mt->db();

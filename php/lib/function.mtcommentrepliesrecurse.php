@@ -23,8 +23,12 @@ function smarty_function_mtcommentrepliesrecurse($args, &$ctx) {
     while ($comment = array_shift($comments)) {
         $blog_id = $ctx->stash('blog_id');
         if ($comment->comment_commenter_id) {
-            $commenter = $ctx->mt->db()->fetch_author($comment->comment_commenter_id);
-            $ctx->stash('commenter', $commenter);
+            $commenter = $comment->commenter();
+            if (empty($commenter)) {
+                $ctx->__stash['commenter'] = null;
+            } else {
+                $ctx->stash('commenter', $commenter);
+            }
         } else {
             $ctx->__stash['commenter'] = null;
         }

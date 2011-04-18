@@ -523,6 +523,8 @@ sub _send_ping_notification {
             edit_url       => $edit_link,
             ban_url        => $ban_link,
             ping           => $ping,
+            entry_id       => $entry ? $entry->id : undef,
+            category_id    => $cat ? $cat->id : undef,
             unapproved     => !$ping->visible(),
             state_editable => (
                        $author->is_superuser()

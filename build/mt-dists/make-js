@@ -11,17 +11,14 @@ use MT;
 use MT::Util qw(encode_js);
 
 my $js = `cat mt-static/mt.js`;
+$js .= `cat mt-static/jquery/jquery.mt.js`;
 $js .= `cat mt-static/js/edit.js`;
 $js .= `cat mt-static/js/archetype_editor.js`;
 $js .= `cat mt-static/js/dialog.js`;
 $js .= `cat mt-static/js/assetdetail.js`;
 $js .= `cat tmpl/cms/edit_template.tmpl`;
 $js .= `cat tmpl/cms/edit_entry.tmpl`;
-$js .= `cat tmpl/cms/widget/blog_stats.tmpl`;
-$js .= `cat tmpl/cms/include/calendar.tmpl`;
-$js .= `cat tmpl/cms/include/category_selector.tmpl`;
 $js .= `cat tmpl/cms/include/asset_upload.tmpl`;
-$js .= `cat tmpl/cms/include/calendar.tmpl`;
 $js .= `cat tmpl/cms/include/category_selector.tmpl`;
 $js .= `cat tmpl/cms/list_category.tmpl`;
 $js .= `cat tmpl/cms/list_common.tmpl`;
@@ -64,7 +61,7 @@ foreach my $lang (qw(ja de nl fr es)) {
     eval 'require MT::L10N::' . $lang
         or die "failed to find package MT::L10N::$lang";
 
-    my $lex = eval '\%{ %MT::L10N::' . $lang . '::Lexicon }' || {};
+    my $lex = eval '\%{ MT::L10N::' . $lang . '::Lexicon }' || {};
 
     foreach my $addon (@addons) {
         eval {

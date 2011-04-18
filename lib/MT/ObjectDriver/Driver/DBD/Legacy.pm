@@ -48,6 +48,8 @@ sub new {
 sub db_column_name {
     my $dbd = shift;
     my ( $table, $col ) = @_;
+    return $1 if $col =~ m/\!(.*)\!/;
+
     $table =~ s{ \A mt_ }{}xms;
     return join( '_', $table, $col );
 }

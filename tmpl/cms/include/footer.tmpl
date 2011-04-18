@@ -52,7 +52,7 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 <mt:if name="open_dialog">
-jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=<mt:var name="dialog_mode">&amp;<mt:var name="dialog_params">'); 
+jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=<mt:var name="dialog_mode">&amp;<mt:var name="dialog_params">');
 </mt:if>
 <mt:unless name="delayed_bootstrap">
 App.bootstrapInline( false );
@@ -65,22 +65,21 @@ jQuery(function() {
     jQuery.mtAddEdgeClass();
     jQuery.mtMenu();
     jQuery.mtSelector();
-    jQuery.mtCMSSearch();
     jQuery('a.mt-open-dialog').mtDialog();
     jQuery('a.mt-rebuild').mtRebuild(<mt:if name="blog_id">{blog_id: '<$mt:var name="blog_id"$>'}</mt:if>);
     jQuery('.mt-close-msg').live('click', function() {
-        jQuery(this).parent('div.msg').remove();
+        jQuery(this).parents('div.msg').remove();
     });
     jQuery('input.mt-edit-field').mtEditInput({
         edit: '<__trans phrase="Edit">'
     });
     jQuery('div.has-option').mtCheckboxOption();
     jQuery('.msg, .display-options').mtToggleField();
-    jQuery('.fav-actions-nav').mtToggleField({hide_clicked: true});
+    jQuery('.fav-actions-nav, #cms-search').mtToggleField({hide_clicked: true});
     jQuery('input.text-date').datepicker({
         dateFormat: 'yy-mm-dd',
         dayNamesMin: [<__trans phrase="_LOCALE_CALENDAR_HEADER_">],
-        monthNames: ['-01','-02','-03','-04','-05','-06','-07','-08','-09','-10','-11','-12'],
+        monthNames: ['- 01','- 02','- 03','- 04','- 05','- 06','- 07','- 08','- 09','- 10','- 11','- 12'],
         showMonthAfterYear: true,
         prevText: '&lt;',
         nextText: '&gt;'
@@ -97,6 +96,7 @@ jQuery(function() {
     jQuery('input').each(function() {
         jQuery(this).addClass(jQuery(this).attr('type'));
     });
+    jQuery('#quick-search').mtPlaceholder();
 });
 /* ]]> */
 </script>

@@ -76,6 +76,9 @@ $Lexicon_de = array(
 	'entry' => 'Eintrag',
 	'Entry' => 'Eintrag',
 
+## php/lib/function.mtinclude.php
+	'\'parent\' modifier cannot be used with \'[_1]\'' => 'Die Option \'parent\' kann nicht zusammen mit \'[_1]\' verwendet werden.',
+
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
 
@@ -84,13 +87,18 @@ $Lexicon_de = array(
 
 ## php/lib/function.mtsetvar.php
 
+## php/lib/function.mttagsearchlink.php
+	'Invalid [_1] parameter.' => 'Ungültiger [_1]-Parameter.',
+
 ## php/lib/function.mtvar.php
 	'\'[_1]\' is not a valid function for a hash.' => '&#8222;[_1]&#8220; ist keine gültige Hash-Funktion.',
 	'\'[_1]\' is not a valid function for an array.' => '&#8222;[_1]&#8220; ist keine gültige Array-Funktion.',
 
 ## php/lib/function.mtwidgetmanager.php
-	'Error: widgetset [_1] is empty.' => 'Fehler: Die Widgetgruppe &#8222;[_1]&#8220; ist leer.',
 	'Error compiling widgetset [_1]' => 'Fehler bei Kompilierung der Widgetgruppe &#8222;[_1]&#8220;',
+
+## php/lib/mtdb.base.php
+	'The attribute exclude_blogs denies all include_blogs.' => 'Das Attribut exclude_blogs hat Vorrang vor dem Attribut include_blogs.',
 
 ## php/lib/MTUtil.php
 	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',

@@ -164,6 +164,7 @@ sub list_props {
         },
         entry_count => {
             label              => 'Entries',
+            filter_label       => '__ENTRY_COUNT',
             order              => 300,
             base               => '__virtual.object_count',
             display            => 'default',
@@ -175,6 +176,7 @@ sub list_props {
         },
         page_count => {
             label              => 'Pages',
+            filter_label       => '__PAGE_COUNT',
             order              => 400,
             base               => '__virtual.object_count',
             display            => 'default',
@@ -186,6 +188,7 @@ sub list_props {
         },
         asset_count => {
             label              => 'Assets',
+            filter_label       => '__ASSET_COUNT',
             order              => 500,
             base               => '__virtual.object_count',
             count_class        => 'asset',
@@ -197,6 +200,7 @@ sub list_props {
         },
         comment_count => {
             label              => 'Comments',
+            filter_label       => '__COMMENT_COUNT',
             order              => 600,
             base               => '__virtual.object_count',
             count_class        => 'comment',
@@ -1141,6 +1145,16 @@ sub clone_with_children {
                     $cat->save or die $cat->errstr;
                 }
             }
+
+            # reconstruct the category order
+            $new_blog->category_order(
+                join(
+                    ',',
+                    map( $cat_map{$_},
+                        split( /,/, ( $blog->category_order || '' ) ) )
+                )
+            );
+
             $callback->(
                 $state . " "
                     . MT->translate( "[_1] records processed.", $counter ),
@@ -1311,6 +1325,16 @@ sub clone_with_children {
                 $cat->save or die $cat->errstr;
             }
         }
+
+        # reconstruct the category order
+        $new_blog->category_order(
+            join(
+                ',',
+                map( $cat_map{$_},
+                    split( /,/, ( $blog->category_order || '' ) ) )
+            )
+        );
+
         $callback->(
             $state . " "
                 . MT->translate( "[_1] records processed.", $counter ),
@@ -1567,9 +1591,6 @@ sub smart_replace_fields {
     my $val = $blog->nwc_replace_field;
     return defined($val) ? $val : MT->config->NwcReplaceField;
 }
-
-#trans('blog')
-#trans('blogs')
 
 sub apply_theme {
     my $blog = shift;

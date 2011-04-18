@@ -8,9 +8,10 @@
 function smarty_function_mtcommentname($args, &$ctx) {
     $comment = $ctx->stash('comment');
 
-    if ($comment->comment_commenter_id &&
-        $author = $ctx->mt->db()->fetch_author($comment->comment_commenter_id)) {
-        return $author->author_nickname;
+    if ($comment->comment_commenter_id ) {
+        $cmtr = $comment->commenter();
+        if ( !empty( $cmtr ) )
+            return $cmtr->nickname;
     }
 
     return $comment->comment_author;

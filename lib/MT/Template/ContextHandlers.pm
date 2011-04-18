@@ -1224,6 +1224,8 @@ sub check_page {
 package MT::Template::Tags::Core;
 use strict;
 
+use MT::Util qw(deep_copy);
+
 sub _math_operation {
     my ( $ctx, $op, $lvalue, $rvalue ) = @_;
     return $lvalue
@@ -2435,6 +2437,8 @@ sub _hdlr_set_var {
     elsif ( $existing ne '' && ( my $op = $args->{op} ) ) {
         $val = _math_operation( $ctx, $op, $existing, $val );
     }
+
+    $val = deep_copy($val, MT->config->DeepCopyRecursiveLimit);
 
     if ( defined $key ) {
         $data ||= {};
@@ -3803,14 +3807,14 @@ sub _hdlr_app_action_bar {
         ? ''
         : qq{\n        <mt:include name="include/pagination.tmpl" bar_position="$pos">};
     my $buttons = $ctx->var('action_buttons') || '';
+    my $buttons_html = $buttons =~ /\S/ ? qq{<div class="button-actions actions">$buttons</div>} : '';
+
     return $ctx->build(<<EOT);
 $form_id
 <div id="actions-bar-$pos" class="actions-bar actions-bar-$pos">
     $pager
-    <span class="button-actions actions">$buttons</span>
-    <span class="plugin-actions actions">
+    $buttons_html
 <mt:include name="include/itemset_action_widget.tmpl">
-    </span>
 </div>
 EOT
 }

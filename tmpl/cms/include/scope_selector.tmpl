@@ -114,7 +114,7 @@
   <mt:else>
     <mt:unless name="selector_hide_blog_chooser">
     <div id="fav-blog-list" class="scope-list blog">
-      <span class="scope-level blog"><__trans phrase="Blogs"></span>
+      <span class="sticky-label scope-level blog"><__trans phrase="Blogs"></span>
       <ul>
         <li id="select-blog" class="select-another">
           <a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog scope-link"><__trans phrase="Select another blog..."></a>
@@ -125,8 +125,8 @@
   </mt:if>
 
   <mt:if name="can_create_website">
-    <div id="create-action">
-      <ul id="create-website-action" class="create-action">
+    <div id="create-website-action">
+      <ul class="create-action">
         <li id="create-website">
           <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=website&amp;blog_id=0" class="create-link website"><__trans phrase="Create Website"></a>
         </li>
@@ -134,8 +134,8 @@
     </div>
   </mt:if>
   <mt:if name="can_create_blog">
-    <div id="create-action" class="create-action">
-      <ul id="create-blog-action">
+    <div id="create-blog-action">
+      <ul class="create-action">
     <mt:if name="scope_type" eq="website">
         <li id="create-blog">
           <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="blog_id"$>" class="create-link website"><__trans phrase="Create Blog (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">"></a>

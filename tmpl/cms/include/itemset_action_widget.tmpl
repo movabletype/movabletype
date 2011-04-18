@@ -6,33 +6,35 @@
 </script>
 
 <mt:if name="has_pulldown_actions">
-<select class="action_selector" name="plugin_action_selector" onchange="updatePluginAction(this)">
-  <option value="0"><__trans phrase="More actions..."></option>
-  <mt:loop name="list_actions">
-    <option value="<mt:var name="key">"><mt:var name="label"></option>
-  </mt:loop>
-  <mt:loop name="more_list_actions">
-  <mt:if name="__first__">
-    <optgroup label="<__trans phrase='Plugin Actions'>">
-  </mt:if>
+<div class="plugin-actions actions">
+  <select class="action_selector" name="plugin_action_selector" onchange="updatePluginAction(this)">
+    <option value="0"><__trans phrase="More actions..."></option>
+    <mt:loop name="list_actions">
       <option value="<mt:var name="key">"><mt:var name="label"></option>
-  <mt:if name="__last__">
-    </optgroup>
-  </mt:if>
-  </mt:loop>
-</select>
+    </mt:loop>
+    <mt:loop name="more_list_actions">
+    <mt:if name="__first__">
+      <optgroup label="<__trans phrase='Plugin Actions'>">
+    </mt:if>
+        <option value="<mt:var name="key">"><mt:var name="label"></option>
+    <mt:if name="__last__">
+      </optgroup>
+    </mt:if>
+    </mt:loop>
+  </select>
 
-<mt:if name="form_id">
-<button
-   type="button"
-   class="button mt-<mt:var name="form_id">-action">
-  <__trans phrase="Go">
-</button>
-<mt:else>
-<button
-   type="button"
-   class="button mt-<mt:var name="object_type">-listing-form-action">
-  <__trans phrase="Go">
-</button>
-</mt:if>
+  <mt:if name="form_id">
+  <button
+     type="button"
+     class="button mt-<mt:var name="form_id">-action">
+    <__trans phrase="Go">
+  </button>
+  <mt:else>
+  <button
+     type="button"
+     class="button mt-<mt:var name="object_type">-listing-form-action">
+    <__trans phrase="Go">
+  </button>
+  </mt:if>
+</div>
 </mt:if>

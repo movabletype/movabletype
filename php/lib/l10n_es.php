@@ -14,7 +14,7 @@ $Lexicon_es = array(
 	'Monthly' => 'Mensuales',
 	'Daily' => 'Diarias',
 	'Weekly' => 'Semanales',
-	'Author' => 'Por Autor',
+	'Author' => 'Autor',
 	'(Display Name not set)' => '(Nombre no configurado)',
 	'Author Yearly' => 'Anuales del autor',
 	'Author Monthly' => 'Mensuales del autor',
@@ -76,6 +76,9 @@ $Lexicon_es = array(
 	'entry' => 'entrada',
 	'Entry' => 'Entrada',
 
+## php/lib/function.mtinclude.php
+	'\'parent\' modifier cannot be used with \'[_1]\'' => 'el modificador \'parent\' no puede usarse con \'[_1]\'',
+
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
 
@@ -84,13 +87,18 @@ $Lexicon_es = array(
 
 ## php/lib/function.mtsetvar.php
 
+## php/lib/function.mttagsearchlink.php
+	'Invalid [_1] parameter.' => 'Parámetro [_1] no válido',
+
 ## php/lib/function.mtvar.php
 	'\'[_1]\' is not a valid function for a hash.' => '\'[_1]\' no es una función válida para un hash.',
 	'\'[_1]\' is not a valid function for an array.' => '\'[_1]\' no es una función válida para un array.',
 
 ## php/lib/function.mtwidgetmanager.php
-	'Error: widgetset [_1] is empty.' => 'Error: el conjunto de widgets [_1] está vacío',
 	'Error compiling widgetset [_1]' => 'Error compilando el conjunto de widgets [_1]',
+
+## php/lib/mtdb.base.php
+	'The attribute exclude_blogs denies all include_blogs.' => 'El atributo exclude_blogs cancela todos los include_blogs.',
 
 ## php/lib/MTUtil.php
 	'userpic-[_1]-%wx%h%x' => 'avatar-[_1]-%wx%h%x',

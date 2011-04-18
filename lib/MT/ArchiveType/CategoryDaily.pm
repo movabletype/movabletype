@@ -121,9 +121,9 @@ sub archive_group_iter {
                     : ()
                 ),
                 group => [
-                    "extract(year from authored_on)",
-                    "extract(month from authored_on)",
-                    "extract(day from authored_on)"
+                    "extract(year from authored_on) AS year",
+                    "extract(month from authored_on) AS month",
+                    "extract(day from authored_on) as day"
                 ],
                 sort => [
                     {   column => "extract(year from authored_on)",

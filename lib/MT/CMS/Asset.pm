@@ -12,7 +12,8 @@ use MT::Util qw( epoch2ts encode_url format_ts relative_date );
 sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
-
+    my $user  = $app->user;
+    my $perms = $app->permissions;
     if ($id) {
         my $asset_class = $app->model('asset');
         $param->{asset}        = $obj;
@@ -76,8 +77,9 @@ sub edit {
         $param->{related} = \@related if @related;
 
         my @appears_in;
-        my $place_class = $app->model('objectasset');
-        my $place_iter  = $place_class->load_iter(
+        my $appears_in_uneditables = 0;
+        my $place_class            = $app->model('objectasset');
+        my $place_iter             = $place_class->load_iter(
             {   blog_id => $obj->blog_id || 0,
                 asset_id => $obj->parent ? $obj->parent : $obj->id
             }
@@ -87,6 +89,10 @@ sub edit {
             next unless $entry_class->isa('MT::Entry');
             my $entry = $entry_class->load( $place->object_id )
                 or next;
+            if ( !$perms->can_edit_entry( $entry, $user ) ) {
+                $appears_in_uneditables++;
+                next;
+            }
             my %entry_data = (
                 id    => $place->object_id,
                 class => $entry->class_type,
@@ -109,12 +115,10 @@ sub edit {
             }
             push @appears_in, \%entry_data;
         }
-        if ( 11 == @appears_in ) {
-            pop @appears_in;
-            $param->{appears_in_more} = 1;
-        }
-        $param->{appears_in} = \@appears_in if @appears_in;
-
+        $param->{appears_in}             = \@appears_in if @appears_in;
+        $param->{appears_in_uneditables} = $appears_in_uneditables;
+        $param->{show_appears_in_widget} = scalar @appears_in
+            || $appears_in_uneditables;
         my $prev_asset = $obj->nextprev(
             direction => 'previous',
             terms     => { class => '*', blog_id => $obj->blog_id },
@@ -179,9 +183,9 @@ sub dialog_list_asset {
         $class_filter = $app->param('filter_val');
     }
     elsif ( $filter eq 'userpic' ) {
-        $class_filter = 'image';
+        $class_filter      = 'image';
         $terms{created_by} = $app->param('filter_val');
-        $terms{blog_id} = 0;
+        $terms{blog_id}    = 0;
 
         my $tag = MT::Tag->load( { name => '@userpic' },
             { binary => { name => 1 } } );
@@ -245,6 +249,7 @@ sub dialog_list_asset {
         if $app->can_do('upload');
     my ( $ext_from, $ext_to )
         = ( $app->param('ext_from'), $app->param('ext_to') );
+
     $app->listing(
         {   terms    => \%terms,
             args     => \%args,
@@ -269,7 +274,7 @@ sub dialog_list_asset {
                 search_label     => MT::Asset->class_label_plural,
                 search_type      => 'asset',
                 class_loop       => \@class_loop,
-                can_delete_files => $app->can_do('delete_asset_file'),
+                can_delete_files => $app->can_do('delete_asset_file') ? 1 : 0,
                 nav_assets       => 1,
                 panel_searchable => 1,
                 saved_deleted    => $app->param('saved_deleted') ? 1 : 0,

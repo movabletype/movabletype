@@ -93,15 +93,15 @@ PHP
 include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
 
-$mt = MT::get_instance(1, $MT_CONFIG);
+$mt = MT::get_instance($blog_id, $MT_CONFIG);
 $mt->init_plugins();
 
 $db = $mt->db();
 $ctx =& $mt->context();
 
-$ctx->stash('blog_id', 2);
-$ctx->stash('local_blog_id', 2);
-$blog = $db->fetch_blog(2);
+$ctx->stash('blog_id', $blog_id);
+$ctx->stash('local_blog_id', $blog_id);
+$blog = $db->fetch_blog($blog_id);
 $ctx->stash('blog', $blog);
 
 if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
@@ -322,6 +322,19 @@ http://narnia.na/cgi-bin/mt-search.cgi?IncludeBlogs=1&amp;tag=anemones&amp;limit
 <mt:OtherBlog blog_id="1"><mt:BlogName /></mt:OtherBlog>
 --- expected
 none
+--- access_overrides
+{ 1 => 2 }
+
+
+=== mt:OtherBlog and mt:Entry with category attribute
+--- template
+<mt:OtherBlog blog_id="1">
+    <mt:Entries category="foo" glue=",">
+        <mt:EntryTitle />
+    </mt:Entries>
+</mt:OtherBlog>
+--- expected
+Verse 3
 --- access_overrides
 { 1 => 2 }
 

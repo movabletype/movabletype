@@ -20,7 +20,7 @@
   </mt:if>
   </li>
   <li>
-    <strong><__trans phrase="Server Model"></strong>: 
+    <strong><__trans phrase="Server Model"></strong>:
     <mt:if name="server_modperl">
       mod_perl
     <mt:else name="server_fastcgi">
@@ -31,6 +31,17 @@
   </li>
 </ul>
 
+<mt:setVarBlock name="syscheck_script">
+<script type="text/javascript">
+jQuery(function() {
+jQuery('.msg-warning').mtToggleField({
+  detail_class: 'exception'
+});
+
+});
+</script>
+</mt:setVarBlock>
+
 <mtapp:setting
     id="system_check"
     label="System Info (MTCheck)"
@@ -40,6 +51,7 @@
     <div class="info">
         <mt:if name="syscheck_html">
           <mt:var name="syscheck_html">
+          <mt:var name="syscheck_script">
         <mt:else>
             <p><__trans phrase="Movable Type could not find the script named 'mt-check.cgi'. To resolve this issue, ensure that the mt-check.cgi script exists and that the CheckScript configuration parameter (if it is necessary) references it properly."></p>
         </mt:if>

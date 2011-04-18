@@ -375,21 +375,6 @@ sub set_blog_load_context {
         $blog_ids = join ",", @ids;
     }
 
-    # Find blog_id which belongs to the specified websites
-    if (   $col eq 'blog_id'
-        && ( $attr->{site_ids} || $attr->{include_websites} )
-        && 'all' ne lc $blog_ids )
-    {
-        my @blogs = MT::Blog->load(
-            {   (     ( 'ARRAY' eq ref $blog_ids )
-                    ? ( 'id' => \@$blog_ids )
-                    : ( 'id' => $blog_ids )
-                ),
-            }
-        );
-        $blog_ids = [ map { $_->id } @blogs ] if @blogs;
-    }
-
     # If no blog IDs specified, use the current blog
     if ( !$blog_ids ) {
         if ( my $blog = $ctx->stash('blog') ) {
@@ -418,7 +403,9 @@ sub set_blog_load_context {
         @blogs = MT->model('blog')->load( { parent_id => $website->id } );
         $blog_ids = scalar @blogs ? [ map { $_->id } @blogs ] : [];
         push @$blog_ids, $website->id if $attr->{include_with_website};
-        $blog_ids = undef unless scalar @$blog_ids;
+        $blog_ids = -1
+            unless scalar @$blog_ids
+        ; # We should use non-existing blog id when calculated blog_ids is empty
         $terms->{$col} = $blog_ids;
 
         # Blogs are specified in include_blogs so set the terms
@@ -494,7 +481,7 @@ sub set_blog_load_context {
             @blog_ids = grep { !$exc_ids{$_} } @$term_ids;
             return $ctx->error(
                 MT->translate(
-                    "The attribute exclude_blogs denies all incllude_blogs."
+                    "When the same blog IDs are simultaneously listed in the include_blogs and exclude_blogs attributes, those blogs are excluded."
                 )
             ) unless @blog_ids;
 

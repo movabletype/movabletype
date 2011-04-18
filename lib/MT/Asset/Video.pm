@@ -9,7 +9,8 @@ package MT::Asset::Video;
 use strict;
 use base qw( MT::Asset );
 
-__PACKAGE__->install_properties( { class_type => 'video', } );
+__PACKAGE__->install_properties(
+    { class_type => 'video', child_of => [ 'MT::Blog', 'MT::Website' ] } );
 
 # List of supported file extensions (to aid the stock 'can_handle' method.)
 sub extensions {

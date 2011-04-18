@@ -81,7 +81,7 @@ sub is_not_junk {
 sub list_props {
     return {
         comment => {
-            label   => 'Comment Text',
+            label   => 'Comment',
             order   => 100,
             display => 'force',
             html    => sub {
@@ -116,18 +116,8 @@ sub list_props {
                     :                      'Unapproved';
                 my $lc_status_class = lc $status_class;
 
-                my $ts          = $obj->created_on;
-                my $date_format = MT::App::CMS::LISTING_DATE_FORMAT();
-                my $blog        = $app ? $app->blog : undef;
-                my $is_relative = 1;
-                ## TBD: should do like this...
-                ## my $is_relative = $app->user->date_type eq 'relative' ? 1 : 0;
-                my $date
-                    = $is_relative
-                    ? MT::Util::relative_date( $ts, time, $blog )
-                    : MT::Util::format_ts( $date_format, $ts, $blog,
-                    $app->user ? $app->user->preferred_language : undef );
-
+                my $blog = $app ? $app->blog : undef;
+                my $edit_str = MT->translate('Edit');
                 my $reply_link;
                 if ( $app->user->permissions( $obj->blog->id )
                         ->can_do('reply_comment_from_cms')
@@ -151,7 +141,7 @@ sub list_props {
                     );
                     my $reply_str = MT->translate('Reply');
                     $reply_link
-                        = qq{<a href="$reply_url" class="reply-link mt-open-dialog">$reply_str</a>};
+                        = qq{<a href="$reply_url" class="reply action-link open-dialog-link mt-open-dialog">$reply_str</a>};
                 }
 
                 return qq{
@@ -160,16 +150,10 @@ sub list_props {
                     </span>
                     <p class="comment-text content-text">$text</p>
                     <div class="item-ctrl">
-                      <a href="$link">$date</a>
+                      <a href="$link" class="edit action-link">$edit_str</a>
                       $reply_link
                     </div>
                 };
-            },
-            sort => sub {
-                my $prop = shift;
-                my ( $terms, $args ) = @_;
-                $args->{sort} = 'created_on';
-                return;
             },
             default_sort_order => 'descend',
         },
@@ -222,7 +206,13 @@ sub list_props {
                 );
                 my $commenter = MT->model('author')->load($id);
 
-                if ( !$commenter ) {
+                if ($commenter) {
+                    $name ||= $commenter->name
+                        || '(' . MT->translate('Registered User') . ')';
+                }
+                else {
+                    $name ||= '('
+                        . MT->translate('__ANONYMOUS_COMMENTER') . ')';
                     $link = $app->uri(
                         mode => 'search_replace',
                         args => {
@@ -294,7 +284,9 @@ sub list_props {
                 $status_img = qq{<img src="$status_url" />};
 
                 $auth_img = $static;
-                if ( $commenter->auth_type eq 'MT' ) {
+                if (   $commenter->auth_type eq 'MT'
+                    || $commenter->auth_type eq 'LDAP' )
+                {
                     $auth_img .= 'images/comment/mt_logo.png';
                     $auth_label = 'Movable Type';
                 }
@@ -322,6 +314,11 @@ sub list_props {
                     </span>
                 };
             },
+        },
+        created_on => {
+            order   => 250,
+            base    => '__virtual.created_on',
+            display => 'default',
         },
         ip => {
             auto      => 1,
@@ -413,13 +410,8 @@ sub list_props {
                 my $app      = shift;
                 my $entry_id = $app->param('filter_val');
                 my $entry    = MT->model('entry')->load($entry_id);
-                my $label    = MT->translate(
-                    'Comments on [_1]: [_2]',
-                    $entry->class eq 'entry'
-                    ? MT->translate('Entry')
-                    : MT->translate('Page'),
-                    $entry->title,
-                );
+                my $label    = MT->translate( 'Comments on [_1]: [_2]',
+                    $entry->class_label, $entry->title, );
                 $prop->{filter_label} = $label;
                 $label;
             },
@@ -433,10 +425,6 @@ sub list_props {
         modified_on => {
             display => 'none',
             base    => '__virtual.modified_on',
-        },
-        created_on => {
-            display => 'none',
-            base    => '__virtual.created_on',
         },
         status => {
             label   => 'Status',
@@ -575,6 +563,8 @@ sub list_props {
                 my $prop = shift;
                 my ( $args, $base_terms, $base_args, $opts, ) = @_;
                 my $val = $args->{value};
+                my $blog_id
+                    = MT->config->SingleCommunity ? 0 : $opts->{blog_ids};
                 if ( $val eq 'deleted' ) {
                     $base_args->{joins} ||= [];
                     push @{ $base_args->{joins} },
@@ -590,6 +580,137 @@ sub list_props {
                 elsif ( $val eq 'anonymous' ) {
                     return { commenter_id => \' is null' };
                 }
+                elsif ( $val eq 'enabled' ) {
+                    push @{ $base_args->{joins} },
+                        MT->model('author')->join_on(
+                        undef,
+                        { id => \'= comment_commenter_id', },
+                        {   unique => 1,
+                            join   => MT->model('permission')->join_on(
+                                undef,
+                                [   [   { blog_id => $blog_id },
+                                        '-or',
+                                        { blog_id => \' IS NULL', }
+                                    ],
+                                    '-and',
+                                    [   [   {   '!author_type!'   => 1,
+                                                '!author_status!' => 1,
+                                            },
+                                            '-and',
+                                            [   {   restrictions => \
+                                                        ' IS NULL',
+                                                },
+                                                '-or',
+                                                {   restrictions => {
+                                                        not_like =>
+                                                            "%'comment'%"
+                                                    },
+                                                },
+                                            ],
+                                        ],
+                                        '-or',
+                                        [   { '!author_type!' => 2, },
+                                            '-and',
+                                            {   permissions =>
+                                                    { like => "%'comment'%" },
+                                            },
+                                            '-and',
+                                            [   {   restrictions => \
+                                                        ' IS NULL',
+                                                },
+                                                '-or',
+                                                {   restrictions => {
+                                                        not_like =>
+                                                            "%'comment'%"
+                                                    },
+                                                },
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                {   type => 'left',
+                                    condition =>
+                                        { author_id => \'= author_id', },
+                                    unique => 1,
+                                }
+                            ),
+                        },
+                        );
+                }
+                elsif ( $val eq 'disabled' ) {
+                    push @{ $base_args->{joins} },
+                        MT->model('author')->join_on(
+                        undef,
+                        { id => \'= comment_commenter_id', },
+                        {   unique => 1,
+                            join   => MT->model('permission')->join_on(
+                                undef,
+                                [   [   { blog_id => $blog_id },
+                                        '-or',
+                                        { blog_id => \' IS NULL', }
+                                    ],
+                                    '-and',
+                                    [   [   {   '!author_type!'   => 1,
+                                                '!author_status!' => 2,
+                                            },
+                                            '-or',
+                                            {   restrictions =>
+                                                    { like => "%'comment'%" },
+                                            },
+                                        ],
+                                        '-or',
+                                        [   {   '!author_type!' => 2,
+                                                permissions     => {
+                                                    not_like => "%'comment'%"
+                                                },
+                                                restrictions =>
+                                                    { like => "%'comment'%" },
+                                            },
+                                        ],
+                                    ],
+                                ],
+                                {   type => 'left',
+                                    condition =>
+                                        { author_id => \'= author_id', },
+                                    unique => 1,
+                                }
+                            ),
+                        },
+                        );
+                }
+                elsif ( $val eq 'pending' ) {
+                    push @{ $base_args->{joins} },
+                        MT->model('author')->join_on(
+                        undef,
+                        { id => \'= comment_commenter_id', },
+                        {   unique => 1,
+                            join   => MT->model('permission')->join_on(
+                                undef,
+                                [   [   { blog_id => $blog_id },
+                                        '-or',
+                                        { blog_id => \' IS NULL', }
+                                    ],
+                                    '-and',
+                                    [   {   '!author_type!' => 1,
+                                            '!author_status!' =>
+                                                MT::Author::PENDING(),
+                                        },
+                                        '-or',
+                                        {   '!author_type!' => 2,
+                                            permissions     => \' IS NULL',
+                                            restrictions    => \' IS NULL',
+                                        },
+                                    ],
+                                ],
+                                {   type => 'left',
+                                    condition =>
+                                        { author_id => \'= author_id', },
+                                    unique => 1,
+                                }
+                            ),
+                        },
+                        );
+                }
                 else {
                     my ( $com_terms, $com_args ) = ( {}, {} );
                     $prop->super( $args, $com_terms, $com_args, $opts );
@@ -602,19 +723,21 @@ sub list_props {
                 }
             },
             single_select_options => [
-                {   label => 'Deleted Users/Deleted Commenters',
+                {   label => 'Deleted',
                     value => 'deleted',
                 },
-                {   label => 'Enabled Users/Enabled Commenters',
+                {   label => 'Enabled',
                     value => 'enabled',
                 },
-                {   label => 'Disabled Users/Banned Commenters',
+                {   label => 'Disabled',
                     value => 'disabled',
                 },
-                {   label => 'Pending Users/Pending Commenters',
+                {   label => 'Pending',
                     value => 'pending',
                 },
-                { label => 'Anonymous Commenters', value => 'anonymous', },
+                {   label => '__ANONYMOUS_COMMENTER',
+                    value => 'anonymous',
+                },
             ],
         },
     };

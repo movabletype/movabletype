@@ -1,19 +1,22 @@
-/* - Status Message */
+/* Status Message */
 .msg { 
     position: relative;
     margin: 10px 0;
     padding: 0.5em 0.75em;
     line-height: 1;
-    background-repeat: no-repeat;
-    background-position: 8px center;
     border-radius: 3px;
     -moz-border-radius: 3px;
+}
+.msg.full {
+    margin: 0;
+    border-radius: 0;
+    -moz-border-radius: 0;
 }
 .msg-success { 
     background-color: #cee4ae;
 }
 .msg-alert, 
-.msg.warning { 
+.msg-warning { 
     background-color: #fef263;
 }
 .msg-error { 
@@ -23,19 +26,22 @@
     background-color: #e6eae3;
 }
 .msg-publishing { 
-    padding-left: 40px;
-    background-image: url(../images/ani-rebuild.gif);
+    margin: 15px 0 0;
+    padding: 0.8em 0 0.8em 25px;
+    background: transparent url(../images/ani-rebuild.gif) left center no-repeat;
 }
-
 .msg-text { 
     margin: 0;
 }
 
-.msg-error .mt-close-msg { 
-    display: none;
+.close-link { 
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    margin-top: -8px;
 }
 
-/* -- for Permission Message */
+/* - for Permission Message */
 .msg .detail { 
     margin: 10px 0 0;
 }
@@ -56,7 +62,6 @@ p.zero-state {
     -webkit-border-radius: 0;
     border-radius: 0;
 }
-
 #is-generic-website p { 
     margin: 0 auto;
     padding: 0 20px;
@@ -73,23 +78,26 @@ p.zero-state {
 .dialog-msg-error {
     display: block;
 }
-.validate-error-wrapper {
-    z-index: 200;
-}
 .validate-error {
+    display: inline-block;
     line-height: 1.3;
+    margin-left: 3px;
     padding: 0.3em 0.5em;
     background-color: #2b2b2b;
     color: #f3f3f3;
-    -moz-border-radius: 0 0 3px 3px;
-    border-bottom-right-radius: 3px;
-    border-bottom-left-radius: 3px;
+    font-size: 95%;
+    font-weight: normal;
     opacity: 0.8;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    -moz-border-radius: 0 0 3px 3px;
 }
 .msg-balloon {
+    margin: 0;
     border-radius: 3px;
     -moz-border-radius: 3px;    
 }
+
 /* - Debug Panel Messages */
 .debug-panel { 
     position: absolute;
@@ -98,7 +106,6 @@ p.zero-state {
     background-color: #f6bfbc;
     text-align: left;
 }
-
 .debug-panel h3 { 
     padding: 5px;
     font-size: 12px;
@@ -107,7 +114,13 @@ p.zero-state {
     color: #f8fbf8;
     text-shadow: none;
 }
-
+.debug-panel-inner {
+    padding: 5px;
+    font-family: 'Andale Mono', monospace;
+    font-size: 10px;
+    max-height: 200px;
+    overflow: auto;
+}
 .debug-panel-inner li {
     margin: 0;
     padding: 0.2em 0.5em;
@@ -116,12 +129,4 @@ p.zero-state {
 
 .debug-panel-inner li:hover {
     background-color: #f2a0a1;
-}
-
-.debug-panel-inner {
-    padding: 5px;
-    font-family: 'Andale Mono', monospace;
-    font-size: 10px;
-    max-height: 200px;
-    overflow: auto;
 }

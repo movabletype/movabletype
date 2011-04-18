@@ -72,16 +72,6 @@ run_test {
 };
 
 run_test {
-    my $entry = $app->model('entry')->load( { blog_id => 1 } );
-    MultiBlog::post_entry_save( $plugin, undef, $app, $entry );
-    MultiBlog::post_entry_save( $plugin, undef, $app, $entry );
-    MultiBlog::post_entry_save( $plugin, undef, $app, $entry );
-    is( $rebuild_count, 1,
-'called once in post_entry_save even if trigger is called multiple times.'
-    );
-};
-
-run_test {
     my $page = $app->model('page')->new;
     $page->blog_id(2);
     MultiBlog::post_entry_save( $plugin, undef, $app, $page );

@@ -1,18 +1,16 @@
-/* - Icon */
-/* Icon Links ---------------------------------------------------------------------------------- */
-
+/* Icon */
 .icon16 {
     display: inline-block;
-    width: 0px;
-    height: 18px;
-    padding-left: 18px;
+    width: 16px;
+    height: 0px;
+    padding-top: 16px;
     overflow: hidden;
     background-color: transparent;
     background-repeat: no-repeat;
     background-position: center;
 }
 .icon-delete {
-    background: transparent url(../images/delete.gif) center top no-repeat;
+    background-image: url(../images/status_icons/icon-delete.png);
 }
 .icon-plus {
     background-image: url(../images/status_icons/icon-plus.png);
@@ -24,51 +22,51 @@
     background-image: url(../images/status_icons/icon-remove.png);    
 }
 .action-icon {
+    border-radius: 8px;
+    -moz-border-radius: 8px;
     vertical-align: middle;
-    border-radius: 9px;
-    -moz-border-radius: 9px;
 }
 .action-icon:hover {
     background-color: #c0c6c9;
 }
 
 .icon-left {
-    padding-left: 11px;
+    padding-left: 14px;
     background-repeat: no-repeat;
     background-position: left center;
 }
 .icon-right {
-    padding-right: 11px;
+    padding-right: 14px;
     background-repeat: no-repeat;
     background-position: right center;
 }
 .icon-mini-left {
-    padding-left: 13px;
+    padding-left: 12px;
     background-repeat: no-repeat;
     background-position: left center;
 }
 .icon-mini-right {
-    padding-right: 13px;
+    padding-right: 12px;
     background-repeat: no-repeat;
     background-position: right center;
 }
 .icon-left-wide {
-    padding-left: 15px;
+    padding-left: 18px;
     background-repeat: no-repeat;
     background-position: left center;
 }
 .icon-right-wide {
-    padding-right: 15px;
+    padding-right: 18px;
     background-repeat: no-repeat;
     background-position: right center;
 }
 .icon-left-xwide {
-    padding-left: 20px;
+    padding-left: 22px;
     background-repeat: no-repeat;
     background-position: left center;
 }
 .icon-right-xwide {
-    padding-right: 20px;
+    padding-right: 22px;
     background-repeat: no-repeat;
     background-position: right center;
 }
@@ -95,6 +93,9 @@
 .icon-pending { background-image: url(../images/status_icons/warning.gif); }
 .icon-share { background-image: url(../images/status_icons/share.gif);}
 .icon-spam { background-image: url(../images/status_icons/warning.gif); }
+
+.icon-spinner { background-image: url(../images/arrow/spinner-right.png); }
+.active .icon-spinner { background-image: url(../images/arrow/spinner-bottom.png); }
 
 .edit-template .global-tmpl { background-image: url(../images/template/global.png); }
 .edit-template .website-tmpl { background-image: url(../images/template/website.png); }
@@ -157,7 +158,8 @@
 .icon-mini-new-asset    { background-image: url(../images/nav_icons/mini/asset-new.gif); }
 .icon-mini-delete span  { display: none; }
 
-.listing img {
+.si img, 
+.view img  {
     background-repeat: no-repeat;
     background-position: center;
 }

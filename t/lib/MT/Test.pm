@@ -498,7 +498,7 @@ sub init_data {
             nickname         => 'Chucky Dee',
             email            => 'chuckd@example.com',
             url              => 'http://chuckd.com/',
-            userpic_asset_id => 1,
+            userpic_asset_id => 3,
             api_password     => 'seecret',
             auth_type        => 'MT',
             created_on       => '19780131074500',
@@ -1087,6 +1087,22 @@ It\'s a hard rain\'s a-gonna fall',
 
     $asset->set_score( 'unit test', $chuckd, 2, 1 );
     $asset->set_score( 'unit test', $johnd,  3, 1 );
+
+    $asset    = new $img_pkg;
+    $asset->blog_id(0);
+    $asset->url('%s/uploads//test.jpg');
+    $asset->file_path(
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ) );
+    $asset->file_name('test.jpg');
+    $asset->file_ext('jpg');
+    $asset->image_width(640);
+    $asset->image_height(480);
+    $asset->mime_type('image/jpeg');
+    $asset->label('Image photo');
+    $asset->description('This is a userpic photo.');
+    $asset->created_by(1);
+    $asset->tags( '@userpic' );
+    $asset->save or die "Couldn't save asset record 3: " . $asset->errstr;
 
     ## ObjectScore
     my $e5 = MT::Entry->load(5);

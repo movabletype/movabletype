@@ -51,6 +51,7 @@ sub list_props {
         folder_id => {
             base             => 'entry.category_id',
             label            => 'Folder',
+            filter_label     => 'Folder',
             display          => 'default',
             view_filter      => [ 'blog', 'website' ],
             order            => 500,

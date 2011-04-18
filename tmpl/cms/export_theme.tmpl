@@ -38,7 +38,7 @@
        required="1"
        label="<__trans phrase="Name">"
        hint="<__trans phrase="The name of your theme.">">
-      <input type="text" name="theme_name" id="theme_name" class="text" value="<mt:var name="theme_name" escape="html">" />
+      <input type="text" name="theme_name" id="theme_name" class="text required" value="<mt:var name="theme_name" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -47,7 +47,7 @@
        label="<__trans phrase="Basename">"
        show_hint="1"
        hint="<__trans phrase="Use letters, numbers, dash or underscore only (a-z, A-Z, 0-9, '-' or '_').">">
-      <input type="text" name="theme_id" id="theme_id" class="text" value="<mt:var name="theme_id" escape="html">" />
+      <input type="text" name="theme_id" id="theme_id" class="text required" value="<mt:var name="theme_id" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -55,7 +55,7 @@
        required="1"
        label="<__trans phrase="Version">"
        hint="<__trans phrase="A version number for this theme.">">
-       <input type="text" name="theme_version" id="theme_version" class="text num" value="<mt:var name="theme_version" escape="html">" />
+       <input type="text" name="theme_version" id="theme_version" class="text required" value="<mt:var name="theme_version" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -147,53 +147,29 @@ jQuery(function() {
     }
     function is_duplicated_basename() {
         var current_id = jQuery('#theme_id').val();
-        var destination = jQuery('#output').val();
+        var destination = jQuery('#output').val() || 'themedir';
         return (existing_ids[current_id] && ( destination == 'themedir' ));
     }
-    jQuery.validator.addMethod('basename', function(value, element) {
-        return is_valid_basename(value);
-    });
-    jQuery.validator.addMethod('duplicate', function(value, element) {
-        return !is_duplicated_basename();
-    });
-    jQuery.validator.addMethod('duplicate_output', function(value, element) {
-        jQuery('#theme_settings').validate().element( "#theme_id" );
-        return 1;
-    });
-    jQuery.validator.addMethod('version', function(value, element) {
-        return is_valid_version(value);
-    });
-
-    jQuery('#theme_settings').validate({
-        rules: {
-            theme_name: 'required',
-            theme_id: {
-                basename: true,
-                duplicate: true
-            },
-            theme_version: {
-                version: true
-            },
-            output: {
-                duplicate_output: true
+    jQuery.mtValidateAddRules({
+        '#theme_id': function ($e) {
+            if ( !is_valid_basename( $e.val() ) ) {
+                return this.raise('<__trans phrase="Basename may only contain letters, numbers, and the dash or underscore character. The basename must begin with a letter." escape="singlequotes">');
             }
-        },    
-        messages: {
-            theme_name: '<__trans phrase="You must set Theme Name." escape="singlequotes">',
-            theme_id: {
-                basename: '<__trans phrase="Basename may only contain letters, numbers, and the dash or underscore character. The basename must begin with a letter." escape="singlequotes">',
-                duplicate: '<__trans phrase="Cannot install new theme with existing (and protected) theme's basename." escape="singlequotes">'
-            },
-            theme_author_name: '<__trans phrase="You must set Author Name." escape="singlequotes">',
-            theme_version: {
-                version: '<__trans phrase="Theme version may only contain letters, numbers, and the dash or underscore character." escape="singlequotes">'
+            if ( is_duplicated_basename( $e.val() ) ) {
+                return this.raise('<__trans phrase="Cannot install new theme with existing (and protected) theme's basename." escape="singlequotes">');
             }
+            return true;
         },
-        errorClass: "msg-error",
-        errorPlacement: function(error, element) {
-            element.parents('div.field').addClass('error-field');
-            error.removeAttr('generated').insertAfter(element);
+        '#theme_version': function ($e) {
+            return is_valid_version($e.val()) ? true : false;
         }
+    });
+    jQuery.mtValidateAddMessages({
+        '#theme_name': '<__trans phrase="You must set Theme Name." escape="singlequotes">',
+        '#theme_version': '<__trans phrase="Theme version may only contain letters, numbers, and the dash or underscore character." escape="singlequotes">'
+    });
+    jQuery('#theme_settings').submit( function() {
+        return jQuery(this).find('input, select').mtValidate('simple') ? true : false;
     });
 });
     <mt:var name="js_include_footer" />

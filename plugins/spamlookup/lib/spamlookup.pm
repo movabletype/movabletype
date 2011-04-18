@@ -195,7 +195,9 @@ sub link_memory {
                             visible => 1
                         };
                         my $args;
-                        if ( my $grey = $config->{priorurl_greyperiod} ) {
+                        if ( $config->{priorurl_greyperiod_mode}
+                            && ( my $grey = $config->{priorurl_greyperiod} ) )
+                        {
                             my $ts = time;
                             $ts -= $grey * ( 24 * 60 * 60 );
                             require MT::Util;
@@ -225,9 +227,10 @@ sub link_memory {
                     visible    => 1
                 };
                 my $args;
-                if ( $config->{priorurl_greyperiod_mode} ) {
-                    my $grey = $config->{priorurl_greyperiod};
-                    my $ts   = time;
+                if ( $config->{priorurl_greyperiod_mode}
+                    && ( my $grey = $config->{priorurl_greyperiod} ) )
+                {
+                    my $ts = time;
                     $ts -= $grey * ( 24 * 60 * 60 );
                     require MT::Util;
                     $ts = MT::Util::epoch2ts( $obj->blog_id, $ts );
@@ -271,9 +274,10 @@ sub email_memory {
                     visible => 1
                 };
                 my $args;
-                if ( $config->{prioremail_greyperiod} ) {
-                    my $grey = $config->{prioremail_greyperiod};
-                    my $ts   = time;
+                if ( $config->{prioremail_greyperiod_mode}
+                    && ( my $grey = $config->{prioremail_greyperiod} ) )
+                {
+                    my $ts = time;
                     $ts -= $grey * ( 24 * 60 * 60 );
                     require MT::Util;
                     $ts = MT::Util::epoch2ts( $obj->blog_id, $ts );

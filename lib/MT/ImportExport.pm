@@ -160,30 +160,9 @@ sub import_contents {
                                     );
                                 }
                                 $authors{$val} = $author;
-                                $cb->(
-                                    MT->translate(
-                                        "Assigning permissions for new user..."
-                                    )
-                                );
-                                my $perms = MT::Permission->new;
-                                $perms->blog_id($blog_id);
-                                $perms->author_id( $author->id );
-                                $perms->can_create_post(1);
-                                if ( $perms->save ) {
-                                    $cb->( MT->translate("ok") . "\n" );
-                                }
-                                else {
-                                    $cb->( MT->translate("failed") . "\n" );
-                                    return __PACKAGE__->error(
-                                        MT->translate(
-                                            "Saving permission failed: [_1]",
-                                            $perms->errstr
-                                        )
-                                    );
-                                }
                             }
                             $author_id = $author->id;
-                            $entry->author_id( $author->id );
+                            $entry->author_id( $author_id );
                         }
                         elsif ($key eq 'CATEGORY'
                             || $key eq 'PRIMARY CATEGORY' )
@@ -464,20 +443,10 @@ sub import_contents {
                         }
                     }
 
-                    ## If an entry has comments listed along with it, set
-                    ## allow_comments to 1 no matter what the default is.
-                    if ( @comments && !$entry->allow_comments ) {
-                        $entry->allow_comments(1);
-                    }
-
-                    ## If an entry has TrackBack pings listed along with it,
-                    ## set allow_pings to 1 no matter what the default is.
+                    ## If the entry has TrackBack pings, we need to make sure
+                    ## that an MT::Trackback object is created. To do that, we
+                    ## need to make sure that $entry->save is called.
                     if (@pings) {
-                        $entry->allow_pings(1);
-
-                        ## If the entry has TrackBack pings, we need to make sure
-                        ## that an MT::Trackback object is created. To do that, we
-                        ## need to make sure that $entry->save is called.
                         $no_save = 0;
                     }
 
@@ -585,11 +554,21 @@ sub import_contents {
 
                     ## Save pings.
                     if (@pings) {
-                        my $tb = $entry->trackback
-                            or return __PACKAGE__->error(
-                            MT->translate(
-                                "Entry has no MT::Trackback object!")
-                            );
+                        my $tb;
+                        unless ( $tb = $entry->trackback ) {
+                            $tb = MT->model('trackback')->new;
+                            $tb->blog_id( $entry->blog_id );
+                            $tb->entry_id( $entry->id );
+                            $tb->category_id(0);    ## category_id can't be NULL
+                            $tb->title( $entry->title );
+                            $tb->description( $entry->get_excerpt );
+                            $tb->url( $entry->permalink );
+                            $tb->is_disabled(0);
+                            $tb->save
+                                or return __PACKAGE__->error( $tb->errstr );
+                            $entry->trackback($tb);
+                        }
+
                         for my $ping (@pings) {
                             $ping->tb_id( $tb->id );
                             $cb->(

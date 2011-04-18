@@ -3,15 +3,16 @@
 body {
     color: #2b2b2b;
     background-color: #f3f3f3;
-    font-size: 13px;
     font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px;
 }
 .chromeless-wide { 
     background-color: #fff;
 }
 
 a { 
-    color: #5c909b;
+    color: #507ea4;
+    outline: 0;
 }
 a:hover, 
 a:active { 
@@ -23,12 +24,16 @@ ul li {
     list-style-type: disc;
     margin-left: 15px;
 }
-
 fieldset {
     margin: 0;
 }
 
 /* -- Hn */
+#page-title {
+    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: normal;
+}
 h2 {
     font-weight: bold;
 }
@@ -37,50 +42,32 @@ h3 {
     margin-bottom: 20px;
 }
 
-#page-title {
-    margin-bottom: 10px;
-    font-size: 18px;
-    font-weight: normal;
-}
-
 /* - Component */
 .ready {
     font-weight: bold;
     color: #93b06b;
 }
-
 .note {
     clear: both;
     padding: 10px 0 10px 0;
 }
-
 .hint {
     margin-top: 3px;
-    color: #7b7c7d;
+    color: #a3a3a2;
+    font-size: 95%;
+    font-style: Italic;
 }
 .input-hint {
-    color:#999;
-}
-
-/* - Field */
-.field {
-    margin-bottom: 20px;
-}
-
-#file-field .field-content, 
-#file-field .field-content #file { 
-    margin-top: 10px;
+    color:#a9a9a9;
 }
 
 /* - Actions Bar */
 .action-buttons {
     margin: 20px 0 15px;
 }
-
 .actions-bar {
     margin: 25px 0 0;
 }
-
 #container.show-actions-bar-top .actions-bar-top {
     display: block;
 }
@@ -127,8 +114,6 @@ h3 {
     margin-left: 20px;
 }
 
-
-
 #brand {
     width: 250px;
     height: 38px;
@@ -136,29 +121,25 @@ h3 {
     font-size: 26px;
     background: #fff url(../images/chromeless/mt_logo.png) center no-repeat;
 }
-
 #brand span { 
     display: none;
 }
-
 #nav {
     position: absolute;
     top: 30px;
     right: 20px;
 }
-
 #nav .step {
     float: left;
     background: url('../images/chromeless/nav_off.png');
     height: 15px;
     width: 14px;
 }
-
 #nav .step_active {
     float: left;
-    background: url('../images/chromeless/nav_on.png');
-    height: 15px;
     width: 14px;
+    height: 15px;
+    background: url('../images/chromeless/nav_on.png');
 }
 
 /* - Sign in Screen */
@@ -202,28 +183,28 @@ h3 {
     padding: 10px;
     background-color: #fbfbfb;
     height: 200px;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
 }
-
 .upgrade #progressbar { 
     margin: 25px 0 0;
 }
-
 /* - Profile */
 ul#profile-data li {
     margin-left: 0;
     padding-left: 0;
     list-style: none;
 }
-
 #profile_userpic-field .field-content label {
     display: block;
     margin-top: 5px;
 }
-
+#userpic-preview {
+    margin-bottom: 10px;
+}
 .mt-profile-edit form {
     margin-bottom: .75em;
 }
-
 .custom-field-radio-list {
     margin-bottom: .25em;
 }
@@ -272,14 +253,19 @@ ul#profile-data li {
     margin-bottom: 3px;
 }
 
+/* -- Complete */
+#config_settings {
+    margin-bottom: 10px;
+}
+
 /* - Publush */
 /* -- Progress Bar */
 .progressbar {
     height: 25px;
     border: 1px solid #c0c6c9;
     background: #fff;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
 }
 .progressbar.indeterminate {
     background: #c0c6c9 url(../images/progress-bar-indeterminate.gif) repeat;
@@ -288,9 +274,9 @@ ul#profile-data li {
     height:100%;
     background-color: #dcdddd;
     background: -webkit-gradient(linear, left top, left bottom, from(#58bee3), to(#32789e));
-    background: -moz-linear-gradient(top, #58bee3, #32789e);
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
-    -moz-border-radius: 5px 0 0 5px;
+    background: -moz-linear-gradient(top, #58bee3 0%, #32789e 100%);
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    -moz-border-radius: 3px 0 0 3px;
 }
 

@@ -148,7 +148,7 @@ sub search_terms {
         = { $app->config->SearchPrivateTags ? () : ( is_private => '0' ) };
     foreach my $or_tag_name (@or_tag_names) {
         my %tags = map { $_ => 1, $tag_class->normalize($_) => 1 }
-            split( /,/, $or_tag_name );
+            ( split( /,/, $or_tag_name ), $or_tag_name );
         $terms->{name} = [ keys %tags ];
         my @tags = $tag_class->load($terms);
         my @tmp;

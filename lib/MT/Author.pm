@@ -70,7 +70,7 @@ __PACKAGE__->install_properties(
         },
         meta          => 1,
         summary       => 1,
-        child_classes => [ 'MT::Permission', 'MT::Association' ],
+        child_classes => [ 'MT::Permission', 'MT::Association', 'MT::Filter' ],
         datasource    => 'author',
         primary_key   => 'id',
         audit         => 1,
@@ -135,24 +135,26 @@ sub list_props {
             bulk_html => \&_nickname_bulk_html,
         },
         entry_count => {
-            label       => 'Entries',
-            display     => 'default',
-            order       => 300,
-            base        => '__virtual.object_count',
-            col_class   => 'num',
-            count_class => 'entry',
-            count_col   => 'author_id',
-            filter_type => 'author_id',
+            label        => 'Entries',
+            filter_label => '__ENTRY_COUNT',
+            display      => 'default',
+            order        => 300,
+            base         => '__virtual.object_count',
+            col_class    => 'num',
+            count_class  => 'entry',
+            count_col    => 'author_id',
+            filter_type  => 'author_id',
         },
         comment_count => {
-            base        => 'author.entry_count',
-            label       => 'Comments',
-            display     => 'default',
-            order       => 400,
-            count_class => 'comment',
-            count_col   => 'commenter_id',
-            filter_type => 'commenter_id',
-            raw         => sub {
+            base         => 'author.entry_count',
+            label        => 'Comments',
+            filter_label => '__COMMENT_COUNT',
+            display      => 'default',
+            order        => 400,
+            count_class  => 'comment',
+            count_col    => 'commenter_id',
+            filter_type  => 'commenter_id',
+            raw          => sub {
                 my ( $prop, $obj ) = @_;
                 MT->model( $prop->count_class )
                     ->count( { commenter_id => $obj->id } );
@@ -213,7 +215,7 @@ sub list_props {
             singleton             => 0,
             single_select_options => sub {
                 my $prop  = shift;
-                my $perms = MT->registry('permissions');
+                my $perms = MT->model('permission')->perms_from_registry;
                 my @perms
                     = map { { label => $perms->{$_}{label}, value => $_ } }
                     sort { $perms->{$a}{order} <=> $perms->{$b}{order} }
@@ -342,9 +344,9 @@ sub commenter_list_props {
                     push @{ $db_args->{joins} },
                         MT->model('permission')->join_on(
                         undef,
-                        {   permissions  => \'IS NULL',
-                            restrictions => \'IS NULL',
-                            author_id    => \'= author_id',
+                        {   permissions  => \'IS NULL', # baka editors',
+                            restrictions => \'IS NULL', # baka editors',
+                            author_id    => \'= author_id', # baka editors',
                             blog_id      => $blog_id,
                         }
                         );
@@ -353,7 +355,7 @@ sub commenter_list_props {
 
             },
             single_select_options => [
-                { label => 'Approved', value => 'enabled', },
+                { label => '__COMMENTER_APPROVED', value => 'enabled', },
                 { label => 'Banned',   value => 'disabled', },
                 { label => 'Pending',  value => 'pending', },
             ],
@@ -441,7 +443,7 @@ sub member_list_props {
                 my $terms = {};
                 $terms->{blog_id}   = MT->app->param('blog_id');
                 $terms->{role_id}   = $args->{value} if $args->{value};
-                $terms->{author_id} = \"= author_id";
+                $terms->{author_id} = \"= author_id";  # baka editors";
                 $db_args->{joins} ||= [];
                 push @{ $db_args->{joins} },
                     MT->model('association')
@@ -603,7 +605,7 @@ sub _bulk_author_name_html {
         my $lc_status_label = lc $status_label;
         my $auth_img        = MT->static_path;
         my $auth_label;
-        if ( $obj->auth_type eq 'MT' ) {
+        if ( $obj->auth_type eq 'MT' || $obj->auth_type eq 'LDAP' ) {
             $auth_img .= 'images/comment/mt_logo.png';
             $auth_label = 'Movable Type';
         }
@@ -616,7 +618,7 @@ sub _bulk_author_name_html {
         }
         my $lc_auth_label = lc $auth_label;
 
-        my $name  = $obj->name;
+        my $name  = $obj->name || '(' . MT->translate('Registered User') . ')';
         my $email = MT::Util::encode_html( $obj->email );
         my $url   = MT::Util::encode_html( $obj->url );
         my $out   = qq{
@@ -878,7 +880,7 @@ sub can_edit_entry {
 sub is_superuser {
     my $author = shift;
     if (@_) {
-        my $perms      = MT->registry('permissions');
+        my $perms      = MT->model('permission')->perms_from_registry;
         my $admin_perm = $perms->{'system.administer'};
         $author->permissions(0)->can_administer(@_);
         if ( $_[0] ) {
@@ -1491,6 +1493,179 @@ I<set_password>). This check is done by one-way encrypting I<$check_pass>,
 using the same salt used to encrypt the original password, then comparing the
 two encrypted strings for equality.
 
+=head2 $author->remove_sessions()
+
+Remove all sessions that belong to this user
+
+=head2 $author->is_email_hidden()
+
+Indicate if author's email is hidden. Hidden emails are packed to hexadecimal
+strings, should not be displayed to the public, and need to be packed before 
+use. To retrive the real email use:
+
+    $email = pack "H*", $author->email();
+
+=head2 $author->entry_prefs([$settings])
+
+Get or set the author entry preferences. $setting, if supplied, should
+be a comma-delimited key-value pairs such as "tag_delim=44,size=3"
+
+returns a hashref containing the entry preferences.
+
+=head2 $author->set_commenter_perm($blog_id, $action)
+
+Set commenting permissions, where $action can be 'approve', 'ban' or 'pending'.
+
+=head2 $author->commenter_status($blog_id)
+
+Get the current commenting permissions for this author. returns one of these 
+constants: C<MT::Author::BANNED> C<MT::Author::APPROVED> C<MT::Author::PENDING>
+
+=head2 $author->is_trusted($blog_id)
+
+Tests if this author is APPROVED for commenting on this blog
+
+=head2 $author->is_banned($blog_id)
+
+Tests if this author is BANNED form commenting on this blog
+
+=head2 $author->is_not_trusted($blog_id)
+
+Tests if this author is still pending approval for commenting on this blog
+
+=head2 $author->approve($blog_id)
+
+approving the author for commenting
+
+=head2 $author->ban($blog_id)
+
+banning the author from commenting
+
+=head2 $author->pending($blog_id)
+
+setting the author commenting permission to still pending
+
+=head2 $author->is_active()
+
+Tests if the status of this author is ACTIVE
+
+=head2 $author->can_edit_entry($entry)
+
+Test if this author can edit this entry. C<$entry> can by a L<MT::Entry>
+object or the ID of such an object.
+
+=head2 $author->can_create_blog([$bool])
+
+check or set author's permission to create blog
+
+=head2 $author->can_create_website([$bool])
+
+check or set author's permission to create a website
+
+=head2 $author->can_view_log([$bool])
+
+check or set author's permission to view the MT activity log
+
+=head2 $author->can_manage_plugins([$bool])
+
+check or set author's permission to manage plugins. (enable, disable, settings...)
+
+=head2 $author->can_edit_templates([$bool])
+
+check or set author's permission to change site's templates
+
+=head2 $author->is_superuser([$bool])
+
+check or set the system-wide administrator status of this author
+
+=head2 $author->can_administer([$bool])
+
+alias for is_superuser
+
+=head2 $author->blog_perm($blog_id)
+
+Get permission object for this author and blog
+
+=head2 $author->has_perm($blog_id)
+
+check if author have any permissions at all
+
+=head2 $author->permissions([$blog])
+
+Return a L<MT::Permission> object for this author and this blog. $blog can
+be either a L<MT::Blog> object or an id of a blog. if $blog is not specifiy,
+will return the system permissions for this author.
+
+=head2 $author->role_iter($terms, $args)
+
+Returns an iterator for the roles of this author. see L<MT::Object> to learn 
+about iterators. if exist C<$terms->{blog_id}>, returns blog roles. otherwise,
+return system-wide roles.
+
+aside of C<$terms->{blog_id}>, $terms and $args are passed to 
+MT::Role->load_iter
+
+=head2 $author->blog_iter($terms, $args)
+
+Returns an iterator for the blogs of this author. see L<MT::Object> to learn 
+about iterators. if author is not superuser, retrive also the permissions 
+for each blog
+
+$terms and $args are passed to MT::Blog->load_iter
+
+=head2 $author->group_iter($terms, $args)
+
+Returns an iterator for the groups this author belongs to. see L<MT::Object> 
+to learn about iterators.
+
+$terms and $args are passed to the groups handler class's load_iter
+
+=head2 $author->group_role_iter($terms, $args)
+
+Returns an iterator for the groups and roles this author belongs to. 
+see L<MT::Object> to learn about iterators. If $terms->{blog_id} is defined,
+the function will return the author's roles and groups related to that blog.
+
+$terms and $args are passed to the groups handler class's load_iter
+
+=head2 $author->add_role($role [, $blog])
+
+Add a role to this author. $role should be a MT::Role object, and $blog,
+is supplied, should be a MT::Blog object. also, if $blog is supplied, 
+the role will be added as related to this blog. otherwise, it will be 
+added as system-wide role.
+
+=head2 $author->remove_role($role [, $blog])
+
+The inverse of add_role
+
+=head2 $author->add_group($group)
+
+Add this author to this group. $group should be a C<MT->model('group')> object
+
+=head2 $author->remove_group($group)
+
+The inverse of add_group
+
+=head2 $author->group_count()
+
+Count how many groups this author is associated with
+
+=head2 $author->add_default_roles();
+
+Add the default roles for an author. these are read from the configuration,
+under DefaultAssignments attribute, that should be a comma-delimited string
+in the format of "role_id,blog_id,role_id,blog_id"
+
+=head2 $author->auth_icon_url([$size])
+
+Returns an icon to show how this commenter is registered to the system - by
+MT account, or by external service. (for example, Facebook account, openid 
+and such) returns the icon URL, or an empty string if can't find one.
+
+If supplied, $size should contain a string describing the size, such as
+'logo' or 'logo_small' (that is the default)
+
 =head1 DATA ACCESS METHODS
 
 The I<MT::Author> object holds the following pieces of data. These fields can
@@ -1523,10 +1698,6 @@ The type of author record. Currently, MT stores authenticated commenters in the 
 =item * status
 
 A column that defines whether the records of an AUTHOR type are ACTIVE, INACTIVE or PENDING (constants declared in this package). 
-
-=item * commenter_status
-
-This method requires a blog id to be passed as the argument and a value of APPROVED, BANNED or PENDING (constants declared in this package) is returned.
 
 =item * email
 

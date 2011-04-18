@@ -24,21 +24,21 @@
          id="website_name"
          label="<__trans phrase="Website Name">"
          label_class="top-label">
-        <input type="text" id="website_name" class="text full" name="website_name" value="<mt:if name="website_name"><mt:var name="website_name" escape="html"><mt:else><__trans phrase="My First Website"></mt:if>" />
+        <input type="text" id="website_name" class="text full required" name="website_name" value="<mt:if name="website_name"><mt:var name="website_name" escape="html"><mt:else><__trans phrase="My First Website"></mt:if>" />
       </mtapp:setting>
 
       <mtapp:setting
          id="website_url"
          label="<__trans phrase="Website URL">"
          label_class="top-label">
-        <input type="text" id="website_url" class="text full" name="website_url" value="<mt:if name="website_url"><mt:var name="website_url" escape="html"></mt:if>" />
+        <input type="text" id="website_url" class="text full required" name="website_url" value="<mt:if name="website_url"><mt:var name="website_url" escape="html"></mt:if>" />
       </mtapp:setting>
 
       <mtapp:setting
          id="website_path"
          label="<__trans phrase="Website Root">"
          label_class="top-label">
-        <input type="text" id="website_path" class="text full" name="website_path" value="<mt:if name="website_path"><mt:var name="website_path" escape="html"></mt:if>" />
+        <input type="text" id="website_path" class="text full required" name="website_path" value="<mt:if name="website_path"><mt:var name="website_path" escape="html"></mt:if>" />
         <p class="hint"><__trans phrase="The 'Website Root' is the directory in your web server's filesystem where Movable Type will publish the files for your website. The web server must have write access to this directory."></p>
       </mtapp:setting>
 
@@ -46,7 +46,8 @@
       <mtapp:setting
          id="website_theme"
          label="<__trans phrase="Theme">"
-         hint="<__trans phrase="Select the theme you wish to use for this new website.">">
+         hint="<__trans phrase="Select the theme you wish to use for this new website.">"
+         label_class="top-label">
         <select name="website_theme">
         <mt:loop name="theme_loop">
           <option value="<mt:var name="key" escape="html">"<mt:if name="website_theme"><mt:if name="key" eq="$website_theme"> selected="selected"</mt:if><mt:else><mt:if name="key" eq="$config.DefaultWebsiteTheme"> selected="selected"</mt:if></mt:if>><mt:var name="label" escape="html"></option>
@@ -148,44 +149,60 @@ jQuery(function() {
     init();
 </mt:unless>
     jQuery('button#finish_button').click(function() {
+        jQuery('#website_form > input[name=back]').val('0');
         jQuery('#website_form > input[name=finish]').val('1');
         jQuery('#website_form').submit();
     });
     jQuery('button#back_button').click(function() {
         jQuery('#website_form > input[name=back]').val('1');
+        jQuery('#website_form > input[name=finish]').val('0');
         jQuery('#website_form').submit();
     });
+    jQuery('#website_form').submit( function () {
+        if ( jQuery('#website_form > input[name=back]').val() > 0 ) return true;
+        return jQuery(this).find('input, select').mtValidate('simple') ? true : false;
+    });
+
     function is_valid_url(url_){
+        if (url_.indexOf(' ') != -1) {
+            return false;
+        }
         return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
     }
-    jQuery.validator.addMethod('url', function(value, element) {
-        return is_valid_url(value);
-    });
-    jQuery('#website_form').validate({
-        rules: {
-            website_name: 'required',
-            website_url: {
-                required: true,
-                url: true
-            },
-            website_path: 'required',
-            website_timezone: 'required'
+
+    function is_valid_path(path_){
+        var str = path_.replace(/["%<>\[\\\]\^`{\|}~]/g, "");
+        str = encodeURI(str);
+        if (str.indexOf('%') != -1) {
+            return false;
+        }
+        if (str.match(/\.\./)) {
+            return false;
+        }
+        return true;
+    }
+
+    jQuery.mtValidateAddRules({
+        '#website_url': function ($e) {
+            return is_valid_url($e.val()) ? true : false;
         },
-        messages: {
-            website_name: '<__trans phrase="The website name is required." escape="singlequotes">',
-            website_url: {
-                required: '<__trans phrase="The website URL is required." escape="singlequotes">',
-                url: 'Your website URL is not valid.'
-            },
-            website_path: '<__trans phrase="The publishing path is required." escape="singlequotes">',
-            website_timezone: '<__trans phrase="The timezone is required." escape="singlequotes">'
+        '#website_path': function ($e) {
+            return is_valid_path($e.val()) ? true : false;
         },
-        errorClass: "msg-error",
-        errorPlacement: function(error, element) {
-            element.parents('div.field').addClass('error-field');
-            error.removeAttr('generated').insertAfter(element);
+        '#website_timezone': function ($e) {
+            return $e.val() > 1 ? true : false;
         }
     });
+
+    jQuery.mtValidateAddMessages({
+        '#website_name': '<__trans phrase="The website name is required." escape="singlequotes">',
+        '#website_url.required': '<__trans phrase="The website URL is required." escape="singlequotes">',
+        '#website_url#website_url': '<__trans phrase="Your website URL is not valid." escape="singlequotes">',
+        '#website_path.required': '<__trans phrase="The publishing path is required." escape="singlequotes">',
+        '#website_path#website_path': '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">',
+        '#website_timezone': '<__trans phrase="The timezone is required." escape="singlequotes">'
+    });
+
 });
 /* ]]> */
 </script>
