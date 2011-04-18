@@ -141,6 +141,9 @@ if (substr($path, strlen($path) - 2, 2) == '/t')
 $const['CURRENT_WORKING_DIRECTORY'] = $path;
 
 $db = $mt->db();
+
+$db->db()->Execute( "SET time_zone = '-7:00'" );
+
 $ctx->stash('blog_id', 1);
 $blog = $db->fetch_blog(1);
 $ctx->stash('blog', $blog);

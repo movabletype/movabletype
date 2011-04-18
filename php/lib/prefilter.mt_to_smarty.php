@@ -103,10 +103,6 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                             $attrs[$attr] = '$vars.' . $matches[1];
                         }
                         $quote = '';
-                    } else {
-                        if (!preg_match('/`/', $attrs[$attr])) {
-                            $attrs[$attr] = preg_replace('/\$/', '\\\\$', $attrs[$attr]);
-                        }
                     }
                     if ($ctx->global_attr[$attr]) {
                         $modargs .= '|';
