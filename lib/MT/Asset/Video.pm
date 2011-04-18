@@ -8,6 +8,8 @@ package MT::Asset::Video;
 
 use strict;
 use base qw( MT::Asset );
+use MT::Blog;
+use MT::Website;
 
 __PACKAGE__->install_properties(
     { class_type => 'video', child_of => [ 'MT::Blog', 'MT::Website' ] } );
