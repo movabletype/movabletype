@@ -2,7 +2,7 @@
 { "r" : "1", "t" : "", "e" : ""}, #1
 { "r" : "1", "t" : "<MTCGIPath>", "e" : "http://narnia.na/cgi-bin/"}, #2
 { "r" : "1", "t" : "<MTCGIRelativeURL>", "e" : "/cgi-bin/"}, #3
-{ "r" : "1", "t" : "<MTStaticWebPath>", "e" : "http://narnia.na/cgi-bin/mt-static/"}, #4
+{ "r" : "1", "t" : "<MTStaticWebPath>", "e" : "http://narnia.na/mt-static/"}, #4
 { "r" : "1", "t" : "<MTCommentScript>", "e" : "mt-comments.cgi"}, #5
 { "r" : "1", "t" : "<MTTrackbackScript>", "e" : "mt-tb.cgi"}, #6
 { "r" : "1", "t" : "<MTSearchScript>", "e" : "mt-search.cgi"}, #7
@@ -114,7 +114,7 @@
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentIP></MTComments>", "e" : "127.0.0.1"}, #113
 { "r" : "1", "t" : "<MTComments lastn=\"3\"><MTCommentAuthorLink>,</MTComments>", "e" : "<a title=\"http://chuckd.com/\" href=\"http://chuckd.com/\">Chucky Dee</a>,Comment 3,John Doe,"}, #114
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEmail></MTComments>", "e" : "johnd@doe.com"}, #115
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthorIdentity></MTComments>", "e" : "<img alt=\"\" src=\"http://narnia.na/cgi-bin/mt-static/images/comment/typepad_logo.png\" width=\"16\" height=\"16\" />"}, #116
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthorIdentity></MTComments>", "e" : "<img alt=\"\" src=\"http://narnia.na/mt-static/images/comment/typepad_logo.png\" width=\"16\" height=\"16\" />"}, #116
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentURL></MTComments>", "e" : "http://john.doe.com/"}, #117
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentOrderNumber></MTComments>", "e" : "1"}, #118
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEntry><MTEntryTitle></MTCommentEntry></MTComments>", "e" : "Verse 2"}, #119
@@ -359,8 +359,8 @@
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetlabel$></MTAssets>", "e" : "Image photo"}, #358
 { "r" : "1", "t" : "<MTEntries id='1'><MTEntryAssets><$MTAssetID$></MTEntryAssets></MTEntries>", "e" : "1"}, #359
 { "r" : "1", "t" : "<MTPages id='20'><MTPageAssets><$MTAssetID$></MTPageAssets></MTPages>", "e" : "2"}, #360
-{ "r" : "1", "t" : "<MTAuthors><$MTAuthorAuthType$>:<$MTAuthorAuthIconURL$>;</MTAuthors>", "e" : "MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;"}, #361
-{ "r" : "1", "t" : "<MTComments><$MTCommenterAuthType$>:<$MTCommenterAuthIconURL$>;</MTComments>", "e" : ":;:;:;:;:;MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;:;TypeKey:http://narnia.na/cgi-bin/mt-static/images/comment/typepad_logo.png;"}, #362
+{ "r" : "1", "t" : "<MTAuthors><$MTAuthorAuthType$>:<$MTAuthorAuthIconURL$>;</MTAuthors>", "e" : "MT:http://narnia.na/mt-static/images/comment/mt_logo.png;MT:http://narnia.na/mt-static/images/comment/mt_logo.png;"}, #361
+{ "r" : "1", "t" : "<MTComments><$MTCommenterAuthType$>:<$MTCommenterAuthIconURL$>;</MTComments>", "e" : ":;:;:;:;:;MT:http://narnia.na/mt-static/images/comment/mt_logo.png;MT:http://narnia.na/mt-static/images/comment/mt_logo.png;:;TypeKey:http://narnia.na/mt-static/images/comment/typepad_logo.png;"}, #362
 { "r" : "1", "t" : "<MTAuthors need_entry='0' ><MTAuthorName>;</MTAuthors>", "e" : "Chuck D;Bob D;Melody;"}, #363
 { "r" : "1", "t" : "<MTAuthors need_entry='0' status='disabled'><MTAuthorName>;</MTAuthors>", "e" : "Hiro Nakamura;"}, #364
 { "r" : "1", "t" : "<MTAuthors need_entry='0' status='enabled or disabled'><MTAuthorName>;</MTAuthors>", "e" : "Chuck D;Bob D;Hiro Nakamura;Melody;"}, #365
@@ -489,9 +489,9 @@
 { "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorScoreCount></MTAuthors>", "e" : ""}, #488
 { "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorScoreHigh></MTAuthors>", "e" : ""}, #489
 { "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorScoreLow></MTAuthors>", "e" : ""}, #490
-{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpic></MTAuthors>", "e" : "<img src=\"http://narnia.na/nana/assets_c/userpics/userpic-2-100x100.png?1\" width=\"100\" height=\"100\" alt=\"\" />"}, #491
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpic></MTAuthors>", "e" : "<img src=\"/mt-static/support/assets_c/userpics/userpic-2-100x100.png?3\" width=\"100\" height=\"100\" alt=\"\" />"}, #491
 { "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpicAsset><MTAssetFileName></MTAuthorUserpicAsset></MTAuthors>", "e" : "test.jpg"}, #492
-{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpicURL></MTAuthors>", "e" : "http://narnia.na/nana/assets_c/userpics/userpic-2-100x100.png"}, #493
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpicURL></MTAuthors>", "e" : "/mt-static/support/assets_c/userpics/userpic-2-100x100.png"}, #493
 { "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorBasename></MTAuthors>", "e" : "chucky_dee"}, #494
 { "r" : "1", "t" : "<MTAssets assets_per_row=\"2\"><MTAssetIsFirstInRow>First</MTAssetIsFirstInRow><MTAssetIsLastInRow>Last</MTAssetIsLastInRow></MTAssets>", "e" : "FirstLast"}, #495
 { "r" : "1", "t" : "<MTAssets lastn='1'><MTAssetIfTagged tag=\"alpha\">Tagged<MTElse>Not Tagged</MTAssetIfTagged></MTAssets>", "e" : "Tagged"}, #496
@@ -528,7 +528,7 @@
 { "r" : "1", "t" : "<MTSetVarTemplate name='foo_template'><MTSetVar name='foo' value='Bar'></MTSetVarTemplate><MTSetVar name='foo' value='Foo'><MTVar name='foo_template'><MTGetVar name='foo'>", "e" : "Bar"}, #527
 { "r" : "1", "t" : "<MTStaticFilePath>", "e" : "STATIC_FILE_PATH"}, #528
 { "r" : "1", "t" : "<MTSubFolders><MTIF tag='FolderID' eq='21'><MTFolderLabel>;<MTSubfolderRecurse></MTIF></MTSubFolders>", "e" : ""}, #529
-{ "r" : "1", "t" : "<MTSupportDirectoryURL>", "e" : "/cgi-bin/mt-static/support/"}, #530
+{ "r" : "1", "t" : "<MTSupportDirectoryURL>", "e" : "/mt-static/support/"}, #530
 { "r" : "1", "t" : "<MTTemplateNOTE note='Comment'>", "e" : ""}, #531
 { "r" : "1", "t" : "<MTFolders><MTIF tag='FolderID' eq='22'><MTToplevelFolder><MTFolderLabel></MTToplevelFolder></MTIF></MTFolders>", "e" : "download"}, #532
 { "r" : "1", "t" : "<MTSetVar name='foo' value='Foo'><MTUnless name='foo' eq='Bar'>Content</MTUnless>", "e" : "Content"}, #533
@@ -554,9 +554,9 @@
 { "r" : "1", "t" : "<MTEntries lastn='3'><MTEntriesHeader><ul></MTEntriesHeader><li><MTEntryTitle></li><MTEntriesFooter><ul></MTEntriesFooter></MTEntries>", "e" : "<ul><li>A Rainy Day</li><li>Verse 5</li><li>Verse 4</li><ul>"}, #553
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAdditionalCategories glue=','><MTCategoryLabel></MTEntryAdditionalCategories></MTEntries>", "e" : ""}, #554
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorID></MTEntries>", "e" : "2"}, #555
-{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorUserpic></MTEntries>", "e" : "<img src=\"http://narnia.na/nana/assets_c/userpics/userpic-2-100x100.png?1\" width=\"100\" height=\"100\" alt=\"\" />"}, #556
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorUserpic></MTEntries>", "e" : "<img src=\"/mt-static/support/assets_c/userpics/userpic-2-100x100.png?3\" width=\"100\" height=\"100\" alt=\"\" />"}, #556
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorUserpicAsset><MTAssetFilename></MTEntryAuthorUserpicAsset></MTEntries>", "e" : "test.jpg"}, #557
-{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorUserpicURL></MTEntries>", "e" : "http://narnia.na/nana/assets_c/userpics/userpic-2-100x100.png"}, #558
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorUserpicURL></MTEntries>", "e" : "/mt-static/support/assets_c/userpics/userpic-2-100x100.png"}, #558
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryBlogDescription></MTEntries>", "e" : "Narnia None Test Blog"}, #559
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryBlogID></MTEntries>", "e" : "1"}, #560
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryBlogName></MTEntries>", "e" : "none"}, #561
