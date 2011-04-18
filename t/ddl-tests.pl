@@ -30,6 +30,21 @@ use Test::Class;
 BEGIN {
     plan skip_all => "Configuration file $ENV{MT_CONFIG} not found"
         if !-r $ENV{MT_CONFIG};
+
+    my %modules = (
+        'mysql'       => 'DBD::mysql',
+        'postgresql'  => 'DBD::Pg',
+        'sqlite'      => 'DBD::SQLite',
+        'oracle'      => 'DBD::Oracle',
+        'mssqlserver' => 'DBD::ODBC',
+    );
+
+    my $db = $1
+        if __FILE__ =~ m{ ([^\\/-]+) \.t \z }xms;
+    my $module = $modules{$db};
+    eval "require $module;";
+    plan skip_all => "Database driver '$module' not found."
+        if $@;
 }
 
 

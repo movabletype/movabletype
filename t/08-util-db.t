@@ -5,7 +5,7 @@ use warnings;
 use utf8;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 
-use Test::More tests => 7;
+use Test::More tests => 8;
 use MT::Test qw(:db :data);
 
 use MT;
