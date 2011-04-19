@@ -59,7 +59,7 @@
     <tr>
         <td id="template-preview-control-strip">
             <div id="preview-label">
-                <__trans phrase="You are previewing the template named &ldquo;[_1]&rdquo;" params="<$mt:var name="name" escape="html"$>">
+                <__trans phrase="You are previewing the template named &ldquo;[_1]&rdquo;" params="<$mt:var name="name" escape="html" escape="html"$>">
                 <mt:if name="build_time"><small><__trans phrase="(Publish time: [_1] seconds)" params="<mt:var name="build_time">"></small></mt:if>
             </div>
             <form method="post" action="<$mt:var name="script_url"$>">
