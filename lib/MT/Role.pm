@@ -87,6 +87,7 @@ sub list_props {
                         $desc = substr( $desc, 0, $len );
                         $desc .= '...';
                     }
+                    $desc = MT::Util::encode_html($desc);
                     my $url = $app->uri(
                         mode => 'view',
                         args => {
@@ -96,7 +97,7 @@ sub list_props {
                         }
                     );
                     my $cnt        = $asc_count->{ $obj->id };
-                    my $name       = $obj->name;
+                    my $name       = MT::Util::encode_html($obj->name);
                     my $status_img = MT->static_path
                         . (
                         $cnt

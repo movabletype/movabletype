@@ -361,7 +361,7 @@ sub list_props {
                 my ( $objs, $app, $opts ) = @_;
                 my ( $cats, $placs ) = $prop->bulk_cats(@_);
                 return map {
-                           $cats->{ $placs->{ $_->id } || 0 }
+                           MT::Util::encode_html( $cats->{ $placs->{ $_->id } || 0 } )
                         || $prop->zero_state_label
                 } @$objs;
             },
@@ -399,7 +399,7 @@ sub list_props {
                         value => 0,
                     },
                     map {
-                        {   label => MT::Util::encode_js( $_->label ),
+                        {   label => $_->label,
                             value => $_->id,
                         }
                         } @categories

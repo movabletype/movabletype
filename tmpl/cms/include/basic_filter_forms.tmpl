@@ -87,7 +87,7 @@
          params="<mt:var name="label" escape="js">%%
                  <select class="<mt:var name="type">-value">
                  <mt:loop name="single_select_options">
-                   <option value="<mt:var name="value">"><__trans phrase="<mt:var name="label">" escape="js"></option>
+                   <option value="<mt:var name="value">"><mt:var name="label" encode_html="1" encode_js="1" encode_html="1" ></option>
                  </mt:loop>
                  </select>%%<mt:var name="verb" escape="js">">
 </mt:setvartemplate>

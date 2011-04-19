@@ -435,7 +435,7 @@ sub member_list_props {
                 return '<ul>'
                     . join( '',
                     map      {qq(<li class="role-item">$_</li>)}
-                    sort map { $_->name } @roles )
+                    sort map { MT::Util::encode_html($_->name) } @roles )
                     . '</ul>';
             },
             terms => sub {
@@ -1596,6 +1596,15 @@ Return a L<MT::Permission> object for this author and this blog. $blog can
 be either a L<MT::Blog> object or an id of a blog. if $blog is not specifiy,
 will return the system permissions for this author.
 
+=head2 $author->can_do($action, [ at_least_one => 1, [ blog_id => $blogs ] ])
+
+Search if this user have this permission. if at_least_one is not supplied,
+searches only on system permissions. if at_least_one is supplies, and blog_id 
+is not supplied, search for this permission in ALL the blogs this author
+have permissions in. If blog_id is supplied, then the search is limited to
+these blogs. $blogs can be either an ID of a single blog, or an array ref 
+for a list of blog ids.
+
 =head2 $author->role_iter($terms, $args)
 
 Returns an iterator for the roles of this author. see L<MT::Object> to learn 
@@ -1665,6 +1674,27 @@ and such) returns the icon URL, or an empty string if can't find one.
 
 If supplied, $size should contain a string describing the size, such as
 'logo' or 'logo_small' (that is the default)
+
+=head2 $author->userpic()
+
+Returns the asset that is this author's user picture, or undef if fails.
+Returns a C<MT->model('asset.image')> object
+
+=head2 $author->userpic_file()
+
+Returns the file location of this author's user picture
+
+=head2 $author->userpic_url()
+
+Returns the URL for this author's user picture
+
+If called in scalar context, returns the URL. if called in list context
+returns (URL, width, height). returns undef (or an empty list) if the 
+picture does not exists.
+
+=head2 $author->userpic_html()
+
+similar to userpic_url, but returns the URL wrapped inside an "img" html tag
 
 =head1 DATA ACCESS METHODS
 

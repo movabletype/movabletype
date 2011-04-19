@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib', 'lib', 'extlib';
-use Test::More tests => 40;
+use Test::More tests => 42;
 
 BEGIN {
         $ENV{MT_APP} = 'MT::App::CMS';
@@ -84,7 +84,8 @@ $out = delete $app->{__test_output};
 ok ($out, "Global comment search results are present");
 ok ($out =~ /Publish selected comments/i, "Publish comments button is present");
 ok ($out =~ /Delete selected comments/i, "Delete comments button is present");
-ok ($out =~ /Report selected comments as spam/i, "Spam comments button is present");
+ok ($out =~ /Mark as Spam/i, "Spam comments dropdown is present");
+ok ($out =~ /Remove Spam status/i, "Non Spam comments dropdown is present");
 ok ($out =~ /Unpublish comment\(s\)/i, "Unpublish comments dropdown is present");
 ok ($out =~ /Trust commenter\(s\)/i, "Trust commenter dropdown is present");
 ok ($out =~ /Untrust commenter\(s\)/i, "Untrust commenter dropdown is present");
@@ -101,7 +102,8 @@ $out = delete $app->{__test_output};
 ok ($out, "Blog comment search results are present");
 ok ($out =~ /Publish selected comments/i, "Publish comments button is present");
 ok ($out =~ /Delete selected comments/i, "Delete comments button is present");
-ok ($out =~ /Report selected comments as spam/i, "Spam comments button is present");
+ok ($out =~ /Mark as Spam/i, "Spam comments dropdown is present");
+ok ($out =~ /Remove Spam status/i, "Non Spam comments dropdown is present");
 ok ($out =~ /Unpublish comment\(s\)/i, "Unpublish comments dropdown is present");
 ok ($out =~ /Trust commenter\(s\)/i, "Trust commenter dropdown is present");
 ok ($out =~ /Untrust commenter\(s\)/i, "Untrust commenter dropdown is present");
