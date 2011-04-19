@@ -19,7 +19,7 @@
     <select name="type" class="full-width se">
         <option value="<mt:var name="build_order">" selected="selected"><__trans phrase="All Files"></option>
         <mt:if name="index_tmpl_id">
-        <option value="index-<mt:var name="index_tmpl_id">" selected="selected"><__trans phrase="Index Template: [_1]" params="<mt:var name="index_tmpl_name" escape="html">"></option>
+        <option value="index-<mt:var name="index_tmpl_id">" selected="selected"><__trans phrase="Index Template: [_1]" params="<mt:var name="index_tmpl_name" escape="html" escape="html">"></option>
         </mt:if>
         <option value="index"<mt:if name="index_selected"> selected="selected"</mt:if>>
         <__trans phrase="Only Indexes"></option>
