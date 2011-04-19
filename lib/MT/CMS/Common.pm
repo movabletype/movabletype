@@ -1396,7 +1396,7 @@ sub filtered_list {
             elsif ( $prop->has('html_link') ) {
                 for my $obj (@$objs) {
                     my $link = $prop->html_link( $obj, $app, \%load_options );
-                    my $raw = $prop->raw( $obj, $app, \%load_options );
+                    my $raw = MT::Util::encode_html($prop->raw( $obj, $app, \%load_options ));
                     push @result,
                         ( $link ? qq{<a href="$link">$raw</a>} : $raw );
                 }
@@ -1404,7 +1404,7 @@ sub filtered_list {
             elsif ( $prop->has('raw') ) {
                 for my $obj (@$objs) {
                     my $out = $prop->raw( $obj, $app, \%load_options );
-                    push @result, remove_html($out);
+                    push @result, MT::Util::encode_html($out);
                 }
             }
 
