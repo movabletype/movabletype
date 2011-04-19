@@ -1324,6 +1324,10 @@ sub restore_parent_ids {
         my $class   = MT->model($elem);
         my $old_id  = $data->{ $elem . '_id' };
         my $new_obj = $objects->{"$class#$old_id"};
+        if ( !$new_obj && $class->isa('MT::Blog') ) {
+            $class = MT->model('website');
+            $new_obj   = $objects->{ "$class#$old_id" };
+        }
         return 0 unless defined($new_obj) && $new_obj;
         $data->{ $elem . '_id' } = $new_obj->id;
         return 1;
