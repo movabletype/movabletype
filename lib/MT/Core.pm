@@ -1018,7 +1018,7 @@ BEGIN {
                                 push @out, $blog->name;
                             }
                         }
-                        return @out;
+                        return map { MT::Util::encode_html($_) } @out;
                     },
                     condition => sub {
                         my $prop = shift;
