@@ -870,7 +870,8 @@ sub list {
                                 {
                                 cls => 'alert',
                                 msg => MT->translate(
-                                    q{Invalid filter: [_1]}, $errstr
+                                    q{Invalid filter: [_1]},
+                                    MT::Util::encode_html($errstr)
                                 )
                                 };
                         }
@@ -885,7 +886,8 @@ sub list {
                                 {
                                 cls => 'alert',
                                 msg => MT->translate(
-                                    q{Invalid filter: [_1]}, $errstr,
+                                    q{Invalid filter: [_1]},
+                                    MT::Util::encode_html($errstr),
                                 )
                                 };
                         }
@@ -903,7 +905,10 @@ sub list {
                 push @messages,
                     {
                     cls => 'alert invalid-filter',
-                    msg => MT->translate( q{Invalid filter: [_1]}, $col, )
+                    msg => MT->translate(
+                        q{Invalid filter: [_1]},
+                        MT::Util::encode_html($col),
+                    )
                     };
             }
         }
@@ -1108,7 +1113,7 @@ sub list {
         = $screen_settings->{object_label_plural}
         ? $screen_settings->{object_label_plural}
         : $obj_class->class_label_plural;
-    $param{action_label}     = $screen_settings->{action_label}
+    $param{action_label} = $screen_settings->{action_label}
         if $screen_settings->{action_label};
     $param{action_label_plural} = $screen_settings->{action_label_plural}
         if $screen_settings->{action_label_plural};
