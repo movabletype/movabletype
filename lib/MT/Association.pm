@@ -69,7 +69,7 @@ sub list_props {
                     . 'images/nav_icons/color/'
                     . $type . '.gif';
                 return '(unknown object)' unless defined $obj->user;
-                my $name      = $obj->user->name;
+                my $name      = MT::Util::encode_html($obj->user->name);
                 my $edit_link = $app->uri(
                     mode => 'view',
                     args => {
@@ -119,7 +119,7 @@ sub list_props {
             html => sub {
                 my ( $prop, $obj, $app ) = @_;
                 my $role      = $obj->role;
-                my $name      = $role->name;
+                my $name      = MT::Util::encode_html($role->name);
                 my $edit_link = $app->uri(
                     mode => 'view',
                     args => {
@@ -208,7 +208,7 @@ sub list_props {
                 my %names = map { $_->id => $_->name } @blogs;
                 my @outs;
                 for my $obj (@$objs) {
-                    my $name          = $names{ $obj->blog_id };
+                    my $name          = MT::Util::encode_html($names{ $obj->blog_id });
                     my $dashboard_url = $app->uri(
                         mode => 'dashboard',
                         args => { blog_id => $obj->blog_id, },
