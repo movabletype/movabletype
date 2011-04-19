@@ -10,9 +10,9 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '5.04');
-define('VERSION_ID', '5.04');
-define('PRODUCT_VERSION', '5.04');
+define('VERSION', '5.05');
+define('VERSION_ID', '5.05');
+define('PRODUCT_VERSION', '5.05');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
