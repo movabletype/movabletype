@@ -23,9 +23,9 @@ use vars qw( %Lexicon );
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'Le répertoire mt-static n\'a pas pu être trouvé. Veuillez configurer le \'StaticFilePath\' pour continuer.',
 	'Permission Denied.' => 'Autorisation refusée.', # Translate - Case
 	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Impossible de créer le dossier [_1] - Vérifiez que votre dossier \'themes\' et en mode webserveur/écriture.',
-	'Successfully applied new theme selection.' => 'Sélection de nouveau Thème appliquée avec succès.',
-	'Invalid URL: [_1]' => 'URL inaccessible : [_1]',
-	'(Untitled)' => '(Sans Titre)',
+	'Successfully applied new theme selection.' => 'Le nouveau thème sélectionné a été appliqué avec succès.',
+	'Invalid URL: [_1]' => 'URL invalide : [_1]',
+	'(Untitled)' => '(Sans titre)',
 
 ## plugins/StyleCatcher/tmpl/view.tmpl
 	'Select a [_1] Style' => 'Sélectionner un style [_1]',
@@ -42,10 +42,10 @@ use vars qw( %Lexicon );
 	'Apply Design' => 'Appliquer l\'habillage',
 	'Error applying theme: ' => 'Erreur en appliquant l\'habillage:',
 	'The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout.' => 'L\'habillage sélectionné a été appliqué. Vous devez republier votre blog afin d\'appliquer la nouvelle mise en page.',
-	'The selected theme has been applied!' => 'L\'habillage sélectionné a été appliqué!',
+	'The selected theme has been applied!' => 'L\'habillage sélectionné a été appliqué !',
 	'Error loading themes! -- [_1]' => 'Erreur lors du chargement des habillages ! -- [_1]',
 	'Stylesheet or Repository URL' => 'URL de la feuille de style ou du répertoire',
-	'Stylesheet or Repository URL:' => 'URL de la feuille de style ou du répertoire:',
+	'Stylesheet or Repository URL:' => 'URL de la feuille de style ou du répertoire :',
 	'Download Styles' => 'Télécharger des habillages',
 	'Current theme for your weblog' => 'Thème actuel de votre weblog',
 	'Current Style' => 'Habillage actuel',

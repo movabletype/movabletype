@@ -12,7 +12,7 @@ use vars qw( %Lexicon );
 
 %Lexicon = (
 ## plugins/WXRImporter/config.yaml
-	'Import WordPress exported RSS into MT.' => 'Importer depuis WordPress exported RSS vers MT',
+	'Import WordPress exported RSS into MT.' => 'Importer depuis un export RSS WordPress vers MT',
 	'"WordPress eXtended RSS (WXR)"' => '"WordPress eXtended RSS (WXR)"', # Translate - New
 	'"Download WP attachments via HTTP."' => '"Télécharger les pièces jointes WP via HTTP."', # Translate - New
 
@@ -22,10 +22,10 @@ use vars qw( %Lexicon );
 	'File is not in WXR format.' => 'Le fichier n\'est pas dans le format WXR.',
 	'Creating new tag (\'[_1]\')...' => 'Création d\'un nouveau tag (\'[_1]\')...',
 	'Saving tag failed: [_1]' => 'L\'enregistrement du tag a échoué : [_1]',
-	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'L\'élément  (\'[_1]\') a été trouvé en double. Abandon.',
+	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'L\'élément  (\'[_1]\') a été trouvé en double. Ignoré.',
 	'Saving asset (\'[_1]\')...' => 'Enregistrement de l\'élément (\'[_1]\')...',
 	' and asset will be tagged (\'[_1]\')...' => ' et l\'élément sera taggué (\'[_1]\')...',
-	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'La note  (\'[_1]\') a été trouvée en double. Abandon.',
+	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'La note  (\'[_1]\') a été trouvée en double. Ignorée.',
 	'Saving page (\'[_1]\')...' => 'Enregistrement de la page (\'[_1]\')...',
 
 ## plugins/WXRImporter/tmpl/options.tmpl
