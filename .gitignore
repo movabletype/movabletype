@@ -1,5 +1,4 @@
 build-language-stamp
-extlib/Data
 index.html
 lib/MT.pm
 lib/MT/L10N/de-iso-8859-1.pm
@@ -11,7 +10,6 @@ mt-config.cgi
 mt-config.cgi-original
 mt-static/css/main.css
 mt-static/css/simple.css
-mt-static/js/common
 mt-static/js/mt_core_compact.js
 mt-static/mt_de.js
 mt-static/mt_es.js
