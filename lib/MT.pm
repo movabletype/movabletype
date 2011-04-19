@@ -2294,7 +2294,9 @@ sub _svn_revision {
     return unless -d File::Spec->catdir( $wc_base, '.git' );
 
     # Currently, we are on the Github.
-    my $fh;
+    return 
+        unless (-e $wc_base && open my $fh, '-|', "git status");
+
     my $revision = '';
     if (-e $wc_base && open my $fh, '-|', "git log --pretty=format:'' | wc -l") {
         $revision = do { local $/ = undef; <$fh> };
