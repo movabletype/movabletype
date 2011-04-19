@@ -1115,7 +1115,7 @@ sub start_rebuild_pages {
         my $tmpl = MT::Template->load($tmpl_id)
             or return $app->error($app->translate('Can\'t load template #[_1].', $tmpl_id));
         $param{build_type_name} =
-          $app->translate( "index template '[_1]'", $tmpl->name );
+          $app->translate( "index template '[_1]'", MT::Util::encode_html( $tmpl->name ) );
         $param{is_one_index} = 1;
     }
     elsif ( $type_name =~ /^entry-(\d+)$/ ) {
