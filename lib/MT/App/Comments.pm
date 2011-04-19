@@ -1452,7 +1452,7 @@ sub redirect_to_target {
         $target = $entry->archive_url;
     }
     elsif ( $static ne '' ) {
-        $target = $static;
+        $target = MT::Util::encode_html( $static );
     }
     if ( $q->param('logout') ) {
         if ( $app->user
