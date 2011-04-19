@@ -412,7 +412,7 @@ sub list_props {
                 my $entry    = MT->model('entry')->load($entry_id);
                 my $label    = MT->translate( 'Comments on [_1]: [_2]',
                     $entry->class_label, $entry->title, );
-                $prop->{filter_label} = $label;
+                $prop->{filter_label} = MT::Util::encode_html($label);
                 $label;
             },
             args_via_param => sub {
