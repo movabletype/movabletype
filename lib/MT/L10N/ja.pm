@@ -1334,7 +1334,7 @@ use vars qw( @ISA %Lexicon );
 	'Failed to save filter: [_1]' => 'フィルタの保存に失敗しました:[_1]',
 	'Permission denied' => '権限がありません。',
 	'Failed to delete filter(s): [_1]' => 'フィルタの削除に失敗しました:[_1]',
-	'Removed [_1] filters successfully.' => '[_1]のフィルタを削除しました。',
+	'Removed [_1] filters successfully.' => '[_1]件のフィルタを削除しました。',
 	'[_1] ( created by [_2] )' => '作成:[_2] - [_1]',
 	'(Legacy) ' => '(レガシー)',
 
