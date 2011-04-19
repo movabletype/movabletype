@@ -38,4 +38,4 @@ plugins/Motion
 plugins/mixiComment
 t/db/mt.db
 t/site
-
+plugins/feeds-app-lite
