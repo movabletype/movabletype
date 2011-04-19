@@ -435,7 +435,7 @@ sub member_list_props {
                 return '<ul>'
                     . join( '',
                     map      {qq(<li class="role-item">$_</li>)}
-                    sort map { $_->name } @roles )
+                    sort map { MT::Util::encode_html($_->name) } @roles )
                     . '</ul>';
             },
             terms => sub {
