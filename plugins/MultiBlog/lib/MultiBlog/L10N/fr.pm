@@ -24,7 +24,7 @@ use vars qw( %Lexicon );
 	'The include_blogs, exclude_blogs, blog_ids and blog_id attributes cannot be used together.' => 'Les attributs include_blogs, exclude_blogs, blog_ids et blog_id ne peuvent pas être utilisés ensemble.',
 	'The value of the blog_id attribute must be a single blog ID.' => 'La valeur de l\'attribut blog_id doit être un ID de blog unique.',
 	'The value for the include_blogs/exclude_blogs attributes must be one or more blog IDs, separated by commas.' => 'La valeur des attributs include_blogs/exclude_blogs doit être un ou plusieurs IDs de blogs, séparés par des virgules.',
-	'Restoring MultiBlog rebuild trigger for blog #[_1]...' => 'Restauration du compteur de republication MutliBlog pour le blog #[_1]...',
+	'Restoring MultiBlog rebuild trigger for blog #[_1]...' => 'Restauration du compteur de republication MultiBlog pour le blog #[_1]...',
 
 ## plugins/MultiBlog/tmpl/dialog_create_trigger.tmpl
 	'Create MultiBlog Trigger' => 'Créer un événement MultiBlog',
@@ -32,7 +32,7 @@ use vars qw( %Lexicon );
 ## plugins/MultiBlog/tmpl/blog_config.tmpl
 	'When' => 'Quand',
 	'Weblog' => 'Blog',
-	'Trigger' => 'Evénement',
+	'Trigger' => 'Événement',
 	'Action' => 'Action',
 	'Content Privacy' => 'Protection du contenu',
 	'Specify whether other blogs in the installation may publish content from this blog. This setting takes precedence over the default system aggregation policy found in the system-level MultiBlog configuration.' => 'Indiquez si les autres blogs de cette installation peuvent publier du contenu de ce blog. Ce réglage prend le dessus sur la règle d\'agrégation du système par défaut qui se trouve dans la configuration de MultiBlog pour tout le système.',
@@ -49,23 +49,23 @@ use vars qw( %Lexicon );
 
 ## plugins/MultiBlog/tmpl/system_config.tmpl
 	'Default system aggregation policy' => 'Règle d\'agrégation du système par défaut',
-	'Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.' => 'L\'agrégation inter-blog sera activée par défaut. Les blogs individuels peuvent être configurés via les paramètres MultiBlog du blog en question, pour restreindre l\'accès à leur contenu par les autres blogs.',
-	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'L\'agrégation inter-blog sera désactivée par défaut. Les blogs individuels peuvent être configurés via les paramètres MultiBlog du blog en question, pour autoriser l\'accès à leur contenu par les autres blogs.',
+	'Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.' => 'L\'agrégation inter-blogs sera activée par défaut. Les blogs individuels peuvent être configurés via les paramètres MultiBlog du blog en question, pour restreindre l\'accès à leur contenu par les autres blogs.',
+	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'L\'agrégation inter-blogs sera désactivée par défaut. Les blogs individuels peuvent être configurés via les paramètres MultiBlog du blog en question, pour autoriser l\'accès à leur contenu par les autres blogs.',
 
 ## plugins/MultiBlog/multiblog.pl
-	'MultiBlog allows you to publish content from other blogs and define publishing rules and access controls between them.' => 'Multiblog vous permet de publier du contenu d\'autres blogs et de définir des règles de publication et de droit d\'accès entre eux.',
+	q{MultiBlog allows you to publish content from other blogs and define publishing rules and access controls between them.} => q{Multiblog vous permet de publier du contenu d'autres blogs et de définir des règles de publication et de droit d'accès entre eux.},
 	'MultiBlog' => 'MultiBlog',
 	'Create Trigger' => 'Créer un nouvel événement',
 	'Search Weblogs' => 'Rechercher les blogs',
-	'When this' => 'quand ce',
+	'When this' => 'Quand',
 	'(All blogs in this website)' => '(Tous les blogs de ce site web)',
 	'Select to apply this trigger to all blogs in this website.' => 'Sélectionner pour appliquer cela à tous les blogs de ce site web.',
-	'(All websites and blogs in this system)' => '(Tous les sites web et blogs de ce systèmes)',
+	'(All websites and blogs in this system)' => '(Tous les sites web et blogs de ce système)',
 	'Select to apply this trigger to all websites and blogs in this system.' => 'Sélectionner pour appliquer cela à tous les sites web et blog de ce système.',
-	'saves an entry/page' => 'sauvegarde une note/page',
-	'publishes an entry/page' => 'publie une note/page',
-	'publishes a comment' => 'publie un commentaire',
-	'publishes a TrackBack' => 'publie un trackback',
+	'saves an entry/page' => 'une note/page est sauvegardée',
+	'publishes an entry/page' => 'une note/page est publiée',
+	'publishes a comment' => 'un commentaire est publié',
+	'publishes a TrackBack' => 'un Trackback est publié',
 	'rebuild indexes.' => 'reconstruire les index.',
 	'rebuild indexes and send pings.' => 'reconstruire les index et envoyer les pings.',
 
