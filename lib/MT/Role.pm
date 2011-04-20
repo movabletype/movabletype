@@ -166,8 +166,8 @@ sub list_props {
                 }
             },
             single_select_options => [
-                { label => '__ROLE_ACTIVE',   value => 'active', },
-                { label => '__ROLE_INACTIVE', value => 'inactive', },
+                { label => MT->translate('__ROLE_ACTIVE'),   value => 'active', },
+                { label => MT->translate('__ROLE_INACTIVE'), value => 'inactive', },
             ],
         },
         description => {

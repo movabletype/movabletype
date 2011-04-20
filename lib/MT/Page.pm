@@ -92,9 +92,9 @@ sub list_props {
         status => {
             base                  => 'entry.status',
             single_select_options => [
-                { label => 'Draft',     value => 1, },
-                { label => 'Published', value => 2, },
-                { label => 'Scheduled', value => 4, },
+                { label => MT->translate('Draft'),     value => 1, },
+                { label => MT->translate('Published'), value => 2, },
+                { label => MT->translate('Scheduled'), value => 4, },
             ],
         },
         basename     => { base => 'entry.basename' },

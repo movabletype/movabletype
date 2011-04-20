@@ -523,11 +523,11 @@ sub list_props {
             col_class             => 'icon',
             base                  => '__virtual.single_select',
             single_select_options => [
-                { label => 'Draft',     value => 1, },
-                { label => 'Published', value => 2, },
-                { label => 'Reviewing', value => 3, },
-                { label => 'Scheduled', value => 4, },
-                { label => 'Junk',      value => 5, },
+                { label => MT->translate('Draft'),     value => 1, },
+                { label => MT->translate('Published'), value => 2, },
+                { label => MT->translate('Reviewing'), value => 3, },
+                { label => MT->translate('Scheduled'), value => 4, },
+                { label => MT->translate('Junk'),      value => 5, },
             ],
         },
         created_on => {
@@ -624,9 +624,9 @@ sub list_props {
             display               => 'none',
             label                 => 'Author Status',
             single_select_options => [
-                { label => 'Deleted',  value => 'deleted', },
-                { label => 'Enabled',  value => 'enabled', },
-                { label => 'Disabled', value => 'disabled', },
+                { label => MT->translate('Deleted'),  value => 'deleted', },
+                { label => MT->translate('Enabled'),  value => 'enabled', },
+                { label => MT->translate('Disabled'), value => 'disabled', },
             ],
             terms => sub {
                 my $prop = shift;

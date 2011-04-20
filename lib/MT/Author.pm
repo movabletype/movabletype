@@ -194,9 +194,9 @@ sub list_props {
                 return { status => $val };
             },
             single_select_options => [
-                { label => 'Active',   value => 'active', },
-                { label => 'Disabled', value => 'disabled', },
-                { label => 'Pending',  value => 'pending', },
+                { label => MT->translate('Active'),   value => 'active', },
+                { label => MT->translate('Disabled'), value => 'disabled', },
+                { label => MT->translate('Pending'),  value => 'pending', },
             ],
         },
         url => {
@@ -355,9 +355,9 @@ sub commenter_list_props {
 
             },
             single_select_options => [
-                { label => '__COMMENTER_APPROVED', value => 'enabled', },
-                { label => 'Banned',   value => 'disabled', },
-                { label => 'Pending',  value => 'pending', },
+                { label => MT->translate('__COMMENTER_APPROVED'), value => 'enabled', },
+                { label => MT->translate('Banned'),   value => 'disabled', },
+                { label => MT->translate('Pending'),  value => 'pending', },
             ],
         },
     };
@@ -497,8 +497,8 @@ sub member_list_props {
                 MT->config->SingleCommunity ? 0 : 1;
             },
             single_select_options => [
-                { label => 'MT Users',   value => AUTHOR(), },
-                { label => 'Commenters', value => COMMENTER(), },
+                { label => MT->translate('MT Users'),   value => AUTHOR(), },
+                { label => MT->translate('Commenters'), value => COMMENTER(), },
             ],
         },
         status     => { base => 'author.status', },
