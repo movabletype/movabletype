@@ -111,8 +111,8 @@ sub list_props {
             display               => 'none',
             label                 => 'Author Status',
             single_select_options => [
-                { label => 'Enabled',  value => 'enabled', },
-                { label => 'Disabled', value => 'disabled', },
+                { label => MT->translate('Enabled'),  value => 'enabled', },
+                { label => MT->translate('Disabled'), value => 'disabled', },
             ],
             terms => sub {
                 my $prop = shift;

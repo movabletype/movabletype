@@ -244,21 +244,21 @@ sub list_props {
                 return { level => \@types };
             },
             single_select_options => [
-                { label => 'Security',    value => SECURITY() },
-                { label => 'Error',       value => ERROR() },
-                { label => 'Warning',     value => WARNING() },
-                { label => 'Information', value => INFO() },
-                { label => 'Debug',       value => DEBUG() },
-                {   label => 'Security or error',
+                { label => MT->translate('Security'),    value => SECURITY() },
+                { label => MT->translate('Error'),       value => ERROR() },
+                { label => MT->translate('Warning'),     value => WARNING() },
+                { label => MT->translate('Information'), value => INFO() },
+                { label => MT->translate('Debug'),       value => DEBUG() },
+                {   label => MT->translate('Security or error'),
                     value => SECURITY() | ERROR()
                 },
-                {   label => 'Security/error/warning',
+                {   label => MT->translate('Security/error/warning'),
                     value => SECURITY() | ERROR() | WARNING()
                 },
-                {   label => 'Not debug',
+                {   label => MT->translate('Not debug'),
                     value => SECURITY() | ERROR() | WARNING() | INFO()
                 },
-                { label => 'Debug/error', value => DEBUG() | ERROR() },
+                { label => MT->translate('Debug/error'), value => DEBUG() | ERROR() },
             ],
         },
         metadata => {
