@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2010 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2011 Six Apart, Ltd. All Rights Reserved.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
