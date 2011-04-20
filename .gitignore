@@ -44,4 +44,4 @@ plugins/Motion
 plugins/mixiComment
 t/db/
 t/site/
-
+plugins/feeds-app-lite
