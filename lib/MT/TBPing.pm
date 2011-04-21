@@ -82,6 +82,7 @@ sub list_props {
                 elsif ( !$text ) {
                     $text = '...';
                 }
+
                 my $id        = $obj->id;
                 my $edit_link = $app->uri(
                     mode => 'view',
@@ -102,9 +103,9 @@ sub list_props {
                     : $status eq 'Published' ? 'success.gif'
                     :                          'draft.gif';
 
-                my $blog_name = $obj->blog_name  || '';
-                my $title     = $obj->title      || '';
-                my $url       = $obj->source_url || '';
+                my $blog_name = MT::Util::encode_html( $obj->blog_name  || '' );
+                my $title     = MT::Util::encode_html( $obj->title      || '' );
+                my $url       = MT::Util::encode_html( $obj->source_url || '' );
                 my $view_img
                     = MT->static_path . 'images/status_icons/view.gif';
                 my $ping_from
