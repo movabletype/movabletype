@@ -133,6 +133,8 @@ sub dialog_select_theme {
 
 sub apply {
     my $app = shift;
+    $app->validate_magic or return;
+
     return $app->return_to_dashboard( permission => 1 )
         unless $app->can_do('apply_theme');
     my $blog = $app->blog
