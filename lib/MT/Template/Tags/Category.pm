@@ -1256,7 +1256,7 @@ sub _hdlr_entry_categories {
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $cats;
-    if ( 'primary' eq lc $args->{type} ) {
+    if ( 'primary' eq lc ( $args->{type} || '' ) ) {
         $cats = [ $e->category ]
             if $e->category;
     }
