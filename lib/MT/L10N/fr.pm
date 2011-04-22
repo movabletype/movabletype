@@ -1446,7 +1446,7 @@ use vars qw( @ISA %Lexicon );
 	'Please confirm your new password' => 'Merci de confirmer votre nouveau mot de passe',
 	'Passwords do not match' => 'Les mots de passe ne correspondent pas',
 	'That action ([_1]) is apparently not implemented!' => 'Cette action ([_1]) n\'est visiblement pas implémentée&nbsp;!',
-	'You don\'t have a system email address configured.  Please set this first, save it, then try the test e-mail again.' => 'Vous n\'avez pas d\'adresse e-mail système configurée. Veuillez le faire d\'abord, enregistrez, et testez à nouveau.',
+	'You don\'t have a system email address configured.  Please set this first, save it, then try the test email again.' => 'Vous n\'avez pas d\'adresse e-mail système configurée. Veuillez le faire d\'abord, enregistrez, et testez à nouveau.',
 	'Please enter a valid email address' => 'Veuillez entrer une adresse e-mail valide',
 	'Test email from Movable Type' => 'Tester l\'e-mail depuis Movable Type',
 	'This is the test email sent by Movable Type.' => 'Ceci est un e-mail de test envoyé par Movable Type.',
