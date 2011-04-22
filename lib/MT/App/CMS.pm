@@ -630,7 +630,7 @@ sub core_list_actions {
                 order         => 300,
                 code          => "${pkg}Tag::add_tags_to_entries",
                 input         => 1,
-                xhr           => 1,
+#                xhr           => 1,
                 input_label   => 'Tags to add to selected entries',
                 permit_action => {
                     permit_action => 'add_tags_to_entry_via_list',
@@ -1346,7 +1346,7 @@ sub core_list_actions {
             'delete' => {
                 label      => 'Delete',
                 code       => "${pkg}Common::delete",
-                xhr        => 1,
+#                xhr        => 1,
                 order      => 110,
                 js_message => 'delete',
                 button     => 1,
@@ -1492,7 +1492,7 @@ sub core_list_actions {
                 mode       => 'delete_filters',
                 order      => 110,
                 js_message => 'delete',
-                xhr        => 1,
+#                xhr        => 1,
                 button     => 1,
             },
         },

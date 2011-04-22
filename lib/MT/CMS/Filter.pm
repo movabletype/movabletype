@@ -128,6 +128,7 @@ sub delete {
     $filter->remove
         or return $app->json_error(
         $app->translate( 'Failed to delete filter(s): [_1]', $filter->errstr ) );
+
     my %res;
     my $list = $app->param('list');
     if ( defined $list && !$list ) {
@@ -159,16 +160,25 @@ sub delete_filters {
         ## if $res is 0E0 ( zero but true )
         return $app->json_error( MT->translate( 'No such filter', ) );
     }
-    $app->forward(
-        'filtered_list',
-        messages => [
-            {   cls => 'success',
-                msg => MT->translate(
-                    'Removed [_1] filters successfully.', $res,
-                ),
-            }
-        ]
-    );
+
+    if ( $app->param('xhr') ) {
+        $app->forward(
+            'filtered_list',
+            messages => [
+                {   cls => 'success',
+                    msg => MT->translate(
+                        'Removed [_1] filters successfully.', $res,
+                    ),
+                }
+            ]
+        );
+    }
+    else {
+        my %return_arg;
+        $return_arg{deleted} = $res;
+        $app->add_return_arg(%return_arg);
+        return $app->call_return;
+    }
 }
 
 ## Note that these filter loading methods below NOT return instances of MT::Filter class.
