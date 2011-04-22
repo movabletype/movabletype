@@ -11,6 +11,35 @@ package MultiBlog::Tags;
 use strict;
 use warnings;
 
+=head2 MultiBlog
+
+This container tag shows aggregated blogs, where the 'include_blog' attribute
+specify the blogs that you want to aggregate, or 'all'. the following
+example will loop over this block three times, once for every blog.
+
+    <mt:MultiBlog include_blogs="1,5,8">
+       <mt:Entries lastn="10">
+          <p><mt:EntryTitle></p>
+       </mt:Entries>
+       <mt:Comments lastn="10">
+          <p><mt:CommentBody></p>
+       </mt:Entries>
+    </mt:MultiBlog>
+
+if no include_blogs param is included, it will try to get the blogs to 
+be included from the blog's plugin configuration. if nothing is configured,
+the tag is ignored.
+
+alternative for include_blogs: exclude_blogs (meaning all but these blogs)
+
+=cut
+
+=head2 OtherBlog
+
+This tag is an alias for the MultiBlog tag
+
+=cut
+
 sub MultiBlog {
     my $plugin = MT::Plugin::MultiBlog->instance;
     my ( $ctx, $args, $cond ) = @_;
@@ -89,6 +118,19 @@ sub MultiBlog {
     return defined($res) ? $res : $ctx->error( $ctx->errstr );
 }
 
+=head2 MultiBlogLocalBlog
+
+This container tag let you refer to the local blog, inside MultiBlog block.
+example:
+
+    <mt:MultiBlog blog_ids="1" mode="context">
+        <mt:MultiBlogLocalBlog>
+            <mt:BlogName />
+        </mt:MultiBlogLocalBlog>
+    </mt:MultiBlog>
+
+=cut
+
 sub MultiBlogLocalBlog {
     my $plugin = MT::Plugin::MultiBlog->instance;
     my ( $ctx, $args, $cond ) = @_;
@@ -115,6 +157,13 @@ sub MultiBlogLocalBlog {
 
     $out;
 }
+
+=head2 MultiBlogIfLocalBlog
+
+A conditional tag that is true when the MultiBlog is presenting the current 
+local blog
+
+=cut
 
 sub MultiBlogIfLocalBlog {
     my $plugin  = MT::Plugin::MultiBlog->instance;
