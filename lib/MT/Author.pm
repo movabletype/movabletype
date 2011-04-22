@@ -194,9 +194,9 @@ sub list_props {
                 return { status => $val };
             },
             single_select_options => [
-                { label => 'Active',   value => 'active', },
-                { label => 'Disabled', value => 'disabled', },
-                { label => 'Pending',  value => 'pending', },
+                { label => MT->translate('Active'),   value => 'active', },
+                { label => MT->translate('Disabled'), value => 'disabled', },
+                { label => MT->translate('Pending'),  value => 'pending', },
             ],
         },
         url => {
@@ -355,9 +355,9 @@ sub commenter_list_props {
 
             },
             single_select_options => [
-                { label => '__COMMENTER_APPROVED', value => 'enabled', },
-                { label => 'Banned',   value => 'disabled', },
-                { label => 'Pending',  value => 'pending', },
+                { label => MT->translate('__COMMENTER_APPROVED'), value => 'enabled', },
+                { label => MT->translate('Banned'),   value => 'disabled', },
+                { label => MT->translate('Pending'),  value => 'pending', },
             ],
         },
     };
@@ -497,8 +497,8 @@ sub member_list_props {
                 MT->config->SingleCommunity ? 0 : 1;
             },
             single_select_options => [
-                { label => 'MT Users',   value => AUTHOR(), },
-                { label => 'Commenters', value => COMMENTER(), },
+                { label => MT->translate('MT Users'),   value => AUTHOR(), },
+                { label => MT->translate('Commenters'), value => COMMENTER(), },
             ],
         },
         status     => { base => 'author.status', },
@@ -618,7 +618,7 @@ sub _bulk_author_name_html {
         }
         my $lc_auth_label = lc $auth_label;
 
-        my $name  = $obj->name || '(' . MT->translate('Registered User') . ')';
+        my $name  = MT::Util::encode_html( $obj->name ) || '(' . MT->translate('Registered User') . ')';
         my $email = MT::Util::encode_html( $obj->email );
         my $url   = MT::Util::encode_html( $obj->url );
         my $out   = qq{
@@ -667,7 +667,7 @@ sub _nickname_bulk_html {
     my ( $prop, $objs, $app ) = @_;
     my @results;
     for my $obj (@$objs) {
-        my $name = $obj->nickname;
+        my $name = MT::Util::encode_html( $obj->nickname );
         my $out  = qq{
             <span class="displayname">$name</span>
         };

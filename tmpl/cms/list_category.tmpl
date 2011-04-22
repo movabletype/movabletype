@@ -189,7 +189,7 @@ function fixInteractions( options ) {
   var opts = jQuery.extend(defaults, options);
   if ( opts.closeInlineForms ) {
     jQuery('div.edit-form button.cancel').click();
-    jQuery('div.add-form button.cancel').click();      
+    jQuery('div.add-form button.cancel').click();
   }
 
   if ( opts.sortable ) {
@@ -299,6 +299,8 @@ function initItem($item) {
       jQuery('<button type="button" class="add button"><__trans phrase="Add" escape="js"></button>')
         .bind('click', function() {
           var label = jQuery(this).parent('.add-form').find('input').val();
+          // sort of hack to do HTML escape.
+          label = jQuery('<div />').text(label).html();
           if ( addItem(parent, label) ) {
               jQuery(this).parent('.add-form').remove();
               fixInteractions({ closeInlineForms: false });

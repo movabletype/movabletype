@@ -223,10 +223,10 @@ sub list_props {
             },
             ## FIXME: Get these values from registry or somewhere...
             single_select_options => [
-                { label => 'Image', value => 'image', },
-                { label => 'Audio', value => 'audio', },
-                { label => 'Video', value => 'video', },
-                { label => 'File',  value => 'file', },
+                { label => MT->translate('Image'), value => 'image', },
+                { label => MT->translate('Audio'), value => 'audio', },
+                { label => MT->translate('Video'), value => 'video', },
+                { label => MT->translate('File'),  value => 'file', },
             ],
         },
         description => {
@@ -358,9 +358,9 @@ sub list_props {
                 }
             },
             single_select_options => [
-                { label => 'Deleted',  value => 'deleted', },
-                { label => 'Enabled',  value => 'active', },
-                { label => 'Disabled', value => 'disabled', },
+                { label => MT->translate('Deleted'),  value => 'deleted', },
+                { label => MT->translate('Enabled'),  value => 'active', },
+                { label => MT->translate('Disabled'), value => 'disabled', },
             ],
         },
     };
