@@ -784,7 +784,8 @@ function bulkUpdateCategories() {
       datasource: '<mt:var name="list_type">',
       blog_id: <mt:var name="blog_id">,
       checksum: checksum,
-      objects: jQuery.toJSON(items)
+      objects: jQuery.toJSON(items),
+      magic_token: '<mt:var name="magic_token">'
     },
     success: function(data) {
       if ( !handleMessages(data) ) return;

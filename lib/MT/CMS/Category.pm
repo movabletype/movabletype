@@ -146,6 +146,8 @@ sub save {
 
 sub bulk_update {
     my $app = shift;
+    $app->validate_magic or return;
+
     my $model = $app->param('datasource') || 'category';
     if ( 'category' eq $model ) {
         $app->can_do('edit_categories')

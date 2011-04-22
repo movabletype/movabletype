@@ -163,6 +163,8 @@ sub dialog_select_theme {
 
 sub apply {
     my $app = shift;
+    $app->validate_magic or return;
+
     return $app->permission_denied()
         unless $app->can_do('apply_theme');
     my $blog = $app->blog

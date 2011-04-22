@@ -481,6 +481,7 @@ sub handle_junk {
 
 sub not_junk {
     my $app = shift;
+    $app->validate_magic or return;
 
     my @ids = $app->param("id");
     my @item_loop;

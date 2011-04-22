@@ -65,9 +65,9 @@
     <mt:unless name="errors">
       <mt:if name="current">
     <a href="<mt:var name="mt_url" />?__mode=dialog_refresh_templates&amp;blog_id=<mt:var name="blog_id">&amp;magic_token=<mt:var name="magic_token">&amp;return_args=<mt:var name="return_args" escape="url">" class="button apply-theme-link mt-open-dialog"><__trans phrase="Refresh Templates"></a>
-    <a href="<mt:var name="mt_url" />?__mode=apply_theme&amp;blog_id=<mt:var name="blog_id">&amp;theme_id=<mt:var name="theme_id">" class="button apply-theme-link"><__trans phrase="Reapply"></a>
+    <a href="<mt:var name="mt_url" />?__mode=apply_theme&amp;blog_id=<mt:var name="blog_id">&amp;theme_id=<mt:var name="theme_id">&amp;magic_token=<mt:var name="magic_token">" class="button apply-theme-link"><__trans phrase="Reapply"></a>
       <mt:else>
-    <a href="<mt:var name="mt_url" />?__mode=apply_theme&amp;blog_id=<mt:var name="blog_id">&amp;theme_id=<mt:var name="theme_id">" class="button apply-theme-link"><__trans phrase="Apply"></a>
+    <a href="<mt:var name="mt_url" />?__mode=apply_theme&amp;blog_id=<mt:var name="blog_id">&amp;theme_id=<mt:var name="theme_id">&amp;magic_token=<mt:var name="magic_token">" class="button apply-theme-link"><__trans phrase="Apply"></a>
       </mt:if>
     </mt:unless>
   <mt:else>

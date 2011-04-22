@@ -9,6 +9,8 @@ use strict;
 
 sub rename_tag {
     my $app     = shift;
+    $app->validate_magic or return;
+
     my $perms   = $app->permissions;
     my $blog_id = $app->blog->id if $app->blog;
     $app->can_do('rename_tag')
@@ -217,6 +219,8 @@ sub js_recent_entries_for_tag {
 
 sub add_tags_to_entries {
     my $app = shift;
+    $app->validate_magic or return;
+
     my $xhr = $app->param('xhr');
     my @id  = $app->param('id');
 
@@ -263,6 +267,7 @@ sub add_tags_to_entries {
 
 sub remove_tags_from_entries {
     my $app = shift;
+    $app->validate_magic or return;
 
     my @id = $app->param('id');
 
@@ -295,6 +300,7 @@ sub remove_tags_from_entries {
 
 sub add_tags_to_assets {
     my $app = shift;
+    $app->validate_magic or return;
 
     my @id = $app->param('id');
     return $app->call_return
@@ -321,6 +327,8 @@ sub add_tags_to_assets {
 
 sub remove_tags_from_assets {
     my $app = shift;
+    $app->validate_magic or return;
+
     return $app->call_return
         unless $app->can_do('remove_tags_from_assets');
     my @id = $app->param('id');
