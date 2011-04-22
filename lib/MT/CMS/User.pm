@@ -1276,7 +1276,7 @@ sub template_param_list {
     $param->{has_list_actions} = 0;
     my $author_name = $app->user->name;
     $param->{page_title}
-        = MT->translate( q{[_1]'s Assciations}, $author_name );
+        = MT->translate( q{[_1]'s Assciations}, MT::Util::encode_html($author_name) );
 }
 
 sub can_view {

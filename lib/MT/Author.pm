@@ -618,7 +618,7 @@ sub _bulk_author_name_html {
         }
         my $lc_auth_label = lc $auth_label;
 
-        my $name  = $obj->name || '(' . MT->translate('Registered User') . ')';
+        my $name  = MT::Util::encode_html( $obj->name ) || '(' . MT->translate('Registered User') . ')';
         my $email = MT::Util::encode_html( $obj->email );
         my $url   = MT::Util::encode_html( $obj->url );
         my $out   = qq{
@@ -667,7 +667,7 @@ sub _nickname_bulk_html {
     my ( $prop, $objs, $app ) = @_;
     my @results;
     for my $obj (@$objs) {
-        my $name = $obj->nickname;
+        my $name = MT::Util::encode_html( $obj->nickname );
         my $out  = qq{
             <span class="displayname">$name</span>
         };
