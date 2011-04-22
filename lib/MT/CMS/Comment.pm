@@ -1131,6 +1131,7 @@ sub handle_junk {
 
 sub not_junk {
     my $app = shift;
+    $app->validate_magic or return;
 
     my $perms = $app->permissions;
 
