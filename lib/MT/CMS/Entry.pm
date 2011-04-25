@@ -146,7 +146,7 @@ sub edit {
         $param->{has_any_pinged_urls} = ( $obj->pinged_urls || '' ) =~ m/\S/;
         $param->{ping_errors}         = $q->param('ping_errors');
         $param->{can_view_log}        = $app->can_do('view_log');
-        $param->{entry_permalink}     = $obj->permalink;
+        $param->{entry_permalink}     = MT::Util::encode_html( $obj->permalink );
         $param->{'mode_view_entry'}   = 1;
         $param->{'basename'}          = $obj->basename;
 
