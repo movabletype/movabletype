@@ -1696,6 +1696,7 @@ sub dialog_refresh_templates {
 
 sub refresh_all_templates {
     my ($app) = @_;
+    $app->validate_magic() or return;
 
     my $backup = 0;
     if ($app->param('backup')) {
