@@ -1204,8 +1204,6 @@ sub save {
           || ( ( 'page' eq $type ) && $perms->can_manage_pages );
     }
 
-    $app->validate_magic() or return;
-
     # check for autosave
     if ( $app->param('_autosave') ) {
         return $app->autosave_object();
