@@ -1330,8 +1330,6 @@ sub save {
         }
     }
 
-    $app->validate_magic() or return;
-
     # check for autosave
     if ( $app->param('_autosave') ) {
         return $app->autosave_object();
