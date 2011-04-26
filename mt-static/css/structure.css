@@ -1016,7 +1016,7 @@ ul.tabs li a {
     position: relative;
 }
 .title.page { 
-    font-size: 185%;
+    font-size: 150%;
     font-weight: normal;
 }
 .title.panel { 
@@ -1883,6 +1883,7 @@ ul#asset-list li a.asset-title {
 }
 ul#asset-list li a.remove-asset {
     position: absolute;
+    top: 5px;
     right: 0;
 }
 ul#asset-list li img.list-image {
