@@ -7,7 +7,7 @@ BEGIN {
 
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use MT::Test qw(:db :data);
-use Test::More qw( no_plan );
+use Test::More;
 use MIME::Base64;
 
 # To keep away from being under FastCGI
@@ -459,7 +459,7 @@ my @apis = (
             my $result = $som->result;
             my $url = $result->{url};
             is( $url, 'http://narnia.na/nana/movable-type-logo.gif' );
-            my $asset = MT::Asset::Image->load(undef, { sort => 'created_on', direction => 'descend', limit => 1 });
+            my $asset = MT::Asset::Image->load(undef, { sort => 'id', direction => 'descend', limit => 1 });
             ok($asset, 'asset loaded');
             is( $asset->mime_type, 'image/gif' );
             is( $asset->file_name, 'movable-type-logo.gif' );
@@ -570,7 +570,7 @@ $uri->path($base_uri);
 my $req = new HTTP::Request(POST => $uri);
 
 foreach my $api ( @apis ) {
-
+    note("test for $api->{api}");
     my $data = {};
     $data = $api->{pre}->() if exists $api->{pre};
     my @params;
@@ -603,5 +603,6 @@ foreach my $api ( @apis ) {
     $api->{post}->() if exists $api->{post};
 }
 
+done_testing();
 1;
 __END__
