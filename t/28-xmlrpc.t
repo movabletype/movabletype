@@ -471,7 +471,7 @@ my @apis = (
             is( $logo, MIME::Base64::encode_base64($image, '') );
         },
         post   => sub {
-            my $asset = MT::Asset->load(undef, { sort => 'created_on', direction => 'descend', limit => 1 });
+            my $asset = MT::Asset->load(undef, { sort => 'id', direction => 'descend', limit => 1 });
             $asset->remove();
         }
     },
