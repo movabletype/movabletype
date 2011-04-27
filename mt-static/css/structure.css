@@ -1016,7 +1016,7 @@ ul.tabs li a {
     position: relative;
 }
 .title.page { 
-    font-size: 185%;
+    font-size: 150%;
     font-weight: normal;
 }
 .title.panel { 
@@ -1198,6 +1198,7 @@ ul.tabs li a {
 }
 .blog-name {
     margin-top: 0;
+    font-size: 115%;
 }
 .favorite-blogs-widget .blog-container { 
     max-height: 455px;
@@ -1225,7 +1226,7 @@ ul.tabs li a {
 .favorite-blogs-widget .blog-link { 
     margin-bottom: 10px;
     overflow: hidden;
-    font-size: 85%;
+    font-size: 90%;
     text-overflow: ellipsis;
     white-space: pre;
 }
@@ -1241,7 +1242,7 @@ ul.tabs li a {
     margin-left: 5px;
     padding-right: 5px;
     border-right: 1px solid #c0c6c9;
-    font-size: 85%;
+    font-size: 90%;
 }
 .favorite-blogs-widget .blog-control li.first-child { 
     margin-left: 0;
@@ -1882,6 +1883,7 @@ ul#asset-list li a.asset-title {
 }
 ul#asset-list li a.remove-asset {
     position: absolute;
+    top: 5px;
     right: 0;
 }
 ul#asset-list li img.list-image {
@@ -2299,6 +2301,7 @@ input#system_performance_logging_threshold {
 #list-plugins .plugin-name {
     border: none;
     margin: 0;
+    font-size: 110%;
 }
 #list-plugins .plugin-name a,
 #list-plugins .plugin-name .plugin-name-disabled {
@@ -2407,17 +2410,18 @@ input#system_performance_logging_threshold {
 }
 #list-themes .theme-meta { 
     margin-left: 135px;
-    font-size: 90%;
 }
 #list-themes .theme-title { 
     margin: 0 0 3px;
-    font-size: 115%;
+    font-size: 110%;
 }
 #list-themes .theme-author {
     margin: 5px 0 10px;
+    font-size: 90%;
 }
 #list-themes .description { 
     margin: 0;
+    font-size: 90%;
 }
 #list-themes .theme-tabs-list li {
     border: 0;
