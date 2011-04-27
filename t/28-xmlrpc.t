@@ -532,7 +532,6 @@ my @apis = (
                 'markdown' => 1,
                 'markdown_with_smartypants' => 1,
                 'textile_2' => 1,
-                '__sanitize__' => 1,
             );
             foreach my $res ( @$result ) {
                 is(1, delete( $tf{$res->{key}} ), $res->{key});
@@ -548,7 +547,7 @@ my @apis = (
             my $result = $som->result;
             my @tags = MT::Tag->load(undef, {
                 'join' => MT::ObjectTag->join_on(undef, {
-                    tag_id => \'= tag_id',
+                    tag_id => \'= tag_id', # baka editors ',
                     blog_id => 1
                 }, { unique => 1 })
             });
