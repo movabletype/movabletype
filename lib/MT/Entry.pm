@@ -242,7 +242,7 @@ sub list_props {
                     $excerpt .= '...';
                 }
                 my $id        = $obj->id;
-                my $permalink = $obj->permalink;
+                my $permalink = MT::Util::encode_html( $obj->permalink );
                 my $edit_url  = MT->app->uri(
                     mode => 'view',
                     args => {

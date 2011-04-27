@@ -2463,7 +2463,7 @@ sub build_entry_table {
             $row->{weblog_name} = $blog->name;
         }
         if ( $obj->status == MT::Entry::RELEASE() ) {
-            $row->{entry_permalink} = $obj->permalink;
+            $row->{entry_permalink} = MT::Util::encode_html( $obj->permalink );
         }
         $row->{object} = $obj;
         push @data, $row;
