@@ -79,7 +79,7 @@ sub edit {
         my $parent = $obj->parent;
         if ( $parent && ( $parent->isa('MT::Entry') ) ) {
             if ( $parent->status == MT::Entry::RELEASE() ) {
-                $param->{entry_permalink} = $parent->permalink;
+                $param->{entry_permalink} = MT::Util::encode_html( $parent->permalink );
             }
         }
 
