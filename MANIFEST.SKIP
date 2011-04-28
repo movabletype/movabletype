@@ -108,6 +108,7 @@ mt-view.cgi
 \bCVS\b
 \bRCS\b
 \.svn\b
+\.git\b
 \.gitignore
 ,v$
 
