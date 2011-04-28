@@ -32,6 +32,35 @@ no warnings;
     chmod(  0644 | ( $perm & 0111 ? 0111 : 0 ),  $dstFile )
       unless ($^O eq 'MacOS');
 };
+
+*ExtUtils::Manifest::manifind = sub {
+    my $p = shift || {};
+    my $found = {};
+
+    my $wanted = sub {
+        my $name = ExtUtils::Manifest::clean_up_filename($File::Find::name);
+        warn "Debug: diskfile $name\n" if $ExtUtils::Manifest::Debug;
+        return if -d $_;
+
+        if( $ExtUtils::Manifest::Is_VMS_lc ) {
+            $name =~ s#(.*)\.$#\L$1#;
+               $name = uc($name) if $name =~ /^MANIFEST(\.SKIP)?$/i;
+        }
+        $found->{$name} = "";
+    };
+
+    # We have to use "$File::Find::dir/$_" in preprocess, because
+    # $File::Find::name is unavailable.
+    # Also, it's okay to use / here, because MANIFEST files use Unix-style
+    # paths.
+
+    ### Follow symbolic links
+    find({wanted => $wanted, follow => 1},
+         $ExtUtils::Manifest::Is_MacOS ? ":" : ".");
+
+    return $found;
+};
+
 use warnings;
 
 # disables resource fork handling for tar command on OS X
@@ -88,7 +117,11 @@ for my $lang (@languages) {
 
     print "---------------- Building $lang ----------------\n";
     verbose_command("$make clean");  # to clean MT.pm
+    verbose_command("$make lib/MT.pm");
+    verbose_command("$make php/mt.php");
     verbose_command($make);
+
+    update_default_lang( $lang );
 
     make_manifest_skip($skip_rules, $skip);
 
@@ -216,3 +249,21 @@ sub verbose_command {
     }
     return $command;
 }
+
+sub update_default_lang {
+    my $lang = shift;
+    my $config;
+
+    open FH, "<mt-config.cgi-original";
+    {
+        local $/;
+        $config = <FH>;
+    }
+    close FH;
+
+    $config =~ s/(DefaultLanguage ).*/$1$lang/;
+    open FH, ">mt-config.cgi-original";
+    print FH $config;
+    close FH;
+}
+
