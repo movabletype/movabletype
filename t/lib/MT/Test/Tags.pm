@@ -1,7 +1,16 @@
-#!/usr/bin/perl
-# $Id: 35-tags.t 3531 2009-03-12 09:11:52Z fumiakiy $
+# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
+package MT::Test::Tags;
 use strict;
 use warnings;
+
+use base qw( Exporter );
+our @EXPORT = qw( run_tests );
+
 use IPC::Open2;
 
 BEGIN {
@@ -10,7 +19,6 @@ BEGIN {
 
 $| = 1;
 
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use MT::Test qw(:db :data);
 use Test::More;
 use JSON -support_by_pp;
@@ -20,78 +28,68 @@ use MT::Template::Context;
 use MT::Builder;
 
 require POSIX;
+our %const;
 
-my $mt = MT->new();
-
-# Clear cache
-my $request = MT::Request->instance;
-$request->{__stash} = {};
-
-local $/ = undef;
-open F, "<t/35-tags.dat";
-my $test_json = <F>;
-close F;
-
-$test_json =~ s/^ *#.*$//mg;
-$test_json =~ s/# *\d+ *(?:TBD.*)? *$//mg;
-
-my $json = new JSON;
-$json->loose(1); # allows newlines inside strings
-my $test_suite = $json->decode($test_json);
-
-# Ok. We are now ready to test!
-plan tests => (scalar(@$test_suite) * 2) + 3;
-
-my $blog_name_tmpl = MT::Template->load({name => "blog-name", blog_id => 1});
-ok($blog_name_tmpl, "'blog-name' template found");
-
-my $ctx = MT::Template::Context->new;
-my $blog = MT::Blog->load(1);
-ok($blog, "Test blog loaded");
-$ctx->stash('blog', $blog);
-$ctx->stash('blog_id', $blog->id);
-$ctx->stash('builder', MT::Builder->new);
-
-my $entry  = MT::Entry->load( 1 );
-ok($entry, "Test entry loaded");
-
-# entry we want to capture is dated: 19780131074500
-my $tsdiff = time - ts2epoch($blog, '19780131074500');
-my $daysdiff = int($tsdiff / (60 * 60 * 24));
-my %const = (
-    CFG_FILE => MT->instance->{cfg_file},
-    VERSION_ID => MT->instance->version_id,
-    CURRENT_WORKING_DIRECTORY => MT->instance->server_path,
-    STATIC_CONSTANT => '1',
-    DYNAMIC_CONSTANT => '',
-    DAYS_CONSTANT1 => $daysdiff + 1,
-    DAYS_CONSTANT2 => $daysdiff - 1,
-    CURRENT_YEAR => POSIX::strftime("%Y", localtime),
-    CURRENT_MONTH => POSIX::strftime("%m", localtime),
-    STATIC_FILE_PATH => MT->instance->static_file_path . '/',
-);
-
-$test_json =~ s/\Q$_\E/$const{$_}/g for keys %const;
-$test_suite = $json->decode($test_json);
-
-$ctx->{current_timestamp} = '20040816135142';
-
-my $num = 1;
-foreach my $test_item (@$test_suite) {
-    unless ($test_item->{r}) {
-        pass("perl test skip " . $num++);
-        next;
-    }
-    local $ctx->{__stash}{entry} = $entry if $test_item->{t} =~ m/<MTEntry/;
-    $ctx->{__stash}{entry} = undef if $test_item->{t} =~ m/MTComments|MTPings/;
-    $ctx->{__stash}{entries} = undef if $test_item->{t} =~ m/MTEntries|MTPages/;
-    $ctx->stash('comment', undef);
-    $request->{__stash} = {};
-    my $result = build($ctx, $test_item->{t});
-    is($result, $test_item->{e}, "perl test " . $num++);
+sub run_tests {
+    my ( $test_suite ) = @_;
+    # Ok. We are now ready to test!
+    plan tests => (scalar(@$test_suite) * 2) + 3;
+    perl_tests($test_suite);
+    php_tests($test_suite);
 }
 
-php_tests($test_suite);
+sub perl_tests {
+    my ( $test_suite ) = @_;
+    # Clear cache
+    my $request = MT::Request->instance;
+    $request->{__stash} = {};
+
+    my $blog_name_tmpl = MT::Template->load({name => "blog-name", blog_id => 1});
+    ok($blog_name_tmpl, "'blog-name' template found");
+
+    my $ctx = MT::Template::Context->new;
+    my $blog = MT::Blog->load(1);
+    ok($blog, "Test blog loaded");
+    $ctx->stash('blog', $blog);
+    $ctx->stash('blog_id', $blog->id);
+    $ctx->stash('builder', MT::Builder->new);
+
+    my $entry  = MT::Entry->load( 1 );
+    ok($entry, "Test entry loaded");
+
+    # entry we want to capture is dated: 19780131074500
+    my $tsdiff = time - ts2epoch($blog, '19780131074500');
+    my $daysdiff = int($tsdiff / (60 * 60 * 24));
+    %const = (
+        CFG_FILE => MT->instance->{cfg_file},
+        VERSION_ID => MT->instance->version_id,
+        CURRENT_WORKING_DIRECTORY => MT->instance->server_path,
+        STATIC_CONSTANT => '1',
+        DYNAMIC_CONSTANT => '',
+        DAYS_CONSTANT1 => $daysdiff + 1,
+        DAYS_CONSTANT2 => $daysdiff - 1,
+        CURRENT_YEAR => POSIX::strftime("%Y", localtime),
+        CURRENT_MONTH => POSIX::strftime("%m", localtime),
+        STATIC_FILE_PATH => MT->instance->static_file_path . '/',
+    );
+
+    $ctx->{current_timestamp} = '20040816135142';
+
+    my $num = 1;
+    foreach my $test_item (@$test_suite) {
+        unless ($test_item->{r}) {
+            pass("perl test skip " . $num++);
+            next;
+        }
+        local $ctx->{__stash}{entry} = $entry if $test_item->{t} =~ m/<MTEntry/;
+        $ctx->{__stash}{entry} = undef if $test_item->{t} =~ m/MTComments|MTPings/;
+        $ctx->{__stash}{entries} = undef if $test_item->{t} =~ m/MTEntries|MTPages/;
+        $ctx->stash('comment', undef);
+        $request->{__stash} = {};
+        my $result = build($ctx, $test_item->{t});
+        is($result, $test_item->{e}, "perl test " . $num++);
+    }
+}
 
 sub build {
     my($ctx, $markup) = @_;
@@ -103,6 +101,30 @@ sub build {
     print '# -- error building: ' . ($b->errstr ? $b->errstr : '') . "\n"
         unless defined $res;
     return $res;
+}
+
+sub _dump_php {
+    my ( $data ) = @_;
+    my $out;
+    if ( ref $data eq 'HASH' ) {
+        my @elements;
+        for my $key ( keys %$data ) {
+            my $val = _dump_php( $data->{$key} );
+            push @elements, "$key => $val";
+        }
+        return sprintf 'array(%s)', join(',', @elements);
+    }
+    elsif ( ref $data eq 'ARRAY' ) {
+        my @elements;
+        for my $val ( @$data ) {
+            push @elements, _dump_php( $val );
+        }
+        return sprintf 'array(%s)', join(',', @elements);
+    }
+    elsif ( !ref $data ) {
+        return $data =~ /^\d+$/ ? $data : sprintf( '"%s"', $data );
+    }
+    die "unsupported type: " . ref $data;
 }
 
 sub php_tests {
@@ -151,7 +173,7 @@ $ctx->stash('current_timestamp', '20040816135142');
 $mt->init_plugins();
 $entry = $db->fetch_entry(1);
 
-$suite = load_tests();
+$suite = <TEST_SUITE_PHP>;
 
 set_error_handler('error_handler');
 
@@ -193,17 +215,6 @@ function run(&$ctx, $suite) {
             echo "ok - php test $test_num\n";
         }
     }
-}
-
-function load_tests() {
-    $suite = cleanup(file_get_contents('t/35-tags.dat'));
-    $json = new JSON();
-    global $const;
-    foreach ($const as $c => $r) {
-        $suite = preg_replace('/' . $c . '/', $r, $suite);
-    }
-    $suite = $json->decode($suite);
-    return $suite;
 }
 
 function cleanup($tmpl) {
@@ -253,7 +264,7 @@ function error_handler($errno, $errstr, $errfile, $errline) {
 
 ?>
 PHP
-
+    $const{TEST_SUITE_PHP} = _dump_php($test_suite);
     $test_script =~ s/<\Q$_\E>/$const{$_}/g for keys %const;
 
     # now run the test suite through PHP!
@@ -296,3 +307,20 @@ PHP
     close IN;
     $test->() if @lines;
 }
+
+1;
+
+=head1 NAME
+
+MT::Test::Tags
+
+=head1 SYNOPSIS
+
+  use MT::Test::Tags;
+  run_tests([
+      {
+          r => 1,
+          t => '<mt:entries><mt:entryTitle /></mt:entries>',
+          e => 'foobar',
+      },
+  ]);
