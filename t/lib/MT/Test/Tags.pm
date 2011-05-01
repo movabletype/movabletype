@@ -32,10 +32,26 @@ our %const;
 
 sub run_tests {
     my ( $test_suite ) = @_;
+    if ( !defined $test_suite ) {
+        $test_suite = load_tests_from_data_section();
+    }
     # Ok. We are now ready to test!
     plan tests => (scalar(@$test_suite) * 2) + 3;
     perl_tests($test_suite);
     php_tests($test_suite);
+}
+
+sub load_tests_from_data_section {
+    ## Taken from Data::Section::Simple
+    my $data = do { no strict 'refs'; \*main::DATA };
+    die "No Data section found" unless defined fileno $data;
+    seek $data, 0, 0;
+    my $content = join '', <$data>;
+    $content =~ s/^.*\n__DATA__\n/\n/s;    # for win32
+    $content =~ s/\n__END__\n.*$/\n/s;
+    require YAML::Tiny;
+    my $test_suite = YAML::Tiny::Load($content);
+    return $test_suite;
 }
 
 sub perl_tests {
@@ -319,3 +335,12 @@ MT::Test::Tags
           e => 'foobar',
       },
   ]);
+
+  ## Alternative, write tests in YAML format in __DATA__ section.
+  use MT::Test::Tags;
+  run_tests();
+  __DATA__
+  -
+    r: 1
+    t: <mt:entries><mt:entryTitle></mt:entries>
+    e: foobar
