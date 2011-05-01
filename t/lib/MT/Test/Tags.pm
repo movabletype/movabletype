@@ -188,29 +188,29 @@ function run(&$ctx, $suite) {
     foreach ($suite as $test_item) {
         $ctx->__stash = $base_stash;
         $mt->db()->savedqueries = array();
-        if ( preg_match('/MT(Entry|Link)/', $test_item->t) 
-          && !preg_match('/MT(Comments|Pings)/', $test_item->t) )
+        if ( preg_match('/MT(Entry|Link)/', $test_item["t"]) 
+          && !preg_match('/MT(Comments|Pings)/', $test_item["t"]) )
         {
             $ctx->stash('entry', $entry);
         }
         else {
             $ctx->__stash['entry'] = null;
         }
-        if ( preg_match('/MTEntries|MTPages/', $test_item->t) ) {
+        if ( preg_match('/MTEntries|MTPages/', $test_item["t"]) ) {
             $ctx->__stash['entries'] = null;
             $ctx->__stash['author'] = null;
             $ctx->__stash['category'] = null;
         }
-        if ( preg_match('/MTCategoryArchiveLink/', $test_item->t) ) {
+        if ( preg_match('/MTCategoryArchiveLink/', $test_item["t"]) ) {
             $ctx->stash('current_archive_type', 'Category');
         } else {
             $ctx->stash('current_archive_type', '');
         }
         $test_num++;
-        if ($test_item->r == 1) {
-            $tmpl = $test_item->t;
-            $result = build($ctx, $test_item->t);
-            ok($result, $test_item->e, $test_num);
+        if ($test_item["r"] == 1) {
+            $tmpl = $test_item["t"];
+            $result = build($ctx, $test_item["t"]);
+            ok($result, $test_item["e"], $test_num);
         } else {
             echo "ok - php test $test_num\n";
         }
@@ -295,15 +295,10 @@ PHP
 
     my $output = '';
     while (<IN>) {
-        $output .= $_;
-        if ($output =~ m/\n/) {
-            my @new_lines = split /\n/, $output;
-            $output = pop @new_lines;
-            push @lines, @new_lines;
-        }
-        $test->() if @lines;
+        $output = $_;
+        push @lines, split( "\n", $output );
+        $test->();
     }
-    push @lines, $output if $output ne '';
     close IN;
     $test->() if @lines;
 }
