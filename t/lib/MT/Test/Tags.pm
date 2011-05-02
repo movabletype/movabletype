@@ -35,6 +35,7 @@ sub run_tests {
     if ( !defined $test_suite ) {
         $test_suite = load_tests_from_data_section();
     }
+    prepare_test_data($test_suite);
     # Ok. We are now ready to test!
     plan tests => (scalar(@$test_suite) * 2) + 3;
     perl_tests($test_suite);
@@ -52,6 +53,27 @@ sub load_tests_from_data_section {
     require YAML::Tiny;
     my $test_suite = YAML::Tiny::Load($content);
     return $test_suite;
+}
+
+{
+    my %aliases = qw(
+        template t
+        expected e
+        run      r
+    );
+
+    sub prepare_test_data {
+        my ($test_suite) = @_;
+        for my $item (@$test_suite) {
+            for my $longname ( keys %aliases ) {
+                my $alias = $aliases{$longname};
+                if ( !defined $item->{$longname} && defined $item->{$alias} )
+                {
+                    $item->{$longname} = $item->{$alias};
+                }
+            }
+        }
+    }
 }
 
 sub perl_tests {
@@ -96,17 +118,17 @@ sub perl_tests {
         SKIP: {
             $num++;
             skip( "perl test skip " . $num, 1 )
-                unless $test_item->{r};
+                unless $test_item->{run};
             local $ctx->{__stash}{entry} = $entry
-                if $test_item->{t} =~ m/<MTEntry/;
+                if $test_item->{template} =~ m/<MTEntry/;
             $ctx->{__stash}{entry} = undef
-                if $test_item->{t} =~ m/MTComments|MTPings/;
+                if $test_item->{template} =~ m/MTComments|MTPings/;
             $ctx->{__stash}{entries} = undef
-                if $test_item->{t} =~ m/MTEntries|MTPages/;
+                if $test_item->{template} =~ m/MTEntries|MTPages/;
             $ctx->stash( 'comment', undef );
             $request->{__stash} = {};
-            my $result = build( $ctx, $test_item->{t} );
-            is( $result, $test_item->{e}, "perl test " . $num++ );
+            my $result = build( $ctx, $test_item->{template} );
+            is( $result, $test_item->{expected}, "perl test " . $num++ );
         }
     }
 }
@@ -208,29 +230,29 @@ function run(&$ctx, $suite) {
     foreach ($suite as $test_item) {
         $ctx->__stash = $base_stash;
         $mt->db()->savedqueries = array();
-        if ( preg_match('/MT(Entry|Link)/', $test_item["t"]) 
-          && !preg_match('/MT(Comments|Pings)/', $test_item["t"]) )
+        if ( preg_match('/MT(Entry|Link)/', $test_item["template"]) 
+          && !preg_match('/MT(Comments|Pings)/', $test_item["template"]) )
         {
             $ctx->stash('entry', $entry);
         }
         else {
             $ctx->__stash['entry'] = null;
         }
-        if ( preg_match('/MTEntries|MTPages/', $test_item["t"]) ) {
+        if ( preg_match('/MTEntries|MTPages/', $test_item["template"]) ) {
             $ctx->__stash['entries'] = null;
             $ctx->__stash['author'] = null;
             $ctx->__stash['category'] = null;
         }
-        if ( preg_match('/MTCategoryArchiveLink/', $test_item["t"]) ) {
+        if ( preg_match('/MTCategoryArchiveLink/', $test_item["template"]) ) {
             $ctx->stash('current_archive_type', 'Category');
         } else {
             $ctx->stash('current_archive_type', '');
         }
         $test_num++;
-        if ($test_item["r"] == 1) {
-            $tmpl = $test_item["t"];
-            $result = build($ctx, $test_item["t"]);
-            ok($result, $test_item["e"], $test_num);
+        if ($test_item["run"] == 1) {
+            $tmpl = $test_item["template"];
+            $result = build($ctx, $test_item["template"]);
+            ok($result, $test_item["expected"], $test_num);
         } else {
             echo "skip - php test $test_num\n";
         }
