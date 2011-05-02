@@ -60,6 +60,7 @@ sub load_tests_from_data_section {
         template t
         expected e
         run      r
+        skip     s
     );
 
     sub prepare_test_data {
@@ -67,11 +68,15 @@ sub load_tests_from_data_section {
         for my $item (@$test_suite) {
             for my $longname ( keys %aliases ) {
                 my $alias = $aliases{$longname};
-                if ( !defined $item->{$longname} && defined $item->{$alias} )
-                {
+                if ( !defined $item->{$longname} && defined $item->{$alias} ) {
                     $item->{$longname} = $item->{$alias};
                 }
             }
+
+            $item->{skip} = 'NO REASON GIVEN'
+                if !defined $item->{skip}
+                    && defined $item->{run}
+                    && !$item->{run};
         }
     }
 }
@@ -117,8 +122,8 @@ sub perl_tests {
     foreach my $test_item (@$test_suite) {
         SKIP: {
             $num++;
-            skip( "perl test skip " . $num, 1 )
-                unless $test_item->{run};
+            skip( $test_item->{skip}, 1 )
+                if $test_item->{skip};
             local $ctx->{__stash}{entry} = $entry
                 if $test_item->{template} =~ m/<MTEntry/;
             $ctx->{__stash}{entry} = undef
@@ -249,12 +254,12 @@ function run(&$ctx, $suite) {
             $ctx->stash('current_archive_type', '');
         }
         $test_num++;
-        if ($test_item["run"] == 1) {
+        if ($test_item["skip"] ) {
+            echo "skip - " . $test_item["skip"] . "\n";
+        } else {
             $tmpl = $test_item["template"];
             $result = build($ctx, $test_item["template"]);
             ok($result, $test_item["expected"], $test_num);
-        } else {
-            echo "skip - php test $test_num\n";
         }
     }
 }
@@ -360,9 +365,8 @@ MT::Test::Tags
   use MT::Test::Tags;
   run_tests([
       {
-          r => 1,
-          t => '<mt:entries><mt:entryTitle /></mt:entries>',
-          e => 'foobar',
+          template => '<mt:entries><mt:entryTitle /></mt:entries>',
+          expected => 'foobar',
       },
   ]);
 
@@ -371,6 +375,16 @@ MT::Test::Tags
   run_tests();
   __DATA__
   -
-    r: 1
-    t: <mt:entries><mt:entryTitle></mt:entries>
-    e: foobar
+    template: <mt:entries><mt:entryTitle></mt:entries>
+    expected: foobar
+
+  ## if you want to skip some tests, give a reason as skip
+  __DATA__
+  -
+    skip: I don't wanna test this!
+    template: <mt:var name="password_of_melody">
+    expected: Nelson
+  ## you can also skip by give false value to the run.
+  ## this is legacy behaviour.
+  -
+    run: 0
