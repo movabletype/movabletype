@@ -173,7 +173,9 @@ sub _dump_php {
         return sprintf 'array(%s)', join(',', @elements);
     }
     elsif ( !ref $data ) {
-        return $data =~ /^\d+$/ ? $data : sprintf( '"%s"', $data );
+        return $data if $data =~ /^\d+$/;
+        $data =~ s!'!\\'!g;
+        return qq{'$data'};
     }
     die "unsupported type: " . ref $data;
 }
