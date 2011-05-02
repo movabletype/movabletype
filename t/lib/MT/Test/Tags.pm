@@ -8,7 +8,7 @@ package MT::Test::Tags;
 use strict;
 use warnings;
 use base qw( Exporter );
-our @EXPORT = qw( run_tests );
+our @EXPORT = qw( run_tests run_tests_by_data );
 
 BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
@@ -25,16 +25,23 @@ use MT::Builder;
 use IPC::Open2;
 require POSIX;
 our %const;
+our $test_section = 0;
 
 sub run_tests {
     my ($test_suite) = @_;
-    if ( !defined $test_suite ) {
-        $test_suite = load_tests_from_data_section();
-    }
+    prepare_test_data($test_suite);
+    $test_section++;
+    # Ok. We are now ready to test!
+    perl_tests($test_suite);
+    php_tests($test_suite);
+}
+
+sub run_tests_by_data {
+    my $test_suite = load_tests_from_data_section();
     prepare_test_data($test_suite);
 
     # Ok. We are now ready to test!
-    plan tests => ( scalar(@$test_suite) * 2 ) + 3;
+    plan tests => ( scalar(@$test_suite) * 2 ) + 2;
     perl_tests($test_suite);
     php_tests($test_suite);
 }
@@ -94,17 +101,12 @@ sub perl_tests {
 
     my $blog_name_tmpl
         = MT::Template->load( { name => "blog-name", blog_id => 1 } );
-    ok( $blog_name_tmpl, "'blog-name' template found" );
-
     my $ctx  = MT::Template::Context->new;
     my $blog = MT::Blog->load(1);
-    ok( $blog, "Test blog loaded" );
     $ctx->stash( 'blog',    $blog );
     $ctx->stash( 'blog_id', $blog->id );
     $ctx->stash( 'builder', MT::Builder->new );
-
     my $entry = MT::Entry->load(1);
-    ok( $entry, "Test entry loaded" );
 
     # entry we want to capture is dated: 19780131074500
     my $tsdiff = time - ts2epoch( $blog, '19780131074500' );
@@ -124,10 +126,13 @@ sub perl_tests {
 
     $ctx->{current_timestamp} = '20040816135142';
 
+    my $rest = scalar @$test_suite;
     foreach my $test_item (@$test_suite) {
-    SKIP: {
-            skip( $test_item->{skip}, 1 )
-                if $test_item->{skip};
+        SKIP: {
+            if ( $test_item->{skip} ) {
+                $rest--;
+                skip( $test_item->{skip}, 1 )
+            }
             local $ctx->{__stash}{entry} = $entry
                 if $test_item->{template} =~ m/<MTEntry/;
             $ctx->{__stash}{entry} = undef
@@ -138,8 +143,10 @@ sub perl_tests {
             $request->{__stash} = {};
             my $result = build( $ctx, $test_item->{template} );
             is( $result, $test_item->{expected}, $test_item->{name} );
+            $rest--;
         }
     }
+    is( $rest, 0, "Done all perl tests in section $test_section" );
 }
 
 sub build {
@@ -316,6 +323,7 @@ function error_handler($errno, $errstr, $errfile, $errline) {
 
 ?>
 PHP
+    my $rest = scalar @$test_suite;
     $const{TEST_SUITE_PHP} = _dump_php($test_suite);
     $test_script =~ s/<\Q$_\E>/$const{$_}/g for keys %const;
 
@@ -335,12 +343,15 @@ PHP
         SKIP: {
                 my $result = shift @lines;
                 if ( $result =~ s/^ok - // ) {
+                    $rest--;
                     pass($result);
                 }
                 elsif ( $result =~ s/^not ok - // ) {
+                    $rest--;
                     fail($result);
                 }
                 elsif ( $result =~ s/^skip - // ) {
+                    $rest--;
                     skip( $result, 1 );
                 }
                 elsif ( $result =~ m/^#/ ) {
@@ -361,6 +372,7 @@ PHP
     }
     close IN;
     $test->() if @lines;
+    is( $rest, 0, "Done all php tests in section $test_section" );
 }
 
 1;
@@ -372,16 +384,18 @@ MT::Test::Tags
 =head1 SYNOPSIS
 
   use MT::Test::Tags;
+  use Test::More;
   run_tests([
       {
           template => '<mt:entries><mt:entryTitle /></mt:entries>',
           expected => 'foobar',
       },
   ]);
+  done_testing();
 
   ## Alternative, write tests in YAML format in __DATA__ section.
   use MT::Test::Tags;
-  run_tests();
+  run_tests_by_data();
   __DATA__
   -
     template: <mt:entries><mt:entryTitle></mt:entries>
