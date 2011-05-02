@@ -93,17 +93,21 @@ sub perl_tests {
 
     my $num = 1;
     foreach my $test_item (@$test_suite) {
-        unless ($test_item->{r}) {
-            pass("perl test skip " . $num++);
-            next;
+        SKIP: {
+            $num++;
+            skip( "perl test skip " . $num, 1 )
+                unless $test_item->{r};
+            local $ctx->{__stash}{entry} = $entry
+                if $test_item->{t} =~ m/<MTEntry/;
+            $ctx->{__stash}{entry} = undef
+                if $test_item->{t} =~ m/MTComments|MTPings/;
+            $ctx->{__stash}{entries} = undef
+                if $test_item->{t} =~ m/MTEntries|MTPages/;
+            $ctx->stash( 'comment', undef );
+            $request->{__stash} = {};
+            my $result = build( $ctx, $test_item->{t} );
+            is( $result, $test_item->{e}, "perl test " . $num++ );
         }
-        local $ctx->{__stash}{entry} = $entry if $test_item->{t} =~ m/<MTEntry/;
-        $ctx->{__stash}{entry} = undef if $test_item->{t} =~ m/MTComments|MTPings/;
-        $ctx->{__stash}{entries} = undef if $test_item->{t} =~ m/MTEntries|MTPages/;
-        $ctx->stash('comment', undef);
-        $request->{__stash} = {};
-        my $result = build($ctx, $test_item->{t});
-        is($result, $test_item->{e}, "perl test " . $num++);
     }
 }
 
@@ -228,7 +232,7 @@ function run(&$ctx, $suite) {
             $result = build($ctx, $test_item["t"]);
             ok($result, $test_item["e"], $test_num);
         } else {
-            echo "ok - php test $test_num\n";
+            echo "skip - php test $test_num\n";
         }
     }
 }
@@ -296,16 +300,20 @@ PHP
 
     my $test = sub {
         while (@lines) {
-            my $result = shift @lines;
-            if ($result =~ m/^ok/) {
-                pass($result);
-            } elsif ($result =~ m/^not ok/) {
-                fail($result);
-            } elsif ($result =~ m/^#/) {
-                print STDERR $result . "\n";
-            } else {
-                print $result . "\n";
-            }
+	    SKIP: {
+                my $result = shift @lines;
+                if ($result =~ m/^ok/) {
+                    pass($result);
+                } elsif ($result =~ m/^not ok/) {
+                    fail($result);
+                } elsif ($result =~ m/skip/ ) {
+                    skip($result, 1);
+                } elsif ($result =~ m/^#/) {
+                    print STDERR $result . "\n";
+                } else {
+                    print $result . "\n";
+                }
+	    }
         }
     };
 
