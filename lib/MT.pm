@@ -2791,9 +2791,7 @@ sub core_commenter_authenticators {
             class      => 'MT::Auth::GoogleOpenId',
             login_form => 'comment/auth_googleopenid.tmpl',
             condition  => sub {
-                eval "require Digest::SHA1;";
-                return 0 if $@;
-                eval "require Crypt::SSLeay;";
+                eval { require Digest::SHA1; require Crypt::SSLeay; };
                 return 0 if $@;
                 return 1;
             },
