@@ -2356,7 +2356,7 @@ sub set_default_tmpl_params {
         }
         my %params = $mt->param_hash;
         $param->{mt_queries} = \%params;
-        if ( $param->{mt_debug} && 4 ) {
+        if ( $param->{mt_debug} & 4 ) {
             if ( my $profiler = Data::ObjectDriver->profiler ) {
                 my $stats = $profiler->statistics;
                 $param->{mt_sql_profile}{statistics} = $stats;
