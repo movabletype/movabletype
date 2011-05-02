@@ -1729,21 +1729,7 @@ sub ping {
             push @tb_domains, MT::Util::extract_domains( $b->site_url );
         }
     }
-    my $tb_domains;
-    if (@tb_domains) {
-        $tb_domains = '';
-        my %seen;
-        local $_;
-        foreach (@tb_domains) {
-            next unless $_;
-            $_ = lc($_);
-            next if $seen{$_};
-            $tb_domains .= '|' if $tb_domains ne '';
-            $tb_domains .= quotemeta($_);
-            $seen{$_} = 1;
-        }
-        $tb_domains = '(' . $tb_domains . ')' if $tb_domains;
-    }
+    my %tb_domains = map { lc($_) => 1 } @tb_domains;
 
     ## Send TrackBack pings.
     if ( my $entry = $param{Entry} ) {
@@ -1773,7 +1759,7 @@ sub ping {
             $url =~ s/\s*$//;
             my $url_domain;
             ($url_domain) = MT::Util::extract_domains($url);
-            next if $tb_domains && lc($url_domain) !~ m/$tb_domains$/;
+            next if exists $tb_domains{lc($url_domain)};
 
             my $req = HTTP::Request->new( POST => $url );
             $req->content_type(
