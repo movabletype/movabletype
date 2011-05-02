@@ -2749,7 +2749,7 @@ sub _commenter_auth_params {
 }
 
 sub _openid_commenter_condition {
-    eval "require Digest::SHA1;";
+    eval { require Digest::SHA1; };
     return $@ ? 0 : 1;
 }
 
