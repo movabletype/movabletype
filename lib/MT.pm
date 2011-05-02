@@ -2634,16 +2634,9 @@ sub build_email {
 
     my $ctx = $tmpl->context;
     $ctx->stash( 'blog_id', $blog->id )                 if $blog;
-    $ctx->stash( 'blog',    delete $param->{'blog'} )   if $param->{'blog'};
-    $ctx->stash( 'entry',   delete $param->{'entry'} )  if $param->{'entry'};
-    $ctx->stash( 'author',  delete $param->{'author'} ) if $param->{'author'};
-    $ctx->stash( 'commenter', delete $param->{'commenter'} )
-        if $param->{'commenter'};
-    $ctx->stash( 'comment', delete $param->{'comment'} )
-        if $param->{'comment'};
-    $ctx->stash( 'category', delete $param->{'category'} )
-        if $param->{'category'};
-    $ctx->stash( 'ping', delete $param->{'ping'} ) if $param->{'ping'};
+    foreach my $name (qw{blog entry author commenter comment category ping}) {
+        $ctx->stash( $name, delete $param->{$name} ) if $param->{$name};
+    }
 
     my $out = $mt->build_page_in_mem( $tmpl, $param );
 
