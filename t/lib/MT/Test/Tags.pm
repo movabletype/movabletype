@@ -259,7 +259,7 @@ function run(&$ctx, $suite) {
         }
 
         if ($test_item["skip"] ) {
-            echo "skip - php " . $test_item["skip"] . "\n";
+            echo "skip - php: " . $test_item["skip"] . "\n";
         } else {
             $tmpl = $test_item["template"];
             $result = build($ctx, $test_item["template"]);
@@ -296,10 +296,10 @@ function ok($str, $that, $test_name) {
     $str = trim($str);
     $that = trim($that);
     if ($str === $that) {
-        echo "ok - php $test_name\n";
+        echo "ok - php: $test_name\n";
         return true;
     } else {
-        echo "not ok - php $test_name\n".
+        echo "not ok - php: $test_name\n".
              "#     expected: $that\n".
              "#          got: $str\n";
         return false;
@@ -333,11 +333,11 @@ PHP
         while (@lines) {
 	    SKIP: {
                 my $result = shift @lines;
-                if ($result =~ m/^ok/) {
+                if ($result =~ s/^ok - //) {
                     pass($result);
-                } elsif ($result =~ m/^not ok/) {
+                } elsif ($result =~ s/^not ok - //) {
                     fail($result);
-                } elsif ($result =~ m/skip/ ) {
+                } elsif ($result =~ s/^skip - // ) {
                     skip($result, 1);
                 } elsif ($result =~ m/^#/) {
                     print STDERR $result . "\n";
