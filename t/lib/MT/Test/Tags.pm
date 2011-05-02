@@ -56,7 +56,9 @@ sub load_tests_from_data_section {
 }
 
 {
+    my $test_total_number = 1;
     my %aliases = qw(
+        name     n
         template t
         expected e
         run      r
@@ -73,10 +75,14 @@ sub load_tests_from_data_section {
                 }
             }
 
+            $item->{num}  = $test_total_number;
+            $item->{name} ||= "test item $test_total_number";
             $item->{skip} = 'NO REASON GIVEN'
                 if !defined $item->{skip}
                     && defined $item->{run}
                     && !$item->{run};
+
+            $test_total_number++;
         }
     }
 }
@@ -118,10 +124,8 @@ sub perl_tests {
 
     $ctx->{current_timestamp} = '20040816135142';
 
-    my $num = 1;
     foreach my $test_item (@$test_suite) {
         SKIP: {
-            $num++;
             skip( $test_item->{skip}, 1 )
                 if $test_item->{skip};
             local $ctx->{__stash}{entry} = $entry
@@ -133,7 +137,7 @@ sub perl_tests {
             $ctx->stash( 'comment', undef );
             $request->{__stash} = {};
             my $result = build( $ctx, $test_item->{template} );
-            is( $result, $test_item->{expected}, "perl test " . $num++ );
+            is( $result, $test_item->{expected}, $test_item->{name} );
         }
     }
 }
@@ -253,13 +257,13 @@ function run(&$ctx, $suite) {
         } else {
             $ctx->stash('current_archive_type', '');
         }
-        $test_num++;
+
         if ($test_item["skip"] ) {
-            echo "skip - " . $test_item["skip"] . "\n";
+            echo "skip - php " . $test_item["skip"] . "\n";
         } else {
             $tmpl = $test_item["template"];
             $result = build($ctx, $test_item["template"]);
-            ok($result, $test_item["expected"], $test_num);
+            ok($result, $test_item["expected"], $test_item["name"]);
         }
     }
 }
@@ -286,16 +290,16 @@ function build(&$ctx, $tmpl) {
     }
 }
 
-function ok($str, $that, $test_num) {
+function ok($str, $that, $test_name) {
     global $mt;
     global $tmpl;
     $str = trim($str);
     $that = trim($that);
     if ($str === $that) {
-        echo "ok - php test $test_num\n";
+        echo "ok - php $test_name\n";
         return true;
     } else {
-        echo "not ok - php test $test_num\n".
+        echo "not ok - php $test_name\n".
              "#     expected: $that\n".
              "#          got: $str\n";
         return false;
