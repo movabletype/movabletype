@@ -7,11 +7,8 @@
 package MT::Test::Tags;
 use strict;
 use warnings;
-
 use base qw( Exporter );
 our @EXPORT = qw( run_tests );
-
-use IPC::Open2;
 
 BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
@@ -21,23 +18,23 @@ $| = 1;
 
 use MT::Test qw(:db :data);
 use Test::More;
-use JSON -support_by_pp;
 use MT;
 use MT::Util qw(ts2epoch epoch2ts);
 use MT::Template::Context;
 use MT::Builder;
-
+use IPC::Open2;
 require POSIX;
 our %const;
 
 sub run_tests {
-    my ( $test_suite ) = @_;
+    my ($test_suite) = @_;
     if ( !defined $test_suite ) {
         $test_suite = load_tests_from_data_section();
     }
     prepare_test_data($test_suite);
+
     # Ok. We are now ready to test!
-    plan tests => (scalar(@$test_suite) * 2) + 3;
+    plan tests => ( scalar(@$test_suite) * 2 ) + 3;
     perl_tests($test_suite);
     php_tests($test_suite);
 }
@@ -57,7 +54,7 @@ sub load_tests_from_data_section {
 
 {
     my $test_total_number = 1;
-    my %aliases = qw(
+    my %aliases           = qw(
         name     n
         template t
         expected e
@@ -70,12 +67,13 @@ sub load_tests_from_data_section {
         for my $item (@$test_suite) {
             for my $longname ( keys %aliases ) {
                 my $alias = $aliases{$longname};
-                if ( !defined $item->{$longname} && defined $item->{$alias} ) {
+                if ( !defined $item->{$longname} && defined $item->{$alias} )
+                {
                     $item->{$longname} = $item->{$alias};
                 }
             }
 
-            $item->{num}  = $test_total_number;
+            $item->{num} = $test_total_number;
             $item->{name} ||= "test item $test_total_number";
             $item->{skip} = 'NO REASON GIVEN'
                 if !defined $item->{skip}
@@ -88,44 +86,46 @@ sub load_tests_from_data_section {
 }
 
 sub perl_tests {
-    my ( $test_suite ) = @_;
+    my ($test_suite) = @_;
+
     # Clear cache
     my $request = MT::Request->instance;
     $request->{__stash} = {};
 
-    my $blog_name_tmpl = MT::Template->load({name => "blog-name", blog_id => 1});
-    ok($blog_name_tmpl, "'blog-name' template found");
+    my $blog_name_tmpl
+        = MT::Template->load( { name => "blog-name", blog_id => 1 } );
+    ok( $blog_name_tmpl, "'blog-name' template found" );
 
-    my $ctx = MT::Template::Context->new;
+    my $ctx  = MT::Template::Context->new;
     my $blog = MT::Blog->load(1);
-    ok($blog, "Test blog loaded");
-    $ctx->stash('blog', $blog);
-    $ctx->stash('blog_id', $blog->id);
-    $ctx->stash('builder', MT::Builder->new);
+    ok( $blog, "Test blog loaded" );
+    $ctx->stash( 'blog',    $blog );
+    $ctx->stash( 'blog_id', $blog->id );
+    $ctx->stash( 'builder', MT::Builder->new );
 
-    my $entry  = MT::Entry->load( 1 );
-    ok($entry, "Test entry loaded");
+    my $entry = MT::Entry->load(1);
+    ok( $entry, "Test entry loaded" );
 
     # entry we want to capture is dated: 19780131074500
-    my $tsdiff = time - ts2epoch($blog, '19780131074500');
-    my $daysdiff = int($tsdiff / (60 * 60 * 24));
+    my $tsdiff = time - ts2epoch( $blog, '19780131074500' );
+    my $daysdiff = int( $tsdiff / ( 60 * 60 * 24 ) );
     %const = (
-        CFG_FILE => MT->instance->{cfg_file},
-        VERSION_ID => MT->instance->version_id,
+        CFG_FILE                  => MT->instance->{cfg_file},
+        VERSION_ID                => MT->instance->version_id,
         CURRENT_WORKING_DIRECTORY => MT->instance->server_path,
-        STATIC_CONSTANT => '1',
-        DYNAMIC_CONSTANT => '',
-        DAYS_CONSTANT1 => $daysdiff + 1,
-        DAYS_CONSTANT2 => $daysdiff - 1,
-        CURRENT_YEAR => POSIX::strftime("%Y", localtime),
-        CURRENT_MONTH => POSIX::strftime("%m", localtime),
-        STATIC_FILE_PATH => MT->instance->static_file_path . '/',
+        STATIC_CONSTANT           => '1',
+        DYNAMIC_CONSTANT          => '',
+        DAYS_CONSTANT1            => $daysdiff + 1,
+        DAYS_CONSTANT2            => $daysdiff - 1,
+        CURRENT_YEAR              => POSIX::strftime( "%Y", localtime ),
+        CURRENT_MONTH             => POSIX::strftime( "%m", localtime ),
+        STATIC_FILE_PATH          => MT->instance->static_file_path . '/',
     );
 
     $ctx->{current_timestamp} = '20040816135142';
 
     foreach my $test_item (@$test_suite) {
-        SKIP: {
+    SKIP: {
             skip( $test_item->{skip}, 1 )
                 if $test_item->{skip};
             local $ctx->{__stash}{entry} = $entry
@@ -143,19 +143,19 @@ sub perl_tests {
 }
 
 sub build {
-    my($ctx, $markup) = @_;
+    my ( $ctx, $markup ) = @_;
     my $b = $ctx->stash('builder');
-    my $tokens = $b->compile($ctx, $markup);
-    print('# -- error compiling: ' . $b->errstr), return undef
+    my $tokens = $b->compile( $ctx, $markup );
+    print( '# -- error compiling: ' . $b->errstr ), return undef
         unless defined $tokens;
-    my $res = $b->build($ctx, $tokens);
-    print '# -- error building: ' . ($b->errstr ? $b->errstr : '') . "\n"
+    my $res = $b->build( $ctx, $tokens );
+    print '# -- error building: ' . ( $b->errstr ? $b->errstr : '' ) . "\n"
         unless defined $res;
     return $res;
 }
 
 sub _dump_php {
-    my ( $data ) = @_;
+    my ($data) = @_;
     my $out;
     if ( ref $data eq 'HASH' ) {
         my @elements;
@@ -163,14 +163,14 @@ sub _dump_php {
             my $val = _dump_php( $data->{$key} );
             push @elements, "$key => $val";
         }
-        return sprintf 'array(%s)', join(',', @elements);
+        return sprintf 'array(%s)', join( ',', @elements );
     }
     elsif ( ref $data eq 'ARRAY' ) {
         my @elements;
-        for my $val ( @$data ) {
-            push @elements, _dump_php( $val );
+        for my $val (@$data) {
+            push @elements, _dump_php($val);
         }
-        return sprintf 'array(%s)', join(',', @elements);
+        return sprintf 'array(%s)', join( ',', @elements );
     }
     elsif ( !ref $data ) {
         return $data if $data =~ /^\d+$/;
@@ -186,7 +186,6 @@ sub php_tests {
 <?php
 include_once("php/mt.php");
 include_once("php/lib/MTUtil.php");
-require "t/lib/JSON.php";
 
 $cfg_file = '<CFG_FILE>';
 
@@ -321,7 +320,7 @@ PHP
     $test_script =~ s/<\Q$_\E>/$const{$_}/g for keys %const;
 
     # now run the test suite through PHP!
-    my $pid = open2(\*IN, \*OUT, "php");
+    my $pid = open2( \*IN, \*OUT, "php" );
     print OUT $test_script;
     close OUT;
     select IN;
@@ -333,20 +332,24 @@ PHP
 
     my $test = sub {
         while (@lines) {
-	    SKIP: {
+        SKIP: {
                 my $result = shift @lines;
-                if ($result =~ s/^ok - //) {
+                if ( $result =~ s/^ok - // ) {
                     pass($result);
-                } elsif ($result =~ s/^not ok - //) {
+                }
+                elsif ( $result =~ s/^not ok - // ) {
                     fail($result);
-                } elsif ($result =~ s/^skip - // ) {
-                    skip($result, 1);
-                } elsif ($result =~ m/^#/) {
+                }
+                elsif ( $result =~ s/^skip - // ) {
+                    skip( $result, 1 );
+                }
+                elsif ( $result =~ m/^#/ ) {
                     print STDERR $result . "\n";
-                } else {
+                }
+                else {
                     print $result . "\n";
                 }
-	    }
+            }
         }
     };
 
