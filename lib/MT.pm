@@ -2342,9 +2342,14 @@ sub set_default_tmpl_params {
             $param->{mt_headers} = \%ENV;
         }
         unless ( $mt->{cookies} ) {
-            my $class = $ENV{MOD_PERL} ? 'Apache::Cookie' : 'CGI::Cookie';
-            eval "use $class;";
-            $mt->{cookies} = $class->fetch;
+            if ($ENV{MOD_PERL}) {
+                eval { require Apache::Cookie };
+                $mt->{cookies} = Apache::Cookie->fetch;
+            }
+            else {
+                eval { require CGI::Cookie };
+                $mt->{cookies} = CGI::Cookie->fetch;
+            }
         }
         if ( $mt->{cookies} ) {
             $param->{mt_cookies} = $mt->{cookies};
