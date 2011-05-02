@@ -2645,12 +2645,6 @@ sub build_email {
         if $param->{'category'};
     $ctx->stash( 'ping', delete $param->{'ping'} ) if $param->{'ping'};
 
-    foreach my $p (%$param) {
-        if ( ref($p) ) {
-            $tmpl->param( $p, $param->{$p} );
-        }
-    }
-
     my $out = $mt->build_page_in_mem( $tmpl, $param );
 
     require MT::Log;
