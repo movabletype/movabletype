@@ -286,14 +286,6 @@ function run(&$ctx, $suite) {
     }
 }
 
-function cleanup($tmpl) {
-    # Translating perl array/hash structures to PHP...
-    # This is not a general solution... it's custom built for our input.
-    $tmpl = preg_replace('/^ *#.*$/m', '', $tmpl);
-    $tmpl = preg_replace('/# *\d+ *(?:TBD.*)? *$/m', '', $tmpl);
-    return $tmpl;
-}
-
 function build(&$ctx, $tmpl) {
     global $error_messages;
     $error_messages = array();
