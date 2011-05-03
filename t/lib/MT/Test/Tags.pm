@@ -181,6 +181,7 @@ sub _dump_php {
     }
     elsif ( !ref $data ) {
         return $data if $data =~ /^\d+$/;
+        $data =~ s!\\!\\\\!g;
         $data =~ s!'!\\'!g;
         return qq{'$data'};
     }
