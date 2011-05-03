@@ -29,7 +29,7 @@ our $test_section = 0;
 
 sub run_tests {
     my ($test_suite) = @_;
-    prepare_test_data($test_suite);
+    prepare_test_suite($test_suite);
     $test_section++;
     # Ok. We are now ready to test!
     perl_tests($test_suite);
@@ -38,7 +38,7 @@ sub run_tests {
 
 sub run_tests_by_data {
     my $test_suite = load_tests_from_data_section();
-    prepare_test_data($test_suite);
+    prepare_test_suite($test_suite);
 
     # Ok. We are now ready to test!
     plan tests => ( scalar(@$test_suite) * 2 ) + 2;
@@ -69,7 +69,7 @@ sub load_tests_from_data_section {
         skip     s
     );
 
-    sub prepare_test_data {
+    sub prepare_test_suite {
         my ($test_suite) = @_;
         prepare_consts();
         for my $item (@$test_suite) {
@@ -87,6 +87,7 @@ sub load_tests_from_data_section {
                 if !defined $item->{skip}
                     && defined $item->{run}
                     && !$item->{run};
+            $item->{trim} = 1 if !defined $item->{trim};
             $test_total_number++;
         }
     }
@@ -146,6 +147,12 @@ sub perl_tests {
             $template =~ s/\Q$_\E/$const{$_}/g for keys %const;
             $expected =~ s/\Q$_\E/$const{$_}/g for keys %const;
             my $result = build( $ctx, $template );
+            if ( $test_item->{trim} ) {
+                $result   =~ s/^\s*//;
+                $result   =~ s/\s*$//;
+                $expected =~ s/^\s*//;
+                $expected =~ s/\s*$//;
+            }
             is( $result, $expected, $test_item->{name} );
             $rest--;
         }
@@ -281,6 +288,10 @@ function run(&$ctx, $suite) {
                 $expected = preg_replace('/' . $c . '/', $r, $expected);
             }
             $result = build($ctx, $template);
+            if ( $test_item["trim"] ) {
+                $result   = trim($result);
+                $expected = trim($expected);
+            }
             ok($result, $expected, $test_item["name"]);
         }
     }
@@ -301,10 +312,6 @@ function build(&$ctx, $tmpl) {
 }
 
 function ok($str, $that, $test_name) {
-    global $mt;
-    global $tmpl;
-    $str = trim($str);
-    $that = trim($that);
     if ($str === $that) {
         echo "ok - php: $test_name\n";
         return true;
@@ -409,7 +416,34 @@ MT::Test::Tags
     skip: I don't wanna test this!
     template: <mt:var name="password_of_melody">
     expected: Nelson
-  ## you can also skip by give false value to the run.
-  ## this is legacy behaviour.
-  -
-    run: 0
+
+=head1 TEST SUITE
+
+Test suite must be an array of hash ref. in each hash must has "template"
+and "expected" values. also you can add optional values for convenience.
+
+=over 4
+
+=item * template | t
+
+Template which you want to test.
+
+=item * expected | e
+
+Expected string which the result the template was built.
+
+=item * name | n (optional)
+
+A name or description of this test.
+
+=item * skip | s (optional)
+
+If you want to skip this test for now, give the reason.
+
+=item * trim (optional)
+
+By default, the result of template and expected are compared after
+trimed (ignore the first and last whitespaces).
+If you don't want that, set 0 for this.
+
+=back
