@@ -150,7 +150,7 @@ sub perl_tests {
             $rest--;
         }
     }
-    is( $rest, 0, "Done all perl tests in section $test_section" );
+    is( $rest, 0, "Done all perl tests" . ( $test_section ? " in section $test_section" : "" ) );
 }
 
 sub build {
@@ -382,7 +382,7 @@ PHP
     }
     close IN;
     $test->() if @lines;
-    is( $rest, 0, "Done all php tests in section $test_section" );
+    is( $rest, 0, "Done all php tests" . ( $test_section ? " in section $test_section" : "" ) );
 }
 
 1;
