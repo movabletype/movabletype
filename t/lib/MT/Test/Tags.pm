@@ -71,6 +71,7 @@ sub load_tests_from_data_section {
 
     sub prepare_test_data {
         my ($test_suite) = @_;
+        prepare_consts();
         for my $item (@$test_suite) {
             for my $longname ( keys %aliases ) {
                 my $alias = $aliases{$longname};
@@ -86,28 +87,13 @@ sub load_tests_from_data_section {
                 if !defined $item->{skip}
                     && defined $item->{run}
                     && !$item->{run};
-
             $test_total_number++;
         }
     }
 }
 
-sub perl_tests {
-    my ($test_suite) = @_;
-
-    # Clear cache
-    my $request = MT::Request->instance;
-    $request->{__stash} = {};
-
-    my $blog_name_tmpl
-        = MT::Template->load( { name => "blog-name", blog_id => 1 } );
-    my $ctx  = MT::Template::Context->new;
+sub prepare_consts {
     my $blog = MT::Blog->load(1);
-    $ctx->stash( 'blog',    $blog );
-    $ctx->stash( 'blog_id', $blog->id );
-    $ctx->stash( 'builder', MT::Builder->new );
-    my $entry = MT::Entry->load(1);
-
     # entry we want to capture is dated: 19780131074500
     my $tsdiff = time - ts2epoch( $blog, '19780131074500' );
     my $daysdiff = int( $tsdiff / ( 60 * 60 * 24 ) );
@@ -123,7 +109,21 @@ sub perl_tests {
         CURRENT_MONTH             => POSIX::strftime( "%m", localtime ),
         STATIC_FILE_PATH          => MT->instance->static_file_path . '/',
     );
+}
 
+sub perl_tests {
+    my ($test_suite) = @_;
+
+    # Clear cache
+    my $request = MT::Request->instance;
+    $request->{__stash} = {};
+
+    my $ctx  = MT::Template::Context->new;
+    my $blog = MT::Blog->load(1);
+    my $entry = MT::Entry->load(1);
+    $ctx->stash( 'blog',    $blog );
+    $ctx->stash( 'blog_id', $blog->id );
+    $ctx->stash( 'builder', MT::Builder->new );
     $ctx->{current_timestamp} = '20040816135142';
 
     my $rest = scalar @$test_suite;
@@ -133,16 +133,20 @@ sub perl_tests {
                 $rest--;
                 skip( $test_item->{skip}, 1 )
             }
+            my $template = $test_item->{template};
+            my $expected = $test_item->{expected};
             local $ctx->{__stash}{entry} = $entry
-                if $test_item->{template} =~ m/<MTEntry/;
+                if $template =~ m/<MTEntry/;
             $ctx->{__stash}{entry} = undef
-                if $test_item->{template} =~ m/MTComments|MTPings/;
+                if $template =~ m/MTComments|MTPings/;
             $ctx->{__stash}{entries} = undef
-                if $test_item->{template} =~ m/MTEntries|MTPages/;
+                if $template =~ m/MTEntries|MTPages/;
             $ctx->stash( 'comment', undef );
             $request->{__stash} = {};
-            my $result = build( $ctx, $test_item->{template} );
-            is( $result, $test_item->{expected}, $test_item->{name} );
+            $template =~ s/\Q$_\E/$const{$_}/g for keys %const;
+            $expected =~ s/\Q$_\E/$const{$_}/g for keys %const;
+            my $result = build( $ctx, $template );
+            is( $result, $expected, $test_item->{name} );
             $rest--;
         }
     }
@@ -180,7 +184,6 @@ sub _dump_php {
         return sprintf 'array(%s)', join( ',', @elements );
     }
     elsif ( !ref $data ) {
-        return $data if $data =~ /^\d+$/;
         $data =~ s!\\!\\\\!g;
         $data =~ s!'!\\'!g;
         return qq{'$data'};
@@ -270,9 +273,15 @@ function run(&$ctx, $suite) {
         if ($test_item["skip"] ) {
             echo "skip - php: " . $test_item["skip"] . "\n";
         } else {
-            $tmpl = $test_item["template"];
-            $result = build($ctx, $test_item["template"]);
-            ok($result, $test_item["expected"], $test_item["name"]);
+            $template = $test_item["template"];
+            $expected = $test_item["expected"];
+            global $const;
+            foreach ($const as $c => $r) {
+                $template = preg_replace('/' . $c . '/', $r, $template);
+                $expected = preg_replace('/' . $c . '/', $r, $expected);
+            }
+            $result = build($ctx, $template);
+            ok($result, $expected, $test_item["name"]);
         }
     }
 }
