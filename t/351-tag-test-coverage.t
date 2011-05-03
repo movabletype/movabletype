@@ -32,8 +32,8 @@ for my $tmpl ( @test_templates ) {
 }
 
 my @existing_tags = (
-    map { lc $_ } keys %{ MT->registry( tags => 'block' ) },
-    map { lc $_ } keys %{ MT->registry( tags => 'function' ) },
+    map { lc $_ } keys %{ MT->component('core')->registry( tags => 'block' ) },
+    map { lc $_ } keys %{ MT->component('core')->registry( tags => 'function' ) },
 );
 
 plan tests => scalar @existing_tags;
