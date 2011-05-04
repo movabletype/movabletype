@@ -9,6 +9,7 @@ use strict;
 use warnings;
 use base qw( Exporter );
 our @EXPORT = qw( run_tests run_tests_by_data );
+use Test::More;
 
 BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
@@ -17,7 +18,6 @@ BEGIN {
 $| = 1;
 
 use MT::Test qw(:db :data);
-use Test::More;
 use MT;
 use MT::Util qw(ts2epoch epoch2ts);
 use MT::Template::Context;
@@ -47,15 +47,19 @@ sub run_tests_by_data {
 }
 
 sub load_tests_from_data_section {
-    ## Taken from Data::Section::Simple
+    ## At first, test YAML::Syck.
+    ## This style of tests can't run without it.
+    eval { require YAML::Syck };
+    plan skip_all => "YAML::Syck is not installed." if $@;
+
+    ## This logic was taken from Data::Section::Simple
     my $data = do { no strict 'refs'; \*main::DATA };
     die "No Data section found" unless defined fileno $data;
     seek $data, 0, 0;
     my $content = join '', <$data>;
     $content =~ s/^.*\n__DATA__\n/\n/s;    # for win32
     $content =~ s/\n__END__\n.*$/\n/s;
-    require YAML::Tiny;
-    my $test_suite = YAML::Tiny::Load($content);
+    my $test_suite = YAML::Syck::Load($content);
     return $test_suite;
 }
 
