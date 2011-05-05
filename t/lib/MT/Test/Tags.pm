@@ -412,8 +412,8 @@ function ok($str, $that, $test_name, $like) {
         return true;
     } else {
         echo "not ok - php: $test_name\n".
-             "#     expected: $that\n".
              "#          got: $str\n";
+             "#     expected: $that\n".
         return false;
     }
 }
@@ -458,7 +458,7 @@ PHP
                     $rest--;
                     skip( $result, 1 );
                 }
-                elsif ( $result =~ s/^#\s*// ) {
+                elsif ( $result =~ s/^#\s// ) {
                     note($result);
                 }
                 else {
