@@ -8,7 +8,7 @@ package MT::Test::Tags;
 use strict;
 use warnings;
 use base qw( Exporter );
-our @EXPORT = qw( run_tests run_tests_by_data );
+our @EXPORT = qw( run_tests run_tests_by_data run_tests_by_files );
 use Test::More;
 
 BEGIN {
@@ -37,7 +37,8 @@ sub run_tests {
 }
 
 sub run_tests_by_data {
-    my $test_suite = load_tests_from_data_section();
+    my $test_suite = load_tests_from_data_section()
+        or return;
     prepare_test_suite($test_suite);
 
     # Ok. We are now ready to test!
@@ -46,12 +47,39 @@ sub run_tests_by_data {
     php_tests($test_suite);
 }
 
-sub load_tests_from_data_section {
+sub run_tests_by_files {
+    for my $fn ( @_ ) {
+        note( "Testing data in $fn..." );
+        $test_section = $fn;
+        my $test_suite = load_tests_from_file($fn)
+            or return;
+        prepare_test_suite($test_suite);
+
+        # Ok. We are now ready to test!
+        perl_tests($test_suite);
+        php_tests($test_suite);
+    }
+}
+
+sub load_tests_from_file {
     ## At first, test YAML::Syck.
     ## This style of tests can't run without it.
     eval { require YAML::Syck };
     plan skip_all => "YAML::Syck is not installed." if $@;
 
+    my ($fn) = @_;
+    my $test_suite = YAML::Syck::LoadFile($fn);
+    return $test_suite;
+}
+
+sub load_tests_from_data_section {
+    ## At first, test YAML::Syck.
+    ## This style of tests can't run without it.
+    eval { require YAML::Syck };
+    if ( $@ ) {
+        plan skip_all => "YAML::Syck is not installed.";
+        return;
+    }
     ## This logic was taken from Data::Section::Simple
     my $data = do { no strict 'refs'; \*main::DATA };
     die "No Data section found" unless defined fileno $data;
