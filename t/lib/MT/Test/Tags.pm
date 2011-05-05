@@ -99,6 +99,7 @@ sub load_tests_from_data_section {
         expected e
         run      r
         skip     s
+        like     l
     );
 
     sub prepare_test_suite {
@@ -160,14 +161,15 @@ sub perl_tests {
     $ctx->{current_timestamp} = '20040816135142';
 
     my $rest = scalar @$test_suite;
-    foreach my $test_item (@$test_suite) {
+    TEST: foreach my $test_item (@$test_suite) {
         SKIP: {
             if ( $test_item->{skip} ) {
                 $rest--;
                 skip( $test_item->{skip}, 1 )
             }
-            my $template = $test_item->{template};
-            my $expected = $test_item->{expected};
+            my $template = $test_item->{template} || '';
+            my $expected = $test_item->{expected} || '';
+            my $like     = $test_item->{like};
             local $ctx->{__stash}{entry} = $entry
                 if $template =~ m/<MTEntry/;
             $ctx->{__stash}{entry} = undef
@@ -179,13 +181,39 @@ sub perl_tests {
             $template =~ s/\Q$_\E/$const{$_}/g for keys %const;
             $expected =~ s/\Q$_\E/$const{$_}/g for keys %const;
             my $result = build( $ctx, $template );
+            if ( $test_item->{error} ) {
+                if ( defined $result ) {
+                    fail( $test_item->{name} );
+                    $rest--;
+                    next TEST;
+                }
+                if ( !$expected && !$like ) {
+                    pass( $test_item->{name} );
+                    $rest--;
+                    next TEST;
+                }
+                $result = $ctx->stash('builder')->errstr;
+            }
+            else {
+                if ( !defined $result ) {
+                    fail( $test_item->{name} );
+                    note( "got error: " . $ctx->stash('builder')->errstr );
+                    $rest--;
+                    next TEST;
+                }
+            }
             if ( $test_item->{trim} ) {
                 $result   =~ s/^\s*//;
                 $result   =~ s/\s*$//;
                 $expected =~ s/^\s*//;
                 $expected =~ s/\s*$//;
             }
-            is( $result, $expected, $test_item->{name} );
+            if ( $like ) {
+                like( $result, $like, $test_item->{name} );
+            }
+            else {
+                is( $result, $expected, $test_item->{name} );
+            }
             $rest--;
         }
     }
@@ -196,12 +224,10 @@ sub build {
     my ( $ctx, $markup ) = @_;
     my $b = $ctx->stash('builder');
     my $tokens = $b->compile( $ctx, $markup );
-    print( '# -- error compiling: ' . $b->errstr ), return undef
-        unless defined $tokens;
-    my $res = $b->build( $ctx, $tokens );
-    print '# -- error building: ' . ( $b->errstr ? $b->errstr : '' ) . "\n"
-        unless defined $res;
-    return $res;
+    if ( !defined $tokens ) {
+        return;
+    }
+    return $b->build( $ctx, $tokens );
 }
 
 sub _dump_php {
@@ -286,8 +312,9 @@ function run(&$ctx, $suite) {
     global $entry;
     global $mt;
     global $tmpl;
+    global $error_messages;
     $base_stash = $ctx->__stash;
-    foreach ($suite as $test_item) {
+    TEST: foreach ($suite as $test_item) {
         $ctx->__stash = $base_stash;
         $mt->db()->savedqueries = array();
         if ( preg_match('/MT(Entry|Link)/', $test_item["template"]) 
@@ -312,19 +339,43 @@ function run(&$ctx, $suite) {
         if ($test_item["skip"] ) {
             echo "skip - php: " . $test_item["skip"] . "\n";
         } else {
-            $template = $test_item["template"];
-            $expected = $test_item["expected"];
+            $test_name = $test_item["name"];
+            $template  = $test_item["template"];
+            $expected  = $test_item["expected_php"] ? $test_item["expected_php"]
+                       :                              $test_item["expected"];
+            $like      = $test_item["like_php"] ? $test_item["like_php"]
+                       :                          $test_item["like"];
             global $const;
             foreach ($const as $c => $r) {
                 $template = preg_replace('/' . $c . '/', $r, $template);
                 $expected = preg_replace('/' . $c . '/', $r, $expected);
             }
             $result = build($ctx, $template);
+            if ( $test_item["error"] ) {
+                if ( !is_null( $result ) ) {
+                    echo "not ok - php: $test_name\n";
+                    continue TEST;
+                }
+                if ( !$expected && !$like ) {
+                    echo "ok - php: $test_name\n";
+                    continue TEST;
+                }
+                $result = join('', $error_messages);
+            }
+            else {
+                if ( is_null( $result ) ) {
+                    echo "not ok - php: $test_name\n"
+                       . "# got error: "
+                       . join( '#    ', $error_messages )
+                       . "\n";
+                    continue TEST;
+                }
+            }
             if ( $test_item["trim"] ) {
                 $result   = trim($result);
                 $expected = trim($expected);
             }
-            ok($result, $expected, $test_item["name"]);
+            $like ? ok($result, $like, $test_name, true) : ok($result, $expected, $test_name, false);
         }
     }
 }
@@ -337,14 +388,26 @@ function build(&$ctx, $tmpl) {
         $ctx->_eval('?>' . $_var_compiled);
         $_contents = ob_get_contents();
         ob_end_clean();
-        return join('', $error_messages) . $_contents;
+        if ( count($error_messages) ) {
+            return null;
+        }
+        else {
+            return $_contents;
+        }
     } else {
         return $ctx->error("Error compiling template module '$module'");
     }
 }
 
-function ok($str, $that, $test_name) {
-    if ($str === $that) {
+function ok($str, $that, $test_name, $like) {
+    $success = null;
+    if ( $like ) {
+        $success = preg_match($that, $str);
+    }
+    else {
+        $success = ( $str === $that );
+    }
+    if ($success) {
         echo "ok - php: $test_name\n";
         return true;
     } else {
@@ -395,11 +458,11 @@ PHP
                     $rest--;
                     skip( $result, 1 );
                 }
-                elsif ( $result =~ m/^#/ ) {
-                    print STDERR $result . "\n";
+                elsif ( $result =~ s/^#\s*// ) {
+                    note($result);
                 }
                 else {
-                    print $result . "\n";
+                    diag($result);
                 }
             }
         }
@@ -456,6 +519,10 @@ and "expected" values. also you can add optional values for convenience.
 
 =over 4
 
+=item * name | n (optional)
+
+A name or description of this test.
+
 =item * template | t
 
 Template which you want to test.
@@ -464,18 +531,33 @@ Template which you want to test.
 
 Expected string which the result the template was built.
 
-=item * name | n (optional)
+=item * like | l
 
-A name or description of this test.
+Like L<expected> but try to match with result string as RegExp.
+
+=item * error
+
+If L<error> is true, test tool understands that this template snipet
+should get any errors. If both L<expected> and L<like> ain't given,
+say OK just if got error. And if L<expected> or L<like> is given, try
+them for matching for error messages.
 
 =item * skip | s (optional)
 
-If you want to skip this test for now, give the reason.
+If you want to skip this test for now, give the reason here.
 
 =item * trim (optional)
 
-By default, the result of template and expected are compared after
+By default, the result of L<template> and L<expected> are compared after
 trimed (ignore the first and last whitespaces).
 If you don't want that, set 0 for this.
+
+=item * expected_php
+
+This value is used for matching only at php testing.
+
+=item * like_php
+
+This value is used for matching only at php testing.
 
 =back
