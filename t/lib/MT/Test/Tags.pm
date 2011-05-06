@@ -69,8 +69,10 @@ sub load_tests_from_file {
     ## At first, test YAML::Syck.
     ## This style of tests can't run without it.
     eval { require YAML::Syck };
-    plan skip_all => "YAML::Syck is not installed." if $@;
-
+    if ( $@ ) {
+        plan skip_all => "YAML::Syck is not installed.";
+        return;
+    }
     my ($fn) = @_;
     my $test_suite = YAML::Syck::LoadFile($fn);
     return $test_suite;
