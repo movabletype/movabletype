@@ -24,7 +24,7 @@ use MT::Template::Context;
 use MT::Builder;
 use IPC::Open2;
 require POSIX;
-our %const;
+
 our $test_section = 0;
 our ( %PRERUN, %SETUP, %PRERUN_PHP, %SETUP_PHP );
 
@@ -32,9 +32,10 @@ sub run_tests {
     my ($test_suite) = @_;
     prepare_test_suite($test_suite);
     $test_section++;
+    my $tmpl_vars = prepare_tmpl_vars();
     # Ok. We are now ready to test!
-    perl_tests($test_suite);
-    php_tests($test_suite);
+    perl_tests( $test_suite, $tmpl_vars );
+    php_tests(  $test_suite, $tmpl_vars );
 }
 
 sub run_tests_by_data {
@@ -44,8 +45,10 @@ sub run_tests_by_data {
 
     # Ok. We are now ready to test!
     plan tests => ( scalar(@$test_suite) * 2 ) + 2;
-    perl_tests($test_suite);
-    php_tests($test_suite);
+    my $tmpl_vars = prepare_tmpl_vars();
+    # Ok. We are now ready to test!
+    perl_tests( $test_suite, $tmpl_vars );
+    php_tests(  $test_suite, $tmpl_vars );
 }
 
 sub run_tests_by_files {
@@ -55,10 +58,10 @@ sub run_tests_by_files {
         my $test_suite = load_tests_from_file($fn)
             or return;
         prepare_test_suite($test_suite);
-
+        my $tmpl_vars = prepare_tmpl_vars();
         # Ok. We are now ready to test!
-        perl_tests($test_suite);
-        php_tests($test_suite);
+        perl_tests( $test_suite, $tmpl_vars );
+        php_tests(  $test_suite, $tmpl_vars );
     }
 }
 
@@ -105,7 +108,6 @@ sub load_tests_from_data_section {
 
     sub prepare_test_suite {
         my ($test_suite) = @_;
-        prepare_consts();
         for my $item (@$test_suite) {
             for my $longname ( keys %aliases ) {
                 my $alias = $aliases{$longname};
@@ -127,12 +129,12 @@ sub load_tests_from_data_section {
     }
 }
 
-sub prepare_consts {
+sub prepare_tmpl_vars {
     my $blog = MT::Blog->load(1);
     # entry we want to capture is dated: 19780131074500
     my $tsdiff = time - ts2epoch( $blog, '19780131074500' );
     my $daysdiff = int( $tsdiff / ( 60 * 60 * 24 ) );
-    %const = (
+    return {
         CFG_FILE                  => MT->instance->{cfg_file},
         VERSION_ID                => MT->instance->version_id,
         CURRENT_WORKING_DIRECTORY => MT->instance->server_path,
@@ -143,7 +145,7 @@ sub prepare_consts {
         CURRENT_YEAR              => POSIX::strftime( "%Y", localtime ),
         CURRENT_MONTH             => POSIX::strftime( "%m", localtime ),
         STATIC_FILE_PATH          => MT->instance->static_file_path . '/',
-    );
+    };
 }
 
 $PRERUN{__default__} = sub {
@@ -198,20 +200,20 @@ $SETUP_PHP{__default__} = <<'PHP';
 PHP
 
 sub perl_tests {
-    my ($test_suite) = @_;
+    my ($test_suite, $tmpl_vars) = @_;
 
     # Clear cache
     my $request = MT::Request->instance;
     my $stock = {};
     for my $sub ( values %PRERUN ) {
-        $sub->($stock);
+        $sub->($stock, $tmpl_vars);
     }
     my $rest = scalar @$test_suite;
     TEST: foreach my $test_item (@$test_suite) {
         my $ctx  = MT::Template::Context->new;
         $request->{__stash} = {};
         for my $sub ( values %SETUP ) {
-            $sub->($test_item, $ctx, $stock);
+            $sub->($test_item, $ctx, $stock, $tmpl_vars);
         }
         SKIP: {
             if ( $test_item->{skip} ) {
@@ -223,8 +225,8 @@ sub perl_tests {
             my $expected = defined $test_item->{expected} ? $test_item->{expected}
                          :                                  '';
             my $like     = $test_item->{like};
-            $template =~ s/\Q$_\E/$const{$_}/g for keys %const;
-            $expected =~ s/\Q$_\E/$const{$_}/g for keys %const;
+            $template =~ s/\Q$_\E/$tmpl_vars->{$_}/g for keys %$tmpl_vars;
+            $expected =~ s/\Q$_\E/$tmpl_vars->{$_}/g for keys %$tmpl_vars;
             my $result = build( $ctx, $template );
             if ( $test_item->{error} ) {
                 if ( defined $result ) {
@@ -302,32 +304,17 @@ sub _dump_php {
 }
 
 sub php_tests {
-    my ($test_suite) = @_;
+    my ($test_suite, $tmpl_vars) = @_;
     my $test_script = <<'PHP';
 <?php
 include_once("php/mt.php");
 include_once("php/lib/MTUtil.php");
 
-$cfg_file = '<CFG_FILE>';
-
-$const = array(
-    'CFG_FILE' => $cfg_file,
-    'VERSION_ID' => VERSION_ID,
-    'CURRENT_WORKING_DIRECTORY' => '',
-    'STATIC_CONSTANT' => '',
-    'DYNAMIC_CONSTANT' => '1',
-    'DAYS_CONSTANT1' => '<DAYS_CONSTANT1>',
-    'DAYS_CONSTANT2' => '<DAYS_CONSTANT2>',
-    'CURRENT_YEAR' => strftime("%Y"),
-    'CURRENT_MONTH' => strftime("%m"),
-    'STATIC_FILE_PATH' => '<STATIC_FILE_PATH>',
-);
-
+$cfg_file  = '<CFG_FILE>';
+$tmpl_vars = <TMPL_VARS>;
 $output_results = 0;
-
 $mt = MT::get_instance(1, $cfg_file);
 $ctx =& $mt->context();
-
 $path = $mt->config('mtdir');
 if (substr($path, strlen($path) - 1, 1) == '/')
     $path = substr($path, 1, strlen($path)-1);
@@ -363,7 +350,7 @@ function run(&$ctx, $suite) {
             $like      = $test_item["like_php"] ? $test_item["like_php"]
                        :                          $test_item["like"];
             global $const;
-            foreach ($const as $c => $r) {
+            foreach ($tmpl_vars as $c => $r) {
                 $template = preg_replace('/' . $c . '/', $r, $template);
                 $expected = preg_replace('/' . $c . '/', $r, $expected);
             }
@@ -445,16 +432,23 @@ function error_handler($errno, $errstr, $errfile, $errline) {
 ?>
 PHP
     my $rest = scalar @$test_suite;
-    $const{TEST_SUITE_PHP} = _dump_php($test_suite);
-    $const{PRERUN_PHP} = '';
+    my %snipet;
+    $snipet{CFG_FILE} => MT->instance->{cfg_file};
+    {
+        local $tmpl_vars->{STATIC_CONSTANT} = '';
+        local $tmpl_vars->{DYNAMIC_CONSTANT} = 1;
+        $snipet{TMPL_VARS} = _dump_php($tmpl_vars);
+    }
+    $snipet{TEST_SUITE_PHP} = _dump_php($test_suite);
+    $snipet{PRERUN_PHP} = '';
     for my $snipet ( values %PRERUN_PHP ) {
-        $const{PRERUN_PHP} .= $snipet;
+        $snipet{PRERUN_PHP} .= $snipet;
     }
-    $const{SETUP_PHP} = '';
+    $snipet{SETUP_PHP} = '';
     for my $snipet ( values %SETUP_PHP ) {
-        $const{SETUP_PHP} .= $snipet;
+        $snipet{SETUP_PHP} .= $snipet;
     }
-    $test_script =~ s/<\Q$_\E>/$const{$_}/g for keys %const;
+    $test_script =~ s/<\Q$_\E>/$snipet{$_}/g for keys %snipet;
 
     # now run the test suite through PHP!
     my $pid = open2( \*IN, \*OUT, "php" );
