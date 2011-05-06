@@ -412,8 +412,8 @@ function ok($str, $that, $test_name, $like) {
         return true;
     } else {
         echo "not ok - php: $test_name\n".
-             "#          got: $str\n";
-             "#     expected: $that\n".
+             "#          got: $str\n".
+             "#     expected: $that\n";
         return false;
     }
 }
