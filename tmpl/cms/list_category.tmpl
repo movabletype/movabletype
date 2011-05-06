@@ -36,11 +36,11 @@
       </div>
 
       <div id="area-action" class="mod sortable-header">
-        <select id="itemlist" name="itemlist">
+        <select id="itemlist" name="itemlist" class="disabled" disabled="disabled">
           <option id="opt-0" value="0"><__trans phrase="Top Level"></option>
         </select>
-        <input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">">
-        <button type="submit" class="add button"><__trans phrase="Add"></button>
+        <input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short disabled" disabled="disabled" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">">
+        <button type="submit" class="add button disabled" disabled="disabled"><__trans phrase="Add"></button>
       </div>
 
       <div id="root" class="sortable"></div>
@@ -703,6 +703,11 @@ function renderItems(data) {
   fixZeroStateMessage();
   checksum = data.result.checksum;
   setHoverAction(jQuery('.sortable-item'));
+
+  jQuery('#area-action > :disabled').each( function() {
+    jQuery(this).removeClass('disabled');
+    jQuery(this).removeAttr('disabled');
+  });
 }
 
 function fixZeroStateMessage () {
@@ -769,6 +774,10 @@ jQuery('.add').click(function() {
 jQuery('.save').click( bulkUpdateCategories );
 
 function bulkUpdateCategories() {
+  jQuery('#area-action > :enabled').each( function() {
+    jQuery(this).addClass('disabled');
+    jQuery(this).attr('disabled', 'disabled');
+  }); 
   var items = [];
   jQuery('.sortable-item:visible').each(function() {
     var $item = jQuery(this);
@@ -815,6 +824,12 @@ jQuery(window).bind('beforeunload', function() {
   }
 });
 
+jQuery(window).bind('listReady', function() {
+  jQuery('#area-action > :disabled').each( function() {
+    jQuery(this).removeClass('disabled');
+    jQuery(this).removeAttr('disabled');
+  });
+});
 renderNestedList();
 </mt:setvarblock>
 <mt:include name="include/footer.tmpl">
