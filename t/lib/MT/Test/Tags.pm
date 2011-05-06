@@ -218,8 +218,10 @@ sub perl_tests {
                 $rest--;
                 skip( $test_item->{skip}, 1 )
             }
-            my $template = $test_item->{template} || '';
-            my $expected = $test_item->{expected} || '';
+            my $template = defined $test_item->{template} ? $test_item->{template}
+                         :                                  '';
+            my $expected = defined $test_item->{expected} ? $test_item->{expected}
+                         :                                  '';
             my $like     = $test_item->{like};
             $template =~ s/\Q$_\E/$const{$_}/g for keys %const;
             $expected =~ s/\Q$_\E/$const{$_}/g for keys %const;
