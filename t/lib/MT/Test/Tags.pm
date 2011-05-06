@@ -26,6 +26,7 @@ use IPC::Open2;
 require POSIX;
 our %const;
 our $test_section = 0;
+our ( %PRERUN, %SETUP, %PRERUN_PHP, %SETUP_PHP );
 
 sub run_tests {
     my ($test_suite) = @_;
@@ -145,23 +146,73 @@ sub prepare_consts {
     );
 }
 
+$PRERUN{__default__} = sub {
+    my ( $stock ) = @_;
+    $stock->{blog}  = MT::Blog->load(1);
+    $stock->{entry} = MT::Entry->load(1);
+};
+
+$PRERUN_PHP{__default__} = <<'PHP';
+    $stock["blog"]  = $db->fetch_blog(1);
+    $stock["entry"] = $db->fetch_entry(1);
+PHP
+
+$SETUP{__default__} = sub {
+    my ( $test, $ctx, $stock ) = @_;
+    $ctx->stash( 'blog',    $stock->{blog} );
+    $ctx->stash( 'blog_id', $stock->{blog}->id );
+    $ctx->stash( 'builder', MT::Builder->new );
+    $ctx->{current_timestamp} = '20040816135142';
+    my $template = $test->{template};
+    $ctx->{__stash}{entry} = $stock->{entry}
+        if $template =~ m/<MTEntry/;
+    $ctx->{__stash}{entry} = undef
+        if $template =~ m/MTComments|MTPings/;
+    $ctx->{__stash}{entries} = undef
+        if $template =~ m/MTEntries|MTPages/;
+    $ctx->stash( 'comment', undef );
+};
+
+$SETUP_PHP{__default__} = <<'PHP';
+    $ctx->stash('blog_id', 1);
+    $ctx->stash('blog', $stock["blog"]);
+    $ctx->stash('current_timestamp', '20040816135142');
+    if ( preg_match('/MT(Entry|Link)/', $test_item["template"]) 
+      && !preg_match('/MT(Comments|Pings)/', $test_item["template"]) )
+    {
+        $ctx->stash('entry', $stock["entry"]);
+    }
+    else {
+        $ctx->__stash['entry'] = null;
+    }
+    if ( preg_match('/MTEntries|MTPages/', $test_item["template"]) ) {
+        $ctx->__stash['entries'] = null;
+        $ctx->__stash['author'] = null;
+        $ctx->__stash['category'] = null;
+    }
+    if ( preg_match('/MTCategoryArchiveLink/', $test_item["template"]) ) {
+        $ctx->stash('current_archive_type', 'Category');
+    } else {
+        $ctx->stash('current_archive_type', '');
+    }
+PHP
+
 sub perl_tests {
     my ($test_suite) = @_;
 
     # Clear cache
     my $request = MT::Request->instance;
-    $request->{__stash} = {};
-
-    my $ctx  = MT::Template::Context->new;
-    my $blog = MT::Blog->load(1);
-    my $entry = MT::Entry->load(1);
-    $ctx->stash( 'blog',    $blog );
-    $ctx->stash( 'blog_id', $blog->id );
-    $ctx->stash( 'builder', MT::Builder->new );
-    $ctx->{current_timestamp} = '20040816135142';
-
+    my $stock = {};
+    for my $sub ( values %PRERUN ) {
+        $sub->($stock);
+    }
     my $rest = scalar @$test_suite;
     TEST: foreach my $test_item (@$test_suite) {
+        my $ctx  = MT::Template::Context->new;
+        $request->{__stash} = {};
+        for my $sub ( values %SETUP ) {
+            $sub->($test_item, $ctx, $stock);
+        }
         SKIP: {
             if ( $test_item->{skip} ) {
                 $rest--;
@@ -170,14 +221,6 @@ sub perl_tests {
             my $template = $test_item->{template} || '';
             my $expected = $test_item->{expected} || '';
             my $like     = $test_item->{like};
-            local $ctx->{__stash}{entry} = $entry
-                if $template =~ m/<MTEntry/;
-            $ctx->{__stash}{entry} = undef
-                if $template =~ m/MTComments|MTPings/;
-            $ctx->{__stash}{entries} = undef
-                if $template =~ m/MTEntries|MTPages/;
-            $ctx->stash( 'comment', undef );
-            $request->{__stash} = {};
             $template =~ s/\Q$_\E/$const{$_}/g for keys %const;
             $expected =~ s/\Q$_\E/$const{$_}/g for keys %const;
             my $result = build( $ctx, $template );
@@ -289,53 +332,25 @@ if (substr($path, strlen($path) - 1, 1) == '/')
 if (substr($path, strlen($path) - 2, 2) == '/t')
     $path = substr($path, 0, strlen($path) - 2);
 $const['CURRENT_WORKING_DIRECTORY'] = $path;
-
 $db = $mt->db();
-
 $db->db()->Execute( "SET time_zone = '-7:00'" );
-
-$ctx->stash('blog_id', 1);
-$blog = $db->fetch_blog(1);
-$ctx->stash('blog', $blog);
-$ctx->stash('current_timestamp', '20040816135142');
 $mt->init_plugins();
-$entry = $db->fetch_entry(1);
-
 $suite = <TEST_SUITE_PHP>;
-
 set_error_handler('error_handler');
-
 run($ctx, $suite);
 
 function run(&$ctx, $suite) {
     $test_num = 0;
-    global $entry;
     global $mt;
-    global $tmpl;
+    global $ctx;
+    global $db;
     global $error_messages;
     $base_stash = $ctx->__stash;
+    <PRERUN_PHP>
     TEST: foreach ($suite as $test_item) {
         $ctx->__stash = $base_stash;
         $mt->db()->savedqueries = array();
-        if ( preg_match('/MT(Entry|Link)/', $test_item["template"]) 
-          && !preg_match('/MT(Comments|Pings)/', $test_item["template"]) )
-        {
-            $ctx->stash('entry', $entry);
-        }
-        else {
-            $ctx->__stash['entry'] = null;
-        }
-        if ( preg_match('/MTEntries|MTPages/', $test_item["template"]) ) {
-            $ctx->__stash['entries'] = null;
-            $ctx->__stash['author'] = null;
-            $ctx->__stash['category'] = null;
-        }
-        if ( preg_match('/MTCategoryArchiveLink/', $test_item["template"]) ) {
-            $ctx->stash('current_archive_type', 'Category');
-        } else {
-            $ctx->stash('current_archive_type', '');
-        }
-
+        <SETUP_PHP>
         if ($test_item["skip"] ) {
             echo "skip - php: " . $test_item["skip"] . "\n";
         } else {
@@ -429,6 +444,14 @@ function error_handler($errno, $errstr, $errfile, $errline) {
 PHP
     my $rest = scalar @$test_suite;
     $const{TEST_SUITE_PHP} = _dump_php($test_suite);
+    $const{PRERUN_PHP} = '';
+    for my $snipet ( values %PRERUN_PHP ) {
+        $const{PRERUN_PHP} .= $snipet;
+    }
+    $const{SETUP_PHP} = '';
+    for my $snipet ( values %SETUP_PHP ) {
+        $const{SETUP_PHP} .= $snipet;
+    }
     $test_script =~ s/<\Q$_\E>/$const{$_}/g for keys %const;
 
     # now run the test suite through PHP!
