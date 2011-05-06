@@ -267,6 +267,7 @@ function initItem($item) {
           $label.text( $element.find('input.label').val() );
           $children.show();
           initItem($item);
+          setItemList();
           setDirty(true);
         })
         .appendTo($form);
