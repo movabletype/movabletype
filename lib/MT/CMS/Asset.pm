@@ -913,6 +913,7 @@ sub _set_start_upload_params {
 sub _upload_file {
     my $app = shift;
     my (%upload_param) = @_;
+    my $ext;
     require MT::Image;
 
     if (my $perms = $app->permissions) {
@@ -1060,7 +1061,7 @@ sub _upload_file {
         $local_base =~ s!^.*/!!;    ## Get rid of full directory paths
         
         my $filename = $local_base; ## Save the filename so we can use it in the error message later
-        my $ext = $local_base;
+        $ext = $local_base;
         $ext =~ m!.*\.(.*)$!;       ## Extract the characters to the right of the last dot delimiter / period
         $ext = $1;                  ## Those characters are the file extension
         
@@ -1278,7 +1279,7 @@ sub _upload_file {
     $local_base =~ s!^.*/!!;    ## Get rid of full directory paths
         
     my $filename = $local_base; ## Save the filename so we can use it in the error message later
-    my $ext = $local_base;
+    $ext = $local_base;
     $ext =~ m!.*\.(.*)$!;       ## Extract the characters to the right of the last dot delimiter / period
     $ext = $1;                  ## Those characters are the file extension
 
@@ -1340,7 +1341,7 @@ sub _upload_file {
 
     require File::Basename;
     my $local_basename = File::Basename::basename($local_file);
-    my $ext =
+    $ext =
       ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
 
     require MT::Asset;
