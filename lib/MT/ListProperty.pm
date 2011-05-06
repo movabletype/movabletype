@@ -344,7 +344,8 @@ sub make_common_label_html {
         },
     );
     if ($label) {
-        $label = MT::Util::encode_html($label);
+        my $can_double_encode = 1;
+        $label = MT::Util::encode_html($label, $can_double_encode);
         return qq{<a href="$edit_link">$label</a>};
     }
     else {

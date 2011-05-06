@@ -1042,7 +1042,7 @@ sub do_search_replace {
             }
         }
         while ( my $obj = $iter->() ) {
-            next unless $author->is_superuser || $api->{perm_check}->($obj);
+            next unless $author->is_superuser || $app->handler_to_coderef($api->{perm_check})->($obj);
             my $match = 0;
             unless ($show_all) {
                 for my $col (@cols) {
