@@ -612,6 +612,18 @@ ul.tabs li a {
 #selector-nav { 
     position: relative;
     z-index: 500;
+    height: 30px;
+}
+#selector-nav .toggle-button { 
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #c0c6c9;
+    margin: -9px 10px 0 0;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
 }
 .scope {
     display: inline-block;
@@ -622,13 +634,18 @@ ul.tabs li a {
     overflow: hidden;
 }
 .blog .scope {
-    max-width: 65%;
+    max-width: 60%;
 }
 .scope.website { 
     background-color: #839b5c;
 }
 .blog .scope.website {
     max-width: 25%;
+}
+.scope.user, 
+.scope.system, 
+.scope.website {
+    padding-left: 40px;
 }
 .scope.blog { 
     margin-left: -5px;
@@ -657,17 +674,6 @@ ul.tabs li a {
     font-weight: bold;
     white-space: nowrap;
     text-overflow: ellipsis;
-}
-.scope .toggle-button { 
-    position: relative;
-    top: 50%;
-    float: left;
-    width: 16px;
-    height: 16px;
-    border: 1px solid #c0c6c9;
-    margin: -9px 10px 0 0;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
 }
 
 /* --- Scope Selector */
@@ -702,7 +708,7 @@ ul.tabs li a {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     border-bottom-left-radius: 0;
-    -moz-border-radius: 0 3px 3px 0;
+    -moz-border-radius: 0 0 3px 0;
 }
 .scope-selector li { 
     margin: 0;

@@ -36,14 +36,18 @@
 .col { 
     width: 13%;
     padding: 7px 8px;
-    border: solid #c0c6c9;
-    border-width: 0;
+    border: solid #fff;
+    border-width: 1px 0 0;
     text-align: left;
     vertical-align: top;
     word-wrap: break-word;
 }
+tbody tr:first-child .col {
+    border: 0;
+}
 .col.head { 
     padding: 0;
+    border-color: #c0c6c9;
     border-width: 0 0 1px 1px;
     line-height: 1;
     background-color: #f3f3f3;
