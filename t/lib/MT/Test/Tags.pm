@@ -26,7 +26,7 @@ use IPC::Open2;
 require POSIX;
 
 our $test_section = 0;
-our ( %PRERUN, %SETUP, %PRERUN_PHP, %SETUP_PHP );
+our ( $PRERUN, $SETUP, $PRERUN_PHP, $SETUP_PHP );
 
 sub run_tests {
     my ($test_suite) = @_;
@@ -150,82 +150,56 @@ sub prepare_tmpl_vars {
     };
 }
 
-$PRERUN{__default__} = sub {
-    my ( $stock ) = @_;
-    $stock->{blog}  = MT::Blog->load(1);
-    $stock->{entry} = MT::Entry->load(1);
-};
-
-$PRERUN_PHP{__default__} = <<'PHP';
-    $stock["blog"]  = $db->fetch_blog(1);
-    $stock["entry"] = $db->fetch_entry(1);
-PHP
-
-$SETUP{__default__} = sub {
-    my ( $test, $ctx, $stock ) = @_;
-    $ctx->stash( 'blog',    $stock->{blog} );
-    $ctx->stash( 'blog_id', $stock->{blog}->id );
-    $ctx->stash( 'builder', MT::Builder->new );
-    $ctx->{current_timestamp} = '20040816135142';
-    my $template = $test->{template};
-    $ctx->{__stash}{entry} = $stock->{entry}
-        if $template =~ m/<MTEntry/;
-    $ctx->{__stash}{entry} = undef
-        if $template =~ m/MTComments|MTPings/;
-    $ctx->{__stash}{entries} = undef
-        if $template =~ m/MTEntries|MTPages/;
-    $ctx->stash( 'comment', undef );
-};
-
-$SETUP_PHP{__default__} = <<'PHP';
-    $ctx->stash('blog_id', 1);
-    $ctx->stash('blog', $stock["blog"]);
-    $ctx->stash('current_timestamp', '20040816135142');
-    if ( preg_match('/MT(Entry|Link)/', $test_item["template"]) 
-      && !preg_match('/MT(Comments|Pings)/', $test_item["template"]) )
-    {
-        $ctx->stash('entry', $stock["entry"]);
-    }
-    else {
-        $ctx->__stash['entry'] = null;
-    }
-    if ( preg_match('/MTEntries|MTPages/', $test_item["template"]) ) {
-        $ctx->__stash['entries'] = null;
-        $ctx->__stash['author'] = null;
-        $ctx->__stash['category'] = null;
-    }
-    if ( preg_match('/MTCategoryArchiveLink/', $test_item["template"]) ) {
-        $ctx->stash('current_archive_type', 'Category');
-    } else {
-        $ctx->stash('current_archive_type', '');
-    }
-PHP
-
 sub perl_tests {
     my ($test_suite, $tmpl_vars) = @_;
 
     # Clear cache
     my $request = MT::Request->instance;
     my $stock = {};
-    for my $sub ( values %PRERUN ) {
-        $sub->($stock, $tmpl_vars);
+
+    $stock->{blog}  = MT::Blog->load(1);
+    $stock->{entry} = MT::Entry->load(1);
+    if ( 'CODE' eq ref $PRERUN ) {
+        $PRERUN->($stock, $tmpl_vars);
     }
+
     my $rest = scalar @$test_suite;
     TEST: foreach my $test_item (@$test_suite) {
         my $ctx  = MT::Template::Context->new;
         $request->{__stash} = {};
-        for my $sub ( values %SETUP ) {
-            $sub->($test_item, $ctx, $stock, $tmpl_vars);
+        my $template = defined $test_item->{template} ? $test_item->{template}
+                     :                                  '';
+        my $expected = defined $test_item->{expected} ? $test_item->{expected}
+                     :                                  '';
+
+        $ctx->stash( 'blog',    $stock->{blog} );
+        $ctx->stash( 'blog_id', $stock->{blog}->id );
+        $ctx->stash( 'builder', MT::Builder->new );
+        $ctx->{current_timestamp} = '20040816135142';
+        $ctx->{__stash}{entry} = $stock->{entry}
+            if $template =~ m/<MTEntry/;
+        $ctx->{__stash}{entry} = undef
+            if $template =~ m/MTComments|MTPings/;
+        $ctx->{__stash}{entries} = undef
+            if $template =~ m/MTEntries|MTPages/;
+        $ctx->stash( 'comment', undef );
+
+        if ( 'CODE' eq ref $SETUP ) {
+            $SETUP->($test_item, $ctx, $stock, $tmpl_vars);
+        }
+        for my $area (qw( stash var )) {
+            if ( my $conf = $test_item->{$area} ) {
+                for my $k ( %$conf ) {
+                    my $v = $conf->{$k} or next;
+                    $ctx->$area( $k => ($v =~ s/^\$// ? $stock->{$v} : $v) );
+                }
+            }
         }
         SKIP: {
             if ( $test_item->{skip} ) {
                 $rest--;
                 skip( $test_item->{skip}, 1 )
             }
-            my $template = defined $test_item->{template} ? $test_item->{template}
-                         :                                  '';
-            my $expected = defined $test_item->{expected} ? $test_item->{expected}
-                         :                                  '';
             my $like     = $test_item->{like};
             $template =~ s/\Q$_\E/$tmpl_vars->{$_}/g for keys %$tmpl_vars;
             $expected =~ s/\Q$_\E/$tmpl_vars->{$_}/g for keys %$tmpl_vars;
@@ -286,7 +260,7 @@ sub _dump_php {
         my @elements;
         for my $key ( keys %$data ) {
             my $val = _dump_php( $data->{$key} );
-            push @elements, "$key => $val";
+            push @elements, "'$key' => $val";
         }
         return sprintf 'array(%s)', join( ',', @elements );
     }
@@ -322,7 +296,7 @@ if (substr($path, strlen($path) - 1, 1) == '/')
     $path = substr($path, 1, strlen($path)-1);
 if (substr($path, strlen($path) - 2, 2) == '/t')
     $path = substr($path, 0, strlen($path) - 2);
-$const['CURRENT_WORKING_DIRECTORY'] = $path;
+$tmpl_vars['CURRENT_WORKING_DIRECTORY'] = $path;
 $db = $mt->db();
 $db->db()->Execute( "SET time_zone = '-7:00'" );
 $mt->init_plugins();
@@ -336,12 +310,63 @@ function run(&$ctx, $suite) {
     global $ctx;
     global $db;
     global $error_messages;
+    global $tmpl_vars;
     $base_stash = $ctx->__stash;
+    $stock = array();
+    $stock["blog"]  = $db->fetch_blog(1);
+    $stock["entry"] = $db->fetch_entry(1);
     <PRERUN_PHP>
     TEST: foreach ($suite as $test_item) {
         $ctx->__stash = $base_stash;
         $mt->db()->savedqueries = array();
+
+        $ctx->stash('blog_id', $stock["blog"].id);
+        $ctx->stash('blog', $stock["blog"]);
+        $ctx->stash('current_timestamp', '20040816135142');
+        if ( preg_match('/MT(Entry|Link)/', $test_item["template"]) 
+          && !preg_match('/MT(Comments|Pings)/', $test_item["template"]) )
+        {
+            $ctx->stash('entry', $stock["entry"]);
+        }
+        else {
+            $ctx->__stash['entry'] = null;
+        }
+        if ( preg_match('/MTEntries|MTPages/', $test_item["template"]) ) {
+            $ctx->__stash['entries'] = null;
+            $ctx->__stash['author'] = null;
+            $ctx->__stash['category'] = null;
+        }
+        if ( preg_match('/MTCategoryArchiveLink/', $test_item["template"]) ) {
+            $ctx->stash('current_archive_type', 'Category');
+        } else {
+            $ctx->stash('current_archive_type', '');
+        }
         <SETUP_PHP>
+
+        if ( $stash = $test_item["stash"] ) {
+            foreach ( $stash as $k => $v ) {
+                if ( preg_match('/^\$/',$v) ) {
+                    $v = preg_replace('/^\$/', '', $v);
+                    $ctx->stash( $k, $stock[$v] );
+                }
+                else {
+                    $ctx->stash( $k, $v );
+                }
+            }
+        }
+        if ( $var = $test_item["var"] ) {
+            $vars =& $ctx->__stash['vars'];
+            foreach ( $var as $k => $v ) {
+                if ( preg_match('/^\$/',$v) ) {
+                    $v = preg_replace('/^\$/', '', $v);
+                    $vars[$k] = $stock[$v];
+                }
+                else {
+                    $vars[$k] = $v;
+                }
+            }
+        }
+
         if ($test_item["skip"] ) {
             echo "skip - php: " . $test_item["skip"] . "\n";
         } else {
@@ -435,21 +460,15 @@ function error_handler($errno, $errstr, $errfile, $errline) {
 PHP
     my $rest = scalar @$test_suite;
     my %snipet;
-    $snipet{CFG_FILE} => MT->instance->{cfg_file};
+    $snipet{CFG_FILE} = MT->instance->{cfg_file};
     {
         local $tmpl_vars->{STATIC_CONSTANT} = '';
         local $tmpl_vars->{DYNAMIC_CONSTANT} = 1;
         $snipet{TMPL_VARS} = _dump_php($tmpl_vars);
     }
     $snipet{TEST_SUITE_PHP} = _dump_php($test_suite);
-    $snipet{PRERUN_PHP} = '';
-    for my $snipet ( values %PRERUN_PHP ) {
-        $snipet{PRERUN_PHP} .= $snipet;
-    }
-    $snipet{SETUP_PHP} = '';
-    for my $snipet ( values %SETUP_PHP ) {
-        $snipet{SETUP_PHP} .= $snipet;
-    }
+    $snipet{PRERUN_PHP} = $PRERUN_PHP || '';
+    $snipet{SETUP_PHP} = $SETUP_PHP || '';
     $test_script =~ s/<\Q$_\E>/$snipet{$_}/g for keys %snipet;
 
     # now run the test suite through PHP!
@@ -538,6 +557,8 @@ MT::Test::Tags
 Test suite must be an array of hash ref. in each hash must has "template"
 and "expected" values. also you can add optional values for convenience.
 
+=head2 TEST DATA STRUCTURE
+
 =over 4
 
 =item * name | n (optional)
@@ -580,5 +601,100 @@ This value is used for matching only at php testing.
 =item * like_php
 
 This value is used for matching only at php testing.
+
+=item * stash
+
+Set stash to context only for this test item. In simple way, just add
+plain value like this;
+
+    template: <mt:entries></mt:entries>
+    stash:
+        current_timestamp: 20110429000000
+        current_timestamp: 20110508235959
+
+If you add a doller sign at the head of the value, you can call any perl
+structure from B<$stock> hash.
+
+    # set entry in PRERUN
+    local $MT::Test::Tags::PRERUN = sub {
+        my ( $stock ) = @_;
+        $stock->{my_entry} = MT->model('entry')->load(42);
+    };
+    # Don't forget about PHP
+    local $MT::Test::Tags::PRERUN_PHP = q{
+        $stock["my_entry"] = $db->fetch_entry(42);
+    };
+    # ...And in test suite
+    template: <mtEntryTitle>
+    expected: foo
+    stash:
+        entry: $my_entry
+
+=item * var
+
+Set variable to context object only for this test item like L<stash> but
+set in to template variables.
+
+=back
+
+=head2 CONSTANT MACRO
+
+Before do test, some constant values in L<template> and L<expected>
+could be replaced for convinience. here is the list of constants.
+
+    CFG_FILE
+    VERSION_ID
+    CURRENT_WORKING_DIRECTORY
+    STATIC_CONSTANT
+    DYNAMIC_CONSTANT
+    DAYS_CONSTANT1
+    DAYS_CONSTANT2
+    CURRENT_YEAR
+    CURRENT_MONTH
+    STATIC_FILE_PATH
+
+=head1 VARIABLES
+
+=over 4
+
+=item * PRERUN
+
+You can set a B<reference of subroutine> for modifying some values before
+run perl tests.
+
+    local $MT::Test::Tags::PRERUN = sub {
+        my ( $stock, $tmpl_vars ) = @_;
+        $stock->{blog} = undef;
+        $tmpl_vars->{CURRENT_YEAR} = 2012;
+    };
+
+=item * PRERUN_PHP
+
+You can set B<strings of PHP code snipet> for midifying some values before
+run php tests.
+
+    local $MT::Test::Tags::PRERUN_PHP = q{
+        $stock["blog"] = null;
+        $tmpl_vars["CURRENT_YEAR"] = 2012;
+    };
+
+=item * SETUP
+
+You can set a B<reference of subroutine> for modifying context and values
+before run each perl test items.
+
+    local $MT::Test::Tags::SETUP = sub {
+        my ($test_item, $ctx, $stock, $tmpl_vars) = @_;
+        $ctx->{foo} = 1l
+    };
+
+=item * SETUP_PHP
+
+You can set B<strings of PHP code snipet> for midifying context and values
+before run each php test items.
+
+    local $MT::Test::Tags::SETUP_PHP = q{
+        $ctx["foo"] = 1;
+    };
 
 =back
