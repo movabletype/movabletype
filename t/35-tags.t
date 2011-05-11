@@ -678,7 +678,7 @@ __DATA__
 -
   name: test item 132
   template: <MTSubCategories show_empty="1" top="1">[[<MTCategoryLabel><MTSubCatsRecurse>]]</MTSubCategories>
-  expected: [[bar]][[foo[[subfoo]]]]
+  expected: '[[bar]][[foo[[subfoo]]]]'
 
 -
   name: test item 133
@@ -2588,22 +2588,22 @@ __DATA__
 -
   name: test item 511
   template: <MTPages lastn='1'><MTPageIfTagged tag='page3'><MTPageTitle></MTPageIfTagged></MTPages>
-  expected: Page #3
+  expected: 'Page #3'
 
 -
   name: test item 512
   template: <MTPages lastn='1' offset='1'><MTPageNext><MTPageTitle></MTPageNext></MTPages>
-  expected: Page #3
+  expected: 'Page #3'
 
 -
   name: test item 513
   template: <MTPages lastn='1'><MTPagePrevious><MTPageTitle></MTPagePrevious></MTPages>
-  expected: Page #2
+  expected: 'Page #2'
 
 -
   name: test item 514
   template: <MTPages lastn='3'><MTPagesHeader><ul></MTPagesHeader><li><MTPageTitle></li><MTPagesFooter></ul></MTPagesFooter></MTPages>
-  expected: <ul><li>Page #3</li><li>Page #2</li><li>Page #1</li></ul>
+  expected: '<ul><li>Page #3</li><li>Page #2</li><li>Page #1</li></ul>'
 
 -
   name: test item 515

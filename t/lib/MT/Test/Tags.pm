@@ -320,7 +320,7 @@ function run(&$ctx, $suite) {
         $ctx->__stash = $base_stash;
         $mt->db()->savedqueries = array();
 
-        $ctx->stash('blog_id', $stock["blog"].id);
+        $ctx->stash('blog_id', $stock["blog"]->id);
         $ctx->stash('blog', $stock["blog"]);
         $ctx->stash('current_timestamp', '20040816135142');
         if ( preg_match('/MT(Entry|Link)/', $test_item["template"]) 
