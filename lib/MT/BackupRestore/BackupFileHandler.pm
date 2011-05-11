@@ -576,8 +576,10 @@ sub end_document {
 }
 
 sub _decode {
-    Encode::decode_utf8( $_[0] )
-      unless Encode::is_utf8( $_[0] );
+    my ($str) = @_;
+
+    $str = Encode::decode_utf8($str) unless Encode::is_utf8($str);
+    return $str;
 }
 
 1;
