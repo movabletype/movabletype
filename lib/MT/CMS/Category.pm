@@ -258,13 +258,11 @@ sub bulk_update {
             my $tmp_id = $1;
             $create->parent( $TEMP_MAP{$tmp_id} );
         }
-        my $original = $clone_objects{ 'x' . $create->{tmp_id} };
-        $app->run_callbacks( 'cms_pre_save.' . $model,
-            $app, $create, $original )
+        my $original = $clone_objects{'x'.$create->{tmp_id}};
+        $app->run_callbacks( 'cms_pre_save.' . $model, $app, $create, $original )
             or return $app->json_error( $app->errstr() );
         $create->save;
-        $app->run_callbacks( 'cms_post_save.' . $model,
-            $app, $create, $original )
+        $app->run_callbacks( 'cms_post_save.' . $model, $app, $create, $original )
             or return $app->json_error( $app->errstr() );
         $creates++;
         $TEMP_MAP{ $create->{tmp_id} } = $create->id;
@@ -274,13 +272,11 @@ sub bulk_update {
             my $tmp_id = $1;
             $updated->parent( $TEMP_MAP{$tmp_id} );
         }
-        my $original = $clone_objects{ $updated->id };
-        $app->run_callbacks( 'cms_pre_save.' . $model,
-            $app, $updated, $original )
+        my $original = $clone_objects{$updated->id};
+        $app->run_callbacks( 'cms_pre_save.' . $model, $app, $updated, $original )
             or return $app->json_error( $app->errstr() );
         $updated->save;
-        $app->run_callbacks( 'cms_post_save.' . $model,
-            $app, $updated, $original )
+        $app->run_callbacks( 'cms_post_save.' . $model, $app, $updated, $original )
             or return $app->json_error( $app->errstr() );
         $updates++;
     }
