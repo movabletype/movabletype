@@ -209,6 +209,7 @@ sub bulk_update {
     }
 
     my %old_objects = map { $_->id => $_ } @old_objects;
+    my %clone_objects;
     my @objects;
     my @creates;
     my @updated;
@@ -219,6 +220,7 @@ sub bulk_update {
         if ( $obj->{id} =~ /^x(\d+)/ ) {
             my $tmp_id  = $1;
             my $new_obj = $class->new;
+            $clone_objects{ $obj->{id} } = $new_obj->clone;
             delete $obj->{id};
             $new_obj->set_values($obj);
             $new_obj->blog_id($blog_id);
@@ -237,6 +239,7 @@ sub bulk_update {
                 )
                 );
             my $exist = delete $old_objects{ $obj->{id} };
+            $clone_objects{ $obj->{id} } = $exist->clone;
             for my $key ( keys %$obj ) {
                 if ( $exist->$key ne $obj->{$key} ) {
                     $diff++;
@@ -254,7 +257,12 @@ sub bulk_update {
             my $tmp_id = $1;
             $create->parent( $TEMP_MAP{$tmp_id} );
         }
+        my $original = $clone_objects{'x'.$create->{tmp_id}};
+        $app->run_callbacks( 'cms_pre_save.' . $model, $app, $create, $original )
+            or return $app->json_error( $app->errstr() );
         $create->save;
+        $app->run_callbacks( 'cms_post_save.' . $model, $app, $create, $original )
+            or return $app->json_error( $app->errstr() );
         $creates++;
         $TEMP_MAP{ $create->{tmp_id} } = $create->id;
     }
@@ -263,11 +271,17 @@ sub bulk_update {
             my $tmp_id = $1;
             $updated->parent( $TEMP_MAP{$tmp_id} );
         }
+        my $original = $clone_objects{$updated->id};
+        $app->run_callbacks( 'cms_pre_save.' . $model, $app, $updated, $original )
+            or return $app->json_error( $app->errstr() );
         $updated->save;
+        $app->run_callbacks( 'cms_post_save.' . $model, $app, $updated, $original )
+            or return $app->json_error( $app->errstr() );
         $updates++;
     }
     for my $obj ( values %old_objects ) {
         $obj->remove;
+        $app->run_callbacks( 'cms_post_delete.' . $model, $app, $obj );
         $deletes++;
     }
 
