@@ -12,6 +12,11 @@ sub can_save {
     return $app->can_do('save_banlist');
 }
 
+sub can_delete {
+    my ( $eh, $app, $id ) = @_;
+    return $app->can_do('delete_banlist');
+}
+
 sub save_filter {
     my $eh    = shift;
     my ($app) = @_;

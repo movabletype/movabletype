@@ -303,11 +303,21 @@ sub edit_role {
     $app->load_tmpl( 'edit_role.tmpl', \%param );
 }
 
+sub can_save_role {
+    my ( $eh, $app, $id ) = @_;
+    return $app->can_do('save_role');
+}
+
+sub can_delete_role {
+    my ( $eh, $app, $id ) = @_;
+    return $app->can_do('delete_role');
+}
+
 sub save_role {
     my $app = shift;
     my $q   = $app->param;
     $app->validate_magic() or return;
-    $app->can_do('save_role') or return $app->errtrans("Invalid request.");
+    $app->can_do('save_role') or return $app->permission_denied();
 
     my $id    = $q->param('id');
     my @perms = $q->param('permission');

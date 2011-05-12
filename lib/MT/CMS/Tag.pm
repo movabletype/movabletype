@@ -358,9 +358,7 @@ sub can_delete {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
-    my $blog_id = $obj->blog_id;
-
-    return $author->permissions($blog_id)->can_do('remove_tag');
+    return $author->permissions($app->blog->id)->can_do('remove_tag');
 }
 
 sub post_delete {
