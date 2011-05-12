@@ -305,8 +305,8 @@ sub php_tests {
     print OUT $test_script;
     close OUT;
 
-    my $output = '';
     while (my $result = <IN>) {
+        chomp $result;
         if ( $result =~ s/^ok - // ) {
             $rest--;
             pass("$result");
