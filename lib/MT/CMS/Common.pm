@@ -100,6 +100,9 @@ sub save {
 
     if ( $type eq 'template' ) {
 
+        # check for preview file
+        $app->remove_preview_file;
+
         # check for autosave
         if ( $q->param('_autosave') ) {
             return $app->autosave_object();
