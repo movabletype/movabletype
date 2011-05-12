@@ -536,6 +536,10 @@ __START_PHP_CODE__
 include_once("php/mt.php");
 include_once("php/lib/MTUtil.php");
 
+if (!ini_get('date.timezone')) {
+    date_default_timezone_set('Asia/Tokyo');
+}
+
 $cfg_file  = '<CFG_FILE>';
 $tmpl_vars = <TMPL_VARS>;
 $output_results = 0;
