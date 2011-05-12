@@ -1219,7 +1219,6 @@ abstract class MTDatabase {
                     }
                 }
             }
-            Entry::load_meta($e);
             $_total_count++;
             if ( !is_null($total_count) ) {
                 if ( ($orig_limit > 0)
@@ -1240,6 +1239,8 @@ abstract class MTDatabase {
                 if (($limit > 0) && (count($entries) >= $limit)) break;
             }
         }
+        Entry::bulk_load_meta($entries);
+
         if ( !is_null($total_count) )
             $total_count = $_total_count;
 

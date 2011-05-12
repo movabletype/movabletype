@@ -413,6 +413,8 @@ class MT {
             $cfg['commenterregistration'] = array('allow' => 1 );
         isset($cfg['userpasswordminlength']) or
             $cfg['userpasswordminlength'] = 8;
+        isset($cfg['bulkloadmetaobjectslimit']) or
+            $cfg['bulkloadmetaobjectslimit'] = 100;
     }
 
     function configure_paths($blog_site_path) {
