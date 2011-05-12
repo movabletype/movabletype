@@ -744,7 +744,7 @@ sub dialog_post_comment {
         comment_script_url => $app->config('CGIPath')
             . $app->config('CommentScript'),
         return_url => ( $app->param('return_args')
-            ? $app->base . $app->uri . $app->param('return_args')
+            ? $app->base . $app->uri . '?' . $app->param('return_args')
             : $app->base
                 . $app->uri(
                 mode => 'list',
