@@ -304,47 +304,31 @@ sub php_tests {
     my $pid = open2( \*IN, \*OUT, "php" );
     print OUT $test_script;
     close OUT;
-    select IN;
-    $| = 1;
-    select STDOUT;
-
-    my @lines;
-    my $num = 1;
-
-    my $test = sub {
-        while (@lines) {
-        SKIP: {
-                my $result = shift @lines;
-                if ( $result =~ s/^ok - // ) {
-                    $rest--;
-                    pass($result);
-                }
-                elsif ( $result =~ s/^not ok - // ) {
-                    $rest--;
-                    fail($result);
-                }
-                elsif ( $result =~ s/^skip - // ) {
-                    $rest--;
-                    skip( $result, 1 );
-                }
-                elsif ( $result =~ s/^#\s// ) {
-                    note($result);
-                }
-                else {
-                    diag($result);
-                }
-            }
-        }
-    };
 
     my $output = '';
-    while (<IN>) {
-        $output = $_;
-        push @lines, split( "\n", $output );
-        $test->();
+    while (my $result = <IN>) {
+        if ( $result =~ s/^ok - // ) {
+            $rest--;
+            pass("$result");
+        }
+        elsif ( $result =~ s/^not ok - // ) {
+            $rest--;
+            fail($result);
+        }
+        elsif ( $result =~ s/^skip - // ) {
+            $rest--;
+            SKIP: {
+                skip( $result, 1 );
+            }
+        }
+        elsif ( $result =~ s/^#\s// ) {
+            note($result);
+        }
+        else {
+            diag($result);
+        }
     }
     close IN;
-    $test->() if @lines;
     is( $rest, 0, "Done all php tests" . ( $test_section ? " in section $test_section" : "" ) );
 }
 
