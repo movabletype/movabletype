@@ -65,27 +65,28 @@ sub run_tests_by_files {
     }
 }
 
-sub load_tests_from_file {
+
+sub load_yaml_syck {
     ## At first, test YAML::Syck.
     ## This style of tests can't run without it.
     eval { require YAML::Syck };
     if ( $@ ) {
-        plan skip_all => "YAML::Syck is not installed.";
+        plan tests => 1;
+        fail("This suite needs YAML::Syck installed");
         return;
     }
+    return 1;
+}
+
+sub load_tests_from_file {
+    load_yaml_syck() or return;
     my ($fn) = @_;
     my $test_suite = YAML::Syck::LoadFile($fn);
     return $test_suite;
 }
 
 sub load_tests_from_data_section {
-    ## At first, test YAML::Syck.
-    ## This style of tests can't run without it.
-    eval { require YAML::Syck };
-    if ( $@ ) {
-        plan skip_all => "YAML::Syck is not installed.";
-        return;
-    }
+    load_yaml_syck() or return;
     ## This logic was taken from Data::Section::Simple
     my $data = do { no strict 'refs'; \*main::DATA };
     die "No Data section found" unless defined fileno $data;
@@ -281,183 +282,11 @@ sub _dump_php {
 
 sub php_tests {
     my ($test_suite, $tmpl_vars) = @_;
-    my $test_script = <<'PHP';
-<?php
-include_once("php/mt.php");
-include_once("php/lib/MTUtil.php");
-
-$cfg_file  = '<CFG_FILE>';
-$tmpl_vars = <TMPL_VARS>;
-$output_results = 0;
-$mt = MT::get_instance(1, $cfg_file);
-$ctx =& $mt->context();
-$path = $mt->config('mtdir');
-if (substr($path, strlen($path) - 1, 1) == '/')
-    $path = substr($path, 1, strlen($path)-1);
-if (substr($path, strlen($path) - 2, 2) == '/t')
-    $path = substr($path, 0, strlen($path) - 2);
-$tmpl_vars['CURRENT_WORKING_DIRECTORY'] = $path;
-$db = $mt->db();
-$db->db()->Execute( "SET time_zone = '-7:00'" );
-$mt->init_plugins();
-$suite = <TEST_SUITE_PHP>;
-set_error_handler('error_handler');
-run($ctx, $suite);
-
-function run(&$ctx, $suite) {
-    $test_num = 0;
-    global $mt;
-    global $ctx;
-    global $db;
-    global $error_messages;
-    global $tmpl_vars;
-    $base_stash = $ctx->__stash;
-    $stock = array();
-    $stock["blog"]  = $db->fetch_blog(1);
-    $stock["entry"] = $db->fetch_entry(1);
-    <PRERUN_PHP>
-    TEST: foreach ($suite as $test_item) {
-        $ctx->__stash = $base_stash;
-        $mt->db()->savedqueries = array();
-
-        $ctx->stash('blog_id', $stock["blog"]->id);
-        $ctx->stash('blog', $stock["blog"]);
-        $ctx->stash('current_timestamp', '20040816135142');
-        if ( preg_match('/MT(Entry|Link)/', $test_item["template"]) 
-          && !preg_match('/MT(Comments|Pings)/', $test_item["template"]) )
-        {
-            $ctx->stash('entry', $stock["entry"]);
-        }
-        else {
-            $ctx->__stash['entry'] = null;
-        }
-        if ( preg_match('/MTEntries|MTPages/', $test_item["template"]) ) {
-            $ctx->__stash['entries'] = null;
-            $ctx->__stash['author'] = null;
-            $ctx->__stash['category'] = null;
-        }
-        if ( preg_match('/MTCategoryArchiveLink/', $test_item["template"]) ) {
-            $ctx->stash('current_archive_type', 'Category');
-        } else {
-            $ctx->stash('current_archive_type', '');
-        }
-        <SETUP_PHP>
-
-        if ( $stash = $test_item["stash"] ) {
-            foreach ( $stash as $k => $v ) {
-                if ( preg_match('/^\$/',$v) ) {
-                    $v = preg_replace('/^\$/', '', $v);
-                    $ctx->stash( $k, $stock[$v] );
-                }
-                else {
-                    $ctx->stash( $k, $v );
-                }
-            }
-        }
-        if ( $var = $test_item["var"] ) {
-            $vars =& $ctx->__stash['vars'];
-            foreach ( $var as $k => $v ) {
-                if ( preg_match('/^\$/',$v) ) {
-                    $v = preg_replace('/^\$/', '', $v);
-                    $vars[$k] = $stock[$v];
-                }
-                else {
-                    $vars[$k] = $v;
-                }
-            }
-        }
-
-        if ($test_item["skip"] ) {
-            echo "skip - php: " . $test_item["skip"] . "\n";
-        } else {
-            $test_name = $test_item["name"];
-            $template  = $test_item["template"];
-            $expected  = $test_item["expected_php"] ? $test_item["expected_php"]
-                       :                              $test_item["expected"];
-            $like      = $test_item["like_php"] ? $test_item["like_php"]
-                       :                          $test_item["like"];
-            global $const;
-            foreach ($tmpl_vars as $c => $r) {
-                $template = preg_replace('/' . $c . '/', $r, $template);
-                $expected = preg_replace('/' . $c . '/', $r, $expected);
-            }
-            $result = build($ctx, $template);
-            if ( $test_item["error"] ) {
-                if ( !is_null( $result ) ) {
-                    echo "not ok - php: $test_name\n";
-                    continue TEST;
-                }
-                if ( !$expected && !$like ) {
-                    echo "ok - php: $test_name\n";
-                    continue TEST;
-                }
-                $result = join('', $error_messages);
-            }
-            else {
-                if ( is_null( $result ) ) {
-                    echo "not ok - php: $test_name\n"
-                       . "# got error: "
-                       . join( '#    ', $error_messages )
-                       . "\n";
-                    continue TEST;
-                }
-            }
-            if ( $test_item["trim"] ) {
-                $result   = trim($result);
-                $expected = trim($expected);
-            }
-            $like ? ok($result, $like, $test_name, true) : ok($result, $expected, $test_name, false);
-        }
-    }
-}
-
-function build(&$ctx, $tmpl) {
-    global $error_messages;
-    $error_messages = array();
-    if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-        ob_start();
-        $ctx->_eval('?>' . $_var_compiled);
-        $_contents = ob_get_contents();
-        ob_end_clean();
-        if ( count($error_messages) ) {
-            return null;
-        }
-        else {
-            return $_contents;
-        }
-    } else {
-        return $ctx->error("Error compiling template module '$module'");
-    }
-}
-
-function ok($str, $that, $test_name, $like) {
-    $success = null;
-    if ( $like ) {
-        $success = preg_match($that, $str);
-    }
-    else {
-        $success = ( $str === $that );
-    }
-    if ($success) {
-        echo "ok - php: $test_name\n";
-        return true;
-    } else {
-        echo "not ok - php: $test_name\n".
-             "#          got: $str\n".
-             "#     expected: $that\n";
-        return false;
-    }
-}
-
-function error_handler($errno, $errstr, $errfile, $errline) {
-    global $error_messages;
-    if ($errno & (E_ALL ^ E_NOTICE)) {
-        array_push($error_messages, $errstr . "\n");
-    }
-}
-
-?>
-PHP
+    
+    my $data_section = do { local $/; <DATA> };
+    my ($test_script) = $data_section =~ m/__START_PHP_CODE__\n(.*)__STOP_PHP_CODE__/s;
+    die "Failed to load PHP test script" unless defined $test_script;
+    
     my $rest = scalar @$test_suite;
     my %snipet;
     $snipet{CFG_FILE} = MT->instance->{cfg_file};
@@ -698,3 +527,184 @@ before run each php test items.
     };
 
 =back
+
+=cut
+
+__DATA__
+__START_PHP_CODE__
+<?php
+include_once("php/mt.php");
+include_once("php/lib/MTUtil.php");
+
+$cfg_file  = '<CFG_FILE>';
+$tmpl_vars = <TMPL_VARS>;
+$output_results = 0;
+$mt = MT::get_instance(1, $cfg_file);
+$ctx =& $mt->context();
+$path = $mt->config('mtdir');
+if (substr($path, strlen($path) - 1, 1) == '/')
+    $path = substr($path, 1, strlen($path)-1);
+if (substr($path, strlen($path) - 2, 2) == '/t')
+    $path = substr($path, 0, strlen($path) - 2);
+$tmpl_vars['CURRENT_WORKING_DIRECTORY'] = $path;
+$db = $mt->db();
+$db->db()->Execute( "SET time_zone = '-7:00'" );
+$mt->init_plugins();
+$suite = <TEST_SUITE_PHP>;
+set_error_handler('error_handler');
+run($ctx, $suite);
+
+function run(&$ctx, $suite) {
+    $test_num = 0;
+    global $mt;
+    global $ctx;
+    global $db;
+    global $error_messages;
+    global $tmpl_vars;
+    $base_stash = $ctx->__stash;
+    $stock = array();
+    $stock["blog"]  = $db->fetch_blog(1);
+    $stock["entry"] = $db->fetch_entry(1);
+    <PRERUN_PHP>
+    TEST: foreach ($suite as $test_item) {
+        $ctx->__stash = $base_stash;
+        $mt->db()->savedqueries = array();
+
+        $ctx->stash('blog_id', $stock["blog"]->id);
+        $ctx->stash('blog', $stock["blog"]);
+        $ctx->stash('current_timestamp', '20040816135142');
+        if ( preg_match('/MT(Entry|Link)/', $test_item["template"]) 
+          && !preg_match('/MT(Comments|Pings)/', $test_item["template"]) )
+        {
+            $ctx->stash('entry', $stock["entry"]);
+        }
+        else {
+            $ctx->__stash['entry'] = null;
+        }
+        if ( preg_match('/MTEntries|MTPages/', $test_item["template"]) ) {
+            $ctx->__stash['entries'] = null;
+            $ctx->__stash['author'] = null;
+            $ctx->__stash['category'] = null;
+        }
+        if ( preg_match('/MTCategoryArchiveLink/', $test_item["template"]) ) {
+            $ctx->stash('current_archive_type', 'Category');
+        } else {
+            $ctx->stash('current_archive_type', '');
+        }
+        <SETUP_PHP>
+
+        if ( $stash = $test_item["stash"] ) {
+            foreach ( $stash as $k => $v ) {
+                if ( preg_match('/^\$/',$v) ) {
+                    $v = preg_replace('/^\$/', '', $v);
+                    $ctx->stash( $k, $stock[$v] );
+                }
+                else {
+                    $ctx->stash( $k, $v );
+                }
+            }
+        }
+        if ( $var = $test_item["var"] ) {
+            $vars =& $ctx->__stash['vars'];
+            foreach ( $var as $k => $v ) {
+                if ( preg_match('/^\$/',$v) ) {
+                    $v = preg_replace('/^\$/', '', $v);
+                    $vars[$k] = $stock[$v];
+                }
+                else {
+                    $vars[$k] = $v;
+                }
+            }
+        }
+
+        if ($test_item["skip"] ) {
+            echo "skip - php: " . $test_item["skip"] . "\n";
+        } else {
+            $test_name = $test_item["name"];
+            $template  = $test_item["template"];
+            $expected  = $test_item["expected_php"] ? $test_item["expected_php"]
+                       :                              $test_item["expected"];
+            $like      = $test_item["like_php"] ? $test_item["like_php"]
+                       :                          $test_item["like"];
+            global $const;
+            foreach ($tmpl_vars as $c => $r) {
+                $template = preg_replace('/' . $c . '/', $r, $template);
+                $expected = preg_replace('/' . $c . '/', $r, $expected);
+            }
+            $result = build($ctx, $template);
+            if ( $test_item["error"] ) {
+                if ( !is_null( $result ) ) {
+                    echo "not ok - php: $test_name\n";
+                    continue TEST;
+                }
+                if ( !$expected && !$like ) {
+                    echo "ok - php: $test_name\n";
+                    continue TEST;
+                }
+                $result = join('', $error_messages);
+            }
+            else {
+                if ( is_null( $result ) ) {
+                    echo "not ok - php: $test_name\n"
+                       . "# got error: "
+                       . join( '#    ', $error_messages )
+                       . "\n";
+                    continue TEST;
+                }
+            }
+            if ( $test_item["trim"] ) {
+                $result   = trim($result);
+                $expected = trim($expected);
+            }
+            $like ? ok($result, $like, $test_name, true) : ok($result, $expected, $test_name, false);
+        }
+    }
+}
+
+function build(&$ctx, $tmpl) {
+    global $error_messages;
+    $error_messages = array();
+    if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
+        ob_start();
+        $ctx->_eval('?>' . $_var_compiled);
+        $_contents = ob_get_contents();
+        ob_end_clean();
+        if ( count($error_messages) ) {
+            return null;
+        }
+        else {
+            return $_contents;
+        }
+    } else {
+        return $ctx->error("Error compiling template module '$module'");
+    }
+}
+
+function ok($str, $that, $test_name, $like) {
+    $success = null;
+    if ( $like ) {
+        $success = preg_match($that, $str);
+    }
+    else {
+        $success = ( $str === $that );
+    }
+    if ($success) {
+        echo "ok - php: $test_name\n";
+        return true;
+    } else {
+        echo "not ok - php: $test_name\n".
+             "#          got: $str\n".
+             "#     expected: $that\n";
+        return false;
+    }
+}
+
+function error_handler($errno, $errstr, $errfile, $errline) {
+    global $error_messages;
+    if ($errno & (E_ALL ^ E_NOTICE)) {
+        array_push($error_messages, $errstr . "\n");
+    }
+}
+
+?>
+__STOP_PHP_CODE__
