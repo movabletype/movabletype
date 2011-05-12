@@ -543,6 +543,8 @@ function initMoving() {
             if ( jQuery('#new-label').mtValidate('dialog') && jQuery('#new-basename').mtValidate('dialog') ) {
               var $label = $item.find('.item-label a').length ? $item.find('.item-label a') : $item.find('.item-label');
               $label.text( jQuery('#new-label').val() );
+              var $basename = $item.find('.item-basename-text');
+              $basename.text( jQuery('#new-basename').val() );
               _stop();
               jQuery('#dialog-change-basename').dialog('close');
 
