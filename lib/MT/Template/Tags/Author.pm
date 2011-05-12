@@ -506,6 +506,7 @@ AUTHOR: while ($next) {
     my $res = '';
     my $vars = $ctx->{__stash}{vars} ||= {};
     $count = 0;
+    MT::Meta::Proxy->bulk_load_meta_objects(\@authors);
     for my $author (@authors) {
         $count++;
         local $ctx->{__stash}{author}    = $author;

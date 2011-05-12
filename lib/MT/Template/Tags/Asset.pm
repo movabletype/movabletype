@@ -526,6 +526,7 @@ sub _hdlr_assets {
     my $total_count = @assets;
     my $vars        = $ctx->{__stash}{vars} ||= {};
 
+    MT::Meta::Proxy->bulk_load_meta_objects(\@assets);
     for my $a (@assets) {
         local $ctx->{__stash}{asset} = $a;
         local $vars->{__first__}     = !$i;

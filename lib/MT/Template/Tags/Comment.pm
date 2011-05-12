@@ -491,6 +491,7 @@ sub _hdlr_comments {
     local $ctx->{__stash}{commenter} = $ctx->{__stash}{commenter};
     my $vars = $ctx->{__stash}{vars} ||= {};
     my $glue = $args->{glue};
+    MT::Meta::Proxy->bulk_load_meta_objects(\@comments);
     for my $c (@comments) {
         local $vars->{__first__}        = $i == 1;
         local $vars->{__last__}         = ( $i == scalar @comments );
@@ -692,6 +693,7 @@ sub _hdlr_comment_replies {
 
     local $ctx->{__stash}{commenter} = $ctx->{__stash}{commenter};
     my $vars = $ctx->{__stash}{vars} ||= {};
+    MT::Meta::Proxy->bulk_load_meta_objects(\@comments);
     for my $c (@comments) {
         local $vars->{__first__}        = $i == 1;
         local $vars->{__last__}         = ( $i == scalar @comments );
@@ -1790,6 +1792,7 @@ sub _hdlr_comment_replies_recurse {
 
     local $ctx->{__stash}{commenter} = $ctx->{__stash}{commenter};
     my $vars = $ctx->{__stash}{vars} ||= {};
+    MT::Meta::Proxy->bulk_load_meta_objects(\@comments);
     for my $c (@comments) {
         local $vars->{__first__}        = $i == 1;
         local $vars->{__last__}         = ( $i == scalar @comments );
