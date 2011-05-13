@@ -39,14 +39,13 @@ sub save {
     if ( !$author->is_superuser ) {
         if ( ( $type ne 'author' ) && ( $type ne 'template' ) )
         {    # for authors, blog-ctx $perms is not relevant
-            return $app->errtrans("Permisison denied.")
+            return return $app->permission_denied()
                 if !$perms && $id;
         }
 
         $app->run_callbacks( 'cms_save_permission_filter.' . $type,
             $app, $id )
-            || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+            || return $app->permission_denied();
     }
 
     my $param = {};
@@ -501,6 +500,7 @@ sub save {
 
 sub edit {
     my $app  = shift;
+
     my $q    = $app->param;
     my $type = $q->param('_type');
 
@@ -1550,8 +1550,7 @@ sub delete {
         next unless $obj;
         $app->run_callbacks( 'cms_delete_permission_filter.' . $type,
             $app, $obj )
-            || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+            || return $app->permission_denied();
 
         if ( $type eq 'comment' ) {
             $entry_id = $obj->entry_id;
