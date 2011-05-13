@@ -488,7 +488,7 @@ sub can_edit_entry {
         $entry = MT::Entry->load($entry)
             or die;
     }
-    die unless $entry->isa('MT::Entry');
+    die unless $entry->is_entry;
 
     return 1
         if $author->permissions( $entry->blog_id )
