@@ -2747,8 +2747,7 @@ sub delete {
 
         $app->run_callbacks( 'cms_delete_permission_filter.entry',
             $app, $obj )
-            || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+            || return $app->permission_denied();
 
         my %recipe = $app->publisher->rebuild_deleted_entry(
             Entry => $obj,
