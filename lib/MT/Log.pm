@@ -189,8 +189,8 @@ sub list_props {
                 while ( my ( $count, $class ) = $iter->() ) {
                     push @options,
                         {
-                        label => MT->translate($class),
-                        value => $class
+                        label => $class ? MT->translate($class) : MT->translate('none'),
+                        value => $class ? $class : '',
                         };
                 }
                 return \@options;
@@ -199,7 +199,12 @@ sub list_props {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
                 delete $db_args->{no_class};
-                $prop->super(@_);
+                if ( $args->{value} ) {
+                    $prop->super(@_);
+                }
+                else {
+                    $db_terms->{class} = \' is null';
+                }
             },
         },
 
