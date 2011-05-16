@@ -340,16 +340,35 @@ sub can_view {
 }
 
 sub can_save {
-    my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
-    return $perms->can_edit_categories();
+    my ( $eh, $app, $obj ) = @_;
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
+
+    unless ( ref $obj ) {
+        $obj = MT->model('category')->load($obj)
+            or return;
+    }
+    return unless $obj->is_category;
+
+    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
+
+    return $author->permissions($blog_id)->can_edit_categories();
 }
 
 sub can_delete {
     my ( $eh, $app, $obj ) = @_;
-    return 1 if $app->user->is_superuser();
-    my $perms = $app->permissions;
-    return $perms && $perms->can_edit_categories();
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
+
+    unless ( ref $obj ) {
+        $obj = MT->model('category')->load($obj)
+            or return;
+    }
+    return unless $obj->is_category;
+
+    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
+
+    return $author->permissions($blog_id)->can_edit_categories();
 }
 
 sub pre_save {

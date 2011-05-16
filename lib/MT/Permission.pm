@@ -412,9 +412,9 @@ sub can_edit_entry {
     unless ( ref $entry ) {
         require MT::Entry;
         $entry = MT::Entry->load($entry)
-            or die;
+            or return;
     }
-    die unless $entry->isa('MT::Entry');
+    return unless $entry->is_entry;
     if ( 'page' eq $entry->class ) {
         return $perms->can_manage_pages;
     }

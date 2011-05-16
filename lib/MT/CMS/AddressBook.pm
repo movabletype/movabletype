@@ -224,6 +224,12 @@ sub can_save {
     return $perms->can_edit_notifications;
 }
 
+sub can_delete {
+    my ( $eh, $app, $id ) = @_;
+    my $perms = $app->permissions;
+    return $perms->can_edit_notifications;
+}
+
 sub save_filter {
     my $eh    = shift;
     my ($app) = @_;
