@@ -730,11 +730,16 @@ sub list_role {
     );
 }
 
+sub can_delete_role {
+    my ( $eh, $app, $id ) = @_;
+    return $app->user->is_superuser;
+}
+
 sub save_role {
     my $app = shift;
     my $q   = $app->param;
     $app->validate_magic()   or return;
-    $app->user->is_superuser or return $app->errtrans("Invalid request.");
+    $app->user->is_superuser or return $app->errtrans("Permission denied.");
 
     my $id    = $q->param('id');
     my @perms = $q->param('permission');

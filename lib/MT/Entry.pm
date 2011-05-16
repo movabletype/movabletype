@@ -784,6 +784,11 @@ sub to_hash {
     $hash;
 }
 
+sub is_entry {
+    my $class = shift;
+    return $class->class eq 'entry' ? 1: 0;
+}
+
 #trans('Draft')
 #trans('Review')
 #trans('Future')

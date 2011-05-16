@@ -448,6 +448,11 @@ sub entry_count {
     }, @_);
 }
 
+sub is_category {
+    my $class = shift;
+    return $class->class eq 'category';
+}
+
 1;
 __END__
 

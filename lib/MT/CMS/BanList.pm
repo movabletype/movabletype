@@ -9,6 +9,13 @@ sub can_save {
       && ( $perms->can_edit_config || $perms->can_manage_feedback );
 }
 
+sub can_delete {
+    my ( $eh, $app, $id ) = @_;
+    my $perms = $app->permissions;
+    return $perms
+      && ( $perms->can_edit_config || $perms->can_manage_feedback );
+}
+
 sub save_filter {
     my $eh    = shift;
     my ($app) = @_;
