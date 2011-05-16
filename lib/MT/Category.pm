@@ -475,6 +475,10 @@ sub populate_category_hierarchy {
     return \@cats;
 }
 
+sub is_category {
+    my $class = shift;
+    return $class->class eq 'category';
+}
 
 1;
 __END__

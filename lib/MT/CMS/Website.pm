@@ -305,6 +305,12 @@ sub can_save {
     my ( $eh, $app, $id ) = @_;
     my $perms = $app->permissions;
     if ($id) {
+        unless ( ref $id ) {
+            $id = MT->model('website')->load($id)
+                or return;
+        }
+        return unless $id->isa('MT::Website');
+
         return $app->can_do('edit_website_config')
                || ( $app->param('cfg_screen')
                     && $app->param('cfg_screen') eq 'cfg_publish_profile');
@@ -312,6 +318,22 @@ sub can_save {
     else {
         return $app->can_do('create_new_website');
     }
+}
+
+sub can_delete {
+    my ( $eh, $app, $id ) = @_;
+    return 1 if $app->user->is_superuser;
+    return 0 unless $id;
+
+    unless ( ref $id ) {
+        $id = MT->model('website')->load($id)
+            or return;
+    }
+    return unless $id->isa('MT::Website');
+
+    my $author = $app->user;
+    return $author->permissions($id->id)->can_do('delete_website');
+
 }
 
 sub dialog_select_website {

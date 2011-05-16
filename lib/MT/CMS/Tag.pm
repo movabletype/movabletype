@@ -343,7 +343,10 @@ sub remove_tags_from_assets {
 
 sub can_delete {
     my ( $eh, $app, $obj ) = @_;
-    return $app->can_do('remove_tag') ? 1 : 0;
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
+
+    return $author->permissions($app->blog->id)->can_do('remove_tag');
 }
 
 sub post_delete {

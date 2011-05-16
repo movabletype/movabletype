@@ -1085,6 +1085,7 @@ sub load_core_permissions {
                 'open_blog_config_screen'      => 1,
                 'open_start_import_screen'     => 1,
                 'save_banlist'                 => 1,
+                'delete_banlist'               => 1,
                 'save_blog_config'             => 1,
                 'update_welcome_message'       => 1,
             }
@@ -1098,6 +1099,7 @@ sub load_core_permissions {
                 'edit_notifications'          => 1,
                 'export_addressbook'          => 1,
                 'save_addressbook'            => 1,
+                'delete_addressbook'          => 1,
             }
         },
         'blog.edit_tags' => {
@@ -1160,6 +1162,7 @@ sub load_core_permissions {
                 'reply_comment_from_cms'                => 1,
                 'save_all_trackback'                    => 1,
                 'save_banlist'                          => 1,
+                'delete_banlist'                        => 1,
                 'save_existing_comment'                 => 1,
                 'trust_commenters_via_list'             => 1,
                 'unapprove_comments_via_list'           => 1,

@@ -470,14 +470,15 @@ sub can_edit_entry {
     unless ( ref $entry ) {
         require MT::Entry;
         $entry = MT::Entry->load($entry)
-            or die;
+            or return;
     }
-    die unless $entry->isa('MT::Entry');
+    return unless $entry->is_entry;
+
     if ( 'page' eq $entry->class ) {
         return $perms->can_manage_pages;
     }
     my $own_entry = $entry->author_id == $author->id;
-    
+
     if ( defined $status ) {
         return $own_entry ? $perms->can_do('edit_own_published_entry')
                           : $perms->can_do('edit_all_published_entry');
