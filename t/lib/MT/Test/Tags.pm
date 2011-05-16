@@ -321,6 +321,12 @@ sub php_tests {
                 skip( $result, 1 );
             }
         }
+        elsif ( $result =~ m/503 Service Unavailable/ ) {
+            fail("Connection to the Database failed: 503 Service Unavailable");
+            diag("PHP could not find a database server");
+            diag("Please add the following line to mysql-test.cfg");
+            diag("DBHost 127.0.0.1");
+        }
         elsif ( $result =~ s/^#\s// ) {
             note($result);
         }
