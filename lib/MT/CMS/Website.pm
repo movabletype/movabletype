@@ -368,8 +368,9 @@ sub can_delete {
     unless ( ref $id ) {
         $id = MT->model('website')->load($id)
             or return;
-        return unless $id->isa('MT::Website');
     }
+
+    return unless $id->isa('MT::Website');
 
     my $author = $app->user;
     return $author->permissions($id->id)->can_do('delete_website');

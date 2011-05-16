@@ -26,6 +26,8 @@ sub can_save {
         $obj = MT->model('folder')->load($obj)
             or return;
     }
+    return unless $id->isa('MT::Folder');
+
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
 
     return $author->permissions($blog_id)->can_do('save_folder');
@@ -40,6 +42,9 @@ sub can_delete {
         $obj = MT->model('folder')->load($obj)
             or return;
     }
+
+    return unless $id->isa('MT::Folder');
+
     my $blog_id = $obj->blog_id;
 
     return $author->permissions($blog_id)->can_do('delete_folder');
