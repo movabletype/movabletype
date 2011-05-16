@@ -323,9 +323,12 @@ sub php_tests {
         }
         elsif ( $result =~ m/503 Service Unavailable/ ) {
             fail("Connection to the Database failed: 503 Service Unavailable");
-            diag("PHP could not find a database server");
-            diag("Please add the following line to mysql-test.cfg");
-            diag("DBHost 127.0.0.1");
+            diag("PHP could not find a database server. possible solutions:");
+            diag("1. (recommanded) change in the machine's php.ini file two directives");
+            diag("   pdo_mysql.default_socket and pdo_mysql.default_socket");
+            diag("   to your correct mysql unix-socket");
+            diag("2. Please add the following line to mysql-test.cfg");
+            diag("   DBHost 127.0.0.1");
         }
         elsif ( $result =~ s/^#\s// ) {
             note($result);
