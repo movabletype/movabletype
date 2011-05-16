@@ -26,7 +26,7 @@ sub can_save {
         $obj = MT->model('folder')->load($obj)
             or return;
     }
-    return unless $id->isa('MT::Folder');
+    return unless $obj->isa('MT::Folder');
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
 
@@ -43,7 +43,7 @@ sub can_delete {
             or return;
     }
 
-    return unless $id->isa('MT::Folder');
+    return unless $obj->isa('MT::Folder');
 
     my $blog_id = $obj->blog_id;
 
