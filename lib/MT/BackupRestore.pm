@@ -1334,7 +1334,8 @@ sub restore_parent_ids {
     };
 
     $u = $processor->('author');
-    $g = $processor->('group');
+    $g = $processor->('group')
+        if MT->component('Enterprise');
     $b = $processor->('blog');
     $r = $processor->('role');
 

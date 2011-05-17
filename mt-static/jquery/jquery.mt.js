@@ -58,13 +58,11 @@ $.mtSelector = function(options) {
         arrow_image: StaticURI+'images/arrow/arrow-toggle.png'
     };
     var opts = $.extend(defaults, options);
-    $('#system-overview > em').prepend('<a hre="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
-    $('#user-dashboard > em').prepend('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
-    $('#current-website > em').prepend('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
+    $('#selector-nav').prepend('<a hre="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
 
-    $('#selector-nav-list li .toggle-button ')
+    $('#selector-nav .toggle-button ')
         .mousedown(function(event) {
-            $(this).parent('em').parents('#selector-nav').toggleClass('show-selector active');
+            $(this).parent('#selector-nav').toggleClass('show-selector active');
             return false;
         })
         .click(function(event) {

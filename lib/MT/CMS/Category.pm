@@ -207,6 +207,7 @@ sub bulk_update {
     }
 
     my %old_objects = map { $_->id => $_ } @old_objects;
+    my %clone_objects;
     my @objects;
     my @creates;
     my @updated;
@@ -217,10 +218,11 @@ sub bulk_update {
         if ( $obj->{id} =~ /^x(\d+)/ ) {
             my $tmp_id  = $1;
             my $new_obj = $class->new;
+            $clone_objects{ $obj->{id} } = $new_obj->clone;
             delete $obj->{id};
             $new_obj->set_values($obj);
             $new_obj->blog_id($blog_id);
-            $new_obj->author_id($app->user->id);
+            $new_obj->author_id( $app->user->id );
             push @objects, $new_obj;
             push @creates, $new_obj;
             $new_obj->{tmp_id} = $tmp_id;
@@ -231,10 +233,12 @@ sub bulk_update {
                 or return $app->json_error(
                 $app->translate(
                     'Tried to update [_1]([_2]), but the object was not found.',
-                    $model, $obj->{id},
+                    $model,
+                    $obj->{id},
                 )
                 );
             my $exist = delete $old_objects{ $obj->{id} };
+            $clone_objects{ $obj->{id} } = $exist->clone;
             for my $key ( keys %$obj ) {
                 if ( $exist->$key ne $obj->{$key} ) {
                     $diff++;
@@ -252,7 +256,14 @@ sub bulk_update {
             my $tmp_id = $1;
             $create->parent( $TEMP_MAP{$tmp_id} );
         }
+        my $original = $clone_objects{ 'x' . $create->{tmp_id} };
+        $app->run_callbacks( 'cms_pre_save.' . $model,
+            $app, $create, $original )
+            or return $app->json_error( $app->errstr() );
         $create->save;
+        $app->run_callbacks( 'cms_post_save.' . $model,
+            $app, $create, $original )
+            or return $app->json_error( $app->errstr() );
         $creates++;
         $TEMP_MAP{ $create->{tmp_id} } = $create->id;
     }
@@ -261,11 +272,61 @@ sub bulk_update {
             my $tmp_id = $1;
             $updated->parent( $TEMP_MAP{$tmp_id} );
         }
+        my $original = $clone_objects{ $updated->id };
+        $app->run_callbacks( 'cms_pre_save.' . $model,
+            $app, $updated, $original )
+            or return $app->json_error( $app->errstr() );
         $updated->save;
+        $app->run_callbacks( 'cms_post_save.' . $model,
+            $app, $updated, $original )
+            or return $app->json_error( $app->errstr() );
         $updates++;
     }
     for my $obj ( values %old_objects ) {
+
+        # Remove published archive files.
+        if ( 'category' eq $model and $app->config('DeleteFilesAtRebuild') ) {
+            require MT::Blog;
+            require MT::Entry;
+            require MT::Placement;
+            my $at = $blog->archive_type;
+            if ( $at && $at ne 'None' ) {
+                my @at = split /,/, $at;
+                for my $target (@at) {
+                    my $archiver = $app->publisher->archiver($target);
+                    next unless $archiver;
+                    if ( $archiver->category_based ) {
+                        if ( $archiver->date_based ) {
+                            my @entries = MT::Entry->load(
+                                { status => MT::Entry::RELEASE() },
+                                {   join => MT::Placement->join_on(
+                                        'entry_id',
+                                        { category_id => $obj->id },
+                                        { unique      => 1 }
+                                    )
+                                }
+                            );
+                            for (@entries) {
+                                $app->publisher->remove_entry_archive_file(
+                                    Category    => $obj,
+                                    ArchiveType => $target,
+                                    Entry       => $_
+                                );
+                            }
+                        }
+                        else {
+                            $app->publisher->remove_entry_archive_file(
+                                Category    => $obj,
+                                ArchiveType => $target
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
         $obj->remove;
+        $app->run_callbacks( 'cms_post_delete.' . $model, $app, $obj );
         $deletes++;
     }
 
@@ -603,7 +664,7 @@ sub template_param_list {
     my ( $cb, $app, $param, $tmpl ) = @_;
     my $blog = $app->blog or return;
     $param->{basename_limit} = $blog->basename_limit || 30; #FIXME: hardcoded.
-    my $type = $app->param('_type');
+    my $type  = $app->param('_type');
     my $class = MT->model($type);
     $param->{basename_prefix} = $class->basename_prefix;
 }
