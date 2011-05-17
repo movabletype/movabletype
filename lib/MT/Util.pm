@@ -807,7 +807,7 @@ sub decode_url {
             && $str =~ m/
             <[^>]+>  ## HTML markup
             |        ## or
-            &(?:(?!(\#([0-9]+)|\#x([0-9a-fA-F]+))).*?);
+            &\#(?:[0-9]+|x[0-9a-fA-F]+).*?;
                      ## something that looks like an HTML entity.
         /x
             )
