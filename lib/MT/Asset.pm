@@ -68,7 +68,7 @@ sub list_props {
                         join      => MT->model('tag')->join_on(
                             undef,
                             {   name => '@userpic',
-                                id   => \'= objecttag_tag_id'
+                                id   => \'= objecttag_tag_id', # baka editors ',
                             }
                         ),
                     }
@@ -265,7 +265,7 @@ sub list_props {
                     MT->model('asset')->meta_pkg->join_on(
                     undef,
                     {   type     => $prop->meta_type,
-                        asset_id => \"= asset_id",
+                        asset_id => \"= asset_id", # baka editor ",
                         %$super_terms,
                     },
                     );
@@ -304,13 +304,15 @@ sub list_props {
                         undef,
                         [   [   { tag_id => { not => $tag->id }, },
                                 '-or',
-                                { tag_id => \'IS NULL', },
+                                { tag_id => \'IS NULL', # baka editors ',
+                                }, 
                             ],
                             '-and',
                             [   {   object_datasource => MT::Asset->datasource
                                 },
                                 '-or',
-                                { object_datasource => \'IS NULL' },
+                                { object_datasource => \'IS NULL' # baka editors ',
+                                }, 
                             ],
                         ],
                         {   unique    => 1,
@@ -334,9 +336,11 @@ sub list_props {
                     push @{ $base_args->{joins} },
                         MT->model('author')->join_on(
                         undef,
-                        { id => \'is null', },
+                        { id => \'is null', # baka editors ',
+                        },
                         {   type      => 'left',
-                            condition => { id => \'= asset_created_by' },
+                            condition => { id => \'= asset_created_by' # baka editors ',
+                            },
                         },
                         );
                 }
@@ -351,7 +355,7 @@ sub list_props {
                     push @{ $base_args->{joins} },
                         MT->model('author')->join_on(
                         undef,
-                        {   id     => \'= asset_created_by',
+                        {   id     => \'= asset_created_by', # baka editors ',
                             status => $status,
                         },
                         );
