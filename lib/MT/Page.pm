@@ -48,6 +48,16 @@ sub list_props {
             display => 'default',
             order   => 400,
         },
+        folder => {
+            base             => 'entry.category',
+            label            => 'Folder',
+            filter_label     => 'Folder',
+            display          => 'default',
+            view_filter      => [ 'blog', 'website' ],
+            order            => 500,
+            category_class   => 'folder',
+            zero_state_label => '(root)',
+        },
         folder_id => {
             base             => 'entry.category_id',
             label            => 'Folder',
@@ -61,8 +71,11 @@ sub list_props {
                 my $prop  = shift;
                 my ($app) = @_;
                 my $id    = $app->param('filter_val');
-                my $cat   = MT->model('category')->load($id);
-                return MT->translate( 'Pages in folder: [_1]', $cat->label, );
+                my $cat   = MT->model('folder')->load($id);
+                my $label = MT->translate( 'Pages in folder: [_1]',
+                    $cat->label." (ID:".$cat->id.")", );
+                $prop->{filter_label} = MT::Util::encode_html($label);
+                $label
             },
         },
         created_on  => { base => 'entry.created_on', order => 600, },

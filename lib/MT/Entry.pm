@@ -302,9 +302,12 @@ sub list_props {
             display => 'default',
         },
         blog_name => {
-            base => '__common.blog_name',
-            label =>
-                sub { MT->app->blog ? MT->translate('Blog Name') : MT->translate('Website/Blog Name') },
+            base  => '__common.blog_name',
+            label => sub {
+                MT->app->blog
+                    ? MT->translate('Blog Name')
+                    : MT->translate('Website/Blog Name');
+            },
             display   => 'default',
             site_name => sub { MT->app->blog ? 0 : 1 },
             order     => 400,
@@ -312,9 +315,76 @@ sub list_props {
         category_id => {
             label            => 'Primary Category',
             filter_label     => 'Category',
+            filter_tmpl        => '<mt:Var name="filter_form_hidden">',
             order            => 500,
             display          => 'default',
-            base             => '__virtual.single_select',
+            base             => '__virtual.integer',
+            filter_editable    => 0,
+            col_class        => 'string',
+            view_filter      => 'blog',
+            category_class   => 'category',
+            terms => sub {
+                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                my $blog_id = MT->app->blog->id;
+                my $cat_id  = $args->{value};
+                return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        $prop->datasource->container_label,
+                        $cat_id
+                    )
+                ) unless $cat_id;
+
+                $db_args->{joins} ||= [];
+                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
+                    undef,
+                    {   category_id => $cat_id,
+                        entry_id    => \'= entry_id',
+                        blog_id     => $blog_id,
+                    },
+                    { unique => 1, },
+                );
+                return;
+            },
+            args_via_param => sub {
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                my $id    = MT->app->param('filter_val');
+                my $cat   = MT->model('category')->load($id)
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        $prop->datasource->container_label,
+                        $id
+                    )
+                    );
+                return { option => 'equal', value => $cat->id };
+            },
+            label_via_param => sub {
+                my $prop  = shift;
+                my ($app) = @_;
+                my $id    = $app->param('filter_val');
+                my $cat   = MT->model('category')->load($id)
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        $prop->datasource->container_label,
+                        $id
+                    )
+                    );
+                return if !$app->blog || $app->blog->id != $cat->blog_id;
+                my $label = MT->translate( 'Entries from category: [_1]',
+                    $cat->label." (ID:".$cat->id.")", );
+                $prop->{filter_label} = MT::Util::encode_html($label);
+                $label
+            },
+        },
+        category => {
+            label            => 'Primary Category',
+            filter_label     => 'Category',
+            order            => 500,
+            display          => 'default',
+            base             => '__virtual.string',
             col_class        => 'string',
             view_filter      => 'blog',
             category_class   => 'category',
@@ -361,7 +431,8 @@ sub list_props {
                 my ( $objs, $app, $opts ) = @_;
                 my ( $cats, $placs ) = $prop->bulk_cats(@_);
                 return map {
-                           MT::Util::encode_html( $cats->{ $placs->{ $_->id } || 0 } )
+                    MT::Util::encode_html(
+                        $cats->{ $placs->{ $_->id } || 0 } )
                         || $prop->zero_state_label
                 } @$objs;
             },
@@ -389,63 +460,58 @@ sub list_props {
             #         :                       0
             #         ;
             #},
-            single_select_options => sub {
-                my ($prop)     = shift;
-                my $blog       = MT->app->blog;
-                my @categories = MT->model( $prop->category_class )
-                    ->load( { blog_id => $blog->id, } );
-                return [
-                    {   label => MT->translate('NONE'),
-                        value => 0,
-                    },
-                    map {
-                        {   label => $_->label,
-                            value => $_->id,
-                        }
-                        } @categories
-                ];
-            },
+            # single_select_options => sub {
+            #     my ($prop)     = shift;
+            #     my $blog       = MT->app->blog;
+            #     my @categories = MT->model( $prop->category_class )
+            #         ->load( { blog_id => $blog->id, } );
+            #     return [
+            #         {   label => MT->translate('NONE'),
+            #             value => 0,
+            #         },
+            #         map {
+            #             {   label => $_->label,
+            #                 value => $_->id,
+            #             }
+            #             } @categories
+            #     ];
+            # },
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 my $blog_id = MT->app->blog->id;
-                my $cat_id  = $args->{value};
-                $db_args->{joins} ||= [];
-                if ( $cat_id == 0 ) {
-                    push @{ $db_args->{joins} },
-                        MT->model('placement')->join_on(
-                        undef,
-                        { id => \'is null', },
-                        {   type      => 'left',
-                            condition => { entry_id => \'= entry_id', },
-                        },
-                        );
-                    return;
+                my $app = MT->instance;
+                my $option = $args->{option};
+                my $query  = $args->{string};
+                if ( 'contains' eq $option ) {
+                    $query = { like => "%$query%" };
                 }
-                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
+                elsif ( 'not_contains' eq $option ) {
+                    $query = { not_like => "%$query%" };
+                }
+                elsif ( 'beginning' eq $option ) {
+                    $query = { like => "$query%" };
+                }
+                elsif ( 'end' eq $option ) {
+                    $query = { like => "%$query" };
+                }
+                push @{ $db_args->{joins} },
+                    MT->model('placement')->join_on(
                     undef,
-                    {   category_id => $cat_id,
-                        entry_id    => \'= entry_id',
-                        blog_id     => $blog_id,
+                    {   entry_id => \'= entry_id',
+                        blog_id  => $blog_id,
                     },
-                    { unique => 1, },
-                );
-                return;
-            },
-            label_via_param => sub {
-                my $prop  = shift;
-                my ($app) = @_;
-                my $id    = $app->param('filter_val');
-                my $cat   = MT->model('category')->load($id)
-                    or return $prop->error(
-                    MT->translate(
-                        '[_1] ( id:[_2] ) does not exists.',
-                        $prop->datasource->container_label,
-                        $id
-                    )
+                    {   unique => 1,
+                        join   => MT->model($prop->category_class)->join_on(
+                            undef,
+                            {   label   => $query,
+                                id      => \'= placement_category_id',
+                                blog_id => $blog_id,
+                            },
+                            { unique => 1, }
+                        ),
+                    },
                     );
-                return if !$app->blog || $app->blog->id != $cat->blog_id;
-                return MT->translate( 'Entries from category: [_1]',
-                    $cat->label, );
+                return;
             },
         },
         authored_on => {
@@ -565,7 +631,7 @@ sub list_props {
                     $query = [
                         '-and',
                         { op => '>', value => $from },
-                        { op => '<', value => $to   },
+                        { op => '<', value => $to },
                     ];
                 }
                 elsif ( 'days' eq $option ) {
