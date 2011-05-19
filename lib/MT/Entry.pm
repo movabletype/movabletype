@@ -315,6 +315,73 @@ sub list_props {
         category_id => {
             label            => 'Primary Category',
             filter_label     => 'Category',
+            filter_tmpl        => '<mt:Var name="filter_form_hidden">',
+            order            => 500,
+            display          => 'default',
+            base             => '__virtual.integer',
+            filter_editable    => 0,
+            col_class        => 'string',
+            view_filter      => 'blog',
+            category_class   => 'category',
+            terms => sub {
+                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                my $blog_id = MT->app->blog->id;
+                my $cat_id  = $args->{value};
+                return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        $prop->datasource->container_label,
+                        $cat_id
+                    )
+                ) unless $cat_id;
+
+                $db_args->{joins} ||= [];
+                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
+                    undef,
+                    {   category_id => $cat_id,
+                        entry_id    => \'= entry_id',
+                        blog_id     => $blog_id,
+                    },
+                    { unique => 1, },
+                );
+                return;
+            },
+            args_via_param => sub {
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                my $id    = MT->app->param('filter_val');
+                my $cat   = MT->model('category')->load($id)
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        $prop->datasource->container_label,
+                        $id
+                    )
+                    );
+                return { option => 'equal', value => $cat->id };
+            },
+            label_via_param => sub {
+                my $prop  = shift;
+                my ($app) = @_;
+                my $id    = $app->param('filter_val');
+                my $cat   = MT->model('category')->load($id)
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        $prop->datasource->container_label,
+                        $id
+                    )
+                    );
+                return if !$app->blog || $app->blog->id != $cat->blog_id;
+                my $label = MT->translate( 'Entries from category: [_1]',
+                    $cat->label." (ID:".$cat->id.")", );
+                $prop->{filter_label} = MT::Util::encode_html($label);
+                $label
+            },
+        },
+        category => {
+            label            => 'Primary Category',
+            filter_label     => 'Category',
             order            => 500,
             display          => 'default',
             base             => '__virtual.string',
@@ -414,7 +481,7 @@ sub list_props {
                 my $blog_id = MT->app->blog->id;
                 my $app = MT->instance;
                 my $option = $args->{option};
-                my $query  = $args->{string} || $args->{value};
+                my $query  = $args->{string};
                 if ( 'contains' eq $option ) {
                     $query = { like => "%$query%" };
                 }
@@ -445,35 +512,6 @@ sub list_props {
                     },
                     );
                 return;
-            },
-            args_via_param => sub {
-                my $prop = shift;
-                my ( $app, $id ) = @_;
-                my $cat   = MT->model($prop->category_class)->load($id)
-                    or return $prop->error(
-                    MT->translate(
-                        '[_1] ( id:[_2] ) does not exists.',
-                        $prop->datasource->container_label,
-                        $id
-                    )
-                    );
-                return { option => 'equal', string => $cat->label };
-            },
-            label_via_param => sub {
-                my $prop  = shift;
-                my ($app) = @_;
-                my $id    = $app->param('filter_val');
-                my $cat   = MT->model('category')->load($id)
-                    or return $prop->error(
-                    MT->translate(
-                        '[_1] ( id:[_2] ) does not exists.',
-                        $prop->datasource->container_label,
-                        $id
-                    )
-                    );
-                return if !$app->blog || $app->blog->id != $cat->blog_id;
-                return MT->translate( 'Entries from category: [_1]',
-                    $cat->label, );
             },
         },
         authored_on => {
