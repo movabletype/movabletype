@@ -866,24 +866,86 @@ MT::Asset
 
     use MT::Asset;
 
-    # Example
+    $asset = MT::Asset->load( $asset_id );
+    print $asset->as_html();
+    
+    $asset_pkg = MT::Asset->handler_for_file($basename);
+    $asset = $asset_pkg->new();
+    $asset->file_path($filepath);
+    $asset->file_name($basename);
+    $asset->file_ext($ext);
+    $asset->blog_id($blog_id);
+    $asset->label($basename);
+    $asset->created_by( $app->user->id );
+    $asset->save();
 
 =head1 DESCRIPTION
 
-This module provides an object definition for a file that is placed under
-MT's control for publishing.
+This module provides an object definition for a general file that is placed under
+MT's control for publishing. There are sub-classes for specific file-types,
+such as L<MT::Asset::Image>, L<MT::Asset::Audio> and L<MT::Asset::Video>
+
+This module is subclass of L<MT::Object>, L<MT::Taggable> and L<MT::Scorable>
 
 =head1 METHODS
+
+=head2 MT::Asset->handler_for_file($filename)
+
+Returns a I<MT::Asset> subclass suitable for the filename given. This
+determination is typically made based on the file's extension.
 
 =head2 MT::Asset->new
 
 Constructs a new asset object. The base class is the generic asset object,
 which represents a generic file.
 
-=head2 MT::Asset->handler_for_file($filename)
+=head2 Data access methods:
 
-Returns a I<MT::Asset> package suitable for the filename given. This
-determination is typically made based on the file's extension.
+=over 4
+
+=item $asset->id
+
+=item $asset->blog_id - The blog that this asset is belong to
+
+=item $asset->label
+
+=item $asset->url
+
+The URL on which this asset can be accessed at. can contain shortcuts
+to build upon: %r for site url, %s for the support directory and
+%a for the archive url
+
+=item $asset->description
+
+=item $asset->file_path
+
+Local path for the file. can contain shortcuts similar to the url method
+
+=item $asset->file_name - i.e. document.pdf
+
+=item $asset->file_ext - the extention, without the leading dot
+
+=item $asset->mime_type
+
+=item $asset->parent
+
+An asset can have a parent-asset, in which case the parent asset id is
+stored here
+
+=back
+
+=head2 $asset_pkt->extensions
+
+an internal function used by can_handle to decide if this module
+can handle a specific file. 
+
+subclasses are expected to override this method and supply their
+own list of handled extensions
+
+=head2 $asset->remove()
+
+Remove this asset from the database, the filesystem and any associated
+tags. also removes child assets and ObjectAsset records
 
 =head1 AUTHORS & COPYRIGHT
 
