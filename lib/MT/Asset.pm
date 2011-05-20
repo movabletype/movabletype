@@ -989,7 +989,7 @@ If $param->{enclose} is true, the HTML contains a form
 Return a HTML snippet of form options for inserting this asset
 into a web page. Default behavior is no options.
 
-$head2 $asset->on_upload( [ $param ] )
+=head2 $asset->on_upload( [ $param ] )
 
 post-upload action. There is nothing to do for a generic file, but
 subclasses can process the file, create thumbnails and so on.
