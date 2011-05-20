@@ -979,6 +979,49 @@ if fails stock_icon_url. %params is passed directly to them.
 If %param contains a 'Pseudo' key, will return the URL with %r, %s or %a
 in the beginning, as explained in $asset->url
 
+=head2 $asset->as_html( [ $params ] )
+
+returns a HTML string containing link with the asset URL and filename
+If $param->{enclose} is true, the HTML contains a form
+
+=head2 $asset->insert_options( [ $params ] )
+
+Return a HTML snippet of form options for inserting this asset
+into a web page. Default behavior is no options.
+
+$head2 $asset->on_upload( [ $param ] )
+
+post-upload action. There is nothing to do for a generic file, but
+subclasses can process the file, create thumbnails and so on.
+
+=head2 $asset->edit_template_param($cb, $app, $param, $tmpl)
+
+Called before the template rendering, and gives an asset a chance
+to add parameters. Default behavior is to do nothing
+
+=head2 $asset->set_values_from_query( $q )
+
+The Asset will collect from a query's parameters any data that it 
+finds relevant. By default search if any of it's data fields 
+exists in the query, and if they do saves them. Subclasses can
+opt out or decorate this behavior by overriding the method
+
+=head2 $asset->remove_cached_files()
+
+Remove all the thumbnails generated for $asset
+
+=head2 $asset->_make_cache_path( [ $path, $pseudo ] )
+
+Returns a suitable place for caching asset-related files. for example,
+thumbnails. This place is basically root_path/cache-directory, where 
+root_path changes if the asset is blog-related, archives or in the 
+site-root. also cache-directory is taken from $path, or if not
+supplied it is taken from the AssetCacheDir configuration directive,
+added with the year and the month $asset was created on.
+
+If $pseudo is true, returns a path starting with %r, %s or %a, 
+as explained in $asset->url
+
 =head2 $asset->remove()
 
 Remove this asset from the database, the filesystem and any associated
