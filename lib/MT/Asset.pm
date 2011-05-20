@@ -934,6 +934,19 @@ stored here
 
 =back
 
+=head2 $asset->blog
+
+returns a Blog object, to which this asset is belong to
+
+=head2 $asset_pkg->can_handle( $filename )
+
+return true if $asset_pkt can handle files as such as $filename
+
+=head2 $asset->metadata()
+
+returns a hashref containing all the fields of this asset with
+translated keys, making it ready for presentation
+
 =head2 $asset_pkt->extensions
 
 an internal function used by can_handle to decide if this module
@@ -941,6 +954,30 @@ can handle a specific file.
 
 subclasses are expected to override this method and supply their
 own list of handled extensions
+
+=head2 $asset_pkt->type_list()
+
+returns the type-name that this package handles. this is the reverse
+function for $pkg->class_handler($type)
+
+=head2 $asset->has_thumbnail
+
+=head2 $asset->thumbnail_file
+
+=head2 $asset->thumbnail_filename
+
+=head2 $asset->stock_icon_url
+
+MT::Asset returns false for all these thumbnail functions, as it handles
+a general file. subclasses should override them with relevant information
+
+=head2 $asset->thumbnail_url( %params )
+
+Tries to retrive thumbnail url base on the thumbnail_file method, or 
+if fails stock_icon_url. %params is passed directly to them. 
+
+If %param contains a 'Pseudo' key, will return the URL with %r, %s or %a
+in the beginning, as explained in $asset->url
 
 =head2 $asset->remove()
 
