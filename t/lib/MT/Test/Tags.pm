@@ -17,7 +17,7 @@ BEGIN {
 
 $| = 1;
 
-use MT::Test qw(:db :data);
+use MT::Test qw(:quickdata);
 use MT;
 use MT::Util qw(ts2epoch epoch2ts);
 use MT::Template::Context;
