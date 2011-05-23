@@ -20,8 +20,7 @@ use MT;
 use MT::XMLRPC;
 use vars qw( $DB_DIR $T_CFG );
 
-use MT::Test;
-MT::Test->import( qw(:db :data) );
+use MT::Test qw( :quickdata );
 
 my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
 isa_ok($mt, 'MT');

@@ -6,7 +6,7 @@ BEGIN {
 };
 
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use MT::Test qw(:db :data);
+use MT::Test qw(:quickdata);
 use Test::More;
 use MIME::Base64;
 

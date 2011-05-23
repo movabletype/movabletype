@@ -7,7 +7,7 @@ use File::Copy;
 use lib qw( t t/lib ./extlib ./lib);
 
 use Test::More tests => 60;
-use MT::Test qw(:db :data);
+use MT::Test qw(:quickdata);
 
 use MT;
 use MT::Asset;

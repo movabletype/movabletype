@@ -14,7 +14,7 @@ use MT::Blog;
 use MT::Entry;
 use MT::Template;
 use MT::Template::Context;
-use MT::Test qw(:db :data);
+use MT::Test qw(:quickdata);
 use MT::Util qw(offset_time_list);
 
 my $mt = MT->new or die MT->errstr;

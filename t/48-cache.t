@@ -3,7 +3,7 @@ use strict;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use Test::More tests => 8;
 
-use MT::Test qw(:db :data);
+use MT::Test qw(:quickdata);
 use MT;
 
 require MT::Category;

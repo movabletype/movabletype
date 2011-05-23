@@ -13,7 +13,7 @@ BEGIN {
 use lib qw( t/lib t );
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 
-use MT::Test qw( :cms :db :data );
+use MT::Test qw( :cms :quickdata );
 
 use MT::Plugin;
 use MT::Entry;

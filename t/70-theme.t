@@ -7,7 +7,7 @@ BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
 
-use MT::Test qw(:db :data);
+use MT::Test qw(:quickdata);
 use Test::More qw( no_plan );
 use YAML::Tiny;
 use File::Spec;

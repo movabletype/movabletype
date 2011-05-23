@@ -15,7 +15,7 @@ use MT::Category;
 use MT::Entry;
 use MT::TBPing;
 use MT::Comment;
-use MT::Test qw(:db :data);
+use MT::Test qw(:quickdata);
 
 use vars qw( $DB_DIR $T_CFG );
 

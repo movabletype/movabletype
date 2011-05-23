@@ -6,7 +6,7 @@ use utf8;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 
 use Test::More tests => 8;
-use MT::Test qw(:db :data);
+use MT::Test qw(:quickdata);
 
 use MT;
 use MT::Util qw(archive_file_for get_entry multi_iter);

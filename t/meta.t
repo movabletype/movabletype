@@ -6,7 +6,7 @@ use warnings;
 use Test::More tests => 6;
 use Data::Dumper;
 
-use MT::Test qw( :db :app :data );
+use MT::Test qw( :app :quickdata );
 
 use MT::Blog;
 

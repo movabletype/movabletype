@@ -13,7 +13,7 @@ use MT::Log;
 use MT::PublishOption;
 use MT::Template;
 use MT::TemplateMap;
-use MT::Test qw( :db :data );
+use MT::Test qw( :quickdata );
 use MT::TheSchwartz::Error;
 
 my @blogs = MT::Blog->load();

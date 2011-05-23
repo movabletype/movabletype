@@ -18,7 +18,7 @@ use MT::Comment;
 use MT::Entry;
 use MT::Import;
 use MT::ImportExport;
-use MT::Test qw( :app :db :data );
+use MT::Test qw( :app :quickdata );
 
 my $blog = MT::Blog->load(1);
 my $user = MT::Author->load(2);

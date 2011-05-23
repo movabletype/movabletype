@@ -16,7 +16,7 @@ use MT::Blog;
 use MT::Comment;
 use MT::Entry;
 use MT::Template;
-use MT::Test qw( :app :db :data );
+use MT::Test qw( :app :quickdata );
 
 my @blogs = MT::Blog->load();
 foreach my $blog (@blogs) {

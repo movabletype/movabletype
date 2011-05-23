@@ -20,7 +20,7 @@ use vars qw( $DB_DIR $T_CFG );
 my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
 isa_ok($mt, 'MT');
 
-use MT::Test qw(:db :data);
+use MT::Test qw( :quickdata );
 
 my %test_data;
 $test_data{'/mt-atom.cgi/weblog'} = <<XML1;

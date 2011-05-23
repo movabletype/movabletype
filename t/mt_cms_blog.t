@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use MT::Test qw(:db :data);
+use MT::Test qw(:quickdata);
 
 use Test::More;
 

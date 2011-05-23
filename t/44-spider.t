@@ -14,7 +14,7 @@ BEGIN {
 
 use LWP::UserAgent::Local;
 use URI;
-use MT::Test qw(:db :data);
+use MT::Test qw(:quickdata);
 
 my $username = "Chuck D"; # Melody
 my $password = "bass"; # Nelson

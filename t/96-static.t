@@ -11,7 +11,7 @@ BEGIN {
 }
 
 use MT;
-use MT::Test qw( :app :db :data );
+use MT::Test qw( :app :quickdata );
 
 my $app = MT::App::CMS->instance();
 

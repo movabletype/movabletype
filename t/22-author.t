@@ -15,7 +15,7 @@ use vars qw( $DB_DIR $T_CFG );
 
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 
-use MT::Test qw(:db :data);
+use MT::Test qw(:quickdata);
 
 my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
 isa_ok($mt, 'MT');
