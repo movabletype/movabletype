@@ -402,9 +402,9 @@ sub error {
 
 sub init_quickdata {
     my $pkg = shift;
-    ## FIXME: Should read DB type from ObjectDriver config directive.
-    my $cachable_db = $ENV{MT_CONFIG} =~ /mysql/  ? 'mysql'
-                    : $ENV{MT_CONFIG} =~ /sqlite/ ? 'sqlite'
+    my $driver = MT->config->ObjectDriver;
+    my $cachable_db = $driver =~ /mysql/i  ? 'mysql'
+                    : $driver =~ /sqlite/i ? 'sqlite'
                     :                               ''
                     ;
     if ( $cachable_db ) {
@@ -427,6 +427,8 @@ sub init_quickdata {
             }
             `cp -r t/site t/site_original`;
         }
+        require MT::ConfigMgr;
+        MT::ConfigMgr->read_config_db;
     }
     else {
         die "Cannot use quickdata for the specified ObjectDriver.";
