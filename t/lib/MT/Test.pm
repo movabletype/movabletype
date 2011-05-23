@@ -409,7 +409,6 @@ sub init_quickdata {
                     ;
     if ( $cachable_db ) {
         if ( -d 't/site_original' && -f "t/data_dump.$cachable_db" ) {
-print STDERR "Use cache\n";
             if ( $cachable_db eq 'mysql' ) {
                 `mysql -u mt mt_test < t/data_dump.mysql`;
             }
@@ -419,8 +418,6 @@ print STDERR "Use cache\n";
             `cp -r t/site_original t/site`;
         }
         else {
-print STDERR "No cache\n";
-
             $pkg->init_db() && $pkg->init_data();
             if ( $cachable_db eq 'mysql' ) {
                 `mysqldump -u mt mt_test > t/data_dump.mysql`;
