@@ -119,16 +119,16 @@ my %xml_tests = (
  
 for my $test (keys %xml_tests) {
     if (ref($xml_tests{$test}) eq 'ARRAY') {
-        is(encode_xml($test), $xml_tests{$test}[0]); #65 #69 #73
-        is(decode_xml($xml_tests{$test}[0]), $test); #66 #70 #74
-        is(decode_xml(encode_xml($test)), $test); #67 #71 #75
+        is(encode_xml($test), $xml_tests{$test}[0], "encode_xml $test"); #65 #69 #73
+        is(decode_xml($xml_tests{$test}[0]), $test, "decode_xml $test"); #66 #70 #74
+        is(decode_xml(encode_xml($test)), $test, "encode_xml round trip $test"); #67 #71 #75
         MT::ConfigMgr->instance->NoCDATA(1);
-        is(encode_xml($test), $xml_tests{$test}[1]); #68 #72 #76
+        is(encode_xml($test), $xml_tests{$test}[1], "encode_xml without CDATA $test"); #68 #72 #76
         MT::ConfigMgr->instance->NoCDATA(0);
     } else {
-        is(encode_xml($test), $xml_tests{$test}); #53 #56 #59
-        is(decode_xml($xml_tests{$test}), $test); #54 #57 #60
-        is(decode_xml(encode_xml($test)), $test); #55 #58 #61
+        is(encode_xml($test), $xml_tests{$test}, "encode_xml $test"); #53 #56 #59
+        is(decode_xml($xml_tests{$test}), $test, "decode_xml $test"); #54 #57 #60
+        is(decode_xml(encode_xml($test)), $test, "encode_xml round trip $test"); #55 #58 #61
     }
 }
 
