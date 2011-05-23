@@ -400,6 +400,42 @@ sub error {
     print "ERROR: $msg\n";
 }
 
+sub init_quickdata {
+    my $pkg = shift;
+    ## FIXME: Should read DB type from ObjectDriver config directive.
+    my $cachable_db = $ENV{MT_CONFIG} =~ /mysql/  ? 'mysql'
+                    : $ENV{MT_CONFIG} =~ /sqlite/ ? 'sqlite'
+                    :                               ''
+                    ;
+    if ( $cachable_db ) {
+        if ( -d 't/site_original' && -f "t/data_dump.$cachable_db" ) {
+print STDERR "Use cache\n";
+            if ( $cachable_db eq 'mysql' ) {
+                `mysql -u mt mt_test < t/data_dump.mysql`;
+            }
+            elsif ( $cachable_db eq 'sqlite' ) {
+                `cp t/data_dump.sqlite t/db/mt.db`;
+            }
+            `cp -r t/site_original t/site`;
+        }
+        else {
+print STDERR "No cache\n";
+
+            $pkg->init_db() && $pkg->init_data();
+            if ( $cachable_db eq 'mysql' ) {
+                `mysqldump -u mt mt_test > t/data_dump.mysql`;
+            }
+            elsif ( $cachable_db eq 'sqlite' ) {
+                `cp t/db/mt.db t/data_dump.sqlite`;
+            }
+            `cp -r t/site t/site_original`;
+        }
+    }
+    else {
+        die "Cannot use quickdata for the specified ObjectDriver.";
+    }
+}
+
 sub init_data {
     my $pkg = shift;
 
