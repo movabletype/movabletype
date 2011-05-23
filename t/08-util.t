@@ -12,9 +12,9 @@ use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
                  archive_file_for format_ts dirify remove_html
                  days_in wday_from_ts encode_js decode_js get_entry spam_protect
                  is_valid_email encode_php encode_url decode_url encode_xml
-                 decode_xml is_valid_url is_url discover_tb convert_high_ascii 
+                 decode_xml is_valid_url is_url discover_tb convert_high_ascii
                  mark_odd_rows dsa_verify perl_sha1_digest relative_date
-                 perl_sha1_digest_hex dec2bin bin2dec xliterate_utf8 
+                 perl_sha1_digest_hex dec2bin bin2dec xliterate_utf8
                  start_background_task launch_background_tasks substr_wref
                  extract_urls extract_domain extract_domains is_valid_date
                  epoch2ts ts2epoch escape_unicode unescape_unicode
@@ -99,36 +99,36 @@ ok(wday_from_ts(1995,2,28) == 2);
 ok(wday_from_ts(1946,12,26) == 4);
 
 my %xml_tests = (
-    'foo' => 'foo', #53 #54
-    'x < y' => 'x &lt; y', #56 #57
-    'foo & bar' => 'foo &amp; bar', #59 #60
-    'foo\'s bar' => 'foo&apos;s bar', #62 #63
-    '<title>my title</title>' => #65 #66 #67
+    'foo' => 'foo',
+    'x < y' => 'x &lt; y',
+    'foo & bar' => 'foo &amp; bar',
+    'foo\'s bar' => 'foo&apos;s bar',
+    '<title>my title</title>' =>
         [ '<![CDATA[<title>my title</title>]]>',
           '&lt;title&gt;my title&lt;/title&gt;', ],
-    '<foo>]]>' => #69 #70 #71
+    '<foo>]]>' =>
         [ '<![CDATA[<foo>]]&gt;]]>',
           '&lt;foo&gt;]]&gt;', ],
-    'x &lt; y' => #73 #74 #75
+    'x &lt; y' =>
         [ '<![CDATA[x &lt; y]]>',
           'x &amp;lt; y', ],
-    'foob&aacute;r' => #77 #78 #79
+    'foob&aacute;r' =>
         [ '<![CDATA[foob&aacute;r]]>',
           'foob&amp;aacute;r', ],
 );
- 
+
 for my $test (keys %xml_tests) {
     if (ref($xml_tests{$test}) eq 'ARRAY') {
-        is(encode_xml($test), $xml_tests{$test}[0], "encode_xml $test"); #65 #69 #73
-        is(decode_xml($xml_tests{$test}[0]), $test, "decode_xml $test"); #66 #70 #74
-        is(decode_xml(encode_xml($test)), $test, "encode_xml round trip $test"); #67 #71 #75
+        is(encode_xml($test), $xml_tests{$test}[0], "encode_xml $test");
+        is(decode_xml($xml_tests{$test}[0]), $test, "decode_xml $test");
+        is(decode_xml(encode_xml($test)), $test, "encode_xml round trip $test");
         MT::ConfigMgr->instance->NoCDATA(1);
-        is(encode_xml($test), $xml_tests{$test}[1], "encode_xml without CDATA $test"); #68 #72 #76
+        is(encode_xml($test), $xml_tests{$test}[1], "encode_xml without CDATA $test");
         MT::ConfigMgr->instance->NoCDATA(0);
     } else {
-        is(encode_xml($test), $xml_tests{$test}, "encode_xml $test"); #53 #56 #59
-        is(decode_xml($xml_tests{$test}), $test, "decode_xml $test"); #54 #57 #60
-        is(decode_xml(encode_xml($test)), $test, "encode_xml round trip $test"); #55 #58 #61
+        is(encode_xml($test), $xml_tests{$test}, "encode_xml $test");
+        is(decode_xml($xml_tests{$test}), $test, "decode_xml $test");
+        is(decode_xml(encode_xml($test)), $test, "encode_xml round trip $test");
     }
 }
 
