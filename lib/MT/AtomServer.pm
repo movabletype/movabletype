@@ -1620,10 +1620,59 @@ posts. Subclass of MT::AtomServer
 
 =head3 $app->handle_request()
 
-Main switchboard for blog posts, based on the HTML verb used in the 
-request. calls handle_upload, get_categories, new_post, edit_post,
-delete_post, get_post, get_posts or get_weblogs to supply the information
-itself
+Main switchboard for blog posts, based on the HTML verb and params 
+used in the request. calls handle_upload, get_categories, new_post, 
+edit_post, delete_post, get_post, get_posts or get_weblogs to supply 
+the information itself
+
+=head3 $app->get_categories()
+
+Will be called if the request contains a 'svc' (for service) parameter
+equal to 'categories'. the request should also contain a blog_id param,
+for which the categories are read of. Answer with a list of categories 
+for this blog.
+
+=head3 $app->new_post()
+
+Will be called on POST API request. 
+
+=head3 $app->edit_post()
+
+Will be called on PUT API request. 
+
+=head3 $app->delete_post()
+
+Will be called on DELETE API request. 
+
+=head3 $app->get_post()
+
+Will be called on GET API request, If an entry_id and blog_id parameters 
+are supplied. 
+
+=head3 $app->get_posts()
+
+Will be called on GET API request, If an blog_id parameter is supplied,
+but not entry_id.
+
+=head3 $app->get_weblogs()
+
+Answer with a list of weblogs that the user have permission to. 
+will be called on API GET request with no blog_id or entry_id
+
+=head3 $app->authenticate()
+
+extends the original authenticate function, by trying to load a MT::Blog
+object and permission object if blog_id param is supplied
+
+=head3 $app->apply_basename( $entry, $atom )
+
+While posting an entry using the API, it is possible to ask for a specific
+basename for this entry using a 'Slug'. this function apply the request,
+but only if such name is not in use yet
+
+=head3 $app->new_with_entry( $entry )
+
+Create a new Atom entry out of a blog entry
 
 =head1 CALLBACKS
 
