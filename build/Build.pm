@@ -88,7 +88,7 @@ sub get_options {
       'notify:s'        => undef,  # Send email notification on completion.
       'pack=s'          => undef,  # Constructed at run-time.
       'plugin=s@'       => undef,  # Plugin list
-      'plugin-uri=s'    => 'http://github.com/movabletyp',
+      'plugin-uri=s'    => 'https://github.com/movabletype',
       'prod'            => 0,  # Command-line --option alias
       'prod-dir=s'      => 'Production_Builds',
       'qa'              => 0,  # Command-line --option alias
