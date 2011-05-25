@@ -145,7 +145,7 @@ lang-es
 lang-no
 lang-ja
 lang-it
-\.(en_us|fr|de|gb|ja|en|no|it)$
+\.(en_us|fr|de|gb|ja|en|no|it|ru)$
 
 # Tools
 ^mt-inbox.pl$
@@ -166,6 +166,7 @@ lang-it
 #^tools/sig-validate
 #^tools/upgrade
 ^tools/write-default-templates
+^ru-filter.pl$
 
 # Plugins
 #plugins/StyleCatcher
