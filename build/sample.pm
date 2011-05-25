@@ -227,6 +227,7 @@ sub encoding { "iso-8859-1" }   # Latin-1
     'Norwegian' => '',
     'Polish' => '',
     'Portuguese' => '',
+    'Russian' => '',
     'Slovak' => '',
     'Slovenian' => '',
     'Spanish' => '',
