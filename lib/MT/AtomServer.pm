@@ -1528,27 +1528,38 @@ __END__
 
 =head1 NAME
 
-MT::AtomServer
+MT::AtomServer - An Atom Publishing API interface for communicating with Movable Type.
 
 =head1 SYNOPSIS
 
-An Atom Publishing API interface for communicating with Movable Type.
+    use MT::Bootstrap App => 'MT::AtomServer';
+
+=head1 DESCRIPTION
+
+A MT::App that handles incoming Atom Publishing API requests, decide
+which of his subclasses should answer it and call it. subclasses are:
+MT::AtomServer::Weblog, MT::AtomServer::Weblog::Legacy and 
+MT::AtomServer::Comments
+
+This app can also handle SOAP requests
 
 =head1 METHODS
 
-=head2 $app->xml_body()
+=head2 $app->init()
 
-Takes the content posted to the server and parses it into an XML document.
-Uses either XML::LibXML or XML::XPath depending on which is available.
+Initializes the application. Called by the MT framework
 
-=head2 $app->iso2epoch($iso_ts)
+=head2 $app->handle()
 
-Converts C<$iso_ts> in the format of an ISO timestamp into a unix timestamp
-(seconds since the epoch).
+Wrapper method that determines the proper AtomServer package to pass the
+request to. calls handle_request on the right subclass
 
-=head2 $app->init
+=head2 $app->handle_request()
 
-Initializes the application.
+Subclasses should override this method to answer a request. By default
+does nothing.
+
+=head1 INTERNAL METHODS
 
 =head2 $app->get_auth_info
 
@@ -1566,42 +1577,53 @@ Processes the request for WSSE authentication and returns a hash containing:
 
 =back
 
-=head2 $app->handle_request
-
-The implementation of this in I<MT::AtomServer::Weblog> passes the request
-to the proper method.
-
-=head2 $app->handle
-
-Wrapper method that determines the proper AtomServer package to pass the
-request to.
-
-=head2 $app->iso2ts($iso_ts, $target_zone)
-
-Converts C<$iso_ts> in the format of an ISO timestamp into a MT-compatible
-timestamp (YYYYMMDDHHMMSS) for the specified timezone C<$target_zone>.
-
-=head2 $app->atom_body
-
-Processes the request as Atom content and returns an XML::Atom object.
-
-=head2 $app->error($code, $message)
-
-Sends the HTTP headers necessary to relay an error.
-
 =head2 $app->authenticate()
 
 Checks the WSSE authentication with the local MT user database and
 confirms the user is authorized to access the resources required by
 the request.
 
-=head2 $app->show_error($message)
-
-Returns an XML wrapper for the error response.
-
 =head2 $app->auth_failure($code, $message)
 
-Handles the response in the event of an authentication failure.
+Handles the response in the event of an authentication failure. 
+equivalent to $app->error, but add an authentication header to
+the response
+
+=head2 $app->xml_body()
+
+Takes the content posted to the server and parses it into an XML document.
+Uses either XML::LibXML or XML::XPath depending on which is available.
+
+xml_body should be called only when the request is SOAP, and not Atom.
+It is better to call $app->atom_body(), that abstract this away
+
+=head2 $app->atom_body
+
+Processes the request and returns an XML::Atom object
+
+=head2 $app->iso2epoch($iso_ts)
+
+Converts C<$iso_ts> in the format of an ISO timestamp into a unix timestamp
+(seconds since the epoch).
+
+=head2 $app->iso2ts($iso_ts, $target_zone)
+
+Converts C<$iso_ts> in the format of an ISO timestamp into a MT-compatible
+timestamp (YYYYMMDDHHMMSS) for the specified timezone C<$target_zone>.
+
+=head1 MT::AtomServer::Weblog
+
+Providing Atom access to creating, editing, posting and reading blog
+posts. Subclass of MT::AtomServer
+
+=head2 METHODS
+
+=head3 $app->handle_request()
+
+Main switchboard for blog posts, based on the HTML verb used in the 
+request. calls handle_upload, get_categories, new_post, edit_post,
+delete_post, get_post, get_posts or get_weblogs to supply the information
+itself
 
 =head1 CALLBACKS
 
@@ -1663,5 +1685,12 @@ I<$atom_entry> is a reference to XML::Atom::Entry object.
 I<$comment> is a reference to the requested MT::Comment object.
 
 =back
+
+=head1 SUBCLASSES
+
+=head2 $app->handle_request
+
+The implementation of this in I<MT::AtomServer::Weblog> passes the request
+to the proper method.
 
 =cut
