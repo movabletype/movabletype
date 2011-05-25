@@ -407,8 +407,13 @@ sub init_quickdata {
                     : $driver =~ /sqlite/i ? 'sqlite'
                     :                               ''
                     ;
+    require MT::FileMgr;
     if ( $cachable_db ) {
-        if ( -d 't/site_original' && -f "t/data_dump.$cachable_db" ) {
+    my $fmgr = MT::FileMgr->new('Local');
+        my $site = 't/site_original';
+        my $dump = "t/data_dump.$cachable_db";
+        ## Use cached dump if it's exists and in 3 hours from last modified..
+        if ( -d $site && -f $dump && $fmgr->file_mod_time($dump) + (60 * 60 * 3 ) > time ) {
             if ( $cachable_db eq 'mysql' ) {
                 `mysql -u mt mt_test < t/data_dump.mysql`;
             }
