@@ -161,7 +161,7 @@ sub edit {
         $param->{has_any_pinged_urls} = ( $obj->pinged_urls || '' ) =~ m/\S/;
         $param->{ping_errors}         = $q->param('ping_errors');
         $param->{can_view_log}        = $app->can_do('view_log');
-        $param->{entry_permalink}     = $obj->permalink;
+        $param->{entry_permalink}     = MT::Util::encode_html( $obj->permalink );
         $param->{'mode_view_entry'}   = 1;
         $param->{'basename'}          = $obj->basename;
 
@@ -1424,8 +1424,6 @@ sub save {
         }
     }
 
-    $app->validate_magic() or return;
-
     # check for autosave
     if ( $app->param('_autosave') ) {
         return $app->autosave_object();
@@ -2465,7 +2463,7 @@ sub build_entry_table {
             $row->{weblog_name} = $blog->name;
         }
         if ( $obj->status == MT::Entry::RELEASE() ) {
-            $row->{entry_permalink} = $obj->permalink;
+            $row->{entry_permalink} = MT::Util::encode_html( $obj->permalink );
         }
         $row->{object} = $obj;
         push @data, $row;
@@ -2749,8 +2747,7 @@ sub delete {
 
         $app->run_callbacks( 'cms_delete_permission_filter.entry',
             $app, $obj )
-            || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+            || return $app->permission_denied();
 
         my %recipe = $app->publisher->rebuild_deleted_entry(
             Entry => $obj,

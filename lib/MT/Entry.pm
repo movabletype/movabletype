@@ -242,7 +242,7 @@ sub list_props {
                     $excerpt .= '...';
                 }
                 my $id        = $obj->id;
-                my $permalink = $obj->permalink;
+                my $permalink = MT::Util::encode_html( $obj->permalink );
                 my $edit_url  = MT->app->uri(
                     mode => 'view',
                     args => {
@@ -1674,6 +1674,11 @@ sub unpack_revision {
         $obj->cache_property( 'category',   undef, $cat );
         $obj->cache_property( 'categories', undef, \@cats );
     }
+}
+
+sub is_entry {
+    my $class = shift;
+    return $class->class eq 'entry' ? 1: 0;
 }
 
 #trans('Draft')

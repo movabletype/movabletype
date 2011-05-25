@@ -630,6 +630,19 @@ sub can_delete {
     }
 }
 
+sub can_save {
+    my ( $eh, $app, $obj ) = @_;
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
+
+    if ( $obj && !ref $obj ) {
+        $obj = MT->model('asset')->load($obj);
+    }
+    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
+
+    return $author->permissions($blog_id)->can_do('save_asset');
+}
+
 sub pre_save {
     my $eh = shift;
     my ( $app, $obj ) = @_;
