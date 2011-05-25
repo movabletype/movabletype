@@ -127,7 +127,7 @@ sub numerate {
 	'Error compiling widgetset [_1]' => 'Ошибка при компиляции связки виджетов [_1]',
 
 ## php/lib/mtdb.base.php
-#	'The attribute exclude_blogs denies all include_blogs.' => 'Атрибут exclude_blogs include_blogs.', # Translate - Empty
+	'The attribute exclude_blogs denies all include_blogs.' => 'Атрибут exclude_blogs запрещает все include_blogs.',
 
 ## php/lib/MTUtil.php
 	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x', # Translate - Not translated
@@ -137,7 +137,7 @@ sub numerate {
 
 ## mt-check.cgi
 	'Movable Type System Check' => 'Системная проверка Movable Type',
-#	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => '', # Translate - Empty
+	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'Вы пытаетесь использовать функцию, доступ к которой ограничен. Если вы уверены, что такого быть не должно, обратитесь к администратору.',
 	'The MT-Check report is disabled when Movable Type has a valid configuration file (mt-config.cgi)' => 'Функция MT-Check отключена, так как имеется валидный конфигурационный файл (mt-config.cgi)',
 	q{The mt-check.cgi script provides you with information about your system's configuration and determines whether you have all of the components you need to run Movable Type.} => q{Скрипт mt-check.cgi предоставляет информацию о системной конфигурации и определяет, все ли необходимые компоненты присутствуют для запуска Movable Type.},
 	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'Установленная версия Perl ([_1]) ниже, чем минимально поддерживаемая ([_2]). Необходимо обновить хотя бы до Perl [_2].',
@@ -149,7 +149,7 @@ sub numerate {
 	'Perl version:' => 'Версия Perl:',
 	'Perl include path:' => 'Путь включения Perl:',
 	'Web server:' => 'Веб-сервер:',
-	'(Probably) running under cgiwrap or suexec' => '(Возможно) Запущено под cgiwrap или suexec', # Translate - Case
+	'(Probably) running under cgiwrap or suexec' => '(Возможно) Запущено под cgiwrap или suexec',
 	'[_1] [_2] Modules' => '[_1] модулей: [_2]',
 	'The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that the module provides.' => 'Следующие модули необязательны. Если они отсутствуют на сервере, вам понадобится установить их только в случае, когда потребуется функциональность, обеспечиваемая модулем.',
 	'Some of the following modules are required by databases supported by Movable Type. Your server must have DBI and at least one of these related modules installed for proper operation of Movable Type.' => 'Некоторые из следующих модулей обязательны для поддержки баз данных в Movable Type. На сервере должен быть установлен DBI, а также хотя бы один из подмодулей для работы c необходимой базой данных.',
@@ -181,8 +181,8 @@ sub numerate {
 	'Image::Magick is optional; It is needed if you would like to be able to create thumbnails of uploaded images.' => 'Модуль Image::Magick необязателен, но необходим, если вы хотите иметь возможность делать миниатюры загружаемых изображений.',
 	'This module is needed if you would like to be able to create thumbnails of uploaded images.' => 'Модуль необходим, если вы хотите иметь возможность делать миниатюры загружаемых изображений.',
 	'This module is needed if you would like to be able to use NetPBM as the image driver for MT.' => 'Модуль необходим, если вы хотите использовать в качестве обработчика картинок драйвер NetPBM.',
-	'Storable is optional; It is required by certain MT plugins available from third parties.' => 'Модуль Storable не обязателен, однако требуется для некоторых сторонних плагинов MT.', # Translate - Case
-	'Crypt::DSA is optional; If it is installed, comment registration sign-ins will be accelerated.' => 'Модуль Crypt::DSA не обязателен, но если он присутствует, то авторизация комментаторов происходит быстрее.', # Translate - Case
+	'Storable is optional; It is required by certain MT plugins available from third parties.' => 'Модуль Storable не обязателен, однако требуется для некоторых сторонних плагинов MT.',
+	'Crypt::DSA is optional; If it is installed, comment registration sign-ins will be accelerated.' => 'Модуль Crypt::DSA не обязателен, но если он присутствует, то авторизация комментаторов происходит быстрее.',
 	'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support.' => 'Этот модуль и его зависимости необходимы для авторизации комментаторов через OpenID-провайдеров, которые требуют поддержки SSL. Например, это может быть Google или Yahoo.',
 	'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan as OpenID.' => 'Необходим Cache::File, если вы хотите использовать возможность авторизации комментаторов через Yahoo! Japan.',
 	'MIME::Base64 is required in order to enable comment registration.' => 'Модуль MIME::Base64 необходим для регистрации комментаторов.',
@@ -527,7 +527,7 @@ sub numerate {
 
 ## lib/MT/App/CMS.pm
 	'Invalid request' => 'Неверный запрос',
-	'Are you sure you want to remove all trackbacks reported as spam?' => 'Вы увеерны, что хотите удалить все трекбэки, отмеченные как спам?', # Translate - Case
+	'Are you sure you want to remove all trackbacks reported as spam?' => 'Вы увеерны, что хотите удалить все трекбэки, отмеченные как спам?',
 	'Are you sure you want to remove all comments reported as spam?' => 'Вы уверены, что хотите удалить все комментарии, помеченные как спам?',
 	'Add a user to this [_1]' => 'Добавить пользователя в этот [_1]',
 	'Are you sure you want to reset the activity log?' => 'Вы уверены, что хотите очистить журнал активности?',
@@ -938,8 +938,8 @@ sub numerate {
 	'Type' => 'Тип',
 	'Filename' => 'Имя файла',
 	'File Extension' => 'Расширение файлов',
-	'Pixel width' => 'Ширина (пикселей)', # проверить
-	'Pixel height' => 'Высота (пикселей)', # проверить
+	'Pixel width' => 'Ширина (пикселей)',
+	'Pixel height' => 'Высота (пикселей)',
 	'Except Userpic' => 'Исключая аватары',
 	'Author Status' => 'Статус автора',
 	'Assets of this website' => 'Медиа на этом сайте',
@@ -985,7 +985,7 @@ sub numerate {
 
 ## lib/MT/Author.pm
 	'Users' => 'Пользователи',
-	'Active' => 'Активный', # проверить
+	'Active' => 'Активный',
 	'Pending' => 'Ожидающий',
 	'__COMMENTER_APPROVED' => 'Принят',
 	'Banned' => 'Заблокирован',
@@ -1102,8 +1102,8 @@ sub numerate {
 	'Unknown tag found: [_1]' => 'Найден неизвестный тег: [_1]',
 
 ## lib/MT/Category.pm
-	'[quant,_1,entry,entries,No entries]' => '[quant,_1,запись,записи,записей,Нет записей]', # проверить
-	'[quant,_1,page,pages,No pages]' => '[quant,_1,страница,страницы,страниц,Нет страниц]', # проверить
+	'[quant,_1,entry,entries,No entries]' => '[quant,_1,запись,записи,записей,Нет записей]',
+	'[quant,_1,page,pages,No pages]' => '[quant,_1,страница,страницы,страниц,Нет страниц]',
 	'Category' => 'Категория',
 	'Categories must exist within the same blog' => 'Категории должны существовать в пределах одного и того же блога',
 	'Category loop detected' => 'Обнаружен цикл категорий',
@@ -1233,7 +1233,6 @@ sub numerate {
 	'Orphaned comment' => 'Осиротевшие комментарии',
 
 ## lib/MT/CMS/Common.pm
-	'Permisison denied.' => 'В доступе отказано.',
 	'The Template Name and Output File fields are required.' => 'Необходимо указать имя шаблона и имя публикуемого файла.',
 	'Invalid type [_1]' => 'Недопустимый тип [_1]',
 	'Invalid ID [_1]' => 'Неверный ID [_1]',
@@ -1244,7 +1243,7 @@ sub numerate {
 	'Load failed: [_1]' => 'Ошибка загрузки: [_1]',
 	'(no reason given)' => '(без указанной причины)',
 	'New Filter' => 'Новый фильтр',
-#	'__SELECT_FILTER_VERB' => '', # Translate - Empty
+	'__SELECT_FILTER_VERB' => '—',
 	'All [_1]' => 'Все [_1]',
 	'[_1] Feed' => '[_1]', # Translate - No russian chars
 	'Unknown list type' => 'Неизвестный тип списка',
@@ -1307,9 +1306,9 @@ sub numerate {
 	'Failed to save filter: [_1]' => 'Не удалось сохранить фильтр: [_1]',
 	'Permission denied' => 'Доступ запрещён',
 	'Failed to delete filter(s): [_1]' => 'Не удалось удалить фильтр(ы): [_1]',
-	'Removed [_1] filters successfully.' => 'Удалено фильтров: [_1].', # проверить
+	'Removed [_1] filters successfully.' => 'Удалено фильтров: [_1].',
 	'[_1] ( created by [_2] )' => '[_1] (создано пользователем [_2] )',
-#	'(Legacy) ' => '', # Translate - Empty
+	'(Legacy) ' => '(Наследие)', # проверить
 
 ## lib/MT/CMS/Folder.pm
 	'The folder \'[_1]\' conflicts with another folder. Folders with the same parent must have unique basenames.' => 'Папка «[_1]» конфликтует с другой папкой. У папок с одной и той же родительской папкой должны быть уникальные базовые имена.',
@@ -1376,8 +1375,8 @@ sub numerate {
 	'Unknown blog' => 'Неизвестный блог',
 	'One or more errors were found in included template module ([_1]).' => 'Одна или несколько ошибок при включении модуля шаблона ([_1]).',
 	'Global Template' => 'Глобальный шаблон',
-	'Invalid Blog' => 'Недопустимый блог', # Translate - Case
-	'Global' => 'Глобальный', # проверить
+	'Invalid Blog' => 'Недопустимый блог',
+	'Global' => 'Глобальный',
 	'Create template requires type' => 'Для создания шаблонов требуется тип',
 	'Archive' => 'Архив',
 	'Entry or Page' => 'Запись или Страница',
@@ -1561,26 +1560,26 @@ sub numerate {
 	'Search other comments from this anonymous commenter' => 'Искать другие комментарии от этого анонимного комментатора',
 	'__ANONYMOUS_COMMENTER' => 'Аноним',
 	'Search other comments from this deleted commenter' => 'Искать другие комментарии от этого удалённого комментатора',
-	'(Deleted)' => '(Удалено)', # проверить
+	'(Deleted)' => '(Удалено)',
 	'Edit this [_1] commenter.' => 'Редактировать этого [_1] комментатора.',
 	'Comments on [_1]: [_2]' => 'Комментарий к [_1]: [_1]',
 	'Approved' => 'Принят',
 	'Unapproved' => 'Отклонен',
-	'Not spam' => 'Не спам', # Translate - Case
-	'Reported as spam' => 'Спам', # Translate - Case
+	'Not spam' => 'Не спам',
+	'Reported as spam' => 'Спам',
 	'All comments by [_1] \'[_2]\'' => 'Все комментарии от [_1] «[_2]»',
 	'Commenter' => 'Комментатор',
 	'Load of entry \'[_1]\' failed: [_2]' => 'Не удалось загрузить запись «[_1]»: [_2]',
 	'Entry/Page' => 'Запись/Страница',
-	'Comments on My Entries/Pages' => 'Комментарии к моим записям/страницам', # Translate - Case
+	'Comments on My Entries/Pages' => 'Комментарии к моим записям/страницам',
 	'Commenter Status' => 'Статус комментатора',
-	'Non-spam comments' => 'Комментарии без спама', # Translate - Case
-	'Non-spam comments on this website' => 'Не-спам комментарии этого сайта', # Translate - Case
+	'Non-spam comments' => 'Комментарии без спама',
+	'Non-spam comments on this website' => 'Не-спам комментарии этого сайта',
 	'Pending comments' => 'Ожидающие комментарии',
 	'Published comments' => 'Опубликованные комментарии',
 	'Comments on my entries/pages' => 'Комментарии к моим записям/страницам',
 	'Comments in the last 7 days' => 'Комментарии за последние 7 дней',
-	'Spam comments' => 'Комментарии, помеченные как спам', # Translate - Case
+	'Spam comments' => 'Комментарии, помеченные как спам',
 
 ## lib/MT/Compat/v3.pm
 	'uses: [_1], should use: [_2]' => 'использовано: [_1], а должно быть: [_2]',
@@ -1605,21 +1604,21 @@ sub numerate {
 	'The physical file path for your SQLite database. ' => 'Физический путь к файлам вашей SQLite базы данных. ',
 	'[_1] in [_2]: [_3]' => '[_1] в [_2]: [_3]',
 	'option is required' => 'параметр обязателен',
-#	'[_1] [_2] between [_3] and [_4]' => '', # Translate - Empty
-#	'[_1] [_2] since [_3]' => '', # Translate - Empty
-#	'[_1] [_2] or before [_3]' => '', # Translate - Empty
-#	'[_1] [_2] these [_3] days' => '', # Translate - Empty
-#	'[_1] [_2] future' => '', # Translate - Empty
-#	'[_1] [_2] past' => '', # Translate - Empty
-	'<mt:var name="[_1]"> [_2] [_3] [_4]' => '<mt:var name="[_1]"> [_2] [_3] [_4]', 
+	'[_1] [_2] between [_3] and [_4]' => '[_1] [_2] между [_3] и [_4]',
+	'[_1] [_2] since [_3]' => '[_1] [_2] начиная с [_3]',
+	'[_1] [_2] or before [_3]' => '[_1] [_2] или раньше [_3]',
+	'[_1] [_2] these [_3] days' => '[_1] [_2] этих [quant,_3,день,дня,дней]', # проверить
+	'[_1] [_2] future' => '[_1] [_2] будущее', # проверить
+	'[_1] [_2] past' => '[_1] [_2] прошлое', # проверить
+	'<mt:var name="[_1]"> [_2] [_3] [_4]' => '<mt:var name="[_1]"> [_2] [_3] [_4]', # Translate - Not translated
 	'Invalid parameter.' => 'Неверный параметр.',
-	'[_1] [_3] [_2]' => '[_1] [_3] [_2]',
-	'No Label' => 'Нет имени', # Translate - Case
+	'[_1] [_3] [_2]' => '[_1] [_3] [_2]', # Translate - Not translated
+	'No Label' => 'Нет имени',
 	'*User deleted*' => '*Пользователь удалён*',
 	'(system)' => '(система)',
 	'*Website/Blog deleted*' => '*Сайт/блог удалён*',
 	'My [_1]' => 'Мои [_1]',
-	'[_1] of this Website' => '[_1] этого сайта', # Translate - Case
+	'[_1] of this Website' => '[_1] этого сайта',
 	'IP Banlist is disabled by system configuration.' => 'Бан по IP отключен в системной конфигурации.',
 	'Address Book is disabled by system configuration.' => 'Адресная книга отключена в системной конфигурации.',
 	'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive: [_2]' => 'Не удалось создать директорию для журнала производительности ([_1]). Пожалуйста, сделайте директорию перезаписываемой, либо используйте альтернативный путь в конфигурациии PerformanceLoggingPath: [_2]',
@@ -1635,12 +1634,12 @@ sub numerate {
 	'Database Path' => 'Путь к базе данных',
 	'Database Port' => 'Порт сервера базы данных',
 	'Database Socket' => 'Сокет базы данных',
-	'ID' => 'ID',
+	'ID' => 'ID', # Translate - Not translated
 	'Date Created' => 'Дата создания',
 	'Date Modified' => 'Дата изменения',
 	'Author Name' => 'Имя автора',
-#	'Legacy Quick Filter' => '', # Translate - Empty
-#	'My Items' => '', # Translate - Empty
+	'Legacy Quick Filter' => 'Быстрый фильтр наследования', # проверить
+	'My Items' => 'Мои записи',
 	'Log' => 'Лог',
 	'Activity Feed' => 'Активность',
 	'Folder' => 'Директория',
@@ -1752,12 +1751,12 @@ sub numerate {
 	'Subscribe Verify' => 'Подтверждение подписки',
 
 ## lib/MT/Entry.pm
-	'NONE' => 'никто', # Translate - Case
 	'[_1] ( id:[_2] ) does not exists.' => '[_1] ( id:[_2] ) не существует.',
 	'Entries from category: [_1]' => 'Записи из категории: [_1]',
+	'NONE' => 'никто',
 	'Draft' => 'Черновик',
 	'Published' => 'Опубликовано',
-	'Reviewing' => 'Рассматривается', # проверить
+	'Reviewing' => 'Рассматривается',
 	'Scheduled' => 'Запланировано',
 	'Junk' => 'Спам',
 	'Entries by [_1]' => 'Записи от [_1]',
@@ -1801,7 +1800,7 @@ sub numerate {
 	'Filters' => 'Фильтры',
 	'Invalid filter type [_1]:[_2]' => 'Неверный тип фильтра  [_1]:[_2]',
 	'Invalid sort key [_1]:[_2]' => 'Неверный ключ сортировки  [_1]:[_2]',
-#	'"editable_terms" and "editable_filters" cannot be specified at the same time.' => '', # Translate - Empty
+	'"editable_terms" and "editable_filters" cannot be specified at the same time.' => '«editable_terms» и «editable_filters» не могут быть использованы в одно и тоже время.',
 	'System Object' => 'Системные объекты',
 
 ## lib/MT/Image/GD.pm
@@ -1871,12 +1870,13 @@ sub numerate {
 	'Composite score: [_1]' => 'Суммарный подсчёт: [_1]',
 
 ## lib/MT/ListProperty.pm
-#	'Failed to init auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'Ошибка при инициализации автоматического параметра списка [_1].[_2]: Cannot find definition of column [_3].', # Translate - Empty
-	'Failed to init auto list property [_1].[_2]: unsupported column type.' => 'Ошибка при инициализации автоматического параметра списка [_1].[_2] не поддерживаемый тип колонки.', # проверить
+	'Failed to init auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'Ошибка при инициализации автоматического параметра списка [_1].[_2]: не удалось найти описание столбца [_3].', # проверить
+	'Failed to init auto list property [_1].[_2]: unsupported column type.' => 'Ошибка при инициализации автоматического параметра списка [_1].[_2] не поддерживаемый тип колонки.',
 
 ## lib/MT/Log.pm
 	'Log message' => 'Сообщение журнала',
 	'Log messages' => 'Сообщения журнала',
+	'none' => 'никто',
 	'Security' => 'Безопасность',
 	'Warning' => 'Предупреждение',
 	'Information' => 'Информация',
@@ -1891,19 +1891,19 @@ sub numerate {
 	'Comment # [_1] not found.' => 'Комментарий # [_1] не найден.',
 	'TrackBack # [_1] not found.' => 'Трекбэк # [_1] не найден.',
 	'blog' => 'блог',
-	'website' => 'Сайт', # Translate - Case
-	'search' => 'Найти', # Translate - Case
-	'author' => 'Автор', # Translate - Case
+	'website' => 'Сайт',
+	'search' => 'Найти',
+	'author' => 'Автор',
 	'ping' => 'пинг',
-	'theme' => 'Тема', # Translate - Case
-	'folder' => 'Директория', # Translate - Case
+	'theme' => 'Тема',
+	'folder' => 'Директория',
 	'plugin' => 'плагин',
 	'Message' => 'Сообщение',
 	'By' => 'от',
 	'Class' => 'класс',
-	'Level' => 'статус', # Translate - Case
+	'Level' => 'статус',
 	'Metadata' => 'Метаданные',
-	'Logs on This Website' => 'Лог на этом сайте', # проверить
+	'Logs on This Website' => 'Лог на этом сайте',
 	'Show only errors' => 'Показать только ошибки',
 
 ## lib/MT/Mail.pm
@@ -1965,7 +1965,7 @@ sub numerate {
 	'4th argument to add_callback must be a CODE reference.' => '4-й параметр для add_callback должен быть ссылкой CODE.',
 	'Two plugins are in conflict' => 'Конфликт двух плагинов',
 	'Invalid priority level [_1] at add_callback' => 'Неверный уровень приоритета [_1] в add_callback',
-#	'Internal callback' => '', # Translate - Empty
+	'Internal callback' => 'Внутренний обратный вызов', # проверить
 	'Unnamed plugin' => 'Безымянный плагин',
 	'[_1] died with: [_2]' => '[_1] не работает с: [_2]',
 	'Bad LocalLib config ([_1]): ' => 'Неверная конфигурация LocalLib ([_1]): ',
@@ -1974,7 +1974,7 @@ sub numerate {
 	'Missing configuration file. Maybe you forgot to move mt-config.cgi-original to mt-config.cgi?' => 'Файл конфигурации не найден. Возможно вы забыли переименовать mt-config.cgi-original в  mt-config.cgi?',
 	'Plugin error: [_1] [_2]' => 'Ошибка плагина: [_1] [_2]',
 	'Loading template \'[_1]\' failed.' => 'Не удалось загрузить шаблон «[_1]»',
-#	'Error during building email: [_1]' => '', # Translate - Empty
+	'Error during building email: [_1]' => 'Ошибка при составлении письма: [_1]',
 	'http://www.movabletype.org/documentation/' => 'http://www.movabletype.org/documentation/', # Translate - Not translated
 	'OpenID' => 'OpenID', # Translate - Not translated
 	'LiveJournal' => 'LiveJournal', # Translate - Not translated
@@ -2031,9 +2031,9 @@ sub numerate {
 	'Not Private' => 'Не приватный',
 	'Tag must have a valid name' => 'Тег должен иметь допустимое имя',
 	'This tag is referenced by others.' => 'На этот тег ссылаются другие.',
-	'Tags with Entries' => 'Теги записей', # Translate - Case
-	'Tags with Pages' => 'Теги страниц', # Translate - Case
-	'Tags with Assets' => 'Теги медиа объектов', # Translate - Case
+	'Tags with Entries' => 'Теги записей',
+	'Tags with Pages' => 'Теги страниц',
+	'Tags with Assets' => 'Теги медиа объектов',
 
 ## lib/MT/TaskMgr.pm
 	'Unable to secure lock for executing system tasks. Make sure your TempDir location ([_1]) is writable.' => 'Не удаётся выполнить блокировку для выполнения системных задач. Разрешите запись в директории TempDir ([_1]).',
@@ -2043,21 +2043,21 @@ sub numerate {
 
 ## lib/MT/TBPing.pm
 	'TrackBack' => 'Трекбэк',
-#	'<a href="[_1]">Ping from: [_2] - [_3]</a>' => '', # Translate - Empty
-#	'Trackbacks on [_1]: [_2]' => '', # Translate - Empty
-	'Trackback Text' => 'Текст трекбэка', # Translate - Case
+	'<a href="[_1]">Ping from: [_2] - [_3]</a>' => '<a href="[_1]">Пинг от: [_2] — [_3]</a>',
+	'Trackbacks on [_1]: [_2]' => 'Трекбэк на [_1]: [_2]', # проверить
+	'Trackback Text' => 'Текст трекбэка',
 	'Target' => 'К записи',
 	'From' => 'От',
 	'Source Site' => 'Сайт источника',
 	'Source Title' => 'Заголовок',
-	'Trackbacks on My Entries/Pages' => 'Трекбэки к моим записям/страницам', # Translate - Case
-	'Non-spam trackbacks' => 'Трекбэки без спама', # Translate - Case
-	'Non-spam trackbacks on this website' => 'Не-спам трекбэки этого сайта', # Translate - Case
-	'Pending trackbacks' => 'Ожидающие трекбэки', # Translate - Case
-	'Published trackbacks' => 'Опубликованные трекбэки', # Translate - Case
-	'Trackbacks on my entries/pages' => 'Трекбэки к моим записям/страницам', # Translate - Case
-	'Trackbacks in the last 7 days' => 'Трекбэки за последние 7 дней', # Translate - Case
-	'Spam trackbacks' => 'Спам-трекбэки', # Translate - Case
+	'Trackbacks on My Entries/Pages' => 'Трекбэки к моим записям/страницам',
+	'Non-spam trackbacks' => 'Трекбэки без спама',
+	'Non-spam trackbacks on this website' => 'Не-спам трекбэки этого сайта',
+	'Pending trackbacks' => 'Ожидающие трекбэки',
+	'Published trackbacks' => 'Опубликованные трекбэки',
+	'Trackbacks on my entries/pages' => 'Трекбэки к моим записям/страницам',
+	'Trackbacks in the last 7 days' => 'Трекбэки за последние 7 дней',
+	'Spam trackbacks' => 'Спам-трекбэки',
 
 ## lib/MT/Template/ContextHandlers.pm
 	'All About Me' => 'Всё обо мне',
@@ -2070,7 +2070,7 @@ sub numerate {
 	'[_1] is not a hash.' => '[_1] — это не хэш.',
 	'No [_1] could be found.' => 'Не удалось найти [_1].',
 	'records' => 'записи',
-#	'No template to include was specified' => '', # Translate - Empty
+	'No template to include was specified' => 'Не был указан включаемый шаблон',
 	'Recursion attempt on [_1]: [_2]' => 'Попытка рекурсии [_1]: [_2]',
 	'Can\'t find included template [_1] \'[_2]\'' => 'Не удалось найти включённый шаблон [_1] «[_2]»',
 	'Error in [_1] [_2]: [_3]' => 'Ошибка в Error [_1] [_2]: [_3]',
@@ -2087,7 +2087,7 @@ sub numerate {
 
 ## lib/MT/Template/Context.pm
 	'The attribute exclude_blogs cannot take \'[_1]\' for a value.' => 'Атрибут exclude_blogs не может содержать значение «[_1]».',
-#	'When the same blog IDs are simultaneously listed in the include_blogs and exclude_blogs attributes, those blogs are excluded.' => '', # Translate - Empty
+	'When the same blog IDs are simultaneously listed in the include_blogs and exclude_blogs attributes, those blogs are excluded.' => 'Когда одинаковые ID указаны в атрибутах include_blogs и exclude_blogs, эти блоги будут исключены.',
 	'You used an \'[_1]\' tag outside of the context of a author; perhaps you mistakenly placed it outside of an \'MTAuthors\' container?' => 'Вы использовали тег «[_1]» вне контекста авторов; возможно, вы поместили его вне контейнера «MTAuthors» ?',
 	'You used an \'[_1]\' tag outside of the context of an entry; perhaps you mistakenly placed it outside of an \'MTEntries\' container?' => 'Вы использовали тег «[_1]» вне контекста записей; возможно, вы поместили его вне контейнера «MTEntries»?',
 	'You used an \'[_1]\' tag outside of the context of the website; perhaps you mistakenly placed it outside of an \'MTWebsites\' container?' => 'Вы использовали тег «[_1]» вне контекста сайта; возможно, вы поместили его вне контейнера «MTWebsites»?',
@@ -2106,7 +2106,7 @@ sub numerate {
 	'File not found: [_1]' => 'Файл не найден: [_1]',
 	'Error reading file \'[_1]\': [_2]' => 'Ошибка при чтении файла «[_1]»: [_2]',
 	'Publish error in template \'[_1]\': [_2]' => 'Ошибка публикации в шаблоне «[_1]»: [_2]',
-#	'Template name must be unique within this [_1].' => '', # Translate - Empty
+	'Template name must be unique within this [_1].' => 'Шаблон должен быть уникальным с [_1].', # проверить
 	'You cannot use a [_1] extension for a linked file.' => 'Вы не можете использовать расширение [_1] для связанного файла.',
 	'Opening linked file \'[_1]\' failed: [_2]' => 'Не удалось открыть связанный файл «[_1]»: [_2]',
 	'Index' => 'Индексный',
@@ -2457,12 +2457,12 @@ sub numerate {
 	'Invalid mail address' => 'Неверный адрес электронной почты',
 	'Invalid URL' => 'Неверный URL',
 	'This field is required' => 'Это поле обязательно',
-#	'This field must be integer' => '', # Translate - Empty
-	'This field must be number' => 'Это поле должно быть числом', 
+	'This field must be integer' => 'Это поле должно быть целочисленным',
+	'This field must be number' => 'Это поле должно быть числом',
 
 ## mt-static/js/assetdetail.js
 	'No Preview Available.' => 'Без предпросмотра.',
-#	'Dimensions' => '', # Translate - Empty
+	'Dimensions' => 'Соотношение размера', # проверить
 	'File Name' => 'Имя файла',
 
 ## mt-static/js/dialog.js
@@ -2480,7 +2480,7 @@ sub numerate {
 	'remove' => 'переместить',
 	'enable' => 'включить',
 	'disable' => 'отключить',
-	'publish' => 'Публикация', # Translate - Case
+	'publish' => 'Публикация',
 	'You did not select any [_1] to [_2].' => 'Вы не выбрали [_1] для [_2].',
 	'Are you sure you want to [_2] this [_1]?' => 'Вы уверены, что хотите [_2] этот [_1]?',
 	'Are you sure you want to [_3] the [_1] selected [_2]?' => 'Вы уверены, что хотите [_3] [_1] выбранный [_2]?',
@@ -2497,16 +2497,17 @@ sub numerate {
 	'The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\'?' => 'Тег  «[_2]» уже существует. Вы уверены, что хотите объединить «[_1]» с «[_2]»?',
 	'The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\' across all weblogs?' => 'Тег «[_2]» уже существует. Вы уверены, что хотите объеденить «[_1]» с «[_2]» во всех блогах?',
 	'Loading...' => 'Загрузка…',
-	'First' => 'Первый', # проверить
-	'Prev' => 'Предыдущий', # проверить
+	'First' => 'Первый',
+	'Prev' => 'Предыдущий',
 	'[_1] &ndash; [_2] of [_3]' => '[_1] — [_2] из [_3]',
 	'[_1] &ndash; [_2]' => '[_1] — [_2]', # Translate - No russian chars
-	'Last' => 'Последний', # проверить
+	'Last' => 'Последний',
 
 ## themes/classic_blog/theme.yaml
 	'Typical and authentic blogging design comes with plenty of styles and the selection of 2 column / 3 column layout. Best for all the bloggers.' => 'Стандартный макет блога, к которому создано множество стилей; можно использовать 2-х или 3-х колончатую структуру макета.',
 
-	'q{Subscribe to this website\'s feed}' => 'q{Подписаться на обновления сайта}',
+## themes/classic_website/templates/syndication.mtml
+	q{Subscribe to this website's feed} => q{}, # Translate - New
 
 ## themes/classic_website/theme.yaml
 	'Create a blog portal that aggregates contents from blogs under the website.' => 'Создать сайт, содержащий контент из блогов, входящих в него.',
@@ -2584,8 +2585,6 @@ sub numerate {
 ## search_templates/results_feed_rss2.tmpl
 	'Search Results for [_1]' => 'Результат поиска по «[_1]»',
 
-## search_templates/results_feed.tmpl
-
 ## tmpl/cms/asset_replace.tmpl
 	'Upload New Asset' => 'Загрузка нового медиа',
 
@@ -2642,6 +2641,7 @@ sub numerate {
 	'Spanish' => 'Испанский',
 	'Suomi' => 'Финский',
 	'Swedish' => 'Шведский',
+    'Russian' => 'Русский',
 	'Basename Length' => 'Длина базового имени (имени файла при публикации записей)',
 	'Specifies the default length of an auto-generated basename. The range for this setting is 15 to 250.' => 'Определите значение автоматически генерируемого базового имени. Диапозон: от 15 до 250.',
 	'Compose Defaults' => 'Создание по умолчанию',
@@ -2716,7 +2716,6 @@ sub numerate {
 	'Transform URLs in comment text into HTML links.' => 'Автоматически делать ссылки из URL в тексте комментариев.',
 	'Specifies the Text Formatting option to use for formatting visitor comments.' => 'Укажите тип форматирования текста комментариев.',
 	'CAPTCHA Provider' => 'Провайдер CAPTCHA',
-	'none' => 'никто',
 	'No CAPTCHA provider available' => 'Нет доступного провайдера CAPTCHA',
 	q{No CAPTCHA provider is available in this system.  Please check to see if Image::Magick is installed and if the CaptchaSourceImageBase configuration directive points to a valid captcha-source directory within the 'mt-static/images' directory.} => q{Нет доступного обработчика CAPTCHA. Проверьте, установлен ли Image::Magick и правильно ли указана конфигурационная директива CaptchaSourceImageBase (директория в папке «mt-static/images»).},
 	'Use Comment Confirmation Page' => 'Использовать страницу подтверждения комментариев',
@@ -2746,7 +2745,7 @@ sub numerate {
 	'Disable Plugins' => 'Отключить плагины',
 	'Enable plugin functionality' => 'Активировать дополнительную функциональность за счёт плагинов',
 	'Enable Plugins' => 'Активировать плагины',
-	'_PLUGIN_DIRECTORY_URL' => 'http://plugins.movabletype.org/',
+	'_PLUGIN_DIRECTORY_URL' => 'http://plugins.movabletype.org/', # Translate - No russian chars
 	'Find Plugins' => 'Поиск плагинов',
 	'Your plugin settings have been saved.' => 'Конфигурация плагинов сохранена.',
 	'Your plugin settings have been reset.' => 'Конфигурация плагинов сброшена.',
@@ -2885,7 +2884,7 @@ sub numerate {
 	'New Created User' => 'Создать нового пользователя',
 	'Select a role that you want assigned to users that are created in the future.' => 'Выберите роль, которая будет автоматически назначаться для пользователей в будущем.',
 	'(No role selected)' => '(Роль не выбрана)',
-	'Select roles' => 'Выберите роль', # Translate - Case
+	'Select roles' => 'Выберите роль',
 	'Authentication Methods' => 'Методы авторизации',
 	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'Для авторизации комментаторов посредством OpenID требуется Perl-модуль Digest::SHA1, но он отсутствует.',
 	'Please select authentication methods to accept comments.' => 'Выберите методы авторизации в комментариях.',
@@ -2992,8 +2991,8 @@ sub numerate {
 	'Your Dashboard has been updated.' => 'Ваша обзорная панель обновлена.',
 	'The support directory is not writable.' => 'Директория support не имеет прав на запись.',
 	q{Movable Type was unable to write to its 'support' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.} => q{Movable Type не удалось записать файлы в в папку «support». Пожалуйста, создайте эту папку в этой директории: [_1]. После этого сделайте папку support перезаписываемой.},
-    'ImageDriver is not configured.' => 'ImageDriver не настроен.',
-#	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => '', # Translate - Empty
+	'ImageDriver is not configured.' => 'ImageDriver не настроен.',
+	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'Инструмент для работы с изображениями, который может быть определён через конфигурационную директиву ImageDriver, отсутствует или неправильно настроен. Для правильной работы с изображениями необходимо установить одно из следующих ПО: Image::Magick, NetPBM, GD, или Imager, а затем указать соответствующую директиву в mt-config.cgi.',
 
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
 	'Confirm Publishing Configuration' => 'Подтверждение настроек публикации',
@@ -3186,7 +3185,7 @@ sub numerate {
 	'[_1] - Created by [_2]' => '[_1] — создано пользователем [_2]',
 	'[_1] - Modified by [_2]' => '[_1] — изменено пользователем [_2]',
 	'Appears in...' => 'Используется в…',
-	'This asset has been used by other users.' => 'Это медиа используется другими пользователями', # проверить
+	'This asset has been used by other users.' => 'Это медиа используется другими пользователями',
 	'Related Assets' => 'Похожее медиа',
 	'[_1] is missing' => '[_1] не найдено',
 	'Embed Asset' => 'Встроить медиа',
@@ -3353,7 +3352,7 @@ sub numerate {
 	'Date this comment was made' => 'Дата отправки комментария',
 	'View all comments created on this day' => 'Показать все комментарии оставленные в этот день',
 	'IP Address of the commenter' => 'IP адрес автора комментария',
-	'View all comments from this IP Address' => 'Показать все комментарии с этого IP', # Translate - Case
+	'View all comments from this IP Address' => 'Показать все комментарии с этого IP',
 	'Fulltext of the comment entry' => 'Полный текст комментария',
 	'Responses to this comment' => 'Ответы на этот комментарий',
 
@@ -3485,8 +3484,8 @@ sub numerate {
 
 ## tmpl/cms/edit_role.tmpl
 	'Edit Role' => 'Изменить роль',
-	'Association (1)' => 'Связано (1)', # проверить
-	'Associations ([_1])' => '', # проверить
+	'Association (1)' => 'Связано (1)',
+	'Associations ([_1])' => 'Ассоциации ([_1])',
 	'You have changed the privileges for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.' => 'Вы изменили параметры роли. Это повлияет на возможности всех пользователей с данной ролью. Чтобы избежать этого, вы можете сохранить роль под новым именем.',
 	'Role Details' => 'Настройка роли',
 	'System' => 'Система',
@@ -3730,23 +3729,23 @@ sub numerate {
 ## tmpl/cms/include/basic_filter_forms.tmpl
 	'contains' => 'содержит',
 	'does not contain' => 'не содержит',
-	'__STRING_FILTER_EQUAL' => '—',
+	'__STRING_FILTER_EQUAL' => '—', # Translate - No russian chars
 	'starts with' => 'начинается с',
 	'ends with' => 'заканчивается на',
-	'[_1] [_2] [_3]' => '[_1] [_2] [_3]',
-	'__INTEGER_FILTER_EQUAL' => '—', 
-	'__INTEGER_FILTER_NOT_EQUAL' => '—',
+	'[_1] [_2] [_3]' => '[_1] [_2] [_3]', # Translate - Not translated
+	'__INTEGER_FILTER_EQUAL' => '—', # Translate - No russian chars
+	'__INTEGER_FILTER_NOT_EQUAL' => '—', # Translate - No russian chars
 	'is greater than' => 'больше, чем',
 	'is greater than or equal to' => 'больше, чем, или равняется',
 	'is less than' => 'меньше, чем',
 	'is less than or equal to' => 'меньше, чем, или равно',
-#	'is between' => '', # Translate - Empty
-#	'is within the last' => '', # Translate - Empty
-	'is before' => 'перед', # проверить
-	'is after' => 'после', # проверить
+	'is between' => 'между',
+	'is within the last' => 'в течении последних',
+	'is before' => 'перед',
+	'is after' => 'после',
 	'is after now' => 'с текущего момента',
 	'is before now' => 'до текущего момента',
-	'__FILTER_DATE_ORIGIN' => '[_1]',
+	'__FILTER_DATE_ORIGIN' => '[_1]', # Translate - No russian chars
 	'[_1] and [_2]' => '[_1] и [_2]',
 	'_FILTER_DATE_DAYS' => '[_1] дней',
 
@@ -3789,13 +3788,11 @@ sub numerate {
 	'Value' => 'Значение',
 
 ## tmpl/cms/include/debug_toolbar/requestvars.tmpl
-#	'Cookies' => '', # Translate - Empty
-#	'Variable' => '', # Translate - Empty
-#	'No COOKIE data' => '', # Translate - Empty
-#	'Input Parameters' => '', # Translate - Empty
-#	'No Input Parameters' => '', # Translate - Empty
-
-## tmpl/cms/include/debug_toolbar/sql.tmpl
+	'Cookies' => 'Куки',
+	'Variable' => 'Переменная',
+	'No COOKIE data' => 'Нет данных о Куки',
+	'Input Parameters' => 'Входящие параметры',
+	'No Input Parameters' => 'Нет входящих параметров',
 
 ## tmpl/cms/include/display_options.tmpl
 	'Display Options' => 'Опции отображения',
@@ -3833,7 +3830,7 @@ sub numerate {
 	'Send Us Feedback' => 'Обратная связь',
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a>, версия [_2]',
 	'with' => 'с',
-#	'_LOCALE_CALENDAR_HEADER_' => '', # Translate - Empty
+	'_LOCALE_CALENDAR_HEADER_' => "'В', 'П', 'В', 'С', 'Ч', 'П', 'С'",
 	'Your Dashboard' => 'Ваша обзорная панель',
 
 ## tmpl/cms/include/header.tmpl
@@ -3985,9 +3982,9 @@ sub numerate {
 	'Add child [_1]' => 'Добавить вложенную [_1]',
 	'Remove [_1]' => 'Удалить [_1]',
 	'[_1] \'[_2]\' already exists.' => '[_1] \'[_2]\' уже существует.',
-	'Are you sure you want to remove [_1] [_2]?' => 'Вы уверены, что хотите удалить [_1] [_2]?', # проверить
-	'Are you sure you want to remove [_1] [_2] with [_3] sub [_4]?' => 'Вы уверены, что хотите удалить [_1] [_2] с [_3] под [_4]?', # проверить
-#	'Alert' => '', # Translate - Empty
+	'Are you sure you want to remove [_1] [_2]?' => 'Вы уверены, что хотите удалить [_1] [_2]?',
+	'Are you sure you want to remove [_1] [_2] with [_3] sub [_4]?' => 'Вы уверены, что хотите удалить [_1] [_2] с [_3] под [_4]?',
+	'Alert' => 'Предупреждение',
 
 ## tmpl/cms/list_common.tmpl
 	'25 rows' => '25 строк',
@@ -3995,27 +3992,27 @@ sub numerate {
 	'100 rows' => '100 строк',
 	'200 rows' => '200 строк',
 	'Column' => 'Колонка',
-	'<mt:var name="js_message">' => '<mt:var name="js_message">',
+	'<mt:var name="js_message">' => '<mt:var name="js_message">', # Translate - Not translated
 	'Filter:' => 'Фильтр:',
 	'Select Filter...' => 'Выбрать фильтр...',
-	'Remove Filter' => 'Убрать фильтр', # Translate - Case
+	'Remove Filter' => 'Убрать фильтр',
 	'Select Filter Item...' => 'Выбрать пункт фильтра...',
 	'Apply' => 'Применить',
 	'Save As' => 'Сохранить как',
 	'Filter Label' => 'Имя фильтра',
 	'My Filters' => 'Мои фильтры',
-#	'Built in Filters' => '', # Translate - Empty
+	'Built in Filters' => 'Встроенные фильтры',
 	'Remove item' => 'Удалить пункт',
 	'Unknown Filter' => 'Неизвестный фильтр',
-#	'act upon' => '', # Translate - Empty
+	'act upon' => 'влияет на',
 	'Are you sure you want to remove the filter \'[_1]\'?' => 'Вы уверены, что хотите удалить фильтр \'[_1]\'?',
-	'Label "[_1]" is already in use.' => 'Имя "[_1]" уже используется.',
-#	'Communication Error ([_1])' => '', # Translate - Empty
-#	'[_1] - [_2] of [_3]' => '', # Translate - Empty
+	'Label "[_1]" is already in use.' => 'Имя «[_1]» уже используется.',
+	'Communication Error ([_1])' => 'Ошибка связи ([_1])', # проверить
+	'[_1] - [_2] of [_3]' => '[_1] - [_2] из [_3]',
 	'Select all [_1] items' => 'Выбрать все [_1]',
-	'All [_1] items are selected' => 'Выбраны все [_1]', # проверить
+	'All [_1] items are selected' => 'Выбраны все [_1]',
 	'[_1] Filter Items have errors' => 'Фильтр [_1] содержит ошибки',
-	'[_1] - Filter [_2]' => '[_1] - фильтр [_2]', # проверить
+	'[_1] - Filter [_2]' => '[_1] - фильтр [_2]',
 	'Save Filter' => 'Сохранить фильтр',
 	'Save As Filter' => 'Сохранить фильтр как',
 	'Select Filter' => 'Выбрать фильтр',
@@ -4083,8 +4080,8 @@ sub numerate {
 	'The selected comment(s) has been reported as spam.' => 'Выбранные комментарии помечены как спам.',
 	'The selected comment(s) has been recovered from spam.' => 'Выбранные комментарии восстановлены из спама.',
 	'The selected comment(s) has been deleted from the database.' => 'Выбранные комментарии были удалены навсегда.',
-	'One or more comments you selected were submitted by an unauthenticated commenter. These commenters cannot be banned or trusted.' => 'Один или несколько комментариев, которые вы выбрали, оставлены неавторизованными комментаторами. Поэтому вы не можете их заблокировать или добавить в список доверенных.', # Translate - Case
-#	'No comments appear to be spam.' => '', # Translate - Empty
+	'One or more comments you selected were submitted by an unauthenticated commenter. These commenters cannot be banned or trusted.' => 'Один или несколько комментариев, которые вы выбрали, оставлены неавторизованными комментаторами. Поэтому вы не можете их заблокировать или добавить в список доверенных.',
+	'No comments appear to be spam.' => 'Нет спам-комментариев.',
 
 ## tmpl/cms/listing/log_list_header.tmpl
 	'All times are displayed in GMT[_1].' => 'Всё время отображено в GMT[_1].',
@@ -4124,7 +4121,7 @@ sub numerate {
 ## tmpl/cms/list_theme.tmpl
 	'[_1] Themes' => 'Темы ([_1])',
 	'All Themes' => 'Все темы',
-	'_THEME_DIRECTORY_URL' => 'http://plugins.movabletype.org/',
+	'_THEME_DIRECTORY_URL' => 'http://plugins.movabletype.org/', # Translate - No russian chars
 	'Find Themes' => 'Искать темы',
 	'Theme [_1] has been uninstalled.' => 'Тема [_1] удалена.',
 	'Theme [_1] has been applied (<a href="[_2]">[quant,_3,warning,warnings]</a>).' => 'Тема [_1] применена (<a href="[_2]">[quant,_3,ошибка,ошибки,ошибок]</a>).',
@@ -4158,7 +4155,7 @@ sub numerate {
 	'<strong>&lt;$MTWidgetSet name=&quot;Name of the Widget Set&quot;$&gt;</strong>' => '<strong>&lt;$MTWidgetSet name=&quot;Имя связки виджетов&quot;$&gt;</strong>',
 	'Your changes to the widget set have been saved.' => 'Изменения в виджетах сохранены.',
 	'You have successfully deleted the selected widget set(s) from your blog.' => 'Выбранные связки виджетов удалены из вашего блога.',
-	'No widget sets could be found.' => 'Связки виджетов не найдены.', # Translate - Case
+	'No widget sets could be found.' => 'Связки виджетов не найдены.',
 	'Create widget template' => 'Создать шаблон виджета',
 
 ## tmpl/cms/login.tmpl
@@ -4199,7 +4196,7 @@ sub numerate {
 	'Publish Again' => 'Опубликовать ещё раз',
 
 ## tmpl/cms/preview_entry.tmpl
-#	'Preview [_1] Content' => '', # Translate - Empty
+	'Preview [_1] Content' => 'Просмотр [_1]', # проверить
 	'Return to the compose screen' => 'Вернуться на страницу редактирования',
 	'Return to the compose screen (e)' => 'Вернуться на страницу редактирования (e)',
 	'Save this entry' => 'Сохранить запись',
@@ -4226,7 +4223,7 @@ sub numerate {
 	'Save this template' => 'Сохранить шаблон',
 	'Re-Edit this template (e)' => 'Повторное редактирование шаблоны (e)',
 	'Re-Edit this template' => 'Повторное редактирование шаблона',
-#	'There are no categories in this blog.  Limited preview of category archive templates is possible with a virtual category displayed.  Normal, non-preview output cannot be generated by this template unless at least one category is created.' => '', # Translate - Empty
+	'There are no categories in this blog.  Limited preview of category archive templates is possible with a virtual category displayed.  Normal, non-preview output cannot be generated by this template unless at least one category is created.' => 'В этом блоге нет категорий. Возможен ограниченный предпросмотр с использованием виртуальной категории. Однако публикация этого шаблона невозможна, пока не будет создана хотя бы одна категория.',
 
 ## tmpl/cms/rebuilding.tmpl
 	'Publishing...' => 'Публикация…',
@@ -4277,8 +4274,8 @@ sub numerate {
 	'_DATE_FROM' => 'С',
 	'_DATE_TO' => 'до',
 	'Submit search (s)' => 'Начать поиск (s)',
-#	'Search For' => '', # Translate - Empty
-	'Replace With' => 'Заменять', # Translate - Case
+	'Search For' => 'Поиск',
+	'Replace With' => 'Заменять',
 	'Replace Checked' => 'Заменить в выделенных',
 	'Successfully replaced [quant,_1,record,records].' => 'Замена успешно осуществлена в [quant,_1,объекте,объектах,объектах].',
 	'Showing first [_1] results.' => 'Показано [_1] найденных объектов.',
@@ -4807,7 +4804,7 @@ sub numerate {
 
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'Ваша директория mt-static не найдена. Пожалуйста, настройте StaticFilePath в mt-config.cgi для продолжения.',
-	'Permission Denied.' => 'Доступ запрещён.', # Translate - Case
+	'Permission Denied.' => 'Доступ запрещён.',
 	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Не удалось создать каталог [_1] - удостоверьте, что папка «themes», находящаяся в папке со статическими файлами, доступна для записи.',
 	'Successfully applied new theme selection.' => 'Новый стиль успешно применён.',
 	'Invalid URL: [_1]' => 'Неверный URL: [_1]',
@@ -4849,7 +4846,7 @@ sub numerate {
 
 ## plugins/TypePadAntiSpam/config.yaml
 	'TypePad AntiSpam is a free service from Six Apart that helps protect your blog from comment and TrackBack spam. The TypePad AntiSpam plugin will send every comment or TrackBack submitted to your blog to the service for evaluation, and Movable Type will filter items if TypePad AntiSpam determines it is spam. If you discover that TypePad AntiSpam incorrectly classifies an item, simply change its classification by marking it as "Spam" or "Not Spam" from the Manage Comments screen, and TypePad AntiSpam will learn from your actions. Over time the service will improve based on reports from its users, so take care when marking items as "Spam" or "Not Spam."' => 'TypePad AntiSpam — это бесплатный сервис от Six Apart, который помогает защищать блог от спама в комментариях и трекбэках. Плагин TypePad AntiSpam отправляет каждый комментарий или трекбэк на проверку, после которой Movable Type сможет пометить эти элементы как спам, если TypePad AntiSpam решит, что это — спам. Если вы заметите, что TypePad AntiSpam неправильно классифицирует какой-то элемент, просто измените его классификацию, пометив флагом «Спам» или, наоборот, «Не спам» со страницы управления комментариями, и в дальнейшем TypePad AntiSpam будет обучаться от ваших действий. Благодаря подобным действиям, сервис будет постоянно улучшаться и, соответственно, спама будет меньше.',
-	'"TypePad AntiSpam"' => '"TypePad AntiSpam"',
+	'"TypePad AntiSpam"' => '"TypePad AntiSpam"', # Translate - Not translated
 
 ## plugins/TypePadAntiSpam/lib/MT/TypePadAntiSpam.pm
 	'API key is a required parameter.' => 'Ключи API — обязательный параметр.',
@@ -4884,8 +4881,8 @@ sub numerate {
 
 ## plugins/WXRImporter/config.yaml
 	'Import WordPress exported RSS into MT.' => 'Импортировать экспортируемый WordPress RSS в MT',
-	'"WordPress eXtended RSS (WXR)"' => '"WordPress eXtended RSS (WXR)"',
-	'"Download WP attachments via HTTP."' => 'Скачать медиа WP через браузер.', # проверить
+	'"WordPress eXtended RSS (WXR)"' => '"WordPress eXtended RSS (WXR)"', # Translate - Not translated
+	'"Download WP attachments via HTTP."' => 'Скачать медиа WP через браузер.',
 
 ## plugins/WXRImporter/lib/WXRImporter/WXRHandler.pm
 	'File is not in WXR format.' => 'Файл не в формате WXR.',
@@ -4911,6 +4908,5 @@ sub numerate {
 
 );
 
-## New words: 1892
 
 1;
