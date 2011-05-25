@@ -2507,7 +2507,7 @@ sub numerate {
 	'Typical and authentic blogging design comes with plenty of styles and the selection of 2 column / 3 column layout. Best for all the bloggers.' => 'Стандартный макет блога, к которому создано множество стилей; можно использовать 2-х или 3-х колончатую структуру макета.',
 
 ## themes/classic_website/templates/syndication.mtml
-	q{Subscribe to this website's feed} => q{}, # Translate - New
+	q{Subscribe to this website's feed} => q{Подписаться на обновления сайта},
 
 ## themes/classic_website/theme.yaml
 	'Create a blog portal that aggregates contents from blogs under the website.' => 'Создать сайт, содержащий контент из блогов, входящих в него.',
