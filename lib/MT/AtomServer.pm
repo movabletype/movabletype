@@ -1685,7 +1685,45 @@ but only if such name is not in use yet
 
 Create a new Atom entry out of a blog entry
 
-=head2 CALLBACKS
+=head1 MT::AtomServer::Weblog::Legacy
+
+Subclass of MT::AtomServer::Weblog, compatible to legacy Atom API
+
+=head1 MT::AtomServer::Comments
+
+A subclass of MT::AtomServer, that inherent only the handle_upload and 
+get_categories operations, and add three operations: get_comment,
+get_comments and get_blog_comments
+
+=head2 METHODS
+
+=head3 $app->get_comment()
+
+Answer with a single comment. will be called on API GET request with 
+comment_id and entry_id. Also need blog_id
+
+=head3 $app->get_comments()
+
+will be called on API GET request with entry_id but not comment_id.
+Also need blog_id. Answers with the last %limit% comments of entry 
+%entry_id%, starting from the %offset% -th comment. if not specified, 
+limit is 21 and offset is 0
+
+=head3 $app->get_blog_comments()
+
+will be called on API GET request with no comment_id or entry_id
+Answers with the last %limit% comments of blog %blog_id%, (from all
+the entries) starting from the %offset% -th comment. if not specified, 
+limit is 21 and offset is 0
+
+=head2 INTERNAL METHODS
+
+=head3 $app->_comments_in_atom( $feed, $terms, $args )
+
+loads all the comments specified by $terms and $args (that will be
+passed to the load function) into an Atom feed $feed
+
+=head1 CALLBACKS
 
 =over 4
 
@@ -1745,6 +1783,5 @@ I<$atom_entry> is a reference to XML::Atom::Entry object.
 I<$comment> is a reference to the requested MT::Comment object.
 
 =back
-
 
 =cut
