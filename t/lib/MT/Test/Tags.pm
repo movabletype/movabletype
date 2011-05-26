@@ -227,10 +227,12 @@ sub perl_tests {
                 }
             }
             if ( $test_item->{trim} ) {
-                $result   =~ s/^\s*//;
-                $result   =~ s/\s*$//;
-                $expected =~ s/^\s*//;
-                $expected =~ s/\s*$//;
+                $result   =~ s/^\s+//mg;
+                $expected =~ s/^\s+//mg;
+                $result   =~ s/\s+$//mg;
+                $expected =~ s/\s+$//mg;
+                $result   =~ s/^\n//mg;
+                $expected =~ s/^\n//mg;
             }
             if ( $like ) {
                 like( $result, $like, $test_item->{name} );
@@ -413,7 +415,7 @@ If you want to skip this test for now, give the reason here.
 =item * trim (optional)
 
 By default, the result of L<template> and L<expected> are compared after
-trimed (ignore the first and last whitespaces).
+trimed (ignore the first and last whitespaces of each line).
 If you don't want that, set 0 for this.
 
 =item * expected_php
@@ -650,8 +652,12 @@ function run(&$ctx, $suite) {
                 }
             }
             if ( $test_item["trim"] ) {
-                $result   = trim($result);
-                $expected = trim($expected);
+                $result   = preg_replace('/^\s+/m', '', $result);
+                $expected = preg_replace('/^\s+/m', '', $expected);
+                $result   = preg_replace('/\s+$/m', '', $result);
+                $expected = preg_replace('/\s+$/m', '', $expected);
+                $result   = preg_replace('/^\n/m', '', $result);
+                $expected = preg_replace('/^\n/m', '', $expected);
             }
             $like ? ok($result, $like, $test_name, true) : ok($result, $expected, $test_name, false);
         }
