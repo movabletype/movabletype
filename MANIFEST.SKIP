@@ -48,43 +48,24 @@ themes/broken_blog_theme
 #?package=MT ^mt-static/addons/Enterprise.pack
 #?package=MT ^tools/migrate-mssql
 
-^addons
 #?package=MTOS ^addons
-^mt-cp.cgi
 #?package=MTOS ^mt-cp.cgi
-^mt-static/addons
 #?package=MTOS ^mt-static/addons
-^mt-static/themes/tristan-blue
 #?package=MTOS ^mt-static/themes/tristan-blue
-^mt-static/themes/tristan-blue-4.2
 #?package=MTOS ^mt-static/themes/tristan-blue-4.2
-^mt-static/plugins/feeds-app-lite
 #?package=MTOS ^mt-static/plugins/feeds-app-lite
-^mt-static/plugins/Motion
 #?package=MTOS ^mt-static/plugins/Motion
-^mt-static/jquery/themes/Motion
 #?package=MTOS ^mt-static/jquery/themes/Motion
-^mt-static/plugins/ActionStreams
 #?package=MTOS ^mt-static/plugins/ActionStreams
-^mt-static/plugins/FacebookCommenters
 #?package=MTOS ^mt-static/plugins/FacebookCommenters
-^mt-static/plugins/mixiComment
 #?package=MTOS ^mt-static/plugins/mixiComment
-^plugins/feeds-app-lite
 #?package=MTOS ^plugins/feeds-app-lite
-^plugins/Motion
 #?package=MTOS ^plugins/Motion
-^plugins/ActionStreams
 #?package=MTOS ^plugins/ActionStreams
-^plugins/FacebookCommenters
 #?package=MTOS ^plugins/FacebookCommenters
-^plugins/CommunityActionStreams
 #?package=MTOS ^plugins/CommunityActionStreams
-^plugins/mixiComment
 #?package=MTOS ^plugins/mixiComment
-^plugins/CustomFields
 #?package=MTOS ^plugins/CustomFields
-^tools/migrate-mssql
 #?package=MTOS ^tools/migrate-mssql
 
 #?package=MTCOM ^COPYING
@@ -131,7 +112,6 @@ themes/broken_blog_theme
 #?language=nl ^plugins/YandexOpenId
 #?language=nl ^mt-static/plugins/YandexOpenId
 #?language=nl ^plugins/UpdatePingsRU
-
 
 # MT::App::Viewer
 lib/MT/App/Viewer.pm
