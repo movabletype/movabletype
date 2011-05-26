@@ -1551,8 +1551,9 @@ Initializes the application. Called by the MT framework
 
 =head2 $app->handle()
 
-Wrapper method that determines the proper AtomServer package to pass the
-request to. calls handle_request on the right subclass
+Wrapper method that determines the proper AtomServer subclass package 
+to pass the request to, and calls handle_request on it. The list of 
+subclasses is listed in the AtomApp configuration.
 
 =head2 $app->handle_request()
 
@@ -1625,6 +1626,13 @@ used in the request. calls handle_upload, get_categories, new_post,
 edit_post, delete_post, get_post, get_posts or get_weblogs to supply 
 the information itself
 
+=head3 $app->handle_upload()
+
+Will be called if the request contains a 'svc' (for service) parameter
+equal to 'upload'. This command will upload an asset to a blog, 
+specified by blog_id param. returns a link to the newly uploaded
+asset
+
 =head3 $app->get_categories()
 
 Will be called if the request contains a 'svc' (for service) parameter
@@ -1634,25 +1642,28 @@ for this blog.
 
 =head3 $app->new_post()
 
-Will be called on POST API request. 
+Will be called on API POST request, and create a new entry or asset.
+Answers with the newly created object
 
 =head3 $app->edit_post()
 
-Will be called on PUT API request. 
+Will be called on API PUT request. Answers with the edited entry
 
 =head3 $app->delete_post()
 
-Will be called on DELETE API request. 
+Will be called on API DELETE request. Removes the entry specified
+by blog_id and entry_id
 
 =head3 $app->get_post()
 
-Will be called on GET API request, If an entry_id and blog_id parameters 
-are supplied. 
+Will be called on API GET request, If an entry_id and blog_id parameters 
+are supplied. Answers with the requested entry
 
 =head3 $app->get_posts()
 
-Will be called on GET API request, If an blog_id parameter is supplied,
-but not entry_id.
+Will be called on API GET request, If an blog_id parameter is supplied,
+but not entry_id. Answers with the last %limit% entries, starting from 
+the %offset% -th entry. if not specified, limit is 21 and offset is 0
 
 =head3 $app->get_weblogs()
 
@@ -1674,7 +1685,7 @@ but only if such name is not in use yet
 
 Create a new Atom entry out of a blog entry
 
-=head1 CALLBACKS
+=head2 CALLBACKS
 
 =over 4
 
@@ -1735,11 +1746,5 @@ I<$comment> is a reference to the requested MT::Comment object.
 
 =back
 
-=head1 SUBCLASSES
-
-=head2 $app->handle_request
-
-The implementation of this in I<MT::AtomServer::Weblog> passes the request
-to the proper method.
 
 =cut
