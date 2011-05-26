@@ -969,7 +969,6 @@ var dirify_table = {
     "\u017C": 'z',    // latin small letter z with dot above
     "\u0179": 'Z',    // latin capital letter z with acute
     "\u017A": 'z',     // latin small letter z with acute
-    "\u017A": 'z',     // latin small letter z with acute 
     "\u0410": 'A',    // cyrillic captial letter A 
     "\u0411": 'B',    // cyrillic capital letter BE 
     "\u0412": 'V',    // cyrillic capital letter VE
