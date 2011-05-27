@@ -7,63 +7,128 @@ run_tests_by_data();
 __DATA__
 -
   name: test item 347
-  template: <MTAuthors lastn="2"><MTAuthorID>;</MTAuthors>
-  expected: 2;3;
+  template: |
+    <MTAuthors lastn="2">
+      <MTAuthorID>;
+    </MTAuthors>
+  expected: |
+    2;
+    3;
 
 -
   name: test item 348
-  template: <MTAuthors sort_by='name'><MTAuthorName>;</MTAuthors>
-  expected: Bob D;Chuck D;
+  template: |
+    <MTAuthors sort_by='name'>
+      <MTAuthorName>;
+    </MTAuthors>
+  expected: |
+    Bob D;
+    Chuck D;
 
 -
   name: test item 349
-  template: <MTAuthors sort_by='nickname'><MTAuthorDisplayName>;</MTAuthors>
-  expected: Chucky Dee;Dylan;
+  template: |
+    <MTAuthors sort_by='nickname'>
+      <MTAuthorDisplayName>;
+    </MTAuthors>
+  expected: |
+    Chucky Dee;
+    Dylan;
 
 -
   name: test item 350
-  template: <MTAuthors sort_by='email'><MTAuthorEmail>;</MTAuthors>
-  expected: bobd@example.com;chuckd@example.com;
+  template: |
+    <MTAuthors sort_by='email'>
+      <MTAuthorEmail>;
+    </MTAuthors>
+  expected: |
+    bobd@example.com;
+    chuckd@example.com;
 
 -
   name: test item 351
-  template: <MTAuthors sort_by='url'><MTAuthorURL>;</MTAuthors>
-  expected: ";http://chuckd.com/;"
+  template: |
+    <MTAuthors sort_by='url'>
+      <MTAuthorURL>;
+    </MTAuthors>
+  expected: |
+    ;
+    http://chuckd.com/;
 
 -
   name: test item 352
-  template: <MTAuthors username='Chuck D'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</MTAuthors>
-  expected: "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"
+  template: |
+    <MTAuthors username='Chuck D'>
+      name: <MTAuthorName>;
+      nick: <MTAuthorDisplayName>;
+      mail: <MTAuthorEmail>;
+      url:  <MTAuthorURL>;
+    </MTAuthors>
+  expected: |
+    name: Chuck D;
+    nick: Chucky Dee;
+    mail: chuckd@example.com;
+    url:  http://chuckd.com/;
 
 -
   name: test item 354
-  template: <MTAuthors sort_by='display_name' sort_order='descend'><MTAuthorID>;</MTAuthors>
-  expected: 3;2;
+  template: |
+    <MTAuthors sort_by='display_name' sort_order='descend'>
+      <MTAuthorID>;
+    </MTAuthors>
+  expected: |
+    3;
+    2;
 
 -
   name: test item 361
-  template: "<MTAuthors><$MTAuthorAuthType$>:<$MTAuthorAuthIconURL$>;</MTAuthors>"
-  expected: "MT:http://narnia.na/mt-static/images/comment/mt_logo.png;MT:http://narnia.na/mt-static/images/comment/mt_logo.png;"
+  template: |
+    <MTAuthors>
+      <$MTAuthorAuthType$>:<$MTAuthorAuthIconURL$>;
+    </MTAuthors>
+  expected: |
+    MT:http://narnia.na/mt-static/images/comment/mt_logo.png;
+    MT:http://narnia.na/mt-static/images/comment/mt_logo.png;
 
 -
   name: test item 363
-  template: <MTAuthors need_entry='0' ><MTAuthorName>;</MTAuthors>
-  expected: Chuck D;Bob D;Melody;
+  template: |
+    <MTAuthors need_entry='0' >
+      <MTAuthorName>;
+    </MTAuthors>
+  expected: |
+    Chuck D;
+    Bob D;
+    Melody;
 
 -
   name: test item 364
-  template: <MTAuthors need_entry='0' status='disabled'><MTAuthorName>;</MTAuthors>
+  template: |
+    <MTAuthors need_entry='0' status='disabled'>
+      <MTAuthorName>;
+    </MTAuthors>
   expected: Hiro Nakamura;
 
 -
   name: test item 365
-  template: <MTAuthors need_entry='0' status='enabled or disabled'><MTAuthorName>;</MTAuthors>
-  expected: Chuck D;Bob D;Hiro Nakamura;Melody;
+  template: |
+    <MTAuthors need_entry='0' status='enabled or disabled'>
+      <MTAuthorName>;
+    </MTAuthors>
+  expected: |
+    Chuck D;
+    Bob D;
+    Hiro Nakamura;
+    Melody;
 
 -
   name: test item 366
-  template: <MTAuthors need_entry='0' role='Author'><MTAuthorName>;</MTAuthors>
-  expected: Bob D;
+  template: |
+    <MTAuthors need_entry='0' role='Author'>
+      <MTAuthorName>;
+    </MTAuthors>
+  expected: |
+    Bob D;
 
 -
   name: test item 367
@@ -72,18 +137,48 @@ __DATA__
 
 -
   name: test item 427
-  template: "<mt:authors username='Chuck D'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>"
-  expected: "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"
+  template: |
+    <mt:authors username='Chuck D'>
+      name: <MTAuthorName>;
+      nick: <MTAuthorDisplayName>;
+      mail: <MTAuthorEmail>;
+      url:  <MTAuthorURL>;
+    </mt:authors>
+  expected: |
+    name: Chuck D;
+    nick: Chucky Dee;
+    mail: chuckd@example.com;
+    url:  http://chuckd.com/;
 
 -
   name: test item 428
-  template: "<mt:authors id='2' username='Bob D'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>"
-  expected: "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"
+  template: |
+    <mt:authors id='2' username='Bob D'>
+      name: <MTAuthorName>;
+      nick: <MTAuthorDisplayName>;
+      mail: <MTAuthorEmail>;
+      url:  <MTAuthorURL>;
+    </mt:authors>
+  expected: |
+    name: Chuck D;
+    nick: Chucky Dee;
+    mail: chuckd@example.com;
+    url:  http://chuckd.com/;
 
 -
   name: test item 429
-  template: "<mt:authors id='2'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>"
-  expected: "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"
+  template: |
+    <mt:authors id='2'>
+      name: <MTAuthorName>;
+      nick: <MTAuthorDisplayName>;
+      mail: <MTAuthorEmail>;
+      url:  <MTAuthorURL>;
+    </mt:authors>
+  expected: |
+    name: Chuck D;
+    nick: Chucky Dee;
+    mail: chuckd@example.com;
+    url:  http://chuckd.com/;
 
 -
   name: test item 480
@@ -92,22 +187,40 @@ __DATA__
 
 -
   name: test item 481
-  template: <MTAuthors lastn="1"><MTAuthorHasEntry><MTAuthorName setvar="author_name"><MTEntries author="$author_name" lastn="1">has</MTEntries></MTAuthorHasEntry></MTAuthors>
+  template: |
+    <MTAuthors lastn="1">
+      <MTAuthorHasEntry>
+        <MTAuthorName setvar="author_name">
+        <MTEntries author="$author_name" lastn="1">has</MTEntries>
+      </MTAuthorHasEntry>
+    </MTAuthors>
   expected: has
 
 -
   name: test item 482
-  template: <MTAuthors lastn="1"><MTAuthorHasPage><MTAuthorName setvar="author_name"><MTPages author="$author_name" lastn="1">has</MTPages></MTAuthorHasPage></MTAuthors>
+  template: |
+    <MTAuthors lastn="1">
+      <MTAuthorHasPage>
+        <MTAuthorName setvar="author_name">
+        <MTPages author="$author_name" lastn="1">has</MTPages>
+      </MTAuthorHasPage>
+    </MTAuthors>
   expected: has
 
 -
   name: test item 483
-  template: <MTAuthors lastn="1"><MTAuthorNext><MTAuthorName></MTAuthorNext></MTAuthors>
+  template: |
+    <MTAuthors lastn="1">
+      <MTAuthorNext><MTAuthorName></MTAuthorNext>
+    </MTAuthors>
   expected: ''
 
 -
   name: test item 484
-  template: <MTAuthors lastn="1"><MTAuthorPrevious><MTAuthorName></MTAuthorPrevious></MTAuthors>
+  template: |
+    <MTAuthors lastn="1">
+      <MTAuthorPrevious><MTAuthorName></MTAuthorPrevious>
+    </MTAuthors>
   expected: Bob D
 
 -
@@ -117,7 +230,10 @@ __DATA__
 
 -
   name: test item 492
-  template: <MTAuthors lastn="1"><MTAuthorUserpicAsset><MTAssetFileName></MTAuthorUserpicAsset></MTAuthors>
+  template: |
+    <MTAuthors lastn="1">
+      <MTAuthorUserpicAsset><MTAssetFileName></MTAuthorUserpicAsset>
+    </MTAuthors>
   expected: test.jpg
 
 -
@@ -132,16 +248,29 @@ __DATA__
 
 -
   name: test item 540
-  template: "<MTIfAuthor>HasAuthor:Outside</MTIfAuthor><MTAuthors lastn='1'><MTIfAuthor>HasAuthor:Inside</MTIfAuthor></MTAuthors>"
+  template: |
+    <MTIfAuthor>HasAuthor:Outside</MTIfAuthor>
+    <MTAuthors lastn='1'>
+      <MTIfAuthor>HasAuthor:Inside</MTIfAuthor>
+    </MTAuthors>
   expected: "HasAuthor:Inside"
 
 -
   name: test item 609
-  template: "<mt:Authors need_entry='0' namespace='unit test' sort_by='score' offset='1'><mt:AuthorName>,</mt:Authors>"
-  expected: Chuck D,Melody,
+  template: |
+    <mt:Authors need_entry='0' namespace='unit test' sort_by='score' offset='1'>
+      <mt:AuthorName>,
+    </mt:Authors>
+  expected: |
+    Chuck D,
+    Melody,
 
 -
   name: test item 610
-  template: "<mt:Authors need_entry='0' namespace='unit test' sort_by='score' offset='2'><mt:AuthorName>,</mt:Authors>"
-  expected: Melody,
+  template: |
+    <mt:Authors need_entry='0' namespace='unit test' sort_by='score' offset='2'>
+      <mt:AuthorName>,
+    </mt:Authors>
+  expected: |
+    Melody,
 

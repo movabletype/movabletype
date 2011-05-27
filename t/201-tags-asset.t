@@ -272,32 +272,64 @@ __DATA__
 
 -
   name: test item 287
-  template: <MTAssets lastn='1'><MTAssetTags><$MTTagName$>; </MTAssetTags></MTAssets>
-  expected: "alpha; beta; gamma; "
+  template: |
+    <MTAssets lastn='1'>
+      <MTAssetTags>
+        <$MTTagName$>;
+      </MTAssetTags>
+    </MTAssets>
+  expected: |
+    alpha;
+    beta;
+    gamma;
 
 -
   name: test item 288
-  template: <MTAssets><MTAssetsHeader>(Head)</MTAssetsHeader><$MTAssetID$>;<MTAssetsFooter>(Last)</MTAssetsFooter></MTAssets>
-  expected: (Head)1;2;(Last)
+  template: |
+    <MTAssets>
+      <MTAssetsHeader>(Head)</MTAssetsHeader>
+      <$MTAssetID$>;
+      <MTAssetsFooter>(Last)</MTAssetsFooter>
+    </MTAssets>
+  expected: |
+    (Head)
+    1;
+    2;
+    (Last)
 
 -
   name: test item 304
-  template: <MTAssets sort_by="score" namespace="unit test"><MTAssetID>; </MTAssets>
-  expected: "1; 2; "
+  template: |
+    <MTAssets sort_by="score" namespace="unit test">
+      <MTAssetID>;
+    </MTAssets>
+  expected: |
+    1;
+    2;
 
 -
   name: test item 358
-  template: <MTAssets lastn='1'><$MTAssetlabel$></MTAssets>
-  expected: Image photo
+  template: |
+    <MTAssets lastn='1'>
+      <$MTAssetlabel$>
+    </MTAssets>
+  expected: |
+    Image photo
 
 -
   name: test item 359
-  template: <MTEntries id='1'><MTEntryAssets><$MTAssetID$></MTEntryAssets></MTEntries>
+  template: |
+    <MTEntries id='1'>
+      <MTEntryAssets><$MTAssetID$></MTEntryAssets>
+    </MTEntries>
   expected: 1
 
 -
   name: test item 360
-  template: <MTPages id='20'><MTPageAssets><$MTAssetID$></MTPageAssets></MTPages>
+  template: |
+    <MTPages id='20'>
+      <MTPageAssets><$MTAssetID$></MTPageAssets>
+    </MTPages>
   expected: 2
 
 -
@@ -317,11 +349,25 @@ __DATA__
 
 -
   name: test item 496
-  template: <MTAssets lastn='1'><MTAssetIfTagged tag="alpha">Tagged<MTElse>Not Tagged</MTAssetIfTagged></MTAssets>
+  template: |
+    <MTAssets lastn='1'>
+      <MTAssetIfTagged tag="alpha">
+        Tagged
+      <MTElse>
+        Not Tagged
+      </MTAssetIfTagged>
+    </MTAssets>
   expected: Tagged
 
 -
   name: test item 497
-  template: <MTAssets lastn='1'><MTAssetIfTagged tag="empty_tag_name">Tagged<MTElse>Not Tagged</MTAssetIfTagged></MTAssets>
+  template: |
+    <MTAssets lastn='1'>
+      <MTAssetIfTagged tag="empty_tag_name">
+        Tagged
+      <MTElse>
+        Not Tagged
+      </MTAssetIfTagged>
+    </MTAssets>
   expected: Not Tagged
 
