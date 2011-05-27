@@ -163,22 +163,49 @@ __DATA__
 
 -
   name: test item 167
-  template: <MTEntries lastn="10"><MTEntryID> <MTEntryCommentCount>; </MTEntries>
-  expected: "1 3; 8 1; 7 0; 6 3; 5 1; 4 0; "
+  template: |
+    <MTEntries lastn="10">
+      <MTEntryID> <MTEntryCommentCount>;
+    </MTEntries>
+  expected: |
+    1 3;
+    8 1;
+    7 0;
+    6 3;
+    5 1;
+    4 0;
 
 -
   name: test item 168
-  template: <MTIfRegistrationNotRequired>yes<MTElse>no</MTElse></MTIfRegistrationNotRequired>
+  template: |
+    <MTIfRegistrationNotRequired>
+      yes
+    <MTElse>
+      no
+    </MTElse>
+    </MTIfRegistrationNotRequired>
   expected: no
 
 -
   name: test item 169
-  template: <MTIfRegistrationRequired>yes<MTElse>no</MTElse></MTIfRegistrationRequired>
+  template: |
+    <MTIfRegistrationRequired>
+      yes
+    <MTElse>
+      no
+    </MTElse>
+    </MTIfRegistrationRequired>
   expected: yes
 
 -
   name: test item 170
-  template: <MTBlogIfCommentsOpen>yes<MTElse>no</MTElse></MTBlogIfCommentsOpen>
+  template: |
+    <MTBlogIfCommentsOpen>
+      yes
+    <MTElse>
+      no
+    </MTElse>
+    </MTBlogIfCommentsOpen>
   expected: yes
 
 -
@@ -214,42 +241,128 @@ __DATA__
 -
   name: test item 210
   run: 0
-  template: <MTIfDynamicComments>dynamic comments<MTElse>static comments</MTElse></MTIfDynamicComments>
+  template: |
+    <MTIfDynamicComments>
+      dynamic comments
+    <MTElse>
+      static comments
+    </MTElse>
+    </MTIfDynamicComments>
   expected: static comments
 
 -
   name: test item 211
-  template: <MTEntries lastn='1'><MTEntryIfAllowComments>entry allows comments</MTEntryIfAllowComments></MTEntries>
+  template: |
+    <MTEntries lastn='1'>
+      <MTEntryIfAllowComments>
+        entry allows comments
+      </MTEntryIfAllowComments>
+    </MTEntries>
   expected: entry allows comments
 
 -
   name: test item 212
-  template: <MTEntries lastn='1'><MTEntryIfCommentsOpen>entry comments open</MTEntryIfCommentsOpen></MTEntries>
+  template: |
+    <MTEntries lastn='1'>
+      <MTEntryIfCommentsOpen>
+        entry comments open
+      </MTEntryIfCommentsOpen>
+    </MTEntries>
   expected: entry comments open
 
 -
   name: test item 309
-  template: <MTComments><MTIfCommentParent><p><MTCommentParent><MTCommentAuthor></MTCommentParent></p></MTIfCommentParent></MTComments>
-  expected: <p>Comment 11</p><p>v14GrUH 4 cheep</p>
+  template: |
+    <MTComments>
+      <MTIfCommentParent>
+        <p>
+          <MTCommentParent><MTCommentAuthor></MTCommentParent>
+        </p>
+      </MTIfCommentParent>
+    </MTComments>
+  expected: |
+    <p>
+      Comment 11
+    </p>
+    <p>
+      v14GrUH 4 cheep
+    </p>
 
 -
   name: test item 310
-  template: <MTComments sort_by='id' sort_order='ascend'><MTIfCommentReplies>,<MTCommentReplies><MTCommentsHeader><ul></MTCommentsHeader><li><MTCommentID></li><MTCommentsFooter></ul></MTCommentsFooter></MTCommentReplies></MTIfCommentReplies></MTComments>
-  expected: ,<ul><li>11</li></ul>,<ul><li>12</li></ul>
+  template: |
+    <MTComments sort_by='id' sort_order='ascend'>
+      <MTIfCommentReplies>,
+        <MTCommentReplies>
+          <MTCommentsHeader><ul></MTCommentsHeader>
+            <li><MTCommentID></li>
+          <MTCommentsFooter></ul></MTCommentsFooter>
+        </MTCommentReplies>
+      </MTIfCommentReplies>
+    </MTComments>
+  expected: |
+    ,
+      <ul>
+        <li>11</li>
+      </ul>
+    ,
+      <ul>
+        <li>12</li>
+      </ul>
 
 -
   name: test item 311
-  template: <MTComments sort_by='id' sort_order='ascend'><MTIfCommentReplies>,<MTCommentReplies><MTCommentsHeader><ul></MTCommentsHeader><li><MTCommentID><MTCommentRepliesRecurse></li><MTCommentsFooter></ul></MTCommentsFooter></MTCommentReplies></MTIfCommentReplies></MTComments>
-  expected: ,<ul><li>11<ul><li>12</li></ul></li></ul>,<ul><li>12</li></ul>
+  template: |
+    <MTComments sort_by='id' sort_order='ascend'>
+      <MTIfCommentReplies>,
+        <MTCommentReplies>
+          <MTCommentsHeader><ul></MTCommentsHeader>
+            <li><MTCommentID><MTCommentRepliesRecurse></li>
+          <MTCommentsFooter></ul></MTCommentsFooter>
+        </MTCommentReplies>
+      </MTIfCommentReplies>
+    </MTComments>
+  expected: |
+    ,
+      <ul>
+        <li>11
+          <ul>
+            <li>12</li>
+          </ul>
+        </li>
+      </ul>
+    ,
+      <ul>
+        <li>12</li>
+      </ul>
 
 -
   name: test item 344
-  template: <MTComments><MTCommentEntry><MTEntryClass>;</MTCommentEntry></MTComments>
-  expected: page;entry;entry;entry;entry;entry;entry;entry;entry;
+  template: |
+    <MTComments>
+      <MTCommentEntry><MTEntryClass>;</MTCommentEntry>
+    </MTComments>
+  expected: |
+    page;
+    entry;
+    entry;
+    entry;
+    entry;
+    entry;
+    entry;
+    entry;
+    entry;
 
 -
   name: test item 452
-  template: <MTComments lastn="1"><MTCommentIfModerated>Moderated<MTElse>NotModerated</MTCommentIfModerated></MTComments>
+  template: |
+    <MTComments lastn="1">
+      <MTCommentIfModerated>
+        Moderated
+      <MTElse>
+        NotModerated
+      </MTCommentIfModerated>
+    </MTComments>
   expected: Moderated
 
 -
@@ -274,8 +387,10 @@ __DATA__
 
 -
   name: test item 457
-  template: <MTComments lastn="1"><MTCommentReplyToLink></MTComments>
-  expected: "<a title=\"Reply\" href=\"javascript:void(0);\" onclick=\"mtReplyCommentOnClick(2, 'John Doe')\">Reply</a>"
+  template: |
+    <MTComments lastn="1"><MTCommentReplyToLink></MTComments>
+  expected: |
+    <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(2, 'John Doe')">Reply</a>
 
 -
   name: test item 469

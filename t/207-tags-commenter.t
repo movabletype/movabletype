@@ -24,18 +24,73 @@ __DATA__
 
 -
   name: test item 224
-  template: "<MTComments lastn='3' glue=','><MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTCommenterIfTrusted>trusted<MTElse>untrusted</MTElse></MTCommenterIfTrusted><MTElse><MTCommentAuthor></MTIfNonEmpty></MTComments>"
-  expected: "Chucky Dee: trusted,Comment 3: untrusted,John Doe: trusted"
+  template: |
+    <MTComments lastn='3'>
+      <MTIfNonEmpty tag='CommenterName'>
+        <MTCommenterName>:
+        <MTCommenterIfTrusted>
+          trusted
+        <MTElse>
+          untrusted
+        </MTElse>
+        </MTCommenterIfTrusted>
+      <MTElse>
+        <MTCommentAuthor>
+      </MTIfNonEmpty>
+    </MTComments>
+  expected: |
+    Chucky Dee:
+      trusted
+    Comment 3:
+      untrusted
+    John Doe:
+      trusted
 
 -
   name: test item 356
-  template: "<MTEntries><$MTEntryID$>:<MTComments><MTIfCommenterIsAuthor><MTIfCommenterIsEntryAuthor>2<MTElse>1</MTIfCommenterIsEntryAuthor><MTElse>0</MTIfCommenterIsAuthor>;</MTComments></MTEntries>"
-  expected: "1:0;0;0;8:0;7:6:2;1;0;5:0;4:"
+  template: |
+    <MTEntries>
+      <$MTEntryID$>:
+      <MTComments>
+        <MTIfCommenterIsAuthor>
+          <MTIfCommenterIsEntryAuthor>2<MTElse>1</MTIfCommenterIsEntryAuthor>
+        <MTElse>
+          0
+        </MTIfCommenterIsAuthor>
+      </MTComments>
+    </MTEntries>
+  expected: |
+    1:
+      0
+      0
+      0
+    8:
+      0
+    7:
+    6:
+      2
+      1
+      0
+    5:
+      0
+    4:
 
 -
   name: test item 362
-  template: "<MTComments><$MTCommenterAuthType$>:<$MTCommenterAuthIconURL$>;</MTComments>"
-  expected: ":;:;:;:;:;MT:http://narnia.na/mt-static/images/comment/mt_logo.png;MT:http://narnia.na/mt-static/images/comment/mt_logo.png;:;TypeKey:http://narnia.na/mt-static/images/comment/typepad_logo.png;"
+  template: |
+    <MTComments>
+      <$MTCommenterAuthType$>:<$MTCommenterAuthIconURL$>;
+    </MTComments>
+  expected: |
+    :;
+    :;
+    :;
+    :;
+    :;
+    MT:http://narnia.na/mt-static/images/comment/mt_logo.png;
+    MT:http://narnia.na/mt-static/images/comment/mt_logo.png;
+    :;
+    TypeKey:http://narnia.na/mt-static/images/comment/typepad_logo.png;
 
 -
   name: test item 499
@@ -64,8 +119,27 @@ __DATA__
 
 -
   name: test item 543
-  template: "<MTComments lastn='3' glue=','><MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTIfCommenterTrusted>trusted<MTElse>untrusted</MTElse></MTIfCommenterTrusted><MTElse><MTCommentAuthor></MTIfNonEmpty></MTComments>"
-  expected: "Chucky Dee: trusted,Comment 3: untrusted,John Doe: trusted"
+  template: |
+    <MTComments lastn='3'>
+      <MTIfNonEmpty tag='CommenterName'>
+        <MTCommenterName>:
+          <MTIfCommenterTrusted>
+            trusted
+          <MTElse>
+            untrusted
+          </MTElse>
+          </MTIfCommenterTrusted>
+      <MTElse>
+        <MTCommentAuthor>
+      </MTIfNonEmpty>
+    </MTComments>
+  expected: |
+    Chucky Dee:
+      trusted
+    Comment 3:
+      untrusted
+    John Doe:
+      trusted
 
 -
   name: test item 544

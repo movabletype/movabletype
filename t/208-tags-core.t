@@ -53,23 +53,77 @@ __DATA__
 
 -
   name: test item 368
-  template: <MTSetVar name='offices' value='San Francisco' index='0'><MTSetVar name='offices' value='Tokyo' function='unshift'><MTSetVarBlock name='offices' index='2'>Paris</MTSetVarBlock>--<MTGetVar name='offices' function='count'>;<MTGetVar name='offices' index='1'>;<MTGetVar name='offices' function='shift'>;<MTGetVar name='offices' function='count'>;<MTGetVar name='offices' index='1'>
-  expected: --3;San Francisco;Tokyo;2;Paris
+  template: |
+    <MTSetVar name='offices' value='San Francisco' index='0'>
+    <MTSetVar name='offices' value='Tokyo' function='unshift'>
+    <MTSetVarBlock name='offices' index='2'>Paris</MTSetVarBlock>
+    --
+    <MTGetVar name='offices' function='count'>;
+    <MTGetVar name='offices' index='1'>;
+    <MTGetVar name='offices' function='shift'>;
+    <MTGetVar name='offices' function='count'>;
+    <MTGetVar name='offices' index='1'>
+  expected: |
+    --
+    3;
+    San Francisco;
+    Tokyo;
+    2;
+    Paris
 
 -
   name: test item 369
-  template: <MTSetVar name='MTVersions' key='4.0' value='Athena'><MTSetVarBlock name='MTVersions' key='4.01'>Enterprise Solution</MTSetVarBlock><MTSetVarBlock name='MTVersions' key='4.1'>Boomer<MTSetVar name='4.2' value='Cal'></MTSetVarBlock><MTGetVar name='MTVersions' key='4.0'>;<MTGetVar name='MTVersions' key='4.01'>;<MTGetVar name='MTVersions' key='4.1'>;<MTGetVar name='MTVersions' key='4.2'>;
-  expected: Athena;Enterprise Solution;Boomer;;
+  template: |
+    <MTSetVar name='MTVersions' key='4.0' value='Athena'>
+    <MTSetVarBlock name='MTVersions' key='4.01'>Enterprise Solution</MTSetVarBlock>
+    <MTSetVarBlock name='MTVersions' key='4.1'>Boomer</MTSetVarBlock>
+    <MTSetVar name='4.2' value='Cal'>
+    <MTGetVar name='MTVersions' key='4.0'>;
+    <MTGetVar name='MTVersions' key='4.01'>;
+    <MTGetVar name='MTVersions' key='4.1'>;
+    <MTGetVar name='MTVersions' key='4.2'>;
+
+  expected: |
+    Athena;
+    Enterprise Solution;
+    Boomer;
+    ;
 
 -
   name: test item 370
-  template: <MTVar name='object1' key='name' value='foo'><MTVar name='object1' key='price' value='1.00'><MTVar name='object2' key='name' value='bar'><MTVar name='object2' key='price' value='1.13'><MTSetVar name='array1' function='push' value='$object1'><MTSetVar name='array1' function='push' value='$object2'><MTLoop name='array1'><MTVar name='name'>(<MTVar name='price'>)<br /></MTLoop>
-  expected: foo(1.00)<br />bar(1.13)<br />
+  template: |
+    <MTVar name='object1' key='name' value='foo'>
+    <MTVar name='object1' key='price' value='1.00'>
+    <MTVar name='object2' key='name' value='bar'>
+    <MTVar name='object2' key='price' value='1.13'>
+    <MTSetVar name='array1' function='push' value='$object1'>
+    <MTSetVar name='array1' function='push' value='$object2'>
+    <MTLoop name='array1'>
+      <MTVar name='name'>(<MTVar name='price'>)<br />
+    </MTLoop>
+  expected: |
+    foo(1.00)<br />
+    bar(1.13)<br />
 
 -
   name: test item 371
-  template: <MTSetVar name='offices1' value='San Francisco' index='0'><MTSetVar name='offices1' value='Tokyo' function='unshift'><MTSetVarBlock name='offices1' index='2'>Paris</MTSetVarBlock>--<MTGetVar name='offices1' function='count'>;<MTGetVar name='offices1' index='1'>;<MTGetVar name='offices1' function='shift'>;<MTGetVar name='offices1' function='count'>;<MTGetVar name='offices1' index='1'>
-  expected: --3;San Francisco;Tokyo;2;Paris
+  template: |
+    <MTSetVar name='offices1' value='San Francisco' index='0'>
+    <MTSetVar name='offices1' value='Tokyo' function='unshift'>
+    <MTSetVarBlock name='offices1' index='2'>Paris</MTSetVarBlock>
+    --
+    <MTGetVar name='offices1' function='count'>;
+    <MTGetVar name='offices1' index='1'>;
+    <MTGetVar name='offices1' function='shift'>;
+    <MTGetVar name='offices1' function='count'>;
+    <MTGetVar name='offices1' index='1'>;
+  expected: |
+    --
+    3;
+    San Francisco;
+    Tokyo;
+    2;
+    Paris;
 
 -
   name: test item 372
