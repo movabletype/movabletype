@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>Utilities in mt.js</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen">
+	<script type="text/javascript" src="../../js/tc.js"></script>
+	<script type="text/javascript" src="../../jquery/jquery.js"></script>
+	<script type="text/javascript" src="../../js/common/Core.js"></script>
+	<script type="text/javascript" src="../../js/common/DOM.js"></script>
+	<script type="text/javascript" src="../../mt.js"></script>
+
+	<link rel="stylesheet" href="../qunit/qunit.css" type="text/css" media="screen">
+	<script type="text/javascript" src="../qunit/qunit.js"></script>
+  <script type="text/javascript" src="../qunit-runner/qunit-runner.js"></script>
+  <script type="text/javascript" src="../qunit-tap//qunit-tap.js"></script>
+  <script>
+    qunitTap(QUnit, function() { console.log.apply(console, arguments); }, {noPlan: true});
+  </script>
+
+	<script type="text/javascript" src="301-mt_js_utils.js"></script>
+
+</head>
+<body>
+	<h1 id="qunit-header">Utilities in mt.js</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture">test markup</div>
+
+  <form id="not_checked_0">
+  </form>
+
+  <form id="not_checked_1">
+    <input type="checkbox" name="id" value="1" />
+  </form>
+
+  <form id="not_checked_2">
+    <input type="checkbox" name="id" value="1" />
+    <input type="checkbox" name="id" value="2" />
+  </form>
+
+  <form id="checked_1">
+    <input type="checkbox" name="id" value="1" checked="checked" />
+  </form>
+
+  <form id="checked_2">
+    <input type="checkbox" name="id" value="1" checked="checked" />
+    <input type="checkbox" name="id" value="2" checked="checked" />
+  </form>
+
+  <form id="hidden_1">
+    <input type="hidden" name="id" value="1" />
+  </form>
+
+  <form id="hidden_2">
+    <input type="hidden" name="id" value="1" />
+    <input type="hidden" name="id" value="2" />
+  </form>
+
+  <form id="name_restrict">
+    <input type="checkbox" name="entry_id" value="1" checked="checked" />
+    <input type="checkbox" name="entry_id" value="2" />
+  </form>
+
+
+  <div id="dialog-container">
+  </div>
+
+  <div id="reply">
+  </div>
+
+
+  <form id="toggleSubPrefs">
+    <input type="checkbox" name="cb_has_sub_pref" />
+    <div id="cb_has_sub_pref-prefs">
+    </div>
+
+    <input type="text" name="text_has_sub_pref" />
+    <div id="text_has_sub_pref-prefs">
+    </div>
+
+    <span id="span_has_sub_pref" />
+    <div id="span_has_sub_pref-prefs">
+    </div>
+  </form>
+
+
+  <input type="text" id="setElementValue" value="" />
+
+
+  <div id="container-inner"></div>
+
+</body>
+</html>

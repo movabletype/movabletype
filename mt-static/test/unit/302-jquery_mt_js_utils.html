@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>Utilities in jquery.mt.js</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen">
+  <script type="text/javascript" src="../../js/common/Core.js"></script>
+  <script type="text/javascript" src="../../js/common/DOM.js"></script>
+	<script type="text/javascript" src="../../mt.js"></script>
+	<script type="text/javascript" src="../../jquery/jquery.js"></script>
+	<script type="text/javascript" src="../../jquery/jquery.mt.js"></script>
+
+	<link rel="stylesheet" href="../qunit/qunit.css" type="text/css" media="screen">
+	<script type="text/javascript" src="../qunit/qunit.js"></script>
+  <script type="text/javascript" src="../qunit-runner/qunit-runner.js"></script>
+  <script type="text/javascript" src="../qunit-tap//qunit-tap.js"></script>
+  <script>
+    qunitTap(QUnit, function() { console.log.apply(console, arguments); }, {noPlan: true});
+  </script>
+
+	<script type="text/javascript" src="302-jquery_mt_js_utils.js"></script>
+
+</head>
+<body>
+	<h1 id="qunit-header">Utilities in jquery.mt.js</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture">test markup</div>
+
+  <form>
+    <input type="text" id="validate" value="" />
+  </form>
+
+  <form>
+    <input type="text" id="validate_with_namespace" value="" />
+  </form>
+
+</body>
+</html>

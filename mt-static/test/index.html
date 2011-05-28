@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>JavaScript Unit Tests</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <link href="qunit/qunit.css" rel="stylesheet" type="text/css" />
+  <link href="qunit-runner/qunit-runner.css" rel="stylesheet" type="text/css" />
+  <script src="../jquery/jquery.js" type="text/javascript"></script>
+  <script src="qunit/qunit.js" type="text/javascript"></script>
+  <script src="qunit-runner/qunit-runner.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var tests = [
+      {
+        page:  'unit/301-mt_js_utils.html',
+        title: 'Utilities in mt.js'
+      },
+      {
+        page:  'unit/302-jquery_mt_js_utils.html',
+        title: 'Utilities in jquery.mt.js'
+      },
+      {
+        page:  'unit/303-jquery_mt_js_validate.html',
+        title: 'mtValidate'
+      }
+    ];
+    var sequential = true; // false to run tests simultaneously
+    var runnerDone = function(failures, total) {
+      // get notified when runner completes
+    }
+    QUnit.run(tests, sequential, runnerDone);
+  </script>
+</head>
+<body>
+  <div>
+    <h1 id="qunit-header">JavaScript Unit Tests</h1>
+    <h2 id="qunit-banner"></h2>
+    <h2 id="qunit-runner-userAgent"></h2>
+    <div id="runner-test-page-container"></div>
+  </div>
+</body>
+</html>
