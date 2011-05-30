@@ -7,78 +7,189 @@ run_tests_by_data();
 __DATA__
 -
   name: test item 289
-  template: <MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScore namespace="unit test">; </MTIfNonZero></MTEntries>
-  expected: "6 2; 5 12; 4 5; "
+  template: |
+    <MTEntries lastn="10">
+      <MTIf tag="MTEntryScoreCount" namespace="unit test">
+        <MTEntryID> (score <MTEntryScore namespace="unit test">)
+      </MTIf>
+    </MTEntries>
+  expected: |
+    6 (score 2)
+    5 (score 12)
+    4 (score 5)
 
 -
   name: test item 290
-  template: <MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreHigh namespace="unit test">; </MTIfNonZero></MTEntries>
-  expected: "6 1; 5 5; 4 3; "
+  template: |
+    <MTEntries lastn="10">
+      <MTIf tag="MTEntryScoreCount" namespace="unit test">
+        <MTEntryID> (score <MTEntryScoreHigh namespace="unit test">)
+      </MTIf>
+    </MTEntries>
+  expected: |
+    6 (score 1)
+    5 (score 5)
+    4 (score 3)
 
 -
   name: test item 291
-  template: <MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreLow namespace="unit test">; </MTIfNonZero></MTEntries>
-  expected: "6 1; 5 3; 4 2; "
+  template: |
+    <MTEntries lastn="10">
+      <MTIf tag="MTEntryScoreCount" namespace="unit test">
+        <MTEntryID> (score <MTEntryScoreLow namespace="unit test">)
+      </MTIf>
+    </MTEntries>
+  expected: |
+    6 (score 1)
+    5 (score 3)
+    4 (score 2)
 
 -
   name: test item 292
-  template: <MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreAvg namespace="unit test">; </MTIfNonZero></MTEntries>
-  expected: "6 1.00; 5 4.00; 4 2.50; "
+  template: |
+    <MTEntries lastn="10">
+      <MTIf tag="MTEntryScoreCount" namespace="unit test">
+        <MTEntryID> (score <MTEntryScoreAvg namespace="unit test">)
+      </MTIf>
+    </MTEntries>
+  expected: |
+    6 (score 1.00)
+    5 (score 4.00)
+    4 (score 2.50)
 
 -
   name: test item 293
-  template: <MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreCount namespace="unit test">; </MTIfNonZero></MTEntries>
-  expected: "6 2; 5 3; 4 2; "
+  template: |
+    <MTEntries lastn="10">
+      <MTIf tag="MTEntryScoreCount" namespace="unit test">
+        <MTEntryID> (score <MTEntryScoreCount namespace="unit test">)
+      </MTIf>
+    </MTEntries>
+  expected: |
+    6 (score 2)
+    5 (score 3)
+    4 (score 2)
 
 -
   name: test item 294
-  template: <MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryRank namespace="unit test">; </MTIfNonZero></MTEntries>
-  expected: "6 6; 5 1; 4 4; "
+  template: |
+    <MTEntries lastn="10">
+      <MTIf tag="MTEntryScoreCount" namespace="unit test">
+        <MTEntryID> (rank <MTEntryRank namespace="unit test">)
+      </MTIf>
+    </MTEntries>
+  expected: |
+    6 (rank 6)
+    5 (rank 1)
+    4 (rank 4)
 
 -
   name: test item 295
-  template: <MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryRank max="10" namespace="unit test">; </MTIfNonZero></MTEntries>
-  expected: "6 10; 5 1; 4 5; "
+  template: |
+    <MTEntries lastn="10">
+      <MTIf tag="MTEntryScoreCount" namespace="unit test">
+        <MTEntryID> (rank <MTEntryRank max="10" namespace="unit test">)
+      </MTIf>
+    </MTEntries>
+  expected: |
+    6 (rank 10)
+    5 (rank 1)
+    4 (rank 5)
 
 -
   name: test item 296
-  template: <MTEntries glue="; " sort_by="score" namespace="unit test" min_score="1"><MTEntryID>-<MTEntryScore namespace="unit test"></MTEntries>
-  expected: 5-12; 4-5; 6-2
+  template: |
+    <MTEntries sort_by="score" namespace="unit test" min_score="1">
+      <MTEntryID> (score <MTEntryScore namespace="unit test">)
+    </MTEntries>
+  expected: |
+    5 (score 12)
+    4 (score 5)
+    6 (score 2)
 
 -
   name: test item 297
-  template: <MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScore namespace="unit test">; </MTIfNonZero></MTAssets>
-  expected: "1 12; 2 5; "
+  template: |
+    <MTAssets lastn="10">
+      <MTIf tag="MTAssetScoreCount" namespace="unit test">
+        <MTAssetID> (score <MTAssetScore namespace="unit test">)
+      </MTIf>
+    </MTAssets>
+  expected: |
+    1 (score 12)
+    2 (score 5)
 
 -
   name: test item 298
-  template: <MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreHigh namespace="unit test">; </MTIfNonZero></MTAssets>
-  expected: "1 5; 2 3; "
+  template: |
+    <MTAssets lastn="10">
+      <MTIf tag="MTAssetScoreCount" namespace="unit test">
+        <MTAssetID> (score <MTAssetScoreHigh namespace="unit test">)
+      </MTIf>
+    </MTAssets>
+  expected: |
+    1 (score 5)
+    2 (score 3)
 
 -
   name: test item 299
-  template: <MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreLow namespace="unit test">; </MTIfNonZero></MTAssets>
-  expected: "1 3; 2 2; "
+  template: |
+    <MTAssets lastn="10">
+      <MTIf tag="MTAssetScoreCount" namespace="unit test">
+        <MTAssetID> (score <MTAssetScoreLow namespace="unit test">)
+      </MTIf>
+    </MTAssets>
+  expected: |
+    1 (score 3)
+    2 (score 2)
 
 -
   name: test item 300
-  template: <MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreAvg namespace="unit test">; </MTIfNonZero></MTAssets>
-  expected: "1 4.00; 2 2.50; "
+  template: |
+    <MTAssets lastn="10">
+      <MTIf tag="MTAssetScoreCount" namespace="unit test">
+        <MTAssetID> (score <MTAssetScoreAvg namespace="unit test">)
+      </MTIf>
+    </MTAssets>
+  expected: |
+    1 (score 4.00)
+    2 (score 2.50)
 
 -
   name: test item 301
-  template: <MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreCount namespace="unit test">; </MTIfNonZero></MTAssets>
-  expected: "1 3; 2 2; "
+  template: |
+    <MTAssets lastn="10">
+      <MTIf tag="MTAssetScoreCount" namespace="unit test">
+        <MTAssetID> (score <MTAssetScoreCount namespace="unit test">)
+      </MTIf>
+    </MTAssets>
+  expected: |
+    1 (score 3)
+    2 (score 2)
 
 -
   name: test item 302
-  template: <MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetRank namespace="unit test">; </MTIfNonZero></MTAssets>
-  expected: "1 1; 2 6; "
+  template: |
+    <MTAssets lastn="10">
+      <MTIfNonZero tag="MTAssetScoreCount" namespace="unit test">
+        <MTAssetID> (rank <MTAssetRank namespace="unit test">)
+      </MTIfNonZero>
+    </MTAssets>
+  expected: |
+    1 (rank 1)
+    2 (rank 6)
 
 -
   name: test item 303
-  template: <MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetRank max="10" namespace="unit test">; </MTIfNonZero></MTAssets>
-  expected: "1 1; 2 10; "
+  template: |
+    <MTAssets lastn="10">
+      <MTIfNonZero tag="MTAssetScoreCount" namespace="unit test">
+        <MTAssetID> (rank <MTAssetRank max="10" namespace="unit test">)
+      </MTIfNonZero>
+    </MTAssets>
+  expected: |
+    1 (rank 1)
+    2 (rank 10)
 
 -
   name: test item 458
