@@ -6,7 +6,7 @@ use MT::Test::Tags;
 run_tests_by_data();
 __DATA__
 -
-  name: test item 35
+  name: ArchiveList outputs proper list of archives
   template: |
     <MTArchiveList archive_type="Monthly">
       <MTArchiveListHeader>(Header)</MTArchiveListHeader>
@@ -22,7 +22,7 @@ __DATA__
       (Footer)January 1961|
 
 -
-  name: test item 147
+  name: ArchiveLink prints URL of the archive
   template: |
     <MTArchiveList archive_type="Monthly">
       <MTArchiveTitle>-<MTArchiveLink>;
@@ -36,7 +36,7 @@ __DATA__
     January 1961-http://narnia.na/nana/archives/1961/01/;
 
 -
-  name: test item 148
+  name: ArchivePrevious set previous archive's context
   template: |
     <MTArchiveList archive_type="Monthly">
       <MTArchivePrevious>
@@ -51,7 +51,7 @@ __DATA__
     January 1961-http://narnia.na/nana/archives/1961/01/;
 
 -
-  name: test item 149
+  name: ArchiveNext set next archive's context
   template: |
     <MTArchiveList archive_type="Monthly">
       <MTArchiveNext>
@@ -66,7 +66,7 @@ __DATA__
     January 1962-http://narnia.na/nana/archives/1962/01/;
 
 -
-  name: test item 150
+  name: ArchiveCount prints the number of entries in that archive
   template: |
     <MTArchiveList archive_type="Monthly">
       <MTArchiveTitle>-<MTArchiveCount>;
@@ -80,12 +80,12 @@ __DATA__
     January 1961-1;
 
 -
-  name: test item 187
+  name: IfArchiveTypeEnabled judges specified archive type is enabled or not
   template: <MTIfArchiveTypeEnabled type="Category">enabled</MTIfArchiveTypeEnabled>
   expected: enabled
 
 -
-  name: test item 203
+  name: Can use IndexList, IndexName, IndexLink and IndexBasename for create list of index templates
   template: |
     <MTIndexList>
       <MTIndexName>-<MTIndexLink>-<MTIndexBasename>;
@@ -99,7 +99,7 @@ __DATA__
     Stylesheet-http://narnia.na/nana/styles.css-index;
 
 -
-  name: test item 217
+  name: ArchiveCategory prints category label of current archive
   template: |
     <MTArchiveList archive_type='Category'>
       <MTArchiveCategory>
@@ -109,7 +109,7 @@ __DATA__
     subfoo
 
 -
-  name: test item 218
+  name: ArchiveFile prints filename of current archive
   template: |
     <MTArchiveList>
       <MTArchiveFile>
@@ -123,7 +123,7 @@ __DATA__
     verse_1.html
 
 -
-  name: test item 219
+  name: Archives prints the labels of enabled archive types in current blog
   template: |
     <MTArchives>
       <MTArchiveType>
@@ -137,7 +137,7 @@ __DATA__
     Page
 
 -
-  name: test item 220
+  name: ArchiveDateEnd prints the date that the end of current archive
   template: |
     <MTArchiveList archive_type='Monthly'>
       <MTArchiveDateEnd>
@@ -151,7 +151,7 @@ __DATA__
     January 31, 1961 11:59 PM
 
 -
-  name: test item 221
+  name: ArchiveDateEnd prints the date that the end of current archive, if archive type is Daily, too.
   template: |
     <MTArchiveList archive_type='Daily'>
       <MTArchiveDateEnd>
@@ -165,7 +165,7 @@ __DATA__
     January 31, 1961 11:59 PM
 
 -
-  name: test item 222
+  name: ArchiveDateEnd prints the date that the end of current archive, if archive type is Weekly, too.
   template: |
     <MTArchiveList archive_type='Weekly'>
       <MTArchiveDateEnd>
@@ -179,7 +179,7 @@ __DATA__
     February  4, 1961 11:59 PM
 
 -
-  name: test item 346
+  name: ArchiveDate can use format attribute.
   template: |
     <MTArchiveList archive_type='Individual' sort_order='ascend'>
       <$MTArchiveDate format='%Y.%m.%d.%H.%M.%S'$>;
@@ -193,7 +193,7 @@ __DATA__
     1978.01.31.07.45.00;
 
 -
-  name: test item 355
+  name: Archives prints the labels of enabled archive types in current blog
   template: |
     <MTArchives>
       <MTArchiveLabel>
@@ -207,7 +207,7 @@ __DATA__
     Page
 
 -
-  name: test item 498
+  name: ArchiveTypeLabel prints descriptive label of the current archive type.
   template: |
     <MTArchiveList type='Individual'>
       <MTArchiveListHeader>
