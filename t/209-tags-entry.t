@@ -32,8 +32,17 @@ __DATA__
 
 -
   name: test item 36
-  template: <MTEntries lastn="10"> * <MTEntryTitle></MTEntries>
-  expected: " * A Rainy Day * Verse 5 * Verse 4 * Verse 3 * Verse 2 * Verse 1"
+  template: |
+    <MTEntries lastn="10">
+      * <MTEntryTitle>
+    </MTEntries>
+  expected: |
+    * A Rainy Day
+    * Verse 5
+    * Verse 4
+    * Verse 3
+    * Verse 2
+    * Verse 1
 
 -
   name: test item 39
@@ -133,27 +142,59 @@ __DATA__
 
 -
   name: test item 69
-  template: <MTEntries lastn="1"><MTEntryTrackbackData></MTEntries>
-  expected: "<!--\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:trackback=\"http://madskills.com/public/xml/rss/module/trackback/\"\n         xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n<rdf:Description\n    rdf:about=\"http://narnia.na/nana/archives/1978/01/a-rainy-day.html\"\n    trackback:ping=\"http://narnia.na/cgi-bin/mt-tb.cgi/1\"\n    dc:title=\"A Rainy Day\"\n    dc:identifier=\"http://narnia.na/nana/archives/1978/01/a-rainy-day.html\"\n    dc:subject=\"\"\n    dc:description=\"A story of a stroll.\"\n    dc:creator=\"Chucky Dee\"\n    dc:date=\"1978-01-31T07:45:00-03:30\" />\n</rdf:RDF>\n-->\n"
+  template: |
+    <MTEntries lastn="1"><MTEntryTrackbackData></MTEntries>
+  expected: |
+    <!--
+    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+             xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/"
+             xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <rdf:Description
+        rdf:about="http://narnia.na/nana/archives/1978/01/a-rainy-day.html"
+        trackback:ping="http://narnia.na/cgi-bin/mt-tb.cgi/1"
+        dc:title="A Rainy Day"
+        dc:identifier="http://narnia.na/nana/archives/1978/01/a-rainy-day.html"
+        dc:subject=""
+        dc:description="A story of a stroll."
+        dc:creator="Chucky Dee"
+        dc:date="1978-01-31T07:45:00-03:30" />
+    </rdf:RDF>
+    -->
 
 -
   name: test item 70
-  template: <MTEntries lastn="1"><MTEntryLink archive_type="Individual"></MTEntries>
-  expected: "http://narnia.na/nana/archives/1978/01/a-rainy-day.html"
+  template: |
+    <MTEntries lastn="1">
+      <MTEntryLink archive_type="Individual">
+    </MTEntries>
+  expected: |
+    http://narnia.na/nana/archives/1978/01/a-rainy-day.html
 
 -
   name: test item 71
-  template: <MTEntries lastn="1"><MTEntryPermalink archive_type="Individual"></MTEntries>
-  expected: "http://narnia.na/nana/archives/1978/01/a-rainy-day.html"
+  template: |
+    <MTEntries lastn="1">
+      <MTEntryPermalink archive_type="Individual">
+    </MTEntries>
+  expected: |
+    http://narnia.na/nana/archives/1978/01/a-rainy-day.html
 
 -
   name: test item 72
-  template: <MTEntries id="6"><MTEntryCategory></MTEntries>
+  template: |
+    <MTEntries id="6">
+      <MTEntryCategory>
+    </MTEntries>
   expected: foo
 
 -
   name: test item 73
-  template: <MTEntries id="6"><MTEntryCategories><MTCategoryLabel></MTEntryCategories></MTEntries>
+  template: |
+    <MTEntries id="6">
+      <MTEntryCategories>
+        <MTCategoryLabel>
+      </MTEntryCategories>
+    </MTEntries>
   expected: foo
 
 -
@@ -169,12 +210,18 @@ __DATA__
 
 -
   name: test item 80
-  template: <MTEntries lastn="1" offset="1"><MTEntryNext><MTEntryTitle></MTEntryNext></MTEntries>
+  template: |
+    <MTEntries lastn="1" offset="1">
+      <MTEntryNext><MTEntryTitle></MTEntryNext>
+    </MTEntries>
   expected: A Rainy Day
 
 -
   name: test item 81
-  template: <MTEntries offset="1" lastn="1"><MTEntryPrevious><MTEntryTitle></MTEntryPrevious></MTEntries>
+  template: |
+    <MTEntries offset="1" lastn="1">
+      <MTEntryPrevious><MTEntryTitle></MTEntryPrevious>
+    </MTEntries>
   expected: Verse 4
 
 -
@@ -224,23 +271,39 @@ __DATA__
 
 -
   name: test item 215
-  template: <MTEntries offset="2" lastn="2"> * <MTEntryTitle></MTEntries>
-  expected: " * Verse 4 * Verse 3"
+  template: |
+    <MTEntries offset="2" lastn="2">
+      * <MTEntryTitle>
+    </MTEntries>
+  expected: |
+    * Verse 4
+    * Verse 3
 
 -
   name: test item 216
-  template: <MTEntries offset="2"> * <MTEntryTitle></MTEntries>
-  expected: " * Verse 4 * Verse 3 * Verse 2 * Verse 1"
+  template: |
+    <MTEntries offset="2">
+      * <MTEntryTitle>
+    </MTEntries>
+  expected: |
+    * Verse 4
+    * Verse 3
+    * Verse 2
+    * Verse 1
 
 -
   name: test item 229
-  template: <MTEntries category='subfoo' lastn='1'><MTEntryTitle></MTEntries>
+  template: |
+    <MTEntries category='subfoo' lastn='1'>
+      <MTEntryTitle>
+    </MTEntries>
   expected: Verse 4
 
 -
   name: test item 230
   run: 0
-  template: <MTEntries tags='verse' category='foo' lastn='1'><MTEntryTitle></MTEntries>
+  template: |
+    <MTEntries tags='verse' category='foo' lastn='1'><MTEntryTitle></MTEntries>
   expected: Verse 3
 
 -
@@ -255,18 +318,32 @@ __DATA__
 
 -
   name: test item 406
-  template: <MTEntries recently_commented_on='3' glue=','><MTEntryTitle></MTEntries>
-  expected: Verse 2,Verse 3,A Rainy Day
+  template: |
+    <MTEntries recently_commented_on='3' glue=','>
+      <MTEntryTitle></MTEntries>
+  expected: |
+    Verse 2,
+    Verse 3,
+    A Rainy Day
 
 -
   name: test item 424
-  template: "<mt:entries limit='1'><mt:EntryTitle></mt:Entries>"
+  template: |
+    <mt:entries limit='1'><mt:EntryTitle></mt:Entries>
   expected: A Rainy Day
 
 -
   name: test item 425
-  template: "<mt:entries category='NOT foo'><mt:EntryTitle>;</mt:Entries>"
-  expected: A Rainy Day;Verse 5;Verse 4;Verse 2;Verse 1;
+  template: |
+    <mt:entries category='NOT foo'>
+      <mt:EntryTitle>;
+    </mt:Entries>
+  expected: |
+    A Rainy Day;
+    Verse 5;
+    Verse 4;
+    Verse 2;
+    Verse 1;
 
 -
   name: test item 426
@@ -280,22 +357,55 @@ __DATA__
 
 -
   name: test item 552
-  template: "<MTEntries lastn='3'><MTDateHeader>Header:<MTEntryDate>,</MTDateHeader><MTDateFooter>Footer:<MTEntryDate>,</MTDateFooter></MTEntries>"
-  expected: "Header:January 31, 1978  7:45 AM,Footer:January 31, 1978  7:45 AM,Header:January 31, 1965  7:45 AM,Footer:January 31, 1965  7:45 AM,Header:January 31, 1964  7:45 AM,Footer:January 31, 1964  7:45 AM,"
+  template: |
+    <MTEntries lastn='3'>
+      <MTDateHeader>
+        Header:<MTEntryDate>,
+      </MTDateHeader>
+      <MTDateFooter>
+        Footer:<MTEntryDate>,
+      </MTDateFooter>
+    </MTEntries>
+  expected: |
+    Header:January 31, 1978  7:45 AM,
+    Footer:January 31, 1978  7:45 AM,
+    Header:January 31, 1965  7:45 AM,
+    Footer:January 31, 1965  7:45 AM,
+    Header:January 31, 1964  7:45 AM,
+    Footer:January 31, 1964  7:45 AM,
 
 -
   name: test item 553
-  template: <MTEntries lastn='3'><MTEntriesHeader><ul></MTEntriesHeader><li><MTEntryTitle></li><MTEntriesFooter><ul></MTEntriesFooter></MTEntries>
-  expected: <ul><li>A Rainy Day</li><li>Verse 5</li><li>Verse 4</li><ul>
+  template: |
+    <MTEntries lastn='3'>
+      <MTEntriesHeader>
+        <ul>
+      </MTEntriesHeader>
+      <li><MTEntryTitle></li>
+      <MTEntriesFooter>
+        </ul>
+      </MTEntriesFooter>
+    </MTEntries>
+  expected: |
+    <ul>
+      <li>A Rainy Day</li>
+      <li>Verse 5</li>
+      <li>Verse 4</li>
+    </ul>
 
 -
   name: test item 554
-  template: <MTEntries lastn="1"><MTEntryAdditionalCategories glue=','><MTCategoryLabel></MTEntryAdditionalCategories></MTEntries>
+  template: |
+    <MTEntries lastn="1">
+      <MTEntryAdditionalCategories glue=','>
+        <MTCategoryLabel></MTEntryAdditionalCategories>
+    </MTEntries>
   expected: ''
 
 -
   name: test item 555
-  template: <MTEntries lastn="1"><MTEntryAuthorID></MTEntries>
+  template: |
+    <MTEntries lastn="1"><MTEntryAuthorID></MTEntries>
   expected: 2
 
 -
@@ -345,7 +455,12 @@ __DATA__
 
 -
   name: test item 565
-  template: <MTEntries category="foo" lastn="1"><MTEntryIfCategory category='foo'><MTCategoryLabel></MTEntryIfCategory></MTEntries>
+  template: |
+    <MTEntries category="foo" lastn="1">
+      <MTEntryIfCategory category='foo'>
+        <MTCategoryLabel>
+      </MTEntryIfCategory>
+    </MTEntries>
   expected: foo
 
 -
@@ -360,11 +475,17 @@ __DATA__
 
 -
   name: test item 611
-  template: <MTEntries id="6"><MTEntryPrimaryCategory><MTCategoryLabel></MTEntryPrimaryCategory></MTEntries>
+  template: |
+    <MTEntries id="6">
+      <MTEntryPrimaryCategory><MTCategoryLabel></MTEntryPrimaryCategory>
+    </MTEntries>
   expected: foo
 
 -
   name: test item 612
-  template: <MTEntries id="6"><MTEntryCategories type="primary"><MTCategoryLabel></MTEntryCategories></MTEntries>
+  template: |
+    <MTEntries id="6">
+      <MTEntryCategories type="primary"><MTCategoryLabel></MTEntryCategories>
+    </MTEntries>
   expected: foo
 
