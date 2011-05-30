@@ -7,12 +7,22 @@ run_tests_by_data();
 __DATA__
 -
   name: test item 312
-  template: <MTPages><MTPageID>;</MTPages>
-  expected: 23;22;21;20;
+  template: |
+    <MTPages>
+      <MTPageID>;
+    </MTPages>
+  expected: |
+    23;
+    22;
+    21;
+    20;
 
 -
   name: test item 313
-  template: <MTPages lastn='1'><MTPageID>;</MTPages>
+  template: |
+    <MTPages lastn='1'>
+      <MTPageID>;
+    </MTPages>
   expected: 23;
 
 -
@@ -27,12 +37,20 @@ __DATA__
 
 -
   name: test item 316
-  template: <MTPages folder='download' include_subfolders='1'><MTPageID>;</MTPages>
-  expected: 23;22;
+  template: |
+    <MTPages folder='download' include_subfolders='1'>
+      <MTPageID>;
+    </MTPages>
+  expected: |
+    23;
+    22;
 
 -
   name: test item 317
-  template: <MTPages tag='river'><MTPageID>;</MTPages>
+  template: |
+    <MTPages tag='river'>
+      <MTPageID>;
+    </MTPages>
   expected: 20;
 
 -
@@ -42,18 +60,36 @@ __DATA__
 
 -
   name: test item 319
-  template: <MTPages sort_by='created_on' sort_order='scend'><MTPageID>;</MTPages>
-  expected: 23;22;21;20;
+  template: |
+    <MTPages sort_by='created_on' sort_order='scend'>
+      <MTPageID>;
+    </MTPages>
+  expected: |
+    23;
+    22;
+    21;
+    20;
 
 -
   name: test item 320
-  template: <MTPages id='21'><MTPageFolder><MTFolderID></MTPageFolder></MTPages>
+  template: |
+    <MTPages id='21'>
+      <MTPageFolder><MTFolderID></MTPageFolder>
+    </MTPages>
   expected: 20
 
 -
   name: test item 321
-  template: <MTPages id='20'><MTPageTags><MTTagName>;</MTPageTags></MTPages>
-  expected: flow;river;watch;
+  template: |
+    <MTPages id='20'>
+      <MTPageTags>
+        <MTTagName>;
+      </MTPageTags>
+    </MTPages>
+  expected: |
+    flow;
+    river;
+    watch;
 
 -
   name: test item 322
@@ -133,21 +169,42 @@ __DATA__
 
 -
   name: test item 511
-  template: <MTPages lastn='1'><MTPageIfTagged tag='page3'><MTPageTitle></MTPageIfTagged></MTPages>
+  template: |
+    <MTPages lastn='1'>
+      <MTPageIfTagged tag='page3'>
+        <MTPageTitle>
+      </MTPageIfTagged>
+    </MTPages>
   expected: 'Page #3'
 
 -
   name: test item 512
-  template: <MTPages lastn='1' offset='1'><MTPageNext><MTPageTitle></MTPageNext></MTPages>
+  template: |
+    <MTPages lastn='1' offset='1'>
+      <MTPageNext><MTPageTitle></MTPageNext>
+    </MTPages>
   expected: 'Page #3'
 
 -
   name: test item 513
-  template: <MTPages lastn='1'><MTPagePrevious><MTPageTitle></MTPagePrevious></MTPages>
+  template: |
+    <MTPages lastn='1'>
+      <MTPagePrevious><MTPageTitle></MTPagePrevious>
+    </MTPages>
   expected: 'Page #2'
 
 -
   name: test item 514
-  template: <MTPages lastn='3'><MTPagesHeader><ul></MTPagesHeader><li><MTPageTitle></li><MTPagesFooter></ul></MTPagesFooter></MTPages>
-  expected: '<ul><li>Page #3</li><li>Page #2</li><li>Page #1</li></ul>'
+  template: |
+    <MTPages lastn='3'>
+      <MTPagesHeader><ul></MTPagesHeader>
+        <li><MTPageTitle></li>
+      <MTPagesFooter></ul></MTPagesFooter>
+    </MTPages>
+  expected: |
+    <ul>
+      <li>Page #3</li>
+      <li>Page #2</li>
+      <li>Page #1</li>
+    </ul>
 

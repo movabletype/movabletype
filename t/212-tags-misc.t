@@ -17,8 +17,14 @@ __DATA__
 
 -
   name: test item 223
-  template: <MTComments lastn='3'><MTFeedbackScore>,</MTComments>
-  expected: 0,0,1.5,
+  template: |
+    <MTComments lastn='3'>
+      <MTFeedbackScore>,
+    </MTComments>
+  expected: |
+    0,
+    0,
+    1.5,
 
 -
   name: test item 451

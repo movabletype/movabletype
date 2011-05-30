@@ -47,38 +47,68 @@ __DATA__
 
 -
   name: test item 141
-  template: <MTEntries lastn="1"><MTPingsSent><MTPingsSentURL>; </MTPingsSent></MTEntries>
-  expected: "http://technorati.com/; "
+  template: |
+    <MTEntries lastn="1">
+      <MTPingsSent><MTPingsSentURL>; </MTPingsSent>
+    </MTEntries>
+  expected: |
+    http://technorati.com/;
 
 -
   name: test item 207
-  template: <MTEntries lastn='1'><MTIfPingsActive>pings active</MTIfPingsActive></MTEntries>
+  template: |
+    <MTEntries lastn='1'>
+      <MTIfPingsActive>pings active</MTIfPingsActive>
+    </MTEntries>
   expected: pings active
 
 -
   name: test item 208
-  template: <MTEntries lastn='1'><MTIfPingsAccepted>pings accepted</MTIfPingsAccepted></MTEntries>
+  template: |
+    <MTEntries lastn='1'>
+      <MTIfPingsAccepted>pings accepted</MTIfPingsAccepted>
+    </MTEntries>
   expected: pings accepted
 
 -
   name: test item 209
-  template: <MTEntries lastn='1'><MTIfPingsAllowed>pings allowed</MTIfPingsAllowed></MTEntries>
+  template: |
+    <MTEntries lastn='1'>
+      <MTIfPingsAllowed>pings allowed</MTIfPingsAllowed>
+    </MTEntries>
   expected: pings allowed
 
 -
   name: test item 213
-  template: <MTEntries lastn='1'><MTEntryIfAllowPings>entry allows pings</MTEntryIfAllowPings></MTEntries>
+  template: |
+    <MTEntries lastn='1'>
+      <MTEntryIfAllowPings>entry allows pings</MTEntryIfAllowPings>
+    </MTEntries>
   expected: entry allows pings
 
 -
   name: test item 345
-  template: <MTPings><MTPingEntry><MTEntryClass>;</MTPingEntry></MTPings>
-  expected: page;entry;
+  template: |
+    <MTPings>
+      <MTPingEntry><MTEntryClass>;</MTPingEntry>
+    </MTPings>
+  expected: |
+    page;
+    entry;
 
 -
   name: test item 523
-  template: <MTPings><MTPingsHeader><ul></MTPingsHeader><li><MTPingTitle></li><MTPingsFooter></ul></MTPingsFooter></MTPings>
-  expected: <ul><li>Trackbacking to a page</li><li>Foo</li></ul>
+  template: |
+    <MTPings>
+      <MTPingsHeader><ul></MTPingsHeader>
+        <li><MTPingTitle></li>
+      <MTPingsFooter></ul></MTPingsFooter>
+    </MTPings>
+  expected: |
+    <ul>
+      <li>Trackbacking to a page</li>
+      <li>Foo</li>
+    </ul>
 
 -
   name: test item 548
