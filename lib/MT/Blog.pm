@@ -70,15 +70,16 @@ __PACKAGE__->install_properties(
             'use_comment_confirmation'  => 'boolean',
             'allow_commenter_regist'    => 'boolean',
             'use_revision'              => 'boolean',
-            ## Have to keep these around for use in mt-upgrade.cgi.
             'archive_url'             => 'string(255)',
             'archive_path'            => 'string(255)',
+            ## Have to keep these around for use in mt-upgrade.cgi.
             'old_style_archive_links' => 'boolean',
             'archive_tmpl_daily'      => 'string(255)',
             'archive_tmpl_weekly'     => 'string(255)',
             'archive_tmpl_monthly'    => 'string(255)',
             'archive_tmpl_category'   => 'string(255)',
             'archive_tmpl_individual' => 'string(255)',
+            ## end of fields for mt-upgrade.cgi 
 
             # meta properties
             'image_default_wrap_text'  => 'integer meta',
@@ -1713,6 +1714,10 @@ I<MT::Object> documentation.
 
 The numeric ID of the blog.
 
+=item * parent_id
+
+=item * theme_id
+
 =item * name
 
 The name of the blog.
@@ -1720,27 +1725,6 @@ The name of the blog.
 =item * description
 
 The blog description.
-
-=item * site_path
-
-The path to the directory containing the blog's output index templates.
-
-=item * site_url
-
-The URL corresponding to the I<site_path>.
-
-=item * archive_path
-
-The path to the directory where the blog's archives are stored.
-
-=item * archive_url
-
-The URL corresponding to the I<archive_path>.
-
-=item * server_offset
-
-A slight misnomer, this is actually the timezone that the B<user> has
-selected; the value is the offset from GMT.
 
 =item * archive_type
 
@@ -1758,9 +1742,19 @@ for example, the link can only point to one of those archives. The preferred
 archive type (which should be one of the archive types set in I<archive_type>,
 above) specifies to which archive this link should point (among other things).
 
+=item * site_path
+
+The path to the directory containing the blog's output index templates.
+
+=item * site_url
+
+The URL corresponding to the I<site_path>.
+
 =item * days_on_index
 
 The number of days to be displayed on the index.
+
+=item * entries_on_index
 
 =item * file_extension
 
@@ -1797,6 +1791,11 @@ C<descend>.
 
 The default value for the I<allow_comments> field in the I<MT::Entry> object.
 
+=item * server_offset
+
+A slight misnomer, this is actually the timezone that the B<user> has
+selected; the value is the offset from GMT.
+
 =item * convert_paras
 
 A comma-separated list of text filters to apply to each entry when it
@@ -1806,6 +1805,8 @@ is built.
 
 A comma-separated list of text filters to apply to each comment when it
 is built.
+
+=item * allow_pings_default
 
 =item * status_default
 
@@ -1821,19 +1822,67 @@ a name or an email address) are allowed.
 A boolean flag specifying whether unregistered comments (those posted
 without a validated email/password pair) are allowed.
 
+=item * moderate_unreg_comments
+
+=item * allow_reg_comments
+
+=item * manual_approve_commenters
+
+=item * allow_commenter_regist
+
+=item * require_comment_emails
+
 =item * words_in_excerpt
 
 The number of words in an auto-generated excerpt.
+
+=item * allow_pings
+
+=item * email_new_pings
 
 =item * ping_weblogs
 
 A boolean flag specifying whether the system should send an XML-RPC ping to
 I<weblogs.com> after an entry is saved.
 
+=item * ping_blogs
+
+=item * ping_technorati
+
+=item * ping_google
+
+=item * ping_others
+
+=item * junk_folder_expiry
+
 =item * mt_update_key
 
 The Movable Type Recently Updated Key to be sent to I<movabletype.org> after
 an entry is saved.
+
+=item * google_api_key
+
+=item * autodiscover_links
+
+=item * internal_autodiscovery
+
+=item * sanitize_spec
+
+=item * cc_license
+
+=item * is_dynamic
+
+=item * remote_auth_token
+
+=item * children_modified_on
+
+=item * custom_dynamic_templates
+
+=item * junk_score_threshold
+
+=item * basename_limit
+
+=item * use_comment_confirmation
 
 =item * language
 
@@ -1848,6 +1897,14 @@ Should contain all desired HTML formatting.
 
 Returns 0 if TrackRevisions master switch in mt-config is off.
 Otherwise it returns the value stored in the column.
+
+=item * archive_path
+
+The path to the directory where the blog's archives are stored.
+
+=item * archive_url
+
+The URL corresponding to the I<archive_path>.
 
 =back
 
