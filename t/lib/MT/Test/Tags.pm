@@ -190,9 +190,9 @@ sub perl_tests {
         }
         for my $area (qw( stash var )) {
             if ( my $conf = $test_item->{$area} ) {
-                for my $k ( %$conf ) {
-                    my $v = $conf->{$k} or next;
-                    $ctx->$area( $k => ($v =~ s/^\$// ? $stock->{$v} : $v) );
+                for my $k ( keys %$conf ) {
+                    my $v = $conf->{$k};
+                    $ctx->$area( $k => (( defined $v && $v =~ s/^\$// ) ? $stock->{$v} : $v) );
                 }
             }
         }
@@ -204,14 +204,23 @@ sub perl_tests {
             my $like     = $test_item->{like};
             $template =~ s/\Q$_\E/$tmpl_vars->{$_}/g for keys %$tmpl_vars;
             $expected =~ s/\Q$_\E/$tmpl_vars->{$_}/g for keys %$tmpl_vars;
-            my $result = build( $ctx, $template );
+            my $result;
+            eval { $result = build( $ctx, $template ) };
+            if ( $@ ) {
+                fail( $test_item->{name} );
+                note( "Died: " . $@ );
+                next TEST;
+            }
             if ( $test_item->{error} ) {
                 if ( defined $result ) {
                     fail( $test_item->{name} );
+                    note( "There should be error, but got no error" );
                     $rest--;
                     next TEST;
                 }
                 if ( !$expected && !$like ) {
+                    ## If expected error string is undefined in test,
+                    ## just ok if there is some error.
                     pass( $test_item->{name} );
                     $rest--;
                     next TEST;
@@ -284,11 +293,11 @@ sub _dump_php {
 
 sub php_tests {
     my ($test_suite, $tmpl_vars) = @_;
-    
+
     my $data_section = do { local $/; <DATA> };
     my ($test_script) = $data_section =~ m/__START_PHP_CODE__\n(.*)__STOP_PHP_CODE__/s;
     die "Failed to load PHP test script" unless defined $test_script;
-    
+
     my $rest = scalar @$test_suite;
     my %snipet;
     $snipet{CFG_FILE} = MT->instance->{cfg_file};
@@ -630,10 +639,20 @@ function run(&$ctx, $suite) {
                 $template = preg_replace('/' . $c . '/', $r, $template);
                 $expected = preg_replace('/' . $c . '/', $r, $expected);
             }
-            $result = build($ctx, $template);
+
+            try {
+                $result = build($ctx, $template);
+            }
+            catch ( Exception $e ) {
+                echo "not ok - php: $test_name\n"
+                   . "# Fatal error occured: "
+                   . $e->getMessage() . "\n";
+                continue TEST;
+            }
             if ( $test_item["error"] ) {
                 if ( !is_null( $result ) ) {
                     echo "not ok - php: $test_name\n";
+                    echo "# Should be error, but got no error.\n";
                     continue TEST;
                 }
                 if ( !$expected && !$like ) {
