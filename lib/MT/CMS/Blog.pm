@@ -1314,15 +1314,15 @@ sub can_view {
 
 sub can_save {
     my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
+
     if ($id) {
         unless ( ref $id ) {
             $id = MT->model('blog')->load($id)
                 or return;
         }
 
-        return unless $id->is_blog;
-        return $app->can_do('edit_blog_config')
+        my $author = $app->user;
+        return $author->permissions($id->id)->can_do('edit_blog_config')
             || ( $app->param('cfg_screen')
             && $app->param('cfg_screen') eq 'cfg_publish_profile' );
     }
@@ -1340,8 +1340,6 @@ sub can_delete {
         $id = MT->model('blog')->load($id)
             or return;
     }
-
-    return unless $id->is_blog;
 
     my $author = $app->user;
     return $author->permissions($id->id)->can_do('delete_blog');
