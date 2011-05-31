@@ -1900,13 +1900,26 @@ unused
 
 =item * autodiscover_links
 
+Search entries for links and upgrade them to pings
+
 =item * internal_autodiscovery
+
+Search entries for links to the same domain of this blog, and upgrade 
+them to pings
 
 =item * sanitize_spec
 
+sanitize spec to pass MT::Sanitize for sanitizing HTML comments. can
+be '0' to disable sanitizing, '1' to enable, or a full spec string
+
 =item * cc_license
 
+IF the blog is CC license, this property holds the variation. for example
+'nc-sa' for NonCommercial-ShareAlike
+
 =item * is_dynamic
+
+Specify if this blog is published dynamically or statically
 
 =item * remote_auth_token
 
