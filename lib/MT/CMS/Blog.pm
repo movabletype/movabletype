@@ -703,7 +703,7 @@ sub rebuild_pages {
         my $entry_id = $1;
         require MT::Entry;
         my $entry = MT::Entry->load($entry_id);
-        return $app->permission_error()
+        return $app->permission_denied()
             unless $perms->can_edit_entry( $entry, $app->user );
         $app->rebuild_entry(
             Entry             => $entry,
