@@ -1696,12 +1696,6 @@ data-management and -storage methods from that class; thus you should look
 at the I<MT::Object> documentation for details about creating a new object,
 loading an existing object, saving an object, etc.
 
-The following methods are unique to the I<MT::Blog> interface:
-
-=head2 $blog->file_mgr
-
-Returns the I<MT::FileMgr> object specific to this particular blog.
-
 =head1 DATA ACCESS METHODS
 
 The I<MT::Blog> object holds the following pieces of data. These fields can
@@ -1716,7 +1710,11 @@ The numeric ID of the blog.
 
 =item * parent_id
 
+The ID of the Website (MT::Website) this blog belongs to
+
 =item * theme_id
+
+If a theme was applied for this blog, this field will hold the theme ID
 
 =item * name
 
@@ -1744,17 +1742,19 @@ above) specifies to which archive this link should point (among other things).
 
 =item * site_path
 
-The path to the directory containing the blog's output index templates.
+The path to the directory containing the blog's output index templates
 
 =item * site_url
 
-The URL corresponding to the I<site_path>.
+The URL corresponding to the I<site_path>
 
 =item * days_on_index
 
-The number of days to be displayed on the index.
+The number of days to be displayed on the index
 
 =item * entries_on_index
+
+The number of entries to be displayed on the index
 
 =item * file_extension
 
@@ -1808,6 +1808,8 @@ is built.
 
 =item * allow_pings_default
 
+The default value for the I<allow_pings> field in the I<MT::Entry> object.
+
 =item * status_default
 
 The default value for the I<status> field in the I<MT::Entry> object.
@@ -1822,15 +1824,32 @@ a name or an email address) are allowed.
 A boolean flag specifying whether unregistered comments (those posted
 without a validated email/password pair) are allowed.
 
+=item * allow_reg_comments
+
+A boolean flag specifying whether registered users's comments (those posted
+with a validated email/password pair) are allowed.
+
 =item * moderate_unreg_comments
 
-=item * allow_reg_comments
+Specifying which comments will not be displayed until approved by the 
+entry author. can be MT::Blog::MODERATE_NONE, (all comments are to be
+published immediately) MODERATE_UNTRSTD, (unused) MODERATE_UNAUTHD, 
+(moderate only comments from unauthenticated users) or MODERATE_ALL
 
 =item * manual_approve_commenters
 
+Specify that the author need to approve each commenter before their
+comment will be displayed. this override the MODERATE_NONE setting in
+moderate_unreg_comments
+
 =item * allow_commenter_regist
 
+A boolean flag specifying if we should allow commenters to register
+to the website, or should they ask the administrator to add them
+
 =item * require_comment_emails
+
+Force the commenters to enter a valid email address
 
 =item * words_in_excerpt
 
@@ -1838,29 +1857,46 @@ The number of words in an auto-generated excerpt.
 
 =item * allow_pings
 
+Allow blog-level pings
+
 =item * email_new_pings
+
+Email the blog owner for new pings
 
 =item * ping_weblogs
 
-A boolean flag specifying whether the system should send an XML-RPC ping to
-I<weblogs.com> after an entry is saved.
+unused
 
 =item * ping_blogs
 
+unused
+
 =item * ping_technorati
+
+unused
 
 =item * ping_google
 
+unused
+
 =item * ping_others
 
+A list of servers to ping after an entry is saved, using XML-RPC.
+the list is \r delimited
+
 =item * junk_folder_expiry
+
+How many days junk is kept before automatically deleted. zero to
+immediately delete spam
 
 =item * mt_update_key
 
 The Movable Type Recently Updated Key to be sent to I<movabletype.org> after
-an entry is saved.
+an entry is saved
 
 =item * google_api_key
+
+unused
 
 =item * autodiscover_links
 
@@ -1908,11 +1944,69 @@ The URL corresponding to the I<archive_path>.
 
 =back
 
-=head1 METHODS
+=head1 META DATA ACCESS METHODS
 
 =over 4
 
-=item * clone( [ \%parameters ] )
+=item * image_default_wrap_text
+
+=item * image_default_align
+
+=item * image_default_thumb
+
+=item * image_default_width
+
+=item * image_default_wunits
+
+=item * image_default_constrain
+
+=item * image_default_popup
+
+=item * commenter_authenticators
+
+=item * require_typekey_emails
+
+=item * nofollow_urls
+
+=item * follow_auth_links
+
+=item * update_pings
+
+=item * captcha_provider
+
+=item * publish_queue
+
+=item * nwc_smart_replace
+
+=item * nwc_replace_field
+
+=item * template_set
+
+=item * page_layout
+
+=item * include_system
+
+=item * include_cache
+
+=item * max_revisions_entry
+
+=item * max_revisions_template
+
+=item * theme_export_settings
+
+=item * category_order
+
+=item * folder_order
+
+=back
+
+=head1 METHODS
+
+=head2 $blog->file_mgr
+
+Returns the I<MT::FileMgr> object specific to this particular blog.
+
+=head2 clone( [ \%parameters ] )
 
 MT::Blog provides a clone method that supports cloning of all known child
 records related to the MT::Blog object. To invoke this behavior, you
@@ -1935,23 +2029,13 @@ Note: Certain exclusions will prevent the clone process from including
 other classes. For instance, if you exclude MT::Trackback, all MT::TBPing
 objects are automatically excluded.
 
-=item * apply_theme
-
-TODO
-
-=back
+=head2 apply_theme
 
 =head1 DATA LOOKUP
 
 In addition to numeric ID lookup, you can look up or sort records by any
 combination of the following fields. See the I<load> documentation in
 I<MT::Object> for more information.
-
-=over 4
-
-=item * name
-
-=back
 
 =head1 NOTES
 
