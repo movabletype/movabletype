@@ -344,8 +344,10 @@ sub init_website {
     $param{website_path} =~ s!(/|\\)$!!;
     $param{website_url} .= '/' if $param{website_url} !~ m!/$!;
 
-    my $tz = $app->param('website_timezone')
-        || $app->config('DefaultTimezone');
+    my $tz
+        = defined( $app->param('website_timezone') )
+        ? $app->param('website_timezone')
+        : $app->config('DefaultTimezone');
     my $param_name = 'website_timezone_' . $tz;
     $param_name =~ s/[\-\.]/_/g;
     $param{$param_name} = 1;

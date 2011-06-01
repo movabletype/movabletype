@@ -125,7 +125,7 @@
 
 <script type="text/javascript">
 /* <![CDATA[ */
-<mt:unless name="website_timezone">
+<mt:if name="website_timezone" eq="">
 function init() {
     var tz = jQuery('#website_timezone')[0];
     if (tz) {
@@ -134,7 +134,7 @@ function init() {
         tz.value = 0 - offset / 60;
     }
 }
-</mt:unless>
+</mt:if>
 
 function dismiss(id) {
     jQuery('#'+id).hide();
@@ -145,9 +145,9 @@ function show(id) {
 }
 
 jQuery(function() {
-<mt:unless name="website_timezone">
+<mt:if name="website_timezone" eq="">
     init();
-</mt:unless>
+</mt:if>
     jQuery('button#finish_button').click(function() {
         jQuery('#website_form > input[name=back]').val('0');
         jQuery('#website_form > input[name=finish]').val('1');
