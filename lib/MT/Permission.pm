@@ -414,8 +414,8 @@ sub can_edit_entry {
         $entry = MT::Entry->load($entry)
             or return;
     }
-    return unless $entry->is_entry;
-    if ( 'page' eq $entry->class ) {
+
+    if ( !$entry->is_entry ) {
         return $perms->can_manage_pages;
     }
     return $perms->can_edit_all_posts
