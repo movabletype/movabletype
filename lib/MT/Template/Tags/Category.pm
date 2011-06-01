@@ -562,8 +562,8 @@ sub _hdlr_sub_categories {
     #   sort_method ::= method name (e.g. package::method)
     #
     # sort_method takes precedence
-    my $sort_order = $args->{sort_order} || 'ascend';
-    my $sort_by    = $args->{sort_by}    || 'user_custom';
+    my $sort_order  = $args->{sort_order} || 'ascend';
+    my $sort_by     = $args->{sort_by};
     my $sort_method = $args->{sort_method};
 
     return $ctx->error(
@@ -572,7 +572,7 @@ sub _hdlr_sub_categories {
             $ctx->stash('tag'),
         )
     ) if ( $sort_method && $sort_by );
-    $sort_by = 'user_custom' if 'user_custom' ne $sort_by && !$class->has_column($sort_by);
+    $sort_by = 'user_custom' if !$sort_by || !$class->has_column($sort_by);
 
     # Store the tokens for recursion
     local $ctx->{__stash}{subCatTokens} = $tokens;
