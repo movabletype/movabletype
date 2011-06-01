@@ -1923,9 +1923,23 @@ Specify if this blog is published dynamically or statically
 
 =item * remote_auth_token
 
+A TypePad token
+
 =item * children_modified_on
 
+Field used to communicate to the dynamic publishing (PHP) when this blog
+changed - new entry was added, or an entry was edited
+
 =item * custom_dynamic_templates
+
+When using dynamic publishing, this field controls when a template will be 
+converted to a PHP page. possible values: 'all' - all templates are to 
+built dynamically. 'none' - all the template will be build on-demand. 
+'async_all' - all the template will be build a-synchronically. 
+'async_partial' - the main index, feed and the preferred archive type
+are to by build on-demand, and the rest will be built a-synchronically.
+'archives' - only the index is to be build on-demand, all the rest will
+be built dynamically
 
 =item * junk_score_threshold
 
