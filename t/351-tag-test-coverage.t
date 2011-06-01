@@ -10,12 +10,12 @@ use File::Spec;
 use YAML::Tiny;
 my $mt = MT->new;
 
-my @tag_tests = qw( 35-tags.t );
+my @tag_tests = ( <t/2*-tags-*.t> );
+
 my $io = IO::File->new;
 my @test_templates;
 for my $test ( @tag_tests ) {
-    my $path = File::Spec->catfile( 't', $test );
-    $io->open( $path, 'r' );
+    $io->open( $test, 'r' );
     my $content = do { local $/; <$io> };
     $io->close;
     die "Can't find __DATA__ section in $test"
