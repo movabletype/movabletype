@@ -190,7 +190,7 @@ jQuery(function() {
             return is_valid_path($e.val()) ? true : false;
         },
         '#website_timezone': function ($e) {
-            return $e.val() > 1 ? true : false;
+            return $e.val() !== '';
         }
     });
 
