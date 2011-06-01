@@ -1943,9 +1943,21 @@ be built dynamically
 
 =item * junk_score_threshold
 
+When a new comment is entered, it is checked if it is spam using spam
+filters. each filter is voting by returning a number between -10 to 10,
+(or ABSTAIN) and then numbers are merged to a single spam score. if this
+score is bigger then junk_score_threshold, this comment is considered 
+spam
+
 =item * basename_limit
 
+Maximum number of words that will appear in the base name of an entry.
+the base name if based on the entry title, and used to build the entry URL
+
 =item * use_comment_confirmation
+
+If true, after entring a comment the commenter will be redirected to
+a 'comment accepted' page
 
 =item * language
 
@@ -1958,8 +1970,8 @@ Should contain all desired HTML formatting.
 
 =item * use_revision
 
-Returns 0 if TrackRevisions master switch in mt-config is off.
-Otherwise it returns the value stored in the column.
+If the TrackRevisions configuration is enabled, specifies how many
+revisions are to be saved
 
 =item * archive_path
 
