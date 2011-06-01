@@ -1341,6 +1341,8 @@ sub can_delete {
             or return;
     }
 
+    return unless $id->is_blog;
+
     my $author = $app->user;
     return $author->permissions($id->id)->can_do('delete_blog');
 }
