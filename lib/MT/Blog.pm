@@ -1989,29 +1989,60 @@ The URL corresponding to the I<archive_path>.
 
 =item * image_default_wrap_text
 
+Default setting for embedded images in entries
+
 =item * image_default_align
+
+Default setting for embedded images in entries
 
 =item * image_default_thumb
 
+Default setting for embedded images in entries
+
 =item * image_default_width
+
+Default setting for embedded images in entries
 
 =item * image_default_wunits
 
+Default setting for embedded images in entries
+
 =item * image_default_constrain
+
+Default setting for embedded images in entries
 
 =item * image_default_popup
 
+Default setting for embedded images in entries
+
 =item * commenter_authenticators
+
+A comma-delimited list of authentication options for commenters.
+for example: "MovableType,TypeKey,LiveJournal"
 
 =item * require_typekey_emails
 
+If true, force typepad commenters to enter their email
+
 =item * nofollow_urls
+
+If true, add a 'nofollow' tag to all the URLs in the comments and 
+TrackBacks
 
 =item * follow_auth_links
 
+If true, do not add a 'nofollow' tag to URLs in comments written by
+trusted commenter, even if the nofollow_urls property is true
+
 =item * update_pings
 
+Comma-delimited list of server to ping for blog-level updates
+
 =item * captcha_provider
+
+The name of the captcha provider to use for commenter. By default the
+captcha option is off, and there is a built-in captcha generator named
+'mt_default'. plugins can add more generators
 
 =item * publish_queue
 
@@ -2023,7 +2054,17 @@ The URL corresponding to the I<archive_path>.
 
 =item * page_layout
 
+IF you have a style applied to this blog, it is possible to tweak the
+layout of the page, specifying how many columns to use, and do we want
+wide or thin columns. all values start with 'layout-', concatenated with
+one of: qw{wt tw wm mw wtt twt}, there 't' stand for thin, 'w' for wide
+and 'm' for medium
+
 =item * include_system
+
+If this meta field exists, turns the mt:Include tags to Server Side 
+Includes. Then it can specify one of these include systems: shtml,
+php, jsp or asp
 
 =item * include_cache
 
