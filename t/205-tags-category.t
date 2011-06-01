@@ -315,3 +315,92 @@ __DATA__
     </MTSubCategories>
   expected: foo-subfoo
 
+
+######## Categories
+## `show_empty`
+## `glue`
+
+######## CategoryPrevious
+## show_empty
+
+######## CategoryNext
+## show_empty
+
+######## SubCategories
+## include_current
+## sort_method
+## sort_order
+## top
+## category
+## glue
+
+######## TopLevelCategories
+
+######## ParentCategory
+
+######## ParentCategories
+## glue
+## exclude_current
+
+######## TopLevelParent
+
+######## EntriesWithSubCategories
+## category
+
+######## IfCategory
+## name (or label; optional)
+## type (optional)
+
+######## EntryIfCategory
+
+######## SubCatIsFirst
+
+######## SubCatIsLast
+
+######## HasSubCategories
+
+######## HasNoSubCategories
+
+######## HasParentCategory
+
+######## HasNoParentCategory
+
+######## IfIsAncestor
+## child (required)
+
+######## IfIsDescendant
+## parent (required)
+
+######## EntryCategories
+## glue (optional)
+
+######## EntryPrimaryCategory
+
+######## EntryAdditionalCategories
+
+######## CategoryID
+
+######## CategoryLabel
+
+######## CategoryBasename
+## default
+## separator
+
+######## CategoryDescription
+
+######## CategoryArchiveLink
+
+######## CategoryCount
+
+######## SubCatsRecurse
+## max_depth (optional)
+
+######## SubCategoryPath
+## separator
+
+######## BlogCategoryCount
+
+######## ArchiveCategory
+
+######## EntryCategory
+

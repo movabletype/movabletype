@@ -180,3 +180,52 @@ __DATA__
     grandpa (rank 6)
     strolling (rank 6)
 
+
+######## Tags
+## glue
+## type
+## sort_by
+## sort_order
+## limit
+## top
+
+######## EntryTags
+## glue
+## include_private
+
+######## PageTags
+## glue
+## include_private
+
+######## AssetTags
+## glue
+## include_private
+
+######## EntryIfTagged
+## tag or name
+## include_private
+
+######## PageIfTagged
+## tag
+## include_private
+
+######## AssetIfTagged
+## tag or name
+## include_private
+
+######## TagSearchLink
+## tmpl_blog_id
+
+######## TagRank
+## max (optional; default "6")
+
+######## TagLabel
+
+######## TagName
+## normalize (optional; default "0")
+## quote (optional; default "0")
+
+######## TagID
+
+######## TagCount
+

@@ -291,3 +291,99 @@ __DATA__
   template: <MTAuthors id="2"><MTAuthorScoreCount namespace='unit test'></MTAuthors>
   expected: 1
 
+
+######## EntryScore
+## namespace (required)
+
+######## CommentScore
+## namespace (required)
+
+######## PingScore
+## namespace (required)
+
+######## AssetScore
+## namespace (required)
+
+######## AuthorScore
+## namespace (required)
+
+######## EntryScoreHigh
+## namespace (required)
+
+######## CommentScoreHigh
+## namespace (required)
+
+######## PingScoreHigh
+## namespace (required)
+
+######## AssetScoreHigh
+## namespace (required)
+
+######## AuthorScoreHigh
+## namespace (required)
+
+######## EntryScoreLow
+## namespace (required)
+
+######## CommentScoreLow
+## namespace (required)
+
+######## PingScoreLow
+## namespace (required)
+
+######## AssetScoreLow
+## namespace (required)
+
+######## AuthorScoreLow
+## namespace (required)
+
+######## EntryScoreAvg
+## namespace (required)
+
+######## CommentScoreAvg
+## namespace (required)
+
+######## PingScoreAvg
+## namespace (required)
+
+######## AssetScoreAvg
+## namespace (required)
+
+######## AuthorScoreAvg
+## namespace (required)
+
+######## EntryScoreCount
+## namespace (required)
+
+######## CommentScoreCount
+## namespace (required)
+
+######## PingScoreCount
+## namespace (required)
+
+######## AssetScoreCount
+## namespace (required)
+
+######## AuthorScoreCount
+## namespace (required)
+
+######## EntryRank
+## namespace (required)
+## max (optional; default "6")
+
+######## CommentRank
+## namespace (required)
+## max (optional; default "6")
+
+######## PingRank
+## namespace (required)
+## max (optional; default "6")
+
+######## AssetRank
+## namespace (required)
+## max (optional; default "6")
+
+######## AuthorRank
+## namespace (required)
+## max (optional; default "6")
+

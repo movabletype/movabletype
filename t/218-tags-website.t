@@ -120,3 +120,46 @@ __DATA__
   template: <MTWebsiteThemeID>
   expected: classic-blog
 
+
+######## Websites
+## site_ids
+
+######## IfWebsite
+
+######## WebsiteID
+
+######## WebsiteName
+
+######## WebsiteDescription
+
+######## WebsiteLanguage
+## locale (optional; default "0")
+## ietf (optional; default "0")
+
+######## WebsiteURL
+
+######## WebsitePath
+
+######## WebsiteTimezone
+## no_colon (optional; default "0")
+
+######## WebsiteIfCCLicense
+
+######## WebsiteCCLicenseURL
+
+######## WebsiteCCLicenseImage
+
+######## WebsiteFileExtension
+
+######## WebsiteHasBlog
+
+######## WebsiteHost
+## exclude_port (optional; default "0")
+## signature (optional; default "0")
+
+######## WebsiteRelativeURL
+
+######## WebsiteThemeID
+
+######## BlogParentWebsite
+

@@ -208,3 +208,65 @@ __DATA__
       <li>Page #1</li>
     </ul>
 
+
+######## AuthorHasPage
+
+######## Pages
+## folder or folders (optional)
+## no_folder (optional)
+## include_subfolders (optional)
+
+######## PagePrevious
+
+######## PageNext
+
+######## PagesHeader
+
+######## PagesFooter
+
+######## PageID
+
+######## PageTitle
+
+######## PageBody
+## words
+## convert_breaks
+
+######## PageMore
+## convert_breaks (optional)
+
+######## PageDate
+## format
+## language
+## utc
+
+######## PageModifiedDate
+## format
+## language
+## utc
+
+######## PageKeywords
+
+######## PageBasename
+## separator (optional)
+
+######## PagePermalink
+
+######## PageAuthorDisplayName
+
+######## PageAuthorEmail
+
+######## PageAuthorLink
+## show_email
+## show_url
+## new_window
+
+######## PageAuthorURL
+
+######## PageExcerpt
+## convert_breaks (optional; default "0")
+
+######## WebsitePageCount
+
+######## BlogPageCount
+

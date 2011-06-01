@@ -159,3 +159,155 @@ __DATA__
   expected: <h1>Title</h1>
 
 
+
+######## IncludeBlock
+## var (optional)
+
+######## Include
+## module
+## widget
+## file
+## identifier
+## name
+## blog_id (optional)
+## local (optional)
+## global (optional; default "0")
+## parent (optional; default "0")
+## ssi (optional; default "0")
+## cache (optional; default "0")
+## key or cache_key (optional)
+## ttl (optional)
+
+######## IfStatic
+
+######## IfDynamic
+
+######## Section
+## cache_prefix (optional)
+## period (optional)
+## by_blog (optional)
+## by_user (optional)
+## html_tag (optional)
+## id (optional)
+
+######## Link
+## template
+## entry_id
+## blog_id
+## with_index (optional; default "0")
+
+######## Date
+## ts (optional)
+## relative (optional)
+## relative="1"
+## relative="2"
+## relative="3"
+## relative="js"
+## format (optional)
+## %Y
+## %m
+## %d
+## %H
+## %M
+## %S
+## %w
+## %j
+## %y
+## %b
+## %B
+## %a
+## %A
+## %e
+## %I
+## %k
+## %l
+## format_name (optional)
+## rfc822
+## iso8601
+## utc (optional)
+## offset_blog_id (optional)
+## language (optional)
+
+######## AdminScript
+
+######## CommentScript
+
+######## TrackbackScript
+
+######## SearchScript
+
+######## XMLRPCScript
+
+######## AtomScript
+
+######## NotifyScript
+
+######## CGIHost
+## exclude_port (optional; default "0")
+
+######## CGIPath
+
+######## AdminCGIPath
+
+######## CGIRelativeURL
+
+######## CGIServerPath
+
+######## StaticFilePath
+
+######## StaticWebPath
+
+######## SupportDirectoryURL
+
+######## Version
+
+######## ProductName
+## version (optional; default "0")
+
+######## PublishCharset
+
+######## DefaultLanguage
+
+######## ConfigFile
+
+######## IndexBasename
+## extension (optional; default "0")
+
+######## HTTPContentType
+## type
+
+######## FileTemplate
+## format
+## %a
+## %-a
+## %b
+## %-b
+## %c
+## %-c
+## %C
+## %-C
+## %d
+## %D
+## %e
+## %E
+## %f
+## %F
+## %h
+## %H
+## %i
+## %I
+## %j
+## %m
+## %M
+## %n
+## %s
+## %x
+## %y
+## %Y
+
+######## TemplateCreatedOn
+
+######## BuildTemplateID
+
+######## ErrorMessage
+

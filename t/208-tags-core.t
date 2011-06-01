@@ -388,3 +388,114 @@ __DATA__
   template: <MTSetVar name='foo' value='Foo'><MTUnless name='foo' eq='Foo'>Content</MTUnless>
   expected: ''
 
+
+######## If
+## name
+## var
+## tag
+## op
+## + or add
+## - or sub
+## ++ or inc
+## -- or dec
+## * or mul
+## / or div
+## % or mod
+## value
+## eq
+## ne
+## gt
+## lt
+## ge
+## le
+## like
+## test
+
+######## Unless
+
+######## Else
+
+######## ElseIf
+
+######## IfNonEmpty
+## tag
+## name or var
+
+######## IfNonZero
+## tag
+## name or var
+
+######## Loop
+## name
+## var
+## sort_by (optional)
+## glue (optional)
+## __first__
+## __last__
+## __odd__
+## __even__
+## __key__
+## __value__
+
+######## For
+## var (optional)
+## from (optional; default "0")
+## start
+## to
+## end
+## step (optional; default "1")
+## increment
+## glue (optional)
+## __first__
+## __last__
+## __odd__
+## __even__
+## __index__
+## __counter__
+
+######## SetVarBlock
+## var or name (required)
+## op (optional)
+## prepend (optional)
+## append (optional)
+
+######## SetVarTemplate
+## var or name (required)
+
+######## SetVars
+
+######## SetHashVar
+
+######## SetVar
+## var or name
+## value
+## op (optional)
+## prepend (optional)
+## append (optional)
+
+######## GetVar
+
+######## Var
+## name (or var)
+## value
+## op
+## prepend
+## append
+## function
+## push
+## pop
+## unshift
+## shift
+## count
+## delete
+## count
+## index
+## key
+## default
+## to_json
+## glue
+
+######## Ignore
+
+######## TemplateNote
+

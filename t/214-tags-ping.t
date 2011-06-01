@@ -115,3 +115,67 @@ __DATA__
   template: <MTIfPingsModerated>Moderated</MTIfPingsModerated>
   expected: Moderated
 
+
+######## Pings
+## category
+## lastn
+## sort_order
+
+######## PingsHeader
+
+######## PingsFooter
+
+######## PingsSent
+
+######## PingEntry
+
+######## IfPingsAllowed
+
+######## IfPingsAccepted
+
+######## IfPingsActive
+
+######## IfPingsModerated
+
+######## EntryIfAllowPings
+
+######## CategoryIfAllowPings
+
+######## PingsSentURL
+
+######## PingTitle
+
+######## PingID
+
+######## PingURL
+
+######## PingExcerpt
+
+######## PingBlogName
+
+######## PingIP
+
+######## PingDate
+## format (optional)
+## language (optional; defaults to blog language)
+## utc (optional; default "0")
+## relative (optional; default "0")
+
+######## WebsitePingCount
+
+######## BlogPingCount
+
+######## EntryTrackbackCount
+
+######## EntryTrackbackLink
+
+######## EntryTrackbackData
+## comment_wrap (optional; default "1")
+## with_index (optional; default "0")
+
+######## EntryTrackbackID
+
+######## CategoryTrackbackLink
+
+######## CategoryTrackbackCount
+

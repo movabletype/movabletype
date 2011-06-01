@@ -489,3 +489,149 @@ __DATA__
     </MTEntries>
   expected: foo
 
+
+######## Entries
+## lastn (optional)
+## limit (optional)
+## sort_by (optional; default "authored_on")
+## sort_order (optional)
+## field:I<basename>
+## namespace (optional)
+## class_type (optional; default entry)
+## offset (optional)
+## category or categories (optional)
+## include_subcategories (optional)
+## tag or tags (optional)
+## author (optional)
+## id (optional)
+## min_score (optional)
+## max_score (optional)
+## min_rate (optional)
+## max_rate (optional)
+## min_count (optional)
+## max_count (optional)
+## scored_by (optional)
+## days (optional)
+## recently_commented_on (optional)
+## unique
+## glue (optional)
+
+######## EntriesHeader
+
+######## EntriesFooter
+
+######## EntryPrevious
+
+######## EntryNext
+
+######## DateHeader
+
+######## DateFooter
+
+######## EntryIfExtended
+
+######## AuthorHasEntry
+
+######## EntriesCount
+
+######## EntryID
+## pad (optional; default "0")
+
+######## EntryTitle
+## generate (optional)
+
+######## EntryStatus
+
+######## EntryFlag
+## flag (required)
+
+######## EntryBody
+## convert_breaks (optional; default "1")
+## words (optional)
+
+######## EntryMore
+
+######## EntryExcerpt
+## no_generate (optional)
+## words (optional; default "40")
+## convert_breaks (optional; default "0")
+
+######## EntryKeywords
+
+######## EntryLink
+## archive_type (optional)
+## type (optional, alias of archive_type)
+## Category
+## Monthly
+## Weekly
+## Daily
+## Individual
+## Author
+## Yearly
+## Author-Daily
+## Author-Weekly
+## Author-Monthly
+## Author-Yearly
+## Category-Daily
+## Category-Weekly
+## Category-Monthly
+## Category-Yearly
+## L<EntryPermalink>
+
+######## EntryBasename
+## separator (optional)
+
+######## EntryAtomID
+
+######## EntryPermalink
+## type or archive_type (optional)
+## valid_html (optional; default "0")
+## with_index (optional; default "0")
+
+######## EntryClass
+
+######## EntryClassLabel
+
+######## EntryAuthor
+
+######## EntryAuthorDisplayName
+
+######## EntryAuthorNickname
+
+######## EntryAuthorUsername
+
+######## EntryAuthorEmail
+## spam_protect (optional; default "0")
+
+######## EntryAuthorURL
+
+######## EntryAuthorLink
+## new_window
+## show_email (optional; default "0")
+## spam_protect (optional)
+## type (optional)
+## show_hcard (optional; default "0")
+
+######## EntryAuthorID
+
+######## AuthorEntryCount
+
+######## EntryDate
+
+######## EntryCreatedDate
+
+######## EntryModifiedDate
+
+######## EntryBlogID
+
+######## EntryBlogName
+
+######## EntryBlogDescription
+
+######## EntryBlogURL
+
+######## EntryEditLink
+## text (optional; default "Edit")
+
+######## BlogEntryCount
+

@@ -274,3 +274,47 @@ __DATA__
   expected: |
     Melody,
 
+
+######## Authors
+## display_name
+## lastn
+## sort_by (optional)
+## sort_order (optional; default "ascend")
+## any_type (optional; default "0")
+## roles
+## need_entry (optional; default "1")
+## need_association (optional; default "0")
+## status (optional; default "enabled")
+## namespace
+## scoring_to
+## min_score
+## max_score
+## min_rate
+## max_rate
+## min_count
+## max_count
+
+######## AuthorNext
+
+######## AuthorPrevious
+
+######## IfAuthor
+
+######## AuthorID
+
+######## AuthorName
+
+######## AuthorDisplayName
+
+######## AuthorEmail
+
+######## AuthorURL
+
+######## AuthorAuthType
+
+######## AuthorAuthIconURL
+## size (optional; default "logo_small")
+
+######## AuthorBasename
+## separator (optional)
+

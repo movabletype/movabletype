@@ -216,3 +216,68 @@ __DATA__
     </MTArchiveList>
   expected: Entry
 
+
+######## Archives
+## type or archive_type (optional)
+
+######## ArchiveList
+## type or archive_type
+## lastn (optional)
+## sort_order (optional; default "descend")
+
+######## ArchiveListHeader
+
+######## ArchiveListFooter
+
+######## ArchivePrevious
+## type or archive_type (optional)
+
+######## ArchiveNext
+## type or archive_type (optional)
+
+######## IfArchiveType
+## type
+## archive_type
+
+######## IfArchiveTypeEnabled
+## type or archive_type
+
+######## IndexList
+
+######## ArchiveLink
+## type (optional)
+## archive_type (optional)
+## with_index (optional; default "0")
+
+######## ArchiveTitle
+## Category
+## Daily
+## Weekly
+## Monthly
+## Individual
+
+######## ArchiveType
+
+######## ArchiveLabel
+
+######## ArchiveTypeLabel
+
+######## ArchiveCount
+
+######## ArchiveDate
+
+######## ArchiveDateEnd
+## format (optional)
+## language (optional; defaults to blog language)
+## utc (optional; default "0")
+## relative (optional; default "0")
+
+######## ArchiveFile
+## extension
+## separator
+
+######## IndexLink
+## with_index (optional; default "0")
+
+######## IndexName
+

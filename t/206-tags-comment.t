@@ -432,3 +432,151 @@ __DATA__
   template: <MTIfRequireCommentEmails>Requied</MTIfRequireCommentEmails>
   expected: ''
 
+
+######## IfCommentsModerated
+
+######## WebsiteIfCommentsOpen
+
+######## BlogIfCommentsOpen
+
+######## Comments
+## lastn
+## offset (optional; default "0")
+## sort_by (optional)
+## sort_order (optional)
+## namespace
+## min_score
+## max_score
+## min_rate
+## max_rate
+## min_count
+## max_count
+
+######## CommentsHeader
+
+######## CommentsFooter
+
+######## CommentEntry
+
+######## CommentIfModerated
+
+######## CommentParent
+
+######## CommentReplies
+
+######## IfCommentParent
+
+######## IfCommentReplies
+
+######## IfRegistrationRequired
+
+######## IfRegistrationNotRequired
+
+######## IfRegistrationAllowed
+## type (optional)
+
+######## IfTypeKeyToken
+
+######## IfAllowCommentHTML
+
+######## IfCommentsAllowed
+
+######## IfCommentsActive
+
+######## IfCommentsAccepted
+
+######## IfNeedEmail
+
+######## IfRequireCommentEmails
+
+######## EntryIfAllowComments
+
+######## EntryIfCommentsOpen
+
+######## CommentID
+
+######## CommentBlogID
+
+######## CommentEntryID
+
+######## CommentName
+
+######## CommentIP
+
+######## CommentAuthor
+
+######## CommentAuthorLink
+## show_email (optional; default "0")
+## show_url (optional; default "1")
+## new_window (optional; default "0")
+## default_name (optional; default "Anonymous")
+## no_redirect (optional; default "0")
+## nofollowfy (optional)
+
+######## CommentAuthorIdentity
+
+######## CommentEmail
+## spam_protect (optional; default "0")
+
+######## CommentLink
+
+######## CommentURL
+
+######## CommentBody
+## autolink (optional)
+## convert_breaks (optional)
+## words (optional)
+
+######## CommentOrderNumber
+
+######## CommentDate
+
+######## CommentParentID
+## pad
+
+######## CommentReplyToLink
+## label or text (optional)
+## onclick (optional)
+
+######## CommentPreviewAuthor
+
+######## CommentPreviewIP
+
+######## CommentPreviewAuthorLink
+
+######## CommentPreviewEmail
+
+######## CommentPreviewURL
+
+######## CommentPreviewBody
+
+######## CommentPreviewDate
+
+######## CommentPreviewState
+
+######## CommentPreviewIsStatic
+
+######## CommentRepliesRecurse
+
+######## WebsiteCommentCount
+
+######## BlogCommentCount
+
+######## EntryCommentCount
+
+######## CategoryCommentCount
+
+######## TypeKeyToken
+
+######## CommentFields
+
+######## RemoteSignInLink
+
+######## RemoteSignOutLink
+
+######## SignInLink
+
+######## SignOutLink
+
+######## SignOnURL
+

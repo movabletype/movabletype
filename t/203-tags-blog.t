@@ -160,3 +160,49 @@ __DATA__
   expected: HasBlog
 
 
+
+######## Blogs
+## blog_ids
+
+######## BlogIfCCLicense
+
+######## IfBlog
+
+######## BlogID
+
+######## BlogName
+
+######## BlogDescription
+
+######## BlogLanguage
+## locale (optional; default "0")
+## ietf (optional; default "0")
+
+######## BlogURL
+
+######## BlogArchiveURL
+
+######## BlogRelativeURL
+
+######## BlogSitePath
+
+######## BlogHost
+## exclude_port (optional; default "0")
+## signature (optional; default "0")
+
+######## BlogTimezone
+## no_colon (optional; default "0")
+
+######## BlogCCLicenseURL
+
+######## BlogCCLicenseImage
+
+######## CCLicenseRDF
+## with_index (optional; default "0")
+
+######## BlogFileExtension
+
+######## BlogTemplateSetID
+
+######## BlogThemeID
+

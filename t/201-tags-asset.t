@@ -371,3 +371,87 @@ __DATA__
     </MTAssets>
   expected: Not Tagged
 
+
+######## Assets
+## type
+## file_ext
+## days
+## author
+## lastn
+## limit
+## offset
+## tag
+## sort_by
+## sort_order
+## namespace
+## assets_per_row
+
+######## Asset
+## id
+
+######## EntryAssets
+
+######## PageAssets
+
+######## AssetsHeader
+
+######## AssetsFooter
+
+######## AssetIsFirstInRow
+
+######## AssetIsLastInRow
+
+######## AssetID
+
+######## AssetFileName
+
+######## AssetLabel
+
+######## AssetDescription
+
+######## AssetURL
+
+######## AssetType
+
+######## AssetMimeType
+
+######## AssetFilePath
+
+######## AssetDateAdded
+## format
+## language
+## utc
+
+######## AssetAddedBy
+
+######## AssetProperty
+## property (required)
+## file_size
+## image_width
+## image_height
+## description
+## format
+## 0
+## 1 (default)
+## k
+## m
+
+######## AssetFileExt
+
+######## AssetThumbnailURL
+## height
+## width
+## scale
+## square
+
+######## AssetLink
+## new_window (optional; default "0")
+
+######## AssetThumbnailLink
+## height
+## width
+## scale
+## new_window (optional; default "0")
+
+######## AssetCount
+

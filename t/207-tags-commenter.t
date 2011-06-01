@@ -146,3 +146,42 @@ __DATA__
   template: <MTIfExternalUserManagement>External</MTIfExternalUserManagement>
   expected: ''
 
+
+######## IfExternalUserManagement
+
+######## IfCommenterRegistrationAllowed
+
+######## CommenterIfTrusted
+
+######## IfCommenterTrusted
+
+######## IfCommenterIsAuthor
+
+######## IfCommenterIsEntryAuthor
+
+######## CommenterNameThunk
+
+######## CommenterUsername
+
+######## CommenterName
+
+######## CommenterEmail
+
+######## CommenterAuthType
+
+######## CommenterAuthIconURL
+
+######## CommenterID
+
+######## CommenterURL
+
+######## UserSessionState
+
+######## UserSessionCookieTimeout
+
+######## UserSessionCookiePath
+
+######## UserSessionCookieDomain
+
+######## UserSessionCookieName
+

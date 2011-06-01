@@ -42,3 +42,22 @@ __DATA__
   template: <MTIfImageSupport>Supported</MTIfImageSupport>
   expected: Supported
 
+
+######## IfImageSupport
+
+######## FeedbackScore
+
+######## ImageURL
+
+######## ImageWidth
+
+######## ImageHeight
+
+######## WidgetManager
+
+######## WidgetSet
+## name (required)
+## blog_id (optional)
+
+######## CaptchaFields
+

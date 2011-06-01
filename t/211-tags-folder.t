@@ -210,3 +210,58 @@ __DATA__
     </MTPages>
   expected: ''
 
+
+######## IfFolder
+## name (or label; optional)
+
+######## FolderHeader
+
+######## FolderFooter
+
+######## HasSubFolders
+
+######## HasParentFolder
+
+######## PageFolder
+
+######## Folders
+## show_empty
+
+######## FolderPrevious
+
+######## FolderNext
+
+######## SubFolders
+## include_current
+## sort_method
+## sort_order
+## top
+
+######## ParentFolders
+## glue
+## exclude_current
+
+######## ParentFolder
+
+######## TopLevelFolders
+
+######## TopLevelFolder
+
+######## FolderBasename
+## default
+## separator
+
+######## FolderDescription
+
+######## FolderID
+
+######## FolderLabel
+
+######## FolderCount
+
+######## FolderPath
+## separator
+
+######## SubFolderRecurse
+## max_depth (optional)
+

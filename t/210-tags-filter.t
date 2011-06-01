@@ -409,3 +409,88 @@ __DATA__
   template: <MTEntries lastn="1"><MTEntryTitle trim_to="6+..."></MTEntries>
   expected: A Rain...
 
+######## numify
+
+######## mteval
+
+######## encode_sha1
+
+######## setvar
+
+######## nofollowfy
+
+######## filters
+
+######## trim_to
+
+######## trim
+
+######## ltrim
+
+######## rtrim
+
+######## decode_html
+
+######## decode_xml
+
+######## remove_html
+
+######## dirify
+
+######## sanitize
+
+######## encode_html
+
+######## encode_xml
+
+######## encode_js
+
+######## encode_php
+
+######## encode_url
+
+######## upper_case
+
+######## lower_case
+
+######## strip_linefeeds
+
+######## space_pad
+
+######## zero_pad
+
+######## string_format
+
+######## sprintf
+
+######## regex_replace
+
+######## capitalize
+
+######## count_characters
+
+######## cat
+
+######## count_paragraphs
+
+######## count_words
+
+######## escape
+
+######## indent
+
+######## nl2br
+
+######## replace
+
+######## spacify
+
+######## strip
+
+######## strip_tags
+
+######## _default
+
+######## wrap_text
+
+
