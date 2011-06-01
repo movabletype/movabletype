@@ -199,7 +199,7 @@ sub perl_tests {
         SKIP: {
             if ( $test_item->{skip} ) {
                 $rest--;
-                skip( $test_item->{skip}, 1 )
+                skip( sprintf( qq{"%s", because %s}, $test_item->{name}, $test_item->{skip}), 1 )
             }
             my $like     = $test_item->{like};
             $template =~ s/\Q$_\E/$tmpl_vars->{$_}/g for keys %$tmpl_vars;
@@ -626,7 +626,10 @@ function run(&$ctx, $suite) {
         }
 
         if ($test_item["skip"] ) {
-            echo "skip - php: " . $test_item["skip"] . "\n";
+            echo 'skip - php: "'
+               . $test_item["name"]
+               . '" because '
+               . $test_item["skip"] . "\n";
         } else {
             $test_name = $test_item["name"];
             $template  = $test_item["template"];
