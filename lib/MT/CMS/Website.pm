@@ -303,7 +303,6 @@ sub post_delete {
 
 sub can_save {
     my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
     if ($id) {
         unless ( ref $id ) {
             $id = MT->model('website')->load($id)
@@ -311,7 +310,8 @@ sub can_save {
         }
         return unless $id->isa('MT::Website');
 
-        return $app->can_do('edit_website_config')
+        my $author = $app->user;
+        return $author->permissions($id->id)->can_do('edit_blog_config')
                || ( $app->param('cfg_screen')
                     && $app->param('cfg_screen') eq 'cfg_publish_profile');
     }
