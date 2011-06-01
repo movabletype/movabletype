@@ -2046,9 +2046,19 @@ captcha option is off, and there is a built-in captcha generator named
 
 =item * publish_queue
 
+The flag is set to 1 if custom_dynamic_templates is async_all or 
+async_partially. FIXME
+
 =item * nwc_smart_replace
 
+Replace UTF-8 characters frequently used by word processors with their 
+more common web equivalents. possible values: 2 - don't replace. 1 - 
+replace to HTML entities. 0 - replace to ASCII characters
+
 =item * nwc_replace_field
+
+A comma-delimited list specifying where to do the smart replace. possible
+values are: qw{title text text_more keywords excerpt tags}
 
 =item * template_set
 
@@ -2063,7 +2073,7 @@ and 'm' for medium
 =item * include_system
 
 If this meta field exists, turns the mt:Include tags to Server Side 
-Includes. Then it can specify one of these include systems: shtml,
+Includes. It can specify one of these include systems: shtml,
 php, jsp or asp
 
 =item * include_cache
@@ -2076,7 +2086,11 @@ php, jsp or asp
 
 =item * category_order
 
+unused
+
 =item * folder_order
+
+unused
 
 =back
 
