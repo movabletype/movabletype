@@ -1970,8 +1970,8 @@ Should contain all desired HTML formatting.
 
 =item * use_revision
 
-If the TrackRevisions configuration is enabled, specifies how many
-revisions are to be saved
+If the global TrackRevisions configuration is enabled, enables the 
+revision tracking for this blog
 
 =item * archive_path
 
@@ -2062,6 +2062,8 @@ values are: qw{title text text_more keywords excerpt tags}
 
 =item * template_set
 
+Returns the template_set that was applied for this blog
+
 =item * page_layout
 
 IF you have a style applied to this blog, it is possible to tweak the
@@ -2080,9 +2082,21 @@ php, jsp or asp
 
 =item * max_revisions_entry
 
+If revisions are enabled for this blog, (see use_revision) specify how
+many revision to keep for each entry
+
 =item * max_revisions_template
 
+If revisions are enabled for this blog, (see use_revision) specify how
+many revision to keep for each template
+
 =item * theme_export_settings
+
+A hash that remembers the last configuration a theme was exported from
+this blog. contains at least a "core" key, that contains a hash
+with all the configuration, such as name, version, author etc. If there
+are plugins with theme exporters installed, they will have an entry in 
+this hash as well
 
 =item * category_order
 
