@@ -1878,8 +1878,10 @@ BEGIN {
             'DefaultWebsiteTheme'  => { default => 'classic_website' },
             'DefaultBlogTheme'     => { default => 'classic_blog' },
             'ThemeStaticFileExtensions' => undef,
-            'AssetFileTypes'            => { type => 'HASH' },
-            'AssetFileExtensions'       => { default => undef },
+
+            'AssetFileTypes'              => { type => 'HASH' },
+            'AssetFileExtensions'         => { default => undef },
+            'DisabledAssetFileExtensions' => { default => undef },
 
             'FastCGIMaxTime'     => { default => 60 * 60 },    # 1 hour
             'FastCGIMaxRequests' => { default => 1000 },       # 1000 requests
