@@ -535,7 +535,7 @@ BEGIN {
 
             'AssetFileTypes' => { type    => 'HASH' },
             'AssetFileExteensions' => { default => undef },
-
+            'DisabledAssetFileExtensions' => { default => undef },
             'FastCGIMaxTime'  => { default => 60 * 60 }, # 1 hour
             'FastCGIMaxRequests' => { default => 1000 }, # 1000 requests
         },
