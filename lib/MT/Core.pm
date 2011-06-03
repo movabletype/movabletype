@@ -534,6 +534,7 @@ BEGIN {
             'DefaultTemplateSet' => { default => 'mt_blog' },
 
             'AssetFileTypes' => { type    => 'HASH' },
+            'AssetFileExteensions' => { default => undef },
 
             'FastCGIMaxTime'  => { default => 60 * 60 }, # 1 hour
             'FastCGIMaxRequests' => { default => 1000 }, # 1000 requests

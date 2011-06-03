@@ -1134,6 +1134,14 @@ sub newMediaObject {
     if ($fname =~ m!\.\.|\0|\|!) {
         die _fault(MT->translate("Invalid filename '[_1]'", $fname));
     }
+
+    if ( my $allow_exts = MT->config('AssetFileExtensions') ) {
+        my @allowed = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $allow_exts;
+        my @ret = File::Basename::fileparse($fname, @allowed);
+        die _fault(MT->translate('The file([_1]) you uploaded is not allowed.', $fname))
+            unless $ret[2];
+    }
+
     my $local_file = File::Spec->catfile($blog->site_path, $file->{name});
     my $fmgr = $blog->file_mgr;
     my($vol, $path, $name) = File::Spec->splitpath($local_file);

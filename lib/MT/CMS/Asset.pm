@@ -1227,6 +1227,14 @@ sub _upload_file {
             $unique_basename );
     }
 
+    if ( my $allow_exts = $app->config('AssetFileExtensions') ) {
+        my @allow_exts = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $allow_exts;
+        my @ret = File::Basename::fileparse( $basename, @allow_exts );
+        unless ( $ret[2] ) {
+            return $app->error($app->translate('The file([_1]) you uploaded is not allowed.', $basename));
+        }
+    }
+
     require MT::Image;
     my ( $w, $h, $id, $write_file ) = MT::Image->check_upload(
         Fh     => $fh,

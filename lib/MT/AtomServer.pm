@@ -533,7 +533,7 @@ sub new_post {
     my $body = encode_text(MT::I18N::utf8_off($content->body),'utf-8',$enc); 
     my $asset;
     if ($type && $type !~ m!^application/.*xml$!) {
-        if ($type !~ m!^text/!) {
+        if ($type !~ m!^[text/|html]!) {
             $asset = $app->_upload_to_asset or return;
         }
         elsif ($type && $type eq 'text/plain') {
@@ -831,6 +831,13 @@ sub _upload_to_asset {
     $fname = basename($fname);
     return $app->error(400, "Invalid or empty filename")
         if $fname =~ m!/|\.\.|\0|\|!;
+
+    if ( my $allow_exts = MT->config('AssetFileExtensions') ) {
+        my @allowed = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $allow_exts;
+        my @ret = File::Basename::fileparse($fname, @allowed);
+        return $app->error(500, MT->translate('The file([_1]) you uploaded is not allowed.', $fname))
+            unless $ret[2];
+    }
 
     my $local_relative = File::Spec->catfile('%r', $fname);
     my $local = File::Spec->catfile($blog->site_path, $fname);
