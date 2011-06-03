@@ -1080,6 +1080,26 @@ sub _upload_file {
         
         ###
         #
+        # If DisabledAssetFileExtensions configuration directive is defined.
+        #
+        ###
+        
+        if (my $deny_exts = $app->config('DisabledAssetFileExtensions')) {
+            
+            # Split the parameters of the DisabledAssetFileExtensions configuration directive into items in an array
+            my @denied = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $deny_exts;
+            # Find the extension in the array
+            my @found = grep(/\b$ext\b/, @denied);
+            
+            # If there is no extension or the extension wasn't found in the array
+            if ( scalar @found ) {
+                return $app->error($app->translate('The file ([_1]) you uploaded is not allowed.', $filename));
+            }
+            
+        }
+
+        ###
+        #
         # If AssetFileExtensions configuration directive is defined.
         #
         ###

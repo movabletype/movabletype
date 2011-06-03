@@ -848,6 +848,20 @@ sub _upload_to_asset {
     #
     ###
     
+    if ( my $deny_exts = $app->config('DisabledAssetFileExtensions') ) {
+        
+        # Split the parameters of the DisabledAssetFileExtensions configuration directive into items in an array
+        my @denied = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $deny_exts;
+        
+        # Find the extension in the array
+        my @found = grep(/\b$ext\b/, @denied);
+
+        # If there is extension or the extension wasn't found in the array
+        if ( scalar @found ) {
+            return $app->error(500, $app->translate('The file ([_1]) you uploaded is not allowed.', $fname));
+        }
+    }
+
     if ( my $allow_exts = $app->config('AssetFileExtensions') ) {
         
         # Split the parameters of the AssetFileExtensions configuration directive into items in an array
