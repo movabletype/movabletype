@@ -268,7 +268,7 @@ sub _get_nickname {
                     $name = $name_el->string_value;
                 }
                 $xml->cleanup;
-            
+
                 return MT::I18N::utf8_off($name) if $name;
             }
         }
@@ -286,6 +286,7 @@ sub get_email {
 sub get_userpicasset {
     my $class = shift;
     my ($vident) = @_;
+
     my $foaf = _get_declared_foaf($vident);
     return undef unless $foaf;
 
@@ -312,6 +313,7 @@ sub _asset_from_url {
     my $image = $resp->content;
     return undef unless $image;
     my $mimetype = $resp->header('Content-Type');
+    return undef unless $mimetype;
     my $def_ext = {
         'image/jpeg' => '.jpg',
         'image/png'  => '.png',
@@ -351,7 +353,10 @@ sub _asset_from_url {
 
     require MT::Asset;
     my $asset_pkg = MT::Asset->handler_for_file($local);
-    return undef if $asset_pkg ne 'MT::Asset::Image';
+    if ( $asset_pkg ne 'MT::Asset::Image' ) {
+        unlink $local;
+        return undef;
+    }
 
     my $asset;
     $asset = $asset_pkg->new();
@@ -370,8 +375,10 @@ sub _asset_from_url {
     $asset->image_height($h);
     $asset->mime_type($mimetype);
 
-    $asset->save
-        or return undef;
+    if ( !$asset->save ) {
+        unlink $local;
+        return undef;
+    }
 
     MT->run_callbacks(
         'api_upload_file.' . $asset->class,
