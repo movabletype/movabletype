@@ -2314,6 +2314,7 @@ sub load_core_permissions {
                 'start_restore'                    => 1,
                 'use_tools:search'                 => 1,
                 'remove_user_assoc'                => 1,
+                'edit_global_commenter_status'     => 1,
             },
         },
         'blog.manage_member_blogs' => {
