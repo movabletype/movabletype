@@ -1226,7 +1226,7 @@ sub _upload_file {
         $asset_file    = File::Spec->catfile( '%s', 'support', 'uploads',
             $unique_basename );
     }
-    if ( my $deny_exts = $app->config->DisabledAssetFileExtensions ) {
+    if ( my $deny_exts = $app->config->DeniedAssetFileExtensions ) {
         my @deny_exts = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $deny_exts;
         my @ret = File::Basename::fileparse( $basename, @deny_exts );
         if ( $ret[2] ) {
