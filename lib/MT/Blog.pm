@@ -1762,8 +1762,9 @@ The file extension to be used for archive pages.
 
 =item * email_new_comments
 
-A boolean flag specifying whether authors should be notified of new comments
-posted on entries they have written.
+A three-states boolean flag specifying whether authors should be notified 
+of all new comments posted on entries they have written, just moderated
+comments or don't send at all
 
 =item * allow_comment_html
 
@@ -1861,7 +1862,8 @@ Allow blog-level pings
 
 =item * email_new_pings
 
-Email the blog owner for new pings
+A flag wether MT should email the blog owner for all new pings, just 
+moderated pings, or not at all
 
 =item * ping_weblogs
 
@@ -2110,6 +2112,70 @@ unused
 
 =head1 METHODS
 
+=head2 $blog->set_defaults
+
+Set default values to all of the data fields
+
+=head2 $blog->is_blog
+
+returns true if this object is a blog and not some subclass (such as 
+MT::Website)
+
+=head2 MT::Blog->create_default_blog( [ $blog_name, $blog_template, $website_id ] )
+
+Create a default blog to a newly created website
+
+=head2 $blog->create_default_templates( @templates )
+
+Apply a set of default templates to the blog, from a given template set
+
+=head2 $blog->current_timestamp
+
+Create a time stamp for the blog's time zone, in the "YYYYMMDDHHMMSS" 
+format
+
+=head2 $blog->website
+
+Returns the blog's parent MT::Website object, or undef if it does not 
+have one
+
+=head2 $blog->theme
+
+returns the blog's theme (a MT::Theme object)
+
+=head2 $blog->raw_site_url
+
+=head2 $blog->raw_archive_url
+
+=head2 $blog->is_site_path_absolute
+
+returns true is site_path is absolute, (i.e. start with X:\ on DOS,
+with '/' on Unix, etc)
+
+=head2 $blog->is_archive_path_absolute
+
+returns true is archive_path is absolute, (i.e. start with X:\ on DOS,
+with '/' on Unix, etc)
+
+=head2 $blog->comment_text_filters
+
+Returns an arrayref containing the names of the text filters to be
+applied to comments
+
+=head2 $blog->cc_license_url
+
+Returns a URL to a website explaining about the Creative Commons license
+that was chosen for this blog
+
+=head2 $blog->email_all_comments
+
+returns true if email will be sent to entry authors for every comment
+
+=head2 $blog->email_attn_reqd_comments
+
+returns true if email will be sent to entry authors only for comments
+that require moderation
+
 =head2 $blog->file_mgr
 
 Returns the I<MT::FileMgr> object specific to this particular blog.
@@ -2136,14 +2202,6 @@ exclude particular classes:
 Note: Certain exclusions will prevent the clone process from including
 other classes. For instance, if you exclude MT::Trackback, all MT::TBPing
 objects are automatically excluded.
-
-=head2 apply_theme
-
-=head1 DATA LOOKUP
-
-In addition to numeric ID lookup, you can look up or sort records by any
-combination of the following fields. See the I<load> documentation in
-I<MT::Object> for more information.
 
 =head1 NOTES
 
