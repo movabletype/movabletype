@@ -2176,9 +2176,66 @@ returns true if email will be sent to entry authors for every comment
 returns true if email will be sent to entry authors only for comments
 that require moderation
 
+=head2 $blog->email_all_pings
+
+returns true if email will be sent to entry authors for every ping
+
+=head2 $blog->email_attn_reqd_pings
+
+returns true if email will be sent to entry authors only for pings
+that require moderation
+
+=head2 $blog->publish_trusted_commenters
+
+true if it is OK to publish comments from thrusted commenters
+
+=head2 $blog->publish_authd_untrusted_commenters
+
+true if it is OK to publish comments from authenticated but non-thrusted 
+commenters
+
+=head2 $blog->publish_unauthd_commenters
+
+true if it is OK to publish comments even from un-authenticated 
+commenters - everyone
+
+=head2 $blog->include_path_parts( %$param )
+
+Accept $param hashref that should contain either a "name" key, for a file
+name, or an "id" key for template_id. from these keys a filename will 
+be created
+
+the path to this file can be passed by the "path" key. if not passed or
+if not absolute path, will return a path that start with the IncludeDir
+configuration directive
+
+returns ($filename, @path). for using these:
+
+    $file = File::Spec->catfile( 
+        File::Spec->catdir($blog->site_path, @path), 
+        $filename 
+        );
+
+=head2 $blog->include_path
+
+Similar to include_path_parts, but will calculate that final path for you.
+In scalar context, returns the final path. in list context returns 
+(full path, directory, filename)
+
+=head2 $blog->include_url
+
+Similar to include_path_parts, but will return the URL to this file
+
+=head2 $blog->include_statement
+
+Similar to include_path, but wrap the path with an include statement,
+according to the include_system defined
+
 =head2 $blog->file_mgr
 
 Returns the I<MT::FileMgr> object specific to this particular blog.
+
+=head2 $blog->has_archive_type
 
 =head2 clone( [ \%parameters ] )
 
