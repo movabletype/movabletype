@@ -367,7 +367,7 @@ sub upload_file {
 
     if ( my $perms = $app->permissions ) {
         return $app->error( $app->translate("Permission denied.") )
-            unless $perms->can_do('upload');
+            unless $perms->can_upload;
     }
     else {
         return $app->error( $app->translate("Permission denied.") );
