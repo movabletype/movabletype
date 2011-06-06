@@ -2235,7 +2235,30 @@ according to the include_system defined
 
 Returns the I<MT::FileMgr> object specific to this particular blog.
 
-=head2 $blog->has_archive_type
+=head2 $blog->has_archive_type( $type )
+
+returns true if this blog support a $type archive type, and have
+templates for it
+
+=head2 $blog->accepts_registered_comments
+
+returns true if the blog is configured to allow comments from registered
+commenters, and have authenticators to let them register
+
+=head2 $blog->accepts_comments
+
+returns true if commenting is allowed for registered and unregistered 
+commenters
+
+=head2 $blog->count_static_templates( $archive_type )
+
+returns how many static templates (non-dynamic) the blog have
+
+=head2 $blog->touch( @types )
+
+update the last-modified record (an MT::Touch object) for the passed
+@types respectably to this blog to 'now'. @types should be model names,
+like 'author' or 'entry'
 
 =head2 clone( [ \%parameters ] )
 
@@ -2259,6 +2282,21 @@ exclude particular classes:
 Note: Certain exclusions will prevent the clone process from including
 other classes. For instance, if you exclude MT::Trackback, all MT::TBPing
 objects are automatically excluded.
+
+=head2 $blog->smart_replace( [ $new_value ] )
+
+get/set the nwc_smart_replace property. when getting, if not set for
+this blog, returns whatever is configured in the global NwcSmartReplace
+
+=head2 $blog->smart_replace_fields( [ $new_value ] )
+
+get/set the nwc_replace_field property. when getting, if not set for
+this blog, returns whatever is configured in the global NwcReplaceField
+
+=head2 $blog->apply_theme( [ $theme_id ] )
+
+apply a theme to the blog. if not specify, try to re-apply the current 
+theme, and if not exists, apply the default theme
 
 =head1 NOTES
 
