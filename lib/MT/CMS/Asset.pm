@@ -1146,13 +1146,13 @@ sub _upload_file {
 
         ###
         #
-        # If DisabledAssetFileExtensions configuration directive is defined.
+        # If DeniedAssetFileExtensions configuration directive is defined.
         #
         ###
 
-        if ( my $deny_exts = $app->config('DisabledAssetFileExtensions') ) {
+        if ( my $deny_exts = $app->config('DeniedAssetFileExtensions') ) {
 
-# Split the parameters of the DisabledAssetFileExtensions configuration directive into items in an array
+# Split the parameters of the DeniedAssetFileExtensions configuration directive into items in an array
             my @denied = map {
                 if   ( $_ =~ m/^\./ ) {qr/$_/i}
                 else                  {qr/\.$_/i}

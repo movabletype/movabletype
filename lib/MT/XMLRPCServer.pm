@@ -1151,9 +1151,9 @@ sub newMediaObject {
     $ext =~ m!.*\.(.*)$!;       ## Extract the characters to the right of the last dot delimiter / period
     $ext = $1;                  ## Those characters are the file extension 
 
-    if ( my $deny_exts = $mt->config('DisabledAssetFileExtensions') ) {
+    if ( my $deny_exts = $mt->config('DeniedAssetFileExtensions') ) {
         
-        # Split the parameters of the DisabledAssetFileExtensions configuration directive into items in an array
+        # Split the parameters of the DeniedAssetFileExtensions configuration directive into items in an array
         my @denied = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $deny_exts;
         
         # Find the extension in the array

@@ -848,9 +848,9 @@ sub _upload_to_asset {
     #
     ###
     
-    if ( my $deny_exts = $app->config('DisabledAssetFileExtensions') ) {
+    if ( my $deny_exts = $app->config('DeniedAssetFileExtensions') ) {
         
-        # Split the parameters of the DisabledAssetFileExtensions configuration directive into items in an array
+        # Split the parameters of the DeniedAssetFileExtensions configuration directive into items in an array
         my @denied = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $deny_exts;
         
         # Find the extension in the array
