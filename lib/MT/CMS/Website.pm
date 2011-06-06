@@ -494,6 +494,8 @@ sub dialog_move_blogs {
 sub move_blogs {
     my $app = shift;
     return unless $app->validate_magic;
+    return $app->error($app->translate('Permission denied.'))
+        unless $app->can_do('move_blogs');
 
     my $website_class = $app->model('website');
     my $ids           = $app->param('ids');
