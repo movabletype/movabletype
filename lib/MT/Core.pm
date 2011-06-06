@@ -943,6 +943,7 @@ sub load_core_permissions {
                 'start_backup'                     => 1,
                 'start_restore'                    => 1,
                 'use_tools:search'                 => 1,
+                'edit_global_commenter_status'     => 1,
             },
         },
         'blog.manage_member_blogs' => {
@@ -1146,6 +1147,7 @@ sub load_core_permissions {
                 'edit_all_comments'                     => 1,
                 'edit_comment_status'                   => 1,
                 'edit_commenter'                        => 1,
+                'edit_commenter_status'                 => 1,
                 'edit_trackback_status'                 => 1,
                 'edit_trackback_status_via_notify_mail' => 1,
                 'get_comment_feed'                      => 1,
