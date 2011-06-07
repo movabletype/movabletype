@@ -457,40 +457,6 @@ L<MT::Role> and L<MT::Blog> objects.
 
 =head1 METHODS
 
-=head2 $assoc->save()
-
-Saves the association and calls the L<rebuild_permissions> method to
-ensure the related permissions are updated.
-
-=head2 $assoc->remove()
-
-Removes the association and calls the L<rebuild_permissions> method to
-ensure the related permissions are updated.
-
-=head2 $assoc->rebuild_permissions()
-
-An alias for calling C<MT::Permission->rebuild($assoc)>.
-
-=head2 $assoc->user()
-
-Returns the L<MT::Author> object tied to this association. Returns undef if
-the author_id property is undefined.
-
-=head2 $assoc->blog()
-
-Returns the L<MT::Blog> object tied to this association. Returns undef if
-the blog_id property is undefined.
-
-=head2 $assoc->group()
-
-Returns the L<MT::Group> object tied to this association. Returns undef if
-the group_id property is undefined.
-
-=head2 $assoc->role()
-
-Returns the L<MT::Role> object tied to this association. Returns undef if
-the role_id property is undefined.
-
 =head2 MT::Association->link(@things)
 
 Creates a new association record that ties the elements of C<@things>
@@ -504,6 +470,14 @@ together. The list of C<@things> may contain:
 
 =item 3. user, group
 
+=item 4. user, role
+
+=item 5. group, role
+
+=item 6. user, role, website
+
+=item 7. group, role, website
+
 =back
 
 Any other combination will fail horribly.
@@ -514,10 +488,38 @@ Removes any association record that exists that ties the elements of
 C<@things> together. See the L<link> method for valid values to pass
 for the C<@things> parameter.
 
+=head2 $assoc->rebuild_permissions()
+
+Update permissions affected by this association object. Will be called 
+automatically after save and remove operations.
+
+=head2 $assoc->user()
+
+Returns the L<MT::Author> object tied to this association. Returns undef if
+the author_id property is undefined.
+
+=head2 $assoc->blog()
+
+Returns the L<MT::Blog> object tied to this association. Returns undef if
+the blog_id property is undefined.
+
+IF this association is with a website instead of a blog, this function
+will return a L<MT::Website> object
+
+=head2 $assoc->group()
+
+Returns the L<MT::Group> object tied to this association. Returns undef if
+the group_id property is undefined.
+
+=head2 $assoc->role()
+
+Returns the L<MT::Role> object tied to this association. Returns undef if
+the role_id property is undefined.
+
 =head2 MT::Association->objects_to_terms(@things)
 
 Utility method that takes an array containing user, group, role, blog
-objects and returns a hashref suitable to use for terms for the
+or website objects and returns a hashref suitable to use for terms for the
 C<MT::Association-E<gt>load> method.
 
 =head1 DATA ACCESS METHODS
@@ -545,7 +547,14 @@ following constants:
 
 =item * MT::Association::USER_GROUP
 
+=item * MT::Association::USER_ROLE
+
+=item * MT::Association::GROUP_ROLE
+
 =back
+
+Even if this association is with a website instead of a blog,
+still USER_BLOG_ROLE and GROUP_BLOG_ROLE should be used
 
 =item * author_id
 

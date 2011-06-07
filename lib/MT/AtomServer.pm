@@ -1528,27 +1528,39 @@ __END__
 
 =head1 NAME
 
-MT::AtomServer
+MT::AtomServer - An Atom Publishing API interface for communicating with Movable Type.
 
 =head1 SYNOPSIS
 
-An Atom Publishing API interface for communicating with Movable Type.
+    use MT::Bootstrap App => 'MT::AtomServer';
+
+=head1 DESCRIPTION
+
+A MT::App that handles incoming Atom Publishing API requests, decide
+which of his subclasses should answer it and call it. subclasses are:
+MT::AtomServer::Weblog, MT::AtomServer::Weblog::Legacy and 
+MT::AtomServer::Comments
+
+This app can also handle SOAP requests
 
 =head1 METHODS
 
-=head2 $app->xml_body()
+=head2 $app->init()
 
-Takes the content posted to the server and parses it into an XML document.
-Uses either XML::LibXML or XML::XPath depending on which is available.
+Initializes the application. Called by the MT framework
 
-=head2 $app->iso2epoch($iso_ts)
+=head2 $app->handle()
 
-Converts C<$iso_ts> in the format of an ISO timestamp into a unix timestamp
-(seconds since the epoch).
+Wrapper method that determines the proper AtomServer subclass package 
+to pass the request to, and calls handle_request on it. The list of 
+subclasses is listed in the AtomApp configuration.
 
-=head2 $app->init
+=head2 $app->handle_request()
 
-Initializes the application.
+Subclasses should override this method to answer a request. By default
+does nothing.
+
+=head1 INTERNAL METHODS
 
 =head2 $app->get_auth_info
 
@@ -1566,42 +1578,150 @@ Processes the request for WSSE authentication and returns a hash containing:
 
 =back
 
-=head2 $app->handle_request
-
-The implementation of this in I<MT::AtomServer::Weblog> passes the request
-to the proper method.
-
-=head2 $app->handle
-
-Wrapper method that determines the proper AtomServer package to pass the
-request to.
-
-=head2 $app->iso2ts($iso_ts, $target_zone)
-
-Converts C<$iso_ts> in the format of an ISO timestamp into a MT-compatible
-timestamp (YYYYMMDDHHMMSS) for the specified timezone C<$target_zone>.
-
-=head2 $app->atom_body
-
-Processes the request as Atom content and returns an XML::Atom object.
-
-=head2 $app->error($code, $message)
-
-Sends the HTTP headers necessary to relay an error.
-
 =head2 $app->authenticate()
 
 Checks the WSSE authentication with the local MT user database and
 confirms the user is authorized to access the resources required by
 the request.
 
-=head2 $app->show_error($message)
-
-Returns an XML wrapper for the error response.
-
 =head2 $app->auth_failure($code, $message)
 
-Handles the response in the event of an authentication failure.
+Handles the response in the event of an authentication failure. 
+equivalent to $app->error, but add an authentication header to
+the response
+
+=head2 $app->xml_body()
+
+Takes the content posted to the server and parses it into an XML document.
+Uses either XML::LibXML or XML::XPath depending on which is available.
+
+xml_body should be called only when the request is SOAP, and not Atom.
+It is better to call $app->atom_body(), that abstract this away
+
+=head2 $app->atom_body
+
+Processes the request and returns an XML::Atom object
+
+=head2 $app->iso2epoch($iso_ts)
+
+Converts C<$iso_ts> in the format of an ISO timestamp into a unix timestamp
+(seconds since the epoch).
+
+=head2 $app->iso2ts($iso_ts, $target_zone)
+
+Converts C<$iso_ts> in the format of an ISO timestamp into a MT-compatible
+timestamp (YYYYMMDDHHMMSS) for the specified timezone C<$target_zone>.
+
+=head1 MT::AtomServer::Weblog
+
+Providing Atom access to creating, editing, posting and reading blog
+posts. Subclass of MT::AtomServer
+
+=head2 METHODS
+
+=head3 $app->handle_request()
+
+Main switchboard for blog posts, based on the HTML verb and params 
+used in the request. calls handle_upload, get_categories, new_post, 
+edit_post, delete_post, get_post, get_posts or get_weblogs to supply 
+the information itself
+
+=head3 $app->handle_upload()
+
+Will be called if the request contains a 'svc' (for service) parameter
+equal to 'upload'. This command will upload an asset to a blog, 
+specified by blog_id param. returns a link to the newly uploaded
+asset
+
+=head3 $app->get_categories()
+
+Will be called if the request contains a 'svc' (for service) parameter
+equal to 'categories'. the request should also contain a blog_id param,
+for which the categories are read of. Answer with a list of categories 
+for this blog.
+
+=head3 $app->new_post()
+
+Will be called on API POST request, and create a new entry or asset.
+Answers with the newly created object
+
+=head3 $app->edit_post()
+
+Will be called on API PUT request. Answers with the edited entry
+
+=head3 $app->delete_post()
+
+Will be called on API DELETE request. Removes the entry specified
+by blog_id and entry_id
+
+=head3 $app->get_post()
+
+Will be called on API GET request, If an entry_id and blog_id parameters 
+are supplied. Answers with the requested entry
+
+=head3 $app->get_posts()
+
+Will be called on API GET request, If an blog_id parameter is supplied,
+but not entry_id. Answers with the last %limit% entries, starting from 
+the %offset% -th entry. if not specified, limit is 21 and offset is 0
+
+=head3 $app->get_weblogs()
+
+Answer with a list of weblogs that the user have permission to. 
+will be called on API GET request with no blog_id or entry_id
+
+=head3 $app->authenticate()
+
+extends the original authenticate function, by trying to load a MT::Blog
+object and permission object if blog_id param is supplied
+
+=head3 $app->apply_basename( $entry, $atom )
+
+While posting an entry using the API, it is possible to ask for a specific
+basename for this entry using a 'Slug'. this function apply the request,
+but only if such name is not in use yet
+
+=head3 $app->new_with_entry( $entry )
+
+Create a new Atom entry out of a blog entry
+
+=head1 MT::AtomServer::Weblog::Legacy
+
+Subclass of MT::AtomServer::Weblog, compatible to legacy Atom API
+
+=head1 MT::AtomServer::Comments
+
+A subclass of MT::AtomServer, that inherent only the handle_upload and 
+get_categories operations, and add three operations: get_comment,
+get_comments and get_blog_comments
+
+=head2 METHODS
+
+=head3 $app->get_comment()
+
+Answer with a single comment. will be called on API GET request with 
+comment_id and entry_id. Also need blog_id
+
+=head3 $app->get_comments()
+
+will be called on API GET request with entry_id but not comment_id.
+Also need blog_id. Answers with the last %limit% comments of entry 
+%entry_id%, starting from the %offset% -th comment. if not specified, 
+limit is 21 and offset is 0
+
+=head3 $app->get_blog_comments()
+
+will be called on API GET request with no comment_id or entry_id
+Answers with the last %limit% comments of blog %blog_id%, (from all
+the entries) starting from the %offset% -th comment. if not specified, 
+limit is 21 and offset is 0
+
+=head2 INTERNAL METHODS
+
+=head3 $app->_comments_in_atom( $feed, $terms, $args )
+
+loads all the comments specified by $terms and $args (that will be
+passed to the load function) into an Atom feed $feed
 
 =head1 CALLBACKS
 

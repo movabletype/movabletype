@@ -70,15 +70,16 @@ __PACKAGE__->install_properties(
             'use_comment_confirmation'  => 'boolean',
             'allow_commenter_regist'    => 'boolean',
             'use_revision'              => 'boolean',
-            ## Have to keep these around for use in mt-upgrade.cgi.
             'archive_url'             => 'string(255)',
             'archive_path'            => 'string(255)',
+            ## Have to keep these around for use in mt-upgrade.cgi.
             'old_style_archive_links' => 'boolean',
             'archive_tmpl_daily'      => 'string(255)',
             'archive_tmpl_weekly'     => 'string(255)',
             'archive_tmpl_monthly'    => 'string(255)',
             'archive_tmpl_category'   => 'string(255)',
             'archive_tmpl_individual' => 'string(255)',
+            ## end of fields for mt-upgrade.cgi 
 
             # meta properties
             'image_default_wrap_text'  => 'integer meta',
@@ -1695,12 +1696,6 @@ data-management and -storage methods from that class; thus you should look
 at the I<MT::Object> documentation for details about creating a new object,
 loading an existing object, saving an object, etc.
 
-The following methods are unique to the I<MT::Blog> interface:
-
-=head2 $blog->file_mgr
-
-Returns the I<MT::FileMgr> object specific to this particular blog.
-
 =head1 DATA ACCESS METHODS
 
 The I<MT::Blog> object holds the following pieces of data. These fields can
@@ -1713,6 +1708,14 @@ I<MT::Object> documentation.
 
 The numeric ID of the blog.
 
+=item * parent_id
+
+The ID of the Website (MT::Website) this blog belongs to
+
+=item * theme_id
+
+If a theme was applied for this blog, this field will hold the theme ID
+
 =item * name
 
 The name of the blog.
@@ -1720,27 +1723,6 @@ The name of the blog.
 =item * description
 
 The blog description.
-
-=item * site_path
-
-The path to the directory containing the blog's output index templates.
-
-=item * site_url
-
-The URL corresponding to the I<site_path>.
-
-=item * archive_path
-
-The path to the directory where the blog's archives are stored.
-
-=item * archive_url
-
-The URL corresponding to the I<archive_path>.
-
-=item * server_offset
-
-A slight misnomer, this is actually the timezone that the B<user> has
-selected; the value is the offset from GMT.
 
 =item * archive_type
 
@@ -1758,9 +1740,21 @@ for example, the link can only point to one of those archives. The preferred
 archive type (which should be one of the archive types set in I<archive_type>,
 above) specifies to which archive this link should point (among other things).
 
+=item * site_path
+
+The path to the directory containing the blog's output index templates
+
+=item * site_url
+
+The URL corresponding to the I<site_path>
+
 =item * days_on_index
 
-The number of days to be displayed on the index.
+The number of days to be displayed on the index
+
+=item * entries_on_index
+
+The number of entries to be displayed on the index
 
 =item * file_extension
 
@@ -1768,8 +1762,9 @@ The file extension to be used for archive pages.
 
 =item * email_new_comments
 
-A boolean flag specifying whether authors should be notified of new comments
-posted on entries they have written.
+A three-states boolean flag specifying whether authors should be notified 
+of all new comments posted on entries they have written, just moderated
+comments or don't send at all
 
 =item * allow_comment_html
 
@@ -1797,6 +1792,11 @@ C<descend>.
 
 The default value for the I<allow_comments> field in the I<MT::Entry> object.
 
+=item * server_offset
+
+A slight misnomer, this is actually the timezone that the B<user> has
+selected; the value is the offset from GMT.
+
 =item * convert_paras
 
 A comma-separated list of text filters to apply to each entry when it
@@ -1806,6 +1806,10 @@ is built.
 
 A comma-separated list of text filters to apply to each comment when it
 is built.
+
+=item * allow_pings_default
+
+The default value for the I<allow_pings> field in the I<MT::Entry> object.
 
 =item * status_default
 
@@ -1821,19 +1825,141 @@ a name or an email address) are allowed.
 A boolean flag specifying whether unregistered comments (those posted
 without a validated email/password pair) are allowed.
 
+=item * allow_reg_comments
+
+A boolean flag specifying whether registered users's comments (those posted
+with a validated email/password pair) are allowed.
+
+=item * moderate_unreg_comments
+
+Specifying which comments will not be displayed until approved by the 
+entry author. can be MT::Blog::MODERATE_NONE, (all comments are to be
+published immediately) MODERATE_UNTRSTD, (unused) MODERATE_UNAUTHD, 
+(moderate only comments from unauthenticated users) or MODERATE_ALL
+
+=item * manual_approve_commenters
+
+Specify that the author need to approve each commenter before their
+comment will be displayed. this override the MODERATE_NONE setting in
+moderate_unreg_comments
+
+=item * allow_commenter_regist
+
+A boolean flag specifying if we should allow commenters to register
+to the website, or should they ask the administrator to add them
+
+=item * require_comment_emails
+
+Force the commenters to enter a valid email address
+
 =item * words_in_excerpt
 
 The number of words in an auto-generated excerpt.
 
+=item * allow_pings
+
+Allow blog-level pings
+
+=item * email_new_pings
+
+A flag wether MT should email the blog owner for all new pings, just 
+moderated pings, or not at all
+
 =item * ping_weblogs
 
-A boolean flag specifying whether the system should send an XML-RPC ping to
-I<weblogs.com> after an entry is saved.
+boolean indicating wether to ping weblogs.com
+
+=item * ping_blogs
+
+unused
+
+=item * ping_technorati
+
+unused
+
+=item * ping_google
+
+boolean indicating wether to ping blogsearch.google.com
+
+=item * ping_others
+
+A list of servers to ping after an entry is saved, using XML-RPC.
+the list is \r delimited
+
+=item * junk_folder_expiry
+
+How many days junk is kept before automatically deleted. zero to
+immediately delete spam
 
 =item * mt_update_key
 
 The Movable Type Recently Updated Key to be sent to I<movabletype.org> after
-an entry is saved.
+an entry is saved
+
+=item * google_api_key
+
+unused
+
+=item * autodiscover_links
+
+Search entries for links and upgrade them to pings
+
+=item * internal_autodiscovery
+
+Search entries for links to the same domain of this blog, and upgrade 
+them to pings
+
+=item * sanitize_spec
+
+sanitize spec to pass MT::Sanitize for sanitizing HTML comments. can
+be '0' to disable sanitizing, '1' to enable, or a full spec string
+
+=item * cc_license
+
+IF the blog is CC license, this property holds the variation. for example
+'nc-sa' for NonCommercial-ShareAlike
+
+=item * is_dynamic
+
+Specify if this blog is published dynamically or statically
+
+=item * remote_auth_token
+
+A TypePad token
+
+=item * children_modified_on
+
+Field used to communicate to the dynamic publishing (PHP) when this blog
+changed - new entry was added, or an entry was edited
+
+=item * custom_dynamic_templates
+
+When using dynamic publishing, this field controls when a template will be 
+converted to a PHP page. possible values: 'all' - all templates are to 
+built dynamically. 'none' - all the template will be build on-demand. 
+'async_all' - all the template will be build a-synchronically. 
+'async_partial' - the main index, feed and the preferred archive type
+are to by build on-demand, and the rest will be built a-synchronically.
+'archives' - only the index is to be build on-demand, all the rest will
+be built dynamically
+
+=item * junk_score_threshold
+
+When a new comment is entered, it is checked if it is spam using spam
+filters. each filter is voting by returning a number between -10 to 10,
+(or ABSTAIN) and then numbers are merged to a single spam score. if this
+score is bigger then junk_score_threshold, this comment is considered 
+spam
+
+=item * basename_limit
+
+Maximum number of words that will appear in the base name of an entry.
+the base name if based on the entry title, and used to build the entry URL
+
+=item * use_comment_confirmation
+
+If true, after entring a comment the commenter will be redirected to
+a 'comment accepted' page
 
 =item * language
 
@@ -1846,16 +1972,296 @@ Should contain all desired HTML formatting.
 
 =item * use_revision
 
-Returns 0 if TrackRevisions master switch in mt-config is off.
-Otherwise it returns the value stored in the column.
+If the global TrackRevisions configuration is enabled, enables the 
+revision tracking for this blog
+
+=item * archive_path
+
+The path to the directory where the blog's archives are stored.
+
+=item * archive_url
+
+The URL corresponding to the I<archive_path>.
+
+=back
+
+=head1 META DATA ACCESS METHODS
+
+=over 4
+
+=item * image_default_wrap_text
+
+Default setting for embedded images in entries
+
+=item * image_default_align
+
+Default setting for embedded images in entries
+
+=item * image_default_thumb
+
+Default setting for embedded images in entries
+
+=item * image_default_width
+
+Default setting for embedded images in entries
+
+=item * image_default_wunits
+
+Default setting for embedded images in entries
+
+=item * image_default_constrain
+
+Default setting for embedded images in entries
+
+=item * image_default_popup
+
+Default setting for embedded images in entries
+
+=item * commenter_authenticators
+
+A comma-delimited list of authentication options for commenters.
+for example: "MovableType,TypeKey,LiveJournal"
+
+=item * require_typekey_emails
+
+If true, force typepad commenters to enter their email
+
+=item * nofollow_urls
+
+If true, add a 'nofollow' tag to all the URLs in the comments and 
+TrackBacks
+
+=item * follow_auth_links
+
+If true, do not add a 'nofollow' tag to URLs in comments written by
+trusted commenter, even if the nofollow_urls property is true
+
+=item * update_pings
+
+Comma-delimited list of server to ping for blog-level updates
+
+=item * captcha_provider
+
+The name of the captcha provider to use for commenter. By default the
+captcha option is off, and there is a built-in captcha generator named
+'mt_default'. plugins can add more generators
+
+=item * publish_queue
+
+The flag is set to 1 if custom_dynamic_templates is async_all or 
+async_partially, acting as a flag to use TheSchwartz publishing queue
+instead of publishing immediately (in the case of static publishing) 
+
+=item * nwc_smart_replace
+
+Replace UTF-8 characters frequently used by word processors with their 
+more common web equivalents. possible values: 2 - don't replace. 1 - 
+replace to HTML entities. 0 - replace to ASCII characters
+
+=item * nwc_replace_field
+
+A comma-delimited list specifying where to do the smart replace. possible
+values are: qw{title text text_more keywords excerpt tags}
+
+=item * template_set
+
+Returns the template_set that was applied for this blog
+
+=item * page_layout
+
+IF you have a style applied to this blog, it is possible to tweak the
+layout of the page, specifying how many columns to use, and do we want
+wide or thin columns. all values start with 'layout-', concatenated with
+one of: qw{wt tw wm mw wtt twt}, there 't' stand for thin, 'w' for wide
+and 'm' for medium
+
+=item * include_system
+
+If this meta field exists, turns the mt:Include tags to Server Side 
+Includes. It can specify one of these include systems: shtml,
+php, jsp or asp
+
+=item * include_cache
+
+=item * max_revisions_entry
+
+If revisions are enabled for this blog, (see use_revision) specify how
+many revision to keep for each entry
+
+=item * max_revisions_template
+
+If revisions are enabled for this blog, (see use_revision) specify how
+many revision to keep for each template
+
+=item * theme_export_settings
+
+A hash that remembers the last configuration a theme was exported from
+this blog. contains at least a "core" key, that contains a hash
+with all the configuration, such as name, version, author etc. If there
+are plugins with theme exporters installed, they will have an entry in 
+this hash as well
+
+=item * category_order
+
+Contain a comma-delimiter list of category ids, ordered
+
+=item * folder_order
+
+Contain a comma-delimiter list of folder ids, ordered
 
 =back
 
 =head1 METHODS
 
-=over 4
+=head2 $blog->set_defaults
 
-=item * clone( [ \%parameters ] )
+Set default values to all of the data fields
+
+=head2 $blog->is_blog
+
+returns true if this object is a blog and not some subclass (such as 
+MT::Website)
+
+=head2 MT::Blog->create_default_blog( [ $blog_name, $blog_template, $website_id ] )
+
+Create a default blog to a newly created website
+
+=head2 $blog->create_default_templates( @templates )
+
+Apply a set of default templates to the blog, from a given template set
+
+=head2 $blog->current_timestamp
+
+Create a time stamp for the blog's time zone, in the "YYYYMMDDHHMMSS" 
+format
+
+=head2 $blog->website
+
+Returns the blog's parent MT::Website object, or undef if it does not 
+have one
+
+=head2 $blog->theme
+
+returns the blog's theme (a MT::Theme object)
+
+=head2 $blog->raw_site_url
+
+=head2 $blog->raw_archive_url
+
+=head2 $blog->is_site_path_absolute
+
+returns true is site_path is absolute, (i.e. start with X:\ on DOS,
+with '/' on Unix, etc)
+
+=head2 $blog->is_archive_path_absolute
+
+returns true is archive_path is absolute, (i.e. start with X:\ on DOS,
+with '/' on Unix, etc)
+
+=head2 $blog->comment_text_filters
+
+Returns an arrayref containing the names of the text filters to be
+applied to comments
+
+=head2 $blog->cc_license_url
+
+Returns a URL to a website explaining about the Creative Commons license
+that was chosen for this blog
+
+=head2 $blog->email_all_comments
+
+returns true if email will be sent to entry authors for every comment
+
+=head2 $blog->email_attn_reqd_comments
+
+returns true if email will be sent to entry authors only for comments
+that require moderation
+
+=head2 $blog->email_all_pings
+
+returns true if email will be sent to entry authors for every ping
+
+=head2 $blog->email_attn_reqd_pings
+
+returns true if email will be sent to entry authors only for pings
+that require moderation
+
+=head2 $blog->publish_trusted_commenters
+
+true if it is OK to publish comments from thrusted commenters
+
+=head2 $blog->publish_authd_untrusted_commenters
+
+true if it is OK to publish comments from authenticated but non-thrusted 
+commenters
+
+=head2 $blog->publish_unauthd_commenters
+
+true if it is OK to publish comments even from un-authenticated 
+commenters - everyone
+
+=head2 $blog->include_path_parts( %$param )
+
+Accept $param hashref that should contain either a "name" key, for a file
+name, or an "id" key for template_id. from these keys a filename will 
+be created
+
+the path to this file can be passed by the "path" key. if not passed or
+if not absolute path, will return a path that start with the IncludeDir
+configuration directive
+
+returns ($filename, @path). for using these:
+
+    $file = File::Spec->catfile( 
+        File::Spec->catdir($blog->site_path, @path), 
+        $filename 
+        );
+
+=head2 $blog->include_path
+
+Similar to include_path_parts, but will calculate that final path for you.
+In scalar context, returns the final path. in list context returns 
+(full path, directory, filename)
+
+=head2 $blog->include_url
+
+Similar to include_path_parts, but will return the URL to this file
+
+=head2 $blog->include_statement
+
+Similar to include_path, but wrap the path with an include statement,
+according to the include_system defined
+
+=head2 $blog->file_mgr
+
+Returns the I<MT::FileMgr> object specific to this particular blog.
+
+=head2 $blog->has_archive_type( $type )
+
+returns true if this blog support a $type archive type, and have
+templates for it
+
+=head2 $blog->accepts_registered_comments
+
+returns true if the blog is configured to allow comments from registered
+commenters, and have authenticators to let them register
+
+=head2 $blog->accepts_comments
+
+returns true if commenting is allowed for registered and unregistered 
+commenters
+
+=head2 $blog->count_static_templates( $archive_type )
+
+returns how many static templates (non-dynamic) the blog have
+
+=head2 $blog->touch( @types )
+
+update the last-modified record (an MT::Touch object) for the passed
+@types respectably to this blog to 'now'. @types should be model names,
+like 'author' or 'entry'
+
+=head2 clone( [ \%parameters ] )
 
 MT::Blog provides a clone method that supports cloning of all known child
 records related to the MT::Blog object. To invoke this behavior, you
@@ -1878,23 +2284,20 @@ Note: Certain exclusions will prevent the clone process from including
 other classes. For instance, if you exclude MT::Trackback, all MT::TBPing
 objects are automatically excluded.
 
-=item * apply_theme
+=head2 $blog->smart_replace( [ $new_value ] )
 
-TODO
+get/set the nwc_smart_replace property. when getting, if not set for
+this blog, returns whatever is configured in the global NwcSmartReplace
 
-=back
+=head2 $blog->smart_replace_fields( [ $new_value ] )
 
-=head1 DATA LOOKUP
+get/set the nwc_replace_field property. when getting, if not set for
+this blog, returns whatever is configured in the global NwcReplaceField
 
-In addition to numeric ID lookup, you can look up or sort records by any
-combination of the following fields. See the I<load> documentation in
-I<MT::Object> for more information.
+=head2 $blog->apply_theme( [ $theme_id ] )
 
-=over 4
-
-=item * name
-
-=back
+apply a theme to the blog. if not specify, try to re-apply the current 
+theme, and if not exists, apply the default theme
 
 =head1 NOTES
 
