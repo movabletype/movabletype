@@ -96,7 +96,8 @@ function submitEdit( id, newname, oldname ) {
     tag_name: newname,
     blog_id: <mt:var name="blog_id">,
     __id: id,
-    xhr: true
+    xhr: false,
+    magic_token: '<mt:var name="magic_token">'
   });
   return false;
 }

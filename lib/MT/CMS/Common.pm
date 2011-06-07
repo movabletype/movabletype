@@ -39,14 +39,13 @@ sub save {
     if ( !$author->is_superuser ) {
         if ( ( $type ne 'author' ) && ( $type ne 'template' ) )
         {    # for authors, blog-ctx $perms is not relevant
-            return $app->errtrans("Permisison denied.")
+            return return $app->permission_denied()
                 if !$perms && $id;
         }
 
         $app->run_callbacks( 'cms_save_permission_filter.' . $type,
             $app, $id )
-            || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+            || return $app->permission_denied();
     }
 
     my $param = {};
@@ -501,6 +500,7 @@ sub save {
 
 sub edit {
     my $app  = shift;
+
     my $q    = $app->param;
     my $type = $q->param('_type');
 
@@ -873,7 +873,8 @@ sub list {
                                 {
                                 cls => 'alert',
                                 msg => MT->translate(
-                                    q{Invalid filter: [_1]}, $errstr
+                                    q{Invalid filter: [_1]},
+                                    MT::Util::encode_html($errstr)
                                 )
                                 };
                         }
@@ -888,7 +889,8 @@ sub list {
                                 {
                                 cls => 'alert',
                                 msg => MT->translate(
-                                    q{Invalid filter: [_1]}, $errstr,
+                                    q{Invalid filter: [_1]},
+                                    MT::Util::encode_html($errstr),
                                 )
                                 };
                         }
@@ -906,7 +908,10 @@ sub list {
                 push @messages,
                     {
                     cls => 'alert invalid-filter',
-                    msg => MT->translate( q{Invalid filter: [_1]}, $col, )
+                    msg => MT->translate(
+                        q{Invalid filter: [_1]},
+                        MT::Util::encode_html($col),
+                    )
                     };
             }
         }
@@ -1111,7 +1116,7 @@ sub list {
         = $screen_settings->{object_label_plural}
         ? $screen_settings->{object_label_plural}
         : $obj_class->class_label_plural;
-    $param{action_label}     = $screen_settings->{action_label}
+    $param{action_label} = $screen_settings->{action_label}
         if $screen_settings->{action_label};
     $param{action_label_plural} = $screen_settings->{action_label_plural}
         if $screen_settings->{action_label_plural};
@@ -1545,8 +1550,7 @@ sub delete {
         next unless $obj;
         $app->run_callbacks( 'cms_delete_permission_filter.' . $type,
             $app, $obj )
-            || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+            || return $app->permission_denied();
 
         if ( $type eq 'comment' ) {
             $entry_id = $obj->entry_id;

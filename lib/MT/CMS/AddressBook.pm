@@ -228,6 +228,12 @@ sub can_save {
     return $perms->can_do('save_addressbook');
 }
 
+sub can_delete {
+    my ( $eh, $app, $id ) = @_;
+    my $perms = $app->permissions;
+    return $perms->can_do('delete_addressbook');
+}
+
 sub save_filter {
     my $eh    = shift;
     my ($app) = @_;

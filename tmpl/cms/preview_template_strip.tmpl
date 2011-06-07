@@ -74,7 +74,7 @@
     <table id="template-preview-layout" class="preview-layout">
       <tr>
         <td id="template-preview-control-strip" class="preview-control-strip">
-          <p id="template-preview-label" class="preview-label"><__trans phrase="You are previewing the template named &ldquo;[_1]&rdquo;" params="<$mt:var name="name" escape="html"$>"><mt:if name="build_time"><small><__trans phrase="(Publish time: [_1] seconds)" params="<mt:var name="build_time">"></small></mt:if></p>
+          <p id="template-preview-label" class="preview-label"><__trans phrase="You are previewing the template named &ldquo;[_1]&rdquo;" params="<$mt:var name="name" escape="html" escape="html"$>"><mt:if name="build_time"><small><__trans phrase="(Publish time: [_1] seconds)" params="<mt:var name="build_time">"></small></mt:if></p>
           <form method="post" action="<$mt:var name="script_url"$>">
             <input type="hidden" name="__mode" value="save" />
             <input type="hidden" name="_type" value="template" />

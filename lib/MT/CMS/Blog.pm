@@ -1071,8 +1071,8 @@ sub start_rebuild_pages {
         my $tmpl = MT::Template->load($tmpl_id)
             or return $app->error(
             $app->translate( 'Can\'t load template #[_1].', $tmpl_id ) );
-        $param{build_type_name}
-            = $app->translate( "index template '[_1]'", $tmpl->name );
+        $param{build_type_name} = $app->translate( "index template '[_1]'",
+            MT::Util::encode_html( $tmpl->name ) );
         $param{is_one_index} = 1;
     }
     elsif ( $type_name =~ /^entry-(\d+)$/ ) {
@@ -1316,6 +1316,12 @@ sub can_save {
     my ( $eh, $app, $id ) = @_;
     my $perms = $app->permissions;
     if ($id) {
+        unless ( ref $id ) {
+            $id = MT->model('blog')->load($id)
+                or return;
+        }
+
+        return unless $id->is_blog;
         return $app->can_do('edit_blog_config')
             || ( $app->param('cfg_screen')
             && $app->param('cfg_screen') eq 'cfg_publish_profile' );
@@ -1326,12 +1332,19 @@ sub can_save {
 }
 
 sub can_delete {
-    my ( $eh, $app, $obj ) = @_;
+    my ( $eh, $app, $id ) = @_;
+    return 1 if $app->user->is_superuser;
+    return 0 unless $id;
+
+    unless ( ref $id ) {
+        $id = MT->model('blog')->load($id)
+            or return;
+    }
+
+    return unless $id->is_blog;
+
     my $author = $app->user;
-    return 1 if $author->is_superuser();
-    require MT::Permission;
-    my $perms = $author->permissions( $obj->id );
-    return $perms && $perms->can_do('delete_blog');
+    return $author->permissions($id->id)->can_do('delete_blog');
 }
 
 sub pre_save {

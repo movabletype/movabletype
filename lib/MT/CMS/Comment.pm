@@ -44,7 +44,7 @@ sub edit {
                 = substr( $param->{entry_title}, 0, $title_max_len ) . '...'
                 if $param->{entry_title}
                     && length( $param->{entry_title} ) > $title_max_len;
-            $param->{entry_permalink} = $entry->permalink;
+            $param->{entry_permalink} = MT::Util::encode_html( $entry->permalink );
             unless ( $param->{has_publish_access} ) {
                 $param->{has_publish_access}
                     = $app->can_do('edit_comment_status_of_own_entry') ? 1 : 0
@@ -481,6 +481,7 @@ sub handle_junk {
 
 sub not_junk {
     my $app = shift;
+    $app->validate_magic or return;
 
     my @ids = $app->param("id");
     my @item_loop;

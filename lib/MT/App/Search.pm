@@ -101,7 +101,8 @@ sub init_request {
         ? $q->param('blog_id')
         : $app->first_blog_id();
     my $blog = $app->model('blog')->load($blog_id)
-        or return $app->errtrans( 'Can\'t load blog #[_1].', $blog_id );
+        or return $app->errtrans( 'Can\'t load blog #[_1].',
+        MT::Util::encode_html($blog_id) );
     my $page = $q->param('page') ? $q->param('page') : 1;
     my $limit
         = $q->param('limit') ? $q->param('limit')
