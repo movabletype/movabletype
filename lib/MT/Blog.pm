@@ -2049,7 +2049,8 @@ captcha option is off, and there is a built-in captcha generator named
 =item * publish_queue
 
 The flag is set to 1 if custom_dynamic_templates is async_all or 
-async_partially. FIXME
+async_partially, acting as a flag to use TheSchwartz publishing queue
+instead of publishing immediately (in the case of static publishing) 
 
 =item * nwc_smart_replace
 
