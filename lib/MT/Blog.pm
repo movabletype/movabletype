@@ -1867,7 +1867,7 @@ moderated pings, or not at all
 
 =item * ping_weblogs
 
-unused
+boolean indicating wether to ping weblogs.com
 
 =item * ping_blogs
 
@@ -1879,7 +1879,7 @@ unused
 
 =item * ping_google
 
-unused
+boolean indicating wether to ping blogsearch.google.com
 
 =item * ping_others
 
@@ -2102,11 +2102,11 @@ this hash as well
 
 =item * category_order
 
-unused
+Contain a comma-delimiter list of category ids, ordered
 
 =item * folder_order
 
-unused
+Contain a comma-delimiter list of folder ids, ordered
 
 =back
 
