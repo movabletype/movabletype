@@ -25,6 +25,8 @@ sub import_folders {
 
 sub _add_categories {
     my ( $theme, $blog, $cat_data, $class, $parent ) = @_;
+    
+    my $user = MT->instance->user;
 
     for my $basename ( keys %$cat_data ) {
         my $datum = $cat_data->{$basename};
@@ -48,6 +50,7 @@ sub _add_categories {
                 $cat->$key($val);
             }
             $cat->allow_pings( $datum->{allow_pings} || 0 );
+            $cat->author_id( $user->id );
             $cat->parent( $parent->id )
                 if defined $parent;
             $cat->save;
