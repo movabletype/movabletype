@@ -1365,60 +1365,19 @@ sub _upload_file {
         ; ## Extract the characters to the right of the last dot delimiter / period
     $ext = $1;    ## Those characters are the file extension
 
-    ###
-    #
-    # If DeniedAssetFileExtensions configuration directive is defined.
-    #
-    ###
-
-    if ( my $deny_exts = $app->config('DeniedAssetFileExtensions') ) {
-
-# Split the parameters of the DeniedAssetFileExtensions configuration directive into items in an array
-        my @denied = map {
-            if   ( $_ =~ m/^\./ ) {qr/$_/i}
-            else                  {qr/\.$_/i}
-        } split '\s?,\s?', $deny_exts;
-
-        # Find the extension in the array
-        my @found = grep( /\b$ext\b/, @denied );
-
-        # If there is no extension or the extension wasn't found in the array
-        if ( scalar @found ) {
-            return $app->error(
-                $app->translate(
-                    'The file ([_1]) you uploaded is not allowed.', $filename
-                )
-            );
+    if ( my $deny_exts = $app->config->DeniedAssetFileExtensions ) {
+        my @deny_exts = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $deny_exts;
+        my @ret = File::Basename::fileparse( $local_base, @deny_exts );
+        if ( $ret[2] ) {
+            return $app->error($app->translate('The file([_1]) you uploaded is not allowed.', $local_base));
         }
-
     }
-
-    ###
-    #
-    # If AssetFileExtensions configuration directive is defined.
-    #
-    ###
-
     if ( my $allow_exts = $app->config('AssetFileExtensions') ) {
-
-# Split the parameters of the AssetFileExtensions configuration directive into items in an array
-        my @allowed = map {
-            if   ( $_ =~ m/^\./ ) {qr/$_/i}
-            else                  {qr/\.$_/i}
-        } split '\s?,\s?', $allow_exts;
-
-        # Find the extension in the array
-        my @found = grep( /\b$ext\b/, @allowed );
-
-        # If there is no extension or the extension wasn't found in the array
-        if ( ( length($ext) == 0 ) || ( !@found ) ) {
-            return $app->error(
-                $app->translate(
-                    'The file ([_1]) you uploaded is not allowed.', $filename
-                )
-            );
+        my @allow_exts = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $allow_exts;
+        my @ret = File::Basename::fileparse( $local_base, @allow_exts );
+        unless ( $ret[2] ) {
+            return $app->error($app->translate('The file([_1]) you uploaded is not allowed.', $local_base));
         }
-
     }
 
     my ( $w, $h, $id, $write_file ) = MT::Image->check_upload(
