@@ -906,6 +906,10 @@ sub preview {
         $entry->id(-1); # fake out things like MT::Taggable::__load_tags
         $entry->blog_id($blog_id);
     }
+
+    return $app->error( $app->translate("Permission denied.") )
+        unless $app->permissions->can_edit_entry( $entry, $app->user );
+
     my $cat;
     my $names = $entry->column_names;
 

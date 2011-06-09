@@ -1151,6 +1151,20 @@ sub newMediaObject {
     $ext =~ m!.*\.(.*)$!;       ## Extract the characters to the right of the last dot delimiter / period
     $ext = $1;                  ## Those characters are the file extension 
 
+    if ( my $deny_exts = $mt->config('DeniedAssetFileExtensions') ) {
+        
+        # Split the parameters of the DeniedAssetFileExtensions configuration directive into items in an array
+        my @denied = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $deny_exts;
+        
+        # Find the extension in the array
+        my @found = grep(/\b$ext\b/, @denied);
+
+        # If there is extension or the extension wasn't found in the array
+        if ( scalar @found ) {
+            die _fault(MT->translate('The file ([_1]) you uploaded is not allowed.', $fname));
+        }
+    }
+
     
     if ( my $allow_exts = $mt->config('AssetFileExtensions') ) {
         
