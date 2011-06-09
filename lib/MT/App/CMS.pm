@@ -2829,21 +2829,21 @@ sub init_core_callbacks {
             # ts_funcmap
             $pkg
                 . 'save_permission_filter.ts_funcmap' => sub {
-                $app->funcmap( $app->translate("Invalid request.") );
+                $app->error( $app->translate("Invalid request.") );
             },
             $pkg
                 . 'delete_permission_filter.ts_funcmap' => sub {
-                $app->funcmap( $app->translate("Invalid request.") );
+                $app->error( $app->translate("Invalid request.") );
             },
 
             # ts_job
             $pkg
                 . 'save_permission_filter.ts_job' => sub {
-                $app->job( $app->translate("Invalid request.") );
+                $app->error( $app->translate("Invalid request.") );
             },
             $pkg
                 . 'delete_permission_filter.ts_job' => sub {
-                $app->job( $app->translate("Invalid request.") );
+                $app->error( $app->translate("Invalid request.") );
             },
 
             # role

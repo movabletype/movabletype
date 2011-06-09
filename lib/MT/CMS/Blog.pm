@@ -703,7 +703,7 @@ sub rebuild_pages {
         my $entry_id = $1;
         require MT::Entry;
         my $entry = MT::Entry->load($entry_id);
-        return $app->permission_error()
+        return $app->permission_denied()
             unless $perms->can_edit_entry( $entry, $app->user );
         $app->rebuild_entry(
             Entry             => $entry,
@@ -1314,15 +1314,15 @@ sub can_view {
 
 sub can_save {
     my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
+
     if ($id) {
         unless ( ref $id ) {
             $id = MT->model('blog')->load($id)
                 or return;
         }
 
-        return unless $id->is_blog;
-        return $app->can_do('edit_blog_config')
+        my $author = $app->user;
+        return $author->permissions($id->id)->can_do('edit_blog_config')
             || ( $app->param('cfg_screen')
             && $app->param('cfg_screen') eq 'cfg_publish_profile' );
     }

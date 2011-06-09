@@ -349,9 +349,15 @@ sub can_view_website_list {
 
 sub can_save {
     my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
+
     if ($id) {
-        return $app->can_do('edit_website_config')
+        unless ( ref $id ) {
+            $id = MT->model('blog')->load($id)
+                or return;
+        }
+
+        my $author = $app->user;
+        return $author->permissions($id->id)->can_do('edit_blog_config')
             || ( $app->param('cfg_screen')
             && $app->param('cfg_screen') eq 'cfg_publish_profile' );
     }
@@ -488,6 +494,8 @@ sub dialog_move_blogs {
 sub move_blogs {
     my $app = shift;
     return unless $app->validate_magic;
+    return $app->error($app->translate('Permission denied.'))
+        unless $app->can_do('move_blogs');
 
     my $website_class = $app->model('website');
     my $ids           = $app->param('ids');

@@ -1878,8 +1878,10 @@ BEGIN {
             'DefaultWebsiteTheme'  => { default => 'classic_website' },
             'DefaultBlogTheme'     => { default => 'classic_blog' },
             'ThemeStaticFileExtensions' => undef,
-            'AssetFileTypes'            => { type => 'HASH' },
-            'AssetFileExtensions'       => { default => undef },
+
+            'AssetFileTypes'              => { type => 'HASH' },
+            'AssetFileExtensions'         => { default => undef },
+            'DeniedAssetFileExtensions'   => { default => q{ascx,asis,asp,aspx,bat,cfc,cfm,cgi,cmd,com,cpl,dll,exe,htaccess,htm,html,inc,jhtml,js,jsb,jsp,mht,mhtml,msi,php\d?,phps,phtm,phtml,pif,pl,pwml,py,reg,scr,sh,shtm,shtml,vbs,vxd} },
 
             'FastCGIMaxTime'     => { default => 60 * 60 },    # 1 hour
             'FastCGIMaxRequests' => { default => 1000 },       # 1000 requests
@@ -2312,6 +2314,7 @@ sub load_core_permissions {
                 'start_restore'                    => 1,
                 'use_tools:search'                 => 1,
                 'remove_user_assoc'                => 1,
+                'edit_global_commenter_status'     => 1,
             },
         },
         'blog.manage_member_blogs' => {

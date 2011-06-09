@@ -1217,7 +1217,7 @@ ok( $out =~ m/__mode=dashboard&permission=1/i,
     "Delete folder (different): result"
 );
 
-$user = MT::Author->load(994);    #kagawa
+$user = MT::Author->load(995);    #ogawa
 
 # Update a Page
 # __mode=save&_type=page&&blog_id=1&author_id=1&status=1&id=1
@@ -1257,7 +1257,7 @@ ok( $out =~ m/__mode=dashboard&permission=1/i,
     "Delete page (different): result"
 );
 
-$user = MT::Author->load(995);    #ogawa
+$user = MT::Author->load(994);    #kagawa
 
 # Update an Entry
 # __mode=save&_type=entry&&blog_id=1&author_id=1&status=1&id=20

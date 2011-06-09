@@ -349,6 +349,20 @@ sub do_signup {
         foreach
         qw(blog_id entry_id static email url username nickname email return_url );
 
+    return $app->errtrans("Invalid request")
+        unless $param->{blog_id};
+
+    my $blog = $app->model('blog')->load( $param->{blog_id} || 0 )
+        or return $app->error(
+        $app->translate( 'Can\'t load blog #[_1].', $param->{blog_id} ) );
+
+    my $cfg = $app->config;
+    if ( my $registration = $cfg->CommenterRegistration ) {
+        return $app->handle_error(
+            $app->translate('Signing up is not allowed.') )
+            unless $registration->{Allow} && $blog->allow_commenter_regist;
+    }
+
     my $filter_result = $app->run_callbacks( 'api_save_filter.author', $app );
 
     my $user;
@@ -1452,7 +1466,7 @@ sub redirect_to_target {
         $target = $entry->archive_url;
     }
     elsif ( $static ne '' ) {
-        $target = MT::Util::encode_html( $static );
+        $target = MT::Util::encode_html($static);
     }
     if ( $q->param('logout') ) {
         if ( $app->user

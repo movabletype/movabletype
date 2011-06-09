@@ -19,7 +19,13 @@
      id="generic-error"
      class="error"
      can_close="0">
-    <mt:var name="error">
+    <mt:if name="enable_pre">
+  <pre>
+    </mt:if>
+    <mt:var name="error" escape="html">
+    <mt:if name="enable_pre">
+  </pre>
+    </mt:if>
   </mtapp:statusmsg>
     </mt:if>
   </mt:if>
