@@ -410,6 +410,16 @@ sub start_upload {
 sub upload_file {
     my $app = shift;
 
+    if ( my $perms = $app->permissions ) {
+        return $app->error( $app->translate("Permission denied.") )
+            unless $perms->can_do('upload');
+    }
+    else {
+        return $app->error( $app->translate("Permission denied.") );
+    }
+
+    $app->validate_magic() or return;
+
     my ( $asset, $bytes ) = _upload_file(
         $app,
         require_type => ( $app->param('require_type') || '' ),
@@ -1061,13 +1071,6 @@ sub _upload_file {
     my (%upload_param) = @_;
     require MT::Image;
 
-    if ( my $perms = $app->permissions ) {
-        return permission_denied()
-            unless $app->can_do('upload');
-    }
-
-    $app->validate_magic() or return;
-
     my $q = $app->param;
     my ( $fh, $info ) = $app->upload_info('file');
     my $mimetype;
@@ -1389,6 +1392,22 @@ sub _upload_file {
         $relative_url  = encode_url($unique_basename);
         $asset_file
             = File::Spec->catfile( '%s', 'uploads', $unique_basename );
+    }
+
+    if ( my $deny_exts = $app->config->DeniedAssetFileExtensions ) {
+        my @deny_exts = map {
+            if   ( $_ =~ m/^\./ ) {qr/$_/i}
+            else                  {qr/\.$_/i}
+        } split '\s?,\s?', $deny_exts;
+        my @ret = File::Basename::fileparse( $basename, @deny_exts );
+        if ( $ret[2] ) {
+            return $app->error(
+                $app->translate(
+                    'The file([_1]) you uploaded is not allowed.', $basename
+                )
+            );
+        }
+
     }
 
     if ( my $allow_exts = $app->config('AssetFileExtensions') ) {

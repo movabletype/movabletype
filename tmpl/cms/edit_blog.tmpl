@@ -246,6 +246,9 @@ function init() {
           return true;
         }
         return is_valid_absolute_path($e.val());
+      },
+      '#server_offset': function ($e) {
+        return $e.val() !== '';
       }
     });
 
@@ -260,7 +263,7 @@ function init() {
     });
 
     jQuery('#cfg_form').submit( function () {
-        if ( !jQuery(this).find('input:visible').mtValidate('simple') ) return false;
+        if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') ) return false;
     });
 </mt:setvarblock>
 

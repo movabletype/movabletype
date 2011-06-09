@@ -239,9 +239,7 @@ sub add_tags_to_entries {
         next unless $id;
         my $entry = MT::Entry->load($id) or next;
         next
-            unless $entry
-                || $user->is_superuser
-                || $perms->can_edit_entry( $entry, $user );
+            unless $entry && $perms->can_edit_entry( $entry, $user );
 
         $entry_count++;
         $entry->add_tags(@tags);
@@ -285,9 +283,7 @@ sub remove_tags_from_entries {
         next unless $id;
         my $entry = MT::Entry->load($id) or next;
         next
-            unless $entry
-                || $user->is_superuser
-                || $perms->can_edit_entry( $entry, $user );
+            unless $entry && $perms->can_edit_entry( $entry, $user );
         $entry->remove_tags(@tags);
         $entry->save
             or return $app->trans_error( "Error saving entry: [_1]",
