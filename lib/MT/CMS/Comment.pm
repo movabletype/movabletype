@@ -474,9 +474,20 @@ sub save_commenter_perm {
     my @ids     = $params ? @$params : $app->param('commenter_id');
     my $blog_id = $q->param('blog_id');
     my $author  = $app->user;
-
+    my %permissions;
     foreach my $id (@ids) {
         ( $id, $blog_id ) = @$id if ref $id eq 'ARRAY';
+        my $perm_blog_id = MT->config->SingleCommunity ? 0 : $blog_id;
+        if ( $perm_blog_id ) {
+            my $perm = $permissions{ $perm_blog_id } ||= $author->permissions($perm_blog_id);
+            if ( !$perm->can_do('edit_commenter_status') ) {
+                return $app->errtrans( "Permission denied." );
+            }
+        }
+        else {
+            return $app->errtrans( "Permission denied." )
+                unless $app->can_do('edit_global_commenter_status');
+        }
 
         my $cmntr = MT::Author->load($id)
           or return $app->errtrans( "No such commenter [_1].", $id );

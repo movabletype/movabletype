@@ -29,10 +29,10 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '5.05', '5.0019' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '5.0501', '5.0019' );
     ( $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID, $PORTAL_URL ) = (
         '__PRODUCT_NAME__', 'MT',
-        '5.05', '5.05',
+        '5.051', '5.051',
         '__PORTAL_URL__'
     );
 

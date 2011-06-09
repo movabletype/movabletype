@@ -978,6 +978,9 @@ sub _create_temp_entry {
         $entry->blog_id($blog_id);
     }
 
+    return $app->return_to_dashboard( redirect => 1 )
+        unless $app->permissions->can_edit_entry( $entry, $app->user );
+
     my $names = $entry->column_names;
     my %values = map { $_ => scalar $app->param($_) } @$names;
     delete $values{'id'} unless $app->param('id');

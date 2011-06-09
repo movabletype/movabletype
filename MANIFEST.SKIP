@@ -98,6 +98,10 @@ themes/broken_blog_theme
 lib/MT/App/Viewer.pm
 mt-view.cgi
 
+# MT::App::NotifyList
+lib/MT/App/NotifyList.pm
+mt-add-notify.cgi
+
 ^schemas
 \bknown-issues
 ^t/

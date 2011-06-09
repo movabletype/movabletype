@@ -30,27 +30,27 @@ sub init {
         do_signup      => \&do_signup,
 
         # register         => \&register,
-        do_register      => \&do_register,
-        preview          => \&preview,
-        post             => \&post,
-        handle_sign_in   => { handler => \&handle_sign_in, charset => 'utf-8' },
-        session_js       => \&session_js,
-        edit_profile     => \&edit_commenter_profile,
-        save_profile     => \&save_commenter_profile,
-        red              => \&do_red,
+        do_register    => \&do_register,
+        preview        => \&preview,
+        post           => \&post,
+        handle_sign_in => { handler => \&handle_sign_in, charset => 'utf-8' },
+        session_js     => \&session_js,
+        edit_profile   => \&edit_commenter_profile,
+        save_profile   => \&save_commenter_profile,
+        red            => \&do_red,
         generate_captcha => \&generate_captcha,
 
-        start_recover    => \&start_recover,
-        recover          => \&recover,
-        new_pw           => \&new_pw,
+        start_recover => \&start_recover,
+        recover       => \&recover,
+        new_pw        => \&new_pw,
 
-        comment_listing    => \&comment_listing,
+        comment_listing => \&comment_listing,
 
         # deprecated
         cmtr_name_js   => \&commenter_name_js,
         cmtr_status_js => \&commenter_status_js,
     );
-    $app->{template_dir} = 'comment';
+    $app->{template_dir}         = 'comment';
     $app->{plugin_template_path} = '';
     $app->init_commenter_authenticators;
     $app->init_captcha_providers();
@@ -347,6 +347,20 @@ sub do_signup {
     $param->{$_} = $q->param($_)
         foreach
         qw(blog_id entry_id static email url username nickname email return_url );
+
+    return $app->errtrans("Invalid request")
+        unless $param->{blog_id};
+
+    my $blog = $app->model('blog')->load( $param->{blog_id} || 0 )
+        or return $app->error(
+        $app->translate( 'Can\'t load blog #[_1].', $param->{blog_id} ) );
+
+    my $cfg = $app->config;
+    if ( my $registration = $cfg->CommenterRegistration ) {
+        return $app->handle_error(
+            $app->translate('Signing up is not allowed.') )
+            unless $registration->{Allow} && $blog->allow_commenter_regist;
+    }
 
     my $filter_result = $app->run_callbacks( 'api_save_filter.author', $app );
 
@@ -959,8 +973,8 @@ sub post {
         }
     }
 
-    $app->param('_type', 'comment');
-    if (! $app->run_callbacks( 'api_save_filter.comment', $app ) ) {
+    $app->param( '_type', 'comment' );
+    if ( !$app->run_callbacks( 'api_save_filter.comment', $app ) ) {
         return $app->handle_error( $app->errstr );
     }
 
@@ -980,9 +994,10 @@ sub post {
         }
         );
     if ( $comment->id && !$comment->is_junk ) {
-        
-        $app->run_callbacks( 'api_post_save.comment', $app, $comment, $commenter );
-        
+
+        $app->run_callbacks( 'api_post_save.comment',
+            $app, $comment, $commenter );
+
         $app->log(
             {   message => $app->translate(
                     'Comment on "[_1]" by [_2].', $entry->title,
@@ -1357,7 +1372,7 @@ sub _make_comment {
 sub preview { my $app = shift; do_preview( $app, $app->{query}, @_ ) }
 
 sub _make_commenter {
-    my $app    = shift;
+    my $app = shift;
     return $app->make_commenter(@_);
 }
 
@@ -1445,7 +1460,7 @@ sub redirect_to_target {
         $target = $entry->archive_url;
     }
     elsif ( $static ne '' ) {
-        $target = MT::Util::encode_html( $static );
+        $target = MT::Util::encode_html($static);
     }
     if ( $q->param('logout') ) {
         if ( $app->user
@@ -1534,7 +1549,6 @@ sub comment_listing {
     return 1;
 }
 
-
 # deprecated
 sub _commenter_status {
     my $app              = shift;
@@ -1601,10 +1615,12 @@ JS
 # deprecated
 sub commenter_name_js {
     local $SIG{__WARN__} = sub { };
-    my $app            = shift;
-    my $commenter_name = Encode::decode_utf8( $app->cookie_val('commenter_name') );
-    my $ids            = Encode::decode_utf8( $app->cookie_val('commenter_id') ) || q();
-    my $commenter_url  = Encode::decode_utf8( $app->cookie_val('commenter_url') ) || q();
+    my $app = shift;
+    my $commenter_name
+        = Encode::decode_utf8( $app->cookie_val('commenter_name') );
+    my $ids = Encode::decode_utf8( $app->cookie_val('commenter_id') ) || q();
+    my $commenter_url
+        = Encode::decode_utf8( $app->cookie_val('commenter_url') ) || q();
 
     my $commenter_id;
     if ($ids) {
@@ -1729,8 +1745,8 @@ sub do_preview {
                 {   'body_class'                => 'mt-comment-error',
                     'comment_response_template' => 1,
                     'comment_error'             => 1,
-                    'return_to'                 => $app->param('return_url') || '',
-                    'system_template'           => 1
+                    'return_to'       => $app->param('return_url') || '',
+                    'system_template' => 1
                 }
             );
         }
@@ -1821,8 +1837,7 @@ sub save_commenter_profile {
     return $app->handle_error( $app->translate('Invalid login') )
         unless $cmntr;
 
-    my %param
-        = map { $_ => scalar( $q->param($_) ) }
+    my %param = map { $_ => scalar( $q->param($_) ) }
         qw( name nickname email password pass_verify url entry_url return_url external_auth blog_id );
     $param{blog_id} =~ s/\D//g if defined $param{blog_id};
 
@@ -1843,8 +1858,12 @@ sub save_commenter_profile {
                 'All required fields must have valid values.');
             return $app->build_page( 'profile.tmpl', \%param );
         }
-        if ( $nickname =~ m/([<>])/) {
-            $param{error} = $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Display Name"), encode_html( $1 ) );
+        if ( $nickname =~ m/([<>])/ ) {
+            $param{error} = $app->translate(
+                "[_1] contains an invalid character: [_2]",
+                $app->translate("Display Name"),
+                encode_html($1)
+            );
             return $app->build_page( 'profile.tmpl', \%param );
         }
         if ( $param{password} ne $param{pass_verify} ) {
@@ -1853,20 +1872,26 @@ sub save_commenter_profile {
         }
     }
     my $email = $param{email};
-    if ( $email && !is_valid_email( $email ) ) {
+    if ( $email && !is_valid_email($email) ) {
         $param{error} = $app->translate('Email Address is invalid.');
         return $app->build_page( 'profile.tmpl', \%param );
     }
-    if ( $email && $email =~ m/([<>])/) {
-        $param{error} = $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Email Address"), encode_html( $1 ) );
+    if ( $email && $email =~ m/([<>])/ ) {
+        $param{error} = $app->translate(
+            "[_1] contains an invalid character: [_2]",
+            $app->translate("Email Address"),
+            encode_html($1)
+        );
         return $app->build_page( 'profile.tmpl', \%param );
     }
-    if ( $param{url} && (!is_url( $param{url} ) || ($param{url} =~ m/[<>]/) ) ) {
+    if ( $param{url}
+        && ( !is_url( $param{url} ) || ( $param{url} =~ m/[<>]/ ) ) )
+    {
         $param{error} = $app->translate('URL is invalid.');
         return $app->build_page( 'profile.tmpl', \%param );
     }
 
-    if (! $app->run_callbacks( 'api_save_filter.author', $app ) ) {
+    if ( !$app->run_callbacks( 'api_save_filter.author', $app ) ) {
         $param{error} = $app->errstr;
         return $app->build_page( 'profile.tmpl', \%param );
     }
@@ -1931,8 +1956,7 @@ sub new_pw {
 
 sub redirect_to_edit_profile {
     my $app = shift;
-    return $app->redirect(
-        $app->uri( mode => 'edit_profile' ) );
+    return $app->redirect( $app->uri( mode => 'edit_profile' ) );
 }
 
 1;

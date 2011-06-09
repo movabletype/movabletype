@@ -869,6 +869,13 @@ sub preview {
 
     return unless $app->validate_magic;
 
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
+    return $app->return_to_dashboard( redirect => 1 )
+      unless $perms || $app->user->is_superuser;
+    if ( $perms && !$perms->can_edit_templates ) {
+        return $app->return_to_dashboard( permission => 1 );
+    }
+
     # We can only do previews on blog templates. Have to publish
     # the preview file somewhere!
     return $app->errtrans("Invalid request.") unless $blog;
