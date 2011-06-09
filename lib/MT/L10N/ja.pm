@@ -4246,6 +4246,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## plugins/GoogleNews/config.yaml
 	'Search for' => '検索ワード',
 
+	'The file([_1]) you uploaded is not allowed.' => 'ファイル([_1])のアップロードは許可されていません。',
 );
 
 1;
