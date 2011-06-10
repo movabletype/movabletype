@@ -26,7 +26,7 @@ sub import_folders {
 sub _add_categories {
     my ( $theme, $blog, $cat_data, $class, $parent ) = @_;
     
-    my $user = MT->instance->user;
+    my $user = MT->app->user;
 
     for my $basename ( keys %$cat_data ) {
         my $datum = $cat_data->{$basename};
