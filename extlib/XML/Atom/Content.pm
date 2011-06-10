@@ -9,7 +9,6 @@ __PACKAGE__->mk_xml_attr_accessors(qw( lang base ));
 
 use Encode;
 use XML::Atom;
-use XML::Atom::Util qw( remove_default_ns hack_unicode_entity );
 use MIME::Base64 qw( encode_base64 decode_base64 );
 
 sub element_name { 'content' }
@@ -55,11 +54,12 @@ sub body {
             my $node;
             eval {
                 if (LIBXML) {
-                    my $parser = XML::LibXML->new;
+                    my $parser = XML::Atom->libxml_parser;
                     my $tree = $parser->parse_string($copy);
                     $node = $tree->getDocumentElement;
                 } else {
-                    my $xp = XML::XPath->new(xml => $copy);
+                    my $parser = XML::Atom->expat_parser;
+                    my $xp = XML::XPath->new(xml => $copy, parser => $parser);
                     $node = (($xp->find('/')->get_nodelist)[0]->getChildNodes)[0]
                         if $xp;
                 }
@@ -112,14 +112,13 @@ sub body {
                     }
                     $content->{__body} = '';
                     for my $n (@children) {
-                        remove_default_ns($n) if LIBXML;
                         $content->{__body} .= $n->toString(LIBXML ? 1 : 0);
                     }
                 } else {
                     $content->{__body} = LIBXML ? $elem->textContent : $elem->string_value;
                 }
                 if ($] >= 5.008) {
-                    $content->{__body} = hack_unicode_entity($content->{__body});
+                    Encode::_utf8_off($content->{__body}) unless $XML::Atom::ForceUnicode;
                 }
             } elsif ($mode eq 'base64') {
                 my $raw = decode_base64(LIBXML ? $elem->textContent : $elem->string_value);
@@ -149,7 +148,7 @@ sub _is_printable {
           ? $data
           : eval { Encode::decode("utf-8", $data, Encode::FB_CROAK) } );
 
-    return ! $@ && $decoded =~ /^\p{IsPrint}*$/;
+    return ! $@ && $decoded =~ /^[\p{IsPrint}\s]*$/;
 }
 
 1;

@@ -226,8 +226,13 @@ sub xml_body {
     my $app = shift;
     unless (exists $app->{xml_body}) {
         if (LIBXML) {
-            my $parser = XML::LibXML->new;
-            $app->{xml_body} = $parser->parse_string($app->request_content);
+            my $parser = MT->libxml_parser;
+            eval {
+                $app->{xml_body} = $parser->parse_string($app->request_content);
+            };
+            if ($@) {
+                die "Error Parsing XML Input $@ ";
+            }
         } else {
             my $xp = XML::XPath->new(xml => $app->request_content);
             $app->{xml_body} = ($xp->find('/')->get_nodelist)[0];
@@ -239,12 +244,12 @@ sub xml_body {
 sub atom_body {
     my $app = shift;
     my $atom;
+    my $xml = $app->xml_body;
     if ($app->{is_soap}) {
-        my $xml = $app->xml_body;
         $atom = MT::Atom::Entry->new(Elem => first($xml, NS_SOAP, 'Body'))
             or return $app->error(500, MT::Atom::Entry->errstr);
     } else {
-        $atom = MT::Atom::Entry->new(Stream => \$app->request_content)
+        $atom = MT::Atom::Entry->new(Doc => $xml)
             or return $app->error(500, MT::Atom::Entry->errstr);
     }
     $atom;
