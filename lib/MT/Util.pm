@@ -1444,7 +1444,7 @@ sub discover_tb {
             requires => [qw( Attribution Notice )],
             permits  => [qw( Reproduction Distribution )],
         },
-        'by-nd-nc' => {
+        'by-nc-nd' => {
             name      => 'Attribution-NoDerivs-NonCommercial',
             requires  => [qw( Attribution Notice )],
             permits   => [qw( Reproduction Distribution )],
@@ -1499,6 +1499,10 @@ sub discover_tb {
             name    => 'PublicDomain',
             permits => [qw( Reproduction Distribution DerivativeWorks )],
         },
+        'pdd' => {
+            name    => 'PublicDomainDedication',
+            permits => [qw( Reproduction Distribution DerivativeWorks )],
+         },
     );
 
     sub cc_url {
