@@ -537,24 +537,22 @@ sub new_post {
     my $type = $content->type; 
     my $body = encode_text(MT::I18N::utf8_off($content->body),'utf-8',$enc); 
     my $asset;
-    if ($type && $type !~ m!^application/.*xml$!) {
-        if ($type !~ m!^[text/|html]!) {
+    if ($type && $type eq 'text/plain') {
+        ## Check for LifeBlog Note & SMS records.
+        my $format = $atom->get(NS_DC, 'format');
+        if ($format && ($format eq 'Note' || $format eq 'SMS')) {
             $asset = $app->_upload_to_asset or return;
         }
-        elsif ($type && $type eq 'text/plain') {
-            ## Check for LifeBlog Note & SMS records.
-            my $format = $atom->get(NS_DC, 'format');
-            if ($format && ($format eq 'Note' || $format eq 'SMS')) {
-                $asset = $app->_upload_to_asset or return;
-            }
-        }
+    }
+    elsif ($type && $type !~ m!^(application/.*xml|text/.*|html)$! ) {
+        $asset = $app->_upload_to_asset or return;
     }
     if ( $atom->get(NS_TYPEPAD, 'standalone') && $asset ) {
         $app->response_code(201);
         $app->response_content_type('application/atom_xml');
         my $a = MT::Atom::Entry->new_with_asset($asset);
-        return $a->as_xml; 
-    } 
+        return $a->as_xml;
+    }
 
     my $entry = MT::Entry->new;
     my $orig_entry = $entry->clone;
