@@ -84,7 +84,7 @@ sub getlist {
     my $obj = shift;
     my($ns, $name) = @_;
     my $ns_uri = ref($ns) eq 'XML::Atom::Namespace' ? $ns->{uri} : $ns;
-    my @node = nodelist($obj->elem, $ns_uri, $name);
+    my @node = childlist($obj->elem, $ns_uri, $name);
     return map {
         my $val = LIBXML ? $_->textContent : $_->string_value;
         if ($] >= 5.008) {
@@ -127,6 +127,8 @@ sub set {
                 $elem->appendAttribute($attr);
             }
         }
+    } elsif (DATETIME && UNIVERSAL::isa($val, "DateTime")) {
+        return $obj->set($ns, $name, DateTime::Format::Atom->format_datetime($val), $attr, $add);
     } else {
         if (LIBXML) {
             $elem->appendChild(XML::LibXML::Text->new($val));

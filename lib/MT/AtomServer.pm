@@ -218,8 +218,13 @@ sub xml_body {
     my $app = shift;
     unless (exists $app->{xml_body}) {
         if (LIBXML) {
-            my $parser = XML::LibXML->new;
-            $app->{xml_body} = $parser->parse_string($app->request_content);
+            my $parser = MT->libxml_parser;
+            eval {
+                $app->{xml_body} = $parser->parse_string($app->request_content);
+            };
+            if ($@) {
+                die "Error Parsing XML Input $@ ";
+            }
         } else {
             my $xp = XML::XPath->new(xml => $app->request_content);
             $app->{xml_body} = ($xp->find('/')->get_nodelist)[0];
@@ -231,12 +236,12 @@ sub xml_body {
 sub atom_body {
     my $app = shift;
     my $atom;
+    my $xml = $app->xml_body;
     if ($app->{is_soap}) {
-        my $xml = $app->xml_body;
         $atom = MT::Atom::Entry->new(Elem => first($xml, NS_SOAP, 'Body'))
             or return $app->error(500, MT::Atom::Entry->errstr);
     } else {
-        $atom = MT::Atom::Entry->new(Stream => \$app->request_content)
+        $atom = MT::Atom::Entry->new(Doc => $xml)
             or return $app->error(500, MT::Atom::Entry->errstr);
     }
     $atom;
@@ -526,17 +531,15 @@ sub new_post {
     my $type = $content->type; 
     my $body = $content->body; 
     my $asset;
-    if ($type && $type !~ m!^application/.*xml$!) {
-        if ($type !~ m!^[text/|html]!) {
+    if ($type && $type eq 'text/plain') {
+        ## Check for LifeBlog Note & SMS records.
+        my $format = $atom->get(NS_DC, 'format');
+        if ($format && ($format eq 'Note' || $format eq 'SMS')) {
             $asset = $app->_upload_to_asset or return;
         }
-        elsif ($type && $type eq 'text/plain') {
-            ## Check for LifeBlog Note & SMS records.
-            my $format = $atom->get(NS_DC, 'format');
-            if ($format && ($format eq 'Note' || $format eq 'SMS')) {
-                $asset = $app->_upload_to_asset or return;
-            }
-        }
+    }
+    elsif ($type && $type !~ m!^(application/.*xml|text/.*|html)$! ) {
+        $asset = $app->_upload_to_asset or return;
     }
     if ( $atom->get(NS_TYPEPAD, 'standalone') && $asset ) {
         $app->response_code(201);
