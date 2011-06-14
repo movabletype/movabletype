@@ -822,7 +822,7 @@ sub decode_url {
             # re-replace &amp;#nnnn => &#nnnn
             $str =~ s/&amp;((\#([0-9]+)|\#x([0-9a-fA-F]+)).*?);/&$1;/g;
         }
-        $str =~ tr/\0-\x8\xB\xC\xE-\x1F\x7F/     /;
+        $str =~ tr/\0-\x08\x0B\x0C\x0E-\x1F\x7F/     /;
         $str;
     }
 
