@@ -2415,7 +2415,7 @@ sub process_mt_template {
     @geis;
 
     # Strip out placeholder wrappers to facilitate tmpl_* callbacks
-    $body =~ s/<\/?MT_(\w+):(\w+)>//g;
+    $body =~ s/<\/?MT_\w+:\w+>//g;
     $body;
 }
 
