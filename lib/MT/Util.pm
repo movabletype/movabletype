@@ -25,7 +25,7 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
                  start_background_task launch_background_tasks substr_wref
                  extract_urls extract_domain extract_domains is_valid_date
                  epoch2ts ts2epoch escape_unicode unescape_unicode
-                 sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
+                 sax_parser expat_parser trim ltrim rtrim asset_cleanup caturl multi_iter
                  weaken log_time make_string_csv browser_language sanitize_embed
                  extract_url_path break_up_text dir_separator );
 
@@ -1883,11 +1883,20 @@ sub unescape_unicode {
 
     sub init_sax {
         require XML::SAX;
-        if (@{XML::SAX->parsers} == 1) {
-            map { eval { XML::SAX->add_parser($_) } }
-                qw( XML::SAX::Expat XML::LibXML::SAX::Parser
-                    XML::LibXML::SAX
-                    XML::SAX::ExpatXS );
+        if ( @{ XML::SAX->parsers } == 1 ) {
+            my @parsers = (
+                'XML::SAX::ExpatXS        1.30',
+                'XML::LibXML::SAX         1.70',
+                'XML::LibXML::SAX::Parser 1.70',
+                'XML::SAX::Expat          0.37',
+            );
+            for my $parser ( @parsers ) {
+                eval "use $parser";
+                next if $@;
+                my ($module) = split /\s+/, $parser;
+                XML::SAX->add_parser($module);
+                last;
+            }
         }
         $initialized_sax = 1;
     }
@@ -1896,8 +1905,20 @@ sub unescape_unicode {
         init_sax() unless $initialized_sax;
         require XML::SAX::ParserFactory;
         my $f = XML::SAX::ParserFactory->new;
-        $f->parser();
+        $f->parser(
+            LexicalHandler => 'MT::Util::XML::SAX::LexicalHandler',
+        );
     }
+}
+
+sub expat_parser {
+    my $parser = XML::Parser->new(
+        Handlers => {
+            ExternEnt    => sub { warn "External entities disabled."; '' },
+            ExternEntFin => sub {},
+        },
+    );
+    return $parser;
 }
 
 sub multi_iter {
@@ -2226,6 +2247,12 @@ sub dir_separator {
     my $sep = File::Spec->catdir( 'MT', 'MT' );
     $sep =~ s/MT//g;
     return $sep;
+}
+
+package MT::Util::XML::SAX::LexicalHandler;
+
+sub start_dtd {
+    die "DOCTYPE declaration is not allowed.";
 }
 
 1;
