@@ -26,7 +26,7 @@ our @EXPORT_OK
     start_background_task launch_background_tasks substr_wref
     extract_urls extract_domain extract_domains is_valid_date
     epoch2ts ts2epoch escape_unicode unescape_unicode
-    sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
+    sax_parser expat_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy );
 
@@ -2223,8 +2223,20 @@ sub unescape_unicode {
         init_sax() unless $initialized_sax;
         require XML::SAX::ParserFactory;
         my $f = XML::SAX::ParserFactory->new;
-        $f->parser();
+        $f->parser(
+            LexicalHandler => 'MT::Util::XML::SAX::LexicalHandler',
+        );
     }
+}
+
+sub expat_parser {
+    my $parser = XML::Parser->new(
+        Handlers => {
+            ExternEnt    => sub { warn "External entities disabled."; '' },
+            ExternEntFin => sub {},
+        },
+    );
+    return $parser;
 }
 
 sub multi_iter {
@@ -2614,6 +2626,12 @@ sub deep_copy {
     else {
         $_[0];
     }
+}
+
+package MT::Util::XML::SAX::LexicalHandler;
+
+sub start_dtd {
+    die "DOCTYPE declaration is not allowed.";
 }
 
 1;
