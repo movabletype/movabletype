@@ -663,8 +663,8 @@ sub meta {
 sub summary {
     my $obj = shift;
     my ( $terms, $value ) = @_;
-    $obj->{__summary}->set_primary_keys($obj);
     return undef if (!$obj->{__summary});
+    $obj->{__summary}->set_primary_keys($obj);
     return $obj->{__summary}->set( $terms, $value ) if (scalar @_ == 2);
     return $obj->{__summary}->get($terms);
 }
