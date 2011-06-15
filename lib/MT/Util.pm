@@ -2210,11 +2210,19 @@ sub unescape_unicode {
     sub init_sax {
         require XML::SAX;
         if ( @{ XML::SAX->parsers } == 1 ) {
-            map {
-                eval { XML::SAX->add_parser($_) }
-                } qw( XML::SAX::Expat XML::LibXML::SAX::Parser
-                XML::LibXML::SAX
-                XML::SAX::ExpatXS );
+            my @parsers = (
+                'XML::SAX::ExpatXS',
+                'XML::LibXML::SAX 1.70',
+                'XML::LibXML::SAX::Parser 1.70',
+                'XML::SAX::Expat',
+            );
+            for my $parser ( @parsers ) {
+                eval "use $parser";
+                next if $@;
+                my ($module) = split /\s+/, $parser;
+                XML::SAX->add_parser($module);
+                last;
+            }
         }
         $initialized_sax = 1;
     }
