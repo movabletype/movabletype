@@ -2211,10 +2211,10 @@ sub unescape_unicode {
         require XML::SAX;
         if ( @{ XML::SAX->parsers } == 1 ) {
             my @parsers = (
-                'XML::SAX::ExpatXS',
-                'XML::LibXML::SAX 1.70',
+                'XML::SAX::ExpatXS        1.30',
+                'XML::LibXML::SAX         1.70',
                 'XML::LibXML::SAX::Parser 1.70',
-                'XML::SAX::Expat',
+                'XML::SAX::Expat          0.37',
             );
             for my $parser ( @parsers ) {
                 eval "use $parser";
