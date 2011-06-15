@@ -341,10 +341,8 @@ sub php_tests {
             diag("2. Please add the following line to mysql-test.cfg");
             diag("   DBHost 127.0.0.1");
         }
-        elsif ( $result =~ s/^#\s// ) {
-            note($result);
-        }
         else {
+            $result =~ s/\A# ?//;
             diag($result);
         }
     }
