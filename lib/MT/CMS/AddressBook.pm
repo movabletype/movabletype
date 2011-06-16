@@ -49,6 +49,7 @@ sub send_notify {
         unless $perms->can_do('send_entry_notification');
 
     my $author = $entry->author;
+    $author = $user unless $author; # in case author was deleted
     return $app->error(
         $app->translate( "No email address for user '[_1]'", $author->name ) )
         unless $author->email;
@@ -135,36 +136,23 @@ sub send_notify {
         )
         );
     delete $head{To};
-
-    foreach my $email ( keys %{$addrs} ) {
-        next unless $email;
-        if ( $app->config('EmailNotificationBcc') ) {
-            push @{ $head{Bcc} }, $email;
-            if ( $i++ % 20 == 0 ) {
-                MT::Mail->send( \%head, $body )
-                    or return $app->error(
-                    $app->translate(
-                        "Error sending mail ([_1]); try another MailTransfer setting?",
-                        MT::Mail->errstr
-                    )
-                    );
-                @{ $head{Bcc} } = ();
-            }
-        }
-        else {
-            $head{To} = $email;
-            MT::Mail->send( \%head, $body )
-                or return $app->error(
-                $app->translate(
-                    "Error sending mail ([_1]); try another MailTransfer setting?",
-                    MT::Mail->errstr
-                )
-                );
-            delete $head{To};
+    
+    my @email_to_send;
+    my @addresses_to_send = grep $_, keys %$addrs;
+    if ( $app->config('EmailNotificationBcc') ) {
+        while ( @addresses_to_send ) {
+            push @email_to_send, 
+                {
+                    %head,
+                    Bcc => [ splice( @addresses_to_send, 0, 20 ) ],
+                };
         }
     }
-    if ( $head{Bcc} && @{ $head{Bcc} } ) {
-        MT::Mail->send( \%head, $body )
+    else {
+        @email_to_send = map { { %head, To => $_ } } @addresses_to_send;
+    }
+    foreach my $info (@email_to_send) {
+        MT::Mail->send( $info, $body )
             or return $app->error(
             $app->translate(
                 "Error sending mail ([_1]); try another MailTransfer setting?",
