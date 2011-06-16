@@ -2213,7 +2213,6 @@ sub unescape_unicode {
             my @parsers = (
                 'XML::SAX::ExpatXS        1.30',
                 'XML::LibXML::SAX         1.70',
-                'XML::LibXML::SAX::Parser 1.70',
                 'XML::SAX::Expat          0.37',
             );
             for my $parser ( @parsers ) {
