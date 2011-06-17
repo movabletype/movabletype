@@ -33,9 +33,9 @@ ok($file->meta('mime_type', 'archive/zip'), 'metadata field could be set');
 is($file->meta('mime_type'), 'archive/zip', 'new metadata value could be retrieved');
 is($file->mime_type, 'archive/zip', 'auto-installed metadata field method retrieved new value');
 
-diag('saving object');
+note('saving object');
 ok($file->save(), 'object with metadata could be saved');
-diag('object saved');
+note('object saved');
 ok($file->id, 'object with metadata received id when saved');
 is($file->meta('mime_type'), 'archive/zip', 'metadata value is still set after save');
 
