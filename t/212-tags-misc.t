@@ -6,39 +6,39 @@ use MT::Test::Tags;
 run_tests_by_data();
 __DATA__
 -
-  name: test item 175
+  name: IfStatic prints the inner content if published statically.
   template: <MTIfStatic>1</MTIfStatic>
   expected: STATIC_CONSTANT
 
 -
-  name: test item 176
+  name: IfDynamic prints the inner content if published dynamically.
   template: <MTIfDynamic>1</MTIfDynamic>
   expected: DYNAMIC_CONSTANT
 
 -
-  name: test item 223
+  name: FeedbackScore prints the junk score of current comment or ping.
   template: |
     <MTComments lastn='3'>
-      <MTFeedbackScore>,
+      <MTFeedbackScore>
     </MTComments>
   expected: |
-    0,
-    0,
-    1.5,
+    0
+    0
+    1.5
 
 -
-  name: test item 451
-  run: 0
+  name: GoogleSearch and GoogleSearchResult prints the search result.
+  skip: Currently not supported.
   template: <MTGoogleSearch query='six apart' results='1'><MTGoogleSearchResult property='URL'></MTGoogleSearch>
   expected: "http://www.sixapart.com/"
 
 -
-  name: test item 531
+  name: TemplateNote doesn't print anything.
   template: <MTTemplateNOTE note='Comment'>
   expected: ''
 
 -
-  name: test item 547
+  name: IfImageSupport prints the inner content if image support is available.
   template: <MTIfImageSupport>Supported</MTIfImageSupport>
   expected: Supported
 
