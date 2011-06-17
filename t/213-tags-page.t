@@ -3,50 +3,169 @@ use strict;
 use warnings;
 use lib qw( t/lib lib extlib ../lib ../extlib );
 use MT::Test::Tags;
+
+
+my $mt          = MT->instance;
+my $page        = MT->model('page')->load(20);
+my $page_folder = MT->model('page')->load(21);
+my $page_tag2   = MT->model('page')->load(22);
+my $page_tag3   = MT->model('page')->load(23);
+
+local $MT::Test::Tags::PRERUN = sub {
+    my ($stock) = @_;
+    $stock->{page}        = $page;
+    $stock->{page_folder} = $page_folder;
+    $stock->{page_tag2}   = $page_tag2;
+    $stock->{page_tag3}   = $page_tag3;
+};
+local $MT::Test::Tags::PRERUN_PHP
+    = '$stock["page"] = $db->fetch_page(' . $page->id . ');'
+    . '$stock["page_folder"] = $db->fetch_page(' . $page_folder->id . ');'
+    . '$stock["page_tag2"] = $db->fetch_page(' . $page_tag2->id . ');'
+    . '$stock["page_tag3"] = $db->fetch_page(' . $page_tag3->id . ');';
+
+
 run_tests_by_data();
 __DATA__
 -
-  name: test item 312
+  name: PageID prints ID of the page.
+  template: |
+    <MTPageID>;
+  expected: 20;
+  stash:
+    entry: $page
+
+-
+  name: PageTitle prints the title of the page.
+  template: <MTPageTitle>
+  expected: Watching the River Flow
+  stash:
+    entry: $page
+
+-
+  name: PageBody prints the body of the page.
+  template: <MTPageBody>
+  expected: <p>What the matter with me,</p>
+  stash:
+    entry: $page
+
+-
+  name: PageMore prints the more of the page.
+  template: <$MTPageMore$>
+  expected: <p>I don't have much to say,</p>
+  stash:
+    entry: $page
+
+-
+  name: PageDate prints the publish-date of the page.
+  template: <MTPageDate format_name='rfc822'>
+  expected: "Tue, 31 Jan 1978 07:45:00 -0330"
+  stash:
+    entry: $page
+
+-
+  name: PageModifiedDate prints the modified-date of the page.
+  template: <MTPageModifiedDate format_name='rfc822'>
+  expected: "Tue, 31 Jan 1978 07:46:00 -0330"
+  stash:
+    entry: $page
+
+-
+  name: PageAuthorDisplayName prints the display name of the author of the page.
+  template: <MTPageAuthorDisplayName>
+  expected: Chucky Dee
+  stash:
+    entry: $page
+
+-
+  name: PageKeywords prints the keywords of the page.
+  template: <MTPageKeywords>
+  expected: no folder
+  stash:
+    entry: $page
+
+-
+  name: PageBasename prints the basename of the page.
+  template: <MTPageBasename>
+  expected: watching_the_river_flow
+  stash:
+    entry: $page
+
+-
+  name: PagePermalink prints the permalink of the page.
+  template: <MTPagePermalink>
+  expected: "http://narnia.na/nana/watching-the-river-flow.html"
+  stash:
+    entry: $page
+
+-
+  name: PageAuthorEmail prints the email address of the author of the page.
+  template: <MTPageAuthorEmail>
+  expected: chuckd@example.com
+  stash:
+    entry: $page
+
+-
+  name: PageAuthorLink prints the link of the author of the page.
+  template: <MTPageAuthorLink>
+  expected: "<a href=\"http://chuckd.com/\">Chucky Dee</a>"
+  stash:
+    entry: $page
+
+-
+  name: PageAuthorLink prints the URL of the author of the page.
+  template: <MTPageAuthorURL>
+  expected: "http://chuckd.com/"
+  stash:
+    entry: $page
+
+-
+  name: PageExcerpt prints the excerpt of the page.
+  template: <MTPageExcerpt>
+  expected: excerpt
+  stash:
+    entry: $page
+
+-
+  name: Pages lists all pages of the blog.
   template: |
     <MTPages>
-      <MTPageID>;
+      <MTPageID>
     </MTPages>
   expected: |
-    23;
-    22;
-    21;
-    20;
+    23
+    22
+    21
+    20
 
 -
-  name: test item 313
+  name: Pages with attributes "lastn" and "offset" lists all specified pages.
   template: |
-    <MTPages lastn='1'>
-      <MTPageID>;
+    <MTPages lastn='1' offset='1'>
+      <MTPageID>
     </MTPages>
-  expected: 23;
+  expected: 22
 
 -
-  name: test item 314
-  template: <MTPages lastn='1' offset='1'><MTPageID>;</MTPages>
-  expected: 22;
+  name: Pages with an attribute "folder" lists all pages related to the specified folder.
+  template: |
+    <MTPages folder='info'>
+      <MTPageID>
+    </MTPages>
+  expected: 21
 
 -
-  name: test item 315
-  template: <MTPages folder='info'><MTPageID>;</MTPages>
-  expected: 21;
-
--
-  name: test item 316
+  name: Pages with attributes "folder" and "include_subfolders" lists all pages related to the specified folders.
   template: |
     <MTPages folder='download' include_subfolders='1'>
-      <MTPageID>;
+      <MTPageID>
     </MTPages>
   expected: |
-    23;
-    22;
+    23
+    22
 
 -
-  name: test item 317
+  name: Pages with an attribute "tag" lists all pages related to the specified tag.
   template: |
     <MTPages tag='river'>
       <MTPageID>;
@@ -54,147 +173,79 @@ __DATA__
   expected: 20;
 
 -
-  name: test item 318
-  template: <MTPages id='20'><MTPageID>;</MTPages>
-  expected: 20;
-
--
-  name: test item 319
+  name: Pages with an attribute "id" lists all specified pages.
   template: |
-    <MTPages sort_by='created_on' sort_order='scend'>
-      <MTPageID>;
-    </MTPages>
-  expected: |
-    23;
-    22;
-    21;
-    20;
-
--
-  name: test item 320
-  template: |
-    <MTPages id='21'>
-      <MTPageFolder><MTFolderID></MTPageFolder>
+    <MTPages id='20'>
+      <MTPageID>
     </MTPages>
   expected: 20
 
 -
-  name: test item 321
+  name: Pages with attributes "sort_by=created_on" and "sort_order=ascend" sorts and clists all pages of the blog.
   template: |
-    <MTPages id='20'>
-      <MTPageTags>
-        <MTTagName>;
-      </MTPageTags>
+    <MTPages sort_by='created_on' sort_order='descend'>
+      <MTPageID>
     </MTPages>
   expected: |
-    flow;
-    river;
-    watch;
+    23
+    22
+    21
+    20
 
 -
-  name: test item 322
-  template: <MTPages id='20'><MTPageTitle></MTPages>
-  expected: Watching the River Flow
+  name: PageFolder prepare the folder context for the folder that related to the page.
+  template: |
+    <MTPageFolder><MTFolderID></MTPageFolder>
+  expected: 20
+  stash:
+    entry: $page_folder
 
 -
-  name: test item 323
-  template: <MTPages id='20'><MTPageBody></MTPages>
-  expected: <p>What the matter with me,</p>
+  name: PageTags lists all tags related to the page.
+  template: |
+    <MTPageTags>
+      <MTTagName>
+    </MTPageTags>
+  expected: |
+    flow
+    river
+    watch
+  stash:
+    entry: $page
 
 -
-  name: test item 324
-  template: <MTPages id='20'><MTPageDate format_name='rfc822'></MTPages>
-  expected: "Tue, 31 Jan 1978 07:45:00 -0330"
-
--
-  name: test item 325
-  template: <MTPages id='20'><MTPageModifiedDate format_name='rfc822'></MTPages>
-  expected: "Tue, 31 Jan 1978 07:46:00 -0330"
-
--
-  name: test item 326
-  template: <MTPages id='20'><MTPageAuthorDisplayName></MTPages>
-  expected: Chucky Dee
-
--
-  name: test item 327
-  template: <MTPages id='20'><MTPageKeywords></MTPages>
-  expected: no folder
-
--
-  name: test item 328
-  template: <MTPages id='20'><MTPageBasename></MTPages>
-  expected: watching_the_river_flow
-
--
-  name: test item 329
-  template: <MTPages id='20'><MTPagePermalink></MTPages>
-  expected: "http://narnia.na/nana/watching-the-river-flow.html"
-
--
-  name: test item 330
-  template: <MTPages id='20'><MTPageAuthorEmail></MTPages>
-  expected: chuckd@example.com
-
--
-  name: test item 331
-  template: <MTPages id='20'><MTPageAuthorLink></MTPages>
-  expected: "<a href=\"http://chuckd.com/\">Chucky Dee</a>"
-
--
-  name: test item 332
-  template: <MTPages id='20'><MTPageAuthorURL></MTPages>
-  expected: "http://chuckd.com/"
-
--
-  name: test item 333
-  template: <MTPages id='20'><MTPageExcerpt></MTPages>
-  expected: excerpt
-
--
-  name: test item 334
+  name: BlogPageCount prints the number of pages of the blog.
   template: <MTBlogPageCount>
   expected: 4
 
 -
-  name: test item 353
-  run: 0
-  template: <MTArchiveList type='Monthly'><MTPages><MTPageTitle></MTPages></MTArchiveList>
-  expected: Watching the River Flow
-
--
-  name: test item 357
-  template: <MTPages id='20'><$MTPageMore$></MTPages>
-  expected: <p>I don't have much to say,</p>
-
--
-  name: test item 511
+  name: PageIfTagged prints inner content if the page has the specified tag.
   template: |
-    <MTPages lastn='1'>
-      <MTPageIfTagged tag='page3'>
-        <MTPageTitle>
-      </MTPageIfTagged>
-    </MTPages>
+    <MTPageIfTagged tag='page3'>
+      <MTPageTitle>
+    </MTPageIfTagged>
   expected: 'Page #3'
+  stash:
+    entry: $page_tag3
 
 -
-  name: test item 512
+  name: PageNext prepare the page content for the next page.
   template: |
-    <MTPages lastn='1' offset='1'>
-      <MTPageNext><MTPageTitle></MTPageNext>
-    </MTPages>
+    <MTPageNext><MTPageTitle></MTPageNext>
   expected: 'Page #3'
+  stash:
+    entry: $page_tag2
 
 -
-  name: test item 513
+  name: PagePrevious prepare the page content for the previous page.
   template: |
-    <MTPages lastn='1'>
-      <MTPagePrevious><MTPageTitle></MTPagePrevious>
-    </MTPages>
+    <MTPagePrevious><MTPageTitle></MTPagePrevious>
   expected: 'Page #2'
+  stash:
+    entry: $page_tag3
 
 -
-  name: test item 514
+  name: PagesHeader and PagesFooter prints the header and the footer.
   template: |
     <MTPages lastn='3'>
       <MTPagesHeader><ul></MTPagesHeader>
