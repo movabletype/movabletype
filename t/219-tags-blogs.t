@@ -49,7 +49,7 @@ run_tests_by_data();
 
 __DATA__
 -
-  name: "mt:Blogs"
+  name: Blogs lists some blogs specified by include_blogs and exclude_blogs.
   template: |
     <mt:Blogs include_blogs="1-20" exclude_blogs="1">
       <mt:BlogName>
