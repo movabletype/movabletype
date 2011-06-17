@@ -3,122 +3,156 @@ use strict;
 use warnings;
 use lib qw( t/lib lib extlib ../lib ../extlib );
 use MT::Test::Tags;
+
+
+my $mt      = MT->instance;
+my $website = MT->model('website')->load(2);
+my $blog    = MT->model('blog')->load(1);
+
+local $MT::Test::Tags::PRERUN = sub {
+    my ($stock) = @_;
+    $stock->{blog}     = $website;
+    $stock->{child}    = $blog;
+    $stock->{child_id} = $blog->id;
+};
+local $MT::Test::Tags::PRERUN_PHP
+    = '$stock["blog"] = $db->fetch_website(' . $website->id . ');'
+    . '$stock["child"] = $db->fetch_blog(' . $blog->id . ');'
+    . '$stock["child_id"] = ' . $blog->id . ';';
+
+
 run_tests_by_data();
 __DATA__
 -
-  name: test item 430
-  template: "<mt:Websites><mt:WebsiteName></mt:Websites>"
+  name: WebsiteName prints the name of the website.
+  template: "<mt:WebsiteName>"
   expected: Test site
 
 -
-  name: test item 431
-  template: "<mt:Websites><mt:WebsiteDescription></mt:Websites>"
+  name: WebsiteDescription prints the description of the website.
+  template: "<mt:WebsiteDescription>"
   expected: Narnia None Test Website
 
 -
-  name: test item 432
-  template: "<mt:Websites><mt:WebsiteURL></mt:Websites>"
+  name: WebsiteURL prints the URL of the website.
+  template: "<mt:WebsiteURL>"
   expected: "http://narnia.na/"
 
 -
-  name: test item 433
-  template: "<mt:Websites><mt:WebsitePath></mt:Websites>"
+  name: WebsitePath prints the root path URL of the website.
+  template: "<mt:WebsitePath>"
   expected: t/
 
 -
-  name: test item 434
-  template: "<mt:Websites><mt:WebsiteID></mt:Websites>"
+  name: WebsiteID prints the ID of the website.
+  template: "<mt:WebsiteID>"
   expected: 2
 
 -
-  name: test item 435
-  template: "<mt:Websites><mt:WebsiteTimezone></mt:Websites>"
+  name: WebsiteTimezone prints the time zone of the website.
+  template: "<mt:WebsiteTimezone>"
   expected: "-03:30"
 
 -
-  name: test item 436
-  template: "<mt:Websites><mt:WebsiteTimezone no_colon='1'></mt:Websites>"
+  name: 'WebsiteTimezone with an attribute "no_colon" prints the time zone of the website without colons.'
+  template: "<mt:WebsiteTimezone no_colon='1'>"
   expected: -0330
 
 -
-  name: test item 437
-  template: "<mt:Websites><mt:WebsiteLanguage></mt:Websites>"
+  name: WebsiteLanguage prints the language of the website.
+  template: "<mt:WebsiteLanguage>"
   expected: en_us
 
 -
-  name: test item 438
-  template: "<mt:Websites><mt:WebsiteLanguage locale='1'></mt:Websites>"
+  name: 'WebsiteLanguage with an attribute "locale" prints the language of the website with locale.'
+  template: "<mt:WebsiteLanguage locale='1'>"
   expected: en_US
 
 -
-  name: test item 439
-  template: "<mt:Websites><mt:IfWebsite>1</mt:IfWebsite></mt:Websites>"
+  name: IfWebsite prints the inner content if website context.
+  template: "<mt:IfWebsite>1</mt:IfWebsite>"
   expected: 1
 
 -
-  name: test item 440
-  template: "<mt:Websites><MTWebsiteCCLicenseURL></mt:Websites>"
+  name: 'WebsiteCCLicenseImage prints the corresponding CC license URL if "nc-sa" is selected.'
+  template: "<MTWebsiteCCLicenseURL>"
   expected: "http://creativecommons.org/licenses/by-nc-sa/2.0/"
 
 -
-  name: test item 441
-  template: "<mt:Websites><MTWebsiteCCLicenseImage></mt:Websites>"
+  name: 'WebsiteCCLicenseImage prints the corresponding CC license image URL if "nc-sa" is selected.'
+  template: "<MTWebsiteCCLicenseImage>"
   expected: "http://creativecommons.org/images/public/somerights20.gif"
 
 -
-  name: test item 442
-  template: "<mt:Websites><MTWebsiteIfCCLicense>1</MTWebsiteIfCCLicense></mt:Websites>"
+  name: WebsiteIfCCLicense prints the inner content if website licensed under the CC license.
+  template: "<MTWebsiteIfCCLicense>1</MTWebsiteIfCCLicense>"
   expected: 1
 
 -
-  name: test item 443
-  template: "<mt:Websites><mt:WebsiteFileExtension></mt:Websites>"
+  name: WebsiteFileExtension prints the file extension of the website.
+  template: "<mt:WebsiteFileExtension>"
   expected: .html
 
 -
-  name: test item 448
-  template: "<mt:Websites><mt:WebsiteHasBlog>true</mt:WebsiteHasBlog></mt:Websites>"
+  name: WebsiteHasBlog prints the inner content if the website has some blog.
+  template: "<mt:WebsiteHasBlog>true</mt:WebsiteHasBlog>"
   expected: true
 
 -
-  name: test item 449
-  template: "<mt:BlogParentWebsite><mt:WebsiteID></mt:BlogParentWebsite>"
-  expected: 2
+  name: BlogParentWebsite make a context of the website that is a parent of the current blog.
+  template: |
+    blog_id: <mt:BlogID />
+    website_id: <mt:BlogParentWebsite><mt:WebsiteID></mt:BlogParentWebsite>
+  expected: |
+    blog_id: 1
+    website_id: 2
+  stash:
+    blog: $child
+    blog_id: $child_id
 
 -
-  name: test item 503
+  name: "BlogParentWebsite don't change a context if current context is already for website."
+  template: |
+    blog_id: <mt:BlogID />
+    website_id: <mt:BlogParentWebsite><mt:WebsiteID></mt:BlogParentWebsite>
+  expected: |
+    blog_id: 2
+    website_id: 2
+
+-
+  name: WebsiteCommentCount prints the number of comments for the website.
   template: <MTWebsiteCommentCount>
-  expected: 9
+  expected: 0
 
 -
-  name: test item 504
+  name: WebsiteHost prints the host name of the website.
   template: <MTWebsiteHost>
   expected: narnia.na
 
 -
-  name: test item 505
+  name: WebsiteIfCommentsOpen prints the inner content if the website is configured to accept comments.
   template: <MTWebsiteIfCommentsOpen>Opened</MTWebsiteIfCommentsOpen>
   expected: Opened
 
 -
-  name: test item 506
+  name: WebsitePageCount prints the number of pages for the website.
   template: <MTWebsitePageCount>
-  expected: 4
+  expected: 0
 
 -
-  name: test item 507
+  name: WebsitePingCount prints the number of trackback ping for the website.
   template: <MTWebsitePingCount>
-  expected: 2
+  expected: 0
 
 -
-  name: test item 508
+  name: WebsiteRelativeURL prints the relative URL of the website.
   template: <MTWebsiteRelativeURL>
-  expected: /nana/
+  expected: /
 
 -
-  name: test item 509
+  name: WebsiteThemeID prints the theme ID of the website.
   template: <MTWebsiteThemeID>
-  expected: classic-blog
+  expected: classic-website
 
 
 ######## Websites
