@@ -2956,16 +2956,6 @@ sub refresh_cache {
     $cache_driver->flush_all();
 }
 
-sub libxml_parser {
-    return XML::LibXML->new(
-        no_network      => 1,
-        expand_xinclude => 0,
-        expand_entities => 1,
-        load_ext_dtd    => 0,
-        ext_ent_handler => sub { die "External entities disabled."; '' },
-    );
-}
-
 sub DESTROY { }
 
 1;
