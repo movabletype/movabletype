@@ -11,6 +11,17 @@ package MT::Atom::Entry;
 use MT::I18N qw( encode_text );
 use base qw( XML::Atom::Entry );
 
+my $ns_prefix;
+
+sub new {
+    my $class = shift;
+    my ( %param ) = @_;
+    $ns_prefix = delete $param{_prefix} if $param{_prefix};
+    $class->SUPER::new(@_);
+}
+
+sub element_name { $ns_prefix ? $ns_prefix . ":entry" : 'entry' }
+
 sub _create_issued {
     my ($ts, $blog) = @_;
     my @co_list = unpack 'A4A2A2A2A2A2', $ts;
