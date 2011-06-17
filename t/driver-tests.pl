@@ -31,7 +31,7 @@ BEGIN {
 
     my %modules = (
         'mysql'       => 'DBD::mysql',
-        'postgresql'  => 'DBD::Pg',
+        'postgres'    => 'DBD::Pg',
         'sqlite'      => 'DBD::SQLite',
         'oracle'      => 'DBD::Oracle',
         'mssqlserver' => 'DBD::ODBC',
