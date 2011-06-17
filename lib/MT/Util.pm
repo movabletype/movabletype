@@ -2239,11 +2239,21 @@ sub unescape_unicode {
 sub expat_parser {
     my $parser = XML::Parser->new(
         Handlers => {
-            ExternEnt    => sub { warn "External entities disabled."; '' },
+            ExternEnt    => sub { die "External entities disabled."; '' },
             ExternEntFin => sub {},
         },
     );
     return $parser;
+}
+
+sub libxml_parser {
+    return XML::LibXML->new(
+        no_network      => 1,
+        expand_xinclude => 0,
+        expand_entities => 1,
+        load_ext_dtd    => 0,
+        ext_ent_handler => sub { die "External entities disabled."; '' },
+    );
 }
 
 sub multi_iter {
