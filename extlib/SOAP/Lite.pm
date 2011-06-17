@@ -20,6 +20,7 @@ use 5.005;
 use strict;
 use vars qw($VERSION);
 use version; $VERSION = qv('0.710.08');
+use Class::Inspector;
 # ======================================================================
 
 package SOAP::XMLSchemaApacheSOAP::Deserializer;
@@ -462,7 +463,7 @@ sub proxy {
     (my $protocol_class = "${class}::$protocol") =~ s/-/_/g;
 
     no strict 'refs';
-    unless (defined %{"$protocol_class\::Client::"}
+    unless (Class::Inspector->loaded("$protocol_class\::Client")
         && UNIVERSAL::can("$protocol_class\::Client" => 'new')
     ) {
         eval "require $protocol_class";
@@ -2148,7 +2149,7 @@ sub decode_value {
 
     {
         no strict qw(refs);
-        if (! defined(%{"${schemaclass}::"}) ) {
+        if (! Class::Inspector->loaded($schemaclass) ) {
             eval "require $schemaclass" or die $@ if not ref $schemaclass;
         }
     }

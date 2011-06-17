@@ -388,6 +388,7 @@ sub _add_supers {
 ###########################################################################
 
 use Locale::Maketext::GutsLoader;
+use Class::Inspector;
 
 ###########################################################################
 
@@ -401,7 +402,7 @@ sub _try_use {   # Basically a wrapper around "require Modulename"
     my $module = $_[0];   # ASSUME sane module name!
     { no strict 'refs';
         return($tried{$module} = 1)
-        if %{$module . '::Lexicon'} or @{$module . '::ISA'};
+        if Class::Inspector->loaded($module);
         # weird case: we never use'd it, but there it is!
     }
 
