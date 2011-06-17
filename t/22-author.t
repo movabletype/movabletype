@@ -57,7 +57,7 @@ ok($perm->can_manage_feedback, 'can_manage_feedback');
 }
 
 {
-diag('meta field tests');
+note('meta field tests');
 
 my $author = MT::Author->load({ name => 'Chuck D' });
 ok(eval { $author->widgets(); 1 }, 'Author obj has widgets accessor');
