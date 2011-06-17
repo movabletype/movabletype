@@ -3,160 +3,175 @@ use strict;
 use warnings;
 use lib qw( t/lib lib extlib ../lib ../extlib );
 use MT::Test::Tags;
+
+
+my $mt    = MT->instance;
+my $entry = MT->model('entry')->load(1);
+
+local $MT::Test::Tags::PRERUN = sub {
+    my ($stock) = @_;
+    $stock->{entry_authored_on} = $entry->authored_on;
+};
+local $MT::Test::Tags::PRERUN_PHP
+    = q{$tmpl_vars['CURRENT_WORKING_DIRECTORY'] = $mt->config('mtdir');}
+    . '$stock["entry_authored_on"] = ' . $entry->authored_on . ';';
+
+local $MT::Test::Tags::SETUP = sub {
+    my ( $test_item, $ctx, $stock, $tmpl_vars ) = @_;
+    if ( exists( $test_item->{stash} )
+        && $test_item->{stash}{current_timestamp} )
+    {
+        my $key = $test_item->{stash}{current_timestamp};
+        $key =~ s/^\$//;
+        $ctx->{current_timestamp} = $stock->{$key};
+    }
+};
+
+
 run_tests_by_data();
 __DATA__
 -
-  name: test item 2
+  name: CGIPath prints the absolute URL of the base of the CGI script.
   template: <MTCGIPath>
   expected: "http://narnia.na/cgi-bin/"
 
 -
-  name: test item 3
+  name: CGIRelativeURL prints the relative URL of the base of the CGI script.
   template: <MTCGIRelativeURL>
   expected: /cgi-bin/
 
 -
-  name: test item 4
+  name: StaticWebPath prints the absolute URL of the base of the static files.
   template: <MTStaticWebPath>
   expected: "http://narnia.na/mt-static/"
 
 -
-  name: test item 5
-  template: <MTCommentScript>
-  expected: mt-comments.cgi
-
--
-  name: test item 6
-  template: <MTTrackbackScript>
-  expected: mt-tb.cgi
-
--
-  name: test item 7
-  template: <MTSearchScript>
-  expected: mt-search.cgi
-
--
-  name: test item 8
-  template: <MTXMLRPCScript>
-  expected: mt-xmlrpc.cgi
-
--
-  name: test item 14
-  template: <MTPublishCharset lower_case='1'>
-  expected: utf-8
-
--
-  name: test item 37
-  template: <MTInclude module="blog-name">
-  expected: none
-
--
-  name: test item 38
-  run: 0
-  template: <MTInclude module="blog-name">
-  expected: none
-
--
-  name: test item 40
-  template: <MTLink template="Main Index">
-  expected: "http://narnia.na/nana/"
-
--
-  name: test item 41
-  template: <MTVersion>
-  expected: VERSION_ID
-
--
-  name: test item 42
-  template: <MTDefaultLanguage>
-  expected: en_US
-
--
-  name: test item 44
-  run: 0
-  template: <MTErrorMessage>
-  expected: ''
-
--
-  name: test item 108
-  run: 0
-  template: <MTCGIServerPath>
-  expected: CURRENT_WORKING_DIRECTORY
-
--
-  name: test item 188
-  template: "<MTEntries lastn=\"1\"><MTFileTemplate format=\"%y/%m/%d/%b\"></MTEntries>"
-  expected: 1978/01/31/a_rainy_day
-
--
-  name: test item 189
-  template: <MTAdminCGIPath>
-  expected: "http://narnia.na/cgi-bin/"
-
--
-  name: test item 190
-  template: <MTConfigFile>
-  expected: CFG_FILE
-
--
-  name: test item 191
+  name: AdminScript prints the name of the admin CGI.
   template: <MTAdminScript>
   expected: mt.cgi
 
 -
-  name: test item 192
+  name: CommentScript prints the name of the comment CGI.
+  template: <MTCommentScript>
+  expected: mt-comments.cgi
+
+-
+  name: TrackbackScript prints the name of the trackback CGI.
+  template: <MTTrackbackScript>
+  expected: mt-tb.cgi
+
+-
+  name: SearchScript prints the name of the search CGI.
+  template: <MTSearchScript>
+  expected: mt-search.cgi
+
+-
+  name: XMLRPCScript prints the name of the XMLRPC CGI.
+  template: <MTXMLRPCScript>
+  expected: mt-xmlrpc.cgi
+
+-
+  name: AtomScript prints the name of the Atom CGI.
   template: <MTAtomScript>
   expected: mt-atom.cgi
 
 -
-  name: test item 193
-  template: <MTCGIHost>
-  expected: narnia.na
-
--
-  name: test item 510
+  name: NotifyScript prints the name of the notify CGI.
   template: <MTNotifyScript>
   expected: mt-add-notify.cgi
 
 -
-  name: test item 524
+  name: PublishCharset prints the publish charset of this system.
+  template: <MTPublishCharset lower_case='1'>
+  expected: utf-8
+
+-
+  name: Include with an attribute "module" includes the content of specified module.
+  template: <MTInclude module="blog-name">
+  expected: none
+
+-
+  name: IncludeBlock with an attribute "module" includes the content of specified module as block.
+  template: <MTIncludeBlock module='header-line'>Title</MTIncludeBlock>
+  expected: <h1>Title</h1>
+
+-
+  name: Link with an attribute "template" prints the absolute URL of the specified template.
+  template: <MTLink template="Main Index">
+  expected: "http://narnia.na/nana/"
+
+-
+  name: Version prints version id of this system.
+  template: <MTVersion>
+  expected: VERSION_ID
+
+-
+  name: DefaultLanguage prints default language of this system.
+  template: <MTDefaultLanguage>
+  expected: en_US
+
+-
+  name: ErrorMessage prints error message. (Used in system templates.)
+  template: <MTErrorMessage>
+  expected: ''
+
+-
+  name: CGIServerPath prints the server path of this system.
+  template: <MTCGIServerPath>
+  expected: CURRENT_WORKING_DIRECTORY
+
+-
+  name: FileTemplate prints the output file path that is formatted by specified format.
+  template: <MTFileTemplate format="%y/%m/%d/%b">
+  expected: 1978/01/31/a_rainy_day
+  stash:
+    current_timestamp: $entry_authored_on
+    entry: $entry
+
+-
+  name: AdminCGIPath prints the absolute URL of the base of the CGI script for administrator.
+  template: <MTAdminCGIPath>
+  expected: "http://narnia.na/cgi-bin/"
+
+-
+  name: ConfigFile prints the server path for "mt-config.cgi".
+  template: <MTConfigFile> aaa
+  expected: CFG_FILE
+
+-
+  name: CGIHost prints the hostname of this system.
+  template: <MTCGIHost>
+  expected: narnia.na
+
+-
+  name: ProductName prints the product name of this system.
   template: <MTProductName>
   expected: Movable Type
 
 -
-  name: test item 525
+  name: Section prints the inner content.
   template: <MTSection>Content</MTSection>
   expected: Content
 
 -
-  name: test item 528
+  name: StaticFilePath prints the server path of the directory for static files.
   template: <MTStaticFilePath>
   expected: STATIC_FILE_PATH
 
 -
-  name: test item 530
+  name: SupportDirectoryURL prints the URL of the directory for support files.
   template: <MTSupportDirectoryURL>
   expected: /mt-static/support/
 
 -
-  name: test item 539
+  name: HTTPContentType dose not print anything.
   template: <MTHTTPContentType type='application/xml'>
   expected: ''
 
 -
-  name: test item 550
+  name: Date with an attribute "ts" prints the formatted date that is specified.
   template: <MTDate ts='20101010101010'>
   expected: "October 10, 2010 10:10 AM"
-
--
-  name: test item 567
-  template: <MTIncludeBlock module='header-line'>Title</MTIncludeBlock>
-  expected: <h1>Title</h1>
-
--
-  name: test item 568
-  template: <MTIncludeBlock module='header-line'>Title</MTIncludeBlock>
-  expected: <h1>Title</h1>
 
 
 
