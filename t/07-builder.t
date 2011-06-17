@@ -22,26 +22,26 @@ ok($builder, "Builder constructed okay");
 my $ctx = My::Context->new;
 ok($ctx, "Context constructed okay");
 
-diag("Testing compilation of an empty template");
+note("Testing compilation of an empty template");
 $tokens = $builder->compile($ctx, '');
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens, "Compiled empty template");
 ok(ref($tokens) eq 'ARRAY', "Empty template produced token list");
 ok(!@$tokens, "Token list is empty, which is okay");
 is($builder->build($ctx, $tokens), '', "Builds to an empty string");
 
-diag("Testing compilation of a pure-text template (no tags)");
+note("Testing compilation of a pure-text template (no tags)");
 $tokens = $builder->compile($ctx, 'justified and ancient');
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens");
 ok(@$tokens == 1, "Created one token");
 ok($tokens->[0][0] eq 'TEXT', "Token is textual");
 ok($tokens->[0][1] eq 'justified and ancient', "Token text is what we expect");
 is($builder->build($ctx, $tokens), 'justified and ancient', "Builds to what we expect");
 
-diag("Testing compilation of simple function tag");
+note("Testing compilation of simple function tag");
 $tokens = $builder->compile($ctx, '<$MTFoo$>');
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens");
 ok(@$tokens == 1, "Created one token");
 ok($tokens->[0][0] eq 'Foo', "Token is a tag token");
@@ -50,9 +50,9 @@ ok(ref($tokens->[0][1]) eq 'HASH', "Element 1 of token object is a hashref");
 is(scalar keys %{ $tokens->[0][1] }, 0, "Has no attributes");
 is($builder->build($ctx, $tokens), 'foo', "Building produces expected result");
 
-diag("Testing compilation of function tag with an attribute");
+note("Testing compilation of function tag with an attribute");
 $tokens = $builder->compile($ctx, '<$MTFoo no="1"$>');
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens");
 ok(@$tokens == 1, "Created one token");
 ok(@{ $tokens->[0] } == 7, "Length of token object is 7 elements");
@@ -61,9 +61,9 @@ ok(ref($tokens->[0][1]) eq 'HASH', "Element 1 of token object is a hashref");
 is($tokens->[0][1]{no}, 1, "Attribute 'no' is equal to 1");
 is($builder->build($ctx, $tokens), 'no foo', "Building produces expected result");
 
-diag("Testing compilation of function tag with multiple attributes");
+note("Testing compilation of function tag with multiple attributes");
 $tokens = $builder->compile($ctx, '<$MTFoo no="1" yes="foo bar"$>');
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens");
 ok(@$tokens == 1, "Created one token");
 ok(@{ $tokens->[0] } == 7, "Length of token object is 7 elements");
@@ -73,9 +73,9 @@ is($tokens->[0][1]{no}, 1, "Attribute 'no' is equal to 1");
 is($tokens->[0][1]{yes}, 'foo bar', "Attribute 'yes' is equal to 'foo bar'");
 is($builder->build($ctx, $tokens), 'no foo', "Building produces expected result");
 
-diag("Testing compilation of function tag with attribute an inner single quote");
+note("Testing compilation of function tag with attribute an inner single quote");
 $tokens = $builder->compile($ctx, '<$MTFoo yes="foo\'s bar"$>');
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens");
 ok(@$tokens == 1, "Created one token");
 ok(@{ $tokens->[0] } == 7, "Length of token object is 7 elements");
@@ -83,12 +83,12 @@ ok($tokens->[0][0] eq 'Foo', "Token is a tag token");
 ok(ref($tokens->[0][1]) eq 'HASH', "Element 1 of token object is a hashref");
 is($tokens->[0][1]{yes}, 'foo\'s bar', "Attribute 'yes' is equal to \"foo's bar\"");
 
-diag("Testing compilation of text + function tag");
+note("Testing compilation of text + function tag");
 $tokens = $builder->compile($ctx, <<'TEXT');
 time to kick out the jams, motherfuckers
 <$MTFoo$>
 TEXT
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens");
 ok(@$tokens == 3, "Created 3 tokens");
 ok($tokens->[0][0] eq 'TEXT', "Token 1 is a text token");
@@ -101,13 +101,12 @@ is($builder->build($ctx, $tokens),
 is($builder->build($ctx, $tokens, { Foo => 0 }),
     "time to kick out the jams, motherfuckers\n\n", "Building produces expected result, with conditional");
 
-diag("Testing compilation failure for a block tag (no closing tag)");
+note("Testing compilation failure for a block tag (no closing tag)");
 $tokens = $builder->compile($ctx, '<MTBars>');
-diag("Error: " . $builder->errstr) unless $tokens;
-ok(!$tokens, "Compiling failed, as expected");
+ok(!$tokens, "Compiling is expected to fail");
 ok($builder->errstr eq "<MTBars> with no </MTBars> on line 1.\n", "Compilation yielded proper error message");
 
-# diag("Testing compilation failure for a nested block tag");
+# note("Testing compilation failure for a nested block tag");
 # $tokens = $builder->compile($ctx, <<EOT);
 # <MTBars>
 # 
@@ -124,13 +123,13 @@ ok($builder->errstr eq "<MTBars> with no </MTBars> on line 1.\n", "Compilation y
 # 
 # </MTBars>
 # EOT
-# diag("Error: " . $builder->errstr) unless $tokens;
+# note("Error: " . $builder->errstr) unless $tokens;
 # ok(!$tokens, "Compiling failed, as expected");
 # ok($builder->errstr eq "<MTBars> with no </MTBars> on line 10.\n", "Compilation yielded proper error message");
 
-diag("Testing compilation of a block tag with nothing in it");
+note("Testing compilation of a block tag with nothing in it");
 $tokens = $builder->compile($ctx, '<MTBars></MTBars>');
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens");
 ok(@$tokens == 1, "Created 1 token");
 ok($tokens->[0][0] eq 'Bars', "Token is a tag token");
@@ -138,9 +137,9 @@ ok(ref($tokens->[0][2]) eq 'ARRAY', "Token has child token array");
 ok(@{ $tokens->[0][2] } == 0, "Child token length is 0");
 is($builder->build($ctx, $tokens), 'Called without tokens!', "Building produces expected result");
 
-diag("Testing compilation of a block tag wrapping plaintext");
+note("Testing compilation of a block tag wrapping plaintext");
 $tokens = $builder->compile($ctx, '<MTBars>foo</MTBars>');
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens");
 ok(@$tokens == 1, "Created 1 token");
 ok($tokens->[0][0] eq 'Bars', "Token is a tag token");
@@ -150,13 +149,13 @@ ok($tokens->[0][2][0][0] eq 'TEXT', "Child token is textual");
 ok($tokens->[0][2][0][1] eq 'foo', "Child token value is 'foo'");
 is($builder->build($ctx, $tokens), 'foofoo', "Building produces expected result");
 
-diag("Testing compilation of a block tag wrapping plaintext + function tag");
+note("Testing compilation of a block tag wrapping plaintext + function tag");
 $tokens = $builder->compile($ctx, <<'TEXT');
 <MTBars>
 foo:<$MTBarBaz$>
 </MTBars>
 TEXT
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens");
 ok(@$tokens == 2, "Created 2 tokens");
 ok($tokens->[0][0] eq 'Bars', "Token 1 is a tag token");
@@ -173,7 +172,7 @@ is($builder->build($ctx, $tokens), "\nfoo:baz1\n\nfoo:baz2\n\n", "Building produ
 
 $tokens = $builder->compile($ctx,
 q[<$MTFoo regex="s/(\d+)/$1==0?'None':$1==1?'1 reply':$1.'replies'/e"$>]);
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens");
 ok(@$tokens == 1, "Created 1 token");
 ok(@{ $tokens->[0] } == 7, "Length of token object is 7 elements");
@@ -181,14 +180,14 @@ ok($tokens->[0][0] eq 'Foo', "Token 1 is a tag token");
 ok(ref($tokens->[0][1]) eq 'HASH', "Token has an attribute hashref");
 is($tokens->[0][1]{regex}, q[s/(\d+)/$1==0?'None':$1==1?'1 reply':$1.'replies'/e], "'regex' attribute is set properly");
 
-diag("Testing compilation of nesting a block tag");
+note("Testing compilation of nesting a block tag");
 $tokens = $builder->compile($ctx, <<'TEXT');
 <MTBars>
 Bars:
 <MTBars>bar</MTBars>
 </MTBars>
 TEXT
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens");
 ok(@$tokens == 2, "Created 2 tokens");
 ok($tokens->[0][0] eq 'Bars', "Token 1 is a tag token");
@@ -207,19 +206,19 @@ ok($tokens->[1][0] eq 'TEXT', "Token 2 is textual");
 ok($tokens->[1][1] eq "\n", "Token 2 is expected value");
 is($builder->build($ctx, $tokens), "\nBars:\nbarbar\n\nBars:\nbarbar\n\n", "Building produces expected result");
 
-diag("Testing compilation of an empty block tag (singlet syntax)");
+note("Testing compilation of an empty block tag (singlet syntax)");
 $tokens = $builder->compile($ctx, "<MTBars/>");
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens");
 ok(@$tokens == 1, "Created 1 token");
 ok($tokens->[0][0] eq 'Bars', "Token is a tag token");
 ok(!@{ $tokens->[0][2] || [] }, "Subtoken list is empty");
 is($builder->build($ctx, $tokens), 'Called without tokens!', "Building produces expected result");
 
-diag("Testing compilation with an attribute that has a newline");
+note("Testing compilation with an attribute that has a newline");
 $tokens = $builder->compile($ctx, '<$MTFoo no="1
 "$>');
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens");
 ok(@$tokens == 1, "Created 1 token");
 ok(@{ $tokens->[0] } == 7, "Length of token object is 7 elements");
@@ -228,30 +227,30 @@ ok(ref($tokens->[0][1]) eq 'HASH', "Token 1 has an attribute hashref");
 is($tokens->[0][1]{no}, "1\n", "Value of 'no' attribute is set properly");
 is($builder->build($ctx, $tokens), 'no foo', "Building produces expected result");
 
-diag("Testing conditional tag");
+note("Testing conditional tag");
 $tokens = $builder->compile($ctx, '<MTIfBaz>yes</MTIfBaz>');
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields token");
 is($builder->build($ctx, $tokens, { IfBaz => 1 }), 'yes', "Building with conditional set produces expected result");
 is($builder->build($ctx, $tokens, { IfBaz => 0 }), '', "Building with conditional unset produces expected result");
 
-diag("Testing conditional tags with Else tag");
+note("Testing conditional tags with Else tag");
 $tokens = $builder->compile($ctx, '<MTIfBaz>yes<MTElse>no</MTElse></MTIfBaz>');
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields token");
 is($builder->build($ctx, $tokens, { IfBaz => 1 }), 'yes', "Building with conditional set produces expected result");
 is($builder->build($ctx, $tokens, { IfBaz => 0 }), 'no', "Building with conditional unset produces expected result");
 
-diag("Testing conditional tags with Else (but no closing Else) tag");
+note("Testing conditional tags with Else (but no closing Else) tag");
 $tokens = $builder->compile($ctx, '<MTIfBaz>yes<MTElse>no</MTIfBaz>');
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields token");
 is($builder->build($ctx, $tokens, { IfBaz => 1 }), 'yes', "Building with conditional set produces expected result");
 is($builder->build($ctx, $tokens, { IfBaz => 0 }), 'no', "Building with conditional unset produces expected result");
 
-diag("Testing case-insensitivity for MT templates");
+note("Testing case-insensitivity for MT templates");
 $tokens = $builder->compile($ctx, '<$MtFoO$>');
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens");
 ok(@$tokens == 1, "Created one token");
 ok($tokens->[0][0] eq 'FoO', "Token is a tag token");
@@ -260,9 +259,9 @@ ok(ref($tokens->[0][1]) eq 'HASH', "Element 1 of token object is a hashref");
 is(scalar keys %{ $tokens->[0][1] }, 0, "Has no attributes");
 is($builder->build($ctx, $tokens), 'foo', "Building produces expected result");
 
-diag("Testing optional '$' syntax for function tags");
+note("Testing optional '$' syntax for function tags");
 $tokens = $builder->compile($ctx, '<mtfoo>');
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens");
 ok(@$tokens == 1, "Created one token");
 ok($tokens->[0][0] eq 'foo', "Token is a tag token");
@@ -271,9 +270,9 @@ ok(ref($tokens->[0][1]) eq 'HASH', "Element 1 of token object is a hashref");
 is(scalar keys %{ $tokens->[0][1] }, 0, "Has no attributes");
 is($builder->build($ctx, $tokens), 'foo', "Building produces expected result");
 
-diag("Testing optional namespace ':' syntax for function tags");
+note("Testing optional namespace ':' syntax for function tags");
 $tokens = $builder->compile($ctx, '<mt:foo>');
-diag("Error: " . $builder->errstr) unless $tokens;
+note("Error: " . $builder->errstr) unless $tokens;
 ok($tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens");
 ok(@$tokens == 1, "Created one token");
 ok($tokens->[0][0] eq 'foo', "Token is a tag token");
