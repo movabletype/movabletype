@@ -3,91 +3,137 @@ use strict;
 use warnings;
 use lib qw( t/lib lib extlib ../lib ../extlib );
 use MT::Test::Tags;
+
+
+my $mt   = MT->instance;
+my $ping = MT->model('tbping')->load(1);
+
+local $MT::Test::Tags::PRERUN = sub {
+    my ($stock) = @_;
+    $stock->{ping} = $ping;
+};
+local $MT::Test::Tags::PRERUN_PHP
+    = 'require_once("class.mt_tbping.php");' .
+      '$tbping = new TBPing;' .
+      '$pings  = $tbping->Find("' . $ping->id . '");' .
+      '$stock["ping"] = $pings[0];';
+
+
 run_tests_by_data();
 __DATA__
 -
-  name: test item 120
-  template: <MTPings lastn="1"><MTPingDate></MTPings>
+  name: PingDate prints created-time of the ping.
+  template: <MTPingDate>
   expected: "April  5, 2005 12:00 AM"
+  stash:
+    ping: $ping
 
 -
-  name: test item 121
-  template: <MTPings lastn="1"><MTPingID></MTPings>
+  name: PingDate prints ID of the ping.
+  template: <MTPingID>
   expected: 1
+  stash:
+    ping: $ping
 
 -
-  name: test item 122
-  template: <MTPings lastn="1"><MTPingTitle></MTPings>
+  name: PingDate prints the title of the ping.
+  template: <MTPingTitle>
   expected: Foo
+  stash:
+    ping: $ping
 
 -
-  name: test item 123
-  template: <MTPings lastn="1"><MTPingURL></MTPings>
+  name: PingDate prints the URL of the ping.
+  template: <MTPingURL>
   expected: "http://example.com/"
+  stash:
+    ping: $ping
 
 -
-  name: test item 124
-  template: <MTPings lastn="1"><MTPingExcerpt></MTPings>
+  name: PingDate prints the excerpt of the ping.
+  template: <MTPingExcerpt>
   expected: Bar
+  stash:
+    ping: $ping
 
 -
-  name: test item 125
-  template: <MTPings lastn="1"><MTPingIP></MTPings>
+  name: PingDate prints the IP address of the ping.
+  template: <MTPingIP>
   expected: 127.0.0.1
+  stash:
+    ping: $ping
 
 -
-  name: test item 126
-  template: <MTPings lastn="1"><MTPingBlogName></MTPings>
+  name: PingDate prints the blog name of the ping.
+  template: <MTPingBlogName>
   expected: Example Blog
+  stash:
+    ping: $ping
 
 -
-  name: test item 140
-  template: <MTPings lastn="1"><MTPingDate></MTPings>
-  expected: "April  5, 2005 12:00 AM"
-
--
-  name: test item 141
+  name: PingsSent and PingsSentURL prints all sent-pings of the entry.
   template: |
-    <MTEntries lastn="1">
-      <MTPingsSent><MTPingsSentURL>; </MTPingsSent>
-    </MTEntries>
+    <MTPingsSent><MTPingsSentURL>; </MTPingsSent>
   expected: |
     http://technorati.com/;
+  stash:
+    entry: $entry
 
 -
-  name: test item 207
+  name: IfPingsActive prints the inner content if active.
   template: |
-    <MTEntries lastn='1'>
-      <MTIfPingsActive>pings active</MTIfPingsActive>
-    </MTEntries>
+    <MTIfPingsActive>pings active</MTIfPingsActive>
   expected: pings active
+  stash:
+    entry: $entry
 
 -
-  name: test item 208
+  name: IfPingsAccepted prints the inner content if accepted.
   template: |
-    <MTEntries lastn='1'>
-      <MTIfPingsAccepted>pings accepted</MTIfPingsAccepted>
-    </MTEntries>
+    <MTIfPingsAccepted>pings accepted</MTIfPingsAccepted>
   expected: pings accepted
+  stash:
+    entry: $entry
 
 -
-  name: test item 209
+  name: IfPingsAllowed prints the inner content if allowed in the blog.
   template: |
-    <MTEntries lastn='1'>
-      <MTIfPingsAllowed>pings allowed</MTIfPingsAllowed>
-    </MTEntries>
+    <MTIfPingsAllowed>pings allowed</MTIfPingsAllowed>
   expected: pings allowed
+  stash:
+    entry: $entry
 
 -
-  name: test item 213
+  name: EntryIfAllowPings prints the inner content if allowed in the entry.
   template: |
-    <MTEntries lastn='1'>
-      <MTEntryIfAllowPings>entry allows pings</MTEntryIfAllowPings>
-    </MTEntries>
+    <MTEntryIfAllowPings>entry allows pings</MTEntryIfAllowPings>
   expected: entry allows pings
+  stash:
+    entry: $entry
 
 -
-  name: test item 345
+  name: Pings lists all the pings of the blog if there is neither the entry nor the category context.
+  template: |
+    <MTPings>
+      <MTPingID />
+    </MTPings>
+  expected: |
+    3
+    1
+
+-
+  name: Pings lists all the pings of the entry if in the entry context.
+  template: |
+    <MTPings>
+      <MTPingID />
+    </MTPings>
+  expected: |
+    1
+  stash:
+    entry: $entry
+
+-
+  name: PingEntry prepare the entry context for the entry of onself.
   template: |
     <MTPings>
       <MTPingEntry><MTEntryClass>;</MTPingEntry>
@@ -97,7 +143,7 @@ __DATA__
     entry;
 
 -
-  name: test item 523
+  name: PingsHeader and PingsFooter prints the header and the footer.
   template: |
     <MTPings>
       <MTPingsHeader><ul></MTPingsHeader>
@@ -111,7 +157,7 @@ __DATA__
     </ul>
 
 -
-  name: test item 548
+  name: IfPingsModerated prints the inner content if moderated.
   template: <MTIfPingsModerated>Moderated</MTIfPingsModerated>
   expected: Moderated
 
