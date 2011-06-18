@@ -6,216 +6,241 @@ use MT::Test::Tags;
 run_tests_by_data();
 __DATA__
 -
-  name: test item 84
-  template: <MTEntries lastn="1"><MTEntryTitle dirify="1"></MTEntries>
+  name: dirify
+  template: <mt:Section dirify="1">A Rainy Day</mt:Section>
   expected: a_rainy_day
 
 -
-  name: test item 85
-  template: <MTEntries lastn="1"><MTEntryTitle trim_to="6"></MTEntries>
+  name: trim_to=6
+  template: <mt:Section trim_to="6">A Rainy Day</mt:Section>
   expected: A Rain
 
 -
-  name: test item 86
-  template: <MTEntries lastn="1"><MTEntryTitle decode_html="1"></MTEntries>
-  expected: A Rainy Day
+  name: trim_to=6+...
+  template: <mt:Section trim_to="6+...">A Rainy Day</mt:Section>
+  expected: A Rain...
 
 -
-  name: test item 87
-  template: <MTEntries lastn="1"><MTEntryTitle decode_xml="1"></MTEntries>
-  expected: A Rainy Day
+  name: decode_html
+  template: '<mt:Section decode_html="1">&quot;&amp;&lt;&gt;</mt:Section>'
+  expected: '"&<>'
 
 -
-  name: test item 88
-  template: <MTEntries lastn="1"><MTEntryTitle remove_html="1"></MTEntries>
-  expected: A Rainy Day
-
--
-  name: test item 89
+  name: decode_xml (has CDATA section)
   template: |
-    <MTEntries lastn="1" sanitize="1">
-      <h1><strong><MTEntryTitle></strong></h1>
-    </MTEntries>
+    <mt:Section decode_xml="1">
+      &quot;&amp;&lt;&gt;&apos;
+      <![CDATA[<strong>A Rainy Day</strong>]]>
+    </mt:Section>
+  expected: |
+    &quot;&amp;&lt;&gt;&apos;
+    <strong>A Rainy Day</strong>
+
+-
+  name: decode_xml (has no CDATA section)
+  template: |
+    <mt:Section decode_xml="1">
+      &quot;&amp;&lt;&gt;&apos;
+    </mt:Section>
+  expected: |
+    "&<>'
+
+-
+  name: remove_html
+  template: <mt:Section remove_html="1">A <a href="#">Rainy</a> Day</mt:Section>
+  expected: A Rainy Day
+
+-
+  name: sanitize
+  template: <mt:Section sanitize="1"><h1><strong>A Rainy Day</strong></h1></mt:Section>
   expected: <strong>A Rainy Day</strong>
 
 -
-  name: test item 90
-  template: <MTEntries lastn="1" encode_html="1"><strong><MTEntryTitle></strong></MTEntries>
+  name: encode_html
+  template: <mt:Section encode_html="1"><strong>A Rainy Day</strong></mt:Section>
   expected: "&lt;strong&gt;A Rainy Day&lt;/strong&gt;"
 
 -
-  name: test item 91
-  template: <MTEntries lastn="1" encode_xml="1"><strong><MTEntryTitle></strong></MTEntries>
+  name: encode_xml
+  template: <mt:Section encode_xml="1"><strong>A Rainy Day</strong></mt:Section>
   expected: <![CDATA[<strong>A Rainy Day</strong>]]>
 
 -
-  name: test item 92
-  template: <MTEntries lastn="1" encode_js="1">"<MTEntryTitle>"</MTEntries>
-  expected: \"A Rainy Day\"
+  name: encode_js
+  template: <mt:Section encode_js="1">"<script>'</script></mt:Section>
+  expected: \"\<s\cript\>\'\<\/s\cript\>
 
 -
-  name: test item 93
-  template: <MTEntries lastn="1" encode_php="1">'<MTEntryTitle>'</MTEntries>
-  expected: \'A Rainy Day\'
+  name: encode_php
+  template: |
+    <mt:Section encode_php="1">
+      '"\
+      A Rainy Day
+      "'
+    </mt:Section>
+  expected: |
+    \'"\\
+    A Rainy Day
+    "\'
 
 -
-  name: test item 94
-  template: <MTEntries lastn="1"><MTEntryTitle encode_url="1"></MTEntries>
+  name: encode_php="qq"
+  template: |
+    <mt:Section encode_php="qq">
+      '"\
+      A Rainy Day
+      "'
+    </mt:Section>
+  expected: |
+    \n  '\"\\\n  A Rainy Day\n  \"'\n
+
+-
+  name: encode_php="here"
+  template: |
+    <mt:Section encode_php="here">
+      '"\
+      A Rainy Day
+      "'
+    </mt:Section>
+  expected: |
+    \n  '"\\\n  A Rainy Day\n  "'\n
+
+-
+  name: encode_url
+  template: <mt:Section encode_url="1">A Rainy Day</mt:Section>
   expected: "A%20Rainy%20Day"
 
 -
-  name: test item 95
-  template: <MTEntries lastn="1"><MTEntryTitle upper_case="1"></MTEntries>
+  name: upper_case
+  template: <mt:Section upper_case="1">A Rainy Day</mt:Section>
   expected: A RAINY DAY
 
 -
-  name: test item 96
-  template: <MTEntries lastn="1"><MTEntryTitle lower_case="1"></MTEntries>
+  name: lower_case
+  template: <mt:Section lower_case="1">A Rainy Day</mt:Section>
   expected: a rainy day
 
 -
-  name: test item 97
-  template: |-
-    <MTEntries lastn="1" strip_linefeeds="1">
-      <MTEntryTitle>
-    </MTEntries>
-  expected: A Rainy Day
+  name: strip_linefeeds
+  template: |
+    <mt:Section strip_linefeeds="1">
+      A Rainy Day
+      A Sunny Day
+      A Rainy Day
+    </mt:Section>
+  expected: |
+    A Rainy Day  A Sunny Day  A Rainy Day
 
 -
-  name: test item 98
-  template: <MTEntries lastn="1"><MTEntryTitle space_pad="30"></MTEntries>
+  name: space_pad=30
+  template: <mt:Section space_pad="30">A Rainy Day</mt:Section>
   expected: "                   A Rainy Day"
 
 -
-  name: test item 99
-  template: <MTEntries lastn="1"><MTEntryTitle space_pad="-30"></MTEntries>
+  name: space_pad=-30
+  template: <mt:Section space_pad="-30">A Rainy Day</mt:Section>
   expected: "A Rainy Day                   "
 
 -
-  name: test item 100
-  template: <MTEntries lastn="1"><MTEntryTitle zero_pad="30"></MTEntries>
+  name: zero_pad=30
+  template: <mt:Section zero_pad="30">A Rainy Day</mt:Section>
   expected: 0000000000000000000A Rainy Day
 
 -
-  name: test item 101
-  template: |
-    <MTEntries lastn="1"><MTEntryTitle sprintf="%030s"></MTEntries>
+  name: sprintf=%030s
+  template: <mt:Section sprintf="%030s">A Rainy Day</mt:Section>
   expected: 0000000000000000000A Rainy Day
 
 -
-  name: test item 146
-  template: <MTEntries lastn="1"><MTEntryTitle lower_case="1"></MTEntries>
-  expected: a rainy day
+  name: trim
+  template: <mt:Section trim="1">   abc   </mt:Section>
+  expected: 'abc'
+  trim: 0
 
 -
-  name: test item 171
-  template: <MTSetVar name="x" value="   abc   "><MTGetVar name="x" trim="1">
-  expected: abc
+  name: ltrim
+  template: <mt:Section ltrim="1">   abc   </mt:Section>
+  expected: 'abc   '
+  trim: 0
 
 -
-  name: test item 172
-  template: <MTSetVar name="x" value="   abc   "><MTGetVar name="x" ltrim="1">
-  expected: "abc   "
+  name: rtrim
+  template: <mt:Section rtrim="1">   abc   </mt:Section>
+  expected: '   abc'
+  trim: 0
 
 -
-  name: test item 173
-  template: <MTSetVar name="x" value="   abc"><MTGetVar name="x" rtrim="1">
-  expected: "   abc"
-
--
-  name: test item 174
-  template: <MTSetVar name="x" value="abc"><MTGetVar name="x" filters="__default__">
+  name: filters=__default__
+  template: <mt:Section filters="__default__">abc</mt:Section>
   expected: <p>abc</p>
 
 -
-  name: test item 569
-  template: |-
-    <MTSetVarBlock name="foo">a
-    b
-    c</MTSetVarBlock><MTGetVar name="foo" count_paragraphs="1">
+  name: count_paragraphs
+  template: |
+    <mt:Section count_paragraphs="1">a
+      b
+      c</mt:Section>
   expected: 3
 
 -
-  name: test item 570
-  template: |
-    <MTSetVarBlock name="foo">-1234567</MTSetVarBlock>
-    <MTGetVar name="foo" numify="1">
+  name: numify
+  template: <mt:Section numify="1">-1234567</mt:Section>
   expected: -1,234,567
 
 -
-  name: test item 571
-  template: |
-    <MTSetVarBlock name="foo">Foo</MTSetVarBlock>
-    <MTGetVar name="foo" encode_sha1="1">
+  name: encode_sha1
+  template: <mt:Section encode_sha1="1">Foo</mt:Section>
   expected: 201a6b3053cc1422d2c3670b62616221d2290929
 
 -
-  name: test item 572
-  template: |
-    <MTSetVarBlock name="foo">Foo</MTSetVarBlock>
-    <MTGetVar name="foo" spacify=" ">
+  name: spacify
+  template: <mt:Section spacify=" ">Foo</mt:Section>
   expected: F o o
 
 -
-  name: test item 573
-  template: |
-    <MTSetVarBlock name="foo">Foo</MTSetVarBlock>
-    <MTGetVar name="foo" count_characters="1">
+  name: spacify=,
+  template: <mt:Section spacify=",">Foo</mt:Section>
+  expected: F,o,o
+
+-
+  name: count_characters
+  template: <mt:Section count_characters="1">Foo</mt:Section>
   expected: 3
 
 -
-  name: test item 574
-  template: |
-    <MTSetVarBlock name="foo">Foo</MTSetVarBlock>
-    <MTGetVar name="foo" cat="Bar">
+  name: cat=Bar
+  template: <mt:Section cat="Bar">Foo</mt:Section>
   expected: FooBar
 
 -
-  name: test item 575
-  template: |
-    <MTSetVarBlock name="foo">FooBar</MTSetVarBlock>
-    <MTGetVar name="foo" regex_replace="/Fo*/i","Bar">
+  name: regex_replace
+  template: <mt:Section regex_replace="/fo*/i","Bar">FooBar</mt:Section>
   expected: BarBar
 
 -
-  name: test item 576
-  template: |
-    <MTSetVarBlock name="foo">Foo Bar Baz</MTSetVarBlock>
-    <MTGetVar name="foo" count_words="1">
+  name: count_words
+  template: <mt:Section count_words="1">Foo Bar Baz</mt:Section>
   expected: 3
 
 -
-  name: test item 577
-  template: |
-    <MTSetVarBlock name="foo">foo</MTSetVarBlock>
-    <MTGetVar name="foo" capitalize="1">
+  name: capitalize
+  template: <mt:Section capitalize="1">foo</mt:Section>
   expected: Foo
 
 -
-  name: test item 578
-  template: |
-    <MTSetVarBlock name="foo">FooBar</MTSetVarBlock>
-    <MTGetVar name="foo" replace="Bar","Foo">
+  name: replace
+  template: <mt:Section replace="Bar","Foo">FooBar</mt:Section>
   expected: FooFoo
 
 -
-  name: test item 579
+  name: indent=2
   template: |-
-    <MTSetVarBlock name="foo">aaa
-    bbb</MTSetVarBlock>
-    <MTGetVar name="foo" indent="2">
-  expected: "  aaa\n  bbb"
+    <mt:Section indent="2">Foo
+    Bar</mt:Section>
+  expected: "  Foo\n  Bar"
 
 -
-  name: test item 580
-  template: |-
-    <MTSetVarBlock name="foo">aaa
-    bbb</MTSetVarBlock>
-    <MTGetVar name="foo" indent="2">
-  expected: "  aaa\n  bbb"
-
--
-  name: test item 581
+  name: mteval
   template: |
     <MTSetVar name="foo" value="Foo">
     <MTSetVar name="bar" value="<MTGetVar name='foo'>">
@@ -223,14 +248,7 @@ __DATA__
   expected: Foo
 
 -
-  name: test item 582
-  template: |
-    <MTSetVarBlock name="foo"><span>Foo</span></MTSetVarBlock>
-    <MTGetVar name="foo" strip_tags="1">
-  expected: Foo
-
--
-  name: test item 583
+  name: setvar
   template: |
     <MTSetVar name="foo" value="Foo">
     <MTVar name="foo" setvar="bar">
@@ -238,10 +256,8 @@ __DATA__
   expected: Foo
 
 -
-  name: test item 584
-  template: |
-    <MTSetVarBlock name="foo">1234567890</MTSetVarBlock>
-    <MTGetVar name="foo" wrap_text="4">
+  name: wrap_text=4
+  template: <mt:Section wrap_text="4">1234567890</mt:Section>
   expected: |-
     123
     456
@@ -249,165 +265,148 @@ __DATA__
     0
 
 -
-  name: test item 585
+  name: nl2br
   template: |-
-    <MTSetVarBlock name="foo">123
-    456</MTSetVarBlock>
-    <MTGetVar name="foo" nl2br="xhtml" strip="">
-  expected: 123<br/>456
+    <mt:Section nl2br="1">Foo
+    Bar</mt:Section>
+  expected: Foo<br>Bar
+  expected_php: |
+    Foo<br />
+    Bar
 
 -
-  name: test item 586
-  template: |
-    <MTSetVarBlock name="foo">  Foo  Bar  </MTSetVarBlock>
-    <MTGetVar name="foo" strip="">
+  name: nl2br=xhtml
+  template: |-
+    <mt:Section nl2br="xhtml">Foo
+    Bar</mt:Section>
+  expected: Foo<br />Bar
+  expected_php: |
+    Foo<br />
+    Bar
+
+-
+  name: strip
+  template: <mt:Section strip="">  Foo  Bar  </mt:Section>
   expected: FooBar
 
 -
-  name: test item 587
-  template: |
-    <MTSetVarBlock name="foo">  Foo  Bar  </MTSetVarBlock>
-    <MTGetVar name="foo" strip="&nbsp;">
-  expected: |
-    &nbsp;Foo&nbsp;Bar&nbsp;
+  name: strip=&nbsp;
+  template: <mt:Section strip="&nbsp;">  Foo  Bar  </mt:Section>
+  expected: '&nbsp;Foo&nbsp;Bar&nbsp;'
 
 -
-  name: test item 588
-  template: |
-    <MTSetVarBlock name="foo">1</MTSetVarBlock>
-    <MTGetVar name="foo" string_format="%06d">
+  name: string_format
+  template: <mt:Section string_format="%06d">1</mt:Section>
   expected: 000001
 
 -
-  name: test item 589
-  template: |
-    <MTSetVarBlock name="foo"></MTSetVarBlock>
-    <MTGetVar name="foo" _default="Default">
-  expected: Default
+  name: _default (has a content)
+  template: <mt:Section _default="default">content</mt:Section>
+  expected: content
 
 -
-  name: test item 590
-  template: |
-    <MTSetVarBlock name="foo">Foo</MTSetVarBlock>
-    <MTGetVar name="foo" _default="Default">
-  expected: Foo
+  name: _default (has no content)
+  template: <mt:Section _default="default"></mt:Section>
+  expected: default
 
 -
-  name: test item 591
+  name: escape=html2
   template: |
-    <MTSetVarBlock name="foo"><span>Foo</span></MTSetVarBlock>
-    <MTGetVar name="foo" escape="html">
+    <mt:Section escape="html">
+      <span>Foo</span>
+    </mt:Section>
   expected: |
     &lt;span&gt;Foo&lt;/span&gt;
 
 -
-  name: test item 592
-  run: 0
+  name: escape=htmlall
+  skip: Not implemented.
   template: |
-    <MTSetVarBlock name="foo"><span>Foo</span></MTSetVarBlock>
-    <MTGetVar name="foo" escape="htmlall">
+    <mt:Section escape="htmlall">
+      <span>Foo</span>
+    </mt:Section>
   expected: |
     &lt;span&gt;Foo&lt;/span&gt;
 
 -
-  name: test item 593
-  template: |
-    <MTSetVarBlock name="foo">http://example.com/?q=@</MTSetVarBlock>
-    <MTGetVar name="foo" escape="url">
+  name: escape=url
+  template: '<mt:Section escape="url">http://example.com/?q=@</mt:Section>'
   expected: |
     http%3A%2F%2Fexample.com%2F%3Fq%3D%40
 
 -
-  name: test item 594
-  run: 0
-  template: |
-    <MTSetVarBlock name="foo">http://example.com/?q=@</MTSetVarBlock>
-    <MTGetVar name="foo" escape="urlpathinfo">
+  name: escape=urlpathinfo
+  skip: Not implemented.
+  template: '<mt:Section escape="url">http://example.com/?q=@</mt:Section>'
   expected: |
     http%3A//example.com/%3Fq%3D%40
 
 -
-  name: test item 595
-  run: 0
-  template: |
-    <MTSetVarBlock name="foo">http://example.com/?q=@</MTSetVarBlock>
-    <MTGetVar name="foo" escape="quotes">
+  name: escape=quotes
+  skip: Not implemented.
+  template: '<mt:Section escape="quotes">http://example.com/?q=@</mt:Section>'
   expected: |
     http://example.com/?q=@
 
 -
-  name: test item 596
-  run: 0
-  template: |
-    <MTSetVarBlock name="foo">http://example.com/?q=@</MTSetVarBlock>
-    <MTGetVar name="foo" escape="hex">
+  name: escape=hex
+  skip: Not implemented.
+  template: '<mt:Section escape="hex">http://example.com/?q=@</mt:Section>'
   expected: |
     %68%74%74%70%3a%2f%2f%65%78%61%6d%70%6c%65%2e%63%6f%6d%2f%3f%71%3d%40
 
 -
-  name: test item 597
-  run: 0
-  template: |
-    <MTSetVarBlock name="foo">http://example.com/?q=@</MTSetVarBlock>
-    <MTGetVar name="foo" escape="hexentity">
+  name: escape=hexentity
+  skip: Not implemented.
+  template: '<mt:Section escape="hexentity">http://example.com/?q=@</mt:Section>'
   expected: |
     &#x68;&#x74;&#x74;&#x70;&#x3a;&#x2f;&#x2f;&#x65;&#x78;&#x61;&#x6d;&#x70;&#x6c;&#x65;&#x2e;&#x63;&#x6f;&#x6d;&#x2f;&#x3f;&#x71;&#x3d;&#x40;
 
 -
-  name: test item 598
-  run: 0
-  template: |
-    <MTSetVarBlock name="foo">http://example.com/?q=@</MTSetVarBlock><MTGetVar name="foo" escape="decentity">
+  name: escape=decentity
+  skip: Not implemented.
+  template: '<mt:Section escape="decentity">http://example.com/?q=@</mt:Section>'
   expected: |
     &#104;&#116;&#116;&#112;&#58;&#47;&#47;&#101;&#120;&#97;&#109;&#112;&#108;&#101;&#46;&#99;&#111;&#109;&#47;&#63;&#113;&#61;&#64;
 
 -
-  name: test item 599
-  run: 0
-  template: |
-    <MTSetVarBlock name="foo"><script>alert("test");</script></MTSetVarBlock>
-    <MTGetVar name="foo" escape="javascript">
+  name: escape=javascript
+  skip: Not implemented.
+  template: '<mt:Section escape="javascript"><script>alert("test");</script></mt:Section>'
   expected: |
     \<s\cript\>alert(\"test\");\<\/s\cript\>
 
 -
-  name: test item 600
-  run: 0
-  template: |
-    <MTSetVarBlock name="foo">test@example.com</MTSetVarBlock>
-    <MTGetVar name="foo" escape="mail">
+  name: escape=mail
+  skip: Not implemented.
+  template: '<mt:Section escape="mail">test@example.com</mt:Section>'
   expected: |
     test [AT] example [DOT] com
 
 -
-  name: test item 601
-  run: 0
-  template: |
-    <MTSetVarBlock name="foo"><span>Foo</span></MTSetVarBlock>
-    <MTGetVar name="foo" escape="nonstd">
+  name: escape=nonstd
+  skip: Not implemented.
+  template: '<mt:Section escape="nonstd"><span>Foo</span></mt:Section>'
   expected: |
     <span>Foo</span>
 
 -
-  name: test item 602
+  name: nofollowfy
   template: |
-    <MTSetVarBlock name="foo"><a href="http://example.com/">Example</a></MTSetVarBlock>
-    <MTGetVar name="foo" nofollowfy="1">
+    <mt:Section nofollowfy="1">
+      <a href="http://example.com/">Example</a>
+    </mt:Section>
   expected: |
     <a href="http://example.com/" rel="nofollow">Example</a>
 
 -
-  name: test item 603
+  name: nofollowfy (already has a attribute "rel")
   template: |
-    <MTSetVarBlock name="foo"><a href="http://example.com/" rel="next">Example</a></MTSetVarBlock>
-    <MTGetVar name="foo" nofollowfy="1">
+    <mt:Section nofollowfy="1">
+      <a href="http://example.com/" rel="next">Example</a>
+    </mt:Section>
   expected: |
     <a href="http://example.com/" rel="nofollow next">Example</a>
-
--
-  name: test item 605
-  template: <MTEntries lastn="1"><MTEntryTitle trim_to="6+..."></MTEntries>
-  expected: A Rain...
 
 ######## numify
 
