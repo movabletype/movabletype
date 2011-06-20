@@ -3,147 +3,129 @@ use strict;
 use warnings;
 use lib qw( t/lib lib extlib ../lib ../extlib );
 use MT::Test::Tags;
+
+
+my $mt = MT->instance;
+
+my %entries         = ();
+my %entries_to_load = qw(
+    entry 1
+    previous_entry 8
+    foo_entry 6
+);
+while ( my ( $key, $id ) = each(%entries_to_load) ) {
+    $entries{$key} = MT->model('entry')->load($id);
+}
+
+my %categories = ();
+$categories{bar} = MT->model('category')->load( { label => 'bar' } );
+my $placement = $mt->model('placement')->new;
+$placement->entry_id( $entries{foo_entry}->id );
+$placement->blog_id( $entries{foo_entry}->blog_id );
+$placement->category_id( $categories{bar}->id );
+$placement->is_primary(0);
+$placement->save
+    or die "Couldn't save placement record: " . $placement->errstr;
+
+local $MT::Test::Tags::PRERUN = sub {
+    my ($stock) = @_;
+    $stock->{$_} = $entries{$_}   for keys(%entries);
+    $stock->{entry_authored_on} = $entries{entry}->authored_on;
+};
+local $MT::Test::Tags::PRERUN_PHP =
+    '$stock["entry_authored_on"] = "' . $entries{entry}->authored_on . '";'
+    . join('', map({
+        '$stock["' . $_ . '"] = $db->fetch_entry(' . $entries{$_}->id . ');'
+    } keys(%entries)));
+
+
 run_tests_by_data();
 __DATA__
 -
-  name: test item 9
-  template: <MTEntries lastn='1'><MTEntryDate></MTEntries>
-  expected: "January 31, 1978  7:45 AM"
+  name: EntryID prints the ID of the entry.
+  template: <MTEntryID>
+  expected: 1
 
 -
-  name: test item 10
-  template: <MTEntries lastn='1'><MTEntryDate utc="1"></MTEntries>
-  expected: "January 31, 1978 11:15 AM"
-
--
-  name: test item 11
-  template: <MTEntries lastn='1'><MTEntryDate format_name=""></MTEntries>
-  expected: "January 31, 1978  7:45 AM"
-
--
-  name: test item 12
-  template: "<MTEntries lastn='1'><MTEntryDate format=\"%Y-%m-%dT%H:%M:%S\"></MTEntries>"
-  expected: "1978-01-31T07:45:00"
-
--
-  name: test item 13
-  template: <MTEntries lastn='1'><MTEntryDate language="pl"></MTEntries>
-  expected: "31 stycznia 1978  7:45"
-
--
-  name: test item 36
-  template: |
-    <MTEntries lastn="10">
-      * <MTEntryTitle>
-    </MTEntries>
-  expected: |
-    * A Rainy Day
-    * Verse 5
-    * Verse 4
-    * Verse 3
-    * Verse 2
-    * Verse 1
-
--
-  name: test item 39
-  template: <MTEntries lastn='1'><MTLink entry_id="1"></MTEntries>
-  expected: "http://narnia.na/nana/archives/1978/01/a-rainy-day.html"
-
-
--
-  name: test item 51
-  template: <MTEntries category="foo"><MTEntryTitle></MTEntries>
-  expected: Verse 3
-
--
-  name: test item 52
-  template: <MTEntries author="Bob D"><MTEntryTitle></MTEntries>
-  expected: Verse 3
-
--
-  name: test item 53
-  template: <MTEntries days="DAYS_CONSTANT1"><MTEntryTitle></MTEntries>
+  name: EntryTitle prints the title of the entry.
+  template: <MTEntryTitle>
   expected: A Rainy Day
 
 -
-  name: test item 54
-  template: <MTEntries days="DAYS_CONSTANT2"><MTEntryTitle></MTEntries>
-  expected: ''
-
--
-  name: test item 55
-  template: <MTEntries lastn="1"><MTEntryBody></MTEntries>
+  name: EntryBody prints the body of the entry.
+  template: <MTEntryBody>
   expected: <p>On a drizzly day last weekend,</p>
 
 -
-  name: test item 56
-  template: <MTEntries lastn="1"><MTEntryMore></MTEntries>
+  name: EntryMore prints the more of the entry.
+  template: <MTEntryMore>
   expected: <p>I took my grandpa for a walk.</p>
 
 -
-  name: test item 57
-  template: <MTEntries lastn="1"><MTEntryStatus></MTEntries>
-  expected: Publish
-
--
-  name: test item 58
-  template: <MTEntries lastn="1"><MTEntryDate></MTEntries>
-  expected: "January 31, 1978  7:45 AM"
-
--
-  name: test item 59
-  template: <MTEntries lastn="1"><MTEntryFlag flag="allow_pings"></MTEntries>
-  expected: 1
-
--
-  name: test item 60
-  template: <MTEntries lastn="1"><MTEntryExcerpt></MTEntries>
+  name: EntryExcerpt prints the excerpt of the entry.
+  template: <MTEntryExcerpt>
   expected: A story of a stroll.
 
 -
-  name: test item 61
-  template: <MTEntries lastn="1"><MTEntryKeywords></MTEntries>
+  name: EntryKeywords prints the keywords of the entry.
+  template: <MTEntryKeywords>
   expected: keywords
 
 -
-  name: test item 62
-  template: <MTEntries lastn="1"><MTEntryAuthor></MTEntries>
-  expected: Chuck D
+  name: EntryStatus prints the status of the entry.
+  template: <MTEntryStatus>
+  expected: Publish
 
 -
-  name: test item 63
-  template: <MTEntries lastn="1"><MTEntryAuthorNickname></MTEntries>
-  expected: Chucky Dee
-
--
-  name: test item 64
-  template: <MTEntries lastn="1"><MTEntryAuthorEmail></MTEntries>
-  expected: chuckd@example.com
-
--
-  name: test item 65
-  template: <MTEntries lastn="1"><MTEntryAuthorURL></MTEntries>
-  expected: "http://chuckd.com/"
-
--
-  name: test item 66
-  template: <MTEntries lastn="1"><MTEntryAuthorLink></MTEntries>
-  expected: "<a href=\"http://chuckd.com/\">Chucky Dee</a>"
-
--
-  name: test item 67
-  template: <MTEntries lastn="1"><MTEntryID></MTEntries>
+  name: EntryFlag prints the status of the specified flag of the entry.
+  template: <MTEntryFlag flag="allow_pings">
   expected: 1
 
 -
-  name: test item 68
-  template: <MTEntries lastn="1"><MTEntryTrackbackLink></MTEntries>
+  name: EntryAuthorID prints the ID of the author of the entry.
+  template: |
+    <MTEntryAuthorID>
+  expected: 2
+
+-
+  name: EntryAuthor prints the login-name of the author of the entry.
+  template: <MTEntryAuthor>
+  expected: Chuck D
+
+-
+  name: EntryAuthorUsername prints the login-name of the author of the entry.
+  template: <MTEntryAuthorUsername>
+  expected: Chuck D
+
+-
+  name: EntryAuthorNickname prints the display-name of the author of the entry.
+  template: <MTEntryAuthorNickname>
+  expected: Chucky Dee
+
+-
+  name: EntryAuthorEmail prints the email address of the author of the entry.
+  template: <MTEntryAuthorEmail>
+  expected: chuckd@example.com
+
+-
+  name: EntryAuthorURL prints the URL the author of the entry.
+  template: <MTEntryAuthorURL>
+  expected: "http://chuckd.com/"
+
+-
+  name: EntryAuthorLink prints the anchor tag of the author of the entry.
+  template: <MTEntryAuthorLink>
+  expected: "<a href=\"http://chuckd.com/\">Chucky Dee</a>"
+
+-
+  name: EntryTrackbackLink prints the trackback URL of the entry.
+  template: <MTEntryTrackbackLink>
   expected: "http://narnia.na/cgi-bin/mt-tb.cgi/1"
 
 -
-  name: test item 69
+  name: EntryTrackbackData prints the trackback data of the entry.
   template: |
-    <MTEntries lastn="1"><MTEntryTrackbackData></MTEntries>
+    <MTEntryTrackbackData>
   expected: |
     <!--
     <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -160,117 +142,162 @@ __DATA__
         dc:date="1978-01-31T07:45:00-03:30" />
     </rdf:RDF>
     -->
+  stash:
+    current_timestamp: $entry_authored_on
 
 -
-  name: test item 70
-  template: |
-    <MTEntries lastn="1">
-      <MTEntryLink archive_type="Individual">
-    </MTEntries>
-  expected: |
-    http://narnia.na/nana/archives/1978/01/a-rainy-day.html
-
--
-  name: test item 71
-  template: |
-    <MTEntries lastn="1">
-      <MTEntryPermalink archive_type="Individual">
-    </MTEntries>
-  expected: |
-    http://narnia.na/nana/archives/1978/01/a-rainy-day.html
-
--
-  name: test item 72
-  template: |
-    <MTEntries id="6">
-      <MTEntryCategory>
-    </MTEntries>
-  expected: foo
-
--
-  name: test item 73
-  template: |
-    <MTEntries id="6">
-      <MTEntryCategories>
-        <MTCategoryLabel>
-      </MTEntryCategories>
-    </MTEntries>
-  expected: foo
-
--
-  name: test item 77
-  run: 0
-  template: <MTEntries lastn="1"></MTEntries>
-  expected: ''
-
--
-  name: test item 79
-  template: <MTEntries lastn="1"><MTEntryTrackbackCount></MTEntries>
+  name: EntryTrackbackID prints the trackback ID of the entry.
+  template: <MTEntryTrackbackID>
   expected: 1
 
 -
-  name: test item 80
-  template: |
-    <MTEntries lastn="1" offset="1">
-      <MTEntryNext><MTEntryTitle></MTEntryNext>
-    </MTEntries>
-  expected: A Rainy Day
-
--
-  name: test item 81
-  template: |
-    <MTEntries offset="1" lastn="1">
-      <MTEntryPrevious><MTEntryTitle></MTEntryPrevious>
-    </MTEntries>
-  expected: Verse 4
-
--
-  name: test item 82
-  template: <MTEntries lastn="1"><MTEntryDate format_name="rfc822"></MTEntries>
-  expected: "Tue, 31 Jan 1978 07:45:00 -0330"
-
--
-  name: test item 83
-  template: <MTEntries lastn="1"><MTEntryDate utc="1"></MTEntries>
-  expected: "January 31, 1978 11:15 AM"
-
--
-  name: test item 106
-  template: <MTEntries lastn="1"><MTEntryTrackbackID></MTEntries>
-  expected: 1
-
--
-  name: test item 107
-  template: <MTEntries lastn="1"><MTEntryBasename></MTEntries>
+  name: EntryBasename prints the basename of the entry.
+  template: <MTEntryBasename>
   expected: a_rainy_day
 
 -
-  name: test item 195
-  template: <MTEntries lastn="1"><MTEntryAuthorUsername></MTEntries>
-  expected: Chuck D
-
--
-  name: test item 196
-  template: <MTEntries lastn="1"><MTEntryAuthorDisplayName></MTEntries>
-  expected: Chucky Dee
-
--
-  name: test item 197
-  template: <MTEntries lastn="1"><MTEntryAtomID></MTEntries>
+  name: EntryAtomID prints the atom ID of the entry.
+  template: <MTEntryAtomID>
   expected: "tag:narnia.na,1978:/nana//1.1"
 
 -
-  name: test item 198
-  template: <MTEntries lastn="1"><MTEntryTitle trim_to="20"></MTEntries>
+  name: Link with an attribute "entry_id" prints the published URL of the entry.
+  template: <MTLink entry_id="1">
+  expected: "http://narnia.na/nana/archives/1978/01/a-rainy-day.html"
+
+-
+  name: EntryLink prints the published URL of the entry.
+  template: |
+    <MTEntryLink>
+  expected: |
+    http://narnia.na/nana/archives/1978/01/a-rainy-day.html
+
+-
+  name: EntryLink with an attribute "archive_type=Daily" prints the published URL of the specified archive of the entry.
+  template: |
+    <MTEntryLink archive_type="Daily">
+  expected: |
+    http://narnia.na/nana/archives/1978/01/31/
+
+-
+  name: EntryLink with an attribute "archive_type=Monthly" prints the published URL of the specified archive of the entry.
+  template: |
+    <MTEntryLink archive_type="Monthly">
+  expected: |
+    http://narnia.na/nana/archives/1978/01/
+
+-
+  name: EntryPermalink prints the published URL of the entry.
+  template: |
+    <MTEntryPermalink archive_type="Individual">
+  expected: |
+    http://narnia.na/nana/archives/1978/01/a-rainy-day.html
+
+-
+  name: EntryPermalink with an attribute "archive_type=Daily" prints the published URL of the specified archive of the entry.
+  template: |
+    <MTEntryPermalink archive_type="Daily">
+  expected: |
+    http://narnia.na/nana/archives/1978/01/31/#000001
+
+-
+  name: EntryPermalink with an attribute "archive_type=Monthly" prints the published URL of the specified archive of the entry.
+  template: |
+    <MTEntryPermalink archive_type="Monthly">
+  expected: |
+    http://narnia.na/nana/archives/1978/01/#000001
+
+-
+  name: EntryCategory prints the label of the category related to the current entry.
+  template: |
+    <MTEntryCategory>
+  expected: foo
+  stash:
+    entry: $foo_entry
+
+-
+  name: EntryDate prints the authored date of the entry.
+  template: <MTEntryDate>
+  expected: "January 31, 1978  7:45 AM"
+
+-
+  name: EntryCreatedDate prints the created-time of the entry.
+  template: <MTEntryCreatedDate>
+  expected: "January 31, 1978  7:45 AM"
+
+-
+  name: EntryModifiedDate prints the modified-time of the entry.
+  template: <MTEntryModifiedDate>
+  expected: "January 31, 1978  7:46 AM"
+
+-
+  name: EntryDate with an attribute "utc" prints the authored date of the entry in in UTC time.
+  template: <MTEntryDate utc="1">
+  expected: "January 31, 1978 11:15 AM"
+
+-
+  name: EntryDate with an attribute "format_name=iso8601" formats and prints the authored date of the entry.
+  template: <MTEntryDate format_name="iso8601">
+  expected: "1978-01-31T07:45:00-03:30"
+
+-
+  name: EntryDate with an attribute "format_name=rfc822" formats and prints the authored date of the entry.
+  template: <MTEntryDate format_name="rfc822">
+  expected: "Tue, 31 Jan 1978 07:45:00 -0330"
+
+-
+  name: EntryDate with an attribute "format" formats and prints the authored date of the entry.
+  template: "<MTEntryDate format=\"%Y-%m-%dT%H:%M:%S\">"
+  expected: "1978-01-31T07:45:00"
+
+-
+  name: EntryDate with an attribute "language" prints the authored date of the entry in specified language.
+  template: <MTEntryDate language="pl">
+  expected: "31 stycznia 1978  7:45"
+
+-
+  name: Entries with an attribute "lastn=10" lists the latest ten entries.
+  template: |
+    <MTEntries lastn="10">
+      * <MTEntryTitle>
+    </MTEntries>
+  expected: |
+    * A Rainy Day
+    * Verse 5
+    * Verse 4
+    * Verse 3
+    * Verse 2
+    * Verse 1
+
+-
+  name: Entries with an attribute "glue=," prints content that was joined with ",".
+  template: |
+    <MTEntries lastn="10" glue=","><MTEntryTitle></MTEntries>
+  expected: |
+    A Rainy Day,Verse 5,Verse 4,Verse 3,Verse 2,Verse 1
+
+-
+  name: Entries with an attribute "category" lists entries related to the specified category.
+  template: <MTEntries category="foo"><MTEntryTitle></MTEntries>
+  expected: Verse 3
+
+-
+  name: Entries with an attribute "author" lists entries written by the specified author.
+  template: <MTEntries author="Bob D"><MTEntryTitle></MTEntries>
+  expected: Verse 3
+
+-
+  name: Entries with an attribute "days" lists entries posted within DAYS_CONSTANT1 days.
+  template: <MTEntries days="DAYS_CONSTANT1"><MTEntryTitle></MTEntries>
   expected: A Rainy Day
 
 -
-  name: test item 214
-  template: <MTEntries lastn='1'><MTEntryIfExtended>entry is extended</MTEntryIfExtended></MTEntries>
-  expected: entry is extended
+  name: Entries with an attribute "days" lists entries posted within DAYS_CONSTANT2 days.
+  template: <MTEntries days="DAYS_CONSTANT2"><MTEntryTitle></MTEntries>
+  expected: ''
 
 -
-  name: test item 215
+  name: Entries with attributes "offset=2" and "lastn=2" lists specified entries.
   template: |
     <MTEntries offset="2" lastn="2">
       * <MTEntryTitle>
@@ -280,7 +307,7 @@ __DATA__
     * Verse 3
 
 -
-  name: test item 216
+  name: Entries with an attribute "offset=2" lists specified entries.
   template: |
     <MTEntries offset="2">
       * <MTEntryTitle>
@@ -292,7 +319,7 @@ __DATA__
     * Verse 1
 
 -
-  name: test item 229
+  name: Entries with attributes "category=subfoo" and "lastn=1" lists specified entries.
   template: |
     <MTEntries category='subfoo' lastn='1'>
       <MTEntryTitle>
@@ -300,40 +327,40 @@ __DATA__
   expected: Verse 4
 
 -
-  name: test item 230
-  run: 0
+  name: Entries with attributes "tags=verse", "category=foo" and "lastn=1" lists specified entries.
   template: |
     <MTEntries tags='verse' category='foo' lastn='1'><MTEntryTitle></MTEntries>
   expected: Verse 3
 
 -
-  name: test item 231
+  name: Entries with attributes "author=Bob D" and "category=foo" lists specified entries.
   template: <MTEntries author='Bob D' category='foo'><MTEntryTitle></MTEntries>
   expected: Verse 3
 
 -
-  name: test item 232
+  name: Entries with attributes "author=Chuck D" and "tags=strolling" lists specified entries.
   template: <MTEntries author='Chuck D' tags='strolling'><MTEntryTitle></MTEntries>
   expected: A Rainy Day
 
 -
-  name: test item 406
+  name: Entries with an attribute "recently_commented_on=3" lists specified entries.
   template: |
-    <MTEntries recently_commented_on='3' glue=','>
-      <MTEntryTitle></MTEntries>
+    <MTEntries recently_commented_on='3'>
+      <MTEntryTitle>
+    </MTEntries>
   expected: |
-    Verse 2,
-    Verse 3,
+    Verse 2
+    Verse 3
     A Rainy Day
 
 -
-  name: test item 424
+  name: Entries with an attribute "limit=1" lists specified entries.
   template: |
     <mt:entries limit='1'><mt:EntryTitle></mt:Entries>
   expected: A Rainy Day
 
 -
-  name: test item 425
+  name: Entries with an attribute "category=NOT foo" lists specified entries.
   template: |
     <mt:entries category='NOT foo'>
       <mt:EntryTitle>;
@@ -346,17 +373,60 @@ __DATA__
     Verse 1;
 
 -
-  name: test item 426
+  name: Entries with attributes "lastn=1" and "tags=verse" lists specified entries.
   template: "<mt:entries lastn='1' tags='verse'><mt:EntryTitle></mt:Entries>"
   expected: Verse 5
 
 -
-  name: test item 551
+  name: Entries with an attribute "tag" doesn't list entries if specified tag doesn't exist.
+  template: <MTEntries tags='@grandparent'><MTEntryTitle></MTEntries>
+  expected: ''
+
+-
+  name: EntryCategories lists all categories related to the entry.
+  template: |
+    <MTEntryCategories>
+      <MTCategoryLabel>
+    </MTEntryCategories>
+  expected: |
+    bar
+    foo
+  stash:
+    entry: $foo_entry
+
+-
+  name: EntryTrackbackCount prints the number of the pings of the entry.
+  template: <MTEntryTrackbackCount>
+  expected: 1
+
+-
+  name: EntryNext create the page content for the next page.
+  template: |
+    <MTEntryNext><MTEntryTitle></MTEntryNext>
+  expected: A Rainy Day
+  stash:
+    entry: $previous_entry
+
+-
+  name: EntryPrevious create the page content for the previous page.
+  template: |
+    <MTEntryPrevious><MTEntryTitle></MTEntryPrevious>
+  expected: Verse 5
+  stash:
+    entry: $entry
+
+-
+  name: EntryIfExtended prints inner content if the entry has a extended content.
+  template: <MTEntryIfExtended>entry is extended</MTEntryIfExtended>
+  expected: entry is extended
+
+-
+  name: EntriesCount prints the number of the entries of the blog.
   template: <MTEntriesCount>
   expected: 6
 
 -
-  name: test item 552
+  name: DateHeader and DateFooter prints inner content if the entry is the first one of the day.
   template: |
     <MTEntries lastn='3'>
       <MTDateHeader>
@@ -375,7 +445,7 @@ __DATA__
     Footer:January 31, 1964  7:45 AM,
 
 -
-  name: test item 553
+  name: EntriesHeader and EntriesFooter prints the header and the footer.
   template: |
     <MTEntries lastn='3'>
       <MTEntriesHeader>
@@ -394,100 +464,81 @@ __DATA__
     </ul>
 
 -
-  name: test item 554
+  name: EntryAdditionalCategories prints categories (except for the primary one) related to the entry.
   template: |
-    <MTEntries lastn="1">
-      <MTEntryAdditionalCategories glue=','>
-        <MTCategoryLabel></MTEntryAdditionalCategories>
-    </MTEntries>
-  expected: ''
+    <MTEntryAdditionalCategories>
+      <MTCategoryLabel>
+    </MTEntryAdditionalCategories>
+  expected: |
+    bar
+  stash:
+    entry: $foo_entry
 
 -
-  name: test item 555
-  template: |
-    <MTEntries lastn="1"><MTEntryAuthorID></MTEntries>
-  expected: 2
-
--
-  name: test item 556
-  template: <MTEntries lastn="1"><MTEntryAuthorUserpic></MTEntries>
+  name: EntryAuthorUserpic prints the img tag that display the userpic of the author of the entry.
+  template: <MTEntryAuthorUserpic>
   expected: <img src="/mt-static/support/assets_c/userpics/userpic-2-100x100.png?3" width="100" height="100" alt="" />
 
 -
-  name: test item 557
-  template: <MTEntries lastn="1"><MTEntryAuthorUserpicAsset><MTAssetFilename></MTEntryAuthorUserpicAsset></MTEntries>
-  expected: test.jpg
-
--
-  name: test item 558
-  template: <MTEntries lastn="1"><MTEntryAuthorUserpicURL></MTEntries>
+  name: EntryAuthorUserpicURL prints the URL of the userpic of the author of the entry.
+  template: <MTEntryAuthorUserpicURL>
   expected: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
 
 -
-  name: test item 559
-  template: <MTEntries lastn="1"><MTEntryBlogDescription></MTEntries>
+  name: EntryAuthorUserpicAsset creates the asset context for the userpic of the author of the entry.
+  template: <MTEntryAuthorUserpicAsset><MTAssetFilename></MTEntryAuthorUserpicAsset>
+  expected: test.jpg
+
+-
+  name: EntryBlogDescription prints the description of the blog of the entry.
+  template: <MTEntryBlogDescription>
   expected: Narnia None Test Blog
 
 -
-  name: test item 560
-  template: <MTEntries lastn="1"><MTEntryBlogID></MTEntries>
+  name: EntryBlogId prints the ID of the blog of the entry.
+  template: <MTEntryBlogID>
   expected: 1
 
 -
-  name: test item 561
-  template: <MTEntries lastn="1"><MTEntryBlogName></MTEntries>
+  name: EntryBlogName prints the name of the blog of the entry.
+  template: <MTEntryBlogName>
   expected: none
 
 -
-  name: test item 562
-  template: <MTEntries lastn="1"><MTEntryBlogURL></MTEntries>
+  name: EntryBlogURL prints the URL of the blog of the entry.
+  template: <MTEntryBlogURL>
   expected: "http://narnia.na/nana/"
 
 -
-  name: test item 563
-  template: <MTEntries lastn="1"><MTEntryClassLabel lower_case='1'></MTEntries>
+  name: EntryClassLabel prints the class name of the entry.
+  template: <MTEntryClassLabel lower_case='1'>
   expected: entry
 
 -
-  name: test item 564
-  template: <MTEntries lastn="1"><MTEntryCreatedDate></MTEntries>
-  expected: "January 31, 1978  7:45 AM"
-
--
-  name: test item 565
+  name: EntryIfCategory prints inner content if the entry is related to the specified category.
   template: |
-    <MTEntries category="foo" lastn="1">
-      <MTEntryIfCategory category='foo'>
-        <MTCategoryLabel>
-      </MTEntryIfCategory>
-    </MTEntries>
+    <MTEntryIfCategory category='foo'>
+      <MTCategoryLabel>
+    </MTEntryIfCategory>
   expected: foo
+  stash:
+    entry: $foo_entry
 
 -
-  name: test item 566
-  template: <MTEntries lastn="1"><MTEntryModifiedDate></MTEntries>
-  expected: "January 31, 1978  7:46 AM"
-
--
-  name: test item 604
-  template: <MTEntries tags='@grandparent' lastn='1'><MTEntryTitle></MTEntries>
-  expected: ''
-
--
-  name: test item 611
+  name: EntryPrimaryCategory creates the category context for the primary category of the entry.
   template: |
-    <MTEntries id="6">
-      <MTEntryPrimaryCategory><MTCategoryLabel></MTEntryPrimaryCategory>
-    </MTEntries>
+    <MTEntryPrimaryCategory><MTCategoryLabel></MTEntryPrimaryCategory>
   expected: foo
+  stash:
+    entry: $foo_entry
 
 -
-  name: test item 612
+  name: EntryCategories with an attribute "type=primary" creates the category context for the primary category of the entry.
   template: |
-    <MTEntries id="6">
-      <MTEntryCategories type="primary"><MTCategoryLabel></MTEntryCategories>
-    </MTEntries>
+    <MTEntryCategories type="primary"><MTCategoryLabel></MTEntryCategories>
   expected: foo
+  stash:
+    entry: $foo_entry
 
 
 ######## Entries
