@@ -9,11 +9,15 @@ our $VERSION = '0.38';
 BEGIN {
     @XML::Atom::EXPORT = qw( LIBXML DATETIME);
     if (eval { require XML::LibXML }) {
+        my $ver    = $XML::LibXML::VERSION;
+        my $rt_ver = XML::LibXML::LIBXML_RUNTIME_VERSION();
         *{XML::Atom::LIBXML} = sub() {
-           return 1 if $XML::LibXML::VERSION >= 1.7;
-           require XML::XPath;
-           return 0;
-       };
+            # We should require XML::LibXML v1.7 / libxml2 v2.7.4 for any setup options.
+            return 1 if 1.7 <= $ver
+                && 20703 < $rt_ver;
+            require XML::XPath;
+            return 0;
+        };
     } else {
         require XML::XPath;
         *{XML::Atom::LIBXML} = sub() {0};
