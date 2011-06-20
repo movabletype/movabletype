@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: SOAP.pm 249 2008-05-05 20:35:05Z kutterma $
+# $Id: SOAP.pm 374 2010-05-14 08:12:25Z kutterma $
 #
 # ======================================================================
 
@@ -15,7 +15,7 @@ use vars qw(@ISA $VERSION);
 use SOAP::Transport::HTTP;
 
 @ISA = qw(SOAP::Transport::HTTP::Apache);
-use version; $VERSION = qv('0.710.05');
+our $VERSION = 0.712;
 
 my $server = __PACKAGE__->new;
 

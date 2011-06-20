@@ -4,24 +4,20 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Lite.pm 131 2007-11-16 10:43:28Z kutterma $
+# $Id: Lite.pm 374 2010-05-14 08:12:25Z kutterma $
 #
 # ======================================================================
 
 package UDDI::Lite;
-
-use 5.004;
+use 5.006;
 use strict;
-use vars qw($VERSION);
-
-#$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name$ =~ /-(\d+)_([\d_]+)/);
-$VERSION = $SOAP::Lite::VERSION;
-
-use SOAP::Lite;
-
+{
+our $VERSION = 0.712;
+}
 # ======================================================================
 
 package UDDI::Constants;
+our $VERSION = 0.712;
 
 BEGIN
 {
@@ -710,7 +706,7 @@ BEGIN
 # ======================================================================
 
 package UDDI::SOM;
-
+our $VERSION = 0.712;
 use vars qw(@ISA);
 @ISA = qw(SOAP::SOM);
 
@@ -725,6 +721,8 @@ sub result
 # ======================================================================
 
 package UDDI::Data;
+our $VERSION = 0.712;
+
 
 use Carp ();
 
@@ -868,6 +866,7 @@ sub AUTOLOAD
 # ======================================================================
 
 package UDDI::Serializer;
+our $VERSION = 0.712;
 
 use vars qw(@ISA);
 @ISA = qw(SOAP::Serializer);
@@ -925,6 +924,7 @@ sub encode_array
 # ======================================================================
 
 package UDDI::Deserializer;
+our $VERSION = 0.712;
 
 use vars qw(@ISA);
 @ISA = qw(SOAP::Deserializer);
@@ -955,6 +955,7 @@ sub deserialize
 # ======================================================================
 
 package UDDI::Lite;
+our $VERSION = 0.712;
 
 use vars qw(@ISA $AUTOLOAD %EXPORT_TAGS);
 use Exporter;
@@ -1198,7 +1199,7 @@ Builded on top of SOAP::Lite module, hence inherited syntax and features
 
 =item *
 
-Supports easy-to-use interface with convinient access to (sub)elements
+Supports easy-to-use interface with convenient access to (sub)elements
 and attributes
 
 =item *
@@ -1317,7 +1318,7 @@ will be serialized into:
     </name>
   </find_business>
 
-For standard elements more convinient syntax is available:
+For standard elements more convenient syntax is available:
 
   find_business(
     findQualifiers(findQualifier('sortByNameAsc',

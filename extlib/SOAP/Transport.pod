@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Transport.pod 98 2007-10-09 09:41:55Z kutterma $
+# $Id: Transport.pod 372 2010-04-29 18:32:31Z kutterma $
 #
 # ======================================================================
 
@@ -107,16 +107,6 @@ Attachments to add to the request. Currently this only supports an array of MIME
 (Required for server classes only.) This method is the central point for the various server classes to provide an interface to handling requests. The exact set and nature of parameters generally varies based on the classes themselves.
 
 =back
-
-=head2 SOAP::Transport::FTP
-
-The SOAP::Transport::FTP module is automatically loaded by the SOAP::Transport portion of the client structure. It is brought in when an endpoint is specified via the proxy method that starts with the characters, ftp://. This module provides only a client class. 
-
-=head3 SOAP::Transport::FTP::Client
-
-Inherits from: L<SOAP::Client>. 
-
-Support is provided for clients to connect to FTP servers using SOAP. The methods defined within the class are just the basic new and send_receive. 
 
 =head2 SOAP::Transport::HTTP
 
@@ -253,11 +243,17 @@ This is true for all initialization parameters and methods of C<LWP::UserAgent>.
 
 =item http_request
 
-This method gives you acess to the HTTP Request object that will be, or was transmitted to a SOAP Server. It returns a L<HTTP::Request> object.
+This method gives you access to a prototype of the HTTP Request object that 
+will be transmitted to a SOAP::Server. The actual request used is a copy of
+that object.
+
+Do not use this method for anything else than setting prototypic behaviour for
+the client object.
 
 =item http_response
 
-This method gives you acess to the HTTP Response object that will be, or was transmitted to a SOAP Server. It returns a L<HTTP::Response> object.
+This method gives you access to the HTTP Response object that will be, or was 
+transmitted to a SOAP Server. It returns a L<HTTP::Response> object.
 
 =back
 
@@ -265,7 +261,10 @@ This method gives you acess to the HTTP Response object that will be, or was tra
 
 Inherits from: L<SOAP::Server>. 
 
-This is the most basic of the HTTP server implementations. It provides the basic methods, new and handle. The handle method's behavior is defined here, along with other methods specific to this class. The role of this class is primarily to act as a superclass for the other HTTP-based server classes. 
+This is the most basic of the HTTP server implementations. It provides the
+ basic methods, new and handle. The handle method's behavior is defined here, 
+ along with other methods specific to this class. The role of this class is 
+ primarily to act as a superclass for the other HTTP-based server classes. 
 
 =over
 
@@ -273,7 +272,9 @@ This is the most basic of the HTTP server implementations. It provides the basic
 
     $server->handle;
 
-Expects the request method to have been used to associate a HTTP::Request object with the server object prior to being called. This method retrieves that object reference to get at the request being handled.
+Expects the request method to have been used to associate a HTTP::Request 
+object with the server object prior to being called. This method retrieves 
+that object reference to get at the request being handled.
 
 =item request(I<optional value>)
 
@@ -479,41 +480,6 @@ Gets or sets the filehandle being used as the output destination.
 
 =back
 
-=head2 SOAP::Transport::JABBER
-
-This class uses the Net::Jabber classes to abstract the Jabber protocol away from the direct notice of the application. Besides maintaining any needed objects internally, the package also uses a separate class as a proxy between communication layers, SOAP::Transport::JABBER::Query. The Jabber support provides both client and server classes. 
-
-=head3 SOAP::Transport::JABBER::Client
-
-Inherits from: L<SOAP::Client>, L<Net::Jabber::Client>. 
-This class provides localized implementations for both the new and send_receive methods, neither of which are changed in terms of interface. The only difference is that the send_receive method doesn't directly use the action hash key on the input it receives. In addition to these two basic methods, the server class overrides the endpoint
-method it would otherwise inherit from SOAP::Client: 
-
-=over
-
-=item endpoint
-
-In the general sense, this still acts as a basic accessor method, with the same get value/set value behavior used consistently through the SOAP::Lite module. The difference between this version and most others is that when the endpoint is initially set or is changed, the client object makes the connection to the Jabber endpoint, sending the proper authentication credentials and setting up the conversation mechanism using the SOAP::Transport::JABBER::Query class as a delegate. It then calls the superclass endpoint method to ensure that all other related elements are taken care of.
-
-=back
-
-=head3 SOAP::Transport::JABBER::Server
-
-Inherits from: L<SOAP::Server>. 
-
-The server class provided for Jabber support defines a slightly different interface to the constructor. The server manages the Jabber communication by means of an internal Net::Jabber::Client instance. In a fashion similar to that used by SOAP::Transport::HTTP::Daemon, the server class catches methods that are meant for the Jabber client and treats them as if the class inherits directly from that class, without actually doing so. In doing so, the handle method is implemented as a frontend to the Process method of the Jabber client class. The difference in the interface to the constructor is: 
-
-=over
-
-=item new(I<URI>, I<optional server key/value options>)
-
-    $srv = SOAP::Transport::JABBER::Server-> new($uri);
-
-The constructor for the class expects that the first argument will be a Jabber-style URI, followed by the standard set of optional key/value pairs of method names and their parameters. All the method/parameter
-pairs are delegated to the superclass constructor; only the Jabber URI is handled locally. It's used to set up the Net::Jabber::Client instance that manages the actual communications.
-
-=back
-
 =head2 SOAP::Transport::LOCAL
 
 The SOAP::Transport::LOCAL module is designed to provide a no-transport client class for tracing and debugging communications traffic. It links SOAP::Client and SOAP::Server so that the same object that "sends" the request also "receives" it. 
@@ -546,65 +512,6 @@ Inherits from: L<SOAP::Client>.
 The client class for this protocol doesn't define any new methods. The constructor functions in the same style as the others class constructors. The functionality of the send_receive method is slightly different from other classes, however.
 
 When invoked, the send_receive method uses the MIME::Lite package to encapsulate and transmit the message. Because mail messages are one-way communications (the reply being a separate process), there is no response message to be returned by the method. Instead, all the status-related attributes (code, message, status, is_success) are set, and no value is explicitly returned. 
-
-=head2 SOAP::Transport::MQ
-
-This class provides implementations of both client and server frameworks built on IBM's Message Queue set of classes. The SOAP objects encapsulate additional objects from these classes, creating and using them behind the scenes as needed. 
-
-=head3 SOAP::Transport::MQ::Client
-
-Inherits from: L<SOAP::Client>. 
-
-The client class provides two methods specific to it, as well as specialized versions of the endpoint and send_receive methods. It also provides a localized new method, but the interface isn't changed from the superclass method. The new methods are: 
-
-=over 
-
-=item requestqueue
-
-    $client->requestqueue->Put(message => $request);
-
-Manages the MQSeries::Queue object the client uses for enqueuing requests to the server. In general, an application shouldn't need to directly access this attribute, let alone set it. If setting it, the new value should be an object of (or derived from) the MQSeries::Queue class.
-
-=item replyqueue
-
-    $client->replyqueue(MQSeries::Queue->new(%args));
-
-Manages the queue object used for receiving messages back from the designated server (endpoint). It is also primarily for internal use, though if the application needs to set it explicitly, the new value should be an object of (or derived from) the MQSeries::Queue class.
-
-=back
-
-The two previous methods are mainly used by the localized versions of the methods: 
-
-=over
-
-=item endpoint
-
-This accessor method has the same interface as other similar classes but is worth noting for the internal actions that take place. When the endpoint is set or changed, the method creates a queue-manager object (from the MQSeries::QueueManager class) and references this object when creating queues for replies and requests using the methods described earlier. The URI structure used with these classes (strings beginning with the characters mq://user@host:port) contains the information needed for these operations.
-
-=item send_receive
-
-This method uses the same interface as other classes, but makes use of only the endpoint and envelope keys in the hash-table input data. The endpoint key is needed only if the client wishes to switch endpoints prior to sending the message. The message (the value of the envelope key) is inserted into the queue stored in the requestqueue attribute. The client then waits for a reply to the message to appear in the queue stored in the replyqueue attribute.
-
-=back
-
-=head3 SOAP::Transport::MQ::Server
-
-Inherits from: L<SOAP::Server>. 
-
-The server class also defines requestqueue and replyqueue methods under the same terms as the client class. Of course, the server reads from the request queue and writes to the reply queue, the opposite of the client's behavior.
-The methods whose functionality are worth noting are: 
-
-=over
-
-=item new(URI, optional parameters)
-
-When called, the constructor creates the MQSeries::QueueManager object and the two MQSeries::Queue objects, similar to what the client does inside its endpoint method. Like the Jabber server described earlier, the first argument to this constructor is expected to be the URI that describes the server itself. The remainder of the arguments are treated as key/value pairs, as with other class constructors previously described.
-
-=item handle
-
-When this method is called, it attempts to read a pending message from the request-queue stored on the requestqueue attribute. The message itself is passed to the handle method of the superclass, and the result from that operation is enqueued to the replyqueue object. This process loops until no more messages are present in the request queue. The return value is the number of messages processed. The reads from the request queue are done in a nonblocking fashion, so if there is no message pending, the method immediately returns with a value of zero.
-
-=back
 
 =head2 SOAP::Transport::POP3
 

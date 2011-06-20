@@ -4,20 +4,18 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: POP3.pm 153 2008-01-07 22:33:46Z kutterma $
+# $Id: POP3.pm 374 2010-05-14 08:12:25Z kutterma $
 #
 # ======================================================================
 
 package SOAP::Transport::POP3;
 
 use strict;
-use vars qw($VERSION);
-#$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name$ =~ /-(\d+)_([\d_]+)/);
-$VERSION = $SOAP::Lite::VERSION;
+
+our $VERSION = 0.712;
 
 use Net::POP3; 
 use URI; 
-use SOAP::Lite;
 
 # ======================================================================
 

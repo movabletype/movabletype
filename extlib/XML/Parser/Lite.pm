@@ -5,15 +5,16 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Lite.pm 249 2008-05-05 20:35:05Z kutterma $
+# $Id: Lite.pm 374 2010-05-14 08:12:25Z kutterma $
 #
 # ======================================================================
 
 package XML::Parser::Lite;
 
 use strict;
-use vars qw($VERSION);
-use version; $VERSION = qv('0.710.05');
+use warnings;
+
+our $VERSION = 0.712;
 
 sub new {
     my $class = shift;
@@ -32,7 +33,8 @@ sub setHandlers {
     my $self = shift;
 
     # allow symbolic refs, avoid "subroutine redefined" warnings
-    no strict 'refs'; local $^W;
+    no strict 'refs';
+    no warnings qw(redefine);
     # clear all handlers if called without parameters
     if (not @_) {
         for (qw(Start End Char Final Init Comment Doctype XMLDecl)) {
@@ -182,6 +184,7 @@ sub _char {
 }
 
 sub _end {
+    no warnings qw(uninitialized);
     pop(@stack) eq $_[0] or die "mismatched tag '$_[0]'\n";
     End(__PACKAGE__, $_[0]);
 }
