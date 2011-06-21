@@ -17,6 +17,7 @@ my %comments_to_load = qw(
     not_author_comment 1
     mt_account_comment 14
     typekey_account_comment 2
+    url_comment 14
 );
 while ( my ( $key, $id ) = each(%comments_to_load) ) {
     $comments{$key} = MT->model('comment')->load($id);
@@ -185,6 +186,87 @@ __DATA__
   name: IfExternalUserManagement prints inner content if enabled.
   template: <MTIfExternalUserManagement>External</MTIfExternalUserManagement>
   expected: ''
+
+-
+  name: CommenterID prints the ID of the author of the comment.
+  template: <MTCommenterID>
+  expected: 2
+  stash:
+    comment: $mt_account_comment
+    commenter: $mt_account_commenter
+
+-
+  name: CommenterID doesn't print anything if the author isn't registered.
+  template: <MTCommenterID>
+  expected: ''
+  stash:
+    comment: $not_author_comment
+    commenter: $not_author_commenter
+
+-
+  name: CommenterURL prints the URL of the commenter.
+  template: <MTCommenterURL>
+  expected: 'http://chuckd.com/'
+  stash:
+    comment: $url_comment
+    commenter: $url_commenter
+
+-
+  name: CommenterURL doesn't print anything if the URL doesn't exist.
+  template: <MTCommenterURL>
+  expected: ''
+  stash:
+    comment: $comment
+    commenter: $commenter
+
+-
+  name: CommenterUsername prints the name if the commenter is registered.
+  template: <MTCommenterUsername>
+  expected: John Doe
+  stash:
+    comment: $comment
+    commenter: $commenter
+
+-
+  name: CommenterUsername doesn't print anything if the commenter isn't registered.
+  template: <MTCommenterUsername>
+  expected: ''
+  stash:
+    comment: $not_author_comment
+    commenter: $not_author_commenter
+
+-
+  name: CommenterUserpic prints the img tag to display the userpic of comment author.
+  template: <MTCommenterUserpic>
+  expected: |
+    <img src="/mt-static/support/assets_c/userpics/userpic-2-100x100.png?3" width="100" height="100" alt="" />
+  stash:
+    comment: $url_comment
+    commenter: $url_commenter
+
+-
+  name: CommenterUserpic doesn't print anything if the user and the userpic doesn't exist.
+  template: <MTCommenterUserpic>
+  expected: ''
+  stash:
+    comment: $comment
+    commenter: $commenter
+
+-
+  name: CommenterUserpicAsset creates the asset context for the userpic of comment author.
+  template: <MTCommenterUserpicAsset><MTAssetID></MTCommenterUserpicAsset>
+  expected: '3'
+  stash:
+    comment: $url_comment
+    commenter: $url_commenter
+
+-
+  name: CommenterUserpicURL prints the URL of the userpic of comment author.
+  template: <MTCommenterUserpicURL>
+  expected: '/mt-static/support/assets_c/userpics/userpic-2-100x100.png'
+  stash:
+    comment: $url_comment
+    commenter: $url_commenter
 
 
 ######## IfExternalUserManagement
