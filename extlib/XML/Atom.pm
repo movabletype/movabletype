@@ -28,6 +28,7 @@ BEGIN {
         *{XML::Atom::DATETIME} = sub() {0};
     }
     
+    require XML::XPath::Function;
     local $^W = 0;
     *XML::XPath::Function::namespace_uri = sub {
         my $self = shift;
