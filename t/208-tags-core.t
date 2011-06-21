@@ -124,7 +124,7 @@ __DATA__
 
 -
   name: Loop with an attribute "glue" prints content that was joined with ",".
-  template:
+  template: |
     <MTSetVar name='offices3' value='San Francisco' index='0'>
     <MTSetVar name='offices3' value='Tokyo' function='unshift'>
     <MTSetVarBlock name='offices3' index='2'>Paris</MTSetVarBlock>
@@ -658,7 +658,7 @@ __DATA__
     B:2
     C:3
 
-- 
+-
   name: Var with attributes "name" and "value" works as SetVar.
   template: |
     <mt:var name='foo' value='2'>
