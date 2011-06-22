@@ -135,7 +135,7 @@ __DATA__
 
 -
   name: ConfigFile prints the server path for "mt-config.cgi".
-  template: <MTConfigFile> aaa
+  template: <MTConfigFile>
   expected: CFG_FILE
 
 -
