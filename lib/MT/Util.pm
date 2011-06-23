@@ -26,7 +26,7 @@ our @EXPORT_OK
     start_background_task launch_background_tasks substr_wref
     extract_urls extract_domain extract_domains is_valid_date
     epoch2ts ts2epoch escape_unicode unescape_unicode
-    sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
+    sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy );
 
@@ -2210,11 +2210,18 @@ sub unescape_unicode {
     sub init_sax {
         require XML::SAX;
         if ( @{ XML::SAX->parsers } == 1 ) {
-            map {
-                eval { XML::SAX->add_parser($_) }
-                } qw( XML::SAX::Expat XML::LibXML::SAX::Parser
-                XML::LibXML::SAX
-                XML::SAX::ExpatXS );
+            my @parsers = (
+                'XML::SAX::ExpatXS        1.30',
+                'XML::LibXML::SAX         1.70',
+                'XML::SAX::Expat          0.37',
+            );
+            for my $parser ( @parsers ) {
+                eval "use $parser";
+                next if $@;
+                my ($module) = split /\s+/, $parser;
+                XML::SAX->add_parser($module);
+                last;
+            }
         }
         $initialized_sax = 1;
     }
@@ -2223,8 +2230,30 @@ sub unescape_unicode {
         init_sax() unless $initialized_sax;
         require XML::SAX::ParserFactory;
         my $f = XML::SAX::ParserFactory->new;
-        $f->parser();
+        $f->parser(
+            LexicalHandler => 'MT::Util::XML::SAX::LexicalHandler',
+        );
     }
+}
+
+sub expat_parser {
+    my $parser = XML::Parser->new(
+        Handlers => {
+            ExternEnt    => sub { die "External entities disabled."; '' },
+            ExternEntFin => sub {},
+        },
+    );
+    return $parser;
+}
+
+sub libxml_parser {
+    return XML::LibXML->new(
+        no_network      => 1,
+        expand_xinclude => 0,
+        expand_entities => 1,
+        load_ext_dtd    => 0,
+        ext_ent_handler => sub { die "External entities disabled."; '' },
+    );
 }
 
 sub multi_iter {
@@ -2614,6 +2643,12 @@ sub deep_copy {
     else {
         $_[0];
     }
+}
+
+package MT::Util::XML::SAX::LexicalHandler;
+
+sub start_dtd {
+    die "DOCTYPE declaration is not allowed.";
 }
 
 1;
