@@ -54,11 +54,12 @@ sub body {
             my $node;
             eval {
                 if (LIBXML) {
-                    my $parser = XML::LibXML->new;
+                    my $parser = XML::Atom->libxml_parser;
                     my $tree = $parser->parse_string($copy);
                     $node = $tree->getDocumentElement;
                 } else {
-                    my $xp = XML::XPath->new(xml => $copy);
+                    my $parser = XML::Atom->expat_parser;
+                    my $xp = XML::XPath->new(xml => $copy, parser => $parser);
                     $node = (($xp->find('/')->get_nodelist)[0]->getChildNodes)[0]
                         if $xp;
                 }
@@ -147,7 +148,7 @@ sub _is_printable {
           ? $data
           : eval { Encode::decode("utf-8", $data, Encode::FB_CROAK) } );
 
-    return ! $@ && $decoded =~ /^\p{IsPrint}*$/;
+    return ! $@ && $decoded =~ /^[\p{IsPrint}\s]*$/;
 }
 
 1;

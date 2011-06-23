@@ -2128,7 +2128,6 @@ sub remove_entry_archive_file {
             my $ext = $blog->file_extension;
             $file .= '.' . $ext if $ext;
         }
-        $file =~ s/\-+/-/g;
         $file;
     }
 }
