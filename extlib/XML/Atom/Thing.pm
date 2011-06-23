@@ -6,7 +6,7 @@ use base qw( XML::Atom::Base );
 
 use XML::Atom;
 use base qw( XML::Atom::ErrorHandler );
-use XML::Atom::Util qw( first nodelist childlist remove_default_ns create_element );
+use XML::Atom::Util qw( first nodelist childlist create_element );
 use XML::Atom::Category;
 use XML::Atom::Link;
 use LWP::UserAgent;
@@ -22,7 +22,7 @@ sub init_libxml {
     my $atom = shift;
     my %param = @_ == 1 ? (Stream => $_[0]) : @_;
     if (my $stream = delete $param{Stream}) {
-        my $parser = XML::LibXML->new;
+        my $parser = delete $param{Parser} || XML::Atom->libxml_parser;
         my $doc;
         if (ref($stream) eq 'SCALAR') {
             $doc = $parser->parse_string($$stream);
@@ -50,13 +50,14 @@ sub init_xpath {
     my %param = @_ == 1 ? (Stream => $_[0]) : @_;
     my $elem_name = $atom->element_name;
     if (my $stream = delete $param{Stream}) {
+        my $parser = delete $param{Parser} || XML::Atom->expat_parser;
         my $xp;
         if (ref($stream) eq 'SCALAR') {
-            $xp = XML::XPath->new(xml => $$stream);
+            $xp = XML::XPath->new(xml => $$stream, parser => $parser);
         } elsif (ref($stream)) {
-            $xp = XML::XPath->new(ioref => $stream);
+            $xp = XML::XPath->new(ioref => $stream, parser => $parser);
         } else {
-            $xp = XML::XPath->new(filename => $stream);
+            $xp = XML::XPath->new(filename => $stream, parser => $parser);
         }
         my $set = $xp->find('/' . $elem_name);
         unless ($set && $set->size) {

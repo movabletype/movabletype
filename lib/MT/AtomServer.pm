@@ -226,11 +226,23 @@ sub xml_body {
     my $app = shift;
     unless (exists $app->{xml_body}) {
         if (LIBXML) {
-            my $parser = XML::LibXML->new;
-            $app->{xml_body} = $parser->parse_string($app->request_content);
+            my $parser = MT::Util->libxml_parser;
+            eval {
+                $app->{xml_body} = $parser->parse_string($app->request_content);
+            };
+            if ($@) {
+                die "Error Parsing XML Input $@ ";
+            }
         } else {
-            my $xp = XML::XPath->new(xml => $app->request_content);
-            $app->{xml_body} = ($xp->find('/')->get_nodelist)[0];
+            my $parser = MT::Util->expat_parser;
+            my $xp;
+            eval {
+                $xp = XML::XPath->new( xml => $app->request_content, parser => $parser );
+                $app->{xml_body} = ( $xp->find('/')->get_nodelist )[0];
+            };
+            if ($@) {
+                die "Error Parsing XML Input $@ ";
+            }
         }
     }
     $app->{xml_body};
@@ -239,12 +251,19 @@ sub xml_body {
 sub atom_body {
     my $app = shift;
     my $atom;
+    my $xml = $app->xml_body;
     if ($app->{is_soap}) {
-        my $xml = $app->xml_body;
-        $atom = MT::Atom::Entry->new(Elem => first($xml, NS_SOAP, 'Body'))
+        $atom = MT::Atom::Entry->new( Elem => first( $xml, NS_SOAP, 'Body' ), _prefix => $xml->getFirstChild->getPrefix)
             or return $app->error(500, MT::Atom::Entry->errstr);
     } else {
-        $atom = MT::Atom::Entry->new(Stream => \$app->request_content)
+        my $parser;
+        if (LIBXML) {
+            $parser = MT::Util->libxml_parser;
+        }
+        else {
+            $parser = MT::Util->expat_parser;
+        }
+        $atom = MT::Atom::Entry->new(Stream => \$app->request_content, Parser => $parser, _prefix => $xml->getFirstChild->getPrefix)
             or return $app->error(500, MT::Atom::Entry->errstr);
     }
     $atom;
@@ -319,6 +338,11 @@ sub atom_x_content_type { 'application/atom+xml' }
 
 sub edit_link_rel { 'edit' }
 sub get_posts_order_field { 'modified_on' }
+
+sub init_app {
+    $XML::Atom::ForceUnicode = 1;
+    $XML::Atom::DefaultVersion = 1.0;
+}
 
 sub new_feed {
     my $app = shift;
@@ -532,24 +556,22 @@ sub new_post {
     my $type = $content->type; 
     my $body = encode_text(MT::I18N::utf8_off($content->body),'utf-8',$enc); 
     my $asset;
-    if ($type && $type !~ m!^application/.*xml$!) {
-        if ($type !~ m!^text/!) {
+    if ($type && $type eq 'text/plain') {
+        ## Check for LifeBlog Note & SMS records.
+        my $format = $atom->get(NS_DC, 'format');
+        if ($format && ($format eq 'Note' || $format eq 'SMS')) {
             $asset = $app->_upload_to_asset or return;
         }
-        elsif ($type && $type eq 'text/plain') {
-            ## Check for LifeBlog Note & SMS records.
-            my $format = $atom->get(NS_DC, 'format');
-            if ($format && ($format eq 'Note' || $format eq 'SMS')) {
-                $asset = $app->_upload_to_asset or return;
-            }
-        }
+    }
+    elsif ($type && $type !~ m!^(application/.*xml|text/.*|html)$! ) {
+        $asset = $app->_upload_to_asset or return;
     }
     if ( $atom->get(NS_TYPEPAD, 'standalone') && $asset ) {
         $app->response_code(201);
         $app->response_content_type('application/atom_xml');
         my $a = MT::Atom::Entry->new_with_asset($asset);
-        return $a->as_xml; 
-    } 
+        return $a->as_xml;
+    }
 
     my $entry = MT::Entry->new;
     my $orig_entry = $entry->clone;
@@ -1030,6 +1052,11 @@ sub atom_x_content_type { 'application/x.atom+xml' }
 
 sub edit_link_rel { 'service.edit' }
 sub get_posts_order_field { 'authored_on' }
+
+sub init_app {
+    $XML::Atom::ForceUnicode = 1;
+    $XML::Atom::DefaultVersion = 0.3;
+}
 
 sub new_feed {
     my $app = shift;
