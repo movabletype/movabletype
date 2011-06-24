@@ -188,7 +188,7 @@ sub munge_response {
     if ($client->use_soap && (my $xml = $res->content)) {
         my $doc;
         if (LIBXML) {
-            my $parser = XML::LibXML->new;
+            my $parser = $client->libxml_parser;
             $doc = $parser->parse_string($xml);
         } else {
             my $xp = XML::XPath->new(xml => $xml);
@@ -217,6 +217,8 @@ sub _utf8_off {
         Encode::_utf8_off($_[0]);
     }
 }
+
+sub libxml_parser { XML::Atom->libxml_parser }
 
 package LWP::UserAgent::AtomClient;
 use strict;

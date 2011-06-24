@@ -284,7 +284,7 @@ sub xml_body {
     my $server = shift;
     unless (exists $server->{xml_body}) {
         if (LIBXML) {
-            my $parser = XML::LibXML->new;
+            my $parser = $server->libxml_parser;
             $server->{xml_body} =
                 $parser->parse_string($server->request_content);
         } else {
@@ -308,6 +308,8 @@ sub atom_body {
     }
     $atom;
 }
+
+sub libxml_parser { XML::Atom->libxml_parser }
 
 1;
 __END__
