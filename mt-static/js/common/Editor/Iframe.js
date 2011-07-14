@@ -751,9 +751,10 @@ Editor.Iframe = new Class( Component, {
         var selection = this.getSelection();
         if( !selection )
             return;
-        if( (selection.type && selection.type == "Text") ||     // IE 6
-            (selection.toString && (selection + '').length) )   // w3c 
-            return true;
+
+        return selection.type
+            ? (selection.type == "Text")    // IE
+            : ((selection + '').length > 0) // w3c
     },
     
     
