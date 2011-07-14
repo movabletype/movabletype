@@ -494,6 +494,27 @@ Editor.Iframe = new Class( Component, {
         return html;
     },
 
+    /**
+     * class: <code>Editor.Iframe</code><br/>
+     * The IE8 replace a link "#foo" to "editor-content.html#foo".
+     * Therefore, add the dummy page to that link, and remove it later.
+     * @param html <code>string</code> The html to replace.
+     */
+    saveFragmentLink: function(html) {
+        this.dummyPage = 'ztqhsdg';
+        while (html.indexOf(this.dummyPage) != -1) {
+            this.dummyPage += '_ztqhsdg';
+        }
+        return html.replace(/("|')#/, '$1' + this.dummyPage + '#');
+    },
+
+    /**
+     * class: <code>Editor.Iframe</code><br/>
+     * @param html <code>string</code> The html to replace.
+     */
+    restoreFragmentLink: function(html) {
+        return html.replace(this.dummyPage + '#', '#');
+    },
 
     /**
      * class: <code>Editor.Iframe</code><br/>
@@ -502,7 +523,23 @@ Editor.Iframe = new Class( Component, {
      */
     setHTML: function( html ) {
         this.formatBlock(); // bugid: 39059
+
+        var needToSaveFragmentLink = false;
+        if(
+            navigator.appVersion.indexOf('MSIE 8.0')    // IE8 Standard Mode
+            || navigator.appVersion.indexOf('MSIE 7.0') // IE8 Quirks Mode
+        ) {
+            needToSaveFragmentLink = true;
+        }
+
+        if (needToSaveFragmentLink) {
+            html = this.saveFragmentLink(html);
+        }
         this.document.body.innerHTML = html;
+        if (needToSaveFragmentLink) {
+            this.document.body.innerHTML =
+                this.restoreFragmentLink(this.document.body.innerHTML);
+        }
     },
 
 
@@ -527,6 +564,8 @@ Editor.Iframe = new Class( Component, {
         if( selection.createRange ) { // Internet Explorer (IE)
             var range = selection.createRange();
             if( selection.type == "None" || selection.type == "Text" ) {
+                html = this.saveFragmentLink(html);
+
                 try {
                     range.pasteHTML( html );
                 } catch ( err ) {
@@ -542,6 +581,17 @@ Editor.Iframe = new Class( Component, {
                         inserted = range.parentElement();
                     }
                 }
+
+                if (inserted) {
+                    var props = ['innerHTML', 'href', 'src'];
+                    for (var i = 0; i < props.length; i++) {
+                        if (inserted[props[i]]) {
+                            inserted[props[i]] =
+                                this.restoreFragmentLink(inserted[props[i]]);
+                        }
+                    }
+                }
+
                 if( select ) 
                     range.select();
             } else { // IE 'Control' selection    
