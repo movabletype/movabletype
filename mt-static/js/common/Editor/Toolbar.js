@@ -115,7 +115,7 @@ Editor.Toolbar = new Class( Component, {
      * @param linkElement <code>Node</code> A DOM element representing an anchor element.
      */ 
     editLink: function( linkElement ) {
-        this.createLink( linkElement.href, true, linkElement );
+        this.createLink( linkElement.getAttribute('href'), true, linkElement );
     },
 
 
