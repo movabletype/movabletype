@@ -155,6 +155,7 @@ Editor.Iframe = new Class( Component, {
      * @param event  <code>Event</code> A prepared event object.
      */
     eventKeyUp: function( event ) {
+        this.saveSelection();
         this.monitorSelection( event );
     },
 
@@ -175,6 +176,7 @@ Editor.Iframe = new Class( Component, {
      * @param event  <code>Event</code> A prepared event object.
      */
     eventMouseUp: function( event ) {
+        this.saveSelection();
         this.eventClick( event );
     },
    
