@@ -759,9 +759,54 @@ Editor.Iframe = new Class( Component, {
         if( !selection )
             return;
 
-        return selection.type
-            ? (selection.type == "Text")    // IE
-            : ((selection + '').length > 0) // w3c
+
+        if (navigator.userAgent.indexOf('MSIE') != -1) {
+            return selection.type == 'Text';
+        }
+        else {
+            if ((selection + '').length > 0) {
+                return true;
+            }
+
+            var asTextElement = {
+                "img": 1
+            };
+            for (var i = 0; i < selection.rangeCount; i++) {
+                var range = selection.getRangeAt(0);
+                var j, j_limit;
+
+                if (range.startContainer != range.endContainer) {
+                    j_limit = range.startContainer.childNodes.length;
+                }
+                else {
+                    j_limit = range.endOffset+1;
+                }
+
+                for (
+                    j = range.startOffset;
+                    j < j_limit;
+                    j++
+                ) {
+                    if (asTextElement[range.startContainer.childNodes[j].nodeName.toLowerCase()]) {
+                        return true;
+                    }
+                }
+
+                if (range.startContainer != range.endContainer) {
+                    for (
+                        j = range.endOffset;
+                        j >= 0;
+                        j--
+                    ) {
+                        if (asTextElement[range.endContainer.childNodes[j].nodeName.toLowerCase()]) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
     },
     
     
