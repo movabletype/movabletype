@@ -588,8 +588,13 @@ Editor.Iframe = new Class( Component, {
                     var props = ['innerHTML', 'href', 'src'];
                     for (var i = 0; i < props.length; i++) {
                         if (inserted[props[i]]) {
-                            inserted[props[i]] =
-                                this.restoreFragmentLink(inserted[props[i]]);
+                            try {
+                                inserted[props[i]] =
+                                    this.restoreFragmentLink(inserted[props[i]]);
+                            }
+                            catch (e) {
+                                // Ignore
+                            }
                         }
                     }
                 }
