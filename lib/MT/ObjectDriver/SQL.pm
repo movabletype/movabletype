@@ -396,7 +396,7 @@ sub as_aggregate {
             = ( ref($attribute) eq 'ARRAY' ) ? $attribute : [$attribute];
         foreach (@$elements) {
             # Remove column alias                                                                                       
-            if ( $_->{column} =~ /^([\w_\-\.]+\(.+\))+\s+AS\s+.+$/ ) {
+            if ( $_->{column} =~ /^([\w_\-\.]+\(.+\))+\s+AS\s+.+$/i ) {
                 $_->{column} = $1;
             }
         }
