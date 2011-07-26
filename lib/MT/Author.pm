@@ -787,6 +787,9 @@ sub userpic_html {
 sub can_do {
     my $author = shift;
     my ($action, %opts) = @_;
+
+    return 1 if $author->is_superuser;
+
     my $sys_perm = MT->model('permission')->load({ blog_id => 0, author_id => $author->id });
     my $sys_priv;
     if ($sys_perm) {
