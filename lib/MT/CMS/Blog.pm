@@ -2638,7 +2638,7 @@ sub clone {
     my $user    = $app->user;
 
     return $app->permission_denied()
-        if !$user->is_superuser && !$user->can('clone_blog');
+        if !$user->permissions( $app->blog->id )->can_do('clone_blog');
 
     my @id = $app->param('id');
 
