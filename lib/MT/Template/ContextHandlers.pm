@@ -339,6 +339,7 @@ sub core_tags {
             ## Misc
             'IfImageSupport?' =>
                 '$Core::MT::Template::Tags::Misc::_hdlr_if_image_support',
+            'WidgetSetLoop' =>  '$Core::MT::Template::Tags::Misc::_hdlr_widget_loop'
         },
         function => {
 
@@ -927,6 +928,13 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Misc::_hdlr_widget_manager',
             CaptchaFields =>
                 '$Core::MT::Template::Tags::Misc::_hdlr_captcha_fields',
+            'WidgetSetName' =>  '$Core::MT::Template::Tags::Misc::_hdlr_widget_set_name',
+            'WidgetSetID' =>  '$Core::MT::Template::Tags::Misc::_hdlr_widget_set_id',
+            'WidgetContent' =>  '$Core::MT::Template::Tags::Misc::_hdlr_widget_content',
+            'WidgetCount' =>  '$Core::MT::Template::Tags::Misc::_hdlr_widget_count',
+            'WidgetName' =>  '$Core::MT::Template::Tags::Misc::_hdlr_widget_name',
+            'WidgetID' =>  '$Core::MT::Template::Tags::Misc::_hdlr_widget_id',
+            'WidgetIdentifier' =>  '$Core::MT::Template::Tags::Misc::_hdlr_widget_identifier'
         },
         modifier => {
             'numify'  => '$Core::MT::Template::Tags::Filters::_fltr_numify',

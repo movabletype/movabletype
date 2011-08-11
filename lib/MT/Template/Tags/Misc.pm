@@ -209,6 +209,275 @@ sub _hdlr_widget_manager {
     return join( '', @res );
 }
 
+#####Widgetset Loop tags
+
+###########################################################################
+
+=head2 WidgetCount
+
+Function tag that returns the number of widgets in a widget set.
+
+B<Attributes:>
+
+=over 4
+
+=item * name (required)
+Name of the widget set.
+
+=back
+
+=for tags widgets
+
+=cut
+
+
+sub _hdlr_widget_count {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $ws = $args->{name} || $args->{identifier}
+      or return $ctx->error( MT->translate('WidgetSet name required.') );
+    my $blog_id = $args->{blog_id} || $ctx->stash('blog_id') || 0;
+
+    my $widgetset = MT->model('template')->load( {
+                                   identifier => $ws,
+                                   blog_id => $blog_id ? [ 0, $blog_id ] : 0,
+                                   type    => 'widgetset'
+                                 },
+                                 { sort => 'blog_id', direction => 'descend' }
+      )
+      || MT->model('template')->load( {
+                                   name    => $ws,
+                                   blog_id => $blog_id ? [ 0, $blog_id ] : 0,
+                                   type    => 'widgetset'
+                                 },
+                                 { sort => 'blog_id', direction => 'descend' }
+      )
+      || return $ctx->error(
+              MT->translate( "Specified WidgetSet '[_1]' not found.", $ws ) );
+
+    my @modulesets = split( ',', $widgetset->modulesets || '' );
+    return scalar @modulesets;
+} ## end sub _hdlr_widget_count
+
+###########################################################################
+
+=head2 WidgetSetLoop
+
+Block loop tag that lets you loop over the contents of a widget set instead of loading the
+widgets all at once.
+
+B<Attributes:>
+
+=over 4
+
+=item * name (required) 
+Name of the widget set.
+
+=item * blog_id (optional)
+Load widgetset from another blog. This will not load them with the context of the other blog.
+Rather, it is intended to let blogs mix and match each other's widget sets or to let one blog
+host widgets for several others without having to make them into system widgets.
+
+=back
+
+It provides the following meta variables:
+
+=over 4
+
+=item * __size__ The size of the widget set.
+=item * __first__ Boolean variable set when the current iteration is the first widget in the set.
+=item * __last__ Boolean variable set when the current iteration is the last widget in the set.
+=item * __index__ An integer variable that is the current position in the widget loop.
+=item * __odd__ Boolean variable set when the current iteration is even numbered in the loop.
+=item * __even__ Boolean variable set when the current iteration is odd numbered in the loop.
+
+=back
+
+=for tags widgets
+
+=cut
+
+sub _hdlr_widget_loop {
+    my ( $ctx, $args, $cond ) = @_;
+    my $tmpl_name 
+      = $args->{name}
+      || $args->{identifier}
+      || return $ctx->error( MT->translate("Template name is required.") );
+    my $blog_id = $args->{blog_id} || $ctx->stash('blog_id') || 0;
+
+    my $tmpl = MT->model('template')->load( {
+                                   identifier => $tmpl_name,
+                                   blog_id => $blog_id ? [ 0, $blog_id ] : 0,
+                                   type    => 'widgetset'
+                                 },
+                                 { sort => 'blog_id', direction => 'descend' }
+      )
+      || MT->model('template')->load( {
+                                   name    => $tmpl_name,
+                                   blog_id => $blog_id ? [ 0, $blog_id ] : 0,
+                                   type    => 'widgetset'
+                                 },
+                                 { sort => 'blog_id', direction => 'descend' }
+      )
+      || return $ctx->error(
+          MT->translate( "Specified WidgetSet '[_1]' not found.", $tmpl_name )
+      );
+
+    my $modulesets = $tmpl->modulesets;
+    my @selected   = split ',', $modulesets;
+    my $vars       = $ctx->{__stash}{vars} ||= {};
+    my $out        = '';
+    my $builder    = $ctx->stash('builder');
+    my $tokens     = $ctx->stash('tokens');
+    $ctx->stash( 'widgetset', $tmpl );
+    my $size = scalar(@selected);
+    local $vars->{__size__}      = $size;
+    local $vars->{ws_name}       = $tmpl->name;
+    local $vars->{ws_identifier} = $tmpl->identifier;
+    my $glue = $args->{glue} || '';
+
+    for ( my $index = 0; $index < $size; $index++ ) {
+        my $widget
+          = MT->model('template')->load( { id => $selected[$index] } );
+        local $vars->{__first__} = ( $index == 0 );
+        local $vars->{__last__}  = ( $index == ( $size - 1 ) );
+        local $vars->{__index__} = $index;
+        local $vars->{__odd__}   = $index % 2 == 1;
+        local $vars->{__even__}  = $index % 2 == 0;
+        $ctx->stash( 'widget', $widget );
+        my $res = $builder->build( $ctx, $tokens, $cond );
+        return $ctx->error( $builder->errstr ) unless defined $res;
+        $res .= $glue if ( $glue && $index < $size - 1 );
+        $out .= $res;
+    }
+    $ctx->stash( 'widgeset', undef );
+    return $out;
+} ## end sub _hdlr_widget_loop
+
+###########################################################################
+
+=head2 WidgetSetName
+
+Used within a WidgetSetLoop context. This returns the name of the widget set.
+
+=for tags widgets
+
+=cut
+
+sub _hdlr_widget_set_name {
+    my ($ctx, $args) =  @_;
+    my $ws = $ctx->stash('widgetset') 
+        or return $ctx->error('You called a WidgetSetName outside of a WidgetLoop context');
+    return $ws->name;
+}
+
+###########################################################################
+
+=head2 WidgetSetId
+    
+Used within a WidgetSetLoop context. This returns the ID number of the widget set.
+
+=for tags widgets
+
+=cut
+
+
+sub _hdlr_widget_set_id {
+    my ($ctx, $args) = @_;
+    my $ws = $ctx->stash('widgetset') 
+        or return $ctx->error('You called a WidgetSetID outside of a WidgetLoop context');
+    return $ws->id;
+}
+
+###########################################################################
+
+=head2 WidgetContent
+    
+Used within a WidgetSetLoop context. This returns the content of the widget. It supports the
+caching options that <mt:Include> provides. Briefly, these are:
+
+=over 4
+
+=item * cache
+=item * cache_key
+=item * ttl
+
+=back
+
+=for tags widgets
+
+=cut
+
+
+sub _hdlr_widget_content {
+    my ($ctx, $args, $cond) = @_;
+    my $widget = $ctx->stash('widget')
+        or return $ctx->error('No widget could be loaded.'); ###TODO more robust error handling!
+    return '' unless $widget->text;
+
+    local $args->{widget} = $widget->name;   
+ 
+    return MT::Template::Tags::System::_include_module(@_);
+}
+
+sub _hdlr_widget_return_property
+{
+    my ($ctx, $args, $method) = @_;
+    my $widget = $ctx->stash('widget')
+        or return $ctx->error('No widget could be loaded.');
+    return '' unless $widget->$method;
+
+    return $widget->$method;
+}
+
+###########################################################################
+
+=head2 WidgetName
+    
+Used within a WidgetSetLoop context. This returns the name of the widget currently in context.
+
+=for tags widgets
+
+=cut
+
+
+sub _hdlr_widget_name {
+    my ($ctx, $args) = @_;
+    return _hdlr_widget_return_property($ctx, $args, 'name');
+}
+
+###########################################################################
+
+=head2 WidgetID
+    
+Used within a WidgetSetLoop context. This returns the id of the widget currenlty in context.
+
+=for tags widgets
+
+=cut
+
+
+sub _hdlr_widget_id {
+    my ($ctx, $args) = @_;
+    return _hdlr_widget_return_property($ctx, $args, 'id');
+}
+
+###########################################################################
+
+=head2 WidgetIdentifier
+    
+Used within a WidgetSetLoop context. This returns the identifier of the widget currently in context.
+
+=for tags widgets
+
+=cut
+
+
+sub _hdlr_widget_identifier {
+    my ($ctx, $args) = @_;
+    return _hdlr_widget_return_property($ctx, $args, 'identifier');
+}
+
 ###########################################################################
 
 =head2 CaptchaFields
