@@ -116,7 +116,7 @@ subtest 'mode = entry_notify' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: entry_notify" ); 
-    ok( $out =~ m!permission=1!i, "entry_notify by other blog user" ); #TODO: should be use 'Permission Denied' instead of
+    ok( $out =~ m!permission=1!i, "entry_notify by other blog user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -129,7 +129,9 @@ subtest 'mode = entry_notify' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: entry_notify" );
-    ok( $out =~ m!permission=1!i, "entry_notify by other role user" );  #TODO: should be use 'Permission Denied' instead of
+    ok( $out =~ m!permission=1!i, "entry_notify by other role user" );  #TODO: should use 'Permission Denied' instead
+
+    done_testing();
 };
 
 subtest 'mode = export_notification' => sub {
@@ -194,6 +196,8 @@ subtest 'mode = export_notification' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: export_notification" );
     ok( $out =~ m!Permission denied!i, "export_notification by other role user (send notification)" );
+
+    done_testing();
 };
 
 subtest 'mode = send_notify' => sub {
@@ -209,7 +213,7 @@ subtest 'mode = send_notify' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: send_notify" );
-    ok( $out !~ m!No permissions!i, "send_notify by admin" ); #TODO: should be use 'Permission Denied' instead of
+    ok( $out !~ m!No permissions!i, "send_notify by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -223,7 +227,7 @@ subtest 'mode = send_notify' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: send_notify" );
-    ok( $out !~ m!No permissions!i, "send_notify by permitted user" ); #TODO: should be use 'Permission Denied' instead of
+    ok( $out !~ m!No permissions!i, "send_notify by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -237,7 +241,7 @@ subtest 'mode = send_notify' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: send_notify" );
-    ok( $out =~ m!No permissions!i, "send_notify by other blog user" ); #TODO: should be use 'Permission Denied' instead of
+    ok( $out =~ m!No permissions!i, "send_notify by other blog user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -250,7 +254,9 @@ subtest 'mode = send_notify' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: send_notify" );
-    ok( $out =~ m!No permissions!i, "send_notify by other role user" ); #TODO: should be use 'Permission Denied' instead of
+    ok( $out =~ m!No permissions!i, "send_notify by other role user" ); #TODO: should use 'Permission Denied' instead
+
+    done_testing();
 };
 
 subtest 'mode = list' => sub {
@@ -265,7 +271,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out !~ m!Permission denied!i, "list by admin" );
+    ok( $out !~ m!permission=1!i, "list by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -278,7 +284,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out !~ m!Permission denied!i, "list by permitted user" );
+    ok( $out !~ m!permission=1!i, "list by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -291,7 +297,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!Permission denied!i, "list by other blog user" );
+    ok( $out =~ m!permission=1!i, "list by other blog user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -304,7 +310,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!Permission denied!i, "list by other role user" );
+    ok( $out =~ m!permission=1!i, "list by other role user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -317,10 +323,14 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!Permission denied!i, "list by other role user (send notification)" );
+    ok( $out =~ m!permission=1!i, "list by other role user (send notification)" ); #TODO: should use 'Permission Denied' instead
+
+    done_testing();
 };
 
 subtest 'mode = save' => sub {
+    # Edit screen is not provided by default installation.
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -390,9 +400,13 @@ subtest 'mode = save' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
     ok( $out =~ m!Permission denied!i, "save by other role user (send notification)" );
+
+    done_testing();
 };
 
 subtest 'mode = edit' => sub {
+    # Edit screen is not provided by default installation.
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -405,7 +419,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit by admin" );
+    ok( $out !~ m!permission=1!i, "edit by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -419,7 +433,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit by permitted user" );
+    ok( $out !~ m!permission=1!i, "edit by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -433,7 +447,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by other blog user" );
+    ok( $out =~ m!permission=1!i, "edit by other blog user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -447,7 +461,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by other role user" );
+    ok( $out =~ m!permission=1!i, "edit by other role user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -461,7 +475,9 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by other role user (send notification)" );
+    ok( $out =~ m!permission=1!i, "edit by other role user (send notification)" ); #TODO: should use 'Permission Denied' instead
+
+    done_testing();
 };
 
 subtest 'mode = delete' => sub {
@@ -549,6 +565,8 @@ subtest 'mode = delete' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
     ok( $out =~ m!Permission denied!i, "delete by other role user (send notification)" );
+
+    done_testing();
 };
 
 done_testing();

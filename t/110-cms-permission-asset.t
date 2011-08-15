@@ -445,7 +445,7 @@ subtest 'mode = list_asset' => sub {
     # By other permission
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $aikawa,
+        {   __test_user      => $ogawa,
             __request_method => 'POST',
             __mode           => 'list_asset',
             label            => 'New Label',
@@ -524,6 +524,7 @@ subtest 'mode = start_upload_entry' => sub {
             __mode           => 'start_upload_entry',
             label            => 'New Label',
             blog_id          => $blog->id,
+            id               => $pic2->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -538,6 +539,7 @@ subtest 'mode = start_upload_entry' => sub {
             __mode           => 'start_upload_entry',
             label            => 'New Label',
             blog_id          => $blog->id,
+            id               => $pic2->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -552,6 +554,7 @@ subtest 'mode = start_upload_entry' => sub {
             __mode           => 'start_upload_entry',
             label            => 'New Label',
             blog_id          => $blog->id,
+            id               => $pic2->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -566,6 +569,7 @@ subtest 'mode = start_upload_entry' => sub {
             __mode           => 'start_upload_entry',
             label            => 'New Label',
             blog_id          => $blog->id,
+            id               => $pic2->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -629,64 +633,6 @@ subtest 'mode = upload_file' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: upload_file" );
     ok( $out =~ m!Permission Denied!i, "upload_file by other permission" );
-};
-
-subtest 'mode = list_asset' => sub {
-    # By admim
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'list_asset',
-            label            => 'New Label',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: list_asset" );
-    ok( $out !~ m!Permission Denied!i, "list_asset by admin" );
-
-    # By Permitted user
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $kagawa,
-            __request_method => 'POST',
-            __mode           => 'list_asset',
-            label            => 'New Label',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: list_asset" );
-    ok( $out !~ m!Permission Denied!i, "list_asset by permitted user" );
-
-    # By non Permitted user
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $kikkawa,
-            __request_method => 'POST',
-            __mode           => 'list_asset',
-            label            => 'New Label',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: list_asset" );
-    ok( $out =~ m!Permission Denied!i, "list_asset by other blog" );
-
-    # By other permission
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'list_asset',
-            label            => 'New Label',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: list_asset" );
-    ok( $out =~ m!Permission Denied!i, "list_asset by other permission" );
 };
 
 subtest 'mode = save' => sub {
@@ -774,7 +720,7 @@ subtest 'mode = delete' => sub {
             __mode           => 'delete',
             _type            => 'asset',
             blog_id          => $blog->id,
-            id               => $pic2->id,
+            id               => $asset->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -802,7 +748,7 @@ subtest 'mode = delete' => sub {
             __mode           => 'delete',
             _type            => 'asset',
             blog_id          => $blog->id,
-            id               => $pic2->id,
+            id               => $asset->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -830,7 +776,7 @@ subtest 'mode = delete' => sub {
             __mode           => 'delete',
             _type            => 'asset',
             blog_id          => $blog->id,
-            id               => $pic2->id,
+            id               => $asset->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -859,7 +805,7 @@ subtest 'mode = delete' => sub {
             _type            => 'asset',
             label            => 'New Label',
             blog_id          => $blog->id,
-            id               => $pic2->id,
+            id               => $asset->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -887,7 +833,7 @@ subtest 'mode = add_tags' => sub {
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'add_tags',
+            __mode           => 'itemset_action',
             _type            => 'asset',
             action_name      => 'add_tags',
             itemset_action_input => 'New Tag',
@@ -907,15 +853,15 @@ subtest 'mode = add_tags' => sub {
         'MT::App::CMS',
         {   __test_user      => $kagawa,
             __request_method => 'POST',
-            __mode           => 'add_tags',
+            __mode           => 'itemset_action',
             _type            => 'asset',
             action_name      => 'add_tags',
-            itemset_action_input => 'New Tag',
+            itemset_action_input => 'aaa',
             return_args      => '__mode%3Dlist_asset%26blog_id%3D'.$blog->id,
-            blog_id          => $blog->id,
+            plugin_action_selector => 'add_tags',
             plugin_action_selector => 'add_tags',
             id               => $asset->id,
-            plugin_action_selector => 'add_tags',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -927,15 +873,15 @@ subtest 'mode = add_tags' => sub {
         'MT::App::CMS',
         {   __test_user      => $kikkawa,
             __request_method => 'POST',
-            __mode           => 'add_tags',
+            __mode           => 'itemset_action',
             _type            => 'asset',
             action_name      => 'add_tags',
-            itemset_action_input => 'New Tag',
+            itemset_action_input => 'aaa',
             return_args      => '__mode%3Dlist_asset%26blog_id%3D'.$blog->id,
-            blog_id          => $blog->id,
+            plugin_action_selector => 'add_tags',
             plugin_action_selector => 'add_tags',
             id               => $asset->id,
-            plugin_action_selector => 'add_tags',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -947,15 +893,15 @@ subtest 'mode = add_tags' => sub {
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'add_tags',
+            __mode           => 'itemset_action',
             _type            => 'asset',
             action_name      => 'add_tags',
-            itemset_action_input => 'New Tag',
+            itemset_action_input => 'aaa',
             return_args      => '__mode%3Dlist_asset%26blog_id%3D'.$blog->id,
-            blog_id          => $blog->id,
+            plugin_action_selector => 'add_tags',
             plugin_action_selector => 'add_tags',
             id               => $asset->id,
-            plugin_action_selector => 'add_tags',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -983,7 +929,7 @@ subtest 'mode = remove_tags' => sub {
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'remove_tags',
+            __mode           => 'itemset_action',
             _type            => 'asset',
             action_name      => 'remove_tags',
             itemset_action_input => 'New Tag',
@@ -1003,7 +949,7 @@ subtest 'mode = remove_tags' => sub {
         'MT::App::CMS',
         {   __test_user      => $kagawa,
             __request_method => 'POST',
-            __mode           => 'remove_tags',
+            __mode           => 'itemset_action',
             _type            => 'asset',
             action_name      => 'remove_tags',
             itemset_action_input => 'New Tag',
@@ -1023,7 +969,7 @@ subtest 'mode = remove_tags' => sub {
         'MT::App::CMS',
         {   __test_user      => $kikkawa,
             __request_method => 'POST',
-            __mode           => 'remove_tags',
+            __mode           => 'itemset_action',
             _type            => 'asset',
             action_name      => 'remove_tags',
             itemset_action_input => 'New Tag',
@@ -1035,6 +981,7 @@ subtest 'mode = remove_tags' => sub {
         }
     );
     $out = delete $app->{__test_output};
+diag($out);
     ok( $out, "Request: remove_tags" );
     ok( $out =~ m!Permission Denied!i, "remove_tags by other blog" );
 
@@ -1043,7 +990,7 @@ subtest 'mode = remove_tags' => sub {
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'remove_tags',
+            __mode           => 'itemset_action',
             _type            => 'asset',
             action_name      => 'remove_tags',
             itemset_action_input => 'New Tag',
