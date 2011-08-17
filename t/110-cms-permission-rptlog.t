@@ -59,6 +59,8 @@ subtest 'mode = reset_rpt_log' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_rpt_log" );
     ok( $out =~ m!Permission denied!i, "reset_rpt_log by non permitted user" );
+
+    done_testing();
 };
 
 subtest 'mode = view_rpt_log' => sub {
@@ -85,6 +87,8 @@ subtest 'mode = view_rpt_log' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: view_rpt_log" );
     ok( $out =~ m!Permission denied!i, "view_rpt_log by non permitted user" );
+
+    done_testing();
 };
 
 done_testing();

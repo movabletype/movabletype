@@ -119,6 +119,8 @@ subtest 'mode = list_page' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_page" );
     ok( $out =~ m!Permission denied!i, "list_page by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = save_pages' => sub {
@@ -196,6 +198,8 @@ subtest 'mode = save_pages' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_pages" );
     ok( $out =~ m!Permission denied!i, "save_pages by type mismatch" );
+
+    done_testing();
 };
 
 subtest 'mode = save' => sub {
@@ -206,6 +210,7 @@ subtest 'mode = save' => sub {
             __mode           => 'save',
             blog_id          => $blog->id,
             id               => $page->id,
+            _type            => 'page',
         }
     );
     $out = delete $app->{__test_output};
@@ -219,6 +224,7 @@ subtest 'mode = save' => sub {
             __mode           => 'save',
             blog_id          => $blog->id,
             id               => $page->id,
+            _type            => 'page',
         }
     );
     $out = delete $app->{__test_output};
@@ -232,6 +238,7 @@ subtest 'mode = save' => sub {
             __mode           => 'save',
             blog_id          => $blog->id,
             id               => $page->id,
+            _type            => 'page',
         }
     );
     $out = delete $app->{__test_output};
@@ -245,6 +252,7 @@ subtest 'mode = save' => sub {
             __mode           => 'save',
             blog_id          => $blog->id,
             id               => $page->id,
+            _type            => 'page',
         }
     );
     $out = delete $app->{__test_output};
@@ -258,11 +266,14 @@ subtest 'mode = save' => sub {
             __mode           => 'save',
             blog_id          => $blog->id,
             id               => $entry->id,
+            _type            => 'page',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
     ok( $out =~ m!Permission denied!i, "save by type mismatch" );
+
+    done_testing();
 };
 
 subtest 'mode = edit' => sub {
@@ -273,11 +284,12 @@ subtest 'mode = edit' => sub {
             __mode           => 'edit',
             blog_id          => $blog->id,
             id               => $page->id,
+            _type            => 'page',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit by admin" );
+    ok( $out !~ m!permission=1!i, "edit by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -286,11 +298,12 @@ subtest 'mode = edit' => sub {
             __mode           => 'edit',
             blog_id          => $blog->id,
             id               => $page->id,
+            _type            => 'page',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit by permitted user" );
+    ok( $out !~ m!permission=1!i, "edit by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -299,11 +312,12 @@ subtest 'mode = edit' => sub {
             __mode           => 'edit',
             blog_id          => $blog->id,
             id               => $page->id,
+            _type            => 'page',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by other blog" );
+    ok( $out =~ m!permission=1!i, "edit by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -312,11 +326,12 @@ subtest 'mode = edit' => sub {
             __mode           => 'edit',
             blog_id          => $blog->id,
             id               => $page->id,
+            _type            => 'page',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by other permission" );
+    ok( $out =~ m!permission=1!i, "edit by other permission" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -325,11 +340,14 @@ subtest 'mode = edit' => sub {
             __mode           => 'edit',
             blog_id          => $blog->id,
             id               => $entry->id,
+            _type            => 'page',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by type mismatch" );
+    ok( $out =~ m!permission=1!i, "edit by type mismatch" ); #TODO: should use 'Permission Denied' instead
+
+    done_testing();
 };
 
 subtest 'mode = delete' => sub {
@@ -344,6 +362,7 @@ subtest 'mode = delete' => sub {
             __mode           => 'delete',
             blog_id          => $blog->id,
             id               => $page->id,
+            _type            => 'page',
         }
     );
     $out = delete $app->{__test_output};
@@ -361,6 +380,7 @@ subtest 'mode = delete' => sub {
             __mode           => 'delete',
             blog_id          => $blog->id,
             id               => $page->id,
+            _type            => 'page',
         }
     );
     $out = delete $app->{__test_output};
@@ -378,6 +398,7 @@ subtest 'mode = delete' => sub {
             __mode           => 'delete',
             blog_id          => $blog->id,
             id               => $page->id,
+            _type            => 'page',
         }
     );
     $out = delete $app->{__test_output};
@@ -395,6 +416,7 @@ subtest 'mode = delete' => sub {
             __mode           => 'delete',
             blog_id          => $blog->id,
             id               => $page->id,
+            _type            => 'page',
         }
     );
     $out = delete $app->{__test_output};
@@ -408,11 +430,14 @@ subtest 'mode = delete' => sub {
             __mode           => 'delete',
             blog_id          => $blog->id,
             id               => $entry->id,
+            _type            => 'page',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
     ok( $out =~ m!Permission denied!i, "delete by type mismatch" );
+
+    done_testing();
 };
 
 subtest 'action = set_draft' => sub {
@@ -515,6 +540,7 @@ subtest 'action = set_draft' => sub {
     ok( $out, "Request: set_draft" );
     ok( $out =~ m!Permission denied!i, "set_draft by type mismatch" );
 
+    done_testing();
 };
 
 subtest 'action = add_tags' => sub {
@@ -617,6 +643,7 @@ subtest 'action = add_tags' => sub {
     ok( $out, "Request: add_tags" );
     ok( $out =~ m!Permission denied!i, "add_tags by type mismatch" );
 
+    done_testing();
 };
 
 subtest 'action = remove_tags' => sub {
@@ -719,6 +746,7 @@ subtest 'action = remove_tags' => sub {
     ok( $out, "Request: remove_tags" );
     ok( $out =~ m!Permission denied!i, "remove_tags by type mismatch" );
 
+    done_testing();
 };
 
 subtest 'action = open_batch_editor' => sub {
@@ -821,6 +849,7 @@ subtest 'action = open_batch_editor' => sub {
     ok( $out, "Request: open_batch_editor" );
     ok( $out =~ m!Permission denied!i, "open_batch_editor by type mismatch" );
 
+    done_testing();
 };
 
 done_testing();

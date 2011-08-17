@@ -630,7 +630,7 @@ sub make_objectscore {
     my %params = @_;
 
     my $values = {
-        blog_id => 2,
+        namespace => 'sample',
         object_id => 1,
         object_ds => 'entry',
     };

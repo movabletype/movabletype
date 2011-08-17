@@ -74,6 +74,8 @@ subtest 'mode = delete' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
     ok( $out =~ m!Permission denied!i, "delete by non permitted user" );
+
+    done_testing();
 };
 
 done_testing();

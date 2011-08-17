@@ -62,58 +62,61 @@ MT::Association->link( $ukawa => $manage_themes => $second_blog );
 # Run
 my ( $app, $out );
 
-subtest 'mode = apply' => sub {
+subtest 'mode = apply_theme' => sub {
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'apply',
+            __mode           => 'apply_theme',
             blog_id          => $blog->id,
             theme_id         => 'classic_blog',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: apply" );
-    ok( $out =~ m!__mode=list_theme!i, "apply by admin" );
+diag($out);
+    ok( $out, "Request: apply_theme" );
+    ok( $out =~ m!__mode=list_theme!i, "apply_theme by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'apply',
+            __mode           => 'apply_theme',
             blog_id          => $blog->id,
             theme_id         => 'classic_blog',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: apply" );
-    ok( $out =~ m!__mode=list_theme!i, "apply by permitted user" );
+    ok( $out, "Request: apply_theme" );
+    ok( $out =~ m!__mode=list_theme!i, "apply_theme by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ukawa,
             __request_method => 'POST',
-            __mode           => 'apply',
+            __mode           => 'apply_theme',
             blog_id          => $blog->id,
             theme_id         => 'classic_blog',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: apply" );
-    ok( $out =~ m!Permission denied!i, "apply by other blog" );
+    ok( $out, "Request: apply_theme" );
+    ok( $out =~ m!Permission denied!i, "apply_theme by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ichikawa,
             __request_method => 'POST',
-            __mode           => 'apply',
+            __mode           => 'apply_theme',
             blog_id          => $blog->id,
             theme_id         => 'classic_blog',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: apply" );
-    ok( $out =~ m!Permission denied!i, "apply by other permission" );
+    ok( $out, "Request: apply_theme" );
+    ok( $out =~ m!Permission denied!i, "apply_theme by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = dialog_select_theme' => sub {
@@ -127,7 +130,7 @@ subtest 'mode = dialog_select_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_select_theme" );
-    ok( $out !~ m!Permission denied!i, "dialog_select_theme by admin" );
+    ok( $out !~ m!permission=1!i, "dialog_select_theme by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -139,7 +142,7 @@ subtest 'mode = dialog_select_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_select_theme" );
-    ok( $out !~ m!Permission denied!i, "dialog_select_theme by permitted user" );
+    ok( $out !~ m!permission=1!i, "dialog_select_theme by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -151,7 +154,7 @@ subtest 'mode = dialog_select_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_select_theme" );
-    ok( $out =~ m!Permission denied!i, "dialog_select_theme by other blog" );
+    ok( $out =~ m!permission=1!i, "dialog_select_theme by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -163,7 +166,9 @@ subtest 'mode = dialog_select_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_select_theme" );
-    ok( $out =~ m!Permission denied!i, "dialog_select_theme by other permission" );
+    ok( $out =~ m!permission=1!i, "dialog_select_theme by other permission" ); #TODO: should use 'Permission Denied' instead
+
+    done_testing();
 };
 
 subtest 'mode = do_export_theme' => sub {
@@ -218,6 +223,8 @@ subtest 'mode = do_export_theme' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: do_export_theme" );
     ok( $out =~ m!Permission denied!i, "do_export_theme by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = theme_element_detail' => sub {
@@ -271,6 +278,8 @@ subtest 'mode = theme_element_detail' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: theme_element_detail" );
     ok( $out =~ m!Permission denied!i, "theme_element_detail by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = export_theme' => sub {
@@ -321,6 +330,8 @@ subtest 'mode = export_theme' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: export_theme" );
     ok( $out =~ m!Permission denied!i, "export_theme by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = list_theme' => sub {
@@ -334,7 +345,7 @@ subtest 'mode = list_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_theme" );
-    ok( $out !~ m!Permission denied!i, "list_theme by admin" );
+    ok( $out !~ m!permission=1!i, "list_theme by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -346,7 +357,7 @@ subtest 'mode = list_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_theme" );
-    ok( $out !~ m!Permission denied!i, "list_theme by permitted user" );
+    ok( $out !~ m!permission=1!i, "list_theme by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -358,7 +369,7 @@ subtest 'mode = list_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_theme" );
-    ok( $out =~ m!Permission denied!i, "list_theme by other blog" );
+    ok( $out =~ m!permission=1!i, "list_theme by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -370,7 +381,9 @@ subtest 'mode = list_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_theme" );
-    ok( $out =~ m!Permission denied!i, "list_theme by other permission" );
+    ok( $out =~ m!permission=1!i, "list_theme by other permission" ); #TODO: should use 'Permission Denied' instead
+
+    done_testing();
 };
 
 subtest 'mode = save_theme_detail' => sub {
@@ -425,6 +438,8 @@ subtest 'mode = save_theme_detail' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_theme_detail" );
     ok( $out =~ m!Permission denied!i, "save_theme_detail by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = uninstall_theme' => sub {
@@ -439,7 +454,7 @@ subtest 'mode = uninstall_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: uninstall_theme" );
-    ok( $out !~ m!Permission denied!i, "uninstall_theme by admin" );
+    ok( $out !~ m!permission=1!i, "uninstall_theme by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -451,7 +466,9 @@ subtest 'mode = uninstall_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: uninstall_theme" );
-    ok( $out =~ m!Permission denied!i, "uninstall_theme by non permitted user" );
+    ok( $out =~ m!permission=1!i, "uninstall_theme by non permitted user" ); #TODO: should use 'Permission Denied' instead
+
+    done_testing();
 };
 
 done_testing();

@@ -41,7 +41,7 @@ MT::Association->link( $aikawa => $blog_admin => $blog );
 my ( $app, $out );
 
 subtest 'mode = list' => sub {
-    my $os = MT::Test::Permission->make_objectscore( blog_id => $blog->id );
+    my $os = MT::Test::Permission->make_objectscore();
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -55,7 +55,7 @@ subtest 'mode = list' => sub {
     ok( $out, "Request: list" );
     ok( $out =~ m!Invalid Request!i, "list by admin" );
 
-    $os = MT::Test::Permission->make_objectscore( blog_id => $blog->id );
+    $os = MT::Test::Permission->make_objectscore();
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
@@ -104,7 +104,7 @@ subtest 'mode = save' => sub {
 };
 
 subtest 'mode = edit' => sub {
-    my $os = MT::Test::Permission->make_objectscore( blog_id => $blog->id );
+    my $os = MT::Test::Permission->make_objectscore();
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -119,7 +119,7 @@ subtest 'mode = edit' => sub {
     ok( $out, "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by admin" );
 
-    $os = MT::Test::Permission->make_objectscore( blog_id => $blog->id );
+    $os = MT::Test::Permission->make_objectscore();
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
@@ -136,7 +136,7 @@ subtest 'mode = edit' => sub {
 };
 
 subtest 'mode = delete' => sub {
-    my $os = MT::Test::Permission->make_objectscore( blog_id => $blog->id );
+    my $os = MT::Test::Permission->make_objectscore();
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -151,7 +151,7 @@ subtest 'mode = delete' => sub {
     ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid Request!i, "delete by admin" );
 
-    $os = MT::Test::Permission->make_objectscore( blog_id => $blog->id );
+    $os = MT::Test::Permission->make_objectscore();
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,

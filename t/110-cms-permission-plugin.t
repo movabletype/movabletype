@@ -86,7 +86,7 @@ subtest 'mode = cfg_plugins' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_plugins" );
-    ok( $out !~ m!Permission denied!i, "cfg_plugins by admin" );
+    ok( $out !~ m!permission=1!i, "cfg_plugins by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -98,7 +98,7 @@ subtest 'mode = cfg_plugins' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_plugins" );
-    ok( $out !~ m!Permission denied!i, "cfg_plugins by permitted user on blog" );
+    ok( $out !~ m!permission=1!i, "cfg_plugins by permitted user on blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -110,7 +110,7 @@ subtest 'mode = cfg_plugins' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_plugins" );
-    ok( $out !~ m!Permission denied!i, "cfg_plugins by permitted user on website" );
+    ok( $out !~ m!permission=1!i, "cfg_plugins by permitted user on website" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -122,7 +122,7 @@ subtest 'mode = cfg_plugins' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_plugins" );
-    ok( $out !~ m!Permission denied!i, "cfg_plugins by permitted user on system" );
+    ok( $out !~ m!permission=1!i, "cfg_plugins by permitted user on system" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -134,7 +134,7 @@ subtest 'mode = cfg_plugins' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_plugins" );
-    ok( $out =~ m!Permission denied!i, "cfg_plugins by other blog" );
+    ok( $out =~ m!permission=1!i, "cfg_plugins by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -146,7 +146,7 @@ subtest 'mode = cfg_plugins' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_plugins" );
-    ok( $out =~ m!Permission denied!i, "cfg_plugins by other permission" );
+    ok( $out =~ m!permission=1!i, "cfg_plugins by other permission" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -158,7 +158,7 @@ subtest 'mode = cfg_plugins' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_plugins" );
-    ok( $out =~ m!Permission denied!i, "cfg_plugins by non permitted user on website" );
+    ok( $out =~ m!permission=1!i, "cfg_plugins by non permitted user on website" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -170,7 +170,7 @@ subtest 'mode = cfg_plugins' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_plugins" );
-    ok( $out =~ m!Permission denied!i, "cfg_plugins by non permitted user on blog" );
+    ok( $out =~ m!permission=1!i, "cfg_plugins by non permitted user on blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -182,7 +182,9 @@ subtest 'mode = cfg_plugins' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_plugins" );
-    ok( $out =~ m!Permission denied!i, "cfg_plugins by non permitted user on system" );
+    ok( $out =~ m!permission=1!i, "cfg_plugins by non permitted user on system" ); #TODO: should use 'Permission Denied' insteadXS
+
+    done_testing();
 };
 
 subtest 'mode = plugin_control' => sub {
@@ -192,6 +194,8 @@ subtest 'mode = plugin_control' => sub {
             __request_method => 'POST',
             __mode           => 'plugin_control',
             blog_id          => 0,
+            plugin_sig       => '*',
+            state            => 'on',
         }
     );
     $out = delete $app->{__test_output};
@@ -204,11 +208,13 @@ subtest 'mode = plugin_control' => sub {
             __request_method => 'POST',
             __mode           => 'plugin_control',
             blog_id          => 0,
+            plugin_sig       => '*',
+            state            => 'on',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: plugin_control" );
-    ok( $out !~ m!Permission denied!i, "plugin_control by permitted" );
+    ok( $out !~ m!Permission denied!i, "plugin_control by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -216,12 +222,15 @@ subtest 'mode = plugin_control' => sub {
             __request_method => 'POST',
             __mode           => 'plugin_control',
             blog_id          => $blog->id,
+            plugin_sig       => '*',
+            state            => 'on',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: plugin_control" );
     ok( $out =~ m!Permission denied!i, "plugin_control by non permitted user" );
 
+    done_testing();
 };
 
 subtest 'mode = reset_plugin_config' => sub {
@@ -332,6 +341,8 @@ subtest 'mode = reset_plugin_config' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_plugin_config" );
     ok( $out =~ m!Permission denied!i, "reset_plugin_config by non permitted user on system" );
+
+    done_testing();
 };
 
 subtest 'mode = save_plugin_config' => sub {
@@ -442,6 +453,8 @@ subtest 'mode = save_plugin_config' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_plugin_config" );
     ok( $out =~ m!Permission denied!i, "save_plugin_config by non permitted user on system" );
+
+    done_testing();
 };
 
 done_testing();

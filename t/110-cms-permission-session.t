@@ -44,7 +44,7 @@ require MT::Association;
 MT::Association->link( $aikawa => $blog_admin => $blog );
 
 # Run
-my ( $app, $out );
+my ( $app, $out, $sess );
 
 subtest 'mode = list' => sub {
     $app = _run_app(

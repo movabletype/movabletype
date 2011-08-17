@@ -84,7 +84,7 @@ subtest 'mode = stylecatcher_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_theme" );
-    ok( $out !~ m!Permission denied!i, "stylecatcher_theme by admin" );
+    ok( $out !~ m!permission=1!i, "stylecatcher_theme by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -96,7 +96,7 @@ subtest 'mode = stylecatcher_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_theme" );
-    ok( $out !~ m!Permission denied!i, "stylecatcher_theme by permitted user" );
+    ok( $out !~ m!permission=1!i, "stylecatcher_theme by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -108,7 +108,7 @@ subtest 'mode = stylecatcher_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_theme" );
-    ok( $out !~ m!Permission denied!i, "stylecatcher_theme by permitted user (sys)" );
+    ok( $out !~ m!permission=1!i, "stylecatcher_theme by permitted user (sys)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -120,7 +120,7 @@ subtest 'mode = stylecatcher_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_theme" );
-    ok( $out =~ m!Permission denied!i, "stylecatcher_theme by other blog" );
+    ok( $out =~ m!permission=1!i, "stylecatcher_theme by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -132,7 +132,9 @@ subtest 'mode = stylecatcher_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_theme" );
-    ok( $out =~ m!Permission denied!i, "stylecatcher_theme by other permission" );
+    ok( $out =~ m!permission=1!i, "stylecatcher_theme by other permission" ); #TODO: should use 'Permission Denied' instead
+
+    done_testing();
 };
 
 subtest 'mode = stylecatcher_js' => sub {
@@ -195,6 +197,8 @@ subtest 'mode = stylecatcher_js' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_js" );
     ok( $out =~ m!Permission denied!i, "stylecatcher_js by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = stylecatcher_apply' => sub {
@@ -208,7 +212,7 @@ subtest 'mode = stylecatcher_apply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_apply" );
-    ok( $out !~ m!Permission denied!i, "stylecatcher_apply by admin" );
+    ok( $out !~ m!permission=1!i, "stylecatcher_apply by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -220,7 +224,7 @@ subtest 'mode = stylecatcher_apply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_apply" );
-    ok( $out !~ m!Permission denied!i, "stylecatcher_apply by permitted user" );
+    ok( $out !~ m!permission=1!i, "stylecatcher_apply by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -232,7 +236,7 @@ subtest 'mode = stylecatcher_apply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_apply" );
-    ok( $out !~ m!Permission denied!i, "stylecatcher_apply by permitted user (sys)" );
+    ok( $out !~ m!permission=1!i, "stylecatcher_apply by permitted user (sys)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -244,7 +248,7 @@ subtest 'mode = stylecatcher_apply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_apply" );
-    ok( $out =~ m!Permission denied!i, "stylecatcher_apply by other blog" );
+    ok( $out =~ m!permission=1!i, "stylecatcher_apply by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -256,7 +260,9 @@ subtest 'mode = stylecatcher_apply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_apply" );
-    ok( $out =~ m!Permission denied!i, "stylecatcher_apply by other permission" );
+    ok( $out =~ m!permission=1!i, "stylecatcher_apply by other permission" ); #TODO: should use 'Permission Denied' instead
+
+    done_testing();
 };
 
 done_testing();

@@ -175,6 +175,8 @@ subtest 'mode = add_map' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_map" );
     ok( $out =~ m!Permission denied!i, "add_map by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = delete_map' => sub {
@@ -257,6 +259,8 @@ subtest 'mode = delete_map' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete_map" );
     ok( $out =~ m!Permission denied!i, "delete_map by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = delete_widget' => sub {
@@ -352,6 +356,8 @@ subtest 'mode = delete_widget' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete_widget" );
     ok( $out =~ m!Permission denied!i, "delete_widget by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = dialog_publishing_profile' => sub {
@@ -424,6 +430,8 @@ subtest 'mode = dialog_publishing_profile' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_publishing_profile" );
     ok( $out =~ m!Permission denied!i, "dialog_publishing_profile by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = dialog_refresh_templates' => sub {
@@ -496,6 +504,8 @@ subtest 'mode = dialog_refresh_templates' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_refresh_templates" );
     ok( $out =~ m!Permission denied!i, "dialog_refresh_templates by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = edit_widget' => sub {
@@ -574,6 +584,8 @@ subtest 'mode = edit_widget' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit_widget" );
     ok( $out =~ m!Permission denied!i, "edit_widget by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = list_template' => sub {
@@ -587,7 +599,7 @@ subtest 'mode = list_template' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_template" );
-    ok( $out !~ m!Permission denied!i, "list_template by admin" );
+    ok( $out !~ m!permission=1!i, "list_template by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -599,7 +611,7 @@ subtest 'mode = list_template' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_template" );
-    ok( $out !~ m!Permission denied!i, "list_template by permitted user" );
+    ok( $out !~ m!permission=1!i, "list_template by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -611,7 +623,7 @@ subtest 'mode = list_template' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_template" );
-    ok( $out !~ m!Permission denied!i, "list_template by permitted user (sys)" );
+    ok( $out !~ m!permission=1!i, "list_template by permitted user (sys)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -623,7 +635,7 @@ subtest 'mode = list_template' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_template" );
-    ok( $out =~ m!Permission denied!i, "list_template by other blog" );
+    ok( $out =~ m!permission=1!i, "list_template by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -635,7 +647,9 @@ subtest 'mode = list_template' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_template" );
-    ok( $out =~ m!Permission denied!i, "list_template by other permission" );
+    ok( $out =~ m!permission=1!i, "list_template by other permission" ); #TODO: should use 'Permission Denied' instead
+
+    done_testing();
 };
 
 subtest 'mode = list_widget' => sub {
@@ -649,7 +663,7 @@ subtest 'mode = list_widget' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_widget" );
-    ok( $out !~ m!Permission denied!i, "list_widget by admin" );
+    ok( $out !~ m!permission=1!i, "list_widget by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -661,7 +675,7 @@ subtest 'mode = list_widget' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_widget" );
-    ok( $out !~ m!Permission denied!i, "list_widget by permitted user" );
+    ok( $out !~ m!permission=1!i, "list_widget by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -673,7 +687,7 @@ subtest 'mode = list_widget' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_widget" );
-    ok( $out !~ m!Permission denied!i, "list_widget by permitted user (sys)" );
+    ok( $out !~ m!permission=1!i, "list_widget by permitted user (sys)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -685,7 +699,7 @@ subtest 'mode = list_widget' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_widget" );
-    ok( $out =~ m!Permission denied!i, "list_widget by other blog" );
+    ok( $out =~ m!permission=1!i, "list_widget by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -697,7 +711,9 @@ subtest 'mode = list_widget' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_widget" );
-    ok( $out =~ m!Permission denied!i, "list_widget by other permission" );
+    ok( $out =~ m!permission=1!i, "list_widget by other permission" ); #TODO: should use 'Permission Denied' instead
+
+    done_testing();
 };
 
 subtest 'mode = preview_template' => sub {
@@ -712,7 +728,7 @@ subtest 'mode = preview_template' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_template" );
-    ok( $out !~ m!Permission denied!i, "preview_template by admin" );
+    ok( $out !~ m!permission=1!i, "preview_template by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -725,7 +741,7 @@ subtest 'mode = preview_template' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_template" );
-    ok( $out !~ m!Permission denied!i, "preview_template by permitted user" );
+    ok( $out !~ m!permission=1!i, "preview_template by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -738,7 +754,7 @@ subtest 'mode = preview_template' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_template" );
-    ok( $out !~ m!Permission denied!i, "preview_template by permitted user (sys)" );
+    ok( $out !~ m!permission=1!i, "preview_template by permitted user (sys)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -751,7 +767,7 @@ subtest 'mode = preview_template' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_template" );
-    ok( $out =~ m!Permission denied!i, "preview_template by other blog" );
+    ok( $out =~ m!permission=1!i, "preview_template by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -764,7 +780,9 @@ subtest 'mode = preview_template' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_template" );
-    ok( $out =~ m!Permission denied!i, "preview_template by other permission" );
+    ok( $out =~ m!permission=1!i, "preview_template by other permission" ); #TODO: should use 'Permission Denied' instead
+
+    done_testing();
 };
 
 subtest 'mode = publish_archive_templates' => sub {
@@ -819,6 +837,8 @@ subtest 'mode = publish_archive_templates' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: publish_archive_templates" );
     ok( $out =~ m!Permission denied!i, "publish_archive_templates by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = publish_index_templates' => sub {
@@ -873,6 +893,8 @@ subtest 'mode = publish_index_templates' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: publish_index_templates" );
     ok( $out =~ m!Permission denied!i, "publish_index_templates by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = publish_templates_from_search' => sub {
@@ -927,6 +949,8 @@ subtest 'mode = publish_templates_from_search' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: publish_templates_from_search" );
     ok( $out =~ m!Permission denied!i, "publish_templates_from_search by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = refresh_all_templates' => sub {
@@ -989,6 +1013,8 @@ subtest 'mode = refresh_all_templates' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: refresh_all_templates" );
     ok( $out =~ m!Permission denied!i, "refresh_all_templates by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = reset_blog_templates' => sub {
@@ -1051,6 +1077,8 @@ subtest 'mode = reset_blog_templates' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_blog_templates" );
     ok( $out =~ m!Permission denied!i, "reset_blog_templates by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = save_widget' => sub {
@@ -1123,6 +1151,8 @@ subtest 'mode = save_widget' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_widget" );
     ok( $out =~ m!Permission denied!i, "save_widget by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = save' => sub {
@@ -1195,6 +1225,8 @@ subtest 'mode = save' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
     ok( $out =~ m!Permission denied!i, "save by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = edit' => sub {
@@ -1210,7 +1242,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit by admin" );
+    ok( $out !~ m!permission=1!i, "edit by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1224,7 +1256,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit by permitted user" );
+    ok( $out !~ m!permission=1!i, "edit by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1238,7 +1270,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit by permitted user (sys)" );
+    ok( $out !~ m!permission=1!i, "edit by permitted user (sys)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1252,7 +1284,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by other blog" );
+    ok( $out =~ m!permission=1!i, "edit by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1266,7 +1298,9 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by other permission" );
+    ok( $out =~ m!permission=1!i, "edit by other permission" ); #TODO: should use 'Permission Denied' instead
+
+    done_testing();
 };
 
 subtest 'mode = delete' => sub {
@@ -1359,6 +1393,8 @@ subtest 'mode = delete' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
     ok( $out =~ m!Permission denied!i, "delete by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = list (templatemap)' => sub {
@@ -1387,6 +1423,8 @@ subtest 'mode = list (templatemap)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
     ok( $out =~ m!Invalid Request!i, "list by non permitted user" );
+
+    done_testing();
 };
 
 subtest 'mode = save (templatemap)' => sub {
@@ -1415,6 +1453,8 @@ subtest 'mode = save (templatemap)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by non permitted user" );
+
+    done_testing();
 };
 
 subtest 'mode = edit (templatemap)' => sub {
@@ -1449,6 +1489,8 @@ subtest 'mode = edit (templatemap)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by non permitted user" );
+
+    done_testing();
 };
 
 subtest 'mode = delete (templatemap)' => sub {
@@ -1483,6 +1525,8 @@ subtest 'mode = delete (templatemap)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid Request!i, "delete by non permitted user" );
+
+    done_testing();
 };
 
 subtest 'mode = save (widget)' => sub {
@@ -1555,6 +1599,8 @@ subtest 'mode = save (widget)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
     ok( $out =~ m!Permission denied!i, "save by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = edit (widget)' => sub {
@@ -1627,6 +1673,8 @@ subtest 'mode = edit (widget)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
     ok( $out =~ m!Permission denied!i, "edit by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = delete (widget)' => sub {
@@ -1724,6 +1772,8 @@ subtest 'mode = delete (widget)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
     ok( $out =~ m!Permission denied!i, "delete by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = refresh_tmpl_templates' => sub {
@@ -1819,6 +1869,8 @@ subtest 'mode = refresh_tmpl_templates' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: refresh_tmpl_templates" );
     ok( $out =~ m!Permission denied!i, "refresh_tmpl_templates by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = copy_templates' => sub {
@@ -1915,6 +1967,8 @@ subtest 'mode = copy_templates' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: copy_templates" );
     ok( $out =~ m!Permission denied!i, "copy_templates by other permission" );
+
+    done_testing();
 };
 
 done_testing();

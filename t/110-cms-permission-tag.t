@@ -140,6 +140,8 @@ subtest 'mode = js_recent_entries_for_tag' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: js_recent_entries_for_tag" );
     ok( $out =~ m!Permission denied!i, "js_recent_entries_for_tag by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = js_tag_check' => sub {
@@ -194,6 +196,8 @@ subtest 'mode = js_tag_check' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: js_tag_check" );
     ok( $out =~ m!Permission denied!i, "js_tag_check by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = js_tag_list' => sub {
@@ -244,6 +248,8 @@ subtest 'mode = js_tag_list' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: js_tag_list" );
     ok( $out =~ m!Permission denied!i, "js_tag_list by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = list_tag' => sub {
@@ -257,7 +263,7 @@ subtest 'mode = list_tag' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_tag" );
-    ok( $out !~ m!Permission denied!i, "list_tag by admin" );
+    ok( $out !~ m!permission=1!i, "list_tag by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -269,7 +275,7 @@ subtest 'mode = list_tag' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_tag" );
-    ok( $out !~ m!Permission denied!i, "list_tag by permitted user" );
+    ok( $out !~ m!permission=1!i, "list_tag by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -281,7 +287,7 @@ subtest 'mode = list_tag' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_tag" );
-    ok( $out =~ m!Permission denied!i, "list_tag by other blog" );
+    ok( $out =~ m!permission=1!i, "list_tag by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -293,7 +299,9 @@ subtest 'mode = list_tag' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_tag" );
-    ok( $out =~ m!Permission denied!i, "list_tag by other permission" );
+    ok( $out =~ m!permission=1!i, "list_tag by other permission" ); #TODO: should use 'Permission Denied' instead
+
+    done_testing();
 };
 
 subtest 'mode = rename_tag' => sub {
@@ -352,6 +360,8 @@ subtest 'mode = rename_tag' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: rename_tag" );
     ok( $out =~ m!Permission denied!i, "rename_tag by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = save' => sub {
@@ -380,6 +390,8 @@ subtest 'mode = save' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by non permitted user" );
+
+    done_testing();
 };
 
 subtest 'mode = edit' => sub {
@@ -410,6 +422,8 @@ subtest 'mode = edit' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by non permitted user" );
+
+    done_testing();
 };
 
 subtest 'mode = delete' => sub {
@@ -472,6 +486,8 @@ subtest 'mode = delete' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
     ok( $out =~ m!Permission denied!i, "delete by other permission" );
+
+    done_testing();
 };
 
 done_testing();
