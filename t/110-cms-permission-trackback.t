@@ -58,7 +58,17 @@ my $kagawa = MT::Test::Permission->make_author(
 
 my $kikkawa = MT::Test::Permission->make_author(
     name => 'Kikkawa',
-    nickname => 'Jiro Kagawa',
+    nickname => 'Jiro Kikkawa',
+);
+
+my $kumekawa = MT::Test::Permission->make_author(
+    name => 'kumekawa',
+    nickname => 'Saburo Kumekawa',
+);
+
+my $kemigawa = MT::Test::Permission->make_author(
+    name => 'kemigawa',
+    nickname => 'Shiro Kemigawa',
 );
 
 my $admin = MT::Author->load(1);
@@ -76,6 +86,10 @@ my $create_post = MT::Test::Permission->make_role(
    name  => 'Create Post',
    permissions => "'create_post'",
 );
+my $publish_post = MT::Test::Permission->make_role(
+   name  => 'Publish Post',
+   permissions => "'publish_post'",
+);
 my $designer = MT::Role->load({ name => MT->translate('Designer') });
 
 require MT::Association;
@@ -86,6 +100,8 @@ MT::Association->link( $egawa => $manage_pages => $blog );
 MT::Association->link( $ogawa => $create_post => $blog );
 MT::Association->link( $kagawa => $manage_pages => $second_blog );
 MT::Association->link( $kikkawa => $create_post => $second_blog );
+MT::Association->link( $kumekawa => $publish_post => $blog );
+MT::Association->link( $kemigawa => $publish_post => $second_blog );
 
 # Entry
 my $entry = MT::Test::Permission->make_entry(
@@ -219,6 +235,8 @@ subtest 'mode = list_pings' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_pings" );
     ok( $out =~ m!Permission denied!i, "list_pings by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = edit' => sub {
@@ -234,7 +252,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit by admin" );
+    ok( $out !~ m!permission=1!i, "edit by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -248,7 +266,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit by permitted user (manage feedback)" );
+    ok( $out !~ m!permission=1!i, "edit by permitted user (manage feedback)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -262,21 +280,33 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit by permitted user (manage_pages)" );
+    ok( $out !~ m!permission=1!i, "edit by permitted user (manage_pages)" ); #TODO: should use 'Permission Denied' instead
 
+    my $entry2 = MT::Test::Permission->make_entry(
+        blog_id        => $blog->id,
+        author_id      => $kumekawa->id,
+    );
+    my $tb_entry2 = MT::Test::Permission->make_tb(
+        blog_id        => $blog->id,
+        entry_id       => $entry2->id,
+    );
+    my $ping_entry2 = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id => $tb_entry2->id,
+    );
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ogawa,
+        {   __test_user      => $kumekawa,
             __request_method => 'POST',
             __mode           => 'edit',
             blog_id          => $blog->id,
-            id               => $ping_entry->id,
+            id               => $ping_entry2->id,
             _type            => 'ping',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit by permitted user (create_post)" );
+    ok( $out !~ m!permission=1!i, "edit by permitted user (publish_post)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -290,7 +320,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by other blog (manage feedback)" );
+    ok( $out =~ m!permission=1!i, "edit by other blog (manage feedback)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -304,11 +334,11 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by other blog (manage pages)" );
+    ok( $out =~ m!permission=1!i, "edit by other blog (manage pages)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $kikkawa,
+        {   __test_user      => $kemigawa,
             __request_method => 'POST',
             __mode           => 'edit',
             blog_id          => $blog->id,
@@ -318,7 +348,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by other blog (create post)" );
+    ok( $out =~ m!permission=1!i, "edit by other blog (publish post)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -332,7 +362,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by other permission" );
+    ok( $out =~ m!permission=1!i, "edit by other permission" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -346,7 +376,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by non permitted user (manage_pages)" );
+    ok( $out =~ m!permission=1!i, "edit by non permitted user (manage_pages)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -360,7 +390,9 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by non permitted user (create_post)" );
+    ok( $out =~ m!permission=1!i, "edit by non permitted user (create_post)" ); #TODO: should use 'Permission Denied' instead
+
+    done_testing();
 };
 
 subtest 'mode = save' => sub {
@@ -406,13 +438,25 @@ subtest 'mode = save' => sub {
     ok( $out, "Request: save" );
     ok( $out !~ m!Permission denied!i, "save by permitted user (manage_pages)" );
 
+    my $entry2 = MT::Test::Permission->make_entry(
+        blog_id        => $blog->id,
+        author_id      => $kumekawa->id,
+    );
+    my $tb_entry2 = MT::Test::Permission->make_tb(
+        blog_id        => $blog->id,
+        entry_id       => $entry2->id,
+    );
+    my $ping_entry2 = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id => $tb_entry2->id,
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ogawa,
             __request_method => 'POST',
             __mode           => 'save',
             blog_id          => $blog->id,
-            id               => $ping_entry->id,
+            id               => $ping_entry2->id,
             _type            => 'ping',
         }
     );
@@ -503,6 +547,8 @@ subtest 'mode = save' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
     ok( $out =~ m!Permission denied!i, "save by non permitted user (create_post)" );
+
+    done_testing();
 };
 
 subtest 'mode = delete' => sub {
@@ -572,27 +618,31 @@ subtest 'mode = delete' => sub {
     ok( $out, "Request: delete" );
     ok( $out !~ m!Permission denied!i, "delete by permitted user (manage_pages)" );
 
-    $ping_entry = MT::Test::Permission->make_ping(
-        blog_id => $blog->id,
-        tb_id => $tb_entry->id,
+    my $entry2 = MT::Test::Permission->make_entry(
+        blog_id        => $blog->id,
+        author_id      => $kumekawa->id,
     );
-    $ping_page = MT::Test::Permission->make_ping(
+    my $tb_entry2 = MT::Test::Permission->make_tb(
+        blog_id        => $blog->id,
+        entry_id       => $entry2->id,
+    );
+    my $ping_entry2 = MT::Test::Permission->make_ping(
         blog_id => $blog->id,
-        tb_id => $tb_page->id,
+        tb_id => $tb_entry2->id,
     );
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ogawa,
+        {   __test_user      => $kumekawa,
             __request_method => 'POST',
             __mode           => 'delete',
             blog_id          => $blog->id,
-            id               => $ping_entry->id,
+            id               => $ping_entry2->id,
             _type            => 'ping',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out !~ m!Permission denied!i, "delete by permitted user (create_post)" );
+    ok( $out !~ m!Permission denied!i, "delete by permitted user (publish)" );
 
     $ping_entry = MT::Test::Permission->make_ping(
         blog_id => $blog->id,
@@ -648,7 +698,7 @@ subtest 'mode = delete' => sub {
     );
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $kikkawa,
+        {   __test_user      => $kemigawa,
             __request_method => 'POST',
             __mode           => 'delete',
             blog_id          => $blog->id,
@@ -658,7 +708,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out =~ m!Permission denied!i, "delete by other blog (create post)" );
+    ok( $out =~ m!Permission denied!i, "delete by other blog (publish post)" );
 
     $ping_entry = MT::Test::Permission->make_ping(
         blog_id => $blog->id,
@@ -725,6 +775,8 @@ subtest 'mode = delete' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
     ok( $out =~ m!Permission denied!i, "delete by non permitted user (create_post)" );
+
+    done_testing();
 };
 
 subtest 'mode = list (trackback)' => sub {
@@ -759,6 +811,8 @@ subtest 'mode = list (trackback)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
     ok( $out =~ m!Invalid Request!i, "list by non permitted user" );
+
+    done_testing();
 };
 
 subtest 'mode = save (trackback)' => sub {
@@ -787,6 +841,8 @@ subtest 'mode = save (trackback)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by non permitted user" );
+
+    done_testing();
 };
 
 subtest 'mode = edit (trackback)' => sub {
@@ -823,6 +879,8 @@ subtest 'mode = edit (trackback)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by non permitted user" );
+
+    done_testing();
 };
 
 subtest 'mode = delete (trackback)' => sub {
@@ -859,6 +917,8 @@ subtest 'mode = delete (trackback)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid Request!i, "delete by non permitted user" );
+
+    done_testing();
 };
 
 subtest 'action = unapprove_ping' => sub {
@@ -931,9 +991,21 @@ subtest 'action = unapprove_ping' => sub {
     ok( $out, "Request: unapprove_ping" );
     ok( $out !~ m!Permission denied!i, "unapprove_ping by permitted user (manage_pages)" );
 
+    my $entry2 = MT::Test::Permission->make_entry(
+        blog_id        => $blog->id,
+        author_id      => $kumekawa->id,
+    );
+    my $tb_entry2 = MT::Test::Permission->make_tb(
+        blog_id        => $blog->id,
+        entry_id       => $entry2->id,
+    );
+    my $ping_entry2 = MT::Test::Permission->make_ping(
+        blog_id => $blog->id,
+        tb_id => $tb_entry2->id,
+    );
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ogawa,
+        {   __test_user      => $kumekawa,
             __request_method => 'POST',
             __mode           => 'unapprove_ping',
             blog_id          => $blog->id,
@@ -943,13 +1015,13 @@ subtest 'action = unapprove_ping' => sub {
             return_args      => '__mode%3Dlist_ping%26blog_id%3D'.$blog->id,
             blog_id          => $blog->id,
             plugin_action_selector => 'unapprove_ping',
-            id               => $ping_entry->id,
+            id               => $ping_entry2->id,
             plugin_action_selector => 'unapprove_ping',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unapprove_ping" );
-    ok( $out =~ m!Permission denied!i, "unapprove_ping by permitted user (create_post)" );
+    ok( $out =~ m!Permission denied!i, "unapprove_ping by permitted user (publish_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -993,7 +1065,7 @@ subtest 'action = unapprove_ping' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $kikkawa,
+        {   __test_user      => $kemigawa,
             __request_method => 'POST',
             __mode           => 'unapprove_ping',
             blog_id          => $blog->id,
@@ -1009,7 +1081,7 @@ subtest 'action = unapprove_ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unapprove_ping" );
-    ok( $out =~ m!Permission denied!i, "unapprove_ping by other blog (create post)" );
+    ok( $out =~ m!Permission denied!i, "unapprove_ping by other blog (publish post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1070,6 +1142,8 @@ subtest 'action = unapprove_ping' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: unapprove_ping" );
     ok( $out =~ m!Permission denied!i, "unapprove_ping by non permitted user (create_post)" );
+
+    done_testing();
 };
 
 done_testing();

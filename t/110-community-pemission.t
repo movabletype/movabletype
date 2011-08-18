@@ -94,6 +94,12 @@ MT::Association->link( $kagawa => $create_post => $second_blog );
 MT::Association->link( $kikkawa => $edit_all_posts => $second_blog );
 MT::Association->link( $kumekawa => $create_post => $blog );
 
+# Entry
+my $entry = MT::Test::Permission->make_entry(
+    blog_id => $blog->id,
+    author_id => $egawa->id,
+);
+
 # Run
 my ( $app, $out );
 
@@ -147,54 +153,54 @@ subtest 'mode = cfg_community_prefs' => sub {
     ok( $out =~ m!Permission denied!i, "cfg_community_prefs by other permission" );
 };
 
-subtest 'mode = save_cfg_community_prefs' => sub {
+subtest 'mode = save_community_prefs' => sub {
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'save_cfg_community_prefs',
+            __mode           => 'save_community_prefs',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_cfg_community_prefs" );
-    ok( $out !~ m!Permission denied!i, "save_cfg_community_prefs by admin" );
+    ok( $out, "Request: save_community_prefs" );
+    ok( $out !~ m!Permission denied!i, "save_community_prefs by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'save_cfg_community_prefs',
+            __mode           => 'save_community_prefs',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_cfg_community_prefs" );
-    ok( $out !~ m!Permission denied!i, "save_cfg_community_prefs by permitted user" );
+    ok( $out, "Request: save_community_prefs" );
+    ok( $out !~ m!Permission denied!i, "save_community_prefs by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ichikawa,
             __request_method => 'POST',
-            __mode           => 'save_cfg_community_prefs',
+            __mode           => 'save_community_prefs',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_cfg_community_prefs" );
-    ok( $out =~ m!Permission denied!i, "save_cfg_community_prefs by other blog" );
+    ok( $out, "Request: save_community_prefs" );
+    ok( $out =~ m!Permission denied!i, "save_community_prefs by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ukawa,
             __request_method => 'POST',
-            __mode           => 'save_cfg_community_prefs',
+            __mode           => 'save_community_prefs',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_cfg_community_prefs" );
-    ok( $out =~ m!Permission denied!i, "save_cfg_community_prefs by other permission" );
+    ok( $out, "Request: save_community_prefs" );
+    ok( $out =~ m!Permission denied!i, "save_community_prefs by other permission" );
 };
 
 subtest 'mode = post' => sub {
@@ -254,11 +260,12 @@ subtest 'mode = unpublish' => sub {
             __request_method => 'POST',
             __mode           => 'unpublish',
             blog_id          => $blog->id,
+            id               => $entry->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: post" );
-    ok( $out !~ m!Permission denied!i, "post by admin" );
+    ok( $out !~ m!Permission denied!i, "unpublish by admin" );
 
     $app = _run_app(
         'MT::App::Community',
@@ -266,11 +273,12 @@ subtest 'mode = unpublish' => sub {
             __request_method => 'POST',
             __mode           => 'unpublish',
             blog_id          => $blog->id,
+            id               => $entry->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: post" );
-    ok( $out !~ m!Permission denied!i, "post by permitted user (create post)" );
+    ok( $out !~ m!Permission denied!i, "unpublish by permitted user (create post)" );
 
     $app = _run_app(
         'MT::App::Community',
@@ -278,11 +286,12 @@ subtest 'mode = unpublish' => sub {
             __request_method => 'POST',
             __mode           => 'unpublish',
             blog_id          => $blog->id,
+            id               => $entry->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: post" );
-    ok( $out !~ m!Permission denied!i, "post by permitted user (edit all posts)" );
+    ok( $out !~ m!Permission denied!i, "unpublish by permitted user (edit all posts)" );
 
     $app = _run_app(
         'MT::App::Community',
@@ -290,11 +299,12 @@ subtest 'mode = unpublish' => sub {
             __request_method => 'POST',
             __mode           => 'unpublish',
             blog_id          => $blog->id,
+            id               => $entry->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: post" );
-    ok( $out =~ m!Permission denied!i, "post by non permitted user (create post)" );
+    ok( $out =~ m!Permission denied!i, "unpublish by non permitted user (create post)" );
 
     $app = _run_app(
         'MT::App::Community',
@@ -302,11 +312,12 @@ subtest 'mode = unpublish' => sub {
             __request_method => 'POST',
             __mode           => 'unpublish',
             blog_id          => $blog->id,
+            id               => $entry->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: post" );
-    ok( $out =~ m!Permission denied!i, "post by non permitted user (edit all posts)" );
+    ok( $out =~ m!Permission denied!i, "unpublish by non permitted user (edit all posts)" );
 
     $app = _run_app(
         'MT::App::Community',
@@ -314,11 +325,12 @@ subtest 'mode = unpublish' => sub {
             __request_method => 'POST',
             __mode           => 'unpublish',
             blog_id          => $blog->id,
+            id               => $entry->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: post" );
-    ok( $out =~ m!Permission denied!i, "post by other permission" );
+    ok( $out =~ m!Permission denied!i, "unpublish by other permission" );
 
     $app = _run_app(
         'MT::App::Community',
@@ -326,11 +338,12 @@ subtest 'mode = unpublish' => sub {
             __request_method => 'POST',
             __mode           => 'unpublish',
             blog_id          => $blog->id,
+            id               => $entry->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: post" );
-    ok( $out =~ m!Permission denied!i, "post by other user" );
+    ok( $out =~ m!Permission denied!i, "unpublish by other user" );
 };
 
 done_testing();

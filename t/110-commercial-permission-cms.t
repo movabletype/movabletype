@@ -365,7 +365,7 @@ subtest 'mode = delete' => sub {
         {   __test_user      => $admin,
             __request_method => 'POST',
             __mode           => 'delete',
-            _type            => 'fiedl',
+            _type            => 'field',
             blog_id          => $blog->id,
             id               => $blog_field->id,
         }
@@ -399,7 +399,7 @@ subtest 'mode = delete' => sub {
         {   __test_user      => $aikawa,
             __request_method => 'POST',
             __mode           => 'delete',
-            _type            => 'fiedl',
+            _type            => 'field',
             blog_id          => $blog->id,
             id               => $blog_field->id,
         }
@@ -433,7 +433,7 @@ subtest 'mode = delete' => sub {
         {   __test_user      => $ichikawa,
             __request_method => 'POST',
             __mode           => 'delete',
-            _type            => 'fiedl',
+            _type            => 'field',
             blog_id          => $blog->id,
             id               => $blog_field->id,
         }
@@ -467,7 +467,7 @@ subtest 'mode = delete' => sub {
         {   __test_user      => $ukawa,
             __request_method => 'POST',
             __mode           => 'delete',
-            _type            => 'fiedl',
+            _type            => 'field',
             blog_id          => $blog->id,
             id               => $blog_field->id,
         }
@@ -501,7 +501,7 @@ subtest 'mode = delete' => sub {
         {   __test_user      => $aikawa,
             __request_method => 'POST',
             __mode           => 'delete',
-            _type            => 'fiedl',
+            _type            => 'field',
             blog_id          => 0,
             id               => $system_field->id,
         }

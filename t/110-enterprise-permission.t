@@ -170,6 +170,7 @@ subtest 'mode = delete_group' => sub {
         {   __test_user      => $admin,
             __request_method => 'POST',
             __mode           => 'delete_group',
+            _type            => 'group',
             blog_id          => 0,
             id               => $grp->id,
         }
@@ -188,6 +189,7 @@ subtest 'mode = delete_group' => sub {
             __mode           => 'delete_group',
             blog_id          => 0,
             id               => $grp->id,
+            _type            => 'group',
         }
     );
     $out = delete $app->{__test_output};
@@ -330,67 +332,7 @@ subtest 'mode = dialog_select_user' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_select_user" );
-    ok( $out !~ m!Permission denied!i, "dialog_select_user by permitted user (blog)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'dialog_select_user',
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dialog_select_user" );
-    ok( $out !~ m!Permission denied!i, "dialog_select_user by permitted user (website)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'dialog_select_user',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dialog_select_user" );
-    ok( $out =~ m!Permission denied!i, "dialog_select_user by non permitted user (blog)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'dialog_select_user',
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dialog_select_user" );
-    ok( $out =~ m!Permission denied!i, "dialog_select_user by non permitted user (website)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'dialog_select_user',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dialog_select_user" );
-    ok( $out =~ m!Permission denied!i, "dialog_select_user by non permitted user (system)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ogawa,
-            __request_method => 'POST',
-            __mode           => 'dialog_select_user',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dialog_select_user" );
-    ok( $out =~ m!Permission denied!i, "dialog_select_user by other permission" );
+    ok( $out =~ m!Permission denied!i, "dialog_select_user by non permitted user" );
 };
 
 subtest 'mode = view_group' => sub {
@@ -424,7 +366,7 @@ subtest 'mode = expport_authors' => sub {
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'expport_authors',
+            __mode           => 'export_authors',
             blog_id          => 0,
         }
     );
@@ -436,7 +378,7 @@ subtest 'mode = expport_authors' => sub {
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'expport_authors',
+            __mode           => 'export_authors',
             blog_id          => 0,
         }
     );
@@ -590,6 +532,7 @@ subtest 'mode = list_group_member' => sub {
             __request_method => 'POST',
             __mode           => 'list_group_member',
             blog_id          => 0,
+            group_id         => $grp->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -602,6 +545,7 @@ subtest 'mode = list_group_member' => sub {
             __request_method => 'POST',
             __mode           => 'list_group_member',
             blog_id          => 0,
+            group_id         => $grp->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -615,7 +559,7 @@ subtest 'mode = list_member' => sub {
         {   __test_user      => $admin,
             __request_method => 'POST',
             __mode           => 'list_member',
-            blog_id          => 0,
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -627,12 +571,36 @@ subtest 'mode = list_member' => sub {
         {   __test_user      => $aikawa,
             __request_method => 'POST',
             __mode           => 'list_member',
-            blog_id          => 0,
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_member" );
-    ok( $out =~ m!Permission denied!i, "list_member by non permitted user" );
+    ok( $out !~ m!Permission denied!i, "list_member by permitted user" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'list_member',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: list_member" );
+    ok( $out =~ m!Permission denied!i, "list_member by other blog" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'list_member',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: list_member" );
+    ok( $out =~ m!Permission denied!i, "list_member by other permission" );
 };
 
 subtest 'mode = remove_group' => sub {
@@ -655,34 +623,6 @@ subtest 'mode = remove_group' => sub {
     $grp = MT::Test::Permission->make_group(
         name => 'Group E',
     );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'remove_group',
-            blog_id          => 0,
-            id               => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: remove_group" );
-    ok( $out =~ m!Permission denied!i, "remove_group by non permitted user" );
-};
-
-subtest 'mode = remove_group' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'remove_group',
-            blog_id          => 0,
-            id               => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: remove_group" );
-    ok( $out !~ m!Permission denied!i, "remove_group by admin" );
-
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
@@ -793,7 +733,7 @@ subtest 'mode = view_role' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: view_role" );
-    ok( $out !~ m!Permission denied!i, "view_role by admin" );
+    ok( $out !~ m!permission=1!i, "view_role by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -806,7 +746,7 @@ subtest 'mode = view_role' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: view_role" );
-    ok( $out =~ m!Permission denied!i, "view_role by non permitted user" );
+    ok( $out =~ m!permission=1!i, "view_role by non permitted user" ); #TODO: should use 'Permission Denied' instead
 };
 
 subtest 'mode = delete' => sub {
@@ -915,6 +855,7 @@ subtest 'mode = save' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
     ok( $out =~ m!Permission denied!i, "save by non permitted user" );
+
 };
 
 done_testing();

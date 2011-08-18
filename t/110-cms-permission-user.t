@@ -365,7 +365,7 @@ subtest 'mode = edit_role' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit_role" );
-    ok( $out !~ m!Permission denied!i, "edit_role by admin" );
+    ok( $out !~ m!permission=1!i, "edit_role by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -378,33 +378,7 @@ subtest 'mode = edit_role' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit_role" );
-    ok( $out =~ m!Permission denied!i, "edit_role by non permitted user" );
-};
-
-subtest 'mode = view_role' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'view_role',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: view_role" );
-    ok( $out !~ m!Permission denied!i, "view_role by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'view_role',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: view_role" );
-    ok( $out =~ m!Permission denied!i, "view_role by non permitted user" );
+    ok( $out =~ m!permission=1!i, "edit_role by non permitted user" ); #TODO: should use 'Permission Denied' instead
 };
 
 subtest 'mode = enable_object' => sub {
@@ -448,7 +422,7 @@ subtest 'mode = list_authors' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_authors" );
-    ok( $out !~ m!Permission denied!i, "list_authors by admin" );
+    ok( $out !~ m!permission=1!i, "list_authors by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -460,7 +434,7 @@ subtest 'mode = list_authors' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_authors" );
-    ok( $out =~ m!Permission denied!i, "list_authors by non permitted user" );
+    ok( $out =~ m!permission=1!i, "list_authors by non permitted user" ); #TODO: should use 'Permission Denied' instead
 };
 
 subtest 'mode = list_associations' => sub {
@@ -600,7 +574,7 @@ subtest 'mode = list_member' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_member" );
-    ok( $out !~ m!Permission denied!i, "list_member by admin" );
+    ok( $out !~ m!permission=1!i, "list_member by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -612,7 +586,7 @@ subtest 'mode = list_member' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_member" );
-    ok( $out !~ m!Permission denied!i, "list_member by permitted user on blog" );
+    ok( $out !~ m!permission=1!i, "list_member by permitted user on blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -624,7 +598,7 @@ subtest 'mode = list_member' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_member" );
-    ok( $out !~ m!Permission denied!i, "list_member by permitted user on website" );
+    ok( $out !~ m!permission=1!i, "list_member by permitted user on website" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -636,7 +610,7 @@ subtest 'mode = list_member' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_member" );
-    ok( $out =~ m!Permission denied!i, "list_member by non permitted user parent website" );
+    ok( $out =~ m!permission=1!i, "list_member by non permitted user parent website" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -648,7 +622,7 @@ subtest 'mode = list_member' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_member" );
-    ok( $out =~ m!Permission denied!i, "list_member by non permitted user child blog" );
+    ok( $out =~ m!permission=1!i, "list_member by non permitted user child blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -660,7 +634,7 @@ subtest 'mode = list_member' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_member" );
-    ok( $out =~ m!Permission denied!i, "list_member by other blog" );
+    ok( $out =~ m!permission=1!i, "list_member by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -672,7 +646,7 @@ subtest 'mode = list_member' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_member" );
-    ok( $out =~ m!Permission denied!i, "list_member by other permision" );
+    ok( $out =~ m!permission=1!i, "list_member by other permision" ); #TODO: should use 'Permission Denied' instead
 };
 
 subtest 'mode = list_role' => sub {
@@ -686,7 +660,7 @@ subtest 'mode = list_role' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_role" );
-    ok( $out !~ m!Permission denied!i, "list_role by admin" );
+    ok( $out !~ m!permission=1!i, "list_role by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -698,7 +672,7 @@ subtest 'mode = list_role' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_role" );
-    ok( $out =~ m!Permission denied!i, "list_role by non permitted user" );
+    ok( $out =~ m!permission=1!i, "list_role by non permitted user" ); #TODO: should use 'Permission Denied' instead
 };
 
 subtest 'mode = recover_profile_password' => sub {
@@ -1093,7 +1067,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out !~ m!Permission denied!i, "delete own record" );
+    ok( $out =~ m!Permission denied!i, "delete own record" );
 
     $app = _run_app(
         'MT::App::CMS',

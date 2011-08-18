@@ -117,7 +117,7 @@ subtest 'mode = list_website' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_website" );
-    ok( $out !~ m!Permission denied!i, "list_website by admin" );
+    ok( $out !~ m!permission=1!i, "list_website by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -129,7 +129,7 @@ subtest 'mode = list_website' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_website" );
-    ok( $out !~ m!Permission denied!i, "list_website by permitted user" );
+    ok( $out !~ m!permission=1!i, "list_website by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -141,7 +141,7 @@ subtest 'mode = list_website' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_website" );
-    ok( $out =~ m!Permission denied!i, "list_website by child blog" );
+    ok( $out =~ m!permission=1!i, "list_website by child blog" ); #TODO: should use 'Permission Denied' instead
 };
 
 subtest 'mode = move_blogs' => sub {
@@ -149,9 +149,14 @@ subtest 'mode = move_blogs' => sub {
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'move_blogs',
-            ids              => $second_website->id,
-            blog_ids         => $blog->id,
+            __mode           => 'itemset_action',
+            _type            => 'blog',
+            action_name      => 'move_blogs',
+            itemset_action_input => '',
+            return_args      => '__mode%3Dlist_blogs%26blog_id%3D'.$website->id,
+            plugin_action_selector => 'move_blogs',
+            id               => $blog->id,
+            plugin_action_selector => 'move_blogs',
         }
     );
     $out = delete $app->{__test_output};
@@ -162,9 +167,14 @@ subtest 'mode = move_blogs' => sub {
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'move_blogs',
-            ids              => $second_website->id,
-            blog_ids         => $blog->id,
+            __mode           => 'itemset_action',
+            _type            => 'blog',
+            action_name      => 'move_blogs',
+            itemset_action_input => '',
+            return_args      => '__mode%3Dlist_blogs%26blog_id%3D'.$website->id,
+            plugin_action_selector => 'move_blogs',
+            id               => $blog->id,
+            plugin_action_selector => 'move_blogs',
         }
     );
     $out = delete $app->{__test_output};
