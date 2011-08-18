@@ -99,7 +99,7 @@ subtest 'mode = save' => sub {
 };
 
 subtest 'mode = edit' => sub {
-    my $fi = MT::Test::Permission->make_fileifo( blog_id => $blog->id );
+    my $fi = MT::Test::Permission->make_fileinfo( blog_id => $blog->id );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -115,7 +115,7 @@ subtest 'mode = edit' => sub {
     ok( $out, "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by admin" );
 
-    my $fi = MT::Test::Permission->make_fileifo( blog_id => $blog->id );
+    my $fi = MT::Test::Permission->make_fileinfo( blog_id => $blog->id );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
@@ -133,7 +133,7 @@ subtest 'mode = edit' => sub {
 };
 
 subtest 'mode = delete' => sub {
-    my $fi = MT::Test::Permission->make_fileifo( blog_id => $blog->id );
+    my $fi = MT::Test::Permission->make_fileinfo( blog_id => $blog->id );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -149,7 +149,7 @@ subtest 'mode = delete' => sub {
     ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid Request!i, "delete by admin" );
 
-    my $fi = MT::Test::Permission->make_fileifo( blog_id => $blog->id );
+    $fi = MT::Test::Permission->make_fileinfo( blog_id => $blog->id );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,

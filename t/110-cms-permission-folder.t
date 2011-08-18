@@ -93,7 +93,7 @@ subtest 'mode = list_folder' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_folder" );
-    ok( $out !~ m!Permission denied!i, "list_folder by admin" );
+    ok( $out !~ m!permission=1!i, "list_folder by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -106,7 +106,7 @@ subtest 'mode = list_folder' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_folder" );
-    ok( $out !~ m!Permission denied!i, "list_folder by permitted user" );
+    ok( $out !~ m!permission=1!i, "list_folder by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -119,7 +119,7 @@ subtest 'mode = list_folder' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_folder" );
-    ok( $out =~ m!Permission denied!i, "list_folder by other blog" );
+    ok( $out =~ m!permission=1!i, "list_folder by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -132,7 +132,7 @@ subtest 'mode = list_folder' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_folder" );
-    ok( $out =~ m!Permission denied!i, "list_folder by other permission" );
+    ok( $out =~ m!permission=1!i, "list_folder by other permission" ); #TODO: should use 'Permission Denied' instead
 };
 
 
@@ -342,7 +342,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit (edit) by admin" );
+    ok( $out !~ m!permission=1!i, "edit (edit) by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -356,7 +356,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit (edit) by permitted user" );
+    ok( $out !~ m!permission=1!i, "edit (edit) by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -370,7 +370,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit (edit) by other blog" );
+    ok( $out =~ m!permission=1!i, "edit (edit) by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -384,7 +384,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit (edit) by other permission" );
+    ok( $out =~ m!permission=1!i, "edit (edit) by other permission" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -398,7 +398,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit (edit) by type mismatch" );
+    ok( $out =~ m!permission=1!i, "edit (edit) by type mismatch" ); #TODO: should use 'Permission Denied' instead
 };
 
 subtest 'mode = delete ' => sub {

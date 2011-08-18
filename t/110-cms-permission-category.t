@@ -89,6 +89,7 @@ subtest 'mode = category_do_add' => sub {
             __request_method => 'POST',
             __mode           => 'category_do_add',
             blog_id          => $blog->id,
+            label            => 'New Label',
         }
     );
     $out = delete $app->{__test_output};
@@ -101,6 +102,7 @@ subtest 'mode = category_do_add' => sub {
             __request_method => 'POST',
             __mode           => 'category_do_add',
             blog_id          => $blog->id,
+            label            => 'New Label',
         }
     );
     $out = delete $app->{__test_output};
@@ -113,6 +115,7 @@ subtest 'mode = category_do_add' => sub {
             __request_method => 'POST',
             __mode           => 'category_do_add',
             blog_id          => $blog->id,
+            label            => 'New Label',
         }
     );
     $out = delete $app->{__test_output};
@@ -125,11 +128,66 @@ subtest 'mode = category_do_add' => sub {
             __request_method => 'POST',
             __mode           => 'category_do_add',
             blog_id          => $blog->id,
+            label            => 'New Label',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: category_do_add" );
     ok( $out =~ m!Permission denied!i, "category_do_add by other permission" );
+};
+
+subtest 'mode = js_add_category' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'js_add_category',
+            blog_id          => $blog->id,
+            label            => 'New Label',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: js_add_category" );
+    ok( $out !~ m!Permission denied!i, "js_add_category by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'js_add_category',
+            blog_id          => $blog->id,
+            label            => 'New Label',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: js_add_category" );
+    ok( $out !~ m!Permission denied!i, "js_add_category by permitted user" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'js_add_category',
+            blog_id          => $blog->id,
+            label            => 'New Label',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: js_add_category" );
+    ok( $out =~ m!Permission denied!i, "js_add_category by other blog" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'js_add_category',
+            blog_id          => $blog->id,
+            label            => 'New Label',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: js_add_category" );
+    ok( $out =~ m!Permission denied!i, "js_add_category by other permission" );
 };
 
 subtest 'mode = list_category' => sub {
@@ -143,7 +201,7 @@ subtest 'mode = list_category' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_category" );
-    ok( $out !~ m!Permission denied!i, "list_category by admin" );
+    ok( $out !~ m!permission=1!i, "list_category by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -155,7 +213,7 @@ subtest 'mode = list_category' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_category" );
-    ok( $out !~ m!Permission denied!i, "list_category by permitted user" );
+    ok( $out !~ m!permission=1!i, "list_category by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -167,7 +225,7 @@ subtest 'mode = list_category' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_category" );
-    ok( $out =~ m!Permission denied!i, "list_category by other blog" );
+    ok( $out =~ m!permission=1!i, "list_category by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -179,7 +237,7 @@ subtest 'mode = list_category' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_category" );
-    ok( $out =~ m!Permission denied!i, "list_category by other permission" );
+    ok( $out =~ m!permission=1!i, "list_category by other permission" ); #TODO: should use 'Permission Denied' instead
 };
 
 subtest 'mode = save_cat' => sub {
@@ -189,6 +247,7 @@ subtest 'mode = save_cat' => sub {
             __request_method => 'POST',
             __mode           => 'save_cat',
             blog_id          => $blog->id,
+            _type            => 'category',
         }
     );
     $out = delete $app->{__test_output};
@@ -201,6 +260,7 @@ subtest 'mode = save_cat' => sub {
             __request_method => 'POST',
             __mode           => 'save_cat',
             blog_id          => $blog->id,
+            _type            => 'category',
         }
     );
     $out = delete $app->{__test_output};
@@ -213,6 +273,7 @@ subtest 'mode = save_cat' => sub {
             __request_method => 'POST',
             __mode           => 'save_cat',
             blog_id          => $blog->id,
+            _type            => 'category',
         }
     );
     $out = delete $app->{__test_output};
@@ -225,6 +286,7 @@ subtest 'mode = save_cat' => sub {
             __request_method => 'POST',
             __mode           => 'save_cat',
             blog_id          => $blog->id,
+            _type            => 'category',
         }
     );
     $out = delete $app->{__test_output};
@@ -498,6 +560,10 @@ subtest 'mode = edit (edit)' => sub {
 };
 
 subtest 'mode = delete ' => sub {
+    $cat = MT::Test::Permission->make_category(
+        blog_id => $blog->id,
+        author_id => $aikawa->id,
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -510,8 +576,12 @@ subtest 'mode = delete ' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out =~ m!Permission denied!i, "delete  by admin" );
+    ok( $out !~ m!Permission denied!i, "delete  by admin" );
 
+    $cat = MT::Test::Permission->make_category(
+        blog_id => $blog->id,
+        author_id => $aikawa->id,
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
@@ -526,6 +596,10 @@ subtest 'mode = delete ' => sub {
     ok( $out, "Request: delete" );
     ok( $out !~ m!Permission denied!i, "delete  by permitted user" );
 
+    $cat = MT::Test::Permission->make_category(
+        blog_id => $blog->id,
+        author_id => $aikawa->id,
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ichikawa,
@@ -540,6 +614,10 @@ subtest 'mode = delete ' => sub {
     ok( $out, "Request: delete" );
     ok( $out =~ m!Permission denied!i, "delete  by other blog" );
 
+    $cat = MT::Test::Permission->make_category(
+        blog_id => $blog->id,
+        author_id => $aikawa->id,
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ukawa,
@@ -554,6 +632,10 @@ subtest 'mode = delete ' => sub {
     ok( $out, "Request: delete" );
     ok( $out =~ m!Permission denied!i, "delete  by other permission" );
 
+    $folder = MT::Test::Permission->make_folder(
+        blog_id => $blog->id,
+        author_id => $egawa->id,
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,

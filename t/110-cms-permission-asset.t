@@ -856,12 +856,12 @@ subtest 'mode = add_tags' => sub {
             __mode           => 'itemset_action',
             _type            => 'asset',
             action_name      => 'add_tags',
-            itemset_action_input => 'aaa',
+            itemset_action_input => 'New Tag',
             return_args      => '__mode%3Dlist_asset%26blog_id%3D'.$blog->id,
-            plugin_action_selector => 'add_tags',
+            blog_id          => $blog->id,
             plugin_action_selector => 'add_tags',
             id               => $asset->id,
-            blog_id          => $blog->id,
+            plugin_action_selector => 'add_tags',
         }
     );
     $out = delete $app->{__test_output};
@@ -876,12 +876,12 @@ subtest 'mode = add_tags' => sub {
             __mode           => 'itemset_action',
             _type            => 'asset',
             action_name      => 'add_tags',
-            itemset_action_input => 'aaa',
+            itemset_action_input => 'New Tag',
             return_args      => '__mode%3Dlist_asset%26blog_id%3D'.$blog->id,
-            plugin_action_selector => 'add_tags',
+            blog_id          => $blog->id,
             plugin_action_selector => 'add_tags',
             id               => $asset->id,
-            blog_id          => $blog->id,
+            plugin_action_selector => 'add_tags',
         }
     );
     $out = delete $app->{__test_output};
@@ -896,12 +896,12 @@ subtest 'mode = add_tags' => sub {
             __mode           => 'itemset_action',
             _type            => 'asset',
             action_name      => 'add_tags',
-            itemset_action_input => 'aaa',
+            itemset_action_input => 'New Tag',
             return_args      => '__mode%3Dlist_asset%26blog_id%3D'.$blog->id,
-            plugin_action_selector => 'add_tags',
+            blog_id          => $blog->id,
             plugin_action_selector => 'add_tags',
             id               => $asset->id,
-            blog_id          => $blog->id,
+            plugin_action_selector => 'add_tags',
         }
     );
     $out = delete $app->{__test_output};
@@ -981,7 +981,6 @@ subtest 'mode = remove_tags' => sub {
         }
     );
     $out = delete $app->{__test_output};
-diag($out);
     ok( $out, "Request: remove_tags" );
     ok( $out =~ m!Permission Denied!i, "remove_tags by other blog" );
 

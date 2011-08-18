@@ -21,218 +21,144 @@ my $website = MT::Test::Permission->make_website();
 my $blog = MT::Test::Permission->make_blog(
     parent_id => $website->id,
 );
-my $second_blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
 
 # Author
 my $aikawa = MT::Test::Permission->make_author(
     name => 'aikawa',
     nickname => 'Ichiro Aikawa',
 );
+
 my $ichikawa = MT::Test::Permission->make_author(
     name => 'ichikawa',
     nickname => 'Jiro Ichikawa',
-);
-my $ukawa = MT::Test::Permission->make_author(
-    name => 'ukawa',
-    nickname => 'Saburo Ukawa',
-);
-my $egawa = MT::Test::Permission->make_author(
-    name => 'egawa',
-    nickname => 'Shiro Egawa',
 );
 
 my $admin = MT::Author->load(1);
 
 # Role
-my $send_notification = MT::Test::Permission->make_role(
-   name  => 'Send Notification',
-   permissions => "'create_post','send_notifications'",
-);
-
-my $edit_notification = MT::Test::Permission->make_role(
-    name  => 'Edit Notification',
-    permissions => "'edit_notifications'",
-);
-
-my $designer_role = MT::Role->load( { name => MT->translate( 'Designer' ) } );
+require MT::Role;
+my $blog_admin = MT::Role->load( { name => MT->translate( 'Blog Administrator' ) } );
 
 require MT::Association;
-MT::Association->link( $ukawa => $send_notification => $blog );
-MT::Association->link( $egawa => $edit_notification => $blog );
-MT::Association->link( $aikawa => $send_notification => $second_blog );
-MT::Association->link( $ichikawa => $designer_role => $blog );
-
-# Entry
-my $entry = MT::Test::Permission->make_entry(
-    blog_id        => $blog->id,
-    author_id      => $admin->id,
-);
+MT::Association->link( $aikawa => $blog_admin => $blog );
 
 # Run
 my ( $app, $out );
 
-subtest 'mode = entry_notify' => sub {
+subtest 'mode = list' => sub {
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'entry_notify',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
+            __mode           => 'list',
+            _type            => 'association',
+            blog_id          => 0,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: entry_notify" );
-    ok( $out !~ m!Permission denied!i, "entry_notify by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'entry_notify',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: entry_notify" );
-    ok( $out !~ m!Permission denied!i, "entry_notify by permitted user" );
+    ok( $out, "Request: list" );
+    ok( $out !~ m!Permission denied!i, "list by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'entry_notify',
-            blog_id          => $second_blog->id,
-            entry_id         => $entry->id,
+            __mode           => 'list',
+            _type            => 'association',
+            blog_id          => 0,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: entry_notify" ); 
-    ok( $out =~ m!permission=1!i, "entry_notify by other blog user" ); #TODO: should be use 'Permission Denied' instead of
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'entry_notify',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: entry_notify" );
-    ok( $out =~ m!permission=1!i, "entry_notify by other role user" );  #TODO: should be use 'Permission Denied' instead of
+    ok( $out, "Request: list" );
+    ok( $out =~ m!Permission denied!i, "list by non permitted user" );
 };
 
-subtest 'mode = export_notification' => sub {
+subtest 'mode = save' => sub {
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'export_notification',
-            blog_id          => $blog->id,
+            __mode           => 'save',
+            _type            => 'association',
+            blog_id          => 0,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: export_notification" );
-    ok( $out !~ m!Permission denied!i, "export_notification by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'export_notification',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: export_notification" );
-    ok( $out !~ m!Permission denied!i, "export_notification by permitted user" );
+    ok( $out, "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'export_notification',
-            blog_id          => $second_blog->id,
+            __mode           => 'save',
+            _type            => 'association',
+            blog_id          => 0,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: export_notification" );
-    ok( $out =~ m!Permission denied!i, "export_notification by other blog user" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'export_notification',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: export_notification" );
-    ok( $out =~ m!Permission denied!i, "export_notification by other role user" );
+    ok( $out, "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by non permitted user" );
 };
 
-subtest 'mode = send_notify' => sub {
+subtest 'mode = edit' => sub {
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'send_notify',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
-            send_notify_emails => 'test@example.com',
+            __mode           => 'edit',
+            _type            => 'association',
+            blog_id          => 0,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: send_notify" );
-    ok( $out !~ m!No permissions!i, "send_notify by admin" ); #TODO: should be use 'Permission Denied' instead of
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'send_notify',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
-            send_notify_emails => 'test@example.com',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: send_notify" );
-    ok( $out !~ m!No permissions!i, "send_notify by permitted user" ); #TODO: should be use 'Permission Denied' instead of
+    ok( $out, "Request: edit" );
+    ok( $out =~ m!Invalid Request!i, "edit by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'send_notify',
-            blog_id          => $second_blog->id,
-            entry_id         => $entry->id,
-            send_notify_emails => 'test@example.com',
+            __mode           => 'edit',
+            _type            => 'association',
+            blog_id          => 0,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: send_notify" );
-    ok( $out =~ m!No permissions!i, "send_notify by other blog user" ); #TODO: should be use 'Permission Denied' instead of
+    ok( $out, "Request: edit" );
+    ok( $out =~ m!Invalid Request!i, "edit by non permitted user" );
+};
 
+subtest 'mode = delete' => sub {
+    my $assoc = MT::Association->link( $ichikawa => $blog_admin => $blog );
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ichikawa,
+        {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'send_notify',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
+            __mode           => 'delete',
+            _type            => 'association',
+            blog_id          => 0,
+            id               => $assoc->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: send_notify" );
-    ok( $out =~ m!No permissions!i, "send_notify by other role user" ); #TODO: should be use 'Permission Denied' instead of
+    ok( $out, "Request: delete" );
+    ok( $out !~ m!Permission denied!i, "delete by admin" );
+
+    $assoc = MT::Association->link( $ichikawa => $blog_admin => $blog );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'association',
+            blog_id          => 0,
+            id               => $assoc->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: delete" );
+    ok( $out =~ m!Permission denied!i, "delete by non permitted user" );
 };
 
 done_testing();

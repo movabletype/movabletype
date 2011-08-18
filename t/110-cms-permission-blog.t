@@ -217,6 +217,18 @@ $p->author_id( $namegawa->id );
 $p->permissions( "'edit_templates'" );
 $p->save;
 
+# Entry
+my $entry = MT::Test::Permission->make_entry(
+    blog_id => $blog->id,
+    author_id => $kikkawa->id,
+);
+
+# Page
+my $page = MT::Test::Permission->make_page(
+    blog_id => $blog->id,
+    author_id => $ukawa->id,
+);
+
 # Run
 my ( $app, $out );
 
@@ -294,7 +306,7 @@ subtest 'mode = cfg_feedback' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_feedback" );
-    ok( $out !~ m!Permission denied!i, "cfg_feedback by permitted user" );
+    ok( $out !~ m!permission=1!i, "cfg_feedback by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -306,7 +318,7 @@ subtest 'mode = cfg_feedback' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_feedback" );
-    ok( $out =~ m!Permission denied!i, "cfg_feedback by other blog" );
+    ok( $out =~ m!permission=1!i, "cfg_feedback by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -318,7 +330,7 @@ subtest 'mode = cfg_feedback' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_feedback" );
-    ok( $out =~ m!Permission denied!i, "cfg_feedback by other permission" );
+    ok( $out =~ m!permission=1!i, "cfg_feedback by other permission" ); #TODO: should use 'Permission Denied' instead
     done_testing();
 };
 
@@ -384,7 +396,7 @@ subtest 'mode = cfg_registration' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_registration" );
-    ok( $out !~ m!Permission denied!i, "cfg_registration by admin" );
+    ok( $out !~ m!permission=1!i, "cfg_registration by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -396,7 +408,7 @@ subtest 'mode = cfg_registration' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_registration" );
-    ok( $out !~ m!Permission denied!i, "cfg_registration by permitted user" );
+    ok( $out !~ m!permission=1!i, "cfg_registration by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -408,7 +420,7 @@ subtest 'mode = cfg_registration' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_registration" );
-    ok( $out =~ m!Permission denied!i, "cfg_registration by other blog" );
+    ok( $out =~ m!permission=1!i, "cfg_registration by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -420,7 +432,7 @@ subtest 'mode = cfg_registration' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_registration" );
-    ok( $out =~ m!Permission denied!i, "cfg_registration by other permission" );
+    ok( $out =~ m!permission=1!i, "cfg_registration by other permission" ); #TODO: should use 'Permission Denied' instead
     done_testing();
 };
 
@@ -435,7 +447,7 @@ subtest 'mode = cfg_web_services' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_web_services" );
-    ok( $out !~ m!Permission denied!i, "cfg_web_services by admin" );
+    ok( $out !~ m!permission=1!i, "cfg_web_services by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -447,7 +459,7 @@ subtest 'mode = cfg_web_services' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_web_services" );
-    ok( $out !~ m!Permission denied!i, "cfg_web_services by permitted user" );
+    ok( $out !~ m!permission=1!i, "cfg_web_services by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -459,7 +471,7 @@ subtest 'mode = cfg_web_services' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_web_services" );
-    ok( $out =~ m!Permission denied!i, "cfg_web_services by other blog" );
+    ok( $out =~ m!permission=1!i, "cfg_web_services by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -471,7 +483,7 @@ subtest 'mode = cfg_web_services' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_web_services" );
-    ok( $out =~ m!Permission denied!i, "cfg_web_services by other permission" );
+    ok( $out =~ m!permission=1!i, "cfg_web_services by other permission" ); #TODO: should use 'Permission Denied' instead
     done_testing();
 };
 
@@ -559,7 +571,7 @@ subtest 'mode = list_blogs' => sub {
         {   __test_user      => $admin,
             __request_method => 'POST',
             __mode           => 'list_blogs',
-            blog_id          => $blog->id,
+            blog_id          => $website->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -571,7 +583,7 @@ subtest 'mode = list_blogs' => sub {
         {   __test_user      => $suda,
             __request_method => 'POST',
             __mode           => 'list_blogs',
-            blog_id          => $blog->id,
+            blog_id          => $website->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -583,7 +595,7 @@ subtest 'mode = list_blogs' => sub {
         {   __test_user      => $ichikawa,
             __request_method => 'POST',
             __mode           => 'list_blogs',
-            blog_id          => $blog->id,
+            blog_id          => $website->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -603,7 +615,7 @@ subtest 'mode = rebuild_confirm' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: rebuild_confirm" );
-    ok( $out !~ m!Permission denied!i, "rebuild_confirm by admin" );
+    ok( $out !~ m!permission=1!i, "rebuild_confirm by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -615,7 +627,7 @@ subtest 'mode = rebuild_confirm' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: rebuild_confirm" );
-    ok( $out !~ m!Permission denied!i, "rebuild_confirm by permitted user" );
+    ok( $out !~ m!permission=1!i, "rebuild_confirm by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -627,7 +639,7 @@ subtest 'mode = rebuild_confirm' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: rebuild_confirm" );
-    ok( $out =~ m!Permission denied!i, "rebuild_confirm by other blog" );
+    ok( $out =~ m!permission=1!i, "rebuild_confirm by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -639,7 +651,7 @@ subtest 'mode = rebuild_confirm' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: rebuild_confirm" );
-    ok( $out =~ m!Permission denied!i, "rebuild_confirm by other permission" );
+    ok( $out =~ m!permission=1!i, "rebuild_confirm by other permission" ); #TODO: should use 'Permission Denied' instead
     done_testing();
 };
 
@@ -650,6 +662,7 @@ subtest 'mode = rebuild_new_phase' => sub {
             __request_method => 'POST',
             __mode           => 'rebuild_new_phase',
             blog_id          => $blog->id,
+            id               => $entry->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -658,34 +671,11 @@ subtest 'mode = rebuild_new_phase' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'rebuild_new_phase',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: rebuild_new_phase" );
-    ok( $out !~ m!Permission denied!i, "rebuild_new_phase by permitted user (rebuild)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $kagawa,
-            __request_method => 'POST',
-            __mode           => 'rebuild_new_phase',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: rebuild_new_phase" );
-    ok( $out !~ m!Permission denied!i, "rebuild_new_phase by permitted user (edit_all_posts)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
         {   __test_user      => $kikkawa,
             __request_method => 'POST',
             __mode           => 'rebuild_new_phase',
             blog_id          => $blog->id,
+            id               => $entry->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -694,34 +684,58 @@ subtest 'mode = rebuild_new_phase' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $shiki,
+        {   __test_user      => $kagawa,
             __request_method => 'POST',
             __mode           => 'rebuild_new_phase',
             blog_id          => $blog->id,
+            id               => $entry->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: rebuild_new_phase" );
-    ok( $out =~ m!Permission denied!i, "rebuild_new_phase by other blog (rebuild)" );
+    ok( $out !~ m!Permission denied!i, "rebuild_new_phase by permitted user (edit_all_posts)" );
 
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'rebuild_new_phase',
+            blog_id          => $blog->id,
+            id               => $page->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: rebuild_new_phase" );
+    ok( $out !~ m!Permission denied!i, "rebuild_new_phase by permitted user (manage pages)" );
+
+    $entry = MT::Test::Permission->make_entry(
+        blog_id => $blog->id,
+        author_id => $aikawa->id,
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $seta,
             __request_method => 'POST',
             __mode           => 'rebuild_new_phase',
             blog_id          => $blog->id,
+            id               => $entry->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: rebuild_new_phase" );
     ok( $out =~ m!Permission denied!i, "rebuild_new_phase by other blog (edit_all_posts)" );
 
+    $entry = MT::Test::Permission->make_entry(
+        blog_id => $blog->id,
+        author_id => $aikawa->id,
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $soneda,
             __request_method => 'POST',
             __mode           => 'rebuild_new_phase',
             blog_id          => $blog->id,
+            id               => $entry->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -730,13 +744,28 @@ subtest 'mode = rebuild_new_phase' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
+        {   __test_user      => $sagawa,
+            __request_method => 'POST',
+            __mode           => 'rebuild_new_phase',
+            blog_id          => $blog->id,
+            id               => $page->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: rebuild_new_phase" );
+    ok( $out =~ m!Permission denied!i, "rebuild_new_phase by other blog (manage pages)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
         {   __test_user      => $ichikawa,
             __request_method => 'POST',
             __mode           => 'rebuild_new_phase',
             blog_id          => $blog->id,
+            id               => $entry->id,
         }
     );
     $out = delete $app->{__test_output};
+diag($out);
     ok( $out, "Request: rebuild_new_phase" );
     ok( $out !~ m!Permission denied!i, "rebuild_new_phase by other permission" );
     done_testing();
@@ -749,6 +778,7 @@ subtest 'mode = rebuild' => sub {
             __request_method => 'POST',
             __mode           => 'rebuild',
             blog_id          => $blog->id,
+            type             => 'all',
         }
     );
     $out = delete $app->{__test_output};
@@ -761,6 +791,7 @@ subtest 'mode = rebuild' => sub {
             __request_method => 'POST',
             __mode           => 'rebuild',
             blog_id          => $blog->id,
+            type             => 'all',
         }
     );
     $out = delete $app->{__test_output};
@@ -773,6 +804,7 @@ subtest 'mode = rebuild' => sub {
             __request_method => 'POST',
             __mode           => 'rebuild',
             blog_id          => $blog->id,
+            type             => 'all',
         }
     );
     $out = delete $app->{__test_output};
@@ -785,6 +817,7 @@ subtest 'mode = rebuild' => sub {
             __request_method => 'POST',
             __mode           => 'rebuild',
             blog_id          => $blog->id,
+            type             => 'all',
         }
     );
     $out = delete $app->{__test_output};
@@ -800,6 +833,8 @@ subtest 'mode = rebuild_phase' => sub {
             __request_method => 'POST',
             __mode           => 'rebuild_phase',
             blog_id          => $blog->id,
+            type             => 'entry',
+            id               => $entry->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -812,6 +847,8 @@ subtest 'mode = rebuild_phase' => sub {
             __request_method => 'POST',
             __mode           => 'rebuild_phase',
             blog_id          => $blog->id,
+            type             => 'entry',
+            id               => $entry->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -824,6 +861,8 @@ subtest 'mode = rebuild_phase' => sub {
             __request_method => 'POST',
             __mode           => 'rebuild_phase',
             blog_id          => $blog->id,
+            type             => 'entry',
+            id               => $entry->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -836,6 +875,8 @@ subtest 'mode = rebuild_phase' => sub {
             __request_method => 'POST',
             __mode           => 'rebuild_phase',
             blog_id          => $blog->id,
+            type             => 'entry',
+            id               => $entry->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -851,6 +892,7 @@ subtest 'mode = save_favorite_blogs' => sub {
             __request_method => 'POST',
             __mode           => 'save_favorite_blogs',
             blog_id          => $blog->id,
+            id               => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -863,6 +905,7 @@ subtest 'mode = save_favorite_blogs' => sub {
             __request_method => 'POST',
             __mode           => 'save_favorite_blogs',
             blog_id          => $blog->id,
+            id               => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -875,6 +918,7 @@ subtest 'mode = save_favorite_blogs' => sub {
             __request_method => 'POST',
             __mode           => 'save_favorite_blogs',
             blog_id          => $blog->id,
+            id               => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -890,6 +934,8 @@ subtest 'mode = start_rebuild' => sub {
             __request_method => 'POST',
             __mode           => 'start_rebuild',
             blog_id          => $blog->id,
+            type             => 'Individual',
+            next             => 'Individual',
         }
     );
     $out = delete $app->{__test_output};
@@ -902,6 +948,8 @@ subtest 'mode = start_rebuild' => sub {
             __request_method => 'POST',
             __mode           => 'start_rebuild',
             blog_id          => $blog->id,
+            type             => 'Individual',
+            next             => 'Individual',
         }
     );
     $out = delete $app->{__test_output};
@@ -914,6 +962,8 @@ subtest 'mode = start_rebuild' => sub {
             __request_method => 'POST',
             __mode           => 'start_rebuild',
             blog_id          => $blog->id,
+            type             => 'Individual',
+            next             => 'Individual',
         }
     );
     $out = delete $app->{__test_output};
@@ -926,6 +976,8 @@ subtest 'mode = start_rebuild' => sub {
             __request_method => 'POST',
             __mode           => 'start_rebuild',
             blog_id          => $blog->id,
+            type             => 'Individual',
+            next             => 'Individual',
         }
     );
     $out = delete $app->{__test_output};
@@ -938,6 +990,8 @@ subtest 'mode = start_rebuild' => sub {
             __request_method => 'POST',
             __mode           => 'start_rebuild',
             blog_id          => $blog->id,
+            type             => 'Individual',
+            next             => 'Individual',
         }
     );
     $out = delete $app->{__test_output};
@@ -950,6 +1004,8 @@ subtest 'mode = start_rebuild' => sub {
             __request_method => 'POST',
             __mode           => 'start_rebuild',
             blog_id          => $blog->id,
+            type             => 'Individual',
+            next             => 'Individual',
         }
     );
     $out = delete $app->{__test_output};
@@ -963,6 +1019,8 @@ subtest 'mode = start_rebuild' => sub {
             __request_method => 'POST',
             __mode           => 'start_rebuild',
             blog_id          => $second_blog->id,
+            type             => 'Individual',
+            next             => 'Individual',
         }
     );
     $out = delete $app->{__test_output};
@@ -975,6 +1033,8 @@ subtest 'mode = start_rebuild' => sub {
             __request_method => 'POST',
             __mode           => 'start_rebuild',
             blog_id          => $second_blog->id,
+            type             => 'Individual',
+            next             => 'Individual',
         }
     );
     $out = delete $app->{__test_output};
@@ -987,6 +1047,8 @@ subtest 'mode = start_rebuild' => sub {
             __request_method => 'POST',
             __mode           => 'start_rebuild',
             blog_id          => $second_blog->id,
+            type             => 'Individual',
+            next             => 'Individual',
         }
     );
     $out = delete $app->{__test_output};
@@ -999,6 +1061,8 @@ subtest 'mode = start_rebuild' => sub {
             __request_method => 'POST',
             __mode           => 'start_rebuild',
             blog_id          => $second_blog->id,
+            type             => 'Individual',
+            next             => 'Individual',
         }
     );
     $out = delete $app->{__test_output};
@@ -1011,6 +1075,8 @@ subtest 'mode = start_rebuild' => sub {
             __request_method => 'POST',
             __mode           => 'start_rebuild',
             blog_id          => $second_blog->id,
+            type             => 'Individual',
+            next             => 'Individual',
         }
     );
     $out = delete $app->{__test_output};
@@ -1023,6 +1089,8 @@ subtest 'mode = start_rebuild' => sub {
             __request_method => 'POST',
             __mode           => 'start_rebuild',
             blog_id          => $blog->id,
+            type             => 'Individual',
+            next             => 'Individual',
         }
     );
     $out = delete $app->{__test_output};

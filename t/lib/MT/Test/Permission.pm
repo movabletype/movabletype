@@ -555,8 +555,8 @@ sub make_fileinfo {
         }
     }
 
-    require MT::Fileinfo;
-    my $fileinfo = MT::Fileinfo->new();
+    require MT::FileInfo;
+    my $fileinfo = MT::FileInfo->new();
 
     foreach my $k ( keys %$values ) {
         $fileinfo->$k( $values->{ $k } );

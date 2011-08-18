@@ -67,7 +67,7 @@ subtest 'mode = export' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: export" );
-    ok( $out !~ m!Permission denied!i, "export by admin" );
+    ok( $out !~ m!You do not have export permissions!i, "export by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -79,7 +79,7 @@ subtest 'mode = export' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: export" );
-    ok( $out !~ m!Permission denied!i, "export by permitted user" );
+    ok( $out !~ m!You do not have export permissions!i, "export by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -91,7 +91,7 @@ subtest 'mode = export' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: export" );
-    ok( $out =~ m!Permission denied!i, "export by other blog" );
+    ok( $out =~ m!You do not have export permissions!i, "export by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -103,7 +103,7 @@ subtest 'mode = export' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: export" );
-    ok( $out =~ m!Permission denied!i, "export by other permission" );
+    ok( $out =~ m!You do not have export permissions!i, "export by other permission" ); #TODO: should use 'Permission Denied' instead
 };
 
 subtest 'mode = start_export' => sub {
@@ -117,7 +117,7 @@ subtest 'mode = start_export' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_export" );
-    ok( $out !~ m!Permission denied!i, "start_export by admin" );
+    ok( $out !~ m!permission=1!i, "start_export by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -129,7 +129,7 @@ subtest 'mode = start_export' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_export" );
-    ok( $out !~ m!Permission denied!i, "start_export by permitted user" );
+    ok( $out !~ m!permission=1!i, "start_export by permitted user" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -141,7 +141,7 @@ subtest 'mode = start_export' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_export" );
-    ok( $out =~ m!Permission denied!i, "start_export by other blog" );
+    ok( $out =~ m!permission=1!i, "start_export by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -153,7 +153,7 @@ subtest 'mode = start_export' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_export" );
-    ok( $out =~ m!Permission denied!i, "start_export by other permission" );
+    ok( $out =~ m!permission=1!i, "start_export by other permission" ); #TODO: should use 'Permission Denied' instead
 };
 
 done_testing();

@@ -93,7 +93,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out !~ m!Permission denied!i, "list by admin" );
+    ok( $out !~ m!permission=1!i, "list by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -106,7 +106,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out !~ m!Permission denied!i, "list by permitted user (list config)" );
+    ok( $out !~ m!permission=1!i, "list by permitted user (list config)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -119,7 +119,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out !~ m!Permission denied!i, "list by permitted user (manage feedback)" );
+    ok( $out !~ m!permission=1!i, "list by permitted user (manage feedback)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -132,7 +132,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!Permission denied!i, "list by other blog (list config)" );
+    ok( $out =~ m!permission=1!i, "list by other blog (list config)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -145,7 +145,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!Permission denied!i, "list by other blog (manage feedback)" );
+    ok( $out =~ m!permission=1!i, "list by other blog (manage feedback)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -158,7 +158,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!Permission denied!i, "list by other permission" );
+    ok( $out =~ m!permission=1!i, "list by other permission" ); #TODO: should use 'Permission Denied' instead
 
     done_testing();
 };
@@ -263,7 +263,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit by admin" );
+    ok( $out =~ m!Invalid request!i, "edit by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -277,7 +277,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit by permitted user (edit config)" );
+    ok( $out =~ m!Invalid request!i, "edit by permitted user (edit config)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -291,7 +291,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit by permitted user (manage feedback)" );
+    ok( $out =~ m!Invalid request!i, "edit by permitted user (manage feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -305,7 +305,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by other blog (edit config)" );
+    ok( $out =~ m!Invalid request!i, "edit by other blog (edit config)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -319,7 +319,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by other blog (manage feedback)" );
+    ok( $out =~ m!Invalid request!i, "edit by other blog (manage feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -333,7 +333,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by other permission" );
+    ok( $out =~ m!Invalid request!i, "edit by other permission" );
 
     done_testing();
 };

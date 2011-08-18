@@ -110,9 +110,20 @@ my $entry = MT::Test::Permission->make_entry(
     author_id      => $ukawa->id,
 );
 
+my $page = MT::Test::Permission->make_page(
+    blog_id        => $blog->id,
+    author_id      => $ichikawa->id,
+);
+
 # Comment
 my $comment = MT::Test::Permission->make_comment(
     entry_id => $entry->id,
+    blog_id  => $blog->id,
+    commenter_id => $kemikawa->id,
+);
+
+my $comment2 = MT::Test::Permission->make_comment(
+    entry_id => $page->id,
     blog_id  => $blog->id,
     commenter_id => $kemikawa->id,
 );
@@ -301,6 +312,7 @@ subtest 'mode = dialog_post_comment' => sub {
             __request_method => 'POST',
             __mode           => 'dialog_post_comment',
             blog_id          => $blog->id,
+            reply_to         => $comment->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -313,6 +325,7 @@ subtest 'mode = dialog_post_comment' => sub {
             __request_method => 'POST',
             __mode           => 'dialog_post_comment',
             blog_id          => $blog->id,
+            reply_to         => $comment->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -325,6 +338,7 @@ subtest 'mode = dialog_post_comment' => sub {
             __request_method => 'POST',
             __mode           => 'dialog_post_comment',
             blog_id          => $blog->id,
+            reply_to         => $comment->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -337,6 +351,7 @@ subtest 'mode = dialog_post_comment' => sub {
             __request_method => 'POST',
             __mode           => 'dialog_post_comment',
             blog_id          => $blog->id,
+            reply_to         => $comment->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -377,7 +392,7 @@ subtest 'mode = do_reply' => sub {
             __request_method => 'POST',
             __mode           => 'do_reply',
             blog_id          => $blog->id,
-            reply_to         => $comment->id,
+            reply_to         => $comment2->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -408,7 +423,7 @@ subtest 'mode = do_reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: do_reply" );
-    ok( $out !~ m!Permission denied!i, "do_reply by other user" );
+    ok( $out =~ m!Permission denied!i, "do_reply by other user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -421,7 +436,7 @@ subtest 'mode = do_reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: do_reply" );
-    ok( $out !~ m!Permission denied!i, "do_reply by other blog (manage_feedback)" );
+    ok( $out =~ m!Permission denied!i, "do_reply by other blog (manage_feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -429,12 +444,12 @@ subtest 'mode = do_reply' => sub {
             __request_method => 'POST',
             __mode           => 'do_reply',
             blog_id          => $blog->id,
-            reply_to         => $comment->id,
+            reply_to         => $comment2->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: do_reply" );
-    ok( $out !~ m!Permission denied!i, "do_reply by other blog (manage_pages)" );
+    ok( $out =~ m!Permission denied!i, "do_reply by other blog (manage_pages)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -447,7 +462,7 @@ subtest 'mode = do_reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: do_reply" );
-    ok( $out !~ m!Permission denied!i, "do_reply by other blog (publish_post)" );
+    ok( $out =~ m!Permission denied!i, "do_reply by other blog (publish_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1251,7 +1266,7 @@ subtest 'mode = save (edit)' => sub {
             __mode           => 'save',
             blog_id          => $blog->id,
             _type            => 'comment',
-            id               => $comment->id,
+            id               => $comment2->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -1344,7 +1359,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit (edit) by admin" );
+    ok( $out !~ m!permission=1!i, "edit (edit) by admin" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1358,7 +1373,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit (edit) by permitted user (feedback)" );
+    ok( $out !~ m!permission=1!i, "edit (edit) by permitted user (feedback)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1367,12 +1382,12 @@ subtest 'mode = edit (edit)' => sub {
             __mode           => 'edit',
             blog_id          => $blog->id,
             _type            => 'comment',
-            id               => $comment->id,
+            id               => $comment2->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit (edit) by permitted user (pages)" );
+    ok( $out !~ m!permission=1!i, "edit (edit) by permitted user (pages)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1386,7 +1401,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit (edit) by permitted user (publish)" );
+    ok( $out !~ m!permission=1!i, "edit (edit) by permitted user (publish)" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1400,7 +1415,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit (edit) by other blog" );
+    ok( $out =~ m!permission=1!i, "edit (edit) by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1414,7 +1429,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit (edit) by other permission" );
+    ok( $out =~ m!permission=1!i, "edit (edit) by other permission" ); #TODO: should use 'Permission Denied' instead
 };
 
 subtest 'mode = delete' => sub {
@@ -1434,7 +1449,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "delete by admin" );
+    ok( $out !~ m!permission=1!i, "delete by admin" ); #TODO: should use 'Permission Denied' instead
 
     $comment = MT::Test::Permission->make_comment(
         entry_id => $entry->id,
@@ -1452,7 +1467,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "delete by permitted user (feedback)" );
+    ok( $out !~ m!permission=1!i, "delete by permitted user (feedback)" ); #TODO: should use 'Permission Denied' instead
 
     $comment = MT::Test::Permission->make_comment(
         entry_id => $entry->id,
@@ -1470,7 +1485,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "delete by permitted user (pages)" );
+    ok( $out !~ m!permission=1!i, "delete by permitted user (pages)" ); #TODO: should use 'Permission Denied' instead
 
     $comment = MT::Test::Permission->make_comment(
         entry_id => $entry->id,
@@ -1488,7 +1503,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "delete by permitted user (publish)" );
+    ok( $out !~ m!permission=1!i, "delete by permitted user (publish)" ); #TODO: should use 'Permission Denied' instead
 
     $comment = MT::Test::Permission->make_comment(
         entry_id => $entry->id,
@@ -1506,7 +1521,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "delete by other blog" );
+    ok( $out =~ m!permission=1!i, "delete by other blog" ); #TODO: should use 'Permission Denied' instead
 
     $comment = MT::Test::Permission->make_comment(
         entry_id => $entry->id,
@@ -1524,7 +1539,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "delete by other permission" );
+    ok( $out =~ m!permission=1!i, "delete by other permission" ); #TODO: should use 'Permission Denied' instead
 };
 
 subtest 'action = unapprove_comment' => sub {
