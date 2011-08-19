@@ -90,6 +90,11 @@ my $publish_post = MT::Test::Permission->make_role(
    permissions => "'publish_post'",
 );
 
+my $create_post = MT::Test::Permission->make_role(
+   name  => 'Create Post',
+   permissions => "'create_post'",
+);
+
 my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
 my $commenter = MT::Role->load( { name => MT->translate( 'Commenter' ) } );
 
@@ -97,12 +102,16 @@ require MT::Association;
 MT::Association->link( $aikawa => $manage_feedback => $blog );
 MT::Association->link( $ichikawa => $manage_pages => $blog );
 MT::Association->link( $ukawa => $publish_post => $blog );
-MT::Association->link( $egawa => $manage_feedback => $second_blog );
-MT::Association->link( $ogawa => $manage_pages => $second_blog );
-MT::Association->link( $kagawa => $publish_post => $second_blog );
 MT::Association->link( $kikkawa => $designer => $blog );
 MT::Association->link( $kumekawa => $publish_post => $blog );
 MT::Association->link( $kemikawa => $commenter => $blog );
+
+MT::Association->link( $egawa => $manage_feedback => $second_blog );
+MT::Association->link( $ogawa => $manage_pages => $second_blog );
+MT::Association->link( $kagawa => $publish_post => $second_blog );
+MT::Association->link( $egawa => $create_post => $blog );
+MT::Association->link( $ogawa => $create_post => $blog );
+MT::Association->link( $kagawa => $create_post => $blog );
 
 # Entry
 my $entry = MT::Test::Permission->make_entry(
@@ -132,55 +141,70 @@ my $comment2 = MT::Test::Permission->make_comment(
 my ( $app, $out );
 
 subtest 'mode = approve_item' => sub {
+    $comment->visible(0);
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
             __mode           => 'approve_item',
             blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: approve_item" );
-    ok( $out !~ m!Permission denied!i, "approve_item by admin" );
+    ok( $out !~ m!permission to approve this comment!i, "approve_item by admin" ); #TODO: should use 'Permission Denied' instead
 
+    $comment->visible(0);
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
             __mode           => 'approve_item',
             blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: approve_item" );
-    ok( $out !~ m!Permission denied!i, "approve_item by permitted user" );
+    ok( $out !~ m!permission to approve this comment!i, "approve_item by permitted user" ); #TODO: should use 'Permission Denied' instead
 
+    $comment->visible(0);
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $egawa,
             __request_method => 'POST',
             __mode           => 'approve_item',
             blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: approve_item" );
-    ok( $out =~ m!Permission denied!i, "approve_item by other blog" );
+    ok( $out =~ m!permission to approve this comment!i, "approve_item by other blog" ); #TODO: should use 'Permission Denied' instead
 
+    $comment->visible(0);
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kikkawa,
             __request_method => 'POST',
             __mode           => 'approve_item',
             blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: approve_item" );
-    ok( $out =~ m!Permission denied!i, "approve_item by other permission" );
+    ok( $out =~ m!permission to approve this comment!i, "approve_item by other permission" ); #TODO: should use 'Permission Denied' instead
 };
-
 subtest 'mode = ban_commenter' => sub {
     MT->config( 'SingleCommunity', 0, 1 );
 
@@ -342,6 +366,7 @@ subtest 'mode = dialog_post_comment' => sub {
         }
     );
     $out = delete $app->{__test_output};
+diag($out);
     ok( $out, "Request: dialog_post_comment" );
     ok( $out =~ m!Permission denied!i, "dialog_post_comment by other blog" );
 
@@ -422,6 +447,7 @@ subtest 'mode = do_reply' => sub {
         }
     );
     $out = delete $app->{__test_output};
+diag($out);
     ok( $out, "Request: do_reply" );
     ok( $out =~ m!Permission denied!i, "do_reply by other user" );
 
@@ -1151,53 +1177,69 @@ subtest 'mode = trust_commenter' => sub {
 };
 
 subtest 'mode = unapprove_item' => sub {
+    $comment->visible(1);
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
             __mode           => 'unapprove_item',
             blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unapprove_item" );
-    ok( $out !~ m!Permission denied!i, "unapprove_item by admin" );
+    ok( $out !~ m!permission to approve this comment!i, "unapprove_item by admin" ); #TODO: should use 'Permission Denied' instead
 
+    $comment->visible(1);
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
             __mode           => 'unapprove_item',
             blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unapprove_item" );
-    ok( $out !~ m!Permission denied!i, "unapprove_item by permitted user" );
+    ok( $out !~ m!permission to approve this comment!i, "unapprove_item by permitted user" ); #TODO: should use 'Permission Denied' instead
 
+    $comment->visible(1);
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $egawa,
             __request_method => 'POST',
             __mode           => 'unapprove_item',
             blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unapprove_item" );
-    ok( $out =~ m!Permission denied!i, "unapprove_item by other blog" );
+    ok( $out =~ m!permission to approve this comment!i, "unapprove_item by other blog" ); #TODO: should use 'Permission Denied' instead
 
+    $comment->visible(1);
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kikkawa,
             __request_method => 'POST',
             __mode           => 'unapprove_item',
             blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unapprove_item" );
-    ok( $out =~ m!Permission denied!i, "unapprove_item by other permission" );
+    ok( $out =~ m!permission to approve this comment!i, "unapprove_item by other permission" ); #TODO: should use 'Permission Denied' instead
 };
 
 subtest 'mode = save (new)' => sub {

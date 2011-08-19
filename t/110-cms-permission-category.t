@@ -59,13 +59,20 @@ my $manage_pages = MT::Test::Permission->make_role(
    permissions => "'manage_pages'",
 );
 
+my $create_post = MT::Test::Permission->make_role(
+   name  => 'Create Post',
+   permissions => "'create_post'",
+);
+
 my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
 
 require MT::Association;
 MT::Association->link( $aikawa => $edit_categories => $blog );
-MT::Association->link( $ichikawa => $edit_categories => $second_blog );
 MT::Association->link( $ukawa => $designer => $blog );
 MT::Association->link( $egawa => $manage_pages => $blog );
+
+MT::Association->link( $ichikawa => $edit_categories => $second_blog );
+MT::Association->link( $ichikawa => $create_post => $blog );
 
 # Category
 my $cat = MT::Test::Permission->make_category(
@@ -143,7 +150,7 @@ subtest 'mode = js_add_category' => sub {
             __request_method => 'POST',
             __mode           => 'js_add_category',
             blog_id          => $blog->id,
-            label            => 'New Label',
+            label            => 'New Label 1',
         }
     );
     $out = delete $app->{__test_output};
@@ -156,7 +163,7 @@ subtest 'mode = js_add_category' => sub {
             __request_method => 'POST',
             __mode           => 'js_add_category',
             blog_id          => $blog->id,
-            label            => 'New Label',
+            label            => 'New Label 2',
         }
     );
     $out = delete $app->{__test_output};
@@ -169,7 +176,7 @@ subtest 'mode = js_add_category' => sub {
             __request_method => 'POST',
             __mode           => 'js_add_category',
             blog_id          => $blog->id,
-            label            => 'New Label',
+            label            => 'New Label 3',
         }
     );
     $out = delete $app->{__test_output};
@@ -182,7 +189,7 @@ subtest 'mode = js_add_category' => sub {
             __request_method => 'POST',
             __mode           => 'js_add_category',
             blog_id          => $blog->id,
-            label            => 'New Label',
+            label            => 'New Label 4',
         }
     );
     $out = delete $app->{__test_output};

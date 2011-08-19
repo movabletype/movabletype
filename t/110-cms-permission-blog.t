@@ -145,6 +145,11 @@ my $blog_admin = MT::Role->load( { name => MT->translate( 'Blog Administrator' )
 my $website_admin = MT::Role->load( { name => MT->translate( 'Website Administrator' ) } );
 my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
 
+my $create_post = MT::Test::Permission->make_role(
+   name  => 'Create Post',
+   permissions => "'create_post'",
+);
+
 my $manage_pages = MT::Test::Permission->make_role(
    name  => 'Manage Pages',
    permissions => "'manage_pages'",
@@ -204,6 +209,16 @@ MT::Association->link( $toda => $edit_templates => $second_blog );
 MT::Association->link( $niyagawa => $website_admin => $website );
 MT::Association->link( $nunota => $website_admin => $second_website );
 
+MT::Association->link( $kemikawa => $create_post => $blog );
+MT::Association->link( $koishikawa => $create_post => $blog );
+MT::Association->link( $sagawa => $create_post => $blog );
+MT::Association->link( $shiki => $create_post => $blog );
+MT::Association->link( $suda => $create_post => $blog );
+MT::Association->link( $seta => $create_post => $blog );
+MT::Association->link( $soneda => $create_post => $blog );
+MT::Association->link( $taneda => $create_post => $blog );
+MT::Association->link( $toda => $create_post => $blog );
+
 require MT::Permission;
 my $p = MT::Permission->new;
 $p->blog_id( 0 );
@@ -227,6 +242,11 @@ my $entry = MT::Test::Permission->make_entry(
 my $page = MT::Test::Permission->make_page(
     blog_id => $blog->id,
     author_id => $ukawa->id,
+);
+
+# Template
+my $tmpl = MT::Test::Permission->make_template(
+    blog_id => $second_blog->id,
 );
 
 # Run
@@ -652,6 +672,19 @@ subtest 'mode = rebuild_confirm' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: rebuild_confirm" );
     ok( $out =~ m!permission=1!i, "rebuild_confirm by other permission" ); #TODO: should use 'Permission Denied' instead
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $egawa,
+            __request_method => 'POST',
+            __mode           => 'rebuild_confirm',
+            blog_id          => $blog->id,
+            tmpl_id          => $tmpl->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: rebuild_confirm" );
+    ok( $out =~ m!permission=1!i, "rebuild_confirm by other permission" ); #TODO: should use 'Permission Denied' instead
     done_testing();
 };
 
@@ -765,7 +798,6 @@ subtest 'mode = rebuild_new_phase' => sub {
         }
     );
     $out = delete $app->{__test_output};
-diag($out);
     ok( $out, "Request: rebuild_new_phase" );
     ok( $out !~ m!Permission denied!i, "rebuild_new_phase by other permission" );
     done_testing();
@@ -1024,6 +1056,7 @@ subtest 'mode = start_rebuild' => sub {
         }
     );
     $out = delete $app->{__test_output};
+diag($out);
     ok( $out, "Request: start_rebuild" );
     ok( $out =~ m!Permission denied!i, "start_rebuild by other blog (rebuild)" );
 
