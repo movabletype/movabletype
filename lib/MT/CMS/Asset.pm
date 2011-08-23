@@ -291,6 +291,9 @@ sub dialog_list_asset {
 
 sub insert {
     my $app = shift;
+
+    $app->validate_magic() or return;
+
     my $text = $app->param('no_insert') ? "" : _process_post_upload($app);
     return unless defined $text;
     my $file_ext_changes = $app->param('changed_file_ext');
