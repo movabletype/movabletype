@@ -1105,7 +1105,9 @@ sub clone_blog {
   my $app = shift;
   my($param) = {};
   my $user = $app->user;
-  
+   
+  $app->validate_magic() or return;
+
   return $app->error($app->translate("Permission denied.")) unless $user->is_superuser;
 
   my @id = $app->param('blog_id') || $app->param('id');
