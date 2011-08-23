@@ -2628,6 +2628,8 @@ sub clone {
     my ($param) = {};
     my $user    = $app->user;
 
+    $app->validate_magic() or return;
+
     return $app->permission_denied()
         if !$user->is_superuser && !$user->can('clone_blog');
 
