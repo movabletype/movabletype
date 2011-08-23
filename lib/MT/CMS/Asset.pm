@@ -535,6 +535,9 @@ sub complete_upload {
 
 sub start_upload_entry {
     my $app = shift;
+
+    $app->validate_magic() or return;
+
     my $q   = $app->param;
     $q->param( '_type', 'entry' );
     defined( my $text = _process_post_upload($app) ) or return;
