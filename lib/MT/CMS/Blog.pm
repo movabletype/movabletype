@@ -2540,6 +2540,8 @@ sub clone {
     my ($param) = {};
     my $user    = $app->user;
 
+    $app->validate_magic() or return;
+
     return $app->error( $app->translate("Permission denied.") )
         if !$user->permissions( $app->blog->id )->can_do('clone_blog');
 
