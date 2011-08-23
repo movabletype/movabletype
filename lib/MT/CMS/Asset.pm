@@ -611,6 +611,9 @@ sub complete_upload {
 
 sub start_upload_entry {
     my $app  = shift;
+
+    $app->validate_magic() or return;
+
     my $q    = $app->param;
     my $blog = $app->blog;
     my $type = 'entry';
