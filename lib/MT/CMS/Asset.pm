@@ -440,6 +440,9 @@ sub complete_insert {
     my $app    = shift;
     my (%args) = @_;
     my $asset  = $args{asset};
+
+    $app->validate_magic() or return;
+
     if ( !$asset && $app->param('id') ) {
         require MT::Asset;
         $asset = MT::Asset->load( $app->param('id') )
