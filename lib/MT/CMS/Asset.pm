@@ -329,6 +329,8 @@ sub asset_userpic {
     my $app = shift;
     my ($param) = @_;
 
+    $app->validate_magic() or return;
+
     my ( $id, $asset );
     if ( $asset = $param->{asset} ) {
         $id = $asset->id;
