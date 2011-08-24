@@ -352,10 +352,13 @@ sub element_dialog {
 
 sub save_detail {
     my $app = shift;
+
+    $app->validate_magic or return;
     $app->can_do('do_export_theme')
         or return $app->error(
             MT->translate('Permission denied.')
         );
+
     my $q    = $app->param;
     my %param;
     my $blog = $app->blog;
