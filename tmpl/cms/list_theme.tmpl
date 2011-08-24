@@ -76,7 +76,7 @@
             <mt:if name="theme_type" eq="package">
                 <mt:unless name="protected">
                     <mt:unless name="blog_count">
-        <a href="<mt:var name="mt_url" />?__mode=uninstall_theme&amp;theme_id=<mt:var name="theme_id">&amp;blog_id=<mt:var blog_id>" class="button uninstall-theme-link"><__trans phrase="Uninstall"></a>
+        <a href="<mt:var name="mt_url" />?__mode=uninstall_theme&amp;theme_id=<mt:var name="theme_id">&amp;blog_id=<mt:var blog_id>&amp;magic_token=<mt:var name="magic_token">" class="button uninstall-theme-link"><__trans phrase="Uninstall"></a>
                     </mt:unless>
                 </mt:unless>
             </mt:if>

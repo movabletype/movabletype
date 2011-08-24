@@ -169,8 +169,11 @@ sub apply {
 
 sub uninstall {
     my $app = shift;
+
+    $app->validate_magic or return;
     $app->can_do('uninstall_theme_package')
         or return $app->return_to_dashboard( permission => 1 );
+
     my $q = $app->param;
     my $theme_id = $q->param('theme_id');
     my $theme = MT::Theme->load($theme_id);
