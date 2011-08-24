@@ -1022,6 +1022,9 @@ sub empty_junk {
     my $perms   = $app->permissions;
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
+
+    $app->validate_magic() or return;
+
     return $app->errtrans("Permission denied.")
       if ( !$blog_id && !$user->is_superuser() )
       || (
