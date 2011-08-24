@@ -648,6 +648,9 @@ sub empty_junk {
     my $perms   = $app->permissions;
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
+
+    $app->validate_magic() or return;
+
     if ($blog_id) {
         $app->can_do('delete_junk_comments')
             or return $app->errtrans('Permission denied');
