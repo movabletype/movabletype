@@ -11,9 +11,10 @@ var dialog;
 var themes = <mt:var theme_json to_json="1" >;
 function returnSelectedTheme(ok, id) {
     if (ok) {
-        var el_id = parent.jQuery('#<mt:var name="idfield" escape="js">')[0];
-        var el_name = parent.jQuery('#<mt:var name="namefield" escape="js">')[0];
-        parent.jQuery('#<mt:var name="imagefield" escape="js">').empty().append(
+        var $parent_html = parent.jQuery('html');
+        var el_id = $parent_html.find('#<mt:var name="idfield" escape="js">')[0];
+        var el_name = $parent_html.find('#<mt:var name="namefield" escape="js">')[0];
+        $parent_html.find('#<mt:var name="imagefield" escape="js">').empty().append(
             '<img src="' + themes[id]['thumb']
                 + '" width="' + themes[id]['thumb_w']
                 + '" height="' + themes[id]['thumb_h'] + '" />'
