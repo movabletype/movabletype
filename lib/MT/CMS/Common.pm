@@ -1256,7 +1256,7 @@ sub build_revision_table {
             code   => $hasher,
             terms  => { $class->datasource . '_id' => $obj->id },
             source => $type,
-            params => { dialog => $q->param('dialog'), },
+            params => { dialog => scalar $q->param('dialog'), },
             %$param
         }
     );
