@@ -378,8 +378,11 @@ sub element_dialog {
 
 sub save_detail {
     my $app = shift;
+
+    $app->validate_magic or return;
     $app->can_do('do_export_theme')
         or return $app->permission_denied();
+
     my $q = $app->param;
     my %param;
     my $blog        = $app->blog;
