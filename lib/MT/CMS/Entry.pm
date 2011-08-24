@@ -895,6 +895,8 @@ sub preview {
     my $entry;
     my $user_id = $app->user->id;
 
+    $app->validate_magic or return;
+
     if ($id) {
         $entry = $entry_class->load( { id => $id, blog_id => $blog_id } )
             or return $app->errtrans( "Invalid request." );
