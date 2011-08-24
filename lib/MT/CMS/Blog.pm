@@ -944,6 +944,9 @@ sub rebuild_pages {
 
 sub rebuild_new_phase {
     my ($app) = @_;
+
+    $app->validate_magic() or return;
+
     require MT::CMS::Entry;
     MT::CMS::Entry::publish_entries($app);
 }
