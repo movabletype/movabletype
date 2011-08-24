@@ -385,10 +385,13 @@ sub save_detail {
 
 sub do_export {
     my $app = shift;
+
+    $app->validate_magic or return;
     $app->can_do('do_export_theme')
         or return $app->error(
             MT->translate('Permission denied.')
         );
+
     my $q    = $app->param;
     my $blog = $app->blog;
     my $theme_id = dirify($q->param('theme_id'))
