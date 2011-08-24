@@ -980,6 +980,9 @@ sub rebuild_pages {
 
 sub rebuild_new_phase {
     my ($app) = @_;
+
+    $app->validate_magic() or return;
+
     $app->setup_filtered_ids
         if $app->param('all_selected');
     require MT::CMS::Entry;
