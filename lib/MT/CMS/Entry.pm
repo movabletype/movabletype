@@ -1024,6 +1024,9 @@ PERMCHECK: {
 
 sub preview {
     my $app   = shift;
+
+    $app->validate_magic or return;
+
     my $entry = _create_temp_entry($app);
 
     return _build_entry_preview( $app, $entry );
