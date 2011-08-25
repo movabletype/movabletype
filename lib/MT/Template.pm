@@ -160,13 +160,28 @@ sub new_string {
 sub load_file {
     my $tmpl = shift;
     my ($file) = @_;
-    unless (File::Spec->file_name_is_absolute($file)) {
+    die 'Template load error'
+        if $file =~ /\.\./;
+
+    if ( File::Spec->file_name_is_absolute($file) ) {
+        require Cwd;
+        my $ok = 0;
+        my @paths = @{ $tmpl->{include_path} || [] };
+        my $abs_file_path = Cwd::realpath($file);
+        foreach my $path (@paths) {
+            my $abs_path = Cwd::realpath($path);
+            $ok = 1, last if $abs_file_path =~ /^$abs_path/;
+        }
+        die "Template load error" unless $ok;
+    }
+    else {
         my @paths = @{ $tmpl->{include_path} || [] };
         foreach my $path (@paths) {
             my $test_file = File::Spec->catfile($path, $file);
             $file = $test_file, last if -f $test_file;
         }
     }
+
     return $tmpl->trans_error("File not found: [_1]", $file) unless -e $file;
     open my $fh, '<', $file
         or return $tmpl->trans_error("Error reading file '[_1]': [_2]", $file, $!);
