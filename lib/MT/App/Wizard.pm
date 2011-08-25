@@ -1075,7 +1075,6 @@ sub seed {
             close OUT;
         }
         $param{config_created} = 1 if -f $cfg_file;
-        $param{config_file} = $cfg_file;
         if ( ( !-f $cfg_file ) && $app->param->param('manually') ) {
             $param{file_not_found} = 1;
             $param{manually}       = 1;
@@ -1083,7 +1082,6 @@ sub seed {
     }
     elsif ( $app->param->param('manually') ) {
         $param{config_created} = 1 if -f $cfg_file;
-        $param{config_file} = $cfg_file;
     }
 
     # back to the complete screen
