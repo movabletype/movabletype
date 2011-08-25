@@ -105,10 +105,19 @@ sub validate_credentials {
 
         if ($author) {
             # password validation
-            if ($ctx->{session_id}) {
-                $app->user($author);
-                $result = MT::Auth::SUCCESS();
-            } else {
+            if ( $ctx->{session_id} ) {
+                my $sess = $app->model('session')->load($ctx->{session_id});
+                my $sess_author_id = $sess->get('author_id') 
+                    if $sess;
+                if ($sess && $sess_author_id && ( $sess_author_id == $author->id )) {
+                    $app->user($author);
+                    $result = MT::Auth::SUCCESS();
+                } else {
+                    $app->errtrans("Invalid request.");
+                    $result = MT::Auth::INVALID_PASSWORD();
+                }
+            }
+            else {
                 my $error;
                 if ($author->is_valid_password($password, 0, \$error)) {
                     $app->user($author);
