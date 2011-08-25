@@ -737,58 +737,47 @@ sub grant_role {
     require MT::Blog;
     require MT::Role;
 
+    push @blogs, $blog_id if $blog_id;
     foreach (@blogs) {
         my $id = $_;
         $id =~ s/\D//g;
         $_ = MT::Blog->load($id);
     }
-    push @blogs, MT::Blog->load($blog_id) if $blog_id;
+    @blogs = grep {defined $_} @blogs;
 
-    my $can_grant_administer = 1;
+    my @can_grant_administer = map 1, 1..@blogs;
     if ( !$user->is_superuser ) {
-        if ( ( scalar @blogs != 1 )
-            || !$user->permissions( $blogs[0] )
-            ->can_do('grant_administer_role') )
-        {
-            $can_grant_administer = 0;
-            if ( !$user->permissions( $blogs[0] )
-                ->can_do('grant_role_for_blog') )
-            {
-                return $app->permission_denied();
+        for (my $i=0; $i < scalar(@blogs); $i++) {
+            my $perm = $user->permissions($blogs[$i]);
+            if ( ! $perm->can_do( 'grant_administer_role' )) {
+                $can_grant_administer[$i] = 0;
+                if ( !$perm->can_do( 'grant_role_for_blog' ) )
+                {
+                    return $app->permission_denied();
+                }             
             }
         }
     }
 
-    my @roles;
-    foreach my $id (@role_ids) {
-        $id =~ s/\D//g;
-        my $role = MT::Role->load($id);
-        if ( $can_grant_administer || !$role->has('administer_blog') ) {
-            push @roles, $role;
-        }
-    }
-    push @roles, MT::Role->load($role_id) if $role_id;
+    push @role_ids, $role_id if $role_id;
+    my @roles = grep { defined $_ } 
+                map  { MT::Role->load($_) }
+                map  { my $id = $_; $id =~ s/\D//g; $id } 
+                @role_ids;
 
+    push @authors, $author_id if $author_id;
     my $add_pseudo_new_user = 0;
     foreach (@authors) {
         my $id = $_;
-        if ( 'author-PSEUDO' eq $id ) {
+        if ( $id =~ /PSEUDO/ ) {
             $add_pseudo_new_user = 1;
             next;
         }
         $id =~ s/\D//g;
         $_ = MT::Author->load($id);
     }
+    my @authors = grep {ref $_} @authors;
     $app->error(undef);
-
-    if ($author_id) {
-        if ( $author_id eq 'PSEUDO' ) {
-            $add_pseudo_new_user = 1;
-        }
-        else {
-            push @authors, MT::Author->load($author_id);
-        }
-    }
 
     my @default_assignments;
 
@@ -805,9 +794,9 @@ sub grant_role {
 
     # TBD: handle case for associating system roles to users/groups
     foreach my $blog (@blogs) {
-        next unless ref $blog;
+        my $can_grant_administer = shift @can_grant_administer;
         foreach my $role (@roles) {
-            next unless ref $role;
+            next if ((!$can_grant_administer) && ($role->has('administer_blog')));
             if ($add_pseudo_new_user) {
                 push @default_assignments, $role->id . ',' . $blog->id;
             }
