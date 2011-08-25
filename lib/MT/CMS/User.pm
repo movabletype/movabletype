@@ -1818,6 +1818,11 @@ sub remove_userpic {
     my $user_id = $q->param('user_id');
     my $user    = $app->model('author')->load( { id => $user_id } )
         or return;
+    
+    my $appuser = $app->user;
+    if ( ( !$appuser->is_superuser ) && ( $user->id != $appuser->id ) ) {
+        return $app->permission_denied();
+    }
     if ( $user->userpic_asset_id ) {
         my $old_file = $user->userpic_file();
         my $fmgr     = MT::FileMgr->new('Local');
