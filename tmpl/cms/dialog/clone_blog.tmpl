@@ -49,7 +49,7 @@ fieldset {
         <input type="hidden" name="site_url" value="<mt:var name="site_url">" />
         <input type="hidden" name="site_path" value="<mt:var name="site_path">" />
         <input type="hidden" name="overwrite" value="<mt:var name="overwrite">" />
-        <input type="hidden" name="clone_prefs_entries_pages" value="<mt:var name="clone_prefs_entries_pages">" />
+        <input type="hidden" name="clone_prefs_entries_pages" value="<mt:var name="clone_prefs_entries_pages" escape="html">" />
         <input type="hidden" name="clone_prefs_comments" value="<mt:var name="clone_prefs_comments">" />
         <input type="hidden" name="clone_prefs_trackbacks" value="<mt:var name="clone_prefs_trackbacks">" />
         <input type="hidden" name="clone_prefs_categories" value="<mt:var name="clone_prefs_categories">" />
@@ -157,7 +157,7 @@ fieldset {
           content_class="field-content-text">
           <ul id="clone-prefs-fields">
             <li>
-              <input type="checkbox" name="clone_prefs_entries_pages" id="clone-prefs-entries-pages" <mt:if name="clone_prefs_entries_pages">checked="<mt:var name="clone_prefs_entries_pages">"</mt:if> class="cb" />
+              <input type="checkbox" name="clone_prefs_entries_pages" id="clone-prefs-entries-pages" <mt:if name="clone_prefs_entries_pages" escape="html">checked="<mt:var name="clone_prefs_entries_pages" escape="html">"</mt:if> class="cb" />
               <label for="clone-prefs-entries-pages"><__trans phrase="Entries/Pages"></label></li>
             <li>
               <input type="checkbox" name="clone_prefs_comments" id="clone-prefs-comments" <mt:if name="clone_prefs_comments">checked="<mt:var name="clone_prefs_comments">"</mt:if> class="cb" />
