@@ -231,28 +231,28 @@
        help_section="archive_url">
     <mt:if name="archive_url_subdomain">
       <div class="archive-url content-path">
-        <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text text path" />.</span><span class="website-url"><mt:var name="website_domain" escape="html"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path" escape="html">" class="blog-url-text text path" /></span>
+        <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain" escape="html">" class="blog-subdomain-text text path" />.</span><span class="website-url"><mt:var name="website_domain" escape="html"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path" escape="html">" class="blog-url-text text path" /></span>
       </div>
       <div class="use-subdomain option">
         <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" checked="checked" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
       </div>
     <mt:elseif name="archive_url_path">
       <div class="archive-url content-path">
-        <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text text path" />.</span><span class="website-url"><mt:var name="website_domain" escape="html"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path" escape="html">" class="blog-url-text text path" /></span>
+        <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain" escape="html">" class="blog-subdomain-text text path" />.</span><span class="website-url"><mt:var name="website_domain" escape="html"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path" escape="html">" class="blog-url-text text path" /></span>
       </div>
       <div class="use-subdomain option">
         <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
       </div>
     <mt:elseif name="archive_url" eq="">
       <div class="archive-url content-path">
-        <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text text path" />.</span><span class="website-url"><mt:var name="website_domain" escape="html"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path" escape="html">" class="<mt:unless name="enable_archive_paths">show-input </mt:unless>blog-url-text text path" /></span>
+        <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain" escape="html">" class="blog-subdomain-text text path" />.</span><span class="website-url"><mt:var name="website_domain" escape="html"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path" escape="html">" class="<mt:unless name="enable_archive_paths">show-input </mt:unless>blog-url-text text path" /></span>
       </div>
       <div class="use-subdomain option">
         <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
       </div>
     <mt:else>
       <div class="archive-url content-path">
-        <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text text path" />.</span><span class="website-url"><mt:var name="website_domain" escape="html"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path" escape="html">" class="blog-url-text text path" /></span>
+        <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain" escape="html">" class="blog-subdomain-text text path" />.</span><span class="website-url"><mt:var name="website_domain" escape="html"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path" escape="html">" class="blog-url-text text path" /></span>
       </div>
       <div class="use-subdomain option">
         <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
@@ -294,7 +294,7 @@
      hint="<__trans phrase="Mark the settings that you want cloning to skip">">
     <ul id="clone-prefs-fields">
       <li>
-        <input type="checkbox" name="clone_prefs_entries_pages" id="clone-prefs-entries-pages" <mt:if name="clone_prefs_entries_pages">checked="<mt:var name="clone_prefs_entries_pages">"</mt:if> class="cb" />
+        <input type="checkbox" name="clone_prefs_entries_pages" id="clone-prefs-entries-pages" <mt:if name="clone_prefs_entries_pages">checked="<mt:var name="clone_prefs_entries_pages" escape="html">"</mt:if> class="cb" />
         <label for="clone-prefs-entries-pages"><__trans phrase="Entries/Pages"></label>
       </li>
       <li>
