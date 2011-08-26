@@ -385,6 +385,14 @@ sub init_request {
         }
     }
 
+    # Global '_type' parameter check; if we get something
+    # special character, die
+    if ( my $type = $app->param('_type') ) {
+        if ( $type =~ /\W/ ) {
+            die $app->translate("Invalid request");
+        }
+    }
+
     unless ( defined $app->{upgrade_required} ) {
         $app->{upgrade_required} = 0;
         if (   ( $mode ne 'logout' )
