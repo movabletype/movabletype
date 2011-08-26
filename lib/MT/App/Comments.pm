@@ -360,6 +360,8 @@ sub do_signup {
         return $app->handle_error(
             $app->translate('Signing up is not allowed.') )
             unless $registration->{Allow} && $blog->allow_commenter_regist;
+    } else {
+        return $app->handle_error( $app->translate('Signing up is not allowed.') );
     }
 
     my $filter_result = $app->run_callbacks( 'api_save_filter.author', $app );
@@ -497,6 +499,7 @@ sub _send_signup_confirmation {
     $sess->name($id);
     $sess->start(time);
     $sess->duration( time + 60 * 60 * 24 );
+    $sess->set( blog_id => $blog_id );
     $sess->save;
 
     MT::Mail->send( \%head, $body )
@@ -509,17 +512,13 @@ sub do_register {
     my $cfg = $app->config;
 
     my $entry_id = $q->param('entry_id');
-    my $blog_id  = $q->param('blog_id');
     my $static   = $q->param('static');
     my $email    = $q->param('email');
     my $token    = $q->param('token');
 
     my $param = {};
-    $param->{$_} = $app->param($_) foreach qw(blog_id entry_id static);
+    $param->{$_} = $app->param($_) foreach qw(entry_id static);
 
-    my $blog = $app->model('blog')->load($blog_id)
-        or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
     ## Token expiration check
     require MT::Session;
     my $commenter;
@@ -534,6 +533,9 @@ sub do_register {
         }
     }
     unless ($sess) {
+        my $blog_id = $q->param('blog_id');
+        my $blog = $app->model('blog')->load($blog_id)
+            or return $app->errtrans( 'Can\'t load blog #[_1].', $blog_id );
         if ( my $provider
             = MT->effective_captcha_provider( $blog->captcha_provider ) )
         {
@@ -541,7 +543,13 @@ sub do_register {
         }
         return $app->build_page( 'signup.tmpl', $param );
     }
+
+    my $blog_id = $sess->get('blog_id');
+    $param->{blog_id} = $blog_id;
     $sess->remove;
+
+    my $blog = $app->model('blog')->load($blog_id)
+        or return $app->errtrans( 'Can\'t load blog #[_1].', $blog_id );
 
     $commenter->status( MT::Author::ACTIVE() );
     if ( $commenter->save ) {
