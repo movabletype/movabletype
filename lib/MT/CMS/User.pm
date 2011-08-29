@@ -1496,8 +1496,8 @@ sub dialog_select_author {
                 panel_first      => 1,
                 panel_last       => 1,
                 list_noncron     => 1,
-                idfield          => $app->param('idfield'),
-                namefield        => $app->param('namefield'),
+                idfield          => scalar($app->param('idfield')),
+                namefield        => scalar($app->param('namefield')),
             },
         }
     );
@@ -1549,8 +1549,8 @@ sub dialog_select_sysadmin {
                 panel_first      => 1,
                 panel_last       => 1,
                 list_noncron     => 1,
-                idfield          => $app->param('idfield'),
-                namefield        => $app->param('namefield'),
+                idfield          => scalar($app->param('idfield')),
+                namefield        => scalar($app->param('namefield')),
             },
         }
     );
