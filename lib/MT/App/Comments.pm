@@ -45,10 +45,6 @@ sub init {
         new_pw        => \&new_pw,
 
         comment_listing => \&comment_listing,
-
-        # deprecated
-        cmtr_name_js   => \&commenter_name_js,
-        cmtr_status_js => \&commenter_status_js,
     );
     $app->{template_dir}         = 'comment';
     $app->{plugin_template_path} = '';
@@ -1596,66 +1592,6 @@ sub _commenter_status {
         }
     }
     $commenter_status;
-}
-
-# deprecated
-sub commenter_status_js {
-    local $SIG{__WARN__} = sub { };
-    my $app = shift;
-    my $ids = Encode::decode_utf8( $app->cookie_val('commenter_id') ) || q();
-
-    my $commenter_id;
-    if ($ids) {
-        my @ids = split ':', $ids;
-        $commenter_id = $ids[0];
-    }
-
-    my $commenter_status = '0';
-    if ($commenter_id) {
-        $commenter_status = $app->_commenter_status($commenter_id);
-    }
-    $commenter_status = encode_js($commenter_status);
-    return <<JS;
-commenter_status = $commenter_status;
-JS
-}
-
-# deprecated
-sub commenter_name_js {
-    local $SIG{__WARN__} = sub { };
-    my $app = shift;
-    my $commenter_name
-        = Encode::decode_utf8( $app->cookie_val('commenter_name') );
-    my $ids = Encode::decode_utf8( $app->cookie_val('commenter_id') ) || q();
-    my $commenter_url
-        = Encode::decode_utf8( $app->cookie_val('commenter_url') ) || q();
-
-    my $commenter_id;
-    if ($ids) {
-        my @ids = split ':', $ids;
-        $commenter_id = $ids[0];
-    }
-
-    $app->set_header( 'Cache-Control' => 'no-cache' );
-    $app->set_header( 'Expires'       => '-1' );
-
-    my $commenter_status = '0';
-    if ($commenter_id) {
-        $commenter_status = $app->_commenter_status($commenter_id);
-    }
-    elsif ($commenter_name) {
-        $commenter_status = 'COMMENTER';
-    }
-    $commenter_name   = encode_js($commenter_name);
-    $commenter_url    = encode_js($commenter_url);
-    $commenter_id     = encode_js($commenter_id);
-    $commenter_status = encode_js($commenter_status);
-    return <<JS;
-commenter_name = '$commenter_name';
-commenter_id = '$commenter_id';
-commenter_url = '$commenter_url';
-commenter_status = $commenter_status;
-JS
 }
 
 sub handle_error {
