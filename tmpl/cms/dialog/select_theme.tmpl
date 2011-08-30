@@ -45,8 +45,8 @@ function init() {    // setup
             </a>
         </div>
         <div class="theme-meta">
-            <h2 class="theme-title"><mt:var name="label"></h2>
-            <p class="theme-description description"><mt:var name="description"></p>
+            <h2 class="theme-title"><mt:var name="label" escape="html"></h2>
+            <p class="theme-description description"><mt:var name="description" escape="html"></p>
             <span class="action-link">
                 <a href="javascript:returnSelectedTheme(1,'<mt:var name="theme_id">')"><__trans phrase="Select"></a>
             </span>
