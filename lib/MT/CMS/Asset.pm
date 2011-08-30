@@ -779,7 +779,7 @@ sub build_asset_hasher {
         else {
             $row->{file_is_missing} = 1 if $file_path;
         }
-        $meta->{file_name} = $row->{file_name};
+        $meta->{file_name} = MT::Util::encode_html($row->{file_name});
         $row->{file_label} 
             = $row->{label} 
             = $obj->label
