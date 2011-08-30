@@ -121,7 +121,7 @@
                         <td class="si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" <mt:if name="file_is_missing">alt="<__trans phrase="Pending">"<mt:else>alt="<__trans phrase="Published">"</mt:if> width="9" height="9" /></td>
                         <td class="label primary-col">
         <mt:if name="has_thumbnail">
-                            <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="js">');" title="<$mt:var name="file_name"$>"><$mt:var name="label" escape="html"$></a>
+                            <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="js">');" title="<$mt:var name="file_name" escape="html"$>"><$mt:var name="label" escape="html"$></a>
         <mt:else>
                             <mt:var name="label" escape="html">
         </mt:if>
