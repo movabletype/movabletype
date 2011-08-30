@@ -772,6 +772,8 @@ sub build_asset_hasher {
         }
 
         @$row{ keys %$meta } = values %$meta;
+        $meta->{name} = MT::Util::encode_html($meta->{name}) if exists $meta->{name};
+        $meta->{Name} = MT::Util::encode_html($meta->{Name}) if exists $meta->{Name};
         $row->{metadata_json} = MT::Util::to_json($meta);
         $row;
     };
