@@ -910,6 +910,15 @@ sub upload_userpic {
     return $app->errtrans("Invalid request.")
         if $app->param('blog_id');
 
+    my $user_id = $app->param('user_id');
+    my $user = MT->model('author')->load( $user_id )
+        or return $app->errtrans("Invalid request.");
+
+    my $appuser = $app->user;
+    if ( ( !$appuser->is_superuser ) && ( $user->id != $appuser->id ) ) {
+        return $app->return_to_dashboard( permission => 1 );
+    }
+
     require MT::CMS::Asset;
     my ( $asset, $bytes )
         = MT::CMS::Asset::_upload_file( $app, @_, require_type => 'image', );
@@ -918,8 +927,6 @@ sub upload_userpic {
 
     ## TODO: should this be layered into _upload_file somehow, so we don't
     ## save the asset twice?
-    my $user_id = $app->param('user_id');
-
     $asset->tags('@userpic');
     $asset->created_by($user_id);
     $asset->save;
@@ -1191,8 +1198,8 @@ sub grant_role {
                 $can_grant_administer[$i] = 0;
                 if ( !$perm->can_do( 'grant_role_for_blog' ) )
                 {
-                    return $app->permission_denied();
-                }             
+                    return $app->return_to_dashboard( permission => 1 );
+                }
             }
         }
     }
@@ -1570,12 +1577,12 @@ sub remove_userpic {
     $app->validate_magic() or return;
     my $q       = $app->param;
     my $user_id = $q->param('user_id');
-    my $user    = $app->model('author')->load( { id => $user_id } )
+    my $user    = $app->model('author')->load($user_id)
         or return;
-    
+
     my $appuser = $app->user;
     if ( ( !$appuser->is_superuser ) && ( $user->id != $appuser->id ) ) {
-        return $app->permission_denied();
+        return $app->return_to_dashboard( permission => 1 );
     }
     if ( $user->userpic_asset_id ) {
         my $old_file = $user->userpic_file();
