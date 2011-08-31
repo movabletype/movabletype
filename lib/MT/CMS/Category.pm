@@ -158,6 +158,8 @@ sub save {
     elsif ( $type eq 'folder' ) {
         return $app->errtrans("Permission denied.")
             unless $app->can_do('save_folder');
+    } else {
+        return $app->errtrans("Invalid request.");
     }
 
     $app->validate_magic() or return;
