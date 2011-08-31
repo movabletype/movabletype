@@ -1240,6 +1240,46 @@ sub filtered_list {
             return $app->json_error( $app->translate('Invalid request') );
         }
     }
+    # Validate scope
+    if ( my $view = $setting->{view} ) {
+        $view = [$view] unless ref $view;
+        my %view = map { $_ => 1 } @$view;
+        if ( !$view{$scope} ) {
+            return $app->return_to_dashboard( redirect => 1, );
+        }
+    }
+
+    # Permission check
+    if ( defined $setting->{permission}
+        && !$app->user->is_superuser() )
+    {
+        my $list_permission = $setting->{permission};
+        my $inherit_blogs   = 1;
+        if ( 'HASH' eq ref $list_permission ) {
+            $inherit_blogs = $list_permission->{inherit}
+                if defined $list_permission->{inherit};
+            $list_permission = $list_permission->{permit_action};
+        }
+        my $allowed  = 0;
+        my @act      = split /\s*,\s*/, $list_permission;
+        my $blog_ids = undef;
+        if ($blog_id) {
+            push @$blog_ids, $blog_id;
+            if ( $scope eq 'website' && $inherit_blogs ) {
+                push @$blog_ids, $_->id foreach @{ $app->blog->blogs() };
+            }
+        }
+        foreach my $p (@act) {
+            $allowed = 1, last
+                if $app->user->can_do(
+                $p,
+                at_least_one => 1,
+                ( $blog_ids ? ( blog_id => $blog_ids ) : () )
+                );
+        }
+        return $app->permission_denied()
+            unless $allowed;
+    }
 
     my $class = $setting->{datasource} || MT->model($ds);
     my $filteritems;
