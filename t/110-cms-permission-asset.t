@@ -177,6 +177,8 @@ subtest 'mode = asset_userpic' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: asset_userpic" );
     ok( $out =~ m!permission=1!i, "asset_userpic by other user" );
+
+    done_testing();
 };
 
 subtest 'mode = complete_insert' => sub {

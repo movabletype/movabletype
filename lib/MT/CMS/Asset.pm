@@ -348,6 +348,11 @@ sub asset_userpic {
         $user = $app->model('author')->load( { id => $user_id } );
         if ($user) {
 
+            my $appuser = $app->user;
+            if ( ( !$appuser->is_superuser ) && ( $user->id != $appuser->id ) ) {
+                return $app->permission_denied();
+            }
+
            # Delete the author's userpic thumb (if any); it'll be regenerated.
             if ( $user->userpic_asset_id != $asset->id ) {
                 my $old_file = $user->userpic_file();
