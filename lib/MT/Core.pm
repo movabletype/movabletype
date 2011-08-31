@@ -1243,24 +1243,12 @@ BEGIN {
                     }
                     0;
                 },
-                condition => sub {
-                    my ($app) = @_;
-                    return 1 if $app->user->is_superuser;
-                    return 1 if $app->can_do('access_to_page_list');
-                    return 0;
-                },
             },
             asset => {
                 object_label     => 'Asset',
                 primary          => 'label',
                 permission       => 'access_to_asset_list',
                 default_sort_key => 'created_on',
-                condition => sub {
-                    my ($app) = @_;
-                    return 1 if $app->user->is_superuser;
-                    return 1 if $app->can_do('access_to_asset_list');
-                    return 0;
-                },
             },
             log => {
                 object_label     => 'Log',
@@ -1398,12 +1386,6 @@ BEGIN {
                     }
                     0;
                 },
-                condition => sub {
-                    my ($app) = @_;
-                    return 1 if $app->user->is_superuser;
-                    return 1 if $app->can_do('access_to_comment_list');
-                    return 0;
-                },
             },
             ping => {
                 primary          => 'excerpt',
@@ -1434,12 +1416,6 @@ BEGIN {
                     }
                     0;
                 },
-                condition => sub {
-                    my ($app) = @_;
-                    return 1 if $app->user->is_superuser;
-                    return 1 if $app->can_do('access_to_trackback_list');
-                    return 0;
-                },
             },
             author => {
                 object_label     => 'Author',
@@ -1448,11 +1424,6 @@ BEGIN {
                 default_sort_key => 'name',
                 view             => 'system',
                 scope_mode       => 'none',
-                condition => sub {
-                    my ($app) = @_;
-                    return 1 if $app->user->is_superuser;
-                    return 0;
-                },
             },
             commenter => {
                 primary             => 'name',
@@ -1467,11 +1438,6 @@ BEGIN {
                 view         => 'system',
                 scope_mode   => 'none',
                 screen_label => 'Manage Commenters',
-                condition => sub {
-                    my ($app) = @_;
-                    return 1 if $app->user->is_superuser;
-                    return 0;
-                },
             },
             member => {
                 primary             => 'name',
@@ -1485,17 +1451,6 @@ BEGIN {
                     permit_action => 'access_to_blog_member_list',
                     inherit       => 0,
                 },
-                condition => sub {
-                    my ($app) = @_;
-                    my $user = $app->user;
-                    return 1 if $user->is_superuser;
-                    my $blog = $app->blog;
-                    return 0 unless $blog;
-                    my $perm = $user->permissions($blog->id);
-                    return 0 unless $perm;
-                    return 1 if $perm->can_do('access_to_blog_member_list');
-                    return 0;
-                },
             },
             tag => {
                 primary      => 'name',
@@ -1507,17 +1462,6 @@ BEGIN {
                 default_sort_key => 'name',
                 view             => [ 'blog', 'website' ],
                 scope_mode       => 'none',
-                condition => sub {
-                    my ($app) = @_;
-                    my $user = $app->user;
-                    return 1 if $user->is_superuser;
-                    my $blog = $app->blog;
-                    return 0 unless $blog;
-                    my $perm = $user->permissions($blog->id);
-                    return 0 unless $perm;
-                    return 1 if $perm->can_do('access_to_tag_list');
-                    return 0;
-                },
             },
             association => {
                 object_label        => 'Permission',
@@ -1538,12 +1482,6 @@ BEGIN {
                 permission       => 'access_to_role_list',
                 default_sort_key => 'name',
                 view             => 'system',
-                condition => sub {
-                    my ($app) = @_;
-                    return 1 if $app->user->is_superuser;
-                    return 1 if $app->can_do('access_to_role_list');
-                    return 0;
-                },
             },
             banlist => {
                 object_label        => 'IP address',

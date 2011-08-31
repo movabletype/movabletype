@@ -1239,8 +1239,6 @@ sub filtered_list {
             }
             return $app->json_error( $app->translate('Invalid request') );
         }
-    } else {
-        return $app->json_error( $app->translate('Invalid request') );
     }
 
     my $class = $setting->{datasource} || MT->model($ds);
