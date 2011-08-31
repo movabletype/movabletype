@@ -801,45 +801,99 @@ subtest 'mode = remove_user_assoc' => sub {
     ok( $out =~ m!Permission denied!i, "remove_user_assoc by other permision" );
 };
 
-subtest 'mode = remove_user_pic' => sub {
+subtest 'mode = remove_userpic' => sub {
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'remove_user_pic',
+            __mode           => 'remove_userpic',
             blog_id          => 0,
-            user_id          => $kemikawa
+            user_id          => $kemikawa->id
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: remove_user_pic" );
-    ok( $out !~ m!Permission denied!i, "remove_user_pic by admin" );
+    ok( $out, "Request: remove_userpic" );
+    ok( $out !~ m!permission=1!i, "remove_userpic by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'remove_user_pic',
+            __mode           => 'remove_userpic',
             blog_id          => 0,
-            user_pic         => $aikawa->id,
+            user_id          => $aikawa->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: remove_user_pic" );
-    ok( $out !~ m!Permission denied!i, "remove_user_pic by myself" );
+    ok( $out, "Request: remove_userpic" );
+    ok( $out !~ m!permission=1!i, "remove_userpic by myself" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'remove_user_pic',
+            __mode           => 'remove_userpic',
             blog_id          => 0,
-            user_pic         => $ichikawa->id,
+            user_id          => $ichikawa->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: remove_user_pic" );
-    ok( $out =~ m!Permission denied!i, "remove_user_pic by other user" );
+    ok( $out, "Request: remove_userpic" );
+    ok( $out =~ m!permission=1!i, "remove_userpic by other user" );
+};
+
+subtest 'mode = upload_userpic' => sub {
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __test_upload    => [
+                'file',
+                File::Spec->catfile($ENV{MT_HOME}, "t", 'images', 'test.jpg'),
+            ],
+            __mode           => 'upload_userpic',
+            blog_id          => 0,
+            user_id          => $kemikawa->id
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: upload_userpic" );
+    ok( $out !~ m!permission=1!i, "upload_userpic by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __test_upload    => [
+                'file',
+                File::Spec->catfile($ENV{MT_HOME}, "t", 'images', 'test.jpg'),
+            ],
+            __mode           => 'upload_userpic',
+            blog_id          => 0,
+            user_id         => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: upload_userpic" );
+    ok( $out !~ m!permission=1!i, "upload_userpic by myself" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __test_upload    => [
+                'file',
+                File::Spec->catfile($ENV{MT_HOME}, "t", 'images', 'test.jpg'),
+            ],
+            __mode           => 'upload_userpic',
+            blog_id          => 0,
+            user_id         => $ichikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: upload_userpic" );
+    ok( $out =~ m!permission=1!i, "upload_userpic by other user" );
 };
 
 subtest 'mode = revoke_role' => sub {

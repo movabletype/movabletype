@@ -343,6 +343,10 @@ sub asset_userpic {
     if ($user_id) {
         $user = $app->model('author')->load( { id => $user_id } );
         if ($user) {
+            my $appuser = $app->user;
+            if ( ( !$appuser->is_superuser ) && ( $user->id != $appuser->id ) ) {
+                return $app->return_to_dashboard( permission => 1 );
+            }
 
            # Delete the author's userpic thumb (if any); it'll be regenerated.
             if ( $user->userpic_asset_id != $asset->id ) {
