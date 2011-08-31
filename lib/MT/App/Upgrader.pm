@@ -233,6 +233,9 @@ sub init_user {
 
     $app->validate_magic or return;
 
+    return $app->error( $app->translate('Invalid request') )
+        if MT->model('author')->count();
+
     my %param = $app->unserialize_config;
     if ( !$app->param('continue') ) {
         return $app->build_page( 'install.tmpl', \%param );
@@ -334,6 +337,9 @@ sub init_website {
     my $app = shift;
     my ($param) = @_;
     my %param;
+
+    return $app->error( $app->translate('Invalid request') )
+        if MT->model('website')->count();
 
     $param{config}           = $param->{config} || $app->param('config');
     $param{website_name}     = $app->param('website_name');
