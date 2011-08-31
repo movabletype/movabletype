@@ -1552,7 +1552,7 @@ sub save {
 
     if ( $type eq 'entry' ) {
         $obj->status( MT::Entry::HOLD() )
-            if !$id && !$perms->can_do('publish_own_entry');
+            if !$id && !$perms->can_do('publish_own_entry') && !$perms->can_do('publish_all_entry');
     }
 
     my $filter_result
