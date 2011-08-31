@@ -134,6 +134,8 @@ sub save {
     elsif ( $type eq 'folder' ) {
         return $app->errtrans("Permission denied.")
           unless $perms && $perms->can_manage_pages;
+    } else {
+        return $app->errtrans("Invalid request.");
     }
 
     $app->validate_magic() or return;
