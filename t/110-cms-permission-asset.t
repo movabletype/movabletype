@@ -136,7 +136,7 @@ subtest 'mode = asset_userpic' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: asset_userpic" );
-    ok( $out !~ m!Permission denied!i, "asset_userpic by admin" );
+    ok( $out !~ m!permission=1!i, "asset_userpic by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -149,7 +149,7 @@ subtest 'mode = asset_userpic' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: asset_userpic" );
-    ok( $out !~ m!Permission denied!i, "asset_userpic by myself" );
+    ok( $out !~ m!permission=1!i, "asset_userpic by myself" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -162,7 +162,9 @@ subtest 'mode = asset_userpic' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: asset_userpic" );
-    ok( $out =~ m!Permission denied!i, "asset_userpic by other user" );
+    ok( $out =~ m!permission=1!i, "asset_userpic by other user" );
+
+    done_testing();
 };
 
 subtest 'mode = complete_insert' => sub {

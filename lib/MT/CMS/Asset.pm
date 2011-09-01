@@ -343,6 +343,10 @@ sub asset_userpic {
     if ($user_id) {
         $user = $app->model('author')->load( { id => $user_id } );
         if ($user) {
+            my $appuser = $app->user;
+            if ( ( !$appuser->is_superuser ) && ( $user->id != $appuser->id ) ) {
+                return $app->return_to_dashboard( permission => 1 );
+            }
 
            # Delete the author's userpic thumb (if any); it'll be regenerated.
             if ( $user->userpic_asset_id != $asset->id ) {
@@ -1295,21 +1299,16 @@ sub _upload_file {
         if ( $fmgr->exists($local_file) ) {
             if ($has_overwrite) {
                 my $tmp = $q->param('temp');
-                if ( $tmp =~ m!([^/]+)$! ) {
-                    $tmp = $1;
-                }
-                else {
-                    return $app->error(
-                        $app->translate(
-                            "Invalid temp file name '[_1]'", $tmp
-                        )
-                    );
-                }
+
+                return $app->error(
+                    $app->translate( "Invalid temp file name '[_1]'", $tmp ) )
+                    unless _is_valid_tempfile_basename($tmp);
+
                 my $tmp_dir = $app->config('TempDir');
                 my $tmp_file = File::Spec->catfile( $tmp_dir, $tmp );
                 if ( $q->param('overwrite_yes') ) {
                     $fh = gensym();
-                    open $fh, $tmp_file
+                    open $fh, '<', $tmp_file
                         or return $app->error(
                         $app->translate(
                             "Error opening '[_1]': [_2]",
@@ -1319,7 +1318,7 @@ sub _upload_file {
                 }
                 else {
                     if ( -e $tmp_file ) {
-                        unlink($tmp_file)
+                        $fmgr->delete($tmp_file)
                             or return $app->error(
                             $app->translate(
                                 "Error deleting '[_1]': [_2]", $tmp_file,
@@ -1491,15 +1490,13 @@ sub _upload_file {
     ## lying around. Delete it.
     if ( $q->param('overwrite_yes') ) {
         my $tmp = $q->param('temp');
-        if ( $tmp =~ m!([^/]+)$! ) {
-            $tmp = $1;
-        }
-        else {
-            return $app->error(
-                $app->translate( "Invalid temp file name '[_1]'", $tmp ) );
-        }
+
+        return $app->error(
+            $app->translate( "Invalid temp file name '[_1]'", $tmp ) )
+            unless _is_valid_tempfile_basename($tmp);
+
         my $tmp_file = File::Spec->catfile( $app->config('TempDir'), $tmp );
-        unlink($tmp_file)
+        $fmgr->delete($tmp_file)
             or return $app->error(
             $app->translate( "Error deleting '[_1]': [_2]", $tmp_file, "$!" )
             );
@@ -1631,6 +1628,13 @@ sub _upload_file {
     return ( $asset, $bytes );
 }
 
+sub _is_valid_tempfile_basename {
+    my ($filename) = @_;
+    $filename
+        && File::Basename::basename($filename) eq $filename
+        && $filename !~ m!^\.\.|\0|\|!;
+}
+
 sub _write_upload {
     my ( $upload_fh, $dest_fh ) = @_;
     my $fh = gensym();
@@ -1638,7 +1642,7 @@ sub _write_upload {
         $fh = $dest_fh;
     }
     else {
-        open $fh, ">$dest_fh" or return;
+        open $fh, '>', $dest_fh or return;
     }
     binmode $fh;
     binmode $upload_fh;
