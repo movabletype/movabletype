@@ -718,14 +718,13 @@ sub handle_junk {
         $app->validate_magic() or return;
     }
 
-    my $perm_checked = $app->can_do('handle_junk');
-
     foreach my $id (@ids) {
         next unless $id;
 
         my $obj = $class->load($id) or die "No $class $id";
         my $perms = $app->user->permissions($obj->blog_id)
             or return $app->return_to_dashboard( permission => 1 );
+        my $perm_checked = $perms->can_do('handle_junk');
         my $old_visible = $obj->visible || 0;
         unless ($perm_checked) {
             if ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Entry') ) {
