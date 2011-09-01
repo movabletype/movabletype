@@ -782,14 +782,13 @@ sub not_junk {
     my $class = $app->model($type);
     my %rebuild_set;
 
-    my $perm_checked = $app->can_do('handle_not_junk');
-
     foreach my $id (@ids) {
         next unless $id;
         my $obj = $class->load($id)
             or next;
         my $perms = $app->user->permissions( $obj->blog_id )
             or return $app->return_to_dashboard( permission => 1 );
+        my $perm_checked = $perms->can_do('handle_not_junk');
         unless ($perm_checked) {
             if ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Entry') ) {
                 return $app->return_to_dashboard( permission => 1 )
