@@ -718,6 +718,12 @@ function mtRelativeDate(ts, fds) {
  */
 </mt:Ignore>
 function mtEditLink(entry_id, author_id) {
+    <mt:Ignore>
+    // This function has been inactivated by default because of the security issue.
+    // You can activate this function if "AdminScript" is already known by visitor.
+    </mt:Ignore>
+    <mt:Ignore>
+
     var u = mtGetUser();
     if (! u) return;
     if (! entry_id) return;
@@ -725,6 +731,8 @@ function mtEditLink(entry_id, author_id) {
     if (u.id != author_id) return;
     var link = '<a href="<$mt:AdminScript$>?__mode=view&amp;_type=entry&amp;id=' + entry_id + '"><__trans phrase="Edit" escape="js"></a>';
     document.write(link);
+
+    </mt:Ignore>
 }
 
 <mt:Ignore>
