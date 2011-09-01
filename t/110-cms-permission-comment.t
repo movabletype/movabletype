@@ -14,16 +14,9 @@ use Test::More;
 
 ### Make test data
 
-# Website
-my $website = MT::Test::Permission->make_website();
-
 # Blog
-my $blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
-my $second_blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
+my $blog = MT::Test::Permission->make_blog();
+my $second_blog = MT::Test::Permission->make_blog();
 
 # Author
 my $aikawa = MT::Test::Permission->make_author(
@@ -366,7 +359,6 @@ subtest 'mode = dialog_post_comment' => sub {
         }
     );
     $out = delete $app->{__test_output};
-diag($out);
     ok( $out, "Request: dialog_post_comment" );
     ok( $out =~ m!Permission denied!i, "dialog_post_comment by other blog" );
 
@@ -447,7 +439,6 @@ subtest 'mode = do_reply' => sub {
         }
     );
     $out = delete $app->{__test_output};
-diag($out);
     ok( $out, "Request: do_reply" );
     ok( $out =~ m!Permission denied!i, "do_reply by other user" );
 
@@ -561,11 +552,13 @@ subtest 'mode = handle_junk' => sub {
             __request_method => 'POST',
             __mode           => 'handle_junk',
             blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: handle_junk" );
-    ok( $out !~ m!Permission denied!i, "handle_junk by admin" );
+    ok( $out !~ m!permission=1!i, "handle_junk by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -573,11 +566,27 @@ subtest 'mode = handle_junk' => sub {
             __request_method => 'POST',
             __mode           => 'handle_junk',
             blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: handle_junk" );
-    ok( $out !~ m!Permission denied!i, "handle_junk by permitted user" );
+    ok( $out !~ m!permission=1!i, "handle_junk by permitted user" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'handle_junk',
+            blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: handle_junk" );
+    ok( $out !~ m!permission=1!i, "handle_junk by own entry" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -585,11 +594,13 @@ subtest 'mode = handle_junk' => sub {
             __request_method => 'POST',
             __mode           => 'handle_junk',
             blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: handle_junk" );
-    ok( $out =~ m!Permission denied!i, "handle_junk by other blog" );
+    ok( $out =~ m!permission=1!i, "handle_junk by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -597,11 +608,13 @@ subtest 'mode = handle_junk' => sub {
             __request_method => 'POST',
             __mode           => 'handle_junk',
             blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: handle_junk" );
-    ok( $out =~ m!Permission denied!i, "handle_junk by other permission" );
+    ok( $out =~ m!permission=1!i, "handle_junk by other permission" );
 };
 
 subtest 'mode = list_comment' => sub {
@@ -661,11 +674,13 @@ subtest 'mode = not_junk' => sub {
             __request_method => 'POST',
             __mode           => 'not_junk',
             blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: not_junk" );
-    ok( $out !~ m!Permission denied!i, "not_junk by admin" );
+    ok( $out !~ m!permission=1!i, "not_junk by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -673,11 +688,27 @@ subtest 'mode = not_junk' => sub {
             __request_method => 'POST',
             __mode           => 'not_junk',
             blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: not_junk" );
-    ok( $out !~ m!Permission denied!i, "not_junk by permitted user" );
+    ok( $out !~ m!permission=1!i, "not_junk by permitted user" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'not_junk',
+            blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: not_junk" );
+    ok( $out !~ m!permission=1!i, "not_junk by own entry" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -685,11 +716,13 @@ subtest 'mode = not_junk' => sub {
             __request_method => 'POST',
             __mode           => 'not_junk',
             blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: not_junk" );
-    ok( $out =~ m!Permission denied!i, "not_junk by other blog" );
+    ok( $out =~ m!permission=1!i, "not_junk by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -697,11 +730,13 @@ subtest 'mode = not_junk' => sub {
             __request_method => 'POST',
             __mode           => 'not_junk',
             blog_id          => $blog->id,
+            id               => $comment->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: not_junk" );
-    ok( $out =~ m!Permission denied!i, "not_junk by other permission" );
+    ok( $out =~ m!permission=1!i, "not_junk by other permission" );
 };
 
 subtest 'mode = reply' => sub {

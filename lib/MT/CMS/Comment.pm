@@ -1057,10 +1057,9 @@ sub handle_junk {
     my $blog_id = $app->param('blog_id');
     my ( %rebuild_entries, %rebuild_categories );
 
-    my @obj_ids = $app->param('id');
     if ( my $req_nonce = $app->param('nonce') ) {
-        if ( scalar @obj_ids == 1 ) {
-            my $cmt_id = $obj_ids[0];
+        if ( scalar @ids == 1 ) {
+            my $cmt_id = $ids[0];
             if ( my $obj = $class->load($cmt_id) ) {
                 my $nonce =
                   MT::Util::perl_sha1_digest_hex( $obj->id
@@ -1092,27 +1091,33 @@ sub handle_junk {
         $app->validate_magic() or return;
     }
 
-    my $perms = $app->permissions;
-    my $perm_checked = ( $app->user->is_superuser()
-      || (
-        $app->param('blog_id')
-        && (   $perms->can_manage_feedback
-            || $perms->can_edit_all_posts )
-      ) ) ? 1 : 0;
 
     foreach my $id (@ids) {
         next unless $id;
 
         my $obj = $class->load($id) or die "No $class $id";
+        my $perms = $app->user->permissions($obj->blog_id)
+            or return $app->return_to_dashboard( permission => 1 );
+        my $perm_checked = ( $app->user->is_superuser()
+            || $perms->can_manage_feedback
+            || $perms->can_edit_all_posts ) ? 1 : 0;
+
         my $old_visible = $obj->visible || 0;
         unless ($perm_checked) {
             if ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Entry') ) {
-                next if $obj->parent->author_id != $app->user->id;
+                return $app->return_to_dashboard( permission => 1 )
+                    if $obj->parent->author_id != $app->user->id;
+            }
+            elsif ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Category') ) {
+                return $app->return_to_dashboard( permission => 1 )
+                    unless $perms->can_edit_categories;
             }
             elsif ( $obj->isa('MT::Comment') ) {
-                next if $obj->entry->author_id != $app->user->id;
+                return $app->return_to_dashboard( permission => 1 )
+                    if $obj->entry->author_id != $app->user->id;
             }
-            next unless $perms->can_publish_post;
+            return $app->return_to_dashboard( permission => 1 )
+                unless $perms->can_publish_post;
         }
         $obj->junk;
         $app->run_callbacks( 'handle_spam', $app, $obj )
@@ -1156,25 +1161,30 @@ sub not_junk {
     my $class = $app->model($type);
     my %rebuild_set;
 
-    my $perm_checked = ( $app->user->is_superuser()
-      || (
-        $app->param('blog_id')
-        && (   $perms->can_manage_feedback
-            || $perms->can_edit_all_posts )
-      ) ) ? 1 : 0;
-
     foreach my $id (@ids) {
         next unless $id;
         my $obj = $class->load($id)
             or next;
+        my $perms = $app->user->permissions($obj->blog_id)
+            or return $app->return_to_dashboard( permission => 1 );
+        my $perm_checked = ( $app->user->is_superuser()
+            || $perms->can_manage_feedback
+            || $perms->can_edit_all_posts ) ? 1 : 0;
         unless ($perm_checked) {
             if ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Entry') ) {
-                next if $obj->parent->author_id != $app->user->id;
+                return $app->return_to_dashboard( permission => 1 )
+                    if $obj->parent->author_id != $app->user->id;
+            }
+            elsif ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Category') ) {
+                return $app->return_to_dashboard( permission => 1 )
+                    unless $perms->can_edit_categories;
             }
             elsif ( $obj->isa('MT::Comment') ) {
-                next if $obj->entry->author_id != $app->user->id;
+                return $app->return_to_dashboard( permission => 1 )
+                    if $obj->entry->author_id != $app->user->id;
             }
-            next unless $perms->can_publish_post;
+            return $app->return_to_dashboard( permission => 1 )
+                unless $perms->can_publish_post;
         }
         $obj->approve;
         $app->run_callbacks( 'handle_ham', $app, $obj );
