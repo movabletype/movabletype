@@ -411,10 +411,9 @@ sub handle_junk {
     my $blog_id = $app->param('blog_id');
     my ( %rebuild_entries, %rebuild_categories );
 
-    my @obj_ids = $app->param('id');
     if ( my $req_nonce = $app->param('nonce') ) {
-        if ( scalar @obj_ids == 1 ) {
-            my $cmt_id = $obj_ids[0];
+        if ( scalar @ids == 1 ) {
+            my $cmt_id = $ids[0];
             if ( my $obj = $class->load($cmt_id) ) {
                 my $nonce
                     = MT::Util::perl_sha1_digest_hex( $obj->id
@@ -452,16 +451,24 @@ sub handle_junk {
         next unless $id;
 
         my $obj = $class->load($id) or die "No $class $id";
-        my $perms = $app->user->permissions($obj->blog_id);
+        my $perms = $app->user->permissions($obj->blog_id)
+            or return $app->permission_denied();
         my $old_visible = $obj->visible || 0;
         unless ($perm_checked) {
             if ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Entry') ) {
-                next if $obj->parent->author_id != $app->user->id;
+                return $app->permission_denied()
+                    if $obj->parent->author_id != $app->user->id;
+            }
+            elsif ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Category') ) {
+                return $app->permission_denied()
+                    unless $perms->can_do( 'handle_junk_for_category_trackback' );
             }
             elsif ( $obj->isa('MT::Comment') ) {
-                next if $obj->entry->author_id != $app->user->id;
+                return $app->permission_denied()
+                    if $obj->entry->author_id != $app->user->id;
             }
-            next unless $perms->can_do('handle_junk_for_own_entry');
+            return $app->permission_denied()
+                unless $perms->can_do('handle_junk_for_own_entry');
         }
         $obj->junk;
         $app->run_callbacks( 'handle_spam', $app, $obj )
@@ -510,15 +517,23 @@ sub not_junk {
         next unless $id;
         my $obj = $class->load($id)
             or next;
-        my $perms = $app->user->permissions( $obj->blog_id );
+        my $perms = $app->user->permissions( $obj->blog_id )
+            or return $app->permission_denied();
         unless ($perm_checked) {
             if ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Entry') ) {
-                next if $obj->parent->author_id != $app->user->id;
+                return $app->permission_denied()
+                    if $obj->parent->author_id != $app->user->id;
+            }
+            elsif ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Category') ) {
+                return $app->permission_denied()
+                    unless $perms->can_do( 'handle_junk_for_category_trackback' );
             }
             elsif ( $obj->isa('MT::Comment') ) {
-                next if $obj->entry->author_id != $app->user->id;
+                return $app->permission_denied()
+                    if $obj->entry->author_id != $app->user->id;
             }
-            next unless $perms->can_do('handle_not_junk_for_own_entry');
+            return $app->permission_denied()
+                unless $perms->can_do('handle_not_junk_for_own_entry');
         }
         $obj->approve;
         $app->run_callbacks( 'handle_ham', $app, $obj );
