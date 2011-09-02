@@ -212,6 +212,37 @@ sub _create_commenter_assign_role {
     $commenter;
 }
 
+sub is_valid_redirect_target {
+    my $app = shift;
+    my $static = $app->param('static') || $app->param('return_url') || '';
+    my $target;
+    if ( ( $static eq '' ) || ( $static eq '1' ) ) {
+        require MT::Entry;
+        my $entry = MT::Entry->load( $app->param('entry_id') || 0 )
+            or return $app->error(
+            $app->translate(
+                'Can\'t load entry #[_1].',
+                $app->param('entry_id')
+            )
+            );
+        $target = $entry->archive_url;
+    }
+    else {
+        $target = $static;
+    }
+    $target =~ s!#.*$!!;    # strip off any existing anchor
+
+    require URI;
+    my $redirect_uri = URI->new( $target );
+
+    my $blog_id = $app->param('blog_id');
+    return if !$blog_id || $blog_id =~ /\D/;
+    my $blog = MT::Blog->load($blog_id) or return;
+    my $blog_uri = URI->new( $blog->site_url );
+    return if $blog_uri->host ne $redirect_uri->host;
+    return 1;
+}
+
 sub do_login {
     my $app     = shift;
     my $q       = $app->param;
@@ -220,6 +251,7 @@ sub do_login {
     my $blog    = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+    return $app->errtrans('Invalid request') if !$app->is_valid_redirect_target;
     my $auths = $blog->commenter_authenticators;
     if ( $auths !~ /MovableType/ ) {
         $app->log(
@@ -1468,6 +1500,8 @@ sub redirect_to_target {
     elsif ( $static ne '' ) {
         $target = MT::Util::encode_html($static);
     }
+    $target =~ s!#.*$!!;    # strip off any existing anchor
+
     if ( $q->param('logout') ) {
         if ( $app->user
             && ( 'TypeKey' eq $app->user->auth_type ) )
@@ -1480,7 +1514,6 @@ sub redirect_to_target {
             );
         }
     }
-    $target =~ s!#.*$!!;    # strip off any existing anchor
     my $fragment = $opts{fragment};
     $target .= '#' . $fragment if $opts{fragment};
     return $app->redirect(
