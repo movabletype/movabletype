@@ -167,7 +167,7 @@ sub handle_sign_in {
     unless ($cmntr) {
         return 0;
     }
-    return $cmntr;
+    return ( $cmntr, $session );
 }
 
 sub set_extension_args {

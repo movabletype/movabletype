@@ -1437,6 +1437,7 @@ sub handle_sign_in {
     my $q   = $app->param;
 
     my $result = 0;
+    my $sess;
     if ( $q->param('logout') ) {
         my ( $s, $commenter ) = $app->_get_commenter_session();
 
@@ -1459,13 +1460,15 @@ sub handle_sign_in {
         $result = 1;
     }
     else {
+        return $app->errtrans('Invalid authentication parameter')
+            if !$app->is_valid_redirect_target;
         my $authenticator = MT->commenter_authenticator( $q->param('key') );
         my $auth_class    = $authenticator->{class};
         eval "require $auth_class;";
         if ( my $e = $@ ) {
             return $app->handle_error( $e, 403 );
         }
-        $result = $auth_class->handle_sign_in( $app, $q->param('key') );
+        ( $result, $sess ) = $auth_class->handle_sign_in( $app, $q->param('key') );
     }
 
     return $app->handle_error(
@@ -1473,8 +1476,7 @@ sub handle_sign_in {
             "The sign-in attempt was not successful; please try again."),
         403
     ) unless $result;
-
-    $app->redirect_to_target;
+    $app->redirect_to_target( $sess ? ( fragment => '_login_' . $sess ) : () );
 }
 
 sub redirect_to_target {
