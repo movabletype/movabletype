@@ -1460,6 +1460,33 @@ sub redirect_to_target {
         $target = $entry->archive_url;
     }
     elsif ( $static ne '' ) {
+        my $blog = $app->model('blog')->load( scalar $q->param('blog_id') )
+            or return $app->error(
+            $app->translate(
+                'Can\'t load blog #[_1].', $q->param('blog_id')
+            )
+            );
+
+        my $site_url     = $blog->site_url;
+        my $domain_regex = qr#\A(?:https?:)?//(?:www.)?([^\s'"<>/]+)#i;
+        my ($static_domain) = ( $static   =~ m/$domain_regex/ );
+        my ($site_domain)   = ( $site_url =~ m/$domain_regex/ );
+
+        if (!(     $static_domain
+                && $site_domain
+                && $static_domain eq $site_domain
+            )
+            )
+        {
+            return $app->error(
+                $app->translate(
+                    q{This blog's URL is [_1] . However, You are tried to be redirected to [_2] . Please confirm that the URL to be redirected is appropriate.},
+                    encode_html($site_url),
+                    encode_html($static)
+                )
+            );
+        }
+
         $target = MT::Util::encode_html($static);
     }
     if ( $q->param('logout') ) {
