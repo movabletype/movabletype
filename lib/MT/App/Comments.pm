@@ -34,7 +34,7 @@ sub init {
         preview        => \&preview,
         post           => \&post,
         handle_sign_in => { handler => \&handle_sign_in, charset => 'utf-8' },
-        session_js     => \&session_js,
+        userinfo       => \&userinfo,
         edit_profile   => \&edit_commenter_profile,
         save_profile   => \&save_commenter_profile,
         red            => \&do_red,
@@ -277,8 +277,8 @@ sub do_login {
         }
         MT::Auth->new_login( $app, $commenter );
         if ( $app->_check_commenter_author( $commenter, $blog_id ) ) {
-            $app->make_commenter_session($commenter);
-            return $app->redirect_to_target;
+            my $sid = $app->make_commenter_session($commenter);
+            return $app->redirect_to_target( fragment => '_login_' . $sid );
         }
         $error   = $app->translate("Permission denied.");
         $message = $app->translate(
@@ -1446,10 +1446,10 @@ sub handle_sign_in {
 }
 
 sub redirect_to_target {
-    my $app = shift;
-    my $q   = $app->param;
-
-    my $cfg = $app->config;
+    my $app  = shift;
+    my $q    = $app->param;
+    my %opts = @_;
+    my $cfg  = $app->config;
     my $target;
     require MT::Util;
     my $static = $q->param('static') || $q->param('return_url') || '';
@@ -1481,23 +1481,47 @@ sub redirect_to_target {
         }
     }
     $target =~ s!#.*$!!;    # strip off any existing anchor
+    my $fragment = $opts{fragment};
+    $target .= '#' . $fragment if $opts{fragment};
     return $app->redirect(
-        $target . '#_' . ( $q->param('logout') ? 'logout' : 'login' ),
+        $target,
         UseMeta => 1 );
 }
 
-sub session_js {
+sub userinfo {
     my $app   = shift;
     my $jsonp = $app->param('jsonp');
     $jsonp = undef if $jsonp !~ m/^\w+$/;
     return $app->error("Invalid request.") unless $jsonp;
-
-    my ( $state, $commenter ) = $app->session_state;
-
     $app->{no_print_body} = 1;
     $app->send_http_header("text/javascript");
-    my $json = MT::Util::to_json($state);
-    $app->print_encode( "$jsonp(" . $json . ");\n" );
+
+    my $out = {};
+    {
+        my $sid   = $app->param('sid');
+        my $sess  = MT::Session::get_unexpired_value(MT->config->UserSessionTimeOut, $sid)
+            or last;
+        my $commenter = MT->model('author')->load($sess->thaw_data->{author_id})
+            or last;
+
+        $out = {
+            sid  => $sid,
+            name => $commenter->nickname
+                || $app->translate('(Display Name not set)'),
+            url     => $commenter->url,
+            email   => $commenter->email,
+            userpic => scalar $commenter->userpic_url,
+            profile => "",                               # profile link url
+            is_authenticated => 1,
+            is_author => ( $commenter->type == MT::Author::AUTHOR() ? 1 : 0 ),
+            is_trusted   => 0,
+            is_anonymous => 0,
+            can_post     => 0,
+            can_comment  => 0,
+            is_banned    => 0,
+        };
+    }
+    $app->print_encode( "$jsonp(" . MT::Util::to_json($out) . ");\n" );
     return undef;
 }
 

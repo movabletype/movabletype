@@ -1102,7 +1102,7 @@ function mtSignInOnClick(sign_in_element) {
         el.innerHTML = '<__trans phrase="Signing in..." escape="js"> <span class="status-indicator">&nbsp;</span>';
 
     mtClearUser(); // clear any 'anonymous' user cookie to allow sign in
-    mtFetchUser('mtSetUserOrLogin');
+    mtSignIn();
     return false;
 }
 
@@ -1450,28 +1450,50 @@ window.onload = mtInit;
 
 <mt:IfBlog>
 <mt:IfRegistrationAllowed>
+
+function mtLoggedIn(sid) {
+    sess_id = sid;
+    var script = document.createElement('script');
+    var ts = new Date().getTime();
+    script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=userinfo&jsonp=mtSaveUserInfo&sid=' + sid;
+    (document.getElementsByTagName('head'))[0].appendChild(script);
+}
+
+function mtSaveUserInfo (u) {
+    console.log('Got User Info');
+    console.log(u);
+    var cmtcookie = mtBakeUserCookie(u);
+    var now = new Date();
+    var cache_period = mtCookieTimeout * 1000;
+
+    // cache anonymous user info for a long period if the
+    // user has requested to be remembered
+    mtFixDate(now);
+    now.setTime(now.getTime() + cache_period);
+    mtSetCookie(mtCookieName, cmtcookie, now, mtCookiePath, mtCookieDomain,
+        location.protocol == 'https:');
+    mtShowGreeting();
+}
+
 /***
  * If request contains a '#_login' or '#_logout' hash, use this to
  * also delete the blog-side user cookie, since we're coming back from
  * a login, logout or edit profile operation.
  */
-var clearCookie = ( window.location.hash && window.location.hash.match( /^#_log(in|out)/ ) ) ? true : false;
+
+var hash = ( window.location.hash );
+var clearCookie = ( hash && hash.match( /^#_logout/ ) ) ? true : false;
 if (clearCookie) {
     // clear any logged in state
     mtClearUser();
-    if (RegExp.$1 == 'in')
-        mtFetchUser();
-} else {
-    <mt:Ignore>
-    /***
-     * Uncondition this call to fetch the current user state (if available)
-     * from MT upon page load if no user cookie is already present.
-     * This is okay if you have a private install, such as an Intranet;
-     * not recommended for public web sites!
-     */
-    </mt:Ignore>
-    if ( is_preview && !user )
-        mtFetchUser();
+} else if ( hash && hash.match( /^#_login_(.*)$/ ) ) {
+    var sid = RegExp.$1;
+    mtLoggedIn(sid);
 }
+else {
+    mtUserOnLoad();
+}
+
+
 </mt:IfRegistrationAllowed>
 </mt:IfBlog>
