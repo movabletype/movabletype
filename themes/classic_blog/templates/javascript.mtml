@@ -1063,7 +1063,6 @@ function mtEntryOnUnload() {
     return true;
 }
 
-mtAttachEvent('usersignin', mtUserOnLoad);
 </mt:IfBlog>
 
 <mt:Ignore>
@@ -1182,7 +1181,7 @@ function mtShowGreeting() {
         } else {
             var user_link;
             if ( u.is_author ) {
-                user_link = '<a href="<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile&return_url=' + encodeURIComponent( location.href );
+                user_link = '<a href="<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile&blog_id=<mt:BlogID>&return_url=' + encodeURIComponent( location.href );
                 user_link += '">' + u.name + '</a>';
             } else {
                 // registered user, but not a user with posting rights
@@ -1415,6 +1414,7 @@ function mtInit() {
         window.onload();
         window.onload = function() {};
     }
+    mtInitCommenter();
 }
 
 /* for Mozilla/Opera9 */
@@ -1460,8 +1460,6 @@ function mtLoggedIn(sid) {
 }
 
 function mtSaveUserInfo (u) {
-    console.log('Got User Info');
-    console.log(u);
     var cmtcookie = mtBakeUserCookie(u);
     var now = new Date();
     var cache_period = mtCookieTimeout * 1000;
@@ -1472,28 +1470,43 @@ function mtSaveUserInfo (u) {
     now.setTime(now.getTime() + cache_period);
     mtSetCookie(mtCookieName, cmtcookie, now, mtCookiePath, mtCookieDomain,
         location.protocol == 'https:');
-    mtShowGreeting();
-}
-
-/***
- * If request contains a '#_login' or '#_logout' hash, use this to
- * also delete the blog-side user cookie, since we're coming back from
- * a login, logout or edit profile operation.
- */
-
-var hash = ( window.location.hash );
-var clearCookie = ( hash && hash.match( /^#_logout/ ) ) ? true : false;
-if (clearCookie) {
-    // clear any logged in state
-    mtClearUser();
-} else if ( hash && hash.match( /^#_login_(.*)$/ ) ) {
-    var sid = RegExp.$1;
-    mtLoggedIn(sid);
-}
-else {
     mtUserOnLoad();
 }
 
+function mtInitCommenter () {
+    /***
+     * If request contains a '#_login' or '#_logout' hash, use this to
+     * also delete the blog-side user cookie, since we're coming back from
+     * a login, logout or edit profile operation.
+     */
 
+    var hash = ( window.location.hash );
+    hash.match( /^#_(.*)$/ );
+    var command = RegExp.$1 || '';
+    if ( command === 'refresh' ) {
+        // Back from profile edit screen.
+        // Reload userinfo with current session ID.
+        var u = mtGetUser();
+        user  = null;
+        mtLoggedIn(u.sid);
+    }
+    else if ( command === 'logout' ) {
+        // clear any logged in state
+        mtClearUser();
+        mtUserOnLoad();
+    }
+    else if ( command.match( /^login_(.*)$/ ) ) {
+        var sid = RegExp.$1;
+        mtLoggedIn(sid);
+    }
+    else {
+        mtUserOnLoad();
+    }
+
+    // If hash fragment is command, delete it.
+    if ( command ) {
+        window.location.hash = '';
+    }
+}
 </mt:IfRegistrationAllowed>
 </mt:IfBlog>

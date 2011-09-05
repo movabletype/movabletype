@@ -120,7 +120,7 @@ sub handle_sign_in {
             if ( $mtime > time - $INTERVAL ) {
 
                 # newer than 7 days ago, don't download the userpic
-                return $cmntr;
+                return ( $cmntr, $session );
             }
         }
 

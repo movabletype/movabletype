@@ -1531,20 +1531,20 @@ sub userinfo {
     $app->{no_print_body} = 1;
     $app->send_http_header("text/javascript");
 
-    my $out = {};
+    my $out = { error => 'Failed to get Commenter Information' };
     {
         my $sid   = $app->param('sid');
-        my $sess  = MT::Session::get_unexpired_value(MT->config->UserSessionTimeOut, $sid)
+        my $sess  = MT::Session::get_unexpired_value( MT->config->UserSessionTimeOut, $sid )
             or last;
-        my $commenter = MT->model('author')->load($sess->thaw_data->{author_id})
+        my $commenter = MT->model('author')->load( $sess->thaw_data->{author_id} )
             or last;
 
         $out = {
             sid  => $sid,
             name => $commenter->nickname
                 || $app->translate('(Display Name not set)'),
-            url     => $commenter->url,
-            email   => $commenter->email,
+            url     => $commenter->url || '',
+            email   => $commenter->email || '',
             userpic => scalar $commenter->userpic_url,
             profile => "",                               # profile link url
             is_authenticated => 1,
@@ -1961,8 +1961,6 @@ sub save_commenter_profile {
         return $app->build_page( 'profile.tmpl', \%param );
     }
 
-    my $renew_session = $param{nickname}
-        && ( $param{nickname} ne $cmntr->nickname ) ? 1 : 0;
     $cmntr->nickname( $param{nickname} ) if $param{nickname};
     $cmntr->email( $param{email} )       if $param{email};
     $cmntr->url( $param{url} )           if $param{url};
@@ -1980,9 +1978,6 @@ sub save_commenter_profile {
         $param{error}
             = $app->translate( 'Commenter profile could not be updated: [_1]',
             $cmntr->errstr );
-    }
-    if ($renew_session) {
-        $app->make_commenter_session($cmntr);
     }
     $param{magic_token} = $app->current_magic;
 
