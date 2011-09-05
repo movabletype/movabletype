@@ -719,6 +719,19 @@ sub _load_recursive {
     return $perms;
 }
 
+sub load_permissions_from_action {
+    my $pkg = shift;
+    my ($action) = @_;
+    my $permissions ||= __PACKAGE__->perms_from_registry();
+    my $perms;
+
+    foreach my $p ( keys %$permissions ) {
+        push @$perms, $p
+            if $pkg->_confirm_action( $p, $action, $permissions );
+    }
+    return $perms;
+}
+
 1;
 __END__
 

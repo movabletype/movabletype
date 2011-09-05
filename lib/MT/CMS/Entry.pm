@@ -2182,45 +2182,61 @@ sub open_batch_editor {
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog;
 
-PERMCHECK: {
-        my $action
-            = $type eq 'page'
-            ? 'open_batch_page_editor_via_list'
-            : 'open_batch_entry_editor_via_list';
-        if ($blog_id) {
-            if ( $blog->is_blog ) {
-                last PERMCHECK if $app->can_do($action);
-            }
-            else {
-                my $blogs = $blog->blogs;
-                my $blog_ids;
-                my @map = map { $_->id } @$blogs;
-                push @$blog_ids, map { $_->id } @{ $blog->blogs };
+    my @blog_ids;
+    my $action
+        = $type eq 'page'
+        ? 'open_batch_page_editor_via_list'
+        : 'open_batch_entry_editor_via_list';
+    if ( $blog->is_blog ) {
+        return $app->permission_denied()
+            unless $app->can_do($action);
+        push @blog_ids, $blog_id;
+    }
+    else {
+        my $blogs = $blog->blogs;
+        @blog_ids = map { $_->id } @$blogs;
+        push @blog_ids, $blog->id
+            if $type eq 'page';
+    }
 
-                my $terms = {
-                    author_id => $app->user->id,
-                    ( $blog_ids ? ( blog_id => $blog_ids ) : () ),
-                };
-                my $iter = MT->model('permission')->load_iter($terms);
-                if ($iter) {
-                    my $cond = 1;
-                    while ( my $p = $iter->() ) {
-                        last if !$p->can_do($action);
-                    }
-                    last PERMCHECK if $cond;
-                }
+    if ( !$app->user->is_superuser ) {
+        my $terms = {
+            author_id => $app->user->id,
+            blog_id   => \' = entry_blog_id',
+        };
+        my $perms = MT::Permission->load_permissions_from_action($action);
+        if ($perms) {
+            my @perms_term;
+            foreach my $perm (@$perms) {
+                $perm =~ m/\.(.*)/;
+                push @perms_term, '-or' if @perms_term;
+                push @perms_term, { permissions => { like => "%'$1'%" } };
             }
+            $terms = [ $terms, '-and', \@perms_term, ];
         }
-        else {
-            last PERMCHECK
-                if $app->user->can_do( $action, at_least_one => 1 );
-        }
-        return $app->permission_denied();
+
+        my $cnt = $pkg->count(
+            {   class   => $type,
+                id      => \@ids,
+                blog_id => \@blog_ids
+            },
+            {   join => MT::Permission->join_on(
+                    undef, $terms, { unique => 1, }
+                ),
+                unique => 1,
+            }
+        );
+
+        return $app->permission_denied()
+            if scalar @ids != $cnt;
     }
 
     # Loading objects
-    my $iter = $pkg->load_iter( { id => \@ids },
-        { sort => 'authored_on', direction => 'descend' } );
+    my $iter = $pkg->load_iter(
+        { class => $type, id => \@ids, blog_id => \@blog_ids },
+        { sort => 'authored_on', direction => 'descend' }
+    );
+    local $Data::ObjectDriver::DEBUG = 0;
 
     my $list_pref = $app->list_pref($type);
     my %param     = %$list_pref;
