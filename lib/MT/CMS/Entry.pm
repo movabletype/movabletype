@@ -2529,7 +2529,7 @@ sub can_view {
     }
     if ($id) {
         my $obj = $objp->force();
-        if ( !$perms->can_edit_entry( $obj, $app->user ) ) {
+        if ( !$app->user->permissions( $obj->blog_id )->can_edit_entry( $obj, $app->user ) ) {
             return 0;
         }
     }
