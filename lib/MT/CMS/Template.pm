@@ -1400,9 +1400,21 @@ sub add_map {
 }
 
 sub can_view {
-    my ( $eh, $app, $id ) = @_;
-    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
-    return ($perms && $perms->can_edit_templates) || (!$app->blog && $app->user->can_edit_templates);
+    my ( $eh, $app, $id, $objp ) = @_;
+    return 1 if $app->user->can_edit_templates;
+    return 0 unless $app->blog;
+
+    if ( $id ) {
+        my $obj = $objp->force();
+        return 0
+            unless $app->user->permissions( $obj->blog_id )->can_do('edit_templates');
+    }
+    else {
+        my $perms = $app->permissions;
+        return 0
+            unless $perms->can_do('edit_templates');
+    }
+    return 1;
 }
 
 sub can_save {

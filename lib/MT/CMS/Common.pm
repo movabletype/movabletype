@@ -1270,19 +1270,23 @@ sub list_revision {
     my $id = $q->param('id');
     my $rn = $q->param('r');
 
+    return $app->errtrans('Invalid request')
+        unless $class->isa('MT::Revisable');
+
     $id =~ s/\D//g;
-    my $obj = $class->load( $id )
-        or return $app->error($app->translate('Can\'t load [_1] #[_1].', $class->class_label, $id));
+    require MT::Promise;
+    my $obj_promise = MT::Promise::delay(
+        sub {
+            return $class->load($id) || undef;
+        }
+    );
+
+    $app->run_callbacks( 'cms_view_permission_filter.' . $type,
+            $app, $id, $obj_promise )
+        || return $app->return_to_dashboard( permission => 1 );
+
+    my $obj = $obj_promise->force();
     my $blog = $obj->blog || MT::Blog->load( $q->param('blog_id') ) || undef;
-    my $author = $app->user;
-    return $app->return_to_dashboard( permission => 1 )
-        if $type eq 'entry'
-        ? ( $obj->author_id == $author->id
-                ? !$app->can_do('edit_own_entry')
-                : !$app->can_do('edit_all_entries') )
-        : $type eq 'page'     ? !$app->can_do('edit_all_pages')
-        : $type eq 'template' ? !$app->can_do('edit_templates')
-        : 0;
 
     my $js = "parent.location.href='"
       . $app->uri

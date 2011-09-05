@@ -25,7 +25,19 @@ sub save_pages {
 
 sub can_view {
     my ( $eh, $app, $id, $objp ) = @_;
-    $app->can_do('open_page_edit_screen');
+    my $perms = $app->permissions;
+    if (   !$id
+        && !$perms->can_do('create_new_page') )
+    {
+        return 0;
+    }
+    if ($id) {
+        my $obj = $objp->force();
+        if ( !$app->user->permissions( $obj->blog_id )->can_do('open_page_edit_screen') ) {
+            return 0;
+        }
+    }
+    1;
 }
 
 sub can_save {
