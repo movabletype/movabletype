@@ -1947,6 +1947,7 @@ sub list_revision {
     );
 }
 
+# Currently, not in use.
 sub save_snapshot {
     my $app   = shift;
     my $q     = $app->param;

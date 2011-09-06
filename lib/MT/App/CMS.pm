@@ -59,7 +59,7 @@ sub core_methods {
         'delete'         => "${pkg}Common::delete",
         'search_replace' => "${pkg}Search::search_replace",
         'list_revision'  => "${pkg}Common::list_revision",
-        'save_snapshot'  => "${pkg}Common::save_snapshot",
+        # 'save_snapshot'  => "${pkg}Common::save_snapshot", # Currently, not in use.
 
         ## Edit methods
         'edit_role'   => "${pkg}User::edit_role",
