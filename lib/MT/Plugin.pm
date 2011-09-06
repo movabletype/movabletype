@@ -79,13 +79,18 @@ sub load_config {
 sub save_config {
     my $plugin = shift;
     my ( $param, $scope ) = @_;
+    my $app = MT->instance;
     my $pdata = $plugin->get_config_obj($scope);
-    $scope =~ s/:.*//;
-    my @vars = $plugin->config_vars($scope);
+    my $vars_scope = $scope;
+    $vars_scope =~ s/:.*//;
+    my @vars = $plugin->config_vars($vars_scope);
     my $data = $pdata->data() || {};
     foreach (@vars) {
         $data->{$_} = exists $param->{$_} ? $param->{$_} : undef;
     }
+    $app->run_callbacks( 'save_config_filter.' . $pdata->plugin, $plugin, $data, $scope )
+        || return $app->error("Error saving plugin settings: " . $plugin->errstr );
+    
     $pdata->data($data);
     MT->request( 'plugin_config.' . $plugin->id, undef );
     $pdata->save() or die $pdata->errstr;
@@ -906,6 +911,25 @@ them, use the C<translate_templatized> method of the plugin object.
     $tmpl = $plugin->load_tmpl("my_template.tmpl");
     $tmpl->param(\%param);
     my $html = $plugin->translate_templatized($tmpl->output());
+
+=head1 CALLBACKS
+
+=over 4
+
+=item save_config_filter.<plugin key>
+
+This filter callback will be called before saving new configuration of
+a plugin, giving the plugin a chance to inspect and reject it, if
+there is some error in it. The callback has the following signature:
+
+    sub save_config_filter($cb, $plugin, $data, $scope)
+    {
+        ...
+    }
+
+return true if this config is ok, false if it is to be rejected
+
+=back
 
 =head1 MT::PluginSettings
 
