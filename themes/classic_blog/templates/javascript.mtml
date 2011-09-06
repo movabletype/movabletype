@@ -1474,7 +1474,7 @@ function mtSaveUserInfo (u) {
     now.setTime(now.getTime() + cache_period);
     mtSetCookie(mtCookieName, cmtcookie, now, mtCookiePath, mtCookieDomain,
         location.protocol == 'https:');
-    mtUserOnLoad();
+    mtFireEvent('usersignin');
 }
 
 function mtInitCommenter () {
@@ -1497,14 +1497,14 @@ function mtInitCommenter () {
     else if ( command === 'logout' ) {
         // clear any logged in state
         mtClearUser();
-        mtUserOnLoad();
+        mtFireEvent('usersignin');
     }
     else if ( command.match( /^login_(.*)$/ ) ) {
         var sid = RegExp.$1;
-        mtLoggedIn(sid);
+         mtLoggedIn(sid);
     }
     else {
-        mtUserOnLoad();
+        mtFireEvent('usersignin');
     }
 
     // If hash fragment is command, delete it.
