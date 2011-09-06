@@ -918,9 +918,10 @@ function mtFetchUser(cb) {
         // we aren't using AJAX for this, since we may have to request
         // from a different domain. JSONP to the rescue.
         mtFetchedUser = true;
+        var u = mtGetUser();
         var script = document.createElement('script');
         var ts = new Date().getTime();
-        script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=session_js&blog_id=<$mt:BlogID$>&jsonp=' + cb + '&ts=' + ts;
+        script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=userinfo&blog_id=<$mt:BlogID$>&jsonp=' + cb + '&ts=' + ts + '&sid=' + u.sid;
         (document.getElementsByTagName('head'))[0].appendChild(script);
     }
 }
@@ -1071,7 +1072,6 @@ function mtEntryOnUnload() {
     return true;
 }
 
-mtAttachEvent('usersignin', mtUserOnLoad);
 </mt:IfBlog>
 
 <mt:Ignore>
@@ -1110,7 +1110,7 @@ function mtSignInOnClick(sign_in_element) {
         el.innerHTML = '<__trans phrase="Signing in..." escape="js"> <span class="status-indicator">&nbsp;</span>';
 
     mtClearUser(); // clear any 'anonymous' user cookie to allow sign in
-    mtFetchUser('mtSetUserOrLogin');
+    mtSignIn();
     return false;
 }
 
@@ -1190,7 +1190,7 @@ function mtShowGreeting() {
         } else {
             var user_link;
             if ( u.is_author ) {
-                user_link = '<a href="<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile&return_url=' + encodeURIComponent( location.href );
+                user_link = '<a href="<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile&blog_id=<mt:BlogID>&return_url=' + encodeURIComponent( location.href );
                 user_link += '">' + u.name + '</a>';
             } else {
                 // registered user, but not a user with posting rights
@@ -1423,6 +1423,11 @@ function mtInit() {
         window.onload();
         window.onload = function() {};
     }
+<mt:IfBlog>
+<mt:IfRegistrationAllowed>
+    mtInitCommenter();
+</mt:IfRegistrationAllowed>
+</mt:IfBlog>
 }
 
 /* for Mozilla/Opera9 */
@@ -1458,28 +1463,63 @@ window.onload = mtInit;
 
 <mt:IfBlog>
 <mt:IfRegistrationAllowed>
-/***
- * If request contains a '#_login' or '#_logout' hash, use this to
- * also delete the blog-side user cookie, since we're coming back from
- * a login, logout or edit profile operation.
- */
-var clearCookie = ( window.location.hash && window.location.hash.match( /^#_log(in|out)/ ) ) ? true : false;
-if (clearCookie) {
-    // clear any logged in state
-    mtClearUser();
-    if (RegExp.$1 == 'in')
-        mtFetchUser();
-} else {
-    <mt:Ignore>
+
+function mtLoggedIn(sid) {
+    sess_id = sid;
+    var script = document.createElement('script');
+    var ts = new Date().getTime();
+    script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=userinfo&jsonp=mtSaveUserInfo&sid=' + sid;
+    (document.getElementsByTagName('head'))[0].appendChild(script);
+}
+
+function mtSaveUserInfo (u) {
+    var cmtcookie = mtBakeUserCookie(u);
+    var now = new Date();
+    var cache_period = mtCookieTimeout * 1000;
+
+    // cache anonymous user info for a long period if the
+    // user has requested to be remembered
+    mtFixDate(now);
+    now.setTime(now.getTime() + cache_period);
+    mtSetCookie(mtCookieName, cmtcookie, now, mtCookiePath, mtCookieDomain,
+        location.protocol == 'https:');
+    mtFireEvent('usersignin');
+}
+
+function mtInitCommenter () {
     /***
-     * Uncondition this call to fetch the current user state (if available)
-     * from MT upon page load if no user cookie is already present.
-     * This is okay if you have a private install, such as an Intranet;
-     * not recommended for public web sites!
+     * If request contains a '#_login' or '#_logout' hash, use this to
+     * also delete the blog-side user cookie, since we're coming back from
+     * a login, logout or edit profile operation.
      */
-    </mt:Ignore>
-    if ( is_preview && !user )
-        mtFetchUser();
+
+    var hash = ( window.location.hash );
+    hash.match( /^#_(.*)$/ );
+    var command = RegExp.$1 || '';
+    if ( command === 'refresh' ) {
+        // Back from profile edit screen.
+        // Reload userinfo with current session ID.
+        var u = mtGetUser();
+        user  = null;
+        mtLoggedIn(u.sid);
+    }
+    else if ( command === 'logout' ) {
+        // clear any logged in state
+        mtClearUser();
+        mtFireEvent('usersignin');
+    }
+    else if ( command.match( /^login_(.*)$/ ) ) {
+        var sid = RegExp.$1;
+         mtLoggedIn(sid);
+    }
+    else {
+        mtFireEvent('usersignin');
+    }
+
+    // If hash fragment is command, delete it.
+    if ( command ) {
+        window.location.hash = '';
+    }
 }
 </mt:IfRegistrationAllowed>
 </mt:IfBlog>
