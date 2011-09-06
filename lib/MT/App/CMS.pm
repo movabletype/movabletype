@@ -2093,6 +2093,16 @@ sub init_core_callbacks {
                 $app->error( $app->translate("Invalid request.") );
             },
 
+            # blocklist
+            $pkg
+                . 'save_permission_filter.blocklist' => sub {
+                $app->error( $app->translate("Invalid request.") );
+            },
+            $pkg
+                . 'delete_permission_filter.blocklist' => sub {
+                $app->error( $app->translate("Invalid request.") );
+            },
+
             # config
             $pkg
                 . 'save_permission_filter.config' => sub {
@@ -2150,6 +2160,16 @@ sub init_core_callbacks {
             },
             $pkg
                 . 'delete_permission_filter.permission' => sub {
+                $app->error( $app->translate("Invalid request.") );
+            },
+
+            # plaement
+            $pkg
+                . 'save_permission_filter.plugindata' => sub {
+                $app->error( $app->translate("Invalid request.") );
+            },
+            $pkg
+                . 'delete_permission_filter.plugindata' => sub {
                 $app->error( $app->translate("Invalid request.") );
             },
 
