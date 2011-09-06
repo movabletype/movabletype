@@ -1440,6 +1440,19 @@ sub grant_role {
 sub dialog_select_author {
     my $app = shift;
 
+    my $blog = $app->blog;
+    return $app->errtrans('Invalid request')
+        unless $blog;
+
+    my $entry_type = $app->param('entry_type') if $app->param('entry_type');
+    $entry_type ||= 'entry';
+    my $action = $entry_type eq 'page'
+        ? 'access_to_page_list'
+        : 'access_to_entry_list';
+
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->can_do($action);
+
     my $hasher = sub {
         my ( $obj, $row ) = @_;
         $row->{label}       = $row->{name};
@@ -1448,10 +1461,6 @@ sub dialog_select_author {
 
     my %hash = $app->param_hash();
 
-    my $entry_type = $app->param('entry_type') if $app->param('entry_type');
-    $entry_type ||= 'entry';
-
-    my $blog = $app->blog;
     my @blog_ids;
     if ( !$blog->is_blog && $app->param('include_child') ) {
         my $blogs = $blog->blogs;
@@ -1793,7 +1802,8 @@ PERMCHECK: {
                                 my $data = $panel_params->{object_loop}
                                     ||= [];
                                 unshift @$data, $pseudo_user_row;
-                                splice( @$data, $limit );
+                                splice( @$data, $limit )
+                                    if scalar @$data > $limit;
                                 $count = 1;
                             }
                         }
