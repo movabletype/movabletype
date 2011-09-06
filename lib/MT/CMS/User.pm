@@ -1258,6 +1258,11 @@ sub grant_role {
 
 sub dialog_select_author {
     my $app = shift;
+    my $blog_id = $app->param('blog_id')
+        or $app->errtrans('Invalid request');
+    my $perms = $app->permissions;
+    $app->return_to_dashboard( permission => 1 )
+        if !$app->user->is_superuser && !$perms->can_edit_all_posts;
 
     my $hasher = sub {
         my ( $obj, $row ) = @_;
