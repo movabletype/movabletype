@@ -910,9 +910,10 @@ function mtFetchUser(cb) {
         // we aren't using AJAX for this, since we may have to request
         // from a different domain. JSONP to the rescue.
         mtFetchedUser = true;
+        var u = mtGetUser();
         var script = document.createElement('script');
         var ts = new Date().getTime();
-        script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=session_js&blog_id=<$mt:BlogID$>&jsonp=' + cb + '&ts=' + ts;
+        script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=userinfo&blog_id=<$mt:BlogID$>&jsonp=' + cb + '&ts=' + ts + '&sid=' + u.sid;
         (document.getElementsByTagName('head'))[0].appendChild(script);
     }
 }
