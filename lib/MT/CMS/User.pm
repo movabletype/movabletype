@@ -1259,10 +1259,22 @@ sub grant_role {
 sub dialog_select_author {
     my $app = shift;
     my $blog_id = $app->param('blog_id')
-        or $app->errtrans('Invalid request');
-    my $perms = $app->permissions;
-    $app->return_to_dashboard( permission => 1 )
-        if !$app->user->is_superuser && !$perms->can_edit_all_posts;
+        or return $app->errtrans('Invalid request');
+    my $type = $app->param('_type') || 'entry';
+    if ( !$app->user->is_superuser ) {
+        my $perms = $app->permissions;
+        if ( $type eq 'entry' ) {
+            return $app->return_to_dashboard( permission => 1 )
+                unless $perms->can_edit_all_posts;
+        }
+        elsif ( $type eq 'page' ) {
+            return $app->return_to_dashboard( permission => 1 )
+                unless $perms->can_manage_pages;
+        }
+        else {
+            return $app->errtrans('Invalid request');
+        }
+    }
 
     my $hasher = sub {
         my ( $obj, $row ) = @_;
@@ -1280,7 +1292,9 @@ sub dialog_select_author {
                 sort => 'name',
                 join => MT::Permission->join_on(
                     'author_id',
-                    {   permissions => "\%'create_post'\%",
+                    {   ( $type eq 'entry' ? ( permissions => "\%'create_post'\%" )
+                        : $type eq 'page' ? ( permissions => "\%'manage_pages'\%" )
+                        : () ),
                         blog_id     => $app->blog->id,
                     },
                     { 'like' => { 'permissions' => 1 } }
