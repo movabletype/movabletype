@@ -845,6 +845,10 @@ sub grant_role {
 sub dialog_select_author {
     my $app = shift;
 
+    my $blog = $app->blog;
+    return $app->errtrans('Invalid request')
+        unless $blog;
+
     my $hasher = sub {
         my ( $obj, $row ) = @_;
         $row->{label}       = $row->{name};
@@ -856,7 +860,6 @@ sub dialog_select_author {
     my $entry_type = $app->param('entry_type') if $app->param('entry_type');
     $entry_type ||= 'entry';
 
-    my $blog = $app->blog;
     my @blog_ids;
     if ( !$blog->is_blog && $app->param('include_child') ) {
         my $blogs = $blog->blogs;
@@ -866,6 +869,19 @@ sub dialog_select_author {
     }
     push @blog_ids, $blog->id
         if ( !$blog->is_blog && $entry_type eq 'page' ) || ( $blog->is_blog );
+
+    if ( !$app->user->is_superuser ) {
+        my @ids = map { $_->id } @{$blog->blogs}
+            if !$blog->is_blog;
+        push @ids, $blog->id;
+        my $ok;
+        foreach ( @ids ) {
+            $ok = 1
+                if $app->user->permissions( $_ )->can_do( 'open_select_author_dialog' );
+        }
+        return $app->permission_denied
+            unless $ok;
+    }
 
     $app->listing(
         {   type  => 'author',
