@@ -2798,6 +2798,14 @@ sub init_core_callbacks {
                 . 'pre_load_filtered_list.log' =>
                 "${pfx}Log::cms_pre_load_filtered_list",
             'list_template_param.log' => "${pfx}Log::template_param_list",
+
+            # role
+            $pkg
+                . 'save_permission_filter.role' =>
+                "${pfx}User::can_save_role",
+            $pkg
+                . 'delete_permission_filter.role' =>
+                "${pfx}User::can_delete_role",
         }
     );
 }
