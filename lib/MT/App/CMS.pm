@@ -2788,6 +2788,7 @@ sub init_core_callbacks {
             $pkg . 'pre_save.asset'     => "${pfx}Asset::pre_save",
             $pkg . 'post_save.asset'    => "${pfx}Asset::post_save",
             $pkg . 'post_delete.asset'  => "${pfx}Asset::post_delete",
+            $pkg . 'save_filter.asset'  => "${pfx}Asset::cms_save_filter",
             'template_param.edit_asset' => "${pfx}Asset::template_param_edit",
             $pkg
                 . 'pre_load_filtered_list.asset' =>
