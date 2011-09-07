@@ -2343,6 +2343,117 @@ sub core_user_menus {
     };
 }
 
+sub core_disable_object_methods {
+    my $app = shift;
+    return {
+        association => {
+            edit => 1,
+            save => 1,
+        },
+        banlist   => { edit => 1, },
+        blocklist => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        config => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        fileinfo => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        log => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        notification => { edit => 1, },
+        objectasset  => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        objectscore => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        objecttag => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        permission => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        placement => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        plugindata => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        session => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        tag => {
+            save => 1,
+            edit => 1,
+        },
+        templatemap => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        touch => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        trackback => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        ts_error => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        ts_exitstatus => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        ts_funcmap => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        ts_job => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        role => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+    };
+}
+
 sub init_core_callbacks {
     my $app = shift;
     my $pkg = 'cms_';
@@ -2383,10 +2494,6 @@ sub init_core_callbacks {
             $pkg
                 . 'delete_permission_filter.association' =>
                 "${pfx}User::can_delete_association",
-            $pkg
-                . 'save_permission_filter.association' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
             $pkg
                 . 'pre_load_filtered_list.association' =>
                 "${pfx}User::cms_pre_load_filtered_list_assoc",
@@ -2663,10 +2770,6 @@ sub init_core_callbacks {
             $pkg
                 . 'pre_load_filtered_list.tag' =>
                 "${pfx}Tag::cms_pre_load_filtered_list",
-            $pkg
-                . 'save_permission_filter.tag' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
 
             # junk-related callbacks
             #'HandleJunk' => \&_builtin_spam_handler,
@@ -2695,193 +2798,6 @@ sub init_core_callbacks {
                 . 'pre_load_filtered_list.log' =>
                 "${pfx}Log::cms_pre_load_filtered_list",
             'list_template_param.log' => "${pfx}Log::template_param_list",
-            $pkg
-                . 'save_permission_filter.log' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.log' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # blocklist
-            $pkg
-                . 'save_permission_filter.blocklist' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.blocklist' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # config
-            $pkg
-                . 'save_permission_filter.config' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.config' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # fileinfo
-            $pkg
-                . 'save_permission_filter.fileinfo' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.fileinfo' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # objectasset
-            $pkg
-                . 'save_permission_filter.objectasset' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.objectasset' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # objectscore
-            $pkg
-                . 'save_permission_filter.objectscore' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.objectscore' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # objecttag
-            $pkg
-                . 'save_permission_filter.objecttag' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.objecttag' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # permission
-            $pkg
-                . 'save_permission_filter.permission' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.permission' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # plaement
-            $pkg
-                . 'save_permission_filter.placement' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.placement' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # plugindata
-            $pkg
-                . 'save_permission_filter.plugindata' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.plugindata' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # session
-            $pkg
-                . 'save_permission_filter.session' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.session' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # templatemap
-            $pkg
-                . 'save_permission_filter.templatemap' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.templatemap' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # touch
-            $pkg
-                . 'save_permission_filter.touch' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.touch' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # trackback
-            $pkg
-                . 'save_permission_filter.trackback' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.trackback' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # ts_error
-            $pkg
-                . 'save_permission_filter.ts_error' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.ts_error' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # ts_exitstatus
-            $pkg
-                . 'save_permission_filter.ts_exitstatus' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.ts_exitstatus' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # ts_funcmap
-            $pkg
-                . 'save_permission_filter.ts_funcmap' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.ts_funcmap' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # ts_job
-            $pkg
-                . 'save_permission_filter.ts_job' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.ts_job' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # role
-            $pkg
-                . 'save_permission_filter.role' =>
-                "${pfx}User::can_save_role",
-            $pkg
-                . 'delete_permission_filter.role' =>
-                "${pfx}User::can_delete_role",
-
         }
     );
 }
