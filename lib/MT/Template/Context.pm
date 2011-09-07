@@ -152,6 +152,7 @@ sub var {
         elsif (lc($1) eq 'config') {
             my $setting = $2;
             return '' if $setting =~ m/password/i;
+            return '' if $setting =~ m/secret/i;
             return MT->config($setting);
         }
         return '';
