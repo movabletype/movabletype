@@ -130,7 +130,7 @@ sub set_password {
 sub is_valid_password {
     my $author = shift;
     my($pass, $crypted, $error_ref) = @_;
-    $pass ||= '';
+    $pass = '' unless length($pass);
     require MT::Auth;
     return MT::Auth->is_valid_password($author, $pass, $crypted, $error_ref);
 }

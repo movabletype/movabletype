@@ -1985,7 +1985,7 @@ sub save_filter {
     return 1 if ( $pref ne 'MT' );
     if ( !$app->param('id') ) {    # it's a new object
         return $eh->error( $app->translate("User requires password") )
-            if ( !$app->param('pass') );
+            if ( 0 == length( scalar $app->param('pass') ) );
     }
     my $email = $app->param('email');
     return $eh->error(
@@ -2022,7 +2022,7 @@ sub pre_save {
     $obj->type( MT::Author::AUTHOR() );
 
     my $pass = $app->param('pass');
-    if ($pass) {
+    if (length($pass)) {
         $obj->set_password($pass);
     }
     elsif ( !$obj->id ) {
