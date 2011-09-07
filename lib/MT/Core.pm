@@ -2412,6 +2412,7 @@ sub load_core_permissions {
                 'get_entry_feed'                   => 1,
                 'save_multiple_entries'            => 1,
                 'open_select_author_dialog'        => 1,
+                'send_update_pings_entry'          => 1,
             }
         },
         'blog.edit_assets' => {
@@ -2597,6 +2598,7 @@ sub load_core_permissions {
                 'publish_page_via_list'           => 1,
                 'view_all_comments'               => 1,
                 'open_select_author_dialog'       => 1,
+                'send_update_pings_pages'         => 1,
             }
         },
         'blog.manage_users' => {
@@ -2666,6 +2668,7 @@ sub load_core_permissions {
                 'use_tools:search'                      => 1,
                 'reply_comment_from_cms'                => 1,
                 'edit_comment_status_of_own_entry'      => 1,
+                'send_update_pings_entry'               => 1,
             }
         },
         'blog.rebuild' => {

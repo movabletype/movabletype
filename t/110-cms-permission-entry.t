@@ -147,6 +147,10 @@ my $entry = MT::Test::Permission->make_entry(
     blog_id        => $blog->id,
     author_id      => $ichikawa->id,
 );
+my $entry2 = MT::Test::Permission->make_entry(
+    blog_id        => $blog->id,
+    author_id      => $shimoda->id,
+);
 
 # Page
 my $page = MT::Test::Permission->make_page(
@@ -851,6 +855,18 @@ subtest 'mode = save_entries' => sub {
 };
 
 subtest 'mode = ping' => sub {
+    $entry = MT::Test::Permission->make_entry(
+        blog_id        => $blog->id,
+        author_id      => $ichikawa->id,
+    );
+    $entry2 = MT::Test::Permission->make_entry(
+        blog_id        => $blog->id,
+        author_id      => $shimoda->id,
+    );
+    $page = MT::Test::Permission->make_page(
+        blog_id        => $blog->id,
+        author_id      => $egawa->id,
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -862,20 +878,20 @@ subtest 'mode = ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ping" );
-    ok( $out !~ m!Permission denied!i, "ping by admin" );
+    ok( $out !~ m!permission=1!i, "ping by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ichikawa,
+        {   __test_user      => $shimoda,
             __request_method => 'POST',
             __mode           => 'ping',
             blog_id          => $blog->id,
-            entry_id         => $entry->id,
+            entry_id         => $entry2->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ping" );
-    ok( $out !~ m!Permission denied!i, "ping by permitted user (create_post)" );
+    ok( $out !~ m!permission=1!i, "ping by permitted user (publish_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -888,7 +904,7 @@ subtest 'mode = ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ping" );
-    ok( $out !~ m!Permission denied!i, "ping by permitted user (edit_all_posts)" );
+    ok( $out !~ m!permission=1!i, "ping by permitted user (edit_all_posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -901,7 +917,7 @@ subtest 'mode = ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ping" );
-    ok( $out =~ m!Permission denied!i, "ping by other user" );
+    ok( $out =~ m!permission=1!i, "ping by other user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -914,7 +930,7 @@ subtest 'mode = ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ping" );
-    ok( $out =~ m!Permission denied!i, "ping by other permission" );
+    ok( $out =~ m!permission=1!i, "ping by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -927,7 +943,7 @@ subtest 'mode = ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ping" );
-    ok( $out =~ m!Permission denied!i, "ping by other blog" );
+    ok( $out =~ m!permission=1!i, "ping by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -940,11 +956,11 @@ subtest 'mode = ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ping" );
-    ok( $out =~ m!Permission denied!i, "ping by type mismatch" );
+    ok( $out =~ m!permission=1!i, "ping by type mismatch (page)" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ichikawa,
+        {   __test_user      => $shimoda,
             __request_method => 'POST',
             __mode           => 'ping',
             blog_id          => $blog->id,
@@ -953,7 +969,9 @@ subtest 'mode = ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ping" );
-    ok( $out =~ m!Permission denied!i, "ping by type mismatch" );
+    ok( $out =~ m!permission=1!i, "ping by type mismatch (entry)" );
+
+    done_testing();
 };
 
 subtest 'mode = edit' => sub {
