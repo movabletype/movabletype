@@ -147,6 +147,10 @@ my $entry = MT::Test::Permission->make_entry(
     blog_id        => $blog->id,
     author_id      => $ichikawa->id,
 );
+my $entry2 = MT::Test::Permission->make_entry(
+    blog_id        => $blog->id,
+    author_id      => $shimoda->id,
+);
 
 # Page
 my $page = MT::Test::Permission->make_page(
@@ -170,7 +174,7 @@ subtest 'mode = cfg_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_entry" );
-    ok( $out !~ m!permission=1!i, "cfg_entry by admin" ); #TODO: should use 'Permission Denied' instead
+    ok( $out !~ m!permission=1!i, "cfg_entry by admin" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -182,7 +186,7 @@ subtest 'mode = cfg_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_entry" );
-    ok( $out !~ m!permission=1!i, "cfg_entry by permitted user" ); #TODO: should use 'Permission Denied' instead
+    ok( $out !~ m!permission=1!i, "cfg_entry by permitted user" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -194,7 +198,7 @@ subtest 'mode = cfg_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_entry" );
-    ok( $out =~ m!permission=1!i, "cfg_entry by other blog" ); #TODO: should use 'Permission Denied' instead
+    ok( $out =~ m!permission=1!i, "cfg_entry by other blog" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -206,7 +210,7 @@ subtest 'mode = cfg_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_entry" );
-    ok( $out =~ m!permission=1!i, "cfg_entry by other permission" ); #TODO: should use 'Permission Denied' instead
+    ok( $out =~ m!permission=1!i, "cfg_entry by other permission" ); 
 };
 
 subtest 'mode = delete_entry' => sub {
@@ -397,7 +401,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out !~ m!permission=1!i, "pinged_urls by admin" ); #TODO: should use 'Permission Denied' instead
+    ok( $out !~ m!permission=1!i, "pinged_urls by admin" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -410,7 +414,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out !~ m!permission=1!i, "pinged_urls by permitted user (create_post)" ); #TODO: should use 'Permission Denied' instead
+    ok( $out !~ m!permission=1!i, "pinged_urls by permitted user (create_post)" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -423,7 +427,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out !~ m!permission=1!i, "pinged_urls by permitted user (edit_all_posts)" ); #TODO: should use 'Permission Denied' instead
+    ok( $out !~ m!permission=1!i, "pinged_urls by permitted user (edit_all_posts)" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -436,7 +440,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out !~ m!permission=1!i, "pinged_urls by permitted user (manage_page)" ); #TODO: should use 'Permission Denied' instead
+    ok( $out !~ m!permission=1!i, "pinged_urls by permitted user (manage_page)" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -449,7 +453,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out =~ m!permission=1!i, "pinged_urls by other user" ); #TODO: should use 'Permission Denied' instead
+    ok( $out =~ m!permission=1!i, "pinged_urls by other user" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -462,7 +466,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out =~ m!permission=1!i, "pinged_urls by other permission" ); #TODO: should use 'Permission Denied' instead
+    ok( $out =~ m!permission=1!i, "pinged_urls by other permission" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -475,7 +479,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out =~ m!permission=1!i, "pinged_urls by other blog" ); #TODO: should use 'Permission Denied' instead
+    ok( $out =~ m!permission=1!i, "pinged_urls by other blog" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -488,7 +492,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out =~ m!permission=1!i, "pinged_urls by type mismatch" ); #TODO: should use 'Permission Denied' instead
+    ok( $out =~ m!permission=1!i, "pinged_urls by type mismatch" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -501,7 +505,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out =~ m!permission=1!i, "pinged_urls by type mismatch" ); #TODO: should use 'Permission Denied' instead
+    ok( $out =~ m!permission=1!i, "pinged_urls by type mismatch" ); 
 };
 
 subtest 'mode = preview_entry' => sub {
@@ -516,7 +520,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out !~ m!redirect=1!i, "preview_entry by admin" ); #TODO: should use 'Permission Denied' instead
+    ok( $out !~ m!redirect=1!i, "preview_entry by admin" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -529,7 +533,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out !~ m!redirect=1!i, "preview_entry by permitted user (create_post)" ); #TODO: should use 'Permission Denied' instead
+    ok( $out !~ m!redirect=1!i, "preview_entry by permitted user (create_post)" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -542,7 +546,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out !~ m!redirect=1!i, "preview_entry by permitted user (edit_all_posts)" ); #TODO: should use 'Permission Denied' instead
+    ok( $out !~ m!redirect=1!i, "preview_entry by permitted user (edit_all_posts)" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -555,7 +559,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out !~ m!redirect=1!i, "preview_entry by permitted user (manage_page)" ); #TODO: should use 'Permission Denied' instead
+    ok( $out !~ m!redirect=1!i, "preview_entry by permitted user (manage_page)" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -568,7 +572,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out =~ m!redirect=1!i, "preview_entry by other user" ); #TODO: should use 'Permission Denied' instead
+    ok( $out =~ m!redirect=1!i, "preview_entry by other user" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -581,7 +585,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out =~ m!redirect=1!i, "preview_entry by other permission" ); #TODO: should use 'Permission Denied' instead
+    ok( $out =~ m!redirect=1!i, "preview_entry by other permission" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -594,7 +598,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out =~ m!redirect=1!i, "preview_entry by other blog" ); #TODO: should use 'Permission Denied' instead
+    ok( $out =~ m!redirect=1!i, "preview_entry by other blog" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -607,7 +611,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out =~ m!redirect=1!i, "preview_entry by type mismatch" ); #TODO: should use 'Permission Denied' instead
+    ok( $out =~ m!redirect=1!i, "preview_entry by type mismatch" ); 
 
     $app = _run_app(
         'MT::App::CMS',
@@ -620,7 +624,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out =~ m!redirect=1!i, "preview_entry by type mismatch" ); #TODO: should use 'Permission Denied' instead
+    ok( $out =~ m!redirect=1!i, "preview_entry by type mismatch" ); 
 };
 
 subtest 'mode = save_entry' => sub {
@@ -851,6 +855,18 @@ subtest 'mode = save_entries' => sub {
 };
 
 subtest 'mode = ping' => sub {
+    $entry = MT::Test::Permission->make_entry(
+        blog_id        => $blog->id,
+        author_id      => $ichikawa->id,
+    );
+    $entry2 = MT::Test::Permission->make_entry(
+        blog_id        => $blog->id,
+        author_id      => $shimoda->id,
+    );
+    $page = MT::Test::Permission->make_page(
+        blog_id        => $blog->id,
+        author_id      => $egawa->id,
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -862,20 +878,20 @@ subtest 'mode = ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ping" );
-    ok( $out !~ m!Permission denied!i, "ping by admin" );
+    ok( $out !~ m!permission=1!i, "ping by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ichikawa,
+        {   __test_user      => $shimoda,
             __request_method => 'POST',
             __mode           => 'ping',
             blog_id          => $blog->id,
-            entry_id         => $entry->id,
+            entry_id         => $entry2->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ping" );
-    ok( $out !~ m!Permission denied!i, "ping by permitted user (create_post)" );
+    ok( $out !~ m!permission=1!i, "ping by permitted user (publish_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -888,7 +904,7 @@ subtest 'mode = ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ping" );
-    ok( $out !~ m!Permission denied!i, "ping by permitted user (edit_all_posts)" );
+    ok( $out !~ m!permission=1!i, "ping by permitted user (edit_all_posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -901,7 +917,7 @@ subtest 'mode = ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ping" );
-    ok( $out =~ m!Permission denied!i, "ping by other user" );
+    ok( $out =~ m!permission=1!i, "ping by other user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -914,7 +930,7 @@ subtest 'mode = ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ping" );
-    ok( $out =~ m!Permission denied!i, "ping by other permission" );
+    ok( $out =~ m!permission=1!i, "ping by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -927,7 +943,7 @@ subtest 'mode = ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ping" );
-    ok( $out =~ m!Permission denied!i, "ping by other blog" );
+    ok( $out =~ m!permission=1!i, "ping by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -940,11 +956,11 @@ subtest 'mode = ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ping" );
-    ok( $out =~ m!Permission denied!i, "ping by type mismatch" );
+    ok( $out =~ m!permission=1!i, "ping by type mismatch" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ichikawa,
+        {   __test_user      => $shimoda,
             __request_method => 'POST',
             __mode           => 'ping',
             blog_id          => $blog->id,
@@ -953,7 +969,9 @@ subtest 'mode = ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ping" );
-    ok( $out =~ m!Permission denied!i, "ping by type mismatch" );
+    ok( $out =~ m!permission=1!i, "ping by type mismatch" );
+
+    done_testing();
 };
 
 subtest 'mode = edit' => sub {
@@ -969,7 +987,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!permission=1!i, "edit by admin" ); #TODO: should use 'Permission Denied' instead
+    ok( $out !~ m!permission=1!i, "edit by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -983,7 +1001,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!permission=1!i, "edit by permitted user (create_post)" ); #TODO: should use 'Permission Denied' instead
+    ok( $out !~ m!permission=1!i, "edit by permitted user (create_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -997,7 +1015,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!permission=1!i, "edit by permitted user (edit_all_posts)" ); #TODO: should use 'Permission Denied' instead
+    ok( $out !~ m!permission=1!i, "edit by permitted user (edit_all_posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1011,7 +1029,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!permission=1!i, "edit by other user" ); #TODO: should use 'Permission Denied' instead
+    ok( $out =~ m!permission=1!i, "edit by other user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1025,7 +1043,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!permission=1!i, "edit by other permission" ); #TODO: should use 'Permission Denied' instead
+    ok( $out =~ m!permission=1!i, "edit by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1039,7 +1057,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!permission=1!i, "edit by other blog" ); #TODO: should use 'Permission Denied' instead
+    ok( $out =~ m!permission=1!i, "edit by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1053,7 +1071,9 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!permission=1!i, "edit by type mismatch" ); #TODO: should use 'Permission Denied' instead
+    ok( $out =~ m!permission=1!i, "edit by type mismatch" );
+
+    done_testing();
 };
 
 subtest 'action = set_draft' => sub {

@@ -1032,6 +1032,7 @@ sub load_core_permissions {
                 'set_entry_draft_via_list'         => 1,
                 'use_entry:manage_menu'            => 1,
                 'use_tools:search'                 => 1,
+                'send_update_pings_entry'          => 1,
             }
         },
         'blog.edit_assets' => {
@@ -1204,6 +1205,7 @@ sub load_core_permissions {
                 'set_page_draft_via_list'         => 1,
                 'use_tools:search'                => 1,
                 'open_blog_listing_screen'        => 1,
+                'send_update_pings_page'          => 1,
             }
         },
         'blog.manage_users' => {
@@ -1264,6 +1266,7 @@ sub load_core_permissions {
                 'unapprove_comments_via_list'           => 1,
                 'unapprove_trackbacks_via_list'         => 1,
                 'use_tools:search'                      => 1,
+                'send_update_pings_entry'               => 1,
             }
         },
         'blog.rebuild' => {

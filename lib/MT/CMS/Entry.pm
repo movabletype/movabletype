@@ -1909,8 +1909,15 @@ sub send_pings {
     $app->validate_magic() or return;
     require MT::Entry;
     require MT::Blog;
-    my $blog  = MT::Blog->load( scalar $q->param('blog_id') );
-    my $entry = MT::Entry->load( scalar $q->param('entry_id') );
+    my $blog  = MT::Blog->load( scalar $q->param('blog_id') )
+        or return $app->errtrans('Invalid request');
+    my $entry = MT::Entry->load( scalar $q->param('entry_id') )
+        or return $app->errtrans('Invalid request');
+
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->user->permissions( $entry->blog->id )
+            ->can_do( 'send_update_pings_' . $entry->class );
+
     ## MT::ping_and_save pings each of the necessary URLs, then processes
     ## the return value from MT::ping to update the list of URLs pinged
     ## and not successfully pinged. It returns the return value from
