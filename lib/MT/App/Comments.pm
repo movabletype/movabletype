@@ -34,7 +34,7 @@ sub init {
         preview          => \&preview,
         post             => \&post,
         handle_sign_in   => \&handle_sign_in,
-        session_js       => \&session_js,
+        userinfo         => \&userinfo,
         edit_profile     => \&edit_commenter_profile,
         save_profile     => \&save_commenter_profile,
         red              => \&do_red,
@@ -208,6 +208,37 @@ sub _create_commenter_assign_role {
     $commenter;
 }
 
+sub is_valid_redirect_target {
+    my $app = shift;
+    my $static = $app->param('static') || $app->param('return_url') || '';
+    my $target;
+    if ( ( $static eq '' ) || ( $static eq '1' ) ) {
+        require MT::Entry;
+        my $entry = MT::Entry->load( $app->param('entry_id') || 0 )
+            or return $app->error(
+            $app->translate(
+                'Can\'t load entry #[_1].',
+                $app->param('entry_id')
+            )
+            );
+        $target = $entry->archive_url;
+    }
+    else {
+        $target = $static;
+    }
+    $target =~ s!#.*$!!;    # strip off any existing anchor
+
+    require URI;
+    my $redirect_uri = URI->new( $target );
+
+    my $blog_id = $app->param('blog_id');
+    return if !$blog_id || $blog_id =~ /\D/;
+    my $blog = MT::Blog->load($blog_id) or return;
+    my $blog_uri = URI->new( $blog->site_url );
+    return if $blog_uri->host ne $redirect_uri->host;
+    return 1;
+}
+
 sub do_login {
     my $app     = shift;
     my $q       = $app->param;
@@ -216,6 +247,7 @@ sub do_login {
     my $blog    = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+    return $app->errtrans('Invalid request') if !$app->is_valid_redirect_target;
     my $auths = $blog->commenter_authenticators;
     if ( $auths !~ /MovableType/ ) {
         $app->log(
@@ -273,8 +305,8 @@ sub do_login {
         }
         MT::Auth->new_login( $app, $commenter );
         if ( $app->_check_commenter_author( $commenter, $blog_id ) ) {
-            $app->make_commenter_session($commenter);
-            return $app->redirect_to_target;
+            my $sid = $app->make_commenter_session($commenter);
+            return $app->redirect_to_target( fragment => '_login_' . $sid );
         }
         $error   = $app->translate("Permission denied.");
         $message = $app->translate(
@@ -1399,6 +1431,7 @@ sub handle_sign_in {
     my $q   = $app->param;
 
     my $result = 0;
+    my $sess;
     if ( $q->param('logout') ) {
         my ( $s, $commenter ) = $app->_get_commenter_session();
 
@@ -1421,13 +1454,15 @@ sub handle_sign_in {
         $result = 1;
     }
     else {
+        return $app->errtrans('Invalid authentication parameter')
+            if !$app->is_valid_redirect_target;
         my $authenticator = MT->commenter_authenticator( $q->param('key') );
         my $auth_class    = $authenticator->{class};
         eval "require $auth_class;";
         if ( my $e = $@ ) {
             return $app->handle_error( $e, 403 );
         }
-        $result = $auth_class->handle_sign_in( $app, $q->param('key') );
+        ( $result, $sess ) = $auth_class->handle_sign_in( $app, $q->param('key') );
     }
 
     return $app->handle_error(
@@ -1435,15 +1470,14 @@ sub handle_sign_in {
             "The sign-in attempt was not successful; please try again."),
         403
     ) unless $result;
-
-    $app->redirect_to_target;
+    $app->redirect_to_target( $sess ? ( fragment => '_login_' . $sess ) : () );
 }
 
 sub redirect_to_target {
-    my $app = shift;
-    my $q   = $app->param;
-
-    my $cfg = $app->config;
+    my $app  = shift;
+    my $q    = $app->param;
+    my %opts = @_;
+    my $cfg  = $app->config;
     my $target;
     require MT::Util;
     my $static = $q->param('static') || $q->param('return_url') || '';
@@ -1489,6 +1523,8 @@ sub redirect_to_target {
 
         $target = MT::Util::encode_html($static);
     }
+    $target =~ s!#.*$!!;    # strip off any existing anchor
+
     if ( $q->param('logout') ) {
         if ( $app->user
             && ( 'TypeKey' eq $app->user->auth_type ) )
@@ -1501,24 +1537,47 @@ sub redirect_to_target {
             );
         }
     }
-    $target =~ s!#.*$!!;    # strip off any existing anchor
+    my $fragment = $opts{fragment};
+    $target .= '#' . $fragment if $opts{fragment};
     return $app->redirect(
-        $target . '#_' . ( $q->param('logout') ? 'logout' : 'login' ),
+        $target,
         UseMeta => 1 );
 }
 
-sub session_js {
+sub userinfo {
     my $app   = shift;
     my $jsonp = $app->param('jsonp');
     $jsonp = undef if $jsonp !~ m/^\w+$/;
     return $app->error("Invalid request.") unless $jsonp;
-
-    my ( $state, $commenter ) = $app->session_state;
-
     $app->{no_print_body} = 1;
     $app->send_http_header("text/javascript");
-    my $json = MT::Util::to_json($state);
-    $app->print( "$jsonp(" . $json . ");\n" );
+
+    my $out = { error => 'Failed to get Commenter Information' };
+    {
+        my $sid   = $app->param('sid');
+        my $sess  = MT::Session::get_unexpired_value( MT->config->UserSessionTimeOut, $sid )
+            or last;
+        my $commenter = MT->model('author')->load( $sess->thaw_data->{author_id} )
+            or last;
+
+        $out = {
+            sid  => $sid,
+            name => $commenter->nickname
+                || $app->translate('(Display Name not set)'),
+            url     => $commenter->url || '',
+            email   => $commenter->email || '',
+            userpic => scalar $commenter->userpic_url,
+            profile => "",                               # profile link url
+            is_authenticated => 1,
+            is_author => ( $commenter->type == MT::Author::AUTHOR() ? 1 : 0 ),
+            is_trusted   => 0,
+            is_anonymous => 0,
+            can_post     => 0,
+            can_comment  => 0,
+            is_banned    => 0,
+        };
+    }
+    $app->print( "$jsonp(" . MT::Util::to_json($out) . ");\n" );
     return undef;
 }
 
@@ -1854,8 +1913,6 @@ sub save_commenter_profile {
         return $app->build_page( 'profile.tmpl', \%param );
     }
 
-    my $renew_session = $param{nickname}
-        && ( $param{nickname} ne $cmntr->nickname ) ? 1 : 0;
     $cmntr->nickname( $param{nickname} ) if $param{nickname};
     $cmntr->email( $param{email} )       if $param{email};
     $cmntr->url( $param{url} )           if $param{url};
@@ -1872,9 +1929,6 @@ sub save_commenter_profile {
         $param{error}
             = $app->translate( 'Commenter profile could not be updated: [_1]',
             $cmntr->errstr );
-    }
-    if ($renew_session) {
-        $app->make_commenter_session($cmntr);
     }
     $param{magic_token} = $app->current_magic;
 

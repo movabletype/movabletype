@@ -105,11 +105,19 @@
 
 </form>
 
-<mt:if name="entry_url">
-<p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<mt:var name="entry_url" escape="html">#_login"></p>
-<mt:elseif name="return_url">
-<p><__trans phrase="Return to the <a href="[_1]">original page</a>." params="<mt:var name="return_url" escape="html">#_login"></p>
-</mt:else></mt:if>
+<mt:if name="saved">
+  <mt:if name="entry_url">
+  <p class="auth-option-info"><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<mt:var name="entry_url" escape="html" regex_replace="/#.*$/","">#_refresh"></p>
+  <mt:elseif name="return_url">
+  <p class="auth-option-info"><__trans phrase="Return to the <a href="[_1]">original page</a>." params="<mt:var name="return_url" escape="html" regex_replace="/#.*$/","">#_refresh"></p>
+  </mt:if>
+<mt:else>
+  <mt:if name="entry_url">
+  <p class="auth-option-info"><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<mt:var name="entry_url" escape="html">"></p>
+  <mt:elseif name="return_url">
+  <p class="auth-option-info"><__trans phrase="Return to the <a href="[_1]">original page</a>." params="<mt:var name="return_url" escape="html">"></p>
+  </mt:if>
+</mt:if>
 
 <mt:include name="include/chromeless_footer.tmpl">
 

@@ -103,7 +103,7 @@ sub handle_sign_in {
             my $mtime = $stat[9];
             if ( $mtime > time - $INTERVAL ) {
                 # newer than 7 days ago, don't download the userpic
-                return $cmntr;
+                return ( $cmntr, $session );
             }
         }
 
@@ -144,7 +144,7 @@ sub handle_sign_in {
     unless ($cmntr) {
         return 0;
     }
-    return $cmntr;
+    return ( $cmntr, $session );
 }
 
 sub set_extension_args {
