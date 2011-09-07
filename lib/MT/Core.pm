@@ -639,6 +639,7 @@ BEGIN {
                     require MT::Import;
                     return MT::Import->core_import_formats();
                 },
+                disable_object_methods => sub { MT->app->core_disable_object_methods() },
             },
         },
         archive_types => \&load_archive_types,
