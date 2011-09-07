@@ -1015,6 +1015,14 @@ sub save {
     );
 }
 
+sub cms_save_filter {
+    my ( $cb, $app ) = @_;
+    if ( $app->param('file_name') || $app->param('file_path') ) {
+        return $app->errtrans("Invalid request.")
+    }
+    1;
+}
+
 sub _set_start_upload_params {
     my $app = shift;
     my ($param) = @_;
