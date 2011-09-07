@@ -75,7 +75,7 @@ sub handle_sign_in {
     if ($q->param('sig') && !$cmntr) {
         return 0;
     }
-    return $cmntr;
+    return ( $cmntr, $session );
 }
 
 my $SIG_WINDOW = 60 * 10;  # ten minute handoff between TP and MT
