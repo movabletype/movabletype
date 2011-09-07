@@ -587,6 +587,7 @@ BEGIN {
                     return MT::Import->core_import_formats();
                 },
                 compose_menus   =>sub { MT->app->core_compose_menus() },
+                disable_object_methods => sub { MT->app->core_disable_object_methods() },
             },
             upgrade => {
                 handler         => 'MT::App::Upgrader',

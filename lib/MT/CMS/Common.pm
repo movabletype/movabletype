@@ -26,6 +26,10 @@ sub save {
         return $app->forward($save_mode);
     }
 
+    my $reg = $app->registry('disable_object_methods', $type);
+    return $app->errtrans("Invalid request.")
+        if $reg && $reg->{save};
+
     my $id = $q->param('id');
     $q->param( 'allow_pings', 0 )
       if ( $type eq 'category' ) && !defined( $q->param('allow_pings') );
@@ -488,6 +492,10 @@ sub edit {
         return $app->forward($edit_mode, @_);
     }
 
+    my $reg = $app->registry('disable_object_methods', $type);
+    return $app->errtrans("Invalid request.")
+        if $reg && $reg->{edit};
+
     my %param = eval { $_[0] ? %{ $_[0] } : (); };
     die Carp::longmess if $@;
     my $class = $app->model($type) or return;
@@ -946,6 +954,10 @@ sub delete {
     if ( my $hdlrs = $app->handlers_for_mode($delete_mode) ) {
         return $app->forward($delete_mode);
     }
+
+    my $reg = $app->registry('disable_object_methods', $type);
+    return $app->errtrans("Invalid request.")
+        if $reg && $reg->{delete};
 
     my $parent  = $q->param('parent');
     my $blog_id = $q->param('blog_id');
