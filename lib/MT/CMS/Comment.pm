@@ -659,7 +659,7 @@ sub do_reply {
         }
     );
     return $app->build_page( 'dialog/comment_reply.tmpl',
-        { closing => 1, return_url => $q->param('return_url') } );
+        { closing => 1, return_url => scalar( $q->param('return_url') ) } );
 }
 
 sub reply_preview {
