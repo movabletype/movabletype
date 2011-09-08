@@ -1324,7 +1324,7 @@ sub dialog_select_weblog {
                 panel_description => $app->translate("Description"),
                 panel_type        => 'blog',
                 panel_multi       => defined $app->param('multi')
-                ? $app->param('multi')
+                ? scalar( $app->param('multi') )
                 : 0,
                 panel_searchable => 1,
                 panel_first      => 1,
