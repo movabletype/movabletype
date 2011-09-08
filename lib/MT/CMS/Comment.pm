@@ -678,7 +678,7 @@ sub reply_preview {
         reply_to    => $q->param('reply_to'),
         magic_token => $app->current_magic,
         blog_id     => $q->param('blog_id'),
-        return_url  => $q->param('return_url'),
+        return_url  => scalar( $q->param('return_url') ),
     };
     my ( $comment, $parent, $entry ) = _prepare_reply($app);
     return unless $comment;
