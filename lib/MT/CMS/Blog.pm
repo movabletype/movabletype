@@ -573,7 +573,13 @@ sub rebuild_phase {
     elsif ( $type eq 'template' ) {
         require MT::Template;
         foreach (@ids) {
-            my $template = MT::Template->load($_);
+            my $template = MT::Template->load($_)
+                or return $app->errtrans( 'Can\'t load template #[_1].', $_ );
+
+            my $perms = $app->user->permissions( $template->blog_id );
+            return $app->errtrans('Permission denied.')
+                unless $perms && $perms->can_rebuild;
+
             $app->rebuild_indexes(
                 Template => $template,
                 Force    => 1
