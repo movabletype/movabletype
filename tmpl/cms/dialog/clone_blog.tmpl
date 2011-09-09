@@ -10,7 +10,7 @@
         <input type="hidden" name="__mode" value="dialog_clone_blog" />
         <input type="hidden" name="id" value="<mt:var name="id">" />
         <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-        <input type="hidden" name="new_blog_name" value="<mt:var name="new_blog_name">" />
+        <input type="hidden" name="new_blog_name" value="<mt:var name="new_blog_name" escape="html">" />
         <mt:if name="site_url_path">
         <input type="hidden" name="site_url_subdomain" value="<mt:var name="site_url_subdomain">" />
         <input type="hidden" name="site_url_path" value="<mt:var name="site_url_path">" />
