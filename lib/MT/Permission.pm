@@ -415,6 +415,9 @@ sub can_edit_entry {
             or return;
     }
 
+    $perms = $author->permissions( $entry->blog_id )
+        or return;
+
     if ( !$entry->is_entry ) {
         return $perms->can_manage_pages;
     }
