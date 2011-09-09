@@ -474,8 +474,8 @@ sub complete_insert {
         fname       => $asset->file_name,
         is_image    => $args{is_image} || 0,
         url         => $asset->url,
-        middle_path => $app->param('middle_path') || '',
-        extra_path  => $app->param('extra_path') || '',
+        middle_path => scalar( $app->param('middle_path') ) || '',
+        extra_path  => scalar( $app->param('extra_path') ) || '',
     };
     for my $field (
         qw( direct_asset_insert edit_field entry_insert site_path
@@ -1136,11 +1136,11 @@ sub _upload_file {
     my $has_overwrite = $q->param('overwrite_yes')
         || $q->param('overwrite_no');
     my %param = (
-        entry_insert => $q->param('entry_insert'),
-        middle_path  => $q->param('middle_path'),
-        edit_field   => $q->param('edit_field'),
-        site_path    => $q->param('site_path'),
-        extra_path   => $q->param('extra_path'),
+        entry_insert => scalar( $q->param('entry_insert') ),
+        middle_path  => scalar( $q->param('middle_path') ),
+        edit_field   => scalar( $q->param('edit_field') ),
+        site_path    => scalar( $q->param('site_path') ),
+        extra_path   => scalar( $q->param('extra_path') ),
         upload_mode  => $app->mode,
     );
     return start_upload( $app, %param,
