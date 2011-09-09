@@ -4457,6 +4457,12 @@ sub rebuild_these {
         require MT::Entry;
         for my $id (@set) {
             my $e = ref $id ? $id : MT::Entry->load($id) or next;
+
+            my $perms = $app->user->permissions( $e->blog_id );
+            return $app->permission_denied()
+                unless $perms
+                    && $perms->can_republish_entry( $e, $app->user );
+
             my $type = $e->class;
 
             # Rebuilding something that isn't an entry, rebless as required

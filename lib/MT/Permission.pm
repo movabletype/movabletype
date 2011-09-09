@@ -512,6 +512,33 @@ sub can_edit_entry {
     }
 }
 
+sub can_republish_entry {
+    my $perms = shift;
+    my ( $entry, $author ) = @_;
+    die unless $author->isa('MT::Author');
+    return 1 if $author->is_superuser();
+    unless ( ref $entry ) {
+        require MT::Entry;
+        $entry = MT::Entry->load($entry)
+            or return;
+    }
+
+    $perms = $author->permissions( $entry->blog_id )
+        or return;
+
+    return 1
+        if $perms->can_do('rebuild');
+
+    return $perms->can_do('manage_pages')
+        unless $entry->is_entry;
+
+    return
+           $perms->can_do('edit_all_entries')
+        || $perms->can_do('manage_feedback')
+        || ( $entry->author_id == $author->id
+        && $perms->can_do('publish_own_entry') );
+}
+
 sub can_upload {
     my $perms = shift;
     if (@_) {
@@ -974,6 +1001,16 @@ is always true if C<$author> is a superuser or can edit all posts or
 is a blog administrator for the blog that contains the entry. Otherwise,
 it returns true if the author has permission to post and the entry was
 authored by that author, false otherwise.
+
+The C<$entry> parameter can either be a I<MT::Entry> object or an entry id.
+
+=head2 $perms->can_republish_entry($entry, $author)
+
+Returns true if the C<$author> has rights to republish entry C<$entry>.
+This is always true if C<$author> is a superuser or can edit all posts or
+can rebuild or can manage feedback or is a blog administrator for the blog
+that contains the entry. Otherwise, it returns true if the author has
+permission to post and the entry was authored by that author, false otherwise.
 
 The C<$entry> parameter can either be a I<MT::Entry> object or an entry id.
 
