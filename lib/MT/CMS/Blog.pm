@@ -691,7 +691,10 @@ sub rebuild_pages {
             unless $perms->can_do('rebuild');
         my $tmpl_id = $1;
         require MT::Template;
-        $tmpl_saved = MT::Template->load($tmpl_id);
+        $tmpl_saved
+            = MT::Template->load( { id => $tmpl_id, blog_id => $blog_id } )
+            or
+            return $app->errtrans( 'Can\'t load template #[_1].', $tmpl_id );
         $app->rebuild_indexes(
             BlogID   => $blog_id,
             Template => $tmpl_saved,

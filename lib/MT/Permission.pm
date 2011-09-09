@@ -488,12 +488,15 @@ sub can_edit_entry {
         $entry = MT::Entry->load($entry)
             or return;
     }
-    return $author->permissions( $entry->blog_id )->can_manage_pages
+
+    $perms = $author->permissions( $entry->blog_id )
+        or return;
+
+    return $perms->can_manage_pages
         unless $entry->is_entry;
 
     return 1
-        if $author->permissions( $entry->blog_id )
-            ->can_do('edit_all_entries');
+        if $perms->can_do('edit_all_entries');
 
     my $own_entry = $entry->author_id == $author->id;
 
