@@ -1740,6 +1740,9 @@ sub set_item_visible {
     my $author = $app->user;
 
     my $type    = $app->param('_type');
+    return $app->errtrans("Invalid request.")
+        unless grep {$_ eq $type} qw{comment ping tbping ping_cat};
+
     my $class   = $app->model($type);
     my @obj_ids = $app->param('id');
 
