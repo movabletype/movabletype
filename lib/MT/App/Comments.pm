@@ -858,13 +858,13 @@ sub post {
         or return $app->error(
         $app->translate(
             "No such entry '[_1]'.",
-            scalar $q->param('entry_id')
+            encode_html($entry_id)
         )
         );
     return $app->error(
         $app->translate(
             "No such entry '[_1]'.",
-            scalar $q->param('entry_id')
+            encode_html($entry_id)
         )
     ) if $entry->status != RELEASE;
 
