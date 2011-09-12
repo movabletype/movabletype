@@ -1250,6 +1250,8 @@ sub save {
         return $app->errtrans("Permission denied.")
           unless ( ( 'entry' eq $type ) && $perms->can_create_post )
           || ( ( 'page' eq $type ) && $perms->can_manage_pages );
+        return $app->errtrans("Invalid request.")
+          unless ( ( 'entry' eq $type ) || ( 'page' eq $type ) )
     }
 
     # check for autosave
@@ -1281,6 +1283,9 @@ sub save {
         }
         elsif ( $type eq 'page' ) {
             $archive_type = 'Page';
+        }
+        else {
+            return $app->errtrans("Invalid request.");
         }
         $orig_obj = $obj->clone;
         $orig_file = archive_file_for( $orig_obj, $blog, $archive_type );
