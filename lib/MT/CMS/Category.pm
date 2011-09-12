@@ -467,7 +467,7 @@ sub js_add_category {
     my $original = $obj->clone;
 
     if (!$app->run_callbacks(
-            'cms_save_permission.' . $type,
+            'cms_save_permission_filter.' . $type,
             $app, $obj, $original
         )
         )
