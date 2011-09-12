@@ -316,7 +316,7 @@ sub js_add_category {
 
     if (
         !$app->run_callbacks(
-            'cms_save_permission.' . $type,
+            'cms_save_permission_filter.' . $type,
             $app, $obj, $original
         )
       )
