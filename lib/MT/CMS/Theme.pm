@@ -6,7 +6,7 @@
 package MT::CMS::Theme;
 
 use strict;
-use MT::Util qw( remove_html dirify is_valid_url encode_js );
+use MT::Util qw( remove_html dirify is_valid_url encode_html );
 use MT::Theme;
 use File::Spec;
 
@@ -121,9 +121,9 @@ sub dialog_select_theme {
         current => $current );
     $param{theme_loop} = $list;
     $param{theme_json} = { map { $_->{theme_id} => {
-        label       => encode_js( 'CODE' eq ref $_->{label} ? $_->{label}->()
+        label       => encode_html( 'CODE' eq ref $_->{label} ? $_->{label}->()
                                                    : $_->{label} ),
-        description => encode_js($_->{description}),
+        description => encode_html($_->{description}),
         thumb       => $_->{thumbnail_url},
         thumb_w     => $_->{thumb_w},
         thumb_h     => $_->{thumb_h},
