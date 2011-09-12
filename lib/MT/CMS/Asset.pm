@@ -589,15 +589,19 @@ sub complete_upload {
     require MT::Asset;
     $param{id} && ( $asset = MT::Asset->load( $param{id} ) )
         or return $app->errtrans("Invalid request.");
-    $asset->label( $param{label} )             if $param{label};
-    $asset->description( $param{description} ) if $param{description};
-    if ( $param{tags} ) {
-        require MT::Tag;
-        my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
-        my @tags = MT::Tag->split( $tag_delim, $param{tags} );
-        $asset->set_tags(@tags);
+
+    if ( $app->can('edit_assets') || $asset->created_by == $app->user->id ) {
+        $asset->label( $param{label} )             if $param{label};
+        $asset->description( $param{description} ) if $param{description};
+        if ( $param{tags} ) {
+            require MT::Tag;
+            my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
+            my @tags = MT::Tag->split( $tag_delim, $param{tags} );
+            $asset->set_tags(@tags);
+        }
+        $asset->save();
     }
-    $asset->save();
+
     $asset->on_upload( \%param );
 
     my $perms = $app->permissions;
