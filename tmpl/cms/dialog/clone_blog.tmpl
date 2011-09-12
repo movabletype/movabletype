@@ -8,24 +8,24 @@
         <h3><__trans phrase="Blog Details"></h3>
         <input type="hidden" name="clone" value="1" />
         <input type="hidden" name="__mode" value="dialog_clone_blog" />
-        <input type="hidden" name="id" value="<mt:var name="id">" />
+        <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
         <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
         <input type="hidden" name="new_blog_name" value="<mt:var name="new_blog_name" escape="html">" />
         <mt:if name="site_url_path">
-        <input type="hidden" name="site_url_subdomain" value="<mt:var name="site_url_subdomain">" />
-        <input type="hidden" name="site_url_path" value="<mt:var name="site_url_path">" />
-        <input type="hidden" name="use_subdomain" value="<mt:var name="use_subdomain">" />
+        <input type="hidden" name="site_url_subdomain" value="<mt:var name="site_url_subdomain" escape="html">" />
+        <input type="hidden" name="site_url_path" value="<mt:var name="site_url_path" escape="html">" />
+        <input type="hidden" name="use_subdomain" value="<mt:var name="use_subdomain" escape="html">" />
         <mt:else>
-        <input type="hidden" name="site_url" value="<mt:var name="site_url">" />
+        <input type="hidden" name="site_url" value="<mt:var name="site_url" escape="html">" />
         </mt:if>
-        <input type="hidden" name="site_path" value="<mt:var name="site_path">" />
-        <input type="hidden" name="overwrite" value="<mt:var name="overwrite">" />
+        <input type="hidden" name="site_path" value="<mt:var name="site_path" escape="html">" />
+        <input type="hidden" name="overwrite" value="<mt:var name="overwrite" escape="html">" />
         <input type="hidden" name="clone_prefs_entries_pages" value="<mt:var name="clone_prefs_entries_pages" escape="html">" />
-        <input type="hidden" name="clone_prefs_comments" value="<mt:var name="clone_prefs_comments">" />
-        <input type="hidden" name="clone_prefs_trackbacks" value="<mt:var name="clone_prefs_trackbacks">" />
-        <input type="hidden" name="clone_prefs_categories" value="<mt:var name="clone_prefs_categories">" />
+        <input type="hidden" name="clone_prefs_comments" value="<mt:var name="clone_prefs_comments" escape="html">" />
+        <input type="hidden" name="clone_prefs_trackbacks" value="<mt:var name="clone_prefs_trackbacks" escape="html">" />
+        <input type="hidden" name="clone_prefs_categories" value="<mt:var name="clone_prefs_categories" escape="html">" />
 <mt:unless name="clone_prefs_input"></mt:unless>
-        <input type="hidden" name="parent_id" value="<mt:var name="parent_id">" />
+        <input type="hidden" name="parent_id" value="<mt:var name="parent_id" escape="html">" />
 
         <mtapp:setting
             id="blog-name"
