@@ -1422,6 +1422,9 @@ sub save {
             return $app->permission_denied()
                 unless $perms->can_do('create_new_entry');
         }
+        else {
+            return $app->errtrans("Invalid request.");
+        }
     }
     else {
         if ( $type eq 'page' ) {
@@ -1460,6 +1463,9 @@ sub save {
         }
         elsif ( $type eq 'page' ) {
             $archive_type = 'Page';
+        }
+        else {
+            return $app->errtrans("Invalid request.");
         }
         $orig_obj = $obj->clone;
         $orig_file = archive_file_for( $orig_obj, $blog, $archive_type );
