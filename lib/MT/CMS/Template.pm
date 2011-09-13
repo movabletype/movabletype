@@ -1283,31 +1283,40 @@ sub delete_map {
 
 sub add_map {
     my $app = shift;
+
     $app->validate_magic() or return;
-    my $perms = $app->{perms}
-      or return $app->error( $app->translate("No permissions") );
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
+    return $app->error( $app->translate('No permissions') )
+        unless $app->user->is_superuser
+            || $perms->can_administer_blog
+            || $perms->can_edit_templates;
 
     my $q = $app->param;
 
     require MT::TemplateMap;
-    my $blog_id = $q->param('blog_id');
-    my $at      = $q->param('new_archive_type');
-    my $exist   = MT::TemplateMap->exist(
-        {
-            blog_id      => $blog_id,
+    my $blog_id     = $q->param('blog_id');
+    my $template_id = $q->param('template_id');
+    my $at          = $q->param('new_archive_type');
+    my $exist       = MT::TemplateMap->exist(
+        {   blog_id      => $blog_id,
             archive_type => $at
         }
     );
+
+    $app->model('template')
+        ->load( { id => $template_id, blog_id => $blog_id } )
+        or
+        return $app->errtrans( 'Can\'t load template #[_1].', $template_id );
+
     my $map = MT::TemplateMap->new;
     $map->is_preferred( $exist ? 0 : 1 );
-    $map->template_id( scalar $q->param('template_id') );
+    $map->template_id($template_id);
     $map->blog_id($blog_id);
     $map->archive_type($at);
     $map->save
       or return $app->error(
         $app->translate( "Saving map failed: [_1]", $map->errstr ) );
-    my $html =
-      _generate_map_table( $app, $blog_id, scalar $q->param('template_id') );
+    my $html = _generate_map_table( $app, $blog_id, $template_id );
     $app->{no_print_body} = 1;
     $app->send_http_header("text/plain");
     $app->print($html);
