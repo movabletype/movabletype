@@ -2133,6 +2133,8 @@ sub pinged_urls {
     my $entry = MT::Entry->load($entry_id)
         or return $app->error(
         $app->translate( 'Can\'t load entry #[_1].', $entry_id ) );
+    return $app->errtrans("Invalid request.")
+        unless $entry->blog_id == $app->blog->id;
     my $author = $app->user;
     return $app->permission_denied()
         if $entry->class eq 'entry'
