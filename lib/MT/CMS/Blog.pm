@@ -1115,7 +1115,8 @@ sub rebuild_confirm {
 
     if ( my $tmpl_id = $app->param('tmpl_id') ) {
         require MT::Template;
-        my $tmpl = MT::Template->load($tmpl_id)
+        my $tmpl
+            = MT::Template->load( { id => $tmpl_id, blog_id => $blog_id } )
             or return $app->error($app->translate('Can\'t load template #[_1].', $tmpl_id));
         $param{index_tmpl_id}   = $tmpl->id;
         $param{index_tmpl_name} = $tmpl->name;
