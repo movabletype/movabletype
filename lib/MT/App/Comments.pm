@@ -1906,6 +1906,11 @@ sub save_commenter_profile {
             $param{error} = $app->translate('Passwords do not match.');
             return $app->build_page( 'profile.tmpl', \%param );
         }
+        require MT::Auth;
+        unless (MT::Auth->is_valid_password($cmntr, scalar($q->param('old_pass')))) {
+            $param{error} = $app->translate('Failed to verify current password.');
+            return $app->build_page( 'profile.tmpl', \%param );
+        }
     }
     my $email = $param{email};
     if ( $email && !is_valid_email($email) ) {
