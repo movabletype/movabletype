@@ -1582,18 +1582,26 @@ sub _populate_archive_loop {
 
 sub delete_map {
     my $app = shift;
+
     $app->validate_magic() or return;
-    my $perms = $app->{perms}
-        or return $app->error( $app->translate("No permissions") );
-    my $q  = $app->param;
-    my $id = $q->param('id');
+    return $app->error( $app->translate('No permissions') )
+        unless $app->can_do('edit_templates');
+
+    my $q           = $app->param;
+    my $id          = $q->param('id');
+    my $blog_id     = $q->param('blog_id');
+    my $template_id = $q->param('template_id');
+
+    $app->model('template')
+        ->load( { id => $template_id, blog_id => $blog_id } )
+        or
+        return $app->errtrans( 'Can\'t load template #[_1].', $template_id );
 
     require MT::TemplateMap;
-    my $map = MT::TemplateMap->load( { id => $id } )
-        or return $app->error( $app->translate('Can\'t load templatemap') );
+    my $map = MT::TemplateMap->load( { id => $id, blog_id => $blog_id } )
+        or return $app->errtrans('Can\'t load templatemap');
     $map->remove;
-    my $html = _generate_map_table( $app, $q->param('blog_id'),
-        $q->param('template_id') );
+    my $html = _generate_map_table( $app, $blog_id, $template_id );
     $app->{no_print_body} = 1;
     $app->send_http_header("text/plain");
     $app->print_encode($html);
