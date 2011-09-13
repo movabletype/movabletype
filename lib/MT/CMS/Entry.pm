@@ -2261,14 +2261,14 @@ sub update_entry_status {
     require MT::Entry;
 
     my $app_author = $app->user;
-    my $perms      = $app->permissions;
 
     foreach my $id (@ids) {
         my $entry = MT::Entry->load($id)
           or return $app->errtrans(
             "One of the entries ([_1]) did not actually exist", $id );
 
-        return $app->error( $app->translate('Permission denied.') )
+        my $perms = $app_author->permissions( $entry->blog_id );
+        return $app->return_to_dashboard( permission => 1 )
             unless $app_author->is_superuser
                 || ( ( $entry->class eq 'entry' )
                     && $perms && $perms->can_edit_entry( $entry, $app_author, 1 ) )
