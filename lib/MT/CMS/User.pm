@@ -1221,7 +1221,7 @@ sub grant_role {
         $id =~ s/\D//g;
         $_ = MT::Author->load($id);
     }
-    my @authors = grep {ref $_} @authors;
+    @authors = grep {ref $_} @authors;
     $app->error(undef);
 
     my @default_assignments;
