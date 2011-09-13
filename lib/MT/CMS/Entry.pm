@@ -1887,6 +1887,8 @@ sub pinged_urls {
     require MT::Entry;
     my $entry = MT::Entry->load($entry_id)
         or return $app->error($app->translate('Can\'t load entry #[_1].', $entry_id));
+    return $app->errtrans("Invalid request.")
+        unless $entry->blog_id == $app->blog->id;
     $param{url_loop} = [ map { { url => $_ } } @{ $entry->pinged_url_list } ];
     $param{failed_url_loop} =
       [ map { { url => $_ } }
