@@ -53,6 +53,14 @@
     </mtapp:setting>
 
 <mt:if name="auth_mode_mt">
+	<mtapp:setting
+	   id="old_pass"
+	   label="<__trans phrase="Current Password">"
+       label_class="top-label"
+	   hint="<__trans phrase="Existing password required to create a new password.">">
+	  <input type="password" name="old_pass" id="old_pass" class="text password" value="" />
+	</mtapp:setting>
+
     <mtapp:setting
         id="password"
         label="<__trans phrase="New Password">"
