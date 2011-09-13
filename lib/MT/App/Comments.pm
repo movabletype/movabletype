@@ -68,6 +68,14 @@ sub init_request {
         }
     }
 
+    # Global '_type' parameter check; if we get something
+    # special character, die
+    if ( my $type = $app->param('_type') ) {
+        if ( $type =~ /\W/ ) {
+            die $app->translate("Invalid request");
+        }
+    }
+
     ## We don't really have a __mode parameter, because we have to
     ## use named submit buttons for Preview and Post. So we hack it.
     if (   $q->param('post')
