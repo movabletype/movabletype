@@ -655,18 +655,20 @@ sub start_restore {
 }
 
 sub backup {
-    my $app     = shift;
-    my $user    = $app->user;
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
-    my $perms   = $app->permissions;
+    my $app      = shift;
+    my $user     = $app->user;
+    my $q        = $app->param;
+    my $blog_id  = $q->param('blog_id');
+    my $perms    = $app->permissions;
+    my $blog_ids = $q->param('backup_what');
+
     unless ( $user->is_superuser ) {
         return $app->errtrans("Permission denied.")
-          unless defined($blog_id) && $perms->can_administer_blog;
+            unless defined($blog_id)
+                && $perms->can_administer_blog
+                && $blog_id eq $blog_ids;
     }
     $app->validate_magic() or return;
-
-    my $blog_ids = $q->param('backup_what');
 
     my $size = $q->param('size_limit') || 0;
     return $app->errtrans( '[_1] is not a number.',
