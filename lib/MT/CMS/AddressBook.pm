@@ -7,6 +7,7 @@ use MT::I18N qw( wrap_text );
 sub entry_notify {
     my $app   = shift;
     my $user  = $app->user;
+    my $blog  = $app->blog;
     my $perms = $app->permissions;
     return $app->error( $app->translate("No permissions.") )
       unless $perms->can_send_notifications;
@@ -19,7 +20,8 @@ sub entry_notify {
     my $entry = MT::Entry->load($entry_id)
       or return $app->error(
         $app->translate( "No such entry '[_1]'", $entry_id ) );
-    my $blog  = MT::Blog->load( $entry->blog_id );
+    return $app->errtrans( "Invalid request")
+        if $blog->id != $entry->blog_id;
     my $param = {};
     $param->{entry_id} = $entry_id;
     return $app->load_tmpl( "dialog/entry_notify.tmpl", $param );
