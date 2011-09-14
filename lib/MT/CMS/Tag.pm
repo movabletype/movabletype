@@ -135,8 +135,14 @@ sub js_tag_check {
 
 sub js_tag_list {
     my $app     = shift;
-    my $blog_id = $app->param('blog_id');
-    my $type    = $app->param('_type') || 'entry';
+    my $blog_id = $app->param('blog_id')
+        or return $app->json_error( $app->translate("Invalid request.") );
+    my $type = $app->param('_type') || 'entry';
+
+    my $perms = $app->user->permissions($blog_id);
+    return $app->json_error( $app->translate('Permission denied.') )
+        unless $app->user->is_superuser
+            || ( $perms && $perms->can_create_post );
 
     my $class = $app->model($type)
       or return $app->json_error( $app->translate("Invalid request.") );
