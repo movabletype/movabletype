@@ -146,6 +146,10 @@ sub js_tag_check {
 
 sub js_tag_list {
     my $app     = shift;
+
+    return $app->json_error( $app->translate('Permission denied.') )
+        unless $app->can_do('create_post');
+
     my $blog_id = $app->param('blog_id');
     my $type    = $app->param('_type') || 'entry';
 
