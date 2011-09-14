@@ -2767,6 +2767,7 @@ sub load_core_permissions {
                 'open_system_check_screen'       => 1,
                 'use_tools:system_info_menu'     => 1,
                 'edit_commenter_status'          => 1,
+                'delete_any_filters'             => 1,
             }
         },
         'system.create_blog' => {
