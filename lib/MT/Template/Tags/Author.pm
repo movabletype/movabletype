@@ -171,7 +171,7 @@ sub _hdlr_authors {
     my ( %blog_terms, %blog_args );
     $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
         or return $ctx->error( $ctx->errstr );
-    my ( @filters, %terms, %args );
+    my ( @filters, %terms, %args, @joins );
 
     if ( ( defined $args->{id} ) && ( my $user_id = $args->{id} ) ) {
         return $ctx->error(
@@ -240,21 +240,22 @@ sub _hdlr_authors {
     {
         $blog_args{'unique'}  = 1;
         $blog_terms{'status'} = MT::Entry::RELEASE();
-        $args{'join'}
-            = MT::Entry->join_on( 'author_id', \%blog_terms, \%blog_args );
+        push @joins,
+            MT::Entry->join_on( 'author_id', \%blog_terms, \%blog_args );
     }
     else {
         $blog_args{'unique'} = 1;
         if ( !$role_arg ) {
             require MT::Permission;
-            $args{'join'} = MT::Permission->join_on(
+            push @joins,
+                MT::Permission->join_on(
                 'author_id',
                 exists( $args->{need_association} )
                     && $args->{need_association}
                 ? \%blog_terms
                 : undef,
                 \%blog_args
-            );
+                );
             if ( !$args->{any_type} ) {
                 push @filters, sub {
                     my @blog_ids;
@@ -349,7 +350,7 @@ sub _hdlr_authors {
                 }
             }
             if ($need_join) {
-                $args{join} = MT->model('objectscore')->join_on(
+                push @joins, MT->model('objectscore')->join_on(
                     undef,
                     {   object_id => \'=author_id',
                         object_ds => 'author',
@@ -417,6 +418,7 @@ sub _hdlr_authors {
         $args{'direction'} = $args->{sort_order} || 'ascend';
     }
 
+    $args{'joins'} = \@joins if @joins;
     my $iter  = MT::Author->load_iter( \%terms, \%args );
     my $count = 0;
     my $next  = $iter->();
