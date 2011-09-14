@@ -11,19 +11,18 @@ use MT::I18N qw( wrap_text );
 
 sub entry_notify {
     my $app  = shift;
-    my $user = $app->user;
-    return $app->permission_denied()
+    return $app->return_to_dashboard( permission => 1 )
         unless $app->can_do('open_entry_notification_screen');
+    my $entry_id = $app->param('entry_id')
+      or return $app->error( $app->translate("No entry ID provided") );
 
-    my $q        = $app->param;
-    my $entry_id = $q->param('entry_id')
-        or return $app->error( $app->translate("No entry ID provided") );
     require MT::Entry;
-    require MT::Blog;
     my $entry = MT::Entry->load($entry_id)
         or return $app->error(
         $app->translate( "No such entry '[_1]'", $entry_id ) );
-    my $blog  = MT::Blog->load( $entry->blog_id );
+    my $blog = $app->blog;
+    return $app->errtrans( "Invalid request")
+        if $blog->id != $entry->blog_id;
     my $param = {};
     $param->{entry_id} = $entry_id;
     return $app->load_tmpl( "dialog/entry_notify.tmpl", $param );
