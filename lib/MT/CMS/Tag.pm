@@ -165,6 +165,18 @@ sub js_tag_list {
 
 sub js_recent_entries_for_tag {
     my $app          = shift;
+
+    my $perms = $app->permissions;
+    if (( !$app->user->is_superuser )
+        && (   ( !$app->blog )
+            || ( !$perms )
+            || ( !$perms->permissions )
+            || ( $perms->permissions eq "'comment'" ) )
+        )
+    {
+        return $app->json_error( $app->translate('Permission denied.') );
+    }
+
     my $user         = $app->user or return;
     my $tag_class    = $app->model('tag') or return;
     my $objtag_class = $app->model('objecttag') or return;
