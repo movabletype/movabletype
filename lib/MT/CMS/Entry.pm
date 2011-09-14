@@ -594,6 +594,12 @@ sub list {
 
     require MT::Entry;
     my $type = $app->param('type') || MT::Entry->class_type;
+    my %type_allowed = (
+        entry => 1,
+        page  => 1,
+    );
+    return $app->errtrans("Invalid request.")
+        unless $type_allowed{$type};
     my $pkg = $app->model($type) or return "Invalid request.";
 
     my $q     = $app->param;
