@@ -15,7 +15,7 @@ function smarty_block_mttoplevelparent($args, $content, &$ctx, &$repeat) {
         get_parent_categories($cat, $ctx, $list);
         $ctx->stash('else_content', null);
         if (count($list) > 0) {
-            $cat = array_pop($list);
+            $cat = array_shift($list);
             $ctx->stash('category', $cat);
         }
         $ctx->stash('conditional', $cat ? 1 : 0);

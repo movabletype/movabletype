@@ -1582,18 +1582,26 @@ sub _populate_archive_loop {
 
 sub delete_map {
     my $app = shift;
+
     $app->validate_magic() or return;
-    my $perms = $app->{perms}
-        or return $app->error( $app->translate("No permissions") );
-    my $q  = $app->param;
-    my $id = $q->param('id');
+    return $app->error( $app->translate('No permissions') )
+        unless $app->can_do('edit_templates');
+
+    my $q           = $app->param;
+    my $id          = $q->param('id');
+    my $blog_id     = $q->param('blog_id');
+    my $template_id = $q->param('template_id');
+
+    $app->model('template')
+        ->load( { id => $template_id, blog_id => $blog_id } )
+        or
+        return $app->errtrans( 'Can\'t load template #[_1].', $template_id );
 
     require MT::TemplateMap;
-    my $map = MT::TemplateMap->load( { id => $id } )
-        or return $app->error( $app->translate('Can\'t load templatemap') );
+    my $map = MT::TemplateMap->load( { id => $id, blog_id => $blog_id } )
+        or return $app->errtrans('Can\'t load templatemap');
     $map->remove;
-    my $html = _generate_map_table( $app, $q->param('blog_id'),
-        $q->param('template_id') );
+    my $html = _generate_map_table( $app, $blog_id, $template_id );
     $app->{no_print_body} = 1;
     $app->send_http_header("text/plain");
     $app->print_encode($html);
@@ -1601,30 +1609,37 @@ sub delete_map {
 
 sub add_map {
     my $app = shift;
+
     $app->validate_magic() or return;
-    my $perms = $app->{perms}
-        or return $app->error( $app->translate("No permissions") );
+    return $app->error( $app->translate('No permissions') )
+        unless $app->can_do('edit_templates');
 
     my $q = $app->param;
 
     require MT::TemplateMap;
-    my $blog_id = $q->param('blog_id');
-    my $at      = $q->param('new_archive_type');
-    my $exist   = MT::TemplateMap->exist(
+    my $blog_id     = $q->param('blog_id');
+    my $template_id = $q->param('template_id');
+    my $at          = $q->param('new_archive_type');
+    my $exist       = MT::TemplateMap->exist(
         {   blog_id      => $blog_id,
             archive_type => $at
         }
     );
+
+    $app->model('template')
+        ->load( { id => $template_id, blog_id => $blog_id } )
+        or
+        return $app->errtrans( 'Can\'t load template #[_1].', $template_id );
+
     my $map = MT::TemplateMap->new;
     $map->is_preferred( $exist ? 0 : 1 );
-    $map->template_id( scalar $q->param('template_id') );
+    $map->template_id($template_id);
     $map->blog_id($blog_id);
     $map->archive_type($at);
     $map->save
         or return $app->error(
         $app->translate( "Saving map failed: [_1]", $map->errstr ) );
-    my $html = _generate_map_table( $app, $blog_id,
-        scalar $q->param('template_id') );
+    my $html = _generate_map_table( $app, $blog_id, $template_id );
     $app->{no_print_body} = 1;
     $app->send_http_header("text/plain");
     $app->print_encode($html);
