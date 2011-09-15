@@ -118,7 +118,7 @@ subtest 'mode = entry_notify' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: entry_notify" ); 
-    ok( $out =~ m!permission=1!i, "entry_notify by other blog user" );
+    ok( $out =~ m!invalid request!i, "entry_notify by other blog user" );
 
     $app = _run_app(
         'MT::App::CMS',
