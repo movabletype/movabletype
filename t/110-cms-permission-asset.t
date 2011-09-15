@@ -181,91 +181,92 @@ subtest 'mode = asset_userpic' => sub {
     done_testing();
 };
 
-subtest 'mode = complete_insert' => sub {
-    # By admim
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'complete_insert',
-            id               => $pic2->id,
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: complete_insert" );
-    ok( $out =~ m!__mode=list!i, "complete_insert by admin" );
+# Removed. because any user can access this mode now.
+# subtest 'mode = complete_insert' => sub {
+#     # By admim
+#     $app = _run_app(
+#         'MT::App::CMS',
+#         {   __test_user      => $admin,
+#             __request_method => 'POST',
+#             __mode           => 'complete_insert',
+#             id               => $pic2->id,
+#             blog_id          => $blog->id,
+#         }
+#     );
+#     $out = delete $app->{__test_output};
+#     ok( $out, "Request: complete_insert" );
+#     ok( $out =~ m!__mode=list!i, "complete_insert by admin" );
 
-    # By Permitted user(A)
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'complete_insert',
-            id               => $pic2->id,
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: complete_insert" );
-    ok( $out =~ m!__mode=start_upload!i, "complete_insert by permitted user (create_post)" );
+#     # By Permitted user(A)
+#     $app = _run_app(
+#         'MT::App::CMS',
+#         {   __test_user      => $aikawa,
+#             __request_method => 'POST',
+#             __mode           => 'complete_insert',
+#             id               => $pic2->id,
+#             blog_id          => $blog->id,
+#         }
+#     );
+#     $out = delete $app->{__test_output};
+#     ok( $out, "Request: complete_insert" );
+#     ok( $out =~ m!__mode=start_upload!i, "complete_insert by permitted user (create_post)" );
 
-    # By Permitted user(B)
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'complete_insert',
-            id               => $pic2->id,
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: complete_insert" );
-    ok( $out =~ m!__mode=start_upload!i, "complete_insert by permitted user (manage_pages)" );
+#     # By Permitted user(B)
+#     $app = _run_app(
+#         'MT::App::CMS',
+#         {   __test_user      => $ichikawa,
+#             __request_method => 'POST',
+#             __mode           => 'complete_insert',
+#             id               => $pic2->id,
+#             blog_id          => $blog->id,
+#         }
+#     );
+#     $out = delete $app->{__test_output};
+#     ok( $out, "Request: complete_insert" );
+#     ok( $out =~ m!__mode=start_upload!i, "complete_insert by permitted user (manage_pages)" );
 
-    # By non Permitted user(A)
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'complete_insert',
-            id               => $pic2->id,
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: complete_insert" );
-    ok( $out =~ m!Permission=1!i, "complete_insert by other blog (create_post)" );
+#     # By non Permitted user(A)
+#     $app = _run_app(
+#         'MT::App::CMS',
+#         {   __test_user      => $ukawa,
+#             __request_method => 'POST',
+#             __mode           => 'complete_insert',
+#             id               => $pic2->id,
+#             blog_id          => $blog->id,
+#         }
+#     );
+#     $out = delete $app->{__test_output};
+#     ok( $out, "Request: complete_insert" );
+#     ok( $out =~ m!Permission=1!i, "complete_insert by other blog (create_post)" );
 
-    # By non Permitted user(B)
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'complete_insert',
-            id               => $pic2->id,
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: complete_insert" );
-    ok( $out =~ m!Permission=1!i, "complete_insert other blog (manage_pages)" );
+#     # By non Permitted user(B)
+#     $app = _run_app(
+#         'MT::App::CMS',
+#         {   __test_user      => $egawa,
+#             __request_method => 'POST',
+#             __mode           => 'complete_insert',
+#             id               => $pic2->id,
+#             blog_id          => $blog->id,
+#         }
+#     );
+#     $out = delete $app->{__test_output};
+#     ok( $out, "Request: complete_insert" );
+#     ok( $out =~ m!Permission=1!i, "complete_insert other blog (manage_pages)" );
 
-    # By other permission
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ogawa,
-            __request_method => 'POST',
-            __mode           => 'complete_insert',
-            id               => $pic2->id,
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: complete_insert" );
-    ok( $out =~ m!Permission=1!i, "complete_insert by other permission" );
-};
+#     # By other permission
+#     $app = _run_app(
+#         'MT::App::CMS',
+#         {   __test_user      => $ogawa,
+#             __request_method => 'POST',
+#             __mode           => 'complete_insert',
+#             id               => $pic2->id,
+#             blog_id          => $blog->id,
+#         }
+#     );
+#     $out = delete $app->{__test_output};
+#     ok( $out, "Request: complete_insert" );
+#     ok( $out =~ m!Permission=1!i, "complete_insert by other permission" );
+# };
 
 subtest 'mode = complete_upload' => sub {
     # By admim
@@ -594,11 +595,11 @@ subtest 'mode = start_upload_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_upload_entry" );
-    ok( $out =~ m!Permission=1!i, "start_upload_entry by permitted user" );
+    ok( $out =~ m!Permission=1!i, "start_upload_entry by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $aikawa,
+        {   __test_user      => $ogawa,
             __request_method => 'POST',
             __mode           => 'start_upload_entry',
             label            => 'New Label',
@@ -880,7 +881,7 @@ subtest 'mode = add_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_tags" );
-    ok( $out !~ m!Permission=1!i, "add_tags by admin" );
+    ok( $out !~ m!not implemented!i, "add_tags by admin" );
 
     # By Permitted user
     $app = _run_app(
@@ -900,7 +901,7 @@ subtest 'mode = add_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_tags" );
-    ok( $out !~ m!Permission=1!i, "add_tags by permitted user" );
+    ok( $out !~ m!not implemented!i, "add_tags by permitted user" );
 
     # By non Permitted user
     $app = _run_app(
@@ -920,7 +921,7 @@ subtest 'mode = add_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_tags" );
-    ok( $out =~ m!Permission=1!i, "add_tags by other blog" );
+    ok( $out =~ m!not implemented!i, "add_tags by other blog" );
 
     # By other permission
     $app = _run_app(
@@ -940,7 +941,7 @@ subtest 'mode = add_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_tags" );
-    ok( $out =~ m!Permission=1!i, "add_tags by other permission" );
+    ok( $out =~ m!not implemented!i, "add_tags by other permission" );
 };
 
 subtest 'mode = remove_tags' => sub {
@@ -976,7 +977,7 @@ subtest 'mode = remove_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: remove_tags" );
-    ok( $out !~ m!Permission=1!i, "remove_tags by admin" );
+    ok( $out !~ m!not implemented!i, "remove_tags by admin" );
 
     # By Permitted user
     $app = _run_app(
@@ -996,7 +997,7 @@ subtest 'mode = remove_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: remove_tags" );
-    ok( $out !~ m!Permission=1!i, "remove_tags by permitted user" );
+    ok( $out !~ m!not implemented!i, "remove_tags by permitted user" );
 
     # By non Permitted user
     $app = _run_app(
@@ -1016,7 +1017,7 @@ subtest 'mode = remove_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: remove_tags" );
-    ok( $out =~ m!Permission=1!i, "remove_tags by other blog" );
+    ok( $out =~ m!not implemented!i, "remove_tags by other blog" );
 
     # By other permission
     $app = _run_app(
@@ -1036,7 +1037,7 @@ subtest 'mode = remove_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: remove_tags" );
-    ok( $out =~ m!Permission=1!i, "remove_tags by other permission" );
+    ok( $out =~ m!not implemented!i, "remove_tags by other permission" );
 };
 
 done_testing();
