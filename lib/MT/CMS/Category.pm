@@ -382,6 +382,8 @@ sub category_do_add {
     my $app    = shift;
     my $q      = $app->param;
     my $type   = $q->param('_type') || 'category';
+    return $app->errtrans("Invalid request.")
+        unless ($type eq 'category') or ($type eq 'folder'); 
     my $author = $app->user;
     my $pkg    = $app->model($type);
     $app->validate_magic() or return;
@@ -435,6 +437,8 @@ sub js_add_category {
     my $blog_id = $app->param('blog_id');
     my $perms   = $app->permissions;
     my $type    = $app->param('_type') || 'category';
+    return $app->json_error( $app->translate("Invalid request.") )
+        unless ($type eq 'category') or ($type eq 'folder'); 
     my $class   = $app->model($type);
     if ( !$class ) {
         return $app->json_error( $app->translate("Invalid request.") );
