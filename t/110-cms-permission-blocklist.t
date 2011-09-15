@@ -40,7 +40,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!Invalid Request!i, "list by admin" );
+    ok( $out =~ m!Unknown action!i, "list by admin" );
 };
 
 subtest 'mode = save' => sub {
