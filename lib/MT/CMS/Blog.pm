@@ -2643,9 +2643,6 @@ sub clone {
 
     $app->validate_magic() or return;
 
-    return $app->permission_denied()
-        if !$user->is_superuser && !$user->can('clone_blog');
-
     my @id = $app->param('id');
 
     if ( !@id ) {
@@ -2668,6 +2665,9 @@ sub clone {
         or return $app->error( $app->translate("Invalid blog_id") );
     return $app->error( $app->translate("This action cannot clone website.") )
         unless $blog->is_blog;
+
+    return $app->permission_denied()
+        unless $app->user->permissions( $blog->website->id )->can_do( 'clone_blog' );
 
     $param->{'id'}            = $blog->id;
     $param->{'new_blog_name'} = $app->param('new_blog_name')
