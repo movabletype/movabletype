@@ -19,6 +19,8 @@ use File::Temp qw( tempfile );
 use File::Basename;
 use MT;
 
+use Cwd qw( abs_path );
+
 MT->add_callback( 'post_init', 1, undef, \&add_plugin_test_libs );
 
 sub add_plugin_test_libs {
@@ -110,6 +112,9 @@ sub init_app {
     eval "require $app; 1;" or die "Can't load $app";
 
     $app->instance( $cfg ? ( Config => $cfg ) : () );
+
+    $app->config->TemplatePath( abs_path( $app->config->TemplatePath ), 1 )
+        if $app->config->TemplatePath;
 
     # kill __test_output for a new request
     require MT;
