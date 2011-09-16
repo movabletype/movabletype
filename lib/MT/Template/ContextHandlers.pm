@@ -4387,6 +4387,9 @@ B<Example:> Passing Parameters to a Template Module
 
     sub _include_file {
         my ( $ctx, $arg, $cond ) = @_;
+        if ( !MT->config->AllowFileInclude ) {
+            return $ctx->error('File include is disabled by "AllowFileInclude" config directive.');
+        }
         my $file = $arg->{file} or return;
         require File::Basename;
         my $base_filename = File::Basename::basename($file);
