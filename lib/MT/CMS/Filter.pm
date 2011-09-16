@@ -113,7 +113,9 @@ sub save {
 }
 
 sub delete {
-    my $app          = shift;
+    my $app = shift;
+    $app->validate_magic
+        or return $app->json_error( $app->translate('Invalid request') );
     my $q            = $app->param;
     my $id           = $q->param('id');
     my $filter_class = MT->model('filter');
