@@ -25,6 +25,9 @@ my $blog = MT::Test::Permission->make_blog(
 my $second_blog = MT::Test::Permission->make_blog(
     parent_id => $website->id,
 );
+my $third_blog = MT::Test::Permission->make_blog(
+    parent_id => $second_website->id,
+);
 
 # Author
 my $aikawa = MT::Test::Permission->make_author(
@@ -137,6 +140,11 @@ my $nunota = MT::Test::Permission->make_author(
     nickname => 'Saburo Nunota',
 );
 
+my $negoro = MT::Test::Permission->make_author(
+    name => 'negoro',
+    nickname => 'Shiro Negoro',
+);
+
 my $admin = MT::Author->load(1);
 
 # Role
@@ -187,7 +195,7 @@ my $edit_templates = MT::Test::Permission->make_role(
 
 require MT::Association;
 MT::Association->link( $aikawa => $blog_admin => $blog );
-MT::Association->link( $ichikawa => $designer => $blog );
+MT::Association->link( $ichikawa => $edit_templates => $blog );
 MT::Association->link( $ukawa => $manage_pages => $blog );
 MT::Association->link( $egawa => $rebuild => $blog );
 MT::Association->link( $ogawa => $edit_config => $blog );
@@ -218,6 +226,8 @@ MT::Association->link( $seta => $create_post => $blog );
 MT::Association->link( $soneda => $create_post => $blog );
 MT::Association->link( $taneda => $create_post => $blog );
 MT::Association->link( $toda => $create_post => $blog );
+
+MT::Association->link( $negoro => $create_post => $blog );
 
 require MT::Permission;
 my $p = MT::Permission->new;
@@ -253,6 +263,8 @@ my $tmpl = MT::Test::Permission->make_template(
 my ( $app, $out );
 
 subtest 'mode = cc_return' => sub {
+    plan skip_all => 'https://movabletype.fogbugz.com/default.asp?106622';
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -514,6 +526,7 @@ subtest 'mode = dialog_clone_blog' => sub {
             __request_method => 'POST',
             __mode           => 'dialog_clone_blog',
             blog_id          => $blog->id,
+            id               => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -526,6 +539,7 @@ subtest 'mode = dialog_clone_blog' => sub {
             __request_method => 'POST',
             __mode           => 'dialog_clone_blog',
             blog_id          => $blog->id,
+            id               => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -538,6 +552,7 @@ subtest 'mode = dialog_clone_blog' => sub {
             __request_method => 'POST',
             __mode           => 'dialog_clone_blog',
             blog_id          => $blog->id,
+            id               => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -558,20 +573,20 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out !~ m!permission=1!i, "list by admin" );
+    ok( $out !~ m!redirect=1!i, "list by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $suda,
+        {   __test_user      => $negoro,
             __request_method => 'POST',
             __mode           => 'list',
-            blog_id          => $website->id,
+            blog_id          => $second_website->id,
             _type            => 'blog',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!permission=1!i, "list by other blog" );
+    ok( $out =~ m!redirect=1!i, "list by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -584,7 +599,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out !~ m!permission=1!i, "list by permitted user" );
+    ok( $out !~ m!redirect=1!i, "list by permitted user" );
     done_testing();
 };
 
@@ -627,7 +642,7 @@ subtest 'mode = rebuild_confirm' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ichikawa,
+        {   __test_user      => $kemikawa,
             __request_method => 'POST',
             __mode           => 'rebuild_confirm',
             blog_id          => $blog->id,
@@ -637,19 +652,6 @@ subtest 'mode = rebuild_confirm' => sub {
     ok( $out, "Request: rebuild_confirm" );
     ok( $out =~ m!permission=1!i, "rebuild_confirm by other permission" );
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'rebuild_confirm',
-            blog_id          => $blog->id,
-            tmpl_id          => $tmpl->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: rebuild_confirm" );
-    ok( $out =~ m!permission=1!i, "rebuild_confirm by other permission" );
-    done_testing();
 };
 
 subtest 'mode = rebuild_new_phase' => sub {
@@ -763,7 +765,7 @@ subtest 'mode = rebuild_new_phase' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: rebuild_new_phase" );
-    ok( $out !~ m!permission=1!i, "rebuild_new_phase by other permission" );
+    ok( $out =~ m!permission=1!i, "rebuild_new_phase by other permission" );
     done_testing();
 };
 
@@ -881,49 +883,9 @@ subtest 'mode = rebuild_phase' => sub {
     done_testing();
 };
 
-subtest 'mode = save_favorite_blogs' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'save_favorite_blogs',
-            blog_id          => $blog->id,
-            id               => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save_favorite_blogs" );
-    ok( $out !~ m!permission=1!i, "save_favorite_blogs by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $suda,
-            __request_method => 'POST',
-            __mode           => 'save_favorite_blogs',
-            blog_id          => $blog->id,
-            id               => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save_favorite_blogs" );
-    ok( $out =~ m!permission=1!i, "save_favorite_blogs by other blog" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'save_favorite_blogs',
-            blog_id          => $blog->id,
-            id               => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save_favorite_blogs" );
-    ok( $out !~ m!permission=1!i, "save_favorite_blogs by permitted user" );
-    done_testing();
-};
-
 subtest 'mode = start_rebuild' => sub {
+    plan skip_all => 'https://movabletype.fogbugz.com/default.asp?106807';
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -1207,7 +1169,7 @@ subtest 'mode = save (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save (edit) by admin" );
+    ok( $out !~ m!permission=1!i, "save (edit) by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1222,7 +1184,7 @@ subtest 'mode = save (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save (edit) by permitted user (blog admin)" );
+    ok( $out !~ m!permission=1!i, "save (edit) by permitted user (blog admin)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1237,7 +1199,7 @@ subtest 'mode = save (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save (edit) by permitted user (edit config)" );
+    ok( $out !~ m!permission=1!i, "save (edit) by permitted user (edit config)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1252,7 +1214,7 @@ subtest 'mode = save (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save (edit) by non permitted user (create blog)" );
+    ok( $out =~ m!permission=1!i, "save (edit) by non permitted user (create blog)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1267,7 +1229,7 @@ subtest 'mode = save (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save (edit) by other blog (blog admin)" );
+    ok( $out =~ m!permission=1!i, "save (edit) by other blog (blog admin)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1282,7 +1244,7 @@ subtest 'mode = save (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save (edit) by other blog (edit config)" );
+    ok( $out =~ m!permission=1!i, "save (edit) by other blog (edit config)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1297,7 +1259,7 @@ subtest 'mode = save (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save (edit) by other permission" );
+    ok( $out =~ m!permission=1!i, "save (edit) by other permission" );
     done_testing();
 };
 
@@ -1357,7 +1319,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit (edit) by admin" );
+    ok( $out !~ m!Permission=1!i, "edit (edit) by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1372,7 +1334,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit (edit) by permitted user (blog admin)" );
+    ok( $out !~ m!Permission=1!i, "edit (edit) by permitted user (blog admin)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1387,7 +1349,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit (edit) by permitted user (edit config)" );
+    ok( $out !~ m!Permission=1!i, "edit (edit) by permitted user (edit config)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1402,7 +1364,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit (edit) by non permitted user (create blog)" );
+    ok( $out =~ m!Permission=1!i, "edit (edit) by non permitted user (create blog)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1417,7 +1379,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit (edit) by other blog (blog admin)" );
+    ok( $out =~ m!Permission=1!i, "edit (edit) by other blog (blog admin)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1432,7 +1394,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit (edit) by other blog (edit config)" );
+    ok( $out =~ m!Permission=1!i, "edit (edit) by other blog (edit config)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1447,9 +1409,10 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit (edit) by other permission" );
+    ok( $out =~ m!Permission=1!i, "edit (edit) by other permission" );
     done_testing();
 };
+
 subtest 'action = refresh_blog_templates' => sub {
     $app = _run_app(
         'MT::App::CMS',
@@ -1467,7 +1430,7 @@ subtest 'action = refresh_blog_templates' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: refresh_blog_templates" );
-    ok( $out !~ m!permission=1!i, "refresh_blog_templates by admin" );
+    ok( $out !~ m!not implemented!i, "refresh_blog_templates by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1485,7 +1448,7 @@ subtest 'action = refresh_blog_templates' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: refresh_blog_templates" );
-    ok( $out !~ m!permission=1!i, "refresh_blog_templates by permitted user" );
+    ok( $out !~ m!not implemented!i, "refresh_blog_templates by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1503,7 +1466,7 @@ subtest 'action = refresh_blog_templates' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: refresh_blog_templates" );
-    ok( $out !~ m!permission=1!i, "refresh_blog_templates by permitted user (system)" );
+    ok( $out !~ m!not implemented!i, "refresh_blog_templates by permitted user (system)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1521,11 +1484,11 @@ subtest 'action = refresh_blog_templates' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: refresh_blog_templates" );
-    ok( $out =~ m!permission=1!i, "refresh_blog_templates by other blog" );
+    ok( $out =~ m!not implemented!i, "refresh_blog_templates by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ichikawa,
+        {   __test_user      => $kumekawa,
             __request_method => 'POST',
             __mode           => 'itemset_action',
             _type            => 'blog',
@@ -1539,7 +1502,7 @@ subtest 'action = refresh_blog_templates' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: refresh_blog_templates" );
-    ok( $out =~ m!permission=1!i, "refresh_blog_templates by other permission" );
+    ok( $out =~ m!not implemented!i, "refresh_blog_templates by other permission" );
 };
 
 subtest 'action = move_blogs' => sub {
@@ -1560,7 +1523,7 @@ subtest 'action = move_blogs' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: move_blogs" );
-    ok( $out !~ m!permission=1!i, "move_blogs by admin" );
+    ok( $out !~ m!not implemented!i, "move_blogs by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1579,27 +1542,28 @@ subtest 'action = move_blogs' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: move_blogs" );
-    ok( $out =~ m!permission=1!i, "move_blogs by non permitted user" );
+    ok( $out =~ m!not implemented!i, "move_blogs by non permitted user" );
 };
 
-subtest 'action = clone_blogs' => sub {
+subtest 'action = clone_blog' => sub {
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
             __mode           => 'itemset_action',
             _type            => 'blog',
-            action_name      => 'clone_blogs',
+            action_name      => 'clone_blog',
             itemset_action_input => '',
             return_args      => '__mode%3Dlist_blog%26blog_id%3D'.$website->id,
-            plugin_action_selector => 'clone_blogs',
+            plugin_action_selector => 'clone_blog',
             id               => $blog->id,
-            plugin_action_selector => 'clone_blogs',
+            plugin_action_selector => 'clone_blog',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: clone_blogs" );
-    ok( $out !~ m!permission=1!i, "clone_blogs by admin" );
+    ok( $out, "Request: clone_blog" );
+    ok( $out !~ m!not implemented!i, "clone_blog by admin(request)" );
+    ok( $out !~ m!permission=1!i, "clone_blog by admin(permission)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1607,17 +1571,18 @@ subtest 'action = clone_blogs' => sub {
             __request_method => 'POST',
             __mode           => 'itemset_action',
             _type            => 'blog',
-            action_name      => 'clone_blogs',
+            action_name      => 'clone_blog',
             itemset_action_input => '',
             return_args      => '__mode%3Dlist_blog%26blog_id%3D'.$website->id,
-            plugin_action_selector => 'clone_blogs',
+            plugin_action_selector => 'clone_blog',
             id               => $blog->id,
-            plugin_action_selector => 'clone_blogs',
+            plugin_action_selector => 'clone_blog',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: clone_blogs" );
-    ok( $out !~ m!permission=1!i, "clone_blogs by non permitted user" );
+    ok( $out, "Request: clone_blog" );
+    ok( $out !~ m!not implemented!i, "clone_blog by permitted user(request)" );
+    ok( $out !~ m!permission=1!i, "clone_blog by permitted user(permission)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1625,17 +1590,17 @@ subtest 'action = clone_blogs' => sub {
             __request_method => 'POST',
             __mode           => 'itemset_action',
             _type            => 'blog',
-            action_name      => 'clone_blogs',
+            action_name      => 'clone_blog',
             itemset_action_input => '',
             return_args      => '__mode%3Dlist_blog%26blog_id%3D'.$website->id,
-            plugin_action_selector => 'clone_blogs',
+            plugin_action_selector => 'clone_blog',
             id               => $blog->id,
-            plugin_action_selector => 'clone_blogs',
+            plugin_action_selector => 'clone_blog',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: clone_blogs" );
-    ok( $out =~ m!permission=1!i, "clone_blogs by non permitted user" );
+    ok( $out, "Request: clone_blog" );
+    ok( $out =~ m!permission=1!i, "clone_blog by non permitted user(permission)" );
 };
 
 subtest 'mode = delete' => sub {
