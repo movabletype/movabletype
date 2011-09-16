@@ -202,7 +202,8 @@ sub _v5_migrate_blog {
     my $self = shift;
 
     my $app  = $MT::Upgrade::App;
-    my $user = MT::Author->load( $app->{author}->id );
+    my $user_id = ref $app ? $app->{author}->id : $MT::Upgrade::SuperUser;
+    my $user    = MT::Author->load( $user_id );
     return if $user->permissions(0)->has('administer_website');
 
     # Create generic website.
@@ -483,7 +484,8 @@ sub _v5_migrate_default_site {
 
         # Grant new role to system administrator
         my $app         = $MT::Upgrade::App;
-        my $user        = MT::Author->load( $app->{author}->id );
+        my $user_id = ref $app ? $app->{author}->id : $MT::Upgrade::SuperUser;
+        my $user        = MT::Author->load( $user_id );
         my $assoc_class = MT->model('association');
         return $self->error(
             $self->translate_escape(
