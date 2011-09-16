@@ -599,6 +599,19 @@ sub _sync_from_disk {
         }
         return;
     }
+    if ( MT->config->SafeMode ) {
+        ## Check for a set of extensions that aren't allowed.
+        for my $ext (qw( pl pm cgi cfg )) {
+            if ( $lfile =~ /\.$ext$/i ) {
+                return $tmpl->error(
+                    MT->translate(
+                        "You cannot use a [_1] extension for a linked file.",
+                        ".$ext"
+                    )
+                );
+            }
+        }
+    }
     unless ( File::Spec->file_name_is_absolute($lfile) ) {
         if ( $tmpl->blog_id ) {
             my $blog = MT::Blog->load( $tmpl->blog_id )
@@ -611,7 +624,7 @@ sub _sync_from_disk {
             $lfile = File::Spec->catfile( MT->instance->server_path, $lfile );
         }
     }
-    return unless -e $lfile;
+    return unless -e $lfile && -w _;
     my ( $size, $mtime ) = ( stat _ )[ 7, 9 ];
     return
         if $size == $tmpl->linked_file_size
