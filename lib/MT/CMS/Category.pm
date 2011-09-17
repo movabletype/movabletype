@@ -360,6 +360,7 @@ sub bulk_update {
     $app->forward( 'filtered_list', messages => \@messages );
 }
 
+# DEPRECATED: will be removed.
 sub category_add {
     my $app  = shift;
     my $q    = $app->param;
