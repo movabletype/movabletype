@@ -41,6 +41,8 @@ subtest 'mode = list' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
     ok( $out =~ m!Unknown action!i, "list by admin" );
+
+    done_testing();
 };
 
 subtest 'mode = save' => sub {
@@ -56,6 +58,8 @@ subtest 'mode = save' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by admin" );
+
+    done_testing();
 };
 
 subtest 'mode = edit' => sub {
@@ -71,6 +75,8 @@ subtest 'mode = edit' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by admin" );
+
+    done_testing();
 };
 
 done_testing();
