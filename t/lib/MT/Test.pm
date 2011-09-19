@@ -112,10 +112,7 @@ sub init_app {
     eval "require $app; 1;" or die "Can't load $app";
 
     $app->instance( $cfg ? ( Config => $cfg ) : () );
-
-    $app->config->TemplatePath( abs_path( $app->config->TemplatePath ), 1 )
-        if $app->config->TemplatePath;
-
+    $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ));
     # kill __test_output for a new request
     require MT;
     MT->add_callback(
@@ -1478,6 +1475,7 @@ sub _run_app {
     eval "require $class;";
     my $app = $class->new( CGIObject => $cgi );
     MT->set_instance($app);
+    $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ));
 
     # nix upgrade required
     # seems to be hanging around when it doesn't need to be
