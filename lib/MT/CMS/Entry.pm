@@ -1054,7 +1054,7 @@ sub _create_temp_entry {
         $entry->blog_id($blog_id);
     }
 
-    return $app->return_to_dashboard( redirect => 1 )
+    return $app->return_to_dashboard( permission => 1 )
         unless $app->permissions->can_edit_entry( $entry, $app->user );
 
     my $names = $entry->column_names;
@@ -1929,10 +1929,13 @@ PERMCHECK: {
             or next;
         my $old_status = $entry->status;
         my $orig_obj   = $entry->clone;
+        $perms   = $app->user->permissions( $entry->blog_id );
         if ( $perms->can_edit_entry( $entry, $this_author ) ) {
             my $author_id = $q->param( 'author_id_' . $id );
             $entry->author_id( $author_id ? $author_id : 0 );
             $entry->title( scalar $q->param( 'title_' . $id ) );
+        } else {
+            return $app->permission_denied();
         }
         if ( $perms->can_edit_entry( $entry, $this_author, 1 ) )
         {    ## can he/she change status?

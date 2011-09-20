@@ -2371,7 +2371,6 @@ sub load_core_permissions {
                 'open_new_entry_screen'                   => 1,
                 'open_own_entry_comment_edit_screen'      => 1,
                 'open_own_entry_trackback_edit_screen'    => 1,
-                'save_multiple_entries'                   => 1,
                 'view_feedback'                           => 1,
                 'use_entry:manage_menu'                   => 1,
                 'use_tools:search'                        => 1,
