@@ -15,7 +15,7 @@ __PACKAGE__->install_properties(
     {   column_defs => {
             'id'       => 'integer not null auto_increment',
             'name'     => 'string(50) not null',
-            'password' => 'string(60) not null',
+            'password' => 'string(124) not null',
             'email'    => 'string(75)',
             'hint'     => 'string(75)',
         },

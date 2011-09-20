@@ -16,7 +16,7 @@ __PACKAGE__->install_properties(
             'id'                   => 'integer not null auto_increment',
             'name'                 => 'string(255) not null',
             'nickname'             => 'string(255)',
-            'password'             => 'string(60) not null',
+            'password'             => 'string(124) not null',
             'type'                 => 'smallint not null',
             'email'                => 'string(127)',
             'url'                  => 'string(255)',
