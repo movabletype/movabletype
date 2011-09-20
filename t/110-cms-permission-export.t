@@ -117,7 +117,7 @@ subtest 'mode = start_export' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_export" );
-    ok( $out !~ m!Permission denied!i, "start_export by admin" );
+    ok( $out !~ m!permission=1!i, "start_export by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -129,7 +129,7 @@ subtest 'mode = start_export' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_export" );
-    ok( $out !~ m!Permission denied!i, "start_export by permitted user" );
+    ok( $out !~ m!permission=1!i, "start_export by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -141,7 +141,7 @@ subtest 'mode = start_export' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_export" );
-    ok( $out =~ m!Permission denied!i, "start_export by other blog" );
+    ok( $out =~ m!permission=1!i, "start_export by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -153,7 +153,7 @@ subtest 'mode = start_export' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_export" );
-    ok( $out =~ m!Permission denied!i, "start_export by other permission" );
+    ok( $out =~ m!permission=1!i, "start_export by other permission" );
 };
 
 done_testing();
