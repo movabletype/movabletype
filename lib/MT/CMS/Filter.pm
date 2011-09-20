@@ -115,7 +115,9 @@ sub save {
 }
 
 sub delete {
-    my $app          = shift;
+    my $app = shift;
+    $app->validate_magic
+        or return $app->json_error( $app->translate('Invalid request') );
     my $q            = $app->param;
     my $id           = $q->param('id');
     my $filter_class = MT->model('filter');
@@ -149,6 +151,11 @@ sub delete {
 
 sub delete_filters {
     my $app = shift;
+    return $app->permission_denied
+        unless $app->can_do('delete_any_filters');
+    return $app->errtrans('Invalid request')
+        unless $app->validate_magic;
+
     my $id  = $app->param('id');
     my @ids = split ',', $id;
     my $res = MT->model('filter')->remove( { id => \@ids } )

@@ -594,7 +594,8 @@ function removeFilter(element) {
     doApplyFilter(allpass_filter, 1);
     renderList({
       mode: 'delete_filter',
-      id: filters[index].id
+      id: filters[index].id,
+      magic_token: 1
     });
   }
   else {

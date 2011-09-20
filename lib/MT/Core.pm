@@ -1696,6 +1696,7 @@ BEGIN {
             'NotifyScript'          => { default => 'mt-add-notify.cgi', },
             'PublishCharset'        => { default => 'utf-8', },
             'SafeMode'              => { default => 1, },
+            'AllowFileInclude'      => { default => 0, },
             'GlobalSanitizeSpec'    => {
                 default =>
                     'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre',
@@ -2413,6 +2414,7 @@ sub load_core_permissions {
                 'save_multiple_entries'            => 1,
                 'open_select_author_dialog'        => 1,
                 'send_update_pings_entry'          => 1,
+                'insert_asset'                     => 1,
             }
         },
         'blog.edit_assets' => {
@@ -2599,6 +2601,9 @@ sub load_core_permissions {
                 'view_all_comments'               => 1,
                 'open_select_author_dialog'       => 1,
                 'send_update_pings_pages'         => 1,
+                'insert_asset'                    => 1,
+                'save_existing_comment'           => 1,
+                'open_own_entry_comment_edit_screen'    => 1,
             }
         },
         'blog.manage_users' => {
@@ -2666,9 +2671,9 @@ sub load_core_permissions {
                 'approve_trackback_via_list'            => 1,
                 'delete_comments_via_list'              => 1,
                 'use_tools:search'                      => 1,
-                'reply_comment_from_cms'                => 1,
                 'edit_comment_status_of_own_entry'      => 1,
                 'send_update_pings_entry'               => 1,
+                'edit_own_entry_comment'                => 1,
             }
         },
         'blog.rebuild' => {
@@ -2767,6 +2772,7 @@ sub load_core_permissions {
                 'open_system_check_screen'       => 1,
                 'use_tools:system_info_menu'     => 1,
                 'edit_commenter_status'          => 1,
+                'delete_any_filters'             => 1,
             }
         },
         'system.create_blog' => {

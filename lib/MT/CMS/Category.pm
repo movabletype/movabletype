@@ -360,6 +360,7 @@ sub bulk_update {
     $app->forward( 'filtered_list', messages => \@messages );
 }
 
+# DEPRECATED: will be removed.
 sub category_add {
     my $app  = shift;
     my $q    = $app->param;
@@ -470,21 +471,21 @@ sub js_add_category {
     my $obj      = $class->new;
     my $original = $obj->clone;
 
-    if (!$app->run_callbacks(
-            'cms_save_permission_filter.' . $type,
-            $app, $obj, $original
-        )
-        )
-    {
-        return $app->json_error( $app->translate("Permission denied.") );
-    }
-
     $obj->label($label);
     $obj->basename($basename)   if $basename;
     $obj->parent( $parent->id ) if $parent;
     $obj->blog_id($blog_id);
     $obj->author_id( $user->id );
     $obj->created_by( $user->id );
+
+    if (!$app->run_callbacks(
+            'cms_save_permission_filter.' . $type,
+            $app, $obj
+        )
+        )
+    {
+        return $app->json_error( $app->translate("Permission denied.") );
+    }
 
     if (!$app->run_callbacks(
             'cms_pre_save.' . $type, $app, $obj, $original
@@ -506,8 +507,18 @@ sub js_add_category {
 }
 
 sub can_view {
-    my ( $eh, $app, $id ) = @_;
-    return $app->can_do('open_category_edit_screen');
+    my ( $eh, $app, $obj ) = @_;
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
+
+    unless ( ref $obj ) {
+        $obj = MT->model('category')->load($obj)
+            or return;
+    }
+    return unless $obj->is_category;
+
+    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
+    return $author->permissions($blog_id)->can_do('open_category_edit_screen');
 }
 
 sub can_save {
@@ -522,7 +533,6 @@ sub can_save {
     return unless $obj->is_category;
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
-
     return $author->permissions($blog_id)->can_do('save_category');
 }
 

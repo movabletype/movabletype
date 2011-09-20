@@ -109,9 +109,6 @@ MT::Association->link( $kemikawa => $commenter => $blog );
 MT::Association->link( $egawa => $manage_feedback => $second_blog );
 MT::Association->link( $ogawa => $manage_pages => $second_blog );
 MT::Association->link( $kagawa => $publish_post => $second_blog );
-MT::Association->link( $egawa => $create_post => $blog );
-MT::Association->link( $ogawa => $create_post => $blog );
-MT::Association->link( $kagawa => $create_post => $blog );
 
 # Entry
 my $entry = MT::Test::Permission->make_entry(
@@ -204,6 +201,8 @@ subtest 'mode = approve_item' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: approve_item" );
     ok( $out =~ m!permission to approve this comment!i, "approve_item by other permission" );
+
+    done_testing();
 };
 subtest 'mode = ban_commenter' => sub {
     MT->config( 'SingleCommunity', 0, 1 );
@@ -327,9 +326,13 @@ subtest 'mode = ban_commenter' => sub {
         $perm->blog_id( 0 );
         $perm->save;
     }
+
+    done_testing();
 };
 
 subtest 'mode = dialog_post_comment' => sub {
+    $comment->publish;
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -341,8 +344,10 @@ subtest 'mode = dialog_post_comment' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_post_comment" );
-    ok( $out !~ m!Permission denied!i, "dialog_post_comment by admin" );
+    ok( $out !~ m!permission=1!i, "dialog_post_comment by admin" );
 
+    $comment->publish;
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
@@ -354,8 +359,10 @@ subtest 'mode = dialog_post_comment' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_post_comment" );
-    ok( $out !~ m!Permission denied!i, "dialog_post_comment by permitted user" );
+    ok( $out !~ m!permission=1!i, "dialog_post_comment by permitted user" );
 
+    $comment->publish;
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $egawa,
@@ -367,8 +374,10 @@ subtest 'mode = dialog_post_comment' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_post_comment" );
-    ok( $out =~ m!Permission denied!i, "dialog_post_comment by other blog" );
+    ok( $out =~ m!permission=1!i, "dialog_post_comment by other blog" );
 
+    $comment->publish;
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kikkawa,
@@ -380,10 +389,14 @@ subtest 'mode = dialog_post_comment' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_post_comment" );
-    ok( $out =~ m!Permission denied!i, "dialog_post_comment by other permission" );
+    ok( $out =~ m!permission=1!i, "dialog_post_comment by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = do_reply' => sub {
+    $comment->approve;
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -395,8 +408,10 @@ subtest 'mode = do_reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: do_reply" );
-    ok( $out !~ m!Permission denied!i, "do_reply by admin" );
+    ok( $out !~ m!permission=1!i, "do_reply by admin" );
 
+    $comment->approve;
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
@@ -408,8 +423,10 @@ subtest 'mode = do_reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: do_reply" );
-    ok( $out !~ m!Permission denied!i, "do_reply by permitted user (manage_feedback)" );
+    ok( $out !~ m!permission=1!i, "do_reply by permitted user (manage_feedback)" );
 
+    $comment->approve;
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ichikawa,
@@ -421,8 +438,10 @@ subtest 'mode = do_reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: do_reply" );
-    ok( $out !~ m!Permission denied!i, "do_reply by permitted user (manage_pages)" );
+    ok( $out !~ m!permission=1!i, "do_reply by permitted user (manage_pages)" );
 
+    $comment->approve;
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ukawa,
@@ -434,8 +453,10 @@ subtest 'mode = do_reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: do_reply" );
-    ok( $out !~ m!Permission denied!i, "do_reply by permitted user (publish_post)" );
+    ok( $out !~ m!permission=1!i, "do_reply by permitted user (publish_post)" );
 
+    $comment->approve;
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kumekawa,
@@ -447,8 +468,10 @@ subtest 'mode = do_reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: do_reply" );
-    ok( $out =~ m!Permission denied!i, "do_reply by other user" );
+    ok( $out =~ m!permission=1!i, "do_reply by other user" );
 
+    $comment->approve;
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $egawa,
@@ -460,8 +483,10 @@ subtest 'mode = do_reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: do_reply" );
-    ok( $out =~ m!Permission denied!i, "do_reply by other blog (manage_feedback)" );
+    ok( $out =~ m!permission=1!i, "do_reply by other blog (manage_feedback)" );
 
+    $comment->approve;
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ogawa,
@@ -473,8 +498,10 @@ subtest 'mode = do_reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: do_reply" );
-    ok( $out =~ m!Permission denied!i, "do_reply by other blog (manage_pages)" );
+    ok( $out =~ m!permission=1!i, "do_reply by other blog (manage_pages)" );
 
+    $comment->approve;
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kagawa,
@@ -486,8 +513,10 @@ subtest 'mode = do_reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: do_reply" );
-    ok( $out =~ m!Permission denied!i, "do_reply by other blog (publish_post)" );
+    ok( $out =~ m!permission=1!i, "do_reply by other blog (publish_post)" );
 
+    $comment->approve;
+    $comment->save;
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kikkawa,
@@ -499,7 +528,9 @@ subtest 'mode = do_reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: do_reply" );
-    ok( $out =~ m!Permission denied!i, "do_reply by other permission" );
+    ok( $out =~ m!permission=1!i, "do_reply by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = empty_junk' => sub {
@@ -513,7 +544,7 @@ subtest 'mode = empty_junk' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: empty_junk" );
-    ok( $out !~ m!Permission denied!i, "empty_junk by admin" );
+    ok( $out !~ m!permission=1!i, "empty_junk by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -525,7 +556,7 @@ subtest 'mode = empty_junk' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: empty_junk" );
-    ok( $out !~ m!Permission denied!i, "empty_junk by permitted user" );
+    ok( $out !~ m!permission=1!i, "empty_junk by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -537,7 +568,7 @@ subtest 'mode = empty_junk' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: empty_junk" );
-    ok( $out =~ m!Permission denied!i, "empty_junk by other blog" );
+    ok( $out =~ m!permission=1!i, "empty_junk by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -549,7 +580,9 @@ subtest 'mode = empty_junk' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: empty_junk" );
-    ok( $out =~ m!Permission denied!i, "empty_junk by other permission" );
+    ok( $out =~ m!permission=1!i, "empty_junk by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = handle_junk' => sub {
@@ -622,56 +655,64 @@ subtest 'mode = handle_junk' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: handle_junk" );
     ok( $out =~ m!permission=1!i, "handle_junk by other permission" );
+
+    done_testing();
 };
 
-subtest 'mode = list_comment' => sub {
+subtest 'mode = list' => sub {
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'list_comment',
+            __mode           => 'list',
             blog_id          => $blog->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_comment" );
-    ok( $out !~ m!Permission denied!i, "list_comment by admin" );
+    ok( $out, "Request: list" );
+    ok( $out !~ m!permission=1!i, "list by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'list_comment',
+            __mode           => 'list',
             blog_id          => $blog->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_comment" );
-    ok( $out !~ m!Permission denied!i, "list_comment by permitted user" );
+    ok( $out, "Request: list" );
+    ok( $out !~ m!permission=1!i, "list by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $egawa,
             __request_method => 'POST',
-            __mode           => 'list_comment',
+            __mode           => 'list',
             blog_id          => $blog->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_comment" );
-    ok( $out =~ m!Permission denied!i, "list_comment by other blog" );
+    ok( $out, "Request: list" );
+    ok( $out =~ m!permission=1!i, "list by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kikkawa,
             __request_method => 'POST',
-            __mode           => 'list_comment',
+            __mode           => 'list',
             blog_id          => $blog->id,
+            _type            => 'comment',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_comment" );
-    ok( $out =~ m!Permission denied!i, "list_comment by other permission" );
+    ok( $out, "Request: list" );
+    ok( $out =~ m!permission=1!i, "list by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = not_junk' => sub {
@@ -744,9 +785,13 @@ subtest 'mode = not_junk' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: not_junk" );
     ok( $out =~ m!permission=1!i, "not_junk by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = reply' => sub {
+    plan skip_all => 'https://movabletype.fogbugz.com/default.asp?106816';
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -757,7 +802,7 @@ subtest 'mode = reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply" );
-    ok( $out !~ m!Permission denied!i, "reply by admin" );
+    ok( $out !~ m!permission=1!i, "reply by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -769,7 +814,7 @@ subtest 'mode = reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply" );
-    ok( $out !~ m!Permission denied!i, "reply by permitted user (manage_feedback)" );
+    ok( $out !~ m!permission=1!i, "reply by permitted user (manage_feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -781,7 +826,7 @@ subtest 'mode = reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply" );
-    ok( $out !~ m!Permission denied!i, "reply by permitted user (manage_pages)" );
+    ok( $out !~ m!permission=1!i, "reply by permitted user (manage_pages)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -793,7 +838,7 @@ subtest 'mode = reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply" );
-    ok( $out !~ m!Permission denied!i, "reply by permitted user (publish_post)" );
+    ok( $out !~ m!permission=1!i, "reply by permitted user (publish_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -805,7 +850,7 @@ subtest 'mode = reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply" );
-    ok( $out =~ m!Permission denied!i, "reply by other user" );
+    ok( $out =~ m!permission=1!i, "reply by other user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -817,7 +862,7 @@ subtest 'mode = reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply" );
-    ok( $out !~ m!Permission denied!i, "reply by other blog (manage_feedback)" );
+    ok( $out =~ m!permission=1!i, "reply by other blog (manage_feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -829,7 +874,7 @@ subtest 'mode = reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply" );
-    ok( $out !~ m!Permission denied!i, "reply by other blog (manage_pages)" );
+    ok( $out =~ m!permission=1!i, "reply by other blog (manage_pages)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -841,7 +886,7 @@ subtest 'mode = reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply" );
-    ok( $out !~ m!Permission denied!i, "reply by other blog (publish_post)" );
+    ok( $out =~ m!permission=1!i, "reply by other blog (publish_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -853,7 +898,9 @@ subtest 'mode = reply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply" );
-    ok( $out =~ m!Permission denied!i, "reply by other permission" );
+    ok( $out =~ m!permission=1!i, "reply by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = reply_preview' => sub {
@@ -868,7 +915,7 @@ subtest 'mode = reply_preview' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply_preview" );
-    ok( $out !~ m!Permission denied!i, "reply_preview by admin" );
+    ok( $out !~ m!permission=1!i, "reply_preview by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -881,7 +928,7 @@ subtest 'mode = reply_preview' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply_preview" );
-    ok( $out !~ m!Permission denied!i, "reply_preview by permitted user (manage_feedback)" );
+    ok( $out !~ m!permission=1!i, "reply_preview by permitted user (manage_feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -889,12 +936,12 @@ subtest 'mode = reply_preview' => sub {
             __request_method => 'POST',
             __mode           => 'reply_preview',
             blog_id          => $blog->id,
-            reply_to         => $comment->id,
+            reply_to         => $comment2->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply_preview" );
-    ok( $out !~ m!Permission denied!i, "reply_preview by permitted user (manage_pages)" );
+    ok( $out !~ m!permission=1!i, "reply_preview by permitted user (manage_pages)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -907,7 +954,7 @@ subtest 'mode = reply_preview' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply_preview" );
-    ok( $out !~ m!Permission denied!i, "reply_preview by permitted user (publish_post)" );
+    ok( $out !~ m!permission=1!i, "reply_preview by permitted user (publish_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -920,7 +967,7 @@ subtest 'mode = reply_preview' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply_preview" );
-    ok( $out !~ m!Permission denied!i, "reply_preview by other blog (manage_feedback)" );
+    ok( $out =~ m!permission=1!i, "reply_preview by other blog (manage_feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -933,7 +980,7 @@ subtest 'mode = reply_preview' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply_preview" );
-    ok( $out !~ m!Permission denied!i, "reply_preview by other blog (manage_pages)" );
+    ok( $out =~ m!permission=1!i, "reply_preview by other blog (manage_pages)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -946,7 +993,7 @@ subtest 'mode = reply_preview' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply_preview" );
-    ok( $out !~ m!Permission denied!i, "reply_preview by other blog (publish_post)" );
+    ok( $out =~ m!permission=1!i, "reply_preview by other blog (publish_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -959,7 +1006,9 @@ subtest 'mode = reply_preview' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply_preview" );
-    ok( $out =~ m!Permission denied!i, "reply_preview by other permission" );
+    ok( $out =~ m!permission=1!i, "reply_preview by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = save_commenter_perm' => sub {
@@ -1092,6 +1141,8 @@ subtest 'mode = save_commenter_perm' => sub {
         $perm->blog_id( $blog->id );
         $perm->save;
     }
+
+    done_testing();
 };
 
 subtest 'mode = trust_commenter' => sub {
@@ -1216,6 +1267,8 @@ subtest 'mode = trust_commenter' => sub {
         $perm->blog_id( 0 );
         $perm->save;
     }
+
+    done_testing();
 };
 
 subtest 'mode = unapprove_item' => sub {
@@ -1282,6 +1335,8 @@ subtest 'mode = unapprove_item' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: unapprove_item" );
     ok( $out =~ m!permission to approve this comment!i, "unapprove_item by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = save (new)' => sub {
@@ -1312,6 +1367,8 @@ subtest 'mode = save (new)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save (new) by permitted user" );
+
+    done_testing();
 };
 
 subtest 'mode = save (edit)' => sub {
@@ -1327,7 +1384,7 @@ subtest 'mode = save (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out !~ m!Permission denied!i, "save (edit) by admin" );
+    ok( $out !~ m!permission=1!i, "save (edit) by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1341,7 +1398,7 @@ subtest 'mode = save (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out !~ m!Permission denied!i, "save (edit) by permitted user (feedback)" );
+    ok( $out !~ m!permission=1!i, "save (edit) by permitted user (feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1355,7 +1412,7 @@ subtest 'mode = save (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out !~ m!Permission denied!i, "save (edit) by permitted user (pages)" );
+    ok( $out !~ m!permission=1!i, "save (edit) by permitted user (pages)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1369,7 +1426,7 @@ subtest 'mode = save (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out !~ m!Permission denied!i, "save (edit) by permitted user (publish)" );
+    ok( $out !~ m!permission=1!i, "save (edit) by permitted user (publish)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1383,7 +1440,7 @@ subtest 'mode = save (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out =~ m!Permission denied!i, "save (edit) by other blog" );
+    ok( $out =~ m!permission=1!i, "save (edit) by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1397,7 +1454,9 @@ subtest 'mode = save (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out =~ m!Permission denied!i, "save (edit) by other permission" );
+    ok( $out =~ m!permission=1!i, "save (edit) by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = edit (new)' => sub {
@@ -1428,6 +1487,8 @@ subtest 'mode = edit (new)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit (new) by permitted user" );
+
+    done_testing();
 };
 
 subtest 'mode = edit (edit)' => sub {
@@ -1443,7 +1504,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit (edit) by admin" );
+    ok( $out !~ m!permission=1!i, "edit (edit) by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1457,7 +1518,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit (edit) by permitted user (feedback)" );
+    ok( $out !~ m!permission=1!i, "edit (edit) by permitted user (feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1471,7 +1532,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit (edit) by permitted user (pages)" );
+    ok( $out !~ m!permission=1!i, "edit (edit) by permitted user (pages)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1485,7 +1546,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit (edit) by permitted user (publish)" );
+    ok( $out !~ m!permission=1!i, "edit (edit) by permitted user (publish)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1499,7 +1560,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit (edit) by other blog" );
+    ok( $out =~ m!permission=1!i, "edit (edit) by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1513,7 +1574,9 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit (edit) by other permission" );
+    ok( $out =~ m!permission=1!i, "edit (edit) by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = delete' => sub {
@@ -1533,7 +1596,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "delete by admin" );
+    ok( $out !~ m!permission=1!i, "delete by admin" );
 
     $comment = MT::Test::Permission->make_comment(
         entry_id => $entry->id,
@@ -1551,7 +1614,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "delete by permitted user (feedback)" );
+    ok( $out !~ m!permission=1!i, "delete by permitted user (feedback)" );
 
     $comment = MT::Test::Permission->make_comment(
         entry_id => $entry->id,
@@ -1564,12 +1627,12 @@ subtest 'mode = delete' => sub {
             __mode           => 'edit',
             blog_id          => $blog->id,
             _type            => 'comment',
-            id               => $comment->id,
+            id               => $comment2->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "delete by permitted user (pages)" );
+    ok( $out !~ m!permission=1!i, "delete by permitted user (pages)" );
 
     $comment = MT::Test::Permission->make_comment(
         entry_id => $entry->id,
@@ -1587,7 +1650,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "delete by permitted user (publish)" );
+    ok( $out !~ m!permission=1!i, "delete by permitted user (publish)" );
 
     $comment = MT::Test::Permission->make_comment(
         entry_id => $entry->id,
@@ -1605,7 +1668,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "delete by other blog" );
+    ok( $out =~ m!permission=1!i, "delete by other blog" );
 
     $comment = MT::Test::Permission->make_comment(
         entry_id => $entry->id,
@@ -1623,7 +1686,9 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "delete by other permission" );
+    ok( $out =~ m!permission=1!i, "delete by other permission" );
+
+    done_testing();
 };
 
 subtest 'action = unapprove_comment' => sub {
@@ -1635,12 +1700,12 @@ subtest 'action = unapprove_comment' => sub {
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'unapprove_comment',
+            __mode           => 'itemset_action',
             blog_id          => $blog->id,
             _type            => 'comment',
             action_name      => 'unapprove_comment',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             blog_id          => $blog->id,
             plugin_action_selector => 'unapprove_comment',
             id               => $comment->id,
@@ -1649,17 +1714,17 @@ subtest 'action = unapprove_comment' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unapprove_comment" );
-    ok( $out !~ m!Permission denied!i, "unapprove_comment by admin" );
+    ok( $out !~ m!not implemented!i, "unapprove_comment by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'unapprove_comment',
+            __mode           => 'itemset_action',
             _type            => 'comment',
             action_name      => 'unapprove_comment',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             blog_id          => $blog->id,
             plugin_action_selector => 'unapprove_comment',
             id               => $comment->id,
@@ -1668,17 +1733,17 @@ subtest 'action = unapprove_comment' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unapprove_comment" );
-    ok( $out !~ m!Permission denied!i, "unapprove_comment by permitted user" );
+    ok( $out !~ m!not implemented!i, "unapprove_comment by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $egawa,
             __request_method => 'POST',
-            __mode           => 'unapprove_comment',
+            __mode           => 'itemset_action',
             _type            => 'comment',
             action_name      => 'unapprove_comment',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             blog_id          => $blog->id,
             plugin_action_selector => 'unapprove_comment',
             id               => $comment->id,
@@ -1687,16 +1752,17 @@ subtest 'action = unapprove_comment' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unapprove_comment" );
-    ok( $out =~ m!Permission denied!i, "unapprove_comment by other blog" );
+    ok( $out =~ m!not implemented!i, "unapprove_comment by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kikkawa,
             __request_method => 'POST',
-            __mode           => 'unapprove_comment',
+            __mode           => 'itemset_action',
+            _type            => 'comment',
             action_name      => 'unapprove_comment',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             blog_id          => $blog->id,
             plugin_action_selector => 'unapprove_comment',
             id               => $comment->id,
@@ -1705,11 +1771,13 @@ subtest 'action = unapprove_comment' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unapprove_comment" );
-    ok( $out =~ m!Permission denied!i, "unapprove_comment by other permission" );
+    ok( $out =~ m!not implemented!i, "unapprove_comment by other permission" );
+
+    done_testing();
 };
 
 subtest 'action = ban_commenter' => sub {
-    MT->config( 'SingleCommunity', 0, 1 );
+    MT->config( 'SingleCommunity', 0 );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1719,15 +1787,16 @@ subtest 'action = ban_commenter' => sub {
             _type            => 'comment',
             action_name      => 'ban_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'ban_commenter',
-            id               => $comment->commenter_id,
+            id               => $comment->id,
             plugin_action_selector => 'ban_commenter',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ban_commenter" );
-    ok( $out !~ m!Permission denied!i, "ban_commenter by admin (SC0)" );
+    ok( $out !~ m!not implemented!i, "ban_commenter by admin (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1737,15 +1806,16 @@ subtest 'action = ban_commenter' => sub {
             _type            => 'comment',
             action_name      => 'ban_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'ban_commenter',
-            id               => $comment->commenter_id,
+            id               => $comment->id,
             plugin_action_selector => 'ban_commenter',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ban_commenter" );
-    ok( $out !~ m!Permission denied!i, "ban_commenter by permitted user (SC0)" );
+    ok( $out !~ m!not implemented!i, "ban_commenter by permitted user (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1755,15 +1825,16 @@ subtest 'action = ban_commenter' => sub {
             _type            => 'comment',
             action_name      => 'ban_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'ban_commenter',
-            id               => $comment->commenter_id,
+            id               => $comment->id,
             plugin_action_selector => 'ban_commenter',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ban_commenter" );
-    ok( $out =~ m!Permission denied!i, "ban_commenter by other blog (SC0)" );
+    ok( $out =~ m!not implemented!i, "ban_commenter by other blog (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1773,17 +1844,18 @@ subtest 'action = ban_commenter' => sub {
             _type            => 'comment',
             action_name      => 'ban_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'ban_commenter',
-            id               => $comment->commenter_id,
+            id               => $comment->id,
             plugin_action_selector => 'ban_commenter',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ban_commenter" );
-    ok( $out =~ m!Permission denied!i, "ban_commenter by other permission (SC0)" );
+    ok( $out =~ m!not implemented!i, "ban_commenter by other permission (SC0)" );
 
-    MT->config( 'SingleCommunity', 1, 1 );
+    MT->config( 'SingleCommunity', 1 );
     require MT::Permission;
     my $perm = MT::Permission->load({
         author_id => $kemikawa->id,
@@ -1802,15 +1874,15 @@ subtest 'action = ban_commenter' => sub {
             _type            => 'comment',
             action_name      => 'ban_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'ban_commenter',
-            id               => $comment->commenter_id,
+            id               => $comment->id,
             plugin_action_selector => 'ban_commenter',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ban_commenter" );
-    ok( $out !~ m!Permission denied!i, "ban_commenter by admin (SC1)" );
+    ok( $out !~ m!not implemented!i, "ban_commenter by admin (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1820,15 +1892,15 @@ subtest 'action = ban_commenter' => sub {
             _type            => 'comment',
             action_name      => 'ban_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'ban_commenter',
-            id               => $comment->commenter_id,
+            id               => $comment->id,
             plugin_action_selector => 'ban_commenter',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ban_commenter" );
-    ok( $out =~ m!Permission denied!i, "ban_commenter by permitted user (SC1)" );
+    ok( $out =~ m!not implemented!i, "ban_commenter by permitted user (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1838,15 +1910,15 @@ subtest 'action = ban_commenter' => sub {
             _type            => 'comment',
             action_name      => 'ban_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'ban_commenter',
-            id               => $comment->commenter_id,
+            id               => $comment->id,
             plugin_action_selector => 'ban_commenter',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ban_commenter" );
-    ok( $out =~ m!Permission denied!i, "ban_commenter by other blog (SC1)" );
+    ok( $out =~ m!not implemented!i, "ban_commenter by other blog (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1856,24 +1928,35 @@ subtest 'action = ban_commenter' => sub {
             _type            => 'comment',
             action_name      => 'ban_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'ban_commenter',
-            id               => $comment->commenter_id,
+            id               => $comment->id,
             plugin_action_selector => 'ban_commenter',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ban_commenter" );
-    ok( $out =~ m!Permission denied!i, "ban_commenter by other permission (SC1)" );
+    ok( $out =~ m!not implemented!i, "ban_commenter by other permission (SC1)" );
 
     if ( $perm ) {
         $perm->blog_id( 0 );
         $perm->save;
     }
+
+    done_testing();
 };
 
 subtest 'action = unban_commenter' => sub {
-    MT->config( 'SingleCommunity', 0, 1 );
+    MT->config( 'SingleCommunity', 0 );
+    require MT::Permission;
+    my $perm = MT::Permission->load({
+        author_id => $kemikawa->id,
+        blog_id   => 0,
+    });
+    if ( $perm ) {
+        $perm->blog_id( $blog->id );
+        $perm->save;
+    }
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1883,15 +1966,16 @@ subtest 'action = unban_commenter' => sub {
             _type            => 'comment',
             action_name      => 'unban_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'unban_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'unban_commenter',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unban_commenter" );
-    ok( $out !~ m!Permission denied!i, "unban_commenter by admin (SC0)" );
+    ok( $out !~ m!not implemented!i, "unban_commenter by admin (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1901,15 +1985,16 @@ subtest 'action = unban_commenter' => sub {
             _type            => 'comment',
             action_name      => 'unban_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'unban_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'unban_commenter',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unban_commenter" );
-    ok( $out !~ m!Permission denied!i, "unban_commenter by permitted user (SC0)" );
+    ok( $out !~ m!not implemented!i, "unban_commenter by permitted user (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1919,15 +2004,16 @@ subtest 'action = unban_commenter' => sub {
             _type            => 'comment',
             action_name      => 'unban_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'unban_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'unban_commenter',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unban_commenter" );
-    ok( $out =~ m!Permission denied!i, "unban_commenter by other blog (SC0)" );
+    ok( $out =~ m!not implemented!i, "unban_commenter by other blog (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1937,19 +2023,19 @@ subtest 'action = unban_commenter' => sub {
             _type            => 'comment',
             action_name      => 'unban_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'unban_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'unban_commenter',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unban_commenter" );
-    ok( $out =~ m!Permission denied!i, "unban_commenter by other permission (SC0)" );
+    ok( $out =~ m!not implemented!i, "unban_commenter by other permission (SC0)" );
 
-    MT->config( 'SingleCommunity', 1, 1 );
-    require MT::Permission;
-    my $perm = MT::Permission->load({
+    MT->config( 'SingleCommunity', 1 );
+    $perm = MT::Permission->load({
         author_id => $kemikawa->id,
         blog_id   => $blog->id,
     });
@@ -1966,7 +2052,7 @@ subtest 'action = unban_commenter' => sub {
             _type            => 'comment',
             action_name      => 'unban_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'unban_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'unban_commenter',
@@ -1974,7 +2060,7 @@ subtest 'action = unban_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unban_commenter" );
-    ok( $out !~ m!Permission denied!i, "unban_commenter by admin (SC1)" );
+    ok( $out !~ m!not implemented!i, "unban_commenter by admin (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1984,7 +2070,7 @@ subtest 'action = unban_commenter' => sub {
             _type            => 'comment',
             action_name      => 'unban_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'unban_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'unban_commenter',
@@ -1992,7 +2078,7 @@ subtest 'action = unban_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unban_commenter" );
-    ok( $out =~ m!Permission denied!i, "unban_commenter by permitted user (SC1)" );
+    ok( $out =~ m!not implemented!i, "unban_commenter by permitted user (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2002,7 +2088,7 @@ subtest 'action = unban_commenter' => sub {
             _type            => 'comment',
             action_name      => 'unban_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'unban_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'unban_commenter',
@@ -2010,7 +2096,7 @@ subtest 'action = unban_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unban_commenter" );
-    ok( $out =~ m!Permission denied!i, "unban_commenter by other blog (SC1)" );
+    ok( $out =~ m!not implemented!i, "unban_commenter by other blog (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2020,7 +2106,7 @@ subtest 'action = unban_commenter' => sub {
             _type            => 'comment',
             action_name      => 'unban_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'unban_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'unban_commenter',
@@ -2028,16 +2114,22 @@ subtest 'action = unban_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unban_commenter" );
-    ok( $out =~ m!Permission denied!i, "unban_commenter by other permission (SC1)" );
+    ok( $out =~ m!not implemented!i, "unban_commenter by other permission (SC1)" );
 
-    if ( $perm ) {
-        $perm->blog_id( 0 );
-        $perm->save;
-    }
+    done_testing();
 };
 
 subtest 'action = trust_commenter' => sub {
-    MT->config( 'SingleCommunity', 0, 1 );
+    MT->config( 'SingleCommunity', 0 );
+    require MT::Permission;
+    my $perm = MT::Permission->load({
+        author_id => $kemikawa->id,
+        blog_id   => 0,
+    });
+    if ( $perm ) {
+        $perm->blog_id( $blog->id );
+        $perm->save;
+    }
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2047,15 +2139,16 @@ subtest 'action = trust_commenter' => sub {
             _type            => 'comment',
             action_name      => 'trust_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'trust_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'trust_commenter',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: trust_commenter" );
-    ok( $out !~ m!Permission denied!i, "trust_commenter by admin (SC0)" );
+    ok( $out !~ m!not implemented!i, "trust_commenter by admin (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2065,15 +2158,16 @@ subtest 'action = trust_commenter' => sub {
             _type            => 'comment',
             action_name      => 'trust_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'trust_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'trust_commenter',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: trust_commenter" );
-    ok( $out !~ m!Permission denied!i, "trust_commenter by permitted user (SC0)" );
+    ok( $out !~ m!not implemented!i, "trust_commenter by permitted user (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2083,15 +2177,16 @@ subtest 'action = trust_commenter' => sub {
             _type            => 'comment',
             action_name      => 'trust_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'trust_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'trust_commenter',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: trust_commenter" );
-    ok( $out =~ m!Permission denied!i, "trust_commenter by other blog (SC0)" );
+    ok( $out =~ m!not implemented!i, "trust_commenter by other blog (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2101,19 +2196,19 @@ subtest 'action = trust_commenter' => sub {
             _type            => 'comment',
             action_name      => 'trust_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'trust_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'trust_commenter',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: trust_commenter" );
-    ok( $out =~ m!Permission denied!i, "trust_commenter by other permission (SC0)" );
+    ok( $out =~ m!not implemented!i, "trust_commenter by other permission (SC0)" );
 
     MT->config( 'SingleCommunity', 1, 1 );
-    require MT::Permission;
-    my $perm = MT::Permission->load({
+    $perm = MT::Permission->load({
         author_id => $kemikawa->id,
         blog_id   => $blog->id,
     });
@@ -2130,7 +2225,7 @@ subtest 'action = trust_commenter' => sub {
             _type            => 'comment',
             action_name      => 'trust_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'trust_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'trust_commenter',
@@ -2138,7 +2233,7 @@ subtest 'action = trust_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: trust_commenter" );
-    ok( $out !~ m!Permission denied!i, "trust_commenter by admin (SC1)" );
+    ok( $out !~ m!not implemented!i, "trust_commenter by admin (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2148,7 +2243,7 @@ subtest 'action = trust_commenter' => sub {
             _type            => 'comment',
             action_name      => 'trust_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'trust_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'trust_commenter',
@@ -2156,7 +2251,7 @@ subtest 'action = trust_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: trust_commenter" );
-    ok( $out =~ m!Permission denied!i, "trust_commenter by permitted user (SC1)" );
+    ok( $out =~ m!not implemented!i, "trust_commenter by permitted user (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2166,7 +2261,7 @@ subtest 'action = trust_commenter' => sub {
             _type            => 'comment',
             action_name      => 'trust_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'trust_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'trust_commenter',
@@ -2174,7 +2269,7 @@ subtest 'action = trust_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: trust_commenter" );
-    ok( $out =~ m!Permission denied!i, "trust_commenter by other blog (SC1)" );
+    ok( $out =~ m!not implemented!i, "trust_commenter by other blog (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2184,7 +2279,7 @@ subtest 'action = trust_commenter' => sub {
             _type            => 'comment',
             action_name      => 'trust_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'trust_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'trust_commenter',
@@ -2192,16 +2287,22 @@ subtest 'action = trust_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: trust_commenter" );
-    ok( $out =~ m!Permission denied!i, "trust_commenter by other permission (SC1)" );
+    ok( $out =~ m!not implemented!i, "trust_commenter by other permission (SC1)" );
 
-    if ( $perm ) {
-        $perm->blog_id( 0 );
-        $perm->save;
-    }
+    done_testing();
 };
 
 subtest 'action = untrust_commenter' => sub {
-    MT->config( 'SingleCommunity', 0, 1 );
+    MT->config( 'SingleCommunity', 0 );
+    require MT::Permission;
+    my $perm = MT::Permission->load({
+        author_id => $kemikawa->id,
+        blog_id   => 0,
+    });
+    if ( $perm ) {
+        $perm->blog_id( $blog->id );
+        $perm->save;
+    }
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2211,15 +2312,16 @@ subtest 'action = untrust_commenter' => sub {
             _type            => 'comment',
             action_name      => 'untrust_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'untrust_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'untrust_commenter',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: untrust_commenter" );
-    ok( $out !~ m!Permission denied!i, "untrust_commenter by admin (SC0)" );
+    ok( $out !~ m!not implemented!i, "untrust_commenter by admin (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2229,15 +2331,16 @@ subtest 'action = untrust_commenter' => sub {
             _type            => 'comment',
             action_name      => 'untrust_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'untrust_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'untrust_commenter',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: untrust_commenter" );
-    ok( $out !~ m!Permission denied!i, "untrust_commenter by permitted user (SC0)" );
+    ok( $out !~ m!not implemented!i, "untrust_commenter by permitted user (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2247,15 +2350,16 @@ subtest 'action = untrust_commenter' => sub {
             _type            => 'comment',
             action_name      => 'untrust_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'untrust_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'untrust_commenter',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: untrust_commenter" );
-    ok( $out =~ m!Permission denied!i, "untrust_commenter by other blog (SC0)" );
+    ok( $out =~ m!not implemented!i, "untrust_commenter by other blog (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2265,19 +2369,19 @@ subtest 'action = untrust_commenter' => sub {
             _type            => 'comment',
             action_name      => 'untrust_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'untrust_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'untrust_commenter',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: untrust_commenter" );
-    ok( $out =~ m!Permission denied!i, "untrust_commenter by other permission (SC0)" );
+    ok( $out =~ m!not implemented!i, "untrust_commenter by other permission (SC0)" );
 
     MT->config( 'SingleCommunity', 1, 1 );
-    require MT::Permission;
-    my $perm = MT::Permission->load({
+    $perm = MT::Permission->load({
         author_id => $kemikawa->id,
         blog_id   => $blog->id,
     });
@@ -2294,7 +2398,7 @@ subtest 'action = untrust_commenter' => sub {
             _type            => 'comment',
             action_name      => 'untrust_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'untrust_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'untrust_commenter',
@@ -2302,7 +2406,7 @@ subtest 'action = untrust_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: untrust_commenter" );
-    ok( $out !~ m!Permission denied!i, "untrust_commenter by admin (SC1)" );
+    ok( $out !~ m!not implemented!i, "untrust_commenter by admin (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2312,7 +2416,7 @@ subtest 'action = untrust_commenter' => sub {
             _type            => 'comment',
             action_name      => 'untrust_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'untrust_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'untrust_commenter',
@@ -2320,7 +2424,7 @@ subtest 'action = untrust_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: untrust_commenter" );
-    ok( $out =~ m!Permission denied!i, "untrust_commenter by permitted user (SC1)" );
+    ok( $out =~ m!not implemented!i, "untrust_commenter by permitted user (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2330,7 +2434,7 @@ subtest 'action = untrust_commenter' => sub {
             _type            => 'comment',
             action_name      => 'untrust_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'untrust_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'untrust_commenter',
@@ -2338,7 +2442,7 @@ subtest 'action = untrust_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: untrust_commenter" );
-    ok( $out =~ m!Permission denied!i, "untrust_commenter by other blog (SC1)" );
+    ok( $out =~ m!not implemented!i, "untrust_commenter by other blog (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2348,7 +2452,7 @@ subtest 'action = untrust_commenter' => sub {
             _type            => 'comment',
             action_name      => 'untrust_commenter',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'untrust_commenter',
             id               => $comment->commenter_id,
             plugin_action_selector => 'untrust_commenter',
@@ -2356,16 +2460,22 @@ subtest 'action = untrust_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: untrust_commenter" );
-    ok( $out =~ m!Permission denied!i, "untrust_commenter by other permission (SC1)" );
+    ok( $out =~ m!not implemented!i, "untrust_commenter by other permission (SC1)" );
 
-    if ( $perm ) {
-        $perm->blog_id( 0 );
-        $perm->save;
-    }
+    done_testing();
 };
 
 subtest 'action = untrust' => sub {
-    MT->config( 'SingleCommunity', 0, 1 );
+    MT->config( 'SingleCommunity', 0 );
+    require MT::Permission;
+    my $perm = MT::Permission->load({
+        author_id => $kemikawa->id,
+        blog_id   => 0,
+    });
+    if ( $perm ) {
+        $perm->blog_id( $blog->id );
+        $perm->save;
+    }
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2375,15 +2485,16 @@ subtest 'action = untrust' => sub {
             _type            => 'commenter',
             action_name      => 'untrust',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'untrust',
             id               => $comment->commenter_id,
             plugin_action_selector => 'untrust',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: untrust" );
-    ok( $out !~ m!Permission denied!i, "untrust by admin (SC0)" );
+    ok( $out !~ m!not implemented!i, "untrust by admin (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2393,15 +2504,16 @@ subtest 'action = untrust' => sub {
             _type            => 'commenter',
             action_name      => 'untrust',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'untrust',
             id               => $comment->commenter_id,
             plugin_action_selector => 'untrust',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: untrust" );
-    ok( $out !~ m!Permission denied!i, "untrust by permitted user (SC0)" );
+    ok( $out =~ m!not implemented!i, "untrust by permitted user (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2411,15 +2523,16 @@ subtest 'action = untrust' => sub {
             _type            => 'commenter',
             action_name      => 'untrust',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'untrust',
             id               => $comment->commenter_id,
             plugin_action_selector => 'untrust',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: untrust" );
-    ok( $out =~ m!Permission denied!i, "untrust by other blog (SC0)" );
+    ok( $out =~ m!not implemented!i, "untrust by other blog (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2429,19 +2542,19 @@ subtest 'action = untrust' => sub {
             _type            => 'commenter',
             action_name      => 'untrust',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'untrust',
             id               => $comment->commenter_id,
             plugin_action_selector => 'untrust',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: untrust" );
-    ok( $out =~ m!Permission denied!i, "untrust by other permission (SC0)" );
+    ok( $out =~ m!not implemented!i, "untrust by other permission (SC0)" );
 
-    MT->config( 'SingleCommunity', 1, 1 );
-    require MT::Permission;
-    my $perm = MT::Permission->load({
+    MT->config( 'SingleCommunity', 1 );
+    $perm = MT::Permission->load({
         author_id => $kemikawa->id,
         blog_id   => $blog->id,
     });
@@ -2458,7 +2571,7 @@ subtest 'action = untrust' => sub {
             _type            => 'commenter',
             action_name      => 'untrust',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'untrust',
             id               => $comment->commenter_id,
             plugin_action_selector => 'untrust',
@@ -2466,7 +2579,7 @@ subtest 'action = untrust' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: untrust" );
-    ok( $out !~ m!Permission denied!i, "untrust by admin (SC1)" );
+    ok( $out !~ m!not implemented!i, "untrust by admin (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2476,7 +2589,7 @@ subtest 'action = untrust' => sub {
             _type            => 'commenter',
             action_name      => 'untrust',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'untrust',
             id               => $comment->commenter_id,
             plugin_action_selector => 'untrust',
@@ -2484,7 +2597,7 @@ subtest 'action = untrust' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: untrust" );
-    ok( $out =~ m!Permission denied!i, "untrust by permitted user (SC1)" );
+    ok( $out =~ m!not implemented!i, "untrust by permitted user (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2494,7 +2607,7 @@ subtest 'action = untrust' => sub {
             _type            => 'commenter',
             action_name      => 'untrust',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'untrust',
             id               => $comment->commenter_id,
             plugin_action_selector => 'untrust',
@@ -2502,7 +2615,7 @@ subtest 'action = untrust' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: untrust" );
-    ok( $out =~ m!Permission denied!i, "untrust by other blog (SC1)" );
+    ok( $out =~ m!not implemented!i, "untrust by other blog (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2512,7 +2625,7 @@ subtest 'action = untrust' => sub {
             _type            => 'commenter',
             action_name      => 'untrust',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'untrust',
             id               => $comment->commenter_id,
             plugin_action_selector => 'untrust',
@@ -2520,16 +2633,27 @@ subtest 'action = untrust' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: untrust" );
-    ok( $out =~ m!Permission denied!i, "untrust by other permission (SC1)" );
+    ok( $out =~ m!not implemented!i, "untrust by other permission (SC1)" );
 
     if ( $perm ) {
         $perm->blog_id( 0 );
         $perm->save;
     }
+
+    done_testing();
 };
 
 subtest 'action = unban' => sub {
-    MT->config( 'SingleCommunity', 0, 1 );
+    MT->config( 'SingleCommunity', 0 );
+    require MT::Permission;
+    my $perm = MT::Permission->load({
+        author_id => $kemikawa->id,
+        blog_id   => 0,
+    });
+    if ( $perm ) {
+        $perm->blog_id( $blog->id );
+        $perm->save;
+    }
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2539,15 +2663,16 @@ subtest 'action = unban' => sub {
             _type            => 'commenter',
             action_name      => 'unban',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'unban',
             id               => $comment->commenter_id,
             plugin_action_selector => 'unban',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unban" );
-    ok( $out !~ m!Permission denied!i, "unban by admin (SC0)" );
+    ok( $out !~ m!not implemented!i, "unban by admin (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2557,15 +2682,16 @@ subtest 'action = unban' => sub {
             _type            => 'commenter',
             action_name      => 'unban',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'unban',
             id               => $comment->commenter_id,
             plugin_action_selector => 'unban',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unban" );
-    ok( $out !~ m!Permission denied!i, "unban by permitted user (SC0)" );
+    ok( $out =~ m!not implemented!i, "unban by permitted user (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2575,15 +2701,16 @@ subtest 'action = unban' => sub {
             _type            => 'commenter',
             action_name      => 'unban',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'unban',
             id               => $comment->commenter_id,
             plugin_action_selector => 'unban',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unban" );
-    ok( $out =~ m!Permission denied!i, "unban by other blog (SC0)" );
+    ok( $out =~ m!not implemented!i, "unban by other blog (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2593,19 +2720,19 @@ subtest 'action = unban' => sub {
             _type            => 'commenter',
             action_name      => 'unban',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'unban',
             id               => $comment->commenter_id,
             plugin_action_selector => 'unban',
+            blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unban" );
-    ok( $out =~ m!Permission denied!i, "unban by other permission (SC0)" );
+    ok( $out =~ m!not implemented!i, "unban by other permission (SC0)" );
 
-    MT->config( 'SingleCommunity', 1, 1 );
-    require MT::Permission;
-    my $perm = MT::Permission->load({
+    MT->config( 'SingleCommunity', 1 );
+    $perm = MT::Permission->load({
         author_id => $kemikawa->id,
         blog_id   => $blog->id,
     });
@@ -2622,7 +2749,7 @@ subtest 'action = unban' => sub {
             _type            => 'commenter',
             action_name      => 'unban',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'unban',
             id               => $comment->commenter_id,
             plugin_action_selector => 'unban',
@@ -2630,7 +2757,7 @@ subtest 'action = unban' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unban" );
-    ok( $out !~ m!Permission denied!i, "unban by admin (SC1)" );
+    ok( $out !~ m!not implemented!i, "unban by admin (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2640,7 +2767,7 @@ subtest 'action = unban' => sub {
             _type            => 'commenter',
             action_name      => 'unban',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'unban',
             id               => $comment->commenter_id,
             plugin_action_selector => 'unban',
@@ -2648,7 +2775,7 @@ subtest 'action = unban' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unban" );
-    ok( $out =~ m!Permission denied!i, "unban by permitted user (SC1)" );
+    ok( $out =~ m!not implemented!i, "unban by permitted user (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2658,7 +2785,7 @@ subtest 'action = unban' => sub {
             _type            => 'commenter',
             action_name      => 'unban',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'unban',
             id               => $comment->commenter_id,
             plugin_action_selector => 'unban',
@@ -2666,7 +2793,7 @@ subtest 'action = unban' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unban" );
-    ok( $out =~ m!Permission denied!i, "unban by other blog (SC1)" );
+    ok( $out =~ m!not implemented!i, "unban by other blog (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2676,7 +2803,7 @@ subtest 'action = unban' => sub {
             _type            => 'commenter',
             action_name      => 'unban',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_comment%26blog_id%3D'.$blog->id,
+            return_args      => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'.$blog->id,
             plugin_action_selector => 'unban',
             id               => $comment->commenter_id,
             plugin_action_selector => 'unban',
@@ -2684,12 +2811,9 @@ subtest 'action = unban' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unban" );
-    ok( $out =~ m!Permission denied!i, "unban by other permission (SC1)" );
+    ok( $out =~ m!not implemented!i, "unban by other permission (SC1)" );
 
-    if ( $perm ) {
-        $perm->blog_id( 0 );
-        $perm->save;
-    }
+    done_testing();
 };
 
 done_testing();

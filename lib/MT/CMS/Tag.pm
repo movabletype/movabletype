@@ -67,28 +67,30 @@ sub rename_tag {
         }
         else {
             my $anti_ot_terms = {
-                ( $blog_id ? ( blog_id => $blog_id ) : () ),
+                ( $blog_id ? ( blog_id => { not => $blog_id } ) : () ),
                 tag_id => $tag->id,
             };
             if ( my $ot_test = $ot_class->load($anti_ot_terms) ) {
                 $new_tag = $tag->clone;
                 $new_tag->name($name);
-                $new_tag->save();
+                $new_tag->id(undef);
+
+                my $ot_terms = {
+                    ( $blog_id ? ( blog_id => $blog_id ) : () ),
+                    tag_id => $tag->id,
+                };
+                my @ots = $ot_class->load($ot_terms);
+                if ( scalar @ots ) {
+                    $new_tag->save();
+                    for my $ot (@ots) {
+                        $ot->tag_id( $new_tag->id );
+                        $ot->save;
+                    }
+                }
             }
             else {
                 $tag->name($name);
                 $tag->save();
-            }
-        }
-        if ($new_tag) {
-            my $ot_terms = {
-                ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                tag_id => $tag->id,
-            };
-            my @ots = $ot_class->load($ot_terms);
-            for my $ot (@ots) {
-                $ot->tag_id( $new_tag->id );
-                $ot->save;
             }
         }
     }

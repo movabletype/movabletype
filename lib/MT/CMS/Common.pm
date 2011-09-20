@@ -26,9 +26,8 @@ sub save {
         return $app->forward($save_mode);
     }
 
-    my $reg = $app->registry('disable_object_methods', $type);
     return $app->errtrans("Invalid request.")
-        if $reg && $reg->{save};
+        if is_disabled_mode( $app, 'save', $type );
 
     my $id = $q->param('id');
     $q->param( 'allow_pings', 0 )
@@ -520,9 +519,8 @@ sub edit {
         return $app->forward( $edit_mode, @_ );
     }
 
-    my $reg = $app->registry('disable_object_methods', $type);
     return $app->errtrans("Invalid request.")
-        if $reg && $reg->{edit};
+        if is_disabled_mode( $app, 'edit', $type );
 
     my %param = eval { $_[0] ? %{ $_[0] } : (); };
     die Carp::longmess if $@;
@@ -1569,9 +1567,8 @@ sub delete {
         return $app->forward($delete_mode);
     }
 
-    my $reg = $app->registry('disable_object_methods', $type);
     return $app->errtrans("Invalid request.")
-        if $reg && $reg->{delete};
+        if is_disabled_mode( $app, 'delete', $type );
 
     my $parent  = $q->param('parent');
     my $blog_id = $q->param('blog_id');
@@ -2069,6 +2066,25 @@ sub save_snapshot {
 sub empty_dialog {
     my $app = shift;
     $app->build_page('dialog/empty_dialog.tmpl');
+}
+
+sub is_disabled_mode {
+    my $app = shift;
+    my ( $mode, $type ) = @_;
+
+    my $res;
+    if ( my $reg = $app->registry('disable_object_methods', $type) ) {
+        if ( defined $reg->{$mode} ) {
+            if ( 'CODE' eq ref $reg->{$mode} ) {
+                my $code = $reg->{$mode};
+                $code = MT->handler_to_coderef($code);
+                $res = $code->();
+            } else {
+                $res = $reg->{$mode};
+            }
+        }
+    }
+    return $res;
 }
 
 1;
