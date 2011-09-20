@@ -2337,6 +2337,16 @@ sub core_disable_object_methods {
             delete => 1,
             edit   => 1,
         },
+        category => {
+            save => sub {
+                return 0 if $app->param('id');
+                return 1;
+            },
+            edit => sub {
+                return 0 if $app->param('id');
+                return 1;
+            },
+        },
         comment => {
             save => sub {
                 return 0 if $app->param('id');
@@ -2351,6 +2361,16 @@ sub core_disable_object_methods {
             save   => 1,
             delete => 1,
             edit   => 1,
+        },
+        folder => {
+            save => sub {
+                return 0 if $app->param('id');
+                return 1;
+            },
+            edit => sub {
+                return 0 if $app->param('id');
+                return 1;
+            },
         },
         log => {
             save   => 1,
