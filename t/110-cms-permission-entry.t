@@ -174,7 +174,7 @@ subtest 'mode = cfg_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_entry" );
-    ok( $out !~ m!Permission denied!i, "cfg_entry by admin" );
+    ok( $out !~ m!permission=1!i, "cfg_entry by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -186,7 +186,7 @@ subtest 'mode = cfg_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_entry" );
-    ok( $out !~ m!Permission denied!i, "cfg_entry by permitted user" );
+    ok( $out !~ m!permission=1!i, "cfg_entry by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -198,7 +198,7 @@ subtest 'mode = cfg_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_entry" );
-    ok( $out =~ m!Permission denied!i, "cfg_entry by other blog" );
+    ok( $out =~ m!permission=1!i, "cfg_entry by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -210,7 +210,7 @@ subtest 'mode = cfg_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_entry" );
-    ok( $out =~ m!Permission denied!i, "cfg_entry by other permission" );
+    ok( $out =~ m!permission=1!i, "cfg_entry by other permission" );
 };
 
 subtest 'mode = delete_entry' => sub {
@@ -225,7 +225,7 @@ subtest 'mode = delete_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete_entry" );
-    ok( $out !~ m!Permission denied!i, "delete_entry by admin" );
+    ok( $out !~ m!permission=1!i, "delete_entry by admin" );
 
     $entry = MT::Test::Permission->make_entry(
         blog_id        => $blog->id,
@@ -243,7 +243,7 @@ subtest 'mode = delete_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete_entry" );
-    ok( $out !~ m!Permission denied!i, "delete_entry by permitted user (create_post)" );
+    ok( $out !~ m!permission=1!i, "delete_entry by permitted user (create_post)" );
 
     $entry = MT::Test::Permission->make_entry(
         blog_id        => $blog->id,
@@ -261,7 +261,7 @@ subtest 'mode = delete_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete_entry" );
-    ok( $out !~ m!Permission denied!i, "delete_entry by permitted user (edit_all_posts)" );
+    ok( $out !~ m!permission=1!i, "delete_entry by permitted user (edit_all_posts)" );
 
     $entry = MT::Test::Permission->make_entry(
         blog_id        => $blog->id,
@@ -279,7 +279,7 @@ subtest 'mode = delete_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete_entry" );
-    ok( $out =~ m!Permission denied!i, "delete_entry by other user" );
+    ok( $out =~ m!permission=1!i, "delete_entry by other user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -292,7 +292,7 @@ subtest 'mode = delete_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete_entry" );
-    ok( $out =~ m!Permission denied!i, "delete_entry by other permission" );
+    ok( $out =~ m!permission=1!i, "delete_entry by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -305,11 +305,11 @@ subtest 'mode = delete_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete_entry" );
-    ok( $out =~ m!Permission denied!i, "delete_entry by other blog" );
+    ok( $out =~ m!permission=1!i, "delete_entry by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $egawa,
+        {   __test_user      => $ukawa,
             __request_method => 'POST',
             __mode           => 'delete_entry',
             blog_id          => $blog->id,
@@ -318,7 +318,7 @@ subtest 'mode = delete_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete_entry" );
-    ok( $out =~ m!Permission denied!i, "delete_entry by type mismatch" );
+    ok( $out =~ m!permission=1!i, "delete_entry by type mismatch" );
 
 };
 
@@ -334,7 +334,7 @@ subtest 'mode = list_entries' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_entries" );
-    ok( $out !~ m!Permission denied!i, "list_entries by admin" );
+    ok( $out !~ m!permission=1!i, "list_entries by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -347,7 +347,7 @@ subtest 'mode = list_entries' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_entries" );
-    ok( $out !~ m!Permission denied!i, "list_entries by permitted user (create_post)" );
+    ok( $out !~ m!permission=1!i, "list_entries by permitted user (create_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -360,7 +360,7 @@ subtest 'mode = list_entries' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_entries" );
-    ok( $out !~ m!Permission denied!i, "list_entries by permitted user (edit_all_posts)" );
+    ok( $out !~ m!permission=1!i, "list_entries by permitted user (edit_all_posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -373,7 +373,7 @@ subtest 'mode = list_entries' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_entries" );
-    ok( $out =~ m!Permission denied!i, "list_entries by other permission" );
+    ok( $out =~ m!permission=1!i, "list_entries by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -386,7 +386,7 @@ subtest 'mode = list_entries' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_entries" );
-    ok( $out =~ m!Permission denied!i, "list_entries by other blog" );
+    ok( $out =~ m!permission=1!i, "list_entries by other blog" );
 };
 
 subtest 'mode = pinged_urls' => sub {
@@ -401,7 +401,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out !~ m!Permission denied!i, "pinged_urls by admin" );
+    ok( $out !~ m!permission=1!i, "pinged_urls by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -414,7 +414,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out !~ m!Permission denied!i, "pinged_urls by permitted user (create_post)" );
+    ok( $out !~ m!permission=1!i, "pinged_urls by permitted user (create_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -427,7 +427,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out !~ m!Permission denied!i, "pinged_urls by permitted user (edit_all_posts)" );
+    ok( $out !~ m!permission=1!i, "pinged_urls by permitted user (edit_all_posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -440,7 +440,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out !~ m!Permission denied!i, "pinged_urls by permitted user (manage_page)" );
+    ok( $out !~ m!permission=1!i, "pinged_urls by permitted user (manage_page)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -453,7 +453,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out =~ m!Permission denied!i, "pinged_urls by other user" );
+    ok( $out =~ m!permission=1!i, "pinged_urls by other user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -466,7 +466,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out =~ m!Permission denied!i, "pinged_urls by other permission" );
+    ok( $out =~ m!permission=1!i, "pinged_urls by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -479,7 +479,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out =~ m!Permission denied!i, "pinged_urls by other blog" );
+    ok( $out =~ m!invalid request!i, "pinged_urls by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -492,7 +492,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out =~ m!Permission denied!i, "pinged_urls by type mismatch" );
+    ok( $out =~ m!permission=1!i, "pinged_urls by type mismatch" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -505,7 +505,7 @@ subtest 'mode = pinged_urls' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: pinged_urls" );
-    ok( $out =~ m!Permission denied!i, "pinged_urls by type mismatch" );
+    ok( $out =~ m!permission=1!i, "pinged_urls by type mismatch" );
 };
 
 subtest 'mode = preview_entry' => sub {
@@ -520,7 +520,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out !~ m!redirect=1!i, "preview_entry by admin" );
+    ok( $out !~ m!permission=1!i, "preview_entry by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -533,7 +533,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out !~ m!redirect=1!i, "preview_entry by permitted user (create_post)" );
+    ok( $out !~ m!permission=1!i, "preview_entry by permitted user (create_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -546,7 +546,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out !~ m!redirect=1!i, "preview_entry by permitted user (edit_all_posts)" );
+    ok( $out !~ m!permission=1!i, "preview_entry by permitted user (edit_all_posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -559,7 +559,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out !~ m!redirect=1!i, "preview_entry by permitted user (manage_page)" );
+    ok( $out !~ m!permission=1!i, "preview_entry by permitted user (manage_page)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -572,7 +572,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out =~ m!redirect=1!i, "preview_entry by other user" );
+    ok( $out =~ m!permission=1!i, "preview_entry by other user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -585,7 +585,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out =~ m!redirect=1!i, "preview_entry by other permission" );
+    ok( $out =~ m!permission=1!i, "preview_entry by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -598,7 +598,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out =~ m!redirect=1!i, "preview_entry by other blog" );
+    ok( $out =~ m!invalid request!i, "preview_entry by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -611,7 +611,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out =~ m!redirect=1!i, "preview_entry by type mismatch" );
+    ok( $out =~ m!permission=1!i, "preview_entry by type mismatch" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -624,7 +624,7 @@ subtest 'mode = preview_entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: preview_entry" );
-    ok( $out =~ m!redirect=1!i, "preview_entry by type mismatch" );
+    ok( $out =~ m!permission=1!i, "preview_entry by type mismatch" );
 };
 
 subtest 'mode = save_entry' => sub {
@@ -637,11 +637,12 @@ subtest 'mode = save_entry' => sub {
             id               => $entry->id,
             title            => 'changed',
             _type            => 'entry',
+            status           => $entry->status,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_entry" );
-    ok( $out !~ m!Permission denied!i, "save_entry by admin" );
+    ok( $out !~ m!permission=1!i, "save_entry by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -652,11 +653,12 @@ subtest 'mode = save_entry' => sub {
             id               => $entry->id,
             title            => 'changed',
             _type            => 'entry',
+            status           => $entry->status,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_entry" );
-    ok( $out !~ m!Permission denied!i, "save_entry by permitted user (create_post)" );
+    ok( $out !~ m!permission=1!i, "save_entry by permitted user (create_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -667,11 +669,12 @@ subtest 'mode = save_entry' => sub {
             id               => $entry->id,
             title            => 'changed',
             _type            => 'entry',
+            status           => $entry->status,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_entry" );
-    ok( $out !~ m!Permission denied!i, "save_entry by permitted user (edit_all_posts)" );
+    ok( $out !~ m!permission=1!i, "save_entry by permitted user (edit_all_posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -682,11 +685,12 @@ subtest 'mode = save_entry' => sub {
             id               => $entry->id,
             title            => 'changed',
             _type            => 'entry',
+            status           => $entry->status,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_entry" );
-    ok( $out =~ m!Permission denied!i, "save_entry by other user" );
+    ok( $out =~ m!permission=1!i, "save_entry by other user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -697,11 +701,12 @@ subtest 'mode = save_entry' => sub {
             id               => $entry->id,
             title            => 'changed',
             _type            => 'entry',
+            status           => $entry->status,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_entry" );
-    ok( $out =~ m!Permission denied!i, "save_entry by other permission" );
+    ok( $out =~ m!permission=1!i, "save_entry by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -712,11 +717,12 @@ subtest 'mode = save_entry' => sub {
             id               => $entry->id,
             title            => 'changed',
             _type            => 'entry',
+            status           => $entry->status,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_entry" );
-    ok( $out =~ m!Permission denied!i, "save_entry by other blog" );
+    ok( $out =~ m!permission=1!i, "save_entry by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -727,11 +733,12 @@ subtest 'mode = save_entry' => sub {
             id               => $entry->id,
             title            => 'changed',
             _type            => 'entry',
+            status           => $entry->status,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_entry" );
-    ok( $out =~ m!Permission denied!i, "save_entry by type mismatch" );
+    ok( $out =~ m!permission=1!i, "save_entry by type mismatch" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -742,11 +749,12 @@ subtest 'mode = save_entry' => sub {
             id               => $page->id,
             title            => 'changed',
             _type            => 'entry',
+            status           => $page->status,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_entry" );
-    ok( $out =~ m!Permission denied!i, "save_entry by type mismatch" );
+    ok( $out =~ m!permission=1!i, "save_entry by type mismatch" );
 };
 
 subtest 'mode = save_entries' => sub {
@@ -765,7 +773,7 @@ subtest 'mode = save_entries' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_entries" );
-    ok( $out !~ m!Permission denied!i, "save_entries by admin" );
+    ok( $out !~ m!permission=1!i, "save_entries by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -779,7 +787,7 @@ subtest 'mode = save_entries' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_entries" );
-    ok( $out !~ m!Permission denied!i, "save_entries by permitted user (create_post)" );
+    ok( $out =~ m!permission=1!i, "save_entries by non permitted user (create_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -793,21 +801,7 @@ subtest 'mode = save_entries' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_entries" );
-    ok( $out !~ m!Permission denied!i, "save_entries by permitted user (edit_all_posts)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ogawa,
-            __request_method => 'POST',
-            __mode           => 'save_entries',
-            blog_id          => $blog->id,
-            $author_id       => $entry->author->id,
-            $col_name        => 'changed',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save_entries" );
-    ok( $out =~ m!Permission denied!i, "save_entries by other user" );
+    ok( $out !~ m!permission=1!i, "save_entries by permitted user (edit_all_posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -821,11 +815,11 @@ subtest 'mode = save_entries' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_entries" );
-    ok( $out =~ m!Permission denied!i, "save_entries by other permission" );
+    ok( $out =~ m!permission=1!i, "save_entries by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $kumekawa,
+        {   __test_user      => $koishikawa,
             __request_method => 'POST',
             __mode           => 'save_entries',
             blog_id          => $second_blog->id,
@@ -835,13 +829,13 @@ subtest 'mode = save_entries' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_entries" );
-    ok( $out =~ m!Permission denied!i, "save_entries by other blog" );
+    ok( $out =~ m!permission=1!i, "save_entries by other blog" );
 
     $author_id  = "author_id_" . $page->id;
     $col_name  = "title_" . $page->id;
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ichikawa,
+        {   __test_user      => $ukawa,
             __request_method => 'POST',
             __mode           => 'save_entries',
             blog_id          => $blog->id,
@@ -851,7 +845,7 @@ subtest 'mode = save_entries' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_entries" );
-    ok( $out =~ m!Permission denied!i, "save_entries by type mismatch" );
+    ok( $out =~ m!permission=1!i, "save_entries by type mismatch" );
 };
 
 subtest 'mode = ping' => sub {
@@ -987,7 +981,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit by admin" );
+    ok( $out !~ m!permission=1!i, "edit by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1001,7 +995,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit by permitted user (create_post)" );
+    ok( $out !~ m!permission=1!i, "edit by permitted user (create_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1015,7 +1009,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission denied!i, "edit by permitted user (edit_all_posts)" );
+    ok( $out !~ m!permission=1!i, "edit by permitted user (edit_all_posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1029,7 +1023,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by other user" );
+    ok( $out =~ m!permission=1!i, "edit by other user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1043,7 +1037,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by other permission" );
+    ok( $out =~ m!permission=1!i, "edit by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1057,7 +1051,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by other blog" );
+    ok( $out =~ m!permission=1!i, "edit by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1071,7 +1065,7 @@ subtest 'mode = edit' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission denied!i, "edit by type mismatch" );
+    ok( $out =~ m!permission=1!i, "edit by type mismatch" );
 };
 
 subtest 'action = set_draft' => sub {
@@ -1096,7 +1090,7 @@ subtest 'action = set_draft' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: set_draft" );
-    ok( $out !~ m!Permission denied!i, "set_draft by admin" );
+    ok( $out !~ m!not implemented!i, "set_draft by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1115,13 +1109,13 @@ subtest 'action = set_draft' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: set_draft" );
-    ok( $out !~ m!Permission denied!i, "set_draft by permitted user (publish_post)" );
+    ok( $out !~ m!not implemented!i, "set_draft by permitted user (publish_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ukawa,
             __request_method => 'POST',
-            __mode           => 'set_draft',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'set_draft',
             itemset_action_input => '',
@@ -1134,13 +1128,13 @@ subtest 'action = set_draft' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: set_draft" );
-    ok( $out !~ m!Permission denied!i, "set_draft by permitted user (edit_all_posts)" );
+    ok( $out !~ m!not implemented!i, "set_draft by permitted user (edit_all_posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $seta,
             __request_method => 'POST',
-            __mode           => 'set_draft',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'set_draft',
             itemset_action_input => '',
@@ -1153,13 +1147,13 @@ subtest 'action = set_draft' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: set_draft" );
-    ok( $out =~ m!Permission denied!i, "set_draft by other user" );
+    ok( $out =~ m!permission=1!i, "set_draft by other user" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kagawa,
             __request_method => 'POST',
-            __mode           => 'set_draft',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'set_draft',
             itemset_action_input => '',
@@ -1172,13 +1166,13 @@ subtest 'action = set_draft' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: set_draft" );
-    ok( $out =~ m!Permission denied!i, "set_draft by other permission" );
+    ok( $out =~ m!not implemented!i, "set_draft by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $koishikawa,
             __request_method => 'POST',
-            __mode           => 'set_draft',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'set_draft',
             itemset_action_input => '',
@@ -1191,13 +1185,13 @@ subtest 'action = set_draft' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: set_draft" );
-    ok( $out =~ m!Permission denied!i, "set_draft by other blog" );
+    ok( $out =~ m!not implemented!i, "set_draft by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kagawa,
             __request_method => 'POST',
-            __mode           => 'set_draft',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'set_draft',
             itemset_action_input => '',
@@ -1210,7 +1204,7 @@ subtest 'action = set_draft' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: set_draft" );
-    ok( $out =~ m!Permission denied!i, "set_draft by type mismatch" );
+    ok( $out =~ m!not implemented!i, "set_draft by type mismatch" );
 
 };
 
@@ -1236,7 +1230,7 @@ subtest 'action = add_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_tags" );
-    ok( $out !~ m!Permission denied!i, "add_tags by admin" );
+    ok( $out !~ m!not implemented!i, "add_tags by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1255,13 +1249,13 @@ subtest 'action = add_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_tags" );
-    ok( $out !~ m!Permission denied!i, "add_tags by permitted user (publish_post)" );
+    ok( $out !~ m!not implemented!i, "add_tags by permitted user (create_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ukawa,
             __request_method => 'POST',
-            __mode           => 'add_tags',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'add_tags',
             itemset_action_input => 'New Tag',
@@ -1274,13 +1268,13 @@ subtest 'action = add_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_tags" );
-    ok( $out !~ m!Permission denied!i, "add_tags by permitted user (edit_all_posts)" );
+    ok( $out !~ m!not implemented!i, "add_tags by permitted user (edit_all_posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ogawa,
             __request_method => 'POST',
-            __mode           => 'add_tags',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'add_tags',
             itemset_action_input => 'New Tag',
@@ -1293,13 +1287,13 @@ subtest 'action = add_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_tags" );
-    ok( $out =~ m!Permission denied!i, "add_tags by other user" );
+    ok( $out =~ m!permission=1!i, "add_tags by other user" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kagawa,
             __request_method => 'POST',
-            __mode           => 'add_tags',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'add_tags',
             itemset_action_input => 'New Tag',
@@ -1312,13 +1306,13 @@ subtest 'action = add_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_tags" );
-    ok( $out =~ m!Permission denied!i, "add_tags by other permission" );
+    ok( $out =~ m!not implemented!i, "add_tags by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $koishikawa,
             __request_method => 'POST',
-            __mode           => 'add_tags',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'add_tags',
             itemset_action_input => 'New Tag',
@@ -1331,13 +1325,13 @@ subtest 'action = add_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_tags" );
-    ok( $out =~ m!Permission denied!i, "add_tags by other blog" );
+    ok( $out =~ m!not implemented!i, "add_tags by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kagawa,
             __request_method => 'POST',
-            __mode           => 'add_tags',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'add_tags',
             itemset_action_input => 'New Tag',
@@ -1350,7 +1344,7 @@ subtest 'action = add_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_tags" );
-    ok( $out =~ m!Permission denied!i, "add_tags by type mismatch" );
+    ok( $out =~ m!not implemented!i, "add_tags by type mismatch" );
 
 };
 
@@ -1376,7 +1370,7 @@ subtest 'action = remove_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: remove_tags" );
-    ok( $out !~ m!Permission denied!i, "remove_tags by admin" );
+    ok( $out !~ m!not implemented!i, "remove_tags by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1395,13 +1389,13 @@ subtest 'action = remove_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: remove_tags" );
-    ok( $out !~ m!Permission denied!i, "remove_tags by permitted user (publish_post)" );
+    ok( $out !~ m!not implemented!i, "remove_tags by permitted user (create_post)" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ukawa,
             __request_method => 'POST',
-            __mode           => 'remove_tags',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'remove_tags',
             itemset_action_input => 'New Tag',
@@ -1414,13 +1408,13 @@ subtest 'action = remove_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: remove_tags" );
-    ok( $out !~ m!Permission denied!i, "remove_tags by permitted user (edit_all_posts)" );
+    ok( $out !~ m!not implemented!i, "remove_tags by permitted user (edit_all_posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ogawa,
             __request_method => 'POST',
-            __mode           => 'remove_tags',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'remove_tags',
             itemset_action_input => 'New Tag',
@@ -1433,13 +1427,13 @@ subtest 'action = remove_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: remove_tags" );
-    ok( $out =~ m!Permission denied!i, "remove_tags by other user" );
+    ok( $out =~ m!permission=1!i, "remove_tags by other user" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kagawa,
             __request_method => 'POST',
-            __mode           => 'remove_tags',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'remove_tags',
             itemset_action_input => 'New Tag',
@@ -1452,13 +1446,13 @@ subtest 'action = remove_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: remove_tags" );
-    ok( $out =~ m!Permission denied!i, "remove_tags by other permission" );
+    ok( $out =~ m!not implemented!i, "remove_tags by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $koishikawa,
             __request_method => 'POST',
-            __mode           => 'remove_tags',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'remove_tags',
             itemset_action_input => 'New Tag',
@@ -1471,13 +1465,13 @@ subtest 'action = remove_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: remove_tags" );
-    ok( $out =~ m!Permission denied!i, "remove_tags by other blog" );
+    ok( $out =~ m!not implemented!i, "remove_tags by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kagawa,
             __request_method => 'POST',
-            __mode           => 'remove_tags',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'remove_tags',
             itemset_action_input => 'New Tag',
@@ -1490,7 +1484,7 @@ subtest 'action = remove_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: remove_tags" );
-    ok( $out =~ m!Permission denied!i, "remove_tags by type mismatch" );
+    ok( $out =~ m!not implemented!i, "remove_tags by type mismatch" );
 
 };
 
@@ -1516,11 +1510,11 @@ subtest 'action = open_batch_editor' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: open_batch_editor" );
-    ok( $out !~ m!Permission denied!i, "open_batch_editor by admin" );
+    ok( $out !~ m!not implemented!i, "open_batch_editor by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ichikawa,
+        {   __test_user      => $ukawa,
             __request_method => 'POST',
             __mode           => 'itemset_action',
             _type            => 'entry',
@@ -1535,51 +1529,13 @@ subtest 'action = open_batch_editor' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: open_batch_editor" );
-    ok( $out !~ m!Permission denied!i, "open_batch_editor by permitted user (publish_post)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'open_batch_editor',
-            _type            => 'entry',
-            action_name      => 'open_batch_editor',
-            itemset_action_input => '',
-            return_args      => '__mode%3Dlist_entry%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
-            plugin_action_selector => 'open_batch_editor',
-            id               => $entry->id,
-            plugin_action_selector => 'open_batch_editor',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: open_batch_editor" );
-    ok( $out !~ m!Permission denied!i, "open_batch_editor by permitted user (edit_all_posts)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ogawa,
-            __request_method => 'POST',
-            __mode           => 'open_batch_editor',
-            _type            => 'entry',
-            action_name      => 'open_batch_editor',
-            itemset_action_input => '',
-            return_args      => '__mode%3Dlist_entry%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
-            plugin_action_selector => 'open_batch_editor',
-            id               => $entry->id,
-            plugin_action_selector => 'open_batch_editor',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: open_batch_editor" );
-    ok( $out =~ m!Permission denied!i, "open_batch_editor by other user" );
+    ok( $out !~ m!not implemented!i, "open_batch_editor by permitted user (edit_all_posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kagawa,
             __request_method => 'POST',
-            __mode           => 'open_batch_editor',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'open_batch_editor',
             itemset_action_input => '',
@@ -1592,13 +1548,13 @@ subtest 'action = open_batch_editor' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: open_batch_editor" );
-    ok( $out =~ m!Permission denied!i, "open_batch_editor by other permission" );
+    ok( $out =~ m!not implemented!i, "open_batch_editor by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $koishikawa,
             __request_method => 'POST',
-            __mode           => 'open_batch_editor',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'open_batch_editor',
             itemset_action_input => '',
@@ -1611,13 +1567,13 @@ subtest 'action = open_batch_editor' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: open_batch_editor" );
-    ok( $out =~ m!Permission denied!i, "open_batch_editor by other blog" );
+    ok( $out =~ m!not implemented!i, "open_batch_editor by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kagawa,
             __request_method => 'POST',
-            __mode           => 'open_batch_editor',
+            __mode           => 'itemset_action',
             _type            => 'entry',
             action_name      => 'open_batch_editor',
             itemset_action_input => '',
@@ -1630,7 +1586,7 @@ subtest 'action = open_batch_editor' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: open_batch_editor" );
-    ok( $out =~ m!Permission denied!i, "open_batch_editor by type mismatch" );
+    ok( $out =~ m!not implemented!i, "open_batch_editor by type mismatch" );
 
 };
 
