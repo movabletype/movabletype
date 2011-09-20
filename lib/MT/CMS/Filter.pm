@@ -13,7 +13,7 @@ sub save {
     my $app       = shift;
     my $q         = $app->param;
     my $fid       = $q->param('fid');
-    my $author_id = $q->param('author_id') || $app->user->id;
+    my $author_id = $app->user->id;
     my $blog_id   = $q->param('blog_id') || 0;
     my $label     = $q->param('label');
     my $ds        = $q->param('datasource');
@@ -53,7 +53,7 @@ sub save {
 
     # Search duplicate.
     if (my $dupe = $filter_class->load(
-            {   author_id => $app->user->id,
+            {   author_id => $author_id,
                 object_ds => $ds,
                 label     => $label,
                 ( $fid ? ( id => { not => $fid } ) : () ),
@@ -73,6 +73,8 @@ sub save {
     if ($fid) {
         $filter = $filter_class->load($fid)
             or return $app->json_error( $app->translate('No such filter') );
+        return $app->json_error( $app->translate('Permission denied') )
+            unless $filter->author_id == $author_id;
     }
     else {
         $filter = $filter_class->new;
