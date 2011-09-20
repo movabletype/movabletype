@@ -3528,6 +3528,46 @@ sub redirect {
     return;
 }
 
+sub is_valid_redirect_target {
+    my $app = shift;
+    my $static
+        = $app->param('static')
+        || $app->param('return_url')
+        || $app->param('return_to')
+        || '';
+    my $target;
+    if ( ( $static eq '' ) || ( $static eq '1' ) ) {
+        require MT::Entry;
+        my $entry = MT::Entry->load( $app->param('entry_id') || 0 )
+            or return $app->error(
+            $app->translate(
+                'Can\'t load entry #[_1].',
+                $app->param('entry_id')
+            )
+            );
+        $target = $entry->archive_url;
+    }
+    else {
+        $target = $static;
+    }
+    $target =~ s!#.*$!!;    # strip off any existing anchor
+
+    require URI;
+    my $redirect_uri = URI->new( $target );
+    my @ok_uris;
+    my $blog_id = $app->param('blog_id');
+    if ( $blog_id && $blog_id !~ /\D/ ) {
+        my $blog = MT::Blog->load($blog_id);
+        my $blog_uri = URI->new( $blog->site_url );
+        push @ok_uris, $blog_uri;
+    }
+    push @ok_uris, URI->new( $app->base );
+    for my $ok_uri ( @ok_uris ) {
+        return 1 if $ok_uri->host eq $redirect_uri->host;
+    }
+    return;
+}
+
 sub param {
     my $app = shift;
     return unless $app->{query};

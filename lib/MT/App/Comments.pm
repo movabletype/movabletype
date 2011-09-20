@@ -216,37 +216,6 @@ sub _create_commenter_assign_role {
     $commenter;
 }
 
-sub is_valid_redirect_target {
-    my $app = shift;
-    my $static = $app->param('static') || $app->param('return_url') || '';
-    my $target;
-    if ( ( $static eq '' ) || ( $static eq '1' ) ) {
-        require MT::Entry;
-        my $entry = MT::Entry->load( $app->param('entry_id') || 0 )
-            or return $app->error(
-            $app->translate(
-                'Can\'t load entry #[_1].',
-                $app->param('entry_id')
-            )
-            );
-        $target = $entry->archive_url;
-    }
-    else {
-        $target = $static;
-    }
-    $target =~ s!#.*$!!;    # strip off any existing anchor
-
-    require URI;
-    my $redirect_uri = URI->new( $target );
-
-    my $blog_id = $app->param('blog_id');
-    return if !$blog_id || $blog_id =~ /\D/;
-    my $blog = MT::Blog->load($blog_id) or return;
-    my $blog_uri = URI->new( $blog->site_url );
-    return if $blog_uri->host ne $redirect_uri->host;
-    return 1;
-}
-
 sub do_login {
     my $app     = shift;
     my $q       = $app->param;
@@ -1508,22 +1477,10 @@ sub redirect_to_target {
                 'Can\'t load blog #[_1].', $q->param('blog_id')
             )
             );
-
-        my $site_url     = $blog->site_url;
-        my $domain_regex = qr#\A(?:https?:)?//(?:www.)?([^\s'"<>/]+)#i;
-        my ($static_domain) = ( $static   =~ m/$domain_regex/ );
-        my ($site_domain)   = ( $site_url =~ m/$domain_regex/ );
-
-        if (!(     $static_domain
-                && $site_domain
-                && $static_domain eq $site_domain
-            )
-            )
-        {
+        if (!$app->is_valid_redirect_target ) {
             return $app->error(
                 $app->translate(
-                    q{This blog's URL is [_1] . However, You are tried to be redirected to [_2] . Please confirm that the URL to be redirected is appropriate.},
-                    encode_html($site_url),
+                    q{You are tried to be redirected to an external resource: [_1]},
                     encode_html($static)
                 )
             );
