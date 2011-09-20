@@ -52,7 +52,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!Invalid Request!i, "list by admin" );
+    ok( $out =~ m!Unknown action!i, "list by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -66,7 +66,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!Invalid Request!i, "list by non permitted user" );
+    ok( $out =~ m!Unknown action!i, "list by non permitted user" );
 };
 
 subtest 'mode = save' => sub {
@@ -115,7 +115,7 @@ subtest 'mode = edit' => sub {
     ok( $out, "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by admin" );
 
-    my $fi = MT::Test::Permission->make_fileinfo( blog_id => $blog->id );
+    $fi = MT::Test::Permission->make_fileinfo( blog_id => $blog->id );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
