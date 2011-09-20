@@ -84,7 +84,7 @@ subtest 'mode = feedswidget_start' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_start" );
-    ok( $out !~ m!Permission denied!i, "feedswidget_start by admin" );
+    ok( $out !~ m!permission=1!i, "feedswidget_start by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -96,7 +96,7 @@ subtest 'mode = feedswidget_start' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_start" );
-    ok( $out !~ m!Permission denied!i, "feedswidget_start by permitted user" );
+    ok( $out !~ m!permission=1!i, "feedswidget_start by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -108,7 +108,7 @@ subtest 'mode = feedswidget_start' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_start" );
-    ok( $out !~ m!Permission denied!i, "feedswidget_start by permitted user (sys)" );
+    ok( $out !~ m!permission=1!i, "feedswidget_start by permitted user (sys)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -120,7 +120,7 @@ subtest 'mode = feedswidget_start' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_start" );
-    ok( $out =~ m!Permission denied!i, "feedswidget_start by other blog" );
+    ok( $out =~ m!permission=1!i, "feedswidget_start by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -132,7 +132,7 @@ subtest 'mode = feedswidget_start' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_start" );
-    ok( $out =~ m!Permission denied!i, "feedswidget_start by other permission" );
+    ok( $out =~ m!permission=1!i, "feedswidget_start by other permission" );
 };
 
 subtest 'mode = feedswidget_select' => sub {
@@ -146,7 +146,7 @@ subtest 'mode = feedswidget_select' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_select" );
-    ok( $out !~ m!Permission denied!i, "feedswidget_select by admin" );
+    ok( $out !~ m!permission=1!i, "feedswidget_select by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -158,7 +158,7 @@ subtest 'mode = feedswidget_select' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_select" );
-    ok( $out !~ m!Permission denied!i, "feedswidget_select by permitted user" );
+    ok( $out !~ m!permission=1!i, "feedswidget_select by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -170,7 +170,7 @@ subtest 'mode = feedswidget_select' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_select" );
-    ok( $out !~ m!Permission denied!i, "feedswidget_select by permitted user (sys)" );
+    ok( $out !~ m!permission=1!i, "feedswidget_select by permitted user (sys)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -182,7 +182,7 @@ subtest 'mode = feedswidget_select' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_select" );
-    ok( $out =~ m!Permission denied!i, "feedswidget_select by other blog" );
+    ok( $out =~ m!permission=1!i, "feedswidget_select by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -194,7 +194,7 @@ subtest 'mode = feedswidget_select' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_select" );
-    ok( $out =~ m!Permission denied!i, "feedswidget_select by other permission" );
+    ok( $out =~ m!permission=1!i, "feedswidget_select by other permission" );
 };
 
 subtest 'mode = feedswidget_config' => sub {
@@ -208,7 +208,7 @@ subtest 'mode = feedswidget_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_config" );
-    ok( $out !~ m!Permission denied!i, "feedswidget_config by admin" );
+    ok( $out !~ m!permission=1!i, "feedswidget_config by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -220,7 +220,7 @@ subtest 'mode = feedswidget_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_config" );
-    ok( $out !~ m!Permission denied!i, "feedswidget_config by permitted user" );
+    ok( $out !~ m!permission=1!i, "feedswidget_config by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -232,7 +232,7 @@ subtest 'mode = feedswidget_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_config" );
-    ok( $out !~ m!Permission denied!i, "feedswidget_config by permitted user (sys)" );
+    ok( $out !~ m!permission=1!i, "feedswidget_config by permitted user (sys)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -244,7 +244,7 @@ subtest 'mode = feedswidget_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_config" );
-    ok( $out =~ m!Permission denied!i, "feedswidget_config by other blog" );
+    ok( $out =~ m!permission=1!i, "feedswidget_config by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -256,7 +256,7 @@ subtest 'mode = feedswidget_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_config" );
-    ok( $out =~ m!Permission denied!i, "feedswidget_config by other permission" );
+    ok( $out =~ m!permission=1!i, "feedswidget_config by other permission" );
 };
 
 subtest 'mode = feedswidget_save' => sub {
@@ -266,11 +266,12 @@ subtest 'mode = feedswidget_save' => sub {
             __request_method => 'POST',
             __mode           => 'feedswidget_save',
             blog_id          => $blog->id,
+            uri              => 'http://sixapart.com',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_save" );
-    ok( $out !~ m!Permission denied!i, "feedswidget_save by admin" );
+    ok( $out !~ m!permission=1!i, "feedswidget_save by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -278,11 +279,12 @@ subtest 'mode = feedswidget_save' => sub {
             __request_method => 'POST',
             __mode           => 'feedswidget_save',
             blog_id          => $blog->id,
+            uri              => 'http://sixapart.com',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_save" );
-    ok( $out !~ m!Permission denied!i, "feedswidget_save by permitted user" );
+    ok( $out !~ m!permission=1!i, "feedswidget_save by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -290,11 +292,12 @@ subtest 'mode = feedswidget_save' => sub {
             __request_method => 'POST',
             __mode           => 'feedswidget_save',
             blog_id          => $blog->id,
+            uri              => 'http://sixapart.com',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_save" );
-    ok( $out !~ m!Permission denied!i, "feedswidget_save by permitted user (sys)" );
+    ok( $out !~ m!permission=1!i, "feedswidget_save by permitted user (sys)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -302,11 +305,12 @@ subtest 'mode = feedswidget_save' => sub {
             __request_method => 'POST',
             __mode           => 'feedswidget_save',
             blog_id          => $blog->id,
+            uri              => 'http://sixapart.com',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_save" );
-    ok( $out =~ m!Permission denied!i, "feedswidget_save by other blog" );
+    ok( $out =~ m!permission=1!i, "feedswidget_save by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -314,11 +318,12 @@ subtest 'mode = feedswidget_save' => sub {
             __request_method => 'POST',
             __mode           => 'feedswidget_save',
             blog_id          => $blog->id,
+            uri              => 'http://sixapart.com',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_save" );
-    ok( $out =~ m!Permission denied!i, "feedswidget_save by other permission" );
+    ok( $out =~ m!permission=1!i, "feedswidget_save by other permission" );
 };
 
 done_testing();
