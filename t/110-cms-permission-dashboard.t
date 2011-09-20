@@ -60,7 +60,7 @@ subtest 'mode = dashboard' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dashboard" );
-    ok( $out !~ m!Permission denied!i, "dashboard by admin" );
+    ok( $out !~ m!permission=1!i, "dashboard by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -72,7 +72,7 @@ subtest 'mode = dashboard' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dashboard" );
-    ok( $out !~ m!Permission denied!i, "dashboard by admin" );
+    ok( $out !~ m!permission=1!i, "dashboard by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -84,7 +84,7 @@ subtest 'mode = dashboard' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dashboard" );
-    ok( $out !~ m!Permission denied!i, "dashboard by permitted user (blog)" );
+    ok( $out !~ m!permission=1!i, "dashboard by permitted user (blog)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -96,7 +96,7 @@ subtest 'mode = dashboard' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dashboard" );
-    ok( $out =~ m!Permission denied!i, "dashboard by permitted user (parent website)" );
+    ok( $out !~ m!permission=1!i, "dashboard by permitted user (parent website)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -107,7 +107,7 @@ subtest 'mode = dashboard' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dashboard" );
-    ok( $out !~ m!Permission denied!i, "dashboard by permitted user (user)" );
+    ok( $out !~ m!permission=1!i, "dashboard by permitted user (user)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -119,7 +119,7 @@ subtest 'mode = dashboard' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dashboard" );
-    ok( $out =~ m!Permission denied!i, "dashboard by other blog" );
+    ok( $out =~ m!permission=1!i, "dashboard by other blog" );
 };
 
 done_testing();
