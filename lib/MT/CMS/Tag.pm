@@ -251,12 +251,12 @@ sub add_tags_to_entries {
     require MT::Entry;
 
     my $user        = $app->user;
-    my $perms       = $app->permissions;
     my $entry_count = 0;
     foreach my $id (@id) {
         next unless $id;
         my $entry = MT::Entry->load($id) or next;
-        next
+        my $perms = $app->user->permissions( $entry->blog_id );
+        return $app->permission_denied()
             unless $entry && $perms->can_edit_entry( $entry, $user );
 
         $entry_count++;
@@ -296,11 +296,11 @@ sub remove_tags_from_entries {
     require MT::Entry;
 
     my $user  = $app->user;
-    my $perms = $app->permissions;
     foreach my $id (@id) {
         next unless $id;
         my $entry = MT::Entry->load($id) or next;
-        next
+        my $perms = $app->user->permissions( $entry->blog_id );
+        return $app->permission_denied()
             unless $entry && $perms->can_edit_entry( $entry, $user );
         $entry->remove_tags(@tags);
         $entry->save
