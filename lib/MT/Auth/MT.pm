@@ -38,9 +38,34 @@ sub is_valid_password {
     if ( ( !$real_pass ) || ( $real_pass eq '(none)' ) ) {
         return 0;
     }
-    return $crypted
-        ? $real_pass eq $pass
-        : crypt( $pass, $real_pass ) eq $real_pass;
+    
+    if ($crypted) {
+        return $real_pass eq $pass;
+    }
+    
+
+    if ($real_pass =~ m/^\$6\$(..)\$(.*)/) {
+        my ($salt, $value) = ($1, $2);
+
+        my $sha512_base64;
+        if (eval { require Digest::SHA }) {
+            $sha512_base64 = \&Digest::SHA::sha512_base64;
+        }
+        else {
+            require Digest::SHA::PurePerl;
+            $sha512_base64 = \&Digest::SHA::PurePerl::sha512_base64;
+        }
+        return $value eq $sha512_base64->($salt . $pass);
+    }
+    
+    # the password is not currently stored as SHA512. upgrade
+    
+    return 0 unless crypt( $pass, $real_pass ) eq $real_pass;
+    
+    $author->set_password($pass);
+    $author->save();
+    
+    return 1;
 }
 
 sub can_recover_password {1}

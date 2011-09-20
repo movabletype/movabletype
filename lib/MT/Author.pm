@@ -699,8 +699,17 @@ sub set_password {
     my @alpha  = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
     my $salt   = join '', map $alpha[ rand @alpha ], 1 .. 2;
 
-    # FIXME: use something besides 'crypt'
-    $auth->column( 'password', crypt $pass, $salt );
+    my $sha512_base64;
+    if (eval { require Digest::SHA }) {
+        $sha512_base64 = \&Digest::SHA::sha512_base64;
+    }
+    else {
+        require Digest::SHA::PurePerl;
+        $sha512_base64 = \&Digest::SHA::PurePerl::sha512_base64;
+    }
+    my $crypt_sha = join '$', '', '6', $salt, $sha512_base64->($salt . $pass);
+
+    $auth->column( 'password', $crypt_sha );
 }
 
 sub is_valid_password {
