@@ -168,7 +168,7 @@ subtest 'mode = list_revision' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_revision" );
-    ok( $out !~ m!Permission denied!i, "list_revision by admin" );
+    ok( $out !~ m!permission=1!i, "list_revision by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -182,7 +182,7 @@ subtest 'mode = list_revision' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_revision" );
-    ok( $out !~ m!Permission denied!i, "list_revision by permitted user (create post)" );
+    ok( $out !~ m!permission=1!i, "list_revision by permitted user (create post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -196,7 +196,7 @@ subtest 'mode = list_revision' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_revision" );
-    ok( $out !~ m!Permission denied!i, "list_revision by permitted user (edit all posts)" );
+    ok( $out !~ m!permission=1!i, "list_revision by permitted user (edit all posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -210,7 +210,7 @@ subtest 'mode = list_revision' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_revision" );
-    ok( $out !~ m!Permission denied!i, "list_revision by permitted user (manage_page)" );
+    ok( $out !~ m!permission=1!i, "list_revision by permitted user (manage_page)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -224,7 +224,7 @@ subtest 'mode = list_revision' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_revision" );
-    ok( $out !~ m!Permission denied!i, "list_revision by permitted user (edit_templates)" );
+    ok( $out !~ m!permission=1!i, "list_revision by permitted user (edit_templates)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -238,7 +238,7 @@ subtest 'mode = list_revision' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_revision" );
-    ok( $out !~ m!Permission denied!i, "list_revision by permitted user ( system:edit_templates)" );
+    ok( $out !~ m!permission=1!i, "list_revision by permitted user ( system:edit_templates)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -252,7 +252,7 @@ subtest 'mode = list_revision' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_revision" );
-    ok( $out !~ m!Permission denied!i, "list_revision by permitted user ( system:edit_templates: system)" );
+    ok( $out !~ m!permission=1!i, "list_revision by permitted user ( system:edit_templates: system)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -266,7 +266,7 @@ subtest 'mode = list_revision' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_revision" );
-    ok( $out =~ m!Permission denied!i, "list_revision by other blog (create post)" );
+    ok( $out =~ m!permission=1!i, "list_revision by other blog (create post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -280,7 +280,7 @@ subtest 'mode = list_revision' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_revision" );
-    ok( $out =~ m!Permission denied!i, "list_revision by other blog (edit all posts)" );
+    ok( $out =~ m!permission=1!i, "list_revision by other blog (edit all posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -294,7 +294,7 @@ subtest 'mode = list_revision' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_revision" );
-    ok( $out =~ m!Permission denied!i, "list_revision by other blog (manage_page)" );
+    ok( $out =~ m!permission=1!i, "list_revision by other blog (manage_page)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -308,7 +308,7 @@ subtest 'mode = list_revision' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list_revision" );
-    ok( $out =~ m!Permission denied!i, "list_revision by other blog (edit_templates)" );
+    ok( $out =~ m!permission=1!i, "list_revision by other blog (edit_templates)" );
 
      $app = _run_app(
          'MT::App::CMS',
@@ -322,7 +322,7 @@ subtest 'mode = list_revision' => sub {
      );
      $out = delete $app->{__test_output};
      ok( $out, "Request: list_revision" );
-     ok( $out =~ m!Permission denied!i, "list_revision on system template (edit_templates)" );
+     ok( $out =~ m!permission=1!i, "list_revision on system template (edit_templates)" );
 
      $app = _run_app(
          'MT::App::CMS',
@@ -336,7 +336,7 @@ subtest 'mode = list_revision' => sub {
      );
      $out = delete $app->{__test_output};
      ok( $out, "Request: list_revision" );
-     ok( $out =~ m!Permission denied!i, "list_revision by other user (create post)" );
+     ok( $out =~ m!permission=1!i, "list_revision by other user (create post)" );
 
      $app = _run_app(
          'MT::App::CMS',
@@ -350,7 +350,7 @@ subtest 'mode = list_revision' => sub {
      );
      $out = delete $app->{__test_output};
      ok( $out, "Request: list_revision" );
-     ok( $out =~ m!Permission denied!i, "list_revision by class mismatch (create post)" );
+     ok( $out =~ m!permission=1!i, "list_revision by class mismatch (create post)" );
 
      $app = _run_app(
          'MT::App::CMS',
@@ -364,7 +364,7 @@ subtest 'mode = list_revision' => sub {
      );
      $out = delete $app->{__test_output};
      ok( $out, "Request: list_revision" );
-     ok( $out =~ m!Permission denied!i, "list_revision by class mismatch (manage_pages)" );
+     ok( $out =~ m!permission=1!i, "list_revision by class mismatch (manage_pages)" );
 
 
      $app = _run_app(
@@ -379,7 +379,7 @@ subtest 'mode = list_revision' => sub {
      );
      $out = delete $app->{__test_output};
      ok( $out, "Request: list_revision" );
-     ok( $out =~ m!Permission denied!i, "list_revision by other permission" );
+     ok( $out =~ m!permission=1!i, "list_revision by other permission" );
  };
 
  done_testing();
