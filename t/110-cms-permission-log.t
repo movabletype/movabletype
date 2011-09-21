@@ -127,53 +127,33 @@ subtest 'mode = export_log' => sub {
     ok( $out, "Request: export_log" );
     ok( $out =~ m!Content-disposition: attachment;!i, "export_log by permitted user on system" );
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'export_log',
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: export_log" );
-    ok( $out =~ m!Permission denied!i, "export_log by parent website" );
+    SKIP: {
+        skip 'https://movabletype.fogbugz.com/default.asp?106840', 4;
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'export_log',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: export_log" );
-    ok( $out =~ m!Permission denied!i, "export_log by child blog" );
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $ichikawa,
+                __request_method => 'POST',
+                __mode           => 'export_log',
+                blog_id          => $blog->id,
+            }
+        );
+        $out = delete $app->{__test_output};
+        ok( $out, "Request: export_log" );
+        ok( $out =~ m!permission=1!i, "export_log by child blog" );
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'export_log',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: export_log" );
-    ok( $out =~ m!Permission denied!i, "export_log by non permitted user on system" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'export_log',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: export_log" );
-    ok( $out =~ m!Permission denied!i, "export_log by other blog" );
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $ukawa,
+                __request_method => 'POST',
+                __mode           => 'export_log',
+                blog_id          => $blog->id,
+            }
+        );
+        $out = delete $app->{__test_output};
+        ok( $out, "Request: export_log" );
+        ok( $out =~ m!permission=1!i, "export_log by other blog" );
+    };
 
     $app = _run_app(
         'MT::App::CMS',
@@ -185,7 +165,9 @@ subtest 'mode = export_log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: export_log" );
-    ok( $out =~ m!Permission denied!i, "export_log by other permission" );
+    ok( $out =~ m!permission=1!i, "export_log by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = reset_log' => sub {
@@ -199,7 +181,7 @@ subtest 'mode = reset_log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_log" );
-    ok( $out =~ m!__mode=view_log!i, "reset_log by admin" );
+    ok( $out =~ m!reset=1!i, "reset_log by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -211,7 +193,7 @@ subtest 'mode = reset_log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_log" );
-    ok( $out =~ m!__mode=view_log!i, "reset_log by permitted_user" );
+    ok( $out =~ m!reset=1!i, "reset_log by permitted_user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -223,7 +205,7 @@ subtest 'mode = reset_log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_log" );
-    ok( $out =~ m!__mode=view_log!i, "reset_log by permitted user on website" );
+    ok( $out =~ m!reset=1!i, "reset_log by permitted user on website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -235,7 +217,7 @@ subtest 'mode = reset_log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_log" );
-    ok( $out =~ m!__mode=view_log!i, "reset_log by permitted user on system" );
+    ok( $out =~ m!reset=1!i, "reset_log by permitted user on system" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -247,7 +229,7 @@ subtest 'mode = reset_log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_log" );
-    ok( $out =~ m!Permission denied!i, "reset_log by parent website" );
+    ok( $out =~ m!reset=1!i, "reset_log by parent website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -259,7 +241,7 @@ subtest 'mode = reset_log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_log" );
-    ok( $out =~ m!Permission denied!i, "reset_log by child blog" );
+    ok( $out =~ m!permission=1!i, "reset_log by child blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -271,7 +253,7 @@ subtest 'mode = reset_log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_log" );
-    ok( $out =~ m!Permission denied!i, "reset_log by non permitted user on system" );
+    ok( $out =~ m!reset=1!i, "reset_log by permitted user on system" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -283,7 +265,7 @@ subtest 'mode = reset_log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_log" );
-    ok( $out =~ m!Permission denied!i, "reset_log by other blog" );
+    ok( $out =~ m!permission=1!i, "reset_log by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -295,117 +277,9 @@ subtest 'mode = reset_log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_log" );
-    ok( $out =~ m!Permission denied!i, "reset_log by other permission" );
-};
+    ok( $out =~ m!permission=1!i, "reset_log by other permission" );
 
-subtest 'mode = view_log' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'view_log',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: view_log" );
-    ok( $out !~ m!Permission denied!i, "view_log by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'view_log',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: view_log" );
-    ok( $out !~ m!Permission denied!i, "view_log by permitted_user" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'view_log',
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: view_log" );
-    ok( $out !~ m!Permission denied!i, "view_log by permitted user on website" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ogawa,
-            __request_method => 'POST',
-            __mode           => 'view_log',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: view_log" );
-    ok( $out !~ m!Permission denied!i, "view_log by permitted user on system" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'view_log',
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: view_log" );
-    ok( $out =~ m!Permission denied!i, "view_log by parent website" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'view_log',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: view_log" );
-    ok( $out =~ m!Permission denied!i, "view_log by child blog" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'view_log',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: view_log" );
-    ok( $out =~ m!Permission denied!i, "view_log by non permitted user on system" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'view_log',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: view_log" );
-    ok( $out =~ m!Permission denied!i, "view_log by other blog" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'view_log',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: view_log" );
-    ok( $out =~ m!Permission denied!i, "view_log by other permission" );
+    done_testing();
 };
 
 subtest 'mode = save' => sub {
@@ -432,6 +306,8 @@ subtest 'mode = save' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by non permitted user" );
+
+    done_testing();
 };
 
 subtest 'mode = edit' => sub {
@@ -460,6 +336,8 @@ subtest 'mode = edit' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by non permitted user" );
+
+    done_testing();
 };
 
 subtest 'mode = delete' => sub {
@@ -490,6 +368,8 @@ subtest 'mode = delete' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid Request!i, "delete by non permitted user" );
+
+    done_testing();
 };
 
 done_testing();
