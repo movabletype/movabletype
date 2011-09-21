@@ -68,7 +68,7 @@ subtest 'mode = import' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: import" );
-    ok( $out !~ m!Permission denied!i, "import by admin" );
+    ok( $out !~ m!permission=1!i, "import by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -81,7 +81,7 @@ subtest 'mode = import' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: import" );
-    ok( $out !~ m!Permission denied!i, "import by permitted user" );
+    ok( $out !~ m!permission=1!i, "import by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -94,7 +94,7 @@ subtest 'mode = import' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: import" );
-    ok( $out =~ m!Permission denied!i, "import by other blog" );
+    ok( $out =~ m!permission=1!i, "import by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -107,7 +107,9 @@ subtest 'mode = import' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: import" );
-    ok( $out =~ m!Permission denied!i, "import by other permission" );
+    ok( $out =~ m!permission=1!i, "import by other permission" );
+
+    done_testing();
 };
 
 subtest 'mode = start_import' => sub {
@@ -121,7 +123,7 @@ subtest 'mode = start_import' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_import" );
-    ok( $out !~ m!Permission denied!i, "start_import by admin" );
+    ok( $out !~ m!permission=1!i, "start_import by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -133,7 +135,7 @@ subtest 'mode = start_import' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_import" );
-    ok( $out !~ m!Permission denied!i, "start_import by permitted user" );
+    ok( $out !~ m!permission=1!i, "start_import by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -145,7 +147,7 @@ subtest 'mode = start_import' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_import" );
-    ok( $out =~ m!Permission denied!i, "start_import by other blog" );
+    ok( $out =~ m!permission=1!i, "start_import by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -157,7 +159,9 @@ subtest 'mode = start_import' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_import" );
-    ok( $out =~ m!Permission denied!i, "start_import by other permission" );
+    ok( $out =~ m!permission=1!i, "start_import by other permission" );
+
+    done_testing();
 };
 
 done_testing();
