@@ -7,7 +7,7 @@ use lib 't/lib';
 use lib 'lib';
 use lib 'extlib';
 
-use Test::More tests => 69;
+use Test::More tests => 70;
 
 use MT;
 use MT::Author;
@@ -132,6 +132,8 @@ $author->name('dummy');
 $author->column('password', '6En93Q4gNHIu6');
 ok(!$author->is_valid_password('wrong'), 'wrong is invalid');
 ok($author->is_valid_password('xxxxx'), 'recognize valid password');
+ok($author->column('password') !~ m/^\$6\$/, 'password is now stored as SHA-512');
+$author->set_password('xxxxx');
 ok($author->column('password') =~ m/^\$6\$/, 'password is now stored as SHA-512');
 ok(!$author->is_valid_password('wrong'), 'wrong is still invalid');
 ok($author->is_valid_password('xxxxx'), 'still recognize valid password');

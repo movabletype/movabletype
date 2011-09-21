@@ -57,15 +57,10 @@ sub is_valid_password {
         }
         return $value eq $sha512_base64->($salt . $pass);
     }
-    
-    # the password is not currently stored as SHA512. upgrade
-    
-    return 0 unless crypt( $pass, $real_pass ) eq $real_pass;
-    
-    $author->set_password($pass);
-    $author->save();
-    
-    return 1;
+    else {
+        # the password is stored using the old hashing method
+        return crypt( $pass, $real_pass ) eq $real_pass;
+    }
 }
 
 sub can_recover_password {1}
