@@ -500,6 +500,11 @@ sub cfg_system_users {
     }
     $param{"tag_delim_$tag_delim"} = 1;
 
+    $param{"combo_upper_lower"} = $app->config('UserPasswordCaseCombi');
+    $param{"combo_letter_number"} = $app->config('UserPasswordAlfaNumericCombi');
+    $param{"require_special_characters"} = $app->config('UserPasswordSpecialChar');
+    $param{"minimum_length"} = $app->config('UserPasswordMinLengh');
+
     ( my $tz = $app->config('DefaultTimezone') ) =~ s![-\.]!_!g;
     $tz =~ s!_00$!!;
     $param{ 'server_offset_' . $tz } = 1;
@@ -626,6 +631,12 @@ sub save_cfg_system_users {
         $registration->{Allow} = 0;
         $cfg->CommenterRegistration( $registration, 1 );
     }
+
+    $app->config('UserPasswordCaseCombi', scalar $app->param('combo_upper_lower'), 1 );
+    $app->config('UserPasswordAlfaNumericCombi', scalar $app->param('combo_letter_number'), 1 );
+    $app->config('UserPasswordSpecialChar', scalar $app->param('require_special_characters'), 1 );
+    $app->config('UserPasswordMinLengh', scalar $app->param('minimum_length'), 1 );
+
     $cfg->save_config();
 
     my $args = ();
