@@ -500,9 +500,10 @@ sub cfg_system_users {
     }
     $param{"tag_delim_$tag_delim"} = 1;
 
-    $param{"combo_upper_lower"} = $app->config('UserPasswordCaseCombi');
-    $param{"combo_letter_number"} = $app->config('UserPasswordAlfaNumericCombi');
-    $param{"require_special_characters"} = $app->config('UserPasswordSpecialChar');
+    my $constrains = $app->config('UserPasswordValidation');
+    $param{"combo_upper_lower"} = ($constrains =~ m/upperlower/ ? 1 : 0);
+    $param{"combo_letter_number"} = ($constrains =~ m/letternumber/ ? 1 : 0);
+    $param{"require_special_characters"} = ($constrains =~ m/symbol/ ? 1 : 0);
     $param{"minimum_length"} = $app->config('UserPasswordMinLengh');
 
     ( my $tz = $app->config('DefaultTimezone') ) =~ s![-\.]!_!g;
@@ -632,9 +633,14 @@ sub save_cfg_system_users {
         $cfg->CommenterRegistration( $registration, 1 );
     }
 
-    $app->config('UserPasswordCaseCombi', scalar $app->param('combo_upper_lower'), 1 );
-    $app->config('UserPasswordAlfaNumericCombi', scalar $app->param('combo_letter_number'), 1 );
-    $app->config('UserPasswordSpecialChar', scalar $app->param('require_special_characters'), 1 );
+    my @constrains;
+    $app->config('UserPasswordValidation',
+        join(',',
+             ( $app->param('combo_upper_lower') ? 'upperlower' : () ),
+             ( $app->param('combo_letter_number') ? 'letternumber' : () ),
+             ( $app->param('require_special_characters') ? 'symbol' : () ),
+             )
+        , 1 );
     $app->config('UserPasswordMinLengh', scalar $app->param('minimum_length'), 1 );
 
     $cfg->save_config();
