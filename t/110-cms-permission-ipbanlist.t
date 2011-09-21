@@ -82,6 +82,7 @@ my $banlist = MT::Test::Permission->make_banlist(
 my ( $app, $out );
 
 subtest 'mode = list' => sub {
+    MT->config( 'ShowIPInformation', 1, 1 );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -93,20 +94,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out !~ m!Permission denied!i, "list by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'list',
-            blog_id          => $blog->id,
-            _type            => 'banlist',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
-    ok( $out !~ m!Permission denied!i, "list by permitted user (list config)" );
+    ok( $out !~ m!permission=1!i, "list by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -119,20 +107,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out !~ m!Permission denied!i, "list by permitted user (manage feedback)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'list',
-            blog_id          => $blog->id,
-            _type            => 'banlist',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
-    ok( $out =~ m!Permission denied!i, "list by other blog (list config)" );
+    ok( $out !~ m!permission=1!i, "list by permitted user (manage feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -145,7 +120,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!Permission denied!i, "list by other blog (manage feedback)" );
+    ok( $out =~ m!permission=1!i, "list by other blog (manage feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -158,7 +133,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!Permission denied!i, "list by other permission" );
+    ok( $out =~ m!permission=1!i, "list by other permission" );
 
     done_testing();
 };
@@ -176,7 +151,7 @@ subtest 'mode = save' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out !~ m!Permission denied!i, "save by admin" );
+    ok( $out !~ m!permission=1!i, "save by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -190,7 +165,7 @@ subtest 'mode = save' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out !~ m!Permission denied!i, "save by permitted user (edit config)" );
+    ok( $out !~ m!permission=1!i, "save by permitted user (edit config)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -204,7 +179,7 @@ subtest 'mode = save' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out !~ m!Permission denied!i, "save by permitted user (manage feedback)" );
+    ok( $out !~ m!permission=1!i, "save by permitted user (manage feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -218,7 +193,7 @@ subtest 'mode = save' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out =~ m!Permission denied!i, "save by other blog (edit config)" );
+    ok( $out =~ m!permission=1!i, "save by other blog (edit config)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -232,7 +207,7 @@ subtest 'mode = save' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out =~ m!Permission denied!i, "save by other blog (manage feedback)" );
+    ok( $out =~ m!permission=1!i, "save by other blog (manage feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -245,7 +220,7 @@ subtest 'mode = save' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out =~ m!Permission denied!i, "save by other permission" );
+    ok( $out =~ m!permission=1!i, "save by other permission" );
 
     done_testing();
 };
@@ -354,7 +329,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out !~ m!Permission denied!i, "delete by admin" );
+    ok( $out !~ m!permission=1!i, "delete by admin" );
 
     $banlist = MT::Test::Permission->make_banlist(
         blog_id => $blog->id,
@@ -371,7 +346,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out !~ m!Permission denied!i, "delete by permitted user (delete config)" );
+    ok( $out !~ m!permission=1!i, "delete by permitted user (delete config)" );
 
     $banlist = MT::Test::Permission->make_banlist(
         blog_id => $blog->id,
@@ -388,7 +363,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out !~ m!Permission denied!i, "delete by permitted user (manage feedback)" );
+    ok( $out !~ m!permission=1!i, "delete by permitted user (manage feedback)" );
 
     $banlist = MT::Test::Permission->make_banlist(
         blog_id => $blog->id,
@@ -405,7 +380,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out =~ m!Permission denied!i, "delete by other blog (delete config)" );
+    ok( $out =~ m!permission=1!i, "delete by other blog (delete config)" );
 
     $banlist = MT::Test::Permission->make_banlist(
         blog_id => $blog->id,
@@ -422,7 +397,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out =~ m!Permission denied!i, "delete by other blog (manage feedback)" );
+    ok( $out =~ m!permission=1!i, "delete by other blog (manage feedback)" );
 
     $banlist = MT::Test::Permission->make_banlist(
         blog_id => $blog->id,
@@ -439,7 +414,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out =~ m!Permission denied!i, "delete by other permission" );
+    ok( $out =~ m!permission=1!i, "delete by other permission" );
 
     done_testing();
 };
