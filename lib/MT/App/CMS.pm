@@ -2452,11 +2452,6 @@ sub core_disable_object_methods {
             delete => 1,
             edit   => 1,
         },
-        role => {
-            save   => 1,
-            delete => 1,
-            edit   => 1,
-        },
     };
 }
 

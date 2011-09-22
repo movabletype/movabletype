@@ -56,7 +56,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out !~ m!Permission denied!i, "delete by admin" );
+    ok( $out !~ m!permission=1!i, "delete by admin" );
 
     $role = MT::Test::Permission->make_role(
         name  => 'Create Post',
@@ -73,7 +73,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out =~ m!Permission denied!i, "delete by non permitted user" );
+    ok( $out =~ m!permission=1!i, "delete by non permitted user" );
 
     done_testing();
 };
