@@ -36,6 +36,8 @@ MT::Association->link( $aikawa => $website_admin => $website );
 my ( $app, $out );
 
 subtest 'mode = reset_rpt_log' => sub {
+    plan skip_all => 'Not implemented';
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -46,7 +48,7 @@ subtest 'mode = reset_rpt_log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_rpt_log" );
-    ok( $out !~ m!Permission denied!i, "reset_rpt_log by admin" );
+    ok( $out !~ m!permission=1!i, "reset_rpt_log by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -58,12 +60,14 @@ subtest 'mode = reset_rpt_log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reset_rpt_log" );
-    ok( $out =~ m!Permission denied!i, "reset_rpt_log by non permitted user" );
+    ok( $out =~ m!permission=1!i, "reset_rpt_log by non permitted user" );
 
     done_testing();
 };
 
 subtest 'mode = view_rpt_log' => sub {
+    plan skip_all => 'Not implemented';
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -74,7 +78,7 @@ subtest 'mode = view_rpt_log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: view_rpt_log" );
-    ok( $out !~ m!Permission denied!i, "view_rpt_log by admin" );
+    ok( $out !~ m!permission=1!i, "view_rpt_log by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -86,7 +90,7 @@ subtest 'mode = view_rpt_log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: view_rpt_log" );
-    ok( $out =~ m!Permission denied!i, "view_rpt_log by non permitted user" );
+    ok( $out =~ m!permission=1!i, "view_rpt_log by non permitted user" );
 
     done_testing();
 };

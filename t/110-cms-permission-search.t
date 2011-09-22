@@ -217,7 +217,7 @@ subtest 'search: entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:entry" );
-    ok( $out !~ m!Permission denied!i, "search:entry by admin" );
+    ok( $out !~ m!permission=1!i, "search:entry by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -235,7 +235,7 @@ subtest 'search: entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:entry" );
-    ok( $out !~ m!Permission denied!i, "search:entry by permitted user (create post)" );
+    ok( $out !~ m!permission=1!i, "search:entry by permitted user (create post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -253,7 +253,7 @@ subtest 'search: entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:entry" );
-    ok( $out !~ m!Permission denied!i, "search:entry by permitted user (edit all posts)" );
+    ok( $out !~ m!permission=1!i, "search:entry by permitted user (edit all posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -271,7 +271,7 @@ subtest 'search: entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:entry" );
-    ok( $out =~ m!Permission denied!i, "search:entry by other blog (create post)" );
+    ok( $out =~ m!permission=1!i, "search:entry by other blog (create post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -289,7 +289,7 @@ subtest 'search: entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:entry" );
-    ok( $out =~ m!Permission denied!i, "search:entry by other blog (edit all posts)" );
+    ok( $out =~ m!permission=1!i, "search:entry by other blog (edit all posts)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -327,7 +327,7 @@ subtest 'search: comment' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:comment" );
-    ok( $out !~ m!Permission denied!i, "search:comment by admin" );
+    ok( $out !~ m!permission=1!i, "search:comment by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -345,7 +345,7 @@ subtest 'search: comment' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:comment" );
-    ok( $out !~ m!Permission denied!i, "search:comment by permitted user (create post)" );
+    ok( $out !~ m!permission=1!i, "search:comment by permitted user (create post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -363,7 +363,7 @@ subtest 'search: comment' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:comment" );
-    ok( $out !~ m!Permission denied!i, "search:comment by permitted user (manage feedback)" );
+    ok( $out !~ m!permission=1!i, "search:comment by permitted user (manage feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -381,7 +381,7 @@ subtest 'search: comment' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:comment" );
-    ok( $out !~ m!Permission denied!i, "search:comment by permitted user (manage pages)" );
+    ok( $out !~ m!permission=1!i, "search:comment by permitted user (manage pages)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -399,7 +399,7 @@ subtest 'search: comment' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:comment" );
-    ok( $out =~ m!Permission denied!i, "search:comment by other blog (create post)" );
+    ok( $out =~ m!permission=1!i, "search:comment by other blog (create post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -417,7 +417,7 @@ subtest 'search: comment' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:comment" );
-    ok( $out =~ m!Permission denied!i, "search:comment by other blog (manage feedback)" );
+    ok( $out =~ m!permission=1!i, "search:comment by other blog (manage feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -435,7 +435,7 @@ subtest 'search: comment' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:comment" );
-    ok( $out =~ m!Permission denied!i, "search:comment by other blog (manage pages)" );
+    ok( $out =~ m!permission=1!i, "search:comment by other blog (manage pages)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -473,7 +473,7 @@ subtest 'search: ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:ping" );
-    ok( $out !~ m!Permission denied!i, "search:ping by admin" );
+    ok( $out !~ m!permission=1!i, "search:ping by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -491,7 +491,7 @@ subtest 'search: ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:ping" );
-    ok( $out !~ m!Permission denied!i, "search:ping by permitted user (create post)" );
+    ok( $out !~ m!permission=1!i, "search:ping by permitted user (create post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -509,7 +509,7 @@ subtest 'search: ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:ping" );
-    ok( $out !~ m!Permission denied!i, "search:ping by permitted user (manage feedback)" );
+    ok( $out !~ m!permission=1!i, "search:ping by permitted user (manage feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -527,7 +527,7 @@ subtest 'search: ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:ping" );
-    ok( $out !~ m!Permission denied!i, "search:ping by permitted user (manage pages)" );
+    ok( $out !~ m!permission=1!i, "search:ping by permitted user (manage pages)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -545,7 +545,7 @@ subtest 'search: ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:ping" );
-    ok( $out =~ m!Permission denied!i, "search:ping by other blog (create post)" );
+    ok( $out =~ m!permission=1!i, "search:ping by other blog (create post)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -563,7 +563,7 @@ subtest 'search: ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:ping" );
-    ok( $out =~ m!Permission denied!i, "search:ping by other blog (manage feedback)" );
+    ok( $out =~ m!permission=1!i, "search:ping by other blog (manage feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -581,7 +581,7 @@ subtest 'search: ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:ping" );
-    ok( $out =~ m!Permission denied!i, "search:ping by other blog (manage pages)" );
+    ok( $out =~ m!permission=1!i, "search:ping by other blog (manage pages)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -619,7 +619,7 @@ subtest 'search: template' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:template" );
-    ok( $out !~ m!Permission denied!i, "search:template by admin" );
+    ok( $out !~ m!permission=1!i, "search:template by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -637,7 +637,7 @@ subtest 'search: template' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:template" );
-    ok( $out !~ m!Permission denied!i, "search:template by permitted user (local)" );
+    ok( $out !~ m!permission=1!i, "search:template by permitted user (local)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -655,7 +655,7 @@ subtest 'search: template' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:template" );
-    ok( $out !~ m!Permission denied!i, "search:template by permitted user (system)" );
+    ok( $out !~ m!permission=1!i, "search:template by permitted user (system)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -673,7 +673,7 @@ subtest 'search: template' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:template" );
-    ok( $out =~ m!Permission denied!i, "search:template by other blog" );
+    ok( $out =~ m!permission=1!i, "search:template by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -711,7 +711,7 @@ subtest 'search: asset' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:asset" );
-    ok( $out !~ m!Permission denied!i, "search:asset by admin" );
+    ok( $out !~ m!permission=1!i, "search:asset by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -729,7 +729,7 @@ subtest 'search: asset' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:asset" );
-    ok( $out !~ m!Permission denied!i, "search:asset by permitted user" );
+    ok( $out !~ m!permission=1!i, "search:asset by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -747,7 +747,7 @@ subtest 'search: asset' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:asset" );
-    ok( $out =~ m!Permission denied!i, "search:asset by other blog" );
+    ok( $out =~ m!permission=1!i, "search:asset by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -785,7 +785,7 @@ subtest 'search: log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:log" );
-    ok( $out !~ m!Permission denied!i, "search:log by admin" );
+    ok( $out !~ m!permission=1!i, "search:log by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -803,7 +803,7 @@ subtest 'search: log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:log" );
-    ok( $out !~ m!Permission denied!i, "search:log by permitted user (local)" );
+    ok( $out !~ m!permission=1!i, "search:log by permitted user (local)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -821,7 +821,7 @@ subtest 'search: log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:log" );
-    ok( $out !~ m!Permission denied!i, "search:log by permitted user (system)" );
+    ok( $out !~ m!permission=1!i, "search:log by permitted user (system)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -839,7 +839,7 @@ subtest 'search: log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:log" );
-    ok( $out =~ m!Permission denied!i, "search:log by other blog" );
+    ok( $out =~ m!permission=1!i, "search:log by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -877,7 +877,7 @@ subtest 'search: author' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:author" );
-    ok( $out !~ m!Permission denied!i, "search:author by admin" );
+    ok( $out !~ m!permission=1!i, "search:author by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -915,7 +915,7 @@ subtest 'search: blog' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:blog" );
-    ok( $out !~ m!Permission denied!i, "search:blog by admin" );
+    ok( $out !~ m!permission=1!i, "search:blog by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -933,7 +933,7 @@ subtest 'search: blog' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:blog" );
-    ok( $out !~ m!Permission denied!i, "search:blog by permitted user" );
+    ok( $out !~ m!permission=1!i, "search:blog by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -951,7 +951,7 @@ subtest 'search: blog' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:blog" );
-    ok( $out =~ m!Permission denied!i, "search:blog by other blog" );
+    ok( $out =~ m!permission=1!i, "search:blog by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -989,7 +989,7 @@ subtest 'search: website' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:website" );
-    ok( $out !~ m!Permission denied!i, "search:website by admin" );
+    ok( $out !~ m!permission=1!i, "search:website by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1007,7 +1007,7 @@ subtest 'search: website' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:website" );
-    ok( $out !~ m!Permission denied!i, "search:website by permitted user" );
+    ok( $out !~ m!permission=1!i, "search:website by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1025,7 +1025,7 @@ subtest 'search: website' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:website" );
-    ok( $out =~ m!Permission denied!i, "search:website by other website" );
+    ok( $out =~ m!permission=1!i, "search:website by other website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1063,7 +1063,7 @@ subtest 'search: page' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:page" );
-    ok( $out !~ m!Permission denied!i, "search:page by admin" );
+    ok( $out !~ m!permission=1!i, "search:page by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1081,7 +1081,7 @@ subtest 'search: page' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:page" );
-    ok( $out !~ m!Permission denied!i, "search:page by permitted user" );
+    ok( $out !~ m!permission=1!i, "search:page by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1099,7 +1099,7 @@ subtest 'search: page' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:page" );
-    ok( $out =~ m!Permission denied!i, "search:page by other blog" );
+    ok( $out =~ m!permission=1!i, "search:page by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
