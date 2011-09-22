@@ -111,7 +111,7 @@ sub perms_from_registry {
 #    N      ||    N    || Author's Weblog level permissions
 #    0      ||    N    || Weblog default preferences of Entry Display (TBRemoved)
 #    0      ||    0    || !!BUG!!
-# Permissions are stored in database like 'Perm1','Perm_2','Pe_rm_3'.
+# Permissions are stored in database like 'Perm1','Perm_2','Perm_3'.
 {
     my @Perms;
 
