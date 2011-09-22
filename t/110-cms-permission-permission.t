@@ -41,10 +41,6 @@ MT::Association->link( $aikawa => $blog_admin => $blog );
 my ( $app, $out );
 
 subtest 'mode = list' => sub {
-    my $perm = MT::Test::Permission->make_permission(
-        blog_id => $blog->id,
-        author_id => $aikawa->id,
-    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -52,17 +48,12 @@ subtest 'mode = list' => sub {
             __mode           => 'list',
             _type            => 'permission',
             blog_id          => $blog->id,
-            id               => $perm->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!Invalid Request!i, "list by admin" );
+    ok( $out =~ m!Unknown Action!i, "list by admin" );
 
-    $perm = MT::Test::Permission->make_permission(
-        blog_id => $blog->id,
-        author_id => $aikawa->id,
-    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
@@ -70,12 +61,11 @@ subtest 'mode = list' => sub {
             __mode           => 'list',
             _type            => 'permission',
             blog_id          => $blog->id,
-            id               => $perm->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!Invalid Request!i, "list by non permitted user" );
+    ok( $out =~ m!Unknown Action!i, "list by non permitted user" );
 };
 
 subtest 'mode = save' => sub {
@@ -109,10 +99,10 @@ subtest 'mode = save' => sub {
 };
 
 subtest 'mode = edit' => sub {
-    my $perm = MT::Test::Permission->make_permission(
+    my $perm = MT::Permission->load({
         blog_id => $blog->id,
         author_id => $aikawa->id,
-    );
+    });
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -127,10 +117,6 @@ subtest 'mode = edit' => sub {
     ok( $out, "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by admin" );
 
-    $perm = MT::Test::Permission->make_permission(
-        blog_id => $blog->id,
-        author_id => $aikawa->id,
-    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
@@ -147,10 +133,10 @@ subtest 'mode = edit' => sub {
 };
 
 subtest 'mode = delete' => sub {
-    my $perm = MT::Test::Permission->make_permission(
+    my $perm = MT::Permission->load({
         blog_id => $blog->id,
         author_id => $aikawa->id,
-    );
+    });
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
