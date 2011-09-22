@@ -53,7 +53,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!Invalid Request!i, "list by admin" );
+    ok( $out =~ m!Unknown Action!i, "list by admin" );
 
     $os = MT::Test::Permission->make_objectasset( blog_id => $blog->id );
     $app = _run_app(
@@ -67,7 +67,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!Invalid Request!i, "list by non permitted user" );
+    ok( $out =~ m!Unknown Action!i, "list by non permitted user" );
 };
 
 subtest 'mode = save' => sub {

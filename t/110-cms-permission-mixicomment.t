@@ -73,6 +73,8 @@ MT::Association->link( $ogawa => $create_post => $blog );
 my ( $app, $out );
 
 subtest 'mode = mixicomment_login_blog_owner' => sub {
+    plan skip_all => 'https://movabletype.fogbugz.com/default.asp?106849';
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -83,7 +85,7 @@ subtest 'mode = mixicomment_login_blog_owner' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: mixicomment_login_blog_owner" );
-    ok( $out !~ m!Permission denied!i, "mixicomment_login_blog_owner by admin" );
+    ok( $out !~ m!permission=1!i, "mixicomment_login_blog_owner by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -95,7 +97,7 @@ subtest 'mode = mixicomment_login_blog_owner' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: mixicomment_login_blog_owner" );
-    ok( $out !~ m!Permission denied!i, "mixicomment_login_blog_owner by permitted user (blog)" );
+    ok( $out !~ m!permission=1!i, "mixicomment_login_blog_owner by permitted user (blog)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -107,7 +109,7 @@ subtest 'mode = mixicomment_login_blog_owner' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: mixicomment_login_blog_owner" );
-    ok( $out !~ m!Permission denied!i, "mixicomment_login_blog_owner by permitted user (website)" );
+    ok( $out !~ m!permission=1!i, "mixicomment_login_blog_owner by permitted user (website)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -119,7 +121,7 @@ subtest 'mode = mixicomment_login_blog_owner' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: mixicomment_login_blog_owner" );
-    ok( $out =~ m!Permission denied!i, "mixicomment_login_blog_owner by non permitted user (blog)" );
+    ok( $out =~ m!permission=1!i, "mixicomment_login_blog_owner by non permitted user (blog)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -131,7 +133,7 @@ subtest 'mode = mixicomment_login_blog_owner' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: mixicomment_login_blog_owner" );
-    ok( $out =~ m!Permission denied!i, "mixicomment_login_blog_owner by non permitted user (website)" );
+    ok( $out =~ m!permission=1!i, "mixicomment_login_blog_owner by non permitted user (website)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -143,10 +145,12 @@ subtest 'mode = mixicomment_login_blog_owner' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: mixicomment_login_blog_owner" );
-    ok( $out =~ m!Permission denied!i, "mixicomment_login_blog_owner by other permission" );
+    ok( $out =~ m!permission=1!i, "mixicomment_login_blog_owner by other permission" );
 };
 
 subtest 'mode = mixicomment_verify_blog_owner' => sub {
+    plan skip_all => 'https://movabletype.fogbugz.com/default.asp?106849';
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -157,7 +161,7 @@ subtest 'mode = mixicomment_verify_blog_owner' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: mixicomment_verify_blog_owner" );
-    ok( $out !~ m!Permission denied!i, "mixicomment_verify_blog_owner by admin" );
+    ok( $out !~ m!permission=1!i, "mixicomment_verify_blog_owner by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -169,7 +173,7 @@ subtest 'mode = mixicomment_verify_blog_owner' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: mixicomment_verify_blog_owner" );
-    ok( $out !~ m!Permission denied!i, "mixicomment_verify_blog_owner by permitted user (blog)" );
+    ok( $out !~ m!permission=1!i, "mixicomment_verify_blog_owner by permitted user (blog)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -181,7 +185,7 @@ subtest 'mode = mixicomment_verify_blog_owner' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: mixicomment_verify_blog_owner" );
-    ok( $out !~ m!Permission denied!i, "mixicomment_verify_blog_owner by permitted user (website)" );
+    ok( $out !~ m!permission=1!i, "mixicomment_verify_blog_owner by permitted user (website)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -193,7 +197,7 @@ subtest 'mode = mixicomment_verify_blog_owner' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: mixicomment_verify_blog_owner" );
-    ok( $out =~ m!Permission denied!i, "mixicomment_verify_blog_owner by non permitted user (blog)" );
+    ok( $out =~ m!permission=1!i, "mixicomment_verify_blog_owner by non permitted user (blog)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -205,7 +209,7 @@ subtest 'mode = mixicomment_verify_blog_owner' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: mixicomment_verify_blog_owner" );
-    ok( $out =~ m!Permission denied!i, "mixicomment_verify_blog_owner by non permitted user (website)" );
+    ok( $out =~ m!permission=1!i, "mixicomment_verify_blog_owner by non permitted user (website)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -217,7 +221,7 @@ subtest 'mode = mixicomment_verify_blog_owner' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: mixicomment_verify_blog_owner" );
-    ok( $out =~ m!Permission denied!i, "mixicomment_verify_blog_owner by other permission" );
+    ok( $out =~ m!permission=1!i, "mixicomment_verify_blog_owner by other permission" );
 };
 
 done_testing();
