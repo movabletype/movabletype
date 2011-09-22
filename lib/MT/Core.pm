@@ -2829,6 +2829,7 @@ sub load_core_permissions {
             'permitted_action' => {
                 'config_plugins'             => 1,
                 'manage_plugins'             => 1,
+                'reset_plugin_setting'       => 1,
                 'save_plugin_setting'        => 1,
                 'toggle_plugin_switch'       => 1,
                 'access_to_system_dashboard' => 1,
