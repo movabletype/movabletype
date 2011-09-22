@@ -702,6 +702,9 @@ sub edit {
         ];
         $param{'master_revision_switch'} = $app->config->TrackRevisions;
     }
+    if ($type eq 'author') {
+        $app->password_validation_params(\%param);
+    }
 
     my $res = $app->run_callbacks( 'cms_edit.' . $type, $app, $id, $obj,
         \%param );

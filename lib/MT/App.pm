@@ -2168,6 +2168,23 @@ sub logout {
     $app->show_login( { logged_out => 1, } );
 }
 
+sub password_validation_params {
+    my $app = shift;
+    my ($params) = @_;
+    $params ||= {};
+
+    my $constrains = $app->config('UserPasswordValidation');
+
+    $params->{__VALIDATION_RULE__} =
+        join(', ',
+             ( $constrains =~ m/upperlower/ ? 'upper and lower letters' : () ),
+             ( $constrains =~ m/letternumber/ ? 'letters and numbered' : () ),
+             ( $constrains =~ m/symbol/ ? 'special symbols (e.g. #!$%)' : () ),
+             );
+    $params->{__VALIDATION_SCRIPT__} = "var validation = 5;";
+    return $params;
+}
+
 sub create_user_pending {
     my $app     = shift;
     my $q       = $app->param;
