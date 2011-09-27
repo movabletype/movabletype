@@ -391,6 +391,8 @@ sub core_tags {
             BuildTemplateID =>
                 \&MT::Template::Tags::System::_hdlr_build_template_id,
             ErrorMessage => \&MT::Template::Tags::System::_hdlr_error_message,
+            PasswordValidation =>
+                \&MT::Template::Tags::System::_hdlr_password_validation_script,
 
             ## App
 
@@ -5714,6 +5716,126 @@ sub _hdlr_error_message {
     my ($ctx) = @_;
     my $err = $ctx->stash('error_message');
     defined $err ? $err : '';
+}
+
+###########################################################################
+
+=head2 PasswordValidation
+
+This tag add a password validation JavaScript to a form (user profile,
+new installation) where ever a user need to insert a new password
+
+As one of the rules are that the password should not include the user name,
+The script will try to fish inside the form for the username, (checking
+name, admin_name) and if not exists will use the logined user name
+
+B<Attributes:>
+
+=over 4
+
+=item * form
+
+The name of the form this tag will letch on
+
+=item * id
+
+The name of the password field in the form this tag will check
+
+=back
+
+B<Example:>
+
+    <$mt:PasswordValidation form="profile" id="pass"$>
+
+=cut
+
+sub _hdlr_password_validation_script {
+    my ( $ctx, $args ) = @_;
+    my $form_id = $args->{form};
+    my $field_id = $args->{id};
+    my $app = MT->instance;
+    
+    my $constrains = $app->config('UserPasswordValidation');
+    my $min_length = $app->config('UserPasswordMinLength');
+    
+    my $vs = "\n";
+    if (my $user = $app->user()) {
+        $vs .= 'var verify_username = "' . $user->name() . "\";\n";
+    }
+    $vs .= 'var minimum_password_length = ' . $min_length . ";\n";
+    $vs .= 'var verify_letter_number = ' . ( $constrains =~ m/upperlower/ ? 1 : 0 ) . ";\n";
+    $vs .= 'var verify_upper_lower = ' . ( $constrains =~ m/letternumber/ ? 1 : 0 ) . ";\n";
+    $vs .= 'var verify_symbol = ' . ( $constrains =~ m/symbol/ ? 1 : 0 ) . ";\n";
+    $vs .= << 'JSCRIPT';
+        function verify_password(username, passwd) {
+          if (passwd.length < minimum_password_length) {
+            return "Password should be longer then " + minimum_password_length + " characters";
+          }
+          if (passwd.indexOf(username) > -1) {
+            return "Password should not include your user name";
+          }
+          if (verify_letter_number) {
+            if ((passwd.search(/[a-zA-Z]/) == -1) || (passwd.search(/\d/) == -1)) {
+              return "Password should include letters and numbers";
+            }
+          }
+          if (verify_upper_lower) {
+            if (( passwd.search(/[a-z]/) == -1) || (passwd.search(/[A-Z]/) == -1)) {
+              return "Password should include lower and upper letters";
+            }
+          }
+          if (verify_symbol) {
+            if ( passwd.search(/[!"#$%&'\(\|\)\*\+,-\.\/\\:;<=>\?@\[\]^_`{}~]/) == -1 ) {
+              return "Password should contain symbols like $!([{}])#";
+            }
+          }
+          return "";
+        }
+JSCRIPT
+
+    $vs .= << "JSCRIPT";
+        function verify_form_password(eventObject) {
+            var form = document.forms["$form_id"];
+            var passwd = form["$field_id"].value;
+            if (passwd == null || passwd == "") {
+                return true;
+            }
+            var username;
+            if (form["admin_username"]) {
+                username = form["admin_username"].value;
+            } else if (form["name"]) {
+                username = form["name"].value;
+            } else {
+                username = verify_username;
+            }
+            var error = verify_password(username, passwd);
+            if (error == "") {
+                return true;
+            }
+            alert(error);
+            if (eventObject.preventDefault) {
+              eventObject.preventDefault();
+            } else if (window.event) /* for ie */ {
+              window.event.returnValue = false;
+            }
+            return false;
+        }
+        function verify_password_install() {
+            var form = document.forms["$form_id"];
+            if (form.addEventListener){                 
+                    form.addEventListener('submit', verify_form_password, false); 
+            } else if (form.attachEvent){                       
+                    form.attachEvent('onsubmit', verify_form_password);
+            }
+        }
+        if (window.addEventListener){   
+            window.addEventListener('load', verify_password_install, false); 
+        } else if (window.attachEvent){ 
+            window.attachEvent('onload', verify_password_install );
+        }
+JSCRIPT
+
+    return $vs;
 }
 
 1;
