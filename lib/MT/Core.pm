@@ -1832,7 +1832,7 @@ BEGIN {
                 default => 'comma',
             },
             'UserPasswordValidation' => { default => '', },
-            'UserPasswordMinLength'  => { default => 8, },
+            'UserPasswordMinLengh'  => { default => 8, },
             'AuthenticationModule'  => { default => 'MT', },
             'AuthLoginURL'          => undef,
             'AuthLogoutURL'         => undef,

@@ -2174,52 +2174,14 @@ sub password_validation_params {
     $params ||= {};
 
     my $constrains = $app->config('UserPasswordValidation');
-    my $min_length = $app->config('UserPasswordMinLength');
 
     $params->{__VALIDATION_RULE__} =
         join(', ',
-             "minimum length of $min_length",
              ( $constrains =~ m/upperlower/ ? 'upper and lower letters' : () ),
              ( $constrains =~ m/letternumber/ ? 'letters and numbered' : () ),
              ( $constrains =~ m/symbol/ ? 'special symbols (e.g. #!$%)' : () ),
              );
-    
-    my $vs = "\n";
-    if (my $user = $app->user()) {
-        $vs .= 'function get_username() { return "' . $user->name() . '"; }'."\n";
-    }
-    $vs .= 'var minimum_password_length = ' . $min_length . ";\n";
-    $vs .= 'var verify_letter_number = ' . ( $constrains =~ m/upperlower/ ? 1 : 0 ) . ";\n";
-    $vs .= 'var verify_upper_lower = ' . ( $constrains =~ m/letternumber/ ? 1 : 0 ) . ";\n";
-    $vs .= 'var verify_symbol = ' . ( $constrains =~ m/symbol/ ? 1 : 0 ) . ";\n";
-    $vs .= << 'JSCRIPT';
-        function verify_password(passwd) {
-          if (passwd.length < minimum_password_length) {
-            return "Password should be longer then " + minimum_password_length + " characters";
-          }
-          if (passwd.indexOf(get_username()) > -1) {
-            return "Password should not include your user name";
-          }
-          if (verify_letter_number) {
-            if ((passwd.search(/[a-zA-Z]/) == -1) || (passwd.search(/\d/) == -1)) {
-              return "Password should include letters and numbers";
-            }
-          }
-          if (verify_upper_lower) {
-            if (( passwd.search(/[a-z]/) == -1) || (passwd.search(/[A-Z]/) == -1)) {
-              return "Password should include lower and upper letters";
-            }
-          }
-          if (verify_symbol) {
-            if ( passwd.search(/[!"#$%&'\(\|\)\*\+,-\.\/\\:;<=>\?@\[\]^_`{}~]/) == -1 ) {
-              return "Password should contain symbols like $!([{}])#";
-            }
-          }
-          return "";
-        }
-JSCRIPT
-
-    $params->{__VALIDATION_SCRIPT__} = $vs;
+    $params->{__VALIDATION_SCRIPT__} = "var validation = 5;";
     return $params;
 }
 
