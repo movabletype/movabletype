@@ -1819,7 +1819,6 @@ sub edit_commenter_profile {
             blog_id  => $blog_id,
             $entry_id ? ( entry_url => $url ) : ( return_url => $url ),
         };
-        $app->password_validation_params($param);
         $param->{ 'auth_mode_' . $commenter->auth_type } = 1;
         require MT::Auth;
         $param->{'email_required'} = MT::Auth->can_recover_password ? 1 : 0;
