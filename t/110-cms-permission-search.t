@@ -16,6 +16,7 @@ use Test::More;
 
 # Website
 my $website = MT::Test::Permission->make_website();
+my $second_website = MT::Test::Permission->make_website();
 
 # Blog
 my $blog = MT::Test::Permission->make_blog(
@@ -173,15 +174,15 @@ MT::Association->link( $kikkawa => $manage_pages => $blog );
 MT::Association->link( $kumekawa => $blog_admin => $blog );
 MT::Association->link( $kemikawa => $website_admin => $website );
 
-MT::Association->link( $shiki => $create_post => $blog );
-MT::Association->link( $suda => $edit_all_posts => $blog );
-MT::Association->link( $segawa => $manage_feedback => $blog );
-MT::Association->link( $sone => $edit_templates => $blog );
-MT::Association->link( $tachikawa => $edit_assets => $blog );
-MT::Association->link( $tsuda => $view_blog_log => $blog );
-MT::Association->link( $terakawa => $manage_pages => $blog );
-MT::Association->link( $toda => $blog_admin => $blog );
-MT::Association->link( $nagayama => $website_admin => $website );
+MT::Association->link( $shiki => $create_post => $second_blog );
+MT::Association->link( $suda => $edit_all_posts => $second_blog );
+MT::Association->link( $segawa => $manage_feedback => $second_blog );
+MT::Association->link( $sone => $edit_templates => $second_blog );
+MT::Association->link( $tachikawa => $edit_assets => $second_blog );
+MT::Association->link( $tsuda => $view_blog_log => $second_blog );
+MT::Association->link( $terakawa => $manage_pages => $second_blog );
+MT::Association->link( $toda => $blog_admin => $second_blog );
+MT::Association->link( $nagayama => $website_admin => $second_website );
 
 
 require MT::Permission;
@@ -201,6 +202,11 @@ $p->save;
 my ( $app, $out );
 
 subtest 'search: entry' => sub {
+    MT::Test::Permission->make_entry(
+        blog_id        => $blog->id,
+        author_id      => $aikawa->id,
+        text           => 'aaaaaaa',
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -299,6 +305,7 @@ subtest 'search: entry' => sub {
             _type            => 'entry',
             limit            => 10,
             blog_id          => $blog->id,
+
             return_args      => '__mode%3Dsearch_replace%26blog_id%3D'.$blog->id,
             do_search        => 1,
             search           => 'aaa',
@@ -307,10 +314,20 @@ subtest 'search: entry' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:entry" );
-    ok( $out =~ m!No permissions!i, "search:entry by other permission" );
+    ok( $out =~ m!No entries were found that match the given criteria!i, "search:entry by other permission" );
 };
 
 subtest 'search: comment' => sub {
+    my $entry = MT::Test::Permission->make_entry(
+        blog_id        => $blog->id,
+        author_id      => $aikawa->id,
+        text           => 'aaaaaaa',
+    );
+    MT::Test::Permission->make_comment(
+        blog_id        => $blog->id,
+        entry_id       => $entry->id,
+        text           => 'aaaa aaa',
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -453,10 +470,24 @@ subtest 'search: comment' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:comment" );
-    ok( $out =~ m!No permissions!i, "search:comment by other permission" );
+    ok( $out =~ m!No comments were found that match the given criteria!i, "search:comment by other permission" );
 };
 
 subtest 'search: ping' => sub {
+    my $entry = MT::Test::Permission->make_entry(
+        blog_id        => $blog->id,
+        author_id      => $aikawa->id,
+        text           => 'aaaaaaa',
+    );
+    my $tb = MT::Test::Permission->make_tb(
+        blog_id        => $blog->id,
+        entry_id       => $entry->id,
+    );
+    MT::Test::Permission->make_ping(
+        blog_id        => $blog->id,
+        tb_id          => $tb->id,
+        excerpt        => 'aaaaaaa',
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -599,10 +630,15 @@ subtest 'search: ping' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:ping" );
-    ok( $out =~ m!No permissions!i, "search:ping by other permission" );
+    ok( $out =~ m!No trackbacks were found that match the given criteria!i, "search:ping by other permission" );
 };
 
 subtest 'search: template' => sub {
+    MT::Test::Permission->make_template(
+        blog_id => $blog->id,
+        name    => 'Test Template',
+        text    => 'aaaaaaaa',
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -691,10 +727,14 @@ subtest 'search: template' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:template" );
-    ok( $out =~ m!No permissions!i, "search:template by other permission" );
+    ok( $out =~ m!No templates were found that match the given criteria!i, "search:template by other permission" );
 };
 
 subtest 'search: asset' => sub {
+    MT::Test::Permission->make_asset(
+        file_name => 'aaa.txt',
+        blog_id   => $blog->id,
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -765,10 +805,14 @@ subtest 'search: asset' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:asset" );
-    ok( $out =~ m!No permissions!i, "search:asset by other permission" );
+    ok( $out =~ m!No assets were found that match the given criteria!i, "search:asset by other permission" );
 };
 
 subtest 'search: log' => sub {
+    MT::Test::Permission->make_log(
+        blog_id => $blog->id,
+        message => 'aaaaaa',
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -857,10 +901,14 @@ subtest 'search: log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:log" );
-    ok( $out =~ m!No permissions!i, "search:log by other permission" );
+    ok( $out =~ m!No log messages were found that match the given criteria!i, "search:log by other permission" );
 };
 
 subtest 'search: author' => sub {
+    MT::Test::Permission->make_author(
+        name     => 'User ABC',
+        nickname => 'aaa',
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -895,10 +943,14 @@ subtest 'search: author' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:author" );
-    ok( $out =~ m!No permissions!i, "search:author by other permission" );
+    ok( $out =~ m!No users were found that match the given criteria!i, "search:author by other permission" );
 };
 
 subtest 'search: blog' => sub {
+    MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name      => 'aaaaaa',
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -969,10 +1021,13 @@ subtest 'search: blog' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:blog" );
-    ok( $out =~ m!No permissions!i, "search:blog by other permission" );
+    ok( $out =~ m!No blogs were found that match the given criteria!i, "search:blog by other permission" );
 };
 
 subtest 'search: website' => sub {
+    MT::Test::Permission->make_website(
+        name => 'aaaaaaaaaaa',
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -1016,7 +1071,7 @@ subtest 'search: website' => sub {
             __mode           => 'search_replace',
             _type            => 'website',
             limit            => 10,
-            website_id          => $website->id,
+            blog_id          => $website->id,
             return_args      => '__mode%3Dsearch_replace%26website_id%3D'.$website->id,
             do_search        => 1,
             search           => 'aaa',
@@ -1034,7 +1089,7 @@ subtest 'search: website' => sub {
             __mode           => 'search_replace',
             _type            => 'website',
             limit            => 10,
-            website_id          => $website->id,
+            blog_id          => $website->id,
             return_args      => '__mode%3Dsearch_replace%26website_id%3D'.$website->id,
             do_search        => 1,
             search           => 'aaa',
@@ -1043,10 +1098,15 @@ subtest 'search: website' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:website" );
-    ok( $out =~ m!No permissions!i, "search:website by other permission" );
+    ok( $out =~ m!permission=1!i, "search:website by other permission" );
 };
 
 subtest 'search: page' => sub {
+    MT::Test::Permission->make_page(
+        blog_id   => $blog->id,
+        author_id => $kikkawa->id,
+        title     => 'aaaa aaaaaaa a',
+    );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -1117,7 +1177,7 @@ subtest 'search: page' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: search:page" );
-    ok( $out =~ m!No permissions!i, "search:page by other permission" );
+    ok( $out =~ m!No pages were found that match the given criteria!i, "search:page by other permission" );
 };
 
 done_testing();

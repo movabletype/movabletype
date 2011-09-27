@@ -12,19 +12,8 @@ sub core_search_apis {
     my $app     = shift;
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
-
     my $author = $app->user;
-    my @perms;
-    if ( !$blog_id ) {
-        if ( !$author->is_superuser() ) {
-            require MT::Permission;
-            @perms = MT::Permission->load( { author_id => $author->id } );
-        }
-    }
-    else {
-        @perms = ( $app->permissions )
-            or return $app->error( $app->translate("No permissions") );
-    }
+
     my $types = {
         'entry' => {
             'order'     => 100,
@@ -59,7 +48,9 @@ sub core_search_apis {
             'handler'    => '$Core::MT::CMS::Entry::build_entry_table',
             'label'      => 'Entries',
             'perm_check' => sub {
-                grep { $_->can_edit_entry( $_[0], $author ) } @perms;
+                my ( $entry ) = @_;
+                my $author = $app->user;
+                $author->permissions( $entry->blog_id )->can_edit_entry( $entry, $author );
             },
             'search_cols' => {
                 'title'     => sub { $app->translate('Title') },
@@ -120,12 +111,15 @@ sub core_search_apis {
             'handler'    => '$Core::MT::CMS::Comment::build_comment_table',
             'label'      => 'Comments',
             'perm_check' => sub {
-                require MT::Entry;
-                my $entry = MT::Entry->load( $_[0]->entry_id );
-                grep {
-                           $_->can_do('manage_feedback')
-                        || $_->can_edit_entry( $entry, $author )
-                } @perms;
+                my $author = MT->app->user;
+                return 1
+                    if $author->permissions( $_[0]->blog_id )->can_do('manage_feedback');
+
+                my $entry = MT->model('entry')->load( $_[0]->entry_id );
+                return 1
+                    if $author->permissions( $entry->blog_id )->can_edit_entry( $entry, $author );
+
+                return 0;
             },
             'search_cols' => {
                 'url'    => sub { $app->translate('URL') },
@@ -180,23 +174,22 @@ sub core_search_apis {
             'label'      => 'TrackBacks',
             'handler'    => '$Core::MT::CMS::TrackBack::build_ping_table',
             'perm_check' => sub {
+                my $author = MT->app->user;
                 my $ping = shift;
                 require MT::Trackback;
                 my $tb = MT::Trackback->load( $ping->tb_id )
                     or return undef;
                 if ( $tb->entry_id ) {
-                    require MT::Entry;
-                    my $entry = MT::Entry->load( $tb->entry_id );
-                    return grep {
-                               $_->can_do('manage_feedback')
-                            || $_->can_edit_entry( $entry, $author )
-                    } @perms;
+                    my $entry = MT->model('entry')->load( $tb->entry_id );
+                    return 1
+                        if $author->permissions( $entry->blog_id )->can_do('manage_feedback')
+                            || $author->permissions( $entry->blog_id )->can_edit_entry( $entry, $author )
                 }
                 elsif ( $tb->category_id ) {
-                    return
-                        grep { $_->can_do('search_category_trackbacks') }
-                        @perms;
+                    return 1
+                        if $author->permissions( $tb->blog_id )->can_do('search_category_trackbacks');
                 }
+                return 0;
             },
             'search_cols' => {
                 'title'      => sub { $app->translate('Title') },
@@ -235,7 +228,10 @@ sub core_search_apis {
             'label'      => 'Pages',
             'handler'    => '$Core::MT::CMS::Entry::build_entry_table',
             'perm_check' => sub {
-                grep { $_->can_manage_pages( $_[0], $author ) } @perms;
+                my ( $page ) = @_;
+                my $author = MT->app->user;
+                return
+                    $author->permissions( $page->blog_id )->can_manage_pages( $page, $author );
             },
             'search_cols' => {
                 'title'     => sub { $app->translate('Title') },
@@ -288,20 +284,19 @@ sub core_search_apis {
             'handler'    => '$Core::MT::CMS::Template::build_template_table',
             'label'      => 'Templates',
             'perm_check' => sub {
-
+                my ($obj) = @_;
+                my $author = MT->app->user;
                 return 1
                     if $author->permissions(0)->can_do('search_templates');
 
-                my ($obj) = @_;
-
                 # are there any perms that match this object and
                 # allow template editing?
-                my @check = grep {
-                           $_->blog_id == $obj->blog_id
-                        && $_->can_do('search_templates')
-                } @perms;
-                return @check;
+                return 0
+                    unless $obj->blog_id;
+                return 1
+                    if $author->permissions( $obj->blog_id )->can_do('search_templates');
 
+                return 0;
             },
             'search_cols' => {
                 'name'        => sub { $app->translate('Template Name') },
@@ -340,6 +335,7 @@ sub core_search_apis {
             'handler'    => '$Core::MT::CMS::Asset::build_asset_table',
             'perm_check' => sub {
                 my ($obj) = @_;
+                my $author = MT->app->user;
                 my $perm = $author->permissions( $obj->blog_id );
                 return $perm->can_do('search_assets');
             },
@@ -407,6 +403,7 @@ sub core_search_apis {
             'label'      => 'Activity Log',
             'perm_check' => sub {
                 my ($obj) = @_;
+                my $author = MT->app->user;
                 return 1 if $author->can_do('search_log');
                 my $perm = $author->permissions( $obj->blog_id );
                 return $perm->can_do('search_blog_log');
@@ -443,6 +440,7 @@ sub core_search_apis {
             'label'      => 'Users',
             'handler'    => '$Core::MT::CMS::User::build_author_table',
             'perm_check' => sub {
+                my $author = MT->app->user;
                 return 1 if $author->is_superuser;
                 return 0 if !$blog_id;
 
@@ -491,6 +489,7 @@ sub core_search_apis {
             },
             'handler'    => '$Core::MT::CMS::Blog::build_blog_table',
             'perm_check' => sub {
+                my $author = MT->app->user;
                 return 1
                     if $author->is_superuser
                         || $author->permissions(0)->can_do('edit_templates');
@@ -527,6 +526,7 @@ sub core_search_apis {
             'label'      => 'Websites',
             'handler'    => '$Core::MT::CMS::Website::build_website_table',
             'perm_check' => sub {
+                my $author = MT->app->user;
                 return 1 if $author->is_superuser;
                 return 1 if $author->permissions(0)->can_do('edit_templates');
                 my ($obj) = @_;
