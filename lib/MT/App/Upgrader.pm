@@ -179,7 +179,6 @@ sub upgrade {
     if ( !$driver || !$driver->table_exists($author_class) ) {
         $install_mode = 1;
         if ( $method ne 'POST' ) {
-            $app->password_validation_params(\%param);
             return $app->build_page( "install.tmpl", \%param );
         }
     }
@@ -238,7 +237,6 @@ sub init_user {
         if MT->model('author')->count();
 
     my %param = $app->unserialize_config;
-    $app->password_validation_params(\%param);
     if ( !$app->param('continue') ) {
         return $app->build_page( 'install.tmpl', \%param );
     }
@@ -664,7 +662,6 @@ sub main {
         my $method = $app->request_method;
         if ( $param || ( $method ne 'POST' ) ) {
             $param->{admin_username} ||= $app->param('admin_username') || '';
-            $app->password_validation_params($param);
             return $app->build_page( "install.tmpl", $param );
         }
         $app->validate_magic or return;
