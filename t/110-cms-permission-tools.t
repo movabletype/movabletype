@@ -94,7 +94,7 @@ subtest 'mode = adjust_sitepath' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: adjust_sitepath" );
-    ok( $out !~ m!Permission denied!i, "adjust_sitepath by admin" );
+    ok( $out !~ m!permission=1!i, "adjust_sitepath by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -106,7 +106,7 @@ subtest 'mode = adjust_sitepath' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: adjust_sitepath" );
-    ok( $out =~ m!Permission denied!i, "adjust_sitepath by non permitted user" );
+    ok( $out =~ m!permission=1!i, "adjust_sitepath by non permitted user" );
 };
 
 subtest 'mode = backup' => sub {
@@ -120,7 +120,7 @@ subtest 'mode = backup' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: backup" );
-    ok( $out !~ m!Permission denied!i, "backup by admin" );
+    ok( $out !~ m!permission=1!i, "backup by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -132,7 +132,7 @@ subtest 'mode = backup' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: backup" );
-    ok( $out !~ m!Permission denied!i, "backup by admin" );
+    ok( $out !~ m!permission=1!i, "backup by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -144,7 +144,7 @@ subtest 'mode = backup' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: backup" );
-    ok( $out !~ m!Permission denied!i, "backup by admin" );
+    ok( $out !~ m!permission=1!i, "backup by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -156,7 +156,7 @@ subtest 'mode = backup' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: backup" );
-    ok( $out =~ m!Permission denied!i, "backup by non permitted user on website" );
+    ok( $out =~ m!permission=1!i, "backup by non permitted user on website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -168,7 +168,7 @@ subtest 'mode = backup' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: backup" );
-    ok( $out =~ m!Permission denied!i, "backup by non permitted user on blog" );
+    ok( $out =~ m!permission=1!i, "backup by non permitted user on blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -180,7 +180,7 @@ subtest 'mode = backup' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: backup" );
-    ok( $out =~ m!Permission denied!i, "backup by other blog" );
+    ok( $out =~ m!permission=1!i, "backup by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -192,7 +192,7 @@ subtest 'mode = backup' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: backup" );
-    ok( $out =~ m!Permission denied!i, "backup by other permission" );
+    ok( $out =~ m!permission=1!i, "backup by other permission" );
 };
 
 subtest 'mode = backup_download' => sub {
@@ -206,7 +206,7 @@ subtest 'mode = backup_download' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: backup_download" );
-    ok( $out !~ m!Permission denied!i, "backup_download by admin" );
+    ok( $out !~ m!permission=1!i, "backup_download by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -218,7 +218,7 @@ subtest 'mode = backup_download' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: backup_download" );
-    ok( $out !~ m!Permission denied!i, "backup_download by admin" );
+    ok( $out !~ m!permission=1!i, "backup_download by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -230,7 +230,7 @@ subtest 'mode = backup_download' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: backup_download" );
-    ok( $out !~ m!Permission denied!i, "backup_download by admin" );
+    ok( $out !~ m!permission=1!i, "backup_download by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -242,7 +242,7 @@ subtest 'mode = backup_download' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: backup_download" );
-    ok( $out =~ m!Permission denied!i, "backup_download by non permitted user on website" );
+    ok( $out =~ m!permission=1!i, "backup_download by non permitted user on website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -254,7 +254,7 @@ subtest 'mode = backup_download' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: backup_download" );
-    ok( $out =~ m!Permission denied!i, "backup_download by non permitted user on blog" );
+    ok( $out =~ m!permission=1!i, "backup_download by non permitted user on blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -266,7 +266,7 @@ subtest 'mode = backup_download' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: backup_download" );
-    ok( $out =~ m!Permission denied!i, "backup_download by other blog" );
+    ok( $out =~ m!permission=1!i, "backup_download by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -278,7 +278,7 @@ subtest 'mode = backup_download' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: backup_download" );
-    ok( $out =~ m!Permission denied!i, "backup_download by other permission" );
+    ok( $out =~ m!permission=1!i, "backup_download by other permission" );
 };
 
 subtest 'mode = cfg_system_general' => sub {
@@ -292,7 +292,7 @@ subtest 'mode = cfg_system_general' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_system_general" );
-    ok( $out !~ m!Permission denied!i, "cfg_system_general by admin" );
+    ok( $out !~ m!permission=1!i, "cfg_system_general by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -304,7 +304,7 @@ subtest 'mode = cfg_system_general' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: cfg_system_general" );
-    ok( $out =~ m!Permission denied!i, "cfg_system_general by non permitted user" );
+    ok( $out =~ m!permission=1!i, "cfg_system_general by non permitted user" );
 };
 
 subtest 'mode = dialog_adjust_sitepath' => sub {
@@ -318,7 +318,7 @@ subtest 'mode = dialog_adjust_sitepath' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_adjust_sitepath" );
-    ok( $out !~ m!Permission denied!i, "dialog_adjust_sitepath by admin" );
+    ok( $out !~ m!permission=1!i, "dialog_adjust_sitepath by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -330,7 +330,7 @@ subtest 'mode = dialog_adjust_sitepath' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_adjust_sitepath" );
-    ok( $out =~ m!Permission denied!i, "dialog_adjust_sitepath by non permitted user" );
+    ok( $out =~ m!permission=1!i, "dialog_adjust_sitepath by non permitted user" );
 };
 
 subtest 'mode = dialog_restore_upload' => sub {
@@ -344,7 +344,7 @@ subtest 'mode = dialog_restore_upload' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_restore_upload" );
-    ok( $out !~ m!Permission denied!i, "dialog_restore_upload by admin" );
+    ok( $out !~ m!permission=1!i, "dialog_restore_upload by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -356,7 +356,7 @@ subtest 'mode = dialog_restore_upload' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_restore_upload" );
-    ok( $out =~ m!Permission denied!i, "dialog_restore_upload by non permitted user" );
+    ok( $out =~ m!permission=1!i, "dialog_restore_upload by non permitted user" );
 };
 
 subtest 'mode = recover' => sub {
@@ -372,21 +372,7 @@ subtest 'mode = recover' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: recover" );
-    ok( $out !~ m!Permission denied!i, "recover by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'recover',
-            blog_id          => 0,
-            email            => $ichikawa->email,
-            name             => $ichikawa->name,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: recover" );
-    ok( $out =~ m!Permission denied!i, "recover by non permitted user" );
+    ok( $out !~ m!permission=1!i, "recover by admin" );
 };
 
 subtest 'mode = restore' => sub {
@@ -400,7 +386,7 @@ subtest 'mode = restore' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: restore" );
-    ok( $out !~ m!Permission denied!i, "restore by admin" );
+    ok( $out !~ m!permission=1!i, "restore by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -412,7 +398,7 @@ subtest 'mode = restore' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: restore" );
-    ok( $out =~ m!Permission denied!i, "restore by non permitted user" );
+    ok( $out =~ m!permission=1!i, "restore by non permitted user" );
 };
 
 subtest 'mode = restore_premature_cancel' => sub {
@@ -426,7 +412,7 @@ subtest 'mode = restore_premature_cancel' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: restore_premature_cancel" );
-    ok( $out !~ m!Permission denied!i, "restore_premature_cancel by admin" );
+    ok( $out !~ m!permission=1!i, "restore_premature_cancel by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -438,7 +424,7 @@ subtest 'mode = restore_premature_cancel' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: restore_premature_cancel" );
-    ok( $out =~ m!Permission denied!i, "restore_premature_cancel by non permitted user" );
+    ok( $out =~ m!permission=1!i, "restore_premature_cancel by non permitted user" );
 };
 
 subtest 'mode = save_cfg_system_general' => sub {
@@ -452,7 +438,7 @@ subtest 'mode = save_cfg_system_general' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_cfg_system_general" );
-    ok( $out !~ m!Permission denied!i, "save_cfg_system_general by admin" );
+    ok( $out !~ m!permission=1!i, "save_cfg_system_general by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -464,7 +450,7 @@ subtest 'mode = save_cfg_system_general' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_cfg_system_general" );
-    ok( $out =~ m!Permission denied!i, "save_cfg_system_general by non permitted user" );
+    ok( $out =~ m!permission=1!i, "save_cfg_system_general by non permitted user" );
 };
 
 subtest 'mode = start_backup' => sub {
@@ -478,7 +464,7 @@ subtest 'mode = start_backup' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_backup" );
-    ok( $out !~ m!Permission denied!i, "start_backup by admin" );
+    ok( $out !~ m!permission=1!i, "start_backup by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -490,7 +476,7 @@ subtest 'mode = start_backup' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_backup" );
-    ok( $out !~ m!Permission denied!i, "start_backup by admin" );
+    ok( $out !~ m!permission=1!i, "start_backup by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -502,7 +488,7 @@ subtest 'mode = start_backup' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_backup" );
-    ok( $out !~ m!Permission denied!i, "start_backup by admin" );
+    ok( $out !~ m!permission=1!i, "start_backup by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -514,7 +500,7 @@ subtest 'mode = start_backup' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_backup" );
-    ok( $out =~ m!Permission denied!i, "start_backup by non permitted user on website" );
+    ok( $out =~ m!permission=1!i, "start_backup by non permitted user on website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -526,7 +512,7 @@ subtest 'mode = start_backup' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_backup" );
-    ok( $out =~ m!Permission denied!i, "start_backup by non permitted user on blog" );
+    ok( $out =~ m!permission=1!i, "start_backup by non permitted user on blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -538,7 +524,7 @@ subtest 'mode = start_backup' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_backup" );
-    ok( $out =~ m!Permission denied!i, "start_backup by other blog" );
+    ok( $out =~ m!permission=1!i, "start_backup by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -550,7 +536,7 @@ subtest 'mode = start_backup' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_backup" );
-    ok( $out =~ m!Permission denied!i, "start_backup by other permission" );
+    ok( $out =~ m!permission=1!i, "start_backup by other permission" );
 };
 
 subtest 'mode = start_restore' => sub {
@@ -564,7 +550,7 @@ subtest 'mode = start_restore' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_restore" );
-    ok( $out !~ m!Permission denied!i, "start_restore by admin" );
+    ok( $out !~ m!permission=1!i, "start_restore by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -576,7 +562,7 @@ subtest 'mode = start_restore' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_restore" );
-    ok( $out !~ m!Permission denied!i, "start_restore by admin" );
+    ok( $out !~ m!permission=1!i, "start_restore by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -588,7 +574,7 @@ subtest 'mode = start_restore' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_restore" );
-    ok( $out !~ m!Permission denied!i, "start_restore by admin" );
+    ok( $out !~ m!permission=1!i, "start_restore by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -600,7 +586,7 @@ subtest 'mode = start_restore' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_restore" );
-    ok( $out =~ m!Permission denied!i, "start_restore by non permitted user on website" );
+    ok( $out =~ m!permission=1!i, "start_restore by non permitted user on website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -612,7 +598,7 @@ subtest 'mode = start_restore' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_restore" );
-    ok( $out =~ m!Permission denied!i, "start_restore by non permitted user on blog" );
+    ok( $out =~ m!permission=1!i, "start_restore by non permitted user on blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -624,7 +610,7 @@ subtest 'mode = start_restore' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_restore" );
-    ok( $out =~ m!Permission denied!i, "start_restore by other blog" );
+    ok( $out =~ m!permission=1!i, "start_restore by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -636,7 +622,7 @@ subtest 'mode = start_restore' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: start_restore" );
-    ok( $out =~ m!Permission denied!i, "start_restore by other permission" );
+    ok( $out =~ m!permission=1!i, "start_restore by other permission" );
 };
 
 subtest 'mode = system_check' => sub {
@@ -650,7 +636,7 @@ subtest 'mode = system_check' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: system_check" );
-    ok( $out !~ m!Permission denied!i, "system_check by admin" );
+    ok( $out !~ m!permission=1!i, "system_check by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -662,7 +648,7 @@ subtest 'mode = system_check' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: system_check" );
-    ok( $out =~ m!Permission denied!i, "system_check by non permitted user" );
+    ok( $out =~ m!permission=1!i, "system_check by non permitted user" );
 };
 
 subtest 'mode = upgrade' => sub {
@@ -676,19 +662,7 @@ subtest 'mode = upgrade' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: upgrade" );
-    ok( $out !~ m!Permission denied!i, "upgrade by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'upgrade',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: upgrade" );
-    ok( $out =~ m!Permission denied!i, "upgrade by non permitted user" );
+    ok( $out !~ m!permission=1!i, "upgrade by admin" );
 };
 
 done_testing();
