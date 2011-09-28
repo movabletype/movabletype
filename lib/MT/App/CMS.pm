@@ -201,7 +201,6 @@ sub core_methods {
             requires_login => 0,
         },
         'plugin_control'           => "${pkg}Plugin::plugin_control",
-        'recover_profile_password' => "${pkg}User::recover_profile_password",
         'rename_tag'               => "${pkg}Tag::rename_tag",
         'remove_user_assoc'        => "${pkg}User::remove_user_assoc",
         'revoke_role'              => "${pkg}User::revoke_role",
@@ -277,6 +276,7 @@ sub core_methods {
         'list_associations' => "${pkg}User::list_association",
         'list_roles'        => "${pkg}User::list_role",
         reply_preview       => "${pkg}Comment::reply_preview",
+        'recover_profile_password' => "${pkg}User::recover_profile_password",
     };
 }
 
