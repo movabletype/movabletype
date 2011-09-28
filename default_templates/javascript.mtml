@@ -1326,7 +1326,7 @@ function mtClearUser() {
 function mtSetCookie(name, value, expires, path, domain, secure) {
     if (domain && domain.match(/^\.?localhost$/))
         domain = null;
-    var curCookie = name + "=" + escape(value) +
+    var curCookie = name + "=" + encodeURIComponent(value) +
         (expires ? "; expires=" + expires.toGMTString() : "") +
         (path ? "; path=" + path : "") +
         (domain ? "; domain=" + domain : "") +
@@ -1348,7 +1348,11 @@ function mtGetCookie(name) {
     var cookieEndIndex = c.indexOf(";", cookieStartIndex + prefix.length);
     if (cookieEndIndex == -1)
         cookieEndIndex = c.length;
-    return unescape(c.substring(cookieStartIndex + prefix.length, cookieEndIndex));
+    var this_cookie = c.substring(cookieStartIndex + prefix.length, cookieEndIndex);
+    if ( this_cookie.match(/\%u/i) ) {
+        return '';
+    }
+    return decodeURIComponent( this_cookie );
 }
 
 <mt:Ignore>
@@ -1511,7 +1515,7 @@ function mtInitCommenter () {
     }
     else if ( command.match( /^login_(.*)$/ ) ) {
         var sid = RegExp.$1;
-         mtLoggedIn(sid);
+        mtLoggedIn(sid);
     }
     else {
         mtFireEvent('usersignin');
