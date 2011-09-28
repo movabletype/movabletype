@@ -119,6 +119,10 @@ sub rename_tag {
 
 sub js_tag_check {
     my $app       = shift;
+
+    return $app->json_error( $app->translate('Permission denied.') )
+        unless $app->can_do('edit_tags');
+
     my $name      = $app->param('tag_name');
     my $blog_id   = $app->param('blog_id');
     my $type      = $app->param('_type') || 'entry';
