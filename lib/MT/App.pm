@@ -1289,10 +1289,15 @@ sub can_do {
 sub session_state {
     my $app     = shift;
     my $blog    = $app->blog;
-    my $blog_id = $blog ? $blog->id : 0;
+    my ( $sessobj, $commenter ) = $app->get_commenter_session();
+    return $app->_commenter_state( $blog, $sessobj, $commenter );
+}
 
-    my ( $c, $commenter );
-    ( my $sessobj, $commenter ) = $app->get_commenter_session();
+sub _commenter_state {
+    my $app = shift;
+    my ( $blog, $sessobj, $commenter ) = @_;
+    my $c;
+    my $blog_id = $blog ? $blog->id : 0;
     if ( $sessobj && $commenter ) {
         $c = {
             sid  => $sessobj->id,
@@ -1446,11 +1451,12 @@ sub get_commenter_session {
     }
 
     my %cookies     = $app->cookies();
-    my $cookie_name = $app->commenter_cookie;
+    my $cookie_name = $app->commenter_session_cookie_name;
     if ( !$cookies{$cookie_name} ) {
         return ( undef, undef );
     }
-    $session_key = $cookies{$cookie_name}->value() || "";
+    my $state = $app->unbake_user_state_cookie( $cookies{$cookie_name}->value() );
+    $session_key = $state->{sid} || "";
     $session_key =~ y/+/ /;
     my $cfg = $app->config;
     require MT::Session;
@@ -1597,7 +1603,47 @@ sub make_commenter_session {
     );
     $app->bake_cookie(%name_kookee);
 
+    my ( $state, $commenter ) = $app->_commenter_state( $app->blog, $sess_obj, $user );
+    my %user_session_kookee = (
+        -name  => $app->commenter_session_cookie_name,
+        -value => $app->bake_user_state_cookie($state),
+        -path  => '/',
+    );
+    $app->bake_cookie(%user_session_kookee);
     return $session_key;
+}
+
+sub commenter_session_cookie_name {
+    my $app = shift;
+    my $user_session_name = MT->config->UserSessionCookieName;
+    if ( !MT->config->SingleCommunity ) {
+        my $blog = $app->blog or return;
+        my $blog_id = $blog->id;
+        $user_session_name =~ s/%b/$blog_id/;
+    }
+    $user_session_name;
+}
+
+sub bake_user_state_cookie {
+    my $app = shift;
+    my ( $state ) = @_;
+    join( ';', (
+        map { $_ . ":'" . $state->{$_} . "'" }
+        grep { $state->{$_} }
+        keys %$state ) );
+}
+
+sub unbake_user_state_cookie {
+    my $app = shift;
+    my ( $value ) = @_;
+    return {
+        map {
+            my ( $k, $v ) = split ( ':', $_);
+            $v =~ s/^'//;
+            $v =~ s/'$//;
+            ($k, $v);
+        } split( ';', $value )
+    };
 }
 
 sub _invalidate_commenter_session {
