@@ -87,9 +87,9 @@ my $manage_pages = MT::Test::Permission->make_role(
    name  => 'Manage Pages',
    permissions => "'manage_pages'",
 );
-my $create_post = MT::Test::Permission->make_role(
-   name  => 'Create Post',
-   permissions => "'create_post'",
+my $edit_all_posts = MT::Test::Permission->make_role(
+   name  => 'Edit All Posts',
+   permissions => "'edit_all_posts'",
 );
 my $designer = MT::Role->load({ name => MT->translate('Designer') });
 
@@ -97,11 +97,11 @@ require MT::Association;
 MT::Association->link( $aikawa => $manage_users => $blog );
 MT::Association->link( $ichikawa => $manage_users => $website );
 MT::Association->link( $ukawa => $manage_pages => $blog );
-MT::Association->link( $egawa => $create_post => $blog );
+MT::Association->link( $egawa => $edit_all_posts => $blog );
 MT::Association->link( $ogawa => $designer => $blog );
 MT::Association->link( $kagawa => $manage_users => $second_blog );
 MT::Association->link( $kikkawa => $manage_pages => $second_blog );
-MT::Association->link( $kumekawa => $create_post => $second_blog );
+MT::Association->link( $kumekawa => $edit_all_posts => $second_blog );
 
 # Run
 my ( $app, $out );
@@ -411,56 +411,32 @@ subtest 'mode = enable_object' => sub {
     ok( $out =~ m!permission=1!i, "enable_object by non permitted user" );
 };
 
-subtest 'mode = list_authors' => sub {
+subtest 'mode = list' => sub {
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'list_authors',
+            __mode           => 'list',
+            _type            => 'author',
             blog_id          => 0,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_authors" );
-    ok( $out !~ m!permission=1!i, "list_authors by admin" );
+    ok( $out, "Request: list" );
+    ok( $out !~ m!permission=1!i, "list by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'list_authors',
+            __mode           => 'list',
+            _type            => 'author',
             blog_id          => 0,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_authors" );
-    ok( $out =~ m!permission=1!i, "list_authors by non permitted user" );
-};
-
-subtest 'mode = list_associations' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'list_associations',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: list_associations" );
-    ok( $out !~ m!permission=1!i, "list_associations by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'list_associations',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: list_associations" );
-    ok( $out =~ m!permission=1!i, "list_associations by non permitted user" );
+    ok( $out, "Request: list" );
+    ok( $out =~ m!permission=1!i, "list by non permitted user" );
 };
 
 subtest 'mode = grant_role' => sub {
@@ -471,7 +447,7 @@ subtest 'mode = grant_role' => sub {
             __mode           => 'grant_role',
             blog             => $blog->id,
             author           => $kemikawa->id,
-            role             => $create_post->id,
+            role             => $edit_all_posts->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -485,7 +461,7 @@ subtest 'mode = grant_role' => sub {
             __mode           => 'grant_role',
             blog             => $blog->id,
             author           => $kemikawa->id,
-            role             => $create_post->id,
+            role             => $edit_all_posts->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -511,9 +487,9 @@ subtest 'mode = grant_role' => sub {
         {   __test_user      => $aikawa,
             __request_method => 'POST',
             __mode           => 'grant_role',
-            blog             => $blog->id,
+            blog             => $website->id,
             author           => $kemikawa->id,
-            role             => $create_post->id,
+            role             => $edit_all_posts->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -527,7 +503,7 @@ subtest 'mode = grant_role' => sub {
             __mode           => 'grant_role',
             blog             => $blog->id,
             author           => $kemikawa->id,
-            role             => $create_post->id,
+            role             => $edit_all_posts->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -541,7 +517,7 @@ subtest 'mode = grant_role' => sub {
             __mode           => 'grant_role',
             blog             => $blog->id,
             author           => $kemikawa->id,
-            role             => $create_post->id,
+            role             => $edit_all_posts->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -555,7 +531,7 @@ subtest 'mode = grant_role' => sub {
             __mode           => 'grant_role',
             blog             => $blog->id,
             author           => $kemikawa->id,
-            role             => $create_post->id,
+            role             => $edit_all_posts->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -563,119 +539,130 @@ subtest 'mode = grant_role' => sub {
     ok( $out =~ m!permission=1!i, "grant_role by other permision" );
 };
 
-subtest 'mode = list_member' => sub {
+subtest 'mode = list (member)' => sub {
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'list_member',
+            __mode           => 'list',
+            _type            => 'member',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_member" );
-    ok( $out !~ m!permission=1!i, "list_member by admin" );
+    ok( $out, "Request: list" );
+    ok( $out !~ m!permission=1!i, "list member by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'list_member',
+            __mode           => 'list',
+            _type            => 'member',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_member" );
-    ok( $out !~ m!permission=1!i, "list_member by permitted user on blog" );
+    ok( $out, "Request: list" );
+    ok( $out !~ m!permission=1!i, "list member by permitted user on blog" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ichikawa,
             __request_method => 'POST',
-            __mode           => 'list_member',
+            __mode           => 'list',
+            _type            => 'member',
             blog_id          => $website->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_member" );
-    ok( $out !~ m!permission=1!i, "list_member by permitted user on website" );
+    ok( $out, "Request: list" );
+    ok( $out !~ m!permission=1!i, "list member by permitted user on website" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'list_member',
+            __mode           => 'list',
+            _type            => 'member',
             blog_id          => $website->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_member" );
-    ok( $out =~ m!permission=1!i, "list_member by non permitted user parent website" );
+    ok( $out, "Request: list" );
+    ok( $out =~ m!permission=1!i, "list member by non permitted user parent website" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ichikawa,
             __request_method => 'POST',
-            __mode           => 'list_member',
+            __mode           => 'list',
+            _type            => 'member',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_member" );
-    ok( $out =~ m!permission=1!i, "list_member by non permitted user child blog" );
+    ok( $out, "Request: list" );
+    ok( $out =~ m!permission=1!i, "list member by non permitted user child blog" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kagawa,
             __request_method => 'POST',
-            __mode           => 'list_member',
+            __mode           => 'list',
+            _type            => 'member',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_member" );
-    ok( $out =~ m!permission=1!i, "list_member by other blog" );
+    ok( $out, "Request: list" );
+    ok( $out =~ m!permission=1!i, "list member by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ogawa,
             __request_method => 'POST',
-            __mode           => 'list_member',
+            __mode           => 'list',
+            _type            => 'member',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_member" );
-    ok( $out =~ m!permission=1!i, "list_member by other permision" );
+    ok( $out, "Request: list" );
+    ok( $out =~ m!permission=1!i, "list member by other permision" );
 };
 
-subtest 'mode = list_role' => sub {
+subtest 'mode = list (role)' => sub {
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'list_role',
+            __mode           => 'list',
+            _type            => 'role',
             blog_id          => 0,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_role" );
-    ok( $out !~ m!permission=1!i, "list_role by admin" );
+    ok( $out, "Request: list" );
+    ok( $out !~ m!permission=1!i, "list role by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'list_role',
+            __mode           => 'list',
+            _type            => 'role',
             blog_id          => 0,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_role" );
-    ok( $out =~ m!permission=1!i, "list_role by non permitted user" );
+    ok( $out, "Request: list" );
+    ok( $out =~ m!permission=1!i, "list role by non permitted user" );
 };
 
 subtest 'mode = recover_profile_password' => sub {
+    plan skip_all => 'deprecated';
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -702,7 +689,7 @@ subtest 'mode = recover_profile_password' => sub {
 };
 
 subtest 'mode = remove_user_assoc' => sub {
-    MT::Association->link( $kemikawa => $create_post => $blog );
+    MT::Association->link( $kemikawa => $edit_all_posts => $blog );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -716,7 +703,7 @@ subtest 'mode = remove_user_assoc' => sub {
     ok( $out, "Request: remove_user_assoc" );
     ok( $out !~ m!permission=1!i, "remove_user_assoc by admin" );
 
-    MT::Association->link( $kemikawa => $create_post => $blog );
+    MT::Association->link( $kemikawa => $edit_all_posts => $blog );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
@@ -758,7 +745,7 @@ subtest 'mode = remove_user_assoc' => sub {
     ok( $out, "Request: remove_user_assoc" );
     ok( $out =~ m!permission=1!i, "remove_user_assoc by non permitted user parent website" );
 
-    MT::Association->link( $kemikawa => $create_post => $blog );
+    MT::Association->link( $kemikawa => $edit_all_posts => $blog );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ichikawa,
@@ -772,7 +759,7 @@ subtest 'mode = remove_user_assoc' => sub {
     ok( $out, "Request: remove_user_assoc" );
     ok( $out =~ m!permission=1!i, "remove_user_assoc by non permitted user child blog" );
 
-    MT::Association->link( $kemikawa => $create_post => $blog );
+    MT::Association->link( $kemikawa => $edit_all_posts => $blog );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kagawa,
@@ -786,7 +773,7 @@ subtest 'mode = remove_user_assoc' => sub {
     ok( $out, "Request: remove_user_assoc" );
     ok( $out =~ m!permission=1!i, "remove_user_assoc by other blog" );
 
-    MT::Association->link( $kemikawa => $create_post => $blog );
+    MT::Association->link( $kemikawa => $edit_all_posts => $blog );
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ogawa,
@@ -904,7 +891,7 @@ subtest 'mode = revoke_role' => sub {
             __mode           => 'revoke_role',
             blog_id          => $blog->id,
             author_id        => $kemikawa->id,
-            role_id          => $create_post->id,
+            role_id          => $edit_all_posts->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -918,7 +905,7 @@ subtest 'mode = revoke_role' => sub {
             __mode           => 'revoke_role',
             blog_id          => $blog->id,
             author_id        => $kemikawa->id,
-            role_id          => $create_post->id,
+            role_id          => $edit_all_posts->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -944,12 +931,13 @@ subtest 'mode = revoke_role' => sub {
         {   __test_user      => $aikawa,
             __request_method => 'POST',
             __mode           => 'revoke_role',
-            blog_id          => $blog->id,
+            blog_id          => $website->id,
             author_id        => $kemikawa->id,
-            role_id          => $create_post->id,
+            role_id          => $edit_all_posts->id,
         }
     );
     $out = delete $app->{__test_output};
+diag($out);
     ok( $out, "Request: revoke_role" );
     ok( $out =~ m!permission=1!i, "revoke_role by non permitted user parent website" );
 
@@ -960,7 +948,7 @@ subtest 'mode = revoke_role' => sub {
             __mode           => 'revoke_role',
             blog_id          => $blog->id,
             author_id        => $kemikawa->id,
-            role_id          => $create_post->id,
+            role_id          => $edit_all_posts->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -974,7 +962,7 @@ subtest 'mode = revoke_role' => sub {
             __mode           => 'revoke_role',
             blog_id          => $blog->id,
             author_id        => $kemikawa->id,
-            role_id          => $create_post->id,
+            role_id          => $edit_all_posts->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -988,7 +976,7 @@ subtest 'mode = revoke_role' => sub {
             __mode           => 'revoke_role',
             blog_id          => $blog->id,
             author_id        => $kemikawa->id,
-            role_id          => $create_post->id,
+            role_id          => $edit_all_posts->id,
         }
     );
     $out = delete $app->{__test_output};
@@ -1155,7 +1143,7 @@ subtest 'action = recover_passwords' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: recover_passwords" );
-    ok( $out !~ m!permission=1!i, "recover_passwords by admin" );
+    ok( $out !~ m!not implemented!i, "recover_passwords by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1173,27 +1161,27 @@ subtest 'action = recover_passwords' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: recover_passwords" );
-    ok( $out =~ m!permission=1!i, "recover_passwords by non permitted user" );
+    ok( $out =~ m!not implemented!i, "recover_passwords by non permitted user" );
 };
 
-subtest 'action = delete_users' => sub {
+subtest 'action = delete_user' => sub {
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
             __mode           => 'itemset_action',
             _type            => 'author',
-            action_name      => 'delete_users',
+            action_name      => 'delete_user',
             itemset_action_input => '',
             return_args      => '__mode%3Dlist_author%26blog_id%3D0',
-            plugin_action_selector => 'delete_users',
+            plugin_action_selector => 'delete_user',
             id               => $aikawa->id,
-            plugin_action_selector => 'delete_users',
+            plugin_action_selector => 'delete_user',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete_users" );
-    ok( $out !~ m!permission=1!i, "delete_users by admin" );
+    ok( $out, "Request: delete_user" );
+    ok( $out !~ m!not implemented!i, "delete_user by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1201,17 +1189,17 @@ subtest 'action = delete_users' => sub {
             __request_method => 'POST',
             __mode           => 'itemset_action',
             _type            => 'author',
-            action_name      => 'delete_users',
+            action_name      => 'delete_user',
             itemset_action_input => '',
             return_args      => '__mode%3Dlist_author%26blog_id%3D0',
-            plugin_action_selector => 'delete_users',
+            plugin_action_selector => 'delete_user',
             id               => $aikawa->id,
-            plugin_action_selector => 'delete_users',
+            plugin_action_selector => 'delete_user',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete_users" );
-    ok( $out =~ m!permission=1!i, "delete_users by non permitted user" );
+    ok( $out, "Request: delete_user" );
+    ok( $out =~ m!not implemented!i, "delete_user by non permitted user" );
 };
 
 done_testing();
