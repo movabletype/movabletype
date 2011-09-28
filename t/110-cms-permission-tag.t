@@ -100,7 +100,7 @@ subtest 'mode = js_recent_entries_for_tag' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: js_recent_entries_for_tag" );
-    ok( $out !~ m!Permission denied!i, "js_recent_entries_for_tag by admin" );
+    ok( $out !~ m!permission denied!i, "js_recent_entries_for_tag by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -113,7 +113,7 @@ subtest 'mode = js_recent_entries_for_tag' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: js_recent_entries_for_tag" );
-    ok( $out !~ m!Permission denied!i, "js_recent_entries_for_tag by permitted user" );
+    ok( $out !~ m!permission denied!i, "js_recent_entries_for_tag by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -126,20 +126,7 @@ subtest 'mode = js_recent_entries_for_tag' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: js_recent_entries_for_tag" );
-    ok( $out =~ m!Permission denied!i, "js_recent_entries_for_tag by other blog" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ogawa,
-            __request_method => 'POST',
-            __mode           => 'js_recent_entries_for_tag',
-            blog_id          => $blog->id,
-            tag              => 'alpha',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: js_recent_entries_for_tag" );
-    ok( $out =~ m!Permission denied!i, "js_recent_entries_for_tag by other permission" );
+    ok( $out =~ m!permission denied!i, "js_recent_entries_for_tag by other blog" );
 
     done_testing();
 };
@@ -156,7 +143,7 @@ subtest 'mode = js_tag_check' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: js_tag_check" );
-    ok( $out !~ m!Permission denied!i, "js_tag_check by admin" );
+    ok( $out !~ m!permission denied!i, "js_tag_check by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -169,7 +156,7 @@ subtest 'mode = js_tag_check' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: js_tag_check" );
-    ok( $out !~ m!Permission denied!i, "js_tag_check by permitted user" );
+    ok( $out !~ m!permission denied!i, "js_tag_check by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -182,7 +169,7 @@ subtest 'mode = js_tag_check' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: js_tag_check" );
-    ok( $out =~ m!Permission denied!i, "js_tag_check by other blog" );
+    ok( $out =~ m!permission denied!i, "js_tag_check by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -195,7 +182,7 @@ subtest 'mode = js_tag_check' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: js_tag_check" );
-    ok( $out =~ m!Permission denied!i, "js_tag_check by other permission" );
+    ok( $out =~ m!permission denied!i, "js_tag_check by other permission" );
 
     done_testing();
 };
@@ -211,7 +198,7 @@ subtest 'mode = js_tag_list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: js_tag_list" );
-    ok( $out !~ m!Permission denied!i, "js_tag_list by admin" );
+    ok( $out !~ m!permission denied!i, "js_tag_list by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -223,7 +210,7 @@ subtest 'mode = js_tag_list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: js_tag_list" );
-    ok( $out !~ m!Permission denied!i, "js_tag_list by permitted user" );
+    ok( $out !~ m!permission denied!i, "js_tag_list by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -235,7 +222,7 @@ subtest 'mode = js_tag_list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: js_tag_list" );
-    ok( $out =~ m!Permission denied!i, "js_tag_list by other blog" );
+    ok( $out =~ m!permission denied!i, "js_tag_list by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -247,59 +234,63 @@ subtest 'mode = js_tag_list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: js_tag_list" );
-    ok( $out =~ m!Permission denied!i, "js_tag_list by other permission" );
+    ok( $out =~ m!permission denied!i, "js_tag_list by other permission" );
 
     done_testing();
 };
 
-subtest 'mode = list_tag' => sub {
+subtest 'mode = list' => sub {
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'list_tag',
+            __mode           => 'list',
+            _type            => 'tag',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_tag" );
-    ok( $out !~ m!Permission denied!i, "list_tag by admin" );
+    ok( $out, "Request: list" );
+    ok( $out !~ m!permission=1!i, "list by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ichikawa,
             __request_method => 'POST',
-            __mode           => 'list_tag',
+            __mode           => 'list',
+            _type            => 'tag',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_tag" );
-    ok( $out !~ m!Permission denied!i, "list_tag by permitted user" );
+    ok( $out, "Request: list" );
+    ok( $out !~ m!permission=1!i, "list by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $egawa,
             __request_method => 'POST',
-            __mode           => 'list_tag',
+            __mode           => 'list',
+            _type            => 'tag',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_tag" );
-    ok( $out =~ m!Permission denied!i, "list_tag by other blog" );
+    ok( $out, "Request: list" );
+    ok( $out =~ m!permission=1!i, "list by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ogawa,
             __request_method => 'POST',
-            __mode           => 'list_tag',
+            __mode           => 'list',
+            _type            => 'tag',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_tag" );
-    ok( $out =~ m!Permission denied!i, "list_tag by other permission" );
+    ok( $out, "Request: list" );
+    ok( $out =~ m!permission=1!i, "list by other permission" );
 
     done_testing();
 };
@@ -317,7 +308,7 @@ subtest 'mode = rename_tag' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: rename_tag" );
-    ok( $out !~ m!Permission denied!i, "rename_tag by admin" );
+    ok( $out !~ m!permission=1!i, "rename_tag by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -331,7 +322,7 @@ subtest 'mode = rename_tag' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: rename_tag" );
-    ok( $out !~ m!Permission denied!i, "rename_tag by permitted user" );
+    ok( $out !~ m!permission=1!i, "rename_tag by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -345,7 +336,7 @@ subtest 'mode = rename_tag' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: rename_tag" );
-    ok( $out =~ m!Permission denied!i, "rename_tag by other blog" );
+    ok( $out =~ m!permission=1!i, "rename_tag by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -359,7 +350,7 @@ subtest 'mode = rename_tag' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: rename_tag" );
-    ok( $out =~ m!Permission denied!i, "rename_tag by other permission" );
+    ok( $out =~ m!permission=1!i, "rename_tag by other permission" );
 
     done_testing();
 };
@@ -440,7 +431,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out !~ m!Permission denied!i, "delete by admin" );
+    ok( $out !~ m!permission=1!i, "delete by admin" );
 
     $tag = MT::Test::Permission->make_tag();
     $app = _run_app(
@@ -455,7 +446,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out !~ m!Permission denied!i, "delete by permitted user" );
+    ok( $out !~ m!permission=1!i, "delete by permitted user" );
 
     $tag = MT::Test::Permission->make_tag();
     $app = _run_app(
@@ -470,7 +461,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out =~ m!Permission denied!i, "delete by other blog" );
+    ok( $out =~ m!permission=1!i, "delete by other blog" );
 
     $tag = MT::Test::Permission->make_tag();
     $app = _run_app(
@@ -485,7 +476,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out =~ m!Permission denied!i, "delete by other permission" );
+    ok( $out =~ m!permission=1!i, "delete by other permission" );
 
     done_testing();
 };

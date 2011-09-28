@@ -84,7 +84,7 @@ subtest 'mode = stylecatcher_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_theme" );
-    ok( $out !~ m!Permission denied!i, "stylecatcher_theme by admin" );
+    ok( $out !~ m!permission=1!i, "stylecatcher_theme by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -96,7 +96,7 @@ subtest 'mode = stylecatcher_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_theme" );
-    ok( $out !~ m!Permission denied!i, "stylecatcher_theme by permitted user" );
+    ok( $out !~ m!permission=1!i, "stylecatcher_theme by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -108,7 +108,7 @@ subtest 'mode = stylecatcher_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_theme" );
-    ok( $out !~ m!Permission denied!i, "stylecatcher_theme by permitted user (sys)" );
+    ok( $out !~ m!permission=1!i, "stylecatcher_theme by permitted user (sys)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -120,7 +120,7 @@ subtest 'mode = stylecatcher_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_theme" );
-    ok( $out =~ m!Permission denied!i, "stylecatcher_theme by other blog" );
+    ok( $out =~ m!permission=1!i, "stylecatcher_theme by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -132,7 +132,7 @@ subtest 'mode = stylecatcher_theme' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_theme" );
-    ok( $out =~ m!Permission denied!i, "stylecatcher_theme by other permission" );
+    ok( $out =~ m!permission=1!i, "stylecatcher_theme by other permission" );
 
     done_testing();
 };
@@ -148,7 +148,7 @@ subtest 'mode = stylecatcher_js' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_js" );
-    ok( $out !~ m!Permission denied!i, "stylecatcher_js by admin" );
+    ok( $out !~ m!permission denied!i, "stylecatcher_js by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -160,7 +160,7 @@ subtest 'mode = stylecatcher_js' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_js" );
-    ok( $out !~ m!Permission denied!i, "stylecatcher_js by permitted user" );
+    ok( $out !~ m!permission denied!i, "stylecatcher_js by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -172,7 +172,7 @@ subtest 'mode = stylecatcher_js' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_js" );
-    ok( $out !~ m!Permission denied!i, "stylecatcher_js by permitted user (sys)" );
+    ok( $out !~ m!permission denied!i, "stylecatcher_js by permitted user (sys)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -184,7 +184,7 @@ subtest 'mode = stylecatcher_js' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_js" );
-    ok( $out =~ m!Permission denied!i, "stylecatcher_js by other blog" );
+    ok( $out =~ m!permission denied!i, "stylecatcher_js by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -196,7 +196,7 @@ subtest 'mode = stylecatcher_js' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_js" );
-    ok( $out =~ m!Permission denied!i, "stylecatcher_js by other permission" );
+    ok( $out =~ m!permission denied!i, "stylecatcher_js by other permission" );
 
     done_testing();
 };
@@ -212,7 +212,7 @@ subtest 'mode = stylecatcher_apply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_apply" );
-    ok( $out !~ m!Permission denied!i, "stylecatcher_apply by admin" );
+    ok( $out !~ m!permission=1!i, "stylecatcher_apply by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -224,7 +224,7 @@ subtest 'mode = stylecatcher_apply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_apply" );
-    ok( $out !~ m!Permission denied!i, "stylecatcher_apply by permitted user" );
+    ok( $out !~ m!permission=1!i, "stylecatcher_apply by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -236,7 +236,7 @@ subtest 'mode = stylecatcher_apply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_apply" );
-    ok( $out !~ m!Permission denied!i, "stylecatcher_apply by permitted user (sys)" );
+    ok( $out !~ m!permission=1!i, "stylecatcher_apply by permitted user (sys)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -248,7 +248,7 @@ subtest 'mode = stylecatcher_apply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_apply" );
-    ok( $out =~ m!Permission denied!i, "stylecatcher_apply by other blog" );
+    ok( $out =~ m!permission=1!i, "stylecatcher_apply by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -260,7 +260,7 @@ subtest 'mode = stylecatcher_apply' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: stylecatcher_apply" );
-    ok( $out =~ m!Permission denied!i, "stylecatcher_apply by other permission" );
+    ok( $out =~ m!permission=1!i, "stylecatcher_apply by other permission" );
 
     done_testing();
 };
