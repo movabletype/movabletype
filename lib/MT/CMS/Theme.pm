@@ -133,7 +133,7 @@ sub dialog_select_theme {
     $param{namefield}  = $app->param('namefield');
     $param{imagefield} = $app->param('imagefield');
     return $app->permission_denied()
-        unless $app->can_do('manage_themes');
+        unless $app->can_do('open_dialog_select_theme');
 
     my $cfg     = $app->config;
     my $blog    = $app->blog;

@@ -2775,6 +2775,7 @@ sub load_core_permissions {
                 'use_tools:system_info_menu'     => 1,
                 'edit_commenter_status'          => 1,
                 'delete_any_filters'             => 1,
+                'open_dialog_select_theme'       => 1,
             }
         },
         'system.create_blog' => {
