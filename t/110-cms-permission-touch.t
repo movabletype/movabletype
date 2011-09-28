@@ -60,7 +60,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!Invalid Request!i, "list by admin" );
+    ok( $out =~ m!Unknown Action!i, "list by admin" );
 
     $touch = MT::Test::Permission->make_touch(
         blog_id => $blog->id,
@@ -75,7 +75,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out =~ m!Invalid Request!i, "list by non permitted user" );
+    ok( $out =~ m!Unknown Action!i, "list by non permitted user" );
 };
 
 subtest 'mode = save' => sub {
