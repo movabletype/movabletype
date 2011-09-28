@@ -393,6 +393,8 @@ sub core_tags {
             ErrorMessage => \&MT::Template::Tags::System::_hdlr_error_message,
             PasswordValidation =>
                 \&MT::Template::Tags::System::_hdlr_password_validation_script,
+            PasswordValidationRule =>
+                \&MT::Template::Tags::System::_hdlr_password_validation_rules,
 
             ## App
 
@@ -5737,58 +5739,68 @@ B<Attributes:>
 
 The name of the form this tag will letch on
 
-=item * id
+=item * password
 
 The name of the password field in the form this tag will check
+
+=item * username
+
+The name of the usrname field in the form to be checked against the password
 
 =back
 
 B<Example:>
 
-    <$mt:PasswordValidation form="profile" id="pass"$>
+    <$mt:PasswordValidation form="profile" password="pass" username="name"$>
 
 =cut
 
 sub _hdlr_password_validation_script {
     my ( $ctx, $args ) = @_;
     my $form_id = $args->{form};
-    my $field_id = $args->{id};
+    my $pass_field = $args->{password};
+    my $user_field = $args->{username};
     my $app = MT->instance;
     
     my $constrains = $app->config('UserPasswordValidation');
     my $min_length = $app->config('UserPasswordMinLength');
     
     my $vs = "\n";
-    if (my $user = $app->user()) {
-        $vs .= 'var verify_username = "' . $user->name() . "\";\n";
-    }
-    $vs .= 'var minimum_password_length = ' . $min_length . ";\n";
-    $vs .= 'var verify_letter_number = ' . ( $constrains =~ m/upperlower/ ? 1 : 0 ) . ";\n";
-    $vs .= 'var verify_upper_lower = ' . ( $constrains =~ m/letternumber/ ? 1 : 0 ) . ";\n";
-    $vs .= 'var verify_symbol = ' . ( $constrains =~ m/symbol/ ? 1 : 0 ) . ";\n";
-    $vs .= << 'JSCRIPT';
+    $vs .= << "JSCRIPT";
         function verify_password(username, passwd) {
-          if (passwd.length < minimum_password_length) {
-            return "Password should be longer then " + minimum_password_length + " characters";
+          if (passwd.length < $min_length) {
+            return "<__trans phrase="Password should be longer then [_1] characters" params="$min_length">";
           }
           if (passwd.indexOf(username) > -1) {
-            return "Password should not include your user name";
+            return "<__trans phrase="Password should not include your user name">";
           }
-          if (verify_letter_number) {
+JSCRIPT
+
+    if ($constrains =~ m/letternumber/) {
+        $vs .= << 'JSCRIPT';
             if ((passwd.search(/[a-zA-Z]/) == -1) || (passwd.search(/\d/) == -1)) {
-              return "Password should include letters and numbers";
+              return "<__trans phrase="Password should include letters and numbers">";
             }
-          }
-          if (verify_upper_lower) {
+JSCRIPT
+
+    }
+    if ($constrains =~ m/upperlower/) {
+        $vs .= << 'JSCRIPT';
             if (( passwd.search(/[a-z]/) == -1) || (passwd.search(/[A-Z]/) == -1)) {
-              return "Password should include lower and upper letters";
+              return "<__trans phrase="Password should include lower and upper letters">";
             }
-          }
-          if (verify_symbol) {
+JSCRIPT
+
+    }
+    if ($constrains =~ m/symbol/) {
+        $vs .= << 'JSCRIPT';
             if ( passwd.search(/[!"#$%&'\(\|\)\*\+,-\.\/\\:;<=>\?@\[\]^_`{}~]/) == -1 ) {
-              return "Password should contain symbols like $!([{}])#";
+              return "<__trans phrase="Password should contain symbols like $!([{}])#">";
             }
-          }
+JSCRIPT
+
+    }
+    $vs .= << 'JSCRIPT';
           return "";
         }
 JSCRIPT
@@ -5796,18 +5808,11 @@ JSCRIPT
     $vs .= << "JSCRIPT";
         function verify_form_password(eventObject) {
             var form = document.forms["$form_id"];
-            var passwd = form["$field_id"].value;
+            var passwd = form["$pass_field"].value;
             if (passwd == null || passwd == "") {
                 return true;
             }
-            var username;
-            if (form["admin_username"]) {
-                username = form["admin_username"].value;
-            } else if (form["name"]) {
-                username = form["name"].value;
-            } else {
-                username = verify_username;
-            }
+            var username = form["$user_field"].value;
             var error = verify_password(username, passwd);
             if (error == "") {
                 return true;
@@ -5836,6 +5841,33 @@ JSCRIPT
 JSCRIPT
 
     return $vs;
+}
+
+###########################################################################
+
+=head2 PasswordValidationRule
+
+A string explaining the effective password policy
+
+=cut
+
+sub _hdlr_password_validation_rules {
+    my ( $ctx ) = @_;
+
+    my $app = MT->instance;
+    
+    my $constrains = $app->config('UserPasswordValidation');
+    my $min_length = $app->config('UserPasswordMinLength');
+
+    my $msg = $app->translate("minimum length of [_1]", $min_length);
+    $msg .= $app->translate(', upper and lower letters')
+        if $constrains =~ m/upperlower/;
+    $msg .= $app->translate(', letters and numbered')
+        if $constrains =~ m/letternumber/;
+    $msg .= $app->translate(', special symbols (e.g. #!$%)')
+        if $constrains =~ m/symbol/;
+    
+    return $msg;
 }
 
 1;
