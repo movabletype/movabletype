@@ -1846,7 +1846,7 @@ sub save_commenter_profile {
     $app->validate_magic
         or return $app->handle_error( $app->translate('Invalid request') );
 
-    unless ( $param{external_auth} ) {
+    if ( 'MT' eq $cmntr->auth_type ) {
         my $nickname = $param{nickname};
         unless ( $nickname && $param{email} ) {
             $param{error} = $app->translate(
@@ -1900,7 +1900,7 @@ sub save_commenter_profile {
     $cmntr->email( $param{email} )       if $param{email};
     $cmntr->url( $param{url} )           if $param{url};
     $cmntr->set_password( $param{password} )
-        if $param{password} && !$param{external_auth};
+        if $param{password} && 'MT' eq $cmntr->auth_type;
     if ( $cmntr->save ) {
         $app->run_callbacks( 'api_post_save.author', $app, $cmntr,
             $original );
