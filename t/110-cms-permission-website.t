@@ -106,42 +106,345 @@ $p->save;
 # Run
 my ( $app, $out );
 
-subtest 'mode = list_website' => sub {
+subtest 'mode = list' => sub {
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'list_website',
+            __mode           => 'list',
             blog_id          => 0,
+            _type            => 'website',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_website" );
-    ok( $out !~ m!Permission denied!i, "list_website by admin" );
+    ok( $out, "Request: list" );
+    ok( $out !~ m!permission=1!i, "list by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'list_website',
+            __mode           => 'list',
             blog_id          => 0,
+            _type            => 'website',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_website" );
-    ok( $out !~ m!Permission denied!i, "list_website by permitted user" );
+    ok( $out, "Request: list" );
+    ok( $out !~ m!permission=1!i, "list by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ichikawa,
             __request_method => 'POST',
-            __mode           => 'list_website',
+            __mode           => 'list',
+            _type            => 'website',
             blog_id          => 0,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_website" );
-    ok( $out =~ m!Permission denied!i, "list_website by child blog" );
+    ok( $out, "Request: list" );
+    ok( $out !~ m!permission=1!i, "list by child blog" );
+};
+
+subtest 'mode = save (new)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'website',
+            name             => 'websiteName',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out !~ m!permission=1!i, "save (new) by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'website',
+            name             => 'WebsiteName',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out !~ m!permission=1!i, "save (new) by permitted user" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'website',
+            name             => 'WebsiteName',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out =~ m!permission=1!i, "save (new) by blog admin" );
+    done_testing();
+};
+
+subtest 'mode = save (edit)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'website',
+            name             => 'BlogName',
+            id               => $website->id,
+            blog_id          => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out !~ m!Permission=1!i, "save (edit) by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'website',
+            name             => 'BlogName',
+            id               => $website->id,
+            blog_id          => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out !~ m!Permission=1!i, "save (edit) by permitted user (website admin)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'website',
+            name             => 'BlogName',
+            id               => $website->id,
+            blog_id          => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out !~ m!Permission=1!i, "save (edit) by permitted user (edit config)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'website',
+            name             => 'BlogName',
+            id               => $website->id,
+            blog_id          => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out =~ m!Permission=1!i, "save (edit) by non permitted user (create website)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $egawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'website',
+            name             => 'BlogName',
+            id               => $website->id,
+            blog_id          => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out =~ m!Permission=1!i, "save (edit) by other blog (website admin)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'website',
+            name             => 'BlogName',
+            id               => $website->id,
+            blog_id          => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out =~ m!Permission=1!i, "save (edit) by other blog (edit config)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'website',
+            name             => 'BlogName',
+            id               => $website->id,
+            blog_id          => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out =~ m!Permission=1!i, "save (edit) by other permission" );
+    done_testing();
+};
+
+subtest 'mode = edit (new)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            _type            => 'website',
+            blog_id          => 0,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out !~ m!permission=1!i, "edit (new) by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'website',
+            blog_id          => 0,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out !~ m!permission=1!i, "edit (new) by permitted user" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'website',
+            blog_id          => 0,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out =~ m!permission=1!i, "edit (new) by blog admin" );
+    done_testing();
+};
+
+subtest 'mode = edit (edit)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            _type            => 'website',
+            name             => 'BlogName',
+            id               => $website->id,
+            blog_id          => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: edit" );
+    ok( $out !~ m!Permission=1!i, "edit (edit) by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            _type            => 'website',
+            name             => 'BlogName',
+            id               => $website->id,
+            blog_id          => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: edit" );
+    ok( $out !~ m!Permission=1!i, "edit (edit) by permitted user (website admin)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            _type            => 'website',
+            name             => 'BlogName',
+            id               => $website->id,
+            blog_id          => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: edit" );
+    ok( $out !~ m!Permission=1!i, "edit (edit) by permitted user (edit config)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            _type            => 'website',
+            name             => 'BlogName',
+            id               => $website->id,
+            blog_id          => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: edit" );
+    ok( $out =~ m!Permission=1!i, "edit (edit) by non permitted user (create website)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $egawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            _type            => 'website',
+            name             => 'BlogName',
+            id               => $website->id,
+            blog_id          => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: edit" );
+    ok( $out =~ m!Permission=1!i, "edit (edit) by other blog (website admin)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            _type            => 'website',
+            name             => 'BlogName',
+            id               => $website->id,
+            blog_id          => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: edit" );
+    ok( $out =~ m!Permission=1!i, "edit (edit) by other blog (edit config)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            _type            => 'website',
+            name             => 'BlogName',
+            id               => $website->id,
+            blog_id          => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: edit" );
+    ok( $out =~ m!Permission=1!i, "edit (edit) by other permission" );
+    done_testing();
 };
 
 subtest 'mode = move_blogs' => sub {
@@ -161,7 +464,7 @@ subtest 'mode = move_blogs' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: move_blogs" );
-    ok( $out !~ m!Permission denied!i, "move_blogs by admin" );
+    ok( $out !~ m!not implemented!i, "move_blogs by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -179,382 +482,7 @@ subtest 'mode = move_blogs' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: move_blogs" );
-    ok( $out =~ m!Permission denied!i, "move_blogs by non permitted user" );
-};
-
-
-subtest 'mode = save (new)' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'website',
-            name             => 'websiteName',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
-    ok( $out !~ m!Permission denied!i, "save (new) by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'website',
-            name             => 'WebsiteName',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
-    ok( $out !~ m!Permission denied!i, "save (new) by permitted user" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'website',
-            name             => 'WebsiteName',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
-    ok( $out =~ m!Permission denied!i, "save (new) by blog admin" );
-    done_testing();
-};
-
-subtest 'mode = save (edit)' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'website',
-            name             => 'BlogName',
-            id               => $website->id,
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save (edit) by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'website',
-            name             => 'BlogName',
-            id               => $website->id,
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save (edit) by permitted user (website admin)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ogawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'website',
-            name             => 'BlogName',
-            id               => $website->id,
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save (edit) by permitted user (edit config)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'website',
-            name             => 'BlogName',
-            id               => $website->id,
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save (edit) by non permitted user (create website)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'website',
-            name             => 'BlogName',
-            id               => $website->id,
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save (edit) by other blog (website admin)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $kagawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'website',
-            name             => 'BlogName',
-            id               => $website->id,
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save (edit) by other blog (edit config)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'website',
-            name             => 'BlogName',
-            id               => $website->id,
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save (edit) by other permission" );
-    done_testing();
-};
-
-subtest 'mode = edit (new)' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            _type            => 'website',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
-    ok( $out !~ m!Permission denied!i, "edit (new) by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'website',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
-    ok( $out !~ m!Permission denied!i, "edit (new) by permitted user" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'website',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
-    ok( $out =~ m!Permission denied!i, "edit (new) by blog admin" );
-    done_testing();
-};
-
-subtest 'mode = edit (edit)' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            _type            => 'website',
-            name             => 'BlogName',
-            id               => $website->id,
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit (edit) by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            _type            => 'website',
-            name             => 'BlogName',
-            id               => $website->id,
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit (edit) by permitted user (website admin)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ogawa,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            _type            => 'website',
-            name             => 'BlogName',
-            id               => $website->id,
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit (edit) by permitted user (edit config)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            _type            => 'website',
-            name             => 'BlogName',
-            id               => $website->id,
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit (edit) by non permitted user (create website)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            _type            => 'website',
-            name             => 'BlogName',
-            id               => $website->id,
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit (edit) by other blog (website admin)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $kagawa,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            _type            => 'website',
-            name             => 'BlogName',
-            id               => $website->id,
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit (edit) by other blog (edit config)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            _type            => 'website',
-            name             => 'BlogName',
-            id               => $website->id,
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit (edit) by other permission" );
-    done_testing();
-};
-
-subtest 'mode = delete' => sub {
-    $website = MT::Test::Permission->make_website();
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            _type            => 'website',
-            id               => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
-    ok( $out !~ m!Permission denied!i, "delete by admin" );
-
-    $website = MT::Test::Permission->make_website();
-    MT::Association->link( $aikawa => $website_admin => $website );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            _type            => 'website',
-            id               => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
-    ok( $out !~ m!Permission denied!i, "delete by permitted user (website admin)" );
-
-    $website = MT::Test::Permission->make_website();
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            _type            => 'website',
-            id               => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
-    ok( $out =~ m!Permission denied!i, "delete by non permitted user (create website)" );
-
-    $website = MT::Test::Permission->make_website();
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            _type            => 'website',
-            id               => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
-    ok( $out =~ m!Permission denied!i, "delete by other blog (website admin)" );
-
-    $website = MT::Test::Permission->make_website();
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            _type            => 'website',
-            id               => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
-    ok( $out =~ m!Permission denied!i, "delete by other permission" );
-    done_testing();
+    ok( $out =~ m!not implemented!i, "move_blogs by non permitted user" );
 };
 
 subtest 'action = refresh_website_templates' => sub {
@@ -574,7 +502,7 @@ subtest 'action = refresh_website_templates' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: refresh_website_templates" );
-    ok( $out !~ m!Permission denied!i, "refresh_website_templates by admin" );
+    ok( $out !~ m!error_id=!i, "refresh_website_templates by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -592,7 +520,7 @@ subtest 'action = refresh_website_templates' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: refresh_website_templates" );
-    ok( $out !~ m!Permission denied!i, "refresh_website_templates by permitted user" );
+    ok( $out !~ m!error_id=!i, "refresh_website_templates by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -610,7 +538,7 @@ subtest 'action = refresh_website_templates' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: refresh_website_templates" );
-    ok( $out !~ m!Permission denied!i, "refresh_website_templates by permitted user (system)" );
+    ok( $out !~ m!error_id=!i, "refresh_website_templates by permitted user (system)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -628,7 +556,7 @@ subtest 'action = refresh_website_templates' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: refresh_website_templates" );
-    ok( $out =~ m!Permission denied!i, "refresh_website_templates by other blog" );
+    ok( $out =~ m!error_id=!i, "refresh_website_templates by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -646,7 +574,81 @@ subtest 'action = refresh_website_templates' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: refresh_website_templates" );
-    ok( $out =~ m!Permission denied!i, "refresh_website_templates by other permission" );
+    ok( $out =~ m!not implemented!i, "refresh_website_templates by other permission" );
+};
+
+subtest 'mode = delete' => sub {
+    $website = MT::Test::Permission->make_website();
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'website',
+            id               => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: delete" );
+    ok( $out !~ m!permission=1!i, "delete by admin" );
+
+    $website = MT::Test::Permission->make_website();
+    MT::Association->link( $aikawa => $website_admin => $website );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'website',
+            id               => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: delete" );
+    ok( $out !~ m!permission=1!i, "delete by permitted user (website admin)" );
+
+    $website = MT::Test::Permission->make_website();
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'website',
+            id               => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: delete" );
+    ok( $out =~ m!permission=1!i, "delete by non permitted user (create website)" );
+
+    $website = MT::Test::Permission->make_website();
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $egawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'website',
+            id               => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: delete" );
+    ok( $out =~ m!permission=1!i, "delete by other blog (website admin)" );
+
+    $website = MT::Test::Permission->make_website();
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'website',
+            id               => $website->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: delete" );
+    ok( $out =~ m!permission=1!i, "delete by other permission" );
+    done_testing();
 };
 
 done_testing();
