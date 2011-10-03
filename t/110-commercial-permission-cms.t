@@ -107,7 +107,7 @@ subtest 'mode = view_field' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: view_field" );
-    ok( $out !~ m!Permission denied!i, "view_field by admin" );
+    ok( $out !~ m!permission=1!i, "view_field by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -120,7 +120,7 @@ subtest 'mode = view_field' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: view_field" );
-    ok( $out !~ m!Permission denied!i, "view_field by permitted user" );
+    ok( $out !~ m!permission=1!i, "view_field by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -133,7 +133,7 @@ subtest 'mode = view_field' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: view_field" );
-    ok( $out =~ m!Permission denied!i, "view_field by other blog" );
+    ok( $out =~ m!permission=1!i, "view_field by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -146,7 +146,7 @@ subtest 'mode = view_field' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: view_field" );
-    ok( $out =~ m!Permission denied!i, "view_field by other permission" );
+    ok( $out =~ m!permission=1!i, "view_field by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -159,97 +159,87 @@ subtest 'mode = view_field' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: view_field" );
-    ok( $out =~ m!Permission denied!i, "view_field on system by non permitted user" );
+    ok( $out =~ m!permission=1!i, "view_field on system by non permitted user" );
 };
 
 subtest 'mode = prep_customfields_upgrade' => sub {
+    plan skip_all => 'Not in use';
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
             __mode           => 'prep_customfields_upgrade',
-            blog_id          => $blog->id,
-            id               => $blog_field->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: prep_customfields_upgrade" );
-    ok( $out !~ m!Permission denied!i, "prep_customfields_upgrade by admin" );
+    ok( $out !~ m!permission=1!i, "prep_customfields_upgrade by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
             __mode           => 'prep_customfields_upgrade',
-            blog_id          => $blog->id,
-            id               => $blog_field->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: prep_customfields_upgrade" );
-    ok( $out =~ m!Permission denied!i, "prep_customfields_upgrade by non permitted user" );
+    ok( $out =~ m!permission=1!i, "prep_customfields_upgrade by non permitted user" );
 };
 
-subtest 'mode = list_field' => sub {
+subtest 'mode = list' => sub {
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'list_field',
+            __mode           => 'list',
+            _type            => 'field',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_field" );
-    ok( $out !~ m!Permission denied!i, "list_field by admin" );
+    ok( $out, "Request: list" );
+    ok( $out !~ m!permission=1!i, "list by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'list_field',
+            __mode           => 'list',
+            _type            => 'field',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_field" );
-    ok( $out !~ m!Permission denied!i, "list_field by permitted user" );
+    ok( $out, "Request: list" );
+    ok( $out !~ m!permission=1!i, "list by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ichikawa,
             __request_method => 'POST',
-            __mode           => 'list_field',
+            __mode           => 'list',
+            _type            => 'field',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_field" );
-    ok( $out =~ m!Permission denied!i, "list_field by other blog" );
+    ok( $out, "Request: list" );
+    ok( $out =~ m!permission=1!i, "list by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ukawa,
             __request_method => 'POST',
-            __mode           => 'list_field',
+            __mode           => 'list',
+            _type            => 'field',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list_field" );
-    ok( $out =~ m!Permission denied!i, "list_field by other permission" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'list_field',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: list_field" );
-    ok( $out =~ m!Permission denied!i, "list_field on system by non permitted user" );
+    ok( $out, "Request: list" );
+    ok( $out =~ m!permission=1!i, "list by other permission" );
 };
 
 subtest 'mode = save' => sub {
@@ -268,7 +258,7 @@ subtest 'mode = save' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out !~ m!Permission denied!i, "save by admin" );
+    ok( $out !~ m!permission=1!i, "save by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -285,7 +275,7 @@ subtest 'mode = save' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out !~ m!Permission denied!i, "save by permitted user" );
+    ok( $out !~ m!permission=1!i, "save by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -302,7 +292,7 @@ subtest 'mode = save' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out =~ m!Permission denied!i, "save by other blog" );
+    ok( $out =~ m!permission=1!i, "save by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -319,7 +309,7 @@ subtest 'mode = save' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out =~ m!Permission denied!i, "save by other permission" );
+    ok( $out =~ m!permission=1!i, "save by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -336,7 +326,7 @@ subtest 'mode = save' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out =~ m!Permission denied!i, "save on system by non permitted user" );
+    ok( $out =~ m!permission=1!i, "save on system by non permitted user" );
 };
 
 subtest 'mode = delete' => sub {
@@ -372,7 +362,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out !~ m!Permission denied!i, "delete by admin" );
+    ok( $out !~ m!permission=1!i, "delete by admin" );
 
     $blog_field = MT::Test::Permission->make_field(
         blog_id => $blog->id,
@@ -406,7 +396,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out !~ m!Permission denied!i, "delete by permitted user" );
+    ok( $out !~ m!permission=1!i, "delete by permitted user" );
 
     $blog_field = MT::Test::Permission->make_field(
         blog_id => $blog->id,
@@ -440,7 +430,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out =~ m!Permission denied!i, "delete by other blog" );
+    ok( $out =~ m!permission=1!i, "delete by other blog" );
 
     $blog_field = MT::Test::Permission->make_field(
         blog_id => $blog->id,
@@ -474,7 +464,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out =~ m!Permission denied!i, "delete by other permission" );
+    ok( $out =~ m!permission=1!i, "delete by other permission" );
 
     $blog_field = MT::Test::Permission->make_field(
         blog_id => $blog->id,
@@ -508,7 +498,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out =~ m!Permission denied!i, "delete on system by non permitted user" );
+    ok( $out =~ m!permission=1!i, "delete on system by non permitted user" );
 };
 
 done_testing();
