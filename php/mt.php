@@ -412,6 +412,8 @@ class MT {
             $cfg['usersessioncookietimeout'] = 60*60*4;
         isset($cfg['commenterregistration']) or
             $cfg['commenterregistration'] = array('allow' => 1 );
+        isset($cfg['userpasswordminlength']) or
+            $cfg['userpasswordminlength'] = 8;
     }
 
     function configure_paths($blog_site_path) {
