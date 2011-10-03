@@ -67,6 +67,10 @@ sub edit {
         eval { require MT::Image; MT::Image->new or die; };
         $param->{can_use_userpic} = $@ ? 0 : 1;
         $param->{date_format} = $obj->date_format || 'relative';
+        if ( ( $obj->column('password') !~ /^\$6\$/ ) and ( not $param->{error} ) ) {
+            $param->{error} =
+                $app->translate("For improved security, please change your password");
+        }
     }
     else {
         if ( $app->config->ExternalUserManagement ) {
