@@ -1822,6 +1822,14 @@ sub edit_commenter_profile {
         $param->{ 'auth_mode_' . $commenter->auth_type } = 1;
         require MT::Auth;
         $param->{'email_required'} = MT::Auth->can_recover_password ? 1 : 0;
+        
+        if ( ( $commenter->auth_type eq 'MT' ) and
+             ( $commenter->column('password') !~ /^\$6\$/ ) and
+             ( not $param->{error} ) ) {
+            $param->{error} =
+                $app->translate("For improved security, please change your password");
+        }
+        
         return $app->build_page( 'profile.tmpl', $param );
     }
     return $app->handle_error( $app->translate('Invalid login') );
@@ -1875,6 +1883,10 @@ sub save_commenter_profile {
         unless (MT::Auth->is_valid_password($cmntr, scalar($q->param('old_pass')))) {
             $param{error} = $app->translate('Failed to verify current password.');
             return $app->build_page( 'profile.tmpl', \%param );
+        }
+        if ( ( $cmntr->column('password') !~ /^\$6\$/ ) and ( not $param{error} ) ) {
+            $param{error} =
+                $app->translate("For improved security, please change your password");
         }
     }
     my $email = $param{email};
