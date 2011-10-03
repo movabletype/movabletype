@@ -35,7 +35,7 @@ sub edit {
 
         # General permissions...
         my $sys_perms = $obj->permissions(0);
-        if ($sys_perms) {
+        if ($sys_perms && $sys_perms->permissions) {
             my @sys_perms = split( ',', $sys_perms->permissions );
             foreach my $perm (@sys_perms) {
                 $perm =~ s/'(.+)'/$1/;
