@@ -227,7 +227,7 @@ sub make_asset {
 
     my $class = 'file';
     $class = delete $params{class}
-        if defined %params && exists $params{class};
+        if %params && exists $params{class};
 
     my $values = {
         url => 'http://narnia.na/nana/files/test.tmpl',
@@ -248,8 +248,8 @@ sub make_asset {
     }
 
     use MT::Asset;
-    my $pkg = MT::Asset->class_handler( $class );
-    my $asset = $pkg->new();
+    my $pkg_class = MT::Asset->class_handler( $class );
+    my $asset = $pkg_class->new();
 
     foreach my $k ( keys %$values ) {
         $asset->$k( $values->{ $k } );
@@ -366,13 +366,12 @@ sub make_folder {
     my $pkg = shift;
     my %params = @_;
 
-    require MT::Page;
     my $values = {
-        blog_id     => 1,
-        label       => 'info',
-        description => 'information',
-        author_id   => 1,
-        parent      => 0,
+        blog_id => 2,
+        label => 'foo',
+        description => 'foo',
+        author_id => 1,
+        parent => 0,
     };
 
     if ( %params ) {
@@ -381,15 +380,19 @@ sub make_folder {
         }
     }
 
+    require MT::Folder;
     my $folder = MT::Folder->new();
-    $folder->set_values( $values );
+
+    foreach my $k ( keys %$values ) {
+        $folder->$k( $values->{ $k } );
+    }
     $folder->save() or die "Couldn't save folder record: " . $folder->errstr;
-    $folder->clear_cache();
 
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
     return $folder;
 }
+
 
 sub make_templatemap {
     my $pkg = shift;
@@ -450,37 +453,6 @@ sub make_category {
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
     return $cat;
-}
-
-sub make_folder {
-    my $pkg = shift;
-    my %params = @_;
-
-    my $values = {
-        blog_id => 2,
-        label => 'foo',
-        description => 'foo',
-        author_id => 1,
-        parent => 0,
-    };
-
-    if ( %params ) {
-        foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
-        }
-    }
-
-    require MT::Folder;
-    my $folder = MT::Folder->new();
-
-    foreach my $k ( keys %$values ) {
-        $folder->$k( $values->{ $k } );
-    }
-    $folder->save() or die "Couldn't save folder record: " . $folder->errstr;
-
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
-
-    return $folder;
 }
 
 sub make_banlist {
