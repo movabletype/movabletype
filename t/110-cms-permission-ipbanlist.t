@@ -165,7 +165,7 @@ subtest 'mode = save' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out !~ m!permission=1!i, "save by permitted user (edit config)" );
+    ok( $out =~ m!permission=1!i, "save by non permitted user (edit config)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -346,7 +346,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out !~ m!permission=1!i, "delete by permitted user (delete config)" );
+    ok( $out =~ m!permission=1!i, "delete by non permitted user (edit config)" );
 
     $banlist = MT::Test::Permission->make_banlist(
         blog_id => $blog->id,
@@ -380,7 +380,7 @@ subtest 'mode = delete' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
-    ok( $out =~ m!permission=1!i, "delete by other blog (delete config)" );
+    ok( $out =~ m!permission=1!i, "delete by other blog (edit config)" );
 
     $banlist = MT::Test::Permission->make_banlist(
         blog_id => $blog->id,
