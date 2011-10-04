@@ -300,7 +300,13 @@ sub content_actions {
     for my $key ( keys %$actions ) {
         my $action = $actions->{$key};
         $action->{key} = $key;
-        my %args = %{ $action->{args} || {} };
+        my %args;
+        if ( 'CODE' eq ref $action->{args} ) {
+            my $code = $action->{args};
+            %args = %{ $code->() || {} };
+        } else {
+            %args = %{ $action->{args} || {} }
+        }
         $args{_type} ||= $type;
         $args{return_args} = $app->make_return_args if $action->{return_args};
         $action->{url} = $app->uri(

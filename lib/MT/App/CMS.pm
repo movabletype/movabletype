@@ -543,9 +543,18 @@ sub core_content_actions {
                     );
                 },
                 mode => 'dialog_grant_role',
-                args => {
-                    type  => 'blog',
-                    _type => 'user',
+                args => sub {
+                    if ( $app->blog->is_blog ) {
+                        return {
+                            type  => 'blog',
+                            _type => 'user',
+                        };
+                    } else {
+                        return {
+                            type  => 'website',
+                            _type => 'user',
+                        };
+                    }
                 },
                 return_args => 1,
                 order       => 100,
