@@ -109,8 +109,8 @@ sub plugin_control {
     my $app = shift;
 
     $app->validate_magic or return;
-    return unless $app->can_do('toggle_plugin_switch');
-
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->can_do('toggle_plugin_switch');
     my $plugin_sig = $app->param('plugin_sig') || '';
     my $state      = $app->param('state')      || '';
 
