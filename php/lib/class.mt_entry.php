@@ -25,13 +25,14 @@ class Entry extends BaseObject
         return $cat;
     }
 
-    public function categories() {
+    public function categories($with_primary = true) {
         $places = $this->placement();
         if (empty($places))
             return null;
 
         $cats = array();
         foreach($places as $p) {
+            if ( !$with_primary && $p->is_primary ) continue;
             $cat = $p->category();
             $cats[] = $cat;
         }
