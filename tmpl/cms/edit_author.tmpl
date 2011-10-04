@@ -159,6 +159,7 @@ function init() {
 }
 
 TC.attachLoadEvent(init);
+<$mt:PasswordValidation form="profile" password="pass" username="name"$>
 /* ]]> */
 </script>
 
@@ -281,18 +282,19 @@ TC.attachLoadEvent(init);
       <mt:if name="new_object">
         <mt:setvar name="password_required" value="1">
         <mt:setvar name="password_prompt" value="<__trans phrase="Initial Password">">
-        <mt:setvar name="password_hint" value="<__trans phrase="Enter preferred password.">">
+        <mt:setvar name="password_hint" value="<__trans phrase="Enter preferred password."> (<$mt:PasswordValidationRule$>)">
       <mt:else>
         <mt:setvar name="password_required" value="0">
         <mt:setvar name="password_prompt" value="<__trans phrase="New Password">">
-        <mt:setvar name="password_hint" value="<__trans phrase="Enter the new password.">">
+        <mt:setvar name="password_hint" value="<__trans phrase="Enter the new password."> (<$mt:PasswordValidationRule$>)">
       </mt:if>
 
       <mtapp:setting
          id="pass"
          label="$password_prompt"
          required="$password_required"
-         hint="$password_hint">
+         hint="$password_hint"
+         show_hint="1">
         <input type="password" name="pass" id="pass" class="text password" value="" />
       </mtapp:setting>
 

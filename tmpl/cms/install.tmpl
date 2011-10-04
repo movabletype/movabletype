@@ -118,7 +118,8 @@ div.warning#version-warning {
          id="admin_password"
          label="<__trans phrase="Password">"
          label_class="top-label"
-         hint="<__trans phrase="Select a password for your account.">">
+         hint="<__trans phrase="Select a password for your account."> (<$mt:PasswordValidationRule$>)"
+         show_hint="1">
         <input type="password" id="admin_password" class="text password required" name="admin_password" />
       </mtapp:setting>
     
@@ -175,6 +176,8 @@ div.warning#version-warning {
 
 <script type="text/javascript">
 /* <![CDATA[ */
+<$mt:PasswordValidation form="install_form" password="admin_password" username="admin_username"$>
+
 function dismiss(id) {
     jQuery('#'+id).hide();
     jQuery('#'+id+'-header').hide();

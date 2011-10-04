@@ -19,7 +19,7 @@
     </mtapp:statusmsg>
 </mt:if>
 
-<form method="post" action="<mt:var name="script_url">">
+<form name="profile" id="profile" method="post" action="<mt:var name="script_url">">
 
 <input type="hidden" name="__mode" value="save_profile" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
@@ -66,7 +66,8 @@
         id="password"
         label="<__trans phrase="New Password">"
         label_class="top-label"
-        hint="<__trans phrase="Select a password for yourself.">">
+        hint="<__trans phrase="Select a password for yourself."> (<$mt:PasswordValidationRule$>)"
+        show_hint="1">
         <input type="password" name="password" id="password" class="text password" value="" />
     </mtapp:setting>
 
@@ -123,6 +124,13 @@
     </div>
 
 </form>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+<$mt:PasswordValidation form="profile" password="password" username="name"$>
+/* ]]> */
+</script>
+
 
 <mt:if name="saved">
   <mt:if name="entry_url">
