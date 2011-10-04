@@ -289,6 +289,9 @@ sub insert {
 
     $app->validate_magic() or return;
 
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->can_do('insert_asset');
+
     my $text = $app->param('no_insert') ? "" : _process_post_upload($app);
     return unless defined $text;
     my $file_ext_changes = $app->param('changed_file_ext');

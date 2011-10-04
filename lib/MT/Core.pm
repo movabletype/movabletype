@@ -1034,6 +1034,7 @@ sub load_core_permissions {
                 'use_entry:manage_menu'            => 1,
                 'use_tools:search'                 => 1,
                 'send_update_pings_entry'          => 1,
+                'insert_asset'                     => 1,
             }
         },
         'blog.edit_assets' => {
@@ -1053,6 +1054,7 @@ sub load_core_permissions {
                 'remove_tags_from_assets_via_list' => 1,
                 'save_asset'                       => 1,
                 'use_tools:search'                 => 1,
+                'insert_asset'                     => 1,
             }
         },
         'blog.edit_categories' => {
