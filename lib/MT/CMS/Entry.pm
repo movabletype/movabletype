@@ -1698,6 +1698,7 @@ sub save_entries {
         my $id    = $1;
         my $entry = MT::Entry->load($id)
             or next;
+        $perms = $app->user->permissions( $entry->blog_id );
         return $app->error( $app->translate("Permission denied.") )
             unless $perms
               && (
@@ -1712,6 +1713,8 @@ sub save_entries {
             my $author_id = $q->param( 'author_id_' . $id );
             $entry->author_id( $author_id ? $author_id : 0 );
             $entry->title( scalar $q->param( 'title_' . $id ) );
+        } else {
+            return $app->error( $app->translate("Permission denied.") );
         }
         if ( $perms->can_edit_entry( $entry, $this_author, 1 ) )
         {    ## can he/she change status?
