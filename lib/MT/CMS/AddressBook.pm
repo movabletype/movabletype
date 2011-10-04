@@ -222,15 +222,31 @@ sub export {
 }
 
 sub can_save {
-    my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
-    return $perms->can_do('save_addressbook');
+    my ( $eh, $app, $obj ) = @_;
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
+
+
+    if ( $obj && !ref $obj ) {
+        $obj = MT->model('notification')->load($obj);
+    }
+    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
+
+    return $author->permissions($blog_id)->can_do('save_addressbook');
 }
 
 sub can_delete {
-    my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
-    return $perms->can_do('delete_addressbook');
+    my ( $eh, $app, $obj ) = @_;
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
+
+
+    if ( $obj && !ref $obj ) {
+        $obj = MT->model('notification')->load($obj);
+    }
+    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
+
+    return $author->permissions($blog_id)->can_do('delete_addressbook');
 }
 
 sub save_filter {
