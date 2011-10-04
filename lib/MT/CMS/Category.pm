@@ -304,6 +304,13 @@ sub js_add_category {
     my $obj      = $class->new;
     my $original = $obj->clone;
 
+    $obj->label($label);
+    $obj->basename($basename)   if $basename;
+    $obj->parent( $parent->id ) if $parent;
+    $obj->blog_id($blog_id);
+    $obj->author_id( $user->id );
+    $obj->created_by( $user->id );
+
     if (
         !$app->run_callbacks(
             'cms_save_permission_filter.' . $type,
@@ -313,13 +320,6 @@ sub js_add_category {
     {
         return $app->json_error( $app->translate("Permission denied.") );
     }
-
-    $obj->label($label);
-    $obj->basename($basename)   if $basename;
-    $obj->parent( $parent->id ) if $parent;
-    $obj->blog_id($blog_id);
-    $obj->author_id( $user->id );
-    $obj->created_by( $user->id );
 
     if (
         !$app->run_callbacks( 'cms_pre_save.' . $type, $app, $obj, $original ) )
