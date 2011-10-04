@@ -1091,8 +1091,6 @@ sub load_core_permissions {
                 'load_next_scheduled_entry'    => 1,
                 'open_blog_config_screen'      => 1,
                 'open_start_import_screen'     => 1,
-                'save_banlist'                 => 1,
-                'delete_banlist'               => 1,
                 'save_blog_config'             => 1,
                 'update_welcome_message'       => 1,
             }
