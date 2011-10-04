@@ -33,6 +33,7 @@ sub can_view {
     }
     if ($id) {
         my $obj = $objp->force();
+        return 0 if $obj->is_entry;
         if ( !$app->user->permissions( $obj->blog_id )->can_do('open_page_edit_screen') ) {
             return 0;
         }
