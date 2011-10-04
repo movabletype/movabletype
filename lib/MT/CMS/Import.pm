@@ -119,6 +119,9 @@ sub do_import {
         );
     }
 
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->user->permissions( $blog_id )->can_do('import_blog');
+
     my $import_as_me = $q->param('import_as_me');
 
     ## Determine the user as whom we will import the entries.
@@ -126,11 +129,11 @@ sub do_import {
     my $author_id = $author->id;
 
     $app->can_do('import_blog_as_me')
-        or $app->error(
+        or return $app->error(
             $app->translate('You do not have import permission') );
     if ( !$import_as_me ) {
         $app->can_do('import_blog_with_authors')
-            or $app->error(
+            or return $app->error(
                 $app->translate('You do not have permission to create users'));
     }
 

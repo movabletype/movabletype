@@ -1086,6 +1086,7 @@ sub load_core_permissions {
                 'edit_config'                  => 1,
                 'edit_junk_auto_delete'        => 1,
                 'export_blog'                  => 1,
+                'import_blog'                  => 1,
                 'import_blog_as_me'            => 1,
                 'load_next_scheduled_entry'    => 1,
                 'open_blog_config_screen'      => 1,
