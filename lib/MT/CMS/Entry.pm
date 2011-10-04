@@ -1762,7 +1762,6 @@ $ao
 
 sub save_entries {
     my $app   = shift;
-    my $perms = $app->permissions;
     my $type  = $app->param('_type');
     if ( $type eq 'page' ) {
         $app->can_do('save_multiple_pages')
@@ -1787,12 +1786,15 @@ sub save_entries {
         my $id    = $1;
         my $entry = MT::Entry->load($id)
             or next;
+        my $perms = $app->user->permissions( $entry->blog_id );
+        return $app->return_to_dashboard( permission => 1 )
+            unless $perms->can_edit_entry( $entry, $this_author );
         my $orig_obj = $entry->clone;
-        if ( $perms->can_edit_entry( $entry, $this_author ) ) {
-            my $author_id = $q->param( 'author_id_' . $id );
-            $entry->author_id( $author_id ? $author_id : 0 );
-            $entry->title( scalar $q->param( 'title_' . $id ) );
-        }
+
+        my $author_id = $q->param( 'author_id_' . $id );
+        $entry->author_id( $author_id ? $author_id : 0 );
+        $entry->title( scalar $q->param( 'title_' . $id ) );
+
         if ( $perms->can_edit_entry( $entry, $this_author, 1 ) )
         {    ## can he/she change status?
             $entry->status( scalar $q->param( 'status_' . $id ) );
