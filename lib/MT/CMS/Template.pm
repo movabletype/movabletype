@@ -1839,7 +1839,9 @@ sub refresh_all_templates {
     my $user = $app->user;
     my @blogs_not_refreshed;
     my $refreshed;
-    my $can_refresh_system = $user->is_superuser() ? 1 : 0;
+    my $can_refresh_system = ( $user->is_superuser()
+        or $user->permissions(0)->can_do('refresh_templates') )
+        ? 1 : 0;
     my $default_language = MT->config->DefaultLanguage;
     BLOG: for my $blog_id (@id) {
         my $blog;

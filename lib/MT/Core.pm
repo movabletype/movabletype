@@ -1403,6 +1403,7 @@ sub load_core_permissions {
                 'use_tools:search'             => 1,
                 'open_blog_listing_screen'     => 1,
                 'open_all_blog_listing_screen' => 1,
+                'refresh_templates'            => 1,
             },
         },
         'system.manage_plugins' => {
