@@ -5862,7 +5862,7 @@ sub _hdlr_password_validation_rules {
     my $msg = $app->translate("minimum length of [_1]", $min_length);
     $msg .= $app->translate(', upper and lower letters')
         if $constrains =~ m/upperlower/;
-    $msg .= $app->translate(', letters and numbered')
+    $msg .= $app->translate(', letters and numbers')
         if $constrains =~ m/letternumber/;
     $msg .= $app->translate(', special symbols (e.g. #!$%)')
         if $constrains =~ m/symbol/;

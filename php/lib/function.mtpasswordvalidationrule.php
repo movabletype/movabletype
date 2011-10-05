@@ -16,7 +16,7 @@ function smarty_function_mtpasswordvalidationrule($args, &$ctx) {
         $msg .= $app->translate(', upper and lower letters');
     }
     if (strpos($constrains, "letternumber") !== false) {
-        $msg .= $app->translate(', letters and numbered');
+        $msg .= $app->translate(', letters and numbers');
     }
     if (strpos($constrains, "symbol") !== false) {
         $msg .= $app->translate(', special symbols (e.g. #!$%)');
