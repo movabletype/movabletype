@@ -124,6 +124,7 @@ sub core_methods {
         ## List actions
         'enable_object'     => "${pkg}User::enable",
         'disable_object'    => "${pkg}User::disable",
+        'unlock'            => "${pkg}User::unlock",
         'list_action'       => "${pkg}Tools::do_list_action",
         'empty_junk'        => "${pkg}Comment::empty_junk",
         'handle_junk'       => "${pkg}Comment::handle_junk",
@@ -162,6 +163,10 @@ sub core_methods {
         },
         'new_pw' => {
             code           => "${pkg}Tools::new_password",
+            requires_login => 0,
+        },
+        'recover_lockout' => {
+            code           => "${pkg}User::recover_lockout",
             requires_login => 0,
         },
 
@@ -1229,6 +1234,17 @@ sub core_list_actions {
                 mode       => 'disable_object',
                 order      => 110,
                 js_message => 'disable',
+                button     => 1,
+                condition  => sub {
+                    $app->can_do('access_to_system_author_list');
+                },
+            },
+            'unlock' => {
+                label      => 'Unlock',
+                code       => "${pkg}User::unlock",
+                mode       => 'unlock',
+                order      => 120,
+                js_message => 'unlock',
                 button     => 1,
                 condition  => sub {
                     $app->can_do('access_to_system_author_list');

@@ -35,6 +35,21 @@
 </mt:if>
 </mt:setvarblock>
 
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function clearLockoutNotifyTo() {
+    var el_name = getByID('lockout-notify-names');
+    var el_id   = getByID('lockout-notify-ids');
+    if (el_name && el_id) {
+        el_id.value       = '';
+        el_name.innerHTML = '<__trans phrase="(None selected)">';
+    }
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
 <mt:include name="include/header.tmpl">
 
 <script type="text/javascript">
@@ -143,6 +158,74 @@ function validate (f) {
         <textarea name="trackback_send_domains" class="text low"><mt:var name="trackback_send_domains" escape="html"></textarea>
       </li>
     </ul>
+  </mtapp:setting>
+</mtapp:settinggroup>
+
+<h2><__trans phrase="Lockout"></h2>
+<mtapp:settinggroup id="lockout">
+  <mtapp:setting
+     id="lockout-notify-ids"
+     label="<__trans phrase="Notify Email">"
+     hint="<__trans phrase="The system administrators whom you wish to notify, when a user or an IP address was locked out.">"
+     show_hint="1">
+    <input type="hidden" id="lockout-notify-ids" name="lockout_notify_ids" value="<mt:var name="lockout_notify_ids" escape="html">" />
+    <span id="lockout-notify-names">
+    <mt:if name="lockout_notify_ids">
+      <strong><mt:var name="lockout_notify_names" escape="html"></strong>
+      <a href="javascript:void(0)" onclick="return clearLockoutNotifyTo()"><__trans phrase="Clear"></a> |
+    <mt:else>
+      <__trans phrase="(None selected)">
+    </mt:if>
+    </span>
+    <a href="<mt:var name="script_url">?__mode=dialog_select_sysadmin&amp;multi=1&amp;idfield=lockout-notify-ids&amp;namefield=lockout-notify-names" class="mt-open-dialog"><__trans phrase="Select system administrators"></a>
+  </mtapp:setting>
+
+  <mtapp:setting
+     id="user-lockout-limit"
+     label="<__trans phrase="User lockout limit">"
+     hint="<__trans phrase="When a user fail to login this number of times, that user will be locked out. If 0 specified, any users will not locked out.">"
+     show_hint="1">
+    <input type="text" name="user_lockout_limit" id="user-lockout-limit" class="text num" maxlength="3" value="<mt:var name="user_lockout_limit" escape="html">" />
+  </mt:app:setting>
+
+  <mtapp:setting
+     id="user-lockout-duration"
+     label="<__trans phrase="User lockout duration">"
+     hint="<__trans phrase="The duration to count the failed login for locking out user.">"
+     show_hint="1">
+    <input type="text" name="user_lockout_duration" id="user-lockout-duration" class="text num" maxlength="5" value="<mt:var name="user_lockout_duration" escape="html">" />
+  </mt:app:setting>
+
+  <mtapp:setting
+     id="ip-lockout-limit"
+     label="<__trans phrase="IP address lockout limit">"
+     hint="<__trans phrase="When someone fail to login this number of times from same IP address, that IP address will be locked out. If 0 specified, any IP addresses will not locked out.">"
+     show_hint="1">
+    <input type="text" name="ip_lockout_limit" id="ip-lockout-limit" class="text num" maxlength="3" value="<mt:var name="ip_lockout_limit" escape="html">" />
+  </mt:app:setting>
+
+  <mtapp:setting
+     id="ip-lockout-duration"
+     label="<__trans phrase="IP address lockout duration">"
+     hint="<__trans phrase="The duration to count the failed login for locking out IP address.">"
+     show_hint="1">
+    <input type="text" name="ip_lockout_duration" id="ip-lockout-duration" class="text num" maxlength="5" value="<mt:var name="ip_lockout_duration" escape="html">" />
+  </mt:app:setting>
+
+  <mtapp:setting
+     id="failed-login-expire-frequency"
+     label="<__trans phrase="Failed login expire frequency">"
+     hint="<__trans phrase="The task execution frequency to remove expired failed login logs.">"
+     show_hint="1">
+    <input type="text" name="failed_login_expire_frequency" id="failed-login-expire-frequency" class="text num" maxlength="5" value="<mt:var name="failed_login_expire_frequency" escape="html">" />
+  </mt:app:setting>
+
+  <mtapp:setting
+     id="lockout-ip-address-whitelist"
+     label="<__trans phrase="Lockout IP address whitelist">"
+     hint="<__trans phrase="The list of IP addresses. If the remote IP address is included in this list, the failed login will not recorded. You can specify multiple IP addresses separated by commas or line breaks.">"
+     show_hint="1">
+    <textarea name="lockout_ip_address_whitelist" id="lockout-ip-address-whitelist" class="text low"><mt:var name="lockout_ip_address_whitelist" escape="html"></textarea>
   </mtapp:setting>
 </mtapp:settinggroup>
 

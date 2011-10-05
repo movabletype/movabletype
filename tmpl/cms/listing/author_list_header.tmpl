@@ -11,6 +11,12 @@
             class="success">
             <__trans phrase="You have successfully enabled the selected user(s).">
         </mtapp:statusmsg>
+    <mt:elseif eq="unlocked">
+        <mtapp:statusmsg
+            id="saved-status-disabled"
+            class="success">
+            <__trans phrase="You have successfully unlocked the selected user(s).">
+        </mtapp:statusmsg>
     </mt:if>
     <mt:if name="request.saved_deleted">
         <mtapp:statusmsg

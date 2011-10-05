@@ -1936,6 +1936,8 @@ sub login {
     my $new_login = 0;
 
     require MT::Auth;
+    require MT::Lockout;
+
     my $ctx = MT::Auth->fetch_credentials( { app => $app } );
     unless ($ctx) {
         if ( defined( $app->param('password') ) ) {
@@ -1946,6 +1948,14 @@ sub login {
 
     my $res = MT::Auth->validate_credentials($ctx) || MT::Auth::UNKNOWN();
     my $user = $ctx->{username};
+
+    if ( $res != MT::Auth::SUCCESS() ) {
+        if ( MT::Lockout->is_locked_out( $app, $app->remote_ip, $user ) ) {
+            return $app->error( $app->translate('Invalid login.') );
+        }
+        MT::Lockout->process_login_result( $app, $app->remote_ip, $user,
+            $res );
+    }
 
     if ( $res == MT::Auth::UNKNOWN() ) {
 
@@ -2792,6 +2802,13 @@ sub show_error {
 
 sub show_login {
     my $app = shift;
+
+    require MT::Lockout;
+    if ( MT::Lockout->is_locked_out( $app, $app->remote_ip ) ) {
+        $app->{hide_goback_button} = 1;
+        return $app->errtrans("Invalid request");
+    }
+
     my ($param) = @_;
     $param ||= {};
     require MT::Auth;

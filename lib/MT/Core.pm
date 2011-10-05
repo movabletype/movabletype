@@ -164,6 +164,7 @@ BEGIN {
             'objectasset'     => 'MT::ObjectAsset',
             'filter'          => 'MT::Filter',
             'touch'           => 'MT::Touch',
+            'failedlogin'     => 'MT::FailedLogin',
 
             # TheSchwartz tables
             'ts_job'        => 'MT::TheSchwartz::Job',
@@ -1899,6 +1900,15 @@ BEGIN {
             # Revision History
             'TrackRevisions'    => { default => 1 },
             'RevisioningDriver' => { default => 'Local' },
+
+            # User Lockout
+            'UserLockoutLimit'           => { default => 6 },
+            'UserLockoutDuration'        => { default => 1800 },
+            'IPLockoutLimit'             => { default => 10 },
+            'IPLockoutDuration'          => { default => 1800 },
+            'FailedLoginExpireFrequency' => { default => 86400 },
+            'LockoutIPWhitelist'         => undef,
+            'LockoutNotifyTo'            => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2182,6 +2192,14 @@ sub load_core_tasks {
             code      => sub {
                 MT::Core->purge_session_records;
                 }
+        },
+        'CleanExpiredFailedLogin' => {
+            label     => 'Remove expired lockout data',
+            frequency => $cfg->FailedLoginExpireFrequency,
+            code      => sub {
+                my $app = MT->instance;
+                $app->model('failedlogin')->cleanup($app);
+            }
         },
     };
 }

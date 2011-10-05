@@ -508,6 +508,39 @@ sub cfg_system_general {
     else {
         $param{"trackback_send_any"} = 1;
     }
+
+    # for lockout settings
+    if (my $notify_to = $cfg->LockoutNotifyTo) {
+        my @ids = split ';', $notify_to;
+        my @sysadmins = MT::Author->load(
+            {   id   => \@ids,
+                type => MT::Author::AUTHOR()
+            },
+            {   join => MT::Permission->join_on(
+                    'author_id',
+                    {   permissions => "\%'administer'\%",
+                        blog_id     => '0',
+                    },
+                    { 'like' => { 'permissions' => 1 } }
+                )
+            }
+        );
+        my @names;
+        foreach my $a (@sysadmins) {
+            push @names, $a->name . '(' . $a->id . ')';
+        }
+        $param{lockout_notify_ids}   = $notify_to;
+        $param{lockout_notify_names} = join ',', @names;
+    }
+
+    $param{user_lockout_limit}            = $cfg->UserLockoutLimit;
+    $param{user_lockout_duration}         = $cfg->UserLockoutDuration;
+    $param{ip_lockout_limit}              = $cfg->IPLockoutLimit;
+    $param{ip_lockout_duration}           = $cfg->IPLockoutDuration;
+    $param{failed_login_expire_frequency} = $cfg->FailedLoginExpireFrequency;
+    ( $param{lockout_ip_address_whitelist} = $cfg->LockoutIPWhitelist )
+        =~ s/,/\n/g;
+
     $param{saved}        = $app->param('saved');
     $param{screen_class} = "settings-screen system-feedback-settings";
     $app->load_tmpl( 'cfg_system_general.tmpl', \%param );
@@ -601,6 +634,75 @@ sub save_cfg_system_general {
     push( @meta_messages,
         'Outbound trackback limit is ' . $app->param('trackback_send') )
         if ( $app->param('trackback_send') =~ /\w+/ );
+
+
+    # for lockout settings
+    foreach my $hash (
+        {
+            key    => 'lockout_notify_ids',
+            cfg    => 'LockoutNotifyTo',
+            label  => 'Notify Email',
+            regex  => qr/\A([\d,;]*)\z/,
+            filter => sub{ $_[0] =~ s/,/;/g },
+        },
+        {
+            key   => 'user_lockout_limit',
+            cfg   => 'UserLockoutLimit',
+            label => 'User lockout limit',
+            regex => qr/\A\s*(\d+)\s*\z/,
+        },
+        {
+            key   => 'user_lockout_duration',
+            cfg   => 'UserLockoutDuration',
+            label => 'User lockout duration',
+            regex => qr/\A\s*(\d+)\s*\z/,
+        },
+        {
+            key   => 'ip_lockout_limit',
+            cfg   => 'IPLockoutLimit',
+            label => 'IP address lockout limit',
+            regex => qr/\A\s*(\d+)\s*\z/,
+        },
+        {
+            key   => 'ip_lockout_duration',
+            cfg   => 'IPLockoutDuration',
+            label => 'IP address lockout duration',
+            regex => qr/\A\s*(\d+)\s*\z/,
+        },
+        {
+            key   => 'failed_login_expire_frequency',
+            cfg   => 'FailedLoginExpireFrequency',
+            label => 'Failed login expire frequency',
+            regex => qr/\A\s*(\d+)\s*\z/,
+        },
+        {
+            key   => 'lockout_ip_address_whitelist',
+            cfg   => 'LockoutIPWhitelist',
+            label => 'Lockout IP address whitelist',
+            regex => qr/\A\s*((.|\r|\n)*?)\s*\z/,
+            filter => sub{
+                $_[0] =~ s/\r|\n/,/g;
+                $_[0] =~ s/,+/,/g;
+            },
+        },
+    ) {
+        if ( $app->param( $hash->{key} ) =~ $hash->{regex} ) {
+            my $value = $1;
+            if ( $hash->{filter} ) {
+                $hash->{filter}->($value);
+            }
+            $cfg->set( $hash->{cfg}, $value, 1 );
+            push(
+                @meta_messages,
+                $app->translate(
+                    '[_1] is [_2]',
+                    $app->translate( $hash->{label} ),
+                    $value || $app->translate('none')
+                )
+            );
+        }
+    }
+
 
     # throw the messages in the activity log
     if ( scalar(@meta_messages) > 0 ) {

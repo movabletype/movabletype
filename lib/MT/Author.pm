@@ -249,6 +249,31 @@ sub list_props {
             label   => 'Email Address',
             display => 'none',
         },
+        lockout => {
+            base    => '__virtual.single_select',
+            display => 'none',
+            label   => 'Lockout',
+            col     => 'lockout',
+            terms   => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $val      = $args->{value};
+                my %statuses = (
+                    not_locked_out => NOT_LOCKED_OUT(),
+                    locked_out     => LOCKED_OUT(),
+                );
+                $val = exists $statuses{$val} ? $statuses{$val} : $val;
+                return { lockout => $val };
+            },
+            single_select_options => [
+                {   label => MT->translate('Not Locked Out'),
+                    value => 'not_locked_out',
+                },
+                {   label => MT->translate('Locked Out'),
+                    value => 'locked_out',
+                },
+            ],
+        },
         id => { view => [] },
     };
 }
@@ -272,6 +297,12 @@ sub system_filters {
             items =>
                 [ { type => 'status', args => { value => 'pending' }, }, ],
             order => 300,
+        },
+        lockedout => {
+            label => 'Locked out Users',
+            items =>
+                [ { type => 'lockout', args => { value => 'locked_out' }, }, ],
+            order => 400,
         },
     };
 }

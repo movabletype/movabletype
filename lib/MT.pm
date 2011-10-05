@@ -32,7 +32,7 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '5.13', '5.0027' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '5.13', '5.0028' );
     (   $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION,
         $VERSION_ID,   $PORTAL_URL
         )
@@ -682,21 +682,14 @@ sub run_callback {
     return $result;
 }
 
-# A callback should return a true/false value. The result of
-# run_callbacks is the logical AND of all the callback's return
-# values. Some hookpoints will ignore the return value: e.g. object
-# callbacks don't use it. By convention, those that use it have Filter
-# at the end of their names (CommentPostFilter, CommentThrottleFilter,
-# etc.)
-# Note: this composition is not short-circuiting. All callbacks are
-# executed even if one has already returned false.
-# ALSO NOTE: failure (dying or setting $cb->errstr) does not force a
-# "false" return.
-# THINK: are there cases where a true value should override all false values?
-# that is, where logical OR is the right way to compose multiple callbacks?
-sub run_callbacks {
+sub callback_is_enabled {
     my $class = shift;
-    my ( $meth, @args ) = @_;
+    scalar $class->_callback_methods(@_);
+}
+
+sub _callback_methods {
+    my $class = shift;
+    my ($meth) = @_;
     return 1 unless $CallbacksEnabled && %CallbacksEnabled;
     $meth = $CallbackAlias{$meth} if exists $CallbackAlias{$meth};
     my @methods;
@@ -730,6 +723,28 @@ sub run_callbacks {
             push @methods, $name2 if $CallbacksEnabled{$name2};    # blah
         }
     }
+
+    @methods;
+}
+
+# A callback should return a true/false value. The result of
+# run_callbacks is the logical AND of all the callback's return
+# values. Some hookpoints will ignore the return value: e.g. object
+# callbacks don't use it. By convention, those that use it have Filter
+# at the end of their names (CommentPostFilter, CommentThrottleFilter,
+# etc.)
+# Note: this composition is not short-circuiting. All callbacks are
+# executed even if one has already returned false.
+# ALSO NOTE: failure (dying or setting $cb->errstr) does not force a
+# "false" return.
+# THINK: are there cases where a true value should override all false values?
+# that is, where logical OR is the right way to compose multiple callbacks?
+sub run_callbacks {
+    my $class = shift;
+    my ( $meth, @args ) = @_;
+
+    my @methods = $class->_callback_methods(@_);
+
     return 1 unless @methods;
 
     $CallbacksEnabled{$_} = 0 for @methods;

@@ -202,6 +202,8 @@ BEGIN {
             'notify-entry'      => { label => 'Entry Notify', },
             'recover-password'  => { label => 'Password Recovery', },
             'verify-subscribe'  => { label => 'Subscribe Verify', },
+            'lockout-user'      => { label => 'User Lockout', },
+            'lockout-ip'        => { label => 'IP Address Lockout', },
         },
     };
 }

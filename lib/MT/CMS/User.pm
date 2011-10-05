@@ -54,9 +54,19 @@ sub edit {
             $param->{search_label} = $app->translate('Entry');
             $param->{object_type}  = 'entry';
         }
+
         $param->{status_enabled} = $obj->is_active ? 1 : 0;
         $param->{status_pending}
             = $obj->status == MT::Author::PENDING() ? 1 : 0;
+        $param->{locked_out}
+            = $obj->lockout == MT::Author::LOCKED_OUT ? 1 : 0;
+        if ( $app->user->is_superuser ) {
+            $param->{recover_lockout_link}
+                = MT::Lockout->recover_lockout_uri( $app, $obj,
+                { return_args => $app->make_return_args } );
+        }
+        $param->{unlocked} = $app->param('unlocked') ? 1 : 0;
+
         $param->{can_modify_password}
             = ( $param->{editing_other_profile} || $param->{is_me} )
             && MT::Auth->password_exists;
@@ -442,6 +452,79 @@ sub set_object_status {
     $app->add_return_arg( unchanged => $unchanged )
         if $unchanged;
     $app->call_return;
+}
+
+sub unlock {
+    my ($app) = @_;
+
+    require MT::Lockout;
+
+    $app->validate_magic() or return;
+    return $app->permission_denied()
+        unless $app->user->is_superuser;
+    return $app->error( $app->translate("Invalid request.") )
+        if $app->request_method ne 'POST';
+
+    my $class = $app->model('author');
+    $app->setup_filtered_ids
+        if $app->param('all_selected');
+
+    my @sync;
+    my $saved = 0;
+    for my $id ( $app->param('id') ) {
+        next unless $id;    # avoid 'empty' ids
+        my $obj = $class->load($id);
+        next unless $obj;
+
+        MT::Lockout->unlock($obj);
+        $obj->save;
+    }
+    $app->add_return_arg(
+        saved_status => 'unlocked',
+    );
+
+    $app->add_return_arg( is_power_edit => 1 )
+        if $app->param('is_power_edit');
+
+    $app->call_return;
+}
+
+sub recover_lockout {
+    my $app     = shift;
+    my $user_id = $app->param('user_id');
+    my $token   = $app->param('token');
+
+    my $user = $app->model('author')->load($user_id)
+        or return $app->errtrans("Invalid request");
+
+    require MT::Lockout;
+    if ( !MT::Lockout->validate_recover_token( $app, $user, $token ) ) {
+        return $app->errtrans("Invalid request");
+    }
+
+    MT::Lockout->unlock($user);
+    $user->save
+        or die $user->errstr;
+
+    if ( $app->param('return_args') ) {
+        $app->add_return_arg( unlocked => 1 );
+        return $app->call_return;
+    }
+
+    my $params = {
+        author_nickname  => $user->nickname,
+        author_name      => $user->name,
+        author_edit_link => $app->base
+            . $app->uri(
+                mode => 'view',
+                args => {
+                    '_type' => 'author',
+                    'id'    => $user->id,
+                },
+            ),
+    };
+
+    my $tmpl = $app->load_tmpl( 'recover_lockout.tmpl', $params );
 }
 
 sub upload_userpic {
