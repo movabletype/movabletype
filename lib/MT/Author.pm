@@ -59,7 +59,7 @@ __PACKAGE__->install_properties(
             type        => 1,
             status      => 1,
             date_format => 'relative',
-            lockout     => NOT_LOCKED_OUT(),
+            lockout     => 0, # NOT_LOCKED_OUT
         },
         indexes => {
             created_on     => 1,
