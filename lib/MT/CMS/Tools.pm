@@ -164,11 +164,7 @@ sub recover_password {
         push( @authors, $_ );
     }
     if ( !@authors ) {
-        return $app->start_recover(
-            {   error => $app->translate('User not found'),
-                ( $username ? ( not_unique_email => 1 ) : () ),
-            }
-        );
+        return $app->start_recover( { recovered => 1, } );
     }
     elsif ( @authors > 1 ) {
         return $app->start_recover( { not_unique_email => 1, } );
