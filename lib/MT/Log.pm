@@ -33,7 +33,7 @@ __PACKAGE__->install_properties(
             'author_id' => 'integer',
             'level'     => 'integer',
             'category'  => 'string(255)',
-            'metadata'  => 'string(255)',
+            'metadata'  => 'text',
         },
         indexes => {
             created_on => 1,
