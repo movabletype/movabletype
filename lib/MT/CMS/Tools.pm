@@ -171,51 +171,52 @@ sub recover_password {
     }
     $user = pop @authors;
 
-    # Generate Token
-    require MT::Util::Captcha;
-    my $salt    = MT::Util::Captcha->_generate_code(8);
-    my $expires = time + ( 60 * 60 );
-    my $token = MT::Util::perl_sha1_digest_hex(
-        $salt . $expires . $app->config->SecretToken );
+    MT::Util::start_background_task(
+        sub {
+            # Generate Token
+            require MT::Util::Captcha;
+            my $salt    = MT::Util::Captcha->_generate_code(8);
+            my $expires = time + ( 60 * 60 );
+            my $token = MT::Util::perl_sha1_digest_hex(
+                $salt . $expires . $app->config->SecretToken );
 
-    $user->password_reset($salt);
-    $user->password_reset_expires($expires);
-    $user->password_reset_return_to($app->param('return_to'))
-        if $app->param('return_to');
-    $user->save;
+            $user->password_reset($salt);
+            $user->password_reset_expires($expires);
+            $user->password_reset_return_to($app->param('return_to'))
+                if $app->param('return_to');
+            $user->save;
 
-    # Send mail to user
-    my %head = (
-        id      => 'recover_password',
-        To      => $email,
-        From    => $app->config('EmailAddressMain') || $email,
-        Subject => $app->translate("Password Recovery")
-    );
-    my $charset = $app->charset;
-    my $mail_enc = uc( $app->config('MailEncoding') || $charset );
-    $head{'Content-Type'} = qq(text/plain; charset="$mail_enc");
+            # Send mail to user
+            my %head = (
+                id      => 'recover_password',
+                To      => $email,
+                From    => $app->config('EmailAddressMain') || $email,
+                Subject => $app->translate("Password Recovery")
+            );
+            my $charset = $app->charset;
+            my $mail_enc = uc( $app->config('MailEncoding') || $charset );
+            $head{'Content-Type'} = qq(text/plain; charset="$mail_enc");
 
-    my $blog_id = $app->param('blog_id');
-    my $body = $app->build_email(
-        'recover-password',
-        {         link_to_login => $app->base
-                . $app->uri
-                . "?__mode=new_pw&token=$token&email="
-                . encode_url($email)
-                . ($blog_id ? "&blog_id=$blog_id" : ''),
+            my $blog_id = $app->param('blog_id');
+            my $body = $app->build_email(
+                'recover-password',
+                {         link_to_login => $app->base
+                        . $app->uri
+                        . "?__mode=new_pw&token=$token&email="
+                        . encode_url($email)
+                        . ($blog_id ? "&blog_id=$blog_id" : ''),
+                }
+            );
+
+            require MT::Mail;
+            MT::Mail->send( \%head, $body )
+                or die $app->translate(
+                    "Error sending mail ([_1]); please fix the problem, then "
+                        . "try again to recover your password.",
+                    MT::Mail->errstr
+                );
         }
     );
-
-    require MT::Mail;
-    MT::Mail->send( \%head, $body )
-        or return $app->error(
-        $app->translate(
-            "Error sending mail ([_1]); please fix the problem, then "
-                . "try again to recover your password.",
-            MT::Mail->errstr
-        )
-        );
-
     return $app->start_recover( { recovered => 1, } );
 }
 
