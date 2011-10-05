@@ -30,6 +30,7 @@ __PACKAGE__->install_properties(
             'date_format'          => 'string(30)',
             'status'               => 'integer',
             'external_id'          => 'string(255)',
+            'lockout'              => 'integer not null',
 
             #'last_login' => 'datetime',
 
@@ -52,11 +53,13 @@ __PACKAGE__->install_properties(
             'password_reset_expires'   => 'string meta',
             'password_reset_return_to' => 'string meta',
             'list_prefs'               => 'hash meta',
+            'lockout_recover_salt'     => 'string meta',
         },
         defaults => {
             type        => 1,
             status      => 1,
             date_format => 'relative',
+            lockout     => NOT_LOCKED_OUT(),
         },
         indexes => {
             created_on     => 1,
@@ -65,6 +68,7 @@ __PACKAGE__->install_properties(
             type           => 1,
             status         => 1,
             external_id    => 1,
+            lockout        => 1,
             auth_type_name => { columns => [ 'auth_type', 'name', 'type' ], },
             basename       => 1,
         },
@@ -98,6 +102,10 @@ sub PENDING ()  {3}
 # Author statuses
 sub ACTIVE ()   {1}
 sub INACTIVE () {2}
+
+# Lockout statuses
+sub NOT_LOCKED_OUT () {0}
+sub LOCKED_OUT () {1}
 
 #use constant PENDING => 3; # there *is* PENDING status for authors but it's the same name and value.
 
