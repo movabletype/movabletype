@@ -380,13 +380,10 @@ sub load_tmpl {
     my ( $file, $param ) = @_;
 
     my $mt = MT->instance;
-    my $type
-        = { 'SCALAR' => 'scalarref', 'ARRAY' => 'arrayref' }->{ ref $file }
-        || 'filename';
 
     require MT::Template;
     my $tmpl = MT::Template->new(
-        type   => $type,
+        type   => 1,
         source => $file,
         path   => [ $c->template_paths ],
         (   $mt->isa('MT::App')
@@ -420,7 +417,7 @@ sub load_tmpl {
                 . $text
                 . '</__trans_section>' );
     }
-    $tmpl->{__file} = $file if $type eq 'filename';
+    $tmpl->{__file} = $file if not ref $file;
 
     ## We do this in load_tmpl because show_error and login don't call
     ## build_page; so we need to set these variables here.

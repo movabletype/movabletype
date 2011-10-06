@@ -113,11 +113,14 @@ sub new {
     my $pkg = shift;
     my (%param) = @_;
     if ( my $type = delete $param{type} ) {
-        if ( $type eq 'filename' ) {
+        if (not ref $param{source})  {
             return $pkg->new_file( $param{source}, %param );
         }
-        elsif ( $type eq 'scalarref' ) {
+        elsif ( ref $param{source} eq 'SCALAR' ) {
             return $pkg->new_string( $param{source}, %param );
+        }
+        else {
+            die "MT::Template called with multiple sources: ", join(', ', @{ $param{source} });
         }
     }
     my $tmpl = $pkg->SUPER::new(@_);

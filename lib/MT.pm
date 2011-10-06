@@ -2274,11 +2274,8 @@ sub load_tmpl {
     my $tmpl;
     my @paths = $mt->template_paths;
 
-    my $type
-        = { 'SCALAR' => 'scalarref', 'ARRAY' => 'arrayref' }->{ ref $file }
-        || 'filename';
     $tmpl = MT::Template->new(
-        type   => $type,
+        type   => 1,
         source => $file,
         path   => \@paths,
         filter => sub {
