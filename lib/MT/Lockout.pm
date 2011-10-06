@@ -78,6 +78,10 @@ sub recover_token {
     my $class = shift;
     my ( $app, $user ) = @_;
 
+    return undef
+        unless $user->lockout == MT::Author::LOCKED_OUT
+            && $user->lockout_recover_salt;
+
     my $sha256_hex;
     if ( eval { require Digest::SHA } ) {
         $sha256_hex = \&Digest::SHA::sha256_hex;
@@ -87,8 +91,6 @@ sub recover_token {
         $sha256_hex = \&Digest::SHA::PurePerl::sha256_hex;
     }
 
-    return undef unless $user->lockout_recover_salt;
-
     $sha256_hex->(
         $user->lockout_recover_salt . $app->config->SecretToken );
 }
@@ -97,7 +99,9 @@ sub recover_lockout_uri {
     my $class = shift;
     my ( $app, $user, $args ) = @_;
 
-    my $token = $class->recover_token( $app, $user );
+    my $token = $class->recover_token( $app, $user )
+        or return undef;
+
     $app->uri(
         'mode' => 'recover_lockout',
         args   => {
