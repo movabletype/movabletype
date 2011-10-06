@@ -47,3 +47,55 @@ sub cleanup {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::FailedLogin - Movable Type failed login log record
+
+=head1 SYNOPSIS
+
+    use MT::FailedLogin;
+    MT::FailedLogin->cleanup;
+
+
+=head1 DATA ACCESS METHODS
+
+The I<MT::FailedLogin> object holds the following pieces of data. These fields
+can be accessed and set using the standard data access methods described in
+the I<MT::Object> documentation.
+
+=over 4
+
+=item * id
+
+The numeric ID of the template.
+
+=item * author_id
+
+The numeric ID of the author who tried to login.
+
+=item * remote_ip
+
+The remote IP address which tried to login.
+
+=item * start
+
+The failed time in the UNIX epoch.
+
+=back
+
+
+=head1 METHODS
+
+=head2 MT::FailedLogin->cleanup;
+
+Clean up all expired failed login log.
+
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

@@ -370,3 +370,172 @@ sub unlock {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::Lockout - Movable Type class for user and IP address lockout feature.
+
+
+=head1 SYNOPSIS
+
+    package MyPlugin;
+
+    use MT::Lockout;
+
+    if ( MT::Lockout->is_locked_out_ip( $app, $remote_ip ) ) {
+        my $t = MT::Lockout->locked_out_ip_recovery_time( $app, $remote_ip );
+    }
+
+    if ( MT::Lockout->is_locked_out_user( $app, $username ) ) {
+        my $user = $app->model('author')->load( { name => $username } );
+        MT::Lockout->unlock($user);
+        $user->save;
+    }
+
+    MT::Lockout->is_locked_out( $app, $remote_ip, $username );
+
+
+    $app->add_callback( 'lockout_filter',    1, undef, $filter );
+
+    $app->add_callback( 'pre_lockout',       1, undef, $callback );
+    $app->add_callback( 'pre_lockout.user',  1, undef, $callback );
+    $app->add_callback( 'pre_lockout.ip',    1, undef, $callback );
+    $app->add_callback( 'post_lockout',      1, undef, $callback );
+    $app->add_callback( 'post_lockout.user', 1, undef, $callback );
+    $app->add_callback( 'post_lockout.ip',   1, undef, $callback );
+
+
+=head1 METHODS
+
+=head2 MT::Lockout->is_locked_out_ip($app, $remote_ip)
+
+Returns 1 if given $remote_ip is locked out,
+returns 0 or undef if not locked out.
+
+
+=head2 MT::Lockout->locked_out_ip_recovery_time($app, $remote_ip)
+
+Returns the time to recover from lockout in the UNIX epoch format
+about given $remote_ip, returns 0 if isn't locked out.
+
+
+=head2 MT::Lockout->is_locked_out_user($app, $username)
+
+Returns 1 if given $username is locked out,
+returns 0 or undef if not locked out.
+
+
+=head2 MT::Lockout->is_locked_out($app, $remote_ip, $username)
+
+Returns 1 if given $remote_ip or $username is locked out,
+returns 0 or undef if not locked out.
+
+
+=head2 MT::Lockout->validate_recover_token($app, $user, $token)
+
+Returns 1 if given $token is valid for the given $user object,
+returns 0 or undef if $token is not valid or $user is not locked out.
+
+
+=head2 MT::Lockout->recover_token($app, $user)
+
+Returns the token for recovering lockout, returns undef if $user is
+not locked out. $user should have been set lockout_recover_salt.
+
+
+=head2 MT::Lockout->recover_lockout_uri($app, $user, $args)
+
+Returns the URI for recovering lockout, returns undef if $user is
+not locked out.
+
+
+=head2 MT::Lockout->process_login_result($app, $remote_ip, $username, $result)
+
+This routine process a result of login. If given result is failure
+a failed login log will be recorded. If given result is successful
+all relevant failed login log is cleared.
+
+If failed login count for given $username is reached to UserLockoutLimit,
+this user is locked out.
+
+
+=head2 MT::Lockout->lock($user)
+
+This routine set the lockout status of given $user. This routine doesn't
+save $user object, should save $user object after returning from this routine.
+
+
+=head2 MT::Lockout->unlock($user)
+
+This routine recover the lockout status of given $user. This routine doesn't
+save $user object, should save $user object after returning from this routine.
+
+
+=head1 CALLBACKS
+
+=head2 lockout_filter
+
+This callback is invoked before to record failed login log. This callback must
+return a boolean value. If the return value is false, the user or the IP
+addresss will marked as lockout candidate. If the return value is true,
+the user or the IP address will not marked as lockout candidate.
+If multiple filters was found, the system will focus on the results of the
+Lockout. This callback has the following signature:
+
+    sub lockout_filter {
+        my ( $cb, $app, $username, $remote_ip ) = @_;
+        ...
+        return $boolean;
+    }
+
+
+=head2 pre_lockout.user
+
+This callback is invoked before to Lock out the user. This callback has
+the following signature:
+
+    sub pre_lockout_user {
+        my ( $cb, $app, $username, $remote_ip ) = @_;
+        ...
+    }
+
+=head2 pre_lockout.ip
+
+This callback is invoked before to Lock out the IP address. This callback has
+the following signature:
+
+    sub pre_lockout_ip {
+        my ( $cb, $app, $username, $remote_ip ) = @_;
+        ...
+    }
+
+
+=head2 post_lockout.user
+
+This callback is invoked after to Locking out the user. This callback has
+the following signature:
+
+    sub post_lockout_user {
+        my ( $cb, $app, $username, $remote_ip ) = @_;
+        ...
+    }
+
+
+=head2 post_lockout.ip
+
+This callback is invoked after to Locking out the IP address. This callback
+has the following signature:
+
+    sub post_lockout_ip {
+        my ( $cb, $app, $username, $remote_ip ) = @_;
+        ...
+    }
+
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut
