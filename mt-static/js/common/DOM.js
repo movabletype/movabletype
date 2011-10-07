@@ -477,9 +477,13 @@ extend( DOM, {
     getSelection: function( w, d ) {
         if ( !w )
             w = window;
-        return w.getSelection ?
-            w.getSelection() :
-            ( d ? d.selection : w.document.selection )
+
+        if (navigator.userAgent.indexOf('MSIE') != -1) {
+            return d ? d.selection : w.document.selection;
+        }
+        else {
+            return w.getSelection();
+        }
     },
 
 
