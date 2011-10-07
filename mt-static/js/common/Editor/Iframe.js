@@ -677,7 +677,7 @@ Editor.Iframe = new Class( Component, {
         }    
         
         if( focusNode.nodeType == Node.TEXT_NODE ) { 
-            if( range.endOffSet < focusNode.nodeValue.length )
+            if( range.endOffset < focusNode.nodeValue.length )
                 return false; // 'false' if text node and not at end of text.
         }
 
