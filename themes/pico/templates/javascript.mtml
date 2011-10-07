@@ -1324,7 +1324,7 @@ function mtClearUser() {
  */
 </mt:Ignore>
 function mtSetCookie(name, value, expires, path, domain, secure) {
-    if (domain && domain.match(/^\.?localhost$/))
+    if (domain && ( domain.match(/^\.?localhost$/) || domain.match(/^[0-9\.]+$/) ))
         domain = null;
     var curCookie = name + "=" + encodeURIComponent(value) +
         (expires ? "; expires=" + expires.toGMTString() : "") +
