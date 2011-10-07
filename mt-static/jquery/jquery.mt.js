@@ -485,7 +485,16 @@ function close_dialog(url, fn) {
     }
     $('.mt-dialog').unbind('close');
     $('.mt-dialog').hide();
-    $('#mt-dialog-iframe').remove();
+
+    // Removing "iframe" in delay.
+    // Because IE9 will continue to run the script after closing,
+    // and raise error if removing "iframe".
+    var iframe = $('#mt-dialog-iframe').
+        attr('id', 'mt-dialog-iframe-removed');
+    setTimeout(function() {
+        iframe.remove();
+    }, 2000);
+
     if (url) {
         window.location = url;
     }
