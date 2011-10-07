@@ -179,6 +179,10 @@ function smarty_function_mtinclude($args, &$ctx) {
             $_include_cache[$cache_id] = $_var_compiled;
         }
     } elseif (isset($args['file']) && ($args['file'])) {
+        global $mt;
+        if ( !$mt->config('AllowFileInclude') ) {
+            return $ctx->error('File include is disabled by "AllowFileInclude" config directive.');
+        }
         $file = $args['file'];
         $cache_id = 'file::' . $blog_id . '::' . $file;
         if (isset($_include_cache[$cache_id])) {
