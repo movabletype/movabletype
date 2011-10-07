@@ -340,7 +340,6 @@
   var eventRegistry = [];
 
   addEvent(window,'load',_init,false);
-  addEvent(window,'unload',_cleanup,false);
 
   <mt:Ignore>
   /**
@@ -363,34 +362,6 @@
     delete count;
   }
 
-  <mt:Ignore>
-  /**
-   * Handles the removal of events and any additional cleanup
-   * @param {Event} e The event object
-   * @return void
-   */
-  </mt:Ignore>
-  function _cleanup (e) {
-    _removeAllEvents();
-  }
-
-  <mt:Ignore>
-  /**
-   * Description
-   *
-   * @constructor
-   * @param
-   * @return
-   */
-  </mt:Ignore>
-  function _removeAllEvents() {
-    var len = eventRegistry.length,
-        reg;
-    while(len--) {
-      reg = eventRegistry[len];
-      reg.el.removeEventListener(reg.type,reg.func,reg.capture)
-    }
-  }
   <mt:Ignore>
   /**
    * Cross-browser solution for stopping event propagation
@@ -765,35 +736,8 @@
    * @return void
    */
   </mt:Ignore>
-  function addEvent(el,type,func,obj) {
-    if(!obj && document.addEventListener) {
-      eventRegistry.push({
-        'el' : el,
-        'type' : type,
-        'func' : func,
-        'capture' : false
-      });
-
-      el.addEventListener(type,func,false);
-    } else if(obj && document.addEventListener) {
-      var anonFunc = function (event) {
-        func.call(obj,event);
-      };
-
-      eventRegistry.push({
-        'el' : el,
-        'type' : type,
-        'func' : anonFunc,
-        'capture' : false
-      });
-
-      el.addEventListener(type,anonFunc,false);
-      delete anonFunc;
-    } else {
-      el.attachEvent(type,function (event) {
-        func.call(obj,event);
-      });
-    }
+  function addEvent(el,type,func) {
+    jQuery(el).bind(type, func);
   }
 })();
 /* ]]> */
