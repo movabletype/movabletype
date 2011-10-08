@@ -119,6 +119,9 @@ sub new {
         elsif ( $type eq 'scalarref' ) {
             return $pkg->new_string( $param{source}, %param );
         }
+        else {
+            delete $param{source} if exists $param{source};
+        }
     }
     my $tmpl = $pkg->SUPER::new(@_);
     $tmpl->{include_path}   = $param{path};
