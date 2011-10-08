@@ -2661,6 +2661,7 @@ sub run {
             $mode = $app->{forward} unless $mode;
 
             my $requires_login = $app->{requires_login};
+            my $no_direct;
 
             my $code = $app->handlers_for_mode($mode);
 
@@ -2673,12 +2674,21 @@ sub run {
                     $requires_login
                         = $requires_login & $meth_info->{requires_login}
                         if exists $meth_info->{requires_login};
+                    $no_direct = 1
+                        if exists $meth_info->{no_direct} && $meth_info->{no_direct};
                 }
             }
 
             if ($requires_login) {
                 my ($author) = $app->login;
                 if ( !$author || !$app->is_authorized ) {
+                    if ( !$app->{login_again}
+                        && $no_direct )
+                    {
+                        # Direct mode call.
+                        # We will be continue but all parameters will be deleted.
+                        $app->param->delete_all();
+                    }
                     $body
                         = ref($author) eq $app->user_class
                         ? $app->show_error( { error => $app->errstr } )
