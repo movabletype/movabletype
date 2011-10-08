@@ -314,15 +314,7 @@ sub process_login_result {
             }
         }
 
-        my $cancel_insert
-            = $app->callback_is_enabled('lockout_filter')
-            ? $app->run_callbacks( 'lockout_filter', $app, $username,
-            $remote_ip )
-            : 0;
-
-        if ( !$cancel_insert ) {
-            $class->_insert_failedlogin( $app, $remote_ip, $username );
-        }
+        $class->_insert_failedlogin( $app, $remote_ip, $username );
     }
     elsif ( grep { $_ == $result } @for_clear ) {
         $app->model('failedlogin')->remove( { remote_ip => $remote_ip } );
@@ -396,8 +388,6 @@ MT::Lockout - Movable Type class for user and IP address lockout feature.
 
     MT::Lockout->is_locked_out( $app, $remote_ip, $username );
 
-
-    $app->add_callback( 'lockout_filter',    1, undef, $filter );
 
     $app->add_callback( 'pre_lockout',       1, undef, $callback );
     $app->add_callback( 'pre_lockout.user',  1, undef, $callback );
@@ -474,22 +464,6 @@ save $user object, should save $user object after returning from this routine.
 
 
 =head1 CALLBACKS
-
-=head2 lockout_filter
-
-This callback is invoked before to record failed login log. This callback must
-return a boolean value. If the return value is false, the user or the IP
-addresss will marked as lockout candidate. If the return value is true,
-the user or the IP address will not marked as lockout candidate.
-If multiple filters was found, the system will focus on the results of the
-Lockout. This callback has the following signature:
-
-    sub lockout_filter {
-        my ( $cb, $app, $username, $remote_ip ) = @_;
-        ...
-        return $boolean;
-    }
-
 
 =head2 pre_lockout.user
 

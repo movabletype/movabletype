@@ -507,47 +507,4 @@ is(scalar @pre_lockout_ip_args, 0, 'pre_lockout.ip did not run');
 is(scalar @post_lockout_ip_args, 0, 'post_lockout.ip did not run');
 
 
-note('lockout_filter');
-sub lockout_filter_lockout { 0 }
-sub lockout_filter_not_lockout { 1 }
-foreach my $case (
-    {
-        label   => 'lockout',
-        filters => [ \&lockout_filter_lockout ],
-        count   => 1,
-    },
-    {
-        label   => 'not_lockout',
-        filters => [ \&lockout_filter_not_lockout ],
-        count   => 0,
-    },
-    {
-        label   => 'lockout - not_lockout',
-        filters => [ \&lockout_filter_lockout, \&lockout_filter_not_lockout ],
-        count   => 1,
-    },
-    {
-        label   => 'not_lockout - lockout',
-        filters => [ \&lockout_filter_not_lockout, \&lockout_filter_lockout ],
-        count   => 1,
-    },
-) {
-    clear_lockout_statuses();
-
-    my @callbacks = ();
-    foreach my $filter ( @{ $case->{filters} } ) {
-        push( @callbacks,
-            $app->add_callback( 'lockout_filter', 1, undef, $filter ) );
-    }
-
-    MT::Lockout->process_login_result( $app, $evil_ip_address,
-        $evil_user->name, MT::Auth::INVALID_PASSWORD() );
-    is( $app->model('failedlogin')->count,
-        $case->{count}, 'lockout_filter: ' . $case->{label} );
-
-    foreach my $cb (@callbacks) {
-        $app->remove_callback($cb);
-    }
-}
-
 done_testing();
