@@ -44,11 +44,17 @@ sub core_methods {
         'admin'     => "${pkg}Dashboard::dashboard",
 
         ## Generic handlers
-        'save'           => "${pkg}Common::save",
+        'save'           => {
+            code      => "${pkg}Common::save",
+            no_direct => 1,
+        },
         'edit'           => "${pkg}Common::edit",
         'view'           => "${pkg}Common::edit",
         'list'           => "${pkg}Common::list",
-        'delete'         => "${pkg}Common::delete",
+        'delete'         =>  {
+            code      => "${pkg}Common::delete",
+            no_direct => 1,
+        },
         'search_replace' => "${pkg}Search::search_replace",
         'list_revision'  => "${pkg}Common::list_revision",
         # 'save_snapshot'  => "${pkg}Common::save_snapshot", ## Currently, Not in use.
@@ -98,16 +104,40 @@ sub core_methods {
         'cfg_web_services' => "${pkg}Blog::cfg_web_services",
 
         ## Save
-        'save_cat'     => "${pkg}Category::save",
-        'save_entries' => "${pkg}Entry::save_entries",
-        'save_pages'   => "${pkg}Page::save_pages",
-        'save_entry'   => "${pkg}Entry::save",
-        'save_role'    => "${pkg}User::save_role",
-        'save_widget'  => "${pkg}Template::save_widget",
+        'save_cat'     =>  {
+            code      => "${pkg}Category::save",
+            no_direct => 1,
+        },
+        'save_entries' =>  {
+            code      => "${pkg}Entry::save_entries",
+            no_direct => 1,
+        },
+        'save_pages'   =>  {
+            code      => "${pkg}Page::save_pages",
+            no_direct => 1,
+        },
+        'save_entry'   =>  {
+            code      => "${pkg}Entry::save",
+            no_direct => 1,
+        },
+        'save_role'    =>  {
+            code      => "${pkg}User::save_role",
+            no_direct => 1,
+        },
+        'save_widget'  =>  {
+            code      => "${pkg}Template::save_widget",
+            no_direct => 1,
+        },
 
         ## Delete
-        'delete_entry'  => "${pkg}Entry::delete",
-        'delete_widget' => "${pkg}Template::delete_widget",
+        'delete_entry'  =>  {
+            code      => "${pkg}Entry::delete",
+            no_direct => 1,
+        },
+        'delete_widget' =>  {
+            code      => "${pkg}Template::delete_widget",
+            no_direct => 1,
+        },
 
         ## List actions
         'enable_object'  => "${pkg}User::enable",

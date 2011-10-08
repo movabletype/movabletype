@@ -2763,7 +2763,15 @@ sub run {
             if ($requires_login) {
                 my ($author) = $app->login;
                 if ( !$author || !$app->is_authorized ) {
-                    $body
+                    if ( !$app->{login_again}
+                        && $meth_info->{no_direct} )
+                    {
+                        # Direct mode call.
+                        # We will be continue but all parameters will be deleted.
+                        $app->param->delete_all();
+                    }
+
+                     $body
                         = ref($author) eq $app->user_class
                         ? $app->show_error( { error => $app->errstr } )
                         : $app->build_page(
