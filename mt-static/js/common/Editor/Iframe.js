@@ -526,7 +526,11 @@ Editor.Iframe = new Class( Component, {
         var inserted = null;
         if( selection.createRange ) { // Internet Explorer (IE)
             var range = selection.createRange();
-            if( selection.type == "None" || selection.type == "Text" ) {
+            if (range.parentElement().document !== this.document) {
+                this.document.body.innerHTML =
+                    html + this.document.body.innerHTML;
+            }
+            else if( selection.type == "None" || selection.type == "Text" ) {
                 try {
                     range.pasteHTML( html );
                 } catch ( err ) {
