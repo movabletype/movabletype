@@ -44,7 +44,10 @@ sub core_methods {
         'admin'     => "${pkg}Dashboard::dashboard",
 
         ## Generic handlers
-        'save'          => "${pkg}Common::save",
+        'save' => {
+            code      => "${pkg}Common::save",
+            no_direct => 1,
+        },
         'edit'          => "${pkg}Common::edit",
         'view'          => "${pkg}Common::edit",
         'list'          => "${pkg}Common::list",
@@ -56,10 +59,14 @@ sub core_methods {
             code     => "${pkg}Common::save_list_prefs",
             app_mode => 'JSON',
         },
-        'delete'         => "${pkg}Common::delete",
+        'delete' => {
+            code      => "${pkg}Common::delete",
+            no_direct => 1,
+        },
         'search_replace' => "${pkg}Search::search_replace",
         'list_revision'  => "${pkg}Common::list_revision",
-        # 'save_snapshot'  => "${pkg}Common::save_snapshot", # Currently, not in use.
+
+ # 'save_snapshot'  => "${pkg}Common::save_snapshot", # Currently, not in use.
 
         ## Edit methods
         'edit_role'   => "${pkg}User::edit_role",
@@ -108,18 +115,48 @@ sub core_methods {
         'cfg_web_services' => "${pkg}Blog::cfg_web_services",
 
         ## Save
-        'save_cat'     => "${pkg}Category::save",
-        'save_entries' => "${pkg}Entry::save_entries",
-        'save_pages'   => "${pkg}Page::save_pages",
-        'save_entry'   => "${pkg}Entry::save",
-        'save_role'    => "${pkg}User::save_role",
-        'save_widget'  => "${pkg}Template::save_widget",
-        'save_filter'  => "${pkg}Filter::save",
+        'save_cat' => {
+            code      => "${pkg}Category::save",
+            no_direct => 1,
+        },
+        'save_entries' => {
+            code      => "${pkg}Entry::save_entries",
+            no_direct => 1,
+        },
+        'save_pages' => {
+            code      => "${pkg}Page::save_pages",
+            no_direct => 1,
+        },
+        'save_entry' => {
+            code      => "${pkg}Entry::save",
+            no_direct => 1,
+        },
+        'save_role' => {
+            code      => "${pkg}User::save_role",
+            no_direct => 1,
+        },
+        'save_widget' => {
+            code      => "${pkg}Template::save_widget",
+            no_direct => 1,
+        },
+        'save_filter' => {
+            code      => "${pkg}Filter::save",
+            no_direct => 1,
+        },
 
         ## Delete
-        'delete_entry'  => "${pkg}Entry::delete",
-        'delete_widget' => "${pkg}Template::delete_widget",
-        'delete_filter' => "${pkg}Filter::delete",
+        'delete_entry' => {
+            code      => "${pkg}Entry::delete",
+            no_direct => 1,
+        },
+        'delete_widget' => {
+            code      => "${pkg}Template::delete_widget",
+            no_direct => 1,
+        },
+        'delete_filter' => {
+            code      => "${pkg}Filter::delete",
+            no_direct => 1,
+        },
 
         ## List actions
         'enable_object'     => "${pkg}User::enable",
@@ -131,8 +168,9 @@ sub core_methods {
         'not_junk'          => "${pkg}Comment::not_junk",
         'open_batch_editor' => "${pkg}Entry::open_batch_editor",
         'delete_filters'    => {
-            code     => "${pkg}Filter::delete_filters",
-            app_mode => 'JSON',
+            code      => "${pkg}Filter::delete_filters",
+            no_direct => 1,
+            app_mode  => 'JSON',
         },
 
         'ping'               => "${pkg}Entry::send_pings",
@@ -233,8 +271,8 @@ sub core_methods {
             "${pkg}Template::publish_templates_from_search",
 
         ## Comment Replies
-        reply         => "${pkg}Comment::reply",
-        do_reply      => "${pkg}Comment::do_reply",
+        reply    => "${pkg}Comment::reply",
+        do_reply => "${pkg}Comment::do_reply",
 
         ## Dialogs
         'dialog_restore_upload'    => "${pkg}Tools::dialog_restore_upload",
@@ -270,17 +308,17 @@ sub core_methods {
         'js_recent_entries_for_tag' => "${pkg}Tag::js_recent_entries_for_tag",
 
         ## DEPRECATED ##
-        'list_pings'        => "${pkg}TrackBack::list",
-        'list_entries'      => "${pkg}Entry::list",
-        'list_pages'        => "${pkg}Page::list",
-        'list_comments'     => "${pkg}Comment::list",
-        'list_authors'      => "${pkg}User::list",
-        'list_assets'       => "${pkg}Asset::list",
-        'list_cat'          => "${pkg}Category::list",
-        'list_blogs'        => "${pkg}Blog::list",
-        'list_associations' => "${pkg}User::list_association",
-        'list_roles'        => "${pkg}User::list_role",
-        reply_preview       => "${pkg}Comment::reply_preview",
+        'list_pings'               => "${pkg}TrackBack::list",
+        'list_entries'             => "${pkg}Entry::list",
+        'list_pages'               => "${pkg}Page::list",
+        'list_comments'            => "${pkg}Comment::list",
+        'list_authors'             => "${pkg}User::list",
+        'list_assets'              => "${pkg}Asset::list",
+        'list_cat'                 => "${pkg}Category::list",
+        'list_blogs'               => "${pkg}Blog::list",
+        'list_associations'        => "${pkg}User::list_association",
+        'list_roles'               => "${pkg}User::list_role",
+        reply_preview              => "${pkg}Comment::reply_preview",
         'recover_profile_password' => "${pkg}User::recover_profile_password",
     };
 }
