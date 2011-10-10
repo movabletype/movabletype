@@ -706,7 +706,12 @@
       customizable_fields.push('assets');
       var default_fields = [<mt:loop name="disp_prefs_default_fields" glue=",">'<mt:var name="name" escape="js">'</mt:loop>];
       
-      function saveEntryFieldOptions(prefs) {
+      function saveEntryFieldOptions(options) {
+          var defaults = {
+              data: '',
+              sort_only: false
+          };
+          var opts = $.extend(defaults, options);
           var mode = jQuery('#entry_prefs').val();
           var param = '__mode=save_entry_prefs'
               + '&_type=<mt:var name="object_type">'
@@ -714,7 +719,8 @@
               + '&entry_prefs=' + mode
               + '&magic_token=<mt:var name="magic_token">';
           if (mode == 'Custom') {
-              param += '&custom_prefs=' + prefs;
+              param += '&custom_prefs=' + opts.data;
+              param += '&sort_only=' + opts.sort_only;
           }
           var params = { uri: '<mt:var name="script_url">', method: 'POST', arguments: param };
           TC.Client.call(params);
@@ -980,7 +986,11 @@
           window.open('<mt:var name="script_url">?__mode=pinged_urls&entry_id=<mt:var name="id" escape="html">&blog_id=<mt:var name="blog_id" escape="html">', 'urls', 'width=400,height=400,resizable=yes,scrollbars=yes');
       }
 
-      function sendEntryPrefs () {
+      function sendEntryPrefs (options) {
+          var defaults = {
+              sort_only: false
+          };
+          var opts = $.extend(defaults, options);
           var rex = RegExp('(.*)-field$');
           var data = [ 'title', 'text' ];
           var order = jQuery('#sortable').sortable('toArray');
@@ -996,7 +1006,10 @@
               data.push(this.value);
           });
 
-          saveEntryFieldOptions(data.toString());
+          saveEntryFieldOptions({
+              data: data.toString(),
+              sort_only: opts.sort_only
+          });
       }
 
     /* ]]> */
@@ -1253,7 +1266,7 @@
         handle: '.field-header',
         containment: 'document',
         update: function () {
-            sendEntryPrefs();
+            sendEntryPrefs({ sort_only: true });
         }
     });
 

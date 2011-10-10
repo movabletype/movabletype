@@ -2154,12 +2154,28 @@ sub pinged_urls {
 
 sub save_entry_prefs {
     my $app   = shift;
+
     my $perms = $app->permissions
         or return $app->error( $app->translate("No permissions") );
     $app->validate_magic() or return;
     my $q          = $app->param;
     my $prefs      = $app->_entry_prefs_from_params;
+    my $disp       = $q->param('entry_prefs');
+    my $sort_only  = $q->param('sort_only');
     my $prefs_type = $q->param('_type') . '_prefs';
+
+    if ( $disp && lc $disp eq 'custom' && lc $sort_only eq 'true' ) {
+        my $current = $perms->$prefs_type;
+        my %current = map { $_ => 1 } split ',', $current;
+        my @new     = split ',', $prefs;
+        $prefs = '';
+        foreach my $p ( @new ) {
+            $prefs .= ',' if $prefs;
+            $prefs .= $p;
+            $prefs .= ':s' unless $current{$p};
+        }
+    }
+
     $perms->$prefs_type($prefs);
     $perms->save
         or return $app->error(
