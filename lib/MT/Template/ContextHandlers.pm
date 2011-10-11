@@ -5795,7 +5795,7 @@ JSCRIPT
     if ($constrains =~ m/symbol/) {
         $vs .= << 'JSCRIPT';
             if ( passwd.search(/[!"#$%&'\(\|\)\*\+,-\.\/\\:;<=>\?@\[\]^_`{}~]/) == -1 ) {
-              return "<__trans phrase="Password should contain symbols like $!([{}])#">";
+              return "<__trans phrase="Password should contain symbols like $!()%#">";
             }
 JSCRIPT
 
