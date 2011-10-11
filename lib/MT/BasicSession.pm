@@ -25,6 +25,7 @@ __PACKAGE__->install_properties(
             'kind'  => 1
         },
         datasource => 'session',
+        primary_key => 'id',
     }
 );
 
