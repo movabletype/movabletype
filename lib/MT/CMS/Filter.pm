@@ -147,8 +147,9 @@ sub delete {
 
 sub delete_filters {
     my $app = shift;
-    my $id  = $app->param('id');
-    my @ids = split ',', $id;
+    my @ids  = $app->param('id');
+    # handling either AJAX request and normal request
+    @ids = split ',', join ',', @ids;
     my $res = MT->model('filter')->remove( { id => \@ids } )
         or return $app->json_error(
         MT->translate(
