@@ -743,6 +743,8 @@ sub dialog_post_comment {
     require MT::Sanitize;
     my $spec = $blog->sanitize_spec
         || $app->config->GlobalSanitizeSpec;
+    my $return_args = $app->param('return_args');
+    $return_args =~ s!^\?!! if $return_args;
     my $param = {
         reply_to       => $parent_id,
         commenter_name => MT::Sanitize->sanitize( $parent->author, $spec ),
@@ -755,8 +757,8 @@ sub dialog_post_comment {
         comment_text       => MT::Sanitize->sanitize( $parent->text, $spec ),
         comment_script_url => $app->config('CGIPath')
             . $app->config('CommentScript'),
-        return_url => ( $app->param('return_args')
-            ? $app->base . $app->uri . '?' . $app->param('return_args')
+        return_url => ( $return_args
+            ? $app->base . $app->uri . '?' . $return_args
             : $app->base
                 . $app->uri(
                 mode => 'list',
