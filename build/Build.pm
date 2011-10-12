@@ -215,9 +215,6 @@ sub setup {
 
     # Set the full name to use for the distribution (e.g. MT-3.3b1-fr-r12345-20061225).
     $self->{'export-dir=s'} = "$self->{'pack=s'}-$self->{'stamp=s'}";
-    # Name the exported directory (and archive) with the language.
-    $self->{'export-dir=s'} .= "-$self->{'short-lang=s'}"
-        if $self->{'prod'} || $self->{'alpha=s'} || $self->{'beta=s'} || $self->{'rc=s'};
 }
 
 sub make {
