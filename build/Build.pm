@@ -190,10 +190,10 @@ sub setup {
               : $self->{'rc=s'}    ? "rc$self->{'rc=s'}"
               : '' );
         }
+        push @stamp, $self->{'short-lang=s'}
+            if $self->{'lang-stamp!'};
         # Add repo, date and ldap to the stamp if we are not production.
         unless( $self->{'prod'} ) {
-            push @stamp, $self->{'short-lang=s'}
-                if $self->{'lang-stamp!'};
             if( $self->{'rev!'} ) {
                 push @stamp, lc( fileparse $self->{'repo=s'} );
                 push @stamp, $self->{'revision=s'};
