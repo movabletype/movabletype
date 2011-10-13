@@ -78,9 +78,9 @@ Editor = new Class( Component, {
         log( "setting mode " + mode );
         var html = this.actual ? this.actual.getHTML() : null;
         this.setModeActual( mode );
+        this.reflow();
         if ( defined( html ) && html != null )
             this.actual.setHTML( html );
-        this.reflow();
         return html;
     },
     
