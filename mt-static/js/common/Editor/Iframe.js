@@ -760,8 +760,29 @@ Editor.Iframe = new Class( Component, {
     getSelectedLink: function() {
         var selection = this.getSelection();
         var selectionRange = new SelectionRange( selection );
-        return DOM.getFirstAncestorByTagName( selectionRange.getCommonAncestorContainer(), "a" ) ||
+        var link = DOM.getFirstAncestorByTagName( selectionRange.getCommonAncestorContainer(), "a" ) ||
             DOM.filterElementsByTagName( selectionRange.getNodes(), "a" )[ 0 ];
+
+        if (link && link.href) {
+            var bases = [
+                this.window.location.href,
+                this.window.location.href.replace(/\/[^\/]*$/, '/'),
+                this.window.location.href.replace(/.*\//, ''),
+                this.window.location.href.replace(/.*\/\/[^\/]+/, '')
+            ]
+            for (var i = 0; i < bases.length; i++) {
+                var base = bases[i];
+                if (
+                    (link.href.indexOf(base) != -1)
+                    && (this.getHTML().indexOf(link.href) == -1)
+                ) {
+                    link.setAttribute('href', link.href.substring(base.length));
+                    break;
+                }
+            }
+        }
+
+        return link;
     },
 
 
