@@ -475,7 +475,7 @@ sub url {
     my $asset = shift;
     my $url   = $asset->SUPER::url(@_);
     return $url
-        if defined($url) && ( $url !~ m!^\%! ) && ( $url =~ m!^https://! );
+        if defined($url) && ( $url !~ m!^\%! ) && ( $url =~ m!^https?://! );
 
     $url = $asset->cache_property(
         sub {
