@@ -422,7 +422,8 @@ sub _send_signup_confirmation {
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
-    my $entry = MT::Entry->load($entry_id)
+    my $entry;
+    $entry = MT::Entry->load($entry_id)
         if $entry_id;
     my $author = $entry ? $entry->author : q();
 
