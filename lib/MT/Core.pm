@@ -1903,10 +1903,10 @@ BEGIN {
 
             # User Lockout
             'UserLockoutLimit'           => { default => 6 },
-            'UserLockoutDuration'        => { default => 1800 },
+            'UserLockoutInterval'        => { default => 1800 },
             'IPLockoutLimit'             => { default => 10 },
-            'IPLockoutDuration'          => { default => 1800 },
-            'FailedLoginExpireFrequency' => { default => 86400 },
+            'IPLockoutInterval'          => { default => 1800 },
+            'FailedLoginExpirationFrequency' => { default => 86400 },
             'LockoutIPWhitelist'         => undef,
             'LockoutNotifyTo'            => undef,
         },
@@ -2195,7 +2195,7 @@ sub load_core_tasks {
         },
         'CleanExpiredFailedLogin' => {
             label     => 'Remove expired lockout data',
-            frequency => $cfg->FailedLoginExpireFrequency,
+            frequency => $cfg->FailedLoginExpirationFrequency,
             code      => sub {
                 my $app = MT->instance;
                 $app->model('failedlogin')->cleanup($app);

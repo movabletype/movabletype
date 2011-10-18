@@ -531,10 +531,10 @@ sub cfg_system_general {
     }
 
     $param{user_lockout_limit}            = $cfg->UserLockoutLimit;
-    $param{user_lockout_duration}         = $cfg->UserLockoutDuration;
+    $param{user_lockout_interval}         = $cfg->UserLockoutInterval;
     $param{ip_lockout_limit}              = $cfg->IPLockoutLimit;
-    $param{ip_lockout_duration}           = $cfg->IPLockoutDuration;
-    $param{failed_login_expire_frequency} = $cfg->FailedLoginExpireFrequency;
+    $param{ip_lockout_interval}           = $cfg->IPLockoutInterval;
+    $param{failed_login_expiration_frequency} = $cfg->FailedLoginExpirationFrequency;
     ( $param{lockout_ip_address_whitelist} = $cfg->LockoutIPWhitelist )
         =~ s/,/\n/g;
 
@@ -649,9 +649,9 @@ sub save_cfg_system_general {
             regex => qr/\A\s*(\d+)\s*\z/,
         },
         {
-            key   => 'user_lockout_duration',
-            cfg   => 'UserLockoutDuration',
-            label => 'User lockout duration',
+            key   => 'user_lockout_interval',
+            cfg   => 'UserLockoutInterval',
+            label => 'User lockout interval',
             regex => qr/\A\s*(\d+)\s*\z/,
         },
         {
@@ -661,15 +661,15 @@ sub save_cfg_system_general {
             regex => qr/\A\s*(\d+)\s*\z/,
         },
         {
-            key   => 'ip_lockout_duration',
-            cfg   => 'IPLockoutDuration',
-            label => 'IP address lockout duration',
+            key   => 'ip_lockout_interval',
+            cfg   => 'IPLockoutInterval',
+            label => 'IP address lockout interval',
             regex => qr/\A\s*(\d+)\s*\z/,
         },
         {
-            key   => 'failed_login_expire_frequency',
-            cfg   => 'FailedLoginExpireFrequency',
-            label => 'Failed login expire frequency',
+            key   => 'failed_login_expiration_frequency',
+            cfg   => 'FailedLoginExpirationFrequency',
+            label => 'Failed login expiration frequency',
             regex => qr/\A\s*(\d+)\s*\z/,
         },
         {

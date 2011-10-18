@@ -15,17 +15,17 @@ function smarty_function_mtpasswordvalidation($args, &$ctx) {
     $vs .= <<< JSCRIPT
         function verify_password(username, passwd) {
           if (passwd.length < $min_length) {
-            return "<__trans phrase="Password should be longer then [_1] characters" params="$min_length">";
+              return "<__trans phrase="Password should be longer than [_1] characters" params="$min_length">";
           }
           if (passwd.indexOf(username) > -1) {
-            return "<__trans phrase="Password should not include your user name">";
+              return "<__trans phrase="Password should not include your Username">";
           }
 JSCRIPT;
 
     if (strpos($constrains, "letternumber") !== false) {
         $vs .= <<< JSCRIPT
             if ((passwd.search(/[a-zA-Z]/) == -1) || (passwd.search(/\d/) == -1)) {
-              return "<__trans phrase="Password should include letters and numbers">";
+                return "<__trans phrase="Password should include letters and numbers">";
             }
 JSCRIPT;
 
@@ -33,7 +33,7 @@ JSCRIPT;
     if (strpos($constrains,  "upperlower") !== false) {
         $vs .= <<< JSCRIPT
             if (( passwd.search(/[a-z]/) == -1) || (passwd.search(/[A-Z]/) == -1)) {
-              return "<__trans phrase="Password should include lower and upper letters">";
+                return "<__trans phrase="Password should include lowercase and uppercase letters">";
             }
 JSCRIPT;
 
@@ -41,7 +41,7 @@ JSCRIPT;
     if (strpos($constrains, "symbol") !== false) {
         $vs .= <<< JSCRIPT
             if ( passwd.search(/[!"#$%&'\(\|\)\*\+,-\.\/\\:;<=>\?@\[\]^_`{}~]/) == -1 ) {
-              return "<__trans phrase="Password should contain symbols like $!([{}])#">";
+                return "<__trans phrase="Password should contain symbols such as #!$%">";
             }
 JSCRIPT;
 

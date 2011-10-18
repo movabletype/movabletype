@@ -20,7 +20,7 @@ sub is_locked_out_ip {
 
     my $count = $app->model('failedlogin')->count(
         {   remote_ip => $remote_ip,
-            start     => [ time - $app->config->IPLockoutDuration, undef ]
+            start     => [ time - $app->config->IPLockoutInterval, undef ]
         },
         { range => { start => 1, } }
     );
@@ -36,7 +36,7 @@ sub locked_out_ip_recovery_time {
 
     my $old = $app->model('failedlogin')->load(
         {   remote_ip => $remote_ip,
-            start     => [ time - $app->config->IPLockoutDuration, undef ]
+            start     => [ time - $app->config->IPLockoutInterval, undef ]
         },
         {   range     => { start => 1, },
             sort      => 'start',
@@ -45,7 +45,7 @@ sub locked_out_ip_recovery_time {
         }
     ) or return 0;
 
-    $old->start + $app->config->IPLockoutDuration;
+    $old->start + $app->config->IPLockoutInterval;
 }
 
 sub is_locked_out_user {
@@ -176,7 +176,7 @@ sub _insert_failedlogin {
     if ($author_id) {
         my $count = $app->model('failedlogin')->count(
             {   author_id => $author_id,
-                start => [ time - $app->config->UserLockoutDuration, undef ]
+                start => [ time - $app->config->UserLockoutInterval, undef ]
             },
             { range => { start => 1, } }
         );
@@ -347,7 +347,7 @@ sub unlock {
     my $app = MT->instance;
     $app->log(
         {   message => $app->translate(
-                'User has been recovered from locked out. Username: [_1]',
+                'User has been unlocked. Username: [_1]',
                 $user->name
             ),
             level    => MT::Log::SECURITY(),

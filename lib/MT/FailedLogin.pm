@@ -37,12 +37,12 @@ sub cleanup {
         if !$app->config->IPLockoutLimit
             && !$app->config->UserLockoutLimit;
 
-    my $ip_duration     = $app->config->IPLockoutDuration;
-    my $author_duration = $app->config->UserLockoutDuration;
-    my $duration
-        = $ip_duration > $author_duration ? $ip_duration : $author_duration;
+    my $ip_interval     = $app->config->IPLockoutInterval;
+    my $author_interval = $app->config->UserLockoutInterval;
+    my $interval
+        = $ip_interval > $author_interval ? $ip_interval : $author_interval;
 
-    $class->remove( { start => [ undef, time - $duration ] },
+    $class->remove( { start => [ undef, time - $interval ] },
         { range => { start => 1, } } );
 }
 

@@ -5795,7 +5795,7 @@ JSCRIPT
     if ($constrains =~ m/symbol/) {
         $vs .= << 'JSCRIPT';
             if ( passwd.search(/[!"#$%&'\(\|\)\*\+,-\.\/\\:;<=>\?@\[\]^_`{}~]/) == -1 ) {
-              return "<__trans phrase="Password should contain symbols like $!()%#">";
+              return "<__trans phrase="Password should contain symbols such as #!$%">";
             }
 JSCRIPT
 
@@ -5827,15 +5827,15 @@ JSCRIPT
         }
         function verify_password_install() {
             var form = document.forms["$form_id"];
-            if (form.addEventListener){                 
+            if (form.addEventListener){
                     form.addEventListener('submit', verify_form_password, false); 
-            } else if (form.attachEvent){                       
+            } else if (form.attachEvent){
                     form.attachEvent('onsubmit', verify_form_password);
             }
         }
-        if (window.addEventListener){   
+        if (window.addEventListener){
             window.addEventListener('load', verify_password_install, false); 
-        } else if (window.attachEvent){ 
+        } else if (window.attachEvent){
             window.attachEvent('onload', verify_password_install );
         }
 JSCRIPT
@@ -5855,18 +5855,18 @@ sub _hdlr_password_validation_rules {
     my ( $ctx ) = @_;
 
     my $app = MT->instance;
-    
+
     my $constrains = $app->config('UserPasswordValidation');
     my $min_length = $app->config('UserPasswordMinLength');
 
     my $msg = $app->translate("minimum length of [_1]", $min_length);
-    $msg .= $app->translate(', upper and lower letters')
+    $msg .= $app->translate(', uppercase and lowercase letters')
         if $constrains =~ m/upperlower/;
     $msg .= $app->translate(', letters and numbers')
         if $constrains =~ m/letternumber/;
-    $msg .= $app->translate(', special symbols (e.g. #!$%)')
+    $msg .= $app->translate(', symbols (such as #!$%)')
         if $constrains =~ m/symbol/;
-    
+
     return $msg;
 }
 
