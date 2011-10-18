@@ -184,7 +184,7 @@ sub export {
             || ( $perms && $perms->can_do('export_addressbook') );
     $app->validate_magic() or return;
 
-    $| = 1;
+    local $| = 1;
     my $enc = $app->config('ExportEncoding');
     $enc = $app->config('LogExportEncoding') if ( !$enc );
     $enc = ( $app->charset || '' ) if ( !$enc );
