@@ -1502,11 +1502,27 @@ sub make_commenter_session {
     );
     $app->bake_cookie(%name_kookee);
 
-    my ( $state, $commenter ) = $app->_commenter_state( $app->blog, $sess_obj, $user );
+    my $blog = $app->blog;
+    my ( $state, $commenter ) = $app->_commenter_state( $blog, $sess_obj, $user );
+    my $blog_id   = $blog ? $blog->id : '0';
+    my $blog_path = MT->config->UserSessionCookiePath;
+    if ( $blog_path =~ m/<\$?mt/i ) {    # hey, a MT tag! lets evaluate
+        require MT::Builder;
+        require MT::Template::Context;
+        my $builder = MT::Builder->new;
+        my $ctx     = MT::Template::Context->new;
+        $ctx->stash(blog    => $blog);
+        $ctx->stash(blog_id => $blog_id);
+        my $tokens = $builder->compile( $ctx, $blog_path );
+        die $ctx->error( $builder->errstr ) unless defined $tokens;
+        $blog_path = $builder->build( $ctx, $tokens );
+        die $ctx->error( $builder->errstr ) unless defined $blog_path;
+    }
+
     my %user_session_kookee = (
         -name  => $app->commenter_session_cookie_name,
         -value => $app->bake_user_state_cookie($state),
-        -path  => '/',
+        -path  => $blog_path,
     );
     $app->bake_cookie(%user_session_kookee);
     return $session_key;
