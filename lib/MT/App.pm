@@ -1334,21 +1334,6 @@ sub get_commenter_session {
 
     my $session_key;
 
-    my $blog = $app->blog;
-    if ($blog) {
-        my $auths = $blog->commenter_authenticators || '';
-        if ( $auths =~ /MovableType/ ) {
-
-            # First, check for a real MT user login. If one exists,
-            # return that as the commenter identity
-            my ( $user, $first_time ) = $app->login();
-            if ($user) {
-                my $sess = $app->session;
-                return ( $sess, $user );
-            }
-        }
-    }
-
     my %cookies     = $app->cookies();
     my $cookie_name = $app->commenter_session_cookie_name;
     if ( !$cookies{$cookie_name} ) {
