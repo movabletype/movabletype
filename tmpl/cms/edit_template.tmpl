@@ -862,6 +862,7 @@ function syncEditor() {
 function saveTemplatePrefs( sync ) {
   jQuery.ajax({
     type: 'POST',
+    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
     async: false,
     url: '<mt:var name="script_url">',
     dataType: 'json',

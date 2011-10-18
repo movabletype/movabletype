@@ -352,6 +352,7 @@ function loginAgain(fn) {
             dialog.find('#msg-block').empty();
             jQuery.ajax({
               type: 'POST',
+              contentType: 'application/x-www-form-urlencoded; charset=utf-8',
               async: false,
               url: '<mt:var name="script_url">',
               dataType: 'json',
@@ -549,6 +550,7 @@ function cancelFilterRenameField() {
 function renameFilter(index, fid, name) {
   jQuery.ajax({
     type: 'POST',
+    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
     url: '<mt:var name="script_url">',
     dataType: 'json',
     data: {
@@ -601,6 +603,7 @@ function removeFilter(element) {
   else {
     jQuery.ajax({
       type: 'POST',
+      contentType: 'application/x-www-form-urlencoded; charset=utf-8',
       url: '<mt:var name="script_url">',
       dataType: 'json',
       data: {
@@ -744,6 +747,7 @@ function saveListPrefs() {
 
   jQuery.ajax({
     type: 'POST',
+    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
     url: '<mt:var name="script_url">',
     dataType: 'json',
     data: {
@@ -833,6 +837,7 @@ function renderList(mode, columns, values, limit, page ) {
   jQuery('#msg-block div.msg-error.filtered-list-msg').remove()
   jQuery.ajax({
     type: 'POST',
+    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
     url: '<mt:var name="script_url">',
     dataType: 'json',
     data: params,
