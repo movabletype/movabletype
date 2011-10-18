@@ -2110,30 +2110,6 @@ sub login {
 
         # Login valid
         if ($new_login) {
-
-            my $commenter_blog_id = $app->_is_commenter($author);
-            return unless defined $commenter_blog_id;
-
-            # $commenter_blog_id
-            #  0: user has more permissions than comment
-            #  N: user has only comment permission on some blog
-            # -1: user has only system permissions
-            # undef: user does not have any permission
-
-            if ( $commenter_blog_id >= 0 ) {
-
-                # Presence of 'password' indicates this is a login request;
-                # do session/cookie management.
-                $app->make_commenter_session($author);
-
-                if ($commenter_blog_id) {
-                    my $url = $app->commenter_loggedin( $author,
-                        $commenter_blog_id );
-                    return $app->redirect($url);
-                }
-            }
-            ## commenter_blog_id can be -1 - user who has only system permissions
-
             $app->start_session( $author, $ctx->{permanent} ? 1 : 0 );
             $app->request( 'fresh_login', 1 );
             $app->log(
