@@ -5769,10 +5769,10 @@ sub _hdlr_password_validation_script {
     $vs .= << "JSCRIPT";
         function verify_password(username, passwd) {
           if (passwd.length < $min_length) {
-            return "<__trans phrase="Password should be longer then [_1] characters" params="$min_length">";
+            return "<__trans phrase="Password should be longer than [_1] characters" params="$min_length">";
           }
           if (passwd.indexOf(username) > -1) {
-            return "<__trans phrase="Password should not include your user name">";
+            return "<__trans phrase="Password should not include your Username">";
           }
 JSCRIPT
 
@@ -5787,7 +5787,7 @@ JSCRIPT
     if ($constrains =~ m/upperlower/) {
         $vs .= << 'JSCRIPT';
             if (( passwd.search(/[a-z]/) == -1) || (passwd.search(/[A-Z]/) == -1)) {
-              return "<__trans phrase="Password should include lower and upper letters">";
+              return "<__trans phrase="Password should include lowercase and uppercase letters">";
             }
 JSCRIPT
 

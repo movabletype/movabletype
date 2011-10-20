@@ -638,7 +638,7 @@ sub save_cfg_system_general {
         {
             key    => 'lockout_notify_ids',
             cfg    => 'LockoutNotifyTo',
-            label  => 'Notify Email',
+            label  => 'Recipients for lockout notification',
             regex  => qr/\A([\d,;]*)\z/,
             filter => sub{ $_[0] =~ s/,/;/g },
         },
@@ -664,12 +664,6 @@ sub save_cfg_system_general {
             key   => 'ip_lockout_interval',
             cfg   => 'IPLockoutInterval',
             label => 'IP address lockout interval',
-            regex => qr/\A\s*(\d+)\s*\z/,
-        },
-        {
-            key   => 'failed_login_expiration_frequency',
-            cfg   => 'FailedLoginExpirationFrequency',
-            label => 'Failed login expiration frequency',
             regex => qr/\A\s*(\d+)\s*\z/,
         },
         {

@@ -83,6 +83,19 @@ $Lexicon_ja = array(
 ## php/lib/function.mtinclude.php
 	'\'parent\' modifier cannot be used with \'[_1]\'' => '\'parent\'属性を[_1]属性と同時に指定することは出来ません。',
 
+## php/lib/function.mtpasswordvalidation.php
+	'Password should be longer than [_1] characters' => 'パスワードは最低[_1]文字以上です。',
+	'Password should not include your Username' => 'パスワードにユーザー名を含む事は出来ません。',
+	'Password should include letters and numbers' => 'パスワードは文字と数字を含める必要があります。',
+	'Password should include lowercase and uppercase letters' => 'パスワードは大文字と小文字を含める必要があります。',
+	'Password should contain symbols such as #!$%' => 'パスワードは記号を含める必要があります。',
+
+## php/lib/function.mtpasswordvalidationrule.php
+	'minimum length of [_1]' => '[_1]文字以上を指定してください。',
+	', uppercase and lowercase letters' => '、大文字と小文字',
+	', letters and numbers' => '、文字と数字',
+	', symbols (such as #!$%)' => '、記号',
+
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
 
