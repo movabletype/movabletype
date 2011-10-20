@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id$
+# $Id:$
 
 package MT::L10N::ja;
 use strict;
@@ -157,7 +157,7 @@ use vars qw( @ISA %Lexicon );
 	'Storable is optional; it is required by certain MT plugins available from third parties.' => 'Storableは必須ではありません。外部プラグインの利用の際に必要となる場合があります。',
 	'Crypt::DSA is optional; if it is installed, comment registration sign-ins will be accelerated.' => 'Crypt::DSAのインストールは必須ではありません。インストールされていると、コメント投稿時のサインインが高速になります。',
 	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.' => 'Crypt::SSLeayはAOLやYahoo!などのSSLを利用するOpenIDのコメント投稿者を認証するために必要となります。',
- 'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan as OpenID.' => 'Yahoo! Japanによるコメント投稿者のOpenID認証を許可する場合に必要となります。',
+	'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan as OpenID.' => 'Yahoo! Japanによるコメント投稿者のOpenID認証を許可する場合に必要となります。',
 	'MIME::Base64 is required in order to enable comment registration.' => 'MIME::Base64のインストールは必須ではありません。コメントの認証機能を利用する場合に必要となります。',
 	'XML::Atom is required in order to use the Atom API.' => 'XML::Atomのインストールは必須ではありません。Atom APIを利用する場合に必要となります。',
 	'Cache::Memcached and memcached server/daemon is required in order to use memcached as caching mechanism used by Movable Type.' => 'Cache::Memcachedのインストールは必須ではありません。Movable Type のキャッシング機能として memcached サーバーを利用する場合に必要となります。',
@@ -578,6 +578,7 @@ use vars qw( @ISA %Lexicon );
 	'Permission denied.' => '権限がありません。',
 	'Warnings and Log Messages' => '警告とメッセージ',
 	'Removed [_1].' => '[_1]を削除しました。',
+	'Can\'t load entry #[_1].' => 'ブログ記事: [_1]をロードできませんでした。',
 
 ## lib/MT/App/ActivityFeeds.pm
 	'Error loading [_1]: [_2]' => '[_1]をロードできませんでした: [_2]',
@@ -746,12 +747,13 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t load template' => 'テンプレートをロードできませんでした。',
 	'Failed comment attempt by pending registrant \'[_1]\'' => 'まだ登録を完了していないユーザー\'[_1]\'がコメントしようとしました。',
 	'Registered User' => '登録ユーザー',
+	'Invalid authentication parameter' => '無効な認証用パラメータです。',
 	'The sign-in attempt was not successful; please try again.' => 'サインインできませんでした。',
-	'Can\'t load entry #[_1].' => 'ブログ記事: [_1]をロードできませんでした。',
 	'No entry was specified; perhaps there is a template problem?' => 'ブログ記事が指定されていません。テンプレートに問題があるかもしれません。',
 	'Somehow, the entry you tried to comment on does not exist' => 'コメントしようとしたブログ記事がありません。',
 	'Invalid entry ID provided' => 'ブログ記事のIDが不正です。',
 	'All required fields must have valid values.' => '必須フィールドのすべてに正しい値を設定してください。',
+	'Failed to verify current password.' => '現在のパスワードを確認できません。',
 	'Commenter profile has successfully been updated.' => 'コメント投稿者のユーザー情報を更新しました。',
 	'Commenter profile could not be updated: [_1]' => 'コメント投稿者のユーザー情報を更新できませんでした: [_1]',
 
@@ -996,7 +998,6 @@ use vars qw( @ISA %Lexicon );
 	'Bad AuthenticationModule config' => 'AuthenticationModuleの設定が正しくありません',
 
 ## lib/MT/Auth/MT.pm
-	'Failed to verify current password.' => '現在のパスワードを確認できません。',
 
 ## lib/MT/Auth/OpenID.pm
 	'Couldn\'t save the session' => 'セッションを保存できませんでした。',
@@ -1110,6 +1111,7 @@ use vars qw( @ISA %Lexicon );
 	'Subscriber \'[_1]\' (ID:[_2]) deleted from address book by \'[_3]\'' => '\'[_3]\'がアドレス帳から\'[_1]\'(ID:[_2])を削除しました。',
 
 ## lib/MT/CMS/Asset.pm
+	'(user deleted)' => '(削除されました)',
 	'Files' => 'ファイル',
 	'Extension changed from [_1] to [_2]' => '拡張子が[_1]から[_2]に変更されました',
 	'Upload File' => 'ファイルアップロード',
@@ -1231,14 +1233,12 @@ use vars qw( @ISA %Lexicon );
 	'Invalid parameter' => '不正なパラメータです。',
 	'Load failed: [_1]' => 'ロードできませんでした: [_1]',
 	'(no reason given)' => '(原因は不明)',
-	'(user deleted)' => '(削除されました)',
 	'No Name' => '名前なし',
 	'Notification List' => '通知リスト',
 	'Removing tag failed: [_1]' => 'タグを削除できませんでした: [_1]',
 	'Loading MT::LDAP failed: [_1].' => 'MT::LDAPの読み込みに失敗しました: [_1]',
 	'Removing [_1] failed: [_2]' => '[_1]を削除できませんでした: [_2]',
 	'System templates can not be deleted.' => 'システムテンプレートは削除できません。',
-	'Can\'t load [_1] #[_1].' => '[_1](ID: [_2])がロードできませんでした。',
 	'Saving snapshot failed: [_1]' => 'スナップショットの保存に失敗しました: [_1]',
 
 ## lib/MT/CMS/Dashboard.pm
@@ -1411,10 +1411,10 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/Tools.pm
 	'Password Recovery' => 'パスワードの再設定',
-	'User not found' => 'ユーザーが見つかりませんでした。',
 	'Error sending mail ([_1]); please fix the problem, then try again to recover your password.' => 'メールを送信できませんでした。問題を解決してから再度パスワードの再設定を行ってください: [_1]',
 	'Password reset token not found' => 'パスワードをリセットするためのトークンが見つかりませんでした。',
 	'Email address not found' => 'メールアドレスが見つかりませんでした。',
+	'User not found' => 'ユーザーが見つかりませんでした。',
 	'Your request to change your password has expired.' => 'パスワードのリセットを始めてから決められた時間を経過してしまいました。',
 	'Invalid password reset request' => '不正なリクエストです。',
 	'Please confirm your new password' => '新しいパスワードを確認してください。',
@@ -2178,12 +2178,12 @@ use vars qw( @ISA %Lexicon );
 	'An error occured during migrating a blog\'s site_url: [_1]' => 'ブログのサイトURLの移行中にエラーが発生しました: [_1]',
 	'Moved blog [_1] ([_2]) under website [_3]' => '[_1]ブログ([_2])を[_3]ウェブサイト下に移動しました',
 	'Removing technorati update-ping service from [_1] (ID:[_2]).' => 'ブログ[_1](ID:[_2])の更新通知先からテクノラティを削除しました。',
+	'Expiring cached MT News widget...' => 'MTニュースのキャッシュを破棄しています...',
+	'Recovering type of author...' => 'コメンターの権限を再設定しています...',
 	'Merging dashboard settings...' => 'ダッシュボート設定を移行しています...',
 	'Classifying blogs...' => 'ブログを分類しています...',
 	'Rebuilding permissions...' => '権限を再構築しています...',
- 'Assigning ID of author for entries...' => '記事に作成者のIDを設定しています...',
- 'Expiring cached MT News widget...' => 'MTニュースのキャッシュを破棄しています...',
- 'Recovering type of author...' => 'コメンターの権限を再設定しています...',
+	'Assigning ID of author for entries...' => '記事に作成者のIDを設定しています...',
 
 ## lib/MT/Util.pm
 	'moments from now' => '今から',
@@ -2867,7 +2867,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] Root' => '[_1]パス',
 	'Note: Changing your site root requires a complete publish of your site.' => '注: サイトパスを変更した場合にはブログの再構築が必要です。',
 	'The path where your index files will be published. Do not end with \'/\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog' => 'インデックスファイルを配置するパスです。末尾には\'/\'を含めません。例: /home/mt/public_html/blog あるいは C:\www\public_html\blog',
-	'The path where your index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\\\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/mt/public_html or C:\www\public_html' => 'インデックスファイルを配置するパスです。絶対パス(\'/\'または\'C:\\\'で始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。例: /home/mt/public_html あるいは C:\www\public_html',
+	'The path where your index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/mt/public_html or C:\www\public_html' => 'インデックスファイルを配置するパスです。絶対パス(\'/\'または\'C:\\'で始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。例: /home/mt/public_html あるいは C:\www\public_html',
 	'Advanced Archive Publishing' => '高度な公開の設定',
 	'Select this option only if you need to publish your archives outside of your Blog Root.' => 'アーカイブをサイトパス以外で公開するときにこのオプションを選択してください。',
 	'Publish archives outside of Blog Root' => 'アーカイブをブログパスとは別のパスで公開する',
@@ -4281,6 +4281,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/list_widget.tmpl
 	'Manage [_1] Widgets' => '[_1]ウィジェットの管理',
+	'Manage Global Widgets' => 'グローバルウィジェットの管理',
 	'Delete selected Widget Sets (x)' => '選択されたウィジェットセットを削除 (x)',
 	'Helpful Tips' => 'ヘルプ',
 	'To add a widget set to your templates, use the following syntax:' => 'テンプレートにウィジェットセットを追加するときは以下の構文を利用します。',
@@ -4289,7 +4290,6 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully deleted the selected widget set(s) from your blog.' => '選択されたウィジェットセットを削除しました。',
 	'No Widget Sets could be found.' => 'ウィジェットセットが見つかりませんでした。',
 	'Create widget template' => 'ウィジェットテンプレートの作成',
-	'Manage Global Widgets' => 'グローバルウィジェットの管理',
 
 ## tmpl/cms/login.tmpl
 	'Sign in' => 'サインイン',
@@ -4730,7 +4730,6 @@ use vars qw( @ISA %Lexicon );
 	'The wizard was unable to save the [_1] configuration file.' => '[_1]の構成ファイルを保存できませんでした。',
 	'Confirm that your [_1] home directory (the directory that contains mt.cgi) is writable by your web server and then click \'Retry\'.' => '[_1]ディレクトリ(mt.cgiを含んでいる場所)がウェブサーバーによって書き込めるか確認して、\'再実行\'をクリックしてください。',
 	'Congratulations! You\'ve successfully configured [_1].' => '[_1]の設定を完了しました。',
-	'Your configuration settings have been written to the following file:' => '設定内容を以下のファイルに書き込みました。',
 	'To change the settings, click the \'Back\' button below.' => '設定を変更する場合は、以下の\'戻る\'ボタンをクリックしてください。',
 	'Show the mt-config.cgi file generated by the wizard' => 'ウィザードで作成されたmt-config.cgiを表示する',
 	'The mt-config.cgi file has been created manually.' => 'mt-config.cgiを手動で作成しました。',
@@ -4838,7 +4837,7 @@ use vars qw( @ISA %Lexicon );
 	'publishes a comment' => 'コメントの公開時',
 	'publishes a TrackBack' => 'トラックバックの公開時',
 	'rebuild indexes.' => 'インデックスを再構築する',
-	'rebuild indexes and send pings.' => 'インデックスを再構築して更新情報を送信する',
+	'rebuild indexes and send pings.' => 'インデックスを再構築して更新pingを送信する',
 
 ## plugins/MultiBlog/tmpl/blog_config.tmpl
 	'When' => ' ',
@@ -5045,6 +5044,9 @@ use vars qw( @ISA %Lexicon );
 	'Keywords to Moderate' => '公開を保留するキーワード',
 	'Keywords to Junk' => 'スパムにするキーワード',
 
+
 );
+
+## New words: 13
 
 1;
