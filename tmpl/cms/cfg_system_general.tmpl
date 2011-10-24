@@ -191,9 +191,10 @@ function validate (f) {
      id="ip-lockout"
      label="<__trans phrase="IP address lockout policy">"
      show_hint="0">  
-    <__trans phrase="An IP address will be locked out if [_1] or more incorrect login attempts are made within [_2] seconds from the same IP address." params="<input type="text" name="ip_lockout_limit" id="ip-lockout-limit" class="text num" maxlength="3" value="<mt:var name="ip_lockout_limit" escape="html">" />%%<input type="text" name="ip_lockout_interval" id="ip-lockout-interval" class="text num" maxlength="5" value="<mt:var name="ip_lockout_interval" escape="html">" />">
-    <p><__trans phrase="However, the following IP addresses are 'whitelisted' and will never be locked out:"></p>
-    <textarea  placeholder="127.0.0.1, 192.168.0.0" name="lockout_ip_address_whitelist" id="lockout-ip-address-whitelist" class="text low"><mt:var name="lockout_ip_address_whitelist" escape="html"></textarea><div class="hint"><__trans phrase="The list of IP addresses. If a remote IP address is included in this list, the failed login will not recorded. You can specify multiple IP addresses separated by commas or line breaks."></div>
+    <p><__trans phrase="An IP address will be locked out if [_1] or more incorrect login attempts are made within [_2] seconds from the same IP address." params="<input type="text" name="ip_lockout_limit" id="ip-lockout-limit" class="text num" maxlength="3" value="<mt:var name="ip_lockout_limit" escape="html">" />%%<input type="text" name="ip_lockout_interval" id="ip-lockout-interval" class="text num" maxlength="5" value="<mt:var name="ip_lockout_interval" escape="html">" />"></p>
+    <label for="lockout-ip-address-whitelist"><__trans phrase="However, the following IP addresses are 'whitelisted' and will never be locked out:"><br />
+    <textarea placeholder="127.0.0.1, 192.168.0.0" name="lockout_ip_address_whitelist" id="lockout-ip-address-whitelist" class="text low"><mt:var name="lockout_ip_address_whitelist" escape="html"></textarea></label>
+    <div class="hint"><__trans phrase="The list of IP addresses. If a remote IP address is included in this list, the failed login will not recorded. You can specify multiple IP addresses separated by commas or line breaks."></div>
   </mt:app:setting>
 
 </mtapp:settinggroup>
