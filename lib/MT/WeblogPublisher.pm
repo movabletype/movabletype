@@ -294,7 +294,6 @@ sub rebuild_categories {
         if ($fcb) {
             $fcb->($cat) or last;
         }
-        next unless $param{Force} or $cat->entry_count > 0;
         $mt->_rebuild_entry_archive_type(
             Blog        => $blog,
             Category    => $cat,
