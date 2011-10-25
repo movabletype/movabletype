@@ -98,7 +98,6 @@ jQuery('div.indicator')
 var checked = [];
 var total = 0;
 var dummy = 1;
-var itemlist = [];
 var checksum = '';
 var isdirty = false;
 var indent = 35;
@@ -399,7 +398,6 @@ function addItem(parent, label) {
   var nestLevel = nest.length;
   jQuery('#opt-'+parent).after('<option id="opt-'+id+'" value="'+id+'">'+nestedLabel(nestLevel, label)+'</option>');
 
-  itemlist.push(label);
   dummy++;
   setDirty(true);
   fixZeroStateMessage();
@@ -434,7 +432,6 @@ function removeItems(id) {
 }
 
 function setItemList() {
-  itemlist = [];
   jQuery('#itemlist option').not(':first').remove();
   jQuery('.sortable-item:visible').each(function() {
     var $item = jQuery(this);
@@ -443,7 +440,6 @@ function setItemList() {
     var nest = countNested(id, []);
     var nestLevel = nest.length - 1;
     jQuery('#itemlist').append('<option id="opt-'+id+'" value="'+id+'">'+nestedLabel(nestLevel, label)+'</option>');
-    itemlist.push(label);
   });
 }
 
@@ -701,7 +697,6 @@ function renderItems(data) {
     var nest = countNested(parent, []);
     var nestLevel = nest.length;
     jQuery('#itemlist').append('<option id="opt-'+id+'" value="'+id+'">'+nestedLabel(nestLevel, label)+'</option>');
-    itemlist.push(jQuery(label).text());
   }
   fixZeroStateMessage();
   checksum = data.result.checksum;
