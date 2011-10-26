@@ -95,8 +95,6 @@ jQuery('div.indicator')
     jQuery(this).hide();
   });
 
-var checked = [];
-var total = 0;
 var dummy = 1;
 var checksum = '';
 var isdirty = false;
@@ -682,7 +680,6 @@ function renderItems(data) {
   jQuery('#root').empty();
   jQuery('#itemlist option').not(':first').remove();
   jQuery('<div id="0" class="0 sortable-item" />').hide().appendTo('#root');
-  total = parseInt(data.result.count);
   var objs = data.result.objects;
   var count = objs.length;
   for (var i = 0; i < count; i++) {
