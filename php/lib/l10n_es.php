@@ -7,6 +7,7 @@
 
 global $Lexicon_es;
 $Lexicon_es = array(
+
 ## php/lib/archive_lib.php
 	'Individual' => 'Inidivual',
 	'Page' => 'Página',
@@ -79,6 +80,19 @@ $Lexicon_es = array(
 ## php/lib/function.mtinclude.php
 	'\'parent\' modifier cannot be used with \'[_1]\'' => 'el modificador \'parent\' no puede usarse con \'[_1]\'',
 
+## php/lib/function.mtpasswordvalidation.php
+	'Password should be longer than [_1] characters' => 'La clave debe tener más de [_1] caracteres', # Translate - New
+	'Password should not include your Username' => 'La clave no debe incluir el nombre de usuario', # Translate - New
+	'Password should include letters and numbers' => 'La clave debe incluir letras y números', # Translate - New
+	'Password should include lowercase and uppercase letters' => 'La clave debe incluir letras en mayúsculas y minúsculas', # Translate - New
+	'Password should contain symbols such as #!$%' => 'La clave debe contener símbolos como #!$%', # Translate - New
+
+## php/lib/function.mtpasswordvalidationrule.php
+	'minimum length of [_1]' => 'longitud mínima de [_1]', # Translate - New
+	', uppercase and lowercase letters' => ', letras mayúsculas y minúsculas', # Translate - New
+	', letters and numbers' => ', letras y números', # Translate - New
+	', symbols (such as #!$%)' => ', símbolos (como #!$%)', # Translate - New
+
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
 
@@ -105,6 +119,7 @@ $Lexicon_es = array(
 
 ## php/mt.php
 	'Page not found - [_1]' => 'Página no encontrada - [_1]',
+
 );
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_es;

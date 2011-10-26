@@ -79,6 +79,19 @@ $Lexicon_de = array(
 ## php/lib/function.mtinclude.php
 	'\'parent\' modifier cannot be used with \'[_1]\'' => 'Die Option \'parent\' kann nicht zusammen mit \'[_1]\' verwendet werden.',
 
+## php/lib/function.mtpasswordvalidation.php
+	'Password should be longer than [_1] characters' => 'Passwörter müssen mindestens [_1] Zeichen lang sein', # Translate - New # OK
+	'Password should not include your Username' => 'Ihr Benutzername darf nicht Teil Ihres Passworts sein', # Translate - New # OK
+	'Password should include letters and numbers' => 'Passwörter müssen sowohl Buchstaben als auch Ziffern enthalten', # Translate - New # OK
+	'Password should include lowercase and uppercase letters' => 'Passwörter müssen sowohl Groß- als auch Kleinbuchstaben enthalten', # Translate - New # OK
+	'Password should contain symbols such as #!$%' => 'Passwörter müssen mindestens ein Sonderzeichen wie #!$% enthalten', # Translate - New # OK
+
+## php/lib/function.mtpasswordvalidationrule.php
+	'minimum length of [_1]' => 'Mindestlänge [_1] Zeichen', # Translate - New # OK
+	', uppercase and lowercase letters' => 'Groß- und Kleinbuchstaben', # Translate - New # OK
+	', letters and numbers' => 'Buchstaben und Ziffern', # Translate - New # OK
+	', symbols (such as #!$%)' => 'Sonderzeichen (#!$% usw.)', # Translate - New # OK
+
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
 
@@ -105,6 +118,7 @@ $Lexicon_de = array(
 
 ## php/mt.php
 	'Page not found - [_1]' => 'Seite nicht gefunden - [_1]',
+
 );
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_de;
