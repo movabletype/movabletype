@@ -3226,7 +3226,7 @@ use vars qw( @ISA %Lexicon );
 	'Only to blogs within this system' => 'Seulement vers les blogs de ce système',
 	'Only to websites on the following domains:' => 'Seulement vers les blogs de ces domaines:',
 	'Lockout Settings' => 'Paramètres de verrouillage', # Translate - New
-	q{The system administrators whom you wish to notify if a user or an IP address is locked out.  If no administrators are selected, notifications will be sent to the 'System Email' address.} => q{}, # Translate - New
+	q{The system administrators whom you wish to notify if a user or an IP address is locked out.  If no administrators are selected, notifications will be sent to the 'System Email' address.} => q{Les administrateur système que vous souhaitez voir notifiés si un utilisateur ou une adresse IP est verrouillée. Si aucun des administrateurs n'est sélectioné, les notifications seront envoyées à l'adresse e-mail système.}, # Translate - New
 	'Clear' => 'Effacer',
 	'Select' => 'Sélectionner',
 	'User lockout policy' => 'Politique de verrouillage des utilisateurs', # Translate - New
