@@ -280,7 +280,6 @@ class MT {
         // path to handlers
         $cfg['phplibdir'] = $cfg['phpdir'] . DIRECTORY_SEPARATOR . 'lib';
 
-        $cfg['dbhost'] or $cfg['dbhost'] = 'localhost'; // default to localhost
         $driver = $cfg['objectdriver'];
         $driver = preg_replace('/^DB[ID]::/', '', $driver);
         $driver or $driver = 'mysql';
