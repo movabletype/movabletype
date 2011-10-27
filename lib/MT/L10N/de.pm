@@ -816,6 +816,7 @@ use vars qw( @ISA %Lexicon );
 	'The address [_1] has been unsubscribed.' => 'Die Adresse [_1] wurde entfernt.',
 
 ## lib/MT/App/Comments.pm
+	'Invalid authentication parameter' => 'Ungültige Authentifizierungs-Parameter', # Translate - New # OK
 	'Invalid request' => 'Ungültige Anfrage',
 	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => 'Fehler bei der Zuweisung von Kommentierungsrechten an Benutzer \'[_1] (ID: [_2])\' für Weblog \'[_3] (ID: [_4])\'. Keine geeignete Kommentierungsrolle gefunden.',
 	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => 'Ungültiger Anmeldeversuch von Kommentarautor [_1] an Weblog [_2](ID: [_3]) - native Movable Type-Authentifizierung bei diesem Weblog nicht zulässig.',
