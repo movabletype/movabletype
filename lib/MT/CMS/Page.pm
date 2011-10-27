@@ -64,6 +64,10 @@ sub post_save {
     MT::CMS::Entry::post_save(@_);
 }
 
+sub post_delete {
+    MT::CMS::Entry::post_delete(@_);
+}
+
 sub CMSPostSave_page {
     require MT::CMS::Entry;
     MT::CMS::Entry::post_save(@_);
