@@ -574,7 +574,7 @@ sub remove_cached_files {
                 my $ext      = '.' . $asset->file_ext;
                 $basename =~ s/$ext$//;
                 my $cache_glob = File::Spec->catfile( $cache_dir,
-                    $basename . '-thumb-*' . $ext );
+                    $basename . '-thumb-*-' . $asset->id . $ext );
                 my @files = glob($cache_glob);
                 foreach my $file (@files) {
                     unless ( $fmgr->delete($file) ) {
