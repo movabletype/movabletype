@@ -2206,6 +2206,8 @@ BLOG: for my $blog_id (@id) {
         $tmpl_list ||= MT::DefaultTemplates->templates();
         MT->set_language($current_lang);
 
+        my $current_component = MT->app->{component};
+
     TEMPLATE: for my $val (@$tmpl_list) {
             if ($blog_id) {
 
@@ -2222,8 +2224,10 @@ BLOG: for my $blog_id (@id) {
                 $val->{orig_name} = $val->{name};
                 my $current_lang = MT->current_language;
                 MT->set_language($tmpl_lang);
+                MT->app->{component} = $blog->theme->id if $blog && $blog->theme;
                 $val->{text} = $app->translate_templatized( $val->{text} );
                 MT->set_language($current_lang);
+                MT->app->{component} = $current_component;
             }
 
             my $orig_name = $val->{orig_name};
@@ -2406,9 +2410,13 @@ sub refresh_individual_templates {
     my $tmpl_types = {};
     my $tmpl_ids   = {};
     my $tmpls      = {};
+    my $current_component = MT->app->{component};
+
     foreach my $tmpl (@$tmpl_list) {
+        MT->app->{component} = $blog->theme->id if $blog && $blog->theme;
         $tmpl->{text} = $app->translate_templatized( $tmpl->{text} )
             if ( $tmpl->{type} !~ m/^widgetset$/ );
+        MT->app->{component} = $current_component;
         $tmpl_ids->{ $tmpl->{identifier} } = $tmpl
             if $tmpl->{identifier};
         if ( $tmpl->{type}
