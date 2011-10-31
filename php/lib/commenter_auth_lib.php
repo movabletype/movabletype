@@ -5,30 +5,6 @@
 #
 # $Id$
 
-global $_commenter_auths;
-$provider = new OpenIDCommenterAuth();
-$_commenter_auths[$provider->get_key()] = $provider;
-$provider = new VoxCommenterAuth();
-$_commenter_auths[$provider->get_key()] = $provider;
-$provider = new LiveJournalCommenterAuth();
-$_commenter_auths[$provider->get_key()] = $provider;
-$provider = new TypeKeyCommenterAuth();
-$_commenter_auths[$provider->get_key()] = $provider;
-$provider = new GoogleCommenterAuth();
-$_commenter_auths[$provider->get_key()] = $provider;
-$provider = new YahooCommenterAuth();
-$_commenter_auths[$provider->get_key()] = $provider;
-$provider = new AIMCommenterAuth();
-$_commenter_auths[$provider->get_key()] = $provider;
-$provider = new WordPressCommenterAuth();
-$_commenter_auths[$provider->get_key()] = $provider;
-$provider = new YahooJPCommenterAuth();
-$_commenter_auths[$provider->get_key()] = $provider;
-$provider = new LivedoorCommenterAuth();
-$_commenter_auths[$provider->get_key()] = $provider;
-$provider = new HatenaCommenterAuth();
-$_commenter_auths[$provider->get_key()] = $provider;
-
 function _auth_icon_url($static_path, $author) {
     $auth_type = $author->author_auth_type;
     if (!$auth_type) {
@@ -39,8 +15,7 @@ function _auth_icon_url($static_path, $author) {
         return $static_path . 'images/comment/mt_logo.png';
     }
 
-    global $_commenter_auths;
-    $authenticator = $_commenter_auths[$auth_type];
+    $authenticator = CommenterAuthProviderFactory::get_provider( $auth_type );
     if (!isset($authenticator)) {
         return '';
     }
@@ -52,15 +27,64 @@ function _auth_icon_url($static_path, $author) {
     return $logo;
 }
 
-class BaseCommenterAuthProvider {
-    // Abstract Method (needs override)
-    function get_key() { }
-    function get_label() { }
-    function get_logo() { }
-    function get_logo_small() { }
+interface CommenterAuthProvider {
+    public function get_key();
+    public function get_label();
+    public function get_logo();
+    public function get_logo_small();
 }
 
-class LiveJournalCommenterAuth extends BaseCommenterAuthProvider {
+class CommenterAuthProviderFactory {
+    private static $_commenter_auths = array(
+        'LiveJournal' => 'LiveJournalCommenterAuth',
+        'OpenID'      => 'OpenIDCommenterAuth',
+        'TypeKey'     => 'TypeKeyCommenterAuth',
+        'Google'      => 'GoogleCommenterAuth',
+        'Yahoo'       => 'YahooCommenterAuth',
+        'AIM'         => 'AIMCommenterAuth',
+        'WordPress'   => 'WordPressCommenterAuth',
+        'YahooJP'     => 'YahooJPCommenterAuth',
+        'livedoor'    => 'LivedoorCommenterAuth',
+        'Hatena'      => 'HatenaCommenterAuth',
+        'Vox'         => 'VoxCommenterAuth',
+    );
+
+    private static $_provider = array();
+
+    private function __construct() { }
+
+    public static function get_provider($type) {
+        if (empty($type)) {
+            require_once('class.exception.php');
+            throw new MTException('Illegal commenter auth type');
+        }
+        if (!array_key_exists($type, CommenterAuthProviderFactory::$_commenter_auths)) {
+            require_once('class.exception.php');
+            throw new MTException('Undefined commenter auth type. (' . $type . ')');
+        }
+
+        $class = CommenterAuthProviderFactory::$_commenter_auths[$type];
+        if (!empty($class)) {
+            $instance = new $class;
+            if (!empty($instance) and $instance instanceof CommenterAuthProvider)
+                CommenterAuthProviderFactory::$_provider[$type] = $instance;
+        } else {
+            CommenterAuthProviderFactory::$_provider[$type] = null;
+        }
+
+        return CommenterAuthProviderFactory::$_provider[$type];
+    }
+
+    public static function add_provider($type, $class) {
+        if (empty($type) or empty($class))
+            return null;
+
+        CommenterAuthProviderFactory::$_commenter_auths[$type] = $class;
+        return true;
+    }
+}
+
+class LiveJournalCommenterAuth implements CommenterAuthProvider {
     function get_key() {
         return 'LiveJournal';
     }
@@ -75,7 +99,7 @@ class LiveJournalCommenterAuth extends BaseCommenterAuthProvider {
     }
 }
 
-class VoxCommenterAuth extends BaseCommenterAuthProvider {
+class VoxCommenterAuth implements CommenterAuthProvider {
     function get_key() {
         return 'Vox';
     }
@@ -90,7 +114,7 @@ class VoxCommenterAuth extends BaseCommenterAuthProvider {
     }
 }
 
-class OpenIDCommenterAuth extends BaseCommenterAuthProvider {
+class OpenIDCommenterAuth implements CommenterAuthProvider {
     function get_key() {
         return 'OpenID';
     }
@@ -105,7 +129,7 @@ class OpenIDCommenterAuth extends BaseCommenterAuthProvider {
     }
 }
 
-class TypeKeyCommenterAuth extends BaseCommenterAuthProvider {
+class TypeKeyCommenterAuth implements CommenterAuthProvider {
     function get_key() {
         return 'TypeKey';
     }
@@ -120,7 +144,7 @@ class TypeKeyCommenterAuth extends BaseCommenterAuthProvider {
     }
 }
 
-class GoogleCommenterAuth extends BaseCommenterAuthProvider {
+class GoogleCommenterAuth implements CommenterAuthProvider {
     function get_key() {
         return 'Google';
     }
@@ -135,7 +159,7 @@ class GoogleCommenterAuth extends BaseCommenterAuthProvider {
     }
 }
 
-class YahooCommenterAuth extends BaseCommenterAuthProvider {
+class YahooCommenterAuth implements CommenterAuthProvider {
     function get_key() {
         return 'Yahoo';
     }
@@ -150,7 +174,7 @@ class YahooCommenterAuth extends BaseCommenterAuthProvider {
     }
 }
 
-class AIMCommenterAuth extends BaseCommenterAuthProvider {
+class AIMCommenterAuth implements CommenterAuthProvider {
     function get_key() {
         return 'AIM';
     }
@@ -165,7 +189,7 @@ class AIMCommenterAuth extends BaseCommenterAuthProvider {
     }
 }
 
-class WordPressCommenterAuth extends BaseCommenterAuthProvider {
+class WordPressCommenterAuth implements CommenterAuthProvider {
     function get_key() {
         return 'WordPress';
     }
@@ -180,7 +204,7 @@ class WordPressCommenterAuth extends BaseCommenterAuthProvider {
     }
 }
 
-class YahooJPCommenterAuth extends BaseCommenterAuthProvider {
+class YahooJPCommenterAuth implements CommenterAuthProvider {
     function get_key() {
         return 'YahooJP';
     }
@@ -195,7 +219,7 @@ class YahooJPCommenterAuth extends BaseCommenterAuthProvider {
     }
 }
 
-class LivedoorCommenterAuth extends BaseCommenterAuthProvider {
+class LivedoorCommenterAuth implements CommenterAuthProvider {
     function get_key() {
         return 'livedoor';
     }
@@ -210,7 +234,7 @@ class LivedoorCommenterAuth extends BaseCommenterAuthProvider {
     }
 }
 
-class HatenaCommenterAuth extends BaseCommenterAuthProvider {
+class HatenaCommenterAuth implements CommenterAuthProvider {
     function get_key() {
         return 'Hatena';
     }
