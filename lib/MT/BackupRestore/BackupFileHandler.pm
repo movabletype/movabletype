@@ -30,45 +30,6 @@ sub start_document {
     1;
 }
 
-sub __inspect_root_element {
-    my ($self, $data) = @_;
-
-    my $name  = $data->{LocalName};
-    my $attrs = $data->{Attributes};
-    my $ns    = $data->{NamespaceURI};
-
-    die MT->translate(
-        'Uploaded file was not a valid Movable Type backup manifest file.'
-        )
-        if !(      ( 'movabletype' eq $name )
-                && ( MT::BackupRestore::NS_MOVABLETYPE() eq $ns )
-        );
-
-    #unless ($self->{ignore_schema_conflicts}) {
-    my $schema = $attrs->{'{}schema_version'}->{Value};
-
-    #if (('ignore' ne $self->{schema_version}) && ($schema > $self->{schema_version})) {
-    if ( $schema != $self->{schema_version} ) {
-        $self->{critical} = 1;
-        my $message = MT->translate(
-            'Uploaded file was backed up from Movable Type but the different schema version ([_1]) from the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.',
-            $schema, $self->{schema_version}
-        );
-        MT->log(
-            {   message  => $message,
-                level    => MT::Log::ERROR(),
-                class    => 'system',
-                category => 'restore',
-            }
-        );
-        die $message;
-    }
-
-    #}
-    $self->{start} = 0;
-    return 1;
-}
-
 sub start_element {
     my $self = shift;
     my $data = shift;
@@ -341,39 +302,83 @@ sub end_element {
     return unless $obj;
 
     if ( my $text_data = delete $self->{current_text} ) {
-        my $column_name = shift @$text_data;
-        my $text = join '', @$text_data;
-
-        my $defs = $obj->column_defs;
-        if ( exists( $defs->{$column_name} ) ) {
-            if ( 'blob' eq $defs->{$column_name}->{type} ) {
-                $text = MIME::Base64::decode_base64($text);
-                if ( substr( $text, 0, 4 ) eq 'SERG' ) {
-                    $text = MT::Serialize->unserialize($text);
-                }
-                $obj->$column_name($$text);
-            }
-            else {
-                $obj->column( $column_name, _decode($text) );
-            }
-        }
-        elsif ( my $metacolumns = $self->{metacolumns}{ ref($obj) } ) {
-            if ( my $type = $metacolumns->{$column_name} ) {
-                if ( 'vblob' eq $type ) {
-                    $text = MIME::Base64::decode_base64($text);
-                    $text = MT::Serialize->unserialize($text);
-                    $obj->$column_name($$text);
-                }
-                else {
-                    $obj->$column_name( _decode($text) );
-                }
-            }
-        }
+        $self->__solicitate_text($obj, $text_data);
         return;
     }
 
     $self->__save_object($obj, $data);
     delete $self->{current};
+}
+
+sub __solicitate_text {
+    my ($self, $obj, $text_data) = @_;
+    my $column_name = shift @$text_data;
+    my $text = join '', @$text_data;
+
+    my $defs = $obj->column_defs;
+    if ( exists( $defs->{$column_name} ) ) {
+        if ( 'blob' eq $defs->{$column_name}->{type} ) {
+            $text = MIME::Base64::decode_base64($text);
+            if ( substr( $text, 0, 4 ) eq 'SERG' ) {
+                $text = MT::Serialize->unserialize($text);
+            }
+            $obj->$column_name($$text);
+        }
+        else {
+            $obj->column( $column_name, _decode($text) );
+        }
+    }
+    elsif ( my $metacolumns = $self->{metacolumns}{ ref($obj) } ) {
+        if ( my $type = $metacolumns->{$column_name} ) {
+            if ( 'vblob' eq $type ) {
+                $text = MIME::Base64::decode_base64($text);
+                $text = MT::Serialize->unserialize($text);
+                $obj->$column_name($$text);
+            }
+            else {
+                $obj->$column_name( _decode($text) );
+            }
+        }
+    }
+}
+
+sub __inspect_root_element {
+    my ($self, $data) = @_;
+
+    my $name  = $data->{LocalName};
+    my $attrs = $data->{Attributes};
+    my $ns    = $data->{NamespaceURI};
+
+    die MT->translate(
+        'Uploaded file was not a valid Movable Type backup manifest file.'
+        )
+        if !(      ( 'movabletype' eq $name )
+                && ( MT::BackupRestore::NS_MOVABLETYPE() eq $ns )
+        );
+
+    #unless ($self->{ignore_schema_conflicts}) {
+    my $schema = $attrs->{'{}schema_version'}->{Value};
+
+    #if (('ignore' ne $self->{schema_version}) && ($schema > $self->{schema_version})) {
+    if ( $schema != $self->{schema_version} ) {
+        $self->{critical} = 1;
+        my $message = MT->translate(
+            'Uploaded file was backed up from Movable Type but the different schema version ([_1]) from the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.',
+            $schema, $self->{schema_version}
+        );
+        MT->log(
+            {   message  => $message,
+                level    => MT::Log::ERROR(),
+                class    => 'system',
+                category => 'restore',
+            }
+        );
+        die $message;
+    }
+
+    #}
+    $self->{start} = 0;
+    return 1;
 }
 
 sub __save_object {
