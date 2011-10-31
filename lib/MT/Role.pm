@@ -219,7 +219,9 @@ sub save {
 sub remove {
     my $role = shift;
     if ( ref $role ) {
+        my @assoc = MT->model('association')->load({ role_id => $role->id });
         $role->remove_children( { key => 'role_id' } ) or return;
+        $_->rebuild_permissions foreach @assoc;
     }
     $role->SUPER::remove(@_);
 }
