@@ -368,7 +368,7 @@ abstract class BaseObject extends ADOdb_Active_Record
     protected function load_cache($key) {
         if (empty($key))
             return null;
-        $this->cache_driver()->get($key);
+        return $this->cache_driver()->get($key);
     }
 
     protected function cache_driver() {
