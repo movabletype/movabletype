@@ -216,83 +216,6 @@ sub __start_object {
         keys(%$attrs);
     my $obj;
     if ( 'author' eq $name ) {
-        $obj = $class->load( { name => $column_data{name} } );
-        if ($obj) {
-            if ( UNIVERSAL::isa( MT->instance, 'MT::App' )
-                && ( $obj->id == MT->instance->user->id ) )
-            {
-                MT->log(
-                    {   message => MT->translate(
-                            "User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.",
-                            $obj->name
-                        ),
-                        level => MT::Log::INFO(),
-                        metadata =>
-                            'Permissions and Associations have been restored.',
-                        class    => 'system',
-                        category => 'restore',
-                    }
-                );
-                $objects->{ "$class#" . $column_data{id} } = $obj;
-                $objects->{ "$class#" . $column_data{id} }
-                    ->{no_overwrite} = 1;
-                $self->{current} = $obj;
-                $self->{loaded}  = 1;
-                $self->{skip} += 1;
-            }
-            else {
-                MT->log(
-                    {   message => MT->translate(
-                            "User with the same name '[_1]' found (ID:[_2]).  Restore replaced this user with the data backed up.",
-                            $obj->name,
-                            $obj->id
-                        ),
-                        level => MT::Log::INFO(),
-                        metadata =>
-                            'Permissions and Associations have been restored as well.',
-                        class    => 'system',
-                        category => 'restore',
-                    }
-                );
-                my $old_id = delete $column_data{id};
-                $objects->{"$class#$old_id"} = $obj;
-                $objects->{"$class#$old_id"}->{no_overwrite} = 1;
-                delete $column_data{userpic_asset_id}
-                    if exists $column_data{userpic_asset_id};
-
-                my $child_classes
-                    = $obj->properties->{child_classes} || {};
-                for my $class ( keys %$child_classes ) {
-                    eval "use $class;";
-                    $class->remove(
-                        { author_id => $obj->id, blog_id => '0' }
-                    );
-                }
-                my $success
-                    = $obj->restore_parent_ids( \%column_data,
-                    $objects );
-                if ($success) {
-                    my %realcolumns = map {
-                        $_ =>
-                            _decode( delete( $column_data{$_} ) )
-                    } @{ $obj->column_names };
-                    $obj->set_values( \%realcolumns );
-                    $obj->$_( $column_data{$_} )
-                        foreach keys(%column_data);
-                    $obj->column( 'external_id',
-                        $realcolumns{external_id} )
-                        if defined $realcolumns{external_id};
-                    $self->{current} = $obj;
-                }
-                else {
-                    $deferred->{ $class . '#' . $column_data{id} }
-                        = 1;
-                    $self->{deferred} = $deferred;
-                    $self->{skip} += 1;
-                }
-                $self->{loaded} = 1;
-            }
-        }
     }
     elsif ( 'template' eq $name ) {
         if ( !$column_data{blog_id} ) {
@@ -400,6 +323,7 @@ sub __save_object {
 
     my $name  = $data->{LocalName};
     my $ns    = $data->{NamespaceURI};
+    my $objects  = $self->{objects};
     my $class = MT->model($name);
 
     my $old_id = $obj->id;
@@ -560,6 +484,55 @@ sub __save_object {
             }
         }
     }
+    elsif ( 'author' eq $name ) {
+        my $existing_obj = $class->load( { name => $obj->name() } );
+        if ($existing_obj) {
+            if ( UNIVERSAL::isa( MT->instance, 'MT::App' ) && ( $existing_obj->id == MT->instance->user->id ) )
+            {
+                MT->log(
+                    {   message => MT->translate(
+                            "User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.",
+                            $obj->name
+                        ),
+                        level => MT::Log::INFO(),
+                        metadata =>
+                            'Permissions and Associations have been restored.',
+                        class    => 'system',
+                        category => 'restore',
+                    }
+                );
+                $objects->{ "$class#" . $obj->id } = $existing_obj;
+                $objects->{ "$class#" . $obj->id }->{no_overwrite} = 1;
+                $exists = 1; 
+            }
+            else {
+                MT->log(
+                    {   message => MT->translate(
+                            "User with the same name '[_1]' found (ID:[_2]).  Restore replaced this user with the data backed up.",
+                            $obj->name,
+                            $obj->id
+                        ),
+                        level => MT::Log::INFO(),
+                        metadata =>
+                            'Permissions and Associations have been restored as well.',
+                        class    => 'system',
+                        category => 'restore',
+                    }
+                );
+                my $old_id = $obj->id;
+                $obj->id($existing_obj->id);
+                $objects->{"$class#$old_id"} = $obj;
+
+                my $child_classes = $obj->properties->{child_classes} || {};
+                for my $class ( keys %$child_classes ) {
+                    eval "use $class;";
+                    $class->remove( { author_id => $obj->id, blog_id => '0' } );
+                }
+                $obj->userpic_asset_id(0);
+            }
+        }
+    }
+
     unless ($exists) {
         my $result;
         if ( $obj->id ) {
