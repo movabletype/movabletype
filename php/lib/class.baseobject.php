@@ -303,7 +303,7 @@ abstract class BaseObject extends ADOdb_Active_Record
         $blog = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
             $blog_id = $this->$col_name;
-            $blog = $this->load_cache($this->_prefix . ":" . $this->id . ":blog:" . $blog_id);
+            $blog = $this->load_cache("blog:" . $blog_id);
             if (empty($blog)) {
                 require_once('class.mt_blog.php');
                 $blog = new Blog;
@@ -317,7 +317,7 @@ abstract class BaseObject extends ADOdb_Active_Record
             $blog->Load("blog_id = $blog_id");
         }
         if (!empty($blog))
-            $this->cache($this->_prefix . ":" . $this->id . ":blog:" . $blog->id, $blog);
+            $this->cache("blog:" . $blog->id, $blog);
 
         return $blog;
     }
@@ -328,12 +328,12 @@ abstract class BaseObject extends ADOdb_Active_Record
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
             $author_id = $this->$col_name;
 
-            $author = $this->load_cache($this->_prefix . ":" . $this->id . ":author:" . $author_id);
+            $author = $this->load_cache("author:" . $author_id);
             if (empty($author)) {
                 require_once('class.mt_author.php');
                 $author = new Author;
                 $author->Load("author_id = $author_id");
-                $this->cache($this->_prefix . ":" . $this->id . ":author:" . $author->id, $author);
+                $this->cache("author:" . $author->id, $author);
             }
         }
 
@@ -346,12 +346,12 @@ abstract class BaseObject extends ADOdb_Active_Record
         if (isset($this->$col_name) && is_numeric($this->$col_name) && $this->$col_name > 0) {
             $entry_id = $this->$col_name;
 
-            $entry = $this->load_cache($this->_prefix . ":" . $this->id . ":entry:" . $entry_id);
+            $entry = $this->load_cache("entry:" . $entry_id);
             if (empty($entry)) {
                 require_once('class.mt_entry.php');
                 $entry = new Entry;
                 $entry->Load("entry_id = $entry_id");
-                $this->cache($this->_prefix . ":" . $this->id . ":entry:" . $entry->id, $entry);
+                $this->cache("entry:" . $entry->id, $entry);
             }
         }
 
