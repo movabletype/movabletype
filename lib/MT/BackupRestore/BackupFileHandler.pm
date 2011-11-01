@@ -215,9 +215,7 @@ sub __start_object {
         = map { $attrs->{$_}->{LocalName} => $attrs->{$_}->{Value} }
         keys(%$attrs);
     my $obj;
-    if ( 'author' eq $name ) {
-    }
-    elsif ( 'template' eq $name ) {
+    if ( 'template' eq $name ) {
         if ( !$column_data{blog_id} ) {
             $obj = $class->load(
                 {   blog_id => 0,
@@ -245,28 +243,6 @@ sub __start_object {
                 else {
                     $self->{skip} += 1;
                 }
-            }
-        }
-    }
-    elsif ( 'filter' eq $name ) {
-        if ($objects->{ "MT::Author#"
-                    . $column_data{author_id} } )
-        {
-            $obj = $class->load(
-                {   author_id => $column_data{author_id},
-                    label     => $column_data{label},
-                    object_ds => $column_data{object_ds},
-                }
-            );
-            if ($obj) {
-                $obj->restore_parent_ids( \%column_data,
-                    $objects );
-                my $old_id = $column_data{id};
-                $objects->{"$class#$old_id"} = $obj;
-                $self->{current}             = $obj;
-                $self->{loaded}              = 1;
-
-                $self->{skip} += 1;
             }
         }
     }
@@ -328,9 +304,8 @@ sub __save_object {
 
     my $old_id = $obj->id;
     unless (
-        (      ( 'author' eq $name )
-            || ( 'template'   eq $name )
-            || ( 'filter'     eq $name )
+        (      ( 'template'   eq $name )
+#            || ( 'filter'     eq $name )
             || ( 'plugindata' eq $name )
         )
         && ( exists $self->{loaded} )
@@ -457,7 +432,21 @@ sub __save_object {
         }
     }
     elsif ( 'filter' eq $name ) {
-        my $objects = $self->{objects};
+
+        if ($objects->{ "MT::Author#" . $obj->author_id } )
+        {
+            my $existing_obj = $class->load(
+                {   author_id => $obj->author_id,
+                    label     => $obj->label,
+                    object_ds => $obj->object_ds,
+                }
+            );
+            if ($existing_obj) {
+                $obj->restore_parent_ids( { blog_id => $obj->blog_id }, $objects );
+                $objects->{"$class#$old_id"} = $obj;
+                $obj->id($existing_obj->id);
+            }
+        }
 
         # Callback for restoring ID in the filter items
         MT->run_callbacks( 'restore_filter_item_ids', $obj, undef,
