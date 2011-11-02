@@ -35,8 +35,6 @@ sub start_element {
     my $self = shift;
     my $data = shift;
 
-    return if $self->{skip};
-
     if ( $self->{start} ) {
         return $self->__inspect_root_element($data);
     }
@@ -97,7 +95,6 @@ sub characters {
     my $self = shift;
     my $data = shift;
 
-    return if $self->{skip};
     return if !exists( $self->{current} );
     if ( my $text_data = $self->{current_text} ) {
         push @$text_data, $data->{Data};
@@ -109,11 +106,6 @@ sub characters {
 sub end_element {
     my $self = shift;
     my $data = shift;
-
-    if ( $self->{skip} ) {
-        $self->{skip} -= 1;
-        return;
-    }
 
     my $obj = $self->{current};
     return unless $obj;
@@ -269,7 +261,6 @@ sub __start_object {
 
     if ( !$success && ( 'blog' ne $name ) ) {
         $self->{deferred}->{ $class . '#' . $column_data{id} } = 1;
-        $self->{skip} += 1;
         return;
     }
 
