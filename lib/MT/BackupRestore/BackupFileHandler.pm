@@ -89,23 +89,8 @@ sub start_element {
         $self->{state} = $state;
     }
 
-    $self->__start_object($data);
+    $self->{current} = $self->__start_object($data);
     1;
-}
-
-sub __start_non_mt_element {
-    my ($self, $data) = @_;
-
-    my $objects  = $self->{objects};
-    my $deferred = $self->{deferred};
-    my $callback = $self->{callback};
-
-    my $name  = $data->{LocalName};
-    my $ns    = $data->{NamespaceURI};
-
-    my $obj = MT->run_callbacks( "Restore.$name:$ns",
-        $data, $objects, $deferred, $callback );
-    return $obj;
 }
 
 sub characters {
@@ -249,6 +234,21 @@ sub _decode {
 #     return $self;
 # }
 
+sub __start_non_mt_element {
+    my ($self, $data) = @_;
+
+    my $objects  = $self->{objects};
+    my $deferred = $self->{deferred};
+    my $callback = $self->{callback};
+
+    my $name  = $data->{LocalName};
+    my $ns    = $data->{NamespaceURI};
+
+    my $obj = MT->run_callbacks( "Restore.$name:$ns",
+        $data, $objects, $deferred, $callback );
+    return $obj;
+}
+
 sub __start_object {
     my ($self, $data) = @_;
 
@@ -270,7 +270,7 @@ sub __start_object {
     if ( !$success && ( 'blog' ne $name ) ) {
         $self->{deferred}->{ $class . '#' . $column_data{id} } = 1;
         $self->{skip} += 1;
-        return 1;
+        return;
     }
 
     require MT::Meta;
@@ -299,8 +299,7 @@ sub __start_object {
             || ( 'vblob' eq $metacolumns{$metacol} );
         $obj->$metacol( $column_data{$metacol} );
     }
-    $self->{current} = $obj;
-    1;
+    return $obj;
 }
 
 sub __save_object {
