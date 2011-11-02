@@ -253,74 +253,55 @@ sub save_object {
         }
     }
     elsif ( 'author' eq $name ) {
-        my $existing_obj = $class->load( { name => $obj->name() } );
-        if ($existing_obj) {
-            if ( UNIVERSAL::isa( MT->instance, 'MT::App' ) && ( $existing_obj->id == MT->instance->user->id ) )
-            {
-                MT->log(
-                    {   message => MT->translate(
-                            "User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.",
-                            $obj->name
-                        ),
-                        level => MT::Log::INFO(),
-                        metadata =>
-                            'Permissions and Associations have been restored.',
-                        class    => 'system',
-                        category => 'restore',
-                    }
-                );
-                $objects->{ "$class#" . $old_id } = $existing_obj;
-                $objects->{ "$class#" . $old_id }->{no_overwrite} = 1;
-                $exists = 1; 
-            }
-            else {
-                MT->log(
-                    {   message => MT->translate(
-                            "User with the same name '[_1]' found (ID:[_2]).  Restore replaced this user with the data backed up.",
-                            $obj->name,
-                            $old_id
-                        ),
-                        level => MT::Log::INFO(),
-                        metadata =>
-                            'Permissions and Associations have been restored as well.',
-                        class    => 'system',
-                        category => 'restore',
-                    }
-                );
-                $obj->id($existing_obj->id);
-                $objects->{"$class#$old_id"} = $obj;
+    	$obj = $self->__save_author($class, $obj, $old_id, $objects);
+        # my $existing_obj = $class->load( { name => $obj->name() } );
+        # if ($existing_obj) {
+        #     if ( UNIVERSAL::isa( MT->instance, 'MT::App' ) && ( $existing_obj->id == MT->instance->user->id ) )
+        #     {
+        #         MT->log(
+        #             {   message => MT->translate(
+        #                     "User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.",
+        #                     $obj->name
+        #                 ),
+        #                 level => MT::Log::INFO(),
+        #                 metadata =>
+        #                     'Permissions and Associations have been restored.',
+        #                 class    => 'system',
+        #                 category => 'restore',
+        #             }
+        #         );
+        #         $objects->{ "$class#" . $old_id } = $existing_obj;
+        #         $objects->{ "$class#" . $old_id }->{no_overwrite} = 1;
+        #         $exists = 1; 
+        #     }
+        #     else {
+        #         MT->log(
+        #             {   message => MT->translate(
+        #                     "User with the same name '[_1]' found (ID:[_2]).  Restore replaced this user with the data backed up.",
+        #                     $obj->name,
+        #                     $old_id
+        #                 ),
+        #                 level => MT::Log::INFO(),
+        #                 metadata =>
+        #                     'Permissions and Associations have been restored as well.',
+        #                 class    => 'system',
+        #                 category => 'restore',
+        #             }
+        #         );
+        #         $obj->id($existing_obj->id);
+        #         $objects->{"$class#$old_id"} = $obj;
 
-                my $child_classes = $obj->properties->{child_classes} || {};
-                for my $class ( keys %$child_classes ) {
-                    eval "use $class;";
-                    $class->remove( { author_id => $obj->id, blog_id => '0' } );
-                }
-                $obj->userpic_asset_id(0);
-            }
-        }
+        #         my $child_classes = $obj->properties->{child_classes} || {};
+        #         for my $class ( keys %$child_classes ) {
+        #             eval "use $class;";
+        #             $class->remove( { author_id => $obj->id, blog_id => '0' } );
+        #         }
+        #         $obj->userpic_asset_id(0);
+        #     }
+        # }
     }
     elsif ( 'template' eq $name ) {
     	$obj = $self->__save_template($class, $obj, $old_id, $objects);
-        # if ( !$obj->blog_id ) {
-        #     my $existing_obj = $class->load(
-        #         {   blog_id => 0,
-        #             (   $obj->identifier
-        #                 ? ( identifier => $obj->identifier )
-        #                 : ( name => $obj->name )
-        #             ),
-        #         }
-        #     );
-        #     if ($existing_obj) {
-        #         if ( $self->{overwrite_template} ) {
-        #             $obj->id($existing_obj->id);
-        #         }
-        #         else {
-        #             $obj = $existing_obj;
-        #             $exists = 1;
-        #         }
-        #         $objects->{"$class#$old_id"} = $obj;
-        #     }
-        # }
     }
 
     if (($exists == 0) and $obj) {
@@ -353,6 +334,56 @@ sub save_object {
             $self->{callback}->( $obj->errstr );
         }
     }
+}
+
+sub __save_author {
+	my ($self, $class, $obj, $old_id, $objects) = @_;
+    my $existing_obj = $class->load( { name => $obj->name() } );
+    if ($existing_obj) {
+        if ( UNIVERSAL::isa( MT->instance, 'MT::App' ) && ( $existing_obj->id == MT->instance->user->id ) )
+        {
+            MT->log(
+                {   message => MT->translate(
+                        "User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.",
+                        $obj->name
+                    ),
+                    level => MT::Log::INFO(),
+                    metadata =>
+                        'Permissions and Associations have been restored.',
+                    class    => 'system',
+                    category => 'restore',
+                }
+            );
+            $objects->{ "$class#" . $old_id } = $existing_obj;
+            $objects->{ "$class#" . $old_id }->{no_overwrite} = 1;
+            return;
+        }
+        else {
+            MT->log(
+                {   message => MT->translate(
+                        "User with the same name '[_1]' found (ID:[_2]).  Restore replaced this user with the data backed up.",
+                        $obj->name,
+                        $old_id
+                    ),
+                    level => MT::Log::INFO(),
+                    metadata =>
+                        'Permissions and Associations have been restored as well.',
+                    class    => 'system',
+                    category => 'restore',
+                }
+            );
+            $obj->id($existing_obj->id);
+            $objects->{"$class#$old_id"} = $obj;
+
+            my $child_classes = $obj->properties->{child_classes} || {};
+            for my $class ( keys %$child_classes ) {
+                eval "use $class;";
+                $class->remove( { author_id => $obj->id, blog_id => '0' } );
+            }
+            $obj->userpic_asset_id(0);
+        }
+    }
+    return $obj;
 }
 
 sub __save_template {
