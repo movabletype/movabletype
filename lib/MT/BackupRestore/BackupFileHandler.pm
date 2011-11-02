@@ -16,6 +16,7 @@ sub new {
     my $class   = shift;
     my (%param) = @_;
     my $self    = bless \%param, $class;
+#    $self->{oc} = MT::BackupRestore::ObjectCreator->new(%param);
     return $self;
 }
 
@@ -135,29 +136,31 @@ sub __solicitate_text {
     my $column_name = shift @$text_data;
     my $text = join '', @$text_data;
 
-    my $defs = $obj->column_defs;
+    my $defs = $self->{current_class}->column_defs;
     if ( exists( $defs->{$column_name} ) ) {
         if ( 'blob' eq $defs->{$column_name}->{type} ) {
             $text = MIME::Base64::decode_base64($text);
             if ( substr( $text, 0, 4 ) eq 'SERG' ) {
                 $text = MT::Serialize->unserialize($text);
             }
-            $obj->$column_name($$text);
+            $text = $$text;
         }
         else {
-            $obj->column( $column_name, _decode($text) );
+            $text = _decode($text);
         }
+        $obj->$column_name($text);
     }
     elsif ( my $metacolumns = $self->{metacolumns}{ ref($obj) } ) {
         if ( my $type = $metacolumns->{$column_name} ) {
             if ( 'vblob' eq $type ) {
                 $text = MIME::Base64::decode_base64($text);
                 $text = MT::Serialize->unserialize($text);
-                $obj->$column_name($$text);
+                $text = $$text;
             }
             else {
-                $obj->$column_name( _decode($text) );
+                $text = _decode($text);
             }
+            $obj->$column_name($text);
         }
     }
 }
@@ -200,6 +203,40 @@ sub __inspect_root_element {
     $self->{start} = 0;
     return 1;
 }
+
+sub end_document {
+    my $self = shift;
+    my $data = shift;
+
+    if ( my $c = $self->{current_class} ) {
+        my $state   = $self->{state};
+        my $records = $self->{records};
+        $self->{callback}->(
+            $state . " "
+                . MT->translate( "[_1] records restored.", $records ),
+            $c->class_type || $c->datasource
+        );
+    }
+
+    1;
+}
+
+sub _decode {
+    my ($str) = @_;
+
+    $str = Encode::decode_utf8($str) unless Encode::is_utf8($str);
+    return $str;
+}
+
+
+# package MT::BackupRestore::ObjectCreator;
+
+# sub new {
+#     my $class   = shift;
+#     my (%param) = @_;
+#     my $self    = bless \%param, $class;
+#     return $self;
+# }
 
 sub __start_object {
     my ($self, $data) = @_;
@@ -528,30 +565,6 @@ sub __save_object {
             $self->{callback}->( $obj->errstr );
         }
     }
-}
-
-sub end_document {
-    my $self = shift;
-    my $data = shift;
-
-    if ( my $c = $self->{current_class} ) {
-        my $state   = $self->{state};
-        my $records = $self->{records};
-        $self->{callback}->(
-            $state . " "
-                . MT->translate( "[_1] records restored.", $records ),
-            $c->class_type || $c->datasource
-        );
-    }
-
-    1;
-}
-
-sub _decode {
-    my ($str) = @_;
-
-    $str = Encode::decode_utf8($str) unless Encode::is_utf8($str);
-    return $str;
 }
 
 1;
