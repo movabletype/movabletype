@@ -98,117 +98,24 @@ sub save_object {
     my $old_id = $obj->id;
     delete $obj->{column_values}->{id};
     delete $obj->{changed_cols}->{id};
-    my $exists = 0;
 
     if ( 'tag' eq $name ) {
-        if (my $tag = MT::Tag->load(
-                { name   => $obj->name },
-                { binary => { name => 1 } }
-            )
-            )
-        {
-            $exists = 1;
-            $self->{objects}->{"$class#$old_id"} = $tag;
-            $self->{callback}->("\n");
-            $self->{callback}->(
-                MT->translate(
-                    "Tag '[_1]' exists in the system.", $obj->name
-                )
-            );
-        }
+    	$obj = $self->__save_tag($class, $obj, $old_id, $objects);
     }
     elsif ( 'trackback' eq $name ) {
-        my $term;
-        my $message;
-        if ( $obj->entry_id ) {
-            $term = { entry_id => $obj->entry_id };
-        }
-        elsif ( $obj->category_id ) {
-            $term = { category_id => $obj->category_id };
-        }
-        if ( my $tb = $class->load($term) ) {
-            $exists = 1;
-            my $changed = 0;
-            if ( $obj->passphrase ) {
-                $tb->passphrase( $obj->passphrase );
-                $changed = 1;
-            }
-            if ( $obj->is_disabled ) {
-                $tb->is_disabled( $obj->is_disabled );
-                $changed = 1;
-            }
-            $tb->save if $changed;
-            $self->{objects}->{"$class#$old_id"} = $tb;
-            my $records = $self->{records};
-            $self->run_callback(
-            	MT->translate("[_1] records restored...", $records),
-                $data->{LocalName}
-            ) if $records && ( $records % 10 == 0 );
-            $self->{records} = $records + 1;
-        }
+    	$obj = $self->__save_trackback($class, $obj, $old_id, $objects);
     }
     elsif ( 'permission' eq $name ) {
-        my $perm = $class->exist(
-            {   author_id => $obj->author_id,
-                blog_id   => $obj->blog_id
-            }
-        );
-        $exists = 1 if $perm;
+    	$obj = $self->__save_permission($class, $obj, $old_id, $objects);
     }
     elsif ( 'objectscore' eq $name ) {
-        my $score = $class->exist(
-            {   author_id => $obj->author_id,
-                object_id => $obj->object_id,
-                object_ds => $obj->object_ds,
-            }
-        );
-        $exists = 1 if $score;
+    	$obj = $self->__save_objectscore($class, $obj, $old_id, $objects);
     }
     elsif ( 'field' eq $name ) {
-
-        # Available in propack only
-        if ( $obj->blog_id == 0 ) {
-            my $field = $class->exist(
-                {   blog_id  => 0,
-                    basename => $obj->basename,
-                }
-            );
-            $exists = 1 if $field;
-        }
+    	$obj = $self->__save_field($class, $obj, $old_id, $objects);
     }
     elsif ( 'role' eq $name ) {
-        my $role = $class->load( { name => $obj->name } );
-        if ($role) {
-            my $old_perms = join '',
-                sort { $a cmp $b } split( ',', $obj->permissions );
-            my $cur_perms = join '',
-                sort { $a cmp $b } split( ',', $role->permissions );
-            if ( $old_perms eq $cur_perms ) {
-                $self->{objects}->{"$class#$old_id"} = $role;
-                $exists = 1;
-            }
-            else {
-
-                # restore in a different name
-                my $i        = 1;
-                my $new_name = $obj->name . " ($i)";
-                while ( $class->exist( { name => $new_name } ) ) {
-                    $new_name = $obj->name . ' (' . ++$i . ')';
-                }
-                $obj->name($new_name);
-                MT->log(
-                    {   message => MT->translate(
-                            "The role '[_1]' has been renamed to '[_2]' because a role with the same name already exists.",
-                            $role->name,
-                            $new_name
-                        ),
-                        level    => MT::Log::INFO(),
-                        class    => 'system',
-                        category => 'restore',
-                    }
-                );
-            }
-        }
+    	$obj = $self->__save_role($class, $obj, $old_id, $objects);
     }
     elsif ( 'filter' eq $name ) {
     	$obj = $self->__save_filter($class, $obj, $old_id, $objects);
@@ -223,7 +130,7 @@ sub save_object {
     	$obj = $self->__save_template($class, $obj, $old_id, $objects);
     }
 
-    if (($exists == 0) and $obj) {
+    if ($obj) {
         my $result;
         if ( $obj->id ) {
             $result = $obj->update();
@@ -255,11 +162,133 @@ sub save_object {
     }
 }
 
-sub __save_ {
+sub __save_tag {
 	my ($self, $class, $obj, $old_id, $objects) = @_;
+    if (my $tag = MT::Tag->load(
+            { name   => $obj->name },
+            { binary => { name => 1 } }
+        )
+        )
+    {
+        $self->{objects}->{"$class#$old_id"} = $tag;
+        $self->{callback}->("\n");
+        $self->{callback}->(
+            MT->translate(
+                "Tag '[_1]' exists in the system.", $obj->name
+            )
+        );
+        return;
+    }
 	return $obj;	
 }
 
+sub __save_trackback {
+	my ($self, $class, $obj, $old_id, $objects) = @_;
+    my $term;
+    my $message;
+    if ( $obj->entry_id ) {
+        $term = { entry_id => $obj->entry_id };
+    }
+    elsif ( $obj->category_id ) {
+        $term = { category_id => $obj->category_id };
+    }
+    if ( my $tb = $class->load($term) ) {
+        my $changed = 0;
+        if ( $obj->passphrase ) {
+            $tb->passphrase( $obj->passphrase );
+            $changed = 1;
+        }
+        if ( $obj->is_disabled ) {
+            $tb->is_disabled( $obj->is_disabled );
+            $changed = 1;
+        }
+        $tb->save if $changed;
+        $self->{objects}->{"$class#$old_id"} = $tb;
+        my $records = $self->{records};
+        $self->run_callback(
+        	MT->translate("[_1] records restored...", $records),
+            "trackback"
+        ) if $records && ( $records % 10 == 0 );
+        $self->{records} = $records + 1;
+        return;
+    }
+	return $obj;	
+}
+
+sub __save_permission {
+	my ($self, $class, $obj, $old_id, $objects) = @_;
+    my $perm = $class->exist(
+        {   author_id => $obj->author_id,
+            blog_id   => $obj->blog_id
+        }
+    );
+    return if $perm;
+	return $obj;	
+}
+
+sub __save_objectscore {
+	my ($self, $class, $obj, $old_id, $objects) = @_;
+    my $score = $class->exist(
+        {   author_id => $obj->author_id,
+            object_id => $obj->object_id,
+            object_ds => $obj->object_ds,
+        }
+    );
+    return if $score;
+	return $obj;	
+}
+
+sub __save_field {
+	my ($self, $class, $obj, $old_id, $objects) = @_;
+
+    # Available in propack only
+    if ( $obj->blog_id == 0 ) {
+        my $field = $class->exist(
+            {   blog_id  => 0,
+                basename => $obj->basename,
+            }
+        );
+        return if $field;
+    }
+	return $obj;	
+}
+
+sub __save_role {
+	my ($self, $class, $obj, $old_id, $objects) = @_;
+    my $role = $class->load( { name => $obj->name } );
+    if ($role) {
+        my $old_perms = join '',
+            sort { $a cmp $b } split( ',', $obj->permissions );
+        my $cur_perms = join '',
+            sort { $a cmp $b } split( ',', $role->permissions );
+        if ( $old_perms eq $cur_perms ) {
+            $self->{objects}->{"$class#$old_id"} = $role;
+            return;
+        }
+        else {
+
+            # restore in a different name
+            my $i        = 1;
+            my $new_name = $obj->name . " ($i)";
+            while ( $class->exist( { name => $new_name } ) ) {
+                $new_name = $obj->name . ' (' . ++$i . ')';
+            }
+            $obj->name($new_name);
+            MT->log(
+                {   message => MT->translate(
+                        "The role '[_1]' has been renamed to '[_2]' because a role with the same name already exists.",
+                        $role->name,
+                        $new_name
+                    ),
+                    level    => MT::Log::INFO(),
+                    class    => 'system',
+                    category => 'restore',
+                }
+            );
+        }
+    }
+	return $obj;	
+}
 
 sub __save_filter {
 	my ($self, $class, $obj, $old_id, $objects) = @_;
