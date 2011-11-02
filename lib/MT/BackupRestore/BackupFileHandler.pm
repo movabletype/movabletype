@@ -253,7 +253,6 @@ sub __start_object {
     my ($self, $data) = @_;
 
     my $objects  = $self->{objects};
-    my $deferred = $self->{deferred};
     my $attrs = $data->{Attributes};
     my $name  = $data->{LocalName};
     my $class = MT->model($name);
@@ -266,42 +265,41 @@ sub __start_object {
 
     # Pass through even if an blog doesn't restore
     # the parent object
-    my $success
-        = $obj->restore_parent_ids( \%column_data, $objects );
-    if ( $success || ( !$success && 'blog' eq $name ) ) {
-        require MT::Meta;
-        my @metacolumns
-            = MT::Meta->metadata_by_class( ref($obj) );
-        my %metacolumns
-            = map { $_->{name} => $_->{type} } @metacolumns;
-        $self->{metacolumns}{ ref($obj) } = \%metacolumns;
-        my %realcolumn_data
-            = map { $_ => _decode( $column_data{$_} ) }
-            grep { !exists( $metacolumns{$_} ) }
-            keys %column_data;
+    my $success = $obj->restore_parent_ids( \%column_data, $objects );
 
-        if ( !$success && 'blog' eq $name ) {
-            $realcolumn_data{parent_id} = undef;
-        }
-
-        $obj->set_values( \%realcolumn_data );
-        $obj->column( 'external_id',
-            $realcolumn_data{external_id} )
-            if $name eq 'author'
-                && defined $realcolumn_data{external_id};
-        foreach my $metacol ( keys %metacolumns ) {
-            next
-                if ( 'vclob' eq $metacolumns{$metacol} )
-                || ( 'vblob' eq $metacolumns{$metacol} );
-            $obj->$metacol( $column_data{$metacol} );
-        }
-        $self->{current} = $obj;
-    }
-    else {
-        $deferred->{ $class . '#' . $column_data{id} } = 1;
-        $self->{deferred} = $deferred;
+    if ( !$success && ( 'blog' ne $name ) ) {
+        $self->{deferred}->{ $class . '#' . $column_data{id} } = 1;
         $self->{skip} += 1;
+        return 1;
     }
+
+    require MT::Meta;
+    my @metacolumns
+        = MT::Meta->metadata_by_class( ref($obj) );
+    my %metacolumns
+        = map { $_->{name} => $_->{type} } @metacolumns;
+    $self->{metacolumns}{ ref($obj) } = \%metacolumns;
+    my %realcolumn_data
+        = map { $_ => _decode( $column_data{$_} ) }
+        grep { !exists( $metacolumns{$_} ) }
+        keys %column_data;
+
+    if ( !$success && 'blog' eq $name ) {
+        $realcolumn_data{parent_id} = undef;
+    }
+
+    $obj->set_values( \%realcolumn_data );
+    $obj->column( 'external_id',
+        $realcolumn_data{external_id} )
+        if $name eq 'author'
+            && defined $realcolumn_data{external_id};
+    foreach my $metacol ( keys %metacolumns ) {
+        next
+            if ( 'vclob' eq $metacolumns{$metacol} )
+            || ( 'vblob' eq $metacolumns{$metacol} );
+        $obj->$metacol( $column_data{$metacol} );
+    }
+    $self->{current} = $obj;
     1;
 }
 
