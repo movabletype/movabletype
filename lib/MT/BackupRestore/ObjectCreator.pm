@@ -51,7 +51,7 @@ sub start_object {
 
     # Pass through even if an blog doesn't restore
     # the parent object
-    my $success = $obj->restore_parent_ids( \%column_data, $objects );
+    my $success = $class->restore_parent_ids( \%column_data, $objects );
 
     if ( !$success && ( 'blog' ne $name ) ) {
         $self->{deferred}->{ $class . '#' . $column_data{id} } = 1;
@@ -279,7 +279,6 @@ sub __save_filter {
             }
         );
         if ($existing_obj) {
-            $obj->restore_parent_ids( { blog_id => $obj->blog_id }, $objects );
             $objects->{"$class#$old_id"} = $obj;
             $obj->id($existing_obj->id);
         }

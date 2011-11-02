@@ -1064,12 +1064,12 @@ sub to_xml {
 }
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     {};
 }
 
 sub _restore_id {
-    my $obj = shift;
+    my $class = shift;
     my ( $key, $val, $data, $objects ) = @_;
 
     return 0 unless 'ARRAY' eq ref($val);
@@ -1087,17 +1087,17 @@ sub _restore_id {
 }
 
 sub restore_parent_ids {
-    my $obj = shift;
+    my $class = shift;
     my ( $data, $objects ) = @_;
 
-    my $parents = $obj->parents;
+    my $parents = $class->parents;
     my $count   = scalar( keys %$parents );
 
     my $done = 0;
     while ( my ( $key, $val ) = each(%$parents) ) {
         $val = [$val] unless ( ref $val );
         if ( 'ARRAY' eq ref($val) ) {
-            $done += $obj->_restore_id( $key, $val, $data, $objects );
+            $done += $class->_restore_id( $key, $val, $data, $objects );
         }
         elsif ( 'HASH' eq ref($val) ) {
             my $v = $val->{class};
@@ -1110,10 +1110,10 @@ sub restore_parent_ids {
                 $ev = MT->model($ds) unless $ev;
                 return 0 unless $ev;
                 $ev = [$ev] unless ( ref $ev );
-                $done += $obj->_restore_id( $key, $ev, $data, $objects );
+                $done += $class->_restore_id( $key, $ev, $data, $objects );
             }
             else {
-                $result = $obj->_restore_id( $key, $v, $data, $objects );
+                $result = $class->_restore_id( $key, $v, $data, $objects );
                 $result = 1 if exists( $val->{optional} ) && $val->{optional};
                 $data->{$key} = -1
                     if !$result
@@ -1173,7 +1173,7 @@ sub backup_terms_args {
 }
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     { parent_id => MT->model('website'), };
 }
 
@@ -1265,7 +1265,7 @@ sub to_xml {
 }
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     {   blog_id => [ MT->model('blog'), MT->model('website') ],
         parent  => MT->model('asset')
     };
@@ -1296,7 +1296,7 @@ sub backup_terms_args {
 }
 
 sub restore_parent_ids {
-    my $obj = shift;
+    my $class = shift;
     my ( $data, $objects ) = @_;
 
     if ( $data->{key} =~ /^configuration:blog:(\d+)$/i ) {
@@ -1314,7 +1314,7 @@ sub restore_parent_ids {
 package MT::Association;
 
 sub restore_parent_ids {
-    my $obj = shift;
+    my $class = shift;
     my ( $data, $objects ) = @_;
 
     my ( $u, $b, $g, $r ) = ( 0, 0, 0, 0 );
@@ -1372,7 +1372,7 @@ sub to_xml {
 }
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     {   blog_id => [ MT->model('blog'),     MT->model('website') ],
         parent  => [ MT->model('category'), MT->model('folder') ],
     };
@@ -1381,7 +1381,7 @@ sub parents {
 package MT::Comment;
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     {   entry_id => [ MT->model('entry'), MT->model('page') ],
         blog_id  => [ MT->model('blog'),  MT->model('website') ],
         commenter_id => { class => MT->model('author'), optional => 1 },
@@ -1391,7 +1391,7 @@ sub parents {
 package MT::Entry;
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     {   blog_id => [ MT->model('blog'), MT->model('website') ],
         author_id =>
             { class => MT->model('author'), optional => 1, orphanize => 1 },
@@ -1401,7 +1401,7 @@ sub parents {
 package MT::FileInfo;
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     {   entry_id => {
             class    => [ MT->model('entry'), MT->model('page') ],
             optional => 1
@@ -1424,14 +1424,14 @@ sub parents {
 package MT::Notification;
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     { blog_id => [ MT->model('blog'), MT->model('website') ], };
 }
 
 package MT::ObjectTag;
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     {   blog_id   => [ MT->model('blog'), MT->model('website') ],
         tag_id    => MT->model('tag'),
         object_id => {
@@ -1446,7 +1446,7 @@ sub parents {
 package MT::Permission;
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     {   blog_id => [ MT->model('blog'), MT->model('website') ],
         author_id => { class => MT->model('author'), optional => 1 },
     };
@@ -1455,7 +1455,7 @@ sub parents {
 package MT::Placement;
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     {   category_id => [ MT->model('category'), MT->model('folder') ],
         blog_id     => [ MT->model('blog'),     MT->model('website') ],
         entry_id    => [ MT->model('entry'),    MT->model('page') ],
@@ -1465,7 +1465,7 @@ sub parents {
 package MT::TBPing;
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     {   blog_id => [ MT->model('blog'), MT->model('website') ],
         tb_id   => MT->model('trackback'),
     };
@@ -1474,14 +1474,14 @@ sub parents {
 package MT::Template;
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     { blog_id => [ MT->model('blog'), MT->model('website') ], };
 }
 
 package MT::TemplateMap;
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     {   blog_id     => [ MT->model('blog'), MT->model('website') ],
         template_id => MT->model('template')
     };
@@ -1490,7 +1490,7 @@ sub parents {
 package MT::Trackback;
 
 sub restore_parent_ids {
-    my $obj = shift;
+    my $class = shift;
     my ( $data, $objects ) = @_;
 
     my $result     = 0;
@@ -1532,7 +1532,7 @@ sub restore_parent_ids {
 package MT::ObjectAsset;
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     {   blog_id   => [ MT->model('blog'), MT->model('website') ],
         asset_id  => MT->model('asset'),
         object_id => {
@@ -1571,7 +1571,7 @@ sub backup_terms_args {
 }
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     {   author_id => MT->model('author'),
         object_id => {
             relations => {
@@ -1585,21 +1585,21 @@ sub parents {
 package MT::IPBanList;
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     { blog_id => [ MT->model('blog'), MT->model('website') ], };
 }
 
 package MT::Blocklist;
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     { blog_id => [ MT->model('blog'), MT->model('website') ], };
 }
 
 package MT::Filter;
 
 sub restore_parent_ids {
-    my $obj = shift;
+    my $class = shift;
     my ( $data, $objects ) = @_;
     my $new_blog = $objects->{ 'MT::Blog#' . $data->{blog_id} };
     $new_blog = $objects->{ 'MT::Website#' . $data->{blog_id} }
@@ -1607,14 +1607,13 @@ sub restore_parent_ids {
 
     if ($new_blog) {
         $data->{blog_id} = $new_blog->id;
-        $obj->blog_id( $data->{blog_id} );
     }
 
     return 1;
 }
 
 sub parents {
-    my $obj = shift;
+    my $class = shift;
     {   author_id => { class => MT->model('author'), optional => 1 },
         blog_id   => { class => MT->model('blog'),   optional => 1 },
     };
