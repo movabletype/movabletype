@@ -266,20 +266,10 @@ sub __save_object {
     my $class = MT->model($name);
 
     my $old_id = $obj->id;
-    unless (
-        (      ( 'template'   eq $name )
-            || ( 'plugindata' eq $name )
-        )
-        && ( exists $self->{loaded} )
-        )
-    {
-        delete $obj->{column_values}->{id};
-        delete $obj->{changed_cols}->{id};
-    }
-    else {
-        delete $self->{loaded};
-    }
+    delete $obj->{column_values}->{id};
+    delete $obj->{changed_cols}->{id};
     my $exists = 0;
+
     if ( 'tag' eq $name ) {
         if (my $tag = MT::Tag->load(
                 { name   => $obj->name },
