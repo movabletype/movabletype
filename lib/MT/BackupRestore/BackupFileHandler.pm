@@ -30,10 +30,7 @@ sub start_document {
     $self->{current_class} = '';
     $self->{current} = undef;
 
-    no warnings 'redefine';
-    *_decode = sub { $_[0] }
-        unless $self->{is_pp};
-
+    $self->{oc}->set_is_pp($self->{is_pp});
     1;
 }
 
@@ -112,46 +109,13 @@ sub end_element {
     return unless $obj;
 
     if ( my $text_data = delete $self->{current_text} ) {
-        $self->__solicitate_text($obj, $text_data);
+        my $column_name = shift @$text_data;
+        $self->{current}->{$column_name} = $text_data;
         return;
     }
 
     $self->{oc}->save_object($obj, $data);
     delete $self->{current};
-}
-
-sub __solicitate_text {
-    my ($self, $obj, $text_data) = @_;
-    my $column_name = shift @$text_data;
-    my $text = join '', @$text_data;
-
-    my $defs = $self->{current_class}->column_defs;
-    if ( exists( $defs->{$column_name} ) ) {
-        if ( 'blob' eq $defs->{$column_name}->{type} ) {
-            $text = MIME::Base64::decode_base64($text);
-            if ( substr( $text, 0, 4 ) eq 'SERG' ) {
-                $text = MT::Serialize->unserialize($text);
-            }
-            $text = $$text;
-        }
-        else {
-            $text = _decode($text);
-        }
-        $obj->$column_name($text);
-    }
-    elsif ( my $metacolumns = $self->{metacolumns}{ ref($obj) } ) {
-        if ( my $type = $metacolumns->{$column_name} ) {
-            if ( 'vblob' eq $type ) {
-                $text = MIME::Base64::decode_base64($text);
-                $text = MT::Serialize->unserialize($text);
-                $text = $$text;
-            }
-            else {
-                $text = _decode($text);
-            }
-            $obj->$column_name($text);
-        }
-    }
 }
 
 sub __inspect_root_element {
@@ -208,11 +172,5 @@ sub end_document {
     1;
 }
 
-sub _decode {
-    my ($str) = @_;
-
-    $str = Encode::decode_utf8($str) unless Encode::is_utf8($str);
-    return $str;
-}
 
 1;

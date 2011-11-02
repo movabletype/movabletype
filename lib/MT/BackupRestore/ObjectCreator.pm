@@ -20,6 +20,11 @@ sub set_new_class {
     $self->{state} = $state;
 }
 
+sub set_is_pp {
+	my ($self, $is_pp) = @_;
+	$self->{decoder} = $is_pp ? \&__decoder_from_utf8 : sub { $_[0] };
+}
+
 sub start_non_mt_element {
     my ($self, $data) = @_;
 
@@ -47,15 +52,35 @@ sub start_object {
     my %column_data
         = map { $attrs->{$_}->{LocalName} => $attrs->{$_}->{Value} }
         keys(%$attrs);
+
+    return \%column_data;
+}
+
+sub __object_from_data {
+	my ($self, $column_data, $data) = @_;
+    
+    my $name  = $data->{LocalName};
+    my $ns    = $data->{NamespaceURI};
+    my $objects  = $self->{objects};
+    my $class = MT->model($name);
+
     my $obj = $class->new;
 
     # Pass through even if an blog doesn't restore
     # the parent object
-    my $success = $class->restore_parent_ids( \%column_data, $objects );
+    my $success = $class->restore_parent_ids( $column_data, $objects );
 
     if ( !$success && ( 'blog' ne $name ) ) {
-        $self->{deferred}->{ $class . '#' . $column_data{id} } = 1;
+        $self->{deferred}->{ $class . '#' . $column_data->{id} } = 1;
         return;
+    }
+
+    while (my ($key, $value) = each %$column_data) {
+    	if (ref $value) {
+    		# this is a text sub-element. join it.
+    		$value = $self->__solicitate_text($class, $key, $value);
+    		$column_data->{$key} = $value;
+    	}
     }
 
     require MT::Meta;
@@ -65,9 +90,9 @@ sub start_object {
         = map { $_->{name} => $_->{type} } @metacolumns;
     $self->{metacolumns}{ ref($obj) } = \%metacolumns;
     my %realcolumn_data
-        = map { $_ => MT::BackupRestore::BackupFileHandler::_decode( $column_data{$_} ) }
+        = map { $_ => $self->{decoder}->( $column_data->{$_} ) }
         grep { !exists( $metacolumns{$_} ) }
-        keys %column_data;
+        keys %$column_data;
 
     if ( !$success && 'blog' eq $name ) {
         $realcolumn_data{parent_id} = undef;
@@ -82,10 +107,43 @@ sub start_object {
         next
             if ( 'vclob' eq $metacolumns{$metacol} )
             || ( 'vblob' eq $metacolumns{$metacol} );
-        $obj->$metacol( $column_data{$metacol} );
+        $obj->$metacol( $column_data->{$metacol} );
     }
     return $obj;
 }
+
+sub __solicitate_text {
+    my ($self, $class, $column_name, $text_data) = @_;
+    my $text = join '', @$text_data;
+
+    my $defs = $class->column_defs;
+    if ( exists( $defs->{$column_name} ) ) {
+        if ( 'blob' eq $defs->{$column_name}->{type} ) {
+            $text = MIME::Base64::decode_base64($text);
+            if ( substr( $text, 0, 4 ) eq 'SERG' ) {
+                $text = MT::Serialize->unserialize($text);
+            }
+            return $$text;
+        }
+        else {
+            return $self->{decoder}->($text);
+        }
+    }
+    elsif ( my $metacolumns = $self->{metacolumns}{ $class } ) {
+        if ( my $type = $metacolumns->{$column_name} ) {
+            if ( 'vblob' eq $type ) {
+                $text = MIME::Base64::decode_base64($text);
+                $text = MT::Serialize->unserialize($text);
+                return $$text;
+            }
+            else {
+                return $self->{decoder}->($text);
+            }
+        }
+    }
+    return;
+}
+
 
 my %func_table = map { ( $_ => "__save_".$_ ) } qw{
 	tag trackback permission objectscore field role 
@@ -93,6 +151,9 @@ my %func_table = map { ( $_ => "__save_".$_ ) } qw{
 
 sub save_object {
     my ($self, $obj, $data) = @_;
+
+    $obj = $self->__object_from_data($obj, $data);
+    return unless $obj;
 
     my $name  = $data->{LocalName};
     my $ns    = $data->{NamespaceURI};
@@ -389,5 +450,13 @@ sub __save_template {
     }
     return $obj;
 }
+
+sub __decoder_from_utf8 {
+    my ($str) = @_;
+
+    $str = Encode::decode_utf8($str) unless Encode::is_utf8($str);
+    return $str;
+}
+
 
 1;
