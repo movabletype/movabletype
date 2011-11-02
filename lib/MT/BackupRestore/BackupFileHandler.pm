@@ -7,6 +7,7 @@
 package MT::BackupRestore::BackupFileHandler;
 
 use strict;
+use warnings;
 use XML::SAX::Base;
 use MIME::Base64;
 
@@ -26,6 +27,10 @@ sub start_document {
     my $data = shift;
 
     $self->{start} = 1;
+    $self->{current_class} = '';
+    $self->{current} = undef;
+
+    no warnings 'redefine';
     *_decode = sub { $_[0] }
         unless $self->{is_pp};
 
@@ -53,7 +58,7 @@ sub start_element {
     }
 
     if ( MT::BackupRestore::NS_MOVABLETYPE() ne $ns ) {
-        my $obj = $self->{oc}->__start_non_mt_element($data);
+        my $obj = $self->{oc}->start_non_mt_element($data);
         $self->{current} = $obj if defined($obj) && ( '1' ne $obj );
         return 1;
     }
@@ -70,25 +75,20 @@ sub start_element {
 
     if ( $self->{current_class} ne $class ) {
         if ( my $c = $self->{current_class} ) {
-            my $state   = $self->{state};
             my $records = $self->{records};
-            $callback->(
-                $state . " "
-                    . MT->translate(
-                    "[_1] records restored.", $records
-                    ),
+            $self->{oc}->run_callback(
+                MT->translate("[_1] records restored.", $records),
                 $c->class_type || $c->datasource
             );
         }
         $self->{records}       = 0;
         $self->{current_class} = $class;
-        my $state
-            = MT->translate( 'Restoring [_1] records:', $class );
-        $callback->( $state, $name );
-        $self->{state} = $state;
+        my $state = MT->translate( 'Restoring [_1] records:', $class );
+        $self->{oc}->set_new_class($class);
+        $self->{oc}->run_callback($name);
     }
 
-    $self->{current} = $self->{oc}->__start_object($data);
+    $self->{current} = $self->{oc}->start_object($data);
     1;
 }
 
@@ -116,7 +116,7 @@ sub end_element {
         return;
     }
 
-    $self->{oc}->__save_object($obj, $data);
+    $self->{oc}->save_object($obj, $data);
     delete $self->{current};
 }
 
@@ -198,11 +198,9 @@ sub end_document {
     my $data = shift;
 
     if ( my $c = $self->{current_class} ) {
-        my $state   = $self->{state};
         my $records = $self->{records};
-        $self->{callback}->(
-            $state . " "
-                . MT->translate( "[_1] records restored.", $records ),
+        $self->{oc}->run_callback(
+            MT->translate( "[_1] records restored.", $records ),
             $c->class_type || $c->datasource
         );
     }

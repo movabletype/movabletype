@@ -1,4 +1,6 @@
 package MT::BackupRestore::ObjectCreator;
+use strict;
+use warnings;
 
 sub new {
     my $class   = shift;
@@ -7,7 +9,18 @@ sub new {
     return $self;
 }
 
-sub __start_non_mt_element {
+sub run_callback {
+	my ($self, @msgs) = @_;
+    $self->{callback}->($self->{state} . " " . join('', @msgs));
+}
+
+sub set_new_class {
+	my ($self, $class_name) = @_;
+    my $state = MT->translate( 'Restoring [_1] records:', $class_name );
+    $self->{state} = $state;
+}
+
+sub start_non_mt_element {
     my ($self, $data) = @_;
 
     my $objects  = $self->{objects};
@@ -22,7 +35,7 @@ sub __start_non_mt_element {
     return $obj;
 }
 
-sub __start_object {
+sub start_object {
     my ($self, $data) = @_;
 
     my $objects  = $self->{objects};
@@ -74,7 +87,7 @@ sub __start_object {
     return $obj;
 }
 
-sub __save_object {
+sub save_object {
     my ($self, $obj, $data) = @_;
 
     my $name  = $data->{LocalName};
@@ -127,11 +140,8 @@ sub __save_object {
             $tb->save if $changed;
             $self->{objects}->{"$class#$old_id"} = $tb;
             my $records = $self->{records};
-            $self->{callback}->(
-                $self->{state} . " "
-                    . MT->translate(
-                    "[_1] records restored...", $records
-                    ),
+            $self->run_callback(
+            	MT->translate("[_1] records restored...", $records),
                 $data->{LocalName}
             ) if $records && ( $records % 10 == 0 );
             $self->{records} = $records + 1;
@@ -170,9 +180,9 @@ sub __save_object {
         my $role = $class->load( { name => $obj->name } );
         if ($role) {
             my $old_perms = join '',
-                sort { $a <=> $b } split( ',', $obj->permissions );
+                sort { $a cmp $b } split( ',', $obj->permissions );
             my $cur_perms = join '',
-                sort { $a <=> $b } split( ',', $role->permissions );
+                sort { $a cmp $b } split( ',', $role->permissions );
             if ( $old_perms eq $cur_perms ) {
                 $self->{objects}->{"$class#$old_id"} = $role;
                 $exists = 1;
@@ -325,12 +335,9 @@ sub __save_object {
                 $class = 'MT::Asset';
             }
             $self->{objects}->{"$class#$old_id"} = $obj;
-            my $records = $self->{records};
-            $self->{callback}->(
-                $self->{state} . " "
-                    . MT->translate(
-                    "[_1] records restored...", $records
-                    ),
+            my $records = $self->{records} || 0;
+            $self->run_callback(
+                MT->translate( "[_1] records restored...", $records ),
                 $data->{LocalName}
             ) if $records && ( $records % 10 == 0 );
             $self->{records} = $records + 1;
