@@ -214,51 +214,44 @@ sub __start_object {
     my %column_data
         = map { $attrs->{$_}->{LocalName} => $attrs->{$_}->{Value} }
         keys(%$attrs);
-    my $obj;
+    my $obj = $class->new;
 
-    unless ($obj) {
-        $obj = $class->new;
+    # Pass through even if an blog doesn't restore
+    # the parent object
+    my $success = $obj->restore_parent_ids( \%column_data, $objects );
+    if ( $success || ( 'blog' eq $name ) ) {
+        require MT::Meta;
+        my @metacolumns
+            = MT::Meta->metadata_by_class( ref($obj) );
+        my %metacolumns
+            = map { $_->{name} => $_->{type} } @metacolumns;
+        $self->{metacolumns}{ ref($obj) } = \%metacolumns;
+        my %realcolumn_data
+            = map { $_ => _decode( $column_data{$_} ) }
+            grep { !exists( $metacolumns{$_} ) }
+            keys %column_data;
+
+        if ( !$success && 'blog' eq $name ) {
+            $realcolumn_data{parent_id} = undef;
+        }
+
+        $obj->set_values( \%realcolumn_data );
+        $obj->column( 'external_id',
+            $realcolumn_data{external_id} )
+            if $name eq 'author'
+                && defined $realcolumn_data{external_id};
+        foreach my $metacol ( keys %metacolumns ) {
+            next
+                if ( 'vclob' eq $metacolumns{$metacol} )
+                || ( 'vblob' eq $metacolumns{$metacol} );
+            $obj->$metacol( $column_data{$metacol} );
+        }
+        $self->{current} = $obj;
     }
-    unless ( $obj->id ) {
-
-        # Pass through even if an blog doesn't restore
-        # the parent object
-        my $success
-            = $obj->restore_parent_ids( \%column_data, $objects );
-        if ( $success || ( !$success && 'blog' eq $name ) ) {
-            require MT::Meta;
-            my @metacolumns
-                = MT::Meta->metadata_by_class( ref($obj) );
-            my %metacolumns
-                = map { $_->{name} => $_->{type} } @metacolumns;
-            $self->{metacolumns}{ ref($obj) } = \%metacolumns;
-            my %realcolumn_data
-                = map { $_ => _decode( $column_data{$_} ) }
-                grep { !exists( $metacolumns{$_} ) }
-                keys %column_data;
-
-            if ( !$success && 'blog' eq $name ) {
-                $realcolumn_data{parent_id} = undef;
-            }
-
-            $obj->set_values( \%realcolumn_data );
-            $obj->column( 'external_id',
-                $realcolumn_data{external_id} )
-                if $name eq 'author'
-                    && defined $realcolumn_data{external_id};
-            foreach my $metacol ( keys %metacolumns ) {
-                next
-                    if ( 'vclob' eq $metacolumns{$metacol} )
-                    || ( 'vblob' eq $metacolumns{$metacol} );
-                $obj->$metacol( $column_data{$metacol} );
-            }
-            $self->{current} = $obj;
-        }
-        else {
-            $deferred->{ $class . '#' . $column_data{id} } = 1;
-            $self->{deferred} = $deferred;
-            $self->{skip} += 1;
-        }
+    else {
+        $deferred->{ $class . '#' . $column_data{id} } = 1;
+        $self->{deferred} = $deferred;
+        $self->{skip} += 1;
     }
     1;
 }
@@ -272,19 +265,7 @@ sub __save_object {
     my $class = MT->model($name);
 
     my $old_id = $obj->id;
-    unless (
-        (      ( 'template'   eq $name )
-            || ( 'plugindata' eq $name )
-        )
-        && ( exists $self->{loaded} )
-        )
-    {
-        delete $obj->{column_values}->{id};
-        delete $obj->{changed_cols}->{id};
-    }
-    else {
-        delete $self->{loaded};
-    }
+
     my $exists = 0;
     if ( 'tag' eq $name ) {
         if (my $tag = MT::Tag->load(
@@ -458,8 +439,8 @@ sub __save_object {
                         category => 'restore',
                     }
                 );
-                $objects->{ "$class#" . $obj->id } = $existing_obj;
-                $objects->{ "$class#" . $obj->id }->{no_overwrite} = 1;
+                $objects->{ "$class#" . $old_id } = $existing_obj;
+                $objects->{ "$class#" . $old_id }->{no_overwrite} = 1;
                 $exists = 1; 
             }
             else {
@@ -467,7 +448,7 @@ sub __save_object {
                     {   message => MT->translate(
                             "User with the same name '[_1]' found (ID:[_2]).  Restore replaced this user with the data backed up.",
                             $obj->name,
-                            $obj->id
+                            $old_id
                         ),
                         level => MT::Log::INFO(),
                         metadata =>
@@ -476,7 +457,6 @@ sub __save_object {
                         category => 'restore',
                     }
                 );
-                my $old_id = $obj->id;
                 $obj->id($existing_obj->id);
                 $objects->{"$class#$old_id"} = $obj;
 
