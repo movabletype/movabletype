@@ -300,29 +300,30 @@ sub save_object {
         }
     }
     elsif ( 'template' eq $name ) {
-        if ( !$obj->blog_id ) {
-            my $existing_obj = $class->load(
-                {   blog_id => 0,
-                    (   $obj->identifier
-                        ? ( identifier => $obj->identifier )
-                        : ( name => $obj->name )
-                    ),
-                }
-            );
-            if ($existing_obj) {
-                if ( $self->{overwrite_template} ) {
-                    $obj->id($existing_obj->id);
-                }
-                else {
-                    $obj = $existing_obj;
-                    $exists = 1;
-                }
-                $objects->{"$class#$old_id"} = $obj;
-            }
-        }
+    	$obj = $self->__save_template($class, $obj, $old_id, $objects);
+        # if ( !$obj->blog_id ) {
+        #     my $existing_obj = $class->load(
+        #         {   blog_id => 0,
+        #             (   $obj->identifier
+        #                 ? ( identifier => $obj->identifier )
+        #                 : ( name => $obj->name )
+        #             ),
+        #         }
+        #     );
+        #     if ($existing_obj) {
+        #         if ( $self->{overwrite_template} ) {
+        #             $obj->id($existing_obj->id);
+        #         }
+        #         else {
+        #             $obj = $existing_obj;
+        #             $exists = 1;
+        #         }
+        #         $objects->{"$class#$old_id"} = $obj;
+        #     }
+        # }
     }
 
-    unless ($exists) {
+    if (($exists == 0) and $obj) {
         my $result;
         if ( $obj->id ) {
             $result = $obj->update();
@@ -352,6 +353,32 @@ sub save_object {
             $self->{callback}->( $obj->errstr );
         }
     }
+}
+
+sub __save_template {
+	my ($self, $class, $obj, $old_id, $objects) = @_;
+    if ( !$obj->blog_id ) {
+        my $existing_obj = $class->load(
+            {   blog_id => 0,
+                (   $obj->identifier
+                    ? ( identifier => $obj->identifier )
+                    : ( name => $obj->name )
+                ),
+            }
+        );
+        if ($existing_obj) {
+            if ( $self->{overwrite_template} ) {
+                $obj->id($existing_obj->id);
+            	$objects->{"$class#$old_id"} = $obj;
+            }
+            else {
+                $obj = $existing_obj;
+            	$objects->{"$class#$old_id"} = $obj;
+                return;
+            }
+        }
+    }
+    return $obj;
 }
 
 1;
