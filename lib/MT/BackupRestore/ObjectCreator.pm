@@ -211,94 +211,13 @@ sub save_object {
         }
     }
     elsif ( 'filter' eq $name ) {
-
-        if ($objects->{ "MT::Author#" . $obj->author_id } )
-        {
-            my $existing_obj = $class->load(
-                {   author_id => $obj->author_id,
-                    label     => $obj->label,
-                    object_ds => $obj->object_ds,
-                }
-            );
-            if ($existing_obj) {
-                $obj->restore_parent_ids( { blog_id => $obj->blog_id }, $objects );
-                $objects->{"$class#$old_id"} = $obj;
-                $obj->id($existing_obj->id);
-            }
-        }
-
-        # Callback for restoring ID in the filter items
-        MT->run_callbacks( 'restore_filter_item_ids', $obj, undef,
-            $objects );
+    	$obj = $self->__save_filter($class, $obj, $old_id, $objects);
     }
     elsif ( 'plugindata' eq $name ) {
-
-        # Skipping System level plugindata
-        # when it was found in the database.
-
-        if ( $obj->key !~ /^configuration:blog:(\d+)$/i ) {
-            if ( my $obj
-                = MT->model('plugindata')
-                ->load( { key => $obj->key, } ) )
-            {
-                $exists = 1;
-                $self->{callback}->("\n");
-                $self->{callback}->(
-                    MT->translate(
-                        "The system level settings for plugin '[_1]' already exist.  Skipping this record.",
-                        $obj->plugin
-                    )
-                );
-            }
-        }
+    	$obj = $self->__save_plugindata($class, $obj, $old_id, $objects);
     }
     elsif ( 'author' eq $name ) {
     	$obj = $self->__save_author($class, $obj, $old_id, $objects);
-        # my $existing_obj = $class->load( { name => $obj->name() } );
-        # if ($existing_obj) {
-        #     if ( UNIVERSAL::isa( MT->instance, 'MT::App' ) && ( $existing_obj->id == MT->instance->user->id ) )
-        #     {
-        #         MT->log(
-        #             {   message => MT->translate(
-        #                     "User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.",
-        #                     $obj->name
-        #                 ),
-        #                 level => MT::Log::INFO(),
-        #                 metadata =>
-        #                     'Permissions and Associations have been restored.',
-        #                 class    => 'system',
-        #                 category => 'restore',
-        #             }
-        #         );
-        #         $objects->{ "$class#" . $old_id } = $existing_obj;
-        #         $objects->{ "$class#" . $old_id }->{no_overwrite} = 1;
-        #         $exists = 1; 
-        #     }
-        #     else {
-        #         MT->log(
-        #             {   message => MT->translate(
-        #                     "User with the same name '[_1]' found (ID:[_2]).  Restore replaced this user with the data backed up.",
-        #                     $obj->name,
-        #                     $old_id
-        #                 ),
-        #                 level => MT::Log::INFO(),
-        #                 metadata =>
-        #                     'Permissions and Associations have been restored as well.',
-        #                 class    => 'system',
-        #                 category => 'restore',
-        #             }
-        #         );
-        #         $obj->id($existing_obj->id);
-        #         $objects->{"$class#$old_id"} = $obj;
-
-        #         my $child_classes = $obj->properties->{child_classes} || {};
-        #         for my $class ( keys %$child_classes ) {
-        #             eval "use $class;";
-        #             $class->remove( { author_id => $obj->id, blog_id => '0' } );
-        #         }
-        #         $obj->userpic_asset_id(0);
-        #     }
-        # }
     }
     elsif ( 'template' eq $name ) {
     	$obj = $self->__save_template($class, $obj, $old_id, $objects);
@@ -334,6 +253,60 @@ sub save_object {
             $self->{callback}->( $obj->errstr );
         }
     }
+}
+
+sub __save_ {
+	my ($self, $class, $obj, $old_id, $objects) = @_;
+	return $obj;	
+}
+
+
+sub __save_filter {
+	my ($self, $class, $obj, $old_id, $objects) = @_;
+
+    if ($objects->{ "MT::Author#" . $obj->author_id } )
+    {
+        my $existing_obj = $class->load(
+            {   author_id => $obj->author_id,
+                label     => $obj->label,
+                object_ds => $obj->object_ds,
+            }
+        );
+        if ($existing_obj) {
+            $obj->restore_parent_ids( { blog_id => $obj->blog_id }, $objects );
+            $objects->{"$class#$old_id"} = $obj;
+            $obj->id($existing_obj->id);
+        }
+    }
+
+    # Callback for restoring ID in the filter items
+    MT->run_callbacks( 'restore_filter_item_ids', $obj, undef,
+        $objects );
+	return $obj;	
+}
+
+sub __save_plugindata {
+	my ($self, $class, $obj, $old_id, $objects) = @_;
+
+    # Skipping System level plugindata
+    # when it was found in the database.
+
+    if ( $obj->key !~ /^configuration:blog:(\d+)$/i ) {
+        if ( my $obj
+            = MT->model('plugindata')
+            ->load( { key => $obj->key, } ) )
+        {
+            $self->{callback}->("\n");
+            $self->{callback}->(
+                MT->translate(
+                    "The system level settings for plugin '[_1]' already exist.  Skipping this record.",
+                    $obj->plugin
+                )
+            );
+            return;
+        }
+    }
+	return $obj;	
 }
 
 sub __save_author {
