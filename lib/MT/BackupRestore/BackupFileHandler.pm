@@ -45,20 +45,16 @@ sub start_element {
     my $attrs = $data->{Attributes};
     my $ns    = $data->{NamespaceURI};
 
-    my $objects  = $self->{objects};
-    my $deferred = $self->{deferred};
     my $callback = $self->{callback};
 
     if ( my $current = $self->{current} ) {
-
         # this is an element for a text column of the object
         $self->{current_text} = [$name];
         return 1;
     }
 
     if ( MT::BackupRestore::NS_MOVABLETYPE() ne $ns ) {
-        my $obj = MT->run_callbacks( "Restore.$name:$ns",
-            $data, $objects, $deferred, $callback );
+        my $obj = $self->__start_non_mt_element($data);
         $self->{current} = $obj if defined($obj) && ( '1' ne $obj );
         return 1;
     }
@@ -95,6 +91,21 @@ sub start_element {
 
     $self->__start_object($data);
     1;
+}
+
+sub __start_non_mt_element {
+    my ($self, $data) = @_;
+
+    my $objects  = $self->{objects};
+    my $deferred = $self->{deferred};
+    my $callback = $self->{callback};
+
+    my $name  = $data->{LocalName};
+    my $ns    = $data->{NamespaceURI};
+
+    my $obj = MT->run_callbacks( "Restore.$name:$ns",
+        $data, $objects, $deferred, $callback );
+    return $obj;
 }
 
 sub characters {
