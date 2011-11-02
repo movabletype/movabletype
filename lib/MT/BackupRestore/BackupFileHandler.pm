@@ -215,37 +215,6 @@ sub __start_object {
         = map { $attrs->{$_}->{LocalName} => $attrs->{$_}->{Value} }
         keys(%$attrs);
     my $obj;
-    if ( 'template' eq $name ) {
-        if ( !$column_data{blog_id} ) {
-            $obj = $class->load(
-                {   blog_id => 0,
-                    (   $column_data{identifier}
-                        ? ( identifier =>
-                                $column_data{identifier} )
-                        : ( name => $column_data{name} )
-                    ),
-                }
-            );
-            if ($obj) {
-                my $old_id = delete $column_data{id};
-                $objects->{"$class#$old_id"} = $obj;
-                if ( $self->{overwrite_template} ) {
-                    my %realcolumns = map {
-                        $_ =>
-                            _decode( delete( $column_data{$_} ) )
-                    } @{ $obj->column_names };
-                    $obj->set_values( \%realcolumns );
-                    $obj->$_( $column_data{$_} )
-                        foreach keys(%column_data);
-                    $self->{current} = $obj;
-                    $self->{loaded}  = 1;
-                }
-                else {
-                    $self->{skip} += 1;
-                }
-            }
-        }
-    }
 
     unless ($obj) {
         $obj = $class->new;
@@ -305,7 +274,6 @@ sub __save_object {
     my $old_id = $obj->id;
     unless (
         (      ( 'template'   eq $name )
-#            || ( 'filter'     eq $name )
             || ( 'plugindata' eq $name )
         )
         && ( exists $self->{loaded} )
@@ -518,6 +486,28 @@ sub __save_object {
                     $class->remove( { author_id => $obj->id, blog_id => '0' } );
                 }
                 $obj->userpic_asset_id(0);
+            }
+        }
+    }
+    elsif ( 'template' eq $name ) {
+        if ( !$obj->blog_id ) {
+            my $existing_obj = $class->load(
+                {   blog_id => 0,
+                    (   $obj->identifier
+                        ? ( identifier => $obj->identifier )
+                        : ( name => $obj->name )
+                    ),
+                }
+            );
+            if ($existing_obj) {
+                if ( $self->{overwrite_template} ) {
+                    $obj->id($existing_obj->id);
+                }
+                else {
+                    $obj = $existing_obj;
+                    $exists = 1;
+                }
+                $objects->{"$class#$old_id"} = $obj;
             }
         }
     }
