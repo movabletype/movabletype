@@ -218,8 +218,9 @@ sub __start_object {
 
     # Pass through even if an blog doesn't restore
     # the parent object
-    my $success = $obj->restore_parent_ids( \%column_data, $objects );
-    if ( $success || ( 'blog' eq $name ) ) {
+    my $success
+        = $obj->restore_parent_ids( \%column_data, $objects );
+    if ( $success || ( !$success && 'blog' eq $name ) ) {
         require MT::Meta;
         my @metacolumns
             = MT::Meta->metadata_by_class( ref($obj) );
@@ -265,7 +266,19 @@ sub __save_object {
     my $class = MT->model($name);
 
     my $old_id = $obj->id;
-
+    unless (
+        (      ( 'template'   eq $name )
+            || ( 'plugindata' eq $name )
+        )
+        && ( exists $self->{loaded} )
+        )
+    {
+        delete $obj->{column_values}->{id};
+        delete $obj->{changed_cols}->{id};
+    }
+    else {
+        delete $self->{loaded};
+    }
     my $exists = 0;
     if ( 'tag' eq $name ) {
         if (my $tag = MT::Tag->load(
