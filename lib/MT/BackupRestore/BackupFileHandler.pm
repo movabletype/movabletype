@@ -16,7 +16,7 @@ sub new {
     my $class   = shift;
     my (%param) = @_;
     my $self    = bless \%param, $class;
-#    $self->{oc} = MT::BackupRestore::ObjectCreator->new(%param);
+    $self->{oc} = MT::BackupRestore::ObjectCreator->new(%param);
     return $self;
 }
 
@@ -52,7 +52,7 @@ sub start_element {
     }
 
     if ( MT::BackupRestore::NS_MOVABLETYPE() ne $ns ) {
-        my $obj = $self->__start_non_mt_element($data);
+        my $obj = $self->{oc}->__start_non_mt_element($data);
         $self->{current} = $obj if defined($obj) && ( '1' ne $obj );
         return 1;
     }
@@ -87,7 +87,7 @@ sub start_element {
         $self->{state} = $state;
     }
 
-    $self->{current} = $self->__start_object($data);
+    $self->{current} = $self->{oc}->__start_object($data);
     1;
 }
 
@@ -115,7 +115,7 @@ sub end_element {
         return;
     }
 
-    $self->__save_object($obj, $data);
+    $self->{oc}->__save_object($obj, $data);
     delete $self->{current};
 }
 
@@ -217,14 +217,14 @@ sub _decode {
 }
 
 
-# package MT::BackupRestore::ObjectCreator;
+package MT::BackupRestore::ObjectCreator;
 
-# sub new {
-#     my $class   = shift;
-#     my (%param) = @_;
-#     my $self    = bless \%param, $class;
-#     return $self;
-# }
+sub new {
+    my $class   = shift;
+    my (%param) = @_;
+    my $self    = bless \%param, $class;
+    return $self;
+}
 
 sub __start_non_mt_element {
     my ($self, $data) = @_;
@@ -271,7 +271,7 @@ sub __start_object {
         = map { $_->{name} => $_->{type} } @metacolumns;
     $self->{metacolumns}{ ref($obj) } = \%metacolumns;
     my %realcolumn_data
-        = map { $_ => _decode( $column_data{$_} ) }
+        = map { $_ => MT::BackupRestore::BackupFileHandler::_decode( $column_data{$_} ) }
         grep { !exists( $metacolumns{$_} ) }
         keys %column_data;
 
