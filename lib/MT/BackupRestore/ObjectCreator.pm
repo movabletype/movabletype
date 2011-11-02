@@ -87,6 +87,10 @@ sub start_object {
     return $obj;
 }
 
+my %func_table = map { ( $_ => "__save_".$_ ) } qw{
+	tag trackback permission objectscore field role 
+	filter plugindata author template};
+
 sub save_object {
     my ($self, $obj, $data) = @_;
 
@@ -99,35 +103,8 @@ sub save_object {
     delete $obj->{column_values}->{id};
     delete $obj->{changed_cols}->{id};
 
-    if ( 'tag' eq $name ) {
-    	$obj = $self->__save_tag($class, $obj, $old_id, $objects);
-    }
-    elsif ( 'trackback' eq $name ) {
-    	$obj = $self->__save_trackback($class, $obj, $old_id, $objects);
-    }
-    elsif ( 'permission' eq $name ) {
-    	$obj = $self->__save_permission($class, $obj, $old_id, $objects);
-    }
-    elsif ( 'objectscore' eq $name ) {
-    	$obj = $self->__save_objectscore($class, $obj, $old_id, $objects);
-    }
-    elsif ( 'field' eq $name ) {
-    	$obj = $self->__save_field($class, $obj, $old_id, $objects);
-    }
-    elsif ( 'role' eq $name ) {
-    	$obj = $self->__save_role($class, $obj, $old_id, $objects);
-    }
-    elsif ( 'filter' eq $name ) {
-    	$obj = $self->__save_filter($class, $obj, $old_id, $objects);
-    }
-    elsif ( 'plugindata' eq $name ) {
-    	$obj = $self->__save_plugindata($class, $obj, $old_id, $objects);
-    }
-    elsif ( 'author' eq $name ) {
-    	$obj = $self->__save_author($class, $obj, $old_id, $objects);
-    }
-    elsif ( 'template' eq $name ) {
-    	$obj = $self->__save_template($class, $obj, $old_id, $objects);
+    if (my $func_name = $func_table{$name}) {
+    	$obj = $self->$func_name($class, $obj, $old_id, $objects);
     }
 
     if ($obj) {
