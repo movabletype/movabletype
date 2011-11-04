@@ -6,20 +6,25 @@ sub new {
     my $class   = shift;
     my (%param) = @_;
     my $self    = bless \%param, $class;
+    $self->set_is_pp(0);
     return $self;
 }
 
+# callback to print status massages
 sub run_callback {
 	my ($self, @msgs) = @_;
     $self->{callback}->($self->{state} . " " . join('', @msgs));
 }
 
+# Set the current class that we are handling right now, so the upcomming 
+# status massages will print it
 sub set_new_class {
 	my ($self, $class_name) = @_;
     my $state = MT->translate( 'Restoring [_1] records:', $class_name );
     $self->{state} = $state;
 }
 
+# The XML::SAX::PurePerl does not do the UTF8 decoding for us
 sub set_is_pp {
 	my ($self, $is_pp) = @_;
 	$self->{decoder} = $is_pp ? \&__decoder_from_utf8 : sub { $_[0] };
@@ -29,6 +34,8 @@ my %func_table = map { ( $_ => "__save_".$_ ) } qw{
 	tag trackback permission objectscore field role 
 	filter plugindata author template};
 
+# Main entry for this object - gets a hash-ref, create an object from it,
+# and saves it. 
 sub save_object {
     my ($self, $obj, $data) = @_;
 
@@ -44,40 +51,37 @@ sub save_object {
     delete $obj->{column_values}->{id};
     delete $obj->{changed_cols}->{id};
 
+    # a type-specific handling, if exists
     if (my $func_name = $func_table{$name}) {
     	$obj = $self->$func_name($class, $obj, $old_id, $objects);
     }
 
-    if ($obj) {
-        my $result;
-        if ( $obj->id ) {
-            $result = $obj->update();
-        }
-        else {
-            $result = $obj->insert();
-        }
-        if ($result) {
-            if ( $class =~ /MT::Asset(::.+)*/ ) {
-                $class = 'MT::Asset';
-            }
-            $self->{objects}->{"$class#$old_id"} = $obj;
-            my $records = $self->{records} || 0;
-            $self->run_callback(
-                MT->translate( "[_1] records restored...", $records ),
-                $data->{LocalName}
-            ) if $records && ( $records % 10 == 0 );
-            $self->{records} = $records + 1;
-            my $cb = "restored.$name";
-            $cb .= ":$ns"
-                if MT::BackupRestore::NS_MOVABLETYPE() ne $ns;
-            MT->run_callbacks( $cb, $obj, $self->{callback} );
-            $obj->call_trigger( 'post_save', $obj );
-        }
-        else {
-            push @{ $self->{errors} }, $obj->errstr;
-            $self->{callback}->( $obj->errstr );
-        }
+    return unless $obj;
+
+    my $result = $obj->id ? $obj->update() : $obj->insert();
+
+    if (not $result) {
+        push @{ $self->{errors} }, $obj->errstr;
+        $self->{callback}->( $obj->errstr );
+        return;
     }
+
+    if ( $class =~ /MT::Asset(::.+)*/ ) {
+        $class = 'MT::Asset';
+    }
+
+    $self->{objects}->{"$class#$old_id"} = $obj;
+    my $records = $self->{records} || 0;
+    $self->run_callback(
+        MT->translate( "[_1] records restored...", $records ),
+        $data->{LocalName}
+    ) if $records && ( $records % 10 == 0 );
+    $self->{records} = $records + 1;
+    my $cb = "restored.$name";
+    $cb .= ":$ns"
+        if MT::BackupRestore::NS_MOVABLETYPE() ne $ns;
+    MT->run_callbacks( $cb, $obj, $self->{callback} );
+    $obj->call_trigger( 'post_save', $obj );
 }
 
 sub __object_from_data {
@@ -123,11 +127,10 @@ sub __object_from_data {
     }
 
     require MT::Meta;
-    my @metacolumns
-        = MT::Meta->metadata_by_class( ref($obj) );
-    my %metacolumns
-        = map { $_->{name} => $_->{type} } @metacolumns;
+    my @metacolumns = MT::Meta->metadata_by_class( ref($obj) );
+    my %metacolumns = map { $_->{name} => $_->{type} } @metacolumns;
     $self->{metacolumns}{ ref($obj) } = \%metacolumns;
+
     my %realcolumn_data
         = map { $_ => $self->{decoder}->( $column_data->{$_} ) }
         grep { !exists( $metacolumns{$_} ) }
@@ -151,6 +154,8 @@ sub __object_from_data {
     return $obj;
 }
 
+# text fields that are represented by their own element in the XML
+# need to be soliciated and decoded
 sub __solicitate_text {
     my ($self, $class, $column_name, $text_data) = @_;
     my $text = join '', @$text_data;
