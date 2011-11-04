@@ -17,8 +17,6 @@ sub new {
     my $class   = shift;
     my (%param) = @_;
     my $self    = bless \%param, $class;
-    require MT::BackupRestore::ObjectCreator;
-    $self->{oc} = MT::BackupRestore::ObjectCreator->new(%param);
     return $self;
 }
 
@@ -30,7 +28,7 @@ sub start_document {
     $self->{current_class} = '';
     $self->{current} = undef;
 
-    $self->{oc}->set_is_pp($self->{is_pp});
+    $self->{obj_creator}->set_is_pp($self->{is_pp});
     1;
 }
 
@@ -45,8 +43,6 @@ sub start_element {
     my $name  = $data->{LocalName};
     my $attrs = $data->{Attributes};
     my $ns    = $data->{NamespaceURI};
-
-    my $callback = $self->{callback};
 
     if ( my $current = $self->{current} ) {
         # this is an element for a text column of the object
@@ -74,7 +70,7 @@ sub start_element {
         if ( $self->{current_class} ne $class ) {
             if ( my $c = $self->{current_class} ) {
                 my $records = $self->{records};
-                $self->{oc}->run_callback(
+                $self->{obj_creator}->run_callback(
                     MT->translate("[_1] records restored.", $records),
                     $c->class_type || $c->datasource
                 );
@@ -82,8 +78,8 @@ sub start_element {
             $self->{records}       = 0;
             $self->{current_class} = $class;
             my $state = MT->translate( 'Restoring [_1] records:', $class );
-            $self->{oc}->set_new_class($class);
-            $self->{oc}->run_callback($name);
+            $self->{obj_creator}->set_new_class($class);
+            $self->{obj_creator}->run_callback($name);
         }
     }
     else {
@@ -121,7 +117,7 @@ sub end_element {
         return;
     }
 
-    $self->{oc}->save_object($obj, $data);
+    $self->{obj_creator}->save_object($obj, $data);
     delete $self->{current};
 }
 
@@ -170,7 +166,7 @@ sub end_document {
 
     if ( my $c = $self->{current_class} ) {
         my $records = $self->{records};
-        $self->{oc}->run_callback(
+        $self->{obj_creator}->run_callback(
             MT->translate( "[_1] records restored.", $records ),
             $c->class_type || $c->datasource
         );

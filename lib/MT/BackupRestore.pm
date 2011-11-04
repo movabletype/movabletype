@@ -452,19 +452,24 @@ sub restore_process_single_file {
 
     require XML::SAX;
     require MT::BackupRestore::BackupFileHandler;
-    my $handler = MT::BackupRestore::BackupFileHandler->new(
+    require MT::BackupRestore::ObjectCreator;
+    my $objCreator = MT::BackupRestore::ObjectCreator->new(
         callback           => $callback,
         objects            => $objects,
         deferred           => $deferred,
         errors             => $errors,
-        schema_version     => $schema_version,
         overwrite_template => $overwrite,
+    );
+    my $handler = MT::BackupRestore::BackupFileHandler->new(
+        errors             => $errors,
+        schema_version     => $schema_version,
+        obj_creator         => $objCreator,
     );
 
     require MT::Util;
     my $parser = MT::Util::sax_parser();
     $callback->( ref($parser) . "\n" ) if MT->config->DebugMode;
-    $handler->{is_pp} = ref($parser) eq 'XML::SAX::PurePerl' ? 1 : 0;
+    $objCreator->set_is_pp( ref($parser) eq 'XML::SAX::PurePerl' ? 1 : 0);
     $parser->{Handler} = $handler;
     eval { $parser->parse_file($fh); };
     if ( my $e = $@ ) {

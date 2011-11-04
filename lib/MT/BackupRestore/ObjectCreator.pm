@@ -25,19 +25,59 @@ sub set_is_pp {
 	$self->{decoder} = $is_pp ? \&__decoder_from_utf8 : sub { $_[0] };
 }
 
-sub start_non_mt_element {
-    my ($self, $data) = @_;
+my %func_table = map { ( $_ => "__save_".$_ ) } qw{
+	tag trackback permission objectscore field role 
+	filter plugindata author template};
 
-    my $objects  = $self->{objects};
-    my $deferred = $self->{deferred};
-    my $callback = $self->{callback};
+sub save_object {
+    my ($self, $obj, $data) = @_;
+
+    $obj = $self->__object_from_data($obj, $data);
+    return unless $obj;
 
     my $name  = $data->{LocalName};
     my $ns    = $data->{NamespaceURI};
+    my $objects  = $self->{objects};
+    my $class = MT->model($name);
 
-    my $obj = MT->run_callbacks( "Restore.$name:$ns",
-        $data, $objects, $deferred, $callback );
-    return $obj;
+    my $old_id = $obj->id;
+    delete $obj->{column_values}->{id};
+    delete $obj->{changed_cols}->{id};
+
+    if (my $func_name = $func_table{$name}) {
+    	$obj = $self->$func_name($class, $obj, $old_id, $objects);
+    }
+
+    if ($obj) {
+        my $result;
+        if ( $obj->id ) {
+            $result = $obj->update();
+        }
+        else {
+            $result = $obj->insert();
+        }
+        if ($result) {
+            if ( $class =~ /MT::Asset(::.+)*/ ) {
+                $class = 'MT::Asset';
+            }
+            $self->{objects}->{"$class#$old_id"} = $obj;
+            my $records = $self->{records} || 0;
+            $self->run_callback(
+                MT->translate( "[_1] records restored...", $records ),
+                $data->{LocalName}
+            ) if $records && ( $records % 10 == 0 );
+            $self->{records} = $records + 1;
+            my $cb = "restored.$name";
+            $cb .= ":$ns"
+                if MT::BackupRestore::NS_MOVABLETYPE() ne $ns;
+            MT->run_callbacks( $cb, $obj, $self->{callback} );
+            $obj->call_trigger( 'post_save', $obj );
+        }
+        else {
+            push @{ $self->{errors} }, $obj->errstr;
+            $self->{callback}->( $obj->errstr );
+        }
+    }
 }
 
 sub __object_from_data {
@@ -143,61 +183,6 @@ sub __solicitate_text {
     return;
 }
 
-
-my %func_table = map { ( $_ => "__save_".$_ ) } qw{
-	tag trackback permission objectscore field role 
-	filter plugindata author template};
-
-sub save_object {
-    my ($self, $obj, $data) = @_;
-
-    $obj = $self->__object_from_data($obj, $data);
-    return unless $obj;
-
-    my $name  = $data->{LocalName};
-    my $ns    = $data->{NamespaceURI};
-    my $objects  = $self->{objects};
-    my $class = MT->model($name);
-
-    my $old_id = $obj->id;
-    delete $obj->{column_values}->{id};
-    delete $obj->{changed_cols}->{id};
-
-    if (my $func_name = $func_table{$name}) {
-    	$obj = $self->$func_name($class, $obj, $old_id, $objects);
-    }
-
-    if ($obj) {
-        my $result;
-        if ( $obj->id ) {
-            $result = $obj->update();
-        }
-        else {
-            $result = $obj->insert();
-        }
-        if ($result) {
-            if ( $class =~ /MT::Asset(::.+)*/ ) {
-                $class = 'MT::Asset';
-            }
-            $self->{objects}->{"$class#$old_id"} = $obj;
-            my $records = $self->{records} || 0;
-            $self->run_callback(
-                MT->translate( "[_1] records restored...", $records ),
-                $data->{LocalName}
-            ) if $records && ( $records % 10 == 0 );
-            $self->{records} = $records + 1;
-            my $cb = "restored.$name";
-            $cb .= ":$ns"
-                if MT::BackupRestore::NS_MOVABLETYPE() ne $ns;
-            MT->run_callbacks( $cb, $obj, $self->{callback} );
-            $obj->call_trigger( 'post_save', $obj );
-        }
-        else {
-            push @{ $self->{errors} }, $obj->errstr;
-            $self->{callback}->( $obj->errstr );
-        }
-    }
-}
 
 sub __save_tag {
 	my ($self, $class, $obj, $old_id, $objects) = @_;
