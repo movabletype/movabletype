@@ -54,38 +54,46 @@ sub start_element {
         return 1;
     }
 
-    if ( MT::BackupRestore::NS_MOVABLETYPE() ne $ns ) {
-        my $obj = $self->{oc}->start_non_mt_element($data);
-        $self->{current} = $obj if defined($obj) && ( '1' ne $obj );
-        return 1;
-    }
+    my %column_data;
 
+    if ( MT::BackupRestore::NS_MOVABLETYPE() eq $ns ) {
 
-    my $class = MT->model($name);
-    unless ($class) {
-        push @{ $self->{errors} },
-            MT->translate(
-            '[_1] is not a subject to be restored by Movable Type.',
-            $name );
-        return 1;
-    }
+        %column_data = 
+            map { $attrs->{$_}->{LocalName} => $attrs->{$_}->{Value} }
+            keys(%$attrs);
 
-    if ( $self->{current_class} ne $class ) {
-        if ( my $c = $self->{current_class} ) {
-            my $records = $self->{records};
-            $self->{oc}->run_callback(
-                MT->translate("[_1] records restored.", $records),
-                $c->class_type || $c->datasource
-            );
+        my $class = MT->model($name);
+        unless ($class) {
+            push @{ $self->{errors} },
+                MT->translate(
+                '[_1] is not a subject to be restored by Movable Type.',
+                $name );
+            return 1;
         }
-        $self->{records}       = 0;
-        $self->{current_class} = $class;
-        my $state = MT->translate( 'Restoring [_1] records:', $class );
-        $self->{oc}->set_new_class($class);
-        $self->{oc}->run_callback($name);
+
+        if ( $self->{current_class} ne $class ) {
+            if ( my $c = $self->{current_class} ) {
+                my $records = $self->{records};
+                $self->{oc}->run_callback(
+                    MT->translate("[_1] records restored.", $records),
+                    $c->class_type || $c->datasource
+                );
+            }
+            $self->{records}       = 0;
+            $self->{current_class} = $class;
+            my $state = MT->translate( 'Restoring [_1] records:', $class );
+            $self->{oc}->set_new_class($class);
+            $self->{oc}->run_callback($name);
+        }
+    }
+    else {
+        # this is an alian object - we need to keep track on the original attributs
+        my %attrs2 = %$attrs;
+        $column_data{'%attributes'} = \%attrs2;
     }
 
-    $self->{current} = $self->{oc}->start_object($data);
+    $self->{current} = \%column_data;
+
     1;
 }
 
@@ -96,7 +104,6 @@ sub characters {
     return if !exists( $self->{current} );
     if ( my $text_data = $self->{current_text} ) {
         push @$text_data, $data->{Data};
-        $self->{current_text} = $text_data;
     }
     1;
 }

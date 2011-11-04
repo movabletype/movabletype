@@ -40,31 +40,30 @@ sub start_non_mt_element {
     return $obj;
 }
 
-sub start_object {
-    my ($self, $data) = @_;
-
-    my $objects  = $self->{objects};
-    my $attrs = $data->{Attributes};
-    my $name  = $data->{LocalName};
-    my $class = MT->model($name);
-
-
-    my %column_data
-        = map { $attrs->{$_}->{LocalName} => $attrs->{$_}->{Value} }
-        keys(%$attrs);
-
-    return \%column_data;
-}
-
 sub __object_from_data {
-	my ($self, $column_data, $data) = @_;
+	my ($self, $column_data, $xml_data) = @_;
     
-    my $name  = $data->{LocalName};
-    my $ns    = $data->{NamespaceURI};
+    my $name  = $xml_data->{LocalName};
+    my $ns    = $xml_data->{NamespaceURI};
     my $objects  = $self->{objects};
-    my $class = MT->model($name);
 
-    my $obj = $class->new;
+    my ($class, $obj);
+	if ( MT::BackupRestore::NS_MOVABLETYPE() eq $ns ) {
+	    $class = MT->model($name);
+	    $obj = $class->new;
+	}
+	else {
+		# this is a non-MT object. try to use callback
+		# but first, we kept the attributes in column_data
+	    my $deferred = $self->{deferred};
+	    my $callback = $self->{callback};
+	    my $attrs = $xml_data->{Attributes} = $column_data->{'%attributes'};
+	    $obj = MT->run_callbacks( "Restore.$name:$ns",
+	        $xml_data, $objects, $deferred, $callback );
+	    return unless $obj and ref $obj;
+	    delete $column_data->{'%attributes'};
+	    $class = ref $obj;
+	}
 
     # Pass through even if an blog doesn't restore
     # the parent object
