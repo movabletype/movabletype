@@ -28,7 +28,6 @@ sub start_document {
     $self->{current_class} = '';
     $self->{current} = undef;
 
-    $self->{obj_creator}->set_is_pp($self->{is_pp});
     1;
 }
 
@@ -177,3 +176,45 @@ sub end_document {
 
 
 1;
+__END__
+
+=head1 NAME
+
+MT::BackupRestore::BackupFileHandler - A XML SAX File reader for restoring MT database from backup
+
+=head1 SYNOPSIS
+
+    my $handler = MT::BackupRestore::BackupFileHandler->new(
+        errors             => $errors,
+        schema_version     => $schema_version,
+        obj_creator         => $objCreator,
+    );
+    $parser->{Handler} = $handler;
+    $parser->parse_file($fh);
+
+=head1 DESCRIPTION
+
+This module is the first step to restoring a backup. It reads the XML file, and
+produce data packages, that in turn will be saved as objects by the object creator.
+
+This $handler then need to be set to a SAX parser as a handler
+
+=head1 PARAMETERS
+
+With $errors an array-ref for storing the errors encountered during the process,
+and $objCreator is the Object Creation engine, that should implement these functions:
+
+    run_callback(@msgs)         # will print this massages to the user
+    set_new_class($class_name)  # e.g. $oc->set_new_class('MT::Author')
+    save_object($obj, $data)    # should save the object
+
+For save_object, $obj is the info collected, and $data is the XML data for this 
+object. (name space, element name, etc.) If the object is not of MT namespace, 
+the original attributes will be contained in $obj->{'%attributes'}. sub-elements 
+of the object are saved in an array-ref, and need to be re-joined.
+
+=head1 AUTHOR & COPYRIGHTS
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

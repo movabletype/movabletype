@@ -9,7 +9,7 @@ use FindBin;
 use File::Spec;
 use MT::Test;
 
-use Test::More tests => 251;
+use Test::More tests => 252;
 
 use_ok('MT::Bootstrap');
 use_ok('MT::ErrorHandler');
@@ -268,6 +268,7 @@ use_ok('MT::AtomServer');
 use_ok('MT::BackupRestore');
 use_ok('MT::BackupRestore::BackupFileHandler');
 use_ok('MT::BackupRestore::ManifestFileHandler');
+use_ok('MT::BackupRestore::ObjectCreator');
 
 # Cache support
 use_ok('MT::Cache::Negotiate');
