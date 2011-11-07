@@ -48,7 +48,7 @@ class MT {
     protected $request;
     protected $http_error;
     protected $cfg_file;
-    private  $cache_driver = null;
+    protected  $cache_driver = null;
     private static $_instance = null;
 
     /***
@@ -68,11 +68,26 @@ class MT {
         }
     }
 
+    final public function __clone(){
+        throw new MTException("Can't clone this object");
+    }
+
     public static function get_instance($blog_id = null, $cfg_file = null) {
         if (is_null(MT::$_instance)) {
             MT::$_instance = new MT($blog_id, $cfg_file);
         }
         return MT::$_instance;
+    }
+
+    final public static function set_instance( $inst ) {
+        if ( empty( $inst ) )
+            throw new MTInvalidArgumentException( 'Not a valid instance' );
+        if ( !is_subclass_of( $inst, 'MT' ) )
+             throw new MTInvalidArgumentException( 'Not a valid instance' );
+        if ( !is_null( MT::$_instance ) )
+            throw new MTInvalidArgumentException( 'The instance is already launched' );
+
+        MT::$_instance = $inst;
     }
 
     public function caching($val = null) {

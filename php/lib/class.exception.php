@@ -15,6 +15,13 @@ class MTBuildException extends MTException {
 }
 
 /***
+ * Exception class about function argument
+ */
+class MTInvalidArgumentException extends MTException {
+
+}
+
+/***
  * Exception class about database
  */
 class MTDBException extends MTException {
