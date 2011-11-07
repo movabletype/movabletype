@@ -8,6 +8,8 @@ package MT::BackupRestore::ObjectCreator;
 use strict;
 use warnings;
 
+my $CbName = "MT::BackupRestore::ObjectRestoreFilter";
+
 sub new {
     my $class   = shift;
     my (%param) = @_;
@@ -36,10 +38,6 @@ sub set_is_pp {
 	$self->{decoder} = $is_pp ? \&__decoder_from_utf8 : sub { $_[0] };
 }
 
-my %func_table = map { ( $_ => "__save_".$_ ) } qw{
-	tag trackback permission objectscore field role 
-	filter plugindata author template};
-
 # Main entry for this object - gets a hash-ref, create an object from it,
 # and saves it. 
 sub save_object {
@@ -58,11 +56,10 @@ sub save_object {
     delete $obj->{changed_cols}->{id};
 
     # a type-specific handling, if exists
-    if (my $func_name = $func_table{$name}) {
-    	$obj = $self->$func_name($class, $obj, $old_id, $objects);
-    }
-
-    return unless $obj;
+    my $mns = MT::BackupRestore::NS_MOVABLETYPE() eq $ns ? '' : ":$ns";
+    my $cb_name = "$CbName.$name$mns";
+    my $result = MT->run_callbacks($cb_name, $self, $class, $obj, $old_id, $objects);
+    return unless $result;
 
     my $result = $obj->id ? $obj->update() : $obj->insert();
 
@@ -194,9 +191,20 @@ sub __solicitate_text {
     return;
 }
 
+sub __decoder_from_utf8 {
+    my ($str) = @_;
 
+    $str = Encode::decode_utf8($str) unless Encode::is_utf8($str);
+    return $str;
+}
+
+#####################################################################
+#
+# class-specific pre-restoring callbacks
+
+MT->add_callback("$CbName.tag", 5, undef, \&__save_tag);
 sub __save_tag {
-	my ($self, $class, $obj, $old_id, $objects) = @_;
+	my ($cb, $self, $class, $obj, $old_id, $objects) = @_;
     if (my $tag = MT::Tag->load(
             { name   => $obj->name },
             { binary => { name => 1 } }
@@ -210,13 +218,14 @@ sub __save_tag {
                 "Tag '[_1]' exists in the system.", $obj->name
             )
         );
-        return;
+        return 0;
     }
-	return $obj;	
+	return 1;	
 }
 
+MT->add_callback("$CbName.trackback", 5, undef, \&__save_trackback);
 sub __save_trackback {
-	my ($self, $class, $obj, $old_id, $objects) = @_;
+	my ($cb, $self, $class, $obj, $old_id, $objects) = @_;
     my $term;
     my $message;
     if ( $obj->entry_id ) {
@@ -243,36 +252,39 @@ sub __save_trackback {
             "trackback"
         ) if $records && ( $records % 10 == 0 );
         $self->{records} = $records + 1;
-        return;
+        return 0;
     }
-	return $obj;	
+	return 1;
 }
 
+MT->add_callback("$CbName.permission", 5, undef, \&__save_permission);
 sub __save_permission {
-	my ($self, $class, $obj, $old_id, $objects) = @_;
+	my ($cb, $self, $class, $obj, $old_id, $objects) = @_;
     my $perm = $class->exist(
         {   author_id => $obj->author_id,
             blog_id   => $obj->blog_id
         }
     );
-    return if $perm;
-	return $obj;	
+    return 0 if $perm;
+	return 1;	
 }
 
+MT->add_callback("$CbName.objectscore", 5, undef, \&__save_objectscore);
 sub __save_objectscore {
-	my ($self, $class, $obj, $old_id, $objects) = @_;
+	my ($cb, $self, $class, $obj, $old_id, $objects) = @_;
     my $score = $class->exist(
         {   author_id => $obj->author_id,
             object_id => $obj->object_id,
             object_ds => $obj->object_ds,
         }
     );
-    return if $score;
-	return $obj;	
+    return 0 if $score;
+	return 1;	
 }
 
+MT->add_callback("$CbName.field", 5, undef, \&__save_field);
 sub __save_field {
-	my ($self, $class, $obj, $old_id, $objects) = @_;
+	my ($cb, $self, $class, $obj, $old_id, $objects) = @_;
 
     # Available in propack only
     if ( $obj->blog_id == 0 ) {
@@ -281,13 +293,14 @@ sub __save_field {
                 basename => $obj->basename,
             }
         );
-        return if $field;
+        return 0 if $field;
     }
-	return $obj;	
+	return 1;	
 }
 
+MT->add_callback("$CbName.role", 5, undef, \&__save_role);
 sub __save_role {
-	my ($self, $class, $obj, $old_id, $objects) = @_;
+	my ($cb, $self, $class, $obj, $old_id, $objects) = @_;
     my $role = $class->load( { name => $obj->name } );
     if ($role) {
         my $old_perms = join '',
@@ -296,7 +309,7 @@ sub __save_role {
             sort { $a cmp $b } split( ',', $role->permissions );
         if ( $old_perms eq $cur_perms ) {
             $self->{objects}->{"$class#$old_id"} = $role;
-            return;
+            return 0;
         }
         else {
 
@@ -320,11 +333,12 @@ sub __save_role {
             );
         }
     }
-	return $obj;	
+	return 1;	
 }
 
+MT->add_callback("$CbName.filter", 5, undef, \&__save_filter);
 sub __save_filter {
-	my ($self, $class, $obj, $old_id, $objects) = @_;
+	my ($cb, $self, $class, $obj, $old_id, $objects) = @_;
 
     if ($objects->{ "MT::Author#" . $obj->author_id } )
     {
@@ -343,11 +357,12 @@ sub __save_filter {
     # Callback for restoring ID in the filter items
     MT->run_callbacks( 'restore_filter_item_ids', $obj, undef,
         $objects );
-	return $obj;	
+	return 1;	
 }
 
+MT->add_callback("$CbName.plugindata", 5, undef, \&__save_plugindata);
 sub __save_plugindata {
-	my ($self, $class, $obj, $old_id, $objects) = @_;
+	my ($cb, $self, $class, $obj, $old_id, $objects) = @_;
 
     # Skipping System level plugindata
     # when it was found in the database.
@@ -364,14 +379,15 @@ sub __save_plugindata {
                     $obj->plugin
                 )
             );
-            return;
+            return 0;
         }
     }
-	return $obj;	
+	return 1;	
 }
 
+MT->add_callback("$CbName.author", 5, undef, \&__save_author);
 sub __save_author {
-	my ($self, $class, $obj, $old_id, $objects) = @_;
+	my ($cb, $self, $class, $obj, $old_id, $objects) = @_;
     my $existing_obj = $class->load( { name => $obj->name() } );
     if ($existing_obj) {
         if ( UNIVERSAL::isa( MT->instance, 'MT::App' ) && ( $existing_obj->id == MT->instance->user->id ) )
@@ -390,7 +406,7 @@ sub __save_author {
             );
             $objects->{ "$class#" . $old_id } = $existing_obj;
             $objects->{ "$class#" . $old_id }->{no_overwrite} = 1;
-            return;
+            return 0;
         }
         else {
             MT->log(
@@ -417,11 +433,12 @@ sub __save_author {
             $obj->userpic_asset_id(0);
         }
     }
-    return $obj;
+    return 1;
 }
 
+MT->add_callback("$CbName.template", 5, undef, \&__save_template);
 sub __save_template {
-	my ($self, $class, $obj, $old_id, $objects) = @_;
+	my ($cb, $self, $class, $obj, $old_id, $objects) = @_;
     if ( !$obj->blog_id ) {
         my $existing_obj = $class->load(
             {   blog_id => 0,
@@ -437,21 +454,12 @@ sub __save_template {
             	$objects->{"$class#$old_id"} = $obj;
             }
             else {
-                $obj = $existing_obj;
-            	$objects->{"$class#$old_id"} = $obj;
-                return;
+            	$objects->{"$class#$old_id"} = $existing_obj;
+                return 0;
             }
         }
     }
-    return $obj;
+    return 1;
 }
-
-sub __decoder_from_utf8 {
-    my ($str) = @_;
-
-    $str = Encode::decode_utf8($str) unless Encode::is_utf8($str);
-    return $str;
-}
-
 
 1;
