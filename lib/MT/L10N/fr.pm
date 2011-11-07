@@ -4168,7 +4168,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/header.tmpl
 	'Signed in as [_1]' => 'Identifié comme étant [_1]',
 	'Help' => 'Aide',
-	'Sign out' => 'c',
+	'Sign out' => 'Déconnexion',
 	'View Site' => 'Voir le site',
 	'Search (q)' => 'Recherche (q)',
 	'Create New' => 'Créer...',
