@@ -42,7 +42,6 @@ abstract class MTDatabase {
         $this->id = md5(uniqid('MTDatabase',true));
         $this->connect($user, $password, $dbname, $host, $port, $sock);
         ADOdb_Active_Record::SetDatabaseAdapter($this->conn);
-#        $this->conn->debug = true;
     }
 
     // Abstract method
@@ -51,6 +50,10 @@ abstract class MTDatabase {
     abstract public function set_names($mt);
 
     // Utility method
+    public function debug_mode ($stat = false) {
+        $this->conn->debug = $stat;
+    }
+
     public function has_distinct_support () {
         return $this->has_distinct;
     }

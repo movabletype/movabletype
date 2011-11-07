@@ -25,7 +25,7 @@ class MTDBException extends MTException {
         $this->last_query = $query;
         parent::__construct($message, $code);
     }
-    
+
     public function __toString() {
         return parent::__toString() . "\n" . "last query: " . $this->last_query;
     }

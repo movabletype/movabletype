@@ -41,13 +41,13 @@ class MT {
     protected $debugging = false;
     protected $caching = false;
     protected $conditional = false;
+    protected $query_log = array();
     protected $log = array();
     protected $warning = array();
     protected $id;
     protected $request;
     protected $http_error;
     protected $cfg_file;
-
     private  $cache_driver = null;
     private static $_instance = null;
 
@@ -117,6 +117,18 @@ class MT {
             $charset = $this->config('PublishCharset');
             mb_internal_encoding($charset);
             mb_http_output($charset);
+        }
+
+        # Debug Support
+        if ( $this->debugging ) {
+            $this->db()->debug_mode( true );
+
+            global $ADODB_OUTP;
+            $ADODB_OUTP = create_function( '$msg, $newline', '
+                $mt = MT::get_instance();
+                if ($newline) $msg .= "<br>\n";
+                $mt->query_log( strip_tags($msg) );
+             ');
         }
     }
 
@@ -217,7 +229,7 @@ class MT {
      */
     public function cache_driver() {
         if (isset($this->cache_driver)) return $this->cache_driver;
-    
+
         # Check for memcached enabled
         require_once("class.basecache.php");
         try {
@@ -652,15 +664,11 @@ class MT {
             $this->_dump($this->warning);
         }
 
-#        if ($this->debugging) {
-#            $this->log("Queries: ".$mtdb->num_queries);
-#            $this->log("Queries executed:");
-#            $queries = $mtdb->savedqueries;
-#            foreach ($queries as $q) {
-#                $this->log($q);
-#            }
-#            $this->log_dump();
-#        }
+        if ($this->debugging) {
+            $this->log( "Queries: ". count($this->query_log) );
+            $this->log( "Queries executed:" );
+            $this->log_dump();
+        }
         restore_error_handler();
     }
 
@@ -762,7 +770,12 @@ class MT {
     }
 
     function log_dump() {
+        $this->_dump($this->query_log);
+        unset($this->query_log);
         $this->_dump($this->log);
+        unset($this->log);
+        $this->_dump($this->warning);
+        unset($this->warning);
     }
 
     function error_handler($errno, $errstr, $errfile, $errline) {
@@ -862,6 +875,10 @@ class MT {
 
     function log($msg = null) {
         $this->log[] = $msg;
+    }
+
+    function query_log($msg = null) {
+        $this->query_log[] = $msg;
     }
 
     function translate($str, $params = null) {
