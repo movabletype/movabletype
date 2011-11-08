@@ -1005,64 +1005,49 @@ sub clone_with_children {
     $callback->(
         MT->translate( "Cloned blog... new id is [_1].", $new_blog_id ) );
 
-    if ( $classes->{'MT::Permission'} )
-    {
-
-        # Cloning PERMISSIONS records
-        $counter = 0;
-        my $state = MT->translate("Cloning permissions for blog:");
-        $callback->( $state, "perms" );
-        require MT::Permission;
-        $iter = MT::Permission->load_iter( { blog_id => $old_blog_id } );
-
-        while ( my $perm = $iter->() ) {
+    my %load_terms;
+    my $cloner = sub {
+        my ($class, $name, $pre_save, $terms) = @_;
+        return unless $classes->{$class};
+        my $counter = 0;
+        $terms ||= {};
+        my $state = MT->translate("Cloning [_1] for blog:", $class);
+        $callback->( $state, $name );
+        eval "use $class";
+        die "Blog::clone_with_children: Failed to load $class" if $@;
+        my $iter = $class->load_iter( { blog_id => $old_blog_id, %load_terms } );
+        while ( my $obj = $iter->() ) {
             $callback->(
                 $state . " "
                     . MT->translate( "[_1] records processed...", $counter ),
-                'perms'
+                $name
             ) if $counter && ( $counter % 100 == 0 );
             $counter++;
-            my $new_perm = $perm->clone();
-            delete $new_perm->{column_values}->{id};
-            delete $new_perm->{changed_cols}->{id};
-            $new_perm->blog_id($new_blog_id);
-            $new_perm->save or die $new_perm->errstr;
+            my $old_id = $obj->id;
+            my $new_obj = $obj->clone();
+            delete $new_obj->{column_values}->{id};
+            delete $new_obj->{changed_cols}->{id};
+            $new_obj->blog_id($new_blog_id);
+            $pre_save->($obj, $old_id) if $pre_save;
+            $new_obj->save or die $new_obj->errstr;
         }
         $callback->(
             $state . " "
                 . MT->translate( "[_1] records processed.", $counter ),
-            'perms'
+            $name
         );
-    }
+    };
 
-    if ( $classes->{'MT::Association'} )
-    {
+    $cloner->('MT::Permission', 'perms');
 
-        # Cloning association records
-        $counter = 0;
-        my $state = MT->translate("Cloning associations for blog:");
-        $callback->( $state, "assoc" );
-        require MT::Association;
-        $iter = MT::Association->load_iter( { blog_id => $old_blog_id } );
-        while ( my $assoc = $iter->() ) {
-            $callback->(
-                $state . " "
-                    . MT->translate( "[_1] records processed...", $counter ),
-                'assoc'
-            ) if $counter && ( $counter % 100 == 0 );
-            $counter++;
-            my $new_assoc = $assoc->clone();
-            delete $new_assoc->{column_values}->{id};
-            delete $new_assoc->{changed_cols}->{id};
-            $new_assoc->blog_id($new_blog_id);
-            $new_assoc->save or die $new_assoc->errstr;
-        }
-        $callback->(
-            $state . " "
-                . MT->translate( "[_1] records processed.", $counter ),
-            'assoc'
-        );
-    }
+    $cloner->('MT::Association', 'assoc');
+
+    %load_terms = (class => '*');
+    $cloner->('MT::Entry', 'entries', sub {
+        my ($obj, $old_id) = @_;
+        $entry_map{$old_id} = $obj;
+    });
+    $entry_map{$_} = $entry_map{$_}->id foreach keys %entry_map;
 
     # include/exclude class logic
     # if user has not specified 'Classes' element, clone everything
@@ -1076,33 +1061,6 @@ sub clone_with_children {
 
     if ( $classes->{'MT::Entry'} ) {
 
-        # Cloning ENTRY records
-        my $state = MT->translate("Cloning entries and pages for blog...");
-        $callback->( $state, "entries" );
-        $counter = 0;
-        require MT::Entry;
-        $iter = MT::Entry->load_iter(
-            { blog_id => $old_blog_id, class => '*' } );
-        while ( my $entry = $iter->() ) {
-            $callback->(
-                $state . " "
-                    . MT->translate( "[_1] records processed...", $counter ),
-                'entries'
-            ) if $counter && ( $counter % 100 == 0 );
-            $counter++;
-            my $entry_id  = $entry->id;
-            my $new_entry = $entry->clone();
-            delete $new_entry->{column_values}->{id};
-            delete $new_entry->{changed_cols}->{id};
-            $new_entry->blog_id($new_blog_id);
-            $new_entry->save or die $new_entry->errstr;
-            $entry_map{$entry_id} = $new_entry->id;
-        }
-        $callback->(
-            $state . " "
-                . MT->translate( "[_1] records processed.", $counter ),
-            'entries'
-        );
 
         if ( $classes->{'MT::Category'} )
         {
