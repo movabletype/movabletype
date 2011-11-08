@@ -1756,6 +1756,21 @@ parameters described above.  XML Namespace is required to be registered,
 so an xml node can be resolved into what plugins to be called back, 
 and can be distinguished the same element name with each other.
 
+=item MT::BackupRestore::ObjectRestoreFilter.<element_name>:<xmlnamespace>
+
+A callback-filter, called then the object is assambled completely. 
+The "Restore.<element_name>:<xmlnamespace>" is called before the text
+sub-elements are included in the data. 
+
+If the filter returns 1, the object will be save to the Database and 
+in the $objects hash. If the filter returns 0, the object will not be 
+saved
+
+    callback($cb, $obj_creator, $class, $obj, $old_id, $objects)
+
+This is your chance to manipulate the object, based on the object itself.
+If there is a need for al the objects to be loaded, use the restore callback 
+
 =item restore
     
 Calling convention is:
