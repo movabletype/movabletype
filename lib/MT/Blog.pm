@@ -961,7 +961,13 @@ sub clone_with_children {
     my $classes    = $params->{Classes};
     my $blog_name  = $params->{BlogName};
     my $website_id = $params->{Website};
-    delete $$params{Children} if ( $params->{Children} );
+    delete $params->{Children} if ( $params->{Children} );
+    for my $class (qw{
+        MT::Permission MT::Association MT::Entry 
+        MT::Category MT::Comment MT::ObjectTag MT::Trackback 
+        MT::TBPing MT::Template}) {
+        $classes->{$class} = 1 unless exists $classes->{$class};
+    }
     my $old_blog_id = $blog->id;
 
     # we must clone:
@@ -999,8 +1005,7 @@ sub clone_with_children {
     $callback->(
         MT->translate( "Cloned blog... new id is [_1].", $new_blog_id ) );
 
-    if ( ( !exists $classes->{'MT::Permission'} )
-        || $classes->{'MT::Permission'} )
+    if ( $classes->{'MT::Permission'} )
     {
 
         # Cloning PERMISSIONS records
@@ -1030,8 +1035,7 @@ sub clone_with_children {
         );
     }
 
-    if ( ( !exists $classes->{'MT::Association'} )
-        || $classes->{'MT::Association'} )
+    if ( $classes->{'MT::Association'} )
     {
 
         # Cloning association records
@@ -1070,7 +1074,7 @@ sub clone_with_children {
     # MT::Entry -> MT::Category, MT::Comment, MT::Tracback, MT::TBPing
     # MT::Page -> MT::Folder, MT::Comment, MT::Trackback, MT::TBPing
 
-    if ( ( !exists $classes->{'MT::Entry'} ) || $classes->{'MT::Entry'} ) {
+    if ( $classes->{'MT::Entry'} ) {
 
         # Cloning ENTRY records
         my $state = MT->translate("Cloning entries and pages for blog...");
@@ -1100,8 +1104,7 @@ sub clone_with_children {
             'entries'
         );
 
-        if ( ( !exists $classes->{'MT::Category'} )
-            || $classes->{'MT::Category'} )
+        if ( $classes->{'MT::Category'} )
         {
 
             # Cloning CATEGORY records
@@ -1193,8 +1196,7 @@ sub clone_with_children {
             );
         }
 
-        if ( ( !exists $classes->{'MT::Comment'} )
-            || $classes->{'MT::Comment'} )
+        if ( $classes->{'MT::Comment'} )
         {
 
             # Comments can only be cloned if entries are cloned.
@@ -1241,8 +1243,7 @@ sub clone_with_children {
             );
         }
 
-        if ( ( !exists $classes->{'MT::ObjectTag'} )
-            || $classes->{'MT::ObjectTag'} )
+        if ( $classes->{'MT::ObjectTag'} )
         {
 
             # conditionally do MT::ObjectTag since it is only
@@ -1282,8 +1283,7 @@ sub clone_with_children {
             }
         }
     }
-    elsif ( ( !exists $classes->{'MT::Category'} )
-        || $classes->{'MT::Category'} )
+    elsif ( $classes->{'MT::Category'} )
     {
 
         # Cloning CATEGORY records
@@ -1343,8 +1343,7 @@ sub clone_with_children {
         );
     }
 
-    if ( ( !exists $classes->{'MT::Trackback'} )
-        || $classes->{'MT::Trackback'} )
+    if ( $classes->{'MT::Trackback'} )
     {
         my $state = MT->translate("Cloning TrackBacks for blog...");
         $callback->( $state, "tbs" );
@@ -1457,8 +1456,7 @@ sub clone_with_children {
         }
     }
 
-    if ( ( !exists $classes->{'MT::Template'} )
-        || $classes->{'MT::Template'} )
+    if ( $classes->{'MT::Template'} )
     {
         my $state = MT->translate("Cloning templates for blog...");
         $callback->( $state, "tmpls" );
