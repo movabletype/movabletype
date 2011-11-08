@@ -15,6 +15,10 @@ sub new {
     my (%param) = @_;
     my $self    = bless \%param, $class;
     $self->set_is_pp(0);
+    if ( UNIVERSAL::isa( MT->instance, 'MT::App' ) ) {
+        $self->{app_user} = MT->instance->user->id;
+    }
+
     return $self;
 }
 
@@ -61,7 +65,7 @@ sub save_object {
     my $result = MT->run_callbacks($cb_name, $self, $class, $obj, $old_id, $objects);
     return unless $result;
 
-    my $result = $obj->id ? $obj->update() : $obj->insert();
+    $result = $obj->id ? $obj->update() : $obj->insert();
 
     if (not $result) {
         push @{ $self->{errors} }, $obj->errstr;
@@ -235,24 +239,7 @@ sub __save_trackback {
         $term = { category_id => $obj->category_id };
     }
     if ( my $tb = $class->load($term) ) {
-        my $changed = 0;
-        if ( $obj->passphrase ) {
-            $tb->passphrase( $obj->passphrase );
-            $changed = 1;
-        }
-        if ( $obj->is_disabled ) {
-            $tb->is_disabled( $obj->is_disabled );
-            $changed = 1;
-        }
-        $tb->save if $changed;
-        $self->{objects}->{"$class#$old_id"} = $tb;
-        my $records = $self->{records};
-        $self->run_callback(
-        	MT->translate("[_1] records restored...", $records),
-            "trackback"
-        ) if $records && ( $records % 10 == 0 );
-        $self->{records} = $records + 1;
-        return 0;
+        $obj->id($tb->id);
     }
 	return 1;
 }
@@ -349,7 +336,6 @@ sub __save_filter {
             }
         );
         if ($existing_obj) {
-            $objects->{"$class#$old_id"} = $obj;
             $obj->id($existing_obj->id);
         }
     }
@@ -389,51 +375,49 @@ MT->add_callback("$CbName.author", 5, undef, \&__save_author);
 sub __save_author {
 	my ($cb, $self, $class, $obj, $old_id, $objects) = @_;
     my $existing_obj = $class->load( { name => $obj->name() } );
-    if ($existing_obj) {
-        if ( UNIVERSAL::isa( MT->instance, 'MT::App' ) && ( $existing_obj->id == MT->instance->user->id ) )
-        {
-            MT->log(
-                {   message => MT->translate(
-                        "User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.",
-                        $obj->name
-                    ),
-                    level => MT::Log::INFO(),
-                    metadata =>
-                        'Permissions and Associations have been restored.',
-                    class    => 'system',
-                    category => 'restore',
-                }
-            );
-            $objects->{ "$class#" . $old_id } = $existing_obj;
-            $objects->{ "$class#" . $old_id }->{no_overwrite} = 1;
-            return 0;
-        }
-        else {
-            MT->log(
-                {   message => MT->translate(
-                        "User with the same name '[_1]' found (ID:[_2]).  Restore replaced this user with the data backed up.",
-                        $obj->name,
-                        $old_id
-                    ),
-                    level => MT::Log::INFO(),
-                    metadata =>
-                        'Permissions and Associations have been restored as well.',
-                    class    => 'system',
-                    category => 'restore',
-                }
-            );
-            $obj->id($existing_obj->id);
-            $objects->{"$class#$old_id"} = $obj;
+    return 1 unless $existing_obj;
 
-            my $child_classes = $obj->properties->{child_classes} || {};
-            for my $class ( keys %$child_classes ) {
-                eval "use $class;";
-                $class->remove( { author_id => $obj->id, blog_id => '0' } );
+    if ( $self->{app_user} && ( $existing_obj->id == $self->{app_user} ) )
+    {
+        MT->log(
+            {   message => MT->translate(
+                    "User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.",
+                    $obj->name
+                ),
+                level => MT::Log::INFO(),
+                metadata =>
+                    'Permissions and Associations have been restored.',
+                class    => 'system',
+                category => 'restore',
             }
-            $obj->userpic_asset_id(0);
-        }
+        );
+        $objects->{ "$class#" . $old_id } = $existing_obj;
+        return 0;
     }
-    return 1;
+    else {
+        MT->log(
+            {   message => MT->translate(
+                    "User with the same name '[_1]' found (ID:[_2]).  Restore replaced this user with the data backed up.",
+                    $obj->name,
+                    $old_id
+                ),
+                level => MT::Log::INFO(),
+                metadata =>
+                    'Permissions and Associations have been restored as well.',
+                class    => 'system',
+                category => 'restore',
+            }
+        );
+        $obj->id($existing_obj->id);
+
+        my $child_classes = $obj->properties->{child_classes} || {};
+        for my $class ( keys %$child_classes ) {
+            eval "use $class;";
+            $class->remove( { author_id => $obj->id, blog_id => '0' } );
+        }
+        $obj->userpic_asset_id(0);
+        return 1;
+    }
 }
 
 MT->add_callback("$CbName.template", 5, undef, \&__save_template);
@@ -451,7 +435,6 @@ sub __save_template {
         if ($existing_obj) {
             if ( $self->{overwrite_template} ) {
                 $obj->id($existing_obj->id);
-            	$objects->{"$class#$old_id"} = $obj;
             }
             else {
             	$objects->{"$class#$old_id"} = $existing_obj;

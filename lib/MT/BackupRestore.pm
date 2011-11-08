@@ -688,27 +688,35 @@ sub cb_restore_objects {
     my $pkg = shift;
     my ( $all_objects, $callback ) = @_;
 
+    my $app_user;
+    if ( UNIVERSAL::isa( MT->instance, 'MT::App' ) ) {
+        $app_user = MT->instance->user->id;
+    }
+
     my %entries;
     my %assets;
     my %old_ids;
     for my $key ( keys %$all_objects ) {
-        if ( $key =~ /^MT::Entry#(\d+)$/ ) {
-            my $new_id = $all_objects->{$key}->id;
+        my ($class_name, $old_id) = $key =~ /^([\w:]+)#(\d+)$/;
+        next unless $class_name;
+        my $new_obj = $all_objects->{$key};
+
+        if ( $class_name eq 'MT::Entry' ) {
+            my $new_id = $new_obj->id;
             $entries{$new_id} = $all_objects->{$key};
         }
-        elsif ( $key =~ /^MT::Asset#(\d+)$/ ) {
-            my $old_id = $1;
-            my $new_id = $all_objects->{$key}->id;
+        elsif ( $class_name eq 'MT::Asset' ) {
+            my $new_id = $new_obj->id;
             $assets{$new_id} = {
-                object => $all_objects->{$key},
+                object => $new_obj,
                 old_id => $old_id,
             };
         }
-        elsif ( $key =~ /^MT::Author#(\d+)$/ ) {
+        elsif ( $class_name eq 'MT::Author' ) {
 
+            my $new_author = $new_obj;
             # restore userpic association now
-            my $new_author = $all_objects->{$key};
-            if ( !$all_objects->{$key}->{no_overwrite} ) {
+            if ( !$app_user or ( $new_author->id != $app_user ) ) {
                 if ( my $userpic_id = $new_author->userpic_asset_id ) {
                     if ( my $new_asset
                         = $all_objects->{ 'MT::Asset#' . $userpic_id } )
