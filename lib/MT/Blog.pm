@@ -1005,7 +1005,6 @@ sub clone_with_children {
     $callback->(
         MT->translate( "Cloned blog... new id is [_1].", $new_blog_id ) );
 
-    my %load_terms;
     my $cloner = sub {
         my ($class, $name, $pre_save, $terms) = @_;
         return unless $classes->{$class};
@@ -1015,7 +1014,7 @@ sub clone_with_children {
         $callback->( $state, $name );
         eval "use $class";
         die "Blog::clone_with_children: Failed to load $class" if $@;
-        my $iter = $class->load_iter( { blog_id => $old_blog_id, %load_terms } );
+        my $iter = $class->load_iter( { blog_id => $old_blog_id, %$terms } );
         while ( my $obj = $iter->() ) {
             $callback->(
                 $state . " "
@@ -1042,13 +1041,12 @@ sub clone_with_children {
 
     $cloner->('MT::Association', 'assoc');
 
-    {
-        local $load_terms{class} = '*';
-        $cloner->('MT::Entry', 'entries', sub {
+    $cloner->('MT::Entry', 'entries', sub {
             my ($obj, $old_id) = @_;
             $entry_map{$old_id} = $obj;
-        });
-    }
+        }, 
+        { class => '*'} 
+    );
     $entry_map{$_} = $entry_map{$_}->id foreach keys %entry_map;
 
     # include/exclude class logic
@@ -1062,9 +1060,7 @@ sub clone_with_children {
     # MT::Page -> MT::Folder, MT::Comment, MT::Trackback, MT::TBPing
 
     my %cat_parents;
-    {
-        local $load_terms{class} = '*';
-        $cloner->('MT::Category', 'cats', sub {
+    $cloner->('MT::Category', 'cats', sub {
             my ($obj, $old_id) = @_;
             my $old_parent = $obj->parent;
             # temporarily wipe the parent association
@@ -1073,8 +1069,9 @@ sub clone_with_children {
             $cat_map{$old_id} = $obj;
             return unless $old_parent;
             push @{$cat_parents{$old_parent}}, $obj;
-        });
-    }
+        }, 
+        { class => '*'}
+    );
     $cat_map{$_} = $cat_map{$_}->id foreach keys %cat_map;
     foreach my $parent_id (keys %cat_parents) {
         my $new_id = $cat_map{$parent_id};
@@ -1093,18 +1090,14 @@ sub clone_with_children {
 
     if ( $classes->{'MT::Entry'} ) {
 
-        if ( $classes->{'MT::Category'} )
-        {
-            # Placements are automatically cloned if categories are
-            # cloned.
-            local $classes->{'MT::Placement'} = 1;
-            $cloner->('MT::Placement', 'places', sub {
-                my ($obj, $old_id) = @_;
-                $obj->category_id( $cat_map{ $obj->category_id } );
-                $obj->entry_id( $entry_map{ $obj->entry_id } );
-            });
-
-        }
+        # Placements are automatically cloned if categories are
+        # cloned.
+        $classes->{'MT::Placement'} = 1 if $classes->{'MT::Category'};
+        $cloner->('MT::Placement', 'places', sub {
+            my ($obj, $old_id) = @_;
+            $obj->category_id( $cat_map{ $obj->category_id } );
+            $obj->entry_id( $entry_map{ $obj->entry_id } );
+        });
 
         my %comment_parents;
         $cloner->('MT::Comment', 'comments', sub {
@@ -1123,13 +1116,12 @@ sub clone_with_children {
             }
         }
 
-        {
-            local $load_terms{object_datasource} = 'entry';
-            $cloner->('MT::ObjectTag', 'tags', sub {
+        $cloner->('MT::ObjectTag', 'tags', sub {
                 my ($obj, $old_id) = @_;
                 $obj->object_id( $entry_map{ $obj->object_id } );
-            });
-        }
+            },
+            {object_datasource => 'entry'}
+        );
 
     }
 
@@ -1222,9 +1214,7 @@ sub clone_with_children {
     if ( $classes->{'MT::Template'} )
     {
 
-        {
-            local $load_terms{type} = { not => 'widgetset' };
-            $cloner->('MT::Template', 'tmpls', sub {
+        $cloner->('MT::Template', 'tmpls', sub {
                 my ($obj, $old_id) = @_;
                 # linked_file won't be cloned for now because
                 # new blog does not have site_path - breaks relative path
@@ -1232,13 +1222,12 @@ sub clone_with_children {
                 delete $obj->{column_values}->{linked_file_mtime};
                 delete $obj->{column_values}->{linked_file_size};
                 $tmpl_map{$old_id} = $obj;
-            });
-        }
+            },
+            { type => { not => 'widgetset' } }
+        );
         $tmpl_map{$_} = $tmpl_map{$_}->id foreach keys %tmpl_map;
 
-        {
-            local $load_terms{type} = 'widgetset' ;
-            $cloner->('MT::Template', 'tmpls', sub {
+        $cloner->('MT::Template', 'tmpls', sub {
                 my ($obj, $old_id) = @_;
                 # linked_file won't be cloned for now because
                 # new blog does not have site_path - breaks relative path
@@ -1260,8 +1249,9 @@ sub clone_with_children {
                     }
                 }
                 $obj->modulesets( join( ',', @new_widgets ) );
-            });
-        }
+            },
+            { type => 'widgetset' }
+        );
 
         $classes->{'MT::TemplateMap'} = 1;
         $cloner->('MT::TemplateMap', 'tmplmaps', sub {
