@@ -1247,70 +1247,49 @@ sub clone_with_children {
 
     if ( $classes->{'MT::Template'} )
     {
-        my $state = MT->translate("Cloning templates for blog...");
-        $callback->( $state, "tmpls" );
-        require MT::Template;
-        $iter = MT::Template->load_iter(
-            { blog_id => $old_blog_id, type => { not => 'widgetset' } } );
-        my $tmpl_processor = sub {
-            my ( $new_blog_id, $counter, $tmpl, $new_tmpl, $tmpl_map ) = @_;
-            $callback->(
-                $state . " "
-                    . MT->translate( "[_1] records processed...", $$counter ),
-                'tmpls'
-            ) if $counter && ( $$counter % 100 == 0 );
-            my $tmpl_id = $tmpl->id;
-            $$counter++;
-            delete $new_tmpl->{column_values}->{id};
-            delete $new_tmpl->{changed_cols}->{id};
 
-            # linked_file won't be cloned for now because
-            # new blog does not have site_path - breaks relative path
-            delete $new_tmpl->{column_values}->{linked_file};
-            delete $new_tmpl->{column_values}->{linked_file_mtime};
-            delete $new_tmpl->{column_values}->{linked_file_size};
-            $new_tmpl->blog_id($new_blog_id);
-            $new_tmpl->save or die $new_tmpl->errstr;
-            $tmpl_map->{$tmpl_id} = $new_tmpl->id;
-        };
-        $counter = 0;
-        while ( my $tmpl = $iter->() ) {
-            my $new_tmpl = $tmpl->clone();
-            $tmpl_processor->(
-                $new_blog_id, \$counter, $tmpl, $new_tmpl, \%tmpl_map
-            );
+        {
+            local $load_terms{type} = { not => 'widgetset' };
+            $cloner->('MT::Template', 'tmpls', sub {
+                my ($obj, $old_id) = @_;
+                # linked_file won't be cloned for now because
+                # new blog does not have site_path - breaks relative path
+                delete $obj->{column_values}->{linked_file};
+                delete $obj->{column_values}->{linked_file_mtime};
+                delete $obj->{column_values}->{linked_file_size};
+                $tmpl_map{$old_id} = $obj;
+            });
         }
-        $iter = MT::Template->load_iter(
-            { blog_id => $old_blog_id, type => 'widgetset' } );
-        while ( my $tmpl = $iter->() ) {
-            my @old_widgets = split /,/, $tmpl->modulesets;
-            my $new_tmpl = $tmpl->clone();
-            $tmpl_processor->(
-                $new_blog_id, \$counter, $tmpl, $new_tmpl, \%tmpl_map
-            );
-            my @new_widgets;
-            foreach (@old_widgets) {
-                if ( exists $tmpl_map{$_} ) {
-                    push @new_widgets, $tmpl_map{$_};
-                }
-                else {
-                    my $global_widget = MT::Template->load($_);
-                    push @new_widgets, $_
-                        if $global_widget
-                            && $global_widget->blog_id == 0
-                            && $global_widget->type eq 'widget';
-                }
-            }
-            $new_tmpl->modulesets( join( ',', @new_widgets ) );
-            $new_tmpl->save;
-        }
-        $callback->(
-            $state . " "
-                . MT->translate( "[_1] records processed.", $counter ),
-            'tmpls'
-        );
+        $tmpl_map{$_} = $tmpl_map{$_}->id foreach keys %tmpl_map;
 
-        local $classes->{'MT::TemplateMap'} = 1;
+        {
+            local $load_terms{type} = 'widgetset' ;
+            $cloner->('MT::Template', 'tmpls', sub {
+                my ($obj, $old_id) = @_;
+                # linked_file won't be cloned for now because
+                # new blog does not have site_path - breaks relative path
+                delete $obj->{column_values}->{linked_file};
+                delete $obj->{column_values}->{linked_file_mtime};
+                delete $obj->{column_values}->{linked_file_size};
+                my @old_widgets = split /,/, $obj->modulesets;
+                my @new_widgets;
+                foreach (@old_widgets) {
+                    if ( exists $tmpl_map{$_} ) {
+                        push @new_widgets, $tmpl_map{$_};
+                    }
+                    else {
+                        my $global_widget = MT::Template->load($_);
+                        push @new_widgets, $_
+                            if $global_widget
+                                && $global_widget->blog_id == 0
+                                && $global_widget->type eq 'widget';
+                    }
+                }
+                $obj->modulesets( join( ',', @new_widgets ) );
+            });
+        }
+
+        $classes->{'MT::TemplateMap'} = 1;
         $cloner->('MT::TemplateMap', 'tmplmaps', sub {
             my ($obj, $old_id) = @_;
             $obj->template_id( $tmpl_map{ $obj->template_id } );
