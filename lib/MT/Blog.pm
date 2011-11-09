@@ -1120,45 +1120,14 @@ sub clone_with_children {
             }
         }
 
-        if ( $classes->{'MT::ObjectTag'} )
         {
-
-            # conditionally do MT::ObjectTag since it is only
-            # available with MT 3.3.
-            if ( $MT::VERSION >= 3.3 ) {
-                my $state = MT->translate("Cloning entry tags for blog...");
-                $callback->( $state, "tags" );
-                require MT::ObjectTag;
-                $iter
-                    = MT::ObjectTag->load_iter(
-                    { blog_id => $old_blog_id, object_datasource => 'entry' }
-                    );
-                $counter = 0;
-                while ( my $entry_tag = $iter->() ) {
-                    $callback->(
-                        $state . " "
-                            . MT->translate(
-                            "[_1] records processed...", $counter
-                            ),
-                        "tags"
-                    ) if $counter && ( $counter % 100 == 0 );
-                    $counter++;
-                    my $new_entry_tag = $entry_tag->clone();
-                    delete $new_entry_tag->{column_values}->{id};
-                    delete $new_entry_tag->{changed_cols}->{id};
-                    $new_entry_tag->blog_id($new_blog_id);
-                    $new_entry_tag->object_id(
-                        $entry_map{ $entry_tag->object_id } );
-                    $new_entry_tag->save or die $new_entry_tag->errstr;
-                }
-                $callback->(
-                    $state . " "
-                        . MT->translate( "[_1] records processed.",
-                        $counter ),
-                    'tags'
-                );
-            }
+            local $load_terms{object_datasource} = 'entry';
+            $cloner->('MT::ObjectTag', 'tags', sub {
+                my ($obj, $old_id) = @_;
+                $obj->object_id( $entry_map{ $obj->object_id } );
+            });
         }
+
     }
     elsif ( $classes->{'MT::Category'} )
     {
