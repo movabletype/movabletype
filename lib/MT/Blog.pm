@@ -1213,36 +1213,10 @@ sub clone_with_children {
             'tbs'
         );
 
-        if ( $classes->{'MT::TBPing'} )
-        {
-            my $state = MT->translate("Cloning TrackBack pings for blog...");
-            $callback->( $state, "pings" );
-            require MT::TBPing;
-            $iter = MT::TBPing->load_iter( { blog_id => $old_blog_id } );
-            $counter = 0;
-            while ( my $ping = $iter->() ) {
-                next unless $tb_map{ $ping->tb_id };
-                $callback->(
-                    $state . " "
-                        . MT->translate(
-                        "[_1] records processed...", $counter
-                        ),
-                    'pings'
-                ) if $counter && ( $counter % 100 == 0 );
-                $counter++;
-                my $new_ping = $ping->clone();
-                delete $new_ping->{column_values}->{id};
-                delete $new_ping->{changed_cols}->{id};
-                $new_ping->tb_id( $tb_map{ $ping->tb_id } );
-                $new_ping->blog_id($new_blog_id);
-                $new_ping->save or die $new_ping->errstr;
-            }
-            $callback->(
-                $state . " "
-                    . MT->translate( "[_1] records processed.", $counter ),
-                'pings'
-            );
-        }
+        $cloner->('MT::TBPing', 'pings', sub {
+            my ($obj, $old_id) = @_;
+            $obj->tb_id( $tb_map{ $obj->tb_id } );
+        });
     }
 
     if ( $classes->{'MT::Template'} )
