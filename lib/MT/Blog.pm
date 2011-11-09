@@ -1061,37 +1061,40 @@ sub clone_with_children {
     # MT::Entry -> MT::Category, MT::Comment, MT::Tracback, MT::TBPing
     # MT::Page -> MT::Folder, MT::Comment, MT::Trackback, MT::TBPing
 
+    my %cat_parents;
+    {
+        local $load_terms{class} = '*';
+        $cloner->('MT::Category', 'cats', sub {
+            my ($obj, $old_id) = @_;
+            my $old_parent = $obj->parent;
+            # temporarily wipe the parent association
+            # to avoid constraint issues.
+            $obj->parent(0);
+            $cat_map{$old_id} = $obj;
+            return unless $old_parent;
+            push @{$cat_parents{$old_parent}}, $obj;
+        });
+    }
+    $cat_map{$_} = $cat_map{$_}->id foreach keys %cat_map;
+    foreach my $parent_id (keys %cat_parents) {
+        my $new_id = $cat_map{$parent_id};
+        foreach my $obj (@{$cat_parents{$parent_id}}) {
+            $obj->parent($new_id);
+            $obj->save;
+        }
+    }
+
+    if ( $classes->{'MT::Category'} ) {
+        # reconstruct the category order
+        $new_blog->category_order(
+            join( ',', map( $cat_map{$_}, split( /,/, ( $blog->category_order || '' ) ) ) )
+        );
+    }
+
     if ( $classes->{'MT::Entry'} ) {
 
         if ( $classes->{'MT::Category'} )
         {
-
-            my %cat_parents;
-            {
-                local $load_terms{class} = '*';
-                $cloner->('MT::Category', 'cats', sub {
-                    my ($obj, $old_id) = @_;
-                    my $old_parent = $obj->parent;
-                    $obj->parent(0);
-                    $cat_map{$old_id} = $obj;
-                    return unless $old_parent;
-                    push @{$cat_parents{$old_parent}}, $obj;
-                });
-            }
-            $cat_map{$_} = $cat_map{$_}->id foreach keys %cat_map;
-            foreach my $parent_id (keys %cat_parents) {
-                my $new_id = $cat_map{$parent_id};
-                foreach my $obj (@{$cat_parents{$parent_id}}) {
-                    $obj->parent($new_id);
-                    $obj->save;
-                }
-            }
-
-            # reconstruct the category order
-            $new_blog->category_order(
-                join( ',', map( $cat_map{$_}, split( /,/, ( $blog->category_order || '' ) ) ) )
-            );
-
             # Placements are automatically cloned if categories are
             # cloned.
             local $classes->{'MT::Placement'} = 1;
@@ -1128,65 +1131,6 @@ sub clone_with_children {
             });
         }
 
-    }
-    elsif ( $classes->{'MT::Category'} )
-    {
-
-        # Cloning CATEGORY records
-        my $state = MT->translate("Cloning categories for blog...");
-        $callback->( $state, "cats" );
-        $counter = 0;
-        require MT::Category;
-        $iter = MT::Category->load_iter(
-            { blog_id => $old_blog_id, class => '*' } );
-        my %cat_parents;
-        while ( my $cat = $iter->() ) {
-            $callback->(
-                $state . " "
-                    . MT->translate( "[_1] records processed...", $counter ),
-                'cats'
-            ) if $counter && ( $counter % 100 == 0 );
-            $counter++;
-            my $cat_id     = $cat->id;
-            my $old_parent = $cat->parent;
-            my $new_cat    = $cat->clone();
-            delete $new_cat->{column_values}->{id};
-            delete $new_cat->{changed_cols}->{id};
-            $new_cat->blog_id($new_blog_id);
-
-            # temporarily wipe the parent association
-            # to avoid constraint issues.
-            $new_cat->parent(0);
-            $new_cat->save or die $new_cat->errstr;
-            $cat_map{$cat_id} = $new_cat->id;
-            if ($old_parent) {
-                $cat_parents{ $new_cat->id } = $old_parent;
-            }
-        }
-
-        # reassign the new category parents
-        foreach ( keys %cat_parents ) {
-            my $cat = MT::Category->load($_);
-            if ($cat) {
-                $cat->parent( $cat_map{ $cat_parents{ $cat->id } } );
-                $cat->save or die $cat->errstr;
-            }
-        }
-
-        # reconstruct the category order
-        $new_blog->category_order(
-            join(
-                ',',
-                map( $cat_map{$_},
-                    split( /,/, ( $blog->category_order || '' ) ) )
-            )
-        );
-
-        $callback->(
-            $state . " "
-                . MT->translate( "[_1] records processed.", $counter ),
-            'cats'
-        );
     }
 
     if ( $classes->{'MT::Trackback'} )
