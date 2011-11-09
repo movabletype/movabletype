@@ -106,6 +106,7 @@ sub _populate_obj_to_backup {
     my @object_hashes;
     my $types        = MT->registry('object_types');
     my $instructions = MT->registry('backup_instructions');
+    my $r            = MT::Request->instance();
     foreach my $key ( keys %$types ) {
         next if $key =~ /\w+\.\w+/;    # skip subclasses
         my $class = MT->model($key);
@@ -116,11 +117,16 @@ sub _populate_obj_to_backup {
                 && exists( $instructions->{$key}{skip} )
                 && $instructions->{$key}{skip};
         next if exists $populated{$class};
+
+        my $cache_key = 'exchanged:' . $class;
+        next if $r->cache($cache_key);
+
         my $order
             = exists( $instructions->{$key} )
             && exists( $instructions->{$key}{order} )
             ? $instructions->{$key}{order}
             : 500;
+        $r->cache( $cache_key, 1 );
 
         if ( $class->can('create_obj_to_backup') ) {
             $class->create_obj_to_backup( $blog_ids, \@object_hashes,
@@ -217,6 +223,10 @@ sub _create_obj_to_backup {
 
     my $instructions = MT->registry('backup_instructions');
     my $columns      = $class->column_names;
+
+    my $r         = MT::Request->instance();
+    my $cache_key = 'exchanged:' . $class;
+
     foreach my $column (@$columns) {
         if ( $column =~ /^(\w+)_id$/ ) {
             my $parent  = $1;
@@ -227,11 +237,13 @@ sub _create_obj_to_backup {
                 if exists( $instructions->{$parent} )
                     && exists( $instructions->{$parent}{skip} )
                     && $instructions->{$parent}{skip};
+            next if $r->cache($cache_key);
             my $p_order
                 = exists( $instructions->{$parent} )
                 && exists( $instructions->{$parent}{order} )
                 ? $instructions->{$parent}{order}
                 : 500;
+            $r->cache( $cache_key, 1 );
             $pkg->_create_obj_to_backup( $p_class, $blog_ids, $obj_to_backup,
                 $populated, $p_order );
         }
@@ -461,15 +473,15 @@ sub restore_process_single_file {
         overwrite_template => $overwrite,
     );
     my $handler = MT::BackupRestore::BackupFileHandler->new(
-        errors             => $errors,
-        schema_version     => $schema_version,
-        obj_creator         => $objCreator,
+        errors         => $errors,
+        schema_version => $schema_version,
+        obj_creator    => $objCreator,
     );
 
     require MT::Util;
     my $parser = MT::Util::sax_parser();
     $callback->( ref($parser) . "\n" ) if MT->config->DebugMode;
-    $objCreator->set_is_pp( ref($parser) eq 'XML::SAX::PurePerl' ? 1 : 0);
+    $objCreator->set_is_pp( ref($parser) eq 'XML::SAX::PurePerl' ? 1 : 0 );
     $parser->{Handler} = $handler;
     eval { $parser->parse_file($fh); };
     if ( my $e = $@ ) {
@@ -697,7 +709,7 @@ sub cb_restore_objects {
     my %assets;
     my %old_ids;
     for my $key ( keys %$all_objects ) {
-        my ($class_name, $old_id) = $key =~ /^([\w:]+)#(\d+)$/;
+        my ( $class_name, $old_id ) = $key =~ /^([\w:]+)#(\d+)$/;
         next unless $class_name;
         my $new_obj = $all_objects->{$key};
 
@@ -715,6 +727,7 @@ sub cb_restore_objects {
         elsif ( $class_name eq 'MT::Author' ) {
 
             my $new_author = $new_obj;
+
             # restore userpic association now
             if ( !$app_user or ( $new_author->id != $app_user ) ) {
                 if ( my $userpic_id = $new_author->userpic_asset_id ) {
@@ -1338,8 +1351,8 @@ sub restore_parent_ids {
         my $old_id  = $data->{ $elem . '_id' };
         my $new_obj = $objects->{"$class#$old_id"};
         if ( !$new_obj && $class->isa('MT::Blog') ) {
-            $class = MT->model('website');
-            $new_obj   = $objects->{ "$class#$old_id" };
+            $class   = MT->model('website');
+            $new_obj = $objects->{"$class#$old_id"};
         }
         return 0 unless defined($new_obj) && $new_obj;
         $data->{ $elem . '_id' } = $new_obj->id;
