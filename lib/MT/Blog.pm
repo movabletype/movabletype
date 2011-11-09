@@ -1042,11 +1042,13 @@ sub clone_with_children {
 
     $cloner->('MT::Association', 'assoc');
 
-    %load_terms = (class => '*');
-    $cloner->('MT::Entry', 'entries', sub {
-        my ($obj, $old_id) = @_;
-        $entry_map{$old_id} = $obj;
-    });
+    {
+        local $load_terms{class} = '*';
+        $cloner->('MT::Entry', 'entries', sub {
+            my ($obj, $old_id) = @_;
+            $entry_map{$old_id} = $obj;
+        });
+    }
     $entry_map{$_} = $entry_map{$_}->id foreach keys %entry_map;
 
     # include/exclude class logic
@@ -1065,13 +1067,16 @@ sub clone_with_children {
         {
 
             my %cat_parents;
-            $cloner->('MT::Category', 'cats', sub {
-                my ($obj, $old_id) = @_;
-                my $old_parent = $obj->parent;
-                $obj->parent(0);
-                $cat_map{$old_id} = $obj;
-                push @{$cat_parents{$old_parent}}, $obj;
-            });
+            {
+                local $load_terms{class} = '*';
+                $cloner->('MT::Category', 'cats', sub {
+                    my ($obj, $old_id) = @_;
+                    my $old_parent = $obj->parent;
+                    $obj->parent(0);
+                    $cat_map{$old_id} = $obj;
+                    push @{$cat_parents{$old_parent}}, $obj;
+                });
+            }
             $cat_map{$_} = $cat_map{$_}->id foreach keys %cat_map;
             delete $cat_parents{0};
             foreach my $parent_id (keys %cat_parents) {
@@ -1089,33 +1094,13 @@ sub clone_with_children {
 
             # Placements are automatically cloned if categories are
             # cloned.
-            my $state = MT->translate("Cloning entry placements for blog...");
-            $callback->( $state, "places" );
-            require MT::Placement;
-            $iter = MT::Placement->load_iter( { blog_id => $old_blog_id } );
-            $counter = 0;
-            while ( my $place = $iter->() ) {
-                $callback->(
-                    $state . " "
-                        . MT->translate(
-                        "[_1] records processed...", $counter
-                        ),
-                    'places'
-                ) if $counter && ( $counter % 100 == 0 );
-                $counter++;
-                my $new_place = $place->clone();
-                delete $new_place->{column_values}->{id};
-                delete $new_place->{changed_cols}->{id};
-                $new_place->blog_id($new_blog_id);
-                $new_place->category_id( $cat_map{ $place->category_id } );
-                $new_place->entry_id( $entry_map{ $place->entry_id } );
-                $new_place->save or die $new_place->errstr;
-            }
-            $callback->(
-                $state . " "
-                    . MT->translate( "[_1] records processed.", $counter ),
-                'places'
-            );
+            local $classes->{'MT::Placement'} = 1;
+            $cloner->('MT::Placement', 'places', sub {
+                my ($obj, $old_id) = @_;
+                $obj->category_id( $cat_map{ $obj->category_id } );
+                $obj->entry_id( $entry_map{ $obj->entry_id } );
+            });
+
         }
 
         if ( $classes->{'MT::Comment'} )
