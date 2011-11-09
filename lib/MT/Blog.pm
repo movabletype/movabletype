@@ -954,6 +954,30 @@ sub clone {
     }
 }
 
+# we must clone:
+#    Blog record
+#    Entry records
+#       - Comment records
+#       - TrackBack records
+#       - TBPing records
+#       - ObjectTag records (if running 3.3)
+#    Category records
+#    Placement records
+#    Template records
+#    Permission records
+#    IPBanList records???
+#    Notification records???
+#
+# include/exclude class logic
+# if user has not specified 'Classes' element, clone everything
+# if user has specified Classes, but a particular class is not
+# identified, clone it (forward compatibility). if a class is
+# specified and the flag is '1', clone it. if a class is specified
+# but the flag is '0', skip it.
+
+# MT::Entry -> MT::Category, MT::Comment, MT::Tracback, MT::TBPing
+# MT::Page -> MT::Folder, MT::Comment, MT::Trackback, MT::TBPing
+
 sub clone_with_children {
     my $blog       = shift;
     my ($params)   = @_;
@@ -970,23 +994,9 @@ sub clone_with_children {
     }
     my $old_blog_id = $blog->id;
 
-    # we must clone:
-    #    Blog record
-    #    Entry records
-    #       - Comment records
-    #       - TrackBack records
-    #       - TBPing records
-    #       - ObjectTag records (if running 3.3)
-    #    Category records
-    #    Placement records
-    #    Template records
-    #    Permission records
-    #    IPBanList records???
-    #    Notification records???
 
     my $new_blog_id;
-    my ( %entry_map, %cat_map, %tb_map, %tmpl_map, %comment_map, $counter,
-        $iter );
+    my ( %entry_map, %cat_map, %tb_map, %tmpl_map, %comment_map);
 
     # Cloning blog
     my $new_blog = $blog->clone($params);
@@ -1049,39 +1059,28 @@ sub clone_with_children {
     );
     $entry_map{$_} = $entry_map{$_}->id foreach keys %entry_map;
 
-    # include/exclude class logic
-    # if user has not specified 'Classes' element, clone everything
-    # if user has specified Classes, but a particular class is not
-    # identified, clone it (forward compatibility). if a class is
-    # specified and the flag is '1', clone it. if a class is specified
-    # but the flag is '0', skip it.
-
-    # MT::Entry -> MT::Category, MT::Comment, MT::Tracback, MT::TBPing
-    # MT::Page -> MT::Folder, MT::Comment, MT::Trackback, MT::TBPing
-
-    my %cat_parents;
-    $cloner->('MT::Category', 'cats', sub {
-            my ($obj, $old_id) = @_;
-            my $old_parent = $obj->parent;
-            # temporarily wipe the parent association
-            # to avoid constraint issues.
-            $obj->parent(0);
-            $cat_map{$old_id} = $obj;
-            return unless $old_parent;
-            push @{$cat_parents{$old_parent}}, $obj;
-        }, 
-        { class => '*'}
-    );
-    $cat_map{$_} = $cat_map{$_}->id foreach keys %cat_map;
-    foreach my $parent_id (keys %cat_parents) {
-        my $new_id = $cat_map{$parent_id};
-        foreach my $obj (@{$cat_parents{$parent_id}}) {
-            $obj->parent($new_id);
-            $obj->save;
-        }
-    }
-
     if ( $classes->{'MT::Category'} ) {
+        my %cat_parents;
+        $cloner->('MT::Category', 'cats', sub {
+                my ($obj, $old_id) = @_;
+                my $old_parent = $obj->parent;
+                # temporarily wipe the parent association
+                # to avoid constraint issues.
+                $obj->parent(0);
+                $cat_map{$old_id} = $obj;
+                return unless $old_parent;
+                push @{$cat_parents{$old_parent}}, $obj;
+            }, 
+            { class => '*'}
+        );
+        $cat_map{$_} = $cat_map{$_}->id foreach keys %cat_map;
+        foreach my $parent_id (keys %cat_parents) {
+            my $new_id = $cat_map{$parent_id};
+            foreach my $obj (@{$cat_parents{$parent_id}}) {
+                $obj->parent($new_id);
+                $obj->save;
+            }
+        }
         # reconstruct the category order
         $new_blog->category_order(
             join( ',', map( $cat_map{$_}, split( /,/, ( $blog->category_order || '' ) ) ) )
@@ -1130,8 +1129,8 @@ sub clone_with_children {
         my $state = MT->translate("Cloning TrackBacks for blog...");
         $callback->( $state, "tbs" );
         require MT::Trackback;
-        $iter = MT::Trackback->load_iter( { blog_id => $old_blog_id } );
-        $counter = 0;
+        my $iter = MT::Trackback->load_iter( { blog_id => $old_blog_id } );
+        my $counter = 0;
         while ( my $tb = $iter->() ) {
             next
                 unless ( $tb->entry_id && $entry_map{ $tb->entry_id } )
