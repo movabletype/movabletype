@@ -1074,11 +1074,11 @@ sub clone_with_children {
                     my $old_parent = $obj->parent;
                     $obj->parent(0);
                     $cat_map{$old_id} = $obj;
+                    return unless $old_parent;
                     push @{$cat_parents{$old_parent}}, $obj;
                 });
             }
             $cat_map{$_} = $cat_map{$_}->id foreach keys %cat_map;
-            delete $cat_parents{0};
             foreach my $parent_id (keys %cat_parents) {
                 my $new_id = $cat_map{$parent_id};
                 foreach my $obj (@{$cat_parents{$parent_id}}) {
@@ -1103,51 +1103,21 @@ sub clone_with_children {
 
         }
 
-        if ( $classes->{'MT::Comment'} )
-        {
-
-            # Comments can only be cloned if entries are cloned.
-            my $state = MT->translate("Cloning comments for blog...");
-            $callback->( $state, "comments" );
-            require MT::Comment;
-            $iter = MT::Comment->load_iter( { blog_id => $old_blog_id } );
-            $counter = 0;
-            my %comment_parents;
-            while ( my $comment = $iter->() ) {
-                $callback->(
-                    $state . " "
-                        . MT->translate(
-                        "[_1] records processed...", $counter
-                        ),
-                    'comments'
-                ) if $counter && ( $counter % 100 == 0 );
-                $counter++;
-
-                my $new_comment = $comment->clone();
-                delete $new_comment->{column_values}->{id};
-                delete $new_comment->{changed_cols}->{id};
-                $new_comment->entry_id( $entry_map{ $comment->entry_id } );
-                $new_comment->blog_id($new_blog_id);
-                $new_comment->save or die $new_comment->errstr;
-                $comment_map{ $comment->id } = $new_comment->id;
-                if ( $comment->parent_id ) {
-                    $comment_parents{ $new_comment->id }
-                        = $comment->parent_id;
-                }
+        my %comment_parents;
+        $cloner->('MT::Comment', 'comments', sub {
+            my ($obj, $old_id) = @_;
+            $comment_map{ $old_id } = $obj;
+            my $parent_id = $obj->parent;
+            return unless $parent_id;
+            push @{$comment_parents{$parent_id}}, $obj;
+        });
+        $comment_map{$_} = $comment_map{$_}->id foreach keys %comment_map;
+        foreach my $parent_id (keys %comment_parents) {
+            my $new_id = $comment_map{$parent_id};
+            foreach my $obj (@{$comment_parents{$parent_id}}) {
+                $obj->parent($new_id);
+                $obj->save;
             }
-            foreach ( keys %comment_parents ) {
-                my $comment = MT::Comment->load($_);
-                if ($comment) {
-                    $comment->parent_id(
-                        $comment_map{ $comment_parents{ $comment->id } } );
-                    $comment->save or die $comment->errstr;
-                }
-            }
-            $callback->(
-                $state . " "
-                    . MT->translate( "[_1] records processed.", $counter ),
-                'comments'
-            );
         }
 
         if ( $classes->{'MT::ObjectTag'} )
