@@ -1213,8 +1213,7 @@ sub clone_with_children {
             'tbs'
         );
 
-        if ( ( !exists $classes->{'MT::TBPing'} )
-            || $classes->{'MT::TBPing'} )
+        if ( $classes->{'MT::TBPing'} )
         {
             my $state = MT->translate("Cloning TrackBack pings for blog...");
             $callback->( $state, "pings" );
@@ -1311,30 +1310,11 @@ sub clone_with_children {
             'tmpls'
         );
 
-        $state = MT->translate("Cloning template maps for blog...");
-        $callback->( $state, "tmplmaps" );
-        require MT::TemplateMap;
-        $iter = MT::TemplateMap->load_iter( { blog_id => $old_blog_id } );
-        $counter = 0;
-        while ( my $map = $iter->() ) {
-            $callback->(
-                $state . " "
-                    . MT->translate( "[_1] records processed...", $counter ),
-                'tmplmaps'
-            ) if $counter && ( $counter % 100 == 0 );
-            $counter++;
-            my $new_map = $map->clone();
-            delete $new_map->{column_values}->{id};
-            delete $new_map->{changed_cols}->{id};
-            $new_map->template_id( $tmpl_map{ $map->template_id } );
-            $new_map->blog_id($new_blog_id);
-            $new_map->save or die $new_map->errstr;
-        }
-        $callback->(
-            $state . " "
-                . MT->translate( "[_1] records processed.", $counter ),
-            'tmplmaps'
-        );
+        local $classes->{'MT::TemplateMap'} = 1;
+        $cloner->('MT::TemplateMap', 'tmplmaps', sub {
+            my ($obj, $old_id) = @_;
+            $obj->template_id( $tmpl_map{ $obj->template_id } );
+        });
     }
 
     MT->run_callbacks(

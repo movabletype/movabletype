@@ -26,6 +26,7 @@ my %prem_ids  = map {( $_->id => 1 )} $mt->model('permission' )->load({blog_id =
 my %placem_ids= map {( $_->id => 1 )} $mt->model('placement'  )->load({blog_id => $blog->id});
 my %comnt_ids = map {( $_->id => 1 )} $mt->model('comment'    )->load({blog_id => $blog->id});
 my %objtag_ids= map {( $_->id => 1 )} $mt->model('objecttag'  )->load({blog_id => $blog->id, object_datasource => 'entry'});
+my %tmplmap_ids=map {( $_->id => 1 )} $mt->model('templatemap')->load({blog_id => $blog->id});
 
 is(scalar(keys %entry_ids), 8, "Got entries");
 is(scalar(keys %cat_ids), 3, "Got Categories");
@@ -34,6 +35,7 @@ is(scalar(keys %prem_ids), 4, "Got permissions");
 is(scalar(keys %placem_ids), 5, "Got placements");
 is(scalar(keys %comnt_ids), 13, "Got comments");
 is(scalar(keys %objtag_ids), 23, "Got object tags");
+is(scalar(keys %tmplmap_ids), 6, "Got templatemaps");
 
 my $new_blog = $blog->clone({Children => 1});
 isnt(undef, $new_blog, "blog was cloned");
@@ -45,6 +47,7 @@ my @new_permissions = $mt->model('permission')->load({blog_id => $new_blog->id})
 my @new_placements = $mt->model('placement')->load({blog_id => $new_blog->id});
 my @new_comments = $mt->model('comment')->load({blog_id => $new_blog->id});
 my @new_objecttags = $mt->model('objecttag')->load({blog_id => $new_blog->id, object_datasource => 'entry'});
+my @new_tmplmaps = $mt->model('templatemap')->load({blog_id => $new_blog->id});
 
 is(scalar(@new_entries), scalar(keys %entry_ids), "Got new entries");
 is(scalar(@new_categories), scalar(keys %cat_ids), "Got New Categories");
@@ -53,6 +56,7 @@ is(scalar(@new_permissions), scalar(keys %prem_ids), "Got permissions");
 is(scalar(@new_placements), scalar(keys %placem_ids), "Got placements");
 is(scalar(@new_comments), scalar(keys %comnt_ids), "Got comments");
 is(scalar(@new_objecttags), scalar(keys %objtag_ids), "Got object tags");
+is(scalar(@new_tmplmaps), scalar(keys %tmplmap_ids), "Got templatemaps");
 
 is( scalar( grep {exists $cat_ids{$_->id}}    @new_categories ), 0, "all categories were duplicated");
 is( scalar( grep {exists $entry_ids{$_->id}}  @new_entries ), 0, "all entries were duplicated");
@@ -61,4 +65,5 @@ is( scalar( grep {exists $prem_ids{$_->id}}   @new_permissions ), 0, "all permis
 is( scalar( grep {exists $placem_ids{$_->id}} @new_placements ), 0, "all placements were duplicated");
 is( scalar( grep {exists $comnt_ids{$_->id}}  @new_comments ), 0, "all comments were duplicated");
 is( scalar( grep {exists $objtag_ids{$_->id}}  @new_objecttags ), 0, "all object tags were duplicated");
+is( scalar( grep {exists $tmplmap_ids{$_->id}}  @new_tmplmaps ), 0, "all templatemaps were duplicated");
 
