@@ -35,6 +35,9 @@
   <input type="hidden" name="clone_prefs_trackbacks" value="<mt:var name="clone_prefs_trackbacks" escape="html">" />
   <input type="hidden" name="clone_prefs_categories" value="<mt:var name="clone_prefs_categories" escape="html">" />
   <mt:unless name="clone_prefs_input"></mt:unless>
+  <mt:loop name="clone_extended_options">
+    <input type="hidden" name="<mt:var name="id">" value="<mt:var name="current_value" escape="html">" />
+  </mt:loop>
   <input type="hidden" name="parent_id" value="<mt:var name="parent_id">" />
 
   <h2><__trans phrase="Blog Details"></h2>
@@ -107,6 +110,11 @@
     <li><__trans phrase="Exclude Categories/Folders"></li>
   </mt:if>
     <mt:unless name="clone_prefs_exclude"></mt:unless>
+    <mt:loop name="clone_extended_options">
+      <mt:if name="current_value" eq="on">
+        <li><mt:var name="label"></li>
+      </mt:if>
+    </mt:loop>
   </ul>
 
 <mt:setvarblock name="action_buttons">
@@ -310,6 +318,12 @@
         <label for="clone-prefs-categories"><__trans phrase="Categories/Folders"></label>
       </li>
       <mt:unless name="clone_prefs_checkbox"></mt:unless>
+      <mt:loop name="clone_extended_options">
+        <li>
+          <input type="checkbox" name="<mt:var name="id">" id="<mt:var name="id">" <mt:if name="current_value">checked="<mt:var name="current_value">"</mt:if> class="cb" />
+          <label for="<mt:var name="id">"><mt:var name="label"></label>
+        </li>
+      </mt:loop>
     </ul>
   </mtapp:setting>
   </fieldset>

@@ -2856,6 +2856,8 @@ sub clone {
         $param->{'system_msg'} = 1;
     }
 
+    $param->{clone_extended_options} = [];
+
     my $tmpl = $app->load_tmpl( "dialog/clone_blog.tmpl", $param );
 
     return $tmpl;
