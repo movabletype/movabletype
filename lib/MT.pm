@@ -1922,9 +1922,14 @@ sub update_ping_list {
         if ( $app->{component} ) {
             if ( my $c = $app->component( $app->{component} ) ) {
                 local $app->{component} = undef;
-                return $c->translate_templatized(@_);
+                $mt = $c;
             }
         }
+        return $] >= 5.009 ? _translate_templatized($mt, @_) : _translate_templatized_safe($mt, @_);
+    }
+
+    sub _translate_templatized {
+        my $mt = shift;
         my @cstack;
         my ($text) = @_;
 
@@ -1999,6 +2004,124 @@ sub update_ping_list {
         return $mt->{charset} if $mt->{charset};
         $mt->{charset} = $mt->config->PublishCharset
             || $mt->language_handle->encoding;
+    }
+
+    sub _translate_templatized_safe {
+        my ($c, $input) = @_;
+
+        my @cond = qw( INITIAL );
+        my $tag;
+        my $key;
+        my @out;
+        my @cstack;
+
+        # Here, the text must be handled as binary ( non utf-8 ) data,
+        # because regexp for utf-8 string is too heavy.
+        # things we have to do is
+        #  * encode $text before parse
+        #  * decode the strings captured by regexp
+        #  * encode the translated string from translate()
+        #  * decode again for return
+        $input = Encode::encode( 'utf8', $input )
+            if Encode::is_utf8($input);
+
+        while (length $input) {
+            if ( $cond[-1] eq 'INITIAL' ) {
+                if ( $input =~ s{^(.*?)(<(/?)__trans(?:_section)?)\s?}{}i ) {
+                    push @out, $1;
+                    push @cond, 'TAG';
+                    $tag = { tag => $2, close => $3 ? 1 : 0 };
+                }
+                elsif ( $input =~ s|^(<?[^<]*)|| ) {
+                    push @out, $1;
+                }
+                else {
+                    die "Invalid translate template";
+                }
+            }
+            elsif ( $cond[-1] eq 'TAG' ) {
+                if ( $input =~ s|^\s*/?>|| ) {
+                    pop @cond;
+                    ## Do translate
+
+                    my $tagname = $tag->{tag};
+                    if ( $tagname =~ /section/ ) {
+                        if ( $tag->{close} ) {
+                            $c = pop @cstack;
+                        }
+                        else {
+                            if ($tag->{component}) {
+                                push @cstack, $c;
+                                $c = MT->component($tag->{component});
+                            }
+                            else {
+                                die "__trans_section without a component argument";
+                            }
+                        }
+                    }
+                    else {
+                        $tag->{params} = '' unless defined $tag->{params};
+                        my $params = $tag->{params};
+                        $params = _translate_templatized_safe($c, $params); #recursive
+                        my @p = map MT::Util::decode_html($_),
+                                split /\s*%%\s*/, $params, -1;
+                        @p = ('') unless @p;
+                        my $phrase = $tag->{phrase};
+                        $phrase = Encode::decode('utf8', $phrase)
+                            unless Encode::is_utf8($phrase);
+
+                        my $translation = $c->translate($phrase, @p);
+                        if (exists $tag->{escape}) {
+                            if (lc($tag->{escape}) eq 'html') {
+                                $translation = MT::Util::encode_html($translation);
+                            } elsif (lc($tag->{escape}) eq 'url') {
+                                $translation = MT::Util::encode_url($translation);
+                            } else {
+                                # fallback for js/javascript/singlequotes
+                                $translation = MT::Util::encode_js($translation);
+                            }
+                        }
+                        $translation = Encode::encode('utf8', $translation)
+                            if Encode::is_utf8($translation);
+                        push @out, $translation;
+                    }
+                }
+                elsif ( $input =~ s/^\s*(\w+)\s*=\s*(['"])// ) {
+                    push @cond, ( $2 eq '"' ? 'DQUOTE' : 'QUOTE' );
+                    $key = $1;
+                    $tag->{$key} = '';
+                }
+                else {
+                    die "Invalid translate template";
+                }
+            }
+            elsif ( $cond[-1] eq 'DQUOTE' ) {
+                if ( $input =~ s/^"// ) {
+                    pop @cond;
+                }
+                elsif ( $input =~ s/^(<(?:[^"'>]|"[^"]*"|'[^']*')*?>|([^"<]+))// ) {
+                    $tag->{$key} .= $1;
+                }
+                else {
+                    die "Invalid translate template";
+                }
+            }
+            elsif ( $cond[-1] eq 'QUOTE' ) {
+                if ( $input =~ s/^'// ) {
+                    pop @cond;
+                }
+                elsif ( $input =~ s/^(<(?:[^"'>]|"[^"]*"|'[^']*')*?>|[^'<]+?)// ) {
+                    $tag->{$key} .= $1;
+                }
+                else {
+                    die "Invalid translate template";
+                }
+            }
+        }
+        my $output = join '', @out;
+        $output = Encode::decode_utf8($output)
+            unless Encode::is_utf8($output);
+        $output;
     }
 }
 

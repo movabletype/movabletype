@@ -6,3 +6,5 @@ object_types:
     awesome:       MT::Awesome
     awesome_image: MT::Awesome::Image
 
+l10n_class: MT::Awesome::L10N
+
