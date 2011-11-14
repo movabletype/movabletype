@@ -7,6 +7,8 @@
 # Adapted from DateTime package to avoid requirement of DateTime package.
 
 package MT::DateTime;
+use strict;
+use warnings;
 
 use Exporter;
 @MT::DateTime::ISA = qw( Exporter );

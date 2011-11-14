@@ -4,6 +4,9 @@
 #
 # $Id$
 package MT::Theme::Element;
+use strict;
+use warnings;
+
 use base qw( MT::ErrorHandler );
 use MT::Util qw( weaken );
 

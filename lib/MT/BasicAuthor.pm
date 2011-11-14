@@ -8,6 +8,8 @@ package MT::BasicAuthor;
 
 # fake out the require for this package since we're
 # declaring it inline...
+use strict;
+use warnings;
 
 use base qw( MT::Object );
 

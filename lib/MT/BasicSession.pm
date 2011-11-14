@@ -5,6 +5,8 @@
 # $Id$
 
 package MT::BasicSession;
+use strict;
+use warnings;
 
 # fake out the require for this package since we're
 # declaring it inline...
