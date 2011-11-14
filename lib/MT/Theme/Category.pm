@@ -5,6 +5,7 @@
 # $Id$
 package MT::Theme::Category;
 use strict;
+use warnings;
 use MT;
 
 sub import_categories {

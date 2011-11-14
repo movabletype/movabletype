@@ -5,6 +5,7 @@
 # $Id$
 package MT::Theme::TemplateSet;
 use strict;
+use warnings;
 use MT;
 use MT::Util qw( dirify );
 

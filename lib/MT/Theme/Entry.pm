@@ -5,6 +5,7 @@
 # $Id$
 package MT::Theme::Entry;
 use strict;
+use warnings;
 use MT;
 use MT::Entry;
 

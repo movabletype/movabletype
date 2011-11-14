@@ -5,6 +5,7 @@
 # $Id$
 package MT::Theme::StaticFiles;
 use strict;
+use warnings;
 use MT;
 
 sub _default_allowed_extensions {

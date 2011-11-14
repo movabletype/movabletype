@@ -7,6 +7,7 @@
 package MT::ObjectDriver::Driver::CacheWrapper;
 
 use strict;
+use warnings;
 use MT;
 
 my $CACHE_ENABLED;
