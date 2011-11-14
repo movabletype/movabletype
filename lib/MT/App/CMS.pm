@@ -1293,6 +1293,9 @@ sub core_list_actions {
                 permit_action => 'clone_blog',
                 max           => 1,
                 dialog        => 1,
+                condition     => sub {
+                    return $app->blog ? 1 : 0;
+                },
             },
             'delete' => {
                 label         => 'Delete',
