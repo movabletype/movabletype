@@ -6,6 +6,7 @@
 package MT::CMS::Page;
 
 use strict;
+use warnings;
 use MT::CMS::Entry;
 
 sub edit {

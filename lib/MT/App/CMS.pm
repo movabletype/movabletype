@@ -7,6 +7,7 @@
 package MT::App::CMS;
 
 use strict;
+use warnings;
 use base qw( MT::App );
 
 use MT::Util qw( format_ts epoch2ts perl_sha1_digest_hex perl_sha1_digest

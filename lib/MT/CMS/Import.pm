@@ -6,6 +6,7 @@
 package MT::CMS::Import;
 
 use strict;
+use warnings;
 
 use MT::I18N qw( const );
 

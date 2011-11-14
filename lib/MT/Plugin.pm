@@ -7,6 +7,7 @@
 package MT::Plugin;
 
 use strict;
+use warnings;
 use base qw( MT::Component );
 
 sub init {

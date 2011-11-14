@@ -5,6 +5,7 @@
 # $Id$
 package MT::Template::Handler;
 use strict;
+use warnings;
 
 sub EL_CODE  {0}
 sub EL_TYPE  {1}

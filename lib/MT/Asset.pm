@@ -7,6 +7,7 @@
 package MT::Asset;
 
 use strict;
+use warnings;
 use MT::Tag;    # Holds MT::Taggable
 use base qw( MT::Object MT::Taggable MT::Scorable );
 

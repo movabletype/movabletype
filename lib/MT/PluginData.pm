@@ -6,6 +6,7 @@
 
 package MT::PluginData;
 use strict;
+use warnings;
 
 use MT::Serialize;
 

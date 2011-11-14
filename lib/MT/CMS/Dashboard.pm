@@ -6,6 +6,7 @@
 package MT::CMS::Dashboard;
 
 use strict;
+use warnings;
 use MT::Util qw( epoch2ts encode_html );
 
 sub dashboard {

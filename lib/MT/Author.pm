@@ -7,6 +7,7 @@
 package MT::Author;
 
 use strict;
+use warnings;
 
 use MT::Summary;    # Holds MT::Summarizable
 use base qw( MT::Object MT::Scorable MT::Summarizable );

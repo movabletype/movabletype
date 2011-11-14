@@ -6,6 +6,7 @@
 
 package MT::Request;
 use strict;
+use warnings;
 
 use base qw( MT::ErrorHandler );
 

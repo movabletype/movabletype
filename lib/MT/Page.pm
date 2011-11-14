@@ -7,6 +7,7 @@
 package MT::Page;
 
 use strict;
+use warnings;
 use base qw( MT::Entry );
 use MT::Util qw( archive_file_for );
 

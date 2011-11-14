@@ -6,6 +6,7 @@
 package MT::CMS::Tag;
 
 use strict;
+use warnings;
 
 sub rename_tag {
     my $app     = shift;

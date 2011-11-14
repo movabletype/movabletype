@@ -7,6 +7,7 @@
 package MT::Plugin::JunkFilter;
 
 use strict;
+use warnings;
 
 use MT::Plugin;
 @MT::Plugin::JunkFilter::ISA = qw( MT::Plugin );

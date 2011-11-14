@@ -7,6 +7,7 @@
 package MT::CMS::Template;
 
 use strict;
+use warnings;
 use MT::Util qw( format_ts );
 
 sub edit {

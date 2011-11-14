@@ -6,6 +6,7 @@
 package MT::CMS::Export;
 
 use strict;
+use warnings;
 use MT::Util qw( dirify );
 
 sub start_export {

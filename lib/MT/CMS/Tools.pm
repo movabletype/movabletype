@@ -6,6 +6,7 @@
 package MT::CMS::Tools;
 
 use strict;
+use warnings;
 use Symbol;
 
 use MT::I18N qw( wrap_text );

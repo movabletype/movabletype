@@ -7,6 +7,7 @@
 package MT::Website;
 
 use strict;
+use warnings;
 use base qw( MT::Blog );
 
 __PACKAGE__->install_properties(

@@ -6,6 +6,7 @@
 package MT::Template::Tags::Pager;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::Util qw( encode_url );

@@ -6,6 +6,7 @@
 package MT::CMS::Comment;
 
 use strict;
+use warnings;
 use MT::Util
     qw( remove_html format_ts relative_date encode_html break_up_text );
 use MT::I18N qw( const );

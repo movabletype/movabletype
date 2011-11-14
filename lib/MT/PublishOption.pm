@@ -7,6 +7,7 @@
 package MT::PublishOption;
 
 use strict;
+use warnings;
 
 # build type
 sub DISABLED ()  {0}

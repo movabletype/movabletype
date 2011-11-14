@@ -7,6 +7,7 @@
 package MT::Template::Context::Search;
 
 use strict;
+use warnings;
 use base qw( MT::Template::Context );
 use MT::Util qw( encode_url decode_html );
 

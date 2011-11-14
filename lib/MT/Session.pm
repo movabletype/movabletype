@@ -6,6 +6,7 @@
 
 package MT::Session;
 use strict;
+use warnings;
 
 use MT::Object;
 @MT::Session::ISA = qw( MT::Object );

@@ -6,6 +6,7 @@
 package MT::Template::Tags::Entry;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::Util

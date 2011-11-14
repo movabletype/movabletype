@@ -7,6 +7,7 @@
 package MT::Object;
 
 use strict;
+use warnings;
 use base qw( Data::ObjectDriver::BaseObject MT::ErrorHandler );
 
 use MT;

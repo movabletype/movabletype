@@ -7,6 +7,7 @@
 package MT::TaskMgr;
 
 use strict;
+use warnings;
 use base qw( MT::ErrorHandler );
 
 use MT::Task;

@@ -5,6 +5,7 @@
 # $Id$
 package MT::Theme;
 use strict;
+use warnings;
 use MT;
 use base qw( MT::Component );
 

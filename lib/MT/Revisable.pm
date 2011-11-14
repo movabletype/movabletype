@@ -9,6 +9,7 @@
 package MT::Revisable;
 
 use strict;
+use warnings;
 
 our $MAX_REVISIONS = 20;
 

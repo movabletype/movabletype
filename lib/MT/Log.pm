@@ -7,6 +7,7 @@
 package MT::Log;
 
 use strict;
+use warnings;
 use base qw( MT::Object );
 use MT::Util qw( ts2epoch epoch2ts offset_time );
 

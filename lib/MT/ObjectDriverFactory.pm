@@ -7,6 +7,7 @@
 package MT::ObjectDriverFactory;
 
 use strict;
+use warnings;
 use base qw( MT::ErrorHandler );
 
 use MT::ObjectDriver::Driver::DBI;

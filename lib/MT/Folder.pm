@@ -7,6 +7,7 @@
 package MT::Folder;
 
 use strict;
+use warnings;
 use base qw( MT::Category );
 
 __PACKAGE__->install_properties(

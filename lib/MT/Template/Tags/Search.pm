@@ -6,6 +6,7 @@
 package MT::Template::Tags::Search;
 
 use strict;
+use warnings;
 
 ###########################################################################
 

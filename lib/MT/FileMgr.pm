@@ -7,6 +7,7 @@
 package MT::FileMgr;
 
 use strict;
+use warnings;
 use base qw( MT::ErrorHandler );
 
 sub new {

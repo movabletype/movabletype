@@ -6,6 +6,7 @@
 package MT::Template::Tags::Userpic;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::Asset;

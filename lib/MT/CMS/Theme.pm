@@ -6,6 +6,7 @@
 package MT::CMS::Theme;
 
 use strict;
+use warnings;
 use MT::Util qw( remove_html dirify is_valid_url );
 use MT::Theme;
 use File::Spec;
