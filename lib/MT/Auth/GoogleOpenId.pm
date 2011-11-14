@@ -6,6 +6,7 @@
 package MT::Auth::GoogleOpenId;
 
 use strict;
+use warnings;
 use base qw( MT::Auth::OpenID );
 
 sub check_url_params {

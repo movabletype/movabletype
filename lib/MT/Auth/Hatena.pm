@@ -6,6 +6,7 @@
 
 package MT::Auth::Hatena;
 use strict;
+use warnings;
 
 use base qw( MT::Auth::OpenID );
 

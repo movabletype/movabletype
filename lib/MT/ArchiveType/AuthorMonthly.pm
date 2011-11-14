@@ -7,6 +7,7 @@
 package MT::ArchiveType::AuthorMonthly;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::Author MT::ArchiveType::Monthly );
 use MT::Util qw( dirify start_end_month );
 

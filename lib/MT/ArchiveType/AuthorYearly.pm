@@ -7,6 +7,7 @@
 package MT::ArchiveType::AuthorYearly;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::Author MT::ArchiveType::Yearly );
 use MT::Util qw( dirify start_end_year );
 

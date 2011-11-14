@@ -7,6 +7,7 @@
 package MT::Asset::Audio;
 
 use strict;
+use warnings;
 use base qw( MT::Asset );
 use MT::Blog;
 use MT::Website;

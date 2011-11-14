@@ -6,6 +6,7 @@
 
 package MT::Auth::MT;
 use strict;
+use warnings;
 
 use base 'MT::ErrorHandler';
 use MT::Author qw( AUTHOR );

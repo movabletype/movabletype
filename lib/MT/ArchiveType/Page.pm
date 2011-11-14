@@ -7,6 +7,7 @@
 package MT::ArchiveType::Page;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::Individual );
 
 sub name {

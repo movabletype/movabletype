@@ -7,6 +7,7 @@
 package MT::Auth::WordPress;
 
 use strict;
+use warnings;
 use base qw( MT::Auth::OpenID );
 
 sub url_for_userid {

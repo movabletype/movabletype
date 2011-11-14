@@ -7,6 +7,7 @@
 package MT::Asset::Image;
 
 use strict;
+use warnings;
 use base qw( MT::Asset );
 use MT::Blog;
 use MT::Website;
