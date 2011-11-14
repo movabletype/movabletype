@@ -6,6 +6,7 @@
 
 package MT::Atom;
 use strict;
+use warnings;
 
 package MT::Atom::Entry;
 use base qw( XML::Atom::Entry );

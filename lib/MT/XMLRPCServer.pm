@@ -6,6 +6,7 @@
 
 package MT::XMLRPCServer::Util;
 use strict;
+use warnings;
 use Time::Local qw( timegm );
 use MT;
 use MT::Util qw( offset_time_list );
