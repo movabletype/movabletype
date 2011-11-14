@@ -2,9 +2,10 @@ package HTTP::Headers::Auth;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = sprintf("%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/);
+$VERSION = "6.00";
 
-require HTTP::Headers;
+use HTTP::Headers;
+
 package HTTP::Headers;
 
 BEGIN {
@@ -21,17 +22,18 @@ sub _parse_authenticate
     for (HTTP::Headers::Util::split_header_words(@_)) {
 	if (!defined($_->[1])) {
 	    # this is a new auth scheme
-	    push(@ret, lc(shift @$_) => {});
+	    push(@ret, shift(@$_) => {});
 	    shift @$_;
 	}
 	if (@ret) {
 	    # this a new parameter pair for the last auth scheme
 	    while (@$_) {
-		my $k = lc(shift @$_);
+		my $k = shift @$_;
 		my $v = shift @$_;
 	        $ret[-1]{$k} = $v;
 	    }
-	} else {
+	}
+	else {
 	    # something wrong, parameter pair without any scheme seen
 	    # IGNORE
 	}
@@ -52,14 +54,16 @@ sub _authenticate
 	    if ($a_scheme =~ /\s/) {
 		# assume complete valid value, pass it through
 		$self->push_header($header, $a_scheme);
-	    } else {
+	    }
+	    else {
 		my @param;
 		if (@new) {
 		    my $p = $new[0];
 		    if (ref($p) eq "ARRAY") {
 			@param = @$p;
 			shift(@new);
-		    } elsif (ref($p) eq "HASH") {
+		    }
+		    elsif (ref($p) eq "HASH") {
 			@param = %$p;
 			shift(@new);
 		    }

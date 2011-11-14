@@ -2,7 +2,7 @@ package HTTP::Headers::ETag;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = sprintf("%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/);
+$VERSION = "6.00";
 
 require HTTP::Date;
 
@@ -32,9 +32,11 @@ sub if_range {
 	my $new = shift;
 	if (!defined $new) {
 	    $self->remove_header("If-Range");
-	} elsif ($new =~ /^\d+$/) {
+	}
+	elsif ($new =~ /^\d+$/) {
 	    $self->_date_header("If-Range", $new);
-	} else {
+	}
+	else {
 	    $self->_etags("If-Range", $new);
 	}
     }
@@ -69,15 +71,19 @@ sub _split_etag_list
             my $etag = "";
 	    if (s/^\s*(\"[^\"\\]*(?:\\.[^\"\\]*)*\")//) {
 		push(@res, "$weak$1");
-            } elsif (s/^\s*,//) {
+            }
+            elsif (s/^\s*,//) {
                 push(@res, qq(W/"")) if $weak;
-            } elsif (s/^\s*([^,\s]+)//) {
+            }
+            elsif (s/^\s*([^,\s]+)//) {
                 $etag = $1;
 		$etag =~ s/([\"\\])/\\$1/g;
 	        push(@res, qq($weak"$etag"));
-            } elsif (s/^\s+// || !length) {
+            }
+            elsif (s/^\s+// || !length) {
                 push(@res, qq(W/"")) if $weak;
-            } else {
+            }
+            else {
 	 	die "This should not happen: '$_'";
             }
         }
