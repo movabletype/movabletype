@@ -7,6 +7,7 @@
 package MT::Worker::SummaryWatcher;
 
 use strict;
+use warnings;
 use base qw( TheSchwartz::Worker );
 use MT::Summary;
 

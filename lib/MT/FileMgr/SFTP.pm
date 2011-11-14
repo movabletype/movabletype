@@ -6,6 +6,7 @@
 
 package MT::FileMgr::SFTP;
 use strict;
+use warnings;
 
 use MT::FileMgr;
 @MT::FileMgr::SFTP::ISA = qw( MT::FileMgr );

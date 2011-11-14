@@ -7,6 +7,7 @@
 package MT::Util::LogProcessor;
 
 use strict;
+use warnings;
 use base qw( Class::Accessor::Fast );
 
 use Carp qw( croak );

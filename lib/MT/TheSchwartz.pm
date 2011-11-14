@@ -7,6 +7,7 @@
 package MT::TheSchwartz;
 
 use strict;
+use warnings;
 use base qw( TheSchwartz );
 use MT::ObjectDriver::Driver::Cache::RAM;
 use List::Util qw( shuffle );

@@ -6,6 +6,7 @@
 
 package MT::Trackback;
 use strict;
+use warnings;
 
 use MT::Object;
 @MT::Trackback::ISA = qw( MT::Object );

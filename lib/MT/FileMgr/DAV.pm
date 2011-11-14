@@ -6,6 +6,7 @@
 
 package MT::FileMgr::DAV;
 use strict;
+use warnings;
 
 use MT::FileMgr;
 @MT::FileMgr::DAV::ISA = qw( MT::FileMgr );
