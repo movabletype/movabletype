@@ -7,6 +7,7 @@
 package MT::App::ActivityFeeds;
 
 use strict;
+use warnings;
 use base 'MT::App';
 use MT::Author qw(AUTHOR);
 use MT::Util qw(perl_sha1_digest_hex ts2epoch epoch2ts ts2iso iso2ts

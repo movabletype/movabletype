@@ -7,6 +7,7 @@
 package MT::Bootstrap;
 
 use strict;
+use warnings;
 
 sub BEGIN {
     my ( $dir, $orig_dir );

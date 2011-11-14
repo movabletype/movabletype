@@ -7,6 +7,7 @@
 package MT::App::Trackback;
 
 use strict;
+use warnings;
 use utf8;
 use base qw( MT::App );
 

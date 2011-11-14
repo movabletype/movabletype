@@ -6,6 +6,7 @@
 
 package MT::ErrorHandler;
 use strict;
+use warnings;
 
 use vars qw( $ERROR );
 

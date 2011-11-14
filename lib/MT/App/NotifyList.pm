@@ -7,6 +7,7 @@
 package MT::App::NotifyList;
 
 use strict;
+use warnings;
 use MT::App;
 use MT::Util qw( encode_url );
 

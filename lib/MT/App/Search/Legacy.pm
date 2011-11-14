@@ -10,6 +10,7 @@
 package MT::App::Search::Legacy;
 
 use strict;
+use warnings;
 use base qw( MT::App );
 
 use File::Spec;
