@@ -741,16 +741,16 @@
           app.setEditorIframeHTML();
       }
       
-      function changedTextFormat(sel) {
-          var form = sel.form;
-          var option = sel.options[sel.selectedIndex].value;
+      function changedTextFormat() {
+          var form = this.form;
+          var option = this.options[this.selectedIndex].value;
           if ((cur_text_format != 'richtext') && (option == 'richtext')) {
               // warn user that changing to richtext is not reversible (easily)
               if (!confirm("<__trans phrase="Are you sure you want to use the Rich Text editor?" escape="js">")) {
                   // revert selection
-                  for (var i = 0; i < sel.options.length; i++) {
-                      if (sel.options[i].value == cur_text_format)
-                          sel.selectedIndex = i;
+                  for (var i = 0; i < this.options.length; i++) {
+                      if (this.options[i].value == cur_text_format)
+                          this.selectedIndex = i;
                   }
                   app.editor.focus();
                   return;
@@ -934,6 +934,7 @@
           cmtTableSelect.rowSelect = true;
           <mt:if name="tags_js">initTags();</mt:if>
           <mt:unless name="id">jQuery('#title').focus();</mt:unless>
+          jQuery('#convert_breaks').change(changedTextFormat);
       }
       
       var tagPos = 0;
@@ -1130,7 +1131,7 @@
           </div>
           <div id="field-convert_breaks">
             <__trans phrase="Format:">
-            <select name="convert_breaks" id="convert_breaks" onchange="changedTextFormat(this)">
+            <select name="convert_breaks" id="convert_breaks">
             <mt:loop name="text_filters">
               <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
             </mt:loop>
