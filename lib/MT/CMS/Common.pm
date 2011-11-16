@@ -1844,7 +1844,7 @@ sub build_revision_table {
             code   => $hasher,
             terms  => { $class->datasource . '_id' => $obj->id },
             source => $type,
-            params => { dialog => scalar $q->param('dialog'), },
+            params => { dialog => scalar $q->param('dialog'), object_id => $obj->id },
             %$param
         }
     );
@@ -1907,6 +1907,42 @@ sub list_revision {
             revision => $revision,
         }
     );
+}
+
+sub diff_revision {
+    my $app   = shift;
+    my $q     = $app->param;
+    my $type  = $q->param('_type');
+    my $class = $app->model($type);
+    my $id    = $q->param('id');
+    my $rev_form = $q->param('rev_from');
+    my $rev_to   = $q->param('rev_to');
+
+    return $app->errtrans("Invalid request.")
+        unless $type;
+
+    my $param = {};
+
+    $id =~ s/\D//g;
+    my $class = $app->model($type);
+    my $obj = $class->load($id)
+        or return $app->errtrans(
+            'Can\'t load [_1] #[_1].', $class->class_label, $id
+        );
+    my $blog = $obj->blog || MT::Blog->load( $q->param('blog_id') ) || undef;
+    my $author = $app->user;
+    return $app->permission_denied()
+        if $type eq 'entry'
+        ? (     $obj->author_id == $author->id
+                ? !$app->can_do('edit_own_entry')
+                : !$app->can_do('edit_all_entries')
+            )
+        : $type eq 'page'     ? !$app->can_do('edit_all_pages')
+        : $type eq 'template' ? !$app->can_do('edit_templates')
+        : 1;
+
+
+    $app->load_tmpl( "dialog/diff_revisions.tmpl", $param );    
 }
 
 sub save_snapshot {

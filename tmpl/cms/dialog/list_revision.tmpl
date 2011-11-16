@@ -14,7 +14,33 @@
             class="cancel action button mt-close-dialog"
             title="<__trans phrase="Cancel (x)">"
             ><__trans phrase="Cancel"></button>
+        <button
+            type="button"
+            accesskey="c"
+            class="action button"
+            onclick="compare_revisions();"
+            title="<__trans phrase="Compare (c)">"
+            ><__trans phrase="Compare"></button>
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
+
+<form id="revision_form" method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="diff_revisions" />
+    <input type="hidden" name="_type" value="<mt:var name="object_type">" />
+    <input type="hidden" name="id" value="<mt:var name="object_id">" />
+    <input type="hidden" name="rev_from" value="" />
+    <input type="hidden" name="rev_to" value="" />
+</form>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+function compare_revisions() {
+	var $form = jQuery('#revision_form');
+	$form.find("#rev_from").val( jQuery("input[@name=diff_from]:checked").val() );
+	$form.find("#rev_to").val( jQuery("input[@name=diff_to]:checked").val() );
+	$form.submit();
+}
+/* ]]> */
+</script>
 
 <mt:include name="dialog/footer.tmpl">

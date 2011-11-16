@@ -59,6 +59,7 @@ sub core_methods {
         'delete'         => "${pkg}Common::delete",
         'search_replace' => "${pkg}Search::search_replace",
         'list_revision'  => "${pkg}Common::list_revision",
+        'diff_revisions' => "${pkg}Common::diff_revision",
         'save_snapshot'  => "${pkg}Common::save_snapshot",
 
         ## Edit methods
