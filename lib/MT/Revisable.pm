@@ -32,8 +32,7 @@ our $MAX_REVISIONS = 20;
     }
 
     sub _handle {
-        my $method = ( caller(1) )[3];
-        $method =~ s/.*:://;
+        my $method = shift;
         my $driver = $driver ||= _driver();
         return undef unless $driver->can($method);
         $driver->$method(@_);
@@ -78,10 +77,10 @@ sub install_properties {
         \&mt_postremove_obj );
 }
 
-sub revision_pkg         { _handle(@_); }
-sub revision_props       { _handle(@_); }
-sub init_revisioning     { _handle(@_); }
-sub handle_max_revisions { _handle(@_); }
+sub revision_pkg         { _handle('revision_pkg',         @_); }
+sub revision_props       { _handle('revision_props',       @_); }
+sub init_revisioning     { _handle('init_revisioning',     @_); }
+sub handle_max_revisions { _handle('handle_max_revisions', @_); }
 
 sub revisioned_columns {
     my $obj  = shift;
@@ -240,7 +239,7 @@ sub save_revision {
 
     MT->run_callbacks( $class . '::pre_save_revision', $obj, @_ );
 
-    my $current_revision = _handle( $obj, @_ );
+    my $current_revision = _handle('save_revision', $obj, @_ );
 
     MT->run_callbacks( $class . '::post_save_revision',
         $obj, $current_revision );
@@ -248,9 +247,9 @@ sub save_revision {
     return $current_revision;
 }
 
-sub object_from_revision { _handle(@_); }
-sub load_revision        { _handle(@_); }
-sub remove_revisions     { _handle(@_); }
+sub object_from_revision { _handle('object_from_revision', @_); }
+sub load_revision        { _handle('load_revision',        @_); }
+sub remove_revisions     { _handle('remove_revisions',     @_); }
 
 sub apply_revision {
     my $obj = shift;
@@ -324,14 +323,16 @@ sub _diff_string {
     my $limit_unchanged = $diff_args->{limit_unchanged};
 
     require HTML::Diff;
+    my $func = HTML::Diff->can($diff_method);
     Carp::croak(
         MT->translate( "Unknown method [_1]", 'HTML::Diff::' . $diff_method )
-    ) unless HTML::Diff->can($diff_method);
+    ) unless $func;
 
-    my $diff_result = eval "HTML::Diff::$diff_method(\$str_a, \$str_b)";
+    my $diff_result = $func->($str_a, $str_b);
     my @result;
     foreach my $diff (@$diff_result) {
         unless ( $diff->[0] eq 'c' ) {    # changed has adds and removes
+            $diff->[0] ||= 'u';
             push @result,
                 {
                 flag => $diff->[0],
@@ -382,7 +383,14 @@ the keyword C<revisioned> to the column definition:
 
 If at least one versioned column is changed
 
-=head1 METHODS
+Currently, only saves from the CMS application or the Atom API are saving 
+revisions, as the Revisable is hooked to these apps pre/post save callbacks.
+
+Revisions start from number 1, and record only the saved object and what
+changed, but there is no way to retrive the previous version, unless an older
+revision is available
+
+=head1 INTERNAL METHODS
 
 =head2 $class->revision_pkg
 
@@ -431,6 +439,8 @@ Called automatically when an object is saved from the MT web interface or
 posted via a 3rd party client (on a low priority api/cms_post_save callback).
 Saves a revision only if at least one revisioned column has changed.
 
+=head1 METHODS
+
 # =head2 $obj->object_from_revision($revision)
 
 =head2 $obj->load_revision(\%terms, \%args)
@@ -453,11 +463,13 @@ args. Terms can be any of the following:
 
 =back
 
+But most likely you want to use the rev_number field
+
 C<load_revision> should return an/array of arrayref(s) of:
 
 =over
 
-=item 0. The object stored at the revision
+=item 0. The object stored at the revision (i.e. an MT::Entry object)
 
 =item 1. An array ref of the changed columns that triggered the revision
 
@@ -468,28 +480,37 @@ C<load_revision> should return an/array of arrayref(s) of:
 =head2 $obj->apply_revision(\%terms, \%args)
 
 Rolls back to the state of the object at C<$obj->load_revision(\%terms, \%args)>
-and saves this action as a revision.
+and saves this action as a revision. Can be also called as:
+
+    $obj->apply_revision(rev_number)
 
 =head2 $obj->diff_object($obj_b)
 
-Returns a hashref of column names with the values being an arrayref representation
-of the diff:
-
-    [<flag>, <left>, <right>]
-
-with the flag being C<'u', '+', '-', 'c'>. See the C<HTML::Diff> POD for more
-information.
+Returns the difference between two objects (i.e. MT::Entry objects). see
+DIFF FORMAT for return value explaination
 
 =head2 $obj->diff_revision(\%terms, \%diff_args)
 
-Loads the first object at C<$obj->load_revision(\%terms, \%args)> and returns
-a hashref of column names with the values being an arrayref representation
-of the diff:
+Takes the first two revisions specified by %terms, and return the difference
+as explained in the DIFF FORMAT section. can be also called as:
+
+    $obj->diff_revision(rev_number, \%diff_args)
+
+And in this case will compare this revision with $obj
+
+=head1 DIFF FORMAT
+
+The diff format returned by diff_object and diff_revision is a hashref whose
+keys are the names of the fields, and value is an array ref of records 
+specifing what changed. each record is in the following form:
 
     [<flag>, <left>, <right>]
 
-with the flag being C<'u', '+', '-', 'c'>. See the C<HTML::Diff> POD for more
-information.
+with the flag being C<'u', '+', '-'. 'u' - unchanged. '+' and '-'
+are for added and removed. It is possible to get either one record with a 'u' 
+flag, or multiple record with 'u', '+' and '-' to specify parts that remind 
+unchaged and parts that changed. 
+See also the C<HTML::Diff> POD for more information.
 
 =head1 CALLBACKS
 

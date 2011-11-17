@@ -148,7 +148,7 @@ sub load_revision {
 
     # Only specified a rev_number
     if ( defined $terms && ref $terms ne 'HASH' ) {
-        $terms = { rev_number => $_[0] };
+        $terms = { rev_number => $terms };
     }
     $terms->{ $datasource . '_id' } ||= $obj->id;
 
