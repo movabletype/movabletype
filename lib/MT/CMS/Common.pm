@@ -1912,15 +1912,16 @@ sub list_revision {
 sub diff_revision {
     my $app   = shift;
     my $q     = $app->param;
-    my $type  = $q->param('_type');
-    my $class = $app->model($type);
+    my $rev_type  = $q->param('_type');
     my $id    = $q->param('id');
-    my $rev_form = $q->param('rev_from');
+    my $rev_from = $q->param('rev_from');
     my $rev_to   = $q->param('rev_to');
 
     return $app->errtrans("Invalid request.")
-        unless $type;
+        unless $rev_type;
 
+    my $type = $rev_type;
+    $type =~ s/:.*//;
     my $param = {};
 
     $id =~ s/\D//g;
@@ -1940,7 +1941,43 @@ sub diff_revision {
         : $type eq 'page'     ? !$app->can_do('edit_all_pages')
         : $type eq 'template' ? !$app->can_do('edit_templates')
         : 1;
+    
+    require Text::Diff::FormattedHTML;
+    if ($rev_from > $rev_to) {
+        ($rev_from, $rev_to) = ($rev_to, $rev_from);
+    }
+    my $diff = $obj->diff_revision({rev_number => [$rev_from, $rev_to]});
+    # my $rev_class = $app->model($rev_type);
+    # my $obj_from = $rev_class->load({ $obj->datasource."_id" => $obj->id, rev_number => $rev_from });
+    # my $obj_to   = $rev_class->load({ $obj->datasource."_id" => $obj->id, rev_number => $rev_to });
+    my $obj_from = $obj->object_from_revision($rev_from)->[0];
+    my $obj_to = $obj->object_from_revision($rev_to)->[0];
 
+    use Data::Dumper;
+    print STDERR Dumper($obj_from);
+
+
+    my @diff_arr;
+    while (my ($key, $val) = each %$diff) {
+        next unless $val;
+        my %rec;
+        if (@$val == 1) {
+            my $flag = $val->[0]->{flag};
+            next if not $flag or $flag eq 'u';
+            $rec{title}  = $flag eq '+' ? "Added" : "Removed";
+            $rec{title} .= " to column $key:";
+        }
+        else {
+            $rec{title} = "Change in column $key:";
+        }
+        $rec{table} = Text::Diff::FormattedHTML::diff_strings( { vertical => 1 }, $obj_from->$key(), $obj_to->$key());
+        push @diff_arr, \%rec;
+    }
+
+    $param->{diff} = Dumper(\@diff_arr);
+
+
+    #my $output = Text::Diff::FormattedHTML::diff_strings( { vertical => 1 }, $file1, $file2);
 
     $app->load_tmpl( "dialog/diff_revisions.tmpl", $param );    
 }

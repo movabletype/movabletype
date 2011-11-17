@@ -36,8 +36,8 @@
 /* <![CDATA[ */
 function compare_revisions() {
 	var $form = jQuery('#revision_form');
-	$form.find("#rev_from").val( jQuery("input[@name=diff_from]:checked").val() );
-	$form.find("#rev_to").val( jQuery("input[@name=diff_to]:checked").val() );
+	$form.children('[name=rev_from]').val( jQuery('input[name="diff_from"]:checked').val() );
+	$form.children('[name=rev_to]').val( jQuery('input[name="diff_to"]:checked').val() );
 	$form.submit();
 }
 /* ]]> */
