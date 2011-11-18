@@ -8,7 +8,7 @@ package MT::Image::NetPBM;
 use strict;
 use warnings;
 
-@MT::Image::NetPBM::ISA = qw( MT::Image );
+use base qw( MT::Image );
 
 sub load_driver {
     my $image = shift;

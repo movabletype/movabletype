@@ -8,7 +8,7 @@ package MT::Image::Imager;
 use strict;
 use warnings;
 
-@MT::Image::Imager::ISA = qw(MT::Image);
+use base qw( MT::Image );
 
 sub load_driver {
     my $image = shift;
