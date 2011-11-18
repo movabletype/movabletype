@@ -233,8 +233,11 @@ sub init_user {
 
     $app->validate_magic or return;
 
+    my $class   = MT->model('author');
+    my $ddl     = $class->driver->dbd->ddl_class;
+    my $db_defs = $ddl->column_defs($class);
     return $app->error( $app->translate('Invalid request') )
-        if MT->model('author')->count();
+        if $db_defs;
 
     my %param = $app->unserialize_config;
     if ( !$app->param('continue') ) {
@@ -338,8 +341,11 @@ sub init_website {
     my ($param) = @_;
     my %param;
 
+    my $class   = MT->model('website');
+    my $ddl     = $class->driver->dbd->ddl_class;
+    my $db_defs = $ddl->column_defs($class);
     return $app->error( $app->translate('Invalid request') )
-        if MT->model('website')->count();
+        if $db_defs;
 
     $param{config}           = $param->{config} || $app->param('config');
     $param{website_name}     = $app->param('website_name');
