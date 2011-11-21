@@ -140,6 +140,7 @@ sub load_file {
         my @paths = @{ $tmpl->{include_path} || [] };
         my $abs_file_path = Cwd::realpath($file);
         foreach my $path (@paths) {
+            next unless -d $path;
             my $abs_path = Cwd::realpath($path);
             $ok = 1, last if $abs_file_path =~ /^$abs_path/;
         }
