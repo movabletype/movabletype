@@ -1942,21 +1942,21 @@ sub diff_revision {
         : $type eq 'template' ? !$app->can_do('edit_templates')
         : 1;
     
-    require Text::Diff::FormattedHTML;
+    $rev_from =~ s/\D//g;
+    $rev_to =~ s/\D//g;
     if ($rev_from > $rev_to) {
         ($rev_from, $rev_to) = ($rev_to, $rev_from);
     }
-    my $diff = $obj->diff_revision({rev_number => [$rev_from, $rev_to]});
-    # my $rev_class = $app->model($rev_type);
-    # my $obj_from = $rev_class->load({ $obj->datasource."_id" => $obj->id, rev_number => $rev_from });
-    # my $obj_to   = $rev_class->load({ $obj->datasource."_id" => $obj->id, rev_number => $rev_to });
-    my $obj_from = $obj->object_from_revision($rev_from)->[0];
-    my $obj_to = $obj->object_from_revision($rev_to)->[0];
 
-    use Data::Dumper;
-    print STDERR Dumper($obj_from);
+    print STDERR "diff_revision: $rev_from, $rev_to\n";
+    my $obj_from = $obj->load_revision($rev_from)->[0];
+    my $obj_to = $obj->load_revision($rev_to)->[0];
+    my $diff = $obj_from->diff_object($obj_to);
 
+    #use Data::Dumper;
+    #print STDERR Dumper($diff);
 
+    require Text::Diff::FormattedHTML;
     my @diff_arr;
     while (my ($key, $val) = each %$diff) {
         next unless $val;
@@ -1971,13 +1971,28 @@ sub diff_revision {
             $rec{title} = "Change in column $key:";
         }
         $rec{table} = Text::Diff::FormattedHTML::diff_strings( { vertical => 1 }, $obj_from->$key(), $obj_to->$key());
+        print STDERR "pushing to diff: ", $rec{title}, "\n";
         push @diff_arr, \%rec;
     }
 
-    $param->{diff} = Dumper(\@diff_arr);
+    $param->{diff} = \@diff_arr;
+    $param->{compare_css} = Text::Diff::FormattedHTML::diff_css();
+    $param->{type} = $type;
+    $param->{rev_from} = $rev_from;
+    $param->{rev_to} = $rev_to;
+    $param->{rev_from_created} = $obj_from->modified_on;
+    $param->{rev_to_created} = $obj_to->modified_on;
 
-
-    #my $output = Text::Diff::FormattedHTML::diff_strings( { vertical => 1 }, $file1, $file2);
+    my $js
+        = $app->uri
+        . '?__mode=view&amp;_type='
+        . $type
+        . '&amp;id='
+        . $obj->id;
+    if ( defined $blog ) {
+        $js .= '&amp;blog_id=' . $blog->id;
+    }
+    $param->{rev_js} = $js;
 
     $app->load_tmpl( "dialog/diff_revisions.tmpl", $param );    
 }

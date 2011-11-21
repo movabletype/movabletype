@@ -1,0 +1,37 @@
+<$mt:setvar name="screen_type" value="dialog-screen diff-revision-dialog"$>
+<mt:setvarblock name="page_title"><__trans phrase="Compare Revisions [_1] and [_2]" params="1%%2"></mt:setvarblock>
+
+<mt:include name="dialog/header.tmpl">
+
+<p>
+	Comparing between Revisions: 
+	<a class="revision-number" href="javascript:void(0);" onclick="javascript:parent.location.href='<$mt:var name="rev_js"$>&amp;r=<$mt:var name="rev_from"$>';">
+		<mt:date ts="$rev_from_created" format="%Y-%m-%d %H:%M:%S"> 
+	</a>
+	and  
+	<a class="revision-number" href="javascript:void(0);" onclick="javascript:parent.location.href='<$mt:var name="rev_js"$>&amp;r=<$mt:var name="rev_to"$>';">
+		<mt:date ts="$rev_to_created" format="%Y-%m-%d %H:%M:%S"> 
+	</a>
+</p>
+<p class="hint"><__trans phrase="Select the revision to populate the values of the Edit screen."></p>
+
+<style type='text/css'>
+	<$mt:var name="compare_css" $>
+</style>
+
+<mt:loop name="diff">
+<div><$mt:var name="title" $></div>
+<div><$mt:var name="table" $></div>
+</mt:loop>
+
+<mt:setvarblock name="action_buttons">
+        <button
+            type="submit"
+            accesskey="x"
+            class="cancel action button mt-close-dialog"
+            title="<__trans phrase="Cancel (x)">"
+            ><__trans phrase="Cancel"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
+
+<mt:include name="dialog/footer.tmpl">

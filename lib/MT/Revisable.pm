@@ -441,8 +441,6 @@ Saves a revision only if at least one revisioned column has changed.
 
 =head1 METHODS
 
-# =head2 $obj->object_from_revision($revision)
-
 =head2 $obj->load_revision(\%terms, \%args)
 
 Loads revisions for the C<$obj>. Arguments work similarly to C<MT::Object->load>.
