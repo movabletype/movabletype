@@ -107,7 +107,7 @@ sub crop {
     return $image->error(
         MT->translate(
             "Cropping a [_1]x[_1] square at [_2],[_3] failed: [_4]",
-            $size, $x, $y, $err
+            $size, $x, $y, $@
         )
     ) if $@;
 
