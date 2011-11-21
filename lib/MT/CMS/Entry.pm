@@ -2815,7 +2815,7 @@ sub delete {
         my %recipe = $app->publisher->rebuild_deleted_entry(
             Entry => $obj,
             Blog  => $obj->blog
-        );
+        ) if $obj->status eq MT::Entry::RELEASE();
 
         # Remove object from database
         $obj->remove()

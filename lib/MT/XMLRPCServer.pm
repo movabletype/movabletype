@@ -860,7 +860,7 @@ sub _delete_entry {
     my %recipe = $mt->publisher->rebuild_deleted_entry(
         Entry => $entry,
         Blog  => $blog
-    );
+    ) if $entry->status eq MT::Entry::RELEASE();
 
     # Remove object
     $entry->remove;
