@@ -40,7 +40,7 @@ sub edit {
             $param->{'auth_pref_tag_delim'} = $tag_delim;
         }
         require MT::ObjectTag;
-        $param->{tags_js} = MT::Util::to_json(
+        my $tags_js = MT::Util::to_json(
             [   map { $_->name } MT::Tag->load(
                     undef,
                     {   join => [
@@ -51,6 +51,8 @@ sub edit {
                 )
             ]
         );
+        $tags_js =~ s!/!\\/!g;
+        $param->{tags_js} = $tags_js;
 
         my @related;
         if ( $obj->parent ) {
@@ -543,7 +545,7 @@ sub complete_insert {
         require MT::ObjectTag;
         my $q       = $app->param;
         my $blog_id = $q->param('blog_id');
-        $param->{tags_js} = MT::Util::to_json(
+        my $tags_js = MT::Util::to_json(
             [   map { $_->name } MT::Tag->load(
                     undef,
                     {   join => [
@@ -554,6 +556,8 @@ sub complete_insert {
                 )
             ]
         );
+        $tags_js =~ s!/!\\/!g;
+        $param->{tags_js} = $tags_js;
     }
 
     $param->{'no_insert'} = $app->param('no_insert');
