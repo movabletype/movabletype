@@ -914,8 +914,14 @@ sub do_search_replace {
                 my @col_terms;
                 my $query_string = "%$plain_search%";
                 for my $col (@cols) {
-                    push( @col_terms,
-                        { $col => { like => $query_string } }, '-or' );
+                    if ( 'id' eq $col ) {
+                        # Direct ID search
+                        push( @col_terms,
+                              { $col => $plain_search }, '-or' );
+                    } else {
+                        push( @col_terms,
+                            { $col => { like => $query_string } }, '-or' );
+                    }
                 }
                 delete $col_terms[$#col_terms];
                 push( @terms, \@col_terms );
