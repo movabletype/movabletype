@@ -329,7 +329,10 @@ sub apply {
 
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
-    if ( !$fmgr->exists($dest_path) && $fmgr->exists($src_path) ) {
+    if ( $fmgr->exists($dest_path) ) {
+        $fmgr->delete($dest_path)
+    }
+    if ( $fmgr->exists($src_path) ) {
         __PACKAGE__->install_static_files( $src_path, $dest_path );
     }
     MT->run_callbacks( 'post_apply_theme', $theme, $blog );
