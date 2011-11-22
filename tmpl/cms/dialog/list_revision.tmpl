@@ -17,8 +17,7 @@
         <button
             type="button"
             accesskey="c"
-            class="action button"
-            onclick="compare_revisions();"
+            class="action button disabled"
             title="<__trans phrase="Compare (c)">"
             ><__trans phrase="Compare"></button>
 </mt:setvarblock>
@@ -34,12 +33,48 @@
 
 <script type="text/javascript">
 /* <![CDATA[ */
-function compare_revisions() {
-	var $form = jQuery('#revision_form');
-	$form.children('[name=rev_from]').val( jQuery('input[name="diff_from"]:checked').val() );
-	$form.children('[name=rev_to]').val( jQuery('input[name="diff_to"]:checked').val() );
-	$form.submit();
-}
+(function ($) {
+    var $radio_from = $('input[name="diff_from"]');
+    var $radio_to = $('input[name="diff_to"]');
+    $radio_from.first().attr('disabled',true);
+    $radio_to.last().attr('disabled',true);
+    var already_enabled = 0;
+
+    function enable_button() {
+        if (already_enabled) {
+            return;
+        }
+        if ($radio_to.filter(':checked').length && $radio_from.filter(':checked').length) {
+            $('div.actions-bar-bottom button:last').removeClass('disabled').bind('click', function (e) {
+                var $form = $('#revision_form');
+                $form.children('[name=rev_from]').val( $radio_from.filter(':checked').val() );
+                $form.children('[name=rev_to]').val( $radio_to.filter(':checked').val() );
+                $form.submit();
+            })
+        }
+    }
+
+    $radio_from.bind('click', function(e) {
+        var val = $(this).val();
+        $radio_to.attr('disabled',false).each(function() {
+            var $this = $(this);
+            if ($this.val() <= val) {
+                $this.attr('disabled',true);
+            }
+        })
+        enable_button();
+    });
+    $radio_to.bind('click', function(e) {
+        var val = $(this).val();
+        $radio_from.attr('disabled',false).each(function() {
+            var $this = $(this);
+            if ($this.val() >= val) {
+                $this.attr('disabled',true);
+            }
+        })
+        enable_button();
+    });
+})(jQuery);
 /* ]]> */
 </script>
 
