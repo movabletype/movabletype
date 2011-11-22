@@ -1,5 +1,5 @@
 <$mt:setvar name="screen_type" value="dialog-screen diff-revision-dialog"$>
-<mt:setvarblock name="page_title"><__trans phrase="Compare Revisions [_1] and [_2]" params="1%%2"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Compare Revisions"></mt:setvarblock>
 
 <mt:include name="dialog/header.tmpl">
 
@@ -31,6 +31,14 @@
             class="cancel action button mt-close-dialog"
             title="<__trans phrase="Cancel (x)">"
             ><__trans phrase="Cancel"></button>
+		<button
+			type="submit"
+			accesskey="b"
+			onclick="history.go(-1)"
+			title="<__trans phrase="Back">"
+			class="goback action button">
+			<__trans phrase="Back">
+		</button>
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
 

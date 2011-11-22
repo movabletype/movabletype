@@ -502,7 +502,7 @@ The diff format returned by diff_object and diff_revision is a hashref whose
 keys are the names of the fields, and value is an array ref of records 
 specifing what changed. each record is in the following form:
 
-    [<flag>, <left>, <right>]
+    { flag => 'X', text => '...'}
 
 with the flag being C<'u', '+', '-'. 'u' - unchanged. '+' and '-'
 are for added and removed. It is possible to get either one record with a 'u' 

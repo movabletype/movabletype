@@ -1948,7 +1948,6 @@ sub diff_revision {
         ($rev_from, $rev_to) = ($rev_to, $rev_from);
     }
 
-    print STDERR "diff_revision: $rev_from, $rev_to\n";
     my $obj_from = $obj->load_revision($rev_from)->[0];
     my $obj_to = $obj->load_revision($rev_to)->[0];
     my $diff = $obj_from->diff_object($obj_to);
@@ -1970,8 +1969,9 @@ sub diff_revision {
         else {
             $rec{title} = "Change in column $key:";
         }
-        $rec{table} = Text::Diff::FormattedHTML::diff_strings( { vertical => 1 }, $obj_from->$key(), $obj_to->$key());
-        print STDERR "pushing to diff: ", $rec{title}, "\n";
+        my $str1 = join "\n", map { $_->{text} } grep { $_->{flag} eq 'u' or $_->{flag} eq '-' } @$val;
+        my $str2 = join "\n", map { $_->{text} } grep { $_->{flag} eq 'u' or $_->{flag} eq '+' } @$val;
+        $rec{table} = Text::Diff::FormattedHTML::diff_strings( { vertical => 1 }, $str1, $str2);
         push @diff_arr, \%rec;
     }
 
