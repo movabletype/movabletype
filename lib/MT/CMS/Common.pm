@@ -1952,8 +1952,7 @@ sub diff_revision {
     my $obj_to = $obj->load_revision($rev_to)->[0];
     my $diff = $obj_from->diff_object($obj_to);
 
-    #use Data::Dumper;
-    #print STDERR Dumper($diff);
+    my $ordering_info = $class->list_props();
 
     require Text::Diff::FormattedHTML;
     my @diff_arr;
@@ -1969,11 +1968,25 @@ sub diff_revision {
         else {
             $rec{title} = "Change in column $key:";
         }
-        my $str1 = join "\n", map { $_->{text} } grep { $_->{flag} eq 'u' or $_->{flag} eq '-' } @$val;
-        my $str2 = join "\n", map { $_->{text} } grep { $_->{flag} eq 'u' or $_->{flag} eq '+' } @$val;
+        foreach my $elem (@$val) {
+            $elem->{text} =~ s!(<\s*(?:br|p)\s*/\s*>)!$1\n!g;
+            $elem->{text} =~ s!(<\s*/\s*(?:div|p)\s*>)!$1\n!g;
+            $elem->{text} =~ s!\n(\s*)$!$1!;
+        }
+        my $str1 = join "\n", 
+                   map { $_->{text} } 
+                   grep { $_->{flag} eq 'u' or $_->{flag} eq '-' } 
+                   @$val;
+        my $str2 = join "\n", 
+                   map { $_->{text} } 
+                   grep { $_->{flag} eq 'u' or $_->{flag} eq '+' } 
+                   @$val;
         $rec{table} = Text::Diff::FormattedHTML::diff_strings( { vertical => 1 }, $str1, $str2);
+        $rec{order} = exists $ordering_info->{$key}->{order} ? $ordering_info->{$key}->{order} : 9000;
         push @diff_arr, \%rec;
     }
+
+    @diff_arr = sort {$a->{order} <=> $b->{order}} @diff_arr;
 
     $param->{diff} = \@diff_arr;
     $param->{compare_css} = Text::Diff::FormattedHTML::diff_css();
