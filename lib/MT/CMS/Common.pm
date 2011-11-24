@@ -1952,7 +1952,7 @@ sub diff_revision {
     my $obj_to = $obj->load_revision($rev_to)->[0];
     my $diff = $obj_from->diff_object($obj_to);
 
-    my $ordering_info = $class->list_props();
+    my $list_props =  MT->registry( list_properties => $type );
 
     require Text::Diff::FormattedHTML;
     my @diff_arr;
@@ -1982,7 +1982,7 @@ sub diff_revision {
                    grep { $_->{flag} eq 'u' or $_->{flag} eq '+' } 
                    @$val;
         $rec{table} = Text::Diff::FormattedHTML::diff_strings( { vertical => 1 }, $str1, $str2);
-        $rec{order} = exists $ordering_info->{$key}->{order} ? $ordering_info->{$key}->{order} : 9000;
+        $rec{order} = exists $list_props->{$key}->{order} ? $list_props->{$key}->{order} : 9000;
         push @diff_arr, \%rec;
     }
 
