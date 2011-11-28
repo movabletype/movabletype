@@ -1954,28 +1954,17 @@ sub diff_revision {
 
     my $list_props =  MT->registry( list_properties => $type );
 
-    my $diff_cleaner;
-    if ($type eq 'template') {
-        $diff_cleaner = sub {
-            my ($key) = @_;
-            return ($obj_from->$key(), $obj_to->$key());
+    my $diff_cleaner = sub {
+        my @strings = @_;
+        foreach my $text (@strings) {
+            $text =~ s!<\s*(?:br|p)\s*/\s*>!\n!g;
+            $text =~ s!<\s*/?\s*(?:div|p)\s*>!\n!g;
+            $text =~ s!(?:\s*\n)+! \n!g;
+            $text = remove_html($text);
+            $text =~ s!(\n(\s*))$!!;
         }
-    } 
-    else {
-        $diff_cleaner = sub {
-            my ($key) = @_;
-            my $str1 = $obj_from->$key();
-            my $str2 = $obj_to->$key();
-            foreach my $text ($str1, $str2) {
-                $text =~ s!<\s*(?:br|p)\s*/\s*>!\n!g;
-                $text =~ s!<\s*/?\s*(?:div|p)\s*>!\n!g;
-                $text =~ s!(?:\s*\n)+! \n!g;
-                $text = remove_html($text);
-                $text =~ s!(\n(\s*))$!!;
-            }
-            return ($str1, $str2);
-        }
-    }
+        return @strings;
+    };
 
     require Text::Diff::FormattedHTML;
     my @diff_arr;
@@ -1987,7 +1976,10 @@ sub diff_revision {
         }
         my %rec;
         $rec{title} = $app->translate("Change in <b>[_1]</b>", $key);
-        my ($str1, $str2) = $diff_cleaner->($key);
+        my ($str1, $str2) = ($obj_from->$key(), $obj_to->$key());
+        if ($type ne 'template') {
+            ($str1, $str2) = $diff_cleaner->($str1, $str2);
+        }
         $rec{table} = Text::Diff::FormattedHTML::diff_strings( { vertical => 1 }, $str1, $str2);
         $rec{order} = exists $list_props->{$key}->{order} ? $list_props->{$key}->{order} : 9000;
         push @diff_arr, \%rec;
