@@ -3,16 +3,21 @@
 
 <mt:include name="dialog/header.tmpl">
 
-<p>
-	Comparing between Revisions: 
+<mt:setvarblock name="rev_from_link">
 	<a class="revision-number" href="javascript:void(0);" onclick="javascript:parent.location.href='<$mt:var name="rev_js"$>&amp;r=<$mt:var name="rev_from"$>';">
 		<mt:date ts="$rev_from_created" format="%Y-%m-%d %H:%M:%S"> 
 	</a>
-	and  
+</mt:setvarblock>
+<mt:setvarblock name="rev_to_link">
 	<a class="revision-number" href="javascript:void(0);" onclick="javascript:parent.location.href='<$mt:var name="rev_js"$>&amp;r=<$mt:var name="rev_to"$>';">
 		<mt:date ts="$rev_to_created" format="%Y-%m-%d %H:%M:%S"> 
 	</a>
+</mt:setvarblock>
+
+<p>
+	<__trans phrase="Comparing between Revisions: [_1] and [_2]" params="<$mt:var name="rev_from_link"$>%%<$mt:var name="rev_to_link"$>">
 </p>
+
 <p class="hint"><__trans phrase="Select the revision to populate the values of the Edit screen."></p>
 
 <style type='text/css'>
