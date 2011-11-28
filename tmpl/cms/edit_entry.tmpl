@@ -711,7 +711,7 @@
               data: '',
               sort_only: false
           };
-          var opts = $.extend(defaults, options);
+          var opts = jQuery.extend(defaults, options);
           var mode = jQuery('#entry_prefs').val();
           var param = '__mode=save_entry_prefs'
               + '&_type=<mt:var name="object_type">'
@@ -991,7 +991,7 @@
           var defaults = {
               sort_only: false
           };
-          var opts = $.extend(defaults, options);
+          var opts = jQuery.extend(defaults, options);
           var rex = RegExp('(.*)-field$');
           var data = [ 'title', 'text' ];
           var order = jQuery('#sortable').sortable('toArray');
