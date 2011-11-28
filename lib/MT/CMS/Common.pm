@@ -1954,33 +1954,40 @@ sub diff_revision {
 
     my $list_props =  MT->registry( list_properties => $type );
 
+    my $diff_cleaner;
+    if ($type eq 'template') {
+        $diff_cleaner = sub {
+            my ($key) = @_;
+            return ($obj_from->$key(), $obj_to->$key());
+        }
+    } 
+    else {
+        $diff_cleaner = sub {
+            my ($key) = @_;
+            my $str1 = $obj_from->$key();
+            my $str2 = $obj_to->$key();
+            foreach my $text ($str1, $str2) {
+                $text =~ s!<\s*(?:br|p)\s*/\s*>!\n!g;
+                $text =~ s!<\s*/?\s*(?:div|p)\s*>!\n!g;
+                $text =~ s!(?:\s*\n)+! \n!g;
+                $text = remove_html($text);
+                $text =~ s!(\n(\s*))$!!;
+            }
+            return ($str1, $str2);
+        }
+    }
+
     require Text::Diff::FormattedHTML;
     my @diff_arr;
     while (my ($key, $val) = each %$diff) {
         next unless $val;
-        my %rec;
         if (@$val == 1) {
             my $flag = $val->[0]->{flag};
             next if not $flag or $flag eq 'u';
-            $rec{title}  = $flag eq '+' ? "Added" : "Removed";
-            $rec{title} .= " to column $key:";
         }
-        else {
-            $rec{title} = "Change in column $key:";
-        }
-        foreach my $elem (@$val) {
-            $elem->{text} =~ s!(<\s*(?:br|p)\s*/\s*>)!$1\n!g;
-            $elem->{text} =~ s!(<\s*/\s*(?:div|p)\s*>)!$1\n!g;
-            $elem->{text} =~ s!\n(\s*)$!$1!;
-        }
-        my $str1 = join "\n", 
-                   map { $_->{text} } 
-                   grep { $_->{flag} eq 'u' or $_->{flag} eq '-' } 
-                   @$val;
-        my $str2 = join "\n", 
-                   map { $_->{text} } 
-                   grep { $_->{flag} eq 'u' or $_->{flag} eq '+' } 
-                   @$val;
+        my %rec;
+        $rec{title} = $app->translate("Change in <b>[_1]</b>", $key);
+        my ($str1, $str2) = $diff_cleaner->($key);
         $rec{table} = Text::Diff::FormattedHTML::diff_strings( { vertical => 1 }, $str1, $str2);
         $rec{order} = exists $list_props->{$key}->{order} ? $list_props->{$key}->{order} : 9000;
         push @diff_arr, \%rec;
