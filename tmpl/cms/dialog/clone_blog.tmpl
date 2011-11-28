@@ -44,6 +44,7 @@ fieldset {
         <h3><__trans phrase="Verify Blog Settings"></h3>
         <input type="hidden" name="clone" value="1" />
         <input type="hidden" name="__mode" value="dialog_clone_blog" />
+        <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" id="m_t" />
         <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
         <input type="hidden" name="new_blog_name" value="<mt:var name="new_blog_name" escape="html">" />
         <input type="hidden" name="site_url" value="<mt:var name="site_url" escape="html>" />
@@ -123,6 +124,7 @@ fieldset {
         <h3><__trans phrase="Blog Details"></h3>
         <input type="hidden" name="verify" value="1" />
         <input type="hidden" name="__mode" value="dialog_clone_blog" />
+        <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" id="m_t" />
         <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
         <mtapp:setting
           id="blog-name"
