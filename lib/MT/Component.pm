@@ -448,12 +448,15 @@ sub translate {
         $_ = $_->() if ref($_) eq 'CODE';
     }
     my $str;
-    if ($h) {
-        $str = $h->maketext( $format, @args );
-    }
-    if ( !defined $str ) {
-        $str = MT->translate(@_);
-    }
+    eval {
+        if ($h) {
+            $str = $h->maketext( $format, @args );
+        }
+        if ( !defined $str ) {
+            $str = MT->translate(@_);
+        }
+    };
+    $str = $format unless $str;
     $str;
 }
 
