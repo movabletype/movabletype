@@ -5,6 +5,7 @@
 <form name='clone-verification-form' id='clone-verification-form' method="post" action="<mt:var name="script_url">">
   <input type="hidden" name="clone" value="1" />
   <input type="hidden" name="__mode" value="dialog_clone_blog" />
+  <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" id="m_t" />
   <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
   <input type="hidden" name="new_blog_name" value="<mt:var name="new_blog_name" escape="html">" />
@@ -141,6 +142,7 @@
 <form name='clone-settings-form' id='clone-settings-form' method="post" action="<mt:var name="script_url">">
   <input type="hidden" name="verify" value="1" />
   <input type="hidden" name="__mode" value="dialog_clone_blog" />
+  <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" id="m_t" />
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
   <input type="hidden" name="id" value="<mt:var name="id">" />
   <input type="hidden" name="parent_id" value="<mt:var name="parent_id">" />
