@@ -242,6 +242,9 @@ sub _get_dimension {
         $n_w = $w;
         $n_h = int( $i_h * $w / $i_w );
     }
+    $n_h = 1 unless $n_h;
+    $n_w = 1 unless $n_w;
+
     return ( $n_h, $n_w );
 }
 
