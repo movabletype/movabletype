@@ -535,7 +535,7 @@ sub cfg_system_general {
     $param{ip_lockout_limit}              = $cfg->IPLockoutLimit;
     $param{ip_lockout_interval}           = $cfg->IPLockoutInterval;
     $param{failed_login_expiration_frequency} = $cfg->FailedLoginExpirationFrequency;
-    ( $param{lockout_ip_address_whitelist} = $cfg->LockoutIPWhitelist )
+    ( $param{lockout_ip_address_whitelist} = $cfg->LockoutIPWhitelist || '' )
         =~ s/,/\n/g;
 
     $param{saved}        = $app->param('saved');
