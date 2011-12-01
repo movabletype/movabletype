@@ -100,10 +100,10 @@ use vars qw( @ISA %Lexicon );
 	'Password should contain symbols such as #!$%' => 'パスワードは記号を含める必要があります。',
 
 ## php/lib/function.mtpasswordvalidationrule.php
-	'minimum length of [_1]' => '[_1]文字以上を指定してください。',
-	', uppercase and lowercase letters' => '、大文字と小文字',
-	', letters and numbers' => '、文字と数字',
-	', symbols (such as #!$%)' => '、記号',
+	'minimum length of [_1]' => '[_1]文字以上',
+	', uppercase and lowercase letters' => '、大文字と小文字を含む',
+	', letters and numbers' => '、文字と数字を含む',
+	', symbols (such as #!$%)' => '、記号を含む',
 
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
