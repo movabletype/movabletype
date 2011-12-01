@@ -299,6 +299,7 @@ sub new_password {
     $param->{'token'}          = $token;
     $param->{'password'}       = $app->param('password');
     $param->{'password_again'} = $app->param('password_again');
+    $param->{'username'}       = $user->name();
     $app->add_breadcrumb( $app->translate('Password Recovery') );
 
     my $blog_id = $app->param('blog_id');
