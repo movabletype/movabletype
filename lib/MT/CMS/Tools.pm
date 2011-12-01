@@ -232,6 +232,7 @@ sub new_password {
     for my $u (@users) {
         my $salt    = $u->password_reset;
         my $expires = $u->password_reset_expires;
+        next unless $salt and $expires;
         my $compare = MT::Util::perl_sha1_digest_hex(
             $salt . $expires . $app->config->SecretToken );
         if ( $compare eq $token ) {
