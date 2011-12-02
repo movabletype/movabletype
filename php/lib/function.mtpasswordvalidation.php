@@ -10,6 +10,9 @@ function smarty_function_mtpasswordvalidation($args, &$ctx) {
 
     $constrains = $app->config('UserPasswordValidation');
     $min_length = $app->config('UserPasswordMinLength');
+    if (preg_match("/\D/", $min_length) || ($min_length < 1) ) {
+        $min_length = 8;
+    }
 
     $vs = "\n";
     $vs .= <<< JSCRIPT
@@ -17,7 +20,7 @@ function smarty_function_mtpasswordvalidation($args, &$ctx) {
           if (passwd.length < $min_length) {
               return "<__trans phrase="Password should be longer than [_1] characters" params="$min_length">";
           }
-          if (passwd.indexOf(username) > -1) {
+          if (passwd.toLowerCase().indexOf(username.toLowerCase()) > -1) {
               return "<__trans phrase="Password should not include your Username">";
           }
 JSCRIPT;
