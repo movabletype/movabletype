@@ -1183,7 +1183,7 @@ function filterItem(type, datepicker_off) {
       }).bind('change', function() {
           dateOption(jQuery(this));
       }).end()
-      .find('input.date').datepicker({
+      .find('.date').datepicker({
         dateFormat: 'yy-mm-dd',
         dayNamesMin: [<__trans phrase="_LOCALE_CALENDAR_HEADER_">],
         monthNames: ['- 01','- 02','- 03','- 04','- 05','- 06','- 07','- 08','- 09','- 10','- 11','- 12'],
@@ -1642,7 +1642,7 @@ jQuery('.filtertype .plus').live('click', function() {
   }).bind('change', function() {
       dateOption(jQuery(this));
   }).end()
-  .find('input.date').datepicker({
+  .find('.date').datepicker({
       dateFormat: 'yy-mm-dd',
       dayNamesMin: [<__trans phrase="_LOCALE_CALENDAR_HEADER_">],
       monthNames: ['- 01','- 02','- 03','- 04','- 05','- 06','- 07','- 08','- 09','- 10','- 11','- 12'],
