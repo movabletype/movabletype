@@ -5763,8 +5763,10 @@ sub _hdlr_password_validation_script {
     my $app = MT->instance;
     
     my $constrains = $app->config('UserPasswordValidation');
-    my $min_length = int( $app->config('UserPasswordMinLength') )
-        || $app->config->default('UserPasswordMinLength');
+    my $min_length = $app->config('UserPasswordMinLength');
+    if (( $min_length =~ m/\D/ ) or ( $min_length < 1 )) {
+        $min_length = $app->config->default('UserPasswordMinLength');
+    }
     
     my $vs = "\n";
     $vs .= << "JSCRIPT";
@@ -5858,8 +5860,10 @@ sub _hdlr_password_validation_rules {
     my $app = MT->instance;
 
     my $constrains = $app->config('UserPasswordValidation');
-    my $min_length = int( $app->config('UserPasswordMinLength') )
-        || $app->config->default('UserPasswordMinLength');
+    my $min_length = $app->config('UserPasswordMinLength');
+    if (( $min_length =~ m/\D/ ) or ( $min_length < 1 )) {
+        $min_length = $app->config->default('UserPasswordMinLength');
+    }
 
     my $msg = $app->translate("minimum length of [_1]", $min_length);
     $msg .= $app->translate(', uppercase and lowercase letters')
