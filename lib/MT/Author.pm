@@ -732,6 +732,14 @@ sub remove_sessions {
     return 1;
 }
 
+sub remove_failedlogin {
+    my $auth = shift;
+    return if ( !$auth or !$auth->id );
+    my $iter
+        = MT->model('failedlogin')->remove( { author_id => $auth->id } );
+    return 1;
+}
+
 sub set_password {
     my $auth   = shift;
     my ($pass) = @_;
@@ -905,6 +913,7 @@ sub save {
 sub remove {
     my $auth = shift;
     $auth->remove_sessions if ref $auth;
+    $auth->remove_failedlogin if ref $auth;
     $auth->remove_children( { key => 'author_id' } ) or return;
     $auth->SUPER::remove(@_);
 }
@@ -1547,6 +1556,10 @@ two encrypted strings for equality.
 =head2 $author->remove_sessions()
 
 Remove all sessions that belong to this user
+
+=head2 $author->remove_failedlogin()
+
+Remove all failed-login histories that belong to this user
 
 =head2 $author->is_email_hidden()
 
