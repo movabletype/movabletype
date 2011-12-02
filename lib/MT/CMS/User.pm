@@ -593,7 +593,8 @@ sub cfg_system_users {
     $param{"combo_upper_lower"} = ($constrains =~ m/upperlower/ ? 1 : 0);
     $param{"combo_letter_number"} = ($constrains =~ m/letternumber/ ? 1 : 0);
     $param{"require_special_characters"} = ($constrains =~ m/symbol/ ? 1 : 0);
-    $param{"minimum_length"} = $app->config('UserPasswordMinLength');
+    $param{"minimum_length"} = int( $app->config('UserPasswordMinLength')) 
+        || $cfg->default('UserPasswordMinLength');
 
     ( my $tz = $app->config('DefaultTimezone') ) =~ s![-\.]!_!g;
     $tz =~ s!_00$!!;
@@ -730,7 +731,12 @@ sub save_cfg_system_users {
              ( $app->param('require_special_characters') ? 'symbol' : () ),
              )
         , 1 );
-    $app->config('UserPasswordMinLength', scalar $app->param('minimum_length'), 1 );
+    
+    my $pass_min_len = $app->param('minimum_length');
+    if (( $pass_min_len =~ m/\D/ ) or ( $pass_min_len < 1 )) {
+        return $app->errtrans('Minimum password lenght should be integer and larger then zero');
+    }
+    $app->config('UserPasswordMinLength', $pass_min_len, 1 );
 
     $cfg->save_config();
 
