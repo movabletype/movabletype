@@ -5746,6 +5746,7 @@ The name of the password field in the form this tag will check
 =item * username
 
 The name of the usrname field in the form to be checked against the password
+If this name is empty string, the username will not be checked.
 
 =back
 
@@ -5774,7 +5775,7 @@ sub _hdlr_password_validation_script {
           if (passwd.length < $min_length) {
             return "<__trans phrase="Password should be longer than [_1] characters" params="$min_length">";
           }
-          if (passwd.toLowerCase().indexOf(username.toLowerCase()) > -1) {
+          if (username && (passwd.toLowerCase().indexOf(username.toLowerCase()) > -1)) {
             return "<__trans phrase="Password should not include your Username">";
           }
 JSCRIPT
@@ -5809,38 +5810,23 @@ JSCRIPT
 JSCRIPT
 
     $vs .= << "JSCRIPT";
-        function verify_form_password(eventObject) {
-            var form = document.forms["$form_id"];
-            var passwd = form["$pass_field"].value;
-            if (passwd == null || passwd == "") {
-                return true;
-            }
-            var username = form["$user_field"].value;
-            var error = verify_password(username, passwd);
-            if (error == "") {
-                return true;
-            }
-            alert(error);
-            if (eventObject.preventDefault) {
-              eventObject.preventDefault();
-            } else if (window.event) /* for ie */ {
-              window.event.returnValue = false;
-            }
-            return false;
-        }
-        function verify_password_install() {
-            var form = document.forms["$form_id"];
-            if (form.addEventListener){
-                    form.addEventListener('submit', verify_form_password, false); 
-            } else if (form.attachEvent){
-                    form.attachEvent('onsubmit', verify_form_password);
-            }
-        }
-        if (window.addEventListener){
-            window.addEventListener('load', verify_password_install, false); 
-        } else if (window.attachEvent){
-            window.attachEvent('onload', verify_password_install );
-        }
+        jQuery(document).ready(function() {
+            jQuery("form#$form_id").submit(function(e){
+                var form = jQuery(this);
+                var passwd = form.find("input[name=$pass_field]").val();
+                if (passwd == null || passwd == "") {
+                    return true;
+                }
+                var username = "$user_field" ? form.find("input[name=$user_field]").val() : "";
+                var error = verify_password(username, passwd);
+                if (error == "") {
+                    return true;
+                }
+                alert(error);
+                e.preventDefault();
+                return false;
+            });
+        });
 JSCRIPT
 
     return $vs;
