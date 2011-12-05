@@ -5762,6 +5762,24 @@ sub _hdlr_password_validation_script {
     my $pass_field = $args->{password};
     my $user_field = $args->{username};
     my $app = MT->instance;
+
+    return $ctx->error(
+        MT->translate(
+            "You used a [_1] tag without a valid [_2] attribute.", 
+            "<MTPasswordValidation>",
+            "form"
+        )
+    ) unless defined $form_id;
+
+    return $ctx->error(
+        MT->translate(
+            "You used a [_1] tag without a valid [_2] attribute.", 
+            "<MTPasswordValidation>",
+            "password"
+        )
+    ) unless defined $pass_field;
+
+    $user_field ||= '';
     
     my $constrains = $app->config('UserPasswordValidation');
     my $min_length = $app->config('UserPasswordMinLength');
