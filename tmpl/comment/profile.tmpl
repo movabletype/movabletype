@@ -79,6 +79,12 @@
         <input type="password" name="pass_verify" id="pass_verify" class="text password" value="" />
     </mtapp:setting>
 
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    <$mt:PasswordValidation form="profile" password="password" username="name"$>
+    /* ]]> */
+    </script>
+
 <mt:else>
     <input type="hidden" name="external_auth" value="1" />
 </mt:if>
@@ -124,12 +130,6 @@
     </div>
 
 </form>
-
-<script type="text/javascript">
-/* <![CDATA[ */
-<$mt:PasswordValidation form="profile" password="password" username="name"$>
-/* ]]> */
-</script>
 
 
 <mt:if name="saved">

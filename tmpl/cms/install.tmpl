@@ -130,6 +130,11 @@ div.warning#version-warning {
          hint="<__trans phrase="Repeat the password for confirmation.">">
         <input type="password" id="admin_password_confirm" class="text password" name="admin_password_confirm" />
       </mtapp:setting>
+      <script type="text/javascript">
+      /* <![CDATA[ */
+        <$mt:PasswordValidation form="install_form" password="admin_password" username="admin_username"$>
+      /* ]]> */
+      </script>
     </mt:if>
     
     <mt:if name="auth_mode_ldap">
@@ -176,8 +181,6 @@ div.warning#version-warning {
 
 <script type="text/javascript">
 /* <![CDATA[ */
-<$mt:PasswordValidation form="install_form" password="admin_password" username="admin_username"$>
-
 function dismiss(id) {
     jQuery('#'+id).hide();
     jQuery('#'+id+'-header').hide();
