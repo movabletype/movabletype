@@ -8,6 +8,21 @@
 function smarty_function_mtpasswordvalidation($args, &$ctx) {
     $app =  $ctx->mt;
 
+    if (!isset($args['form'])) {
+        return $ctx->error($ctx->mt->translate('You used a [_1] tag without a valid [_2] attribute.', "<MTPasswordValidation>", "form"));
+    }
+    if (!isset($args['password'])) {
+        return $ctx->error($ctx->mt->translate('You used a [_1] tag without a valid [_2] attribute.', "<MTPasswordValidation>", "password"));
+    }
+    if (!isset($args['username'])) {
+        $args['username'] = "";
+    }
+
+
+    $form_id    = $args['form'];
+    $pass_field = $args['password'];
+    $user_field = $args['username'];
+
     $constrains = $app->config('UserPasswordValidation');
     $min_length = $app->config('UserPasswordMinLength');
     if (preg_match("/\D/", $min_length) || ($min_length < 1) ) {
