@@ -2804,10 +2804,19 @@ sub show_error {
 sub show_login {
     my $app = shift;
 
-    require MT::Lockout;
-    if ( MT::Lockout->is_locked_out( $app, $app->remote_ip ) ) {
-        $app->{hide_goback_button} = 1;
-        return $app->errtrans("Invalid request");
+    my $judge = 1;
+    if ( $app->isa( 'MT::App::Upgrader' ) ) {
+        my $class   = MT->model('failedlogin');
+        my $ddl     = $class->driver->dbd->ddl_class;
+        my $db_defs = $ddl->column_defs($class);
+        $judge = 0 unless $db_defs;
+    }
+    if ( $judge ) {
+        require MT::Lockout;
+        if ( MT::Lockout->is_locked_out( $app, $app->remote_ip ) ) {
+            $app->{hide_goback_button} = 1;
+            return $app->errtrans("Invalid request");
+        }
     }
 
     my ($param) = @_;
