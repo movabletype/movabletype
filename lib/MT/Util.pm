@@ -27,7 +27,7 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
                  epoch2ts ts2epoch escape_unicode unescape_unicode
                  sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
                  weaken log_time make_string_csv browser_language sanitize_embed
-                 extract_url_path break_up_text dir_separator );
+                 extract_url_path break_up_text dir_separator realpath);
 
 {
 my $Has_Weaken;
@@ -2258,6 +2258,28 @@ sub dir_separator {
     return $sep;
 }
 
+sub realpath {
+    my ( $abs ) = @_;
+    return '' unless $abs;
+
+    require File::Spec;
+    return $abs unless File::Spec->file_name_is_absolute( $abs );
+
+    require Cwd;
+    my $abs_path;
+    eval {
+        $abs_path = Cwd::realpath( $abs );
+    };
+    return $abs unless $abs_path;
+
+    my ( $vol, $dirs, $filename ) = File::Spec->splitpath( $abs_path );
+    my @paths = File::Spec->splitdir( $dirs );
+    my $real_path = File::Spec->catdir( @paths );
+    $abs_path = File::Spec->catpath( $vol, $real_path, $filename );
+
+    return $abs_path;
+}
+
 package MT::Util::XML::SAX::LexicalHandler;
 
 sub start_dtd {
@@ -2457,6 +2479,12 @@ for MT to render json strings properly.
 =head2 dir_separator
 
 Returns the character of directory separator.
+
+=head2 realpath
+
+Wrapper method to Cwd::realpath which returns true real path.
+Why? Because on Windows, Cwd::realpath returns wrong value.
+(died, or change path separator from backslash to slash)
 
 =head1 AUTHOR & COPYRIGHTS
 
