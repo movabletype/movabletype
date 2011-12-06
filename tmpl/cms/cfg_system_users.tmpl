@@ -49,7 +49,7 @@ function clearNotifyUsers() {
 
 <mt:include name="include/header.tmpl">
 
-<form action="<mt:var name="script_url">" method="post">
+<form id="cfg_user_settings" action="<mt:var name="script_url">" method="post">
   <input type="hidden" name="__mode" value="save_cfg_system_users" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
@@ -232,5 +232,13 @@ function clearNotifyUsers() {
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+    jQuery('#cfg_user_settings').submit( function () {
+        if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') ) return false;
+    });
+/* ]]> */
+</script>
 
 <mt:include name="include/footer.tmpl">
