@@ -25,7 +25,7 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
                  extract_urls extract_domain extract_domains is_valid_date
                  epoch2ts ts2epoch escape_unicode unescape_unicode
                  sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
-                 weaken log_time make_string_csv sanitize_embed );
+                 weaken log_time make_string_csv sanitize_embed relapath );
 
 {
 my $Has_Weaken;
@@ -2202,6 +2202,28 @@ sub to_json {
     return MT::I18N::encode( MT->config->PublishCharset, $js );
 }
 
+sub realpath {
+    my ( $abs ) = @_;
+    return '' unless $abs;
+
+    require File::Spec;
+    return $abs unless File::Spec->file_name_is_absolute( $abs );
+
+    require Cwd;
+    my $abs_path;
+    eval {
+        $abs_path = Cwd::realpath( $abs );
+    };
+    return $abs unless $abs_path;
+
+    my ( $vol, $dirs, $filename ) = File::Spec->splitpath( $abs_path );
+    my @paths = File::Spec->splitdir( $dirs );
+    my $real_path = File::Spec->catdir( @paths );
+    $abs_path = File::Spec->catpath( $vol, $real_path, $filename );
+
+    return $abs_path;
+}
+
 package MT::Util::XML::SAX::LexicalHandler;
 
 sub start_dtd {
@@ -2397,6 +2419,12 @@ Wrapper method to JSON::to_json which decodes any string value
 in I<reference> to UTF-8 strings as JSON::to_json requires.
 It then encodes back to the charset specified in PublishCharset
 for MT to render json strings properly.
+
+=head2 realpath
+
+Wrapper method to Cwd::realpath which returns true real path.
+Why? Because on Windows, Cwd::realpath returns wrong value.
+(died, or change path separator from backslash to slash)
 
 =head1 AUTHOR & COPYRIGHTS
 

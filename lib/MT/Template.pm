@@ -138,10 +138,10 @@ sub load_file {
         require Cwd;
         my $ok = 0;
         my @paths = @{ $tmpl->{include_path} || [] };
-        my $abs_file_path = Cwd::realpath($file);
+        my $abs_file_path = MT::Util::realpath($file);
         foreach my $path (@paths) {
             next unless -d $path;
-            my $abs_path = Cwd::realpath($path);
+            my $abs_path = MT::Util::realpath($path);
             $ok = 1, last if $abs_file_path =~ /^$abs_path/;
         }
         die "Template load error" unless $ok;
