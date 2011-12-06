@@ -74,6 +74,7 @@ sub core_backup_instructions {
         'ts_exitstatus' => { 'skip' => 1 },
         'ts_funcmap'    => { 'skip' => 1 },
         'touch'         => { 'skip' => 1 },
+        'failedlogin'   => { 'skip' => 1 },
     };
 }
 
