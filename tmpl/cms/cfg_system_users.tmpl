@@ -233,12 +233,12 @@ function clearNotifyUsers() {
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
 
-<script type="text/javascript">
-/* <![CDATA[ */
+<mt:setvarblock name="jq_js_include" append="1">
+
     jQuery('#cfg_user_settings').submit( function () {
         if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') ) return false;
     });
-/* ]]> */
-</script>
+
+</mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">
