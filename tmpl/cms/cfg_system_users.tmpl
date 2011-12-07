@@ -99,7 +99,7 @@ function clearNotifyUsers() {
     <mtapp:setting
        id="minimum-length"
        label="<__trans phrase="Minimun Length">">
-         <input type="text" name="minimum_length" id="minimum-length" class="text num" value="<mt:var name="minimum_length">">
+         <input type="text" name="minimum_length" id="minimum-length" class="positive_num num" value="<mt:var name="minimum_length">">
     </mtapp:setting>
   </mtapp:settinggroup>
 </mt:unless>
@@ -234,6 +234,15 @@ function clearNotifyUsers() {
 </form>
 
 <mt:setvarblock name="jq_js_include" append="1">
+
+    jQuery.mtValidateAddRules({
+      '.positive_num': function ($e) {
+        return /^\d+$/.test($e.val()) && ($e.val() > 0);
+      }
+    });
+    jQuery.mtValidateAddMessages({
+        '.positive_num': '<__trans phrase="This field must be a positive integer.">'
+    });
 
     jQuery('#cfg_user_settings').submit( function () {
         if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') ) return false;
