@@ -171,7 +171,7 @@ sub load_file {
         foreach my $path (@paths) {
             next unless -d $path;
             my $abs_path = MT::Util::realpath($path);
-            $ok = 1, last if $abs_file_path =~ /^$abs_path/;
+            $ok = 1, last if $abs_file_path =~ /^\Q$abs_path\E/;
         }
         die "Template load error" unless $ok;
     }
