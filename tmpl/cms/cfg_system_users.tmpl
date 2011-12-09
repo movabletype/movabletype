@@ -78,7 +78,9 @@ function clearNotifyUsers() {
     </mt:if>
     </mtapp:setting>
   </mtapp:settinggroup>
+</mt:unless>
 
+<mt:if name="auth_mode_mt">
   <h2><__trans phrase="Password Validation"></h2>
   <mtapp:settinggroup id="password-validation">
     <mtapp:setting
@@ -102,7 +104,24 @@ function clearNotifyUsers() {
          <input type="text" name="minimum_length" id="minimum-length" class="positive_num num" value="<mt:var name="minimum_length">">
     </mtapp:setting>
   </mtapp:settinggroup>
-</mt:unless>
+
+  <mt:setvarblock name="jq_js_include" append="1">
+
+    jQuery.mtValidateAddRules({
+      '.positive_num': function ($e) {
+        return /^\d+$/.test($e.val()) && ($e.val() > 0);
+      }
+    });
+    jQuery.mtValidateAddMessages({
+        '.positive_num': '<__trans phrase="This field must be a positive integer.">'
+    });
+
+    jQuery('#cfg_user_settings').submit( function () {
+        if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') ) return false;
+    });
+
+  </mt:setvarblock>
+</mt:if>
 
   <h2><__trans phrase="New User Defaults"></h2>
   <mtapp:settinggroup id="new-user-defaults">
@@ -232,22 +251,5 @@ function clearNotifyUsers() {
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
-
-<mt:setvarblock name="jq_js_include" append="1">
-
-    jQuery.mtValidateAddRules({
-      '.positive_num': function ($e) {
-        return /^\d+$/.test($e.val()) && ($e.val() > 0);
-      }
-    });
-    jQuery.mtValidateAddMessages({
-        '.positive_num': '<__trans phrase="This field must be a positive integer.">'
-    });
-
-    jQuery('#cfg_user_settings').submit( function () {
-        if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') ) return false;
-    });
-
-</mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">
