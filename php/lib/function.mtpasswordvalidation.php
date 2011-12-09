@@ -9,10 +9,10 @@ function smarty_function_mtpasswordvalidation($args, &$ctx) {
     $app =  $ctx->mt;
 
     if (!isset($args['form'])) {
-        return $ctx->error($ctx->mt->translate('You used a [_1] tag without a valid [_2] attribute.', "<MTPasswordValidation>", "form"));
+        return $ctx->error($ctx->mt->translate('You used an [_1] tag without a valid [_2] attribute.', "<MTPasswordValidation>", "form"));
     }
     if (!isset($args['password'])) {
-        return $ctx->error($ctx->mt->translate('You used a [_1] tag without a valid [_2] attribute.', "<MTPasswordValidation>", "password"));
+        return $ctx->error($ctx->mt->translate('You used an [_1] tag without a valid [_2] attribute.', "<MTPasswordValidation>", "password"));
     }
     if (!isset($args['username'])) {
         $args['username'] = "";

@@ -98,6 +98,7 @@ use vars qw( @ISA %Lexicon );
 	'Password should include letters and numbers' => 'パスワードは文字と数字を含める必要があります。',
 	'Password should include lowercase and uppercase letters' => 'パスワードは大文字と小文字を含める必要があります。',
 	'Password should contain symbols such as #!$%' => 'パスワードは記号を含める必要があります。',
+	'You used an [_1] tag without a valid [_2] attribute.' => '[_1]タグでは[_2]属性は必須です。',
 
 ## php/lib/function.mtpasswordvalidationrule.php
 	'minimum length of [_1]' => '[_1]文字以上',
@@ -1556,7 +1557,8 @@ use vars qw( @ISA %Lexicon );
 	'Blog(s) (ID:[_1]) was/were successfully backed up by user \'[_2]\'' => '\'[_2]\'がブログ(ID:[_1])をバックアップしました。',
 	'Movable Type system was successfully backed up by user \'[_1]\'' => '\'[_1]\'がMovable Typeのシステムをバックアップしました。',
 	'Some [_1] were not restored because their parent objects were not restored.' => '親となるオブジェクトがないため[_1]を復元できませんでした。',
-'User lockout limit' => 'ログイン試行回数',
+	'Recipients for lockout notification' => '通知メール受信者',
+	'User lockout limit' => 'ログイン試行回数',
 	'User lockout interval' => 'ログインの間隔',
 	'IP address lockout limit' => '同一IPアドレスからの試行回数',
 	'IP address lockout interval' => '同一IPアドレスからの試行間隔',
@@ -1581,6 +1583,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid type' => 'typeが不正です。',
 	'Invalid ID given for personal blog theme.' => '個人用ブログテーマのIDが不正です。',
 	'Invalid ID given for personal blog clone location ID.' => '個人用ブログの複製先のIDが不正です。',
+	'Minimum password length must be integer and greater than zero.' => 'パスワードの最低文字数は0以上の整数でなければなりません。',
 	'If personal blog is set, the personal blog location are required.' => '個人用ブログの設定にはウェブサイトの選択が必要です。',
 	'Select a entry author' => 'ブログ記事の投稿者を選択',
 	'Select a page author' => 'ページの投稿者を選択',
@@ -3216,7 +3219,6 @@ use vars qw( @ISA %Lexicon );
 	'Only to blogs within this system' => 'ブログのみ',
 	'Only to websites on the following domains:' => '次のドメインに属するウェブサイト:',
 	'Lockout Settings' => 'アカウントロックの設定',
-	'Recipients for lockout notification' => '通知メール受信者',
 	q{The system administrators whom you wish to notify if a user or an IP address is locked out.  If no administrators are selected, notifications will be sent to the 'System Email' address.} => q{通知メールを受信するシステム管理者を設定できます。受信者の設定がされていない場合は、'システムのメールアドレス'宛に通知されます。},
 	'Clear' => 'クリア',
 	'Select' => '選択',
@@ -3224,11 +3226,11 @@ use vars qw( @ISA %Lexicon );
 	'A Movable Type user will be locked out if he or she submits an incorrect password [_1] or more times within [_2] seconds.' => 'MTユーザーが、[_2] 秒間に [_1] 回以上ログインに失敗した場合、そのユーザーのログインを禁止します。',
 	'IP address lockout policy' => 'IPアドレスのロック方針',
 	'An IP address will be locked out if [_1] or more incorrect login attempts are made within [_2] seconds from the same IP address.' => '同一IPアドレスから、[_2] 秒間に [_1] 回以上ログインに失敗した場合、そのIPアドレスからのアクセスを禁止します。',
+	q{However, the following IP addresses are 'whitelisted' and will never be locked out:} => q{次の一覧で設定されたIPアドレスはアクセスが禁止されることはありません。},
 	'The list of IP addresses. If a remote IP address is included in this list, the failed login will not recorded. You can specify multiple IP addresses separated by commas or line breaks.' => '特定のIPアドレスについて判定を行わない場合、上の一覧にカンマ又は改行区切りで追加してください。',
 	'Send Email To' => 'メール送信先',
 	'The email address that should receive a test email from Movable Type.' => 'テストメールを受け取るメールアドレス',
 	'Send' => '送信',
-	q{However, the following IP addresses are 'whitelisted' and will never be locked out:} => '次の一覧で設定されたIPアドレスはアクセスが禁止されることはありません。',
 
 ## tmpl/cms/cfg_system_users.tmpl
 	'User Settings' => 'ユーザー設定',
@@ -3246,7 +3248,7 @@ use vars qw( @ISA %Lexicon );
 	'Should contain letters and numbers.' => '文字と数字を含める必要があります。',
 	'Should contain special characters.' => '記号を含める必要があります。',
 	'Minimun Length' => '最低文字数',
-	'Characters' => '文字以上',
+	'This field must be a positive integer.' => 'このフィールドは0以上の整数を指定してください。',
 	'New User Defaults' => '新しいユーザーの初期設定',
 	'Personal Blog' => '個人用ブログ',
 	'Have the system automatically create a new personal blog when a user is created. The user will be granted the blog administrator role on this blog.' => '新しいユーザーの個人用ブログを自動作成する。同時に個人用ブログへの管理者権限を設定します。',
@@ -3406,6 +3408,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/dialog/new_password.tmpl
 	'Change Password' => 'パスワードの変更',
+	'Enter the new password.' => '新しいパスワードを入力してください。',
 	'New Password' => '新しいパスワード',
 	'Confirm New Password' => '新しいパスワード確認',
 	'Change' => '変更',
@@ -3530,7 +3533,6 @@ use vars qw( @ISA %Lexicon );
 	'Existing password required to create a new password.' => 'パスワード変更には現在のパスワードが必要です。',
 	'Initial Password' => '初期パスワード',
 	'Enter preferred password.' => '新しいパスワードを入力してください。',
-	'Enter the new password.' => '新しいパスワードを入力してください。',
 	'Confirm Password' => 'パスワード確認',
 	'Repeat the password for confirmation.' => '確認のため、パスワードを再入力してください。',
 	'Password recovery word/phrase' => 'パスワード再設定用のフレーズ',
@@ -5287,7 +5289,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/tmpl/edit_field.tmpl
 	'Edit Custom Field' => 'カスタムフィールドの編集',
 	'Create Custom Field' => 'カスタムフィールドの作成',
-	'The selected fields(s) has been deleted from the database.' => '選択されたフィールドはデータベースから削除されました。',
+	'The selected field(s) has been deleted from the database.' => '選択されたフィールドはデータベースから削除されました。',
 	'You must enter information into the required fields highlighted below before the custom field can be created.' => 'すべての必須フィールドに値を入力してください。',
 	'You must save this custom field before setting a default value.' => '既定の値を設定する前に、このカスタムフィールドを保存する必要があります。',
 	'Choose the system object where this custom field should appear.' => 'フィールドを追加するオブジェクトを選択してください。',
@@ -5306,6 +5308,8 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Commercial.pack/tmpl/export_field.tmpl
 	'Object' => 'オブジェクト',
+
+## addons/Commercial.pack/tmpl/listing/field_list_header.tmpl
 
 ## addons/Commercial.pack/tmpl/reorder_fields.tmpl
 	'open' => '開く',
@@ -6309,6 +6313,8 @@ use vars qw( @ISA %Lexicon );
 	'Incoming feedback can be monitored for specific keywords, domain names, and patterns. Matches can be held for moderation or scored as junk. Additionally, junk scores for these matches can be customized.' => '受信したコメントトラックバックについて、特定のキーワードやドメイン名、パターンを監視します。一致したものについて、公開の保留または、スパム指定を行います。個々のパターンについて、評価値の調整も可能です。',
 	'Keywords to Moderate' => '公開を保留するキーワード',
 	'Keywords to Junk' => 'スパムにするキーワード',
+
+
 );
 
 1;
