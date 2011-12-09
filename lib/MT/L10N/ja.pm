@@ -1345,7 +1345,7 @@ use vars qw( @ISA %Lexicon );
 	'Ping \'[_1]\' failed: [_2]' => '[_1]へトラックバックできませんでした: [_2]',
 	'(user deleted - ID:[_1])' => '(削除されたユーザー - ID:[_1])',
 	'<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar, then click it when you are visiting a site that you want to blog about.' => '<a href="[_1]">クイック投稿</a>: このリンクをブラウザのツールバーにドラッグし、興味のあるウェブページでクリックすると、ブログへ簡単に投稿できます。',
-	'Entry \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => '\'[_3]\'がブログ記事\'[_1]\'(ID:[_2])を削除しました。',
+	'[_1] \'[_2]\' (ID:[_3]) deleted by \'[_4]\'' => '\'[_4]\'が[_1]\'[_2]\'(ID:[_3])を削除しました。',
 	'Need a status to update entries' => 'ブログ記事を更新するにはまず公開状態を設定してください。',
 	'Need entries to update status' => '公開状態を設定するにはブログ記事が必要です。',
 	'One of the entries ([_1]) did not actually exist' => 'ブログ記事(ID:[_1])は存在しませんでした。',

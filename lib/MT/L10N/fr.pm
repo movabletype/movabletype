@@ -1321,7 +1321,7 @@ use vars qw( @ISA %Lexicon );
 	'Ping \'[_1]\' failed: [_2]' => 'Le ping \'[_1]\' n\'a pas fonctionné: [_2]',
 	'(user deleted - ID:[_1])' => '(utilisateur supprimé - ID:[_1])',
 	'<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar, then click it when you are visiting a site that you want to blog about.' => '<a href="[_1]">QuickPost vers [_2]</a> - Glissez-déposez ce lien vers la barre des signets de votre navigateur puis cliquez dessus lorsque vous visitez un site que vous voulez bloguer.',
-	'Entry \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Note \'[_1]\' (ID:[_2]) supprimée par \'[_3]\'',
+	'[_1] \'[_2]\' (ID:[_3]) deleted by \'[_4]\'' => '[_1] \'[_2]\' (ID:[_3]) supprimée par \'[_4]\'',
 	'Need a status to update entries' => 'Statut nécessaire pour mettre à jour les notes',
 	'Need entries to update status' => 'Notes nécessaires pour mettre à jour le statut',
 	'One of the entries ([_1]) did not actually exist' => 'Une des notes ([_1]) n\'existait pas',

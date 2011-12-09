@@ -2651,8 +2651,8 @@ sub post_delete {
 
     $app->log(
         {   message => $app->translate(
-                "Entry '[_1]' (ID:[_2]) deleted by '[_3]'",
-                $obj->title, $obj->id, $app->user->name
+                "[_1] '[_2]' (ID:[_3]) deleted by '[_4]'",
+                $obj->class_label, $obj->title, $obj->id, $app->user->name
             ),
             level    => MT::Log::INFO(),
             class    => $obj->class,

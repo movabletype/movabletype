@@ -1320,7 +1320,7 @@ use vars qw( @ISA %Lexicon );
 	'Ping \'[_1]\' failed: [_2]' => 'Ping \'[_1]\' mislukt: [_2]',
 	'(user deleted - ID:[_1])' => '(gebruiker verwijderd - ID:[_1])',
 	'<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar, then click it when you are visiting a site that you want to blog about.' => '<a href="[_1]">QuickPost op [_2]</a> - Sleep deze link naar de werkbalk van uw browser en klik er dan op wanneer u een site bezoekt waar u over wil bloggen.',
-	'Entry \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Bericht \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
+	'[_1] \'[_2]\' (ID:[_3]) deleted by \'[_4]\'' => '[_1] \'[_2]\' (ID:[_3]) verwijderd door \'[_4]\'',
 	'Need a status to update entries' => 'Status vereist om berichten bij te werken',
 	'Need entries to update status' => 'Berichten nodig om status bij te werken',
 	'One of the entries ([_1]) did not actually exist' => 'Een van de berichten ([_1]) bestond niet',
