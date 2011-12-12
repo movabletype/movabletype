@@ -40,12 +40,12 @@ my $good_ip_address    = '192.0.2.2';
 my @white_ip_addresses = qw( 192.0.2.3 192.0.3.1 );
 
 my $ip_limit      = $app->config->IPLockoutLimit(10);
-my $user_limit  = $app->config->UserLockoutLimit(6);
-my $ip_duration   = $app->config->IPLockoutDuration(1800); # 30min
-my $user_duration = $app->config->UserLockoutDuration(1800); # 30min
+my $user_limit    = $app->config->UserLockoutLimit(6);
+my $ip_interval   = $app->config->IPLockoutInterval(1800); # 30min
+my $user_interval = $app->config->UserLockoutInterval(1800); # 30min
 $app->config->LockoutIPWhitelist('192.0.2.3,192.0.3');
-my $max_duration  =
-    $ip_duration > $user_duration ? $ip_duration : $user_duration;
+my $max_interval  =
+    $ip_interval > $user_interval ? $ip_interval : $user_interval;
 
 
 my $unknown_name   = 'Unknown';
@@ -354,7 +354,7 @@ clear_lockout_statuses();
 note('MT::Lockout::cleanup');
 $fixed_time = $now-60;
 MT::Lockout->_insert_failedlogin($app, $evil_ip_address, $evil_user->name);
-$fixed_time = $now-$max_duration-60;
+$fixed_time = $now-$max_interval-60;
 MT::Lockout->_insert_failedlogin($app, $evil_ip_address, $evil_user->name);
 is($app->model('failedlogin')->count, 2, 'Failedlogin has 2 entries.');
 
@@ -371,8 +371,8 @@ for (my $i = 0; $i < $ip_limit; $i++) {
     MT::Lockout->_insert_failedlogin($app, $evil_ip_address, '');
 }
 is( MT::Lockout->locked_out_ip_recovery_time( $app, $evil_ip_address ),
-    $now - 60 + $ip_duration,
-    'Will recovered after IPLockoutDuration seconds.'
+    $now - 60 + $ip_interval,
+    'Will recovered after IPLockoutInterval seconds.'
 );
 
 
@@ -412,14 +412,14 @@ $evil_user->save();
 
 clear_lockout_statuses();
 note('task');
-$fixed_time = $now-$max_duration-60;
+$fixed_time = $now-$max_interval-60;
 MT::Lockout->_insert_failedlogin($app, $evil_ip_address, $evil_user->name);
 is($app->model('failedlogin')->count, 1, 'Failedlogin has 1 entries.');
 $fixed_time = $now;
 
 my $task = $app->registry('tasks', 'CleanExpiredFailedLogin');
 ok($task, 'CleanExpiredFailedLogin is registered.');
-is($task->{frequency}, $app->config->FailedLoginExpireFrequency, "task's frequency: is FailedLoginExpireFrequency");
+is($task->{frequency}, $app->config->FailedLoginExpirationFrequency, "task's frequency: is FailedLoginExpirationFrequency");
 $task->{code}->();
 is($app->model('failedlogin')->count, 0, 'Failedlogin has 0 entries. (cleaned)');
 
