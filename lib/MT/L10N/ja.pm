@@ -1960,7 +1960,7 @@ use vars qw( @ISA %Lexicon );
 	'User was locked out. IP address: [_1], Username: [_2]' => 'ユーザー: [_2] のアカウントがロックされました。IPアドレス: [_1]',
 	'User Was Locked Out' => 'ユーザーアカウントがロックされました',
 	'Error sending mail: [_1]' => 'メールを送信できませんでした: [_1]',
-	'IP address was locked out. IP address: [_1], Username: [_2]' => 'IPアドレス: [_2]からのアクセスがロックされました。(ユーザー: [_2])',
+	'IP address was locked out. IP address: [_1], Username: [_2]' => 'IPアドレス: [_1]からのアクセスがロックされました。(ユーザー: [_2])',
 	'IP address Was Locked Out' => 'IPアドレスがロックされました',
 	'User has been unlocked. Username: [_1]' => 'ユーザー: [_1] のアカウントロックが解除されました',
 
