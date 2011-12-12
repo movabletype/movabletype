@@ -181,7 +181,9 @@ sub _insert_failedlogin {
             { range => { start => 1, } }
         );
 
-        if ( $count >= $app->config->UserLockoutLimit ) {
+        if (   $app->config->UserLockoutLimit
+            && $count >= $app->config->UserLockoutLimit )
+        {
             $app->run_callbacks( 'pre_lockout.user', $app, $username,
                 $remote_ip );
 

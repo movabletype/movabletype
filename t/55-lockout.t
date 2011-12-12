@@ -411,6 +411,29 @@ $evil_user->save();
 
 
 clear_lockout_statuses();
+{
+    local $app->config->{__var}{lc('UserLockoutLimit')} = 0;
+
+    note('When UserLockoutLimit is 0');
+    ok(
+        ! MT::Lockout->is_locked_out_user($app, $evil_user->name),
+        '$evil_user has not locked out.'
+    );
+    for (my $i = 0; $i < 10; $i++) {
+        $fixed_time = $now-60*($i+2);
+        MT::Lockout->_insert_failedlogin($app, $evil_ip_address, $evil_user->name);
+    }
+
+    $evil_user = $author_class->load($evil_user->id);
+    ok(
+        ! $evil_user->lockout,
+        '$evil_user is never locked out.'
+    );
+}
+
+
+
+clear_lockout_statuses();
 note('task');
 $fixed_time = $now-$max_interval-60;
 MT::Lockout->_insert_failedlogin($app, $evil_ip_address, $evil_user->name);
