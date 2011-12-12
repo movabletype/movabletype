@@ -878,9 +878,10 @@ $.mtValidator = function ( ns, options ) {
 
 $.extend( $.mtValidator.prototype, {
     options: {},
-    validateElement: function ( $elem, val ) {
+    validateElement: function ( $elem, additionalRules ) {
         var validator  = this;
-        var rules = $.mtValidateRules;
+        if ( undefined === additionalRules ) additionalRules = {};
+        var rules = $.extend( {}, $.mtValidateRules, additionalRules );
         validator.error  = false;
         validator.errstr = undefined;
         $.each ( rules, function( selector, fn ) {
@@ -1037,9 +1038,11 @@ $.mtValidateMessages = {
 };
 
 $.fn.extend({
-    mtValidate: function( ns ) {
+    mtValidate: function( ns, rules ) {
+        if ( undefined === rules ) rules = {};
         this.each( function () {
             $.data( this, 'mtValidator', ns || 'default' );
+            $.data( this, 'mtValidateRules', rules );
         });
         return this.mtValid();
     },
@@ -1058,7 +1061,8 @@ $.fn.extend({
             var validator = $this.mtValidator();
             if ( !validator ) return true;
             var $current_error = $.data( this, 'mtValidateError' );
-            var res = validator.validateElement($this);
+            var rules = $.data( this, 'mtValidateRules' );
+            var res = validator.validateElement($this, rules);
             if ( res ) {
                 successes++;
                 if ( $current_error ) {
@@ -1097,7 +1101,7 @@ $.fn.extend({
         return errors == 0;
     },
     mtUnvalidate: function() {
-        this.each( function () { 
+        this.each( function () {
             var validator = $(this).mtValidator();
             if ( validator ) {
                 var $current_error = $.data( this, 'mtValidateError' );
