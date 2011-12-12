@@ -589,10 +589,10 @@ sub cfg_system_users {
     }
     $param{"tag_delim_$tag_delim"} = 1;
 
-    my $constrains = $app->config('UserPasswordValidation');
-    $param{"combo_upper_lower"} = ($constrains =~ m/upperlower/ ? 1 : 0);
-    $param{"combo_letter_number"} = ($constrains =~ m/letternumber/ ? 1 : 0);
-    $param{"require_special_characters"} = ($constrains =~ m/symbol/ ? 1 : 0);
+    my @constrains = $app->config('UserPasswordValidation');
+    $param{"combo_upper_lower"}          = grep( {$_ eq 'upperlower'} @constrains) ? 1 : 0;
+    $param{"combo_letter_number"}        = grep( {$_ eq 'letternumber'} @constrains) ? 1 : 0;
+    $param{"require_special_characters"} = grep( {$_ eq 'symbol'} @constrains) ? 1 : 0;
     $param{"minimum_length"} = $app->config('UserPasswordMinLength');
 
     ( my $tz = $app->config('DefaultTimezone') ) =~ s![-\.]!_!g;
@@ -740,11 +740,11 @@ sub save_cfg_system_users {
 
     my @constrains;
     $app->config('UserPasswordValidation',
-        join(',',
-             ( $app->param('combo_upper_lower') ? 'upperlower' : () ),
-             ( $app->param('combo_letter_number') ? 'letternumber' : () ),
-             ( $app->param('require_special_characters') ? 'symbol' : () ),
-             )
+        [
+            ( $app->param('combo_upper_lower') ? 'upperlower' : () ),
+            ( $app->param('combo_letter_number') ? 'letternumber' : () ),
+            ( $app->param('require_special_characters') ? 'symbol' : () ),
+        ]
         , 1 );
 
     my $pass_min_len = $app->param('minimum_length');

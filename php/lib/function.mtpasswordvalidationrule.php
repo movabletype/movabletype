@@ -12,13 +12,13 @@ function smarty_function_mtpasswordvalidationrule($args, &$ctx) {
     $min_length = $app->config('UserPasswordMinLength');
 
     $msg = $app->translate("minimum length of [_1]", $min_length);
-    if (strpos($constrains,  "upperlower") !== false) {
+    if (array_search("upperlower", $constrains) !== false) {
         $msg .= $app->translate(', uppercase and lowercase letters');
     }
-    if (strpos($constrains, "letternumber") !== false) {
+    if (array_search("letternumber", $constrains) !== false) {
         $msg .= $app->translate(', letters and numbers');
     }
-    if (strpos($constrains, "symbol") !== false) {
+    if (array_search("symbol", $constrains) !== false) {
         $msg .= $app->translate(', symbols (such as #!$%)');
     }
     return $msg;

@@ -1832,7 +1832,7 @@ BEGIN {
                 handler => \&DefaultUserTagDelimiter,
                 default => 'comma',
             },
-            'UserPasswordValidation' => { default => '', },
+            'UserPasswordValidation' => { type    => 'ARRAY', },
             'UserPasswordMinLength'  => { default => 8, },
             'AuthenticationModule'  => { default => 'MT', },
             'AuthLoginURL'          => undef,

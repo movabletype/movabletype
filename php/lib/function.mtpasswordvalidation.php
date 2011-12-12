@@ -40,7 +40,7 @@ function smarty_function_mtpasswordvalidation($args, &$ctx) {
           }
 JSCRIPT;
 
-    if (strpos($constrains, "letternumber") !== false) {
+    if (array_search("letternumber", $constrains) !== false) {
         $vs .= <<< JSCRIPT
             if ((passwd.search(/[a-zA-Z]/) == -1) || (passwd.search(/\d/) == -1)) {
                 return "<__trans phrase="Password should include letters and numbers">";
@@ -48,7 +48,7 @@ JSCRIPT;
 JSCRIPT;
 
     }
-    if (strpos($constrains,  "upperlower") !== false) {
+    if (array_search("upperlower", $constrains) !== false) {
         $vs .= <<< JSCRIPT
             if (( passwd.search(/[a-z]/) == -1) || (passwd.search(/[A-Z]/) == -1)) {
                 return "<__trans phrase="Password should include lowercase and uppercase letters">";
@@ -56,7 +56,7 @@ JSCRIPT;
 JSCRIPT;
 
     }
-    if (strpos($constrains, "symbol") !== false) {
+    if (array_search("symbol", $constrains) !== false) {
         $vs .= <<< JSCRIPT
             if ( passwd.search(/[!"#$%&'\(\|\)\*\+,-\.\/\\:;<=>\?@\[\]^_`{}~]/) == -1 ) {
                 return "<__trans phrase="Password should contain symbols such as #!$%">";

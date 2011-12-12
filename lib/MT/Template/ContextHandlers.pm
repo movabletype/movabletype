@@ -5780,8 +5780,7 @@ sub _hdlr_password_validation_script {
     ) unless defined $pass_field;
 
     $user_field ||= '';
-
-    my $constrains = $app->config('UserPasswordValidation');
+    my @constrains = $app->config('UserPasswordValidation');
     my $min_length = $app->config('UserPasswordMinLength');
     if (( $min_length =~ m/\D/ ) or ( $min_length < 1 )) {
         $min_length = $app->config->default('UserPasswordMinLength');
@@ -5798,7 +5797,7 @@ sub _hdlr_password_validation_script {
           }
 JSCRIPT
 
-    if ($constrains =~ m/letternumber/) {
+    if (grep {$_ eq 'letternumber'} @constrains) {
         $vs .= << 'JSCRIPT';
             if ((passwd.search(/[a-zA-Z]/) == -1) || (passwd.search(/\d/) == -1)) {
               return "<__trans phrase="Password should include letters and numbers">";
@@ -5806,7 +5805,7 @@ JSCRIPT
 JSCRIPT
 
     }
-    if ($constrains =~ m/upperlower/) {
+    if (grep {$_ eq 'upperlower'} @constrains) {
         $vs .= << 'JSCRIPT';
             if (( passwd.search(/[a-z]/) == -1) || (passwd.search(/[A-Z]/) == -1)) {
               return "<__trans phrase="Password should include lowercase and uppercase letters">";
@@ -5814,7 +5813,7 @@ JSCRIPT
 JSCRIPT
 
     }
-    if ($constrains =~ m/symbol/) {
+    if (grep {$_ eq 'symbol'} @constrains) {
         $vs .= << 'JSCRIPT';
             if ( passwd.search(/[!"#$%&'\(\|\)\*\+,-\.\/\\:;<=>\?@\[\]^_`{}~]/) == -1 ) {
               return "<__trans phrase="Password should contain symbols such as #!$%">";
@@ -5863,7 +5862,7 @@ sub _hdlr_password_validation_rules {
 
     my $app = MT->instance;
 
-    my $constrains = $app->config('UserPasswordValidation');
+    my @constrains = $app->config('UserPasswordValidation');
     my $min_length = $app->config('UserPasswordMinLength');
     if (( $min_length =~ m/\D/ ) or ( $min_length < 1 )) {
         $min_length = $app->config->default('UserPasswordMinLength');
@@ -5871,11 +5870,11 @@ sub _hdlr_password_validation_rules {
 
     my $msg = $app->translate("minimum length of [_1]", $min_length);
     $msg .= $app->translate(', uppercase and lowercase letters')
-        if $constrains =~ m/upperlower/;
+        if grep {$_ eq 'upperlower'} @constrains;
     $msg .= $app->translate(', letters and numbers')
-        if $constrains =~ m/letternumber/;
+        if grep {$_ eq 'letternumber'} @constrains;
     $msg .= $app->translate(', symbols (such as #!$%)')
-        if $constrains =~ m/symbol/;
+        if grep {$_ eq 'symbol'} @constrains;
 
     return $msg;
 }
