@@ -3511,7 +3511,7 @@ use vars qw( @ISA %Lexicon );
 	'This user was classified as pending.' => 'このユーザーは保留中にされています。',
 	'This user was classified as disabled.' => 'このユーザーは無効にされています。',
 	'This user was locked out.' => 'このユーザーはロックされています。',
-	q{If you want to unlock this user click the 'Unlock' link. <a href="[_1]">Unlock</a>} => q{ユーザーのロックを解除する場合、リンクをクリックしてください。},
+	q{If you want to unlock this user click the 'Unlock' link. <a href="[_1]">Unlock</a>} => q{<a href="[_1]">ロックを解除する</a>},
 	'User properties' => 'ユーザー属性',
 	'Your web services password is currently' => 'Webサービスのパスワード',
 	'_WARNING_PASSWORD_RESET_SINGLE' => '[_1]のパスワードを再設定しようとしています。新しいパスワードはランダムに生成され、ユーザーにメールで送信されます。続行しますか?',
