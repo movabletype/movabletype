@@ -593,7 +593,7 @@ sub cfg_system_users {
     $param{"combo_upper_lower"} = ($constrains =~ m/upperlower/ ? 1 : 0);
     $param{"combo_letter_number"} = ($constrains =~ m/letternumber/ ? 1 : 0);
     $param{"require_special_characters"} = ($constrains =~ m/symbol/ ? 1 : 0);
-    $param{"minimum_length"} = $app->config('UserPasswordMinLength'); 
+    $param{"minimum_length"} = $app->config('UserPasswordMinLength');
 
     ( my $tz = $app->config('DefaultTimezone') ) =~ s![-\.]!_!g;
     $tz =~ s!_00$!!;
@@ -664,6 +664,22 @@ sub cfg_system_users {
             $param{notify_user_name} = join ',', @names;
         }
     }
+
+    my @config_warnings;
+    for my $config_directive (
+        qw( UserPasswordValidation UserPasswordMinLength )
+        )
+    {
+        push( @config_warnings, $config_directive )
+            if $app->config->is_readonly($config_directive);
+    }
+    my $config_warning = join( ", ", @config_warnings ) if (@config_warnings);
+
+    $param{config_warning} = $app->translate(
+        "These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
+        $config_warning
+    ) if $config_warning;
+
     $app->load_tmpl( 'cfg_system_users.tmpl', \%param );
 }
 

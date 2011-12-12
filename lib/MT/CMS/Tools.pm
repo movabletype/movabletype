@@ -474,7 +474,9 @@ sub cfg_system_general {
     my @config_warnings;
     for my $config_directive (
         qw( EmailAddressMain DebugMode PerformanceLogging
-        PerformanceLoggingPath PerformanceLoggingThreshold )
+        PerformanceLoggingPath PerformanceLoggingThreshold
+        UserLockoutLimit UserLockoutInterval IPLockoutLimit
+        IPLockoutInterval LockoutIPWhitelist LockoutNotifyTo )
         )
     {
         push( @config_warnings, $config_directive )

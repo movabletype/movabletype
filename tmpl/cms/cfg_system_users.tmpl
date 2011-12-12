@@ -18,6 +18,14 @@
     <__trans phrase="Your settings have been saved.">
   </mtapp:statusmsg>
 </mt:if>
+<mt:if name="config_warning">
+  <mtapp:statusmsg
+     id="info"
+     class="info"
+     can_close="0">
+    <mt:var name="config_warning">
+  </mtapp:statusmsg>
+</mt:if>
 </mt:setvarblock>
 
 <mt:setvarblock name="html_head" append="1">
