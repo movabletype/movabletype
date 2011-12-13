@@ -747,11 +747,13 @@ sub save_cfg_system_users {
         ]
         , 1 );
 
-    my $pass_min_len = $app->param('minimum_length');
-    if (( $pass_min_len =~ m/\D/ ) or ( $pass_min_len < 1 )) {
-        return $app->errtrans('Minimum password length must be integer and greater than zero.');
+    if ( 'MT' eq uc $app->config('AuthenticationModule') ) {
+        my $pass_min_len = $app->param('minimum_length');
+        if (( $pass_min_len =~ m/\D/ ) or ( $pass_min_len < 1 )) {
+            return $app->errtrans('Minimum password length must be integer and greater than zero.');
+        }
+        $app->config('UserPasswordMinLength', $pass_min_len, 1 );
     }
-    $app->config('UserPasswordMinLength', $pass_min_len, 1 );
 
     $cfg->save_config();
 
