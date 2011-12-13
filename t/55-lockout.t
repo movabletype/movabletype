@@ -117,7 +117,7 @@ ok(
     '$evil_ip_address has not locked out. (FailedLogin: IPLockoutLimit - 1)'
 );
 
-$fixed_time = $now-60;
+$fixed_time = $now;
 MT::Lockout->_insert_failedlogin($app, $evil_ip_address, '');
 ok(
     MT::Lockout->is_locked_out_ip($app, $evil_ip_address),
@@ -128,7 +128,13 @@ ok(
     '$good_ip_address has not locked out. (FailedLogin: IPLockoutLimit)'
 );
 
-$fixed_time = $now+60*90;
+$fixed_time = $now+$ip_interval;
+ok(
+    MT::Lockout->is_locked_out_ip($app, $evil_ip_address),
+    '$evil_ip_address has locked out. (not yet recovered)'
+);
+
+$fixed_time = $now+$ip_interval+1;
 ok(
     ! MT::Lockout->is_locked_out_ip($app, $evil_ip_address),
     '$evil_ip_address has not locked out. (recovered)'

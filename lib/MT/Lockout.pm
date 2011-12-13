@@ -18,14 +18,13 @@ sub is_locked_out_ip {
     my $limit = $app->config->IPLockoutLimit
         or return 0;
 
-    my $count = $app->model('failedlogin')->count(
+    $app->model('failedlogin')->load(
         {   remote_ip => $remote_ip,
-            start     => [ time - $app->config->IPLockoutInterval, undef ]
+            ip_locked => 1,
+            start     => [ time - $app->config->IPLockoutInterval, undef ],
         },
-        { range => { start => 1, } }
-    );
-
-    $count >= $limit;
+        { range_incl => { start => 1, } }
+    ) ? 1 : 0;
 }
 
 sub locked_out_ip_recovery_time {
@@ -38,10 +37,10 @@ sub locked_out_ip_recovery_time {
         {   remote_ip => $remote_ip,
             start     => [ time - $app->config->IPLockoutInterval, undef ]
         },
-        {   range     => { start => 1, },
-            sort      => 'start',
-            direction => 'ascend',
-            limit     => 1
+        {   range_incl => { start => 1, },
+            sort       => 'start',
+            direction  => 'ascend',
+            limit      => 1
         }
     ) or return 0;
 
@@ -116,6 +115,36 @@ sub recover_lockout_uri {
     );
 }
 
+sub _check_locked_out_ip {
+    my $class = shift;
+    my ( $app, $remote_ip ) = @_;
+    my $limit = $app->config->IPLockoutLimit
+        or return 0;
+
+    my $count = $app->model('failedlogin')->count(
+        {   remote_ip => $remote_ip,
+            start     => [ time - $app->config->IPLockoutInterval, undef ]
+        },
+        { range_incl => { start => 1, } }
+    );
+
+    $count >= $limit;
+}
+
+sub _check_locked_out_user {
+    my $class = shift;
+    my ( $app, $author_id ) = @_;
+    my $count = $app->model('failedlogin')->count(
+        {   author_id => $author_id,
+            start     => [ time - $app->config->UserLockoutInterval, undef ]
+        },
+        { range_incl => { start => 1, } }
+    );
+
+    $app->config->UserLockoutLimit
+        && $count >= $app->config->UserLockoutLimit;
+}
+
 sub _notify_to {
     my $class = shift;
     my ($app) = @_;
@@ -177,72 +206,60 @@ sub _insert_failedlogin {
 
     my @notify_to = $class->_notify_to($app);
 
-    if ($author_id) {
-        my $count = $app->model('failedlogin')->count(
-            {   author_id => $author_id,
-                start => [ time - $app->config->UserLockoutInterval, undef ]
-            },
-            { range => { start => 1, } }
+    if ( $author_id && $class->_check_locked_out_user( $app, $author_id ) ) {
+        $app->run_callbacks( 'pre_lockout.user', $app, $username,
+            $remote_ip );
+
+        $app->log(
+            {   message => $app->translate(
+                    'User was locked out. IP address: [_1], Username: [_2]',
+                    $remote_ip, $username
+                ),
+                level    => MT::Log::SECURITY(),
+                category => 'lockout',
+                class    => 'author',
+            }
         );
 
-        if (   $app->config->UserLockoutLimit
-            && $count >= $app->config->UserLockoutLimit )
-        {
-            $app->run_callbacks( 'pre_lockout.user', $app, $username,
-                $remote_ip );
+        $class->lock($user);
+        $user->save or die $user->errstr;
 
-            $app->log(
-                {   message => $app->translate(
-                        'User was locked out. IP address: [_1], Username: [_2]',
-                        $remote_ip,
-                        $username
-                    ),
-                    level    => MT::Log::SECURITY(),
-                    category => 'lockout',
-                    class    => 'author',
+        foreach
+            my $email ( $class->_merge_notiry_to( @notify_to, $user->email ) )
+        {
+            my %head = (
+                id      => 'lockout_user',
+                To      => $email,
+                Subject => $app->translate('User Was Locked Out')
+            );
+
+            my $body = $app->build_email(
+                'lockout-user',
+                {   author               => $user,
+                    recover_lockout_link => $app->base
+                        . $class->recover_lockout_uri( $app, $user ),
                 }
             );
 
-            $class->lock($user);
-            $user->save or die $user->errstr;
-
-            foreach my $email (
-                $class->_merge_notiry_to( @notify_to, $user->email ) )
-            {
-                my %head = (
-                    id      => 'lockout_user',
-                    To      => $email,
-                    Subject => $app->translate('User Was Locked Out')
+            require MT::Mail;
+            MT::Mail->send( \%head, $body )
+                or $app->log(
+                {   message => $app->translate(
+                        'Error sending mail: [_1]',
+                        MT::Mail->errstr
+                    ),
+                    level    => MT::Log::ERROR(),
+                    class    => 'system',
+                    category => 'email'
+                }
                 );
-
-                my $body = $app->build_email(
-                    'lockout-user',
-                    {   author               => $user,
-                        recover_lockout_link => $app->base
-                            . $class->recover_lockout_uri( $app, $user ),
-                    }
-                );
-
-                require MT::Mail;
-                MT::Mail->send( \%head, $body )
-                    or $app->log(
-                    {   message => $app->translate(
-                            'Error sending mail: [_1]',
-                            MT::Mail->errstr
-                        ),
-                        level    => MT::Log::ERROR(),
-                        class    => 'system',
-                        category => 'email'
-                    }
-                    );
-            }
-
-            $app->run_callbacks( 'post_lockout.user', $app, $username,
-                $remote_ip );
         }
+
+        $app->run_callbacks( 'post_lockout.user', $app, $username,
+            $remote_ip );
     }
 
-    if ( $class->is_locked_out_ip( $app, $remote_ip ) ) {
+    if ( $class->_check_locked_out_ip( $app, $remote_ip ) ) {
         $app->run_callbacks( 'pre_lockout.ip', $app, $username, $remote_ip );
 
         $app->log(
@@ -256,6 +273,9 @@ sub _insert_failedlogin {
                 class    => 'author',
             }
         );
+
+        $failedlogin->ip_locked(1);
+        $failedlogin->save or die $failedlogin->errstr;
 
         foreach my $email (@notify_to) {
             my %head = (

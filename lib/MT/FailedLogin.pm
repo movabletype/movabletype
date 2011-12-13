@@ -16,6 +16,7 @@ __PACKAGE__->install_properties(
             'author_id' => 'integer',
             'remote_ip' => 'string(60)',
             'start'     => 'integer not null',
+            'ip_locked' => 'boolean',
         },
         indexes => {
             author_id    => 1,
@@ -23,6 +24,10 @@ __PACKAGE__->install_properties(
             start        => 1,
             author_start => { columns => [ 'author_id', 'start' ], },
             ip_start     => { columns => [ 'remote_ip', 'start' ], },
+            ip_locked    => 1,
+        },
+        defaults => {
+            ip_locked    => 0,
         },
         datasource  => 'failedlogin',
         primary_key => 'id'
