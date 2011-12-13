@@ -30,7 +30,7 @@ __PACKAGE__->install_properties(
             'date_format'          => 'string(30)',
             'status'               => 'integer',
             'external_id'          => 'string(255)',
-            'lockout'              => 'integer not null',
+            'locked_out_time'      => 'integer not null',
 
             #'last_login' => 'datetime',
 
@@ -56,19 +56,19 @@ __PACKAGE__->install_properties(
             'lockout_recover_salt'     => 'string meta',
         },
         defaults => {
-            type        => 1,
-            status      => 1,
-            date_format => 'relative',
-            lockout     => 0, # NOT_LOCKED_OUT
+            type            => 1,
+            status          => 1,
+            date_format     => 'relative',
+            locked_out_time => 0,
         },
         indexes => {
-            created_on     => 1,
-            name           => 1,
-            email          => 1,
-            type           => 1,
-            status         => 1,
-            external_id    => 1,
-            lockout        => 1,
+            created_on      => 1,
+            name            => 1,
+            email           => 1,
+            type            => 1,
+            status          => 1,
+            external_id     => 1,
+            locked_out_time => 1,
             auth_type_name => { columns => [ 'auth_type', 'name', 'type' ], },
             basename       => 1,
         },
@@ -102,10 +102,6 @@ sub PENDING ()  {3}
 # Author statuses
 sub ACTIVE ()   {1}
 sub INACTIVE () {2}
-
-# Lockout statuses
-sub NOT_LOCKED_OUT () {0}
-sub LOCKED_OUT () {1}
 
 #use constant PENDING => 3; # there *is* PENDING status for authors but it's the same name and value.
 
@@ -258,12 +254,15 @@ sub list_props {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
                 my $val      = $args->{value};
+                require MT::Lockout;
                 my %statuses = (
-                    not_locked_out => NOT_LOCKED_OUT(),
-                    locked_out     => LOCKED_OUT(),
+                    not_locked_out =>
+                        { '<' => MT::Lockout::locked_out_user_threshold(), },
+                    locked_out =>
+                        { '>=' => MT::Lockout::locked_out_user_threshold(), },
                 );
                 $val = exists $statuses{$val} ? $statuses{$val} : $val;
-                return { lockout => $val };
+                return { locked_out_time => $val };
             },
             single_select_options => [
                 {   label => MT->translate('Not Locked Out'),
@@ -1498,6 +1497,14 @@ sub can_do {
         }
     }
     return;
+}
+
+sub locked_out {
+    my $author = shift;
+    require MT::Lockout;
+    $author->locked_out_time
+        && $author->locked_out_time
+        >= MT::Lockout::locked_out_user_threshold();
 }
 
 1;

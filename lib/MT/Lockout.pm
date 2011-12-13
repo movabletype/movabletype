@@ -48,6 +48,10 @@ sub locked_out_ip_recovery_time {
     $old->start + $app->config->IPLockoutInterval;
 }
 
+sub locked_out_user_threshold {
+    time - MT->instance->config->UserLockoutInterval;
+}
+
 sub is_locked_out_user {
     my $class = shift;
     my ( $app, $username ) = @_;
@@ -57,7 +61,7 @@ sub is_locked_out_user {
     my $user = $app->model('author')->load( { name => $username } )
         or return 0;
 
-    $user->lockout;
+    $user->locked_out;
 }
 
 sub is_locked_out {
@@ -79,7 +83,7 @@ sub recover_token {
     my ( $app, $user ) = @_;
 
     return undef
-        unless $user->lockout == MT::Author::LOCKED_OUT
+        unless $user->locked_out
             && $user->lockout_recover_salt;
 
     my $sha256_hex;
@@ -331,20 +335,20 @@ sub lock {
     my $class = shift;
     my ($user) = @_;
 
-    return if $user->lockout != MT::Author::NOT_LOCKED_OUT;
+    return if $user->locked_out;
 
     my @alpha = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
     my $salt = join '', map $alpha[ rand @alpha ], 1 .. 2;
 
     $user->lockout_recover_salt($salt);
-    $user->lockout(MT::Author::LOCKED_OUT);
+    $user->locked_out_time(time);
 }
 
 sub unlock {
     my $class = shift;
     my ($user) = @_;
 
-    return if $user->lockout != MT::Author::LOCKED_OUT;
+    return unless $user->locked_out;
 
     my $app = MT->instance;
     $app->log(
@@ -360,7 +364,7 @@ sub unlock {
     $app->model('failedlogin')->remove( { author_id => $user->id } );
 
     $user->lockout_recover_salt(undef);
-    $user->lockout(MT::Author::NOT_LOCKED_OUT);
+    $user->locked_out_time(undef);
 }
 
 1;

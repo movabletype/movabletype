@@ -156,7 +156,7 @@ ok(
     '$evil_user has not locked out. (FailedLogin: AuthorLockoutLimit - 1)'
 );
 
-$fixed_time = $now-60;
+$fixed_time = $now;
 MT::Lockout->_insert_failedlogin($app, $evil_ip_address, $evil_user->name);
 ok(
     MT::Lockout->is_locked_out_user($app, $evil_user->name),
@@ -167,10 +167,16 @@ ok(
     '$good_user has not locked out. (FailedLogin: IPLockoutLimit)'
 );
 
-$fixed_time = $now+60*90;
+$fixed_time = $now+$user_interval;
 ok(
     MT::Lockout->is_locked_out_user($app, $evil_user->name),
-    '$evil_user has locked out. (recovery is not automatic)'
+    '$evil_user has locked out. (not yet recoveried)'
+);
+
+$fixed_time = $now+$user_interval+1;
+ok(
+    ! MT::Lockout->is_locked_out_user($app, $evil_user->name),
+    '$evil_user has not locked out. (recoveried automaticaly)'
 );
 
 
@@ -426,7 +432,7 @@ clear_lockout_statuses();
 
     $evil_user = $author_class->load($evil_user->id);
     ok(
-        ! $evil_user->lockout,
+        ! $evil_user->locked_out,
         '$evil_user is never locked out.'
     );
 }
