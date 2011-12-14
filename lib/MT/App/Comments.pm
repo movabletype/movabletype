@@ -45,6 +45,8 @@ sub init {
         new_pw        => \&new_pw,
 
         comment_listing => \&comment_listing,
+
+        recover_lockout => 'MT::CMS::User::recover_lockout',
     );
     $app->{template_dir}         = 'comment';
     $app->{plugin_template_path} = '';
@@ -128,6 +130,12 @@ sub _get_commenter_session {
 sub login_form {
     my $app   = shift;
     my %param = @_;
+
+    require MT::Lockout;
+    if ( MT::Lockout->is_locked_out( $app, $app->remote_ip ) ) {
+        $app->{hide_goback_button} = 1;
+        return $app->errtrans("Invalid request");
+    }
 
     my $param = {
         blog_id    => ( $app->param('blog_id')    || 0 ),
@@ -297,6 +305,9 @@ sub do_login {
         $message
             = $app->translate( "Failed login attempt by disabled user '[_1]'",
             $name );
+    }
+    elsif ( MT::Auth::LOCKED_OUT() == $result ) {
+        $message = $app->translate('Invalid login.');
     }
     else {
         $message

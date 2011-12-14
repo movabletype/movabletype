@@ -1961,7 +1961,6 @@ sub login {
     my $new_login = 0;
 
     require MT::Auth;
-    require MT::Lockout;
 
     my $ctx = MT::Auth->fetch_credentials( { app => $app } );
     unless ($ctx) {
@@ -1973,14 +1972,6 @@ sub login {
 
     my $res = MT::Auth->validate_credentials($ctx) || MT::Auth::UNKNOWN();
     my $user = $ctx->{username};
-
-    if ( $res != MT::Auth::SUCCESS() ) {
-        if ( MT::Lockout->is_locked_out( $app, $app->remote_ip, $user ) ) {
-            return $app->error( $app->translate('Invalid login.') );
-        }
-        MT::Lockout->process_login_result( $app, $app->remote_ip, $user,
-            $res );
-    }
 
     if ( $res == MT::Auth::UNKNOWN() ) {
 
@@ -2054,6 +2045,9 @@ sub login {
                 'This account has been deleted. Please see your system administrator for access.'
             )
         );
+    }
+    elsif ( $res == MT::Auth::LOCKED_OUT() ) {
+        return $app->error( $app->translate('Invalid login.') );
     }
     elsif ( $res == MT::Auth::REDIRECT_NEEDED() ) {
 

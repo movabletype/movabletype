@@ -110,7 +110,7 @@ sub recover_lockout_uri {
         args   => {
             user_id => $user->id,
             token   => $token,
-            ($args ? %$args : ()),
+            ( $args ? %$args : () ),
         }
     );
 }
@@ -173,7 +173,7 @@ sub _notify_to {
     @notify_to ? @notify_to : ( $app->config->EmailAddressMain );
 }
 
-sub _merge_notiry_to {
+sub _merge_notify_to {
     my $class     = shift;
     my %addresses = ();
     foreach (@_) {
@@ -225,7 +225,7 @@ sub _insert_failedlogin {
         $user->save or die $user->errstr;
 
         foreach
-            my $email ( $class->_merge_notiry_to( @notify_to, $user->email ) )
+            my $email ( $class->_merge_notify_to( @notify_to, $user->email ) )
         {
             my %head = (
                 id      => 'lockout_user',

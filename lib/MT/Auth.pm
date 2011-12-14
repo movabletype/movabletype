@@ -18,6 +18,7 @@ sub REDIRECT_NEEDED ()  {6}
 sub NEW_LOGIN ()        {7}
 sub NEW_USER ()         {8}
 sub PENDING ()          {9}
+sub LOCKED_OUT ()       {10}
 
 {
     my $auth_module;
@@ -67,6 +68,28 @@ BEGIN {
     foreach my $meth (@methods) {
         *{"MT::Auth::$meth"} = sub { shift; _handle( $meth, @_ ) };
     }
+}
+
+sub validate_credentials {
+    my $class = shift;
+    my ($ctx) = @_;
+    my $app   = MT->instance;
+
+    my $res = _handle( 'validate_credentials', @_ );
+
+    if ( $res != MT::Auth::SUCCESS() ) {
+        require MT::Lockout;
+        my $user = $ctx->{username};
+
+        if ( MT::Lockout->is_locked_out( $app, $app->remote_ip, $user ) ) {
+            return MT::Auth::LOCKED_OUT();
+        }
+
+        MT::Lockout->process_login_result( $app, $app->remote_ip, $user,
+            $res );
+    }
+
+    $res;
 }
 
 sub task_synchronize {

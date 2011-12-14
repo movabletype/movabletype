@@ -59,7 +59,7 @@ sub edit {
         $param->{status_pending}
             = $obj->status == MT::Author::PENDING() ? 1 : 0;
         $param->{locked_out}
-            = $obj->lockout == MT::Author::LOCKED_OUT ? 1 : 0;
+            = $obj->locked_out ? 1 : 0;
         if ( $app->user->is_superuser ) {
             $param->{recover_lockout_link}
                 = MT::Lockout->recover_lockout_uri( $app, $obj,
@@ -514,19 +514,23 @@ sub recover_lockout {
     }
 
     my $params = {
-        author_nickname  => $user->nickname,
-        author_name      => $user->name,
-        author_edit_link => $app->base
-            . $app->uri(
-                mode => 'view',
-                args => {
-                    '_type' => 'author',
-                    'id'    => $user->id,
-                },
-            ),
+        author_nickname => $user->nickname,
+        author_name     => $user->name,
     };
 
-    my $tmpl = $app->load_tmpl( 'recover_lockout.tmpl', $params );
+    if ( $app->isa('MT::App::CMS') ) {
+        $params->{author_edit_link} = $app->base
+            . $app->uri(
+            mode => 'view',
+            args => {
+                '_type' => 'author',
+                'id'    => $user->id,
+            },
+            );
+    }
+
+    $app->{template_dir} = 'cms';
+    $app->load_tmpl( 'recover_lockout.tmpl', $params );
 }
 
 sub upload_userpic {

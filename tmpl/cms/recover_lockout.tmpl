@@ -8,6 +8,7 @@
 <__trans phrase="User '[_1]' has been unlocked." params="<mt:var name="author_nickname" encode_html="1" />">
 </mtapp:statusmsg>
 
+<mt:if name="author_edit_link">
 <mt:setvarblock name="action_buttons">
 <button
    id="goback-button"
@@ -18,6 +19,7 @@
    <__trans phrase="Edit Profile" />
 </button>
 </mt:setvarblock>
+</mt:if>
 
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 
