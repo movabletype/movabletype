@@ -484,7 +484,7 @@ sub dialog_move_blogs {
                 panel_first       => 1,
                 panel_last        => 1,
                 list_noncron      => 1,
-                return_url        => $app->param('return_args'),
+                return_url        => ( $app->param('return_args') || '' ),
                 blog_ids          => $ids,
             },
         }
