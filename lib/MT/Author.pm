@@ -734,8 +734,8 @@ sub remove_sessions {
 sub remove_failedlogin {
     my $auth = shift;
     return if ( !$auth or !$auth->id );
-    my $iter
-        = MT->model('failedlogin')->remove( { author_id => $auth->id } );
+    require MT::Lockout;
+    MT::Lockout->clear_failedlogin($auth);
     return 1;
 }
 

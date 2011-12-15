@@ -346,7 +346,7 @@ sub process_login_result {
         $app->model('failedlogin')->remove( { remote_ip => $remote_ip } );
         if ( my $user = $app->model('author')->load( { name => $username } ) )
         {
-            $app->model('failedlogin')->remove( { author_id => $user->id } );
+            $class->clear_failedlogin($user);
         }
     }
 }
@@ -381,10 +381,34 @@ sub unlock {
             class    => 'author',
         }
     );
-    $app->model('failedlogin')->remove( { author_id => $user->id } );
+    $class->clear_failedlogin($user);
 
     $user->lockout_recover_salt(undef);
     $user->locked_out_time(undef);
+}
+
+sub clear_failedlogin {
+    my $class = shift;
+    my ($user) = @_;
+
+    return if !$user || !$user->id;
+
+    my $failedlogin_class = MT->model('failedlogin');
+    $failedlogin_class->remove(
+        {   author_id => $user->id,
+            ip_locked => { not => 1 },
+        }
+    );
+
+    my $iter = $failedlogin_class->load_iter(
+        {   author_id => $user->id,
+            ip_locked => 1,
+        }
+    );
+    while (my $failedlogin = $iter->()) {
+        $failedlogin->author_id(undef);
+        $failedlogin->save;
+    }
 }
 
 1;
@@ -487,6 +511,11 @@ save $user object, should save $user object after returning from this routine.
 
 This routine recover the lockout status of given $user. This routine doesn't
 save $user object, should save $user object after returning from this routine.
+
+
+=head2 MT::Lockout->clear_failedlogin($user)
+
+This routine clear the failed login logs relevant to the $user.
 
 
 =head1 CALLBACKS

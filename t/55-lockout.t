@@ -445,6 +445,84 @@ clear_lockout_statuses();
 
 
 
+note('When the failedlogin count reached the limit at different timing.');
+clear_lockout_statuses();
+{
+    my $user_limit = 2;
+    my $ip_limit   = 4;
+    local $app->config->{__var}{lc('UserLockoutLimit')} = $user_limit;
+    local $app->config->{__var}{lc('IPLockoutLimit')}   = $ip_limit;
+
+    for (my $i = 0; $i < $user_limit; $i++) {
+        MT::Lockout
+            ->_insert_failedlogin($app, $evil_ip_address, $evil_user->name);
+    }
+    for (my $i = $user_limit; $i < $ip_limit; $i++) {
+        MT::Lockout
+            ->_insert_failedlogin($app, $evil_ip_address, '');
+    }
+    $evil_user = $author_class->load($evil_user->id);
+    MT::Lockout->unlock($evil_user);
+    ok(
+        MT::Lockout->is_locked_out_ip($app, $evil_ip_address),
+        '$evil_ip_address is locked out yet. (not recovered by unlocking user)'
+    );
+}
+
+
+note('When the failedlogin count reached the limit at same timing. And unlock');
+clear_lockout_statuses();
+{
+    my $user_limit = 2;
+    my $ip_limit   = 4;
+    local $app->config->{__var}{lc('UserLockoutLimit')} = $user_limit;
+    local $app->config->{__var}{lc('IPLockoutLimit')}   = $ip_limit;
+
+    for (my $i = 0; $i < $ip_limit-$user_limit; $i++) {
+        MT::Lockout
+            ->_insert_failedlogin($app, $evil_ip_address, '');
+    }
+    for (my $i = $ip_limit-$user_limit; $i < $ip_limit; $i++) {
+        MT::Lockout
+            ->_insert_failedlogin($app, $evil_ip_address, $evil_user->name);
+    }
+    $evil_user = $author_class->load($evil_user->id);
+    MT::Lockout->unlock($evil_user);
+    ok(
+        MT::Lockout->is_locked_out_ip($app, $evil_ip_address),
+        '$evil_ip_address is locked out yet. (not recovered by unlocking user)'
+    );
+}
+
+
+note('When the failedlogin count reached the limit at same timing. And remove');
+clear_lockout_statuses();
+{
+    my $user_limit = 2;
+    my $ip_limit   = 4;
+    local $app->config->{__var}{lc('UserLockoutLimit')} = $user_limit;
+    local $app->config->{__var}{lc('IPLockoutLimit')}   = $ip_limit;
+
+    for (my $i = 0; $i < $ip_limit-$user_limit; $i++) {
+        MT::Lockout
+            ->_insert_failedlogin($app, $evil_ip_address, '');
+    }
+    for (my $i = $ip_limit-$user_limit; $i < $ip_limit; $i++) {
+        MT::Lockout
+            ->_insert_failedlogin($app, $evil_ip_address, $evil_user->name);
+    }
+    $evil_user = $author_class->load($evil_user->id);
+    $evil_user->remove;
+    ok(
+        MT::Lockout->is_locked_out_ip($app, $evil_ip_address),
+        '$evil_ip_address is locked out yet. (not recovered by removing user)'
+    );
+
+    $evil_user->save;
+    $evil_user = $author_class->load($evil_user->id);
+}
+
+
 clear_lockout_statuses();
 note('task');
 $fixed_time = $now-$max_interval-60;
