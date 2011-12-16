@@ -2434,6 +2434,7 @@ sub load_core_permissions {
                 'open_select_author_dialog'        => 1,
                 'send_update_pings_entry'          => 1,
                 'insert_asset'                     => 1,
+                'access_to_insert_asset_list'      => 1,
             }
         },
         'blog.edit_assets' => {
