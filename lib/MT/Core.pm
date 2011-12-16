@@ -1035,6 +1035,7 @@ sub load_core_permissions {
                 'use_tools:search'                 => 1,
                 'send_update_pings_entry'          => 1,
                 'insert_asset'                     => 1,
+                'access_to_asset_list'             => 1,
             }
         },
         'blog.edit_assets' => {
@@ -1208,6 +1209,8 @@ sub load_core_permissions {
                 'use_tools:search'                => 1,
                 'open_blog_listing_screen'        => 1,
                 'send_update_pings_page'          => 1,
+                'insert_asset'                    => 1,
+                'access_to_asset_list'            => 1,
             }
         },
         'blog.manage_users' => {
