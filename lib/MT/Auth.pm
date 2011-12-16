@@ -58,7 +58,7 @@ sub LOCKED_OUT ()       {10}
 BEGIN {
     my @methods = qw(
         errstr sanity_check is_valid_password can_recover_password
-        is_profile_needed password_exists validate_credentials
+        is_profile_needed password_exists
         invalidate_credentials delegate_auth can_logout
         synchronize synchronize_author synchronize_group
         new_user new_login login_form fetch_credentials
