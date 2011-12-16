@@ -384,7 +384,7 @@ sub unlock {
     $class->clear_failedlogin($user);
 
     $user->lockout_recover_salt(undef);
-    $user->locked_out_time(undef);
+    $user->locked_out_time(0);
 }
 
 sub clear_failedlogin {
