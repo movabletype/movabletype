@@ -145,8 +145,14 @@ sub filter_conditional_list {
 
                 my $include_all;
                 if ( 'HASH' eq ref $action ) {
+                    if ( $action->{system_action} ) {
+                        # Return true if user has system level privilege for this action.
+                        return 1
+                            if $system_perms->can_do( $action->{system_action} );
+                    }
+
                     $include_all = $action->{include_all} || 0;
-                    $action = $action->{permit_action};
+                    $action      = $action->{permit_action};
                 }
                 if ( $include_all and $blog and !$blog->is_blog ) {
                     my $blogs = $blog->blogs;

@@ -1315,6 +1315,7 @@ sub core_list_actions {
                 permit_action => {
                     permit_action => 'refresh_template_via_list',
                     include_all   => 1,
+                    system_action => 'refresh_template_via_list',
                 },
                 condition => sub {
                     return 0 if $app->mode eq 'view';
@@ -1370,24 +1371,14 @@ sub core_list_actions {
                     require MT::CMS::Template;
                     MT::CMS::Template::refresh_all_templates( $app, @_ );
                 },
+                permit_action => {
+                    permit_action => 'refresh_template_via_list',
+                    include_all   => 1,
+                    system_action => 'refresh_template_via_list',
+                },
                 condition => sub {
                     return 0 if $app->mode eq 'view';
-                    return 1 if $app->user->is_superuser;
-
-                    require MT::Permission;
-                    my $iter = MT::Permission->load_iter(
-                        {   author_id => $app->user->id,
-                            blog_id   => { not => 0 },
-                        }
-                    );
-
-                    my $cond = 1;
-                    while ( my $p = $iter->() ) {
-                        next if $p->blog->is_blog;
-                        $cond = 0, last
-                            if !$p->can_do('refresh_template_via_list');
-                    }
-                    return $cond;
+                    return 1;
                 },
             },
             'delete' => {

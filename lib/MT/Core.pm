@@ -2837,7 +2837,8 @@ sub load_core_permissions {
                 'use_tools:search'             => 1,
                 'open_blog_listing_screen'     => 1,
                 'open_all_blog_listing_screen' => 1,
-                'refresh_templates'            => 1.
+                'refresh_templates'            => 1,
+                'refresh_template_via_list'    => 1,
             },
         },
         'system.manage_plugins' => {
