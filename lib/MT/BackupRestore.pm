@@ -1127,7 +1127,7 @@ sub restore_parent_ids {
     ( $count == $done ) ? 1 : 0;
 }
 
-package MT::Blog;
+package MT::Website;
 
 sub backup_terms_args {
     my $class = shift;
@@ -1135,12 +1135,41 @@ sub backup_terms_args {
 
     if ( defined($blog_ids) && scalar(@$blog_ids) ) {
         return {
-            terms => { 'id' => $blog_ids, class => $class->class_type },
+            terms => { 'id' => $blog_ids, class => 'website' },
             args  => undef,
         };
     }
     else {
-        return { terms => { class => $class->class_type }, args => undef };
+        return { terms => undef, args => undef };
+    }
+}
+
+package MT::Blog;
+
+sub backup_terms_args {
+    my $class = shift;
+    my ($blog_ids) = @_;
+
+    my $column     = 'id';
+    my $blog_class = MT->model('blog');
+    if ( my @blogs = $blog_class->load(@$blog_ids) ) {
+        my $is_blog;
+        foreach my $blog (@blogs) {
+            $is_blog = 1, last
+                if $blog->is_blog();
+        }
+        $column = 'parent_id'
+            if !$is_blog;
+    }
+
+    if ( defined($blog_ids) && scalar(@$blog_ids) ) {
+        return {
+            terms => { $column => $blog_ids, class => 'blog' },
+            args  => undef,
+        };
+    }
+    else {
+        return { terms => { class => 'blog' }, args => undef };
     }
 }
 

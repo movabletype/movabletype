@@ -929,7 +929,23 @@ sub backup {
     my $blog_ids = $q->param('backup_what');
     my @blog_ids = split ',', $blog_ids;
 
-    if (@blog_ids && $q->param('include_child')) {
+    unless ( $user->is_superuser ) {
+        return $app->permission_denied()
+            unless defined($blog_id) && $perms->can_do('backup_blog');
+
+        my @allowed_blog_ids = _allowed_blog_ids_for_backup( $app, $blog_id );
+        for my $blog_id (@blog_ids) {
+            return $app->permission_denied()
+                unless grep { $_ eq $blog_id } @allowed_blog_ids;
+        }
+    }
+    $app->validate_magic() or return;
+
+    my $size = $q->param('size_limit') || 0;
+    return $app->errtrans( '[_1] is not a number.', encode_html($size) )
+        if $size !~ /^\d+$/;
+
+    if (@blog_ids) {
         my @child_ids;
         my $blog_class = $app->model('blog');
         foreach my $bid (@blog_ids) {
@@ -941,23 +957,6 @@ sub backup {
         }
         push @blog_ids, @child_ids if @child_ids;
     }
-
-    unless ( $user->is_superuser ) {
-        return $app->permission_denied()
-            unless defined($blog_id) && $perms->can_do('backup_blog');
-
-        my @allowed_blog_ids = _allowed_blog_ids_for_backup( $app, $blog_id );
-        for my $blog_id (@blog_ids) {
-            return $app->permission_denied()
-                unless grep { $_ eq $blog_id } @allowed_blog_ids;
-        }
-    }
-
-    $app->validate_magic() or return;
-
-    my $size = $q->param('size_limit') || 0;
-    return $app->errtrans( '[_1] is not a number.', encode_html($size) )
-        if $size !~ /^\d+$/;
 
     my $archive = $q->param('backup_archive_format');
     my $enc     = $app->charset || 'utf-8';
