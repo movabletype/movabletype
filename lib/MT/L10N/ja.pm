@@ -1976,6 +1976,7 @@ use vars qw( @ISA %Lexicon );
 	'To enable comment registration, you need to add a TypePad token in your weblog config or user profile.' => 'コメント投稿者を登録するためにTypePadトークンをブログの設定またはユーザーのプロフィールに設定してください。',
 
 ## lib/MT/Template/Tags/Commenter.pm
+	q{This '[_1]' tag has been deprecated. Please use '[_2]' instead.} =>  q{テンプレートタグ '[_1]' は廃止されました。代わりに '[_2]'を使用してください。},
 
 ## lib/MT/Template/Tags/Entry.pm
 	'You used <$MTEntryFlag$> without a flag.' => '<$MTEntryFlag$>をフラグなしで利用しようとしました。',
