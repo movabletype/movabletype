@@ -651,13 +651,11 @@ sub _allowed_blog_ids_for_backup {
 
     my @blog_ids = ();
 
-    if (  !$blog->is_blog
-        && $app->can_do('manage_member_blogs') )
-    {
+    if (  !$blog->is_blog ) {
         my $user  = $app->user;
         my $blogs = $blog->blogs;
         push( @blog_ids,
-            grep { $user->permissions($_)->can_do('administer_blog') }
+            grep { $user->permissions($_)->can_do('backup_blog') }
             map  { $_->id } @$blogs );
     }
 
@@ -760,9 +758,28 @@ sub backup {
     my $blog_ids = $q->param('backup_what');
     my @blog_ids = split ',', $blog_ids;
 
-    unless ( $user->is_superuser ) {
-        return $app->errtrans("Permission denied.")
-          unless defined($blog_id) && $perms->can_do('backup_blog');
+    if ( $user->is_superuser ) {
+        # Get all target blog_id when system administrator choose website.
+        if (@blog_ids) {
+            my @child_ids;
+            my $blog_class = $app->model('blog');
+            foreach my $bid (@blog_ids) {
+                my $target = $blog_class->load($bid);
+                if ( !$target->is_blog && scalar @{ $target->blogs } ) {
+                    my @blogs = map { $_->id } @{ $target->blogs };
+                    push @child_ids, @blogs;
+                }
+            }
+            push @blog_ids, @child_ids if @child_ids;
+        }
+    }
+    else {
+       return $app->errtrans("Permission denied.")
+         unless defined($blog_id) && $perms->can_do('backup_blog');
+
+        # Only System Administrator can do all backup.
+        return $app->errtrans('Invalid request')
+            unless $blog_ids;
 
         my @allowed_blog_ids = _allowed_blog_ids_for_backup( $app, $blog_id );
         for my $blog_id (@blog_ids) {
@@ -776,19 +793,6 @@ sub backup {
     return $app->errtrans( '[_1] is not a number.',
         encode_html($size) )
       if $size !~ /^\d+$/;
-
-    if ( @blog_ids ) {
-        my @child_ids;
-        my $blog_class = $app->model('blog');
-        foreach my $bid ( @blog_ids ) {
-            my $target = $blog_class->load( $bid );
-            if ( !$target->is_blog && scalar @{$target->blogs} ) {
-                my @blogs = map { $_->id } @{$target->blogs};
-                push @child_ids, @blogs;
-            }
-        }
-        push @blog_ids, @child_ids if @child_ids;
-    }
 
     my $archive = $q->param('backup_archive_format');
     my $enc     = $app->charset || 'utf-8';
