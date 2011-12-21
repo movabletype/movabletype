@@ -120,6 +120,9 @@ $Lexicon_ja = array(
 ## php/mt.php
 	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
 
+## php/lib/function.mtcommenternamethunk.php
+	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'テンプレートタグ \'[_1]\' は廃止されました。代わりに \'[_2]\'を使用してください。',
+
 );
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_ja;
