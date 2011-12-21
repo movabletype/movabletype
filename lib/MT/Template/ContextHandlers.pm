@@ -11723,27 +11723,22 @@ sub _hdlr_if_comment_replies {
 =head2 CommenterNameThunk
 
 Used to populate the commenter_name Javascript variable. Deprecated in
-favor of the L<UserSessionState> tag.
+favor of the L<UserSessionState> tag. This tag has been removed.
 
-=for tags deprecated
+=for tags deprecated removed
 
 =cut
 
 sub _hdlr_commenter_name_thunk {
     my $ctx = shift;
-    my $cfg = $ctx->{config};
-    my $blog = $ctx->stash('blog') || MT::Blog->load($ctx->stash('blog_id'));
-    return $ctx->error(MT->translate('Can\'t load blog #[_1].', $ctx->stash('blog_id'))) unless $blog;
-    my ($blog_domain) = $blog->archive_url =~ m|://([^/]*)|;
-    my $cgi_path = _hdlr_cgi_path($ctx);
-    my ($mt_domain) = $cgi_path =~ m|://([^/]*)|;
-    $mt_domain ||= '';
-    if ($blog_domain ne $mt_domain) {
-        my $cmt_script = $cfg->CommentScript;
-        return "<script type='text/javascript' src='$cgi_path$cmt_script?__mode=cmtr_name_js'></script>";
-    } else {
-        return "<script type='text/javascript'>var commenter_name = getCookie('commenter_name')</script>";
-    }
+
+    return $ctx->error(
+        MT->translate(
+            "This '[_1]' tag has been deprecated. Please use '[_2]' instead.",
+            'MTCommenterNameThunk',
+            'MTUserSessionState'
+        )
+    );
 }
 
 ###########################################################################
