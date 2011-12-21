@@ -815,6 +815,24 @@ sub recover_profile_password {
     }
 }
 
+sub _allowed_blog_ids_for_backup {
+    my ($app, $blog_id) = @_;
+    my $blog = $app->model('blog')->load($blog_id)
+        or return $blog_id;
+
+    my @blog_ids = ();
+
+    if (  !$blog->is_blog ) {
+        my $user  = $app->user;
+        my $blogs = $blog->blogs;
+        push( @blog_ids,
+            grep { $user->permissions($_)->can_do('backup_blog') }
+            map  { $_->id } @$blogs );
+    }
+
+    @blog_ids, $blog_id;
+}
+
 sub start_backup {
     my $app     = shift;
     my $user    = $app->user;
@@ -828,16 +846,8 @@ sub start_backup {
     if ( defined($blog_id) ) {
         $param{blog_id} = $blog_id;
         $app->add_breadcrumb( $app->translate('Backup') );
-        my $blog = $app->model('blog')->load($blog_id);
-        if ( defined $blog && !$blog->is_blog ) {
-            my $blogs = $blog->blogs;
-            my @blog_ids = map { $_->id } @$blogs;
-            push @blog_ids, $blog_id;
-            $param{backup_what} = join ',', @blog_ids;
-        }
-        else {
-            $param{backup_what} = $blog_id;
-        }
+        $param{backup_what} = join ',',
+            _allowed_blog_ids_for_backup( $app, $blog_id );
     }
     else {
         $app->add_breadcrumb( $app->translate('Backup & Restore') );
@@ -909,36 +919,49 @@ sub start_restore {
 }
 
 sub backup {
-    my $app     = shift;
-    my $user    = $app->user;
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
-    my $perms   = $app->permissions;
-    unless ( $user->is_superuser ) {
+    my $app      = shift;
+    my $user     = $app->user;
+    my $q        = $app->param;
+    my $blog_id  = $q->param('blog_id');
+    my $perms    = $app->permissions;
+    my $blog_ids = $q->param('backup_what');
+    my @blog_ids = split ',', $blog_ids;
+
+    if ( $user->is_superuser ) {
+        # Get all target blog_id when system administrator choose website.
+        if (@blog_ids) {
+            my @child_ids;
+            my $blog_class = $app->model('blog');
+            foreach my $bid (@blog_ids) {
+                my $target = $blog_class->load($bid);
+                if ( !$target->is_blog && scalar @{ $target->blogs } ) {
+                    my @blogs = map { $_->id } @{ $target->blogs };
+                    push @child_ids, @blogs;
+                }
+            }
+            push @blog_ids, @child_ids if @child_ids;
+        }
+    }
+    else {
         return $app->permission_denied()
             unless defined($blog_id) && $perms->can_do('backup_blog');
+
+        # Only System Administrator can do all backup.
+        return $app->errtrans('Invalid request')
+            unless $blog_ids;
+
+        my @allowed_blog_ids = _allowed_blog_ids_for_backup( $app, $blog_id );
+        for my $blog_id (@blog_ids) {
+            return $app->permission_denied()
+                unless grep { $_ eq $blog_id } @allowed_blog_ids;
+        }
     }
     $app->validate_magic() or return;
 
-    my $blog_ids = $q->param('backup_what');
 
     my $size = $q->param('size_limit') || 0;
     return $app->errtrans( '[_1] is not a number.', encode_html($size) )
         if $size !~ /^\d+$/;
-
-    my @blog_ids = split ',', $blog_ids;
-    if (@blog_ids) {
-        my @child_ids;
-        my $blog_class = $app->model('blog');
-        foreach my $bid (@blog_ids) {
-            my $target = $blog_class->load($bid);
-            if ( !$target->is_blog && scalar @{ $target->blogs } ) {
-                my @blogs = map { $_->id } @{ $target->blogs };
-                push @child_ids, @blogs;
-            }
-        }
-        push @blog_ids, @child_ids if @child_ids;
-    }
 
     my $archive = $q->param('backup_archive_format');
     my $enc     = $app->charset || 'utf-8';
