@@ -773,13 +773,13 @@ sub list {
     } MT::Component->select;
 
     my @list_headers;
-    push @list_headers,
-        File::Spec->catfile( MT->config->TemplatePath, $app->{template_dir},
-        'listing', $type . '_list_header.tmpl' );
+    push @list_headers, {
+        filename => File::Spec->catfile( MT->config->TemplatePath, $app->{template_dir},
+        'listing', $type . '_list_header.tmpl' ) };
     for my $c (@list_components) {
         my $f = File::Spec->catfile( $c->path, 'tmpl', 'listing',
             $type . '_list_header.tmpl' );
-        push @list_headers, $f if -e $f;
+        push @list_headers, { filename => $f, component => $c->id } if -e $f;
     }
 
     my $screen_settings = MT->registry( listing_screens => $type )
