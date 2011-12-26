@@ -775,7 +775,8 @@ sub list {
     my @list_headers;
     push @list_headers, {
         filename => File::Spec->catfile( MT->config->TemplatePath, $app->{template_dir},
-        'listing', $type . '_list_header.tmpl' ) };
+        'listing', $type . '_list_header.tmpl' ),
+        component => 'Core' };
     for my $c (@list_components) {
         my $f = File::Spec->catfile( $c->path, 'tmpl', 'listing',
             $type . '_list_header.tmpl' );
