@@ -1546,12 +1546,6 @@ sub userinfo {
         my $commenter = MT->model('author')->load( $sess->thaw_data->{author_id} )
             or last;
 
-        my $can_post_entry = 0;
-        if ( my $blog_id = $app->param('blog_id') ) {
-            my $perms          = $commenter->permissions($blog_id) if $commenter;
-            $can_post_entry = $perms && $perms->can_create_post ? 1 : 0;
-        }
-
         $out = {
             sid  => $sid,
             name => $commenter->nickname
@@ -1568,6 +1562,28 @@ sub userinfo {
             can_comment  => 0,
             is_banned    => 0,
         };
+
+        my $blog_id = $app->param('blog_id');
+        my $blog = $app->model('blog')->load( $blog_id )
+            if $blog_id;
+        if ( $blog_id && $blog ) {
+            my $blog_perms = $commenter->blog_perm($blog_id);
+            my $banned = $commenter->is_banned($blog_id) ? 1 : 0;
+            $banned = 0 if $blog_perms && $blog_perms->can_administer;
+            $banned ||= 1 if $commenter->status == MT::Author::BANNED();
+            $c->{is_banned} = $banned;
+
+            my $can_comment = $banned ? 0 : 1;
+            $can_comment = 0
+                unless $blog->allow_unreg_comments
+                    || $blog->allow_reg_comments;
+            $c->{can_comment} = $can_comment;
+            $c->{can_post}
+                = ( $blog_perms && $blog_perms->can_create_post ) ? 1 : 0;
+            $c->{is_trusted}
+                = ( $commenter->is_trusted($blog_id) ? 1 : 0 ),
+                ;
+        }
     }
     $app->print_encode( "$jsonp(" . MT::Util::to_json($out) . ");\n" );
     return undef;
