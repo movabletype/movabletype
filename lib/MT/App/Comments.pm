@@ -1558,7 +1558,7 @@ sub userinfo {
             is_author => ( $commenter->type == MT::Author::AUTHOR() ? 1 : 0 ),
             is_trusted   => 0,
             is_anonymous => 0,
-            can_post     => $can_post_entry,
+            can_post     => 0,
             can_comment  => 0,
             is_banned    => 0,
         };
@@ -1571,16 +1571,16 @@ sub userinfo {
             my $banned = $commenter->is_banned($blog_id) ? 1 : 0;
             $banned = 0 if $blog_perms && $blog_perms->can_administer;
             $banned ||= 1 if $commenter->status == MT::Author::BANNED();
-            $c->{is_banned} = $banned;
+            $out->{is_banned} = $banned;
 
             my $can_comment = $banned ? 0 : 1;
             $can_comment = 0
                 unless $blog->allow_unreg_comments
                     || $blog->allow_reg_comments;
-            $c->{can_comment} = $can_comment;
-            $c->{can_post}
+            $out->{can_comment} = $can_comment;
+            $out->{can_post}
                 = ( $blog_perms && $blog_perms->can_create_post ) ? 1 : 0;
-            $c->{is_trusted}
+            $out->{is_trusted}
                 = ( $commenter->is_trusted($blog_id) ? 1 : 0 ),
                 ;
         }
