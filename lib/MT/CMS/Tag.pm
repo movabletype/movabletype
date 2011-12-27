@@ -84,7 +84,9 @@ sub rename_tag {
         if ( $blog->is_blog ) {
             $terms->{blog_id} = $blog_id if $blog_id;
         } else {
-            my @blog_ids = map { $_->id } @{ $blog->blogs };
+            my $blog_ids = $app->_load_child_blog_ids($blog_id);
+            push @$blog_ids, $blog_id if $blog_id;
+            $terms->{blog_id} = $blog_ids;
         }
     }
     my $iter = $obj_class->load_iter(
