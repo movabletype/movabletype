@@ -1545,6 +1545,27 @@ sub userinfo {
             can_comment  => 0,
             is_banned    => 0,
         };
+
+        my $blog_id = $app->param('blog_id');
+        my $blog = $app->model('blog')->load( $blog_id );
+        if ( $blog_id && $blog ) {
+            my $blog_perms = $commenter->blog_perm($blog_id);
+            my $banned = $commenter->is_banned($blog_id) ? 1 : 0;
+            $banned = 0 if $blog_perms && $blog_perms->can_administer;
+            $banned ||= 1 if $commenter->status == MT::Author::BANNED();
+            $out->{is_banned} = $banned;
+
+            # FIXME: These may not be accurate in 'SingleCommunity' mode...
+            my $can_comment = $banned ? 0 : 1;
+            $can_comment = 0
+                unless $blog->allow_unreg_comments
+                    || $blog->allow_reg_comments;
+            $out->{can_comment} = $can_comment;
+            $out->{can_post}
+                = ( $blog_perms && $blog_perms->can_create_post ) ? 1 : 0;
+            $out->{is_trusted} =
+                ( $commenter->is_trusted($blog_id) ? 1 : 0 ),
+        }
     }
     $app->print_encode( "$jsonp(" . MT::Util::to_json($out) . ");\n" );
     return undef;
