@@ -35,6 +35,7 @@ sub init {
         post           => \&post,
         handle_sign_in => { handler => \&handle_sign_in, charset => 'utf-8' },
         userinfo       => \&userinfo,
+        verify_session => \&verify_session,
         edit_profile   => \&edit_commenter_profile,
         save_profile   => \&save_commenter_profile,
         red            => \&do_red,
@@ -283,7 +284,20 @@ sub do_login {
         MT::Auth->new_login( $app, $commenter );
         if ( $app->_check_commenter_author( $commenter, $blog_id ) ) {
             my $sid = $app->make_commenter_session($commenter);
-            return $app->redirect_to_target( fragment => '_login_' . $sid );
+            my $ott = MT->model('session')->new();
+            $ott->kind('OT');  # One time Token
+            $ott->id( MT::App::make_magic_token() );
+            $ott->start( time );
+            $ott->duration( time + 5 * 60 );
+            $ott->set( sid => $sid );
+            $ott->save
+                or return $app->error(
+                $app->translate(
+                    "The login could not be confirmed because of a database error ([_1])",
+                    $ott->errstr
+                )
+                );
+            return $app->redirect_to_target( fragment => '_login_' . $ott->id );
         }
         $error   = $app->translate("Permission denied.");
         $message = $app->translate(
@@ -1451,7 +1465,23 @@ sub handle_sign_in {
             "The sign-in attempt was not successful; please try again."),
         403
     ) unless $result;
-    $app->redirect_to_target( $sess ? ( fragment => '_login_' . $sess ) : () );
+    if ( $sess ) {
+        my $ott = MT->model('session')->new();
+        $ott->kind('OT');  # One time Token
+        $ott->id( MT::App::make_magic_token() );
+        $ott->start( time );
+        $ott->duration( time + 5 * 60 );
+        $ott->set( sid => $sess );
+        $ott->save
+            or return $app->error(
+            $app->translate(
+                "The login could not be confirmed because of a database error ([_1])",
+                $ott->errstr
+            )
+            );
+        return $app->redirect_to_target( fragment => '_login_' . $ott->id );
+    }
+    $app->redirect_to_target();
 }
 
 sub redirect_to_target {
@@ -1513,6 +1543,30 @@ sub redirect_to_target {
         UseMeta => 1 );
 }
 
+sub verify_session {
+    my $app   = shift;
+    my $jsonp = $app->param('jsonp');
+    $jsonp = undef if $jsonp !~ m/^\w+$/;
+    return $app->error("Invalid request.") unless $jsonp;
+    $app->{no_print_body} = 1;
+    $app->send_http_header("text/javascript");
+
+    my $out = { error => 'Failed to get Commenter Information' };
+    {
+        my $sid   = $app->param('sid');
+        my $sess
+            = MT::Session::get_unexpired_value(
+            MT->config->UserSessionTimeOut, $sid )
+            or last;
+        my $commenter = MT->model('author')->load( $sess->thaw_data->{author_id} )
+            or last;
+        $out = { verified => 1 };
+    }
+    $app->print_encode( "$jsonp(" . MT::Util::to_json($out) . ");\n" );
+    return undef;
+
+}
+
 sub userinfo {
     my $app   = shift;
     my $jsonp = $app->param('jsonp');
@@ -1524,13 +1578,21 @@ sub userinfo {
     my $out = { error => 'Failed to get Commenter Information' };
     {
         my $sid   = $app->param('sid');
-        my $sess  = MT::Session::get_unexpired_value( MT->config->UserSessionTimeOut, $sid )
+        my $ott
+            = MT::Session::get_unexpired_value(
+            5 * 60, $sid )
             or last;
+        my $sess
+            = MT::Session::get_unexpired_value(
+            MT->config->UserSessionTimeOut,
+            $ott->get('sid') )
+            or last;
+        $ott->remove();
         my $commenter = MT->model('author')->load( $sess->thaw_data->{author_id} )
             or last;
 
         $out = {
-            sid  => $sid,
+            sid  => $sess->id,
             name => $commenter->nickname
                 || $app->translate('(Display Name not set)'),
             url     => $commenter->url || '',

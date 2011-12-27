@@ -154,6 +154,10 @@ Active commenter sessions are held in SI sessions.
 The public key of the remote comment authentication service is held in
 the I<single> record of kind 'KY'.
 
+=item OT
+
+The one time token that to exchange with commenter session.
+
 =item AN
 
 "Nonce" values (used for certain authentication systems) are stored
@@ -215,7 +219,7 @@ Periodic Task indicates when a certain scheduled task is run the last time.
 =item CA
 
 CaptchA session stores the captcha token that is asked for a particular challenge.
-It expires after 10 minutes.
+It expiers after 10 minutes.
 
 =item TC
 

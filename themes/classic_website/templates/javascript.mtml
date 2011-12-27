@@ -925,6 +925,15 @@ function mtFetchUser(cb) {
         (document.getElementsByTagName('head'))[0].appendChild(script);
     }
 }
+
+function mtVerifySession(cb) {
+    if (!cb) return;
+    var script = document.createElement('script');
+    var ts = new Date().getTime();
+    var u = mtGetUser();
+    script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=verify_session&blog_id=<$mt:BlogID$>&jsonp=' + cb + '&ts=' + ts + '&sid=' + u.sid;
+    (document.getElementsByTagName('head'))[0].appendChild(script);
+}
 </mt:IfWebsite>
 
 <mt:Ignore>
@@ -967,8 +976,7 @@ function mtCommentOnSubmit(f) {
         var u = mtGetUser();
         if ( !is_preview && ( u && u.is_authenticated ) ) {
             // validate session; then submit
-            mtFetchedUser = false;
-            mtFetchUser('mtCommentSessionVerify');
+            mtVerifySession('mtCommentSessionVerify');
             return false;
         }
 
@@ -978,9 +986,8 @@ function mtCommentOnSubmit(f) {
 }
 
 function mtCommentSessionVerify(app_user) {
-    var u = mtGetUser();
     var f = document['comments_form'];
-    if ( u && app_user && app_user.sid && ( u.sid == app_user.sid ) ) {
+    if ( app_user && app_user.verified ) {
         f.submit();
     } else {
         alert('<__trans phrase="Your session has expired. Please sign in again to comment." escape="js">');
@@ -1478,6 +1485,13 @@ function mtLoggedIn(sid) {
 }
 
 function mtSaveUserInfo (u) {
+    if ( u.error ) {
+        if ( !user ) {
+            alert('<__trans phrase="The sign-in attempt was not successful; please try again.">');
+        }
+        return;
+    }
+    user = null;
     var cmtcookie = mtBakeUserCookie(u);
     var now = new Date();
     var cache_period = mtCookieTimeout * 1000;
@@ -1519,11 +1533,6 @@ function mtInitCommenter () {
     }
     else {
         mtFireEvent('usersignin');
-    }
-
-    // If hash fragment is command, delete it.
-    if ( command ) {
-        window.location.hash = '';
     }
 }
 </mt:IfRegistrationAllowed>
