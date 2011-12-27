@@ -381,7 +381,7 @@ use vars qw( @ISA %Lexicon );
 	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => '<a href="[_1]" onclick="[_2]">[_3]からのコメント</a>に返信',
 
 ## default_templates/lockout-ip.mtml
-	'This email is to notify you that an IP address has been locked out.' => 'これは以下のIPアドレスからのアクセスががロックされたことを通知するメールです。',
+	'This email is to notify you that an IP address has been locked out.' => 'これは以下のIPアドレスからのアクセスがロックされたことを通知するメールです。',
 	'IP Address: [_1]' => 'IPアドレス: [_1]',
 	'Recovery: [_1]' => '解除時刻: [_1]',
 
