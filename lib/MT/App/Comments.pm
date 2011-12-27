@@ -1546,6 +1546,12 @@ sub userinfo {
         my $commenter = MT->model('author')->load( $sess->thaw_data->{author_id} )
             or last;
 
+        my $can_post_entry = 0;
+        if ( my $blog_id = $app->param('blog_id') ) {
+            my $perms          = $commenter->permissions($blog_id) if $commenter;
+            $can_post_entry = $perms && $perms->can_create_post ? 1 : 0;
+        }
+
         $out = {
             sid  => $sid,
             name => $commenter->nickname
@@ -1558,7 +1564,7 @@ sub userinfo {
             is_author => ( $commenter->type == MT::Author::AUTHOR() ? 1 : 0 ),
             is_trusted   => 0,
             is_anonymous => 0,
-            can_post     => 0,
+            can_post     => $can_post_entry,
             can_comment  => 0,
             is_banned    => 0,
         };
