@@ -1547,7 +1547,8 @@ sub userinfo {
         };
 
         my $blog_id = $app->param('blog_id');
-        my $blog = $app->model('blog')->load( $blog_id );
+        my $blog = $app->model('blog')->load( $blog_id )
+            if $blog_id;
         if ( $blog_id && $blog ) {
             my $blog_perms = $commenter->blog_perm($blog_id);
             my $banned = $commenter->is_banned($blog_id) ? 1 : 0;
