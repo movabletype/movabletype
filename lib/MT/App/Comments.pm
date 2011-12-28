@@ -1556,7 +1556,7 @@ sub verify_session {
             or last;
         $out = { verified => 1 };
     }
-    $app->print_encode( "$jsonp(" . MT::Util::to_json($out) . ");\n" );
+    $app->print( "$jsonp(" . MT::Util::to_json($out) . ");\n" );
     return undef;
 
 }
