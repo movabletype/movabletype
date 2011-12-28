@@ -901,6 +901,11 @@ sub remove_expired_sessions {
           start => [ undef, time - $expired ],
           data  => { not_like => '%remember-%' } },
         { range => { start => 1 } } );
+
+    MT::Session->remove(
+        { kind  => 'OT',
+          start => [ undef, time - ( 60 * 5 ) ], },
+        { range => { start => 1 } } );
     return '';
 }
 

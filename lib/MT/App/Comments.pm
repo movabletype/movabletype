@@ -288,7 +288,6 @@ sub do_login {
             $ott->kind('OT');  # One time Token
             $ott->id( MT::App::make_magic_token() );
             $ott->start( time );
-            $ott->duration( time + 5 * 60 );
             $ott->set( sid => $sid );
             $ott->save
                 or return $app->error(
@@ -1466,7 +1465,6 @@ sub handle_sign_in {
         $ott->kind('OT');  # One time Token
         $ott->id( MT::App::make_magic_token() );
         $ott->start( time );
-        $ott->duration( time + 5 * 60 );
         $ott->set( sid => $sess );
         $ott->save
             or return $app->error(
