@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -79,8 +79,8 @@ sub load_config {
 sub save_config {
     my $plugin = shift;
     my ( $param, $scope ) = @_;
-    my $app = MT->instance;
-    my $pdata = $plugin->get_config_obj($scope);
+    my $app        = MT->instance;
+    my $pdata      = $plugin->get_config_obj($scope);
     my $vars_scope = $scope;
     $vars_scope =~ s/:.*//;
     my @vars = $plugin->config_vars($vars_scope);
@@ -88,9 +88,11 @@ sub save_config {
     foreach (@vars) {
         $data->{$_} = exists $param->{$_} ? $param->{$_} : undef;
     }
-    $app->run_callbacks( 'save_config_filter.' . $pdata->plugin, $plugin, $data, $scope )
-        || return $app->error("Error saving plugin settings: " . $plugin->errstr );
-    
+    $app->run_callbacks( 'save_config_filter.' . $pdata->plugin,
+        $plugin, $data, $scope )
+        || return $app->error(
+        "Error saving plugin settings: " . $plugin->errstr );
+
     $pdata->data($data);
     MT->request( 'plugin_config.' . $plugin->id, undef );
     $pdata->save() or die $pdata->errstr;

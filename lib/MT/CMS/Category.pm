@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -91,7 +91,8 @@ sub save {
     elsif ( $type eq 'folder' ) {
         return $app->permission_denied()
             unless $app->can_do('save_folder');
-    } else {
+    }
+    else {
         return $app->errtrans("Invalid request.");
     }
 
@@ -380,11 +381,12 @@ sub category_add {
 }
 
 sub category_do_add {
-    my $app    = shift;
-    my $q      = $app->param;
-    my $type   = $q->param('_type') || 'category';
+    my $app  = shift;
+    my $q    = $app->param;
+    my $type = $q->param('_type') || 'category';
     return $app->errtrans("Invalid request.")
-        unless ($type eq 'category') or ($type eq 'folder'); 
+        unless ( $type eq 'category' )
+        or ( $type eq 'folder' );
     my $author = $app->user;
     my $pkg    = $app->model($type);
     $app->validate_magic() or return;
@@ -439,8 +441,9 @@ sub js_add_category {
     my $perms   = $app->permissions;
     my $type    = $app->param('_type') || 'category';
     return $app->json_error( $app->translate("Invalid request.") )
-        unless ($type eq 'category') or ($type eq 'folder'); 
-    my $class   = $app->model($type);
+        unless ( $type eq 'category' )
+        or ( $type eq 'folder' );
+    my $class = $app->model($type);
     if ( !$class ) {
         return $app->json_error( $app->translate("Invalid request.") );
     }
@@ -518,7 +521,8 @@ sub can_view {
     return unless $obj->is_category;
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
-    return $author->permissions($blog_id)->can_do('open_category_edit_screen');
+    return $author->permissions($blog_id)
+        ->can_do('open_category_edit_screen');
 }
 
 sub can_save {

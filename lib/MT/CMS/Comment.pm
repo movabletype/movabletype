@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -44,7 +44,8 @@ sub edit {
                 = substr( $param->{entry_title}, 0, $title_max_len ) . '...'
                 if $param->{entry_title}
                     && length( $param->{entry_title} ) > $title_max_len;
-            $param->{entry_permalink} = MT::Util::encode_html( $entry->permalink );
+            $param->{entry_permalink}
+                = MT::Util::encode_html( $entry->permalink );
             unless ( $param->{has_publish_access} ) {
                 $param->{has_publish_access}
                     = $app->can_do('edit_comment_status_of_own_entry') ? 1 : 0
@@ -194,14 +195,15 @@ sub save_commenter_perm {
     foreach my $id (@ids) {
         ( $id, $blog_id ) = @$id if ref $id eq 'ARRAY';
         my $perm_blog_id = MT->config->SingleCommunity ? 0 : $blog_id;
-        if ( $perm_blog_id ) {
-            my $perm = $permissions{ $perm_blog_id } ||= $author->permissions($perm_blog_id);
+        if ($perm_blog_id) {
+            my $perm = $permissions{$perm_blog_id}
+                ||= $author->permissions($perm_blog_id);
             if ( !$perm->can_do('edit_commenter_status') ) {
-                return $app->errtrans( "Permission denied." );
+                return $app->errtrans("Permission denied.");
             }
         }
         else {
-            return $app->errtrans( "Permission denied." )
+            return $app->errtrans("Permission denied.")
                 unless $app->can_do('edit_global_commenter_status');
         }
 
@@ -449,7 +451,7 @@ sub handle_junk {
         next unless $id;
 
         my $obj = $class->load($id) or die "No $class $id";
-        my $perms = $app->user->permissions($obj->blog_id)
+        my $perms = $app->user->permissions( $obj->blog_id )
             or return $app->permission_denied();
         my $perm_checked = $perms->can_do('handle_junk');
         my $old_visible = $obj->visible || 0;
@@ -458,9 +460,12 @@ sub handle_junk {
                 return $app->permission_denied()
                     if $obj->parent->author_id != $app->user->id;
             }
-            elsif ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Category') ) {
+            elsif ($obj->isa('MT::TBPing')
+                && $obj->parent->isa('MT::Category') )
+            {
                 return $app->permission_denied()
-                    unless $perms->can_do( 'handle_junk_for_category_trackback' );
+                    unless $perms->can_do(
+                            'handle_junk_for_category_trackback');
             }
             elsif ( $obj->isa('MT::Comment') ) {
                 return $app->permission_denied()
@@ -523,9 +528,12 @@ sub not_junk {
                 return $app->permission_denied()
                     if $obj->parent->author_id != $app->user->id;
             }
-            elsif ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Category') ) {
+            elsif ($obj->isa('MT::TBPing')
+                && $obj->parent->isa('MT::Category') )
+            {
                 return $app->permission_denied()
-                    unless $perms->can_do( 'handle_junk_for_category_trackback' );
+                    unless $perms->can_do(
+                            'handle_junk_for_category_trackback');
             }
             elsif ( $obj->isa('MT::Comment') ) {
                 return $app->permission_denied()
@@ -783,7 +791,8 @@ sub dialog_post_comment {
         comment_text       => MT::Sanitize->sanitize( $parent->text, $spec ),
         comment_script_url => $app->config('CGIPath')
             . $app->config('CommentScript'),
-        return_url => ( $app->param('return_args')
+        return_url => (
+              $app->param('return_args')
             ? $app->base . $app->uri . '?' . $app->param('return_args')
             : $app->base
                 . $app->uri(
@@ -1012,10 +1021,10 @@ sub set_item_visible {
     my $perms  = $app->permissions;
     my $author = $app->user;
 
-    my $type  = $app->param('_type');
+    my $type = $app->param('_type');
     return $app->errtrans("Invalid request.")
-        unless grep {$_ eq $type} qw{comment ping tbping ping_cat};
-    
+        unless grep { $_ eq $type } qw{comment ping tbping ping_cat};
+
     my $class = $app->model($type);
     $app->setup_filtered_ids
         if $app->param('all_selected');

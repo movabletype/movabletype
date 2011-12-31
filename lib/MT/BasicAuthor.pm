@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -50,14 +50,15 @@ sub set_password {
     my $salt   = join '', map $alpha[ rand @alpha ], 1 .. 2;
 
     my $sha512_base64;
-    if (eval { require Digest::SHA }) {
+    if ( eval { require Digest::SHA } ) {
         $sha512_base64 = \&Digest::SHA::sha512_base64;
     }
     else {
         require Digest::SHA::PurePerl;
         $sha512_base64 = \&Digest::SHA::PurePerl::sha512_base64;
     }
-    my $crypt_sha = join '$', '', '6', $salt, $sha512_base64->($salt . $pass);
+    my $crypt_sha = join '$', '', '6', $salt,
+        $sha512_base64->( $salt . $pass );
 
     $auth->column( 'password', $crypt_sha );
 }

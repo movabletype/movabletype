@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1335,7 +1335,7 @@ sub can_save {
         }
 
         my $author = $app->user;
-        return $author->permissions($id->id)->can_do('edit_blog_config')
+        return $author->permissions( $id->id )->can_do('edit_blog_config')
             || ( $app->param('cfg_screen')
             && $app->param('cfg_screen') eq 'cfg_publish_profile' );
     }
@@ -1357,7 +1357,7 @@ sub can_delete {
     return unless $id->is_blog;
 
     my $author = $app->user;
-    return $author->permissions($id->id)->can_do('delete_blog');
+    return $author->permissions( $id->id )->can_do('delete_blog');
 }
 
 sub pre_save {
@@ -2667,7 +2667,8 @@ sub clone {
         unless $blog->is_blog;
 
     return $app->permission_denied()
-        unless $app->user->permissions( $blog->website->id )->can_do( 'clone_blog' );
+        unless $app->user->permissions( $blog->website->id )
+            ->can_do('clone_blog');
 
     $param->{'id'}            = $blog->id;
     $param->{'new_blog_name'} = $app->param('new_blog_name')

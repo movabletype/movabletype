@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -34,9 +34,7 @@ sub init {
     my $magick = $image->{magick} = Image::Magick->new(%arg);
     if ( my $file = $param{Filename} ) {
         my $x;
-        eval {
-            $x = $magick->Read($file);
-        };
+        eval { $x = $magick->Read($file); };
         return $image->error(
             MT->translate( "Reading file '[_1]' failed: [_2]", $file, $x ) )
             if $x;
@@ -45,9 +43,7 @@ sub init {
     }
     elsif ( $param{Data} ) {
         my $x;
-        eval {
-            my $x = $magick->BlobToImage( $param{Data} );
-        };
+        eval { my $x = $magick->BlobToImage( $param{Data} ); };
         return $image->error(
             MT->translate( "Reading image failed: [_1]", $x ) )
             if $x;
@@ -68,8 +64,10 @@ sub scale {
             ? $magick->Resize( width => $w, height => $h )
             : $magick->Scale( width => $w, height => $h );
         return $image->error(
-            MT->translate( "Scaling to [_1]x[_2] failed: [_3]", $w, $h, $err ) )
-            if $err;
+            MT->translate(
+                "Scaling to [_1]x[_2] failed: [_3]", $w, $h, $err
+            )
+        ) if $err;
         $magick->Profile("*") if $magick->can('Profile');
         ( $image->{width}, $image->{height} ) = ( $w, $h );
         $blob = $magick->ImageToBlob;
@@ -88,8 +86,12 @@ sub crop {
     my $blob;
 
     eval {
-        my $err
-            = $magick->Crop( width => $size, height => $size, x => $x, y => $y );
+        my $err = $magick->Crop(
+            width  => $size,
+            height => $size,
+            x      => $x,
+            y      => $y
+        );
         return $image->error(
             MT->translate(
                 "Cropping a [_1]x[_1] square at [_2],[_3] failed: [_4]",
@@ -115,22 +117,25 @@ sub crop {
 }
 
 sub convert {
-    my $image = shift;
-    my %param = @_;
-    my $type  = $image->{type} = $param{Type};
+    my $image  = shift;
+    my %param  = @_;
+    my $type   = $image->{type} = $param{Type};
     my $magick = $image->{magick};
     my $blob;
 
     eval {
         my $err = $magick->Set( magick => uc $type );
         return $image->error(
-            MT->translate( "Converting image to [_1] failed: [_2]", $type, $err )
+            MT->translate(
+                "Converting image to [_1] failed: [_2]",
+                $type, $err
+            )
         ) if $err;
         $blob = $magick->ImageToBlob;
     };
     return $image->error(
-        MT->translate( "Converting image to [_1] failed: [_2]", $type, $@ )
-    ) if $@;
+        MT->translate( "Converting image to [_1] failed: [_2]", $type, $@ ) )
+        if $@;
 
     return $blob;
 }

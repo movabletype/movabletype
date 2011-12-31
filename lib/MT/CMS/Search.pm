@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -12,7 +12,7 @@ sub core_search_apis {
     my $app     = shift;
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
-    my $author = $app->user;
+    my $author  = $app->user;
 
     my $types = {
         'entry' => {
@@ -48,9 +48,10 @@ sub core_search_apis {
             'handler'    => '$Core::MT::CMS::Entry::build_entry_table',
             'label'      => 'Entries',
             'perm_check' => sub {
-                my ( $entry ) = @_;
+                my ($entry) = @_;
                 my $author = $app->user;
-                $author->permissions( $entry->blog_id )->can_edit_entry( $entry, $author );
+                $author->permissions( $entry->blog_id )
+                    ->can_edit_entry( $entry, $author );
             },
             'search_cols' => {
                 'title'     => sub { $app->translate('Title') },
@@ -113,11 +114,13 @@ sub core_search_apis {
             'perm_check' => sub {
                 my $author = MT->app->user;
                 return 1
-                    if $author->permissions( $_[0]->blog_id )->can_do('manage_feedback');
+                    if $author->permissions( $_[0]->blog_id )
+                        ->can_do('manage_feedback');
 
                 my $entry = MT->model('entry')->load( $_[0]->entry_id );
                 return 1
-                    if $author->permissions( $entry->blog_id )->can_edit_entry( $entry, $author );
+                    if $author->permissions( $entry->blog_id )
+                        ->can_edit_entry( $entry, $author );
 
                 return 0;
             },
@@ -175,19 +178,22 @@ sub core_search_apis {
             'handler'    => '$Core::MT::CMS::TrackBack::build_ping_table',
             'perm_check' => sub {
                 my $author = MT->app->user;
-                my $ping = shift;
+                my $ping   = shift;
                 require MT::Trackback;
                 my $tb = MT::Trackback->load( $ping->tb_id )
                     or return undef;
                 if ( $tb->entry_id ) {
                     my $entry = MT->model('entry')->load( $tb->entry_id );
                     return 1
-                        if $author->permissions( $entry->blog_id )->can_do('manage_feedback')
-                            || $author->permissions( $entry->blog_id )->can_edit_entry( $entry, $author )
+                        if $author->permissions( $entry->blog_id )
+                            ->can_do('manage_feedback')
+                            || $author->permissions( $entry->blog_id )
+                            ->can_edit_entry( $entry, $author );
                 }
                 elsif ( $tb->category_id ) {
                     return 1
-                        if $author->permissions( $tb->blog_id )->can_do('search_category_trackbacks');
+                        if $author->permissions( $tb->blog_id )
+                            ->can_do('search_category_trackbacks');
                 }
                 return 0;
             },
@@ -228,10 +234,10 @@ sub core_search_apis {
             'label'      => 'Pages',
             'handler'    => '$Core::MT::CMS::Entry::build_entry_table',
             'perm_check' => sub {
-                my ( $page ) = @_;
+                my ($page) = @_;
                 my $author = MT->app->user;
-                return
-                    $author->permissions( $page->blog_id )->can_manage_pages( $page, $author );
+                return $author->permissions( $page->blog_id )
+                    ->can_manage_pages( $page, $author );
             },
             'search_cols' => {
                 'title'     => sub { $app->translate('Title') },
@@ -294,7 +300,8 @@ sub core_search_apis {
                 return 0
                     unless $obj->blog_id;
                 return 1
-                    if $author->permissions( $obj->blog_id )->can_do('search_templates');
+                    if $author->permissions( $obj->blog_id )
+                        ->can_do('search_templates');
 
                 return 0;
             },
@@ -334,9 +341,9 @@ sub core_search_apis {
             'label'      => 'Assets',
             'handler'    => '$Core::MT::CMS::Asset::build_asset_table',
             'perm_check' => sub {
-                my ($obj) = @_;
+                my ($obj)  = @_;
                 my $author = MT->app->user;
-                my $perm = $author->permissions( $obj->blog_id );
+                my $perm   = $author->permissions( $obj->blog_id );
                 return $perm->can_do('search_assets');
             },
             'search_cols' => {
@@ -584,6 +591,7 @@ sub can_search_replace {
         );
 
         my $cond;
+
         # An user who has only 'manage_users' permission can't do search.
         my $restrict_manage_users = MT::Permission->new;
         $restrict_manage_users->restrictions('manage_users');
@@ -915,10 +923,11 @@ sub do_search_replace {
                 my $query_string = "%$plain_search%";
                 for my $col (@cols) {
                     if ( 'id' eq $col ) {
+
                         # Direct ID search
-                        push( @col_terms,
-                              { $col => $plain_search }, '-or' );
-                    } else {
+                        push( @col_terms, { $col => $plain_search }, '-or' );
+                    }
+                    else {
                         push( @col_terms,
                             { $col => { like => $query_string } }, '-or' );
                     }
@@ -1048,7 +1057,9 @@ sub do_search_replace {
             }
         }
         while ( my $obj = $iter->() ) {
-            next unless $author->is_superuser || $app->handler_to_coderef($api->{perm_check})->($obj);
+            next
+                unless $author->is_superuser
+                    || $app->handler_to_coderef( $api->{perm_check} )->($obj);
             my $match = 0;
             unless ($show_all) {
                 for my $col (@cols) {
@@ -1189,8 +1200,9 @@ sub do_search_replace {
             = $datefrom =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
         ( $dateto_year, $dateto_month, $dateto_day )
             = $dateto =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
-        $from = sprintf "%s-%s-%s", $datefrom_year, $datefrom_month, $datefrom_day;
-        $to   = sprintf "%s-%s-%s", $dateto_year, $dateto_month, $dateto_day;
+        $from = sprintf "%s-%s-%s", $datefrom_year, $datefrom_month,
+            $datefrom_day;
+        $to = sprintf "%s-%s-%s", $dateto_year, $dateto_month, $dateto_day;
     }
 
     my %res = (

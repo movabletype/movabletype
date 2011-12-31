@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -155,6 +155,7 @@ sub recover_password {
 
     MT::Util::start_background_task(
         sub {
+
             # Generate Token
             require MT::Util::Captcha;
             my $salt    = MT::Util::Captcha->_generate_code(8);
@@ -193,9 +194,10 @@ sub recover_password {
             require MT::Mail;
             MT::Mail->send( \%head, $body )
                 or die $app->translate(
-                    "Error sending mail ([_1]); please fix the problem, then "
-                        . "try again to recover your password.",
-                    MT::Mail->errstr );
+                "Error sending mail ([_1]); please fix the problem, then "
+                    . "try again to recover your password.",
+                MT::Mail->errstr
+                );
         }
     );
 
@@ -266,14 +268,17 @@ sub new_password {
             $param->{'error'} = $app->translate('Passwords do not match');
         }
         elsif ( ref $app eq 'MT::App::Community' ) {
+
             # community people may change the template, and not include the
             # needed password validation tags
             $param->{'error'} = eval {
+
                 # might be an old version that does not have this function
-                MT::App::Community::__verify_password_strength($app, $user, $new_password) 
+                MT::App::Community::__verify_password_strength( $app, $user,
+                    $new_password );
             };
         }
-        if (not $param->{'error'}) {
+        if ( not $param->{'error'} ) {
             my $redirect = $user->password_reset_return_to || '';
 
             $user->set_password($new_password);
@@ -519,7 +524,7 @@ sub cfg_system_general {
     }
 
     # for lockout settings
-    if (my $notify_to = $cfg->LockoutNotifyTo) {
+    if ( my $notify_to = $cfg->LockoutNotifyTo ) {
         my @ids = split ';', $notify_to;
         my @sysadmins = MT::Author->load(
             {   id   => \@ids,
@@ -538,15 +543,16 @@ sub cfg_system_general {
         foreach my $a (@sysadmins) {
             push @names, $a->name . '(' . $a->id . ')';
         }
-        $param{lockout_notify_ids}   = $notify_to;
+        $param{lockout_notify_ids} = $notify_to;
         $param{lockout_notify_names} = join ',', @names;
     }
 
-    $param{user_lockout_limit}            = $cfg->UserLockoutLimit;
-    $param{user_lockout_interval}         = $cfg->UserLockoutInterval;
-    $param{ip_lockout_limit}              = $cfg->IPLockoutLimit;
-    $param{ip_lockout_interval}           = $cfg->IPLockoutInterval;
-    $param{failed_login_expiration_frequency} = $cfg->FailedLoginExpirationFrequency;
+    $param{user_lockout_limit}    = $cfg->UserLockoutLimit;
+    $param{user_lockout_interval} = $cfg->UserLockoutInterval;
+    $param{ip_lockout_limit}      = $cfg->IPLockoutLimit;
+    $param{ip_lockout_interval}   = $cfg->IPLockoutInterval;
+    $param{failed_login_expiration_frequency}
+        = $cfg->FailedLoginExpirationFrequency;
     ( $param{lockout_ip_address_whitelist} = $cfg->LockoutIPWhitelist || '' )
         =~ s/,/\n/g;
 
@@ -644,51 +650,45 @@ sub save_cfg_system_general {
         'Outbound trackback limit is ' . $app->param('trackback_send') )
         if ( $app->param('trackback_send') =~ /\w+/ );
 
-
     # for lockout settings
     foreach my $hash (
-        {
-            key    => 'lockout_notify_ids',
+        {   key    => 'lockout_notify_ids',
             cfg    => 'LockoutNotifyTo',
             label  => 'Recipients for lockout notification',
             regex  => qr/\A([\d,;]*)\z/,
-            filter => sub{ $_[0] =~ s/,/;/g },
+            filter => sub { $_[0] =~ s/,/;/g },
         },
-        {
-            key   => 'user_lockout_limit',
+        {   key   => 'user_lockout_limit',
             cfg   => 'UserLockoutLimit',
             label => 'User lockout limit',
             regex => qr/\A\s*(\d+)\s*\z/,
         },
-        {
-            key   => 'user_lockout_interval',
+        {   key   => 'user_lockout_interval',
             cfg   => 'UserLockoutInterval',
             label => 'User lockout interval',
             regex => qr/\A\s*(\d+)\s*\z/,
         },
-        {
-            key   => 'ip_lockout_limit',
+        {   key   => 'ip_lockout_limit',
             cfg   => 'IPLockoutLimit',
             label => 'IP address lockout limit',
             regex => qr/\A\s*(\d+)\s*\z/,
         },
-        {
-            key   => 'ip_lockout_interval',
+        {   key   => 'ip_lockout_interval',
             cfg   => 'IPLockoutInterval',
             label => 'IP address lockout interval',
             regex => qr/\A\s*(\d+)\s*\z/,
         },
-        {
-            key   => 'lockout_ip_address_whitelist',
-            cfg   => 'LockoutIPWhitelist',
-            label => 'Lockout IP address whitelist',
-            regex => qr/\A\s*((.|\r|\n)*?)\s*\z/,
-            filter => sub{
+        {   key    => 'lockout_ip_address_whitelist',
+            cfg    => 'LockoutIPWhitelist',
+            label  => 'Lockout IP address whitelist',
+            regex  => qr/\A\s*((.|\r|\n)*?)\s*\z/,
+            filter => sub {
                 $_[0] =~ s/\r|\n/,/g;
                 $_[0] =~ s/,+/,/g;
             },
         },
-    ) {
+        )
+    {
         if ( $app->param( $hash->{key} ) =~ $hash->{regex} ) {
             my $value = $1;
             if ( $hash->{filter} ) {
@@ -705,7 +705,6 @@ sub save_cfg_system_general {
             );
         }
     }
-
 
     # throw the messages in the activity log
     if ( scalar(@meta_messages) > 0 ) {
@@ -816,13 +815,13 @@ sub recover_profile_password {
 }
 
 sub _allowed_blog_ids_for_backup {
-    my ($app, $blog_id) = @_;
+    my ( $app, $blog_id ) = @_;
     my $blog = $app->model('blog')->load($blog_id)
         or return $blog_id;
 
     my @blog_ids = ();
 
-    if (  !$blog->is_blog ) {
+    if ( !$blog->is_blog ) {
         my $user  = $app->user;
         my $blogs = $blog->blogs;
         push( @blog_ids,
@@ -928,6 +927,7 @@ sub backup {
     my @blog_ids = split ',', $blog_ids;
 
     if ( $user->is_superuser ) {
+
         # Get all target blog_id when system administrator choose website.
         if (@blog_ids) {
             my @child_ids;
@@ -957,7 +957,6 @@ sub backup {
         }
     }
     $app->validate_magic() or return;
-
 
     my $size = $q->param('size_limit') || 0;
     return $app->errtrans( '[_1] is not a number.', encode_html($size) )

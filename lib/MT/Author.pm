@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -72,12 +72,13 @@ __PACKAGE__->install_properties(
             auth_type_name => { columns => [ 'auth_type', 'name', 'type' ], },
             basename       => 1,
         },
-        meta          => 1,
-        summary       => 1,
-        child_classes => [ 'MT::Permission', 'MT::Association', 'MT::Filter' ],
-        datasource    => 'author',
-        primary_key   => 'id',
-        audit         => 1,
+        meta    => 1,
+        summary => 1,
+        child_classes =>
+            [ 'MT::Permission', 'MT::Association', 'MT::Filter' ],
+        datasource  => 'author',
+        primary_key => 'id',
+        audit       => 1,
     }
 );
 
@@ -253,7 +254,7 @@ sub list_props {
             terms   => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
-                my $val      = $args->{value};
+                my $val = $args->{value};
                 require MT::Lockout;
                 my %statuses = (
                     not_locked_out =>
@@ -299,8 +300,9 @@ sub system_filters {
         },
         lockedout => {
             label => 'Locked out Users',
-            items =>
-                [ { type => 'lockout', args => { value => 'locked_out' }, }, ],
+            items => [
+                { type => 'lockout', args => { value => 'locked_out' }, },
+            ],
             order => 400,
         },
     };
@@ -382,9 +384,9 @@ sub commenter_list_props {
                     push @{ $db_args->{joins} },
                         MT->model('permission')->join_on(
                         undef,
-                        {   permissions  => \'IS NULL', # baka editors',
-                            restrictions => \'IS NULL', # baka editors',
-                            author_id    => \'= author_id', # baka editors',
+                        {   permissions  => \'IS NULL',       # baka editors',
+                            restrictions => \'IS NULL',       # baka editors',
+                            author_id    => \'= author_id',   # baka editors',
                             blog_id      => $blog_id,
                         }
                         );
@@ -393,9 +395,11 @@ sub commenter_list_props {
 
             },
             single_select_options => [
-                { label => MT->translate('__COMMENTER_APPROVED'), value => 'enabled', },
-                { label => MT->translate('Banned'),   value => 'disabled', },
-                { label => MT->translate('Pending'),  value => 'pending', },
+                {   label => MT->translate('__COMMENTER_APPROVED'),
+                    value => 'enabled',
+                },
+                { label => MT->translate('Banned'),  value => 'disabled', },
+                { label => MT->translate('Pending'), value => 'pending', },
             ],
         },
     };
@@ -472,16 +476,17 @@ sub member_list_props {
                 return '' unless scalar @roles;
                 return '<ul>'
                     . join( '',
-                    map      {qq(<li class="role-item">$_</li>)}
-                    sort map { MT::Util::encode_html($_->name) } @roles )
+                    map          {qq(<li class="role-item">$_</li>)}
+                        sort map { MT::Util::encode_html( $_->name ) }
+                        @roles )
                     . '</ul>';
             },
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 my $terms = {};
-                $terms->{blog_id}   = MT->app->param('blog_id');
-                $terms->{role_id}   = $args->{value} if $args->{value};
-                $terms->{author_id} = \"= author_id";  # baka editors";
+                $terms->{blog_id} = MT->app->param('blog_id');
+                $terms->{role_id} = $args->{value} if $args->{value};
+                $terms->{author_id} = \"= author_id";    # baka editors";
                 $db_args->{joins} ||= [];
                 push @{ $db_args->{joins} },
                     MT->model('association')
@@ -535,8 +540,10 @@ sub member_list_props {
                 MT->config->SingleCommunity ? 0 : 1;
             },
             single_select_options => [
-                { label => MT->translate('MT Users'),   value => AUTHOR(), },
-                { label => MT->translate('Commenters'), value => COMMENTER(), },
+                { label => MT->translate('MT Users'), value => AUTHOR(), },
+                {   label => MT->translate('Commenters'),
+                    value => COMMENTER(),
+                },
             ],
         },
         status     => { base => 'author.status', },
@@ -656,7 +663,8 @@ sub _bulk_author_name_html {
         }
         my $lc_auth_label = lc $auth_label;
 
-        my $name  = MT::Util::encode_html( $obj->name ) || '(' . MT->translate('Registered User') . ')';
+        my $name = MT::Util::encode_html( $obj->name )
+            || '(' . MT->translate('Registered User') . ')';
         my $email = MT::Util::encode_html( $obj->email );
         my $url   = MT::Util::encode_html( $obj->url );
         my $out   = qq{
@@ -746,14 +754,15 @@ sub set_password {
     my $salt   = join '', map $alpha[ rand @alpha ], 1 .. 2;
 
     my $sha512_base64;
-    if (eval { require Digest::SHA }) {
+    if ( eval { require Digest::SHA } ) {
         $sha512_base64 = \&Digest::SHA::sha512_base64;
     }
     else {
         require Digest::SHA::PurePerl;
         $sha512_base64 = \&Digest::SHA::PurePerl::sha512_base64;
     }
-    my $crypt_sha = join '$', '', '6', $salt, $sha512_base64->($salt . $pass);
+    my $crypt_sha = join '$', '', '6', $salt,
+        $sha512_base64->( $salt . $pass );
 
     $auth->column( 'password', $crypt_sha );
 }
@@ -911,7 +920,7 @@ sub save {
 
 sub remove {
     my $auth = shift;
-    $auth->remove_sessions if ref $auth;
+    $auth->remove_sessions    if ref $auth;
     $auth->remove_failedlogin if ref $auth;
     $auth->remove_children( { key => 'author_id' } ) or return;
     $auth->SUPER::remove(@_);

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -146,13 +146,15 @@ sub filter_conditional_list {
                 my $include_all;
                 if ( 'HASH' eq ref $action ) {
                     if ( $action->{system_action} ) {
-                        # Return true if user has system level privilege for this action.
+
+             # Return true if user has system level privilege for this action.
                         return 1
-                            if $system_perms->can_do( $action->{system_action} );
+                            if $system_perms->can_do(
+                                    $action->{system_action} );
                     }
 
                     $include_all = $action->{include_all} || 0;
-                    $action      = $action->{permit_action};
+                    $action = $action->{permit_action};
                 }
                 if ( $include_all and $blog and !$blog->is_blog ) {
                     my $blogs = $blog->blogs;
@@ -310,8 +312,9 @@ sub content_actions {
         if ( 'CODE' eq ref $action->{args} ) {
             my $code = $action->{args};
             %args = %{ $code->() || {} };
-        } else {
-            %args = %{ $action->{args} || {} }
+        }
+        else {
+            %args = %{ $action->{args} || {} };
         }
         $args{_type} ||= $type;
         $args{return_args} = $app->make_return_args if $action->{return_args};
@@ -1299,8 +1302,8 @@ sub can_do {
 }
 
 sub session_state {
-    my $app     = shift;
-    my $blog    = $app->blog;
+    my $app  = shift;
+    my $blog = $app->blog;
     my ( $sessobj, $commenter ) = $app->get_commenter_session();
     return $app->_commenter_state( $blog, $sessobj, $commenter );
 }
@@ -1452,7 +1455,8 @@ sub get_commenter_session {
     if ( !$cookies{$cookie_name} ) {
         return ( undef, undef );
     }
-    my $state = $app->unbake_user_state_cookie( $cookies{$cookie_name}->value() );
+    my $state
+        = $app->unbake_user_state_cookie( $cookies{$cookie_name}->value() );
     $session_key = $state->{sid} || "";
     $session_key =~ y/+/ /;
     my $cfg = $app->config;
@@ -1601,16 +1605,17 @@ sub make_commenter_session {
     $app->bake_cookie(%name_kookee);
 
     my $blog = $app->blog;
-    my ( $state, $commenter ) = $app->_commenter_state( $blog, $sess_obj, $user );
-    my $blog_id   = $blog ? $blog->id : '0';
+    my ( $state, $commenter )
+        = $app->_commenter_state( $blog, $sess_obj, $user );
+    my $blog_id = $blog ? $blog->id : '0';
     my $blog_path = MT->config->UserSessionCookiePath;
     if ( $blog_path =~ m/<\$?mt/i ) {    # hey, a MT tag! lets evaluate
         require MT::Builder;
         require MT::Template::Context;
         my $builder = MT::Builder->new;
         my $ctx     = MT::Template::Context->new;
-        $ctx->stash(blog    => $blog);
-        $ctx->stash(blog_id => $blog_id);
+        $ctx->stash( blog    => $blog );
+        $ctx->stash( blog_id => $blog_id );
         my $tokens = $builder->compile( $ctx, $blog_path );
         die $ctx->error( $builder->errstr ) unless defined $tokens;
         $blog_path = $builder->build( $ctx, $tokens );
@@ -1626,7 +1631,7 @@ sub make_commenter_session {
 }
 
 sub commenter_session_cookie_name {
-    my $app = shift;
+    my $app               = shift;
     my $user_session_name = MT->config->UserSessionCookieName;
     if ( !MT->config->SingleCommunity ) {
         my $blog = $app->blog or return;
@@ -1638,23 +1643,26 @@ sub commenter_session_cookie_name {
 
 sub bake_user_state_cookie {
     my $app = shift;
-    my ( $state ) = @_;
-    join( ';', (
-        map { $_ . ":'" . $state->{$_} . "'" }
-        grep { $state->{$_} }
-        keys %$state ) );
+    my ($state) = @_;
+    join(
+        ';',
+        (   map      { $_ . ":'" . $state->{$_} . "'" }
+                grep { $state->{$_} }
+                keys %$state
+        )
+    );
 }
 
 sub unbake_user_state_cookie {
     my $app = shift;
-    my ( $value ) = @_;
+    my ($value) = @_;
     return {
         map {
-            my ( $k, $v ) = split ( ':', $_);
+            my ( $k, $v ) = split( ':', $_ );
             $v =~ s/^'//;
             $v =~ s/'$//;
-            ($k, $v);
-        } split( ';', $value )
+            ( $k, $v );
+            } split( ';', $value )
     };
 }
 
@@ -1696,7 +1704,7 @@ sub _invalidate_commenter_session {
     );
     $app->bake_cookie(%id_kookee);
 
-    my $blog = $app->blog;
+    my $blog      = $app->blog;
     my $blog_id   = $blog ? $blog->id : '0';
     my $blog_path = MT->config->UserSessionCookiePath;
     if ( $blog_path =~ m/<\$?mt/i ) {    # hey, a MT tag! lets evaluate
@@ -1704,8 +1712,8 @@ sub _invalidate_commenter_session {
         require MT::Template::Context;
         my $builder = MT::Builder->new;
         my $ctx     = MT::Template::Context->new;
-        $ctx->stash(blog    => $blog);
-        $ctx->stash(blog_id => $blog_id);
+        $ctx->stash( blog    => $blog );
+        $ctx->stash( blog_id => $blog_id );
         my $tokens = $builder->compile( $ctx, $blog_path );
         die $ctx->error( $builder->errstr ) unless defined $tokens;
         $blog_path = $builder->build( $ctx, $tokens );
@@ -1713,8 +1721,8 @@ sub _invalidate_commenter_session {
     }
 
     my %user_session_kookee = (
-        -name  => $app->commenter_session_cookie_name,
-        -value => '',
+        -name    => $app->commenter_session_cookie_name,
+        -value   => '',
         -expires => "+${timeout}s"
     );
     $app->bake_cookie(%user_session_kookee);
@@ -2803,13 +2811,13 @@ sub show_login {
     my $app = shift;
 
     my $judge = 1;
-    if ( $app->isa( 'MT::App::Upgrader' ) ) {
+    if ( $app->isa('MT::App::Upgrader') ) {
         my $class   = MT->model('failedlogin');
         my $ddl     = $class->driver->dbd->ddl_class;
         my $db_defs = $ddl->column_defs($class);
         $judge = 0 unless $db_defs;
     }
-    if ( $judge ) {
+    if ($judge) {
         require MT::Lockout;
         if ( MT::Lockout->is_locked_out( $app, $app->remote_ip ) ) {
             $app->{hide_goback_button} = 1;
@@ -2941,11 +2949,12 @@ sub run {
             if ($requires_login) {
                 my ($author) = $app->login;
                 if ( !$author || !$app->is_authorized ) {
-                    if ( !$app->{login_again}
+                    if (  !$app->{login_again}
                         && $meth_info->{no_direct} )
                     {
-                        # Direct mode call.
-                        # We will be continue but all parameters will be deleted.
+
+                     # Direct mode call.
+                     # We will be continue but all parameters will be deleted.
                         $app->param->delete_all();
                     }
 
@@ -3889,7 +3898,7 @@ sub redirect {
 
 sub is_valid_redirect_target {
     my $app = shift;
-    my $static
+    my $static 
         = $app->param('static')
         || $app->param('return_url')
         || $app->param('return_to')
@@ -3912,16 +3921,16 @@ sub is_valid_redirect_target {
     $target =~ s!#.*$!!;    # strip off any existing anchor
 
     require URI;
-    my $redirect_uri = URI->new( $target );
+    my $redirect_uri = URI->new($target);
     my @ok_uris;
     my $blog_id = $app->param('blog_id');
     if ( $blog_id && $blog_id !~ /\D/ ) {
-        my $blog = MT::Blog->load($blog_id);
+        my $blog     = MT::Blog->load($blog_id);
         my $blog_uri = URI->new( $blog->site_url );
         push @ok_uris, $blog_uri;
     }
     push @ok_uris, URI->new( $app->base );
-    for my $ok_uri ( @ok_uris ) {
+    for my $ok_uri (@ok_uris) {
         return 1 if $ok_uri->host eq $redirect_uri->host;
     }
     return;

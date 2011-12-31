@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -961,13 +961,13 @@ BEGIN {
                     grep  => \&MT::Filter::pack_grep,
                 },
                 blog_name => {
-                    label     => 'Website/Blog Name',
+                    label        => 'Website/Blog Name',
                     filter_label => '__WEBSITE_BLOG_NAME',
-                    order     => 10000,
-                    display   => 'default',
-                    site_name => 1,
-                    view      => [ 'system', 'website' ],
-                    bulk_html => sub {
+                    order        => 10000,
+                    display      => 'default',
+                    site_name    => 1,
+                    view         => [ 'system', 'website' ],
+                    bulk_html    => sub {
                         my $prop     = shift;
                         my ($objs)   = @_;
                         my %blog_ids = map { $_->blog_id => 1 } @$objs;
@@ -1834,18 +1834,18 @@ BEGIN {
             },
             'UserPasswordValidation' => { type    => 'ARRAY', },
             'UserPasswordMinLength'  => { default => 8, },
-            'AuthenticationModule'  => { default => 'MT', },
-            'AuthLoginURL'          => undef,
-            'AuthLogoutURL'         => undef,
-            'DefaultAssignments'    => { default => '' },
-            'AutoSaveFrequency'     => { default => 5 },
-            'FuturePostFrequency'   => { default => 1 },
-            'AssetCacheDir'         => { default => 'assets_c', },
-            'IncludesDir'           => { default => 'includes_c', },
-            'MemcachedServers'      => { type    => 'ARRAY', },
-            'MemcachedNamespace'    => undef,
-            'MemcachedDriver'       => { default => 'Cache::Memcached' },
-            'CommenterRegistration' => {
+            'AuthenticationModule'   => { default => 'MT', },
+            'AuthLoginURL'           => undef,
+            'AuthLogoutURL'          => undef,
+            'DefaultAssignments'     => { default => '' },
+            'AutoSaveFrequency'      => { default => 5 },
+            'FuturePostFrequency'    => { default => 1 },
+            'AssetCacheDir'          => { default => 'assets_c', },
+            'IncludesDir'            => { default => 'includes_c', },
+            'MemcachedServers'       => { type    => 'ARRAY', },
+            'MemcachedNamespace'     => undef,
+            'MemcachedDriver'        => { default => 'Cache::Memcached' },
+            'CommenterRegistration'  => {
                 type    => 'HASH',
                 default => {
                     Allow  => '1',
@@ -1883,9 +1883,12 @@ BEGIN {
             'DefaultBlogTheme'     => { default => 'classic_blog' },
             'ThemeStaticFileExtensions' => undef,
 
-            'AssetFileTypes'              => { type => 'HASH' },
-            'AssetFileExtensions'         => { default => undef },
-            'DeniedAssetFileExtensions'   => { default => q{ascx,asis,asp,aspx,bat,cfc,cfm,cgi,cmd,com,cpl,dll,exe,htaccess,htm,html,inc,jhtml,js,jsb,jsp,mht,mhtml,msi,php\d?,phps,phtm,phtml,pif,pl,pwml,py,reg,scr,sh,shtm,shtml,vbs,vxd,pm,so,rb,htc} },
+            'AssetFileTypes'            => { type    => 'HASH' },
+            'AssetFileExtensions'       => { default => undef },
+            'DeniedAssetFileExtensions' => {
+                default =>
+                    q{ascx,asis,asp,aspx,bat,cfc,cfm,cgi,cmd,com,cpl,dll,exe,htaccess,htm,html,inc,jhtml,js,jsb,jsp,mht,mhtml,msi,php\d?,phps,phtm,phtml,pif,pl,pwml,py,reg,scr,sh,shtm,shtml,vbs,vxd,pm,so,rb,htc}
+            },
 
             'FastCGIMaxTime'     => { default => 60 * 60 },    # 1 hour
             'FastCGIMaxRequests' => { default => 1000 },       # 1000 requests
@@ -1902,13 +1905,13 @@ BEGIN {
             'RevisioningDriver' => { default => 'Local' },
 
             # User Lockout
-            'UserLockoutLimit'           => { default => 6 },
-            'UserLockoutInterval'        => { default => 1800 },
-            'IPLockoutLimit'             => { default => 10 },
-            'IPLockoutInterval'          => { default => 1800 },
+            'UserLockoutLimit'               => { default => 6 },
+            'UserLockoutInterval'            => { default => 1800 },
+            'IPLockoutLimit'                 => { default => 10 },
+            'IPLockoutInterval'              => { default => 1800 },
             'FailedLoginExpirationFrequency' => { default => 86400 },
-            'LockoutIPWhitelist'         => undef,
-            'LockoutNotifyTo'            => undef,
+            'LockoutIPWhitelist'             => undef,
+            'LockoutNotifyTo'                => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -1957,7 +1960,8 @@ BEGIN {
                 },
                 compose_menus => sub { MT->app->core_compose_menus() },
                 user_menus    => sub { MT->app->core_user_menus() },
-                disable_object_methods => sub { MT->app->core_disable_object_methods() },
+                disable_object_methods =>
+                    sub { MT->app->core_disable_object_methods() },
             },
             upgrade => {
                 handler => 'MT::App::Upgrader',
@@ -2199,7 +2203,7 @@ sub load_core_tasks {
             code      => sub {
                 my $app = MT->instance;
                 $app->model('failedlogin')->cleanup($app);
-            }
+                }
         },
     };
 }
@@ -2594,35 +2598,35 @@ sub load_core_permissions {
             'label'            => 'Manage Pages',
             'order'            => 500,
             'permitted_action' => {
-                'access_to_insert_asset_list'     => 1,
-                'access_to_folder_list'           => 1,
-                'access_to_page_list'             => 1,
-                'add_tags_to_pages_via_list'      => 1,
-                'create_new_page'                 => 1,
-                'delete_folder'                   => 1,
-                'delete_page'                     => 1,
-                'edit_all_pages'                  => 1,
-                'edit_own_page'                   => 1,
-                'get_page_feed'                   => 1,
-                'manage_pages'                    => 1,
-                'open_all_comment_edit_screen'    => 1,
-                'open_batch_page_editor_via_list' => 1,
-                'open_folder_edit_screen'         => 1,
-                'open_page_edit_screen'           => 1,
-                'remove_tags_from_pages_via_list' => 1,
-                'save_folder'                     => 1,
-                'save_multiple_pages'             => 1,
-                'save_page'                       => 1,
-                'set_page_draft_via_list'         => 1,
-                'use_tools:search'                => 1,
-                'open_blog_listing_screen'        => 1,
-                'publish_page_via_list'           => 1,
-                'view_all_comments'               => 1,
-                'open_select_author_dialog'       => 1,
-                'send_update_pings_pages'         => 1,
-                'insert_asset'                    => 1,
-                'save_existing_comment'           => 1,
-                'open_own_entry_comment_edit_screen'    => 1,
+                'access_to_insert_asset_list'        => 1,
+                'access_to_folder_list'              => 1,
+                'access_to_page_list'                => 1,
+                'add_tags_to_pages_via_list'         => 1,
+                'create_new_page'                    => 1,
+                'delete_folder'                      => 1,
+                'delete_page'                        => 1,
+                'edit_all_pages'                     => 1,
+                'edit_own_page'                      => 1,
+                'get_page_feed'                      => 1,
+                'manage_pages'                       => 1,
+                'open_all_comment_edit_screen'       => 1,
+                'open_batch_page_editor_via_list'    => 1,
+                'open_folder_edit_screen'            => 1,
+                'open_page_edit_screen'              => 1,
+                'remove_tags_from_pages_via_list'    => 1,
+                'save_folder'                        => 1,
+                'save_multiple_pages'                => 1,
+                'save_page'                          => 1,
+                'set_page_draft_via_list'            => 1,
+                'use_tools:search'                   => 1,
+                'open_blog_listing_screen'           => 1,
+                'publish_page_via_list'              => 1,
+                'view_all_comments'                  => 1,
+                'open_select_author_dialog'          => 1,
+                'send_update_pings_pages'            => 1,
+                'insert_asset'                       => 1,
+                'save_existing_comment'              => 1,
+                'open_own_entry_comment_edit_screen' => 1,
             }
         },
         'blog.manage_users' => {

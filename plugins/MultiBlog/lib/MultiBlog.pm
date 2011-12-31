@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2006-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2006-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -79,7 +79,7 @@ sub preprocess_native_tags {
         }
         else {
             my $local_blog_id = $ctx->stash('local_blog_id');
-            if (defined $local_blog_id) {
+            if ( defined $local_blog_id ) {
                 $args->{blog_id} = $ctx->stash('local_blog_id');
             }
         }

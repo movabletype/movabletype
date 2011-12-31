@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -11,7 +11,7 @@ our @EXPORT = qw( make_base_data );
 use strict;
 
 sub make_author {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     require MT::Author;
@@ -25,15 +25,13 @@ sub make_author {
         is_superuser => 0,
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
-    my $count = MT::Author->count({
-        type => MT::Author::AUTHOR()
-    });
+    my $count = MT::Author->count( { type => MT::Author::AUTHOR() } );
     if ( !$values->{name} ) {
         $values->{name} = 'test' . $count;
     }
@@ -42,10 +40,10 @@ sub make_author {
     }
 
     my $author = MT::Author->new();
-    $author->set_values( $values );
+    $author->set_values($values);
     $author->set_password("pass");
     $author->save()
-      or die "Couldn't save author record: " . $author->errstr;
+        or die "Couldn't save author record: " . $author->errstr;
 
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
@@ -53,43 +51,44 @@ sub make_author {
 }
 
 sub make_website {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
-        name => 'Test site',
-        site_url => 'http://narnia.na/',
-        site_path => 't',
-        description => "Narnia None Test Website",
+        name                     => 'Test site',
+        site_url                 => 'http://narnia.na/',
+        site_path                => 't',
+        description              => "Narnia None Test Website",
         custom_dynamic_templates => 'custom',
-        convert_paras => 1,
-        allow_reg_comments => 1,
-        allow_unreg_comments => 0,
-        allow_pings => 1,
-        sort_order_posts => 'descend',
-        sort_order_comments => 'ascend',
-        remote_auth_token => 'token',
-        convert_paras_comments => 1,
-        cc_license => 'by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif',
-        server_offset => '-3.5',
+        convert_paras            => 1,
+        allow_reg_comments       => 1,
+        allow_unreg_comments     => 0,
+        allow_pings              => 1,
+        sort_order_posts         => 'descend',
+        sort_order_comments      => 'ascend',
+        remote_auth_token        => 'token',
+        convert_paras_comments   => 1,
+        cc_license =>
+            'by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif',
+        server_offset        => '-3.5',
         children_modified_on => '20000101000000',
-        language => 'en_us',
-        file_extension => 'html',
-        theme_id => 'classic_website',
+        language             => 'en_us',
+        file_extension       => 'html',
+        theme_id             => 'classic_website',
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
     require MT::Website;
     my $website = MT::Website->new();
-    $website->set_values( $values );
+    $website->set_values($values);
     $website->class('website');
     $website->commenter_authenticators('enabled_TypeKey');
-    $website->save() or die "Couldn't save website: ". $website->errstr;
+    $website->save() or die "Couldn't save website: " . $website->errstr;
 
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
     MT->config->ThemesDirectory($themedir);
@@ -106,46 +105,47 @@ sub make_website {
 }
 
 sub make_blog {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
-        name => 'none',
-        site_url => '/::/nana/',
-        archive_url => '/::/nana/archives/',
-        site_path => 'site/',
+        name         => 'none',
+        site_url     => '/::/nana/',
+        archive_url  => '/::/nana/archives/',
+        site_path    => 'site/',
         archive_path => 'site/archives/',
-        archive_type=>'Individual,Monthly,Weekly,Daily,Category,Page',
-        archive_type_preferred => 'Individual',
-        description => "Narnia None Test Blog",
+        archive_type => 'Individual,Monthly,Weekly,Daily,Category,Page',
+        archive_type_preferred   => 'Individual',
+        description              => "Narnia None Test Blog",
         custom_dynamic_templates => 'custom',
-        convert_paras => 1,
-        allow_reg_comments => 1,
-        allow_unreg_comments => 0,
-        allow_pings => 1,
-        sort_order_posts => 'descend',
-        sort_order_comments => 'ascend',
-        remote_auth_token => 'token',
-        convert_paras_comments => 1,
-        google_api_key => 'r9Vj5K8PsjEu+OMsNZ/EEKjWmbCeQAv1',
-        cc_license => 'by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif',
-        server_offset => '-3.5',
+        convert_paras            => 1,
+        allow_reg_comments       => 1,
+        allow_unreg_comments     => 0,
+        allow_pings              => 1,
+        sort_order_posts         => 'descend',
+        sort_order_comments      => 'ascend',
+        remote_auth_token        => 'token',
+        convert_paras_comments   => 1,
+        google_api_key           => 'r9Vj5K8PsjEu+OMsNZ/EEKjWmbCeQAv1',
+        cc_license =>
+            'by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif',
+        server_offset        => '-3.5',
         children_modified_on => '20000101000000',
-        language => 'en_us',
-        file_extension => 'html',
-        theme_id => 'classic_blog',
-        parent_id => 1,
+        language             => 'en_us',
+        file_extension       => 'html',
+        theme_id             => 'classic_blog',
+        parent_id            => 1,
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
     require MT::Blog;
     my $blog = MT::Blog->new();
-    $blog->set_values( $values );
+    $blog->set_values($values);
     $blog->class('blog');
     $blog->commenter_authenticators('enabled_TypeKey');
     $blog->save() or die "Couldn't save blog: " . $blog->errstr;
@@ -166,14 +166,15 @@ sub make_blog {
 
 sub make_role {
     my $pkg = shift;
-    my ( %params ) = @_;
+    my (%params) = @_;
 
     require MT::Role;
     my $role = MT::Role->new();
-    $role->set_values({
-        name => $params{name},
-        permissions => $params{permissions},
-    });
+    $role->set_values(
+        {   name        => $params{name},
+            permissions => $params{permissions},
+        }
+    );
 
     $role->save
         or die "Couldn't save role record: " . $role->errstr;
@@ -184,7 +185,7 @@ sub make_role {
 }
 
 sub make_entry {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     require MT::Entry;
@@ -205,14 +206,14 @@ sub make_entry {
         status         => MT::Entry::RELEASE(),
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
     my $entry = MT::Entry->new();
-    $entry->set_values( $values );
+    $entry->set_values($values);
     $entry->save() or die "Couldn't save entry record: " . $entry->errstr;
     $entry->clear_cache();
 
@@ -222,7 +223,7 @@ sub make_entry {
 }
 
 sub make_asset {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $class = 'file';
@@ -230,29 +231,29 @@ sub make_asset {
         if %params && exists $params{class};
 
     my $values = {
-        url => 'http://narnia.na/nana/files/test.tmpl',
-        file_path => File::Spec->catfile( $ENV{MT_HOME}, "t", 'test.tmpl' ),
-        file_name => 'test.tmpl',
-        file_ext => 'tmpl',
-        mime_type => 'text/plain',
-        label => 'Template',
+        url         => 'http://narnia.na/nana/files/test.tmpl',
+        file_path   => File::Spec->catfile( $ENV{MT_HOME}, "t", 'test.tmpl' ),
+        file_name   => 'test.tmpl',
+        file_ext    => 'tmpl',
+        mime_type   => 'text/plain',
+        label       => 'Template',
         description => 'This is a test template.',
-        created_by => 1,
-        created_on => '19780131074500',
+        created_by  => 1,
+        created_on  => '19780131074500',
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
     use MT::Asset;
-    my $pkg_class = MT::Asset->class_handler( $class );
-    my $asset = $pkg_class->new();
+    my $pkg_class = MT::Asset->class_handler($class);
+    my $asset     = $pkg_class->new();
 
     foreach my $k ( keys %$values ) {
-        $asset->$k( $values->{ $k } );
+        $asset->$k( $values->{$k} );
     }
     $asset->save() or die "Couldn't save asset record: " . $asset->errstr;
 
@@ -262,12 +263,12 @@ sub make_asset {
 }
 
 sub make_comment {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
         text =>
-'Postmodern false consciousness has always been firmly rooted in post-Freudian Lacanian neo-Marxist bojangles. Needless to say, this quickly and asymptotically approches a purpletacular jouissance of etic jumpinmypants.',
+            'Postmodern false consciousness has always been firmly rooted in post-Freudian Lacanian neo-Marxist bojangles. Needless to say, this quickly and asymptotically approches a purpletacular jouissance of etic jumpinmypants.',
         entry_id   => 1,
         author     => 'v14GrUH 4 cheep',
         visible    => 1,
@@ -278,9 +279,9 @@ sub make_comment {
         created_on => '20040714182800',
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -288,9 +289,10 @@ sub make_comment {
     my $comment = MT::Comment->new();
 
     foreach my $k ( keys %$values ) {
-        $comment->$k( $values->{ $k } );
+        $comment->$k( $values->{$k} );
     }
-    $comment->save() or die "Couldn't save comment record: " . $comment->errstr;
+    $comment->save()
+        or die "Couldn't save comment record: " . $comment->errstr;
 
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
@@ -298,7 +300,7 @@ sub make_comment {
 }
 
 sub make_template {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
@@ -308,9 +310,9 @@ sub make_template {
         type    => 'custom',
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -318,7 +320,7 @@ sub make_template {
     my $tmpl = MT::Template->new();
 
     foreach my $k ( keys %$values ) {
-        $tmpl->$k( $values->{ $k } );
+        $tmpl->$k( $values->{$k} );
     }
     $tmpl->save() or die "Couldn't save template record: " . $tmpl->errstr;
 
@@ -328,7 +330,7 @@ sub make_template {
 }
 
 sub make_page {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     require MT::Page;
@@ -346,14 +348,14 @@ sub make_page {
         status      => MT::Entry::RELEASE(),
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
     my $page = MT::Page->new();
-    $page->set_values( $values );
+    $page->set_values($values);
     $page->save() or die "Couldn't save page record: " . $page->errstr;
     $page->clear_cache();
 
@@ -363,20 +365,20 @@ sub make_page {
 }
 
 sub make_folder {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
-        blog_id => 2,
-        label => 'foo',
+        blog_id     => 2,
+        label       => 'foo',
         description => 'foo',
-        author_id => 1,
-        parent => 0,
+        author_id   => 1,
+        parent      => 0,
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -384,7 +386,7 @@ sub make_folder {
     my $folder = MT::Folder->new();
 
     foreach my $k ( keys %$values ) {
-        $folder->$k( $values->{ $k } );
+        $folder->$k( $values->{$k} );
     }
     $folder->save() or die "Couldn't save folder record: " . $folder->errstr;
 
@@ -393,9 +395,8 @@ sub make_folder {
     return $folder;
 }
 
-
 sub make_templatemap {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
@@ -405,9 +406,9 @@ sub make_templatemap {
         archive_type => 'Individual',
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -415,7 +416,7 @@ sub make_templatemap {
     my $map = MT::TemplateMap->new();
 
     foreach my $k ( keys %$values ) {
-        $map->$k( $values->{ $k } );
+        $map->$k( $values->{$k} );
     }
     $map->save() or die "Couldn't save templatemap record: " . $map->errstr;
 
@@ -425,20 +426,20 @@ sub make_templatemap {
 }
 
 sub make_category {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
-        blog_id => 2,
-        label => 'foo',
+        blog_id     => 2,
+        label       => 'foo',
         description => 'foo',
-        author_id => 1,
-        parent => 0,
+        author_id   => 1,
+        parent      => 0,
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -446,7 +447,7 @@ sub make_category {
     my $cat = MT::Category->new();
 
     foreach my $k ( keys %$values ) {
-        $cat->$k( $values->{ $k } );
+        $cat->$k( $values->{$k} );
     }
     $cat->save() or die "Couldn't save category record: " . $cat->errstr;
 
@@ -456,7 +457,7 @@ sub make_category {
 }
 
 sub make_banlist {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
@@ -464,9 +465,9 @@ sub make_banlist {
         ip      => '1.1.1.1',
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -474,9 +475,10 @@ sub make_banlist {
     my $banlist = MT::IPBanList->new();
 
     foreach my $k ( keys %$values ) {
-        $banlist->$k( $values->{ $k } );
+        $banlist->$k( $values->{$k} );
     }
-    $banlist->save() or die "Couldn't save banlist record: " . $banlist->errstr;
+    $banlist->save()
+        or die "Couldn't save banlist record: " . $banlist->errstr;
 
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
@@ -484,7 +486,7 @@ sub make_banlist {
 }
 
 sub make_notification {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
@@ -494,9 +496,9 @@ sub make_notification {
         url     => 'http://example.com',
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -504,9 +506,10 @@ sub make_notification {
     my $notification = MT::Notification->new();
 
     foreach my $k ( keys %$values ) {
-        $notification->$k( $values->{ $k } );
+        $notification->$k( $values->{$k} );
     }
-    $notification->save() or die "Couldn't save notification record: " . $notification->errstr;
+    $notification->save()
+        or die "Couldn't save notification record: " . $notification->errstr;
 
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
@@ -514,16 +517,14 @@ sub make_notification {
 }
 
 sub make_fileinfo {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
-    my $values = {
-        blog_id => 2,
-    };
+    my $values = { blog_id => 2, };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -531,9 +532,10 @@ sub make_fileinfo {
     my $fileinfo = MT::FileInfo->new();
 
     foreach my $k ( keys %$values ) {
-        $fileinfo->$k( $values->{ $k } );
+        $fileinfo->$k( $values->{$k} );
     }
-    $fileinfo->save() or die "Couldn't save fileinfo record: " . $fileinfo->errstr;
+    $fileinfo->save()
+        or die "Couldn't save fileinfo record: " . $fileinfo->errstr;
 
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
@@ -541,16 +543,14 @@ sub make_fileinfo {
 }
 
 sub make_log {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
-    my $values = {
-        blog_id => 2,
-    };
+    my $values = { blog_id => 2, };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -558,7 +558,7 @@ sub make_log {
     my $log = MT::Log->new();
 
     foreach my $k ( keys %$values ) {
-        $log->$k( $values->{ $k } );
+        $log->$k( $values->{$k} );
     }
     $log->save() or die "Couldn't save log record: " . $log->errstr;
 
@@ -568,19 +568,19 @@ sub make_log {
 }
 
 sub make_objectasset {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
-        blog_id => 2,
+        blog_id   => 2,
         object_id => 1,
         object_ds => 'entry',
-        asset_id => 1,
+        asset_id  => 1,
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -588,7 +588,7 @@ sub make_objectasset {
     my $os = MT::ObjectAsset->new();
 
     foreach my $k ( keys %$values ) {
-        $os->$k( $values->{ $k } );
+        $os->$k( $values->{$k} );
     }
     $os->save() or die "Couldn't save objectasset record: " . $os->errstr;
 
@@ -598,7 +598,7 @@ sub make_objectasset {
 }
 
 sub make_objectscore {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
@@ -607,9 +607,9 @@ sub make_objectscore {
         object_ds => 'entry',
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -617,7 +617,7 @@ sub make_objectscore {
     my $os = MT::ObjectScore->new();
 
     foreach my $k ( keys %$values ) {
-        $os->$k( $values->{ $k } );
+        $os->$k( $values->{$k} );
     }
     $os->save() or die "Couldn't save objectscore record: " . $os->errstr;
 
@@ -627,19 +627,19 @@ sub make_objectscore {
 }
 
 sub make_objecttag {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
-        blog_id => 2,
-        object_id => 1,
+        blog_id           => 2,
+        object_id         => 1,
         object_datasource => 'entry',
-        tag_id => 1,
+        tag_id            => 1,
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -647,7 +647,7 @@ sub make_objecttag {
     my $os = MT::ObjectTag->new();
 
     foreach my $k ( keys %$values ) {
-        $os->$k( $values->{ $k } );
+        $os->$k( $values->{$k} );
     }
     $os->save() or die "Couldn't save objecttag record: " . $os->errstr;
 
@@ -657,17 +657,17 @@ sub make_objecttag {
 }
 
 sub make_permission {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
-        blog_id => 0,
+        blog_id   => 0,
         author_id => 1,
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -675,7 +675,7 @@ sub make_permission {
     my $perm = MT::Permission->new();
 
     foreach my $k ( keys %$values ) {
-        $perm->$k( $values->{ $k } );
+        $perm->$k( $values->{$k} );
     }
     $perm->save() or die "Couldn't save permission record: " . $perm->errstr;
 
@@ -685,19 +685,19 @@ sub make_permission {
 }
 
 sub make_placement {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
-        blog_id => 0,
-        entry_id => 1,
+        blog_id     => 0,
+        entry_id    => 1,
         category_id => 1,
-        is_primary => 1,
+        is_primary  => 1,
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -705,7 +705,7 @@ sub make_placement {
     my $place = MT::Placement->new();
 
     foreach my $k ( keys %$values ) {
-        $place->$k( $values->{ $k } );
+        $place->$k( $values->{$k} );
     }
     $place->save() or die "Couldn't save placement record: " . $place->errstr;
 
@@ -715,17 +715,17 @@ sub make_placement {
 }
 
 sub make_session {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
-        id => '0123456789',
+        id    => '0123456789',
         start => time,
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -733,7 +733,7 @@ sub make_session {
     my $sess = MT::Session->new();
 
     foreach my $k ( keys %$values ) {
-        $sess->$k( $values->{ $k } );
+        $sess->$k( $values->{$k} );
     }
     $sess->save() or die "Couldn't save session record: " . $sess->errstr;
 
@@ -743,18 +743,18 @@ sub make_session {
 }
 
 sub make_tag {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
-        name => 'Tag',
-        n8d_id => 'tag',
+        name       => 'Tag',
+        n8d_id     => 'tag',
         is_private => 0,
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -762,7 +762,7 @@ sub make_tag {
     my $tag = MT::Tag->new();
 
     foreach my $k ( keys %$values ) {
-        $tag->$k( $values->{ $k } );
+        $tag->$k( $values->{$k} );
     }
     $tag->save() or die "Couldn't save tag record: " . $tag->errstr;
 
@@ -772,27 +772,27 @@ sub make_tag {
 }
 
 sub make_ping {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
-        blog_id => 2,
-        tb_id   => 1,
-        title   => 'Trackback Title',
-        excerpt => 'Body',
-        source_url => 'http://example.com/1',
-        ip         => '127.0.0.1',
-        blog_name  => 'From Blog',
-        visible => 1,
-        junk_status => 1,
+        blog_id       => 2,
+        tb_id         => 1,
+        title         => 'Trackback Title',
+        excerpt       => 'Body',
+        source_url    => 'http://example.com/1',
+        ip            => '127.0.0.1',
+        blog_name     => 'From Blog',
+        visible       => 1,
+        junk_status   => 1,
         last_moved_on => '20000101000000',
-        junk_score => 0,
-        junk_log => '',
+        junk_score    => 0,
+        junk_log      => '',
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -800,7 +800,7 @@ sub make_ping {
     my $ping = MT::TBPing->new();
 
     foreach my $k ( keys %$values ) {
-        $ping->$k( $values->{ $k } );
+        $ping->$k( $values->{$k} );
     }
     $ping->save() or die "Couldn't save tbping record: " . $ping->errstr;
 
@@ -810,18 +810,18 @@ sub make_ping {
 }
 
 sub make_tb {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
-        blog_id => 2,
-        entry_id => 1,
+        blog_id     => 2,
+        entry_id    => 1,
         category_id => 0,
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -829,7 +829,7 @@ sub make_tb {
     my $tb = MT::Trackback->new();
 
     foreach my $k ( keys %$values ) {
-        $tb->$k( $values->{ $k } );
+        $tb->$k( $values->{$k} );
     }
     $tb->save() or die "Couldn't save trackback record: " . $tb->errstr;
 
@@ -839,17 +839,17 @@ sub make_tb {
 }
 
 sub make_touch {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
-        blog_id => 2,
+        blog_id     => 2,
         object_type => 'blog',
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -857,7 +857,7 @@ sub make_touch {
     my $touch = MT::Touch->new();
 
     foreach my $k ( keys %$values ) {
-        $touch->$k( $values->{ $k } );
+        $touch->$k( $values->{$k} );
     }
     $touch->save() or die "Couldn't save touch record: " . $touch->errstr;
 
@@ -867,17 +867,17 @@ sub make_touch {
 }
 
 sub make_plugindata {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
         plugin => 'Dummy',
-        key => 'Dummy Key',
+        key    => 'Dummy Key',
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -885,9 +885,10 @@ sub make_plugindata {
     my $plugindata = MT::PluginData->new();
 
     foreach my $k ( keys %$values ) {
-        $plugindata->$k( $values->{ $k } );
+        $plugindata->$k( $values->{$k} );
     }
-    $plugindata->save() or die "Couldn't save plugindata record: " . $plugindata->errstr;
+    $plugindata->save()
+        or die "Couldn't save plugindata record: " . $plugindata->errstr;
 
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
@@ -895,22 +896,22 @@ sub make_plugindata {
 }
 
 sub make_field {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
-        blog_id => 2,
-        name => 'Sample Field',
+        blog_id     => 2,
+        name        => 'Sample Field',
         description => 'This is a sample.',
-        obj_type => 'entry',
-        type => 'text',
-        tag => 'samplefield',
-        basename => 'sample_field',
+        obj_type    => 'entry',
+        type        => 'text',
+        tag         => 'samplefield',
+        basename    => 'sample_field',
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -918,7 +919,7 @@ sub make_field {
     my $cf = CustomFields::Field->new();
 
     foreach my $k ( keys %$values ) {
-        $cf->$k( $values->{ $k } );
+        $cf->$k( $values->{$k} );
     }
     $cf->save() or die "Couldn't save field record: " . $cf->errstr;
 
@@ -928,18 +929,18 @@ sub make_field {
 }
 
 sub make_group {
-    my $pkg = shift;
+    my $pkg    = shift;
     my %params = @_;
 
     my $values = {
-        name => 'Sample Group',
+        name         => 'Sample Group',
         display_name => 'Sample Group',
-        status => 1,
+        status       => 1,
     };
 
-    if ( %params ) {
+    if (%params) {
         foreach my $key ( keys %params ) {
-            $values->{ $key } = $params{ $key };
+            $values->{$key} = $params{$key};
         }
     }
 
@@ -947,7 +948,7 @@ sub make_group {
     my $grp = MT::Group->new();
 
     foreach my $k ( keys %$values ) {
-        $grp->$k( $values->{ $k } );
+        $grp->$k( $values->{$k} );
     }
     $grp->save() or die "Couldn't save group record: " . $grp->errstr;
 

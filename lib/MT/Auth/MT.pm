@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -19,7 +19,9 @@ sub sanity_check {
     if ( $q->param('pass') ne $q->param('pass_verify') ) {
         return $app->translate('Passwords do not match.');
     }
-    if ( length(scalar $q->param('pass')) && ( $id && $app->user->id == $id ) ) {
+    if ( length( scalar $q->param('pass') )
+        && ( $id && $app->user->id == $id ) )
+    {
         my $author = MT::Author->load($id)
             or return $app->translate('Failed to verify current password.');
         if ( !$auth->is_valid_password( $author, $q->param('old_pass') ) ) {
@@ -38,26 +40,26 @@ sub is_valid_password {
     if ( ( !$real_pass ) || ( $real_pass eq '(none)' ) ) {
         return 0;
     }
-    
+
     if ($crypted) {
         return $real_pass eq $pass;
     }
-    
 
-    if ($real_pass =~ m/^\$6\$(..)\$(.*)/) {
-        my ($salt, $value) = ($1, $2);
+    if ( $real_pass =~ m/^\$6\$(..)\$(.*)/ ) {
+        my ( $salt, $value ) = ( $1, $2 );
 
         my $sha512_base64;
-        if (eval { require Digest::SHA }) {
+        if ( eval { require Digest::SHA } ) {
             $sha512_base64 = \&Digest::SHA::sha512_base64;
         }
         else {
             require Digest::SHA::PurePerl;
             $sha512_base64 = \&Digest::SHA::PurePerl::sha512_base64;
         }
-        return $value eq $sha512_base64->($salt . $pass);
+        return $value eq $sha512_base64->( $salt . $pass );
     }
     else {
+
         # the password is stored using the old hashing method
         return crypt( $pass, $real_pass ) eq $real_pass;
     }
@@ -75,7 +77,8 @@ sub login_credentials {
     my ($ctx) = @_;
 
     my $app = $ctx->{app} or return;
-    if ( $app->param('username') && length(scalar $app->param('password')) ) {
+    if ( $app->param('username') && length( scalar $app->param('password') ) )
+    {
         my ( $user, $pass, $remember );
         $user     = $app->param('username');
         $pass     = $app->param('password');
@@ -146,13 +149,17 @@ sub validate_credentials {
 
             # password validation
             if ( $ctx->{session_id} ) {
-                my $sess = $app->model('session')->load($ctx->{session_id});
-                my $sess_author_id = $sess->get('author_id') 
+                my $sess = $app->model('session')->load( $ctx->{session_id} );
+                my $sess_author_id = $sess->get('author_id')
                     if $sess;
-                if ($sess && $sess_author_id && ( $sess_author_id == $author->id )) {
+                if (   $sess
+                    && $sess_author_id
+                    && ( $sess_author_id == $author->id ) )
+                {
                     $app->user($author);
                     $result = MT::Auth::SUCCESS();
-                } else {
+                }
+                else {
                     $app->errtrans("Invalid request.");
                     $result = MT::Auth::INVALID_PASSWORD();
                 }

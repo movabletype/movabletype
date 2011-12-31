@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -842,8 +842,8 @@ sub _build_favorite_websites_data {
     # Sort by recently access
     my $i;
     my %sorted = map { $_ => $i++ } @fav_websites;
-    foreach ( @websites ) {
-        $sorted{$_->id} = scalar @websites if !exists $sorted{$_->id};
+    foreach (@websites) {
+        $sorted{ $_->id } = scalar @websites if !exists $sorted{ $_->id };
     }
     @websites
         = sort { ( $sorted{ $a->id } || 0 ) <=> ( $sorted{ $b->id } || 0 ) }
@@ -983,8 +983,8 @@ sub _build_favorite_blogs_data {
     # Sort by recently access
     my $i;
     my %sorted = map { $_ => $i++ } @fav_blogs;
-    foreach ( @blogs ) {
-        $sorted{$_->id} = scalar @blogs if !exists $sorted{$_->id};
+    foreach (@blogs) {
+        $sorted{ $_->id } = scalar @blogs if !exists $sorted{ $_->id };
     }
     @blogs
         = sort { ( $sorted{ $a->id } || 0 ) <=> ( $sorted{ $b->id } || 0 ) }

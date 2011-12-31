@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1854,12 +1854,12 @@ sub _hdlr_blog_comment_count {
         or return $ctx->error( $ctx->errstr );
     $terms{visible} = 1;
     require MT::Entry;
-    $args{join} =  MT::Entry->join_on(
+    $args{join} = MT::Entry->join_on(
         undef,
-        {
-            id      => \'= comment_entry_id',
-            status  => MT::Entry::RELEASE(),
-        }, {}
+        {   id     => \'= comment_entry_id',
+            status => MT::Entry::RELEASE(),
+        },
+        {}
     );
 
     require MT::Comment;

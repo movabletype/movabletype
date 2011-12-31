@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -94,8 +94,7 @@ sub recover_token {
         $sha256_hex = \&Digest::SHA::PurePerl::sha256_hex;
     }
 
-    $sha256_hex->(
-        $user->lockout_recover_salt . $app->config->SecretToken );
+    $sha256_hex->( $user->lockout_recover_salt . $app->config->SecretToken );
 }
 
 sub recover_lockout_uri {
@@ -284,13 +283,13 @@ sub _insert_failedlogin {
                 Subject => $app->translate('IP address Was Locked Out')
             );
 
-            my $recovery_time
-                = $class->locked_out_ip_recovery_time( $app, $app->remote_ip );
+            my $recovery_time = $class->locked_out_ip_recovery_time( $app,
+                $app->remote_ip );
 
             my $body = $app->build_email(
                 'lockout-ip',
-                {   ip_address   => $remote_ip,
-                    username     => $username,
+                {   ip_address    => $remote_ip,
+                    username      => $username,
                     recovery_time => epoch2ts( undef, $recovery_time )
                 }
             );
@@ -405,7 +404,7 @@ sub clear_failedlogin {
             ip_locked => 1,
         }
     );
-    while (my $failedlogin = $iter->()) {
+    while ( my $failedlogin = $iter->() ) {
         $failedlogin->author_id(undef);
         $failedlogin->save;
     }

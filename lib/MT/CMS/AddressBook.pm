@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -10,18 +10,18 @@ use MT::Util qw( is_valid_email is_url dirify );
 use MT::I18N qw( wrap_text );
 
 sub entry_notify {
-    my $app  = shift;
+    my $app = shift;
     return $app->return_to_dashboard( permission => 1 )
         unless $app->can_do('open_entry_notification_screen');
     my $entry_id = $app->param('entry_id')
-      or return $app->error( $app->translate("No entry ID provided") );
+        or return $app->error( $app->translate("No entry ID provided") );
 
     require MT::Entry;
     my $entry = MT::Entry->load($entry_id)
         or return $app->error(
         $app->translate( "No such entry '[_1]'", $entry_id ) );
     my $blog = $app->blog;
-    return $app->errtrans( "Invalid request")
+    return $app->errtrans("Invalid request")
         if $blog->id != $entry->blog_id;
     my $param = {};
     $param->{entry_id} = $entry_id;
@@ -226,7 +226,6 @@ sub can_save {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
-
     if ( $obj && !ref $obj ) {
         $obj = MT->model('notification')->load($obj);
     }
@@ -239,7 +238,6 @@ sub can_delete {
     my ( $eh, $app, $obj ) = @_;
     my $author = $app->user;
     return 1 if $author->is_superuser();
-
 
     if ( $obj && !ref $obj ) {
         $obj = MT->model('notification')->load($obj);

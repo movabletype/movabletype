@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -531,7 +531,9 @@ sub core_content_actions {
                 return_args => 1,
                 order       => 100,
                 confirm_msg => sub {
-                    $app->translate('Are you sure you want to remove all trackbacks reported as spam?');
+                    $app->translate(
+                        'Are you sure you want to remove all trackbacks reported as spam?'
+                    );
                 },
                 permit_action => {
                     include_all => 1,
@@ -548,7 +550,9 @@ sub core_content_actions {
                 return_args => 1,
                 order       => 100,
                 confirm_msg => sub {
-                    MT->translate('Are you sure you want to remove all comments reported as spam?');
+                    MT->translate(
+                        'Are you sure you want to remove all comments reported as spam?'
+                    );
                 },
                 permit_action => {
                     include_all => 1,
@@ -592,7 +596,8 @@ sub core_content_actions {
                             type  => 'blog',
                             _type => 'user',
                         };
-                    } else {
+                    }
+                    else {
                         return {
                             type  => 'website',
                             _type => 'user',
@@ -606,12 +611,13 @@ sub core_content_actions {
         },
         'log' => {
             'reset_log' => {
-                class => 'icon-action',
-                label => 'Clear Activity Log',
-                mode  => 'reset_log',
-                order => 100,
+                class       => 'icon-action',
+                label       => 'Clear Activity Log',
+                mode        => 'reset_log',
+                order       => 100,
                 confirm_msg => sub {
-                    MT->translate('Are you sure you want to reset the activity log?');
+                    MT->translate(
+                        'Are you sure you want to reset the activity log?');
                 },
                 permit_action => {
                     permit_action => 'reset_blog_log',
@@ -686,11 +692,12 @@ sub core_list_actions {
                 },
             },
             'add_tags' => {
-                label         => "Add Tags...",
-                order         => 300,
-                code          => "${pkg}Tag::add_tags_to_entries",
-                input         => 1,
-#                xhr           => 1,
+                label => "Add Tags...",
+                order => 300,
+                code  => "${pkg}Tag::add_tags_to_entries",
+                input => 1,
+
+                #                xhr           => 1,
                 input_label   => 'Tags to add to selected entries',
                 permit_action => {
                     permit_action => 'add_tags_to_entry_via_list',
@@ -1074,7 +1081,7 @@ sub core_list_actions {
                     return 0 unless $app->blog;
 
                     return 1;
-                }
+                    }
             },
             'ban_commenter' => {
                 label         => "Ban Commenter(s)",
@@ -1095,7 +1102,7 @@ sub core_list_actions {
                     return 0 unless $app->blog;
 
                     return 1;
-                }
+                    }
             },
             'unban_commenter' => {
                 label         => "Unban Commenter(s)",
@@ -1116,7 +1123,7 @@ sub core_list_actions {
                     return 0 unless $app->blog;
 
                     return 1;
-                }
+                    }
             },
             'publish' => {
                 label         => 'Publish',
@@ -1382,9 +1389,10 @@ sub core_list_actions {
                 },
             },
             'delete' => {
-                label      => 'Delete',
-                code       => "${pkg}Common::delete",
-#                xhr        => 1,
+                label => 'Delete',
+                code  => "${pkg}Common::delete",
+
+                #                xhr        => 1,
                 order      => 110,
                 js_message => 'delete',
                 button     => 1,
@@ -1530,8 +1538,9 @@ sub core_list_actions {
                 mode       => 'delete_filters',
                 order      => 110,
                 js_message => 'delete',
-#                xhr        => 1,
-                button     => 1,
+
+                #                xhr        => 1,
+                button => 1,
             },
         },
     };
@@ -2776,11 +2785,10 @@ sub init_core_callbacks {
             $pkg . 'view_permission_filter.page' => "${pfx}Page::can_view",
             $pkg
                 . 'delete_permission_filter.page' => "${pfx}Page::can_delete",
-            $pkg
-                . 'save_permission_filter.page' => "${pfx}Page::can_save",
-            $pkg . 'pre_save.page'    => "${pfx}Page::pre_save",
-            $pkg . 'post_save.page'   => "${pfx}Page::post_save",
-            $pkg . 'post_delete.page' => "${pfx}Page::post_delete",
+            $pkg . 'save_permission_filter.page' => "${pfx}Page::can_save",
+            $pkg . 'pre_save.page'               => "${pfx}Page::pre_save",
+            $pkg . 'post_save.page'              => "${pfx}Page::post_save",
+            $pkg . 'post_delete.page'            => "${pfx}Page::post_delete",
             $pkg
                 . 'pre_load_filtered_list.page' =>
                 "${pfx}Page::cms_pre_load_filtered_list",
@@ -2837,11 +2845,9 @@ sub init_core_callbacks {
             $pkg
                 . 'delete_permission_filter.asset' =>
                 "${pfx}Asset::can_delete",
-            $pkg
-                . 'save_permission_filter.asset' =>
-                "${pfx}Asset::can_save",
-            $pkg . 'pre_save.asset'     => "${pfx}Asset::pre_save",
-            $pkg . 'post_save.asset'    => "${pfx}Asset::post_save",
+            $pkg . 'save_permission_filter.asset' => "${pfx}Asset::can_save",
+            $pkg . 'pre_save.asset'               => "${pfx}Asset::pre_save",
+            $pkg . 'post_save.asset'              => "${pfx}Asset::post_save",
             $pkg . 'post_delete.asset'  => "${pfx}Asset::post_delete",
             $pkg . 'save_filter.asset'  => "${pfx}Asset::cms_save_filter",
             'template_param.edit_asset' => "${pfx}Asset::template_param_edit",
@@ -2970,8 +2976,9 @@ sub set_default_tmpl_params {
             || $param->{can_edit_all_entries}
             || $param->{can_publish_post};
         require MT::CMS::Search;
-        $param->{can_search_replace} = MT::CMS::Search::can_search_replace($app);
-        $param->{can_edit_authors}   = $param->{can_administer_blog};
+        $param->{can_search_replace}
+            = MT::CMS::Search::can_search_replace($app);
+        $param->{can_edit_authors} = $param->{can_administer_blog};
         $param->{can_access_assets} 
             = $param->{can_create_post}
             || $param->{can_edit_all_posts}
@@ -3142,7 +3149,7 @@ sub build_blog_selector {
         if !$auth->is_superuser
             && !$auth->permissions(0)->can_do('edit_templates');
     $terms{class}     = 'blog';
-    $terms{parent_id} = \">0"; # baka editors ";
+    $terms{parent_id} = \">0";    # baka editors ";
     $args{limit}      = 6;        # Don't load over 6 blogs
     my @blogs = $blog_class->load( \%terms, \%args );
 
@@ -3189,13 +3196,15 @@ sub build_blog_selector {
         push @websites, @sites;
     }
 
-    if ( @fav_websites ) {
+    if (@fav_websites) {
         my $i;
-        my %sorted = map{ $_ => $i++ } @fav_websites;
-        foreach ( @websites ) {
-            $sorted{$_->id} = scalar @websites if !exists $sorted{$_->id};
+        my %sorted = map { $_ => $i++ } @fav_websites;
+        foreach (@websites) {
+            $sorted{ $_->id } = scalar @websites if !exists $sorted{ $_->id };
         }
-        @websites = sort { ( $sorted{$a->id} || 0 ) <=> ( $sorted{$b->id} || 0 ) } @websites;
+        @websites
+            = sort { ( $sorted{ $a->id } || 0 ) <=> ( $sorted{ $b->id } || 0 ) }
+            @websites;
     }
     unshift @websites, $blog->website if $blog && $blog->is_blog;
 
@@ -3268,8 +3277,10 @@ sub build_blog_selector {
     if (@blogs) {
 
         my $i;
-        my %sorted = map{ $_ => $i++ } @fav_blogs;
-        @blogs = sort { ( $sorted{$a->id} || 0 ) <=> ( $sorted{$b->id} || 0 ) } @blogs;
+        my %sorted = map { $_ => $i++ } @fav_blogs;
+        @blogs
+            = sort { ( $sorted{ $a->id } || 0 ) <=> ( $sorted{ $b->id } || 0 ) }
+            @blogs;
 
         foreach $b (@blogs) {
             if ( $blog && $blog->is_blog && $blog->id == $b->id ) {

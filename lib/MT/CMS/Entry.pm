@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -161,9 +161,9 @@ sub edit {
         $param->{has_any_pinged_urls} = ( $obj->pinged_urls || '' ) =~ m/\S/;
         $param->{ping_errors}         = $q->param('ping_errors');
         $param->{can_view_log}        = $app->can_do('view_log');
-        $param->{entry_permalink}     = MT::Util::encode_html( $obj->permalink );
-        $param->{'mode_view_entry'}   = 1;
-        $param->{'basename'}          = $obj->basename;
+        $param->{entry_permalink} = MT::Util::encode_html( $obj->permalink );
+        $param->{'mode_view_entry'} = 1;
+        $param->{'basename'}        = $obj->basename;
 
         if ( my $ts = $obj->authored_on ) {
             $param->{authored_on_ts} = $ts;
@@ -294,7 +294,8 @@ sub edit {
                 { class => '*' },
                 {   join => MT::ObjectAsset->join_on(
                         undef,
-                        {   asset_id  => \'= asset_id', # coloring editors hack'
+                        {   asset_id => \
+                                '= asset_id',    # coloring editors hack'
                             object_ds => 'entry',
                             object_id => $id
                         }
@@ -535,19 +536,17 @@ sub edit {
     $param->{object_label} = $class->class_label;
 
     my @ordered = qw( title text tags excerpt keywords );
-    if ( $pref_param ) {
+    if ($pref_param) {
         if ( my $disp_field = $pref_param->{disp_prefs_custom_fields} ) {
             my %order;
             my $i = 1;
-            foreach ( @$disp_field ) {
-                $order{$_->{name}} = $i++;
+            foreach (@$disp_field) {
+                $order{ $_->{name} } = $i++;
             }
-            foreach ( @ordered ) {
-                $order{$_} = $i++ if !$order{$_}
+            foreach (@ordered) {
+                $order{$_} = $i++ if !$order{$_};
             }
-            @ordered = sort {
-                $order{$a} <=> $order{$b}
-            } @ordered;
+            @ordered = sort { $order{$a} <=> $order{$b} } @ordered;
         }
     }
 
@@ -1023,7 +1022,7 @@ PERMCHECK: {
 }
 
 sub preview {
-    my $app   = shift;
+    my $app = shift;
 
     $app->validate_magic or return;
 
@@ -1558,7 +1557,9 @@ sub save {
 
     if ( $type eq 'entry' ) {
         $obj->status( MT::Entry::HOLD() )
-            if !$id && !$perms->can_do('publish_own_entry') && !$perms->can_do('publish_all_entry');
+            if !$id
+                && !$perms->can_do('publish_own_entry')
+                && !$perms->can_do('publish_all_entry');
     }
 
     my $filter_result
@@ -1568,7 +1569,7 @@ sub save {
         my %param = ();
         $param{error}       = $app->errstr;
         $param{return_args} = $app->param('return_args');
-        $app->param('reedit', 1);
+        $app->param( 'reedit', 1 );
         return $app->forward( "view", \%param );
     }
 
@@ -1599,10 +1600,10 @@ sub save {
         }
         unless ( $param{error} ) {
             my $s = $6 || 0;
-            $param{error}
-                = $app->translate(
+            $param{error} = $app->translate(
                 "Invalid date '[_1]'; published on dates should be real dates.",
-                $ao )
+                $ao
+                )
                 if (
                    $s > 59
                 || $s < 0
@@ -1623,7 +1624,8 @@ sub save {
             $previous_old = $obj->previous(1);
             $next_old     = $obj->next(1);
         }
-        my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5, ( $6 || 0 );
+        my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
+            ( $6 || 0 );
         $obj->authored_on($ts);
     }
     my $is_new = $obj->id ? 0 : 1;
@@ -1929,12 +1931,13 @@ PERMCHECK: {
             or next;
         my $old_status = $entry->status;
         my $orig_obj   = $entry->clone;
-        $perms   = $app->user->permissions( $entry->blog_id );
+        $perms = $app->user->permissions( $entry->blog_id );
         if ( $perms->can_edit_entry( $entry, $this_author ) ) {
             my $author_id = $q->param( 'author_id_' . $id );
             $entry->author_id( $author_id ? $author_id : 0 );
             $entry->title( scalar $q->param( 'title_' . $id ) );
-        } else {
+        }
+        else {
             return $app->permission_denied();
         }
         if ( $perms->can_edit_entry( $entry, $this_author, 1 ) )
@@ -1943,11 +1946,15 @@ PERMCHECK: {
 
             my $date_closure = sub {
                 my ( $val, $col, $name ) = @_;
-                unless ( $val =~ m!(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})(?::(\d{2}))?! ) {
+                unless ( $val
+                    =~ m!(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})(?::(\d{2}))?!
+                    )
+                {
                     return $app->error(
                         $app->translate(
                             "Invalid date '[_1]'; [_2] dates must be in the format YYYY-MM-DD HH:MM:SS.",
-                            $val, $name
+                            $val,
+                            $name
                         )
                     );
                 }
@@ -1957,29 +1964,36 @@ PERMCHECK: {
                 return $app->error(
                     $app->translate(
                         "Invalid date '[_1]'; [_2] dates should be real dates.",
-                        $val, $name
+                        $val,
+                        $name
                     )
-                ) if $s > 59
-                    || $s < 0
-                    || $5 > 59
-                    || $5 < 0
-                    || $4 > 23
-                    || $4 < 0
-                    || $2 > 12
-                    || $2 < 1
-                    || $3 < 1
-                    || ( MT::Util::days_in( $2, $1 ) < $3
-                        && !MT::Util::leap_day( $0, $1, $2 ) );
+                    )
+                    if $s > 59
+                        || $s < 0
+                        || $5 > 59
+                        || $5 < 0
+                        || $4 > 23
+                        || $4 < 0
+                        || $2 > 12
+                        || $2 < 1
+                        || $3 < 1
+                        || ( MT::Util::days_in( $2, $1 ) < $3
+                            && !MT::Util::leap_day( $0, $1, $2 ) );
 
                 # FIXME: Should be assigning the publish_date field here
-                my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5, $s;
+                my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4,
+                    $5, $s;
                 $entry->$col($ts);
             };
 
             my $co = $q->param( 'created_on_' . $id );
-            $date_closure->( $co, 'authored_on', MT->translate('authored on') ) or return;
+            $date_closure->(
+                $co, 'authored_on', MT->translate('authored on')
+            ) or return;
             $co = $q->param( 'modified_on_' . $id );
-            $date_closure->( $co, 'modified_on', MT->translate('modified on') ) or return;
+            $date_closure->(
+                $co, 'modified_on', MT->translate('modified on')
+            ) or return;
         }
         $app->run_callbacks( 'cms_pre_save.' . $type,
             $app, $entry, $orig_obj )
@@ -2088,7 +2102,7 @@ sub send_pings {
     $app->validate_magic() or return;
     require MT::Entry;
     require MT::Blog;
-    my $blog  = MT::Blog->load( scalar $q->param('blog_id') )
+    my $blog = MT::Blog->load( scalar $q->param('blog_id') )
         or return $app->errtrans('Invalid request');
     my $entry = MT::Entry->load( scalar $q->param('entry_id') )
         or return $app->errtrans('Invalid request');
@@ -2153,7 +2167,7 @@ sub pinged_urls {
 }
 
 sub save_entry_prefs {
-    my $app   = shift;
+    my $app = shift;
 
     my $perms = $app->permissions
         or return $app->error( $app->translate("No permissions") );
@@ -2169,7 +2183,7 @@ sub save_entry_prefs {
         my %current = map { $_ => 1 } split ',', $current;
         my @new     = split ',', $prefs;
         $prefs = '';
-        foreach my $p ( @new ) {
+        foreach my $p (@new) {
             $prefs .= ',' if $prefs;
             $prefs .= $p;
             $prefs .= ':s' unless $current{$p};
@@ -2210,7 +2224,7 @@ sub open_batch_editor {
         entry => 1,
         page  => 1,
     );
-    return $app->errtrans( "Invalid request." )
+    return $app->errtrans("Invalid request.")
         unless $type_allowed{$type};
     my $pkg = $app->model($type) or return "Invalid request.";
 
@@ -2525,7 +2539,8 @@ sub build_entry_table {
             $row->{weblog_name} = $blog->name;
         }
         if ( $obj->status == MT::Entry::RELEASE() ) {
-            $row->{entry_permalink} = MT::Util::encode_html( $obj->permalink );
+            $row->{entry_permalink}
+                = MT::Util::encode_html( $obj->permalink );
         }
         $row->{object} = $obj;
         push @data, $row;
@@ -2570,7 +2585,9 @@ sub can_view {
     if ($id) {
         my $obj = $objp->force();
         return 0 unless $obj->is_entry;
-        if ( !$app->user->permissions( $obj->blog_id )->can_edit_entry( $obj, $app->user ) ) {
+        if ( !$app->user->permissions( $obj->blog_id )
+            ->can_edit_entry( $obj, $app->user ) )
+        {
             return 0;
         }
     }
@@ -2652,7 +2669,8 @@ sub post_delete {
     $app->log(
         {   message => $app->translate(
                 "[_1] '[_2]' (ID:[_3]) deleted by '[_4]'",
-                $obj->class_label, $obj->title, $obj->id, $app->user->name
+                $obj->class_label, $obj->title,
+                $obj->id,          $app->user->name
             ),
             level    => MT::Log::INFO(),
             class    => $obj->class,

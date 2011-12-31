@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -151,7 +151,7 @@ sub dialog_select_theme {
                     ? $_->{label}->()
                     : $_->{label}
                 ),
-                description => encode_html($_->{description}),
+                description => encode_html( $_->{description} ),
                 thumb       => $_->{thumbnail_url},
                 thumb_w     => $_->{thumb_w},
                 thumb_h     => $_->{thumb_h},

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -99,9 +99,9 @@ sub global_perms {
 }
 
 sub perms_from_registry {
-    my $regs = MT::Component->registry('permissions');
-    my %keys = map { $_ => 1 } map { keys %$_ } @$regs;
-    my %perms = map { $_ => MT->registry('permissions' => $_ ) } keys %keys;
+    my $regs  = MT::Component->registry('permissions');
+    my %keys  = map { $_ => 1 } map { keys %$_ } @$regs;
+    my %perms = map { $_ => MT->registry( 'permissions' => $_ ) } keys %keys;
     \%perms;
 }
 

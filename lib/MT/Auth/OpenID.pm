@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -7,7 +7,8 @@
 package MT::Auth::OpenID;
 use strict;
 
-use MT::Util qw( decode_url is_valid_email escape_unicode ts2epoch expat_parser );
+use MT::Util
+    qw( decode_url is_valid_email escape_unicode ts2epoch expat_parser );
 
 sub NS_OPENID_AX   {"http://openid.net/srv/ax/1.0"}
 sub NS_OPENID_SREG {"http://openid.net/extensions/sreg/1.1"}
@@ -310,7 +311,10 @@ sub _get_nickname {
                 my $name;
 
                 require XML::XPath;
-                my $xml = XML::XPath->new( xml => $resp->content, parser => expat_parser() );
+                my $xml = XML::XPath->new(
+                    xml    => $resp->content,
+                    parser => expat_parser()
+                );
                 if ( my ($name_el) = $xml->findnodes('/feed/author/name') ) {
                     $name = $name_el->string_value;
                 }
@@ -363,7 +367,7 @@ sub _asset_from_url {
     return undef unless $image;
     my $mimetype = $resp->header('Content-Type');
     return undef unless $mimetype;
-    my $def_ext  = {
+    my $def_ext = {
         'image/jpeg' => '.jpg',
         'image/png'  => '.png',
         'image/gif'  => '.gif'

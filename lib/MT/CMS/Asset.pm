@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -169,7 +169,7 @@ sub dialog_list_asset {
         if !$blog_id && $mode_userpic ne 'upload_userpic';
 
     my $blog_class = $app->model('blog');
-    my $blog       = $blog_class->load($blog_id) if $blog_id;
+    my $blog = $blog_class->load($blog_id) if $blog_id;
 
     return $app->permission_denied()
         if $blog_id && !$app->can_do('access_to_insert_asset_list');
@@ -308,6 +308,7 @@ sub insert {
         $ext_from, $ext_to )
         if ( $ext_from && $ext_to );
     my $tmpl;
+
     if ($extension_message) {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
@@ -354,7 +355,9 @@ sub asset_userpic {
         if ($user) {
 
             my $appuser = $app->user;
-            if ( ( !$appuser->is_superuser ) && ( $user->id != $appuser->id ) ) {
+            if (   ( !$appuser->is_superuser )
+                && ( $user->id != $appuser->id ) )
+            {
                 return $app->permission_denied();
             }
 
@@ -632,7 +635,7 @@ sub complete_upload {
 }
 
 sub start_upload_entry {
-    my $app  = shift;
+    my $app = shift;
 
     $app->validate_magic() or return;
 
@@ -795,7 +798,7 @@ sub build_asset_hasher {
         else {
             $row->{file_is_missing} = 1 if $file_path;
         }
-        $meta->{file_name} = MT::Util::encode_html($row->{file_name});
+        $meta->{file_name} = MT::Util::encode_html( $row->{file_name} );
         $row->{file_label} 
             = $row->{label} 
             = $obj->label
@@ -998,7 +1001,7 @@ sub save {
 sub cms_save_filter {
     my ( $cb, $app ) = @_;
     if ( $app->param('file_name') || $app->param('file_path') ) {
-        return $app->errtrans("Invalid request.")
+        return $app->errtrans("Invalid request.");
     }
     1;
 }

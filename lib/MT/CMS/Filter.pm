@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -126,12 +126,16 @@ sub delete {
     my $blog_id = $q->param('blog_id') || 0;
     my $ds      = $q->param('datasource');
     my $user    = $app->user;
+
     if ( $filter->author_id != $user->id && !$user->is_superuser ) {
         return $app->json_error( $app->translate('Permission denied') );
     }
     $filter->remove
         or return $app->json_error(
-        $app->translate( 'Failed to delete filter(s): [_1]', $filter->errstr ) );
+        $app->translate(
+            'Failed to delete filter(s): [_1]', $filter->errstr
+        )
+        );
 
     my %res;
     my $list = $app->param('list');

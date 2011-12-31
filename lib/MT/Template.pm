@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -172,8 +172,8 @@ sub load_file {
 
     if ( File::Spec->file_name_is_absolute($file) ) {
         require Cwd;
-        my $ok = 0;
-        my @paths = @{ $tmpl->{include_path} || [] };
+        my $ok            = 0;
+        my @paths         = @{ $tmpl->{include_path} || [] };
         my $abs_file_path = MT::Util::realpath($file);
         foreach my $path (@paths) {
             next unless -d $path;
@@ -444,12 +444,14 @@ sub save {
         if ( $tmpl->blog_id ) {
             my $blog = $tmpl->blog;
             $scope = lc $blog->class_label;
-        } else {
+        }
+        else {
             $scope = MT->translate('system');
         }
         return $tmpl->error(
             MT->translate(
-                'Template name must be unique within this [_1].', $scope)
+                'Template name must be unique within this [_1].', $scope
+            )
         );
     }
 

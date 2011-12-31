@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -229,12 +229,13 @@ sub edit {
                                 : 0
                             : [ $obj->blog_id, 0 ];
 
-                        my $mod_id
+                        my $mod_id 
                             = $mod . "::"
                             . (
                             ref $inc_blog_id
                             ? $inc_blog_id->[0]
-                            : $inc_blog_id );
+                            : $inc_blog_id
+                            );
                         next if exists $seen{$type}{$mod_id};
                         $seen{$type}{$mod_id} = 1;
 
@@ -1043,7 +1044,7 @@ sub preview {
 
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->return_to_dashboard( redirect => 1 )
-      unless $perms || $app->user->is_superuser;
+        unless $perms || $app->user->is_superuser;
     if ( $perms && !$perms->can_edit_templates ) {
         return $app->return_to_dashboard( permission => 1 );
     }
@@ -1080,8 +1081,8 @@ sub preview {
     my $archive_file;
     my $archive_url;
     my %param;
-    my $blog_path = $blog->site_path;
-    my $blog_url  = $blog->site_url;
+    my $blog_path       = $blog->site_path;
+    my $blog_url        = $blog->site_url;
     my $use_virtual_cat = 0;
 
     if ( ( $type eq 'custom' ) || ( $type eq 'widget' ) ) {
@@ -1150,9 +1151,9 @@ sub preview {
                     direction => 'ascend',
                 }
             );
-            unless ( $cat ) {
+            unless ($cat) {
                 $use_virtual_cat = 1;
-                $cat = new MT::Category;
+                $cat             = new MT::Category;
                 $cat->label( $app->translate("Preview") );
                 $cat->basename("preview");
                 $cat->parent(0);
@@ -1649,10 +1650,11 @@ sub can_view {
     my ( $eh, $app, $id, $objp ) = @_;
     return 1 if $app->user->can_edit_templates;
     return 0 unless $app->blog;
-    if ( $id ) {
+    if ($id) {
         my $obj = $objp->force();
         return 0
-            unless $app->user->permissions( $obj->blog_id )->can_do('edit_templates');
+            unless $app->user->permissions( $obj->blog_id )
+                ->can_do('edit_templates');
     }
     else {
         my $perms = $app->permissions;
@@ -1668,7 +1670,7 @@ sub can_save {
     return 1 if $author->is_superuser();
 
     if ( $obj && !ref $obj ) {
-        $obj = MT->model('template')->load( $obj );
+        $obj = MT->model('template')->load($obj);
     }
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
 
@@ -2098,9 +2100,10 @@ sub refresh_all_templates {
     my $user = $app->user;
     my @blogs_not_refreshed;
     my $refreshed;
-    my $can_refresh_system = ( $user->is_superuser()
-        or $user->permissions(0)->can_do('refresh_templates') )
-        ? 1 : 0;
+    my $can_refresh_system = (
+               $user->is_superuser()
+            or $user->permissions(0)->can_do('refresh_templates')
+    ) ? 1 : 0;
     my $default_language = MT->config->DefaultLanguage;
 BLOG: for my $blog_id (@id) {
         my $blog;
@@ -2224,7 +2227,8 @@ BLOG: for my $blog_id (@id) {
                 $val->{orig_name} = $val->{name};
                 my $current_lang = MT->current_language;
                 MT->set_language($tmpl_lang);
-                MT->app->{component} = $blog->theme->id if $blog && $blog->theme;
+                MT->app->{component} = $blog->theme->id
+                    if $blog && $blog->theme;
                 $val->{text} = $app->translate_templatized( $val->{text} );
                 MT->set_language($current_lang);
                 MT->app->{component} = $current_component;
@@ -2407,9 +2411,9 @@ sub refresh_individual_templates {
     }
     $tmpl_list ||= MT::DefaultTemplates->templates();
 
-    my $tmpl_types = {};
-    my $tmpl_ids   = {};
-    my $tmpls      = {};
+    my $tmpl_types        = {};
+    my $tmpl_ids          = {};
+    my $tmpls             = {};
     my $current_component = MT->app->{component};
 
     foreach my $tmpl (@$tmpl_list) {
@@ -3000,7 +3004,7 @@ sub list_widget {
     $app->load_list_actions( 'template', $widget_actions );
     $param->{ 'widget_' . $_ } = $widget_actions->{$_}
         for keys %$widget_actions;
-    $param->{page_actions}  = $app->page_actions('list_widget');
+    $param->{page_actions} = $app->page_actions('list_widget');
     $app->load_tmpl( 'list_widget.tmpl', $param );
 }
 
@@ -3112,7 +3116,7 @@ sub restore_widgetmanagers {
 sub save_template_prefs {
     my $app     = shift;
     my $blog_id = $app->param('blog_id');
-    my $perms = $app->user->permissions( $blog_id )
+    my $perms   = $app->user->permissions($blog_id)
         or return $app->error( $app->translate("No permissions") );
     $app->validate_magic() or return;
 

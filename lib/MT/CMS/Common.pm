@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -502,7 +502,7 @@ sub save {
 }
 
 sub edit {
-    my $app  = shift;
+    my $app = shift;
 
     my $q    = $app->param;
     my $type = $q->param('_type');
@@ -773,10 +773,15 @@ sub list {
     } MT::Component->select;
 
     my @list_headers;
-    push @list_headers, {
-        filename => File::Spec->catfile( MT->config->TemplatePath, $app->{template_dir},
-        'listing', $type . '_list_header.tmpl' ),
-        component => 'Core' };
+    push @list_headers,
+        {
+        filename => File::Spec->catfile(
+            MT->config->TemplatePath, $app->{template_dir},
+            'listing',                $type . '_list_header.tmpl'
+        ),
+        component => 'Core'
+        };
+
     for my $c (@list_components) {
         my $f = File::Spec->catfile( $c->path, 'tmpl', 'listing',
             $type . '_list_header.tmpl' );
@@ -1247,6 +1252,7 @@ sub filtered_list {
             return $app->json_error( $app->translate('Invalid request') );
         }
     }
+
     # Validate scope
     if ( my $view = $setting->{view} ) {
         $view = [$view] unless ref $view;
@@ -1451,7 +1457,8 @@ sub filtered_list {
             elsif ( $prop->has('html_link') ) {
                 for my $obj (@$objs) {
                     my $link = $prop->html_link( $obj, $app, \%load_options );
-                    my $raw = MT::Util::encode_html($prop->raw( $obj, $app, \%load_options ));
+                    my $raw = MT::Util::encode_html(
+                        $prop->raw( $obj, $app, \%load_options ) );
                     push @result,
                         ( $link ? qq{<a href="$link">$raw</a>} : $raw );
                 }
@@ -1920,7 +1927,7 @@ sub list_revision {
     );
 
     $app->run_callbacks( 'cms_view_permission_filter.' . $type,
-            $app, $id, $obj_promise )
+        $app, $id, $obj_promise )
         || return $app->permission_denied();
 
     my $obj = $obj_promise->force();
@@ -2074,13 +2081,14 @@ sub is_disabled_mode {
     my ( $mode, $type ) = @_;
 
     my $res;
-    if ( my $reg = $app->registry('disable_object_methods', $type) ) {
+    if ( my $reg = $app->registry( 'disable_object_methods', $type ) ) {
         if ( defined $reg->{$mode} ) {
             if ( 'CODE' eq ref $reg->{$mode} ) {
                 my $code = $reg->{$mode};
                 $code = MT->handler_to_coderef($code);
-                $res = $code->();
-            } else {
+                $res  = $code->();
+            }
+            else {
                 $res = $reg->{$mode};
             }
         }

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -89,7 +89,8 @@ sub edit {
         my $parent = $obj->parent;
         if ( $parent && ( $parent->isa('MT::Entry') ) ) {
             if ( $parent->status == MT::Entry::RELEASE() ) {
-                $param->{entry_permalink} = MT::Util::encode_html( $parent->permalink );
+                $param->{entry_permalink}
+                    = MT::Util::encode_html( $parent->permalink );
             }
         }
 

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -98,7 +98,8 @@ sub work {
                 # TBD: notification to administrator
                 # At the very least, log to MT activity log.
                 my $errmsg
-                    = MT->translate("Error during rsync of files in [_1]:\n", $file)
+                    = MT->translate( "Error during rsync of files in [_1]:\n",
+                    $file )
                     . "Command (exit code $res): $cmd";
                 MT::TheSchwartz->debug($errmsg);
                 require MT::Log;

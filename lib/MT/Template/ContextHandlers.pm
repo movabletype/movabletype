@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -2442,7 +2442,7 @@ sub _hdlr_set_var {
         $val = _math_operation( $ctx, $op, $existing, $val );
     }
 
-    $val = deep_copy($val, MT->config->DeepCopyRecursiveLimit);
+    $val = deep_copy( $val, MT->config->DeepCopyRecursiveLimit );
 
     if ( defined $key ) {
         $data ||= {};
@@ -3811,7 +3811,10 @@ sub _hdlr_app_action_bar {
         ? ''
         : qq{\n        <mt:include name="include/pagination.tmpl" bar_position="$pos">};
     my $buttons = $ctx->var('action_buttons') || '';
-    my $buttons_html = $buttons =~ /\S/ ? qq{<div class="button-actions actions">$buttons</div>} : '';
+    my $buttons_html
+        = $buttons =~ /\S/
+        ? qq{<div class="button-actions actions">$buttons</div>}
+        : '';
 
     return $ctx->build(<<EOT);
 $form_id
@@ -4392,7 +4395,9 @@ B<Example:> Passing Parameters to a Template Module
     sub _include_file {
         my ( $ctx, $arg, $cond ) = @_;
         if ( !MT->config->AllowFileInclude ) {
-            return $ctx->error('File include is disabled by "AllowFileInclude" config directive.');
+            return $ctx->error(
+                'File include is disabled by "AllowFileInclude" config directive.'
+            );
         }
         my $file = $arg->{file} or return;
         require File::Basename;
@@ -5758,31 +5763,29 @@ B<Example:>
 
 sub _hdlr_password_validation_script {
     my ( $ctx, $args ) = @_;
-    my $form_id = $args->{form};
+    my $form_id    = $args->{form};
     my $pass_field = $args->{password};
     my $user_field = $args->{username};
-    my $app = MT->instance;
+    my $app        = MT->instance;
 
     return $ctx->error(
         MT->translate(
             "You used an [_1] tag without a valid [_2] attribute.",
-            "<MTPasswordValidation>",
-            "form"
+            "<MTPasswordValidation>", "form"
         )
     ) unless defined $form_id;
 
     return $ctx->error(
         MT->translate(
             "You used an [_1] tag without a valid [_2] attribute.",
-            "<MTPasswordValidation>",
-            "password"
+            "<MTPasswordValidation>", "password"
         )
     ) unless defined $pass_field;
 
     $user_field ||= '';
     my @constrains = $app->config('UserPasswordValidation');
     my $min_length = $app->config('UserPasswordMinLength');
-    if (( $min_length =~ m/\D/ ) or ( $min_length < 1 )) {
+    if ( ( $min_length =~ m/\D/ ) or ( $min_length < 1 ) ) {
         $min_length = $app->config->default('UserPasswordMinLength');
     }
 
@@ -5797,7 +5800,7 @@ sub _hdlr_password_validation_script {
           }
 JSCRIPT
 
-    if (grep {$_ eq 'letternumber'} @constrains) {
+    if ( grep { $_ eq 'letternumber' } @constrains ) {
         $vs .= << 'JSCRIPT';
             if ((passwd.search(/[a-zA-Z]/) == -1) || (passwd.search(/\d/) == -1)) {
               return "<__trans phrase="Password should include letters and numbers">";
@@ -5805,7 +5808,7 @@ JSCRIPT
 JSCRIPT
 
     }
-    if (grep {$_ eq 'upperlower'} @constrains) {
+    if ( grep { $_ eq 'upperlower' } @constrains ) {
         $vs .= << 'JSCRIPT';
             if (( passwd.search(/[a-z]/) == -1) || (passwd.search(/[A-Z]/) == -1)) {
               return "<__trans phrase="Password should include lowercase and uppercase letters">";
@@ -5813,7 +5816,7 @@ JSCRIPT
 JSCRIPT
 
     }
-    if (grep {$_ eq 'symbol'} @constrains) {
+    if ( grep { $_ eq 'symbol' } @constrains ) {
         $vs .= << 'JSCRIPT';
             if ( passwd.search(/[!"#$%&'\(\|\)\*\+,-\.\/\\:;<=>\?@\[\]^_`{}~]/) == -1 ) {
               return "<__trans phrase="Password should contain symbols such as #!$%">";
@@ -5858,23 +5861,23 @@ A string explaining the effective password policy
 =cut
 
 sub _hdlr_password_validation_rules {
-    my ( $ctx ) = @_;
+    my ($ctx) = @_;
 
     my $app = MT->instance;
 
     my @constrains = $app->config('UserPasswordValidation');
     my $min_length = $app->config('UserPasswordMinLength');
-    if (( $min_length =~ m/\D/ ) or ( $min_length < 1 )) {
+    if ( ( $min_length =~ m/\D/ ) or ( $min_length < 1 ) ) {
         $min_length = $app->config->default('UserPasswordMinLength');
     }
 
-    my $msg = $app->translate("minimum length of [_1]", $min_length);
+    my $msg = $app->translate( "minimum length of [_1]", $min_length );
     $msg .= $app->translate(', uppercase and lowercase letters')
-        if grep {$_ eq 'upperlower'} @constrains;
+        if grep { $_ eq 'upperlower' } @constrains;
     $msg .= $app->translate(', letters and numbers')
-        if grep {$_ eq 'letternumber'} @constrains;
+        if grep { $_ eq 'letternumber' } @constrains;
     $msg .= $app->translate(', symbols (such as #!$%)')
-        if grep {$_ eq 'symbol'} @constrains;
+        if grep { $_ eq 'symbol' } @constrains;
 
     return $msg;
 }

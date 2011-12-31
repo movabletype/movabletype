@@ -429,14 +429,16 @@ sub _create_asset {
     my $asset_values = { 'blog_id' => $blog->id };
     for my $hash (@$hashes) {
         for my $key ( keys %$hash ) {
-            my $value =  $hash->{$key};
+            my $value = $hash->{$key};
             if ( '_title' eq $key ) {
                 $asset_values->{'label'} = $value;
             }
             elsif ( '_link' eq $key ) {
+
                 # skip
             }
             elsif ( '_pubDate' eq $key ) {
+
                 # skip - we use post_date_gmt;
             }
             elsif ( 'dc_creator' eq $key ) {
@@ -452,15 +454,18 @@ sub _create_asset {
                 $asset_values->{'url'} = $value;
             }
             elsif ( '_description' eq $key ) {
+
                 # skip
             }
             elsif ( 'content_encoded' eq $key ) {
                 $asset_values->{'description'} = $value;
             }
             elsif ( 'wp_post_id' eq $key ) {
+
                 # skip;
             }
             elsif ( 'wp_post_date' eq $key ) {
+
                 # skip;
             }
             elsif ( 'wp_post_date_gmt' eq $key ) {
@@ -468,18 +473,23 @@ sub _create_asset {
                     = $self->_gmt2blogtime( $value, $blog );
             }
             elsif ( 'wp_comment_status' eq $key ) {
+
                 # skip
             }
             elsif ( 'wp_ping_status' eq $key ) {
+
                 # skip
             }
             elsif ( 'wp_post_name' eq $key ) {
+
                 # skip - we don't have an equivalent.
             }
             elsif ( 'wp_status' eq $key ) {
+
                 # skip possible values: inherit,
             }
             elsif ( 'wp_post_parent' eq $key ) {
+
                 # skip - entry association?
             }
             elsif ( 'wp_postmeta' eq $key ) {
@@ -488,6 +498,7 @@ sub _create_asset {
                         $asset_values->{'file_path'} = $value->{$meta_key};
                     }
                     elsif ( '_wp_attachment_metadata' eq $meta_key ) {
+
                         # only parse width and height
                         my $serialized = $value->{$meta_key};
                         if ( $serialized

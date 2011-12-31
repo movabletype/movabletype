@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -55,13 +55,13 @@ sub class_label_plural {
 sub list_props {
     return {
         user_name => {
-            label   => 'User',
+            label        => 'User',
             filter_label => 'User Name',
-            base    => '__virtual.string',
-            display => 'force',
-            order   => 100,
-            col     => 'name',               # this looks up author table
-            html    => sub {
+            base         => '__virtual.string',
+            display      => 'force',
+            order        => 100,
+            col          => 'name',               # this looks up author table
+            html         => sub {
                 my ( $prop, $obj, $app ) = @_;
                 my $type = 'user';
                 my $icon_url
@@ -69,7 +69,7 @@ sub list_props {
                     . 'images/nav_icons/color/'
                     . $type . '.gif';
                 return '(unknown object)' unless defined $obj->user;
-                my $name      = MT::Util::encode_html($obj->user->name);
+                my $name      = MT::Util::encode_html( $obj->user->name );
                 my $edit_link = $app->uri(
                     mode => 'view',
                     args => {
@@ -104,13 +104,13 @@ sub list_props {
             sort => 0,
         },
         role_name => {
-            label      => 'Role',
+            label        => 'Role',
             filter_label => 'Role Name',
-            display    => 'force',
-            order      => 200,
-            base       => '__virtual.string',
-            col        => 'name',               # this looks up role table
-            sub_fields => [
+            display      => 'force',
+            order        => 200,
+            base         => '__virtual.string',
+            col          => 'name',               # this looks up role table
+            sub_fields   => [
                 {   class   => 'role-detail',
                     label   => 'Role Detail',
                     display => 'optional',
@@ -119,7 +119,7 @@ sub list_props {
             html => sub {
                 my ( $prop, $obj, $app ) = @_;
                 my $role      = $obj->role;
-                my $name      = MT::Util::encode_html($role->name);
+                my $name      = MT::Util::encode_html( $role->name );
                 my $edit_link = $app->uri(
                     mode => 'view',
                     args => {
@@ -166,7 +166,7 @@ sub list_props {
                 my $role_terms = $prop->super(@_);
                 my @roles = MT->model('role')->load( { %$role_terms, }, );
                 if ( scalar @roles < 1 ) {
-                    return { role_id => \'< 0' }; # baka editors '};
+                    return { role_id => \'< 0' };    # baka editors '};
                 }
                 return { role_id => [ map { $_->id } @roles ], };
             },
@@ -177,7 +177,7 @@ sub list_props {
                 delete $args->{sort};
                 push @{ $args->{joins} }, MT->model('role')->join_on(
                     undef,
-                    { id => \'= association_role_id', }, # baka editors '},
+                    { id => \'= association_role_id', },    # baka editors '},
                     {   sort      => 'name',
                         direction => delete $args->{direction},
                     },
@@ -186,11 +186,11 @@ sub list_props {
             },
         },
         blog_name => {
-            label   => 'Website/Blog Name',
+            label        => 'Website/Blog Name',
             filter_label => '__WEBSITE_BLOG_NAME',
-            base    => '__virtual.string',
-            display => 'default',
-            order   => 300,
+            base         => '__virtual.string',
+            display      => 'default',
+            order        => 300,
             col => 'name',    # this looks up mt_blog.blog_nam column
             default_sort_order => 'ascend',
             bulk_html          => sub {
@@ -208,7 +208,8 @@ sub list_props {
                 my %names = map { $_->id => $_->name } @blogs;
                 my @outs;
                 for my $obj (@$objs) {
-                    my $name          = MT::Util::encode_html($names{ $obj->blog_id });
+                    my $name
+                        = MT::Util::encode_html( $names{ $obj->blog_id } );
                     my $dashboard_url = $app->uri(
                         mode => 'dashboard',
                         args => { blog_id => $obj->blog_id, },
@@ -257,8 +258,8 @@ sub list_props {
             label_via_param => sub {
                 my ( $prop, $app, $val ) = @_;
                 my $role = MT->model('role')->load($val)
-                    or return $prop->error(
-                    MT->translate('Invalid parameter') );
+                    or
+                    return $prop->error( MT->translate('Invalid parameter') );
                 return MT->translate( 'Permissions with role: [_1]',
                     $role->name, );
             },
@@ -272,8 +273,8 @@ sub list_props {
             label_via_param => sub {
                 my ( $prop, $app, $val ) = @_;
                 my $author = MT->model('author')->load($val)
-                    or return $prop->error(
-                    MT->translate('Invalid parameter') );
+                    or
+                    return $prop->error( MT->translate('Invalid parameter') );
                 my $label = MT->translate( 'Permissions for [_1]',
                     $author->nickname, );
                 return $label;
@@ -281,8 +282,8 @@ sub list_props {
             args_via_param => sub {
                 my ( $prop, $app, $val ) = @_;
                 my $author = MT->model('author')->load($val)
-                    or return $prop->error(
-                    MT->translate('Invalid parameter') );
+                    or
+                    return $prop->error( MT->translate('Invalid parameter') );
                 my $label = MT->translate( 'Permissions for [_1]',
                     $author->nickname, );
                 return {
