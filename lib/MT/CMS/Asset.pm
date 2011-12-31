@@ -280,6 +280,7 @@ sub insert {
         $ext_from, $ext_to )
         if ( $ext_from && $ext_to );
     my $tmpl;
+
     if ($extension_message) {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
@@ -326,7 +327,9 @@ sub asset_userpic {
         my $user = $app->model('author')->load( { id => $user_id } );
         if ($user) {
             my $appuser = $app->user;
-            if ( ( !$appuser->is_superuser ) && ( $user->id != $appuser->id ) ) {
+            if (   ( !$appuser->is_superuser )
+                && ( $user->id != $appuser->id ) )
+            {
                 return $app->return_to_dashboard( permission => 1 );
             }
 
@@ -550,7 +553,7 @@ sub start_upload_entry {
 
     $app->validate_magic() or return;
 
-    my $q   = $app->param;
+    my $q = $app->param;
     $q->param( '_type', 'entry' );
     defined( my $text = _process_post_upload($app) ) or return;
     $q->param( 'text',     $text );
@@ -784,8 +787,10 @@ sub build_asset_hasher {
         }
 
         @$row{ keys %$meta } = values %$meta;
-        $meta->{name} = MT::Util::encode_html($meta->{name}) if exists $meta->{name};
-        $meta->{Name} = MT::Util::encode_html($meta->{Name}) if exists $meta->{Name};
+        $meta->{name} = MT::Util::encode_html( $meta->{name} )
+            if exists $meta->{name};
+        $meta->{Name} = MT::Util::encode_html( $meta->{Name} )
+            if exists $meta->{Name};
         $row->{metadata_json} = MT::Util::to_json($meta);
         $row;
     };
@@ -924,7 +929,7 @@ sub save {
 sub cms_save_filter {
     my ( $cb, $app ) = @_;
     if ( $app->param('file_name') || $app->param('file_path') ) {
-        return $app->errtrans("Invalid request.")
+        return $app->errtrans("Invalid request.");
     }
     1;
 }
@@ -1401,17 +1406,31 @@ sub _upload_file {
     $ext = $1;    ## Those characters are the file extension
 
     if ( my $deny_exts = $app->config->DeniedAssetFileExtensions ) {
-        my @deny_exts = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $deny_exts;
+        my @deny_exts = map {
+            if   ( $_ =~ m/^\./ ) {qr/$_/i}
+            else                  {qr/\.$_/i}
+        } split '\s?,\s?', $deny_exts;
         my @ret = File::Basename::fileparse( $local_base, @deny_exts );
         if ( $ret[2] ) {
-            return $app->error($app->translate('The file([_1]) you uploaded is not allowed.', $local_base));
+            return $app->error(
+                $app->translate(
+                    'The file([_1]) you uploaded is not allowed.', $local_base
+                )
+            );
         }
     }
     if ( my $allow_exts = $app->config('AssetFileExtensions') ) {
-        my @allow_exts = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $allow_exts;
+        my @allow_exts = map {
+            if   ( $_ =~ m/^\./ ) {qr/$_/i}
+            else                  {qr/\.$_/i}
+        } split '\s?,\s?', $allow_exts;
         my @ret = File::Basename::fileparse( $local_base, @allow_exts );
         unless ( $ret[2] ) {
-            return $app->error($app->translate('The file([_1]) you uploaded is not allowed.', $local_base));
+            return $app->error(
+                $app->translate(
+                    'The file([_1]) you uploaded is not allowed.', $local_base
+                )
+            );
         }
     }
 

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -17,14 +17,14 @@ BEGIN {
     eval "use DBD::SQLite 1.11;";
     if ($@) {
         *bind_param_attributes = sub {
-            my ($dbd, $data_type) = @_;
-            if ($data_type && $data_type->{type} eq 'blob') {
+            my ( $dbd, $data_type ) = @_;
+            if ( $data_type && $data_type->{type} eq 'blob' ) {
                 return SQL_BLOB;
             }
             return;
         };
     }
-};
+}
 
 use base qw(
     MT::ObjectDriver::Driver::DBD::Legacy
@@ -59,32 +59,35 @@ sub dsn_from_config {
 
     my $db_file = $cfg->Database;
     require File::Spec;
-    if (!File::Spec->file_name_is_absolute($db_file)) {
-        $db_file = File::Spec->catfile(MT->instance->config_dir, $db_file);
+    if ( !File::Spec->file_name_is_absolute($db_file) ) {
+        $db_file = File::Spec->catfile( MT->instance->config_dir, $db_file );
         $cfg->Database($db_file);
     }
     ## This is ugly but necessary. SQLite only creates files with 0644
     ## permissions, so we can't use umask settings to modify those. So
     ## instead, we have to create the file if it doesn't exist in order
     ## to give it the proper permissions.
-    unless (-e $db_file) {
+    unless ( -e $db_file ) {
         my $umask = oct $cfg->DBUmask;
-        my $old = umask($umask);
+        my $old   = umask($umask);
         local *JUNK;
-        sysopen JUNK, $db_file, O_RDWR|O_CREAT, 0666
+        sysopen JUNK, $db_file, O_RDWR | O_CREAT, 0666
             or return undef;
-            #or return $driver->error(MT->translate("Can't open '[_1]': [_2]", $db_file, $!));
+
+#or return $driver->error(MT->translate("Can't open '[_1]': [_2]", $db_file, $!));
         close JUNK;
         umask($old);
     }
-    unless (-w $db_file) {
+    unless ( -w $db_file ) {
         return undef;
+
         #return $driver->error(MT->translate(
         #    "Your database file ('[_1]') is not writable.", $db_file));
     }
     my $dir = dirname($db_file);
-    unless (-w $dir) {
+    unless ( -w $dir ) {
         return undef;
+
         #return $driver->error(MT->translate(
         #    "Your database directory ('[_1]') is not writable.", $dir));
     }
@@ -96,7 +99,7 @@ sub dsn_from_config {
 
 sub init_dbh {
     my $dbd = shift;
-    my($dbh) = @_;
+    my ($dbh) = @_;
     $dbd->SUPER::init_dbh($dbh);
     $dbh->{sqlite_handle_binary_nulls} = 1;
     return $dbh;
@@ -119,18 +122,19 @@ sub configure {
 
 sub count {
     my $driver = shift;
-    my($class, $terms, $args) = @_;
+    my ( $class, $terms, $args ) = @_;
 
-    my $join = $args->{join};
+    my $join   = $args->{join};
     my $select = 'COUNT(*)';
-    if ($join && $join->[3]->{unique}) {
+    if ( $join && $join->[3]->{unique} ) {
         my $col;
-        if ($join->[3]{unique} =~ m/\D/) {
+        if ( $join->[3]{unique} =~ m/\D/ ) {
             $col = $args->{join}[3]{unique};
-        } else {
+        }
+        else {
             $col = $class->properties->{primary_key};
         }
-        my $dbcol = $driver->dbd->db_column_name($class->datasource, $col);
+        my $dbcol = $driver->dbd->db_column_name( $class->datasource, $col );
         ## the line below is the only difference from the DBI::count method.
         $args->{count_distinct} = { $col => 1 };
     }
@@ -141,10 +145,10 @@ sub count {
         terms    => $terms,
         args     => $args,
         override => {
-                     order  => '',
-                     limit  => undef,
-                     offset => undef,
-                    },
+            order  => '',
+            limit  => undef,
+            offset => undef,
+        },
     );
     delete $args->{count_distinct};
     $result;

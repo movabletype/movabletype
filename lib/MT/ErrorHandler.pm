@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -9,16 +9,18 @@ use strict;
 
 use vars qw( $ERROR );
 
-sub new    { bless {}, shift }
-sub error  {
+sub new { bless {}, shift }
+
+sub error {
     my $class = shift;
     my $msg = @_ ? $_[0] : '';
-    if (defined $msg) {
-        $msg .= "\n" if ($msg ne '') && ($msg !~ /\n$/);
+    if ( defined $msg ) {
+        $msg .= "\n" if ( $msg ne '' ) && ( $msg !~ /\n$/ );
     }
-    if (ref($class)) {
+    if ( ref($class) ) {
         $class->{_errstr} = $msg;
-    } else {
+    }
+    else {
         $ERROR = $msg;
     }
     return;
@@ -26,10 +28,11 @@ sub error  {
 
 sub trans_error {
     my $obj = shift;
-    return $obj->error($obj->can('translate') ? $obj->translate(@_) : MT->translate(@_));
+    return $obj->error(
+        $obj->can('translate') ? $obj->translate(@_) : MT->translate(@_) );
 }
 
-sub errstr { ref($_[0]) ? $_[0]->{_errstr} : $ERROR }
+sub errstr { ref( $_[0] ) ? $_[0]->{_errstr} : $ERROR }
 
 1;
 __END__

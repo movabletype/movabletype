@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -9,18 +9,20 @@ package MT::Asset::Image;
 use strict;
 use base qw( MT::Asset );
 
-__PACKAGE__->install_properties( {
-    class_type => 'image',
-    column_defs => {
-        'image_width' => 'integer meta',
-        'image_height' => 'integer meta',
-    },
-} );
+__PACKAGE__->install_properties(
+    {   class_type  => 'image',
+        column_defs => {
+            'image_width'  => 'integer meta',
+            'image_height' => 'integer meta',
+        },
+    }
+);
 
 # List of supported file extensions (to aid the stock 'can_handle' method.)
 sub extensions {
     my $pkg = shift;
-    return $pkg->SUPER::extensions( [ qr/gif/i, qr/jpe?g/i, qr/png/i, qr/bmp/i, qr/tiff?/i, ] );
+    return $pkg->SUPER::extensions(
+        [ qr/gif/i, qr/jpe?g/i, qr/png/i, qr/bmp/i, qr/tiff?/i, ] );
 }
 
 sub class_label {
@@ -39,26 +41,26 @@ sub metadata {
     my $height = $obj->image_height;
     $meta->{image_width}  = $width  if defined $width;
     $meta->{image_height} = $height if defined $height;
-    $meta->{image_dimensions} = $meta->{ MT->translate("Actual Dimensions") } =
-      MT->translate( "[_1] x [_2] pixels", $width, $height )
-      if defined $width && defined $height;
+    $meta->{image_dimensions} = $meta->{ MT->translate("Actual Dimensions") }
+        = MT->translate( "[_1] x [_2] pixels", $width, $height )
+        if defined $width && defined $height;
 
     $meta;
 }
 
 sub image_height {
     my $asset = shift;
-    my $height = $asset->meta('image_height', @_);
+    my $height = $asset->meta( 'image_height', @_ );
     return $height if $height || @_;
 
     eval { require Image::Size; };
     return undef if $@;
-    if ( ! -e $asset->file_path || ! -r $asset->file_path ) {
+    if ( !-e $asset->file_path || !-r $asset->file_path ) {
         return undef;
     }
-    my ( $w, $h, $id ) = Image::Size::imgsize($asset->file_path);
-    $asset->meta('image_height', $h);
-    if ($asset->id) {
+    my ( $w, $h, $id ) = Image::Size::imgsize( $asset->file_path );
+    $asset->meta( 'image_height', $h );
+    if ( $asset->id ) {
         $asset->save;
     }
     return $h;
@@ -66,17 +68,17 @@ sub image_height {
 
 sub image_width {
     my $asset = shift;
-    my $width = $asset->meta('image_width', @_);
+    my $width = $asset->meta( 'image_width', @_ );
     return $width if $width || @_;
 
     eval { require Image::Size; };
     return undef if $@;
-    if ( ! -e $asset->file_path || ! -r $asset->file_path ) {
+    if ( !-e $asset->file_path || !-r $asset->file_path ) {
         return undef;
     }
-    my ( $w, $h, $id ) = Image::Size::imgsize($asset->file_path);
-    $asset->meta('image_width', $w);
-    if ($asset->id) {
+    my ( $w, $h, $id ) = Image::Size::imgsize( $asset->file_path );
+    $asset->meta( 'image_width', $w );
+    if ( $asset->id ) {
         $asset->save;
     }
     return $w;
@@ -87,10 +89,10 @@ sub has_thumbnail {
 }
 
 sub thumbnail_path {
-    my $asset   = shift;
+    my $asset = shift;
     my (%param) = @_;
 
-    $asset->_make_cache_path($param{Path});
+    $asset->_make_cache_path( $param{Path} );
 }
 
 sub thumbnail_file {
@@ -104,16 +106,16 @@ sub thumbnail_file {
     my $fmgr;
 
     require MT::Util;
-    my $asset_cache_path = $asset->_make_cache_path($param{Path});
+    my $asset_cache_path = $asset->_make_cache_path( $param{Path} );
     my ( $i_h, $i_w ) = ( $asset->image_height, $asset->image_width );
     return undef unless $i_h && $i_w;
 
     # Pretend the image is already square, for calculation purposes.
-    if ($param{Square}) {
+    if ( $param{Square} ) {
         require MT::Image;
-        my %square = MT::Image->inscribe_square(
-            Width => $i_w, Height => $i_h );
-        ($i_h, $i_w) = @square{qw( Size Size )};
+        my %square
+            = MT::Image->inscribe_square( Width => $i_w, Height => $i_h );
+        ( $i_h, $i_w ) = @square{qw( Size Size )};
         if ( $param{Width} && !$param{Height} ) {
             $param{Height} = $param{Width};
         }
@@ -132,8 +134,8 @@ sub thumbnail_file {
     }
 
     # find the longest dimension of the image:
-    my ( $n_h, $n_w ) =
-      _get_dimension( $i_h, $i_w, $param{Height}, $param{Width} );
+    my ( $n_h, $n_w )
+        = _get_dimension( $i_h, $i_w, $param{Height}, $param{Width} );
 
     my $file = $asset->thumbnail_filename(%param) or return;
     my $thumbnail = File::Spec->catfile( $asset_cache_path, $file );
@@ -151,8 +153,11 @@ sub thumbnail_file {
     return undef unless $fmgr->can_write($asset_cache_path);
 
     my $data;
-    if ( ( $n_w == $i_w ) && ( $n_h == $i_h ) && !$param{Square}
-      && !$param{Type} ) {
+    if (   ( $n_w == $i_w )
+        && ( $n_h == $i_h )
+        && !$param{Square}
+        && !$param{Type} )
+    {
         $data = $fmgr->get_data( $file_path, 'upload' );
     }
     else {
@@ -160,28 +165,30 @@ sub thumbnail_file {
         # create a thumbnail for this file
         require MT::Image;
         my $img = new MT::Image( Filename => $file_path )
-          or return $asset->error( MT::Image->errstr );
+            or return $asset->error( MT::Image->errstr );
 
         # Really make the image square, so our scale calculation works out.
-        if ($param{Square}) {
+        if ( $param{Square} ) {
             ($data) = $img->make_square()
-              or return $asset->error(
+                or return $asset->error(
                 MT->translate( "Error cropping image: [_1]", $img->errstr ) );
         }
 
         ($data) = $img->scale( Height => $n_h, Width => $n_w )
-          or return $asset->error(
+            or return $asset->error(
             MT->translate( "Error scaling image: [_1]", $img->errstr ) );
 
-        if (my $type = $param{Type}) {
+        if ( my $type = $param{Type} ) {
             ($data) = $img->convert( Type => $type )
-              or return $asset->error(
-                MT->translate( "Error converting image: [_1]", $img->errstr ) );
+                or return $asset->error(
+                MT->translate( "Error converting image: [_1]", $img->errstr )
+                );
         }
     }
     $fmgr->put_data( $data, $thumbnail, 'upload' )
-      or return $asset->error(
-        MT->translate( "Error creating thumbnail file: [_1]", $fmgr->errstr ) );
+        or return $asset->error(
+        MT->translate( "Error creating thumbnail file: [_1]", $fmgr->errstr )
+        );
     return ( $thumbnail, $n_w, $n_h );
 }
 
@@ -245,7 +252,7 @@ sub thumbnail_filename {
     $file =~ s/\.\w+$//;
     my $base = File::Basename::basename($file);
     my $id   = $asset->id;
-    my $ext  = lc($param{Type}) || $asset->file_ext || '';
+    my $ext  = lc( $param{Type} ) || $asset->file_ext || '';
     $ext = '.' . $ext;
     $format =~ s/%w/$width/g;
     $format =~ s/%h/$height/g;
@@ -261,7 +268,9 @@ sub as_html {
     my $text    = '';
 
     my $app = MT->instance;
-    $param->{enclose} = 0 unless ( $app->isa('MT::App') && ( $app->param('edit_field') =~ /^customfield/ ) );
+    $param->{enclose} = 0
+        unless ( $app->isa('MT::App')
+        && ( $app->param('edit_field') =~ /^customfield/ ) );
     $param->{enclose} = 1 unless exists $param->{enclose};
 
     if ( $param->{include} ) {
@@ -272,18 +281,17 @@ sub as_html {
         my $thumb = undef;
         if ( $param->{thumb} ) {
             $thumb = MT::Asset->load( $param->{thumb_asset_id} )
-              || return $asset->error(
+                || return $asset->error(
                 MT->translate(
                     "Can't load image #[_1]",
                     $param->{thumb_asset_id}
                 )
-              );
+                );
         }
 
         my $dimensions = sprintf(
             'width="%s" height="%s"',
-            (
-                $thumb
+            (   $thumb
                 ? ( $thumb->image_width, $thumb->image_height )
                 : ( $asset->image_width, $asset->image_height )
             )
@@ -298,31 +306,33 @@ sub as_html {
                 $wrap_style .= q{style="float: left; margin: 0 20px 20px 0;"};
             }
             elsif ( $param->{align} eq 'right' ) {
-                $wrap_style .= q{style="float: right; margin: 0 0 20px 20px;"};
+                $wrap_style
+                    .= q{style="float: right; margin: 0 0 20px 20px;"};
             }
             elsif ( $param->{align} eq 'center' ) {
-                $wrap_style .= q{style="text-align: center; display: block; margin: 0 auto 20px;"};
+                $wrap_style
+                    .= q{style="text-align: center; display: block; margin: 0 auto 20px;"};
             }
         }
 
         if ( $param->{popup} && $param->{popup_asset_id} ) {
             my $popup = MT::Asset->load( $param->{popup_asset_id} )
-              || return $asset->error(
+                || return $asset->error(
                 MT->translate(
                     "Can't load image #[_1]",
                     $param->{popup_asset_id}
                 )
-              );
-            my $link =
-              $thumb
-              ? sprintf(
+                );
+            my $link
+                = $thumb
+                ? sprintf(
                 '<img src="%s" %s alt="%s" %s />',
                 MT::Util::encode_html( $thumb->url ),   $dimensions,
                 MT::Util::encode_html( $asset->label ), $wrap_style
-              )
-              : MT->translate('View image');
+                )
+                : MT->translate('View image');
             $text = sprintf(
-q|<a href="%s" onclick="window.open('%s','popup','width=%d,height=%d,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false">%s</a>|,
+                q|<a href="%s" onclick="window.open('%s','popup','width=%d,height=%d,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false">%s</a>|,
                 MT::Util::encode_html( $popup->url ),
                 MT::Util::encode_html( $popup->url ),
                 $asset->image_width,
@@ -375,21 +385,23 @@ sub insert_options {
     eval { require MT::Image; MT::Image->new or die; };
     $param->{do_thumb} = $@ ? 0 : 1;
 
-    $param->{can_save_image_defaults} = $perms->can_save_image_defaults ? 1 : 0;
+    $param->{can_save_image_defaults}
+        = $perms->can_save_image_defaults ? 1 : 0;
 
     #$param->{constrain} = $blog->image_default_constrain ? 1 : 0;
     $param->{popup}      = $blog->image_default_popup     ? 1 : 0;
     $param->{wrap_text}  = $blog->image_default_wrap_text ? 1 : 0;
     $param->{make_thumb} = $blog->image_default_thumb     ? 1 : 0;
-    $param->{ 'align_' . $_ } =
-      ( $blog->image_default_align || 'none' ) eq $_ ? 1 : 0
-      for qw(none left center right);
-    $param->{ 'unit_w' . $_ } =
-      ( $blog->image_default_wunits || 'pixels' ) eq $_ ? 1 : 0
-      for qw(percent pixels);
-    $param->{thumb_width} = $blog->image_default_width
-      || $asset->image_width
-      || 0;
+    $param->{ 'align_' . $_ }
+        = ( $blog->image_default_align || 'none' ) eq $_ ? 1 : 0
+        for qw(none left center right);
+    $param->{ 'unit_w' . $_ }
+        = ( $blog->image_default_wunits || 'pixels' ) eq $_ ? 1 : 0
+        for qw(percent pixels);
+    $param->{thumb_width} 
+        = $blog->image_default_width
+        || $asset->image_width
+        || 0;
 
     return $app->build_page( 'dialog/asset_options_image.tmpl', $param );
 }
@@ -410,9 +422,8 @@ sub on_upload {
     my $height = $asset->image_height;
 
     my ( $base_url, $fname ) = $url =~ m|(.*)/([^/]*)|;
-    $url =
-        $base_url . '/'
-      . $fname;    # no need to re-encode filename; url is already encoded
+    $url = $base_url . '/'
+        . $fname;    # no need to re-encode filename; url is already encoded
     my $blog = $asset->blog or return;
     my $blog_id = $blog->id;
 
@@ -447,7 +458,7 @@ sub on_upload {
             $blog->image_default_thumb(1);
             $blog->image_default_width($thumb_width);
             $blog->image_default_wunits( $param->{thumb_width_type}
-                  || MT::Blog::UNITS() );
+                    || MT::Blog::UNITS() );
         }
         else {
             $blog->image_default_thumb(0);
@@ -461,25 +472,32 @@ sub on_upload {
     }
 
     require MT::Util;
+
     # Thumbnail creation
     if ( $thumb = $param->{thumb} ) {
         require MT::Image;
         my $image_type = scalar $param->{image_type};
         my ( $w, $h ) = map $param->{$_}, qw( thumb_width thumb_height );
-        my ($pseudo_thumbnail_url) =
-          $asset->thumbnail_url( Height => $h, Width => $w, Pseudo => 1 );
-        my $thumbnail = $asset->thumbnail_filename( Height => $h, Width => $w );
-        my $pseudo_thumbnail_path = File::Spec->catfile( $asset->_make_cache_path( undef, 1 ), $thumbnail );
-        my ( $base, $path, $ext ) =
-          File::Basename::fileparse( $thumbnail, qr/[A-Za-z0-9]+$/ );
-        my $img_pkg         = MT::Asset->handler_for_file($thumbnail);
+        my ($pseudo_thumbnail_url)
+            = $asset->thumbnail_url( Height => $h, Width => $w, Pseudo => 1 );
+        my $thumbnail
+            = $asset->thumbnail_filename( Height => $h, Width => $w );
+        my $pseudo_thumbnail_path
+            = File::Spec->catfile( $asset->_make_cache_path( undef, 1 ),
+            $thumbnail );
+        my ( $base, $path, $ext )
+            = File::Basename::fileparse( $thumbnail, qr/[A-Za-z0-9]+$/ );
+        my $img_pkg = MT::Asset->handler_for_file($thumbnail);
         my $original;
-        my $asset_thumb = $img_pkg->load({
-            file_name => "$base$ext",
-            parent   => $asset->id,});
-        if (!$asset_thumb) {
-            $asset_thumb     = new $img_pkg;
-            $original        = $asset_thumb->clone;
+        my $asset_thumb = $img_pkg->load(
+            {   file_name => "$base$ext",
+                parent    => $asset->id,
+            }
+        );
+
+        if ( !$asset_thumb ) {
+            $asset_thumb = new $img_pkg;
+            $original    = $asset_thumb->clone;
             $asset_thumb->blog_id($blog_id);
             $asset_thumb->url($pseudo_thumbnail_url);
             $asset_thumb->file_path($pseudo_thumbnail_path);
@@ -488,17 +506,23 @@ sub on_upload {
             $asset_thumb->image_width($w);
             $asset_thumb->image_height($h);
             $asset_thumb->created_by( $app->user->id );
-            $asset_thumb->label($app->translate("Thumbnail image for [_1]", $asset->label || $asset->file_name));
+            $asset_thumb->label(
+                $app->translate(
+                    "Thumbnail image for [_1]",
+                    $asset->label || $asset->file_name
+                )
+            );
             $asset_thumb->parent( $asset->id );
             $asset_thumb->save;
-        } else {
+        }
+        else {
             $original = $asset_thumb->clone;
         }
 
         # force these to calculate now, giving a full URL / file path
         # for callbacks
         $thumbnail = $asset_thumb->file_path;
-        my $thumbnail_url = $asset_thumb->url;
+        my $thumbnail_url   = $asset_thumb->url;
         my $thumb_file_size = ( stat($thumbnail) )[7];
 
         $app->run_callbacks( 'cms_post_save.asset', $app, $asset_thumb,
@@ -546,14 +570,12 @@ sub on_upload {
     }
     if ( $param->{popup} ) {
         require MT::Template;
-        if (
-            my $tmpl = MT::Template->load(
-                {
-                    blog_id => $blog_id,
+        if (my $tmpl = MT::Template->load(
+                {   blog_id => $blog_id,
                     type    => 'popup_image'
                 }
             )
-          )
+            )
         {
             ( my $rel_path = $param->{fname} ) =~ s!\.[^.]*$!!;
             if ( $rel_path =~ m!\.\.|\0|\|! ) {
@@ -571,50 +593,58 @@ sub on_upload {
             $ctx->stash( 'image_url',    $url );
             $ctx->stash( 'image_width',  $width );
             $ctx->stash( 'image_height', $height );
-            my $popup = $tmpl->build($ctx) or die $tmpl->errstr;
-            my $fmgr = $blog->file_mgr;
-            my $root_path = $asset->_make_cache_path;
+            my $popup       = $tmpl->build($ctx) or die $tmpl->errstr;
+            my $fmgr        = $blog->file_mgr;
+            my $root_path   = $asset->_make_cache_path;
             my $pseudo_path = $asset->_make_cache_path( undef, 1 );
-            my $abs_file_path =
-              File::Spec->catfile( $root_path, $rel_path . $ext );
+            my $abs_file_path
+                = File::Spec->catfile( $root_path, $rel_path . $ext );
 
             my ( $i, $rel_path_ext ) = ( 0, $rel_path . $ext );
             $pseudo_path = File::Spec->catfile( $pseudo_path, $rel_path_ext );
-            my ( $vol, $dirs, $basename ) =
-              File::Spec->splitpath($rel_path_ext);
+            my ( $vol, $dirs, $basename )
+                = File::Spec->splitpath($rel_path_ext);
 
             ## Untaint. We have checked for security holes above, so we
             ## should be safe.
             ($abs_file_path) = $abs_file_path =~ /(.+)/s;
             $fmgr->put_data( $popup, $abs_file_path, 'upload' )
-              or return $app->error(
+                or return $app->error(
                 $app->translate(
                     "Error writing to '[_1]': [_2]", $abs_file_path,
                     $fmgr->errstr
                 )
-              );
+                );
 
-            my $html_pkg   = MT::Asset->handler_for_file($abs_file_path);
+            my $html_pkg = MT::Asset->handler_for_file($abs_file_path);
             my $original;
-            my $asset_html = $html_pkg->load({
-                file_name => "$basename",
-                parent => $asset->id});
-            if (!$asset_html) {
+            my $asset_html = $html_pkg->load(
+                {   file_name => "$basename",
+                    parent    => $asset->id
+                }
+            );
+            if ( !$asset_html ) {
                 $asset_html = new $html_pkg;
                 $original   = $asset_html->clone;
                 $asset_html->blog_id($blog_id);
                 my $pseudo_url = $pseudo_path;
-                $pseudo_url  =~ s!\\!/!g;
+                $pseudo_url =~ s!\\!/!g;
                 $asset_html->url($pseudo_url);
-                $asset_html->label($app->translate("Popup Page for [_1]", $asset->label || $asset->file_name));
+                $asset_html->label(
+                    $app->translate(
+                        "Popup Page for [_1]",
+                        $asset->label || $asset->file_name
+                    )
+                );
                 $asset_html->file_path($pseudo_path);
                 $asset_html->file_name($basename);
                 $asset_html->file_ext( $blog->file_extension );
                 $asset_html->created_by( $app->user->id );
                 $asset_html->parent( $asset->id );
                 $asset_html->save;
-            } else {
-                $original   = $asset_html->clone;
+            }
+            else {
+                $original = $asset_html->clone;
             }
 
             # Select back the real URL for callbacks
@@ -647,7 +677,7 @@ sub on_upload {
 
 sub edit_template_param {
     my $asset = shift;
-    my ($cb, $app, $param, $tmpl) = @_;
+    my ( $cb, $app, $param, $tmpl ) = @_;
 
     $param->{image_height} = $asset->image_height;
     $param->{image_width}  = $asset->image_width;

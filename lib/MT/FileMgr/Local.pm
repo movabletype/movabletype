@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -15,20 +15,25 @@ use Fcntl qw( :DEFAULT :flock );
 
 sub get_data {
     my $fmgr = shift;
-    my($from, $type) = @_;
-    my($fh);
-    if (!$fmgr->is_handle($from)) {
+    my ( $from, $type ) = @_;
+    my ($fh);
+    if ( !$fmgr->is_handle($from) ) {
         $fh = gensym();
         open $fh, $from
-            or return $fmgr->error(MT->translate(
-                "Opening local file '[_1]' failed: [_2]", $from, "$!" ));
-    } else {
+            or return $fmgr->error(
+            MT->translate(
+                "Opening local file '[_1]' failed: [_2]",
+                $from, "$!"
+            )
+            );
+    }
+    else {
         $fh = $from;
     }
-    if ($type && $type eq 'upload') {
+    if ( $type && $type eq 'upload' ) {
         binmode($fh);
     }
-    my($data);
+    my ($data);
     { local $/; $data = <$fh>; }
     close $fh if !$fmgr->is_handle($from);
     $data;
@@ -37,17 +42,22 @@ sub get_data {
 ## $type is either 'upload' or 'output'
 sub put {
     my $fmgr = shift;
-    my($from, $to, $type) = @_;
+    my ( $from, $to, $type ) = @_;
     my $rv;
-    if (!$fmgr->is_handle($from)) {
+    if ( !$fmgr->is_handle($from) ) {
         my $fh = gensym();
         open $fh, $from
-            or return $fmgr->error(MT->translate(
-                "Opening local file '[_1]' failed: [_2]", $from, "$!"));
-        $rv = _write_file($fmgr, $fh, $to, $type);
+            or return $fmgr->error(
+            MT->translate(
+                "Opening local file '[_1]' failed: [_2]",
+                $from, "$!"
+            )
+            );
+        $rv = _write_file( $fmgr, $fh, $to, $type );
         close $fh;
-    } else {
-        $rv = _write_file($fmgr, $from, $to, $type);
+    }
+    else {
+        $rv = _write_file( $fmgr, $from, $to, $type );
     }
     $rv;
 }
@@ -56,22 +66,24 @@ sub put {
 
 sub _write_file {
     my $fmgr = shift;
-    my($from, $to, $type) = @_;
+    my ( $from, $to, $type ) = @_;
     local *FH;
-    my($umask, $perms);
+    my ( $umask, $perms );
     my $cfg = MT->config;
-    if ($type && $type eq 'upload') {
+    if ( $type && $type eq 'upload' ) {
         $umask = $cfg->UploadUmask;
         $perms = $cfg->UploadPerms;
-    } else {
+    }
+    else {
         $umask = $cfg->HTMLUmask;
         $perms = $cfg->HTMLPerms;
     }
-    my $old = umask(oct $umask);
-    sysopen FH, $to, O_RDWR|O_CREAT|O_TRUNC, oct $perms
-        or return $fmgr->error(MT->translate(
-            "Opening local file '[_1]' failed: [_2]", $to, "$!"));
-    if ($type && $type eq 'upload') {
+    my $old = umask( oct $umask );
+    sysopen FH, $to, O_RDWR | O_CREAT | O_TRUNC, oct $perms
+        or return $fmgr->error(
+        MT->translate( "Opening local file '[_1]' failed: [_2]", $to, "$!" )
+        );
+    if ( $type && $type eq 'upload' ) {
         binmode(FH);
         binmode($from) if $fmgr->is_handle($from);
     }
@@ -80,12 +92,13 @@ sub _write_file {
     seek FH, 0, 0;
     truncate FH, 0;
     my $bytes = 0;
-    if ($fmgr->is_handle($from)) {
-        while (my $len = read $from, my($block), 8192) {
+    if ( $fmgr->is_handle($from) ) {
+        while ( my $len = read $from, my ($block), 8192 ) {
             print FH $block;
             $bytes += $len;
         }
-    } else {
+    }
+    else {
         print FH $from;
         $bytes = length($from);
     }
@@ -100,11 +113,11 @@ sub can_write { -w $_[1] }
 
 sub mkpath {
     my $fmgr = shift;
-    my($path) = @_;
+    my ($path) = @_;
     require File::Path;
     my $umask = oct MT->config->DirUmask;
-    my $old = umask($umask);
-    eval { File::Path::mkpath([$path], 0, 0777) };
+    my $old   = umask($umask);
+    eval { File::Path::mkpath( [$path], 0, 0777 ) };
     return $fmgr->error($@) if $@;
     umask($old);
     1;
@@ -112,49 +125,56 @@ sub mkpath {
 
 sub rename {
     my $fmgr = shift;
-    my($from, $to) = @_;
+    my ( $from, $to ) = @_;
     rename $from, $to
-       or return $fmgr->error(MT->translate(
-           "Renaming '[_1]' to '[_2]' failed: [_3]", $from, $to, "$!"));
+        or return $fmgr->error(
+        MT->translate(
+            "Renaming '[_1]' to '[_2]' failed: [_3]",
+            $from, $to, "$!"
+        )
+        );
     1;
 }
 
 sub file_mod_time {
     my $fmgr = shift;
     my ($file) = @_;
-    if (-e $file) {
-        return (stat($file))[9]; # modification timestamp
+    if ( -e $file ) {
+        return ( stat($file) )[9];    # modification timestamp
     }
     return undef;
 }
 
 sub content_is_updated {
     my $fmgr = shift;
-    my($file, $content) = @_;
+    my ( $file, $content ) = @_;
     return 1 unless -e $file;
     ## If the system has Digest::MD5, compare MD5 hashes; otherwise
     ## read in the file and compare the strings.
     my $fh = gensym();
     open $fh, $file or return 1;
-    if (eval { require Digest::MD5; 1 }) {
+    if ( eval { require Digest::MD5; 1 } ) {
         my $ctx = Digest::MD5->new;
         $ctx->addfile($fh);
         close $fh;
         my $data;
-        if ($] >= 5.007003) {
+        if ( $] >= 5.007003 ) {
             require Encode;
             $data = $$content;
             Encode::_utf8_off($data);
-        } elsif ($] >= 5.006001) {
+        }
+        elsif ( $] >= 5.006001 ) {
             $data = pack 'C0A*', $$content;
-        } else {
+        }
+        else {
             $data = $$content;
         }
         return $ctx->digest ne Digest::MD5::md5($data);
-    } else {
+    }
+    else {
         my $data;
         binmode $fh;
-        while (read $fh, my($chunk), 8192) {
+        while ( read $fh, my ($chunk), 8192 ) {
             $data .= $chunk;
         }
         close $fh;
@@ -168,8 +188,8 @@ sub delete {
 
     return 1 unless -e $file or -l $file;
     unlink $file
-       or return $fmgr->error(MT->translate(
-           "Deleting '[_1]' failed: [_2]", $file, "$!"));
+        or return $fmgr->error(
+        MT->translate( "Deleting '[_1]' failed: [_2]", $file, "$!" ) );
     1;
 }
 

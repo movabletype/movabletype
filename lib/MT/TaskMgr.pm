@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -12,7 +12,7 @@ use base qw( MT::ErrorHandler );
 use MT::Task;
 use Fcntl qw( :DEFAULT :flock );
 use Symbol;
-our (%Tasks, $inst);
+our ( %Tasks, $inst );
 
 sub instance {
     $inst ||= new MT::TaskMgr;
@@ -28,7 +28,7 @@ sub init {
     my $mgr = shift;
     return if $mgr->{initialized};
     %Tasks = %{ MT->registry("tasks") || {} };
-    MT->run_callbacks('tasks', \%Tasks);
+    MT->run_callbacks( 'tasks', \%Tasks );
     $mgr->{initialized} = 1;
 }
 
@@ -36,13 +36,13 @@ sub run_tasks {
     my $mgr = shift;
     my (@tasks_to_run) = @_;
 
-    if (!ref($mgr)) {
+    if ( !ref($mgr) ) {
         $mgr = $mgr->instance;
     }
 
     @tasks_to_run = keys %Tasks unless @tasks_to_run;
 
-    if ($mgr->{running}) {
+    if ( $mgr->{running} ) {
         warn "Attempt to recursively invoke TaskMgr.";
         return;
     }
@@ -51,13 +51,17 @@ sub run_tasks {
 
     # Secure lock before running tasks
     my $unlock;
-    unless ($unlock = $mgr->_lock()) {
-        MT->log({
-            class => 'system',
-            category => 'tasks',
-            level => MT::Log::ERROR(),
-            message => MT->translate("Unable to secure lock for executing system tasks. Make sure your TempDir location ([_1]) is writable.", MT->config->TempDir)
-        });
+    unless ( $unlock = $mgr->_lock() ) {
+        MT->log(
+            {   class    => 'system',
+                category => 'tasks',
+                level    => MT::Log::ERROR(),
+                message  => MT->translate(
+                    "Unable to secure lock for executing system tasks. Make sure your TempDir location ([_1]) is writable.",
+                    MT->config->TempDir
+                )
+            }
+        );
         return;
     }
 
@@ -73,20 +77,21 @@ sub run_tasks {
         foreach my $task_name (@tasks_to_run) {
             my $task = $Tasks{$task_name} or next;
 
-            if (ref $task eq 'HASH') {
+            if ( ref $task eq 'HASH' ) {
                 $task->{key} ||= $task_name;
                 $task = $Tasks{$task_name} = MT::Task->new($task);
             }
 
             my $name = $task->label();
-            my $sess = MT::Session->load({
-                id => 'Task:' . $task->key,
-                kind => 'PT'
-            });
-            next if $sess && ($sess->start + $task->frequency > time);
-            if (!$sess) {
+            my $sess = MT::Session->load(
+                {   id   => 'Task:' . $task->key,
+                    kind => 'PT'
+                }
+            );
+            next if $sess && ( $sess->start + $task->frequency > time );
+            if ( !$sess ) {
                 $sess = MT::Session->new;
-                $sess->id('Task:' . $task->key);
+                $sess->id( 'Task:' . $task->key );
                 $sess->kind('PT');
             }
 
@@ -98,31 +103,46 @@ sub run_tasks {
             };
             if ($@) {
                 my $err = $@;
-                $app->log({
-                    class => 'system',
-                    category => 'tasks',
-                    level => MT::Log::ERROR(),
-                    message => $app->translate("Error during task '[_1]': [_2]", $name, $err),
-                    metadata => MT::Util::log_time() . ' '
-                        . $app->translate("Error during task '[_1]': [_2]", $name, $err)
-                });
-            } else {
-                push @completed, $name if (defined $status) && ($status ne '') && ($status > 0);
- 
+                $app->log(
+                    {   class    => 'system',
+                        category => 'tasks',
+                        level    => MT::Log::ERROR(),
+                        message  => $app->translate(
+                            "Error during task '[_1]': [_2]",
+                            $name, $err
+                        ),
+                        metadata => MT::Util::log_time() . ' '
+                            . $app->translate(
+                            "Error during task '[_1]': [_2]",
+                            $name, $err
+                            )
+                    }
+                );
+            }
+            else {
+                push @completed, $name
+                    if ( defined $status )
+                    && ( $status ne '' )
+                    && ( $status > 0 );
+
             }
 
             $sess->start(time);
             $sess->save;
         }
         if (@completed) {
-            $app->log({
-                class => 'system',
-                category => 'tasks',
-                level => MT::Log::INFO(),
-                message => $app->translate("Scheduled Tasks Update"),
-                metadata => MT::Util::log_time() . ' ' . $app->translate("The following tasks were run:") . ' ' .
-                    join ", ", @completed
-            });
+            $app->log(
+                {   class    => 'system',
+                    category => 'tasks',
+                    level    => MT::Log::INFO(),
+                    message  => $app->translate("Scheduled Tasks Update"),
+                    metadata => MT::Util::log_time() . ' '
+                        . $app->translate("The following tasks were run:")
+                        . ' '
+                        . join ", ",
+                    @completed
+                }
+            );
         }
     };
 
@@ -143,32 +163,37 @@ sub _lock {
     #}
 
     my $temp_dir = $cfg->TempDir;
-    my $mt_dir = MT->instance->{mt_dir};
+    my $mt_dir   = MT->instance->{mt_dir};
     $mt_dir =~ s/[^A-Za-z0-9]+/_/g;
     my $lock_name = "mt-tasks-$mt_dir.lock";
     require File::Spec;
-    $lock_name = File::Spec->catfile($temp_dir, $lock_name);
+    $lock_name = File::Spec->catfile( $temp_dir, $lock_name );
 
-    if ($cfg->UseNFSSafeLocking) {
+    if ( $cfg->UseNFSSafeLocking ) {
         require Sys::Hostname;
         my $hostname = Sys::Hostname::hostname();
         my $lock_tmp = $lock_name . '.' . $hostname . '.' . $$;
-        my $max_lock_age = 60;    ## no. of seconds til we break the lock
-        my $tries = 10;           ## no. of seconds to keep trying
-        my $lock_fh = gensym();
+        my $max_lock_age = 60;         ## no. of seconds til we break the lock
+        my $tries        = 10;         ## no. of seconds to keep trying
+        my $lock_fh      = gensym();
         open $lock_fh, ">$lock_tmp" or return;
-        select((select($lock_fh), $|=1)[0]);  ## Turn off buffering
+        select( ( select($lock_fh), $| = 1 )[0] );    ## Turn off buffering
         my $got_lock = 0;
-        for (0..$tries-1) {
-            print $lock_fh $$, "\n"; ## Update modified time on lockfile
-            if (link($lock_tmp, $lock_name)) {
-                $got_lock++; last;
-            } elsif ((stat $lock_tmp)[3] > 1) {
+
+        for ( 0 .. $tries - 1 ) {
+            print $lock_fh $$, "\n";    ## Update modified time on lockfile
+            if ( link( $lock_tmp, $lock_name ) ) {
+                $got_lock++;
+                last;
+            }
+            elsif ( ( stat $lock_tmp )[3] > 1 ) {
                 ## link() failed, but the file exists--we got the lock.
-                $got_lock++; last;
-            } else {
+                $got_lock++;
+                last;
+            }
+            else {
                 ## Couldn't get a lock; if the lock is too old, break it.
-                my $lock_age = (stat $lock_name)[10];
+                my $lock_age = ( stat $lock_name )[10];
                 unlink $lock_name if time - $lock_age > $max_lock_age;
             }
             sleep 1;
@@ -177,12 +202,13 @@ sub _lock {
         unlink $lock_tmp;
         return unless $got_lock;
         return sub { unlink $lock_name };
-    } else {
+    }
+    else {
         my $lock_fh = gensym();
-        sysopen $lock_fh, $lock_name, O_RDWR|O_CREAT, 0666
+        sysopen $lock_fh, $lock_name, O_RDWR | O_CREAT, 0666
             or return;
         my $lock_flags = LOCK_EX;
-        unless (flock $lock_fh, $lock_flags) {
+        unless ( flock $lock_fh, $lock_flags ) {
             close $lock_fh;
             return;
         }

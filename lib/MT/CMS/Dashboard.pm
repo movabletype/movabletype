@@ -24,15 +24,18 @@ sub dashboard {
     $param->{permission} ||= $app->param('permission');
     $param->{saved}      ||= $app->param('saved');
 
-    $param->{system_overview_nav} = $app->param('blog_id') ? 0 : defined($app->param('blog_id')) ? 1 : 0;
-    $param->{quick_search}        = 0;
-    $param->{no_breadcrumbs}      = 1;
-    $param->{screen_class}        = "dashboard";
-    $param->{screen_id}           = "dashboard";
+    $param->{system_overview_nav}
+        = $app->param('blog_id')            ? 0
+        : defined( $app->param('blog_id') ) ? 1
+        :                                     0;
+    $param->{quick_search}   = 0;
+    $param->{no_breadcrumbs} = 1;
+    $param->{screen_class}   = "dashboard";
+    $param->{screen_id}      = "dashboard";
 
     my $default_widgets = {
         'blog_stats' =>
-          { param => { tab => 'entry' }, order => 1, set => 'main' },
+            { param => { tab => 'entry' }, order => 1, set => 'main' },
         'this_is_you-1' => { order => 1, set => 'sidebar' },
         'mt_shortcuts'  => { order => 2, set => 'sidebar' },
         'mt_news'       => { order => 3, set => 'sidebar' },
@@ -41,25 +44,28 @@ sub dashboard {
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
     foreach my $subdir (qw( uploads userpics )) {
-        $param->{support_path} =
-            File::Spec->catdir( $app->static_file_path, 'support', $subdir );
+        $param->{support_path}
+            = File::Spec->catdir( $app->static_file_path, 'support',
+            $subdir );
         if ( !$fmgr->exists( $param->{support_path} ) ) {
             $fmgr->mkpath( $param->{support_path} );
         }
-        if ( $fmgr->exists( $param->{support_path} )
-             && $fmgr->can_write( $param->{support_path} ) )
+        if (   $fmgr->exists( $param->{support_path} )
+            && $fmgr->can_write( $param->{support_path} ) )
         {
             $param->{has_uploads_path} = 1;
-        } else {
+        }
+        else {
             $param->{has_uploads_path} = 0;
             last;
         }
     }
     unless ( exists $param->{has_uploads_path} ) {
         unless ( $fmgr->exists( $param->{support_path} ) ) {
+
             # the path didn't exist - change the warning a little
-            $param->{support_path} =
-                File::Spec->catdir( $app->static_file_path, 'support' );
+            $param->{support_path}
+                = File::Spec->catdir( $app->static_file_path, 'support' );
         }
     }
     eval { require MT::Image; MT::Image->new or die; };
@@ -78,26 +84,35 @@ sub new_version_widget {
     my ( $tmpl, $param ) = @_;
 
     push @{ $param->{feature_loop} ||= [] },
-      {
-        feature_label => MT->translate('Better, Stronger, Faster'),
-        feature_url  => $app->help_url('mt42/performance.html'),
-        feature_description => MT->translate('Movable Type has undergone a significant overhaul in all aspects of performance. Memory utilization has been reduced, publishing times have been increased significantly and search is now 100x faster!'),
-      },
-      {
-        feature_label => MT->translate('Module Caching'),
-        feature_url  => $app->help_url('mt42/module-caching.html'),
-        feature_description => MT->translate('Template module and widget content can now be cached in the database to dramatically speed up publishing.'),
-      },
-      {
-        feature_label => MT->translate('Improved Template and Design Management'),
-        feature_url  => $app->help_url('mt42/design-enhancements.html'),
-        feature_description => MT->translate('The template editing interface has been enhanced to make designers more efficient at updating their site\'s design. The default templates have also been dramatically simplified to make it easier for you to edit and create the site you want.'),
-      },
-      {
-        feature_label => MT->translate('Threaded Comments'),
-        feature_url  => $app->help_url('mt42/threading.html'),
-        feature_description => MT->translate('Allow commenters on your blog to reply to each other increasing user engagement and creating more dynamic conversations.'),
-      };
+        {
+        feature_label       => MT->translate('Better, Stronger, Faster'),
+        feature_url         => $app->help_url('mt42/performance.html'),
+        feature_description => MT->translate(
+            'Movable Type has undergone a significant overhaul in all aspects of performance. Memory utilization has been reduced, publishing times have been increased significantly and search is now 100x faster!'
+        ),
+        },
+        {
+        feature_label       => MT->translate('Module Caching'),
+        feature_url         => $app->help_url('mt42/module-caching.html'),
+        feature_description => MT->translate(
+            'Template module and widget content can now be cached in the database to dramatically speed up publishing.'
+        ),
+        },
+        {
+        feature_label =>
+            MT->translate('Improved Template and Design Management'),
+        feature_url => $app->help_url('mt42/design-enhancements.html'),
+        feature_description => MT->translate(
+            'The template editing interface has been enhanced to make designers more efficient at updating their site\'s design. The default templates have also been dramatically simplified to make it easier for you to edit and create the site you want.'
+        ),
+        },
+        {
+        feature_label       => MT->translate('Threaded Comments'),
+        feature_url         => $app->help_url('mt42/threading.html'),
+        feature_description => MT->translate(
+            'Allow commenters on your blog to reply to each other increasing user engagement and creating more dynamic conversations.'
+        ),
+        };
 }
 
 sub this_is_you_widget {
@@ -111,61 +126,53 @@ sub this_is_you_widget {
     require MT::Entry;
     $param->{publish_count} = MT::Entry->count( { author_id => $user->id, } );
     $param->{draft_count} = MT::Entry->count(
-        {
-            author_id => $user->id,
+        {   author_id => $user->id,
             status    => MT::Entry::HOLD(),
         }
     );
     if ( $param->{publish_count} ) {
-        my $iter = MT::Entry->sum_group_by({
-            author_id => $user->id,
-        }, { sum => 'comment_count', group => ['author_id'] });
-        my ($count, $author_id) = $iter->();
+        my $iter = MT::Entry->sum_group_by( { author_id => $user->id, },
+            { sum => 'comment_count', group => ['author_id'] } );
+        my ( $count, $author_id ) = $iter->();
         $param->{comment_count} = $count;
     }
 
     require MT::Permission;
-    my @perm = MT::Permission->load(
-        { author_id => $app->user->id } );
-    my @blogs
-        = map { $_->blog_id }
+    my @perm = MT::Permission->load( { author_id => $app->user->id } );
+    my @blogs = map { $_->blog_id }
         grep {
-        $_->can_create_post
+               $_->can_create_post
             || $_->can_publish_post
             || $_->can_edit_all_posts
         } @perm;
-    $param->{can_list_entries} = @blogs ? 1: 0;
-    @blogs
-        = map { $_->blog_id }
-        grep {
-            $_->can_view_feedback
-        } @perm;
+    $param->{can_list_entries} = @blogs ? 1 : 0;
+    @blogs = map { $_->blog_id }
+        grep { $_->can_view_feedback } @perm;
     $param->{can_list_comments} = @blogs ? 1 : 0;
 
     my $last_post = MT::Entry->load(
-        {
-            author_id => $user->id,
+        {   author_id => $user->id,
             status    => MT::Entry::RELEASE(),
         },
-        {
-            sort      => 'authored_on',
+        {   sort      => 'authored_on',
             direction => 'descend',
             limit     => 1,
         }
     );
+
     if ($last_post) {
-        $param->{last_post_id}      = $last_post->id;
-        $param->{last_post_blog_id} = $last_post->blog_id;
+        $param->{last_post_id}        = $last_post->id;
+        $param->{last_post_blog_id}   = $last_post->blog_id;
         $param->{last_post_blog_name} = $last_post->blog->name;
-        $param->{last_post_ts}      = $last_post->authored_on;
-        my $perms = MT::Permission->load( 
+        $param->{last_post_ts}        = $last_post->authored_on;
+        my $perms = MT::Permission->load(
             { blog_id => $last_post->blog_id, author_id => $app->user->id } );
         $param->{last_post_can_edit}
-            = $perms && $perms->can_edit_entry($last_post, $app->user);
+            = $perms && $perms->can_edit_entry( $last_post, $app->user );
     }
 
-    if (my ($url) = $user->userpic_url()) {
-        $param->{author_userpic_url}    = $url;
+    if ( my ($url) = $user->userpic_url() ) {
+        $param->{author_userpic_url} = $url;
     }
     $param->{author_userpic_width}  = 50;
     $param->{author_userpic_height} = 50;
@@ -175,24 +182,24 @@ sub mt_news_widget {
     my $app = shift;
     my ( $tmpl, $param ) = @_;
 
-    $param->{news_html} = get_newsbox_content($app) || '';
-    $param->{learning_mt_news_html} = get_lmt_content($app) || '';
+    $param->{news_html}             = get_newsbox_content($app) || '';
+    $param->{learning_mt_news_html} = get_lmt_content($app)     || '';
 }
 
 sub get_newsbox_content {
-    my $app = shift;
+    my $app         = shift;
     my $newsbox_url = $app->config('NewsboxURL');
     if ( $newsbox_url && $newsbox_url ne 'disable' ) {
-        return MT::Util::get_newsbox_html($newsbox_url, 'NW');
+        return MT::Util::get_newsbox_html( $newsbox_url, 'NW' );
     }
     return q();
 }
 
 sub get_lmt_content {
-    my $app = shift;
+    my $app         = shift;
     my $newsbox_url = $app->config('LearningNewsURL');
     if ( $newsbox_url && $newsbox_url ne 'disable' ) {
-        return MT::Util::get_newsbox_html($newsbox_url, 'LW');
+        return MT::Util::get_newsbox_html( $newsbox_url, 'LW' );
     }
     return q();
 }
@@ -202,10 +209,11 @@ sub mt_blog_stats_widget {
     my ( $tmpl, $param ) = @_;
 
     # For stats shown on this page
-    stats_generation_handler($app, $param) or return;
+    stats_generation_handler( $app, $param ) or return;
 
     my $tabs = $app->registry('blog_stats_tabs') or return;
-    $tabs = $app->filter_conditional_list($tabs, 'dashboard', ($param->{widget_scope} || ''));
+    $tabs = $app->filter_conditional_list( $tabs, 'dashboard',
+        ( $param->{widget_scope} || '' ) );
 
     $param->{tab_html_head} = '';
     {
@@ -214,16 +222,17 @@ sub mt_blog_stats_widget {
 
         my %cfgs;
         my $stat_url = delete $param->{stat_url};
-        while (my ($tab_id, $url) = each %$stat_url) {
+        while ( my ( $tab_id, $url ) = each %$stat_url ) {
             $param->{has_stat_urls} = 1;
             $cfgs{$tab_id} = { param => { stat_url => $url } };
         }
         $app->build_widgets(
-            set            => 'blog_stats',
-            param          => $param,
-            widgets        => $tabs,
-            widget_cfgs    => \%cfgs,
-            passthru_param => [qw( html_head js_include tabs active_stats_panel_updates )],
+            set         => 'blog_stats',
+            param       => $param,
+            widgets     => $tabs,
+            widget_cfgs => \%cfgs,
+            passthru_param =>
+                [qw( html_head js_include tabs active_stats_panel_updates )],
         ) or return;
 
         $param->{blog_stats} = $param->{main};
@@ -232,84 +241,96 @@ sub mt_blog_stats_widget {
 }
 
 sub stats_generation_handler {
-  my $app = shift;
-  my ($param) = @_;
-  
-  if( lc( MT->config('StatsCachePublishing') ) eq 'off' ) {
-    return;
-  }
+    my $app = shift;
+    my ($param) = @_;
 
-  my $cache_time = 60 * MT->config('StatsCacheTTL'); # cache for x minutes
-
-  my $stats_static_path = create_stats_directory($app,$param) or return;
-
-  my $tabs = $app->registry('blog_stats_tabs') or return;
-  
-  while (my ($tab_id, $tab) = each %$tabs) {
-    next if !$tab->{stats};
-    
-    my $file = "${tab_id}.xml";
-    $param->{stat_url}->{$tab_id} = $stats_static_path . '/' . $file;
-    my $path = File::Spec->catfile( $param->{support_path}, $file );
-
-    my $time = ( stat($path) )[9] if -f $path;
-
-    if ( lc( MT->config('StatsCachePublishing') ) eq 'onload' ) {
-      if ( !$time || ( time - $time > $cache_time )) {
-        unless (generate_dashboard_stats($app,$param,$tab,$tab_id,$path) ) {
-          delete $param->{stat_url}->{$tab_id};
-        }
-      }
-    } else {
-      return;
+    if ( lc( MT->config('StatsCachePublishing') ) eq 'off' ) {
+        return;
     }
-  }
 
-  1;
+    my $cache_time = 60 * MT->config('StatsCacheTTL');   # cache for x minutes
+
+    my $stats_static_path = create_stats_directory( $app, $param ) or return;
+
+    my $tabs = $app->registry('blog_stats_tabs') or return;
+
+    while ( my ( $tab_id, $tab ) = each %$tabs ) {
+        next if !$tab->{stats};
+
+        my $file = "${tab_id}.xml";
+        $param->{stat_url}->{$tab_id} = $stats_static_path . '/' . $file;
+        my $path = File::Spec->catfile( $param->{support_path}, $file );
+
+        my $time = ( stat($path) )[9] if -f $path;
+
+        if ( lc( MT->config('StatsCachePublishing') ) eq 'onload' ) {
+            if ( !$time || ( time - $time > $cache_time ) ) {
+                unless (
+                    generate_dashboard_stats(
+                        $app, $param, $tab, $tab_id, $path
+                    )
+                    )
+                {
+                    delete $param->{stat_url}->{$tab_id};
+                }
+            }
+        }
+        else {
+            return;
+        }
+    }
+
+    1;
 }
 
 sub create_stats_directory {
-  my $app = shift;
-  my ($param) = @_;
-  
-  my $blog_id = $app->blog ? $app->blog->id : 0;
-  my $user    = $app->user;
-  my $user_id = $user->id;
-  
-  my $static_path      = $app->static_path;
-  my $static_file_path = $app->static_file_path;
+    my $app = shift;
+    my ($param) = @_;
 
-  if ( -f File::Spec->catfile( $static_file_path, "mt.js" ) ) {
-    $param->{static_file_path} = $static_file_path;
-  } else {
-    return;
-  }
+    my $blog_id = $app->blog ? $app->blog->id : 0;
+    my $user    = $app->user;
+    my $user_id = $user->id;
 
-  my $low_dir = sprintf("%03d", $user_id % 1000);
-  my $sub_dir = sprintf("%03d", $blog_id % 1000);
-  my $top_dir = $blog_id > $sub_dir ? $blog_id - $sub_dir : 0;
-  $param->{support_path} =
-    File::Spec->catdir( $static_file_path, 'support', 'dashboard', 'stats',
-      $top_dir, $sub_dir, $low_dir); 
+    my $static_path      = $app->static_path;
+    my $static_file_path = $app->static_file_path;
 
-  require MT::FileMgr;
-  my $fmgr = MT::FileMgr->new('Local');
-  unless ( $fmgr->exists( $param->{support_path} ) ) {
-    $fmgr->mkpath( $param->{support_path} );
-    unless ( $fmgr->exists( $param->{support_path} ) ) {
-      # the path didn't exist - change the warning a little
-      $param->{support_path} =
-        File::Spec->catdir( $app->static_file_path, 'support' );
-      return;
+    if ( -f File::Spec->catfile( $static_file_path, "mt.js" ) ) {
+        $param->{static_file_path} = $static_file_path;
     }
-  }
+    else {
+        return;
+    }
 
-  return $static_path . 'support/dashboard/stats/' .
-      $top_dir . '/' . $sub_dir . '/' . $low_dir;
+    my $low_dir = sprintf( "%03d", $user_id % 1000 );
+    my $sub_dir = sprintf( "%03d", $blog_id % 1000 );
+    my $top_dir = $blog_id > $sub_dir ? $blog_id - $sub_dir : 0;
+    $param->{support_path}
+        = File::Spec->catdir( $static_file_path, 'support', 'dashboard',
+        'stats', $top_dir, $sub_dir, $low_dir );
+
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    unless ( $fmgr->exists( $param->{support_path} ) ) {
+        $fmgr->mkpath( $param->{support_path} );
+        unless ( $fmgr->exists( $param->{support_path} ) ) {
+
+            # the path didn't exist - change the warning a little
+            $param->{support_path}
+                = File::Spec->catdir( $app->static_file_path, 'support' );
+            return;
+        }
+    }
+
+    return
+          $static_path
+        . 'support/dashboard/stats/'
+        . $top_dir . '/'
+        . $sub_dir . '/'
+        . $low_dir;
 }
 
 sub mt_blog_stats_widget_entry_tab {
-    my ($app, $tmpl, $param) = @_;
+    my ( $app, $tmpl, $param ) = @_;
 
     my $user    = $app->user;
     my $blog    = $app->blog;
@@ -329,31 +350,29 @@ sub mt_blog_stats_widget_entry_tab {
         if ( !$user->is_superuser && !$blog_id ) {
             $args->{join} = MT::Permission->join_on(
                 undef,
-                {
-                    blog_id   => \'= entry_blog_id',
+                {   blog_id   => \'= entry_blog_id',
                     author_id => $user->id
                 },
             );
         }
-        my @e =
-          MT::Entry->load( { ( $blog_id ? ( blog_id => $blog_id ) : () ), },
-            $args );
+        my @e = MT::Entry->load(
+            { ( $blog_id ? ( blog_id => $blog_id ) : () ), }, $args );
         \@e;
     };
 
     require MT::Promise;
     my $ctx = $tmpl->context;
-    $ctx->stash( 'entries',  MT::Promise::delay($entries) );
+    $ctx->stash( 'entries', MT::Promise::delay($entries) );
 }
 
 sub generate_dashboard_stats {
     my $app = shift;
-    my ($param,$tab,$tab_id,$path) = @_;
+    my ( $param, $tab, $tab_id, $path ) = @_;
 
     my $gen_stats = $tab->{stats};
     $gen_stats = $app->handler_to_coderef($gen_stats);
 
-    my %counts = $gen_stats->($app,$tab);
+    my %counts = $gen_stats->( $app, $tab );
 
     unless ( create_dashboard_stats_file( $app, $path, \%counts ) ) {
         delete $param->{stat_url}->{$tab_id};
@@ -367,7 +386,7 @@ sub create_dashboard_stats_file {
     my ( $file, $data ) = @_;
 
     my $support_dir = File::Spec->catdir( $app->static_file_path, "support" );
-    
+
     local *FOUT;
     if ( !open( FOUT, ">$file" ) ) {
         return;
@@ -379,11 +398,12 @@ sub create_dashboard_stats_file {
   <daily_counts>
 EOT
     my $now = time;
-    for ( my $i = 120 ; $i >= 1 ; $i-- ) {
-        my $ds =
-          substr( epoch2ts( $app->blog, $now - ( ( $i - 1 ) * 60 * 60 * 24 ) ),
+    for ( my $i = 120; $i >= 1; $i-- ) {
+        my $ds
+            = substr(
+            epoch2ts( $app->blog, $now - ( ( $i - 1 ) * 60 * 60 * 24 ) ),
             0, 8 )
-          . 'T00:00:00';
+            . 'T00:00:00';
         my $count = $data->{$ds} || 0;
         print FOUT qq{    <count date="$ds">$count</count>\n};
     }
@@ -397,7 +417,7 @@ EOT
 sub generate_dashboard_stats_entry_tab {
     my $app = shift;
     my ($tab) = @_;
-    
+
     my $blog_id = $app->blog ? $app->blog->id : 0;
     my $user    = $app->user;
     my $user_id = $user->id;
@@ -413,9 +433,14 @@ sub generate_dashboard_stats_entry_tab {
     };
 
     require MT::Util;
-    my @ts = MT::Util::offset_time_list(time - (121 * 24 * 60 * 60), $blog_id);
-    my $earliest = sprintf('%04d%02d%02d%02d%02d%02d',
-        $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0]);
+    my @ts = MT::Util::offset_time_list( time - ( 121 * 24 * 60 * 60 ),
+        $blog_id );
+    my $earliest = sprintf(
+        '%04d%02d%02d%02d%02d%02d',
+        $ts[5] + 1900,
+        $ts[4] + 1,
+        @ts[ 3, 2, 1, 0 ]
+    );
     $terms->{authored_on} = [ $earliest, undef ];
     $args->{range_incl}{authored_on} = 1;
 
@@ -423,8 +448,7 @@ sub generate_dashboard_stats_entry_tab {
     if ( !$user->is_superuser && !$blog_id ) {
         $args->{join} = MT::Permission->join_on(
             undef,
-            {
-                blog_id   => \'= entry_blog_id',
+            {   blog_id   => \'= entry_blog_id',
                 author_id => $user_id
             },
         );
@@ -441,64 +465,70 @@ sub generate_dashboard_stats_entry_tab {
 }
 
 sub mt_blog_stats_tag_cloud_tab {
-    my ($app, $tmpl, $param) = @_;
+    my ( $app, $tmpl, $param ) = @_;
 
     my $blog = $app->blog;
     my $blog_id = $blog->id if $blog;
 
     my $terms = {};
-    my $args = {};
-    $terms->{blog_id} = $blog_id if $blog_id;
+    my $args  = {};
+    $terms->{blog_id}           = $blog_id if $blog_id;
     $terms->{object_datasource} = 'entry';
-    $args->{group} = [ 'tag_id' ];
-    $args->{sort} = '1'; # sort by count(*)
-    $args->{direction} = 'descend';
-    $args->{limit} = 100;
-    $args->{join} = MT::Tag->join_on(undef, { id => \'= objecttag_tag_id', is_private => 1 },
-        { not => { is_private => 1 } } );
+    $args->{group}              = ['tag_id'];
+    $args->{sort}               = '1';                    # sort by count(*)
+    $args->{direction}          = 'descend';
+    $args->{limit}              = 100;
+    $args->{join}               = MT::Tag->join_on(
+        undef,
+        { id => \'= objecttag_tag_id', is_private => 1 },
+        { not => { is_private => 1 } }
+    );
 
-    my $iter = $app->model('objecttag')->count_group_by($terms, $args);
+    my $iter = $app->model('objecttag')->count_group_by( $terms, $args );
     my @tag_loop;
     my @tag_ids;
     my $ntags = 0;
-    my $min = undef;
-    my $max = undef;
-    while (my ($count, $tag_id) = $iter->()) {
+    my $min   = undef;
+    my $max   = undef;
+    while ( my ( $count, $tag_id ) = $iter->() ) {
         $ntags += $count;
-        $min = defined $min ? ($count < $min ? $count : $min) : $count;
-        $max = defined $max ? ($count > $max ? $count : $max) : $count;
+        $min = defined $min ? ( $count < $min ? $count : $min ) : $count;
+        $max = defined $max ? ( $count > $max ? $count : $max ) : $count;
         push @tag_loop, { id => $tag_id, count => $count };
         push @tag_ids, $tag_id;
     }
 
-    if ( @tag_ids ) {
+    if (@tag_ids) {
         my $iter = MT::Tag->load_iter( { id => \@tag_ids } );
         my %tags;
         while ( my $t = $iter->() ) {
             $tags{ $t->id } = $t->name;
         }
-        $_->{name} = $tags{$_->{id}} for @tag_loop;
+        $_->{name} = $tags{ $_->{id} } for @tag_loop;
     }
 
     $min ||= 0;
     $max ||= 0;
     my $factor;
-    if ($max - $min == 0) {
+    if ( $max - $min == 0 ) {
         $min -= 6;
         $factor = 1;
-    } else {
-        $factor = 5 / log($max - $min + 1);
     }
-    $factor *= ($ntags / 6) if $ntags < 6;
+    else {
+        $factor = 5 / log( $max - $min + 1 );
+    }
+    $factor *= ( $ntags / 6 ) if $ntags < 6;
 
     foreach my $tag (@tag_loop) {
+
         # now calc rank
         my $rank;
         my $count = $tag->{count};
-        if ($count - $min + 1 == 0) {
+        if ( $count - $min + 1 == 0 ) {
             $rank = 0;
-        } else {
-            $rank = 6 - int(log($count - $min + 1) * $factor);
+        }
+        else {
+            $rank = 6 - int( log( $count - $min + 1 ) * $factor );
         }
         $tag->{rank} = $rank;
     }
@@ -508,7 +538,7 @@ sub mt_blog_stats_tag_cloud_tab {
 }
 
 sub mt_blog_stats_widget_comment_tab {
-    my ($app, $tmpl, $param) = @_;
+    my ( $app, $tmpl, $param ) = @_;
 
     my $user    = $app->user;
     my $blog    = $app->blog;
@@ -517,7 +547,8 @@ sub mt_blog_stats_widget_comment_tab {
     $param->{editable} = $user->is_superuser;
     if ( $blog && !$param->{editable} ) {
         $param->{editable} = $user->permissions($blog_id)->can_edit_all_posts;
-        $param->{comment_editable} = $user->permissions($blog_id)->can_manage_feedback;
+        $param->{comment_editable}
+            = $user->permissions($blog_id)->can_manage_feedback;
     }
 
     my $comments = sub {
@@ -529,16 +560,13 @@ sub mt_blog_stats_widget_comment_tab {
         if ( !$user->is_superuser && !$blog_id ) {
             $args->{join} = MT::Permission->join_on(
                 undef,
-                {
-                    blog_id   => \'= comment_blog_id',
+                {   blog_id   => \'= comment_blog_id',
                     author_id => $user->id
                 },
             );
         }
         my @c = MT::Comment->load(
-            {
-                ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                junk_status => 1,
+            {   ( $blog_id ? ( blog_id => $blog_id ) : () ), junk_status => 1,
             },
             $args
         );
@@ -547,13 +575,13 @@ sub mt_blog_stats_widget_comment_tab {
 
     require MT::Promise;
     my $ctx = $tmpl->context;
-    $ctx->stash( 'comments',  MT::Promise::delay($comments) );
+    $ctx->stash( 'comments', MT::Promise::delay($comments) );
 }
 
 sub generate_dashboard_stats_comment_tab {
     my $app = shift;
     my ($tab) = @_;
-    
+
     my $blog_id = $app->blog ? $app->blog->id : 0;
     my $user    = $app->user;
     my $user_id = $user->id;
@@ -570,17 +598,21 @@ sub generate_dashboard_stats_comment_tab {
     };
 
     require MT::Util;
-    my @ts = MT::Util::offset_time_list(time - (121 * 24 * 60 * 60), $blog_id);
-    my $earliest = sprintf('%04d%02d%02d%02d%02d%02d',
-        $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0]);
+    my @ts = MT::Util::offset_time_list( time - ( 121 * 24 * 60 * 60 ),
+        $blog_id );
+    my $earliest = sprintf(
+        '%04d%02d%02d%02d%02d%02d',
+        $ts[5] + 1900,
+        $ts[4] + 1,
+        @ts[ 3, 2, 1, 0 ]
+    );
     $terms->{created_on} = [ $earliest, undef ];
     $args->{range_incl}{created_on} = 1;
 
     if ( !$user->is_superuser && !$blog_id ) {
         $args->{join} = MT::Permission->join_on(
             undef,
-            {
-                blog_id   => \'= comment_blog_id',
+            {   blog_id   => \'= comment_blog_id',
                 author_id => $user_id
             },
         );

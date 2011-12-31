@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -21,19 +21,20 @@ sub file_mgr {
     my $app = MT->instance;
     require MT::FileMgr;
     my $filemgr = MT::FileMgr->new('Local')
-      or return $app->error( MT::FileMgr->errstr );
+        or return $app->error( MT::FileMgr->errstr );
     $filemgr;
 }
 
 sub listify {
     my ($data) = @_;
     my @list;
-    foreach my $k (keys %$data) {
+    foreach my $k ( keys %$data ) {
         my %entry = %{ $data->{$k} };
         $entry{key} = $k;
         delete $entry{plugin};
-        $entry{label} = $entry{label}->() if ref($entry{label});
-        $entry{description_label} = $entry{description_label}->() if ref($entry{description_label});
+        $entry{label} = $entry{label}->() if ref( $entry{label} );
+        $entry{description_label} = $entry{description_label}->()
+            if ref( $entry{description_label} );
         push @list, \%entry;
     }
     @list = sort { $a->{order} <=> $b->{order} } @list;
@@ -47,25 +48,31 @@ sub view {
 
     my $blog = MT::Blog->load($blog_id);
     return $app->errtrans("Invalid request") unless $blog;
-    
-    #
-    # Tell the user "Permission denied." if he does not have the appropriate blog
-    # level permissions and isn't a System Administrator.
-    #
+
+ #
+ # Tell the user "Permission denied." if he does not have the appropriate blog
+ # level permissions and isn't a System Administrator.
+ #
     my $perms = $app->permissions;
-    if ( $app->blog && ( !$perms || ( !$perms->can_edit_templates && !$app->user->is_superuser ) ) ) {
+    if ($app->blog
+        && ( !$perms
+            || ( !$perms->can_edit_templates && !$app->user->is_superuser ) )
+        )
+    {
         return $app->errtrans("Permission denied.");
     }
 
     my $static_path = $app->static_file_path;
-    if (! -d $static_path ) {
-        return $app->errtrans("Your mt-static directory could not be found. Please configure 'StaticFilePath' to continue.");
+    if ( !-d $static_path ) {
+        return $app->errtrans(
+            "Your mt-static directory could not be found. Please configure 'StaticFilePath' to continue."
+        );
     }
 
-    my $themeroot =
-      File::Spec->catdir( $app->static_file_path, 'support', 'themes' );
+    my $themeroot
+        = File::Spec->catdir( $app->static_file_path, 'support', 'themes' );
     my $webthemeroot = $app->static_path . 'support/themes';
-    my $stylelibrary = listify(style_library());
+    my $stylelibrary = listify( style_library() );
     my $theme_data   = make_themes();
     my $styled_blogs = fetch_blogs();
 
@@ -73,25 +80,28 @@ sub view {
 
     my @blog_loop;
     my %current_themes;
-    my ($blog_theme, $blog_layout);
+    my ( $blog_theme, $blog_layout );
     foreach my $blog (@$styled_blogs) {
-        my $curr_theme = $config->{"current_theme_" . $blog->id} || '';
-        my $curr_layout = $config->{"current_layout_" . $blog->id} || 'layout-wtt';
+        my $curr_theme = $config->{ "current_theme_" . $blog->id } || '';
+        my $curr_layout = $config->{ "current_layout_" . $blog->id }
+            || 'layout-wtt';
         push @blog_loop,
-          {
+            {
             blog_id   => $blog->id,
             blog_name => $blog->name,
             layout    => $curr_layout,
             theme_id  => $curr_theme,
             view_link => $blog->site_url,
-          };
-        if ($blog->id == $blog_id) {
-            $blog_theme = $curr_theme;
+            };
+        if ( $blog->id == $blog_id ) {
+            $blog_theme  = $curr_theme;
             $blog_layout = $curr_layout;
         }
         if ( $theme_data->{themes} && $curr_theme ) {
             foreach my $theme ( @{ $theme_data->{themes} } ) {
-                if ( ($theme->{prefix} || '') . ':' . $theme->{name} eq $curr_theme ) {
+                if ( ( $theme->{prefix} || '' ) . ':'
+                    . $theme->{name} eq $curr_theme )
+                {
                     push @{ $theme->{blogs} }, $blog->id;
                     next if exists $current_themes{ $theme->{name} };
                     $current_themes{ $theme->{name} } = 1;
@@ -102,22 +112,23 @@ sub view {
     }
 
     push @{ $theme_data->{categories} }, 'current'
-      if %current_themes;
+        if %current_themes;
 
     require MT::Util;
     my $url   = $app->param('url');
     my %param = (
-        version     => plugin()->version,
+        version => plugin()->version,
+
         # blog_loop   => \@blog_loop,
         blog_id => $blog_id,
-        themes_json => MT::Util::to_json(
-            $theme_data, { pretty => 1, indent => 2 }
-        ),
+        themes_json =>
+            MT::Util::to_json( $theme_data, { pretty => 1, indent => 2 } ),
         auto_fetch => $url ? 1 : 0,
         style_library => $stylelibrary,
-        current_theme => $blog_theme || '',
+        current_theme  => $blog_theme  || '',
         current_layout => $blog_layout || 'layout-wtt',
-        dynamic_blog => (($blog->custom_dynamic_templates || '') eq 'all'),
+        dynamic_blog =>
+            ( ( $blog->custom_dynamic_templates || '' ) eq 'all' ),
     );
 
     if ( $blog_id && @$styled_blogs ) {
@@ -139,6 +150,7 @@ sub view {
 
 # returns a json structure of styles given a particular url
 sub js {
+
     # ydnar's remixer uses javascript files for each collection of styles -
     # we generate these js files from css metadata
     # StyleCatcher will pick up any metadata in the theme css file in the
@@ -147,17 +159,18 @@ sub js {
     my $app = shift;
     return $app->json_error( $app->errstr ) unless $app->validate_magic;
 
-    my $data = fetch_themes($app->param('url'))
+    my $data = fetch_themes( $app->param('url') )
         or return $app->json_error( $app->errstr );
-    return $app->json_result( $data );
+    return $app->json_result($data);
 }
 
 sub files_from_response {
-    my ($res, %param) = @_;
+    my ( $res, %param ) = @_;
 
-    my $extensions = $param{css} ? qr{ (?:gif|jpe?g|png|css) }xms
-                   :               qr{ (?:gif|jpe?g|png)     }xms
-                   ;
+    my $extensions
+        = $param{css}
+        ? qr{ (?:gif|jpe?g|png|css) }xms
+        : qr{ (?:gif|jpe?g|png)     }xms;
 
     my $stylesheet = $res->content;
     $stylesheet =~ s!/\*.*?\*/!!gs;    # strip all comments first
@@ -177,42 +190,45 @@ sub download_theme {
     my ($url) = @_;
 
     my $static_path = $app->static_file_path;
-    my $themeroot   = File::Spec->catdir($static_path, 'support', 'themes');
-    my $ua          = $app->new_ua( {max_size => 500_000 } );
+    my $themeroot   = File::Spec->catdir( $static_path, 'support', 'themes' );
+    my $ua          = $app->new_ua( { max_size => 500_000 } );
     my $filemgr     = file_mgr()
         or return;
 
-    my @url = split( /\//, $url );
+    my @url                 = split( /\//, $url );
     my $stylesheet_filename = pop @url;
-    my $theme_url = join(q{/}, @url) . '/';
+    my $theme_url           = join( q{/}, @url ) . '/';
 
-    my ($basename, $extension) = split /\./, $stylesheet_filename;
-    if ($basename eq 'screen' || $basename eq 'style') {
+    my ( $basename, $extension ) = split /\./, $stylesheet_filename;
+    if ( $basename eq 'screen' || $basename eq 'style' ) {
         $basename = $url[-1];
     }
 
     # Pick up the stylesheet
     my $stylesheet_res = $ua->get($url);
 
-    my @images = files_from_response($stylesheet_res, css => 1);
+    my @images = files_from_response( $stylesheet_res, css => 1 );
 
-    my $theme_path = File::Spec->catdir($themeroot, $basename);
-    if (!$filemgr->mkpath($theme_path)) {
-        my $error = $app->translate("Could not create [_1] folder - Check that your 'themes' folder is webserver-writable.",
-            $basename);
+    my $theme_path = File::Spec->catdir( $themeroot, $basename );
+    if ( !$filemgr->mkpath($theme_path) ) {
+        my $error = $app->translate(
+            "Could not create [_1] folder - Check that your 'themes' folder is webserver-writable.",
+            $basename
+        );
         return $app->json_error($error);
     }
 
     $filemgr->put_data( $stylesheet_res->content,
-        File::Spec->catfile($theme_path, $basename . '.css') );
+        File::Spec->catfile( $theme_path, $basename . '.css' ) );
 
     # Pick up the images we parsed earlier and write them to the theme folder
     my %got_files;
-    my @files = ('thumbnail.gif', 'thumbnail-large.gif', @images);
-    FILE: while (my $rel_url = shift @files) {
+    my @files = ( 'thumbnail.gif', 'thumbnail-large.gif', @images );
+FILE: while ( my $rel_url = shift @files ) {
+
         # Is this safe to get?
         require URI;
-        my $full_url = URI->new_abs($rel_url, $theme_url);
+        my $full_url = URI->new_abs( $rel_url, $theme_url );
         next FILE if !$full_url;
         my $url = $full_url->as_string();
         next FILE if $url !~ m{ \A \Q$theme_url\E }xms;
@@ -221,30 +237,36 @@ sub download_theme {
         $got_files{$url} = 1;
         my $res = $ua->get($url);
 
-        # Skip files that don't download; we were accidentally doing so already.
+      # Skip files that don't download; we were accidentally doing so already.
         next FILE if !$res->is_success();
 
-        my $canon_rel_url = URI->new($rel_url)->rel($theme_url);
-        my @image_path = split /\//, $canon_rel_url->as_string();
+        my $canon_rel_url  = URI->new($rel_url)->rel($theme_url);
+        my @image_path     = split /\//, $canon_rel_url->as_string();
         my $image_filename = pop @image_path;
 
-        my $image_path = File::Spec->catdir($theme_path, @image_path);
-        if (!$filemgr->exists($image_path) && !$filemgr->mkpath($image_path)) {
-            my $error = $app->translate("Could not create [_1] folder - Check that your 'themes' folder is webserver-writable.",
-                $basename);
+        my $image_path = File::Spec->catdir( $theme_path, @image_path );
+        if (   !$filemgr->exists($image_path)
+            && !$filemgr->mkpath($image_path) )
+        {
+            my $error = $app->translate(
+                "Could not create [_1] folder - Check that your 'themes' folder is webserver-writable.",
+                $basename
+            );
             return $app->json_error($error);
         }
 
-        my $image_full_path = File::Spec->catfile($image_path, $image_filename);
-        $filemgr->put_data($res->content, $image_full_path, 'upload')
-          or return $app->json_error( $filemgr->errstr );
+        my $image_full_path
+            = File::Spec->catfile( $image_path, $image_filename );
+        $filemgr->put_data( $res->content, $image_full_path, 'upload' )
+            or return $app->json_error( $filemgr->errstr );
 
-        if ($image_filename =~ m{ \.css \z }xmsi) {
-            my @new_files = files_from_response($res, css => 0);
+        if ( $image_filename =~ m{ \.css \z }xmsi ) {
+            my @new_files = files_from_response( $res, css => 0 );
+
             # Schedule these as full URLs so relative references aren't
             # misabsolved relative to the theme directory.
             @new_files = map {
-                my $uri = URI->new_abs($_, $url);
+                my $uri = URI->new_abs( $_, $url );
                 $uri ? $uri->as_string() : ();
             } @new_files;
             push @files, @new_files;
@@ -257,59 +279,73 @@ sub download_theme {
 # does the work after user selects a particular theme to apply to a blog
 sub apply {
     my $app = shift;
-    
-    #
-    # Tell the user "Permission denied." if he does not have the appropriate blog
-    # level permissions and isn't a System Administrator.
-    #
+
+ #
+ # Tell the user "Permission denied." if he does not have the appropriate blog
+ # level permissions and isn't a System Administrator.
+ #
     my $perms = $app->permissions;
-    if ( $app->blog && ( !$perms || ( !$perms->can_edit_templates && !$app->user->is_superuser ) ) ) {
-    return $app->errtrans("Permission denied.");
+    if ($app->blog
+        && ( !$perms
+            || ( !$perms->can_edit_templates && !$app->user->is_superuser ) )
+        )
+    {
+        return $app->errtrans("Permission denied.");
     }
 
-    my ($blog_id, $url, $layout, $name, $template_set)
-        = map { $app->param($_) || q{} } (qw( blog_id url layout name template_set ));
+    my ( $blog_id, $url, $layout, $name, $template_set )
+        = map { $app->param($_) || q{} }
+        (qw( blog_id url layout name template_set ));
 
     # Load the default stylesheet for this blog
     my $tmpl = load_style_template($blog_id);
 
-    $app->validate_magic or return $app->json_error($app->translate("Invalid request"));
-    return $app->json_error($app->translate("Invalid request"))
-      unless $blog_id && $url && $tmpl;
+    $app->validate_magic
+        or return $app->json_error( $app->translate("Invalid request") );
+    return $app->json_error( $app->translate("Invalid request") )
+        unless $blog_id && $url && $tmpl;
 
     my $static_path = $app->static_file_path;
-    if (! -d $static_path ) {
-        return $app->json_error($app->translate("Your mt-static directory could not be found. Please configure 'StaticFilePath' to continue."));
+    if ( !-d $static_path ) {
+        return $app->json_error(
+            $app->translate(
+                "Your mt-static directory could not be found. Please configure 'StaticFilePath' to continue."
+            )
+        );
     }
 
     # if this isn't a local url, then we have to grab some files from
     # yonder...
     my $static_url = $app->static_path;
     if ( $url !~ m{ \A \Q$static_url\E (?:support/)? themes/ }xms ) {
-        my $basename = download_theme($app, $url)
+        my $basename = download_theme( $app, $url )
             or return;
         $url = "${static_url}support/themes/$basename/$basename.css";
     }
 
     my $blog = MT->model('blog')->load($blog_id)
-      or return $app->json_error( $app->translate('No such blog [_1]', $blog_id) );
+        or return $app->json_error(
+        $app->translate( 'No such blog [_1]', $blog_id ) );
     my $blog_tset = $blog->template_set;
-    my $base_css_url = MT->registry('template_sets')->{$blog_tset}->{base_css};
+    my $base_css_url
+        = MT->registry('template_sets')->{$blog_tset}->{base_css};
 
     my $base_css = q{};
     if ($base_css_url) {
         require URI;
-        my $uri = URI->new_abs($base_css_url, $app->static_path);
+        my $uri = URI->new_abs( $base_css_url, $app->static_path );
         $base_css = '@import url(' . $uri->as_string() . ');'
             if $uri;
     }
-    my $blog = MT->model('blog')->load($blog_id)    
-      or return $app->json_error( $app->translate('No such blog [_1]', $blog_id) );
+    my $blog = MT->model('blog')->load($blog_id)
+        or return $app->json_error(
+        $app->translate( 'No such blog [_1]', $blog_id ) );
 
     # Replacing the theme import or adding a new one at the beginning
-    my $template_text  = $tmpl->text();
-    my $replaced       = 0;
-    my $header = '/* This is the StyleCatcher theme addition. Do not remove this block. */';
+    my $template_text = $tmpl->text();
+    my $replaced      = 0;
+    my $header
+        = '/* This is the StyleCatcher theme addition. Do not remove this block. */';
     my $footer = '/* end StyleCatcher imports */';
     my $styles = <<"EOT";
 $header
@@ -317,8 +353,8 @@ $base_css
 \@import url($url);
 $footer
 EOT
-    if ($template_text =~ s/\Q$header\E.*\Q$footer\E/$styles/s) {
-        $tmpl->text( $template_text );
+    if ( $template_text =~ s/\Q$header\E.*\Q$footer\E/$styles/s ) {
+        $tmpl->text($template_text);
         $replaced = 1;
     }
     unless ($replaced) {
@@ -328,10 +364,10 @@ EOT
         # style is applied properly.
         my @ts = MT::Util::offset_time_list( time, $blog_id );
         my $ts = sprintf "%04d-%02d-%02d %02d:%02d:%02d", $ts[5] + 1900,
-          $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+            $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
         my $backup = $tmpl->clone;
         delete $backup->{column_values}
-          {id};    # make sure we don't overwrite original
+            {id};    # make sure we don't overwrite original
         delete $backup->{changed_cols}{id};
         $backup->name( $backup->name . ' (Backup from ' . $ts . ')' );
         $backup->outfile('');
@@ -363,17 +399,17 @@ EOT
     my $p = plugin();
     $name =~ s/^repo_\d+:/local:/;
     $name =~ s/\.css$//;
-    $p->set_config_value('current_theme_' . $blog_id, $name);
+    $p->set_config_value( 'current_theme_' . $blog_id, $name );
     if ($layout) {
-        $p->set_config_value('current_layout_' . $blog_id, $layout);
-    } else {
-        $p->set_config_value('current_layout_' . $blog_id, undef);
+        $p->set_config_value( 'current_layout_' . $blog_id, $layout );
+    }
+    else {
+        $p->set_config_value( 'current_layout_' . $blog_id, undef );
     }
 
     return $app->json_result(
-        {
-            message =>
-              $app->translate("Successfully applied new theme selection.")
+        {   message =>
+                $app->translate("Successfully applied new theme selection.")
         }
     );
 }
@@ -388,7 +424,8 @@ sub fetch_blogs {
     my @blogs;
     if ($blog_id) {
         @blogs = MT::Blog->load($blog_id);
-    } else {
+    }
+    else {
         if ( $user->is_superuser() ) {
             if ($blog_id) {
                 @blogs = MT::Blog->load($blog_id);
@@ -424,23 +461,20 @@ sub load_style_template {
     my $tmpl;
 
     $tmpl = MT::Template->load(
-        {
-            blog_id    => $blog_id,
+        {   blog_id    => $blog_id,
             identifier => 'styles'
         }
     );
 
     $tmpl ||= MT::Template->load(
-        {
-            blog_id => $blog_id,
+        {   blog_id => $blog_id,
             outfile => "styles.css"
         }
     );
 
     # MT 3.x era stylesheet file
     $tmpl ||= MT::Template->load(
-        {
-            blog_id => $blog_id,
+        {   blog_id => $blog_id,
             outfile => "styles-site.css"
         }
     );
@@ -450,7 +484,7 @@ sub load_style_template {
         # Create one since we didn't find a candidate
         $tmpl = new MT::Template;
         $tmpl->blog_id($blog_id);
-        $tmpl->name(plugin()->translate('Stylesheet'));
+        $tmpl->name( plugin()->translate('Stylesheet') );
         $tmpl->type('index');
         $tmpl->identifier('styles');
         $tmpl->outfile("styles.css");
@@ -473,8 +507,8 @@ sub fetch_themes {
     my $blog_id = $app->param('blog_id');
     my $data    = {};
 
-  # If we have a url then we're specifying a specific theme (css) or repo (html)
-    # Pick up the file (html with <link>s or a css file with metadata)
+# If we have a url then we're specifying a specific theme (css) or repo (html)
+# Pick up the file (html with <link>s or a css file with metadata)
     my $user_agent = $app->new_ua;
     my $request    = HTTP::Request->new( GET => $url );
     my $response   = $user_agent->request($request);
@@ -497,7 +531,7 @@ sub fetch_themes {
             ref( $response->headers->{'link'} ) eq 'ARRAY'
             ? @{ $response->headers->{'link'} }
             : $response->headers->{'link'}
-          )
+            )
         {
             my ( $css, @parsed_link ) = split( /;/, $link );
             $css =~ s/[<>]//g;
@@ -513,7 +547,7 @@ sub fetch_themes {
             next unless lc $attr{type} eq 'text/x-theme';
 
             # Fix for relative theme locations
-            if ($css !~ m!^https?://!) {
+            if ( $css !~ m!^https?://! ) {
                 my $new_css = $url;
                 $new_css =~ s!/[a-z0-9_-]+\.[a-z]+?$|/$!/!;
                 $new_css .= $css;
@@ -524,15 +558,13 @@ sub fetch_themes {
 
         my $themes = [];
         for my $repo_theme (@repo_themes) {
-            my $theme = metadata_for_theme(
-                url => $repo_theme,
-            );
+            my $theme = metadata_for_theme( url => $repo_theme, );
             push @$themes, $theme if $theme;
         }
         $data->{themes} = $themes;
         if ( $data->{repo}{display_name} = $response->headers->{'title'} ) {
-            $data->{repo}{name} =
-              MT::Util::dirify( $data->{repo}{display_name} );
+            $data->{repo}{name}
+                = MT::Util::dirify( $data->{repo}{display_name} );
         }
         else {
             $data->{repo}{display_name} = $url;
@@ -541,7 +573,7 @@ sub fetch_themes {
         $data->{repo}{url} = $url;
     }
     else {
-        return $app->error( $app->translate('Invalid URL: [_1]', $url) );
+        return $app->error( $app->translate( 'Invalid URL: [_1]', $url ) );
     }
 
     $data;
@@ -606,8 +638,8 @@ sub make_themes {
         $themes->{$theme}{prefix} = 'default';
     }
 
-    my $themeroot =
-      File::Spec->catdir( $app->static_file_path, 'support', 'themes' );
+    my $themeroot
+        = File::Spec->catdir( $app->static_file_path, 'support', 'themes' );
 
     # Generate our list of themes within the themeroot directory
     my @themeroot_list = glob( File::Spec->catfile( $themeroot, "*" ) );
@@ -634,14 +666,14 @@ sub make_themes {
 
 sub theme_for_url {
     my %param = @_;
-    my ($url, $path, $tags, $baseurl, $basepath)
+    my ( $url, $path, $tags, $baseurl, $basepath )
         = @param{qw( url path tags baseurl basepath )};
     my $app = MT->instance;
 
     my %theme;
-    if ($path && -e $path) {
+    if ( $path && -e $path ) {
         $theme{stylesheet} = file_mgr()->get_data($path);
-        $theme{id} = basename(dirname($path));
+        $theme{id}         = basename( dirname($path) );
     }
     elsif ($url) {
         my $user_agent = $app->new_ua;
@@ -687,6 +719,7 @@ sub metadata_for_stylesheet {
 
     # Trim me white space, yarr
     for my $comment (@comments) {
+
         # Strip any null bytes
         $comment =~ tr/\x00//d;
         $comment =~ s/^\s+|\s+$//g;
@@ -702,13 +735,15 @@ sub metadata_for_stylesheet {
         author       => [ 'designer',     'author' ],
         author_url   => [ 'designer_url', 'author_url', 'author uri' ],
         template_set => [ 'template_set', 'template' ],
-        description  => [ 'description' ],
+        description => ['description'],
     );
-    while (my ($best_name, $possible_names) = each %field_map) {
-        ($metadata{$best_name}) = grep { defined }
-            delete @metadata{ @$possible_names }, q{};
+    while ( my ( $best_name, $possible_names ) = each %field_map ) {
+        ( $metadata{$best_name} )
+            = grep {defined} delete @metadata{@$possible_names}, q{};
+
         # TODO: do html mashing later
-        $metadata{$best_name} = decode_html(remove_html($metadata{$best_name}));
+        $metadata{$best_name}
+            = decode_html( remove_html( $metadata{$best_name} ) );
     }
 
     return %metadata;
@@ -716,12 +751,11 @@ sub metadata_for_stylesheet {
 
 sub thumbnails_for_theme {
     my %param = @_;
-    my ($url, $path, $metadata)
-        = @param{qw( url path metadata )};
+    my ( $url, $path, $metadata ) = @param{qw( url path metadata )};
     my $app = MT->instance;
 
     my %thumbnails;
-    THUMB: for my $thumb (qw( thumbnail thumbnail_large )) {
+THUMB: for my $thumb (qw( thumbnail thumbnail_large )) {
         $thumbnails{$thumb} = $metadata->{$thumb};
         next THUMB if $thumbnails{$thumb};
 
@@ -731,49 +765,54 @@ sub thumbnails_for_theme {
 
         require URI;
         if ($path) {
-            my ($volume, $dir, $theme_filename) = File::Spec->splitpath($path);
-            my $thumb_path = File::Spec->catpath($volume, $dir, $thumb_filename);
-            if (-e $thumb_path) {
-                my $url_uri = URI->new_abs($thumb_filename, $url);
+            my ( $volume, $dir, $theme_filename )
+                = File::Spec->splitpath($path);
+            my $thumb_path
+                = File::Spec->catpath( $volume, $dir, $thumb_filename );
+            if ( -e $thumb_path ) {
+                my $url_uri = URI->new_abs( $thumb_filename, $url );
                 $thumbnails{$thumb} = $url_uri->as_string();
             }
         }
         elsif ($url) {
-            my $url_uri = URI->new_abs($thumb_filename, $url);
+            my $url_uri = URI->new_abs( $thumb_filename, $url );
             my $thumb_url = $url_uri->as_string();
 
             my $user_agent = $app->new_ua;
             my $response   = $user_agent->head($thumb_url);
-            if ($response->is_success()) {
+            if ( $response->is_success() ) {
                 $thumbnails{$thumb} = $thumb_url;
             }
         }
 
         # Use plugin's default thumbnail if necessary.
-        $thumbnails{$thumb} ||= $app->static_path . 'plugins/StyleCatcher/'
-            . 'images/' . $thumb_filename;
+        $thumbnails{$thumb}
+            ||= $app->static_path
+            . 'plugins/StyleCatcher/'
+            . 'images/'
+            . $thumb_filename;
     }
 
     return %thumbnails;
 }
 
 sub metadata_for_theme {
-    my $app = MT->app;
+    my $app   = MT->app;
     my %param = @_;
-    my ($url, $path, $tags, $default_metadata)
+    my ( $url, $path, $tags, $default_metadata )
         = @param{qw( url path tags metadata )};
 
     # Update a path, if present, from a theme directory to the real full
     # stylesheet path.
-    if ($path && -d $path) {
+    if ( $path && -d $path ) {
         $path =~ s{ / \z }{}xms;
-        FILESTEM: for my $filestem (basename($path), "screen", "style") {
-            my $full_path = File::Spec->catfile($path, "$filestem.css");
-            if ($full_path && -f $full_path) {
+    FILESTEM: for my $filestem ( basename($path), "screen", "style" ) {
+            my $full_path = File::Spec->catfile( $path, "$filestem.css" );
+            if ( $full_path && -f $full_path ) {
                 $path = $param{path} = $full_path;
 
                 $url =~ s{ / \z }{}xms;
-                $url  = $param{url}  = "$url/$filestem.css";
+                $url = $param{url} = "$url/$filestem.css";
 
                 last FILESTEM;
             }
@@ -781,23 +820,23 @@ sub metadata_for_theme {
     }
 
     my %theme      = theme_for_url(%param);
-    my %metadata   = metadata_for_stylesheet(%param, %theme);
-    my %thumbnails = thumbnails_for_theme(%param, metadata => \%metadata);
+    my %metadata   = metadata_for_stylesheet( %param, %theme );
+    my %thumbnails = thumbnails_for_theme( %param, metadata => \%metadata );
 
     my $data = {
-        name         => $theme{id},
-        description  => $metadata{description} || q{},
-        title        => $metadata{title} || '(Untitled)',
-        url          => $url,
-        imageSmall   => $thumbnails{thumbnail},
-        imageBig     => $thumbnails{thumbnail_large},
-        layouts      => $metadata{layouts} || q{},
-        sort         => lc($metadata{title} || $theme{id} || q{}),
-        tags         => $tags || [],
-        blogs        => [],
-        author       => $metadata{author},
-        author_url   => $metadata{author_url},
-        template_set => $metadata{template_set},
+        name        => $theme{id},
+        description => $metadata{description} || q{},
+        title       => $metadata{title} || '(Untitled)',
+        url         => $url,
+        imageSmall  => $thumbnails{thumbnail},
+        imageBig    => $thumbnails{thumbnail_large},
+        layouts     => $metadata{layouts} || q{},
+        sort        => lc( $metadata{title} || $theme{id} || q{} ),
+        tags => $tags || [],
+        blogs              => [],
+        author             => $metadata{author},
+        author_url         => $metadata{author_url},
+        template_set       => $metadata{template_set},
         author_affiliation => $metadata{author_affiliation} || q{},
     };
     $data;

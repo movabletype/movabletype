@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -8,14 +8,15 @@ package MT::Config;
 use strict;
 use base qw( MT::Object );
 
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id' => 'integer not null auto_increment',
-        'data' => 'text',
-    },
-    primary_key => 'id',
-    datasource => 'config',
-});
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'   => 'integer not null auto_increment',
+            'data' => 'text',
+        },
+        primary_key => 'id',
+        datasource  => 'config',
+    }
+);
 
 sub class_label {
     MT->translate("Configuration");

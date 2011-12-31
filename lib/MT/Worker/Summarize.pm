@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -19,41 +19,47 @@ sub work {
         = split( /:::/, $job->uniqkey );
     my ( $obj, $model );
     my $good = 1;
-    if ( ! defined($class_type) or ! defined($object_id) or ! defined($summary_type) ) {
-        MT::TheSchwartz->debug( qq{Bad MT::Worker::Summarize key: } . $job->uniqkey );
+    if (   !defined($class_type)
+        or !defined($object_id)
+        or !defined($summary_type) )
+    {
+        MT::TheSchwartz->debug(
+            qq{Bad MT::Worker::Summarize key: } . $job->uniqkey );
         $good = 0;
     }
-    if ( $good ) {
-        $model = MT->model( $class_type );
-        if ( ! $model ) {
-            MT::TheSchwartz->debug( qq{Bad MT::Worker::Summarize key (bad class type): } .
-                $job->uniqkey );
+    if ($good) {
+        $model = MT->model($class_type);
+        if ( !$model ) {
+            MT::TheSchwartz->debug(
+                qq{Bad MT::Worker::Summarize key (bad class type): }
+                    . $job->uniqkey );
             $good = 0;
         }
     }
-    if ( $good ) {
-        $obj = $model->load( $object_id );
-        if ( ! $obj ) {
-            MT::TheSchwartz->debug( qq{Bad MT::Worker::Summarize key (can't load object $object_id): } .
-                $job->uniqkey );
+    if ($good) {
+        $obj = $model->load($object_id);
+        if ( !$obj ) {
+            MT::TheSchwartz->debug(
+                qq{Bad MT::Worker::Summarize key (can't load object $object_id): }
+                    . $job->uniqkey );
             $good = 0;
         }
     }
-    if ( $good ) {
-        if ( ! $obj->has_summary ) {
-            MT::TheSchwartz->debug( qq{Bad MT::Worker::Summarize key ($class_type not summarizable): } .
-                $job->uniqkey );
+    if ($good) {
+        if ( !$obj->has_summary ) {
+            MT::TheSchwartz->debug(
+                qq{Bad MT::Worker::Summarize key ($class_type not summarizable): }
+                    . $job->uniqkey );
             $good = 0;
         }
     }
-    if ( $good ) {
+    if ($good) {
         my $result;
-        eval {
-            $result = $obj->summarize( $summary_type );
-        };
-        if ( $@ ) {
-            $job->failed( qq{MT::Worker::Summarize could not summarize } .
-                    $job->uniqkey . ': ' . $@ );
+        eval { $result = $obj->summarize($summary_type); };
+        if ($@) {
+            $job->failed( qq{MT::Worker::Summarize could not summarize }
+                    . $job->uniqkey . ': '
+                    . $@ );
             $good = 0;
         }
         else {
@@ -61,6 +67,7 @@ sub work {
         }
     }
     else {
+
         # We've failed in a way we don't want to retry
         $job->completed();
     }

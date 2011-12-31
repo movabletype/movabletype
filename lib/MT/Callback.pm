@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -13,7 +13,7 @@ use MT::ErrorHandler;
 
 sub new {
     my $class = shift;
-    my ($cb) = ref$_[0] ? @_ : {@_};
+    my ($cb) = ref $_[0] ? @_ : {@_};
     bless $cb, $class;
 }
 
@@ -29,10 +29,10 @@ sub method {
 
 sub invoke {
     my $cb = shift;
-    unless (ref($cb->{code})) {
-        $cb->{code} = MT->handler_to_coderef($cb->{code});
+    unless ( ref( $cb->{code} ) ) {
+        $cb->{code} = MT->handler_to_coderef( $cb->{code} );
     }
-    return $cb->{code}->($cb, @_);
+    return $cb->{code}->( $cb, @_ );
 }
 
 sub plugin {

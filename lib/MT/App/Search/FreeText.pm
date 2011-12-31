@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -10,19 +10,19 @@ use strict;
 use base qw( MT::App::Search );
 use MT::ObjectDriver::SQL qw( :constants );
 
-sub id { 'new_search' }
+sub id {'new_search'}
 
 sub query_parse {
     my $app = shift;
-    my ( %columns ) = @_;
+    my (%columns) = @_;
 
     my @column_names = keys %columns;
 
     my $args = {
-      'freetext' => {
-        columns       => \@column_names,
-        search_string => $app->{search_string}
-      }
+        'freetext' => {
+            columns       => \@column_names,
+            search_string => $app->{search_string}
+        }
     };
     { args => $args };
 }

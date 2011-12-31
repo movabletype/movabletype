@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -44,13 +44,13 @@ sub view {
     ## Check ExcludeBlogs and IncludeBlogs to see if this blog is
     ## private or not.
     my $cfg = $app->config;
-    if (my $inc_blogs = $cfg->IncludeBlogs) {
+    if ( my $inc_blogs = $cfg->IncludeBlogs ) {
         return $app->return_to_dashboard( permission => 1 )
-            unless grep {$_ == $blog_id} split ',', $inc_blogs;
-    } 
-    elsif (my $exc_blogs = $cfg->ExcludeBlogs) {
+            unless grep { $_ == $blog_id } split ',', $inc_blogs;
+    }
+    elsif ( my $exc_blogs = $cfg->ExcludeBlogs ) {
         return $app->return_to_dashboard( permission => 1 )
-            if grep {$_ == $blog_id} split ',', $exc_blogs;
+            if grep { $_ == $blog_id } split ',', $exc_blogs;
     }
     $app->{__blog_id} = $blog_id;
 

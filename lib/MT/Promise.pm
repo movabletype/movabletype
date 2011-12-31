@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -7,11 +7,11 @@
 package MT::Promise;
 use strict;
 use Exporter;
-*import = \&Exporter::import;
+*import                 = \&Exporter::import;
 @MT::Promise::EXPORT_OK = qw(delay force lazy);
 
 sub new {
-    my ($class, $code) = @_;
+    my ( $class, $code ) = @_;
     my $this = \$code;
     bless $this, $class;
 }
@@ -23,17 +23,18 @@ sub delay {
 
 sub lazy (&) {
     my ($this) = @_;
-    __PACKAGE__->new($this);    
+    __PACKAGE__->new($this);
 }
 
 sub force {
     my $this = shift;
-    return $this if (ref $this ne 'MT::Promise');
-    if (ref $$this eq 'CODE') {
+    return $this if ( ref $this ne 'MT::Promise' );
+    if ( ref $$this eq 'CODE' ) {
         $$this = $$this->(@_);
-    } else {
+    }
+    else {
         return $$this;
-    } 
+    }
 }
 
 1;

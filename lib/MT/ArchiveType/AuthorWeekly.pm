@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -20,20 +20,19 @@ sub archive_label {
 
 sub default_archive_templates {
     return [
-        {
-            label => 'author/author-display-name/yyyy/mm/day-week/index.html',
+        {   label => 'author/author-display-name/yyyy/mm/day-week/index.html',
             template => 'author/%-a/%y/%m/%d-week/%f',
             default  => 1
         },
-        {
-            label => 'author/author_display_name/yyyy/mm/day-week/index.html',
+        {   label => 'author/author_display_name/yyyy/mm/day-week/index.html',
             template => 'author/%a/%y/%m/%d-week/%f'
         },
     ];
 }
 
 sub dynamic_template {
-    return 'author/<$MTEntryAuthorID$>/week/<$MTArchiveDate format="%Y%m%d"$>';
+    return
+        'author/<$MTEntryAuthorID$>/week/<$MTArchiveDate format="%Y%m%d"$>';
 }
 
 sub template_params {
@@ -43,7 +42,8 @@ sub template_params {
         archive_template      => 1,
         archive_listing       => 1,
         datebased_archive     => 1,
-    },
+        },
+        ;
 }
 
 sub archive_title {
@@ -51,11 +51,9 @@ sub archive_title {
     my ( $ctx, $entry_or_ts ) = @_;
     my $stamp = ref $entry_or_ts ? $entry_or_ts->authored_on : $entry_or_ts;
     my ( $start, $end ) = start_end_week($stamp);
-    my $start_date =
-      MT::Template::Context::_hdlr_date( $ctx,
+    my $start_date = MT::Template::Context::_hdlr_date( $ctx,
         { ts => $start, 'format' => "%x" } );
-    my $end_date =
-      MT::Template::Context::_hdlr_date( $ctx,
+    my $end_date = MT::Template::Context::_hdlr_date( $ctx,
         { ts => $end, 'format' => "%x" } );
     my $author = $obj->display_name($ctx);
 
@@ -79,12 +77,12 @@ sub archive_file {
         $name = "author" . $this_author->id if $name !~ /\w/;
         my $start = start_end_week($timestamp);
         my ( $year, $month, $day ) = unpack 'A4A2A2', $start;
-        $file =
-          sprintf( "%s/%04d/%02d/%02d-week/index", $name, $year, $month, $day );
+        $file = sprintf( "%s/%04d/%02d/%02d-week/index",
+            $name, $year, $month, $day );
     }
     else {
-        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} ) =
-          start_end_week($timestamp);
+        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} )
+            = start_end_week($timestamp);
     }
     $file;
 }
@@ -93,8 +91,8 @@ sub archive_group_iter {
     my $obj = shift;
     my ( $ctx, $args ) = @_;
     my $blog = $ctx->stash('blog');
-    my $sort_order =
-      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $sort_order
+        = ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
     my $auth_order = $args->{sort_order} ? $args->{sort_order} : 'ascend';
     my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
     my $limit = exists $args->{lastn} ? delete $args->{lastn} : undef;
@@ -121,14 +119,15 @@ sub archive_group_iter {
     my $loop_sub = sub {
         my $auth       = shift;
         my $count_iter = MT::Entry->count_group_by(
-            {
-                blog_id   => $blog->id,
+            {   blog_id   => $blog->id,
                 author_id => $auth->id,
                 status    => MT::Entry::RELEASE(),
                 ( $ts && $tsend ? ( authored_on => [ $ts, $tsend ] ) : () ),
             },
-            {
-                ( $ts && $tsend ? ( range_incl => { authored_on => 1 } ) : () ),
+            {   (   $ts && $tsend
+                    ? ( range_incl => { authored_on => 1 } )
+                    : ()
+                ),
                 group  => ["week_number"],
                 'sort' => [ { column => "week_number", desc => $order } ]
             }
@@ -144,7 +143,7 @@ sub archive_group_iter {
             };
             push( @data, $hash );
             return $count + 1
-              if ( defined($limit) && ( $count + 1 ) == $limit );
+                if ( defined($limit) && ( $count + 1 ) == $limit );
             $count++;
         }
         return $count;
@@ -161,11 +160,11 @@ sub archive_group_iter {
         my $iter;
         $iter = MT::Author->load_iter(
             undef,
-            {
-                sort      => 'name',
+            {   sort      => 'name',
                 direction => $auth_order,
                 join      => [
-                    'MT::Entry', 'author_id',
+                    'MT::Entry',
+                    'author_id',
                     { status => MT::Entry::RELEASE(), blog_id => $blog->id },
                     { unique => 1 }
                 ]
@@ -198,15 +197,16 @@ sub archive_group_iter {
             return ( $count, %hash );
         }
         undef;
-      }
+        }
 }
 
 sub archive_group_entries {
     my $obj = shift;
     my ( $ctx, %param ) = @_;
-    my $ts =
-        $param{year}
-    ? sprintf( "%04d%02d%02d000000", week2ymd( $param{year}, $param{week} ) )
+    my $ts
+        = $param{year}
+        ? sprintf( "%04d%02d%02d000000",
+        week2ymd( $param{year}, $param{week} ) )
         : $ctx->stash('current_timestamp');
     my $author = $param{author} || $ctx->stash('author');
     my $limit = $param{limit};
@@ -218,8 +218,7 @@ sub archive_entries_count {
     my ( $blog, $at, $entry ) = @_;
     my $auth = $entry->author;
     return $obj->SUPER::archive_entries_count(
-        {
-            Blog        => $blog,
+        {   Blog        => $blog,
             ArchiveType => $at,
             Timestamp   => $entry->authored_on,
             Author      => $auth

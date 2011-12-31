@@ -7,10 +7,11 @@ sub edit {
     require MT::CMS::Entry;
     MT::CMS::Entry::edit(@_);
 }
+
 sub list {
     my $app = shift;
     $app->param( 'type', 'page' );
-    return $app->forward('list_entry', { type => 'page' } );
+    return $app->forward( 'list_entry', { type => 'page' } );
 }
 
 sub save_pages {
@@ -36,7 +37,7 @@ sub can_save {
     return unless $id->isa('MT::Page');
 
     my $author = $app->user;
-    return $author->permissions($id->blog_id)->can_manage_pages;
+    return $author->permissions( $id->blog_id )->can_manage_pages;
 }
 
 sub can_delete {
@@ -48,7 +49,7 @@ sub can_delete {
     return unless $id->isa('MT::Page');
 
     my $author = $app->user;
-    return $author->permissions($id->blog_id)->can_manage_pages;
+    return $author->permissions( $id->blog_id )->can_manage_pages;
 }
 
 sub pre_save {

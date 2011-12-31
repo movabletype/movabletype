@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -9,9 +9,9 @@ package MT::Cache::Null;
 use strict;
 
 sub new {
-    my $class = shift;
+    my $class   = shift;
     my (%param) = @_;
-    my $self = bless \%param, $class;
+    my $self    = bless \%param, $class;
     return $self;
 }
 
@@ -29,7 +29,7 @@ sub get_multi {
 
 sub delete {
     my MT::Cache::Null $self = shift;
-    my ($key, $time) = @_;
+    my ( $key, $time ) = @_;
     return;
 }
 *remove = \&delete;
@@ -49,7 +49,7 @@ sub set {
 sub _set {
     my $cmdname = shift;
     my MT::Cache::Null $self = shift;
-    my ($key, $val, $exptime) = @_;
+    my ( $key, $val, $exptime ) = @_;
     return;
 }
 
@@ -63,7 +63,7 @@ sub flush_all {
     return;
 }
 
-sub DESTROY {}
+sub DESTROY { }
 
 1;
 __END__
@@ -86,4 +86,3 @@ See POD of I<MT::Cache::Session> for details.
 Please see L<MT/AUTHOR & COPYRIGHT>.
 
 =cut
-

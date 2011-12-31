@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -24,7 +24,7 @@ sub init {
     $cfg->UsePlugins(0);
     $app->SUPER::init(@_);
     $app->{mt_dir} ||= $ENV{MT_HOME} || $param{Directory};
-    $app->{is_admin} = 1;
+    $app->{is_admin}             = 1;
     $app->{plugin_template_path} = '';
     $app->add_methods(
         pre_start => \&pre_start,
@@ -86,7 +86,7 @@ sub init_request {
 
     # If mt-check.cgi exists, redirect to errro screen
     my $cfg_exists = $app->is_config_exists();
-    if ($cfg_exists && lc $step ne 'seed' && lc $mode ne 'retry') {
+    if ( $cfg_exists && lc $step ne 'seed' && lc $mode ne 'retry' ) {
         my %param;
         $param{cfg_exists} = 1;
         $app->mode('pre_start');
@@ -260,9 +260,8 @@ sub init_core_registry {
                     'This module is required in mt-search.cgi if you are running Movable Type on Perl older than Perl 5.8.',
             },
             'XML::Parser' => {
-                link => 'http://search.cpan.org/dist/Text-Balanced',
-                label =>
-                    'This module required for action streams.',
+                link  => 'http://search.cpan.org/dist/Text-Balanced',
+                label => 'This module required for action streams.',
             },
         },
         required_packages => {
@@ -349,7 +348,7 @@ sub pre_start {
     my %param;
 
     eval { use File::Spec; };
-    my ( $static_file_path );
+    my ($static_file_path);
     if ( !$@ ) {
         $static_file_path = File::Spec->catfile( $app->static_file_path );
     }
@@ -543,9 +542,11 @@ sub configure {
         elsif ( $dbtype eq 'mssqlserver' ) {
             $param{login_required}  = 1;
             $param{publish_charset} = $app->param('publish_charset')
-                || ( $app->{cfg}->DefaultLanguage eq 'ja'
+                || (
+                $app->{cfg}->DefaultLanguage eq 'ja'
                 ? 'Shift_JIS'
-                : 'ISO-8859-1' );
+                : 'ISO-8859-1'
+                );
         }
         elsif ( $dbtype eq 'sqlite' ) {
             $param{path_required} = 1;
@@ -654,7 +655,7 @@ sub configure {
             require MT::ObjectDriverFactory;
             my $od = MT::ObjectDriverFactory->new($driver);
 
-            $cfg->PublishCharset( $current_charset );
+            $cfg->PublishCharset($current_charset);
 
             eval { $od->rw_handle; };    ## to test connection
             if ( my $err = $@ ) {
@@ -663,9 +664,11 @@ sub configure {
                     'An error occurred while attempting to connect to the database.  Check the settings and try again.'
                     );
                 if ( $param{publish_charset} ne $current_charset ) {
-                    # $param{publish_charset} is sometimes undef which forces encode_text
-                    # to guess_encode which should handle all of the cases.
-                    $err = encode_text( $err, $param{publish_charset}, $current_charset );
+
+         # $param{publish_charset} is sometimes undef which forces encode_text
+         # to guess_encode which should handle all of the cases.
+                    $err = encode_text( $err, $param{publish_charset},
+                        $current_charset );
                 }
                 $err_more = $err;
             }
