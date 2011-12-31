@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -14,23 +14,26 @@ use MT::Promise qw( delay );
 use MT::I18N qw( first_n_text );
 
 sub _comment_follow {
-    my($ctx, $arg) = @_;
+    my ( $ctx, $arg ) = @_;
     my $c = $ctx->stash('comment');
     return unless $c;
 
     my $blog = $ctx->stash('blog');
-    if ($blog && $blog->nofollow_urls) {
-        if ($blog->follow_auth_links) {
+    if ( $blog && $blog->nofollow_urls ) {
+        if ( $blog->follow_auth_links ) {
             my $cmntr = $ctx->stash('commenter');
             unless ($cmntr) {
-                if ($c->commenter_id) {
-                    $cmntr = MT::Author->load($c->commenter_id) || undef;
+                if ( $c->commenter_id ) {
+                    $cmntr = MT::Author->load( $c->commenter_id ) || undef;
                 }
             }
-            if (!defined $cmntr || ($cmntr && !$cmntr->is_trusted($blog->id))) {
+            if ( !defined $cmntr
+                || ( $cmntr && !$cmntr->is_trusted( $blog->id ) ) )
+            {
                 $ctx->nofollowfy_on($arg);
             }
-        } else {
+        }
+        else {
             $ctx->nofollowfy_on($arg);
         }
     }
@@ -50,9 +53,11 @@ incoming comments from anonymous commenters.
 sub _hdlr_comments_moderated {
     my ($ctx) = @_;
     my $blog = $ctx->stash('blog');
-    if ($blog->moderate_unreg_comments || $blog->manual_approve_commenters) {
+    if ( $blog->moderate_unreg_comments || $blog->manual_approve_commenters )
+    {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -82,13 +87,19 @@ fashion.
 =cut
 
 sub _hdlr_blog_if_comments_open {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
-    if ($ctx->{config}->AllowComments &&
-        (($blog->allow_reg_comments && $blog->effective_remote_auth_token)
-         || $blog->allow_unreg_comments)) {
+    if ($ctx->{config}->AllowComments
+        && ((      $blog->allow_reg_comments
+                && $blog->effective_remote_auth_token
+            )
+            || $blog->allow_unreg_comments
+        )
+        )
+    {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -172,22 +183,27 @@ to consider the comment for inclusion.
 =cut
 
 sub _hdlr_comments {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
-    my (%terms, %args);
+    my ( %terms, %args );
     my @filters;
     my @comments;
-    my $comments = $ctx->stash('comments');
-    my $blog_id = $ctx->stash('blog_id');
-    my $blog = $ctx->stash('blog');
+    my $comments  = $ctx->stash('comments');
+    my $blog_id   = $ctx->stash('blog_id');
+    my $blog      = $ctx->stash('blog');
     my $namespace = $args->{namespace};
-    if ($args->{namespace}) {
+    if ( $args->{namespace} ) {
         my $need_join = 0;
-        if ($args->{sort_by} && ($args->{sort_by} eq 'score' || $args->{sort_by} eq 'rate')) {
+        if ( $args->{sort_by}
+            && ( $args->{sort_by} eq 'score' || $args->{sort_by} eq 'rate' ) )
+        {
             $need_join = 1;
-        } else {
-            for my $f qw( min_score max_score min_rate max_rate min_count max_count scored_by ) {
-                if ($args->{$f}) {
+        }
+        else {
+            for my $f
+                qw( min_score max_score min_rate max_rate min_count max_count scored_by )
+            {
+                if ( $args->{$f} ) {
                     $need_join = 1;
                     last;
                 }
@@ -197,62 +213,76 @@ sub _hdlr_comments {
             my $scored_by = $args->{scored_by} || undef;
             if ($scored_by) {
                 require MT::Author;
-                my $author = MT::Author->load({ name => $scored_by }) or
-                    return $ctx->error(MT->translate(
-                        "No such user '[_1]'", $scored_by ));
+                my $author = MT::Author->load( { name => $scored_by } )
+                    or return $ctx->error(
+                    MT->translate( "No such user '[_1]'", $scored_by ) );
                 $scored_by = $author;
             }
-            $args{join} = MT->model('objectscore')->join_on(undef,
-                {
-                    object_id => \'=comment_id',
+            $args{join} = MT->model('objectscore')->join_on(
+                undef,
+                {   object_id => \'=comment_id',
                     object_ds => 'comment',
                     namespace => $namespace,
-                    (!$comments && $scored_by ? (author_id => $scored_by->id) : ()),
-                }, {
-                    unique => 1,
-            });
-            if ($comments && $scored_by) {
-                push @filters, sub { $_[0]->get_score($namespace, $scored_by) };
+                    (   !$comments && $scored_by
+                        ? ( author_id => $scored_by->id )
+                        : ()
+                    ),
+                },
+                { unique => 1, }
+            );
+            if ( $comments && $scored_by ) {
+                push @filters,
+                    sub { $_[0]->get_score( $namespace, $scored_by ) };
             }
         }
 
         # Adds a rate or score filter to the filter list.
-        if ($args->{min_score}) {
-            push @filters, sub { $_[0]->score_for($namespace) >= $args->{min_score}; };
+        if ( $args->{min_score} ) {
+            push @filters,
+                sub { $_[0]->score_for($namespace) >= $args->{min_score}; };
         }
-        if ($args->{max_score}) {
-            push @filters, sub { $_[0]->score_for($namespace) <= $args->{max_score}; };
+        if ( $args->{max_score} ) {
+            push @filters,
+                sub { $_[0]->score_for($namespace) <= $args->{max_score}; };
         }
-        if ($args->{min_rate}) {
-            push @filters, sub { $_[0]->score_avg($namespace) >= $args->{min_rate}; };
+        if ( $args->{min_rate} ) {
+            push @filters,
+                sub { $_[0]->score_avg($namespace) >= $args->{min_rate}; };
         }
-        if ($args->{max_rate}) {
-            push @filters, sub { $_[0]->score_avg($namespace) <= $args->{max_rate}; };
+        if ( $args->{max_rate} ) {
+            push @filters,
+                sub { $_[0]->score_avg($namespace) <= $args->{max_rate}; };
         }
-        if ($args->{min_count}) {
-            push @filters, sub { $_[0]->vote_for($namespace) >= $args->{min_count}; };
+        if ( $args->{min_count} ) {
+            push @filters,
+                sub { $_[0]->vote_for($namespace) >= $args->{min_count}; };
         }
-        if ($args->{max_count}) {
-            push @filters, sub { $_[0]->vote_for($namespace) <= $args->{max_count}; };
+        if ( $args->{max_count} ) {
+            push @filters,
+                sub { $_[0]->vote_for($namespace) <= $args->{max_count}; };
         }
     }
 
-    my $so = lc ($args->{sort_order} || ($blog ? $blog->sort_order_comments : undef) || 'ascend');
+    my $so
+        = lc(  $args->{sort_order}
+            || ( $blog ? $blog->sort_order_comments : undef )
+            || 'ascend' );
     my $no_resort;
 
     # if old comments are present in the stash
     if ($comments) {
         my $n = $args->{lastn};
-        my $col = lc($args->{sort_by} || 'created_on');
-        @$comments = $so eq 'ascend' ?
-            sort { $a->created_on cmp $b->created_on } @$comments :
-            sort { $b->created_on cmp $a->created_on } @$comments;
+        my $col = lc( $args->{sort_by} || 'created_on' );
+        @$comments
+            = $so eq 'ascend'
+            ? sort { $a->created_on cmp $b->created_on } @$comments
+            : sort { $b->created_on cmp $a->created_on } @$comments;
         $no_resort = 1
             unless $args->{sort_order} || $args->{sort_by};
         if (@filters) {
             my $offset = $args->{offset} || 0;
-            my $j      = 0;
-            COMMENTS: for my $c (@$comments) {
+            my $j = 0;
+        COMMENTS: for my $c (@$comments) {
                 for (@filters) {
                     next COMMENTS unless $_->($c);
                 }
@@ -262,49 +292,54 @@ sub _hdlr_comments {
         }
         else {
             my $offset;
-            if ($offset = $args->{offset}) {
-                if ($offset < scalar @comments) {
-                    @comments = @$comments[$offset..$#comments];
-                } else {
+            if ( $offset = $args->{offset} ) {
+                if ( $offset < scalar @comments ) {
+                    @comments = @$comments[ $offset .. $#comments ];
+                }
+                else {
                     @comments = ();
                 }
-            } else {
+            }
+            else {
                 @comments = @$comments;
             }
         }
         if ($n) {
             my $max = $n - 1 > $#comments ? $#comments : $n - 1;
-            @comments = $so eq 'ascend' ?
-                @comments[$#comments-$max..$#comments] :
-                @comments[0..$max];
+            @comments
+                = $so eq 'ascend'
+                ? @comments[ $#comments - $max .. $#comments ]
+                : @comments[ 0 .. $max ];
         }
-    } 
+    }
+
     # if there are no comments in the stash
     else {
         $terms{visible} = 1;
-        $ctx->set_blog_load_context($args, \%terms, \%args)
-            or return $ctx->error($ctx->errstr);
+        $ctx->set_blog_load_context( $args, \%terms, \%args )
+            or return $ctx->error( $ctx->errstr );
 
         ## If there is a "lastn" arg, then we need to check if there is an entry
         ## in context. If so, grab the N most recent comments for that entry;
         ## otherwise, grab the N most recent comments for the entire blog.
         my $n = $args->{lastn};
-        if (my $e = $ctx->stash('entry')) {
+        if ( my $e = $ctx->stash('entry') ) {
             ## Sort in descending order unless sort_order is specified
             ## then grab the first $n ($n mos recent) comments.
             $args{'sort'} = 'created_on';
             if ($so) {
                 $args{'direction'} = $so;
-            } else {
+            }
+            else {
                 $args{'direction'} = 'descend';
             }
-            my $cmts = $e->comments(\%terms, \%args);
+            my $cmts = $e->comments( \%terms, \%args );
             my $offset = $args->{offset} || 0;
             if (@filters) {
-                my $i = 0;
-                my $j = 0;
+                my $i      = 0;
+                my $j      = 0;
                 my $offset = $args->{offset} || 0;
-                COMMENTS: for my $c (@$cmts) {
+            COMMENTS: for my $c (@$cmts) {
                     for (@filters) {
                         next COMMENTS unless $_->($c);
                     }
@@ -312,54 +347,64 @@ sub _hdlr_comments {
                     push @comments, $c;
                     last if $n && ( $n <= ++$i );
                 }
-            } elsif ($offset || $n) {
+            }
+            elsif ( $offset || $n ) {
                 if ($offset) {
-                    if ($offset < scalar @$cmts - 1) {
-                        @$cmts = @$cmts[$offset..(scalar @$cmts - 1)];
-                     } else {
+                    if ( $offset < scalar @$cmts - 1 ) {
+                        @$cmts = @$cmts[ $offset .. ( scalar @$cmts - 1 ) ];
+                    }
+                    else {
                         @$cmts = ();
                     }
                 }
                 if ($n) {
-                    my $max = $n - 1 > scalar @$cmts - 1 ? scalar @$cmts - 1 : $n - 1;
-                    @$cmts = @$cmts[0..$max];
+                    my $max
+                        = $n - 1 > scalar @$cmts - 1
+                        ? scalar @$cmts - 1
+                        : $n - 1;
+                    @$cmts = @$cmts[ 0 .. $max ];
                 }
                 @comments = @$cmts;
-            } else {
+            }
+            else {
                 @comments = @$cmts;
             }
         }
+
         # else look for most recent comments in the entire blog
         else {
             $args{'sort'} = lc $args->{sort_by} || 'created_on';
-            if ($args->{lastn} || $args->{offset}) {
-                $args{'direction'} =  'descend';
-            } else {
-                $args{'direction'} =  $so ? $so : 'ascend';
+            if ( $args->{lastn} || $args->{offset} ) {
+                $args{'direction'} = 'descend';
+            }
+            else {
+                $args{'direction'} = $so ? $so : 'ascend';
                 $no_resort = 1
                     unless $args->{sort_order} || $args->{sort_by};
             }
             $args{'sort'} = 'created_on';
 
             require MT::Comment;
-            if (!@filters) {
+            if ( !@filters ) {
                 $args{limit} = $n if $n;
                 $args{offset} = $args->{offset} if $args->{offset};
                 $args{join} = MT->model('entry')->join_on(
                     undef,
-                    {
-                        id => \'=comment_entry_id',
+                    {   id     => \'=comment_entry_id',
                         status => MT::Entry::RELEASE(),
-                    }, {unique => 1});
+                    },
+                    { unique => 1 }
+                );
 
-                @comments = MT::Comment->load(\%terms, \%args);
-            } else {
-                my $iter = MT::Comment->load_iter(\%terms, \%args);
+                @comments = MT::Comment->load( \%terms, \%args );
+            }
+            else {
+                my $iter = MT::Comment->load_iter( \%terms, \%args );
                 my %entries;
                 my $j = 0;
                 my $offset = $args->{offset} || 0;
-                COMMENT: while (my $c = $iter->()) {
-                    my $e = $entries{$c->entry_id} ||= $c->entry;
+            COMMENT: while ( my $c = $iter->() ) {
+                    my $e = $entries{ $c->entry_id } ||= $c->entry;
                     next unless $e;
                     next if $e->status != MT::Entry::RELEASE();
                     for (@filters) {
@@ -367,7 +412,7 @@ sub _hdlr_comments {
                     }
                     next if $offset && $j++ < $offset;
                     push @comments, $c;
-                    if ($n && (scalar @comments == $n)) {
+                    if ( $n && ( scalar @comments == $n ) ) {
                         $iter->end;
                         last;
                     }
@@ -376,43 +421,61 @@ sub _hdlr_comments {
         }
     }
 
-    if (!$no_resort) {
-        my $col = lc ($args->{sort_by} || 'created_on');
+    if ( !$no_resort ) {
+        my $col = lc( $args->{sort_by} || 'created_on' );
         if (@comments) {
-            if ('created_on' eq $col) {
+            if ( 'created_on' eq $col ) {
                 my @comm;
-                @comm = $so eq 'ascend' ?
-                    sort { $a->created_on <=> $b->created_on } @comments :
-                    sort { $b->created_on <=> $a->created_on } @comments;
+                @comm
+                    = $so eq 'ascend'
+                    ? sort { $a->created_on <=> $b->created_on } @comments
+                    : sort { $b->created_on <=> $a->created_on } @comments;
+
                 # filter out comments from unapproved commenters
                 @comments = grep { $_->visible() } @comm;
-            } elsif ('score' eq $col) {
+            }
+            elsif ( 'score' eq $col ) {
                 my %m = map { $_->id => $_ } @comments;
                 my @cid = keys %m;
                 require MT::ObjectScore;
                 my $scores = MT::ObjectScore->sum_group_by(
-                    { 'object_ds' => 'comment', 'namespace' => $namespace, object_id => \@cid },
-                    { 'sum' => 'score', group => ['object_id'],
-                      $so eq 'ascend' ? (direction => 'ascend') : (direction => 'descend'),
-                    });
+                    {   'object_ds' => 'comment',
+                        'namespace' => $namespace,
+                        object_id   => \@cid
+                    },
+                    {   'sum' => 'score',
+                        group => ['object_id'],
+                        $so eq 'ascend'
+                        ? ( direction => 'ascend' )
+                        : ( direction => 'descend' ),
+                    }
+                );
                 my @tmp;
-                while (my ($score, $object_id) = $scores->()) {
-                    push @tmp, delete $m{ $object_id } if exists $m{ $object_id };
+                while ( my ( $score, $object_id ) = $scores->() ) {
+                    push @tmp, delete $m{$object_id} if exists $m{$object_id};
                     $scores->end, last unless %m;
                 }
                 @comments = @tmp;
-            } elsif ('rate' eq $col) {
+            }
+            elsif ( 'rate' eq $col ) {
                 my %m = map { $_->id => $_ } @comments;
                 my @cid = keys %m;
                 require MT::ObjectScore;
                 my $scores = MT::ObjectScore->avg_group_by(
-                    { 'object_ds' => 'comment', 'namespace' => $namespace, object_id => \@cid },
-                    { 'avg' => 'score', group => ['object_id'],
-                      $so eq 'ascend' ? (direction => 'ascend') : (direction => 'descend'),
-                    });
+                    {   'object_ds' => 'comment',
+                        'namespace' => $namespace,
+                        object_id   => \@cid
+                    },
+                    {   'avg' => 'score',
+                        group => ['object_id'],
+                        $so eq 'ascend'
+                        ? ( direction => 'ascend' )
+                        : ( direction => 'descend' ),
+                    }
+                );
                 my @tmp;
-                while (my ($score, $object_id) = $scores->()) {
-                    push @tmp, delete $m{ $object_id } if exists $m{ $object_id };
+                while ( my ( $score, $object_id ) = $scores->() ) {
+                    push @tmp, delete $m{$object_id} if exists $m{$object_id};
                     $scores->end, last unless %m;
                 }
                 @comments = @tmp;
@@ -420,39 +483,46 @@ sub _hdlr_comments {
         }
     }
 
-    my $html = '';
+    my $html    = '';
     my $builder = $ctx->stash('builder');
-    my $tokens = $ctx->stash('tokens');
-    my $i = 1;
+    my $tokens  = $ctx->stash('tokens');
+    my $i       = 1;
 
     local $ctx->{__stash}{commenter} = $ctx->{__stash}{commenter};
     my $vars = $ctx->{__stash}{vars} ||= {};
     my $glue = $args->{glue};
     for my $c (@comments) {
-        local $vars->{__first__} = $i == 1;
-        local $vars->{__last__} = ($i == scalar @comments);
-        local $vars->{__odd__} = ($i % 2) == 1;
-        local $vars->{__even__} = ($i % 2) == 0;
-        local $vars->{__counter__} = $i;
-        local $ctx->{__stash}{blog} = $c->blog;
-        local $ctx->{__stash}{blog_id} = $c->blog_id;
-        local $ctx->{__stash}{comment} = $c;
+        local $vars->{__first__}        = $i == 1;
+        local $vars->{__last__}         = ( $i == scalar @comments );
+        local $vars->{__odd__}          = ( $i % 2 ) == 1;
+        local $vars->{__even__}         = ( $i % 2 ) == 0;
+        local $vars->{__counter__}      = $i;
+        local $ctx->{__stash}{blog}     = $c->blog;
+        local $ctx->{__stash}{blog_id}  = $c->blog_id;
+        local $ctx->{__stash}{comment}  = $c;
         local $ctx->{current_timestamp} = $c->created_on;
-        $ctx->stash('comment_order_num', $i);
-        if ($c->commenter_id) {
-            $ctx->stash('commenter', delay(sub {MT::Author->load($c->commenter_id)}));
-        } else {
-            $ctx->stash('commenter', undef);
+        $ctx->stash( 'comment_order_num', $i );
+
+        if ( $c->commenter_id ) {
+            $ctx->stash( 'commenter',
+                delay( sub { MT::Author->load( $c->commenter_id ) } ) );
         }
-        my $out = $builder->build($ctx, $tokens,
-            { CommentsHeader => $i == 1,
-              CommentsFooter => ($i == scalar @comments), %$cond } );
+        else {
+            $ctx->stash( 'commenter', undef );
+        }
+        my $out = $builder->build(
+            $ctx, $tokens,
+            {   CommentsHeader => $i == 1,
+                CommentsFooter => ( $i == scalar @comments ),
+                %$cond
+            }
+        );
         return $ctx->error( $builder->errstr ) unless defined $out;
         $html .= $glue if defined $glue && length($html) && length($out);
         $html .= $out;
         $i++;
     }
-    if (!@comments) {
+    if ( !@comments ) {
         return MT::Template::Context::_hdlr_pass_tokens_else(@_);
     }
     return $html;
@@ -499,14 +569,14 @@ B<Example:>
 =cut
 
 sub _hdlr_comment_entry {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
-    my $entry = MT::Entry->load($c->entry_id)
+    my $entry = MT::Entry->load( $c->entry_id )
         or return '';
     local $ctx->{__stash}{entry} = $entry;
     local $ctx->{current_timestamp} = $entry->authored_on;
-    $ctx->stash('builder')->build($ctx, $ctx->stash('tokens'), $cond);
+    $ctx->stash('builder')->build( $ctx, $ctx->stash('tokens'), $cond );
 }
 
 ###########################################################################
@@ -547,14 +617,14 @@ B<Example:>
 =cut
 
 sub _hdlr_comment_parent {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
-    $c->parent_id && (my $parent = MT::Comment->load($c->parent_id))
+    $c->parent_id && ( my $parent = MT::Comment->load( $c->parent_id ) )
         or return '';
     local $ctx->{__stash}{comment} = $parent;
-    $ctx->stash('builder')->build($ctx, $ctx->stash('tokens'), $cond);
+    $ctx->stash('builder')->build( $ctx, $ctx->stash('tokens'), $cond );
 }
 
 ###########################################################################
@@ -578,69 +648,80 @@ B<Example:>
 =cut
 
 sub _hdlr_comment_replies {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $comment = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
     my $tokens = $ctx->stash('tokens');
 
-    $ctx->stash('_comment_replies_tokens', $tokens);
+    $ctx->stash( '_comment_replies_tokens', $tokens );
 
-    my (%terms, %args);
-    $terms{parent_id} = $comment->id;
-    $terms{visible} = 1;
-    $args{'sort'} = 'created_on';
+    my ( %terms, %args );
+    $terms{parent_id}  = $comment->id;
+    $terms{visible}    = 1;
+    $args{'sort'}      = 'created_on';
     $args{'direction'} = 'descend';
     require MT::Comment;
-    my $iter = MT::Comment->load_iter(\%terms, \%args);
+    my $iter = MT::Comment->load_iter( \%terms, \%args );
     my %entries;
     my $blog = $ctx->stash('blog');
-    my $so = lc($args->{sort_order}) || ($blog ? $blog->sort_order_comments : undef) || 'ascend';
+    my $so 
+        = lc( $args->{sort_order} )
+        || ( $blog ? $blog->sort_order_comments : undef )
+        || 'ascend';
     my $n = $args->{lastn};
     my @comments;
-    while (my $c = $iter->()) {
+
+    while ( my $c = $iter->() ) {
         push @comments, $c;
-        if ($n && (scalar @comments == $n)) {
+        if ( $n && ( scalar @comments == $n ) ) {
             $iter->end;
             last;
         }
     }
-    @comments = $so eq 'ascend' ?
-        sort { $a->created_on <=> $b->created_on } @comments :
-        sort { $b->created_on <=> $a->created_on } @comments;
+    @comments
+        = $so eq 'ascend'
+        ? sort { $a->created_on <=> $b->created_on } @comments
+        : sort { $b->created_on <=> $a->created_on } @comments;
 
-    my $html = '';
+    my $html    = '';
     my $builder = $ctx->stash('builder');
-    my $i = 1;
-    
+    my $i       = 1;
+
     @comments = grep { $_->visible() } @comments;
 
     local $ctx->{__stash}{commenter} = $ctx->{__stash}{commenter};
     my $vars = $ctx->{__stash}{vars} ||= {};
     for my $c (@comments) {
-        local $vars->{__first__} = $i == 1;
-        local $vars->{__last__} = ($i == scalar @comments);
-        local $vars->{__odd__} = ($i % 2) == 1;
-        local $vars->{__even__} = ($i % 2) == 0;
-        local $vars->{__counter__} = $i;
-        local $ctx->{__stash}{blog} = $c->blog;
-        local $ctx->{__stash}{blog_id} = $c->blog_id;
-        local $ctx->{__stash}{comment} = $c;
+        local $vars->{__first__}        = $i == 1;
+        local $vars->{__last__}         = ( $i == scalar @comments );
+        local $vars->{__odd__}          = ( $i % 2 ) == 1;
+        local $vars->{__even__}         = ( $i % 2 ) == 0;
+        local $vars->{__counter__}      = $i;
+        local $ctx->{__stash}{blog}     = $c->blog;
+        local $ctx->{__stash}{blog_id}  = $c->blog_id;
+        local $ctx->{__stash}{comment}  = $c;
         local $ctx->{current_timestamp} = $c->created_on;
-        $ctx->stash('comment_order_num', $i);
-        if ($c->commenter_id) {
-            $ctx->stash('commenter', delay(sub {MT::Author->load($c->commenter_id)}));
-        } else {
-            $ctx->stash('commenter', undef);
+        $ctx->stash( 'comment_order_num', $i );
+
+        if ( $c->commenter_id ) {
+            $ctx->stash( 'commenter',
+                delay( sub { MT::Author->load( $c->commenter_id ) } ) );
         }
-        my $out = $builder->build($ctx, $tokens,
-            { CommentsHeader => $i == 1,
-              CommentsFooter => ($i == scalar @comments), } );
+        else {
+            $ctx->stash( 'commenter', undef );
+        }
+        my $out = $builder->build(
+            $ctx, $tokens,
+            {   CommentsHeader => $i == 1,
+                CommentsFooter => ( $i == scalar @comments ),
+            }
+        );
         return $ctx->error( $builder->errstr ) unless defined $out;
         $html .= $out;
         $i++;
     }
-    if (!@comments) {
+    if ( !@comments ) {
         return MT::Template::Context::_hdlr_pass_tokens_else(@_);
     }
     $html;
@@ -664,7 +745,7 @@ B<Example:>
 =cut
 
 sub _hdlr_if_comment_parent {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $c = $ctx->stash('comment');
     return 0 if !$c;
@@ -673,7 +754,7 @@ sub _hdlr_if_comment_parent {
     return 0 unless $parent_id;
 
     require MT::Comment;
-    my $parent = MT::Comment->load($c->parent_id);
+    my $parent = MT::Comment->load( $c->parent_id );
     return 0 unless $parent;
     return $parent->visible ? 1 : 0;
 }
@@ -690,7 +771,7 @@ has replies.
 =cut
 
 sub _hdlr_if_comment_replies {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $c = $ctx->stash('comment');
     return 0 if !$c;
     MT::Comment->exist( { parent_id => $c->id, visible => 1 } );
@@ -710,10 +791,13 @@ require user registration.
 sub _hdlr_reg_required {
     my ($ctx) = @_;
     my $blog = $ctx->stash('blog');
-    if ( $blog->allow_reg_comments && $blog->commenter_authenticators
-        && ! $blog->allow_unreg_comments ) {
+    if (   $blog->allow_reg_comments
+        && $blog->commenter_authenticators
+        && !$blog->allow_unreg_comments )
+    {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -732,10 +816,13 @@ permit anonymous comments.
 sub _hdlr_reg_not_required {
     my ($ctx) = @_;
     my $blog = $ctx->stash('blog');
-    if ($blog->allow_reg_comments && $blog->commenter_authenticators
-        && $blog->allow_unreg_comments) {
+    if (   $blog->allow_reg_comments
+        && $blog->commenter_authenticators
+        && $blog->allow_unreg_comments )
+    {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -764,16 +851,17 @@ and "MovableType". The identifier is case-insensitive.
 =cut
 
 sub _hdlr_reg_allowed {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $blog = $ctx->stash('blog');
-    if ($blog->allow_reg_comments && $blog->commenter_authenticators) {
-        if (my $type = $args->{type}) {
+    if ( $blog->allow_reg_comments && $blog->commenter_authenticators ) {
+        if ( my $type = $args->{type} ) {
             my %types = map { lc($_) => 1 }
                 split /,/, $blog->commenter_authenticators;
-            return $types{lc $type} ? 1 : 0;
+            return $types{ lc $type } ? 1 : 0;
         }
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -813,12 +901,13 @@ permit HTML in comments.
 =cut
 
 sub _hdlr_if_allow_comment_html {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
-    if ($blog->allow_comment_html) {
+    if ( $blog->allow_comment_html ) {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -837,15 +926,23 @@ L<IfCommentsAccepted> tag for this.
 =cut
 
 sub _hdlr_if_comments_allowed {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
-    my $cfg = $ctx->{config};
-    if ((!$blog || ($blog && ($blog->allow_unreg_comments
-                              || ($blog->allow_reg_comments
-                                  && $blog->effective_remote_auth_token))))
-        && $cfg->AllowComments) {
+    my $cfg  = $ctx->{config};
+    if ((   !$blog
+            || ($blog
+                && ($blog->allow_unreg_comments
+                    || (   $blog->allow_reg_comments
+                        && $blog->effective_remote_auth_token )
+                )
+            )
+        )
+        && $cfg->AllowComments
+        )
+    {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -863,20 +960,24 @@ comments exist for the entry in context.
 
 # comments exist in stash OR entry context allows comments
 sub _hdlr_if_comments_active {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
-    my $cfg = $ctx->{config};
+    my $cfg  = $ctx->{config};
     my $active;
-    if (my $entry = $ctx->stash('entry')) {
-        $active = 1 if ($blog->accepts_comments && $entry->allow_comments
-                        && $cfg->AllowComments);
+    if ( my $entry = $ctx->stash('entry') ) {
+        $active = 1
+            if ( $blog->accepts_comments
+            && $entry->allow_comments
+            && $cfg->AllowComments );
         $active = 1 if $entry->comment_count;
-    } else {
-        $active = 1 if ($blog->accepts_comments && $cfg->AllowComments);
+    }
+    else {
+        $active = 1 if ( $blog->accepts_comments && $cfg->AllowComments );
     }
     if ($active) {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -900,16 +1001,18 @@ B<Example:>
 =cut
 
 sub _hdlr_if_comments_accepted {
-    my ($ctx, $args, $cond) = @_;
-    my $blog = $ctx->stash('blog');
-    my $cfg = $ctx->{config};
+    my ( $ctx, $args, $cond ) = @_;
+    my $blog  = $ctx->stash('blog');
+    my $cfg   = $ctx->{config};
     my $entry = $ctx->stash('entry');
-    my $blog_comments_accepted = $blog->accepts_comments && $cfg->AllowComments;
+    my $blog_comments_accepted
+        = $blog->accepts_comments && $cfg->AllowComments;
     my $accepted = $blog_comments_accepted;
     $accepted = 0 if $entry && !$entry->allow_comments;
     if ($accepted) {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -933,12 +1036,13 @@ require an e-mail address for anonymous comments.
 =cut
 
 sub _hdlr_if_need_email {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
-    my $cfg = $ctx->{config};
-    if ($blog->require_comment_emails) {
+    my $cfg  = $ctx->{config};
+    if ( $blog->require_comment_emails ) {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -954,14 +1058,16 @@ also permits comments.
 =cut
 
 sub _hdlr_entry_if_allow_comments {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
-    my $cfg = $ctx->{config};
-    my $blog_comments_accepted = $blog->accepts_comments && $cfg->AllowComments;
+    my $cfg  = $ctx->{config};
+    my $blog_comments_accepted
+        = $blog->accepts_comments && $cfg->AllowComments;
     my $entry = $ctx->stash('entry');
-    if ($blog_comments_accepted && $entry->allow_comments) {
+    if ( $blog_comments_accepted && $entry->allow_comments ) {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -977,14 +1083,20 @@ Deprecated in favor of L<IfCommentsActive>.
 =cut
 
 sub _hdlr_entry_if_comments_open {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
-    my $cfg = $ctx->{config};
-    my $blog_comments_accepted = $blog->accepts_comments && $cfg->AllowComments;
+    my $cfg  = $ctx->{config};
+    my $blog_comments_accepted
+        = $blog->accepts_comments && $cfg->AllowComments;
     my $entry = $ctx->stash('entry');
-    if ($entry && $blog_comments_accepted && $entry->allow_comments && $entry->allow_comments eq '1') {
+    if (   $entry
+        && $blog_comments_accepted
+        && $entry->allow_comments
+        && $entry->allow_comments eq '1' )
+    {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -1000,11 +1112,11 @@ Outputs the numeric ID for the current comment in context.
 =cut
 
 sub _hdlr_comment_id {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
     my $id = $c->id || 0;
-    return $args && $args->{pad} ? (sprintf "%06d", $id) : $id;
+    return $args && $args->{pad} ? ( sprintf "%06d", $id ) : $id;
 }
 
 ###########################################################################
@@ -1037,10 +1149,11 @@ the current comment in context.
 =cut
 
 sub _hdlr_comment_entry_id {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
-    return $args && $args->{pad} ? (sprintf "%06d", $c->entry_id) : $c->entry_id;
+    return $args
+        && $args->{pad} ? ( sprintf "%06d", $c->entry_id ) : $c->entry_id;
 }
 
 ###########################################################################
@@ -1084,7 +1197,7 @@ display name).
 =cut
 
 sub _hdlr_comment_author {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     $ctx->sanitize_on($args);
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
@@ -1092,7 +1205,7 @@ sub _hdlr_comment_author {
     $args->{default} = MT->translate("Anonymous")
         unless exists $args->{default};
     $a ||= $args->{default};
-    return remove_html($a);    
+    return remove_html($a);
 }
 
 ###########################################################################
@@ -1141,9 +1254,10 @@ If assigned, applies a C<rel="nofollow"> link relation to the link.
 =cut
 
 sub _hdlr_comment_author_link {
+
     #sanitize_on($_[1]);
-    my($ctx, $args) = @_;
-    _comment_follow($ctx, $args);
+    my ( $ctx, $args ) = @_;
+    _comment_follow( $ctx, $args );
 
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
@@ -1151,9 +1265,10 @@ sub _hdlr_comment_author_link {
     $name = '' unless defined $name;
     $name ||= $args->{default_name};
     $name ||= MT->translate("Anonymous");
-    $name = encode_html( remove_html( $name ) );
+    $name = encode_html( remove_html($name) );
     my $show_email = $args->{show_email} ? 1 : 0;
     my $show_url = 1 unless exists $args->{show_url} && !$args->{show_url};
+
     # Open the link in a new window if requested (with new_window="1").
     my $target = $args->{new_window} ? ' target="_blank"' : '';
     my $cmntr = $ctx->stash('commenter');
@@ -1161,30 +1276,45 @@ sub _hdlr_comment_author_link {
         $cmntr = MT::Author->load( $c->commenter_id ) if $c->commenter_id;
     }
 
-    if ( $cmntr ) {
-        $name = encode_html( remove_html( $cmntr->nickname ) ) if $cmntr->nickname;
-        if ($cmntr->url) {
-            return sprintf(qq(<a title="%s" href="%s"%s>%s</a>),
-                           encode_html( $cmntr->url ), encode_html( $cmntr->url ), $target, $name); 
+    if ($cmntr) {
+        $name = encode_html( remove_html( $cmntr->nickname ) )
+            if $cmntr->nickname;
+        if ( $cmntr->url ) {
+            return sprintf(
+                qq(<a title="%s" href="%s"%s>%s</a>),
+                encode_html( $cmntr->url ),
+                encode_html( $cmntr->url ),
+                $target, $name
+            );
         }
         return $name;
-    } elsif ($show_url && $c->url) {
-        my $cfg = $ctx->{config};
-        my $cgi_path = $ctx->cgi_path;
+    }
+    elsif ( $show_url && $c->url ) {
+        my $cfg            = $ctx->{config};
+        my $cgi_path       = $ctx->cgi_path;
         my $comment_script = $cfg->CommentScript;
         $name = remove_html($name);
-        my $url = remove_html($c->url);
-        if ($c->id && !$args->{no_redirect} && !$args->{nofollowfy}) {
-            return sprintf(qq(<a title="%s" href="%s%s?__mode=red;id=%d"%s>%s</a>),
-                           encode_html( $url ), $cgi_path, $comment_script, $c->id, $target, $name);
-        } else {
-            # In the case of preview, show URL directly without a redirect
-            return sprintf(qq(<a title="%s" href="%s"%s>%s</a>),
-                           $url, $url, $target, $name); 
+        my $url = remove_html( $c->url );
+        if ( $c->id && !$args->{no_redirect} && !$args->{nofollowfy} ) {
+            return
+                sprintf(
+                qq(<a title="%s" href="%s%s?__mode=red;id=%d"%s>%s</a>),
+                encode_html($url), $cgi_path, $comment_script, $c->id,
+                $target, $name );
         }
-    } elsif ($show_email && $c->email && MT::Util::is_valid_email($c->email)) {
-        my $email = remove_html($c->email);
-        my $str = "mailto:" . encode_html( $email );
+        else {
+
+            # In the case of preview, show URL directly without a redirect
+            return sprintf( qq(<a title="%s" href="%s"%s>%s</a>),
+                $url, $url, $target, $name );
+        }
+    }
+    elsif ($show_email
+        && $c->email
+        && MT::Util::is_valid_email( $c->email ) )
+    {
+        my $email = remove_html( $c->email );
+        my $str   = "mailto:" . encode_html($email);
         $str = spam_protect($str) if $args->{'spam_protect'};
         return sprintf qq(<a href="%s">%s</a>), $str, $name;
     }
@@ -1205,26 +1335,28 @@ is linked to that URL.
 =cut
 
 sub _hdlr_comment_author_identity {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $cmt = $ctx->stash('comment')
-         or return $ctx->_no_comment_error();
+        or return $ctx->_no_comment_error();
     my $cmntr = $ctx->stash('commenter');
     unless ($cmntr) {
-        if ($cmt->commenter_id) {
-            $cmntr = MT::Author->load($cmt->commenter_id) 
+        if ( $cmt->commenter_id ) {
+            $cmntr = MT::Author->load( $cmt->commenter_id )
                 or return "";
-        } else {
+        }
+        else {
             return q();
         }
     }
-    my $link = $cmntr->url;
-    my $static_path = $ctx->invoke_handler('StaticWebPath', $args);
-    my $logo = $cmntr->auth_icon_url;
+    my $link        = $cmntr->url;
+    my $static_path = $ctx->invoke_handler( 'StaticWebPath', $args );
+    my $logo        = $cmntr->auth_icon_url;
     unless ($logo) {
         my $root_url = $static_path . "images";
         $logo = "$root_url/nav-commenters.gif";
     }
-    if ($logo =~ m!^/!) {
+    if ( $logo =~ m!^/! ) {
+
         # relative path, prepend blog domain
         my $blog = $ctx->stash('blog');
         if ($blog) {
@@ -1232,7 +1364,8 @@ sub _hdlr_comment_author_identity {
             $logo = $blog_domain . $logo;
         }
     }
-    my $result = qq{<img alt=\"\" src=\"$logo\" width=\"16\" height=\"16\" />};
+    my $result
+        = qq{<img alt=\"\" src=\"$logo\" width=\"16\" height=\"16\" />};
     if ($link) {
         $link   = MT::Util::encode_html($link);
         $result = qq{<a class="commenter-profile" href=\"$link\">$result</a>};
@@ -1261,13 +1394,13 @@ B<Attributes:>
 =cut
 
 sub _hdlr_comment_email {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     $ctx->sanitize_on($args);
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
     return '' unless defined $c->email;
     return '' unless $c->email =~ m/@/;
-    my $email = remove_html($c->email);
+    my $email = remove_html( $c->email );
     return $args && $args->{'spam_protect'} ? spam_protect($email) : $email;
 }
 
@@ -1289,7 +1422,7 @@ sub _hdlr_comment_link {
         or return $ctx->_no_comment_error();
     return '#' unless $c->id;
     my $entry = $c->entry
-        or return $ctx->error("No entry exists for comment #" . $c->id);
+        or return $ctx->error( "No entry exists for comment #" . $c->id );
     return $entry->archive_url . '#comment-' . $c->id;
 }
 
@@ -1306,7 +1439,7 @@ comments, is the URL from the commenter's profile.
 =cut
 
 sub _hdlr_comment_url {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     $ctx->sanitize_on($args);
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
@@ -1349,27 +1482,30 @@ of each.
 =cut
 
 sub _hdlr_comment_body {
-    my($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     $ctx->sanitize_on($args);
-    _comment_follow($ctx, $args);
+    _comment_follow( $ctx, $args );
 
     my $blog = $ctx->stash('blog');
     return q() unless $blog;
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
     my $t = defined $c->text ? $c->text : '';
-    unless ($blog->allow_comment_html) {
+    unless ( $blog->allow_comment_html ) {
         $t = remove_html($t);
     }
-    my $convert_breaks = exists $args->{convert_breaks} ?
-        $args->{convert_breaks} :
-        $blog->convert_paras_comments;
-    $t = $convert_breaks ?
-        MT->apply_text_filters($t, $blog->comment_text_filters, $ctx) :
-        $t;
-    return first_n_text($t, $args->{words}) if exists $args->{words};
-    if (!(exists $args->{autolink} && !$args->{autolink}) &&
-        $blog->autolink_urls) {
+    my $convert_breaks
+        = exists $args->{convert_breaks}
+        ? $args->{convert_breaks}
+        : $blog->convert_paras_comments;
+    $t
+        = $convert_breaks
+        ? MT->apply_text_filters( $t, $blog->comment_text_filters, $ctx )
+        : $t;
+    return first_n_text( $t, $args->{words} ) if exists $args->{words};
+    if ( !( exists $args->{autolink} && !$args->{autolink} )
+        && $blog->autolink_urls )
+    {
         $t =~ s!(^|\s|>)(https?://[^\s<]+)!$1<a href="$2">$2</a>!gs;
     }
     $t;
@@ -1403,7 +1539,7 @@ the L<Date> tag for support attributes.
 =cut
 
 sub _hdlr_comment_date {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
     $args->{ts} = $c->created_on;
@@ -1432,10 +1568,10 @@ If specified, zero-pads the ID to 6 digits. Example: 001234.
 =cut
 
 sub _hdlr_comment_parent_id {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $c = $ctx->stash('comment') or return '';
     my $id = $c->parent_id || 0;
-    $args && $args->{pad} ? (sprintf "%06d", $id) : ($id ? $id : '');
+    $args && $args->{pad} ? ( sprintf "%06d", $id ) : ( $id ? $id : '' );
 }
 
 ###########################################################################
@@ -1467,17 +1603,21 @@ with the comment ID; %s is replaced with the name of the commenter).
 =cut
 
 sub _hdlr_comment_reply_link {
-    my($ctx, $args) = @_;
-    my $comment = $ctx->stash('comment') or
-        return  $ctx->_no_comment_error();
+    my ( $ctx, $args ) = @_;
+    my $comment = $ctx->stash('comment')
+        or return $ctx->_no_comment_error();
 
     my $label = $args->{label} || $args->{text} || MT->translate('Reply');
     my $comment_author = MT::Util::encode_html(
         MT::Util::encode_html( MT::Util::encode_js( $comment->author ) ), 1 );
-    my $onclick = sprintf( $args->{onclick} || "mtReplyCommentOnClick(%d, '%s')", $comment->id, $comment_author);
+    my $onclick
+        = sprintf( $args->{onclick} || "mtReplyCommentOnClick(%d, '%s')",
+        $comment->id, $comment_author );
 
-    return sprintf(qq(<a title="%s" href="javascript:void(0);" onclick="$onclick">%s</a>),
-                   $label, $label);
+    return
+        sprintf(
+        qq(<a title="%s" href="javascript:void(0);" onclick="$onclick">%s</a>),
+        $label, $label );
 }
 
 ###########################################################################
@@ -1577,8 +1717,8 @@ For the comment preview template only.
 
 sub _hdlr_comment_prev_static {
     my ($ctx) = @_;
-    my $s = encode_html($ctx->stash('comment_is_static')) || '';
-    return defined $s ? $s : ''
+    my $s = encode_html( $ctx->stash('comment_is_static') ) || '';
+    return defined $s ? $s : '';
 }
 
 ###########################################################################
@@ -1608,67 +1748,78 @@ B<Example:>
 =cut
 
 sub _hdlr_comment_replies_recurse {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $comment = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
     my $tokens = $ctx->stash('_comment_replies_tokens');
 
-    my (%terms, %args);
-    $terms{parent_id} = $comment->id;
-    $terms{visible} = 1;
-    $args{'sort'} = 'created_on';
+    my ( %terms, %args );
+    $terms{parent_id}  = $comment->id;
+    $terms{visible}    = 1;
+    $args{'sort'}      = 'created_on';
     $args{'direction'} = 'descend';
     require MT::Comment;
-    my $iter = MT::Comment->load_iter(\%terms, \%args);
+    my $iter = MT::Comment->load_iter( \%terms, \%args );
     my %entries;
     my $blog = $ctx->stash('blog');
-    my $so = lc($args->{sort_order}) || ($blog ? $blog->sort_order_comments : undef) || 'ascend';
+    my $so 
+        = lc( $args->{sort_order} )
+        || ( $blog ? $blog->sort_order_comments : undef )
+        || 'ascend';
     my $n = $args->{lastn};
     my @comments;
-    while (my $c = $iter->()) {
+
+    while ( my $c = $iter->() ) {
         push @comments, $c;
-        if ($n && (scalar @comments == $n)) {
+        if ( $n && ( scalar @comments == $n ) ) {
             $iter->end;
             last;
         }
     }
-    @comments = $so eq 'ascend' ?
-        sort { $a->created_on <=> $b->created_on } @comments :
-        sort { $b->created_on <=> $a->created_on } @comments;
+    @comments
+        = $so eq 'ascend'
+        ? sort { $a->created_on <=> $b->created_on } @comments
+        : sort { $b->created_on <=> $a->created_on } @comments;
 
-    my $html = '';
+    my $html    = '';
     my $builder = $ctx->stash('builder');
-    my $i = 1;
-    
+    my $i       = 1;
+
     @comments = grep { $_->visible() } @comments;
 
     local $ctx->{__stash}{commenter} = $ctx->{__stash}{commenter};
     my $vars = $ctx->{__stash}{vars} ||= {};
     for my $c (@comments) {
-        local $vars->{__first__} = $i == 1;
-        local $vars->{__last__} = ($i == scalar @comments);
-        local $vars->{__odd__} = ($i % 2) == 1;
-        local $vars->{__even__} = ($i % 2) == 0;
-        local $vars->{__counter__} = $i;
-        local $ctx->{__stash}{blog} = $c->blog;
-        local $ctx->{__stash}{blog_id} = $c->blog_id;
-        local $ctx->{__stash}{comment} = $c;
+        local $vars->{__first__}        = $i == 1;
+        local $vars->{__last__}         = ( $i == scalar @comments );
+        local $vars->{__odd__}          = ( $i % 2 ) == 1;
+        local $vars->{__even__}         = ( $i % 2 ) == 0;
+        local $vars->{__counter__}      = $i;
+        local $ctx->{__stash}{blog}     = $c->blog;
+        local $ctx->{__stash}{blog_id}  = $c->blog_id;
+        local $ctx->{__stash}{comment}  = $c;
         local $ctx->{current_timestamp} = $c->created_on;
-        $ctx->stash('comment_order_num', $i);
-        if ($c->commenter_id) {
-            $ctx->stash('commenter', delay(sub {MT::Author->load($c->commenter_id)}));
-        } else {
-            $ctx->stash('commenter', undef);
+        $ctx->stash( 'comment_order_num', $i );
+
+        if ( $c->commenter_id ) {
+            $ctx->stash( 'commenter',
+                delay( sub { MT::Author->load( $c->commenter_id ) } ) );
         }
-        my $out = $builder->build($ctx, $tokens,
-            { CommentsHeader => $i == 1,
-              CommentsFooter => ($i == scalar @comments), } );
+        else {
+            $ctx->stash( 'commenter', undef );
+        }
+        my $out = $builder->build(
+            $ctx, $tokens,
+            {   CommentsHeader => $i == 1,
+                CommentsFooter => ( $i == scalar @comments ),
+            }
+        );
         return $ctx->error( $builder->errstr ) unless defined $out;
         $html .= $out;
         $i++;
     }
-    if (!@comments) {
+    if ( !@comments ) {
         return MT::Template::Context::_hdlr_pass_tokens_else(@_);
     }
     $html;
@@ -1697,14 +1848,14 @@ currently in context.
 =cut
 
 sub _hdlr_blog_comment_count {
-    my ($ctx, $args, $cond) = @_;
-    my (%terms, %args);
-    $ctx->set_blog_load_context($args, \%terms, \%args)
-        or return $ctx->error($ctx->errstr);
+    my ( $ctx, $args, $cond ) = @_;
+    my ( %terms, %args );
+    $ctx->set_blog_load_context( $args, \%terms, \%args )
+        or return $ctx->error( $ctx->errstr );
     $terms{visible} = 1;
     require MT::Comment;
-    my $count = MT::Comment->count(\%terms, \%args);
-    return $ctx->count_format($count, $args);
+    my $count = MT::Comment->count( \%terms, \%args );
+    return $ctx->count_format( $count, $args );
 }
 
 ###########################################################################
@@ -1716,11 +1867,11 @@ Outputs the number of published comments for the current entry in context.
 =cut
 
 sub _hdlr_entry_comments {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $count = $e->comment_count;
-    return $ctx->count_format($count, $args);
+    return $ctx->count_format( $count, $args );
 }
 
 ###########################################################################
@@ -1740,24 +1891,37 @@ B<Example:>
 =cut
 
 sub _hdlr_category_comment_count {
-    my ($ctx, $args, $cond) = @_;
-    my $cat = ($ctx->stash('category') || $ctx->stash('archive_category'))
-        or return $ctx->error(MT->translate(
+    my ( $ctx, $args, $cond ) = @_;
+    my $cat = ( $ctx->stash('category') || $ctx->stash('archive_category') )
+        or return $ctx->error(
+        MT->translate(
             "You used an [_1] tag outside of the proper context.",
-            '<$MT' . $ctx->stash('tag') . '$>'));
-    my($count);
-    my $blog_id = $ctx->stash ('blog_id');
-    my $class = MT->model(
-        $ctx->stash('tag') =~ m/Category/ig ? 'entry' : 'page');
-    my @args = ({ blog_id => $blog_id, visible => 1 },
-                { 'join' => MT::Entry->join_on(undef,
-                              { id => \'= comment_entry_id',
-                              status => MT::Entry::RELEASE(),
-                              blog_id => $blog_id, },
-                              { 'join' => MT::Placement->join_on('entry_id', { category_id => $cat->id, blog_id => $blog_id } ) } ) } );
+            '<$MT' . $ctx->stash('tag') . '$>'
+        )
+        );
+    my ($count);
+    my $blog_id = $ctx->stash('blog_id');
+    my $class
+        = MT->model( $ctx->stash('tag') =~ m/Category/ig ? 'entry' : 'page' );
+    my @args = (
+        { blog_id => $blog_id, visible => 1 },
+        {   'join' => MT::Entry->join_on(
+                undef,
+                {   id      => \'= comment_entry_id',
+                    status  => MT::Entry::RELEASE(),
+                    blog_id => $blog_id,
+                },
+                {   'join' => MT::Placement->join_on(
+                        'entry_id',
+                        { category_id => $cat->id, blog_id => $blog_id }
+                    )
+                }
+            )
+        }
+    );
     require MT::Comment;
     $count = scalar MT::Comment->count(@args);
-    return $ctx->count_format($count, $args);
+    return $ctx->count_format( $count, $args );
 }
 
 ###########################################################################
@@ -1771,11 +1935,12 @@ an empty string.
 =cut
 
 sub _hdlr_typekey_token {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $blog_id = $ctx->stash('blog_id');
-    my $blog = MT::Blog->load($blog_id)
-        or return $ctx->error(MT->translate('Can\'t load blog #[_1].', $blog_id));
+    my $blog    = MT::Blog->load($blog_id)
+        or return $ctx->error(
+        MT->translate( 'Can\'t load blog #[_1].', $blog_id ) );
     my $tp_token = $blog->effective_remote_auth_token();
     return $tp_token;
 }
@@ -1791,8 +1956,13 @@ A deprecated tag that formerly published an entry comment form.
 =cut
 
 sub _hdlr_comment_fields {
-    my ($ctx, $args, $cond) = @_;
-    return $ctx->error(MT->translate("The MTCommentFields tag is no longer available; please include the [_1] template module instead.", MT->translate("Comment Form")));
+    my ( $ctx, $args, $cond ) = @_;
+    return $ctx->error(
+        MT->translate(
+            "The MTCommentFields tag is no longer available; please include the [_1] template module instead.",
+            MT->translate("Comment Form")
+        )
+    );
 }
 
 ###########################################################################
@@ -1807,29 +1977,44 @@ configured blog. B<NOTE: This is deprecated in favor of L<SignInLink>.>
 =cut
 
 sub _hdlr_remote_sign_in_link {
-    my ($ctx, $args) = @_;
-    my $cfg = $ctx->{config};
+    my ( $ctx, $args ) = @_;
+    my $cfg  = $ctx->{config};
     my $blog = $ctx->stash('blog_id');
     $blog = MT::Blog->load($blog)
-        if defined $blog && !(ref $blog);
-    return $ctx->error(MT->translate('Can\'t load blog #[_1].', $ctx->stash('blog_id'))) unless $blog;
+        if defined $blog && !( ref $blog );
+    return $ctx->error(
+        MT->translate( 'Can\'t load blog #[_1].', $ctx->stash('blog_id') ) )
+        unless $blog;
     my $auths = $blog->commenter_authenticators;
-    return $ctx->error(MT->translate("TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can't be used."))
-        if $auths !~ /TypeKey/;
-    
+    return $ctx->error(
+        MT->translate(
+            "TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can't be used."
+        )
+    ) if $auths !~ /TypeKey/;
+
     my $rem_auth_token = $blog->effective_remote_auth_token();
-    return $ctx->error(MT->translate("To enable comment registration, you need to add a TypePad token in your weblog config or user profile."))
-        unless $rem_auth_token;
-    my $needs_email = $blog->require_typekey_emails ? "&amp;need_email=1" : "";
-    my $signon_url = $cfg->SignOnURL;
-    my $path = $ctx->cgi_path;
+    return $ctx->error(
+        MT->translate(
+            "To enable comment registration, you need to add a TypePad token in your weblog config or user profile."
+        )
+    ) unless $rem_auth_token;
+    my $needs_email
+        = $blog->require_typekey_emails ? "&amp;need_email=1" : "";
+    my $signon_url     = $cfg->SignOnURL;
+    my $path           = $ctx->cgi_path;
     my $comment_script = $cfg->CommentScript;
-    my $static_arg = $args->{static} ? "static=" . encode_url( encode_url( $args->{static} ) ) : "static=0";
+    my $static_arg
+        = $args->{static}
+        ? "static=" . encode_url( encode_url( $args->{static} ) )
+        : "static=0";
     my $e = $ctx->stash('entry');
-    my $tk_version = $cfg->TypeKeyVersion ? "&amp;v=" . $cfg->TypeKeyVersion : "";
-    my $language = "&amp;lang=" . ($args->{lang} || $cfg->DefaultLanguage || $blog->language);
-    return "$signon_url$needs_email$language&amp;t=$rem_auth_token$tk_version&amp;_return=$path$comment_script%3f__mode=handle_sign_in%26key=TypeKey%26$static_arg" .
-        ($e ? "%26entry_id=" . $e->id : '%26blog_id=' . $blog->id);
+    my $tk_version
+        = $cfg->TypeKeyVersion ? "&amp;v=" . $cfg->TypeKeyVersion : "";
+    my $language = "&amp;lang="
+        . ( $args->{lang} || $cfg->DefaultLanguage || $blog->language );
+    return
+        "$signon_url$needs_email$language&amp;t=$rem_auth_token$tk_version&amp;_return=$path$comment_script%3f__mode=handle_sign_in%26key=TypeKey%26$static_arg"
+        . ( $e ? "%26entry_id=" . $e->id : '%26blog_id=' . $blog->id );
 }
 
 ###########################################################################
@@ -1844,26 +2029,29 @@ a blog. B<NOTE: This tag is deprecated in favor of L<SignOutLink>.>
 =cut
 
 sub _hdlr_remote_sign_out_link {
-    my ($ctx, $args) = @_;
-    my $cfg = $ctx->{config};
-    my $path = $ctx->cgi_path;
+    my ( $ctx, $args ) = @_;
+    my $cfg            = $ctx->{config};
+    my $path           = $ctx->cgi_path;
     my $comment_script = $cfg->CommentScript;
     my $static_arg;
-    if ($args->{no_static}) {
+    if ( $args->{no_static} ) {
         $static_arg = q();
-    } else {
+    }
+    else {
         my $url = $args->{static};
-        if ($url && ($url ne '1')) {
+        if ( $url && ( $url ne '1' ) ) {
             $static_arg = "&amp;static=" . MT::Util::encode_url($url);
-        } elsif ($url) {
+        }
+        elsif ($url) {
             $static_arg = "&amp;static=1";
-        } else {
+        }
+        else {
             $static_arg = "&amp;static=0";
         }
     }
     my $e = $ctx->stash('entry');
-    "$path$comment_script?__mode=handle_sign_in$static_arg&amp;logout=1" .
-        ($e ? "&amp;entry_id=" . $e->id : '');
+    "$path$comment_script?__mode=handle_sign_in$static_arg&amp;logout=1"
+        . ( $e ? "&amp;entry_id=" . $e->id : '' );
 }
 
 ###########################################################################
@@ -1876,17 +2064,18 @@ to comment on the blog.
 =cut
 
 sub _hdlr_sign_in_link {
-    my ($ctx, $args) = @_;    
-    my $cfg = $ctx->{config};
+    my ( $ctx, $args ) = @_;
+    my $cfg  = $ctx->{config};
     my $blog = $ctx->stash('blog');
     my $path = $ctx->cgi_path;
     $path .= '/' unless $path =~ m!/$!;
     my $comment_script = $cfg->CommentScript;
-    my $static_arg = $args->{static} ? "&static=" . $args->{static} : '';
-    my $e = $ctx->stash('entry');
-    return "$path$comment_script?__mode=login$static_arg" .
-        ($blog ? '&blog_id=' . $blog->id : '') .
-        ($e ? '&entry_id=' . $e->id : '');
+    my $static_arg     = $args->{static} ? "&static=" . $args->{static} : '';
+    my $e              = $ctx->stash('entry');
+    return
+          "$path$comment_script?__mode=login$static_arg"
+        . ( $blog ? '&blog_id=' . $blog->id : '' )
+        . ( $e    ? '&entry_id=' . $e->id   : '' );
 }
 
 ###########################################################################
@@ -1899,27 +2088,30 @@ sign out from the blog.
 =cut
 
 sub _hdlr_sign_out_link {
-    my ($ctx, $args) = @_;
-    my $cfg = $ctx->{config};
+    my ( $ctx, $args ) = @_;
+    my $cfg  = $ctx->{config};
     my $path = $ctx->cgi_path;
     $path .= '/' unless $path =~ m!/$!;
     my $comment_script = $cfg->CommentScript;
     my $static_arg;
-    if ($args->{no_static}) {
+    if ( $args->{no_static} ) {
         $static_arg = q();
-    } else {
+    }
+    else {
         my $url = $args->{static};
-        if ($url && ($url ne '1')) {
+        if ( $url && ( $url ne '1' ) ) {
             $static_arg = "&static=" . MT::Util::encode_url($url);
-        } elsif ($url) {
+        }
+        elsif ($url) {
             $static_arg = "&static=1";
-        } else {
+        }
+        else {
             $static_arg = "&static=0";
         }
     }
     my $e = $ctx->stash('entry');
-    return "$path$comment_script?__mode=handle_sign_in$static_arg&logout=1" .
-        ($e ? "&amp;entry_id=" . $e->id : '');
+    return "$path$comment_script?__mode=handle_sign_in$static_arg&logout=1"
+        . ( $e ? "&amp;entry_id=" . $e->id : '' );
 }
 
 ###########################################################################

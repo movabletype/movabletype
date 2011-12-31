@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -9,58 +9,51 @@ package MT::TBPing;
 use strict;
 use base qw( MT::Object MT::Scorable );
 
-sub JUNK()      { -1 }
-sub NOT_JUNK () {  1 }
+sub JUNK()      {-1}
+sub NOT_JUNK () {1}
 
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id' => 'integer not null auto_increment',
-        'blog_id' => 'integer not null',
-        'tb_id' => 'integer not null',
-        'title' => 'string(255)',
-        'excerpt' => 'text',
-        'source_url' => 'string(255)',
-        'ip' => 'string(50) not null',
-        'blog_name' => 'string(255)',
-        'visible' => 'boolean',
-        'junk_status' => 'smallint not null',
-        'last_moved_on' => 'datetime not null',
-        'junk_score' => 'float',
-        'junk_log' => 'text',
-    },
-    indexes => {
-        created_on => 1,
-        tb_visible => {
-            columns => [ 'tb_id', 'visible', 'created_on' ],
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'            => 'integer not null auto_increment',
+            'blog_id'       => 'integer not null',
+            'tb_id'         => 'integer not null',
+            'title'         => 'string(255)',
+            'excerpt'       => 'text',
+            'source_url'    => 'string(255)',
+            'ip'            => 'string(50) not null',
+            'blog_name'     => 'string(255)',
+            'visible'       => 'boolean',
+            'junk_status'   => 'smallint not null',
+            'last_moved_on' => 'datetime not null',
+            'junk_score'    => 'float',
+            'junk_log'      => 'text',
         },
-        ip => 1,
-        last_moved_on => 1, # used for junk expiration
-        # For URL lookups to aid spam filtering
-        blog_url => {
-            columns => [ 'blog_id', 'visible', 'source_url' ],
+        indexes => {
+            created_on => 1,
+            tb_visible =>
+                { columns => [ 'tb_id', 'visible', 'created_on' ], },
+            ip            => 1,
+            last_moved_on => 1,    # used for junk expiration
+                                   # For URL lookups to aid spam filtering
+            blog_url =>
+                { columns => [ 'blog_id', 'visible', 'source_url' ], },
+            blog_stat =>
+                { columns => [ 'blog_id', 'junk_status', 'created_on' ], },
+            blog_visible =>
+                { columns => [ 'blog_id', 'visible', 'created_on', 'id' ], },
+            visible_date => { columns => [ 'visible',     'created_on' ], },
+            junk_date    => { columns => [ 'junk_status', 'created_on' ], },
         },
-        blog_stat => {
-            columns => ['blog_id', 'junk_status', 'created_on'],
+        defaults => {
+            junk_status   => NOT_JUNK,
+            last_moved_on => '20000101000000',
         },
-        blog_visible => {
-            columns => ['blog_id', 'visible', 'created_on', 'id'],
-        },
-        visible_date => {
-            columns => [ 'visible', 'created_on' ],
-        },
-        junk_date => {
-            columns => [ 'junk_status', 'created_on' ],
-        },
-    },
-    defaults => {
-        junk_status => NOT_JUNK,
-        last_moved_on => '20000101000000',
-    },
-    audit => 1,
-    meta => 1,
-    datasource => 'tbping',
-    primary_key => 'id',
-});
+        audit       => 1,
+        meta        => 1,
+        datasource  => 'tbping',
+        primary_key => 'id',
+    }
+);
 
 sub class_label {
     return MT->translate('TrackBack');
@@ -73,6 +66,7 @@ sub class_label_plural {
 sub is_junk {
     $_[0]->junk_status == JUNK;
 }
+
 sub is_not_junk {
     $_[0]->junk_status != JUNK;
 }
@@ -89,11 +83,15 @@ sub blog {
     my ($ping) = @_;
     my $blog = $ping->{__blog};
     unless ($blog) {
-        my $blog_id = $ping->blog_id;
+        my $blog_id    = $ping->blog_id;
         my $blog_class = MT->model('blog');
-        $blog = $blog_class->load($blog_id) or
-            return $ping->error(MT->translate(
-                "Load of blog '[_1]' failed: [_2]", $blog_id, $blog_class->errstr));   
+        $blog = $blog_class->load($blog_id)
+            or return $ping->error(
+            MT->translate(
+                "Load of blog '[_1]' failed: [_2]", $blog_id,
+                $blog_class->errstr
+            )
+            );
         $ping->{__blog} = $blog;
     }
     return $blog;
@@ -101,45 +99,47 @@ sub blog {
 
 sub parent {
     my ($ping) = @_;
-    if (my $tb = MT->model('trackback')->load($ping->tb_id)) {
-        if ($tb->entry_id) {
-            return MT->model('entry')->load($tb->entry_id);
-        } else {
-            return MT->model('category')->load($tb->category_id);
+    if ( my $tb = MT->model('trackback')->load( $ping->tb_id ) ) {
+        if ( $tb->entry_id ) {
+            return MT->model('entry')->load( $tb->entry_id );
+        }
+        else {
+            return MT->model('category')->load( $tb->category_id );
         }
     }
 }
 
 sub parent_id {
     my ($ping) = @_;
-    if (my $tb = MT->model('trackback')->load($ping->tb_id)) {
-        if ($tb->entry_id) {
-            return ('MT::Entry', $tb->entry_id);
-        } else {
-            return ('MT::Category', $tb->category_id);
+    if ( my $tb = MT->model('trackback')->load( $ping->tb_id ) ) {
+        if ( $tb->entry_id ) {
+            return ( 'MT::Entry', $tb->entry_id );
+        }
+        else {
+            return ( 'MT::Category', $tb->category_id );
         }
     }
 }
 
 sub next {
     my $ping = shift;
-    my($publish_only) = @_;
-    $publish_only = $publish_only ? {'visible' => 1} : {};
-    $ping->_nextprev('next', $publish_only);
+    my ($publish_only) = @_;
+    $publish_only = $publish_only ? { 'visible' => 1 } : {};
+    $ping->_nextprev( 'next', $publish_only );
 }
 
 sub previous {
     my $ping = shift;
-    my($publish_only) = @_;
-    $publish_only = $publish_only ? {'visible' => 1} : {};
-    $ping->_nextprev('previous', $publish_only);
+    my ($publish_only) = @_;
+    $publish_only = $publish_only ? { 'visible' => 1 } : {};
+    $ping->_nextprev( 'previous', $publish_only );
 }
 
 sub _nextprev {
-    my $obj = shift;
+    my $obj   = shift;
     my $class = ref($obj);
-    my ($direction, $publish_only) = @_;
-    return undef unless ($direction eq 'next' || $direction eq 'previous');
+    my ( $direction, $publish_only ) = @_;
+    return undef unless ( $direction eq 'next' || $direction eq 'previous' );
     my $next = $direction eq 'next';
 
     my $label = '__' . $direction;
@@ -151,17 +151,18 @@ sub _nextprev {
     # to select all entries with the same timestamp, then compare them using
     # id as a secondary sort column.
 
-    my ($id, $ts) = ($obj->id, $obj->created_on);
-    my $iter = $class->load_iter({
-        blog_id => $obj->blog_id,
-        created_on => ($next ? [ $ts, undef ] : [ undef, $ts ]),
-        %{$publish_only}
-    }, {
-        'sort' => 'created_on',
-        'direction' => $next ? 'ascend' : 'descend',
-        'range_incl' => { 'created_on' => 1 },
-        'limit' => 10,
-    });
+    my ( $id, $ts ) = ( $obj->id, $obj->created_on );
+    my $iter = $class->load_iter(
+        {   blog_id    => $obj->blog_id,
+            created_on => ( $next ? [ $ts, undef ] : [ undef, $ts ] ),
+            %{$publish_only}
+        },
+        {   'sort'      => 'created_on',
+            'direction' => $next ? 'ascend' : 'descend',
+            'range_incl' => { 'created_on' => 1 },
+            'limit'      => 10,
+        }
+    );
 
     # This selection should always succeed, but handle situation if
     # it fails by returning undef.
@@ -171,29 +172,36 @@ sub _nextprev {
     # timestamps; we will then sort those by id to find the correct
     # adjacent object.
     my @same;
-    while (my $e = $iter->()) {
+    while ( my $e = $iter->() ) {
+
         # Don't consider the object that is 'current'
         next if $e->id == $id;
         my $e_ts = $e->created_on;
-        if ($e_ts eq $ts) {
+        if ( $e_ts eq $ts ) {
+
             # An object with the same timestamp should only be
             # considered if the id is in the scope we're looking for
             # (greater than for the 'next' object; less than for
             # the 'previous' object).
             push @same, $e
-                if $next && $e->id > $id or !$next && $e->id < $id;
-        } else {
+                if $next && $e->id > $id
+                    or !$next && $e->id < $id;
+        }
+        else {
+
             # We found an object with a timestamp different than
             # the 'current' object.
-            if (!@same) {
+            if ( !@same ) {
                 push @same, $e;
+
                 # We should check to see if this new timestamped object also
                 # has entries adjacent to _it_ that have the same timestamp.
-                while (my $e = $iter->()) {
-                    push(@same, $e), next if $e->created_on eq $e_ts;
+                while ( my $e = $iter->() ) {
+                    push( @same, $e ), next if $e->created_on eq $e_ts;
                     $iter->end, last;
                 }
-            } else {
+            }
+            else {
                 $iter->end;
             }
             return $obj->{$label} = $e unless @same;
@@ -201,24 +209,31 @@ sub _nextprev {
         }
     }
     if (@same) {
+
         # If we only have 1 element in @same, return that.
         return $obj->{$label} = $same[0] if @same == 1;
+
         # Sort remaining elements in @same by id.
         @same = sort { $a->id <=> $b->id } @same;
+
         # Return front of list (smallest id) if selecting 'next'
         # object. Return tail of list (largest id) if selection 'previous'.
-        return $obj->{$label} = $same[$next ? 0 : $#same];
+        return $obj->{$label} = $same[ $next ? 0 : $#same ];
     }
     return;
 }
 
 sub junk {
     my $ping = shift;
-    if (($ping->junk_status || 0) != JUNK) {
+    if ( ( $ping->junk_status || 0 ) != JUNK ) {
         require MT::Util;
-        my @ts = MT::Util::offset_time_list(time, $ping->blog_id);
-        my $ts = sprintf("%04d%02d%02d%02d%02d%02d",
-                         $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0]);
+        my @ts = MT::Util::offset_time_list( time, $ping->blog_id );
+        my $ts = sprintf(
+            "%04d%02d%02d%02d%02d%02d",
+            $ts[5] + 1900,
+            $ts[4] + 1,
+            @ts[ 3, 2, 1, 0 ]
+        );
         $ping->last_moved_on($ts);
     }
     $ping->junk_status(JUNK);
@@ -239,9 +254,9 @@ sub approve {
 sub all_text {
     my $this = shift;
     my $text = $this->column('blog_name') || '';
-    $text .= "\n" . ($this->column('title') || '');
-    $text .= "\n" . ($this->column('source_url') || '');
-    $text .= "\n" . ($this->column('excerpt') || '');
+    $text .= "\n" . ( $this->column('title')      || '' );
+    $text .= "\n" . ( $this->column('source_url') || '' );
+    $text .= "\n" . ( $this->column('excerpt')    || '' );
     $text;
 }
 
@@ -249,11 +264,14 @@ sub to_hash {
     my $ping = shift;
     my $hash = $ping->SUPER::to_hash(@_);
     require MT::Sanitize;
-    $hash->{'tbping.excerpt_html'} = MT::Sanitize->sanitize($ping->excerpt || '');
-    $hash->{'tbping.created_on_iso'} = sub { MT::Util::ts2iso($ping->blog_id, $ping->created_on) };
-    $hash->{'tbping.modified_on_iso'} = sub { MT::Util::ts2iso($ping->blog_id, $ping->modified_on) };
+    $hash->{'tbping.excerpt_html'}
+        = MT::Sanitize->sanitize( $ping->excerpt || '' );
+    $hash->{'tbping.created_on_iso'}
+        = sub { MT::Util::ts2iso( $ping->blog_id, $ping->created_on ) };
+    $hash->{'tbping.modified_on_iso'}
+        = sub { MT::Util::ts2iso( $ping->blog_id, $ping->modified_on ) };
 
-    if (my $parent = $ping->parent) {
+    if ( my $parent = $ping->parent ) {
         my $parent_hash = $parent->to_hash;
         $hash->{"tbping.$_"} = $parent_hash->{$_} foreach keys %$parent_hash;
     }
@@ -264,16 +282,17 @@ sub to_hash {
 sub visible {
     my $ping = shift;
     return $ping->SUPER::visible unless @_;
-        
+
     ## Note transitions in visibility in the object, so that
     ## other methods can act appropriately.
     my $was_visible = $ping->SUPER::visible || 0;
     my $is_visible = shift || 0;
-        
+
     my $vis_delta = 0;
-    if (!$was_visible && $is_visible) {
+    if ( !$was_visible && $is_visible ) {
         $vis_delta = 1;
-    } elsif ($was_visible && !$is_visible) {
+    }
+    elsif ( $was_visible && !$is_visible ) {
         $vis_delta = -1;
     }
     $ping->{__changed}{visibility} = $vis_delta;

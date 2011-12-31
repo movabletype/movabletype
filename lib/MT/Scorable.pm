@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -17,34 +17,38 @@ use constant SCORE_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
 sub install_properties {
     my $pkg = shift;
     my ($class) = @_;
-    my (@namespaces, @owner_expires);
+    my ( @namespaces, @owner_expires );
     my $namespaces = MT->registry( 'score_expire', $class->datasource );
     @namespaces = map { ref $_ eq 'ARRAY' ? @$_ : $_ } @$namespaces;
 
-    if ( $class->isa( 'MT::Author' ) ) {
-        my $owner_expires = MT->registry( 'score_expire_with_owner' );
+    if ( $class->isa('MT::Author') ) {
+        my $owner_expires = MT->registry('score_expire_with_owner');
         @owner_expires = map { ref $_ eq 'ARRAY' ? @$_ : $_ } @$owner_expires;
     }
 
     if ( scalar @namespaces || scalar @owner_expires ) {
-        $class->add_trigger( post_remove => sub {
-            my $class = shift;
-            my ($obj) = @_;
-            require MT::ObjectScore;
-            if ( scalar @namespaces ) {
-                MT::ObjectScore->remove({
-                    namespace => \@namespaces,
-                    object_ds => $obj->datasource,
-                    object_id => $obj->id,
-                });
+        $class->add_trigger(
+            post_remove => sub {
+                my $class = shift;
+                my ($obj) = @_;
+                require MT::ObjectScore;
+                if ( scalar @namespaces ) {
+                    MT::ObjectScore->remove(
+                        {   namespace => \@namespaces,
+                            object_ds => $obj->datasource,
+                            object_id => $obj->id,
+                        }
+                    );
+                }
+                if ( scalar @owner_expires ) {
+                    MT::ObjectScore->remove(
+                        {   namespace => \@owner_expires,
+                            author_id => $obj->id,
+                        }
+                    );
+                }
             }
-            if ( scalar @owner_expires ) {
-                MT::ObjectScore->remove({
-                    namespace => \@owner_expires,
-                    author_id => $obj->id,
-                });
-            }
-        });
+        );
     }
 }
 
@@ -67,7 +71,7 @@ sub set_score {
     my ( $namespace, $user, $score, $overwrite, $blog ) = @_;
 
     return $obj->error( MT->translate('Object must be saved first.') )
-      unless $obj->id;
+        unless $obj->id;
 
     my $mt = MT->instance;
     my $ip;
@@ -85,7 +89,7 @@ sub set_score {
 
     my $s = @{ $obj->_load_score_data($term) }[0];
     return $obj->error( MT->translate('Already scored for this object.') )
-      if $s && !$overwrite;
+        if $s && !$overwrite;
 
     unless ($s) {
         $s = MT::ObjectScore->new;
@@ -95,19 +99,19 @@ sub set_score {
         unless exists( $s->{__orig_value}->{score} );
     $s->score($score);
     if ($blog) {
-		$blog = MT->model('blog')->load($blog) unless ref($blog);
-    	require MT::Util;
-        my $ts = MT::Util::epoch2ts($blog, time);
+        $blog = MT->model('blog')->load($blog) unless ref($blog);
+        require MT::Util;
+        my $ts = MT::Util::epoch2ts( $blog, time );
         $s->created_on($ts);
         $s->modified_on($ts);
     }
     $s->save
-      or return $obj->error(
+        or return $obj->error(
         MT->translate(
             "Could not set score to the object '[_1]'(ID: [_2])",
             $obj->datasource, $obj->id
         )
-      );
+        );
     $obj->_flush_score_cache($term);
     return $s;
 }
@@ -116,14 +120,14 @@ sub _get_objectscores {
     my $obj         = shift;
     my ($namespace) = @_;
     my $scores      = $obj->_load_score_data(
-        {
-            namespace => $namespace,
+        {   namespace => $namespace,
             object_id => $obj->id,
             object_ds => $obj->datasource,
         }
     );
     my $req = MT::Request->instance();
-    $req->cache( $obj->datasource . '_scores_' . $obj->id . "_$namespace", $scores );
+    $req->cache( $obj->datasource . '_scores_' . $obj->id . "_$namespace",
+        $scores );
     return $scores;
 }
 
@@ -132,7 +136,8 @@ sub score_for {
     my ($namespace) = @_;
 
     my $req    = MT::Request->instance();
-    my $scores = $req->stash( $obj->datasource . '_scores_' . $obj->id . "_$namespace" );
+    my $scores = $req->stash(
+        $obj->datasource . '_scores_' . $obj->id . "_$namespace" );
     unless ( $scores && @$scores ) {
         $scores = $obj->_get_objectscores($namespace);
     }
@@ -146,19 +151,21 @@ sub votes_for {
     my $obj         = shift;
     my ($namespace) = @_;
     my $req         = MT::Request->instance();
-    my $scores      = $req->stash( $obj->datasource . '_scores_' . $obj->id . "_$namespace" );
+    my $scores      = $req->stash(
+        $obj->datasource . '_scores_' . $obj->id . "_$namespace" );
     unless ($scores) {
         $scores = $obj->_get_objectscores($namespace);
     }
     return scalar @$scores;
 }
-*vote_for = \&votes_for; # backward-compatible mapping for typo
+*vote_for = \&votes_for;    # backward-compatible mapping for typo
 
 sub _score_top {
     my $obj = shift;
     my ( $namespace, $block ) = @_;
     my $req    = MT::Request->instance();
-    my $scores = $req->stash( $obj->datasource . '_scores_' . $obj->id . "_$namespace" );
+    my $scores = $req->stash(
+        $obj->datasource . '_scores_' . $obj->id . "_$namespace" );
     unless ($scores) {
         $scores = $obj->_get_objectscores($namespace);
     }
@@ -193,7 +200,8 @@ sub score_avg {
     my $obj         = shift;
     my ($namespace) = @_;
     my $req         = MT::Request->instance();
-    my $scores      = $req->stash( $obj->datasource . '_scores_' . $obj->id . "_$namespace" );
+    my $scores      = $req->stash(
+        $obj->datasource . '_scores_' . $obj->id . "_$namespace" );
     unless ($scores) {
         $scores = $obj->_get_objectscores($namespace);
     }
@@ -220,7 +228,8 @@ sub rank_for {
             'object_ds' => $obj->datasource,
             'namespace' => $namespace,
         };
-        ( $total, $high, $low ) = $obj->_load_rank_data( $term, $score, $dbd_args );
+        ( $total, $high, $low )
+            = $obj->_load_rank_data( $term, $score, $dbd_args );
         $req->cache( $obj->datasource . "_score_total_$namespace", $total );
         $req->cache( $obj->datasource . "_score_high_$namespace",  $high );
         $req->cache( $obj->datasource . "_score_low_$namespace",   $low );
@@ -250,11 +259,11 @@ sub _cache_key {
     my $key;
     if ( $term->{author_id} ) {
         $key = sprintf "%sscore%s-%d-%d", $term->{object_ds},
-          $term->{namespace}, $term->{object_id}, $term->{author_id};
+            $term->{namespace}, $term->{object_id}, $term->{author_id};
     }
     elsif ( $term->{object_id} ) {
         $key = sprintf "%sscore%s-%d", $term->{object_ds}, $term->{namespace},
-          $term->{object_id};
+            $term->{object_id};
     }
     else {
         $key = sprintf "%sscore%s", $term->{object_ds}, $term->{namespace};
@@ -270,7 +279,7 @@ sub _load_score_data {
     my $scores;
     $scores = $cache->get($memkey);
     unless ( $scores = $cache->get($memkey) ) {
-        $scores = [ grep { defined } MT::ObjectScore->load($term) ];
+        $scores = [ grep {defined} MT::ObjectScore->load($term) ];
         $cache->set( $memkey, $scores, SCORE_CACHE_TIME );
     }
     return $scores;
@@ -287,8 +296,7 @@ sub _load_rank_data {
     unless ( $total && $high && $low ) {
         my $sgb_iter = MT::ObjectScore->sum_group_by(
             $term,
-            {
-                'sum' => 'score',
+            {   'sum' => 'score',
                 group => ['object_id'],
                 ( defined($dbd_args) && %$dbd_args ) ? (%$dbd_args) : (),
             }
@@ -299,10 +307,10 @@ sub _load_rank_data {
 
         while ( my ( $score, $object_id ) = $sgb_iter->() ) {
             $low = $score
-              if ( ( $score || $score == 0 ) && ( $score < $low ) )
-              || $low == 0;
+                if ( ( $score || $score == 0 ) && ( $score < $low ) )
+                || $low == 0;
             $high = $score
-              if ( ( $score || $score == 0 ) && ( $score > $high ) );
+                if ( ( $score || $score == 0 ) && ( $score > $high ) );
             $score *= -1 if ( 0 > $score );
             $total += $score;
         }
@@ -390,4 +398,3 @@ the data loaded from the database that is loaded from the database.
 Please see L<MT/AUTHOR & COPYRIGHT>.
 
 =cut
-

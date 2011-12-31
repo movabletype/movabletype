@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -24,11 +24,11 @@ sub save_filter {
     $ip =~ s/(^\s+|\s+$)//g;
     return $eh->error(
         MT->translate("You did not enter an IP address to ban.") )
-      if ( '' eq $ip );
+        if ( '' eq $ip );
     my $blog_id = $app->param('blog_id');
     require MT::IPBanList;
-    my $existing =
-      MT::IPBanList->load( { 'ip' => $ip, 'blog_id' => $blog_id } );
+    my $existing
+        = MT::IPBanList->load( { 'ip' => $ip, 'blog_id' => $blog_id } );
     my $id = $app->param('id');
 
     if ( $existing && ( !$id || $existing->id != $id ) ) {

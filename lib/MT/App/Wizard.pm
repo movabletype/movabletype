@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -10,7 +10,6 @@ use strict;
 use base qw( MT::App );
 
 use MT::Util qw( trim browser_language );
-
 
 sub id {'wizard'}
 
@@ -24,7 +23,7 @@ sub init {
     $cfg->UsePlugins(0);
     $app->SUPER::init(@_);
     $app->{mt_dir} ||= $ENV{MT_HOME} || $param{Directory};
-    $app->{is_admin} = 1;
+    $app->{is_admin}             = 1;
     $app->{plugin_template_path} = '';
     $app->add_methods(
         pre_start => \&pre_start,
@@ -92,7 +91,7 @@ sub init_request {
 
     # If mt-check.cgi exists, redirect to errro screen
     my $cfg_exists = $app->is_config_exists();
-    if ($cfg_exists && lc $step ne 'seed' && lc $mode ne 'retry') {
+    if ( $cfg_exists && lc $step ne 'seed' && lc $mode ne 'retry' ) {
         my %param;
         $param{cfg_exists} = 1;
         $app->mode('pre_start');
@@ -111,7 +110,9 @@ sub init_core_registry {
             start => {
                 order   => 0,
                 handler => \&start,
-                params  => [qw(set_static_uri_to set_static_file_to default_language)],
+                params  => [
+                    qw(set_static_uri_to set_static_file_to default_language)
+                ],
             },
             configure => {
                 order   => 100,
@@ -126,7 +127,7 @@ sub init_core_registry {
                 handler => \&optional,
                 params  => [
                     qw(mail_transfer sendmail_path smtp_server
-                       test_mail_address email_address_main)
+                        test_mail_address email_address_main)
                 ]
             },
             cfg_dir => {
@@ -209,7 +210,8 @@ sub init_core_registry {
             },
             'Cache::File' => {
                 link => 'http://search.cpan.org/dist/Cache/lib/Cache/File.pm',
-                label => 'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan as OpenID.',
+                label =>
+                    'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan as OpenID.',
             },
             'MIME::Base64' => {
                 link => 'http://search.cpan.org/dist/MIME-Base64',
@@ -270,9 +272,8 @@ sub init_core_registry {
                     'This module is required in mt-search.cgi if you are running Movable Type on Perl older than Perl 5.8.',
             },
             'XML::Parser' => {
-                link => 'http://search.cpan.org/dist/Text-Balanced',
-                label =>
-                    'This module required for action streams.',
+                link  => 'http://search.cpan.org/dist/Text-Balanced',
+                label => 'This module required for action streams.',
             },
         },
         required_packages => {
@@ -305,29 +306,18 @@ sub init_core_registry {
         },
         database_options => {
             'mysql' => {
-                options => {
-                    login_required => 1,
-                },
+                options          => { login_required => 1, },
                 default_database => 'test',
-                list_sql => 'SHOW DATABASES;'
+                list_sql         => 'SHOW DATABASES;'
             },
             'postgres' => {
-                options => {
-                    login_required => 1,
-                },
+                options          => { login_required => 1, },
                 default_database => 'template1',
-                list_sql => 'SELECT datname FROM pg_database ORDER BY datname;'
+                list_sql =>
+                    'SELECT datname FROM pg_database ORDER BY datname;'
             },
-            'sqlite' => {
-                options => {
-                    path_required => 1,
-                },
-            },
-            'sqlite2' => {
-                options => {
-                    path_required => 1,
-                },
-            },
+            'sqlite'  => { options => { path_required => 1, }, },
+            'sqlite2' => { options => { path_required => 1, }, },
         },
     };
 }
@@ -385,7 +375,7 @@ sub pre_start {
     my %param;
 
     eval { use File::Spec; };
-    my ( $static_file_path );
+    my ($static_file_path);
     if ( !$@ ) {
         $static_file_path = File::Spec->catfile( $app->static_file_path );
     }
@@ -396,7 +386,8 @@ sub pre_start {
     $param{mt_static_exists} = $app->mt_static_exists;
     $param{static_file_path} = $static_file_path;
 
-    $param{languages} = MT::I18N::languages_list( $app, $app->current_language );
+    $param{languages}
+        = MT::I18N::languages_list( $app, $app->current_language );
 
     return $app->build_page( "start.tmpl", \%param );
 }
@@ -443,7 +434,8 @@ sub start {
     my $app   = shift;
     my %param = @_;
 
-    $param{languages} = MT::I18N::languages_list( $app, $app->current_language );
+    $param{languages}
+        = MT::I18N::languages_list( $app, $app->current_language );
 
     my $static_path = $app->param('set_static_uri_to');
     my $static_file_path
@@ -485,8 +477,8 @@ sub start {
         return $app->build_page( "start.tmpl", \%param );
     }
     $param{default_language} = $app->param('default_language');
-    $param{config}      = $app->serialize_config(%param);
-    $param{static_file} = $static_file_path;
+    $param{config}           = $app->serialize_config(%param);
+    $param{static_file}      = $static_file_path;
 
     # test for required packages...
     my $req = $app->registry("required_packages");
@@ -741,7 +733,7 @@ sub configure {
                     'An error occurred while attempting to connect to the database.  Check the settings and try again.'
                     );
                 my $enc;
-                if ( exists( $param{publish_charset} )
+                if (   exists( $param{publish_charset} )
                     && $param{publish_charset}
                     && ( $param{publish_charset} ne $current_charset ) )
                 {
@@ -750,7 +742,7 @@ sub configure {
                 if ( $dbtype =~ m/u?mssqlserver/i ) {
                     $enc = 'utf8';
                 }
-                if ( $enc ) {
+                if ($enc) {
                     require Encode;
                     $err = Encode::decode( $enc, $err );
                 }
@@ -803,7 +795,7 @@ my @Sendmail
 sub cfg_dir_conditions {
     my $app = shift;
     my ($param) = @_;
-    if ( $^O ne 'MSWin32' ) { 
+    if ( $^O ne 'MSWin32' ) {
 
         # check for writable temp directory
         if ( -w "/tmp" ) {
@@ -1020,21 +1012,21 @@ sub seed {
         }
         else {
             my %param_name = (
-                dbname => 'database_name',
-                dbuser => 'database_username',
-                dbpass => 'database_password',
-                dbserver => 'database_host',
-                dbport => 'database_port',
-                dbsocket => 'database_socket',
-                odbcdriver => 'database_odbcdriver',
-                setnames => 'use_setnames',
+                dbname          => 'database_name',
+                dbuser          => 'database_username',
+                dbpass          => 'database_password',
+                dbserver        => 'database_host',
+                dbport          => 'database_port',
+                dbsocket        => 'database_socket',
+                odbcdriver      => 'database_odbcdriver',
+                setnames        => 'use_setnames',
                 publish_charset => 'publish_charset',
             );
 
-            $param{use_dbms}          = 1;
-            $param{object_driver}     = $drivers->{$dbtype}{config_package};
+            $param{use_dbms}      = 1;
+            $param{object_driver} = $drivers->{$dbtype}{config_package};
             my $disp = $drivers->{$dbtype}->{display};
-            foreach my $id ( @$disp ) {
+            foreach my $id (@$disp) {
                 next unless exists $param{$id};
                 next unless exists $param_name{$id};
 
@@ -1171,7 +1163,7 @@ sub module_check {
                 label       => $name,
                 link        => $link,
                 display     => $display,
-            };
+                };
         }
         else {
             push @ok,
@@ -1183,7 +1175,7 @@ sub module_check {
                 label       => $name,
                 link        => $link,
                 display     => $display,
-            };
+                };
         }
     }
     ( \@missing, \@ok );

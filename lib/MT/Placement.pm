@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -10,27 +10,26 @@ use strict;
 
 use base qw( MT::Object );
 
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id' => 'integer not null auto_increment',
-        'blog_id' => 'integer not null',
-        'entry_id' => 'integer not null',
-        'category_id' => 'integer not null',
-        'is_primary' => 'boolean not null',
-    },
-    indexes => {
-        blog_id => 1,
-        entry_id => 1,
-        category_id => 1,
-        is_primary => 1,
-        blog_cat => {
-            columns => [ 'blog_id', 'category_id' ],
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'          => 'integer not null auto_increment',
+            'blog_id'     => 'integer not null',
+            'entry_id'    => 'integer not null',
+            'category_id' => 'integer not null',
+            'is_primary'  => 'boolean not null',
         },
-    },
-    datasource => 'placement',
-    primary_key => 'id',
-    cacheable => 0,
-});
+        indexes => {
+            blog_id     => 1,
+            entry_id    => 1,
+            category_id => 1,
+            is_primary  => 1,
+            blog_cat    => { columns => [ 'blog_id', 'category_id' ], },
+        },
+        datasource  => 'placement',
+        primary_key => 'id',
+        cacheable   => 0,
+    }
+);
 
 sub class_label {
     MT->translate("Category Placement");

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -9,39 +9,40 @@ package MT::Association;
 use strict;
 use base qw( MT::Object );
 
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id'           => 'integer not null auto_increment',
-        'type'         => 'integer not null',
-        'author_id'    => 'integer',
-        'blog_id'      => 'integer',
-        'group_id'     => 'integer',
-        'role_id'      => 'integer',
-    },
-    indexes => {
-        blog_id        => 1,
-        author_id      => 1,
-        role_id        => 1,
-        group_id       => 1,
-        type           => 1,
-        created_on     => 1,
-    },
-    defaults => {
-        author_id      => 0,
-        group_id       => 0,
-        blog_id        => 0,
-        role_id        => 0,
-    },
-    audit => 1,
-    datasource  => 'association',
-    primary_key => 'id',
-});
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'        => 'integer not null auto_increment',
+            'type'      => 'integer not null',
+            'author_id' => 'integer',
+            'blog_id'   => 'integer',
+            'group_id'  => 'integer',
+            'role_id'   => 'integer',
+        },
+        indexes => {
+            blog_id    => 1,
+            author_id  => 1,
+            role_id    => 1,
+            group_id   => 1,
+            type       => 1,
+            created_on => 1,
+        },
+        defaults => {
+            author_id => 0,
+            group_id  => 0,
+            blog_id   => 0,
+            role_id   => 0,
+        },
+        audit       => 1,
+        datasource  => 'association',
+        primary_key => 'id',
+    }
+);
 
-sub USER_BLOG_ROLE ()  { 1 }
-sub GROUP_BLOG_ROLE () { 2 }
-sub USER_GROUP ()      { 3 }
-sub USER_ROLE ()       { 4 }
-sub GROUP_ROLE ()      { 5 }
+sub USER_BLOG_ROLE ()  {1}
+sub GROUP_BLOG_ROLE () {2}
+sub USER_GROUP ()      {3}
+sub USER_ROLE ()       {4}
+sub GROUP_ROLE ()      {5}
 
 sub class_label {
     MT->translate("Association");
@@ -61,7 +62,7 @@ sub save {
 sub remove {
     my $assoc = shift;
     my $res = $assoc->SUPER::remove(@_) or return;
-    if (ref $assoc) {
+    if ( ref $assoc ) {
         $assoc->rebuild_permissions;
     }
     $res;
@@ -75,45 +76,58 @@ sub rebuild_permissions {
 
 sub user {
     my $assoc = shift;
-    $assoc->cache_property('user', sub {
-        require MT::Author;
-        $assoc->author_id ? MT::Author->load($assoc->author_id) : undef;
-    });
+    $assoc->cache_property(
+        'user',
+        sub {
+            require MT::Author;
+            $assoc->author_id ? MT::Author->load( $assoc->author_id ) : undef;
+        }
+    );
 }
 
 sub blog {
     my $assoc = shift;
-    $assoc->cache_property('blog', sub {
-        require MT::Blog;
-        $assoc->blog_id ? MT::Blog->load($assoc->blog_id) : undef;
-    });
+    $assoc->cache_property(
+        'blog',
+        sub {
+            require MT::Blog;
+            $assoc->blog_id ? MT::Blog->load( $assoc->blog_id ) : undef;
+        }
+    );
 }
 
 sub group {
     my $assoc = shift;
-    $assoc->cache_property('group', sub {
-        require MT::Group;
-        $assoc->group_id ? MT::Group->load($assoc->group_id) : undef;
-    });
+    $assoc->cache_property(
+        'group',
+        sub {
+            require MT::Group;
+            $assoc->group_id ? MT::Group->load( $assoc->group_id ) : undef;
+        }
+    );
 }
 
 sub role {
     my $assoc = shift;
-    $assoc->cache_property('role', sub {
-        require MT::Role;
-        $assoc->role_id ? MT::Role->load($assoc->role_id) : undef;
-    });
+    $assoc->cache_property(
+        'role',
+        sub {
+            require MT::Role;
+            $assoc->role_id ? MT::Role->load( $assoc->role_id ) : undef;
+        }
+    );
 }
 
 # Creates an association between 2 or 3 objects
 sub link {
-    my $pkg = shift;
+    my $pkg   = shift;
     my $terms = $pkg->objects_to_terms(@_);
     return unless $terms;
     my $assoc = $pkg->get_by_key($terms);
-    if (!$assoc->id) {
-        if (MT->instance->isa('MT::App')) {
-            $assoc->created_by(MT->instance->user->id) if (defined(MT->instance->user));
+    if ( !$assoc->id ) {
+        if ( MT->instance->isa('MT::App') ) {
+            $assoc->created_by( MT->instance->user->id )
+                if ( defined( MT->instance->user ) );
         }
         $assoc->save or return;
     }
@@ -122,7 +136,7 @@ sub link {
 
 # Removes an association between 2 or 3 objects
 sub unlink {
-    my $pkg = shift;
+    my $pkg   = shift;
     my $terms = $pkg->objects_to_terms(@_);
     return unless $terms;
     my $assoc = $pkg->get_by_key($terms);
@@ -130,26 +144,30 @@ sub unlink {
 }
 
 sub objects_to_terms {
-    my $pkg = shift;
+    my $pkg   = shift;
     my %param = map { ref $_ => $_ } @_;
     my $terms = {};
-    $terms->{author_id} = $param{'MT::Author'}->id if $param{'MT::Author'};
-    $terms->{group_id} = $param{'MT::Group'}->id if $param{'MT::Group'};
-    $terms->{role_id} = $param{'MT::Role'}->id if $param{'MT::Role'};
-    $terms->{blog_id} = $param{'MT::Blog'}->id if $param{'MT::Blog'};
-    $terms->{blog_id} = $param{'MT::Website'}->id if $param{'MT::Website'};
-    if ($terms->{author_id} && $terms->{blog_id} && $terms->{role_id}) {
+    $terms->{author_id} = $param{'MT::Author'}->id  if $param{'MT::Author'};
+    $terms->{group_id}  = $param{'MT::Group'}->id   if $param{'MT::Group'};
+    $terms->{role_id}   = $param{'MT::Role'}->id    if $param{'MT::Role'};
+    $terms->{blog_id}   = $param{'MT::Blog'}->id    if $param{'MT::Blog'};
+    $terms->{blog_id}   = $param{'MT::Website'}->id if $param{'MT::Website'};
+    if ( $terms->{author_id} && $terms->{blog_id} && $terms->{role_id} ) {
         $terms->{type} = USER_BLOG_ROLE;
-    } elsif ($terms->{group_id} && $terms->{blog_id} && $terms->{role_id}) {
+    }
+    elsif ( $terms->{group_id} && $terms->{blog_id} && $terms->{role_id} ) {
         $terms->{type} = GROUP_BLOG_ROLE;
-    } elsif ($terms->{group_id} && $terms->{author_id}) {
+    }
+    elsif ( $terms->{group_id} && $terms->{author_id} ) {
         $terms->{type} = USER_GROUP;
-    # To be defined...
-    #} elsif ($terms->{user_id} && $terms->{role_id}) {
-    #    $terms->{type} = USER_ROLE;
-    #} elsif ($terms->{group_id} && $terms->{role_id}) {
-    #    $terms->{type} = GROUP_ROLE;
-    } else {
+
+        # To be defined...
+        #} elsif ($terms->{user_id} && $terms->{role_id}) {
+        #    $terms->{type} = USER_ROLE;
+        #} elsif ($terms->{group_id} && $terms->{role_id}) {
+        #    $terms->{type} = GROUP_ROLE;
+    }
+    else {
         return undef;
     }
     $terms;

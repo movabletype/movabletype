@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2006-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2006-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -12,8 +12,8 @@ use strict;
 use warnings;
 
 # Blog-level Access override statuses
-sub DENIED  () { 1 }
-sub ALLOWED () { 2 }
+sub DENIED ()  {1}
+sub ALLOWED () {2}
 
 sub preprocess_native_tags {
     my ( $ctx, $args, $cond ) = @_;
@@ -23,65 +23,73 @@ sub preprocess_native_tags {
 
     # If we're running under MT-Search, set the context based on the search
     # parameters available.
-    unless ($args->{blog_id} || $args->{blog_ids} || $args->{include_blogs} || $args->{exclude_blogs}) {
+    unless ( $args->{blog_id}
+        || $args->{blog_ids}
+        || $args->{include_blogs}
+        || $args->{exclude_blogs} )
+    {
         my $app = MT->instance;
-        if ($app->isa('MT::App::Search') && !$ctx->stash('inside_blogs')) {
-            if (my $excl = $app->{searchparam}{ExcludeBlogs}) {
+        if ( $app->isa('MT::App::Search') && !$ctx->stash('inside_blogs') ) {
+            if ( my $excl = $app->{searchparam}{ExcludeBlogs} ) {
                 $args->{exclude_blogs} ||= join ',', @$excl;
-            } elsif (my $incl = $app->{searchparam}{IncludeBlogs}) {
+            }
+            elsif ( my $incl = $app->{searchparam}{IncludeBlogs} ) {
                 $args->{include_blogs} = join ',', @$incl;
-            } 
-            if (($args->{include_blogs} || $args->{exclude_blogs}) && $args->{blog_id}) {
+            }
+            if ( ( $args->{include_blogs} || $args->{exclude_blogs} )
+                && $args->{blog_id} )
+            {
                 delete $args->{blog_id};
             }
         }
     }
 
-   # Filter through MultiBlog's access controls.  If no blogs
-   # are accessible given the specified attributes, we return
-   # NULL or an error if one occured.
-    if ( ! filter_blogs_from_args($plugin, $ctx, $args) ) {
-        return $ctx->errstr ? $ctx->error($ctx->errstr) : '';
+    # Filter through MultiBlog's access controls.  If no blogs
+    # are accessible given the specified attributes, we return
+    # NULL or an error if one occured.
+    if ( !filter_blogs_from_args( $plugin, $ctx, $args ) ) {
+        return $ctx->errstr ? $ctx->error( $ctx->errstr ) : '';
     }
+
     # Explicity set blog_id for MTInclude if not specified
     # so that it never gets a multiblog context from MTMultiBlog
-    elsif ($tag eq 'include' and ! exists $args->{blog_id}) {
+    elsif ( $tag eq 'include' and !exists $args->{blog_id} ) {
         if ( $ctx->stash('multiblog_context') && !$args->{local} ) {
             $args->{blog_id} = $ctx->stash('blog_id');
         }
         else {
             my $local_blog_id = $ctx->stash('local_blog_id');
-            if (defined $local_blog_id) {
+            if ( defined $local_blog_id ) {
                 $args->{blog_id} = $ctx->stash('local_blog_id');
             }
         }
     }
-    # If no include_blogs/exclude_blogs specified look for a 
+
+    # If no include_blogs/exclude_blogs specified look for a
     # previously set MTMultiBlog context
     elsif ( my $mode = $ctx->stash('multiblog_context') ) {
-        $args->{$mode} = $ctx->stash('multiblog_blog_ids');        
+        $args->{$mode} = $ctx->stash('multiblog_blog_ids');
     }
 
     # Remove local blog ID from MTTags since it is cross-blog
-    # and hence MTMultiBlogIfLocalBlog doesn't make sense there.    
+    # and hence MTMultiBlogIfLocalBlog doesn't make sense there.
     local $ctx->{__stash}{local_blog_id} = 0 if $tag eq 'tags';
 
     # Call original tag handler with new args
-    defined(my $result = $ctx->super_handler( $args, $cond ))
-        or return $ctx->error($ctx->errstr);
+    defined( my $result = $ctx->super_handler( $args, $cond ) )
+        or return $ctx->error( $ctx->errstr );
     return $result;
 }
-
 
 sub post_feedback_save {
     my $plugin = shift;
     my ( $trigger, $eh, $feedback ) = @_;
     if ( $feedback->visible ) {
         my $blog_id = $feedback->blog_id;
-        my $app = MT->instance;
+        my $app     = MT->instance;
 
         my $code = sub {
-            my ( $d ) = @_;
+            my ($d) = @_;
 
             while ( my ( $id, $a ) = each( %{ $d->{$trigger} } ) ) {
                 next if $id == $blog_id;
@@ -89,16 +97,21 @@ sub post_feedback_save {
             }
         };
 
-        foreach my $scope ("blog:$blog_id", "system") {
-            my $d = $plugin->get_config_value( $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
+        foreach my $scope ( "blog:$blog_id", "system" ) {
+            my $d
+                = $plugin->get_config_value(
+                $scope eq 'system' ? 'all_triggers' : 'other_triggers',
+                $scope );
             $code->($d);
         }
 
         my $blog = $feedback->blog;
         if ( $blog->is_blog ) {
             if ( my $website = $blog->website ) {
-                my $scope = "blog:".$website->id;
-                my $d = $plugin->get_config_value( 'blogs_in_website_triggers', $scope);
+                my $scope = "blog:" . $website->id;
+                my $d
+                    = $plugin->get_config_value( 'blogs_in_website_triggers',
+                    $scope );
                 $code->($d);
             }
         }
@@ -109,10 +122,10 @@ sub post_entry_save {
     my $plugin = shift;
     my ( $eh, $app, $entry ) = @_;
     my $blog_id = $entry->blog_id;
-    my @scope = ("blog:$blog_id", "system");
+    my @scope = ( "blog:$blog_id", "system" );
 
     my $code = sub {
-        my ( $d ) = @_;
+        my ($d) = @_;
         while ( my ( $id, $a ) = each( %{ $d->{'entry_save'} } ) ) {
             next if $id == $blog_id;
             perform_mb_action( $app, $id, $_ ) foreach keys %$a;
@@ -127,15 +140,17 @@ sub post_entry_save {
         }
     };
 
-    foreach my $scope ( @scope ) {
-        my $d = $plugin->get_config_value( $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
+    foreach my $scope (@scope) {
+        my $d = $plugin->get_config_value(
+            $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
         $code->($d);
     }
 
     my $blog = $entry->blog;
     if ( my $website = $blog->website ) {
-        my $scope = "blog:".$website->id;
-        my $d = $plugin->get_config_value( 'blogs_in_website_triggers', $scope);
+        my $scope = "blog:" . $website->id;
+        my $d     = $plugin->get_config_value( 'blogs_in_website_triggers',
+            $scope );
         $code->($d);
     }
 }
@@ -146,7 +161,7 @@ sub post_entry_pub {
     my $blog_id = $entry->blog_id;
 
     my $code = sub {
-        my ( $d ) = @_;
+        my ($d) = @_;
 
         require MT::Entry;
         if ( ( $entry->status || 0 ) == MT::Entry::RELEASE() ) {
@@ -157,15 +172,17 @@ sub post_entry_pub {
         }
     };
 
-    foreach my $scope ("blog:$blog_id", "system") {
-        my $d = $plugin->get_config_value( $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
+    foreach my $scope ( "blog:$blog_id", "system" ) {
+        my $d = $plugin->get_config_value(
+            $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
         $code->($d);
     }
 
     my $blog = $entry->blog;
     if ( my $website = $blog->website ) {
-        my $scope = "blog:".$website->id;
-        my $d = $plugin->get_config_value( 'blogs_in_website_triggers', $scope);
+        my $scope = "blog:" . $website->id;
+        my $d     = $plugin->get_config_value( 'blogs_in_website_triggers',
+            $scope );
         $code->($d);
     }
 }
@@ -179,7 +196,7 @@ sub perform_mb_action {
     my $rebuilt = $r->stash('multiblog_rebuilt') || {};
     return if exists $rebuilt->{"$blog_id,$action"};
     $rebuilt->{"$blog_id,$action"} = 1;
-    $r->stash('multiblog_rebuilt', $rebuilt);
+    $r->stash( 'multiblog_rebuilt', $rebuilt );
 
     # If the action we are performing starts with ri
     # we rebuild indexes for the given blog_id
@@ -194,99 +211,120 @@ sub perform_mb_action {
     }
 }
 
-sub filter_blogs_from_args { 
-    my ($plugin, $ctx, $args) = @_;
+sub filter_blogs_from_args {
+    my ( $plugin, $ctx, $args ) = @_;
 
     # SANITY CHECK ON ARGUMENTS
     my $err;
+
     # Set and clean up working variables
-    my $incl = $args->{include_blogs} || $args->{blog_id} || $args->{blog_ids};
+    my $incl 
+        = $args->{include_blogs}
+        || $args->{blog_id}
+        || $args->{blog_ids};
     my $excl = $args->{exclude_blogs};
-    for ($incl,$excl) {
+    for ( $incl, $excl ) {
         next unless $_;
-        s{\s+}{}g ; # Remove spaces
+        s{\s+}{}g;    # Remove spaces
     }
-    
+
     # If there are no multiblog arguments to filter, we don't need to be here
     return 1 unless $incl or $excl;
 
     # Only one multiblog argument can be used
-    my $arg_count = scalar grep { $_ and $_ ne '' } $args->{include_blogs}, 
-                                                    $args->{blog_id}, 
-                                                    $args->{blog_ids}, 
-                                                    $args->{exclude_blogs};
-    if ($arg_count > 1) {
-        $err = $plugin->translate('The include_blogs, exclude_blogs, blog_ids and blog_id attributes cannot be used together.');
+    my $arg_count = scalar grep { $_ and $_ ne '' } $args->{include_blogs},
+        $args->{blog_id},
+        $args->{blog_ids},
+        $args->{exclude_blogs};
+    if ( $arg_count > 1 ) {
+        $err
+            = $plugin->translate(
+            'The include_blogs, exclude_blogs, blog_ids and blog_id attributes cannot be used together.'
+            );
     }
+
     # exclude_blogs="all" is not allowed
-    elsif ( $excl 
-        && (   lc( $excl ) eq 'all'
-            || lc( $excl ) eq 'site'
-            || lc( $excl ) eq 'children'
-            || lc( $excl ) eq 'siblings' )
-    ) {
-        return $ctx->error(MT->translate(
+    elsif (
+        $excl
+        && (   lc($excl) eq 'all'
+            || lc($excl) eq 'site'
+            || lc($excl) eq 'children'
+            || lc($excl) eq 'siblings' )
+        )
+    {
+        return $ctx->error(
+            MT->translate(
                 "The attribute exclude_blogs cannot take '[_1]' for a value.",
                 $excl
-            ));
+            )
+        );
     }
+
     # blog_id only accepts a single blog ID
-    elsif ($args->{blog_id} and $args->{blog_id} !~ /^\d+$/) {
-        $err = $plugin->translate('The value of the blog_id attribute must be a single blog ID.');
+    elsif ( $args->{blog_id} and $args->{blog_id} !~ /^\d+$/ ) {
+        $err = $plugin->translate(
+            'The value of the blog_id attribute must be a single blog ID.');
     }
+
     # Make sure include_blogs/exclude_blogs is valid
     else {
         my $list = $incl || $excl;
-        if ( ( $list !~ /^\d+([,-]\d+)*$/ )
-          && lc( $list ) ne 'all'
-          && lc( $list ) ne 'site'
-          && lc( $list ) ne 'children'
-          && lc( $list ) ne 'siblings' )
+        if (   ( $list !~ /^\d+([,-]\d+)*$/ )
+            && lc($list) ne 'all'
+            && lc($list) ne 'site'
+            && lc($list) ne 'children'
+            && lc($list) ne 'siblings' )
         {
-            $err =  $plugin->translate('The value for the include_blogs/exclude_blogs attributes must be one or more blog IDs, separated by commas.');
+            $err
+                = $plugin->translate(
+                'The value for the include_blogs/exclude_blogs attributes must be one or more blog IDs, separated by commas.'
+                );
         }
     }
     return $ctx->error($err) if $err;
 
     # Prepare for filter_blogs
-    my ($attr, $val, @blogs);
+    my ( $attr, $val, @blogs );
     if ($incl) {
-        ($attr, $val) = ('include_blogs', $incl);
-    } else {
-        ($attr, $val) = ('exclude_blogs', $excl);
+        ( $attr, $val ) = ( 'include_blogs', $incl );
+    }
+    else {
+        ( $attr, $val ) = ( 'exclude_blogs', $excl );
     }
 
-    if ($val =~ m/-/) {
+    if ( $val =~ m/-/ ) {
         my @list = split /\s*,\s*/, $val;
         foreach my $id (@list) {
-            if ($id =~ m/^(\d+)-(\d+)$/) {
-                push @blogs, $_ for $1..$2;
-            } else {
+            if ( $id =~ m/^(\d+)-(\d+)$/ ) {
+                push @blogs, $_ for $1 .. $2;
+            }
+            else {
                 push @blogs, $id;
             }
         }
     }
     else {
-        @blogs = split(/\s*,\s*/, $val);
+        @blogs = split( /\s*,\s*/, $val );
     }
 
     # Filter the blogs using the MultiBlog access controls
-    ($attr, @blogs) = filter_blogs($plugin, $ctx, $attr, @blogs);
+    ( $attr, @blogs ) = filter_blogs( $plugin, $ctx, $attr, @blogs );
     return unless $attr && @blogs;
 
     if ( ( $attr eq 'include_blogs' ) && $args->{include_with_website} ) {
         my $blog = $ctx->stash('blog');
         push @blogs, $blog->is_blog ? $blog->website->id : $blog->id;
     }
-    
+
     # Rewrite the args to the modifed value
-    delete $args->{blog_ids} if exists $args->{blog_ids};  # Deprecated
-    if ($args->{blog_id}) {
+    delete $args->{blog_ids} if exists $args->{blog_ids};    # Deprecated
+    if ( $args->{blog_id} ) {
         $args->{'blog_id'} = $blogs[0];
-    } else {
+    }
+    else {
         delete $args->{include_blogs};
         delete $args->{exclude_blogs};
-        $args->{$attr} = join(',', @blogs);
+        $args->{$attr} = join( ',', @blogs );
     }
     1;
 }
@@ -306,118 +344,144 @@ sub filter_blogs {
     my $this_blog = $ctx->stash('blog_id') || 0;
 
     # Get the MultiBlog system config for default access and overrides
-    my $default_access_allowed = 
-        $plugin->get_config_value( 'default_access_allowed', 'system' );
-    my $access_overrides = 
-        $plugin->get_config_value( 'access_overrides', 'system' ) || {};
+    my $default_access_allowed
+        = $plugin->get_config_value( 'default_access_allowed', 'system' );
+    my $access_overrides
+        = $plugin->get_config_value( 'access_overrides', 'system' ) || {};
 
     # System setting allows access by default
     if ($default_access_allowed) {
 
         # include_blogs="all"
-        if ($is_include and $blogs[0] eq "all") {
-            # Check for any deny overrides. 
+        if ( $is_include and $blogs[0] eq "all" ) {
+
+            # Check for any deny overrides.
             # If found, switch to exclude_blogs="..."
-            my @deny = grep {     $_ != $this_blog 
-                              and exists $access_overrides->{$_} 
-                              and $access_overrides->{$_} == DENIED 
-                            } keys %$access_overrides;
-            return @deny ? ('exclude_blogs', @deny)
-                         : ('include_blogs', 'all');
-        } elsif ( ( my $blog = $ctx->stash('blog') )
-          && (
-               ( lc($blogs[0]) eq 'site' )
-            || ( lc($blogs[0]) eq 'children' )
-            || ( lc($blogs[0]) eq 'siblings' )
-          )
-        ) {
-            my $website = $blog->is_blog ? $blog->website
-                        :                  $blog
-                        ;
-            my @children = MT->model('blog')->load(
-                { parent_id => $website->id },
-                { fetch_only => ['id'], no_triggers => 1 }
-            );
+            my @deny = grep {
+                        $_ != $this_blog
+                    and exists $access_overrides->{$_}
+                    and $access_overrides->{$_} == DENIED
+            } keys %$access_overrides;
+            return @deny
+                ? ( 'exclude_blogs', @deny )
+                : ( 'include_blogs', 'all' );
+        }
+        elsif (
+            ( my $blog = $ctx->stash('blog') )
+            && (   ( lc( $blogs[0] ) eq 'site' )
+                || ( lc( $blogs[0] ) eq 'children' )
+                || ( lc( $blogs[0] ) eq 'siblings' ) )
+            )
+        {
+            my $website
+                = $blog->is_blog
+                ? $blog->website
+                : $blog;
+            my @children
+                = MT->model('blog')->load( { parent_id => $website->id },
+                { fetch_only => ['id'], no_triggers => 1 } );
             my @allow = map { $_->id }
-                        grep {    $_->id == $this_blog 
-                               or ! exists $access_overrides->{$_->id} 
-                               or $access_overrides->{$_->id} == ALLOWED
-                             } @children;
-            return @allow ? ('include_blogs', @allow) : undef;
+                grep {
+                       $_->id == $this_blog
+                    or !exists $access_overrides->{ $_->id }
+                    or $access_overrides->{ $_->id } == ALLOWED
+                } @children;
+            return @allow ? ( 'include_blogs', @allow ) : undef;
         }
+
         # include_blogs="1,2,3,4"
-        elsif ($is_include and @blogs) {
-           # Remove any included blogs that are specifically deny override
-           # Return undef is all specified blogs are deny override
-           my @allow = grep {    $_ == $this_blog 
-                              or ! exists $access_overrides->{$_} 
-                              or $access_overrides->{$_} == ALLOWED
-                            } @blogs;
-           return @allow ? ('include_blogs', @allow) : undef;
+        elsif ( $is_include and @blogs ) {
+
+            # Remove any included blogs that are specifically deny override
+            # Return undef is all specified blogs are deny override
+            my @allow = grep {
+                       $_ == $this_blog
+                    or !exists $access_overrides->{$_}
+                    or $access_overrides->{$_} == ALLOWED
+            } @blogs;
+            return @allow ? ( 'include_blogs', @allow ) : undef;
         }
+
         # exclude_blogs="1,2,3,4"
         else {
+
             # Add any deny overrides blogs to the list and de-dupe
-            push(@blogs, grep { $_ != $this_blog
-                                and $access_overrides->{$_} == DENIED 
-                              } keys %$access_overrides);
-           my %seen;
-           @seen{@blogs} = ();
-           @blogs = keys %seen;
-           return ('exclude_blogs', @blogs);
-        }
-    }
-    # System setting does not allow access by default
-    else {
-        # include_blogs="all"
-        if ($is_include and $blogs[0] eq "all") {
-            # Enumerate blogs from allow override
-            # Hopefully this is significantly smaller than @all_blogs
-            my @allow = grep { $_ == $this_blog 
-                               or $access_overrides->{$_} == ALLOWED
-                             } ($this_blog, keys %$access_overrides);
-            return @allow ? ('include_blogs', @allow) : undef;
-        } elsif ( ( my $blog = $ctx->stash('blog') )
-          && (
-               ( lc($blogs[0]) eq 'site' )
-            || ( lc($blogs[0]) eq 'children' )
-            || ( lc($blogs[0]) eq 'siblings' )
-          )
-        ) {
-            my $website = $blog->is_blog ? $blog->website
-                        :                  $blog
-                        ;
-            my @children = MT->model('blog')->load(
-                { parent_id => $website->id },
-                { fetch_only => ['id'], no_triggers => 1 }
+            push(
+                @blogs,
+                grep {
+                            $_ != $this_blog
+                        and $access_overrides->{$_} == DENIED
+                    } keys %$access_overrides
             );
-            my @allow = map { $_->id }
-                        grep {    $_->id == $this_blog
-                               or ( exists $access_overrides->{$_->id} 
-                                    and $access_overrides->{$_->id} == ALLOWED)
-                             } @children;
-            return @allow ? ('include_blogs', @allow) : undef;
-        }
-        # include_blogs="1,2,3,4"
-        elsif ($is_include and @blogs) {
-            # Filter @blogs returning only those with allow override
-            my @allow = grep {    $_ == $this_blog
-                               or ( exists $access_overrides->{$_} 
-                                    and $access_overrides->{$_} == ALLOWED)
-                             } @blogs;
-            return @allow ? ('include_blogs', @allow) : undef;
-        }
-        # exclude_blogs="1,2,3,4"
-        else {
-            # Get allow override blogs and then omit 
-            # the specified excluded blogs.
-            my @allow = grep { $_ == $this_blog
-                               or $access_overrides->{$_} == ALLOWED
-                             } ($this_blog, keys %$access_overrides);
             my %seen;
             @seen{@blogs} = ();
-            @blogs = grep { ! $seen{$_} } @allow;
-            return @blogs ? ('include_blogs', @blogs) : undef;
+            @blogs = keys %seen;
+            return ( 'exclude_blogs', @blogs );
+        }
+    }
+
+    # System setting does not allow access by default
+    else {
+
+        # include_blogs="all"
+        if ( $is_include and $blogs[0] eq "all" ) {
+
+            # Enumerate blogs from allow override
+            # Hopefully this is significantly smaller than @all_blogs
+            my @allow = grep {
+                       $_ == $this_blog
+                    or $access_overrides->{$_} == ALLOWED
+            } ( $this_blog, keys %$access_overrides );
+            return @allow ? ( 'include_blogs', @allow ) : undef;
+        }
+        elsif (
+            ( my $blog = $ctx->stash('blog') )
+            && (   ( lc( $blogs[0] ) eq 'site' )
+                || ( lc( $blogs[0] ) eq 'children' )
+                || ( lc( $blogs[0] ) eq 'siblings' ) )
+            )
+        {
+            my $website
+                = $blog->is_blog
+                ? $blog->website
+                : $blog;
+            my @children
+                = MT->model('blog')->load( { parent_id => $website->id },
+                { fetch_only => ['id'], no_triggers => 1 } );
+            my @allow = map { $_->id }
+                grep {
+                $_->id == $this_blog
+                    or ( exists $access_overrides->{ $_->id }
+                    and $access_overrides->{ $_->id } == ALLOWED )
+                } @children;
+            return @allow ? ( 'include_blogs', @allow ) : undef;
+        }
+
+        # include_blogs="1,2,3,4"
+        elsif ( $is_include and @blogs ) {
+
+            # Filter @blogs returning only those with allow override
+            my @allow = grep {
+                $_ == $this_blog
+                    or ( exists $access_overrides->{$_}
+                    and $access_overrides->{$_} == ALLOWED )
+            } @blogs;
+            return @allow ? ( 'include_blogs', @allow ) : undef;
+        }
+
+        # exclude_blogs="1,2,3,4"
+        else {
+
+            # Get allow override blogs and then omit
+            # the specified excluded blogs.
+            my @allow = grep {
+                       $_ == $this_blog
+                    or $access_overrides->{$_} == ALLOWED
+            } ( $this_blog, keys %$access_overrides );
+            my %seen;
+            @seen{@blogs} = ();
+            @blogs = grep { !$seen{$_} } @allow;
+            return @blogs ? ( 'include_blogs', @blogs ) : undef;
         }
     }
 }
@@ -427,63 +491,82 @@ sub post_restore {
 
     foreach my $key ( keys %$objects ) {
         next unless $key =~ /^MT::PluginData#\d+$/;
-        my $pd = $objects->{$key};
+        my $pd   = $objects->{$key};
         my $data = $pd->data;
         next unless ref $data eq 'HASH';
         if ( my $rebuild_triggers = $data->{rebuild_triggers} ) {
             my @restored;
-            foreach my $trg_str ( split ( '\|', $rebuild_triggers ) ) {
-                my ( $action, $id, $trigger ) = split ( ':', $trg_str );
+            foreach my $trg_str ( split( '\|', $rebuild_triggers ) ) {
+                my ( $action, $id, $trigger ) = split( ':', $trg_str );
                 if ( $id eq '_all' ) {
                     push @restored, "$action:$id:$trigger";
-               } elsif ( $id eq '_blogs_in_website' ) {
-                   my @keys = keys %{ $data->{blogs_in_website_triggers} };
-                   foreach my $act ( @keys ) {
-                       my @old_ids = keys %{ $data->{blogs_in_website_triggers}{$act} };
-                       foreach my $old_id ( @old_ids ) {
-                           my $new_obj = $objects->{'MT::Blog#' . $old_id};
-                           $new_obj = $objects->{'MT::Website#' . $old_id}
-                               unless $new_obj;
-                           if ( $new_obj ) {
-                               $data->{blogs_in_website_triggers}{$act}{$new_obj->id} = 
-                                   delete $data->{blogs_in_website_triggers}{$act}{$old_id};
-                               $callback->(
-                                   $plugin->translate('Restoring MultiBlog rebuild trigger for blog #[_1]...', $old_id));
-                           }
-                       }
-                   }
-                   push @restored, "$action:$id:$trigger";
-               } else {
-                    my $new_obj = $objects->{'MT::Blog#' . $id};
-                    $new_obj = $objects->{'MT::Website#' . $id}
+                }
+                elsif ( $id eq '_blogs_in_website' ) {
+                    my @keys = keys %{ $data->{blogs_in_website_triggers} };
+                    foreach my $act (@keys) {
+                        my @old_ids = keys
+                            %{ $data->{blogs_in_website_triggers}{$act} };
+                        foreach my $old_id (@old_ids) {
+                            my $new_obj = $objects->{ 'MT::Blog#' . $old_id };
+                            $new_obj = $objects->{ 'MT::Website#' . $old_id }
+                                unless $new_obj;
+                            if ($new_obj) {
+                                $data->{blogs_in_website_triggers}{$act}
+                                    { $new_obj->id }
+                                    = delete
+                                    $data->{blogs_in_website_triggers}{$act}
+                                    {$old_id};
+                                $callback->(
+                                    $plugin->translate(
+                                        'Restoring MultiBlog rebuild trigger for blog #[_1]...',
+                                        $old_id
+                                    )
+                                );
+                            }
+                        }
+                    }
+                    push @restored, "$action:$id:$trigger";
+                }
+                else {
+                    my $new_obj = $objects->{ 'MT::Blog#' . $id };
+                    $new_obj = $objects->{ 'MT::Website#' . $id }
                         unless $new_obj;
-                    if ( $new_obj ) {
-                        push @restored, "$action:" . $new_obj->id . ":$trigger";
+                    if ($new_obj) {
+                        push @restored,
+                            "$action:" . $new_obj->id . ":$trigger";
                         $callback->(
-                            $plugin->translate('Restoring MultiBlog rebuild trigger for blog #[_1]...', $id)
+                            $plugin->translate(
+                                'Restoring MultiBlog rebuild trigger for blog #[_1]...',
+                                $id
+                            )
                         );
                     }
                 }
             }
 
-            if ( @restored ) {
-                $data->{rebuild_triggers} = join ( '|', @restored );
+            if (@restored) {
+                $data->{rebuild_triggers} = join( '|', @restored );
                 $pd->data($data);
                 $pd->save;
             }
-        } elsif ( my $other_triggers = $data->{other_triggers} ) {
-            my @keys = keys %{ $other_triggers };
-            foreach my $act ( @keys ) {
+        }
+        elsif ( my $other_triggers = $data->{other_triggers} ) {
+            my @keys = keys %{$other_triggers};
+            foreach my $act (@keys) {
                 my @old_ids = keys %{ $other_triggers->{$act} };
-                foreach my $old_id ( @old_ids ) {
-                    my $new_obj = $objects->{'MT::Blog#' . $old_id};
-                    $new_obj = $objects->{'MT::Website#' . $old_id}
+                foreach my $old_id (@old_ids) {
+                    my $new_obj = $objects->{ 'MT::Blog#' . $old_id };
+                    $new_obj = $objects->{ 'MT::Website#' . $old_id }
                         unless $new_obj;
-                    if ( $new_obj ) {
-                        $data->{other_triggers}{$act}{$new_obj->id} = 
-                            delete $data->{other_triggers}{$act}{$old_id};
+                    if ($new_obj) {
+                        $data->{other_triggers}{$act}{ $new_obj->id }
+                            = delete $data->{other_triggers}{$act}{$old_id};
                         $callback->(
-                            $plugin->translate('Restoring MultiBlog rebuild trigger for blog #[_1]...', $old_id));
+                            $plugin->translate(
+                                'Restoring MultiBlog rebuild trigger for blog #[_1]...',
+                                $old_id
+                            )
+                        );
                     }
                 }
             }

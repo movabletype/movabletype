@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -11,7 +11,7 @@ use base qw(MT::ErrorHandler);
 
 sub new {
     my $class = shift;
-    my ($this) = ref$_[0] ? @_ : {@_};
+    my ($this) = ref $_[0] ? @_ : {@_};
     bless $this, $class;
     $this->init();
     $this;
@@ -33,7 +33,7 @@ sub name {
 }
 
 sub label {
-    my $task = shift;
+    my $task  = shift;
     my $label = $task->{label};
     $label = $label->() if ref($label) eq 'CODE';
     return $label || $task->name();
@@ -42,6 +42,7 @@ sub label {
 sub frequency {
     my $task = shift;
     $task->{frequency} = shift if @_;
+
     # default to daily run
     my $freq = $task->{frequency} || 60 * 60 * 24;
     if ( $freq =~ m/^\s*sub\s*\{/s ) {
@@ -54,10 +55,10 @@ sub frequency {
 sub run {
     my $task = shift;
     my $code = $task->{code} || $task->{handler};
-    if (ref $code ne 'CODE') {
+    if ( ref $code ne 'CODE' ) {
         $code = $task->{code} = MT->handler_to_coderef($code);
     }
-    if (ref $code eq 'CODE') {
+    if ( ref $code eq 'CODE' ) {
         return $code->($task);
     }
     0;
@@ -65,6 +66,7 @@ sub run {
 
 1;
 __END__
+
 =head1 NAME
 
 MT::Task - Movable Type class for registering runnable tasks.

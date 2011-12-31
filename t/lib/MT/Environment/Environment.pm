@@ -99,13 +99,13 @@ sub create_roles {
 sub create_user {
     my ( $user_data_ref, $env_data_ref ) = @_;
     croak('No values for user') if ( !$user_data_ref->{values} );
-    my $v = $user_data_ref->{values};
+    my $v    = $user_data_ref->{values};
     my $user = MT->model('author')->get_by_key( { name => $v->{name} } );
-    my $pwd = delete $v->{password} || "password";
-    
+    my $pwd  = delete $v->{password} || "password";
+
     $user->set_values($v);
     $user->set_password($pwd);
-    
+
     $user->save or croak $user->errstr;
     if ( $user_data_ref->{roles} ) {
         foreach my $blog_key ( keys %{ $user_data_ref->{roles} } ) {
@@ -206,7 +206,8 @@ sub create_entry {
     $v->{author_id} = $author->id;
 
     my $blog_key = delete $v->{blog} or croak('No blog key for entry!');
-    my $blog = $env_data_ref->{blogs}->{$blog_key} or croak ("Could not get blog $blog_key for entry!");
+    my $blog = $env_data_ref->{blogs}->{$blog_key}
+        or croak("Could not get blog $blog_key for entry!");
     $v->{blog_id} = $blog->id;
 
     require MT::Entry;

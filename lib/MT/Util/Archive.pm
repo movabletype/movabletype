@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -13,18 +13,18 @@ use base qw( MT::ErrorHandler );
 
 sub new {
     my $pkg = shift;
-    my ($type, $file) = @_;
+    my ( $type, $file ) = @_;
 
-    return $pkg->error(MT->translate('Type must be specified'))
+    return $pkg->error( MT->translate('Type must be specified') )
         unless $type;
 
     my $classes = MT->registry('archivers');
-    return $pkg->error(MT->translate('Registry could not be loaded'))
+    return $pkg->error( MT->translate('Registry could not be loaded') )
         unless $classes && %$classes;
 
     my $class = $classes->{$type};
     $class = $class->{class} if $class;
-    return $pkg->error(MT->translate('Registry could not be loaded'))
+    return $pkg->error( MT->translate('Registry could not be loaded') )
         unless $class;
 
     my $obj;
@@ -33,10 +33,10 @@ sub new {
         return $pkg->error($e);
     }
     eval { $obj = $class->new(@_); };
-    if (my $e = $@) {
+    if ( my $e = $@ ) {
         return $pkg->error($e);
     }
-    elsif (!defined $obj) {
+    elsif ( !defined $obj ) {
         return $pkg->error( $class->errstr );
     }
 
@@ -44,12 +44,12 @@ sub new {
 }
 
 sub available_formats {
-    my $pkg = shift;
+    my $pkg     = shift;
     my $classes = MT->registry('archivers');
     return {} unless $classes && %$classes;
 
     my @data;
-    for my $key (keys %$classes) {
+    for my $key ( keys %$classes ) {
         my $class = $classes->{$key}->{class};
         eval "require $class;";
         next if $@;
@@ -57,11 +57,12 @@ sub available_formats {
         if ( 'CODE' eq ref($label) ) {
             $label = $label->();
         }
-        push @data, {
+        push @data,
+            {
             key   => $key,
             label => $label,
             class => $class,
-        };
+            };
     }
     @data;
 }
@@ -139,4 +140,3 @@ Adds the specified string as a file.
 =head2 add_tree( '/path/to/directory' )
 
 Adds all files incleded in the specified directory into the archive file.
-

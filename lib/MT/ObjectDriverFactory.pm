@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -22,12 +22,13 @@ our $drivers = [
 our @drivers;
 
 sub new {
-    my $pkg = shift;
+    my $pkg        = shift;
     my $get_driver = $pkg->driver_for_class();
     return $get_driver->();
 }
 
 our $DRIVER;
+
 sub instance {
     my $pkg = shift;
     $DRIVER = $pkg->new unless $DRIVER;
@@ -42,25 +43,27 @@ sub driver_for_class {
     require MT::ObjectDriver::Driver::CacheWrapper;
     my $driver_code = MT::ObjectDriver::Driver::CacheWrapper->wrap(
         sub {
-            my $cfg = MT->config;
+            my $cfg      = MT->config;
             my $Password = $cfg->DBPassword;
             my $Username = $cfg->DBUser;
-            my $dbd = $pkg->dbd_class;
-            my $driver = MT::ObjectDriver::Driver::DBI->new(
-                dbd => $dbd,
-                dsn => $dbd->dsn_from_config($cfg),
+            my $dbd      = $pkg->dbd_class;
+            my $driver   = MT::ObjectDriver::Driver::DBI->new(
+                dbd       => $dbd,
+                dsn       => $dbd->dsn_from_config($cfg),
                 reuse_dbh => 1,
-                ($Username ? ( username => $Username) : ()),
-                ($Password ? ( password => $Password) : ()),
+                ( $Username ? ( username => $Username ) : () ),
+                ( $Password ? ( password => $Password ) : () ),
             );
             push @drivers, $driver;
             return $driver;
-        }, $class
+        },
+        $class
     );
     return $driver_code;
 }
 
 our $dbd_class;
+
 sub dbd_class {
     return $dbd_class if defined $dbd_class;
     my $pkg = shift;
@@ -70,17 +73,17 @@ sub dbd_class {
 
     my $dbd_class;
     foreach my $driver (@$drivers) {
-        if ((lc $type) =~ m/^$driver->[0]$/) {
+        if ( ( lc $type ) =~ m/^$driver->[0]$/ ) {
             $dbd_class = $driver->[1];
             last;
         }
     }
 
-    unless ( $dbd_class ) {
+    unless ($dbd_class) {
         my $all_drivers = MT->registry("object_drivers");
-        foreach my $driver ( %$all_drivers ) {
+        foreach my $driver (%$all_drivers) {
             if ( my $re = $all_drivers->{$driver}{match} ) {
-                if ( (lc $type) =~ m/^$re$/ ) {
+                if ( ( lc $type ) =~ m/^$re$/ ) {
                     $dbd_class = $all_drivers->{$driver}{config_package};
                     last;
                 }
@@ -112,7 +115,7 @@ sub cleanup {
             $driver->dbh->{private_set_names} = undef;
             $driver->dbh(undef);
         }
-        $MT::Object::DRIVER = undef;
+        $MT::Object::DRIVER     = undef;
         $MT::Object::DBI_DRIVER = undef;
     }
     foreach my $driver (@drivers) {

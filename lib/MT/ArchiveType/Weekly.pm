@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -24,8 +24,7 @@ sub dynamic_template {
 
 sub default_archive_templates {
     return [
-        {
-            label    => MT->translate('yyyy/mm/day-week/index.html'),
+        {   label    => MT->translate('yyyy/mm/day-week/index.html'),
             template => '%y/%m/%d-week/%i',
             default  => 1
         },
@@ -51,8 +50,8 @@ sub archive_file {
 
     my $file;
     if ($file_tmpl) {
-        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} ) =
-          start_end_week($timestamp);
+        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} )
+            = start_end_week($timestamp);
     }
     else {
         my $start = start_end_week($timestamp);
@@ -68,8 +67,8 @@ sub archive_title {
     my ( $start, $end ) = start_end_week( $stamp, $_[0]->stash('blog') );
     MT::Template::Context::_hdlr_date( $_[0],
         { ts => $start, 'format' => "%x" } )
-      . ' - '
-      . MT::Template::Context::_hdlr_date( $_[0],
+        . ' - '
+        . MT::Template::Context::_hdlr_date( $_[0],
         { ts => $end, 'format' => "%x" } );
 }
 
@@ -83,8 +82,8 @@ sub archive_group_iter {
     my ( $ctx, $args ) = @_;
     my $blog = $ctx->stash('blog');
     my $iter;
-    my $sort_order =
-      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $sort_order
+        = ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
     my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
 
     my $ts    = $ctx->{current_timestamp};
@@ -92,14 +91,12 @@ sub archive_group_iter {
 
     require MT::Entry;
     $iter = MT::Entry->count_group_by(
-        {
-            blog_id => $blog->id,
+        {   blog_id => $blog->id,
             status  => MT::Entry::RELEASE(),
             ( $ts && $tsend ? ( authored_on => [ $ts, $tsend ] ) : () ),
         },
-        {
-            ( $ts && $tsend ? ( range_incl => { authored_on => 1 } ) : () ),
-            group => [ "week_number" ],
+        {   ( $ts && $tsend ? ( range_incl => { authored_on => 1 } ) : () ),
+            group => ["week_number"],
             $args->{lastn} ? ( limit => $args->{lastn} ) : (),
             sort => [ { column => "week_number", desc => $order } ],
         }
@@ -108,8 +105,8 @@ sub archive_group_iter {
     return sub {
         while ( my @row = $iter->() ) {
             my $year = unpack 'A4', $row[1];
-            my $date =
-              sprintf( "%04d%02d%02d000000", week2ymd( $year, $row[1] ) );
+            my $date
+                = sprintf( "%04d%02d%02d000000", week2ymd( $year, $row[1] ) );
             my ( $start, $end ) = start_end_week($date);
             return (
                 $row[0],
@@ -126,9 +123,10 @@ sub archive_group_iter {
 sub archive_group_entries {
     my $obj = shift;
     my ( $ctx, %param ) = @_;
-    my $ts =
-        $param{year}
-    ? sprintf( "%04d%02d%02d000000", week2ymd( $param{year}, $param{week} ) )
+    my $ts
+        = $param{year}
+        ? sprintf( "%04d%02d%02d000000",
+        week2ymd( $param{year}, $param{week} ) )
         : undef;
     my $limit = $param{limit};
     $obj->dated_group_entries( $ctx, 'Weekly', $ts, $limit );
@@ -138,8 +136,7 @@ sub archive_entries_count {
     my $obj = shift;
     my ( $blog, $at, $entry ) = @_;
     return $obj->SUPER::archive_entries_count(
-        {
-            Blog        => $blog,
+        {   Blog        => $blog,
             ArchiveType => $at,
             Timestamp   => $entry->authored_on
         }

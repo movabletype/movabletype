@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -7,14 +7,15 @@ package MT::CMS::RptLog;
 
 use strict;
 
-use MT::Util qw( offset_time_list format_ts epoch2ts ts2epoch relative_date offset_time encode_url dirify encode_url );
+use MT::Util
+    qw( offset_time_list format_ts epoch2ts ts2epoch relative_date offset_time encode_url dirify encode_url );
 use MT::I18N qw( const break_up_text encode_text );
 
 sub view {
-    my $app     = shift;
-    my $user    = $app->user;
-    my $blog_id = $app->param('blog_id');
-    my $perms   = $app->permissions;
+    my $app        = shift;
+    my $user       = $app->user;
+    my $blog_id    = $app->param('blog_id');
+    my $perms      = $app->permissions;
     my $log_class  = $app->model('log');
     my $blog_class = $app->model('blog');
     my $list_pref  = $app->list_pref('rptlog');
@@ -26,7 +27,8 @@ sub view {
     my ( $filter_col, $val );
 
     # can this user really view this shit?
-    return $app->error( $app->translate("Permission denied.") ) unless $user->can_view_log;
+    return $app->error( $app->translate("Permission denied.") )
+        unless $user->can_view_log;
 
     # all classes of log objects
     unless ( exists $terms->{class} ) {
@@ -40,8 +42,7 @@ sub view {
     # get the iterator for the log messages
     my $iter_logs = $log_class->load_iter(
         $terms,
-        {
-            'sort'      => 'id',
+        {   'sort'      => 'id',
             'direction' => 'descend',
             'offset'    => $offset,
             'limit'     => $limit
@@ -49,13 +50,20 @@ sub view {
     );
 
     # finally build the log table
-    my $log = build_log_table( $app, iter_logs => $iter_logs, iter_errors => $iter_errors, param => \%param );
+    my $log = build_log_table(
+        $app,
+        iter_logs   => $iter_logs,
+        iter_errors => $iter_errors,
+        param       => \%param
+    );
 
     # get the time offset based on the system settings
     my $so = $app->config('TimeOffset');
     if ($so) {
         my $partial_hour_offset = 60 * abs( $so - int($so) );
-        my $tz = sprintf( "%s%02d:%02d", $so < 0 ? '-' : '+', abs($so), $partial_hour_offset );
+        my $tz                  = sprintf( "%s%02d:%02d",
+            $so < 0 ? '-' : '+',
+            abs($so), $partial_hour_offset );
         $param{time_offset} = $tz;
     }
 
@@ -67,17 +75,18 @@ sub view {
     $param{list_end}        = $offset + ( scalar @$log );
     $param{offset}          = $offset;
     $param{next_offset_val} = $offset + ( scalar @$log );
-    $param{next_offset}     = $param{next_offset_val} < $param{list_total} ? 1 : 0;
+    $param{next_offset}
+        = $param{next_offset_val} < $param{list_total} ? 1 : 0;
     $param{next_max}
         = $param{next_offset}
         ? int( $param{list_total} / $limit ) * $limit
         : 0;
-    $param{'reset'}             = $app->param('reset');
-    $param{nav_log}             = 1;
-    $param{feed_name}           = $app->translate("System RPT Feed");
-    $param{screen_class}        = "list-log";
-    $param{screen_id}           = "list-log";
-    $param{listing_screen}      = 1;
+    $param{'reset'}        = $app->param('reset');
+    $param{nav_log}        = 1;
+    $param{feed_name}      = $app->translate("System RPT Feed");
+    $param{screen_class}   = "list-log";
+    $param{screen_id}      = "list-log";
+    $param{listing_screen} = 1;
     $param{system_overview_nav} = 1 unless ( $app->param('blog_id') );
 
     # dude, if this is not 0 then do pagination stuff
@@ -90,14 +99,14 @@ sub view {
     # what the hell are breadcrumbs for?
     $app->add_breadcrumb( $app->translate('RPT Log') );
 
-     # ahhh finally....
+    # ahhh finally....
     $app->load_tmpl( 'view_rpt_log.tmpl', \%param );
 }
 
 sub build_log_table {
-    my $app = shift;
+    my $app    = shift;
     my (%args) = @_;
-    my $i          = 1;
+    my $i      = 1;
     my @log;
     my @error;
 
@@ -107,7 +116,7 @@ sub build_log_table {
     # get the proper iterator of error messages
     my $iter_errors = $args{iter_errors};
 
-    # the param object used to pass stuff to the view later on in mother function
+ # the param object used to pass stuff to the view later on in mother function
     my $param = $args{param};
 
     # reusing comment length constant for log view
@@ -119,18 +128,17 @@ sub build_log_table {
         $msg = break_up_text( $msg, $break_len );
 
         # create a new row for the log message
-        my $row = {
-            log_message => $msg,
-        };
+        my $row = { log_message => $msg, };
 
         # get the relative and formatted versions of the timestamps
         if ( my $error_time = $error->error_time ) {
             my @ts = offset_time_list($error_time);
-            my $ts = sprintf '%04d%02d%02d%02d%02d%02d', $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
-            $row->{created_on_formatted} = format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(),
-                                                      $ts, 
-                                                      undef, 
-                                                      $app->user ? $app->user->preferred_language : undef );
+            my $ts = sprintf '%04d%02d%02d%02d%02d%02d', $ts[5] + 1900,
+                $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+            $row->{created_on_formatted}
+                = format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(),
+                $ts, undef,
+                $app->user ? $app->user->preferred_language : undef );
             $row->{created_on_relative} = relative_date( $ts, time );
         }
 
@@ -144,15 +152,16 @@ sub build_log_table {
 }
 
 sub reset {
-    my $app    = shift;
+    my $app = shift;
     $app->validate_magic() or return;
-    my $author = $app->user;
+    my $author    = $app->user;
     my $log_class = $app->model('log');
-    return $app->error( $app->translate("Permission denied.") ) unless $author->can_view_log;
+    return $app->error( $app->translate("Permission denied.") )
+        unless $author->can_view_log;
     my $args = { 'reset' => 1 };
     $log_class->remove( { class => '*' } );
     my $log_url = $app->uri( mode => 'view_rpt_log' );
-    $app->redirect( $log_url );
+    $app->redirect($log_url);
 }
 
 sub apply_log_filter {
@@ -173,13 +182,14 @@ sub apply_log_filter {
                 }
             }
             elsif ( $filter_col eq 'class' ) {
-                if ($val eq 'publish') {
+                if ( $val eq 'publish' ) {
                     $arg{category} = 'publish';
                 }
                 else {
-                    if ($val =~ m/,/) {
+                    if ( $val =~ m/,/ ) {
                         $arg{class} = [ split ",", $val ];
-                    } else {
+                    }
+                    else {
                         $arg{class} = $val;
                     }
                 }

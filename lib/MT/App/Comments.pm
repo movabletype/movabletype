@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -225,7 +225,8 @@ sub do_login {
     my $blog    = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
-    return $app->errtrans('Invalid request') if !$app->is_valid_redirect_target;
+    return $app->errtrans('Invalid request')
+        if !$app->is_valid_redirect_target;
     my $auths = $blog->commenter_authenticators;
     if ( $auths !~ /MovableType/ ) {
         $app->log(
@@ -285,9 +286,9 @@ sub do_login {
         if ( $app->_check_commenter_author( $commenter, $blog_id ) ) {
             my $sid = $app->make_commenter_session($commenter);
             my $ott = MT->model('session')->new();
-            $ott->kind('OT');  # One time Token
+            $ott->kind('OT');    # One time Token
             $ott->id( MT::App::make_magic_token() );
-            $ott->start( time );
+            $ott->start(time);
             $ott->duration( time + 5 * 60 );
             $ott->set( sid => $sid );
             $ott->save
@@ -297,7 +298,8 @@ sub do_login {
                     $ott->errstr
                 )
                 );
-            return $app->redirect_to_target( fragment => '_login_' . $ott->id );
+            return $app->redirect_to_target(
+                fragment => '_login_' . $ott->id );
         }
         $error   = $app->translate("Permission denied.");
         $message = $app->translate(
@@ -379,8 +381,10 @@ sub do_signup {
         return $app->handle_error(
             $app->translate('Signing up is not allowed.') )
             unless $registration->{Allow} && $blog->allow_commenter_regist;
-    } else {
-        return $app->handle_error( $app->translate('Signing up is not allowed.') );
+    }
+    else {
+        return $app->handle_error(
+            $app->translate('Signing up is not allowed.') );
     }
 
     my $filter_result = $app->run_callbacks( 'api_save_filter.author', $app );
@@ -553,7 +557,7 @@ sub do_register {
     }
     unless ($sess) {
         my $blog_id = $q->param('blog_id');
-        my $blog = $app->model('blog')->load($blog_id)
+        my $blog    = $app->model('blog')->load($blog_id)
             or return $app->errtrans( 'Can\'t load blog #[_1].', $blog_id );
         if ( my $provider
             = MT->effective_captcha_provider( $blog->captcha_provider ) )
@@ -1054,7 +1058,8 @@ sub post {
         }
         else {
             $static =~ s/[\r\n].*$//s;
-            $comment_link = MT::Util::remove_html($static) . '#comment-' . $comment->id;
+            $comment_link
+                = MT::Util::remove_html($static) . '#comment-' . $comment->id;
         }
     }
 
@@ -1457,14 +1462,17 @@ sub handle_sign_in {
         if ( my $e = $@ ) {
             return $app->handle_error( $e, 403 );
         }
-        ( $result, $sess ) = $auth_class->handle_sign_in( $app, $q->param('key') );
-        unless ( $sess ) {
+        ( $result, $sess )
+            = $auth_class->handle_sign_in( $app, $q->param('key') );
+        unless ($sess) {
+
             # Support for old auth plugin
             my $cmtr_sess = MT::Session::get_unexpired_value(
-                MT->config->UserSessionTimeOut, {
-                    kind => 'SI',
+                MT->config->UserSessionTimeOut,
+                {   kind => 'SI',
                     name => $result->name,
-                });
+                }
+            );
             $sess = $cmtr_sess->id
                 if $cmtr_sess->get('author_id') == $result->id;
         }
@@ -1475,11 +1483,11 @@ sub handle_sign_in {
             "The sign-in attempt was not successful; please try again."),
         403
     ) unless $result;
-    if ( $sess ) {
+    if ($sess) {
         my $ott = MT->model('session')->new();
-        $ott->kind('OT');  # One time Token
+        $ott->kind('OT');    # One time Token
         $ott->id( MT::App::make_magic_token() );
-        $ott->start( time );
+        $ott->start(time);
         $ott->duration( time + 5 * 60 );
         $ott->set( sid => $sess );
         $ott->save
@@ -1521,7 +1529,7 @@ sub redirect_to_target {
                 'Can\'t load blog #[_1].', $q->param('blog_id')
             )
             );
-        if (!$app->is_valid_redirect_target ) {
+        if ( !$app->is_valid_redirect_target ) {
             return $app->error(
                 $app->translate(
                     q{You are tried to be redirected to an external resource: [_1]},
@@ -1548,9 +1556,7 @@ sub redirect_to_target {
     }
     my $fragment = $opts{fragment};
     $target .= '#' . $fragment if $opts{fragment};
-    return $app->redirect(
-        $target,
-        UseMeta => 1 );
+    return $app->redirect( $target, UseMeta => 1 );
 }
 
 sub verify_session {
@@ -1563,12 +1569,13 @@ sub verify_session {
 
     my $out = { error => 'Failed to get Commenter Information' };
     {
-        my $sid   = $app->param('sid');
+        my $sid = $app->param('sid');
         my $sess
             = MT::Session::get_unexpired_value(
             MT->config->UserSessionTimeOut, $sid )
             or last;
-        my $commenter = MT->model('author')->load( $sess->thaw_data->{author_id} )
+        my $commenter
+            = MT->model('author')->load( $sess->thaw_data->{author_id} )
             or last;
         $out = { verified => 1 };
     }
@@ -1587,10 +1594,8 @@ sub userinfo {
 
     my $out = { error => 'Failed to get Commenter Information' };
     {
-        my $sid   = $app->param('sid');
-        my $ott
-            = MT::Session::get_unexpired_value(
-            5 * 60, $sid )
+        my $sid = $app->param('sid');
+        my $ott = MT::Session::get_unexpired_value( 5 * 60, $sid )
             or last;
         my $sess
             = MT::Session::get_unexpired_value(
@@ -1598,15 +1603,18 @@ sub userinfo {
             $ott->get('sid') )
             or last;
         $ott->remove();
-        my $commenter = MT->model('author')->load( $sess->thaw_data->{author_id} )
+        my $commenter
+            = MT->model('author')->load( $sess->thaw_data->{author_id} )
             or last;
 
         $out = {
             sid  => $sess->id,
             name => $commenter->nickname
                 || $app->translate('(Display Name not set)'),
-            url     => $commenter->url || '',
-            email   => $commenter->email || '',
+            url => $commenter->url
+                || '',
+            email => $commenter->email
+                || '',
             userpic => scalar $commenter->userpic_url,
             profile => "",                               # profile link url
             is_authenticated => 1,
@@ -1619,7 +1627,7 @@ sub userinfo {
         };
 
         my $blog_id = $app->param('blog_id');
-        my $blog = $app->model('blog')->load( $blog_id )
+        my $blog    = $app->model('blog')->load($blog_id)
             if $blog_id;
         if ( $blog_id && $blog ) {
             my $blog_perms = $commenter->blog_perm($blog_id);
@@ -1636,8 +1644,9 @@ sub userinfo {
             $out->{can_comment} = $can_comment;
             $out->{can_post}
                 = ( $blog_perms && $blog_perms->can_create_post ) ? 1 : 0;
-            $out->{is_trusted} =
-                ( $commenter->is_trusted($blog_id) ? 1 : 0 ),
+            $out->{is_trusted}
+                = ( $commenter->is_trusted($blog_id) ? 1 : 0 ),
+                ;
         }
     }
     $app->print_encode( "$jsonp(" . MT::Util::to_json($out) . ");\n" );
@@ -1960,8 +1969,14 @@ sub save_commenter_profile {
             return $app->build_page( 'profile.tmpl', \%param );
         }
         require MT::Auth;
-        unless (MT::Auth->is_valid_password($cmntr, scalar($q->param('old_pass')))) {
-            $param{error} = $app->translate('Failed to verify current password.');
+        unless (
+            MT::Auth->is_valid_password(
+                $cmntr, scalar( $q->param('old_pass') )
+            )
+            )
+        {
+            $param{error}
+                = $app->translate('Failed to verify current password.');
             return $app->build_page( 'profile.tmpl', \%param );
         }
     }

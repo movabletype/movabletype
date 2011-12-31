@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -10,24 +10,25 @@ use strict;
 use MT::Blog;
 use MT::Object;
 @MT::Notification::ISA = qw( MT::Object );
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id' => 'integer not null auto_increment',
-        'blog_id' => 'integer not null',
-        'name' => 'string(50)',
-        'email' => 'string(75)',
-        'url' => 'string(255)',
-    },
-    indexes => {
-        blog_id => 1,
-        email => 1,
-    },
-    child_of => 'MT::Blog',
-    datasource => 'notification',
-    audit => 1,
-    primary_key => 'id',
-    listing_screen => 1,
-});
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'      => 'integer not null auto_increment',
+            'blog_id' => 'integer not null',
+            'name'    => 'string(50)',
+            'email'   => 'string(75)',
+            'url'     => 'string(255)',
+        },
+        indexes => {
+            blog_id => 1,
+            email   => 1,
+        },
+        child_of       => 'MT::Blog',
+        datasource     => 'notification',
+        audit          => 1,
+        primary_key    => 'id',
+        listing_screen => 1,
+    }
+);
 
 sub class_label {
     MT->translate('Contact');

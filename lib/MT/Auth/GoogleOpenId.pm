@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -18,18 +18,20 @@ sub check_url_params {
 
 sub set_extension_args {
     my $class = shift;
-    my ( $claimed_identity ) = @_;
+    my ($claimed_identity) = @_;
 
-    $claimed_identity->set_extension_args(MT::Auth::OpenID::NS_OPENID_AX(), {
-        'mode' => 'fetch_request',
-        'required' => 'email',
-        'type.email' => 'http://schema.openid.net/contact/email',
-    });
+    $claimed_identity->set_extension_args(
+        MT::Auth::OpenID::NS_OPENID_AX(),
+        {   'mode'       => 'fetch_request',
+            'required'   => 'email',
+            'type.email' => 'http://schema.openid.net/contact/email',
+        }
+    );
 }
 
 sub get_csr {
     my $class = shift;
-    my ($params, $blog) = @_;
+    my ( $params, $blog ) = @_;
     my $ua = MT->new_ua( { paranoid => 1 } );
     delete $ua->{max_size};
     return $class->SUPER::get_csr( $params, $blog, $ua );
@@ -38,18 +40,20 @@ sub get_csr {
 sub set_commenter_properties {
     my $class = shift;
     my ( $commenter, $vident ) = @_;
-    my $fields = $vident->extension_fields(MT::Auth::OpenID::NS_OPENID_AX());
+    my $fields
+        = $vident->extension_fields( MT::Auth::OpenID::NS_OPENID_AX() );
     my $email = $fields->{'value.email'} if exists $fields->{'value.email'};
     my $nick;
     if ( $email =~ /^(.+)\@gmail\.com$/ ) {
         $nick = $1;
     }
     if ( $commenter->url eq $vident->url ) {
+
         # Google OpenID URL does not represent a web-browseable resource
         $commenter->url(q());
     }
-    $commenter->nickname($nick || $vident->url);
-    $commenter->email($email || '');
+    $commenter->nickname( $nick || $vident->url );
+    $commenter->email( $email   || '' );
 }
 
 1;

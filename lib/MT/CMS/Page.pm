@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -12,10 +12,11 @@ sub edit {
     require MT::CMS::Entry;
     MT::CMS::Entry::edit(@_);
 }
+
 sub list {
     my $app = shift;
     $app->param( 'type', 'page' );
-    return $app->forward('list_entry', { type => 'page' } );
+    return $app->forward( 'list_entry', { type => 'page' } );
 }
 
 sub save_pages {
@@ -34,7 +35,9 @@ sub can_view {
     if ($id) {
         my $obj = $objp->force();
         return 0 if $obj->is_entry;
-        if ( !$app->user->permissions( $obj->blog_id )->can_do('open_page_edit_screen') ) {
+        if ( !$app->user->permissions( $obj->blog_id )
+            ->can_do('open_page_edit_screen') )
+        {
             return 0;
         }
     }
@@ -50,7 +53,7 @@ sub can_save {
     return unless $id->isa('MT::Page');
 
     my $author = $app->user;
-    return $author->permissions($id->blog_id)->can_do('save_page');
+    return $author->permissions( $id->blog_id )->can_do('save_page');
 
 }
 

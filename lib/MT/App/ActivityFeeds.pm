@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -59,7 +59,10 @@ sub login {
         $app->translate( "Error loading [_1]: [_2]", $user_class, $@ ) )
         if $@;
     my $author = $user_class->load( { name => $username, type => AUTHOR } );
-    if ( $author && $author->is_active && ( ( $author->api_password || '' ) ne '' ) ) {
+    if (   $author
+        && $author->is_active
+        && ( ( $author->api_password || '' ) ne '' ) )
+    {
         my $auth_token
             = perl_sha1_digest_hex( 'feed:' . $author->api_password );
         if ( $token eq $auth_token ) {
@@ -150,7 +153,7 @@ sub mode_default {
                 $app->set_header( 'Last-Modified', $last_update )
                     if $last_update;
                 $app->send_http_header("application/atom+xml");
-                $app->print_encode( $feed );
+                $app->print_encode($feed);
             }
         }
         else {
@@ -258,7 +261,10 @@ sub process_log_feed {
     $param->{loop_entries} = \@entries;
     my $str = qq();
     for my $key ( $app->param ) {
-        $str .= "&amp;" . encode_url($key) . "=" . encode_url($app->param($key));
+        $str
+            .= "&amp;"
+            . encode_url($key) . "="
+            . encode_url( $app->param($key) );
     }
     $str =~ s/^&amp;(.+)$/?$1/;
     $param->{feed_self} = $app->base . $app->app_path . $app->script . $str;
@@ -356,7 +362,8 @@ sub _feed_ping {
             my @perms = MT::Permission->load( { author_id => $user->id } );
             return $cb->error( $app->translate("No permissions.") )
                 unless @perms;
-            my @blog_list = map { $_->blog_id } grep { $_->can_do('get_trackback_feed') } @perms;
+            my @blog_list = map { $_->blog_id }
+                grep { $_->can_do('get_trackback_feed') } @perms;
             push @blog_list, $_->blog_id foreach @perms;
             $blog_id = join ',', @blog_list;
         }
@@ -415,7 +422,8 @@ sub _feed_comment {
             my @perms = MT::Permission->load( { author_id => $user->id } );
             return $cb->error( $app->translate("No permissions.") )
                 unless @perms;
-            my @blog_list = map { $_->blog_id } grep { $_->can_do('get_comment_feed') } @perms;
+            my @blog_list = map { $_->blog_id }
+                grep { $_->can_do('get_comment_feed') } @perms;
             $blog_id = join ',', @blog_list;
         }
     }
@@ -470,7 +478,8 @@ sub _feed_entry {
             my @perms = MT::Permission->load( { author_id => $user->id } );
             return $cb->error( $app->translate("No permissions.") )
                 unless @perms;
-            my @blog_list = map { $_->blog_id } grep { $_->can_do('get_entry_feed') } @perms;
+            my @blog_list = map { $_->blog_id }
+                grep { $_->can_do('get_entry_feed') } @perms;
             $blog_id = join ',', @blog_list;
         }
     }
@@ -526,7 +535,8 @@ sub _feed_blog {
             my @perms = MT::Permission->load( { author_id => $user->id } );
             return $cb->error( $app->translate("No permissions.") )
                 unless @perms;
-            my @blog_list = map { $_->blog_id } grep { $_->can_do('get_blog_feed') } @perms;
+            my @blog_list = map { $_->blog_id }
+                grep { $_->can_do('get_blog_feed') } @perms;
             $blog_id = join ',', @blog_list;
         }
     }
@@ -647,7 +657,8 @@ sub _feed_page {
             my @perms = MT::Permission->load( { author_id => $user->id } );
             return $cb->error( $app->translate("No permissions.") )
                 unless @perms;
-            my @blog_list = map { $_->blog_id } grep { $_->can_do('get_page_feed') } @perms;
+            my @blog_list = map { $_->blog_id }
+                grep { $_->can_do('get_page_feed') } @perms;
             $blog_id = join ',', @blog_list;
         }
     }

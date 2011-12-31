@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1045,7 +1045,7 @@ sub upload_userpic {
         if $app->param('blog_id');
 
     my $user_id = $app->param('user_id');
-    my $user = MT->model('author')->load( $user_id )
+    my $user    = MT->model('author')->load($user_id)
         or return $app->errtrans("Invalid request.");
 
     my $appuser = $app->user;
@@ -1345,16 +1345,15 @@ sub grant_role {
         $id =~ s/\D//g;
         $_ = MT::Blog->load($id);
     }
-    @blogs = grep {defined $_} @blogs;
+    @blogs = grep { defined $_ } @blogs;
 
-    my @can_grant_administer = map 1, 1..@blogs;
+    my @can_grant_administer = map 1, 1 .. @blogs;
     if ( !$user->is_superuser ) {
-        for (my $i=0; $i < scalar(@blogs); $i++) {
-            my $perm = $user->permissions($blogs[$i]);
-            if ( ! $perm->can_do( 'grant_administer_role' )) {
+        for ( my $i = 0; $i < scalar(@blogs); $i++ ) {
+            my $perm = $user->permissions( $blogs[$i] );
+            if ( !$perm->can_do('grant_administer_role') ) {
                 $can_grant_administer[$i] = 0;
-                if ( !$perm->can_do( 'grant_role_for_blog' ) )
-                {
+                if ( !$perm->can_do('grant_role_for_blog') ) {
                     return $app->return_to_dashboard( permission => 1 );
                 }
             }
@@ -1362,10 +1361,9 @@ sub grant_role {
     }
 
     push @role_ids, $role_id if $role_id;
-    my @roles = grep { defined $_ } 
-                map  { MT::Role->load($_) }
-                map  { my $id = $_; $id =~ s/\D//g; $id } 
-                @role_ids;
+    my @roles = grep { defined $_ }
+        map { MT::Role->load($_) }
+        map { my $id = $_; $id =~ s/\D//g; $id } @role_ids;
 
     push @authors, $author_id if $author_id;
     my $add_pseudo_new_user = 0;
@@ -1378,7 +1376,7 @@ sub grant_role {
         $id =~ s/\D//g;
         $_ = MT::Author->load($id);
     }
-    @authors = grep {ref $_} @authors;
+    @authors = grep { ref $_ } @authors;
     $app->error(undef);
 
     my @default_assignments;
@@ -1398,7 +1396,9 @@ sub grant_role {
     foreach my $blog (@blogs) {
         my $can_grant_administer = shift @can_grant_administer;
         foreach my $role (@roles) {
-            next if ((!$can_grant_administer) && ($role->has('administer_blog')));
+            next
+                if ( ( !$can_grant_administer )
+                && ( $role->has('administer_blog') ) );
             if ($add_pseudo_new_user) {
                 push @default_assignments, $role->id . ',' . $blog->id;
             }
@@ -1446,7 +1446,8 @@ sub dialog_select_author {
 
     my $entry_type = $app->param('entry_type') if $app->param('entry_type');
     $entry_type ||= 'entry';
-    my $action = $entry_type eq 'page'
+    my $action
+        = $entry_type eq 'page'
         ? 'access_to_page_list'
         : 'access_to_entry_list';
 
@@ -1512,8 +1513,8 @@ sub dialog_select_author {
                 panel_first      => 1,
                 panel_last       => 1,
                 list_noncron     => 1,
-                idfield          => scalar($app->param('idfield')),
-                namefield        => scalar($app->param('namefield')),
+                idfield          => scalar( $app->param('idfield') ),
+                namefield        => scalar( $app->param('namefield') ),
             },
         }
     );
@@ -1565,8 +1566,8 @@ sub dialog_select_sysadmin {
                 panel_first      => 1,
                 panel_last       => 1,
                 list_noncron     => 1,
-                idfield          => scalar($app->param('idfield')),
-                namefield        => scalar($app->param('namefield')),
+                idfield          => scalar( $app->param('idfield') ),
+                namefield        => scalar( $app->param('namefield') ),
             },
         }
     );
@@ -2022,7 +2023,7 @@ sub pre_save {
     $obj->type( MT::Author::AUTHOR() );
 
     my $pass = $app->param('pass');
-    if (length($pass)) {
+    if ( length($pass) ) {
         $obj->set_password($pass);
     }
     elsif ( !$obj->id ) {

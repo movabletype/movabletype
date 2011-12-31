@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -27,7 +27,7 @@ sub cfg_plugins {
         $param{screen_id} = "list-plugins";
         $param{screen_class} .= " plugin-settings";
         $param{output} = 'cfg_plugin.tmpl';
-        $app->forward("view", \%param);
+        $app->forward( "view", \%param );
     }
     else {
         return $app->return_to_dashboard( permission => 1 )
@@ -45,7 +45,7 @@ sub cfg_plugins {
         $param{saved}    = 1 if $app->param('saved');
         $param{mod_perl} = 1 if $ENV{MOD_PERL};
         $app->add_breadcrumb( $app->translate("Plugin Settings") );
-        $param{screen_id} = "list-plugins";
+        $param{screen_id}    = "list-plugins";
         $param{screen_class} = "plugin-settings";
 
         $app->load_tmpl( 'cfg_plugin.tmpl', \%param );
@@ -67,16 +67,18 @@ sub save_config {
     my %param;
     my @params = $q->param;
     foreach (@params) {
-        next if $_ =~ m/^(__mode|return_args|plugin_sig|magic_token|blog_id)$/;
+        next
+            if $_ =~ m/^(__mode|return_args|plugin_sig|magic_token|blog_id)$/;
         $param{$_} = $q->param($_);
     }
     if ( $profile && $profile->{object} ) {
         my $plugin = $profile->{object};
         $plugin->error(undef);
-        $profile->{object}
-          ->save_config( \%param, $blog_id ? 'blog:' . $blog_id : 'system' );
+        $profile->{object}->save_config( \%param,
+            $blog_id ? 'blog:' . $blog_id : 'system' );
         if ( $plugin->errstr ) {
-            return $app->error("Error saving plugin settings: " . $plugin->errstr);
+            return $app->error(
+                "Error saving plugin settings: " . $plugin->errstr );
         }
     }
 
@@ -99,7 +101,7 @@ sub reset_config {
     my %param;
     if ( $profile && $profile->{object} ) {
         $profile->{object}
-          ->reset_config( $blog_id ? 'blog:' . $blog_id : 'system' );
+            ->reset_config( $blog_id ? 'blog:' . $blog_id : 'system' );
     }
     $app->add_return_arg( 'reset' => 1 );
     $app->call_return;
@@ -161,10 +163,10 @@ sub build_plugin_table {
         $fld = '' unless $fld;
         $folder_counts{$fld}++ if $fld;
         $plg ||= $sig;
-        $list{  $sub
-              . sprintf( "%-100s", $fld )
-              . ( $obj ? '1' : '0' )
-              . $plg } = $sig;
+        $list{    $sub
+                . sprintf( "%-100s", $fld )
+                . ( $obj ? '1' : '0' )
+                . $plg } = $sig;
     }
     my @keys = keys %list;
     foreach my $key (@keys) {
@@ -174,8 +176,8 @@ sub build_plugin_table {
             my $sig = $list{$key};
             delete $list{$key};
             my $plugin = $MT::Plugins{$sig};
-            my $name =
-              $plugin && $plugin->{object} ? $plugin->{object}->name : $sig;
+            my $name   = $plugin
+                && $plugin->{object} ? $plugin->{object}->name : $sig;
             $list{ '0' . ( ' ' x 100 ) . sprintf( "%-102s", $name ) } = $sig;
         }
     }
@@ -193,39 +195,41 @@ sub build_plugin_table {
         ($plg) = $plugin_sig =~ m!(?:.*)/(.*)!;
         my $fld = substr( $list_key, 1, 100 );
         $fld =~ s/\s+$//;
-        my $folder =
-            $fld
-          ? $app->translate( "Plugin Set: [_1]", $fld )
-          : $app->translate("Individual Plugins");
+        my $folder
+            = $fld
+            ? $app->translate( "Plugin Set: [_1]", $fld )
+            : $app->translate("Individual Plugins");
         my $row;
         my $icon = $app->static_path . 'images/plugin.gif';
 
         if ( my $plugin = $profile->{object} ) {
             my $plugin_icon;
             if ( $plugin->icon ) {
-                $plugin_icon =
-                  $app->static_path . $plugin->envelope . '/' . $plugin->icon;
+                $plugin_icon
+                    = $app->static_path
+                    . $plugin->envelope . '/'
+                    . $plugin->icon;
             }
             else {
                 $plugin_icon = $icon;
             }
             my $plugin_name = remove_html( $plugin->name() );
             my $config_link = $plugin->config_link();
-            my $plugin_page =
-              ( $cgi_path . '/' . $plugin->envelope . '/' . $config_link )
-              if $config_link;
+            my $plugin_page
+                = ( $cgi_path . '/' . $plugin->envelope . '/' . $config_link )
+                if $config_link;
             my $doc_link = $plugin->doc_link;
             if ( $doc_link && ( $doc_link !~ m!^https?://! ) ) {
-                $doc_link =
-                  $app->static_path . $plugin->envelope . '/' . $doc_link;
+                $doc_link
+                    = $app->static_path . $plugin->envelope . '/' . $doc_link;
             }
 
             my ($config_html);
             my %plugin_param;
             my $settings = $plugin->get_config_obj($scope);
             $plugin->load_config( \%plugin_param, $scope );
-            if ( my $snip_tmpl =
-                $plugin->config_template( \%plugin_param, $scope ) )
+            if ( my $snip_tmpl
+                = $plugin->config_template( \%plugin_param, $scope ) )
             {
                 my $tmpl;
                 if ( ref $snip_tmpl ne 'MT::Template' ) {
@@ -236,7 +240,7 @@ sub build_plugin_table {
                         ? $snip_tmpl
                         : \$snip_tmpl
 
-                          # TBD: add path for plugin template directory
+                            # TBD: add path for plugin template directory
                     );
                 }
                 else {
@@ -247,9 +251,10 @@ sub build_plugin_table {
                 # localization (give plugin a chance to do L10N first).
                 $tmpl->param( \%plugin_param );
                 $config_html = $tmpl->output()
-                    or $config_html = "Error in configuration template: " . $tmpl->errstr;
+                    or $config_html
+                    = "Error in configuration template: " . $tmpl->errstr;
                 $config_html = $plugin->translate_templatized($config_html)
-                  if $config_html =~ m/<(?:__trans|mt_trans) /i;
+                    if $config_html =~ m/<(?:__trans|mt_trans) /i;
             }
             else {
 
@@ -291,9 +296,9 @@ sub build_plugin_table {
                 plugin_id            => $id,
                 plugin_compat_errors => $registry->{compat_errors},
             };
-            my $block_tags = $plugin->registry('tags', 'block');
-            my $function_tags = $plugin->registry('tags', 'function');
-            my $modifiers = $plugin->registry('tags', 'modifier');
+            my $block_tags    = $plugin->registry( 'tags', 'block' );
+            my $function_tags = $plugin->registry( 'tags', 'function' );
+            my $modifiers     = $plugin->registry( 'tags', 'modifier' );
             my $junk_filters = $plugin->registry('junk_filters');
             my $text_filters = $plugin->registry('text_filters');
 
@@ -306,13 +311,13 @@ sub build_plugin_table {
 
                             # Format all 'block' tags with <MT(name)>
                             map { s/\?$//; "<MT$_>" }
-                              ( keys %{ $block_tags || {} } )
+                                ( keys %{ $block_tags || {} } )
                         ),
                         (
 
                             # Format all 'function' tags with <$MT(name)$>
-                            map { "<\$MT$_\$>" }
-                              ( keys %{ $function_tags || {} } )
+                            map {"<\$MT$_\$>"}
+                                ( keys %{ $function_tags || {} } )
                         )
                     )
                 ]
@@ -322,7 +327,7 @@ sub build_plugin_table {
 
                     # Filter out 'plugin' registry entry
                     grep { $_ ne 'plugin' }
-                      keys %{ $modifiers || {} }
+                        keys %{ $modifiers || {} }
                 ]
             ) if $modifiers;
             $row->{plugin_junk_filters} = MT::App::CMS::listify(
@@ -330,7 +335,7 @@ sub build_plugin_table {
 
                     # Filter out 'plugin' registry entry
                     grep { $_ ne 'plugin' }
-                      keys %{ $junk_filters || {} }
+                        keys %{ $junk_filters || {} }
                 ]
             ) if $junk_filters;
             $row->{plugin_text_filters} = MT::App::CMS::listify(
@@ -338,7 +343,7 @@ sub build_plugin_table {
 
                     # Filter out 'plugin' registry entry
                     grep { $_ ne 'plugin' }
-                      keys %{ $text_filters || {} }
+                        keys %{ $text_filters || {} }
                 ]
             ) if $text_filters;
             if (   $row->{plugin_tags}
@@ -369,14 +374,14 @@ sub build_plugin_table {
 
             # no registered plugin objects--
             $row = {
-                first                => $next_is_first,
-                plugin_major         => $fld ? 0 : 1,
-                plugin_icon          => $icon,
-                plugin_name          => $plugin_sig,
-                plugin_sig           => $plugin_sig,
-                plugin_error         => $profile->{error},
-                plugin_disabled      => $profile->{enabled} ? 0 : 1,
-                plugin_id            => $id,
+                first           => $next_is_first,
+                plugin_major    => $fld ? 0 : 1,
+                plugin_icon     => $icon,
+                plugin_name     => $plugin_sig,
+                plugin_sig      => $plugin_sig,
+                plugin_error    => $profile->{error},
+                plugin_disabled => $profile->{enabled} ? 0 : 1,
+                plugin_id       => $id,
             };
             push @$data, $row;
         }

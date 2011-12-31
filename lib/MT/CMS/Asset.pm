@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -163,7 +163,7 @@ sub list {
         if !$blog_id && $mode_userpic ne 'upload_userpic';
 
     my $blog_class = $app->model('blog');
-    my $blog       = $blog_class->load($blog_id) if $blog_id;
+    my $blog = $blog_class->load($blog_id) if $blog_id;
 
     return $app->errtrans("Permission denied.")
         if $blog_id && !$app->can_do('access_to_asset_list');
@@ -302,6 +302,7 @@ sub insert {
         $ext_from, $ext_to )
         if ( $ext_from && $ext_to );
     my $tmpl;
+
     if ($extension_message) {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
@@ -347,7 +348,9 @@ sub asset_userpic {
         $user = $app->model('author')->load( { id => $user_id } );
         if ($user) {
             my $appuser = $app->user;
-            if ( ( !$appuser->is_superuser ) && ( $user->id != $appuser->id ) ) {
+            if (   ( !$appuser->is_superuser )
+                && ( $user->id != $appuser->id ) )
+            {
                 return $app->return_to_dashboard( permission => 1 );
             }
 
@@ -620,7 +623,7 @@ sub complete_upload {
 }
 
 sub start_upload_entry {
-    my $app  = shift;
+    my $app = shift;
 
     $app->validate_magic() or return;
 
@@ -884,8 +887,10 @@ sub build_asset_hasher {
         }
 
         @$row{ keys %$meta } = values %$meta;
-        $meta->{name} = MT::Util::encode_html($meta->{name}) if exists $meta->{name};
-        $meta->{Name} = MT::Util::encode_html($meta->{Name}) if exists $meta->{Name};
+        $meta->{name} = MT::Util::encode_html( $meta->{name} )
+            if exists $meta->{name};
+        $meta->{Name} = MT::Util::encode_html( $meta->{Name} )
+            if exists $meta->{Name};
         $row->{metadata_json} = MT::Util::to_json($meta);
         $row;
     };
@@ -1028,7 +1033,7 @@ sub save {
 sub cms_save_filter {
     my ( $cb, $app ) = @_;
     if ( $app->param('file_name') || $app->param('file_path') ) {
-        return $app->errtrans("Invalid request.")
+        return $app->errtrans("Invalid request.");
     }
     1;
 }
@@ -1455,10 +1460,17 @@ sub _upload_file {
             = File::Spec->catfile( '%s', 'uploads', $unique_basename );
     }
     if ( my $deny_exts = $app->config->DeniedAssetFileExtensions ) {
-        my @deny_exts = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $deny_exts;
+        my @deny_exts = map {
+            if   ( $_ =~ m/^\./ ) {qr/$_/i}
+            else                  {qr/\.$_/i}
+        } split '\s?,\s?', $deny_exts;
         my @ret = File::Basename::fileparse( $basename, @deny_exts );
         if ( $ret[2] ) {
-            return $app->error($app->translate('The file([_1]) you uploaded is not allowed.', $basename));
+            return $app->error(
+                $app->translate(
+                    'The file([_1]) you uploaded is not allowed.', $basename
+                )
+            );
         }
 
     }

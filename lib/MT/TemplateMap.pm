@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -9,31 +9,30 @@ package MT::TemplateMap;
 use strict;
 use base qw( MT::Object );
 
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id' => 'integer not null auto_increment',
-        'blog_id' => 'integer not null',
-        'template_id' => 'integer not null',
-        'archive_type' => 'string(25) not null',
-        'file_template' => 'string(255)',
-        'is_preferred' => 'boolean',
-        'build_type' => 'smallint',
-        'build_interval' => 'integer',
-    },
-    indexes => {
-        blog_id => 1,
-        template_id => 1,
-        archive_type => 1,
-        is_preferred => 1,
-    },
-    defaults => {
-        'build_type' => 1,
-    },
-    child_classes => ['MT::FileInfo'],
-    datasource => 'templatemap',
-    primary_key => 'id',
-    cacheable => 0,
-});
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'             => 'integer not null auto_increment',
+            'blog_id'        => 'integer not null',
+            'template_id'    => 'integer not null',
+            'archive_type'   => 'string(25) not null',
+            'file_template'  => 'string(255)',
+            'is_preferred'   => 'boolean',
+            'build_type'     => 'smallint',
+            'build_interval' => 'integer',
+        },
+        indexes => {
+            blog_id      => 1,
+            template_id  => 1,
+            archive_type => 1,
+            is_preferred => 1,
+        },
+        defaults      => { 'build_type' => 1, },
+        child_classes => ['MT::FileInfo'],
+        datasource    => 'templatemap',
+        primary_key   => 'id',
+        cacheable     => 0,
+    }
+);
 
 sub class_label {
     return MT->translate("Archive Mapping");
@@ -49,16 +48,17 @@ sub save {
     return $res unless $res;
 
     my $at   = $map->archive_type;
-    my $blog = MT->model('blog')->load($map->blog_id)
+    my $blog = MT->model('blog')->load( $map->blog_id )
         or return;
-    my $blog_at   = $blog->archive_type;
-    my @ats = map { $_ } 
+    my $blog_at = $blog->archive_type;
+    my @ats = map {$_}
         grep { $map->archive_type ne $_ }
-            split /,/, $blog_at
-                if $blog_at ne 'None';
+        split /,/, $blog_at
+        if $blog_at ne 'None';
     push @ats, $map->archive_type;
     my $new_at = join ',', @ats;
-    if ($new_at ne $blog_at) {
+
+    if ( $new_at ne $blog_at ) {
         $blog->archive_type($new_at);
         $blog->save;
     }
@@ -67,32 +67,32 @@ sub save {
 
 sub remove {
     my $map = shift;
-    $map->remove_children({ key => 'templatemap_id' });
+    $map->remove_children( { key => 'templatemap_id' } );
     my $result = $map->SUPER::remove(@_);
 
-    if (ref $map) {
+    if ( ref $map ) {
         my $remaining = MT::TemplateMap->load(
-          {
-            blog_id => $map->blog_id,
-            archive_type => $map->archive_type,
-            id => [ $map->id ],
-          },
-          {
-            limit => 1,
-            not => { id => 1 }
-          }
+            {   blog_id      => $map->blog_id,
+                archive_type => $map->archive_type,
+                id           => [ $map->id ],
+            },
+            {   limit => 1,
+                not   => { id => 1 }
+            }
         );
         if ($remaining) {
             $remaining->is_preferred(1);
             $remaining->save;
         }
         else {
-            my $blog = MT->model('blog')->load($map->blog_id)
+            my $blog = MT->model('blog')->load( $map->blog_id )
                 or return;
-            my $at   = $blog->archive_type;
+            my $at = $blog->archive_type;
             if ( $at && $at ne 'None' ) {
-                my @newat = map { $_ } grep { $map->archive_type ne $_ } split /,/, $at;
-                $blog->archive_type(join ',', @newat);
+                my @newat
+                    = map {$_} grep { $map->archive_type ne $_ } split /,/,
+                    $at;
+                $blog->archive_type( join ',', @newat );
                 $blog->save;
             }
         }
@@ -100,27 +100,31 @@ sub remove {
     else {
         my $blog_id;
         if ( $_[0] && $_[0]->{template_id} ) {
-           my $tmpl_id;
-           if ( ref $_[0]->{template_id} eq 'ARRAY' ) {
-               $tmpl_id = $_[0]->{template_id}->[0];
-           } else {
-               $tmpl_id = $_[0]->{template_id};
-           }
-            my $tmpl = MT::Template->load( $tmpl_id );
-            if ( $tmpl ) {
-                return $result unless $tmpl->blog_id; # global template does not have maps
+            my $tmpl_id;
+            if ( ref $_[0]->{template_id} eq 'ARRAY' ) {
+                $tmpl_id = $_[0]->{template_id}->[0];
+            }
+            else {
+                $tmpl_id = $_[0]->{template_id};
+            }
+            my $tmpl = MT::Template->load($tmpl_id);
+            if ($tmpl) {
+                return $result
+                    unless
+                    $tmpl->blog_id;    # global template does not have maps
                 $blog_id = $tmpl->blog_id;
             }
         }
         elsif ( $_[0] && $_[0]->{blog_id} ) {
+
             # for cases where we remove with a blog_id parameter
             $blog_id = $_[0]->{blog_id};
         }
 
-        my $maps_iter = MT::TemplateMap->count_group_by(
+        my $maps_iter
+            = MT::TemplateMap->count_group_by(
             { ( defined $blog_id ? ( blog_id => $blog_id ) : () ) },
-            { group => [ 'blog_id', 'archive_type' ] }
-        );
+            { group => [ 'blog_id', 'archive_type' ] } );
         my %ats;
         while ( my ( $count, $blog_id, $at ) = $maps_iter->() ) {
             my $ats = $ats{$blog_id};
@@ -128,27 +132,34 @@ sub remove {
             $ats{$blog_id} = $ats;
         }
         my $iter;
-        if ( $blog_id ) {
-            my $blog = MT::Blog->load( $blog_id );
+        if ($blog_id) {
+            my $blog = MT::Blog->load($blog_id);
             $iter = sub { my $ret = $blog; $blog = undef; $ret; }
-        } else {
+        }
+        else {
             $iter = MT::Blog->load_iter();
         }
         while ( my $blog = $iter->() ) {
-            $blog->archive_type( $ats{ $blog->id } ? join ',', @{ $ats{ $blog->id } } : '' );
+            $blog->archive_type( $ats{ $blog->id }
+                ? join ',',
+                @{ $ats{ $blog->id } }
+                : '' );
             $blog->save;
             for my $at ( @{ $ats{ $blog->id } } ) {
-                unless ( __PACKAGE__->exist({
-                    blog_id => $blog->id, archive_type => $at, is_preferred => 1 
-                }) ) {
+                unless (
+                    __PACKAGE__->exist(
+                        {   blog_id      => $blog->id,
+                            archive_type => $at,
+                            is_preferred => 1
+                        }
+                    )
+                    )
+                {
                     my $remaining = __PACKAGE__->load(
-                      {
-                        blog_id => $blog->id,
-                        archive_type => $at,
-                      },
-                      {
-                        limit => 1,
-                      }
+                        {   blog_id      => $blog->id,
+                            archive_type => $at,
+                        },
+                        { limit => 1, }
                     );
                     if ($remaining) {
                         $remaining->is_preferred(1);
@@ -164,32 +175,37 @@ sub remove {
 sub prefer {
     my $map = shift;
     my ($prefer) = @_;
-    $prefer = (defined($prefer) && $prefer) ? 1 : 0;
+    $prefer = ( defined($prefer) && $prefer ) ? 1 : 0;
 
     if ($prefer) {
         return 1 if $map->is_preferred;
-        my $preferred = MT::TemplateMap->load({
-                blog_id => $map->blog_id,
+        my $preferred = MT::TemplateMap->load(
+            {   blog_id      => $map->blog_id,
                 archive_type => $map->archive_type,
                 is_preferred => 1,
-            }) or return;
+            }
+        ) or return;
         $preferred->is_preferred(0);
-        $preferred->save or return $map->error($preferred->errstr);
+        $preferred->save or return $map->error( $preferred->errstr );
         $map->is_preferred(1);
-        $map->save or return $map->error($map->errstr);
-    } else {
+        $map->save or return $map->error( $map->errstr );
+    }
+    else {
         return 1 unless $map->is_preferred;
-        if ($map->_prefer_next_map) {
+        if ( $map->_prefer_next_map ) {
             $map->is_preferred(0);
-            $map->save or return $map->error($map->errstr);
+            $map->save or return $map->error( $map->errstr );
         }
     }
 }
 
 sub _prefer_next_map {
     my $map = shift;
-    my @all = MT::TemplateMap->load({ blog_id => $map->blog_id,
-                                      archive_type => $map->archive_type });
+    my @all = MT::TemplateMap->load(
+        {   blog_id      => $map->blog_id,
+            archive_type => $map->archive_type
+        }
+    );
     @all = grep { $_->id != $map->id } @all;
     if (@all) {
         $all[0]->is_preferred(1);
