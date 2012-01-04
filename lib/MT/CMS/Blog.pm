@@ -783,9 +783,13 @@ sub rebuild_pages {
         my $tmpl_id = $1;
         require MT::Template;
         $tmpl_saved
-            = MT::Template->load( { id => $tmpl_id, blog_id => $blog_id } )
+            = MT::Template->load( $tmpl_id )
             or
             return $app->errtrans( 'Can\'t load template #[_1].', $tmpl_id );
+        return $app->error( $app->translate("Permission denied.") )
+            unless $app->user->permissions( $tmpl_saved->blog_id )
+                ->can_do('rebuild');
+
         $app->rebuild_indexes(
             BlogID   => $blog_id,
             Template => $tmpl_saved,
@@ -798,7 +802,8 @@ sub rebuild_pages {
         require MT::Entry;
         my $entry = MT::Entry->load($entry_id);
         return $app->error( $app->translate("Permission denied.") )
-            unless $perms->can_edit_entry( $entry, $app->user );
+            if !$perms->can_edit_entry( $entry, $app->user )
+                && !$perms->can_republish_entry( $entry, $app->user );
         $app->rebuild_entry(
             Entry             => $entry,
             BuildDependencies => 1,
@@ -810,6 +815,23 @@ sub rebuild_pages {
     elsif ( $archiver && $archiver->category_based ) {
         return $app->error( $app->translate("Permission denied.") )
             unless $perms->can_do('rebuild');
+        if ($template_id) {
+            my $tmpl = MT->model('template')->load($template_id)
+                or return $app->errtrans( 'Can\'t load template #[_1].',
+                $template_id );
+            return $app->error( $app->translate("Permission denied.") )
+                unless $app->user->permissions( $tmpl->blog_id )
+                    ->can_do('rebuild');
+        }
+        elsif ($map_id) {
+            my $map = MT->model('templatemap')->load($map_id)
+                or return $app->errtrans( 'Can\'t load template #[_1].',
+                $map_id );
+            return $app->error( $app->translate("Permission denied.") )
+                unless $app->user->permissions( $map->blog_id )
+                    ->can_do('rebuild');
+        }
+
         $offset = $q->param('offset') || 0;
         my $start = time;
         my $count = 0;
@@ -863,6 +885,23 @@ sub rebuild_pages {
         if ( !$special ) {
             return $app->error( $app->translate("Permission denied.") )
                 unless $perms->can_do('rebuild');
+            if ($template_id) {
+                my $tmpl = MT->model('template')->load($template_id)
+                    or return $app->errtrans( 'Can\'t load template #[_1].',
+                    $template_id );
+                return $app->error( $app->translate("Permission denied.") )
+                    unless $app->user->permissions( $tmpl->blog_id )
+                        ->can_do('rebuild');
+            }
+            elsif ($map_id) {
+                my $map = MT->model('templatemap')->load($map_id)
+                    or return $app->errtrans( 'Can\'t load template #[_1].',
+                    $map_id );
+                return $app->error( $app->translate("Permission denied.") )
+                    unless $app->user->permissions( $map->blog_id )
+                        ->can_do('rebuild');
+            }
+
             $offset = $q->param('offset') || 0;
             if ( $offset < $total ) {
                 my $start = time;
