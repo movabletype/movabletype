@@ -271,8 +271,9 @@ sub core_methods {
             "${pkg}Template::publish_templates_from_search",
 
         ## Comment Replies
-        reply    => "${pkg}Comment::reply",
-        do_reply => "${pkg}Comment::do_reply",
+        reply         => "${pkg}Comment::reply",
+        do_reply      => "${pkg}Comment::do_reply",
+        reply_preview => "${pkg}Comment::reply_preview",
 
         ## Dialogs
         'dialog_restore_upload'    => "${pkg}Tools::dialog_restore_upload",
@@ -308,18 +309,16 @@ sub core_methods {
         'js_recent_entries_for_tag' => "${pkg}Tag::js_recent_entries_for_tag",
 
         ## DEPRECATED ##
-        'list_pings'               => "${pkg}TrackBack::list",
-        'list_entries'             => "${pkg}Entry::list",
-        'list_pages'               => "${pkg}Page::list",
-        'list_comments'            => "${pkg}Comment::list",
-        'list_authors'             => "${pkg}User::list",
-        'list_assets'              => "${pkg}Asset::list",
-        'list_cat'                 => "${pkg}Category::list",
-        'list_blogs'               => "${pkg}Blog::list",
-        'list_associations'        => "${pkg}User::list_association",
-        'list_roles'               => "${pkg}User::list_role",
-        reply_preview              => "${pkg}Comment::reply_preview",
-        'recover_profile_password' => "${pkg}User::recover_profile_password",
+        'list_pings'        => "${pkg}TrackBack::list",
+        'list_entries'      => "${pkg}Entry::list",
+        'list_pages'        => "${pkg}Page::list",
+        'list_comments'     => "${pkg}Comment::list",
+        'list_authors'      => "${pkg}User::list",
+        'list_assets'       => "${pkg}Asset::list",
+        'list_cat'          => "${pkg}Category::list",
+        'list_blogs'        => "${pkg}Blog::list",
+        'list_associations' => "${pkg}User::list_association",
+        'list_roles'        => "${pkg}User::list_role",
     };
 }
 
@@ -1052,14 +1051,13 @@ sub core_list_actions {
                 condition => sub {
                     return 0 if $app->mode eq 'view';
                     return 1 if $app->user->is_superuser;
-
-                    # Only system administrator can do if SingleCommunity
-                    return 0 if $app->config->SingleCommunity;
-
-                    # If not a SingleCommunity, need a blog
-                    return 0 unless $app->blog;
-
-                    return 1;
+                    return
+                          $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog ? 1
+                        :              0;
                     }
             },
             'untrust_commenter' => {
@@ -1073,14 +1071,13 @@ sub core_list_actions {
                 condition => sub {
                     return 0 if $app->mode eq 'view';
                     return 1 if $app->user->is_superuser;
-
-                    # Only system administrator can do if SingleCommunity
-                    return 0 if $app->config->SingleCommunity;
-
-                    # If not a SingleCommunity, need a blog
-                    return 0 unless $app->blog;
-
-                    return 1;
+                    return
+                          $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog ? 1
+                        :              0;
                     }
             },
             'ban_commenter' => {
@@ -1094,14 +1091,13 @@ sub core_list_actions {
                 condition => sub {
                     return 0 if $app->mode eq 'view';
                     return 1 if $app->user->is_superuser;
-
-                    # Only system administrator can do if SingleCommunity
-                    return 0 if $app->config->SingleCommunity;
-
-                    # If not a SingleCommunity, need a blog
-                    return 0 unless $app->blog;
-
-                    return 1;
+                    return
+                          $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog ? 1
+                        :              0;
                     }
             },
             'unban_commenter' => {
@@ -1115,14 +1111,13 @@ sub core_list_actions {
                 condition => sub {
                     return 0 if $app->mode eq 'view';
                     return 1 if $app->user->is_superuser;
-
-                    # Only system administrator can do if SingleCommunity
-                    return 0 if $app->config->SingleCommunity;
-
-                    # If not a SingleCommunity, need a blog
-                    return 0 unless $app->blog;
-
-                    return 1;
+                    return
+                          $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog ? 1
+                        :              0;
                     }
             },
             'publish' => {
@@ -1204,7 +1199,14 @@ sub core_list_actions {
                 permit_action => 'access_to_all_commenter_list',
                 condition     => sub {
                     return 0 if $app->mode eq 'view';
-                    return $app->user->is_superuser ? 1 : 0;
+                    return 1 if $app->user->is_superuser;
+                    return
+                          $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog ? 1
+                        :              0;
                 },
             },
             'untrust' => {
@@ -1214,7 +1216,14 @@ sub core_list_actions {
                 permit_action => 'access_to_all_commenter_list',
                 condition     => sub {
                     return 0 if $app->mode eq 'view';
-                    return $app->user->is_superuser ? 1 : 0;
+                    return 1 if $app->user->is_superuser;
+                    return
+                          $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog ? 1
+                        :              0;
                 },
             },
             'ban' => {
@@ -1224,7 +1233,14 @@ sub core_list_actions {
                 permit_action => 'access_to_all_commenter_list',
                 condition     => sub {
                     return 0 if $app->mode eq 'view';
-                    return $app->user->is_superuser ? 1 : 0;
+                    return 1 if $app->user->is_superuser;
+                    return
+                          $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog ? 1
+                        :              0;
                 },
             },
             'unban' => {
@@ -1234,7 +1250,14 @@ sub core_list_actions {
                 permit_action => 'access_to_all_commenter_list',
                 condition     => sub {
                     return 0 if $app->mode eq 'view';
-                    return $app->user->is_superuser ? 1 : 0;
+                    return 1 if $app->user->is_superuser;
+                    return
+                          $app->config->SingleCommunity
+                        ? $app->blog
+                            ? 0
+                            : 1
+                        : $app->blog ? 1
+                        :              0;
                 },
             },
         },
@@ -2399,26 +2422,6 @@ sub core_disable_object_methods {
             save   => 1,
             delete => 1,
             edit   => 1,
-        },
-        category => {
-            save => sub {
-                return 0 if $app->param('id');
-                return 1;
-            },
-            edit => sub {
-                return 0 if $app->param('id');
-                return 1;
-            },
-        },
-        comment => {
-            save => sub {
-                return 0 if $app->param('id');
-                return 1;
-            },
-            edit => sub {
-                return 0 if $app->param('id');
-                return 1;
-            },
         },
         fileinfo => {
             save   => 1,

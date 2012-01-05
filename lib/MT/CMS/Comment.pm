@@ -670,7 +670,6 @@ sub do_reply {
         { closing => 1, return_url => scalar( $q->param('return_url') ) } );
 }
 
-# DEPRECATED: will be removed
 sub reply_preview {
     my $app = shift;
 
@@ -697,16 +696,6 @@ sub reply_preview {
     return $app->error(
         $app->translate( 'Can\'t load blog #[_1].', $q->param('blog_id') ) )
         unless $blog;
-
-    unless ( $app->can_do('reply_comment_from_cms') ) {
-        my $user  = $app->user;
-        my $perms = $app->{perms};
-        return unless $perms;
-
-        return $app->permission_denied()
-            unless $perms->can_edit_entry( $entry, $user, 1 )
-        ;    # check for publish_post
-    }
 
     require MT::Sanitize;
     my $spec = $blog->sanitize_spec
