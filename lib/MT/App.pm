@@ -1555,7 +1555,7 @@ sub unbake_user_state_cookie {
     my ($value) = @_;
     return {
         map {
-            my ( $k, $v ) = split( ':', $_ );
+            my ( $k, $v ) = split( ':', $_, 2 );
             $v =~ s/^'//;
             $v =~ s/'$//;
             ( $k, $v );
