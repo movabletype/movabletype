@@ -2695,6 +2695,7 @@ sub load_core_permissions {
                 'reply_comment_from_cms'                => 1,
                 'edit_comment_status_of_own_entry'      => 1,
                 'send_update_pings_entry'               => 1,
+                'edit_own_entry_comment'                => 1,
             }
         },
         'blog.rebuild' => {
