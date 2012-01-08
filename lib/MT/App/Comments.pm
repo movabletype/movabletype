@@ -1474,7 +1474,7 @@ sub handle_sign_in {
                 }
             );
             $sess = $cmtr_sess->id
-                if $cmtr_sess->get('author_id') == $result->id;
+                if $cmtr_sess && $cmtr_sess->get('author_id') == $result->id;
         }
     }
 
