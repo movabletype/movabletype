@@ -408,6 +408,57 @@ sub start_upload {
     $app->load_tmpl( $tmpl_file, \%param );
 }
 
+sub upload_entry_asset_xhr {
+    my $app = shift;
+
+    my $blog = $app->blog
+        or return $app->json_error( $app->translate("Invalid request.") );
+
+    my $entry_id = $app->param('entry_insert')
+        or return $app->json_error( $app->translate("Invalid request.") );
+
+    my $entry = $app->model('entry')->load($entry_id)    
+        or return $app->json_error( $app->translate("Invalid request.") );
+
+    if ( $entry->blog_id != $blog->id ) {
+        return $app->json_error( $app->translate("Invalid request.") );
+    }
+
+    my $perms = $app->permissions
+        or return $app->json_error( $app->translate("Permission denied.") );
+
+    return $app->json_error( $app->translate("Permission denied.") )
+        unless $perms->can_do('upload');
+
+    $app->validate_magic() or return;
+    
+    my ( $asset, $bytes ) = _upload_file(
+        $app,
+        require_type => ( $app->param('require_type') || '' ),
+        @_,
+    );
+
+    return $app->json_error( $app->translate("Error uploading file") )
+        unless $asset;
+    
+    if (not $bytes) {
+        # this is an overwrite - we need to ask the user
+        # $asset actually contain a template object
+        return $app->json_result(
+            {   type   => 'overwrite',
+                params => $asset->param(),
+            }
+        );
+    }
+
+    return $app->json_result(
+        {   type   => 'success',
+            asset_id => $asset->id(),
+        }
+    );
+
+}
+
 sub upload_file {
     my $app = shift;
 
