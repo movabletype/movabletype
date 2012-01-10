@@ -5833,7 +5833,11 @@ JSCRIPT
         jQuery(document).ready(function() {
             jQuery("form#$form_id").submit(function(e){
                 var form = jQuery(this);
-                var passwd = form.find("input[name=$pass_field]").val();
+                var passwd_input = form.find("input[name=$pass_field]");
+                if ( !passwd_input.is(":visible") ) {
+                    return true;
+                }
+                var passwd = passwd_input.val();
                 if (passwd == null || passwd == "") {
                     return true;
                 }
