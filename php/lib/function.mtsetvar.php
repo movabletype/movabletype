@@ -91,7 +91,7 @@ function smarty_function_mtsetvar($args, &$ctx) {
         $op = $args['op'];
         $value = _math_operation($op, $existing, $value);
         if (!isset($value))
-            return $ctx->error($ctx->mt->translate("[_1] [_2] [_3] is illegal.", $existing, $op, $value));
+            return $ctx->error($ctx->mt->translate("[_1] [_2] [_3] is illegal.", array($existing, $op, $value)));
     }
 
     $data = $vars[$name];
