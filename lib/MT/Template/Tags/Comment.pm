@@ -2090,6 +2090,7 @@ sign out from the blog.
 sub _hdlr_sign_out_link {
     my ( $ctx, $args ) = @_;
     my $cfg  = $ctx->{config};
+    my $blog = $ctx->stash('blog');
     my $path = $ctx->cgi_path;
     $path .= '/' unless $path =~ m!/$!;
     my $comment_script = $cfg->CommentScript;
@@ -2111,6 +2112,7 @@ sub _hdlr_sign_out_link {
     }
     my $e = $ctx->stash('entry');
     return "$path$comment_script?__mode=handle_sign_in$static_arg&logout=1"
+        . ( $blog ? '&blog_id=' . $blog->id : '' )
         . ( $e ? "&amp;entry_id=" . $e->id : '' );
 }
 
