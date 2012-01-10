@@ -72,6 +72,9 @@ $Lexicon_ja = array(
 
 ## php/lib/function.mtcommentauthorlink.php
 
+## php/lib/function.mtcommenternamethunk.php
+	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'テンプレートタグ \'[_1]\' は廃止されました。代わりに \'[_2]\'を使用してください。',
+
 ## php/lib/function.mtcommentreplytolink.php
 	'Reply' => '返信',
 
@@ -89,6 +92,7 @@ $Lexicon_ja = array(
 	'Password should include letters and numbers' => 'パスワードは文字と数字を含める必要があります。',
 	'Password should include lowercase and uppercase letters' => 'パスワードは大文字と小文字を含める必要があります。',
 	'Password should contain symbols such as #!$%' => 'パスワードは記号を含める必要があります。',
+	'You used an [_1] tag without a valid [_2] attribute.' => '[_1]タグでは[_2]属性は必須です。',
 
 ## php/lib/function.mtpasswordvalidationrule.php
 	'minimum length of [_1]' => '[_1]文字以上',
@@ -119,9 +123,6 @@ $Lexicon_ja = array(
 
 ## php/mt.php
 	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
-
-## php/lib/function.mtcommenternamethunk.php
-	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'テンプレートタグ \'[_1]\' は廃止されました。代わりに \'[_2]\'を使用してください。',
 
 );
 function translate_phrase($str, $params = null) {
