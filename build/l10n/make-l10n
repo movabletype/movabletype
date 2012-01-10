@@ -53,7 +53,7 @@ awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/M
 echo "in plugins..."
 find -L plugins -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.cfg" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" -or -name "*.yaml" | sort | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
-perl $SCRIPT_DIR/diff.pl -old lib/MT/L10N/$TARGET.pm -target $TEMP_DIR/$TARGET-base.pm -new $TEMP_DIR/$TARGET-nodupe.pm > $TEMP_DIR/$TARGET-old.pm
+#perl $SCRIPT_DIR/diff.pl -old lib/MT/L10N/$TARGET.pm -target $TEMP_DIR/$TARGET-base.pm -new $TEMP_DIR/$TARGET-nodupe.pm > $TEMP_DIR/$TARGET-old.pm
 #cat $TEMP_DIR/$TARGET-old.pm >> $TEMP_DIR/$TARGET-base.pm
 cat $TEMP_DIR/$TARGET-base.pm | perl $SCRIPT_DIR/wrap.pl $TARGET > $TEMP_DIR/$TARGET.pm
 #perl -Ilib -cw $TEMP_DIR/$TARGET.pm
