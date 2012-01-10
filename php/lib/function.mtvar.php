@@ -163,7 +163,7 @@ function smarty_function_mtvar($args, &$ctx) {
             if ( $op && isset($value) && !is_array($value) ) {
                 $return_val = _math_operation($op, $value, $rvalue);
                 if (!isset($return_val)) {
-                    return $ctx->error($ctx->mt->translate("[_1] [_2] [_3] is illegal.", $value, $op, $rvalue));
+                    return $ctx->error($ctx->mt->translate("[_1] [_2] [_3] is illegal.", array(($value, $op, $rvalue)));
             }}
         }
     }

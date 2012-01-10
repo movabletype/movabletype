@@ -94,7 +94,7 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
             if ( $op && isset($value) && !is_array($value) ) {
                 $val = _math_operation($op, $val, $rvalue);
                 if (!isset($val)) {
-                    return $ctx->error($ctx->mt->translate("[_1] [_2] [_3] is illegal.", $val, $op, $rvalue));
+                    return $ctx->error($ctx->mt->translate("[_1] [_2] [_3] is illegal.", array($val, $op, $rvalue)));
             }}
         }
         if (array_key_exists('eq', $args)) {
