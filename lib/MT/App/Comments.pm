@@ -1068,8 +1068,7 @@ sub post {
         }
         else {
             $static =~ s/[\r\n].*$//s;
-            $comment_link
-                = MT::Util::remove_html($static) . '#comment-' . $comment->id;
+            $comment_link = $static . '#comment-' . $comment->id;
         }
     }
 
