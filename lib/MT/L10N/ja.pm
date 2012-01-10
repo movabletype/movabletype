@@ -81,6 +81,9 @@ use vars qw( @ISA %Lexicon );
 
 ## php/lib/function.mtcommentauthorlink.php
 
+## php/lib/function.mtcommenternamethunk.php
+	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'テンプレートタグ \'[_1]\' は廃止されました。代わりに \'[_2]\'を使用してください。',
+
 ## php/lib/function.mtcommentreplytolink.php
 	'Reply' => '返信',
 
@@ -771,6 +774,7 @@ use vars qw( @ISA %Lexicon );
 	'Registered User' => '登録ユーザー',
 	'Invalid authentication parameter' => '無効な認証用パラメータです。',
 	'The sign-in attempt was not successful; please try again.' => 'サインインできませんでした。',
+	'You are trying to redirect to external resources. If you can trust the site, please click the link: [_1]' => '外部のサイトへリダイレクトしようとしています。あなたがそのサイトを信頼できる場合、リンクをクリックしてください。',
 	'No entry was specified; perhaps there is a template problem?' => 'ブログ記事が指定されていません。テンプレートに問題があるかもしれません。',
 	'Somehow, the entry you tried to comment on does not exist' => 'コメントしようとしたブログ記事がありません。',
 	'Invalid entry ID provided' => 'ブログ記事のIDが不正です。',
@@ -1299,6 +1303,7 @@ use vars qw( @ISA %Lexicon );
 	'\'[_1]\' edited the global template \'[_2]\'' => '[_1]がグローバルテンプレート([_2])を編集しました',
 	'Load failed: [_1]' => 'ロードできませんでした: [_1]',
 	'(no reason given)' => '(原因は不明)',
+	'Invalid filter: [_1]' => '無効なフィルターです: [_1]',
 	'New Filter' => '新しいフィルタ',
 	'__SELECT_FILTER_VERB' => 'が',
 	'All [_1]' => 'すべての[_1]',
@@ -1499,6 +1504,7 @@ use vars qw( @ISA %Lexicon );
 	'Please confirm your new password' => '新しいパスワードを確認してください。',
 	'Passwords do not match' => 'パスワードが一致していません。',
 	'That action ([_1]) is apparently not implemented!' => 'アクション([_1])が実装されていません。',
+	'Error occured while act [_1]: [_2]' => '[_1]の実行中にエラーが発生しました: [_2]',
 	'You don\'t have a system email address configured.  Please set this first, save it, then try the test email again.' => 'システムメールアドレスの設定がされていません。最初に設定を保存してから、再度テストメール送信を行ってください。',
 	'Please enter a valid email address' => '正しいメールアドレスを入力してください',
 	'Test email from Movable Type' => 'Movable Typeからのテストメール',
@@ -1604,6 +1610,7 @@ use vars qw( @ISA %Lexicon );
 	'Roles Selected' => '選択されたロール',
 	'Grant Permissions' => '権限の付与',
 	'You cannot delete your own association.' => '自分の関連付けは削除できません。',
+	'[_1]\'s Assciations' => '[_1]の権限',
 	'You cannot delete your own user record.' => '自分のデータは削除できません。',
 	'You have no permission to delete the user [_1].' => '[_1]を削除する権限がありません。',
 	'User requires username' => 'ユーザー名は必須です。',
@@ -1677,6 +1684,8 @@ use vars qw( @ISA %Lexicon );
 	'The physical file path for your SQLite database. ' => 'SQLiteのデータベースファイルのパス',
 	'[_1] in [_2]: [_3]' => '[_2]に \'[_3]\' を含む[_1]',
 	'option is required' => '条件は必須です。',
+	'Days can\'t include non numeriacal characters.' => '日数には数値を指定してください。',
+	'Invalid date.' => '無効な日付フォーマットです。',
 	'[_1] [_2] between [_3] and [_4]' => '[_2]が[_3]から[_4]の期間内の[_1]',
 	'[_1] [_2] since [_3]' => '[_2]が[_3]より後の[_1]',
 	'[_1] [_2] or before [_3]' => '[_2]が[_3]より前の[_1]',
@@ -1952,6 +1961,7 @@ use vars qw( @ISA %Lexicon );
 	'Composite score: [_1]' => '合計点: [_1]',
 
 ## lib/MT/ListProperty.pm
+	'Can\'t initialize list property [_1].[_2].' => '初期化に失敗しました。[_1].[_2]',
 	'Failed to init auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'リストプロパティの初期化に失敗しました: [_3]というカラムは見つかりません。',
 	'Failed to init auto list property [_1].[_2]: unsupported column type.' => 'リストプロパティの初期化に失敗しました: 未サポートのカラム型です。',
 
@@ -2213,7 +2223,7 @@ use vars qw( @ISA %Lexicon );
 	'To enable comment registration, you need to add a TypePad token in your weblog config or user profile.' => 'コメント投稿者を登録するためにTypePadトークンをブログの設定またはユーザーのプロフィールに設定してください。',
 
 ## lib/MT/Template/Tags/Commenter.pm
-	q{This '[_1]' tag has been deprecated. Please use '[_2]' instead.} =>  q{テンプレートタグ '[_1]' は廃止されました。代わりに '[_2]'を使用してください。},
+
 ## lib/MT/Template/Tags/Entry.pm
 	'You used <$MTEntryFlag$> without a flag.' => '<$MTEntryFlag$>をフラグなしで利用しようとしました。',
 	'Could not create atom id for entry [_1]' => 'ブログ記事のAtom IDを作成できませんでした。',
@@ -5378,6 +5388,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/lib/MT/App/Community.pm
 	'No login form template defined' => 'ログインフォームのテンプレートがありません。',
 	'Before you can sign in, you must authenticate your email address. <a href="[_1]">Click here</a> to resend the verification email.' => 'ログインする前にメールアドレスを確認する必要があります。確認メールを再送したい場合は<a href="[_1]">ここをクリック</a>してください。',
+	'You are trying to redirect to external resources. If you can trust the site, please click the link: [_1]' => '外部のサイトへリダイレクトしようとしています。あなたがそのサイトを信頼できる場合、リンクをクリックしてください。',
 	'(No email address)' => '(メールアドレスがありません)',
 	'Your confirmation have expired. Please register again.' => '有効期限が過ぎています。再度登録してください。',
 	'User \'[_1]\' (ID:[_2]) has been successfully registered.' => 'ユーザー「[_1]」(ID: [_2])が登録されました。',
@@ -5718,6 +5729,7 @@ use vars qw( @ISA %Lexicon );
 	'Groups ([_1])' => 'グループ([_1])',
 	'Are you sure you want to delete the selected group(s)?' => '選択されているグループを削除してよろしいですか?',
 	'Are you sure you want to remove the selected member(s) from the group?' => '選択されているメンバーをグループから削除してよろしいですか?',
+	'[_1]\'s Group' => '[_1]の所属するグループ',
 	'Groups' => 'グループ',
 	'Manage Member' => 'メンバーの管理',
 	'Bulk Author Export' => 'ユーザーの一括出力',
