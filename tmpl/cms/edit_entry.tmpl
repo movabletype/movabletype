@@ -657,7 +657,61 @@
     </ul>
     <input type="hidden" id="include_asset_ids" name="include_asset_ids" value="<mt:loop name="asset_loop"><mt:var name="asset_id"><mt:unless name="__last__">,</mt:unless></mt:loop>" />
   </mtapp:widget>
+  <div class="droppable-cover" style="z-index: 50; position: absolute; display: none; background-color: #DCDDDD">
+    <h2><__trans phrase="Drop the files here!"></h2>
+  </div>
+  <div id="asset_dialog_content" style="display: none;">
+    <h2>Uploading files...</h2>
+  </div>
 </div>
+<mt:setvarblock name="js_include" append="1">
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.filedrop.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+</mt:setvarblock>
+<mt:setvarblock name="jq_js_include" append="1">
+(function($) {
+  var $asset_f = $('#assets-field');
+  $asset_f.css('z-index', 10);
+  var $dialog = $('<div></div>').dialog({
+    autoOpen: false,
+    modal: true
+  });
+
+  $(function() {
+    $('#assets-field').filedrop({
+        maxfiles: 25,
+        maxfilesize: 20,    // max file size in MBs
+        url: '<mt:var name="script_url">', // upload handler, handles each file separately
+        paramname: 'file',          // POST parameter name used on serverside to reference file
+        data: {
+            // send POST variables
+            __mode: 'upload_file',
+            blog_id: <mt:var name="blog_id" escape="url">,
+            entry_insert: <$mt:var name="id" escape="url"$>, 
+            magic_token: '<mt:var name="magic_token">',
+            xhr: 1
+        },
+        docOver: function() {
+            // user dragging files anywhere inside the browser document window
+            var $cover = $asset_f.find('div.droppable-cover');
+            var ppos = $asset_f.offset();
+            $cover
+              .css('top', ppos.top).css('left', ppos.left)
+              .height($asset_f.height()).width($asset_f.width())
+              .show();
+        },
+        docLeave: function() {
+            // user dragging files out of the browser document window
+            $asset_f.find('div.droppable-cover').hide();
+        },
+        drop: function() {
+            // user drops file
+            $asset_f.find('div.droppable-cover').hide();
+            $dialog.html( $('#asset_dialog_content').html() ).dialog('open');
+        },
+    });
+  });
+})(jQuery);
+</mt:setvarblock>
 </mt:if>
 
 <mt:if name="object_type" eq="page">
