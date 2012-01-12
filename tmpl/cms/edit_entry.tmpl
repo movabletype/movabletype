@@ -655,62 +655,136 @@
       <li id="empty-asset-list"><__trans phrase="No assets"></li>
     </mt:if>
     </ul>
+    <div id="asset_xhr_upload_status" style="display: none;"></div>
     <input type="hidden" id="include_asset_ids" name="include_asset_ids" value="<mt:loop name="asset_loop"><mt:var name="asset_id"><mt:unless name="__last__">,</mt:unless></mt:loop>" />
   </mtapp:widget>
   <div class="droppable-cover" style="z-index: 50; position: absolute; display: none; background-color: #DCDDDD">
     <h2><__trans phrase="Drop the files here!"></h2>
-  </div>
-  <div id="asset_dialog_content" style="display: none;">
-    <h2>Uploading files...</h2>
   </div>
 </div>
 <mt:setvarblock name="js_include" append="1">
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.filedrop.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 </mt:setvarblock>
 <mt:setvarblock name="jq_js_include" append="1">
-(function($) {
-  var $asset_f = $('#assets-field');
+
+  var $asset_f = jQuery('#assets-field');
   $asset_f.css('z-index', 10);
-  var $dialog = $('<div></div>').dialog({
-    autoOpen: false,
-    modal: true
+
+  function insertAsset(id, name) {
+    var $list = $asset_f.find('#asset-list');
+    $list.find('#empty-asset-list').remove();
+    if ($list.find('#list-asset-' + id).length) {
+      return // this asset already exists
+    }
+    var $id_list = $asset_f.find('#include_asset_ids');
+    var asset_ids = $id_list.val();
+    if (asset_ids.length > 0) {
+      asset_ids += ',';
+    }
+    $id_list.val( asset_ids + id );
+    var $item = jQuery('<li></li>')
+      .attr('id', 'list-asset-'+id);
+    jQuery('<a></a>')
+      .attr('href', '<mt:CGIPath><mt:AdminScript>?__mode=view&_type=asset&blog_id=<mt:var name="blog_id" escape="url">&id='+id)
+      .addClass('asset-title')
+      .text(name)
+      .appendTo($item);
+    jQuery('<a></a>')
+      .attr('href', 'javascript:removeAssetFromList('+id+')')
+      .attr('title', '<__trans phrase="Remove this asset.">')
+      .addClass('remove-asset icon-remove icon16 action-icon')
+      .text('<__trans phrase="Remove">')
+      .appendTo($item);
+    $item.appendTo($list);
+  }
+
+  jQuery('#assets-field').filedrop({
+      maxfiles: 25,
+      maxfilesize: 20,    // max file size in MBs
+      url: '<mt:var name="script_url">', // upload handler, handles each file separately
+      paramname: 'file',          // POST parameter name used on serverside to reference file
+      data: {
+          // send POST variables
+          __mode: 'upload_asset_xhr',
+          blog_id: <mt:var name="blog_id" escape="url">,
+          magic_token: '<mt:var name="magic_token">'
+      },
+      docOver: function() {
+          // user dragging files anywhere inside the browser document window
+          var ppos = $asset_f.offset();
+          $asset_f.find('div.droppable-cover')
+            .css('top', ppos.top).css('left', ppos.left)
+            .height($asset_f.height()).width($asset_f.width())
+            .show();
+      },
+      docLeave: function() {
+          // user dragging files out of the browser document window
+          $asset_f.find('div.droppable-cover').hide();
+      },
+      drop: function() {
+          // user drops file
+          $asset_f.find('div.droppable-cover').hide();
+      },
+      uploadStarted: function(i, file, len){
+          // a file began uploading
+          // i = index => 0, 1, 2, 3, 4 etc
+          // file is the actual file of the index
+          // len = total files user dropped
+          $asset_f.find('#asset_xhr_upload_status')
+            .html('Upload ' + (i+1) + '/' + len + ': ' + file.name)
+            .show();
+      },
+      error: function(err, file) {
+        alert(err);
+      },
+      uploadFinished: function(i, file, response, time) {
+          // response is the data you got back from server in JSON format.
+          $asset_f.find('#asset_xhr_upload_status').hide();
+          var result = response.result.type;
+          if (result === 'success') {
+            var id = response.result.asset_id;
+            insertAsset(id, file.name);
+          }
+          else if (result === 'overwrite') {
+            // file with this name already exists - ask the user
+            var params = response.result.params;
+            var $over;
+
+            var overfunc = function (opts, callback) {
+              jQuery.post(
+                '<mt:var name="script_url">',
+                jQuery.extend({
+                  __mode: 'upload_asset_xhr',
+                  blog_id: <mt:var name="blog_id" escape="url">,
+                  magic_token: '<mt:var name="magic_token">',
+                  fname: params.fname,
+                  temp: params.temp
+                }, opts), callback, 'json');
+                $over.remove();
+            };
+
+            $over = jQuery('<div></div>').text('Overwrite '+file.name+'?');
+            jQuery('<button></button>')
+              .text('Yes')
+              .addClass('action button')
+              .click(function () {
+                overfunc( { overwrite_yes: 1 }, function (data) { 
+                  insertAsset(data.result.asset_id, file.name); 
+                });
+              })
+              .appendTo($over);
+            jQuery('<button></button>')
+              .text('No')
+              .addClass('action button')
+              .click(function () {
+                overfunc( { overwrite_no: 1 }, function (data) { });
+              })
+              .appendTo($over);
+            $over.appendTo($asset_f);
+          }
+      }
   });
 
-  $(function() {
-    $('#assets-field').filedrop({
-        maxfiles: 25,
-        maxfilesize: 20,    // max file size in MBs
-        url: '<mt:var name="script_url">', // upload handler, handles each file separately
-        paramname: 'file',          // POST parameter name used on serverside to reference file
-        data: {
-            // send POST variables
-            __mode: 'upload_file',
-            blog_id: <mt:var name="blog_id" escape="url">,
-            entry_insert: <$mt:var name="id" escape="url"$>, 
-            magic_token: '<mt:var name="magic_token">',
-            xhr: 1
-        },
-        docOver: function() {
-            // user dragging files anywhere inside the browser document window
-            var $cover = $asset_f.find('div.droppable-cover');
-            var ppos = $asset_f.offset();
-            $cover
-              .css('top', ppos.top).css('left', ppos.left)
-              .height($asset_f.height()).width($asset_f.width())
-              .show();
-        },
-        docLeave: function() {
-            // user dragging files out of the browser document window
-            $asset_f.find('div.droppable-cover').hide();
-        },
-        drop: function() {
-            // user drops file
-            $asset_f.find('div.droppable-cover').hide();
-            $dialog.html( $('#asset_dialog_content').html() ).dialog('open');
-        },
-    });
-  });
-})(jQuery);
 </mt:setvarblock>
 </mt:if>
 

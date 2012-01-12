@@ -147,6 +147,7 @@ sub core_methods {
         'upload_userpic'     => "${pkg}User::upload_userpic",
         'complete_insert'    => "${pkg}Asset::complete_insert",
         'complete_upload'    => "${pkg}Asset::complete_upload",
+        'upload_asset_xhr'   => "${pkg}Asset::upload_asset_xhr",
         'start_upload_entry' => "${pkg}Asset::start_upload_entry",
         'logout'             => {
             code           => sub { $_[0]->SUPER::logout(@_) },

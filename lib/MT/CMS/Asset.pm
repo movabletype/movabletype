@@ -408,21 +408,11 @@ sub start_upload {
     $app->load_tmpl( $tmpl_file, \%param );
 }
 
-sub upload_entry_asset_xhr {
+sub upload_asset_xhr {
     my $app = shift;
 
     my $blog = $app->blog
         or return $app->json_error( $app->translate("Invalid request.") );
-
-    my $entry_id = $app->param('entry_insert')
-        or return $app->json_error( $app->translate("Invalid request.") );
-
-    my $entry = $app->model('entry')->load($entry_id)    
-        or return $app->json_error( $app->translate("Invalid request.") );
-
-    if ( $entry->blog_id != $blog->id ) {
-        return $app->json_error( $app->translate("Invalid request.") );
-    }
 
     my $perms = $app->permissions
         or return $app->json_error( $app->translate("Permission denied.") );
@@ -444,9 +434,14 @@ sub upload_entry_asset_xhr {
     if (not $bytes) {
         # this is an overwrite - we need to ask the user
         # $asset actually contain a template object
+        my $tmpl_params = $asset->param();
+        my $params = {};
+        foreach my $key (qw{ temp fname }) {
+            $params->{$key} = $tmpl_params->{$key};
+        }
         return $app->json_result(
             {   type   => 'overwrite',
-                params => $asset->param(),
+                params => $params,
             }
         );
     }
@@ -1392,9 +1387,9 @@ sub _upload_file {
                     {   temp              => $tmp,
                         extra_path        => $relative_path_save,
                         site_path         => scalar $q->param('site_path'),
-                        asset_select      => $q->param('asset_select'),
-                        entry_insert      => $q->param('entry_insert'),
-                        edit_field        => $app->param('edit_field'),
+                        asset_select      => scalar $q->param('asset_select'),
+                        entry_insert      => scalar $q->param('entry_insert'),
+                        edit_field        => scalar $app->param('edit_field'),
                         middle_path       => $middle_path,
                         fname             => $basename,
                         no_insert         => $q->param('no_insert') || "",
