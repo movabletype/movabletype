@@ -46,7 +46,7 @@ foreach (keys %conv) {
     $conv{$key_esc}=$value_esc;
     $key_esc = $key;
     $key_esc =~ s/\n/\\n/sg;
-    $conv{$key_esc}=$value_esc;    
+    $conv{$key_esc}=$value_esc;
     $key_esc = $key;
     $key_esc =~ s/\"/\\"/sg;
     $conv{$key_esc}=$value_esc;
@@ -64,7 +64,7 @@ do {
         $tmpl = $ARGV;
         if ( $tmpl =~ m|plugins/([\-\w]+)/\w+| ) {
             my $plugin = $1;
-            eval { 
+            eval {
                 unshift @INC, "plugins/$plugin/lib";
             };
             eval {
@@ -103,7 +103,7 @@ do {
         }
         elsif ( $tmpl =~ m|addons/(\w+)\.pack/\w+| ) {
             my $addon = $1;
-            eval { 
+            eval {
                 unshift @INC, "addons/$addon.pack/lib";
                 require "addons/$addon.pack/lib/MT/$addon/L10N/$lang.pm"
             };
@@ -131,10 +131,10 @@ do {
                 $args{phrase} =~ s/([^\\])'/$1\\'/g;
                 $args{phrase} =~ s/^'/\\'/;
                 $args{phrase} =~ s/\\"/"/g;
-		
+
                 unless ($phrase{$args{phrase}}) {
                     $phrase{$args{phrase}} = 1;
-                    
+
                     my $q = "'";
                     if ($args{phrase} =~ /\\n/) {
                        $q = '"';
@@ -148,20 +148,20 @@ do {
                         printf "\t$q%s$q => '%s',\n", $args{phrase}, $trans; # Print out translation if there was an existing one
                     } else {
                         $trans = $lconv{lc $args{phrase}};
-			$trans =~ s/([^\\]?)'/$1\\'/g;
-			my $reason = $trans?'Case':'New'; # Really new translation or just different case
+            $trans =~ s/([^\\]?)'/$1\\'/g;
+            my $reason = $trans?'Case':'New'; # Really new translation or just different case
                         utf8::decode($trans) if !utf8::is_utf8($trans);
                         printf "\t$q%s$q => '%s', # Translate - $reason\n", $args{phrase}, $trans; # Print out translation if there was an existing one based on the lowercase string, empty otherwise
                     }
                 }
             }
         }
-        while ($text =~ /(?:translate|errtrans|trans_error|trans|translate_escape|maketext)\s*\(((?:\s*(?:"(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*')\s*\.?\s*){1,})[,\)]/gs) {
+        while ($text =~ /(?:translate|errtrans|trans_error|trans|translate_escape|maketext)\s*\(((?:\s*(?:"(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*'|q{(?:[^}\\]+|\\.)*})\s*\.?\s*){1,})[,\)]/gs) {
             my($msg, %args);
             my $p = $1;
-            while ($p =~ /"((?:[^"\\]+|\\.)*)"|'((?:[^'\\]+|\\.)*)'/gs) {
-                $args{'phrase'} .= ($1 || $2);
-            }          
+            while ($p =~ /"((?:[^"\\]+|\\.)*)"|'((?:[^'\\]+|\\.)*)'|q{((?:[^}\\]+|\\.)*)}/gs) {
+                $args{'phrase'} .= ($1 || $2 || $3);
+            }
             my $trans = '';
             $args{phrase} =~ s/([^\\]?)'/$1\\'/g;
             $args{phrase} =~ s/['"]\s*.\s*\n\s*['"]//gs;
@@ -190,7 +190,7 @@ do {
                 printf "\t$q%s$q => $q%s$q, # Translate - $reason\n", $args{phrase}, $trans; # Print out the translation if there was an existing one based on the lowercase string, else empty
             }
         }
-        while ($text =~ /\s*(?:["'])?label(?:["'])?\s*=>\s*(["'])(.*?)([^\\])\1/gs) { 
+        while ($text =~ /\s*(?:["'])?label(?:["'])?\s*=>\s*(["'])(.*?)([^\\])\1/gs) {
             my($msg, %args);
             my $trans = '';
             $args{phrase} = $2.$3;
@@ -217,7 +217,7 @@ do {
             }
         }
         if ($tmpl =~ /(services|streams)\.yaml$/) {
-            while ($text =~ /\s*(?:description|ident_hint|label|name):\s*(.+)/g) { 
+            while ($text =~ /\s*(?:description|ident_hint|label|name):\s*(.+)/g) {
                 my($msg, %args);
                 my $trans = '';
                 $args{phrase} = $1;
@@ -246,7 +246,7 @@ do {
             }
         }
         elsif ($tmpl =~ /\.yaml$/) {
-            while ($text =~ /\s*label:\s*(.+)/g) { 
+            while ($text =~ /\s*label:\s*(.+)/g) {
                 my($msg, %args);
                 my $trans = '';
                 $args{phrase} = $1;
@@ -290,11 +290,11 @@ foreach my $p (keys %conv) {
         }
         my $q = "'";
         if ($p =~ /\\[a-z]/) {
-            $q = '"';    
+            $q = '"';
         }
         $trans =~ s/([^\\])'/$1\\'/g;
-	printf "\t$q%s$q => '%s',\n", $p, '';#$trans;
-    #printf "\nmsgid \"%s\"\nmsgstr \"%s\"\n", $p, $trans;
+        printf "\t$q%s$q => '%s',\n", $p, '';#$trans;
+        #printf "\nmsgid \"%s\"\nmsgstr \"%s\"\n", $p, $trans;
     }
 }
 
