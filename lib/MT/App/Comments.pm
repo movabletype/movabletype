@@ -1532,7 +1532,7 @@ sub redirect_to_target {
         if ( !$app->is_valid_redirect_target ) {
             return $app->error(
                 $app->translate(
-                    q{You are tried to be redirected to an external resource: [_1]},
+                    q{You are trying to redirect to external resources. If you can trust the site, please click the link: [_1]},
                     encode_html($static)
                 )
             );

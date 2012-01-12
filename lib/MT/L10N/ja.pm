@@ -81,6 +81,9 @@ use vars qw( @ISA %Lexicon );
 
 ## php/lib/function.mtcommentauthorlink.php
 
+## php/lib/function.mtcommenternamethunk.php
+	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'テンプレートタグ \'[_1]\' は廃止されました。代わりに \'[_2]\'を使用してください。',
+
 ## php/lib/function.mtcommentreplytolink.php
 	'Reply' => '返信',
 
@@ -749,6 +752,7 @@ use vars qw( @ISA %Lexicon );
 	'Registered User' => '登録ユーザー',
 	'Invalid authentication parameter' => '無効な認証用パラメータです。',
 	'The sign-in attempt was not successful; please try again.' => 'サインインできませんでした。',
+	'You are trying to redirect to external resources. If you can trust the site, please click the link: [_1]' => '外部のサイトへリダイレクトしようとしています。あなたがそのサイトを信頼できる場合、リンクをクリックしてください。',
 	'No entry was specified; perhaps there is a template problem?' => 'ブログ記事が指定されていません。テンプレートに問題があるかもしれません。',
 	'Somehow, the entry you tried to comment on does not exist' => 'コメントしようとしたブログ記事がありません。',
 	'Invalid entry ID provided' => 'ブログ記事のIDが不正です。',
@@ -1976,7 +1980,6 @@ use vars qw( @ISA %Lexicon );
 	'To enable comment registration, you need to add a TypePad token in your weblog config or user profile.' => 'コメント投稿者を登録するためにTypePadトークンをブログの設定またはユーザーのプロフィールに設定してください。',
 
 ## lib/MT/Template/Tags/Commenter.pm
-	q{This '[_1]' tag has been deprecated. Please use '[_2]' instead.} =>  q{テンプレートタグ '[_1]' は廃止されました。代わりに '[_2]'を使用してください。},
 
 ## lib/MT/Template/Tags/Entry.pm
 	'You used <$MTEntryFlag$> without a flag.' => '<$MTEntryFlag$>をフラグなしで利用しようとしました。',
@@ -5047,7 +5050,5 @@ use vars qw( @ISA %Lexicon );
 
 
 );
-
-## New words: 13
 
 1;
