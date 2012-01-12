@@ -669,6 +669,12 @@
 
   var $asset_f = jQuery('#assets-field');
   $asset_f.css('z-index', 10);
+  var now = new Date();
+  var dateStr = now.getFullYear() + "/";
+  if (now.getMonth() < 9 ) dateStr += "0";
+  dateStr += (now.getMonth() + 1).toString() + "/"; 
+  if (now.getDate() < 10 ) dateStr += "0";
+  dateStr += now.getDate(); 
 
   function insertAsset(id, name) {
     var $list = $asset_f.find('#asset-list');
@@ -707,7 +713,8 @@
           // send POST variables
           __mode: 'upload_asset_xhr',
           blog_id: <mt:var name="blog_id" escape="url">,
-          magic_token: '<mt:var name="magic_token">'
+          magic_token: '<mt:var name="magic_token">',
+          middle_path: dateStr
       },
       docOver: function() {
           // user dragging files anywhere inside the browser document window
@@ -731,7 +738,7 @@
           // file is the actual file of the index
           // len = total files user dropped
           $asset_f.find('#asset_xhr_upload_status')
-            .html('Upload ' + (i+1) + '/' + len + ': ' + file.name)
+            .html('Uploading ' + (i+1) + '/' + len + ': ' + file.name)
             .show();
       },
       error: function(err, file) {
@@ -758,12 +765,17 @@
                   blog_id: <mt:var name="blog_id" escape="url">,
                   magic_token: '<mt:var name="magic_token">',
                   fname: params.fname,
-                  temp: params.temp
+                  temp: params.temp,
+                  middle_path: dateStr
                 }, opts), callback, 'json');
                 $over.remove();
             };
 
-            $over = jQuery('<div></div>').text('Overwrite '+file.name+'?');
+            $over = jQuery('<div></div>')
+              .css({'position': 'relative', 'overflow': 'auto'});
+            var $b_div = jQuery('<div></div>')
+              .css({'float': 'right', 'top': 0})
+              .appendTo($over);
             jQuery('<button></button>')
               .text('Yes')
               .addClass('action button')
@@ -772,13 +784,15 @@
                   insertAsset(data.result.asset_id, file.name); 
                 });
               })
-              .appendTo($over);
+              .appendTo($b_div);
             jQuery('<button></button>')
               .text('No')
               .addClass('action button')
               .click(function () {
                 overfunc( { overwrite_no: 1 }, function (data) { });
               })
+              .appendTo($b_div);
+            jQuery('<div></div>').text('overwrite '+file.name+'?')
               .appendTo($over);
             $over.appendTo($asset_f.find('#asset_container'));
           }

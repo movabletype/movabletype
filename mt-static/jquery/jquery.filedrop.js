@@ -100,7 +100,7 @@
       $.each(params, function() {
         var pair = this.split(/=/, 2);
         var name = decodeURI(pair[0]);
-        var val = decodeURI(pair[1]);
+        var val = decodeURI(pair[1]).replace(/%2F/g, '/');
 
         builder += dashdash;
         builder += boundary;
