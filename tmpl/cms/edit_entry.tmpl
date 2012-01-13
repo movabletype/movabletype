@@ -676,7 +676,7 @@
   if (now.getDate() < 10 ) dateStr += "0";
   dateStr += now.getDate(); 
 
-  function insertAsset(id, name) {
+  function insertAsset(id, name, type, thumbnail) {
     var $list = $asset_f.find('#asset-list');
     $list.find('#empty-asset-list').remove();
     if ($list.find('#list-asset-' + id).length) {
@@ -689,7 +689,8 @@
     }
     $id_list.val( asset_ids + id );
     var $item = jQuery('<li></li>')
-      .attr('id', 'list-asset-'+id);
+      .attr('id', 'list-asset-'+id)
+      .addClass('asset-type-'+type);
     jQuery('<a></a>')
       .attr('href', '<mt:CGIPath><mt:AdminScript>?__mode=view&_type=asset&blog_id=<mt:var name="blog_id" escape="url">&id='+id)
       .addClass('asset-title')
@@ -701,6 +702,15 @@
       .addClass('remove-asset icon-remove icon16 action-icon')
       .text('<__trans phrase="Remove">')
       .appendTo($item);
+    if (( type === 'image') && (thumbnail)) {
+      $item
+        .mouseover( function () { show('list-image-'+id)} )
+        .mouseout(  function () { hide('list-image-'+id)} );
+      jQuery('<img><img>')
+        .attr({ 'id': 'list-image-'+id, 'src': thumbnail })
+        .addClass('list-image hidden')
+        .appendTo($item);
+    }
     $item.appendTo($list);
   }
 
@@ -749,8 +759,8 @@
           $asset_f.find('#asset_xhr_upload_status').hide();
           var result = response.result.type;
           if (result === 'success') {
-            var id = response.result.asset_id;
-            insertAsset(id, file.name);
+            var res = response.result;
+            insertAsset(res.asset_id, file.name, res.asset_type, res.thumbnail);
           }
           else if (result === 'overwrite') {
             // file with this name already exists - ask the user
@@ -781,7 +791,8 @@
               .addClass('action button')
               .click(function () {
                 overfunc( { overwrite_yes: 1 }, function (data) { 
-                  insertAsset(data.result.asset_id, file.name); 
+                  var res = data.result;
+                  insertAsset(res.asset_id, file.name, res.asset_type, res.thumbnail); 
                 });
               })
               .appendTo($b_div);

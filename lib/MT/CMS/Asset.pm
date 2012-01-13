@@ -446,9 +446,18 @@ sub upload_asset_xhr {
         );
     }
 
+    my $class = $asset->class();
+    my %params;
+    if ($class eq 'image') {
+        my ($t_url) = $asset->thumbnail_url(Blog => $blog, Width => 100);
+        $params{thumbnail} = $t_url;
+    }
+
     return $app->json_result(
         {   type   => 'success',
             asset_id => $asset->id(),
+            asset_type => $class,
+            %params,
         }
     );
 
