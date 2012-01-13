@@ -2217,6 +2217,8 @@ sub open_batch_editor {
     $param ||= {};
     my @ids = $app->param('id')
         or return "Invalid request.";
+    my %dupe;
+    @ids = grep {!$dupe{$_}++} @ids;
 
     require MT::Entry;
     my $type = $app->param('_type') || MT::Entry->class_type;
