@@ -10,7 +10,7 @@
 <mt:If name="unapproved"><mt:If name="state_editable"><__trans phrase="Approve comment:">
   <<$mt:Var name="approve_url"$>></mt:If></mt:If>
 <mt:If name="view_url"><__trans phrase="View comment:">
-  <<$mt:Var name="view_url"$>></mt:If>
+  <<$mt:Var name="view_url" escape="html"$>></mt:If>
 <__trans phrase="Edit comment:">
   <<$mt:Var name="edit_url"$>>
 <mt:If name="state_editable"><__trans phrase="Report comment as spam:">
