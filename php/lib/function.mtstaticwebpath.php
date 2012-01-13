@@ -16,9 +16,9 @@ function smarty_function_mtstaticwebpath($args, &$ctx) {
         $host = $blog->site_url();
         if (!preg_match('!/$!', $host))
             $host .= '/';
-        if (preg_match('!^(https?://[^/:]+)(:\d+)?/!', $host, $matches)) {
+        if (preg_match('!(.+://[^/]+)!', $host, $matches)) {
             $path = $matches[1] . $path;
-        }        
+        }
     }
     if (substr($path, strlen($path) - 1, 1) != '/')
         $path .= '/';
