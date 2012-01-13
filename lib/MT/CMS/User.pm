@@ -1446,13 +1446,9 @@ sub dialog_select_author {
 
     my $entry_type = $app->param('entry_type') if $app->param('entry_type');
     $entry_type ||= 'entry';
-    my $action
-        = $entry_type eq 'page'
-        ? 'access_to_page_list'
-        : 'access_to_entry_list';
 
     return $app->return_to_dashboard( permission => 1 )
-        unless $app->can_do($action);
+        unless $app->can_do( 'open_select_author_dialog' );
 
     my $hasher = sub {
         my ( $obj, $row ) = @_;
