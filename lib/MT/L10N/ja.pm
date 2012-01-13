@@ -752,7 +752,7 @@ use vars qw( @ISA %Lexicon );
 	'Registered User' => '登録ユーザー',
 	'Invalid authentication parameter' => '無効な認証用パラメータです。',
 	'The sign-in attempt was not successful; please try again.' => 'サインインできませんでした。',
-	'You are trying to redirect to external resources. If you can trust the site, please click the link: [_1]' => '外部のサイトへリダイレクトしようとしています。あなたがそのサイトを信頼できる場合、リンクをクリックしてください。',
+	'You are trying to redirect to external resources. If you can trust the site, please click the link: [_1]' => '外部のサイトへリダイレクトしようとしています。あなたがそのサイトを信頼できる場合、リンクをクリックしてください。[_1]',
 	'No entry was specified; perhaps there is a template problem?' => 'ブログ記事が指定されていません。テンプレートに問題があるかもしれません。',
 	'Somehow, the entry you tried to comment on does not exist' => 'コメントしようとしたブログ記事がありません。',
 	'Invalid entry ID provided' => 'ブログ記事のIDが不正です。',
@@ -5178,7 +5178,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/lib/MT/App/Community.pm
 	'No login form template defined' => 'ログインフォームのテンプレートがありません。',
 	'Before you can sign in, you must authenticate your email address. <a href="[_1]">Click here</a> to resend the verification email.' => 'ログインする前にメールアドレスを確認する必要があります。確認メールを再送したい場合は<a href="[_1]">ここをクリック</a>してください。',
-	'You are trying to redirect to external resources. If you can trust the site, please click the link: [_1]' => '外部のサイトへリダイレクトしようとしています。あなたがそのサイトを信頼できる場合、リンクをクリックしてください。',
+	'You are trying to redirect to external resources: [_1]' => '外部のサイトへリダイレクトしようとしています。[_1]',
 	'Your confirmation have expired. Please register again.' => '有効期限が過ぎています。再度登録してください。',
 	'User \'[_1]\' (ID:[_2]) has been successfully registered.' => 'ユーザー「[_1]」(ID: [_2])が登録されました。',
 	'Thanks for the confirmation.  Please sign in.' => '確認されました。ログインしてください。',
