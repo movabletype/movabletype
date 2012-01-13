@@ -2623,7 +2623,7 @@ sub load_core_permissions {
                 'publish_page_via_list'           => 1,
                 'view_all_comments'               => 1,
                 'open_select_author_dialog'       => 1,
-                'send_update_pings_pages'         => 1,
+                'send_update_pings_page'          => 1,
                 'insert_asset'                    => 1,
             }
         },
