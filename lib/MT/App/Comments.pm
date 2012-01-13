@@ -233,8 +233,6 @@ sub do_login {
     my $blog    = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
-    return $app->errtrans('Invalid request')
-        if !$app->is_valid_redirect_target;
     my $auths = $blog->commenter_authenticators;
     if ( $auths !~ /MovableType/ ) {
         $app->log(
@@ -1463,8 +1461,6 @@ sub handle_sign_in {
         $result = 1;
     }
     else {
-        return $app->errtrans('Invalid authentication parameter')
-            if !$app->is_valid_redirect_target;
         my $authenticator = MT->commenter_authenticator( $q->param('key') );
         my $auth_class    = $authenticator->{class};
         eval "require $auth_class;";
