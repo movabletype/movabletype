@@ -1865,47 +1865,51 @@ sub save_entries {
 
         if ( $perms->can_edit_entry( $entry, $this_author, 1 ) )
         {    ## can he/she change status?
-            $entry->status( scalar $q->param( 'status_' . $id ) );
+            if ( my $new_status = scalar $q->param( 'status_' . $id ) ) {
+                $entry->status( $new_status );
+            }
             my $co = $q->param( 'created_on_' . $id );
-            unless ( $co
-                =~ m!(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})(?::(\d{2}))?! )
-            {
+            if ( $co ) {
+                unless ( $co
+                    =~ m!(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})(?::(\d{2}))?! )
+                {
+                    return $app->error(
+                        $app->translate(
+                            "Invalid date '[_1]'; authored on dates must be in the format YYYY-MM-DD HH:MM:SS.",
+                            $co
+                        )
+                    );
+                }
+                my $s = $6 || 0;
+
+                # Emit an error message if the date is bogus.
                 return $app->error(
                     $app->translate(
-                        "Invalid date '[_1]'; authored on dates must be in the format YYYY-MM-DD HH:MM:SS.",
+                        "Invalid date '[_1]'; authored on dates should be real dates.",
                         $co
                     )
-                );
-            }
-            my $s = $6 || 0;
+                    )
+                    if $s > 59
+                        || $s < 0
+                        || $5 > 59
+                        || $5 < 0
+                        || $4 > 23
+                        || $4 < 0
+                        || $2 > 12
+                        || $2 < 1
+                        || $3 < 1
+                        || ( MT::Util::days_in( $2, $1 ) < $3
+                            && !MT::Util::leap_day( $0, $1, $2 ) );
 
-            # Emit an error message if the date is bogus.
-            return $app->error(
-                $app->translate(
-                    "Invalid date '[_1]'; authored on dates should be real dates.",
-                    $co
-                )
-                )
-                if $s > 59
-                    || $s < 0
-                    || $5 > 59
-                    || $5 < 0
-                    || $4 > 23
-                    || $4 < 0
-                    || $2 > 12
-                    || $2 < 1
-                    || $3 < 1
-                    || ( MT::Util::days_in( $2, $1 ) < $3
-                        && !MT::Util::leap_day( $0, $1, $2 ) );
-
-            # FIXME: Should be assigning the publish_date field here
-            my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
-                $s;
-            if ( $type eq 'page' ) {
-                $entry->modified_on($ts);
-            }
-            else {
-                $entry->authored_on($ts);
+                # FIXME: Should be assigning the publish_date field here
+                my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
+                    $s;
+                if ( $type eq 'page' ) {
+                    $entry->modified_on($ts);
+                }
+                else {
+                    $entry->authored_on($ts);
+                }
             }
         }
         $app->run_callbacks( 'cms_pre_save.' . $type,
