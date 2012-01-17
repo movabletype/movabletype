@@ -1701,6 +1701,13 @@ sub search_by_meta {
         @{ $class->lookup_multi( [ map { $get_pk->($_) } @metaobjs ] ) };
 }
 
+sub lookup_multi {
+    my $class = shift;
+    my $objs = $class->SUPER::lookup_multi( @_ );
+    my @objs = $objs ? grep { defined $_ } @$objs : undef;
+    return \@objs;
+}
+
 package MT::Object::Meta;
 
 use base qw( Data::ObjectDriver::BaseObject );
