@@ -676,6 +676,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'URL is invalid.' => 'URLが不正です。',
 	'Commenter profile has successfully been updated.' => 'コメント投稿者のユーザー情報を更新しました。',
 	'Commenter profile could not be updated: [_1]' => 'コメント投稿者のユーザー情報を更新できませんでした: [_1]',
+	'You are trying to redirect to external resources: [_1]' => '外部のサイトへリダイレクトしようとしています。[_1]',
 
 ## lib/MT/App/NotifyList.pm
 	'Please enter a valid email address.' => '正しいメールアドレスを入力してください。',
