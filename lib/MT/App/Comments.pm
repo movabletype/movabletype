@@ -1470,16 +1470,23 @@ sub handle_sign_in {
         ( $result, $sess )
             = $auth_class->handle_sign_in( $app, $q->param('key') );
         unless ($sess) {
-
-            # Support for old auth plugin
-            my $cmtr_sess = MT::Session::get_unexpired_value(
-                MT->config->UserSessionTimeOut,
+            my $cmtr_sess = MT::Session->load(
                 {   kind => 'SI',
                     name => $result->name,
+                },
+                {   limit     => 1,
+                    sort      => "start",
+                    direction => "descend",
                 }
             );
             $sess = $cmtr_sess->id
                 if $cmtr_sess && $cmtr_sess->get('author_id') == $result->id;
+            if ( $cmtr_sess && $cmtr_sess->get('author_id') == $result->id ) {
+                my $cfg     = $app->config;
+                my $timeout = $cfg->CommentSessionTimeout;
+                $sess = $cmtr_sess->id
+                    if $cmtr_sess->start() >= time - $timeout;
+            }
         }
     }
 
