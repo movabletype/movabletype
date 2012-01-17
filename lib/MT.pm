@@ -2122,7 +2122,7 @@ sub support_directory_path {
     my $app  = shift;
     my $path = $app->config('SupportDirectoryPath');
     if ($path) {
-        if ( $path !~ m{^/} ) {
+        if ( $path !~ m{^/|^[a-zA-Z]:\\|^\\\\[a-zA-Z0-9\.]+} ) {
             return File::Spec->catdir( $app->path, $path );
         }
         return $path;
