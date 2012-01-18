@@ -1044,6 +1044,8 @@ sub load_core_permissions {
                 'insert_asset'                     => 1,
                 'access_to_asset_list'             => 1,
                 'open_select_author_dialog'        => 1,
+                'save_multiple_entries'            => 1,
+                'save_multiple_pages'              => 1,
             }
         },
         'blog.edit_assets' => {
