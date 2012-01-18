@@ -2324,7 +2324,7 @@ sub open_batch_editor {
 
     $param->{return_args} ||= $app->make_return_args;
     my @return_args
-        = grep { $_ !~ /offset=\d/ && $_ !~ /__mode=.*/ } split /&/,
+        = grep { $_ !~ /^(?:offset|__mode|id)=/ } split /&/,
         $param->{return_args};
     push @return_args, '__mode=open_batch_editor';
     push @return_args, "id=$_" foreach (@ids);

@@ -123,7 +123,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 
 <div id="listing" class="listing line has-filter">
   <div class="unit size1of1">
-    <form id="<mt:var name="object_type">-listing-form" method="post">
+    <form id="<mt:var name="object_type">-listing-form" method="post" action="<mt:var name="script_url">">
       <input type="hidden" name="__mode" value="" />
       <input type="hidden" name="_type" value="<mt:var name="object_type">" />
       <input type="hidden" name="action_name" value="" />
@@ -197,7 +197,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 </div>
 
 <div id="dialog_save_filter" class="dialog">
-  <form method="post">
+  <form method="post" action="<mt:var name="script_url">">
     <div class="dialog-msg-block"></div>
     <mtapp:setting
        id="filter-label"
