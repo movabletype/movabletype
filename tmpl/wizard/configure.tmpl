@@ -110,15 +110,15 @@ window.onload = function() {
     <mtapp:statusmsg
         id="connect_error"
         class="error">
-        <mt:var name="error"><mt:if name="error_more">&nbsp;&nbsp;<a href="javascript:void(0)" onclick="return toggleMore()">More</a>.</mt:if>
+        <mt:var name="error" escape="html"><mt:if name="error_more">&nbsp;&nbsp;<a href="javascript:void(0)" onclick="return toggleMore()">More</a>.</mt:if>
     </mtapp:statusmsg>
-    <div id="error_more" style="display:none"><mt:var name="error_more"></div>
+    <div id="error_more" style="display:none"><mt:var name="error_more" escape="html"></div>
 <mt:else>
     <mt:if name="error">
         <mtapp:statusmsg
             id="error"
             class="error">
-            <mt:var name="error">
+            <mt:var name="error" escape="html">
         </mtapp:statusmsg>
     </mt:if>
 </mt:if>
@@ -165,7 +165,7 @@ window.onload = function() {
     <div id="db_hint">
         <p class="hint"><__trans phrase="Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary." params="mt-check.cgi"></p>
         <p class="hint"><__trans phrase="Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>." params="reTest();"></p>
-        <p class="hint"><__trans phrase="Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>" params="<mt:var name="db_setup_url">"></p>
+        <p class="hint"><__trans phrase="Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>" params="<mt:var name="db_setup_url" escape="html" escape="html">"></p>
     </div>
     
 </mt:unless>
