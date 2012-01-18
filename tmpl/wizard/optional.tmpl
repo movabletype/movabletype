@@ -4,7 +4,7 @@
   <input type="hidden" name="__mode" value="" />
   <input type="hidden" name="step" value="optional" />
   <input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<mt:var name="static_uri" escape="html">" />
-  <input type="hidden" name="default_language" value="<mt:var name="default_language">" />
+  <input type="hidden" name="default_language" value="<mt:var name="default_language" escape="html">" />
   <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
 <mt:if name="success">
   <p class="intro"><span class="ready"><__trans phrase="Your mail configuration is complete."></span> <__trans phrase="Check your email to confirm receipt of a test email from Movable Type and then proceed to the next step."></p>
@@ -34,7 +34,7 @@
        id="send_error"
        class="error"
        can_close="0">
-      <__trans phrase="An error occurred while attempting to send mail: "><mt:var name="error">
+      <__trans phrase="An error occurred while attempting to send mail: "><mt:var name="error" escape="html">
     </mtapp:statusmsg>
   <mt:else>
     <mt:if name="error">
@@ -42,7 +42,7 @@
        id="error"
        class="error"
        can_close="0">
-      <mt:var name="error">
+      <mt:var name="error" escape="html">
     </mtapp:statusmsg>
     </mt:if>
   </mt:if>
