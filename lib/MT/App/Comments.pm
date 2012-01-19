@@ -546,99 +546,94 @@ sub do_register {
     my $q   = $app->param;
     my $cfg = $app->config;
 
-    my $entry_id = $q->param('entry_id');
-    my $static   = $q->param('static');
-    my $email    = $q->param('email');
-    my $token    = $q->param('token');
-
-    my $param = {};
-    $param->{$_} = $app->param($_) foreach qw(entry_id static);
+    my $q_blog_id = $q->param('blog_id');
+    my $entry_id  = $q->param('entry_id');
+    my $static    = $q->param('static');
+    my $email     = $q->param('email');
+    my $token     = $q->param('token');
 
     ## Token expiration check
     require MT::Session;
     my $commenter;
     my $sess = MT::Session->load(
         { id => $token, kind => 'CR', email => $email } );
-    if ($sess) {
-        $commenter = MT::Author->load( $sess->name );
-        if ( $sess->start() < ( time - 60 * 60 * 24 ) ) {
-            $commenter->remove if $commenter;
-            $sess->remove;
-            $sess = $commenter = undef;
-        }
-    }
-    unless ($sess) {
-        my $blog_id = $q->param('blog_id');
-        my $blog    = $app->model('blog')->load($blog_id)
-            or return $app->errtrans( 'Can\'t load blog #[_1].', $blog_id );
-        if ( my $provider
-            = MT->effective_captcha_provider( $blog->captcha_provider ) )
-        {
-            $param->{captcha_fields} = $provider->form_fields( $blog->id );
-        }
-        return $app->build_page( 'signup.tmpl', $param );
+
+    return $app->forward('signup') unless ($sess);
+    $sess->remove;
+
+    $commenter = MT::Author->load( $sess->name )
+        or return $app->errtrans("Invalid request.");
+
+    if ( $sess->start() < ( time - 60 * 60 * 24 ) ) {
+        $commenter->remove;
+        return $app->forward(
+            'signup', 
+            error => $app->translate('Confirmation period expired. Please register again')
+        );
     }
 
     my $blog_id = $sess->get('blog_id');
-    $param->{blog_id} = $blog_id;
-    $sess->remove;
+
+    my $error = sub {
+        $commenter->remove;
+        return $app->errtrans(@_);
+    };
+
+    return $error->("Invalid request.")
+        unless $blog_id == $q_blog_id;
 
     my $blog = $app->model('blog')->load($blog_id)
-        or return $app->errtrans( 'Can\'t load blog #[_1].', $blog_id );
+        or return $error->( 'Can\'t load blog #[_1].', $blog_id );
+
+    my $registration = $cfg->CommenterRegistration
+        or return $error->( 'Signing up is not allowed.' );
+
+    return $error->('Signing up is not allowed.')
+        unless $registration->{Allow} && $blog->allow_commenter_regist;
 
     $commenter->status( MT::Author::ACTIVE() );
-    if ( $commenter->save ) {
-        $app->log(
-            {   message => $app->translate(
-                    "Commenter '[_1]' (ID:[_2]) has been successfully registered.",
-                    $commenter->name,
-                    $commenter->id
-                ),
-                level    => MT::Log::INFO(),
-                class    => 'author',
-                category => 'new',
-            }
-        );
-        require MT::Role;
-        require MT::Association;
-        my $role = MT::Role->load_same( undef, undef, 1, 'comment' );
-        if ( $role && $blog ) {
-            MT::Association->link( $commenter => $role => $blog );
+    $commenter->save 
+        or $app->forward('signup', error => $commenter->errstr);
+
+    $app->log(
+        {   message => $app->translate(
+                "Commenter '[_1]' (ID:[_2]) has been successfully registered.",
+                $commenter->name,
+                $commenter->id
+            ),
+            level    => MT::Log::INFO(),
+            class    => 'author',
+            category => 'new',
         }
-        else {
-            $app->log(
-                {   message => MT->translate(
-                        "Error assigning commenting rights to user '[_1] (ID: [_2])' for weblog '[_3] (ID: [_4])'. No suitable commenting role was found.",
-                        $commenter->name, $commenter->id,
-                        $blog->name,      $blog->id,
-                    ),
-                    level    => MT::Log::ERROR(),
-                    class    => 'system',
-                    category => 'new'
-                }
-            );
-        }
+    );
+    require MT::Role;
+    require MT::Association;
+    my $role = MT::Role->load_same( undef, undef, 1, 'comment' );
+    if ( $role && $blog ) {
+        MT::Association->link( $commenter => $role => $blog );
     }
     else {
-        if ( my $provider
-            = MT->effective_captcha_provider( $blog->captcha_provider ) )
-        {
-            $param->{captcha_fields} = $provider->form_fields( $blog->id );
-        }
-        $param->{error} = $commenter->errstr;
-        return $app->build_page( 'signup.tmpl', $param );
+        $app->log(
+            {   message => MT->translate(
+                    "Error assigning commenting rights to user '[_1] (ID: [_2])' for weblog '[_3] (ID: [_4])'. No suitable commenting role was found.",
+                    $commenter->name, $commenter->id,
+                    $blog->name,      $blog->id,
+                ),
+                level    => MT::Log::ERROR(),
+                class    => 'system',
+                category => 'new'
+            }
+        );
     }
 
-    if ( my $registration = $cfg->CommenterRegistration ) {
-        if ( my $ids = $registration->{Notify} ) {
-            ## Send notification email in the background.
-            MT::Util::start_background_task(
-                sub {
-                    $app->_send_registration_notification( $commenter,
-                        $entry_id, $blog_id, $ids );
-                }
-            );
-        }
+    if ( my $ids = $registration->{Notify} ) {
+        ## Send notification email in the background.
+        MT::Util::start_background_task(
+            sub {
+                $app->_send_registration_notification( $commenter,
+                    $entry_id, $blog_id, $ids );
+            }
+        );
     }
 
     $app->login_form(
