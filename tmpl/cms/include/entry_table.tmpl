@@ -211,7 +211,7 @@
 <mt:else>
     <mt:if name="object_type" eq="entry">
         <mtapp:statusmsg id="zero-state" class="info zero-state">
-            <__trans phrase="No entries could be found."><mt:if name="is_blog"> <__trans phrase="<a href="[_1]">Create an entry</a> now." params="<$mt:var name="mt_url"$>?__mode=view&amp;_type=entry&amp;blog_id=<$mt:var name="blog_id"$>"></mt:if>
+            <__trans phrase="No entries could be found."><mt:if name="is_blog"><mt:if name="can_create_post"> <__trans phrase="<a href="[_1]">Create an entry</a> now." params="<$mt:var name="mt_url"$>?__mode=view&amp;_type=entry&amp;blog_id=<$mt:var name="blog_id"$>"></mt:if></mt:if>
         </mtapp:statusmsg>
     <mt:else>
         <mtapp:statusmsg id="zero-state" class="info zero-state">
