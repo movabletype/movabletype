@@ -552,7 +552,7 @@ sub do_register {
         $commenter->remove;
         return $app->forward(
             'signup', 
-            error => $app->translate('Confirmation period expired. Please register again')
+            error => $app->translate('Your confirmation have expired. Please register again.')
         );
     }
 
