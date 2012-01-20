@@ -69,10 +69,23 @@ sub view {
     }
 
     # Load fileinfo by URL
+    require MT::Template;
+    require MT::PublishOption;
+    local $Data::ObjectDriver::DEBUG = 1;
     my $fi = MT->model('fileinfo')->load(
         {   blog_id => $blog_id,
-            url     => \@urls
+            url     => \@urls,
+        },
+        {   join => [
+                'MT::Template',
+                undef,
+                {   type       => { not => 'backup' },
+                    build_type => { not => MT::PublishOption->DISABLED() },
+                    id         => \' = fileinfo_template_id',
+                }
+            ],
         }
+
     ) or return $app->errtrans("Invalid request.");
 
     if ($fi) {
@@ -222,8 +235,6 @@ sub _view_entry {
         EntryIfExtended      => $entry->text_more ? 1 : 0,
     );
     require MT::TemplateMap;
-    my $tmpl;
-
     unless ($tmpl) {
         $tmpl = MT->model('template')->load( $fi->template_id )
             or return $app->errtrans( "Can't load template [_1]",
