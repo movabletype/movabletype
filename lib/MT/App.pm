@@ -149,7 +149,7 @@ sub filter_conditional_list {
 
              # Return true if user has system level privilege for this action.
                         return 1
-                            if $system_perms->can_do(
+                            if $system_perms && $system_perms->can_do(
                                     $action->{system_action} );
                     }
 
