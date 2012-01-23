@@ -713,6 +713,8 @@
     }
     $item.appendTo($list);
   }
+  // letting dialog insert assets using this function
+  window.insertAsset = insertAsset;
 
   jQuery('#assets-field').filedrop({
       maxfiles: 25,
