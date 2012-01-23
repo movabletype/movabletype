@@ -635,11 +635,12 @@ sub _sync_from_disk {
     return
         if $size == $tmpl->linked_file_size
             && $mtime == $tmpl->linked_file_mtime;
-    local *FH;
-    open FH, $lfile or return;
+    # Use rw handle due to avoid that anyone do open unwritable file.
+    # ( -w file test operator can't detect windows ACL condition, so just try to open. )
+    open my $fh, '+<', $lfile or return;
     my $c;
-    do { local $/; $c = <FH> };
-    close FH;
+    do { local $/; $c = <$fh> };
+    close $fh;
     $tmpl->linked_file_size($size);
     $tmpl->linked_file_mtime($mtime);
     return $c;
@@ -674,16 +675,15 @@ sub _sync_to_disk {
             $lfile = File::Spec->catfile( MT->instance->server_path, $lfile );
         }
     }
-    local *FH;
     ## If the linked file already exists, and there is no template text
     ## (empty textarea, etc.), then we read the template text from the
     ## linked file, assuming that it should not be overwritten. If the
     ## file does not already exist, or if there is template text, assume
     ## that we should update the linked file.
     if ( -e $lfile && !$tmpl->SUPER::text ) {
-        open FH, $lfile or return;
-        do { local $/; $tmpl->SUPER::text(<FH>) };
-        close FH;
+        open my $fh, '+<', $lfile or return;
+        do { local $/; $tmpl->SUPER::text(<$fh>) };
+        close $fh;
     }
     else {
         my $umask = oct $cfg->HTMLUmask;
@@ -691,15 +691,15 @@ sub _sync_to_disk {
         ## Untaint. We assume that the user knows what he/she is doing,
         ## and allow anything.
         ($lfile) = $lfile =~ /(.+)/s;
-        open FH, ">$lfile"
+        open my $fh, '>', $lfile
             or return $tmpl->error(
             MT->translate(
                 "Opening linked file '[_1]' failed: [_2]",
                 $lfile, "$!"
             )
             );
-        print FH $text;
-        close FH;
+        print $fh $text;
+        close $fh;
         umask($old);
     }
     my ( $size, $mtime ) = ( stat $lfile )[ 7, 9 ];
