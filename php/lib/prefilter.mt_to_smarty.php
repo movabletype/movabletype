@@ -94,7 +94,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                     if (preg_match('/^\$([A-Za-z_](\w|\.)*)$/', $attrs[$attr], $matches)) {
                         if (preg_match('/^(config|request)\.(.+)$/i', $matches[1], $m)) {
                             if (strtolower($m[1]) == 'config') {
-                                $attrs[$attr] = $mt->config[strtolower($m[2])];
+                                $attrs[$attr] = $mt->config(strtolower($m[2]));
                             }
                             elseif (strtolower($m[1]) == 'request') {
                                 $attrs[$attr] = '$smarty.request.' . $m[2];
@@ -302,15 +302,16 @@ function _parse_modifier($str) {
     if (!preg_match('/,/', $str)) {
         return $str;
     }
+    $mt = MT::get_instance();
     $result = '';
     if (preg_match_all('/(?:[,:]((["\'])((?:<[^>]*?>|.)*?)?\2)+)/', $str, $matches, PREG_SET_ORDER)) {
         for ($a = 0; $a < count($matches); $a++) {
             $val = $matches[$a][1];
             if (strlen($val)) {
-                if (preg_match('/^([\'"])\$([A-Za-z_]\w*)\1$/', $val, $matches)) {
+                if (preg_match('/^([\'"])\$([A-Za-z_](\w|\.)*)\1$/', $val, $matches)) {
                     if (preg_match('/^(config|request)\.(.+)$/i', $matches[2], $m)) {
                         if (strtolower($m[1]) == 'config') {
-                            $val = $mt->config[strtolower($m[2])];
+                            $val = $mt->config(strtolower($m[2]));
                         }
                         elseif (strtolower($m[1]) == 'request') {
                             $val = '$smarty.request.' . $m[2];
