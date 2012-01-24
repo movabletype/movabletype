@@ -20,7 +20,7 @@ function smarty_function_mtvar($args, &$ctx) {
     $name or $name = $args['var'];
     if (preg_match('/^(config|request)\.(.+)$/i', $name, $m)) {
         if (strtolower($m[1]) == 'config') {
-            if (!preg_match('/password/i', $m[2])) {
+            if (!preg_match('/password|secret/i', $m[2])) {
                 $mt = MT::get_instance();
                 return $mt->config(strtolower($m[2]));
             }
