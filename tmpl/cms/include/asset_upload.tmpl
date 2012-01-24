@@ -15,6 +15,8 @@ function validate(f) {
         return false;
     }
 </mt:if>
+    window.parent.UploadDialogLastSitePathIndex = jQuery('#site_path')[0].selectedIndex;
+    window.parent.UploadDialogLastExtraPath = jQuery('#extra_path').val();
 }
 
 function is_valid_path(path_){
@@ -180,6 +182,12 @@ function is_valid_path(path_){
      </select> / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
      <a href="javascript:void(0);" mt:command="open-folder-selector" class="toggle-link"><__trans phrase="Choose Folder"></a>
   </mtapp:setting>
+  <mt:setvarblock name="jq_js_include" append="1">
+     
+    jQuery('#site_path')[0].selectedIndex = window.parent.UploadDialogLastSitePathIndex || 0;
+    jQuery('#extra_path').val( window.parent.UploadDialogLastExtraPath || '');
+
+  </mt:setvarblock>
   </mt:if>
 
   <mt:if name="enable_destination">
