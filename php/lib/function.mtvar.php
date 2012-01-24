@@ -22,7 +22,7 @@ function smarty_function_mtvar($args, &$ctx) {
         if (strtolower($m[1]) == 'config') {
             if (!preg_match('/password/i', $m[2])) {
                 $mt = MT::get_instance();
-                return $mt->config[strtolower($m[2])];
+                return $mt->config(strtolower($m[2]));
             }
         }
         elseif (strtolower($m[1]) == 'request') {
