@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Trace.pod 98 2007-10-09 09:41:55Z kutterma $
+# $Id: Trace.pod 381 2011-08-15 19:28:43Z kutterma $
 #
 # ======================================================================
 
@@ -16,25 +16,25 @@ SOAP::Trace - used only to manage and manipulate the runtime tracing of executio
 
 =head1 DESCRIPTION
 
-This class has no methods or objects. It is used only to manage and manipulate the runtime tracing of execution within the toolkit. In absence of methods, this section reviews the events that may be configured and the ways of configuring them. 
+This class has no methods or objects. It is used only to manage and manipulate the runtime tracing of execution within the toolkit. In absence of methods, this section reviews the events that may be configured and the ways of configuring them.
 
 =head1 SYNOPSIS
 
-Tracing is enabled by the SOAP::Lite import method. This is usually done at compile-time, though it may be done explicitly by calling import directly. The commands for setting up tracing start with the keyword +trace. Alternately, +debug may be used; the two are interchangeable. After the initial keyword, one or more of the signals detailed here may be specified, optionally with a callback to handle them. When specifying multiple signals to be handled by a single callback, it is sufficient to list all of them first, followed finally by the callback, as in: 
+Tracing is enabled by the SOAP::Lite import method. This is usually done at compile-time, though it may be done explicitly by calling import directly. The commands for setting up tracing start with the keyword +trace. Alternately, +debug may be used; the two are interchangeable. After the initial keyword, one or more of the signals detailed here may be specified, optionally with a callback to handle them. When specifying multiple signals to be handled by a single callback, it is sufficient to list all of them first, followed finally by the callback, as in:
 
-   use SOAP::Lite +trace => 
-     method => fault => \&message_level, 
-     trace => objects => \&lower_level; 
+   use SOAP::Lite +trace =>
+     method => fault => \&message_level,
+     trace => objects => \&lower_level;
 
-In the fragment, the reference to message_level is installed as the callback for both method and fault signals, while lower_level is installed for trace and object events. If callbacks aren't explicitly provided, the default tracing action is to log a message to Perl's STDOUT file descriptor. Callbacks should expect a one or more arguments passed in, though the nature of the arguments varies based on the signal. 
+In the fragment, the reference to message_level is installed as the callback for both method and fault signals, while lower_level is installed for trace and object events. If callbacks aren't explicitly provided, the default tracing action is to log a message to Perl's STDOUT file descriptor. Callbacks should expect a one or more arguments passed in, though the nature of the arguments varies based on the signal.
 
-Any signal can be disabled by prefacing the name with a hyphen, such as -result. This is useful with the pseudosignal "all," which is shorthand for the full list of signals. The following fragment disables only the two signals, while still enabling the rest: 
+Any signal can be disabled by prefacing the name with a hyphen, such as -result. This is useful with the pseudosignal "all," which is shorthand for the full list of signals. The following fragment disables only the two signals, while still enabling the rest:
 
     SOAP::Lite->import(+trace => all => -result => -parameters);
 
-If the keyword +trace (or +debug) is used without any signals specified, it enables all signals (as if all were implied). 
+If the keyword +trace (or +debug) is used without any signals specified, it enables all signals (as if all were implied).
 
-The signals and their meaning follow. Each also bears a note as to whether the signal is relevant to a server application, client application, or both. 
+The signals and their meaning follow. Each also bears a note as to whether the signal is relevant to a server application, client application, or both.
 
 =head1 TRACE SIGNALS
 
