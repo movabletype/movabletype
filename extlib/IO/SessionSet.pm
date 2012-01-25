@@ -24,14 +24,14 @@ $DEBUG = 0;
 sub new {
     my $pack = shift;
     my $listen = shift;
-    my $self = bless { 
+    my $self = bless {
         sessions     => {},
         readers      => IO::Select->new(),
         writers      => IO::Select->new(),
         }, $pack;
     # if initialized with an IO::Handle object (or subclass)
     # then we treat it as a listening socket.
-    if ( defined($listen) and $listen->can('accept') ) { 
+    if ( defined($listen) and $listen->can('accept') ) {
         $self->{listen_socket} = $listen;
         $self->{readers}->add($listen);
     }
@@ -51,7 +51,7 @@ sub add {
     my $self = shift;
     my ($handle,$writeonly) = @_;
     warn "Adding a new session for $handle.\n" if $DEBUG;
-    return $self->{sessions}{$handle} = 
+    return $self->{sessions}{$handle} =
         $self->SessionDataClass->new($self,$handle,$writeonly);
 }
 
@@ -113,24 +113,24 @@ sub activate {
 }
 
 # Object method: wait()
-# Wait for I/O.  Handles writes automatically.  Returns a list of 
-# IO::SessionData objects ready for reading.  
+# Wait for I/O.  Handles writes automatically.  Returns a list of
+# IO::SessionData objects ready for reading.
 # If there is a listen socket, then will automatically do an accept()
 # and return a new IO::SessionData object for that.
 sub wait {
     my $self = shift;
     my $timeout = shift;
 
-    # Call select() to get the list of sessions that are ready for 
+    # Call select() to get the list of sessions that are ready for
     # reading/writing.
     warn "IO::Select->select() returned error: $!"
-        unless my ($read,$write) = 
+        unless my ($read,$write) =
             IO::Select->select($self->{readers},$self->{writers},undef,$timeout);
 
     # handle queued writes automatically
     foreach (@$write) {
         my $session = $self->to_session($_);
-        warn "Writing pending data (",$session->pending+0," bytes) for $_.\n" 
+        warn "Writing pending data (",$session->pending+0," bytes) for $_.\n"
             if $DEBUG;
         my $rc = $session->write;
     }

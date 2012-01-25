@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Data.pod 98 2007-10-09 09:41:55Z kutterma $
+# $Id: Data.pod 381 2011-08-15 19:28:43Z kutterma $
 #
 # ======================================================================
 
@@ -16,11 +16,11 @@ SOAP::Data - this class provides the means by which to explicitly manipulate and
 
 =head1 DESCRIPTION
 
-The SOAP::Data class provides the means by which to explicitly manipulate and control all aspects of the way in which Perl data gets expressed as SOAP data entities. Most of the methods are accessors, which like those in SOAP::Lite are designed to return the current value if no new one is passed, while returning the object reference otherwise (allowing for chained method calls). Note that most accessors (except value) accept a new value for the data object as a second argument. 
+The SOAP::Data class provides the means by which to explicitly manipulate and control all aspects of the way in which Perl data gets expressed as SOAP data entities. Most of the methods are accessors, which like those in SOAP::Lite are designed to return the current value if no new one is passed, while returning the object reference otherwise (allowing for chained method calls). Note that most accessors (except value) accept a new value for the data object as a second argument.
 
 =head1 METHODS
 
-=over 
+=over
 
 =item new(optional key/value pairs)
 
@@ -66,7 +66,7 @@ Fetches the current value encapsulated by the object, or explicitly sets it.
 
 =back
 
-The last four methods are convenience shortcuts for the attributes that SOAP itself supports. Each also permits inclusion of a new value, as an optional second argument. 
+The last four methods are convenience shortcuts for the attributes that SOAP itself supports. Each also permits inclusion of a new value, as an optional second argument.
 
 =over
 
@@ -145,14 +145,14 @@ The following code:
 
     $temp_elements = SOAP::Data
         ->name("CallDetails" => \SOAP::Data->value(
-              SOAP::Data->name("elem1" => 'foo'), 
-              SOAP::Data->name("elem2" => 'baz'), 
+              SOAP::Data->name("elem1" => 'foo'),
+              SOAP::Data->name("elem2" => 'baz'),
               SOAP::Data->name("someArray" => \SOAP::Data->value(
                   SOAP::Data->name("someArrayItem" => @array)
                             ->type("SomeObject"))
                        )->type("ArrayOf_SomeObject") ))
 
-	->type("SomeObject"); 
+    ->type("SomeObject");
 
     $response = $client->someMethod($temp_elements);
 
@@ -181,23 +181,23 @@ Will produce the following XML:
     </SOAP-ENV:Envelope>
 
 In the code above, the @array variable can be an array of anything. If you pass
-in an array of numbers, then SOAP::Lite will properly serialize that into such. 
-If however you need to encode an array of complex types, then simply pass in an 
+in an array of numbers, then SOAP::Lite will properly serialize that into such.
+If however you need to encode an array of complex types, then simply pass in an
 array of other SOAP::Data objects and you are all set.
 
 =head2 COMPOSING MESSAGES USING RAW XML
 
-In some circumstances you may need to encode a message using raw unserialized 
+In some circumstances you may need to encode a message using raw unserialized
 XML text. To instantiate a SOAP::Data object using raw XML, do the following:
 
     $xml_content = "<foo><bar>123</bar></foo>";
     $elem = SOAP::Data->type('xml' => $xml_content);
 
-SOAP::Lite's serializer simple takes whatever text is passed to it, and inserts 
-into the encoded SOAP::Data element I<verbatim>. The text input is NOT validated to 
-ensure it is valid XML, nor is the resulting SOAP::Data element validated to 
-ensure that it will produce valid XML. Therefore, it is incumbent upon the 
-developer to ensure that any XML data used in this fashion is valid and will 
+SOAP::Lite's serializer simple takes whatever text is passed to it, and inserts
+into the encoded SOAP::Data element I<verbatim>. The text input is NOT validated to
+ensure it is valid XML, nor is the resulting SOAP::Data element validated to
+ensure that it will produce valid XML. Therefore, it is incumbent upon the
+developer to ensure that any XML data used in this fashion is valid and will
 result in a valid XML document.
 
 =head2 MULTIPLE NAMESPACES
@@ -205,7 +205,7 @@ result in a valid XML document.
 When working with complex types it may be necessary to declare multiple namespaces. The following code demonstrates how to do so:
 
     $elem = SOAP::Data->name("myElement" => "myValue")
-                      ->attr( { 'xmlns:foo2' => 'urn:Foo2', 
+                      ->attr( { 'xmlns:foo2' => 'urn:Foo2',
                                 'xmlns:foo3' => 'urn:Foo3' } );
 
 This will produce the following XML:
@@ -214,7 +214,7 @@ This will produce the following XML:
 
 =head1 SEE ALSO
 
-L<SOAP::Header>, L<SOAP::SOM>, L<SOAP::Serializer> 
+L<SOAP::Header>, L<SOAP::SOM>, L<SOAP::Serializer>
 
 =head1 ACKNOWLEDGEMENTS
 
