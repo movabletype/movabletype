@@ -4,24 +4,20 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Lite.pm 131 2007-11-16 10:43:28Z kutterma $
+# $Id: Lite.pm 386 2011-08-18 19:48:31Z kutterma $
 #
 # ======================================================================
 
 package UDDI::Lite;
-
-use 5.004;
+use 5.006;
 use strict;
-use vars qw($VERSION);
-
-#$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name$ =~ /-(\d+)_([\d_]+)/);
-$VERSION = $SOAP::Lite::VERSION;
-
-use SOAP::Lite;
-
+{
+our $VERSION = 0.714;
+}
 # ======================================================================
 
 package UDDI::Constants;
+our $VERSION = 0.714;
 
 BEGIN
 {
@@ -146,7 +142,7 @@ BEGIN
                     tModel          => 1,
                     tModelKey       => 1
                 }
-            },    
+            },
             ATTRIBUTES => {
                 accessPoint => { URLType  => 2 },
                 address     => { sortCode => 2, useType => 2 },
@@ -710,7 +706,7 @@ BEGIN
 # ======================================================================
 
 package UDDI::SOM;
-
+our $VERSION = 0.714;
 use vars qw(@ISA);
 @ISA = qw(SOAP::SOM);
 
@@ -725,6 +721,8 @@ sub result
 # ======================================================================
 
 package UDDI::Data;
+our $VERSION = 0.714;
+
 
 use Carp ();
 
@@ -868,6 +866,7 @@ sub AUTOLOAD
 # ======================================================================
 
 package UDDI::Serializer;
+our $VERSION = 0.714;
 
 use vars qw(@ISA);
 @ISA = qw(SOAP::Serializer);
@@ -925,6 +924,7 @@ sub encode_array
 # ======================================================================
 
 package UDDI::Deserializer;
+our $VERSION = 0.714;
 
 use vars qw(@ISA);
 @ISA = qw(SOAP::Deserializer);
@@ -955,6 +955,7 @@ sub deserialize
 # ======================================================================
 
 package UDDI::Lite;
+our $VERSION = 0.714;
 
 use vars qw(@ISA $AUTOLOAD %EXPORT_TAGS);
 use Exporter;
@@ -1131,39 +1132,39 @@ UDDI::Lite - Library for UDDI clients in Perl
     -> result
     -> businessInfos->businessInfo->serviceInfos->serviceInfo->name;
 
-The same code with autodispatch: 
+The same code with autodispatch:
 
-  use UDDI::Lite +autodispatch => 
+  use UDDI::Lite +autodispatch =>
     proxy => 'http://uddi.microsoft.com/inquire'
   ;
 
   print find_business(name => 'old')
-    -> businessInfos->businessInfo->serviceInfos->serviceInfo->name;                         
+    -> businessInfos->businessInfo->serviceInfos->serviceInfo->name;
 
 Or with importing:
 
-  use UDDI::Lite 
+  use UDDI::Lite
     'UDDI::Lite' => [':inquiry'],
     proxy => 'http://uddi.microsoft.com/inquire'
   ;
 
   print find_business(name => 'old')
-    -> businessInfos->businessInfo->serviceInfos->serviceInfo->name;                         
+    -> businessInfos->businessInfo->serviceInfos->serviceInfo->name;
 
 Publishing API:
 
-  use UDDI::Lite 
-    import => ['UDDI::Data'], 
+  use UDDI::Lite
+    import => ['UDDI::Data'],
     import => ['UDDI::Lite'],
     proxy => "https://some.server.com/endpoint_fot_publishing_API";
 
   my $auth = get_authToken({userID => 'USERID', cred => 'CRED'})->authInfo;
   my $busent = with businessEntity =>
-    name("Contoso Manufacturing"), 
+    name("Contoso Manufacturing"),
     description("We make components for business"),
     businessKey(''),
     businessServices with businessService =>
-      name("Buy components"), 
+      name("Buy components"),
       description("Bindings for buying our components"),
       serviceKey(''),
       bindingTemplates with bindingTemplate =>
@@ -1178,7 +1179,7 @@ Publishing API:
 
 =head1 DESCRIPTION
 
-UDDI::Lite for Perl is a collection of Perl modules which provides a 
+UDDI::Lite for Perl is a collection of Perl modules which provides a
 simple and lightweight interface to the Universal Description, Discovery
 and Integration (UDDI) server.
 
@@ -1190,7 +1191,7 @@ The main features of the library are:
 
 =item *
 
-Supports both inquiry and publishing API 
+Supports both inquiry and publishing API
 
 =item *
 
@@ -1198,7 +1199,7 @@ Builded on top of SOAP::Lite module, hence inherited syntax and features
 
 =item *
 
-Supports easy-to-use interface with convinient access to (sub)elements
+Supports easy-to-use interface with convenient access to (sub)elements
 and attributes
 
 =item *
@@ -1249,7 +1250,7 @@ gives you additional syntax:
     proxy => 'http://uddi.microsoft.com/inquire'
   ;
 
-new() accepts hash with method names and values, and will call 
+new() accepts hash with method names and values, and will call
 appropriate method with passed value.
 
 Since new() is optional it won't be mentioned anymore.
@@ -1260,20 +1261,20 @@ Other available methods inherited from SOAP::Lite and most usable are:
 
 =item proxy()
 
-Shortcut for C<transport-E<gt>proxy()>. This lets you specify an endpoint and 
-also loads the required module at the same time. It is required for dispatching SOAP 
-calls. The name of the module will be defined depending on the protocol 
+Shortcut for C<transport-E<gt>proxy()>. This lets you specify an endpoint and
+also loads the required module at the same time. It is required for dispatching SOAP
+calls. The name of the module will be defined depending on the protocol
 specific for the endpoint. SOAP::Lite will do the rest work.
 
 =item on_fault()
 
-Lets you specify handler for on_fault event. Default behavior is die 
-on transport error and does nothing on others. You can change this 
+Lets you specify handler for on_fault event. Default behavior is die
+on transport error and does nothing on others. You can change this
 behavior globally or locally, for particular object.
 
 =item on_debug()
 
-Lets you specify handler for on_debug event. Default behavior is do 
+Lets you specify handler for on_debug event. Default behavior is do
 nothing. Use +trace/+debug option for UDDI::Lite instead.
 
 =back
@@ -1284,10 +1285,10 @@ To change to UDDI Version 2, use the following pragma:
 
 =head2 UDDI::Data
 
-You can use this class if you want to specify value and name for UDDI 
-elements. 
-For example, C<UDDI::Data-E<gt>name('businessInfo')-E<gt>value(123)> will 
-be serialized to C<E<lt>businessInfoE<gt>123E<lt>/businessInfoE<gt>>, as 
+You can use this class if you want to specify value and name for UDDI
+elements.
+For example, C<UDDI::Data-E<gt>name('businessInfo')-E<gt>value(123)> will
+be serialized to C<E<lt>businessInfoE<gt>123E<lt>/businessInfoE<gt>>, as
 well as C<UDDI::Data->name(businessInfo =E<gt> 123)>.
 
 If you want to provide names for your parameters you can either specify
@@ -1303,9 +1304,9 @@ Later has some advantages: it'll work on any level, so you can do:
   find_business(UDDI::Data->name(name => UDDI::Data->name(subname => 'old')))
 
 and also you can create arrays with this syntax:
-                         
-  find_business(UDDI::Data->name(name => 
-    [UDDI::Data->name(subname1 => 'name1'), 
+
+  find_business(UDDI::Data->name(name =>
+    [UDDI::Data->name(subname1 => 'name1'),
      UDDI::Data->name(subname2 => 'name2')]))
 
 will be serialized into:
@@ -1317,7 +1318,7 @@ will be serialized into:
     </name>
   </find_business>
 
-For standard elements more convinient syntax is available:
+For standard elements more convenient syntax is available:
 
   find_business(
     findQualifiers(findQualifier('sortByNameAsc',
@@ -1326,16 +1327,16 @@ For standard elements more convinient syntax is available:
   )
 
 and
- 
+
   find_business(
-    findQualifiers([findQualifier('sortByNameAsc'), 
-                    findQualifier('caseSensitiveMatch')]), 
+    findQualifiers([findQualifier('sortByNameAsc'),
+                    findQualifier('caseSensitiveMatch')]),
     name('M')
   )
 
 both will generate:
 
-  <SOAP-ENV:Envelope 
+  <SOAP-ENV:Envelope
     xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
     <SOAP-ENV:Body>
       <find_business xmlns="urn:uddi-org:api" generic="1.0">
@@ -1348,8 +1349,8 @@ both will generate:
     </SOAP-ENV:Body>
   </SOAP-ENV:Envelope>
 
-You can use ANY valid combinations (according to "UDDI Programmer's 
-API Specification"). If you try to generate something unusual, like 
+You can use ANY valid combinations (according to "UDDI Programmer's
+API Specification"). If you try to generate something unusual, like
 C<name(name('myname'))>, you'll get:
 
   Don't know what to do with 'name' and 'name' elements ....
@@ -1381,24 +1382,24 @@ You can get access to attributes and elements through the same interface:
           "\n";
   }
 
-To match advantages provided by C<with> operator available in other 
-languages (like VB) we provide similar functionality that adds you 
+To match advantages provided by C<with> operator available in other
+languages (like VB) we provide similar functionality that adds you
 flexibility:
 
-    with findQualifiers => 
+    with findQualifiers =>
       findQualifier => 'sortByNameAsc',
       findQualifier => 'caseSensitiveMatch'
 
-is the same as: 
+is the same as:
 
-    with(findQualifiers => 
+    with(findQualifiers =>
       findQualifier('sortByNameAsc'),
       findQualifier('caseSensitiveMatch'),
     )
 
 and:
 
-    findQualifiers->with( 
+    findQualifiers->with(
       findQualifier('sortByNameAsc'),
       findQualifier('caseSensitiveMatch'),
     )
@@ -1408,23 +1409,23 @@ will all generate the same code as mentioned above:
     findQualifiers(findQualifier('sortByNameAsc',
                                  'caseSensitiveMatch')),
 
-Advantage of C<with> syntax is the you can specify both attributes and 
-elements through the same interface. First argument is element where all 
-other elements and attributes will be attached. Provided examples and 
+Advantage of C<with> syntax is the you can specify both attributes and
+elements through the same interface. First argument is element where all
+other elements and attributes will be attached. Provided examples and
 tests cover different syntaxes.
 
 =head2 AUTODISPATCHING
 
-UDDI::Lite provides autodispatching feature that lets you create 
+UDDI::Lite provides autodispatching feature that lets you create
 code that looks similar for local and remote access.
 
 For example:
 
-  use UDDI::Lite +autodispatch => 
+  use UDDI::Lite +autodispatch =>
     proxy => 'http://uddi.microsoft.com/inquire';
 
-tells autodispatch all UDDI calls to 
-'http://uddi.microsoft.com/inquire'. All subsequent calls can look 
+tells autodispatch all UDDI calls to
+'http://uddi.microsoft.com/inquire'. All subsequent calls can look
 like:
 
   find_business(name => 'old');
@@ -1441,7 +1442,7 @@ Interface is still subject to change.
 
 =item *
 
-Though HTTPS/SSL is supported you should specify it yourself (with 
+Though HTTPS/SSL is supported you should specify it yourself (with
 C<proxy> or C<endpoint>) for publishing API calls.
 
 =back
@@ -1449,8 +1450,8 @@ C<proxy> or C<endpoint>) for publishing API calls.
 =head1 AVAILABILITY
 
 For now UDDI::Lite is distributed as part of SOAP::Lite package.
-You can download it from ( http://soaplite.com/ ) 
-or from CPAN ( http://search.cpan.org/search?dist=SOAP-Lite ).  
+You can download it from ( http://soaplite.com/ )
+or from CPAN ( http://search.cpan.org/search?dist=SOAP-Lite ).
 
 =head1 SEE ALSO
 

@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Server.pod 98 2007-10-09 09:41:55Z kutterma $
+# $Id: Server.pod 381 2011-08-15 19:28:43Z kutterma $
 #
 # ======================================================================
 
@@ -16,7 +16,7 @@ SOAP::Server - provides the basic framework for the transport-specific server cl
 
 =head1 DESCRIPTION
 
-The SOAP::Server class provides the basic framework for the transport-specific server classes to build upon. Note that in none of the code examples provided with SOAP::Lite is this class used directly. Instead, it is designed to be a superclass within more specific implementation classes. The methods provided by SOAP::Server itself are: 
+The SOAP::Server class provides the basic framework for the transport-specific server classes to build upon. Note that in none of the code examples provided with SOAP::Lite is this class used directly. Instead, it is designed to be a superclass within more specific implementation classes. The methods provided by SOAP::Server itself are:
 
 =head1 METHODS
 
@@ -62,7 +62,7 @@ Sets (or retrieves) the current server options as a hash-table  reference. At pr
 The value of this option is expected to be a numerical value. If set, and if the Compress::Zlib library is available to use, messages whose size in bytes exceeds this value are compressed for transmission. Both
 ends of the conversation have to support this and have it enabled.
 
-=back 
+=back
 
 Other options may be defined and passed around using this mechanism. Note that setting the options using this accessor requires a full hash reference be passed. To set just one or a few values, retrieve the current reference value and use it to set the key(s).
 
@@ -149,7 +149,7 @@ The name of the method being called by the request.
 
 Gets or sets the subroutine reference used for the on_dispatch hook. This hook is called at the start of the request-routing phase and is given a single argument when called:
 
-=over 
+=over
 
 =item request
 
@@ -197,9 +197,9 @@ Creates a SOAP::Fault object from the data passed in. The order of arguments is:
 
 This class provides two methods, but the primary purpose from the developer's point of view is to allow classes that a SOAP server exposes to inherit from it. When a class inherits from the SOAP::Server::Parameters class, the list of parameters passed to a called method includes the deserialized request in the form of a L<SOAP::SOM> object. This parameter is passed at the end of the arguments list, giving methods the option of ignoring it unless it is needed.
 
-The class provides two subroutines (not methods), for retrieving parameters from the L<SOAP::SOM> object. These are designed to be called without an object reference in the parameter list, but with an array reference instead (as the first parameter). The remainder of the arguments list is expected to be the list from the method-call itself, including the SOAP::SOM object at the end of the list. The routines may be useful to understand if an application wishes to subclass SOAP::Server::Parameters and inherit from the new class instead. 
+The class provides two subroutines (not methods), for retrieving parameters from the L<SOAP::SOM> object. These are designed to be called without an object reference in the parameter list, but with an array reference instead (as the first parameter). The remainder of the arguments list is expected to be the list from the method-call itself, including the SOAP::SOM object at the end of the list. The routines may be useful to understand if an application wishes to subclass SOAP::Server::Parameters and inherit from the new class instead.
 
-=over 
+=over
 
 =item byNameOrOrder(order, parameter list, envelope)
 

@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: SOM.pod 98 2007-10-09 09:41:55Z kutterma $
+# $Id: SOM.pod 381 2011-08-15 19:28:43Z kutterma $
 #
 # ======================================================================
 
@@ -40,7 +40,7 @@ As said, the need to actually create an object of this class should be very rare
 
 =back
 
-The following group of methods provide general data retrieval from the SOAP::SOM object. The model for this is an abbreviated form of XPath. Following this group are methods that are geared towards specific retrieval of commonly requested elements. 
+The following group of methods provide general data retrieval from the SOAP::SOM object. The model for this is an abbreviated form of XPath. Following this group are methods that are geared towards specific retrieval of commonly requested elements.
 
 =over
 
@@ -221,7 +221,7 @@ Suppose the following SOAP Envelope:
 
 Then to print the attribute 'test' use the following code:
 
-    print "The attribute is: " . 
+    print "The attribute is: " .
       $som->dataof('//c2fResponse/convertedTemp')->attr->{'test'};
 
 =head2 ITERATING OVER AN ARRAY
@@ -233,11 +233,11 @@ Suppose for the following SOAP Envelope:
         <catalog>
           <product>
             <title>Programming Web Service with Perl</title>
-            <price>$29.95</price> 
+            <price>$29.95</price>
           </product>
           <product>
             <title>Perl Cookbook</title>
-            <price>$49.95</price> 
+            <price>$49.95</price>
           </product>
         </catalog>
       </Body>

@@ -30,8 +30,8 @@ BEGIN {
         ),
         (eval {require POSIX}
             ? map {
-                eval { POSIX->can($_)->() }
-                    ? (POSIX->can($_)->() => 1)
+                POSIX->can($_) && eval { POSIX->can($_)->() }
+                ? (POSIX->can($_)->() => 1)
                     : ()
                 } @names
             : ()

@@ -10,11 +10,11 @@ sub anyTypeValue { 'ur-type' }
 sub as_string; *as_string = \&SOAP::Lite::Deserializer::XMLSchemaSOAP1_1::as_string;
 sub as_boolean; *as_boolean = \&SOAP::Lite::Deserializer::XMLSchemaSOAP1_1::as_boolean;
 
-sub as_hex { 
-    shift; 
-    my $value = shift; 
-    $value =~ s/([a-zA-Z0-9]{2})/chr oct '0x'.$1/ge; 
-    $value 
+sub as_hex {
+    shift;
+    my $value = shift;
+    $value =~ s/([a-zA-Z0-9]{2})/chr oct '0x'.$1/ge;
+    $value
 }
 
 sub as_ur_type { $_[1] }
@@ -23,9 +23,9 @@ sub as_undef {
     shift;
     my $value = shift;
     $value eq '1' || $value eq 'true'
-        ? 1 
+        ? 1
         : $value eq '0' || $value eq 'false'
-            ? 0 
+            ? 0
             : die "Wrong null/nil value '$value'\n";
 }
 

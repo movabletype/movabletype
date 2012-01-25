@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Transport.pod 98 2007-10-09 09:41:55Z kutterma $
+# $Id: Transport.pod 386 2011-08-18 19:48:31Z kutterma $
 #
 # ======================================================================
 
@@ -16,7 +16,7 @@ SOAP::Transport - an abstract class extended by more specialized transport modul
 
 =head1 DESCRIPTION
 
-Objects of the SOAP::Transport class manage two roles: they manage both the parameters related to transport as set through the containing SOAP::Lite object, and they abstract the selection and loading of an appropriate transport module. This is done with an AUTOLOAD function within the class that intercepts all methods beyond the two defined next and reroutes them to the underlying transport implementation code. 
+Objects of the SOAP::Transport class manage two roles: they manage both the parameters related to transport as set through the containing SOAP::Lite object, and they abstract the selection and loading of an appropriate transport module. This is done with an AUTOLOAD function within the class that intercepts all methods beyond the two defined next and reroutes them to the underlying transport implementation code.
 
 =head1 METHODS
 
@@ -38,7 +38,7 @@ Gets or sets the proxy (endpoint). This method must be called before any other m
 
 =head1 SOAP Transport Sub-Classes
 
-Because the bulk of the work is done within the C<SOAP::Lite> module itself, many of the transport-level modules are very simple in their implementations. Transport modules are expected to define both client and server classes within their files. If a module defines only one of the types, it is assumed that the transport protocol itself supports only that side of the conversation. An example is L<SOAP::Transport::FTP>, which provides only a C<SOAP::Transport::FTP::Client> class. 
+Because the bulk of the work is done within the C<SOAP::Lite> module itself, many of the transport-level modules are very simple in their implementations. Transport modules are expected to define both client and server classes within their files. If a module defines only one of the types, it is assumed that the transport protocol itself supports only that side of the conversation. An example is L<SOAP::Transport::FTP>, which provides only a C<SOAP::Transport::FTP::Client> class.
 
 L</"SOAP::Transport::FTP"> - Client class only
 
@@ -60,7 +60,7 @@ L</"SOAP::Transport::TCP"> - Server and Client classes
 
 =head2 METHODS
 
-Each SOAP::Transport sub-class is expected to define (or inherit, if it is subclassing another transport class) at least two methods. Any newly developed transport classes are also expected to adhere to this interface. Clients are expected to implement the C<new> and C<send_receive> methods, and servers are expected to implement the C<new> and C<handle> methods. Here they are: 
+Each SOAP::Transport sub-class is expected to define (or inherit, if it is subclassing another transport class) at least two methods. Any newly developed transport classes are also expected to adhere to this interface. Clients are expected to implement the C<new> and C<send_receive> methods, and servers are expected to implement the C<new> and C<handle> methods. Here they are:
 
 =over
 
@@ -76,7 +76,7 @@ Creates a new object instance and returns it. Like the constructors for both C<S
 
 (Required for client classes only) When the SOAP::Lite objects attempt to send out requests, the means for doing so is to attempt to call this method on the object held within the SOAP::Transport object contained within the client itself. All clients are expected to provide this, and the call to this method always passes four values for the hash keys:
 
-=over 
+=over
 
 =item action
 
@@ -108,32 +108,22 @@ Attachments to add to the request. Currently this only supports an array of MIME
 
 =back
 
-=head2 SOAP::Transport::FTP
-
-The SOAP::Transport::FTP module is automatically loaded by the SOAP::Transport portion of the client structure. It is brought in when an endpoint is specified via the proxy method that starts with the characters, ftp://. This module provides only a client class. 
-
-=head3 SOAP::Transport::FTP::Client
-
-Inherits from: L<SOAP::Client>. 
-
-Support is provided for clients to connect to FTP servers using SOAP. The methods defined within the class are just the basic new and send_receive. 
-
 =head2 SOAP::Transport::HTTP
 
-The most commonly used transport module is the HTTP implementation. This is loaded whenever an endpoint is given that starts with the characters, http:// or https://. This is also the most involved of the transport modules, defining not only a client class but several different server classes as well. 
+The most commonly used transport module is the HTTP implementation. This is loaded whenever an endpoint is given that starts with the characters, http:// or https://. This is also the most involved of the transport modules, defining not only a client class but several different server classes as well.
 
 =head3 HTTP PROXY SETTINGS
 
 Because C<SOAP::Client> inherits from C<LWP::UserAgent>, you can use any of C<LWP::UserAgent>'s proxy settings. For example:
 
-   SOAP::Lite->proxy("http://endpoint.server/", 
+   SOAP::Lite->proxy("http://endpoint.server/",
                      proxy => ["http" => "http://my.proxy.server"]);
 
 or
 
    $soap->transport->proxy("http" => "http://my.proxy.server");
 
-The above code samples should specify a proxy server for you. And should you use C<HTTP_proxy_user> 
+The above code samples should specify a proxy server for you. And should you use C<HTTP_proxy_user>
 and C<HTTP_proxy_pass> for proxy authorization, C<SOAP::Lite> will handle it properly.
 
 =head3 HTTP BASIC AUTHENTICATION
@@ -141,7 +131,7 @@ and C<HTTP_proxy_pass> for proxy authorization, C<SOAP::Lite> will handle it pro
 HTTP Basic authentication is accomplished by overriding the get_basic_credentials suboutine in C<LWP::UserAgent> (which C<SOAP::Transport::HTTP::Client> is a subclass):
 
   BEGIN {
-    sub SOAP::Transport::HTTP::Client::get_basic_credentials { 
+    sub SOAP::Transport::HTTP::Client::get_basic_credentials {
       return 'username' => 'password';
     }
   }
@@ -156,7 +146,7 @@ HTTP Basic authentication is accomplished by overriding the get_basic_credential
 
 Or, alternatively, you can do the above on a single line:
 
-  $soap->proxy('http://localhost/', 
+  $soap->proxy('http://localhost/',
                cookie_jar => HTTP::Cookies->new(ignore_discard => 1));
 
 Cookies will be taken from the response and provided to the request. You may access and manipulate cookies received, as well as add cookies of your own by using the C<HTTP::Cookies> interfaces.
@@ -178,7 +168,7 @@ http://groups.yahoo.com/group/soaplite/message/729
 
 SOAP::Lite provides you with the option for enabling compression over the wire using HTTP I<only> in both the server and client contexts, provided that you have L<Compress::Zlib> installed. Compression and decompression is done transparantly to your application.
 
-A server will respond with an encoded/compressed message only if the client has asserted that it can accept it (indicated by client sending an C<Accept-Encoding> HTTP header with a 'deflate' or '*' value). 
+A server will respond with an encoded/compressed message only if the client has asserted that it can accept it (indicated by client sending an C<Accept-Encoding> HTTP header with a 'deflate' or '*' value).
 
 C<SOAP::Lite> clients all have fallback logic implemented so that if a server doesn't understand the specified encoding (i.e. "Content-Encoding: deflate") and returns the proper HTTP status code (415 NOT ACCEPTABLE), the client will repeat the request without using encoding/compression. The client will then store this server in a per-session cache, so that all subsequent requests to that server will be transmitted without encoding.
 
@@ -205,14 +195,14 @@ See also: L<Compress::Zlib>
 
 =head3 SOAP::Transport::HTTP::Client
 
-Inherits from: L<SOAP::Client>, L<LWP::UserAgent> (from the LWP package). 
+Inherits from: L<SOAP::Client>, L<LWP::UserAgent> (from the LWP package).
 
-With this class, clients are able to use HTTP for sending messages. This class provides just the basic new and send_receive methods. Objects of this class understand the compress_threshold option and use it if the server being communicated to also understands it. 
+With this class, clients are able to use HTTP for sending messages. This class provides just the basic new and send_receive methods. Objects of this class understand the compress_threshold option and use it if the server being communicated to also understands it.
 
 =head4 CHANGING THE DEFAULT USERAGENT CLASS
 
 By default, C<SOAP::Transport::HTTP::Client> extends C<LWP::UserAgent>.
-But under some circumstances, a user may wish to change the default 
+But under some circumstances, a user may wish to change the default
 UserAgent class with their in order to better handle persist connections, or
 to C<LWP::UserAgent::ProxyAny>, for example, which has better Win32/Internet
 Explorer interoperability.
@@ -253,19 +243,28 @@ This is true for all initialization parameters and methods of C<LWP::UserAgent>.
 
 =item http_request
 
-This method gives you acess to the HTTP Request object that will be, or was transmitted to a SOAP Server. It returns a L<HTTP::Request> object.
+This method gives you access to a prototype of the HTTP Request object that
+will be transmitted to a SOAP::Server. The actual request used is a copy of
+that object.
+
+Do not use this method for anything else than setting prototypic behaviour for
+the client object.
 
 =item http_response
 
-This method gives you acess to the HTTP Response object that will be, or was transmitted to a SOAP Server. It returns a L<HTTP::Response> object.
+This method gives you access to the HTTP Response object that will be, or was
+transmitted to a SOAP Server. It returns a L<HTTP::Response> object.
 
 =back
 
 =head3 SOAP::Transport::HTTP::Server
 
-Inherits from: L<SOAP::Server>. 
+Inherits from: L<SOAP::Server>.
 
-This is the most basic of the HTTP server implementations. It provides the basic methods, new and handle. The handle method's behavior is defined here, along with other methods specific to this class. The role of this class is primarily to act as a superclass for the other HTTP-based server classes. 
+This is the most basic of the HTTP server implementations. It provides the
+ basic methods, new and handle. The handle method's behavior is defined here,
+ along with other methods specific to this class. The role of this class is
+ primarily to act as a superclass for the other HTTP-based server classes.
 
 =over
 
@@ -273,7 +272,9 @@ This is the most basic of the HTTP server implementations. It provides the basic
 
     $server->handle;
 
-Expects the request method to have been used to associate a HTTP::Request object with the server object prior to being called. This method retrieves that object reference to get at the request being handled.
+Expects the request method to have been used to associate a HTTP::Request
+object with the server object prior to being called. This method retrieves
+that object reference to get at the request being handled.
 
 =item request(I<optional value>)
 
@@ -307,9 +308,9 @@ This method takes no arguments and simply returns a string identifying the eleme
 
 =head3 SOAP::Transport::HTTP::CGI
 
-Inherits from: L<SOAP::Transport::HTTP::Server>. 
+Inherits from: L<SOAP::Transport::HTTP::Server>.
 
-This class is a direct subclass of SOAP::Transport::HTTP::Server and defines no additional methods. It includes logic in its implementation of the handle method that deals with the request headers and parameters specific to a CGI environment. 
+This class is a direct subclass of SOAP::Transport::HTTP::Server and defines no additional methods. It includes logic in its implementation of the handle method that deals with the request headers and parameters specific to a CGI environment.
 
 =head4 EXAMPLE CGI
 
@@ -352,16 +353,16 @@ B<soap.cgi>
   use SOAP::Transport::HTTP;
 
   SOAP::Transport::HTTP::CGI
-    ->dispatch_to('/Your/Path/To/Deployed/Modules', 'Module::Name', 'Module::method') 
+    ->dispatch_to('/Your/Path/To/Deployed/Modules', 'Module::Name', 'Module::method')
     ->handle;
 
 I<WARNING: Dynamic deployments with C<Apache::Registry> will fail because the module will be only loaded dynamically the first time. Subsequent calls will produce "denied access" errors because once the module is already in memory C<SOAP::Lite> will bypass dynamic deployment. To work around this, simply specify both the full PATH and MODULE name in C<dispatch_to()> and the module will be loaded dynamically, but will then work as if under static deployment. See F<examples/server/soap.mod_cgi> as an example.>
 
 =head3 SOAP::Transport::HTTP::Daemon
 
-Inherits from: L<SOAP::Transport::HTTP::Server>. 
+Inherits from: L<SOAP::Transport::HTTP::Server>.
 
-The SOAP::Transport::HTTP::Daemon class encapsulates a reference to an object of the HTTP::Daemon class (from the LWP package). The class catches methods that aren't provided locally or by the superclass and attempts to call them on the HTTP::Daemon object. Thus, all methods defined in the documentation for that class are available to this class as well. Any that conflict with methods in SOAP::Transport::HTTP::Server (such as product_tokens) go to the superclass. Additionally, the behavior of the handle method is specific to this class: 
+The SOAP::Transport::HTTP::Daemon class encapsulates a reference to an object of the HTTP::Daemon class (from the LWP package). The class catches methods that aren't provided locally or by the superclass and attempts to call them on the HTTP::Daemon object. Thus, all methods defined in the documentation for that class are available to this class as well. Any that conflict with methods in SOAP::Transport::HTTP::Server (such as product_tokens) go to the superclass. Additionally, the behavior of the handle method is specific to this class:
 
 =over
 
@@ -384,21 +385,21 @@ Often when implementing an HTTP daemon, sockets will get tied up when you try to
   # change LocalPort to 81 if you want to test it with soapmark.pl
   my $daemon = SOAP::Transport::HTTP::Daemon
     -> new (LocalAddr => 'localhost', LocalPort => 80)
-    # specify list of objects-by-reference here 
+    # specify list of objects-by-reference here
     -> objects_by_reference(qw(My::PersistentIterator My::SessionIterator My::Chat))
     # specify path to My/Examples.pm here
-    -> dispatch_to('/Your/Path/To/Deployed/Modules', 'Module::Name', 'Module::method') 
+    -> dispatch_to('/Your/Path/To/Deployed/Modules', 'Module::Name', 'Module::method')
   ;
   print "Contact to SOAP server at ", $daemon->url, "\n";
   $daemon->handle;
 
 =head3 SOAP::Transport::HTTP::Apache
 
-Inherits from: L<SOAP::Transport::HTTP::Server>. 
+Inherits from: L<SOAP::Transport::HTTP::Server>.
 
-This class provides an integration of the SOAP::Server base class with the mod_perl extension for Apache. To work as a location handler, the package provides a method called handler, for which handle is made an alias. The new method isn't functionally different from the superclass. Here are the other methods provided by this class: 
+This class provides an integration of the SOAP::Server base class with the mod_perl extension for Apache. To work as a location handler, the package provides a method called handler, for which handle is made an alias. The new method isn't functionally different from the superclass. Here are the other methods provided by this class:
 
-=over 
+=over
 
 =item handler(I<Apache request>)
 
@@ -441,7 +442,7 @@ B<SOAP::Apache.pm>
   package SOAP::Apache;
   use SOAP::Transport::HTTP;
   my $server = SOAP::Transport::HTTP::Apache
-    ->dispatch_to('/Your/Path/To/Deployed/Modules', 'Module::Name', 'Module::method'); 
+    ->dispatch_to('/Your/Path/To/Deployed/Modules', 'Module::Name', 'Module::method');
   sub handler { $server->handler(@_) }
   1;
 
@@ -449,19 +450,19 @@ See also L<Apache::SOAP>.
 
 =head3 SOAP::Transport::HTTP::FCGI
 
-Inherits from: L<SOAP::Transport::HTTP::CGI>. 
+Inherits from: L<SOAP::Transport::HTTP::CGI>.
 
-This is an extension of the SOAP::Transport::HTTP::CGI that implements the differences needed for the FastCGI protocol. None of the methods are functionally different. 
+This is an extension of the SOAP::Transport::HTTP::CGI that implements the differences needed for the FastCGI protocol. None of the methods are functionally different.
 
 =head2 SOAP::Transport::IO
 
-The SOAP::Transport::IO-based class allows for a sort of I/O proxying by allowing the application to configure what files or filehandles are used. This module supplies only a server class. 
+The SOAP::Transport::IO-based class allows for a sort of I/O proxying by allowing the application to configure what files or filehandles are used. This module supplies only a server class.
 
 =head3 SOAP::Transport::IO::Server
 
-Inherits from: L<SOAP::Server>. 
+Inherits from: L<SOAP::Server>.
 
-The server class defined here inherits all methods from SOAP::Server, and adds two additional methods specific to the nature of the class: 
+The server class defined here inherits all methods from SOAP::Server, and adds two additional methods specific to the nature of the class:
 
 =over
 
@@ -479,49 +480,14 @@ Gets or sets the filehandle being used as the output destination.
 
 =back
 
-=head2 SOAP::Transport::JABBER
-
-This class uses the Net::Jabber classes to abstract the Jabber protocol away from the direct notice of the application. Besides maintaining any needed objects internally, the package also uses a separate class as a proxy between communication layers, SOAP::Transport::JABBER::Query. The Jabber support provides both client and server classes. 
-
-=head3 SOAP::Transport::JABBER::Client
-
-Inherits from: L<SOAP::Client>, L<Net::Jabber::Client>. 
-This class provides localized implementations for both the new and send_receive methods, neither of which are changed in terms of interface. The only difference is that the send_receive method doesn't directly use the action hash key on the input it receives. In addition to these two basic methods, the server class overrides the endpoint
-method it would otherwise inherit from SOAP::Client: 
-
-=over
-
-=item endpoint
-
-In the general sense, this still acts as a basic accessor method, with the same get value/set value behavior used consistently through the SOAP::Lite module. The difference between this version and most others is that when the endpoint is initially set or is changed, the client object makes the connection to the Jabber endpoint, sending the proper authentication credentials and setting up the conversation mechanism using the SOAP::Transport::JABBER::Query class as a delegate. It then calls the superclass endpoint method to ensure that all other related elements are taken care of.
-
-=back
-
-=head3 SOAP::Transport::JABBER::Server
-
-Inherits from: L<SOAP::Server>. 
-
-The server class provided for Jabber support defines a slightly different interface to the constructor. The server manages the Jabber communication by means of an internal Net::Jabber::Client instance. In a fashion similar to that used by SOAP::Transport::HTTP::Daemon, the server class catches methods that are meant for the Jabber client and treats them as if the class inherits directly from that class, without actually doing so. In doing so, the handle method is implemented as a frontend to the Process method of the Jabber client class. The difference in the interface to the constructor is: 
-
-=over
-
-=item new(I<URI>, I<optional server key/value options>)
-
-    $srv = SOAP::Transport::JABBER::Server-> new($uri);
-
-The constructor for the class expects that the first argument will be a Jabber-style URI, followed by the standard set of optional key/value pairs of method names and their parameters. All the method/parameter
-pairs are delegated to the superclass constructor; only the Jabber URI is handled locally. It's used to set up the Net::Jabber::Client instance that manages the actual communications.
-
-=back
-
 =head2 SOAP::Transport::LOCAL
 
-The SOAP::Transport::LOCAL module is designed to provide a no-transport client class for tracing and debugging communications traffic. It links SOAP::Client and SOAP::Server so that the same object that "sends" the request also "receives" it. 
+The SOAP::Transport::LOCAL module is designed to provide a no-transport client class for tracing and debugging communications traffic. It links SOAP::Client and SOAP::Server so that the same object that "sends" the request also "receives" it.
 
 =head3 SOAP::Transport::LOCAL::Client
 
-Inherits from: L<SOAP::Client>, L<SOAP::Server>. 
-The implementations of the new and send_receive methods aren't noticeably different in their interface. Their behavior warrants description, however: 
+Inherits from: L<SOAP::Client>, L<SOAP::Server>.
+The implementations of the new and send_receive methods aren't noticeably different in their interface. Their behavior warrants description, however:
 
 =over
 
@@ -537,74 +503,15 @@ The implementation of this method simply passes the envelope portion of the inpu
 
 =head2 SOAP::Transport::MAILTO
 
-This transport class manages SMTP-based sending of messages from a client perspective. It doesn't provide a server class. The class gets selected when a client object passes a URI to proxy or endpoint that starts with the characters, mailto:. 
+This transport class manages SMTP-based sending of messages from a client perspective. It doesn't provide a server class. The class gets selected when a client object passes a URI to proxy or endpoint that starts with the characters, mailto:.
 
 =head3 SOAP::Transport::MAILTO::Client
 
-Inherits from: L<SOAP::Client>. 
+Inherits from: L<SOAP::Client>.
 
 The client class for this protocol doesn't define any new methods. The constructor functions in the same style as the others class constructors. The functionality of the send_receive method is slightly different from other classes, however.
 
-When invoked, the send_receive method uses the MIME::Lite package to encapsulate and transmit the message. Because mail messages are one-way communications (the reply being a separate process), there is no response message to be returned by the method. Instead, all the status-related attributes (code, message, status, is_success) are set, and no value is explicitly returned. 
-
-=head2 SOAP::Transport::MQ
-
-This class provides implementations of both client and server frameworks built on IBM's Message Queue set of classes. The SOAP objects encapsulate additional objects from these classes, creating and using them behind the scenes as needed. 
-
-=head3 SOAP::Transport::MQ::Client
-
-Inherits from: L<SOAP::Client>. 
-
-The client class provides two methods specific to it, as well as specialized versions of the endpoint and send_receive methods. It also provides a localized new method, but the interface isn't changed from the superclass method. The new methods are: 
-
-=over 
-
-=item requestqueue
-
-    $client->requestqueue->Put(message => $request);
-
-Manages the MQSeries::Queue object the client uses for enqueuing requests to the server. In general, an application shouldn't need to directly access this attribute, let alone set it. If setting it, the new value should be an object of (or derived from) the MQSeries::Queue class.
-
-=item replyqueue
-
-    $client->replyqueue(MQSeries::Queue->new(%args));
-
-Manages the queue object used for receiving messages back from the designated server (endpoint). It is also primarily for internal use, though if the application needs to set it explicitly, the new value should be an object of (or derived from) the MQSeries::Queue class.
-
-=back
-
-The two previous methods are mainly used by the localized versions of the methods: 
-
-=over
-
-=item endpoint
-
-This accessor method has the same interface as other similar classes but is worth noting for the internal actions that take place. When the endpoint is set or changed, the method creates a queue-manager object (from the MQSeries::QueueManager class) and references this object when creating queues for replies and requests using the methods described earlier. The URI structure used with these classes (strings beginning with the characters mq://user@host:port) contains the information needed for these operations.
-
-=item send_receive
-
-This method uses the same interface as other classes, but makes use of only the endpoint and envelope keys in the hash-table input data. The endpoint key is needed only if the client wishes to switch endpoints prior to sending the message. The message (the value of the envelope key) is inserted into the queue stored in the requestqueue attribute. The client then waits for a reply to the message to appear in the queue stored in the replyqueue attribute.
-
-=back
-
-=head3 SOAP::Transport::MQ::Server
-
-Inherits from: L<SOAP::Server>. 
-
-The server class also defines requestqueue and replyqueue methods under the same terms as the client class. Of course, the server reads from the request queue and writes to the reply queue, the opposite of the client's behavior.
-The methods whose functionality are worth noting are: 
-
-=over
-
-=item new(URI, optional parameters)
-
-When called, the constructor creates the MQSeries::QueueManager object and the two MQSeries::Queue objects, similar to what the client does inside its endpoint method. Like the Jabber server described earlier, the first argument to this constructor is expected to be the URI that describes the server itself. The remainder of the arguments are treated as key/value pairs, as with other class constructors previously described.
-
-=item handle
-
-When this method is called, it attempts to read a pending message from the request-queue stored on the requestqueue attribute. The message itself is passed to the handle method of the superclass, and the result from that operation is enqueued to the replyqueue object. This process loops until no more messages are present in the request queue. The return value is the number of messages processed. The reads from the request queue are done in a nonblocking fashion, so if there is no message pending, the method immediately returns with a value of zero.
-
-=back
+When invoked, the send_receive method uses the MIME::Lite package to encapsulate and transmit the message. Because mail messages are one-way communications (the reply being a separate process), there is no response message to be returned by the method. Instead, all the status-related attributes (code, message, status, is_success) are set, and no value is explicitly returned.
 
 =head2 SOAP::Transport::POP3
 
@@ -612,76 +519,15 @@ POP3 support is limited to a server implementation. Just as the MAILTO class det
 
 =head3 SOAP::Transport::POP3::Server
 
-Inherits from: L<SOAP::Server>. 
+Inherits from: L<SOAP::Server>.
 
-The new method of this class creates an object of the Net::POP3 class to use internally for polling a specified POP3 server for incoming messages. When an object of this class is created, it expects an endpoint to be specified with a URI that begins with the characters pop:// and includes user ID and password information as well as the hostname itself. 
+The new method of this class creates an object of the Net::POP3 class to use internally for polling a specified POP3 server for incoming messages. When an object of this class is created, it expects an endpoint to be specified with a URI that begins with the characters pop:// and includes user ID and password information as well as the hostname itself.
 
 The handle method takes the messages present in the remote mailbox and passes them (one at a time) to the superclass handle method. Each message is deleted after being routed. All messages in the POP3 mailbox are presumed to be SOAP messages.
 
 Methods for the Net::POP3 object are detected and properly routed, allowing operations such as $server->ping( ).
 
-This means that the endpoint string doesn't need to provide the user ID and password because the login method from the POP3 API may be used directly. 
-
-=head2 SOAP::Transport::TCP
-
-The classes provided by this module implement direct TCP/IP communications methods for both clients and servers.
-
-The connections don't use HTTP or any other higher-level protocol. These classes are selected when the client or server object being created uses an endpoint URI that starts with tcp://. Both client and server classes support using Secure Socket Layer if it is available. If any of the parameters to a new method from either of the classes begins with SSL_ (such as SSL_server in place of Server), the class attempts to load the IO::Socket::SSL package and use it to create socket objects. 
-
-Both of the following classes catch methods that are intended for the socket objects and pass them along, allowing calls such as $client->accept( ) without including the socket class in the inheritance tree. 
-
-=head3 SOAP::Transport::TCP::Client
-
-Inherits from: L<SOAP::Client>. 
-
-The TCP client class defines only two relevant methods beyond new and send_receive. These methods are: 
-
-=over
-
-=item SSL(I<optional new boolean value>)
-
-    if ($client->SSL) # Execute only if in SSL mode
-
-Reflects the attribute that denotes whether the client object is using SSL sockets for communications.
-
-=item io_socket_class
-
-    ($client->io_socket_class)->new(%options);
-
-Returns the name of the class to use when creating socket objects for internal use in communications. As implemented, it returns one of IO::Socket::INET or IO::Socket::SSL, depending on the return value of the previous SSL method.
-
-=back
-
-If an application creates a subclass that inherits from this client class, either method is a likely target for overloading.
-
-The new method behaves identically to most other classes, except that it detects the presence of SSL-targeted values in the parameter list and sets the SSL method appropriately if they are present. 
-
-The send_receive method creates a socket of the appropriate class and connects to the configured endpoint. It then sets the socket to nonblocking I/O, sends the message, shuts down the client end of the connection (preventing further writing), and reads the response back from the server. The socket object is discarded after the response and
-appropriate status codes are set on the client object.
-
-=head3 SOAP::Transport::TCP::Server
-
-Inherits from: L<SOAP::Server>. 
-
-The server class also defines the same two additional methods as in the client class: 
-
-=over
-
-=item SSL(I<optional new boolean value>)
-
-    if ($client->SSL) # Execute only if in SSL mode
-
-Reflects the attribute that denotes whether the client object is using SSL sockets for communications.
-
-=item io_socket_class
-
-    ($client->io_socket_class)->new(%options);
-
-Returns the name of the class to use when creating socket objects for internal use in communications. As implemented, it returns one of IO::Socket::INET or IO::Socket::SSL, depending on the return value of the previous SSL method. The new method also manages the automatic selection of SSL in the same fashion as the client class does. 
-
-The handle method in this server implementation isn't designed to be called once with each new request. Rather, it is called with no arguments, at which time it enters into an infinite loop of waiting for a connection, reading the request, routing the request and sending back the serialized response. This continues until the process itself is interrupted by an untrapped signal or similar means. 
-
-=back
+This means that the endpoint string doesn't need to provide the user ID and password because the login method from the POP3 API may be used directly.
 
 =head1 ACKNOWLEDGEMENTS
 
