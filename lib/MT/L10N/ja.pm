@@ -4518,6 +4518,7 @@ use vars qw( @ISA %Lexicon );
 	'Tagged: [_1]' => 'タグ: [_1]',
 	'View all entries' => 'すべてのブログ記事を表示',
 	'No entries have been created in this blog. <a href="[_1]">Create a entry</a>' => 'このブログには記事が見つかりません。<a href="[_1]">記事を作成</a>する。',
+	'No entries have been created in this blog.' => 'このブログには記事が見つかりません。',
 
 ## tmpl/cms/widget/blog_stats_recent_entries.tmpl
 	'[quant,_1,entry,entries] tagged &ldquo;[_2]&rdquo;' => 'タグ&ldquo;[_2]&rdquo;の付いたブログ記事([quant,_1,件,件])',

@@ -4514,6 +4514,7 @@ use vars qw( @ISA %Lexicon );
 	'Tagged: [_1]' => 'avec le tag : [_1]',
 	'View all entries' => 'Voir toutes les notes',
 	'No entries have been created in this blog. <a href="[_1]">Create a entry</a>' => 'Aucune note n\'a été créé dans ce blog. <a href="[_1]">Créer une note</a>',
+	'No entries have been created in this blog.' => 'Aucune note n\'a été créé dans ce blog.',
 
 ## tmpl/cms/widget/blog_stats_recent_entries.tmpl
 	'[quant,_1,entry,entries] tagged &ldquo;[_2]&rdquo;' => '[quant,_1,note,notes] avec le tag &ldquo;[_2]&rdquo;',

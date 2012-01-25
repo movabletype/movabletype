@@ -4511,6 +4511,7 @@ use vars qw( @ISA %Lexicon );
 	'Tagged: [_1]' => 'Getaggt: [_1]',
 	'View all entries' => 'Alle Einträge',
 	'No entries have been created in this blog. <a href="[_1]">Create a entry</a>' => 'In diesem Blog wurden noch keine Einträge angelegt. <a href="[_1]">Jetzt Eintrag anlegen</a>',
+	'No entries have been created in this blog.' => 'In diesem Blog wurden noch keine Einträge angelegt.',
 
 ## tmpl/cms/widget/blog_stats_recent_entries.tmpl
 	'[quant,_1,entry,entries] tagged &ldquo;[_2]&rdquo;' => '[quant,_1,Eintrag,Einträge] getaggt mit &#8222;[_2]&#8221;',

@@ -4512,6 +4512,7 @@ use vars qw( @ISA %Lexicon );
 	'Tagged: [_1]' => 'Getagd: [_1]',
 	'View all entries' => 'Alle berichten bekijken',
 	'No entries have been created in this blog. <a href="[_1]">Create a entry</a>' => 'Er werden nog geen berichten aangemaakt in deze blog <a href="[_1]">Bericht aanmaken</a>',
+	'No entries have been created in this blog.' => 'Er werden nog geen berichten aangemaakt in deze blog',
 
 ## tmpl/cms/widget/blog_stats_recent_entries.tmpl
 	'[quant,_1,entry,entries] tagged &ldquo;[_2]&rdquo;' => '[quant,_1,bericht,berichten] getagd &ldquo;[_2]&rdquo;',

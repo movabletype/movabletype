@@ -4541,6 +4541,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Tagged: [_1]' => 'Etiquetas: [_1]',
 	'View all entries' => 'Mostrar todas las entradas',
 	'No entries have been created in this blog. <a href="[_1]">Create a entry</a>' => 'No se han creado entradas en este blog. <a href="[_1]">Crear una entrada</a>',
+	'No entries have been created in this blog.' => 'No se han creado entradas en este blog.',
 
 ## tmpl/cms/widget/blog_stats_recent_entries.tmpl
 	'[quant,_1,entry,entries] tagged &ldquo;[_2]&rdquo;' => '[quant,_1,entrada etiquetada,entradas etiquetadas] &ldquo;[_2]&rdquo;',
