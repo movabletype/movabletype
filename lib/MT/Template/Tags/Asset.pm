@@ -1303,6 +1303,9 @@ sub _hdlr_asset_count {
     my ( %terms, %args );
     $terms{blog_id} = $ctx->stash('blog_id') if $ctx->stash('blog_id');
     $terms{class} = $args->{type} || '*';
+    # Adds parent filter (skips any generated files such as thumbnails)
+    $args{null}{parent} = 1;
+    $terms{parent} = \'is null';
     my $count = MT::Asset->count( \%terms, \%args );
     return $ctx->count_format( $count, $args );
 }
