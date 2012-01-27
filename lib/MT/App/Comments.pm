@@ -1607,20 +1607,30 @@ sub userinfo {
     $app->send_http_header("text/javascript");
 
     my $out = { error => 'Failed to get Commenter Information' };
-    {
-        my $sid = $app->param('sid');
-        my $ott = MT::Session::get_unexpired_value( 5 * 60, $sid )
-            or last;
-        my $sess
-            = MT::Session::get_unexpired_value(
-            MT->config->UserSessionTimeOut,
-            $ott->get('sid') )
-            or last;
-        $ott->remove();
-        my $commenter
-            = MT->model('author')->load( $sess->thaw_data->{author_id} )
-            or last;
-
+    TRY: {
+        my ( $commenter, $sess );
+        if ( my $sid = $app->param('sid') ) {
+            $sess
+                = MT::Session::get_unexpired_value(
+                MT->config->UserSessionTimeOut,
+                { id => $sid, kind => 'SI' } )
+                or last TRY;
+        }
+        elsif ( my $ot = $app->param('ott') ) {
+            my $ott = MT::Session::get_unexpired_value( 5 * 60, { id => $ot, kind => 'OT' } )
+                or last TRY;
+            $sess
+                = MT::Session::get_unexpired_value(
+                MT->config->UserSessionTimeOut,
+                { id => $ott->get('sid'), kind => 'SI' } )
+                or last TRY;
+            $ott->remove();
+        }
+        if ( $sess ) {
+            $commenter
+                = MT->model('author')->load( $sess->thaw_data->{author_id} )
+                or last TRY;
+        }
         $out = {
             sid  => $sess->id,
             name => $commenter->nickname

@@ -1476,8 +1476,14 @@ window.onload = mtInit;
 <mt:IfWebsite>
 <mt:IfRegistrationAllowed>
 
-function mtLoggedIn(sid) {
-    sess_id = sid;
+function mtLoggedIn(ott) {
+    var script = document.createElement('script');
+    var ts = new Date().getTime();
+    script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=userinfo&jsonp=mtSaveUserInfo&ott=' + ott;
+    (document.getElementsByTagName('head'))[0].appendChild(script);
+}
+
+function mtRefreshUserInfo(sid) {
     var script = document.createElement('script');
     var ts = new Date().getTime();
     script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=userinfo&jsonp=mtSaveUserInfo&sid=' + sid;
@@ -1520,7 +1526,7 @@ function mtInitCommenter () {
         // Reload userinfo with current session ID.
         var u = mtGetUser();
         user  = null;
-        mtLoggedIn(u.sid);
+        mtRefreshUserInfo(u.sid);
     }
     else if ( command === 'logout' ) {
         // clear any logged in state
