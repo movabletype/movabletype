@@ -557,7 +557,7 @@ sub do_register {
             $msg .= '&nbsp;'.$app->translate(
                 '<a href="[_1]">Return to the original page.</a>', $static);
         }
-        return $app->forward( 'signup', error => $msg );
+        return $app->forward( 'signup', message => $msg );
     }
     $sess->remove;
 
@@ -572,7 +572,7 @@ sub do_register {
             $msg .= '&nbsp;'.$app->translate(
                 '<a href="[_1]">Return to the original page.</a>', $static);
         }
-        return $app->forward( 'signup', error => $msg );
+        return $app->forward( 'signup', message => $msg );
     }
 
     my $blog_id = $sess->get('blog_id');
