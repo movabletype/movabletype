@@ -10,11 +10,14 @@ window.parent.app.insertHTML( '<mt:var name="upload_html" escape="js">', '<mt:va
   <mt:var name="insert_script">
 </mt:if>
 
+<mt:Assets>
 <mt:If tag="AssetType" eq="image">
   <mt:setvarblock name="thumbnail"><mt:AssetThumbnailURL width="100" encode_js="1"></mt:setvarblock>
 </mt:If>
 
 window.parent.insertAsset(<mt:AssetID>, '<mt:AssetFileName encode_js="1">', '<mt:AssetProperty property="class"$>', '<$mt:var name="thumbnail" default=""$>');
+
+</mt:Assets>
 
 <mt:unless name="extension_message">
   parent.jQuery.fn.mtDialog.close();
