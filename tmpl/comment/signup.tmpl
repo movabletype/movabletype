@@ -9,6 +9,14 @@
     <mt:var name="error">
   </mtapp:statusmsg>
 </mt:if>
+<mt:If name="message">
+    <mt:App:StatusMsg
+        id="message"
+        class="alert"
+        can_close="0">
+        <$mt:Var name="message"$>
+    </mt:App:StatusMsg>
+</mt:If>
 
 <mt:setvarblock name="common_fields" id="common_fields">
 <mtapp:setting
