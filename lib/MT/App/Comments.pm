@@ -332,6 +332,7 @@ sub do_login {
 sub signup {
     my $app   = shift;
     my %opt   = @_;
+
     my $param = {};
     $param->{$_} = $app->param($_)
         foreach qw(blog_id entry_id static username return_url );
@@ -538,13 +539,26 @@ sub do_register {
     my $email     = $q->param('email');
     my $token     = $q->param('token');
 
+    if ($static) {
+        return $app->errtrans('Invalid request.')
+            unless $app->is_valid_redirect_target;
+    }
+
     ## Token expiration check
     require MT::Session;
     my $commenter;
     my $sess = MT::Session->load(
         { id => $token, kind => 'CR', email => $email } );
 
-    return $app->forward('signup') unless ($sess);
+    unless ( $sess ) {
+        my $msg = $app->translate(
+            'Your confirmation have expired. Please register again.');
+        if ( $static ) {
+            $msg .= '&nbsp;'.$app->translate(
+                '<a href="[_1]">Return to the original page.</a>', $static);
+        }
+        return $app->forward( 'signup', error => $msg );
+    }
     $sess->remove;
 
     $commenter = MT::Author->load( $sess->name )
@@ -552,10 +566,13 @@ sub do_register {
 
     if ( $sess->start() < ( time - 60 * 60 * 24 ) ) {
         $commenter->remove;
-        return $app->forward(
-            'signup', 
-            error => $app->translate('Your confirmation have expired. Please register again.')
-        );
+        my $msg = $app->translate(
+            'Your confirmation have expired. Please register again.');
+        if ( $static ) {
+            $msg .= '&nbsp;'.$app->translate(
+                '<a href="[_1]">Return to the original page.</a>', $static);
+        }
+        return $app->forward( 'signup', error => $msg );
     }
 
     my $blog_id = $sess->get('blog_id');
