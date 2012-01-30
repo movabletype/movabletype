@@ -1113,10 +1113,10 @@ sub _hdlr_entries {
                         : sort { $b->$col() cmp $a->$col() } @entries;
                 }
             }
-            if ($post_sort_limit) {
+            if ( $post_sort_limit && ( scalar @entries ) > $post_sort_limit ) {
                 @entries
                     = @entries[ $post_sort_offset .. $post_sort_offset
-                    + $post_sort_limit 
+                    + $post_sort_limit
                     - 1 ];
             }
         }
