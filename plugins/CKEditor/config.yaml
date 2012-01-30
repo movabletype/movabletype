@@ -1,0 +1,8 @@
+id: CKEditor
+name: CKEditor
+version: 1
+
+editors:
+    ckeditor:
+        label: CKEditor
+        template: editor.tmpl
