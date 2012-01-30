@@ -1,0 +1,20 @@
+tinyMCE.addI18n('ja.mt', {
+    font_size_smaller: "\u30c6\u30ad\u30b9\u30c8\u30b5\u30a4\u30ba\u3092\u5c0f\u3055\u304f\u3059\u308b",
+    font_size_larger: "\u30c6\u30ad\u30b9\u30c8\u30b5\u30a4\u30ba\u3092\u5927\u304d\u304f\u3059\u308b",
+    bold: "\u592a\u5b57",
+    italic: "\u659c\u4f53",
+    underline: "\u4e0b\u7dda",
+    strikethrough: "\u53d6\u308a\u6d88\u3057\u7dda",
+    insert_link: "\u30ea\u30f3\u30af",
+    insert_email: "\u30e1\u30fc\u30eb\u30a2\u30c9\u30ec\u30b9\u30ea\u30f3\u30af",
+    indent: "\u5f15\u7528\u958b\u59cb",
+    outdent: "\u5f15\u7528\u7d42\u4e86",
+    insert_unordered_list: "\u7b87\u6761\u66f8\u304d\u30ea\u30b9\u30c8",
+    insert_ordered_list: "\u756a\u53f7\u4ed8\u304d\u30ea\u30b9\u30c8",
+    justify_left: "\u30c6\u30ad\u30b9\u30c8\u5de6\u63c3\u3048",
+    justify_center: "\u30c6\u30ad\u30b9\u30c8\u4e2d\u592e\u63c3\u3048",
+    justify_right: "\u30c6\u30ad\u30b9\u30c8\u53f3\u63c3\u3048",
+	insert_image: "\u753b\u50cf\u306e\u633f\u5165",
+	insert_file: "\u30d5\u30a1\u30a4\u30eb\u306e\u633f\u5165",
+	source_mode: "HTML\u30e2\u30fc\u30c9"
+});
