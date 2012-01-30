@@ -514,26 +514,49 @@ sub edit {
         $param->{blog_file_extension} = $ext;
     }
 
-    my $rte;
-    if ( $param->{convert_breaks} =~ m/richtext/ ) {
-        ## Rich Text editor
-        $rte = lc( $app->config('RichTextEditor') );
+    if (my $editors = $app->registry('editors')) {
+        $param->{editor_templates} = [];
+        foreach my $editor_key (keys(%$editors)) {
+            my $reg = $editors->{$editor_key};
+            if ( my $rich_editor_tmpl
+                = $reg->{plugin}->load_tmpl( $reg->{template} ) )
+            {
+                push(@{ $param->{editor_templates} }, { tmpl => $rich_editor_tmpl });
+            }
+        }
+
+        my $editor = lc( $app->config('Editor') );
+        $param->{wysiwyg_editor}  = lc( $app->config('WYSIWYGEditor') || $editor );
+        $param->{source_editor}   = lc( $app->config('SourceEditor') || $editor );
+        $param->{editor_strategy} = lc( $app->config('EditorStrategy') );
+
+        $param->{object_type}  = $type;
+        $param->{object_label} = $class->class_label;
     }
     else {
-        $rte = 'archetype';
-    }
-    my $editors = $app->registry("richtext_editors");
-    my $edit_reg = $editors->{$rte} || $editors->{archetype};
-    my $rich_editor_tmpl;
-    if ( $rich_editor_tmpl
-        = $edit_reg->{plugin}->load_tmpl( $edit_reg->{template} ) )
-    {
-        $param->{rich_editor}      = $rte;
-        $param->{rich_editor_tmpl} = $rich_editor_tmpl;
-    }
+        my $rte;
+        if ( $param->{convert_breaks} =~ m/richtext/ ) {
+            ## Rich Text editor
+            $rte = lc( $app->config('RichTextEditor') );
+        }
+        else {
+            $rte = 'archetype';
+        }
+        my $editors = $app->registry("richtext_editors");
+        my $edit_reg = $editors->{$rte} || $editors->{archetype};
 
-    $param->{object_type}  = $type;
-    $param->{object_label} = $class->class_label;
+
+        my $rich_editor_tmpl;
+        if ( $rich_editor_tmpl
+            = $edit_reg->{plugin}->load_tmpl( $edit_reg->{template} ) )
+        {
+            $param->{rich_editor}      = $rte;
+            $param->{rich_editor_tmpl} = $rich_editor_tmpl;
+        }
+
+        $param->{object_type}  = $type;
+        $param->{object_label} = $class->class_label;
+    }
 
     my @ordered = qw( title text tags excerpt keywords );
     if ($pref_param) {
