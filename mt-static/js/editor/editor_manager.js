@@ -82,7 +82,7 @@ $.extend(MT.EditorManager.prototype, {
     init: function(id, options) {
         this.id = id;
         var opt = this.options = $.extend({
-            format: 'rich_text',
+            format: 'richtext',
             wrap: false,
             wrapTag: this.constructor.defaultWrapTag,
             wrapClass: this.constructor.defaultWrapClass
