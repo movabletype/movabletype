@@ -75,7 +75,6 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             mode: mode,
             format: format
         });
-        this.proxies.source.setFormat(format);
 
         if (mode == 'source') {
             if (this.editor !== this.source) {
@@ -126,7 +125,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
     },
 
     hide: function() {
-        this.setMode('wysiwyg');
+        this.setFormat('richtext');
         this.tinymce.hide();
     },
 
@@ -143,9 +142,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
     },
 
     clearDirty: function() {
-        if (this.tinymce) {
-            this.tinymce.isNotDirty = 1;
-        }
+        this.tinymce.isNotDirty = 1;
     },
 
     getHeight: function() {
@@ -231,7 +228,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
 });
 
 MT.Editor.TinyMCE.setupEnsureInitializedMethods([
-    'setFormat', 'hide', 'insertContent', 'resetUndo'
+    'setFormat', 'hide', 'insertContent', 'clearDirty', 'resetUndo'
 ]);
 
 MT.EditorManager.register('tinymce', MT.Editor.TinyMCE);

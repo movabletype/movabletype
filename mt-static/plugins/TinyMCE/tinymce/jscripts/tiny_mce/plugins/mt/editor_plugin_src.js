@@ -80,6 +80,7 @@
 
             var supportedButtonsCache = {};
             function supportedButtons(mode, format) {
+                var k = mode + '-' + format;
                 if (! supportedButtonsCache[k]) {
                     supportedButtonsCache[k] = {};
                     $.each(ed.mtButtons, function(name, button) {
@@ -102,6 +103,7 @@
             ed.addCommand('mtGetStatus', function() {
                 return ed.mtEditorStatus;
             });
+
             ed.addCommand('mtSetStatus', function(status) {
                 var s = ed.mtEditorStatus;
                 $.extend(s, status);
@@ -112,6 +114,8 @@
                 disabledControls = [];
 
                 if (s.mode == 'source') {
+                    proxies.source.setFormat(s.format);
+
                     var supporteds = {};
                     $.each(supportedButtons(s.mode, s.format), function(k, v) {
                         supporteds[id + '_' + k] = 1;
@@ -129,6 +133,7 @@
             ed.addCommand('mtGetProxies', function() {
                 return proxies;
             });
+
             ed.addCommand('mtSetProxies', function(_proxies) {
                 $.extend(proxies, _proxies);
             });
@@ -138,7 +143,7 @@
 				title : 'mt.font_size_smaller',
 				onclickFunctions : {
                     wysiwyg: 'fontSizeSmaller',
-                    source:  'fontSizeSmaller'
+                    source: 'fontSizeSmaller'
                 }
 			});
 
@@ -146,7 +151,7 @@
 				title : 'mt.font_size_larger',
 				onclickFunctions : {
                     wysiwyg: 'fontSizeLarger',
-                    source:  'fontSizeLarger'
+                    source: 'fontSizeLarger'
                 }
 			});
 
@@ -344,15 +349,20 @@
                     cm.setDisabled('mt_outdent', !ed.queryCommandState('Outdent'));
                 }
 
-                var disabled =
-                    ed.mtEditorStatus['mode'] == 'source' &&
-                    ed.mtEditorStatus['format'] != 'none.tinymce_temp';
-                cm.setDisabled('mt_source_mode', disabled);
+                if (ed.getParam('fullscreen_is_enabled')) {
+                    cm.setDisabled('mt_source_mode', true);
+                }
+                else {
+                    var disabled =
+                        ed.mtEditorStatus['mode'] == 'source' &&
+                        ed.mtEditorStatus['format'] != 'none.tinymce_temp';
+                    cm.setDisabled('mt_source_mode', disabled);
 
-                var active =
-                    ed.mtEditorStatus['mode'] == 'source' &&
-                    ed.mtEditorStatus['format'] == 'none.tinymce_temp';
-                cm.setActive('mt_source_mode', active);
+                    var active =
+                        ed.mtEditorStatus['mode'] == 'source' &&
+                        ed.mtEditorStatus['format'] == 'none.tinymce_temp';
+                    cm.setActive('mt_source_mode', active);
+                }
             });
 		},
 
