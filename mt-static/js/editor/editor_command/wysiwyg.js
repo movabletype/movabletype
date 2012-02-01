@@ -47,12 +47,26 @@ $.extend(MT.EditorCommand.WYSIWYG.prototype, MT.EditorCommand.prototype, {
     changeFontSizeOfSelection: function(doc, bigger) {
         var bogus = "-editor-proxy";
         doc.execCommand( "fontName", false, bogus );
-        var elements = doc.getElementsByTagName( "font" );
+
+        var elements = null;
+
+        elements = doc.getElementsByTagName( "font" );
         for( var i = 0; i < elements.length; i++ ) {
             var element = elements[ i ];
             if( element.face == bogus ) {
                 element.removeAttribute( "face" );
                 element.style.fontSize = this.mutateFontSize( element, bigger );
+                return;
+            }
+        }
+
+        elements = doc.getElementsByTagName( "span" );
+        for( var i = 0; i < elements.length; i++ ) {
+            var element = elements[ i ];
+            if( element.style.fontFamily == bogus ) {
+                element.style.fontFamily = '';
+                element.style.fontSize = this.mutateFontSize( element, bigger );
+                return;
             }
         }
     },
