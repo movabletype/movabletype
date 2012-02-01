@@ -48,7 +48,7 @@ $.extend(MT.EditorManager, {
             var found = null;
             $.each(this.editorsForFormat[format], function() {
                 if (this.id == thisConstructor.map[format]) {
-                    found = this['editor'];
+                    found = this;
                     return false;
                 }
             });
@@ -58,7 +58,7 @@ $.extend(MT.EditorManager, {
         }
 
         if (this.editorsForFormat[format]) {
-            return this.editorsForFormat[format][0]['editor'];
+            return this.editorsForFormat[format][0];
         }
         else {
             return false;
@@ -104,11 +104,11 @@ $.extend(MT.EditorManager.prototype, {
     editorInstance: function(format) {
         var editorClass = this.constructor.editorClass(format);
 
-        if (! this.editors[editorClass]) {
-            this.editors[editorClass] = new editorClass(this.id);
+        if (! this.editors[editorClass.id]) {
+            this.editors[editorClass.id] = new editorClass.editor(this.id);
         }
 
-        return this.editors[editorClass];
+        return this.editors[editorClass.id];
     },
 
     setMode: function(mode) {
@@ -126,9 +126,11 @@ $.extend(MT.EditorManager.prototype, {
             this.currentEditor.setFormat(format);
         }
         else {
+            var content = this.currentEditor.getContent();
             this.currentEditor.hide();
             this.currentEditor = editor;
             this.currentEditor.initOrShow(format);
+            this.currentEditor.setContent(content);
         }
     },
 
