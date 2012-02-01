@@ -8,104 +8,146 @@
 ;(function($) {
 
 MT.Editor.CKEditor = function() { MT.Editor.apply(this, arguments) };
-$.extend(MT.Editor.CKEditor, MT.Editor);
+
+$.extend(MT.Editor.CKEditor, MT.Editor, {
+    config: {
+        resize_minWidth: 500,
+        resize_dir: 'vertical',
+        skin: 'mt',
+        plugins: 'list,table,mt,maximize,elementspath,basicstyles,sourcearea,removeformat,liststyle,link,button,format,contextmenu,justify,tab,horizontalrule,resize,blockquote,undo,image,enterkey,wysiwygarea,font,toolbar,indent',
+        toolbar_mt: [
+        ['mt_font_size_smaller', 'mt_font_size_larger', 'mt_bold', 'mt_italic', 'mt_underline', 'mt_strikethrough', 'mt_insert_link', 'mt_insert_email', 'mt_indent', 'mt_outdent', 'mt_insert_unordered_list', 'mt_insert_ordered_list', 'mt_justify_left', 'mt_justify_center', 'mt_justify_right', 'mt_insert_image', 'mt_insert_file', '-', 'Source'],
+        '/',
+        ['Undo','Redo','-','Link','Unlink','-','HorizontalRule','RemoveFormat','-','Table','Maximize','-','Font','FontSize'],
+        ],
+        toolbar: 'mt',
+        on: {
+            instanceReady: function(ev) {},
+            mode: function(ev) {}
+        }
+    }
+});
+
 $.extend(MT.Editor.CKEditor.prototype, MT.Editor.prototype, {
-    changed: false,
-    initEditor: function(id, format) {
+    initEditor: function(format) {
+        this.proxies = {};
+
         this.show();
 
-        if (format == 'textarea') {
+        if (MT.EditorManager.toMode(format) == 'source') {
             this.setFormat(format);
         }
     },
-    ensureInitializedSetFormat: function(format) {
-        var editor = this.editor;
-        if (format == 'textarea') {
-            editor.fire( 'saveSnapshot' );
-            /*
-            editor.getCommand( 'source' ).setState( CKEDITOR.TRISTATE_DISABLED );
-            */
-            editor.setMode('source');
 
-            this._disableButtons();
+    setFormat: function(format) {
+        var mode = MT.EditorManager.toMode(format);
+        var editor = this.editor;
+
+        editor.execCommand('mtSetStatus', {
+            mode: mode,
+            format: format
+        });
+    },
+
+    getContent: function(content) {
+        if (this.editor) {
+            return this.editor.getData();
         }
         else {
-            editor.setMode('wysiwyg');
-
-            this._restoreButtons();
+            return $('#' + this.id).val();
         }
     },
-    ensureInitializedGetContent: function(content) {
-        return this.editor.getData();
-    },
-    ensureInitializedSetContent: function(content) {
+
+    setContent: function(content) {
         this.editor.setData(content);
     },
-    ensureInitializedHide: function() {
+
+    hide: function() {
         this.editor.destroy();
         this.editor = null;
     },
+
     show: function() {
-        var instance = this;
-        var config = {
-            skin: 'movabletype',
-            plugins: 'pastefromword,list,table,smiley,tabletools,showborders,scayt,movabletype,maximize,xml,newpage,forms,filebrowser,keystrokes,bidi,clipboard,about,elementspath,templates,a11yhelp,div,showblocks,basicstyles,sourcearea,iframe,popup,removeformat,liststyle,colordialog,print,ajax,dialogadvtab,link,button,format,colorbutton,find,contextmenu,flash,preview,justify,wsc,tab,horizontalrule,resize,blockquote,save,stylescombo,pastetext,entities,undo,specialchar,htmldataprocessor,image,enterkey,pagebreak,wysiwygarea,font,toolbar,indent',
-            toolbar_MTCustom: [
-            ['mt_font_size_smaller', 'mt_font_size_larger', 'mt_bold', 'mt_italic', 'mt_underline', 'mt_strikethrough', 'mt_insert_link', 'mt_insert_email', 'mt_indent', 'mt_outdent', 'mt_insert_unordered_list', 'mt_insert_ordered_list', 'mt_justify_left', 'mt_justify_center', 'mt_justify_right', 'mt_insert_image', 'mt_insert_file', '-', 'Source'],
-            '/',
-            ['Undo','Redo','-','Link','Unlink','-','HorizontalRule','RemoveFormat','-','Table','Maximize','-','Font','FontSize'],
-            ],
-            toolbar: 'MTCustom',
-            on: {
-                instanceReady: function(ev) {
-                    instance.editor = this;
-                },
-                key: function(ev) {
-                    instance.setChanged(ev);
-                }
-            }
+        var adapter = this;
+
+        var config = $.extend({}, this.constructor.config);
+        config.on = $.extend({}, config.on);
+
+        var instanceReady = config.on['instanceReady'];
+        config.on['instanceReady'] = function(ev) {
+            instanceReady.apply(this, arguments);
+            adapter.editor = this;
+
+            this.on('key', function(ev) {
+                adapter.setDirty({
+                    target: adapter.editor.element['$']
+                });
+            });
+
+            this.on('resize', function(ev) {
+                adapter.editor.container.$.style.width = '';
+            });
         };
+
+        var mode = config.on['mode'];
+        config.on['mode'] = function(ev) {
+            mode.apply(this, arguments);
+            adapter.editor = this;
+
+            var proxies = {};
+            if (this.mode == 'source') {
+                adapter.source = new MT.Editor.Source(this.textarea.$.id);
+                adapter.proxies['source'] =
+                    new MT.EditorCommand.Source(adapter.source);
+            }
+            else if (this.mode == 'wysiwyg') {
+                adapter.proxies['wysiwyg'] =
+                    new MT.EditorCommand.WYSIWYG(adapter)
+            }
+
+            this.execCommand('mtSetProxies', adapter.proxies);
+        };
+
         $('#' + this.id).ckeditor(config);
     },
-    isDirty: function() {
-        return (this.editor && this.editor.checkDirty()) || this.changed;
-    },
-    ensureInitializedClearDirty: function() {
-        this.editor.resetDirty();
-        this.changed = false;
-    },
-    ensureInitializedSetChanged: function(key) {
-        this.changed = true;
-    },
-    ensureInitializedInsertHTML: function(value) {
+
+    insertContent: function(value) {
         this.editor.insertHtml(value);
     },
-    ensureInitializedClearDirty: function() {
+
+    clearDirty: function() {
         this.editor.isNotDirty = 1;
     },
-    ensureInitializedGetHeight: function() {
-        return this.editor.getResizable().$.offsetHeight;
+
+    getHeight: function() {
+        if (this.editor) {
+            return this.editor.getResizable().$.offsetHeight;
+        }
+        else {
+            return null;
+        }
     },
-    ensureInitializedSetHeight: function(height) {
+
+    setHeight: function(height) {
         this.editor.resize(
             this.editor.getResizable().$.offsetWidth, height-3
         );
     },
-    ensureInitializedResetUndo: function(height) {
+
+    resetUndo: function() {
         this.editor.resetUndo();
     },
-    _disableButtons: function() {
-        if (! this.hiddenButtons) {
-            this.hiddenButtons = $('.cke_button_source').parent().hide();
-        }
-    },
-    _restoreButtons: function() {
-        if (this.hiddenButtons) {
-            this.hiddenButtons.show();
-            this.hiddenButtons = null;
-        }
+
+    getDocument: function() {
+        return this.editor.document.$;
     }
 });
+
+MT.Editor.CKEditor.setupEnsureInitializedMethods([
+    'setFormat', 'hide', 'insertContent', 'setContent',
+    'clearDirty', 'resetUndo', 'setHeight'
+]);
+
 MT.EditorManager.register('ckeditor', MT.Editor.CKEditor);
 
 })(jQuery);
