@@ -45,8 +45,12 @@ MT.App.prototype = $.extend({}, MT.App.prototype, {
         this.editor.setFormat('richtext');
     },
 
-    saveHTML: function() {
+    saveHTML: function(resetChanged) {
         this.editorStrategy.save(this);
+        if (resetChanged) {
+            this.clearDirty();
+            this.editor.clearDirty();
+        }
     },
 
     setEditor: function(id) {
