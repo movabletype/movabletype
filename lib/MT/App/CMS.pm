@@ -1515,10 +1515,11 @@ sub core_menus {
             view       => "system",
         },
         'tools:system_information' => {
-            label => "System Information",
-            order => 800,
-            mode  => "tools",
-            view  => "system",
+            label             => "System Information",
+            order             => 800,
+            mode              => "tools",
+            view              => "system",
+            system_permission => 'administer',
         },
 
         # System menu which is actually separate
