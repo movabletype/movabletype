@@ -17,6 +17,8 @@ sub system_check {
             )
         );
     }
+    return $app->errtrans("Permission denied.")
+        unless $app->user->is_superuser();
 
     my %param;
 
