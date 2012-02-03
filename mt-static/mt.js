@@ -78,6 +78,9 @@ function countMarked (f, nameRestrict) {
 //trans('enable');
 //trans('disable');
 //trans('publish');
+//trans('unlock');
+
+
 function doRemoveItems (f, singular, plural, nameRestrict, args, params) {
     if (params && (typeof(params) == 'string')) {
         params = { 'mode': params };

@@ -2565,6 +2565,7 @@ use vars qw( @ISA %Lexicon );
 	'enable' => '有効に',
 	'disable' => '無効に',
 	'publish' => '公開',
+	'unlock'  => 'ロック解除してログイン可能に',
 	'You did not select any [_1] to [_2].' => '[_2]する[_1]が選択されていません。',
 	'Are you sure you want to [_2] this [_1]?' => '[_1]を[_2]してよろしいですか?',
 	'Are you sure you want to [_3] the [_1] selected [_2]?' => '[_1]件の[_2]を[_3]してよろしいですか?',
