@@ -78,7 +78,7 @@ sub edit {
         $param->{date_format} = $obj->date_format || 'relative';
 
         if (    $param->{is_me}
-            and ( $obj->column('password') !~ /^\$6\$/ )
+            and ( $obj->column('password') !~ /^\$6\$|{SHA}/ )
             and ( not $param->{error} ) )
         {
             $param->{error} = $app->translate(

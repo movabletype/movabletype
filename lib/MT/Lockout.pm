@@ -87,11 +87,12 @@ sub recover_token {
 
     my $sha256_hex;
     if ( eval { require Digest::SHA } ) {
+        # Can use SHA256
         $sha256_hex = \&Digest::SHA::sha256_hex;
     }
     else {
-        require Digest::SHA::PurePerl;
-        $sha256_hex = \&Digest::SHA::PurePerl::sha256_hex;
+        # Maybe cannot use SHA256
+        $sha256_hex = \&MT::Util::perl_sha1_digest_hex;
     }
 
     $sha256_hex->( $user->lockout_recover_salt . $app->config->SecretToken );

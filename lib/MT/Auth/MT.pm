@@ -45,18 +45,18 @@ sub is_valid_password {
         return $real_pass eq $pass;
     }
 
-    if ( $real_pass =~ m/^\$6\$(..)\$(.*)/ ) {
+    if ( $real_pass =~ m/^\$6\$(.*)\$(.*)/ ) {
         my ( $salt, $value ) = ( $1, $2 );
-
-        my $sha512_base64;
         if ( eval { require Digest::SHA } ) {
-            $sha512_base64 = \&Digest::SHA::sha512_base64;
+            return $value eq Digest::SHA::sha512_base64( $salt . $pass );
         }
         else {
-            require Digest::SHA::PurePerl;
-            $sha512_base64 = \&Digest::SHA::PurePerl::sha512_base64;
+            die MT->translate('Missing Required Modules') . ' Digest::SHA';
         }
-        return $value eq $sha512_base64->( $salt . $pass );
+    }
+    elsif ( $real_pass =~ m/^{SHA}(.*)\$(.*)/ ) {
+        my ( $salt, $value ) = ( $1, $2 );
+        return $value eq MT::Util::perl_sha1_digest_hex( $salt . $pass )
     }
     else {
 

@@ -751,18 +751,17 @@ sub set_password {
     my $auth   = shift;
     my ($pass) = @_;
     my @alpha  = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
-    my $salt   = join '', map $alpha[ rand @alpha ], 1 .. 2;
+    my $salt   = join '', map $alpha[ rand @alpha ], 1 .. 16;
+    my $crypt_sha;
 
-    my $sha512_base64;
     if ( eval { require Digest::SHA } ) {
-        $sha512_base64 = \&Digest::SHA::sha512_base64;
+        # Can use SHA512
+        $crypt_sha = '$6$' . $salt . '$' . Digest::SHA::sha512_base64( $salt . $pass );
     }
     else {
-        require Digest::SHA::PurePerl;
-        $sha512_base64 = \&Digest::SHA::PurePerl::sha512_base64;
+        # Use SHA-1 algorism
+        $crypt_sha = '{SHA}' . $salt . '$' . MT::Util::perl_sha1_digest_hex( $salt . $pass );
     }
-    my $crypt_sha = join '$', '', '6', $salt,
-        $sha512_base64->( $salt . $pass );
 
     $auth->column( 'password', $crypt_sha );
 }
