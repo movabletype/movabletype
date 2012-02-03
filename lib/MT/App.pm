@@ -2031,6 +2031,19 @@ sub login {
 
         # Login valid
         if ($new_login) {
+            my $commenter_blog_id = $app->_is_commenter($author);
+            # $commenter_blog_id
+            #  0: user has more permissions than comment
+            #  N: user has only comment permission on some blog
+            # -1: user has only system permissions
+            # undef: user does not have any permission
+
+            return $app->error(
+                $app->translate(
+                    'Our apologies, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.'
+                )
+            ) if !defined $commenter_blog_id || $commenter_blog_id > 0;
+
             $app->start_session( $author, $ctx->{permanent} ? 1 : 0 );
             $app->request( 'fresh_login', 1 );
             $app->log(
