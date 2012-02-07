@@ -6,6 +6,11 @@ use MT;
 use CGI::PSGI;
 use Plack::App::URLMap;
 use Plack::App::WrapCGI;
+use CGI::Parse::PSGI;
+use IPC::Open3;
+use IO::Select;
+use POSIX ":sys_wait_h";
+use Symbol qw( gensym );
 
 MT->new();
 
@@ -54,7 +59,61 @@ my $mt_app = sub {
 ## Run apps as non persistence cgi
 my $mt_cgi = sub {
     my $script = shift;
-    Plack::App::WrapCGI->new(script => $script, execute => 1)->to_app;
+    return sub {
+        my $env = shift;
+        return sub {
+            my $respond = shift;
+            my $pid;
+            my ( $child_in, $child_out, $child_err);
+            $child_err = gensym();
+            {
+                local %ENV = (%ENV, CGI::Emulate::PSGI->emulate_environment($env));
+                $pid = open3( $child_in, $child_out, $child_err, $script );
+            }
+            syswrite $child_in, do {
+                local $/;
+                my $fh = $env->{'psgi.input'};
+                <$fh>;
+            };
+            my $s = IO::Select->new( $child_out, $child_err );
+            my $header = '';
+            my $header_sent;
+            my $writer;
+            while (my @ready = $s->can_read) {
+                for my $fh (@ready) {
+                    if (my $len = sysread($fh, my $buf, 4096) > 0) {
+                        if ($fh == $child_out) {
+                            if ( $header_sent ) {
+                                $writer->write($buf);
+                            }
+                            else {
+                                $header .= $buf;
+                                if ( $header =~ /\r\n\r\n/ ) {
+                                    my $res = CGI::Parse::PSGI::parse_cgi_output(\$header);
+                                    my %header = @{ $res->[1] };
+                                    delete $header{'Content-Length'};
+                                    $res->[1] = [ %header ];
+                                    my $body = delete $res->[2];
+                                    $writer = $respond->($res);
+                                    $body = join '', @$body if 'ARRAY' eq ref $body;
+                                    $writer->write($body);
+                                    $header_sent = 1;
+                                }
+                            }
+                        }
+                        elsif ( $fh == $child_err ) {
+                            syswrite $env->{'psgi.errors'}, $buf;
+                        }
+                    }
+                    else {
+                        $s->remove($fh);
+                        close $fh;
+                    }
+                }
+            }
+            $writer->close if $writer;
+        };
+    };
 };
 
 my %DAEMON_SCRIPTS = (
