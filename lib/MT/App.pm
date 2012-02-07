@@ -1450,7 +1450,7 @@ sub make_commenter_session {
     }
 
     # test
-    $session_key = $app->param('sig') if $user->auth_type eq 'TypeKey';
+    $session_key = $app->param('sig') if $user && $user->auth_type eq 'TypeKey';
 
     require MT::Session;
     my $sess_obj = MT::Session->new();
@@ -1459,7 +1459,7 @@ sub make_commenter_session {
     $sess_obj->name($name);
     $sess_obj->start(time);
     $sess_obj->kind("SI");
-    $sess_obj->set( 'author_id', $user->id ) if $user;
+    $sess_obj->set( 'author_id', $id ) if $id;
     $sess_obj->save()
         or return $app->error(
         $app->translate(
@@ -1468,11 +1468,25 @@ sub make_commenter_session {
         )
         );
 
+    $app->bake_commenter_cookie( $sess_obj, $user, $nick );
+    return $session_key;
+}
+
+sub bake_commenter_cookie {
+    my $app = shift;
+    my ( $sess_obj, $user, $nick ) = @_;
+
+    my $session_key = $sess_obj->id;
+
     my $enc          = $app->charset;
-    my $nick_escaped = MT::Util::escape_unicode($nick);
+    my $nick_escaped = $nick
+        ? MT::Util::escape_unicode($nick)
+        : $user
+            ? MT::Util::escape_unicode( $user->nickname )
+            : '';
 
     my $timeout;
-    if ( $user->type == MT::Author::AUTHOR() ) {
+    if ( $user && $user->type == MT::Author::AUTHOR() ) {
         if ( $app->param('remember') ) {
 
             # 10 years, same as app sign-in 'remember me'
@@ -1524,7 +1538,6 @@ sub make_commenter_session {
         -value => $app->bake_user_state_cookie($state),
     );
     $app->bake_cookie(%user_session_kookee);
-    return $session_key;
 }
 
 sub commenter_session_cookie_name {
