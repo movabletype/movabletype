@@ -2986,7 +2986,6 @@ sub set_default_tmpl_params {
             = $param->{can_create_post}
             || $param->{can_edit_all_posts}
             || $param->{can_edit_assets};
-        $param->{can_edit_commenters} = $param->{can_manage_feedback};
         $param->{has_manage_label} 
             = $param->{can_edit_templates}
             || $param->{can_administer_blog}
@@ -3010,6 +3009,15 @@ sub set_default_tmpl_params {
             || $param->{can_edit_all_posts};
         $param->{show_ip_info} = $app->config->ShowIPInformation
             && $param->{can_manage_feedback};
+
+        $param->{can_edit_commenters} = 1
+            if $app->user->is_superuser
+                || (   $app->config->SingleCommunity
+                    && !$blog
+                    && $param->{can_manage_feedback} )
+                || (  !$app->config->SingleCommunity
+                    && $blog
+                    && $param->{can_manage_feedback} );
     }
 
     my $static_app_url = $app->static_path;
