@@ -26,7 +26,7 @@ my $mt_app = sub {
         MT->set_instance($app);
 
         # Cheap hack to get the output
-        my($header_sent, $body);
+        my ($header_sent, $body);
         local *MT::App::send_http_header = sub { $header_sent++ };
         local *MT::App::print = sub { my $self = shift; $body .= "@_" if $header_sent };
 
@@ -143,7 +143,6 @@ my %DAEMON_SCRIPTS = (
     comments   => MT->config->CommentScript,
     tb         => MT->config->TrackbackScript,
     new_search => MT->config->SearchScript,
-    xmlrpc     => MT->config->XMLRPCScript,
     view       => MT->config->ViewScript,
     atom       => MT->config->AtomScript,
     notify     => MT->config->NotifyScript,
@@ -154,6 +153,7 @@ my %CGI_SCRIPTS = (
     wizard  => 'mt-wizard.cgi',
     check   => 'mt-check.cgi', # TBD: This will fail since no entry is in core registry.
     upgrade => MT->config->UpgradeScript,
+    xmlrpc     => MT->config->XMLRPCScript,
 );
 
 my $urlmap = Plack::App::URLMap->new;
@@ -161,7 +161,11 @@ for my $id ( keys %DAEMON_SCRIPTS ) {
     my $app = MT->registry( applications => $id ) or next;
     my $handler = $app->{handler};
     my $path = $DAEMON_SCRIPTS{$id};
-    $path = '/' . $path unless $path =~ m!^/!;
+    my $base = $id eq 'cms' ? MT->config->AdminCGIPath : MT->config->CGIPath;
+    $base =~ s!^https?://[^/]*/!/!;
+    $base .= '/' unless $base =~ m!/$!;
+    $path = $base . $path;
+    DEBUG && warn "Mount $handler in $path\n";
     $urlmap->map( $path, $mt_app->($handler) );
 }
 
