@@ -79,7 +79,8 @@ sub edit {
 
         if (    $param->{is_me}
             and ( $obj->column('password') !~ /^\$6\$|{SHA}/ )
-            and ( not $param->{error} ) )
+            and ( not $param->{error} )
+            and lc $app->config->AuthenticationModule eq 'mt' )
         {
             $param->{error} = $app->translate(
                 "For improved security, please change your password");
