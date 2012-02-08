@@ -118,8 +118,14 @@ sub list {
 
         return $app->errtrans("Permission denied.")
             unless $app->user->is_superuser
-                || (   $perms
-                    && $perms->can_edit_assets );
+                || ($perms
+                    && ($perms->can_edit_assets
+                        || ($app->param('dialog_view')
+                            && (   $perms->can_create_post
+                                || $perms->can_manage_pages )
+                        )
+                    )
+                );
     }
     else {
 
