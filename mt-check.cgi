@@ -214,6 +214,7 @@ if ( !$view ) {
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta http-equiv="content-language" content="$lang" />
+    <meta name='robots' content='noindex,nofollow' />
     <title><__trans phrase="Movable Type System Check"> [mt-check.cgi]</title>
     <style type=\"text/css\">
         <!--
