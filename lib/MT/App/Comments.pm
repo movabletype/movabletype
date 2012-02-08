@@ -1960,7 +1960,7 @@ sub edit_commenter_profile {
         $param->{'email_required'} = MT::Auth->can_recover_password ? 1 : 0;
 
         if (    ( $commenter->auth_type eq 'MT' )
-            and ( $commenter->column('password') !~ /^\$6\$/ )
+            and ( $commenter->column('password') !~ /^\$6\$|{SHA}/ )
             and ( not $param->{error} ) )
         {
             $param->{error} = $app->translate(
