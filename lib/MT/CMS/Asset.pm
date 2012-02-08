@@ -467,7 +467,7 @@ sub complete_insert {
             if ( $ext_from && $ext_to );
     }
     if ( !$app->param('asset_select')
-        && ( $perms->can_create_post || $app->user->is_superuser ) )
+        && ( $perms->can_create_post || $perms->can_manage_pages || $app->user->is_superuser ) )
     {
         my $html = $asset->insert_options($param);
         if ( $param->{direct_asset_insert} && !$html ) {
