@@ -947,6 +947,12 @@ sub post {
         $app->translate( "An error occurred: [_1]", $app->errstr() ) )
         unless $comment;
 
+    return $app->handle_error(
+        $app->translate(
+            "Your session has expired. Please sign in again to comment."
+        )
+    ) if ( $commenter && !$q->param('sid') );
+
     my $remember = $q->param('bakecookie') || 0;
     $remember = 0 if $remember eq 'Forget Info';    # another value for '0'
     if ( $commenter && $remember ) {
