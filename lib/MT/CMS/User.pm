@@ -761,7 +761,7 @@ sub save_cfg_system_users {
                 'Minimum password length must be integer and greater than zero.'
             );
         }
-        $app->config( 'UserPasswordMinLength', $pass_min_len, 1 );
+        $app->config( 'UserPasswordMinLength', int $pass_min_len, 1 );
     }
 
     $cfg->save_config();
