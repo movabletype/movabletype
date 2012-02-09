@@ -81,7 +81,7 @@ my $cgi     = new CGI;
 my $view    = $cgi->param("view");
 my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
-$version ||= '5.07rc1';
+$version ||= '5.07rc2';
 
 my ( $mt, $LH );
 my $lang = $cgi->param("language") || $cgi->param("__lang");
