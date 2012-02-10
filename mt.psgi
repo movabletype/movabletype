@@ -153,7 +153,7 @@ my %CGI_SCRIPTS = (
     wizard  => 'mt-wizard.cgi',
     check   => 'mt-check.cgi', # TBD: This will fail since no entry is in core registry.
     upgrade => MT->config->UpgradeScript,
-    xmlrpc     => MT->config->XMLRPCScript,
+    xmlrpc  => MT->config->XMLRPCScript,
 );
 
 my $urlmap = Plack::App::URLMap->new;
@@ -161,7 +161,9 @@ for my $id ( keys %DAEMON_SCRIPTS ) {
     my $app = MT->registry( applications => $id ) or next;
     my $handler = $app->{handler};
     my $path = $DAEMON_SCRIPTS{$id};
-    my $base = $id eq 'cms' ? MT->config->AdminCGIPath : MT->config->CGIPath;
+    my $base = $id eq 'cms' ? MT->config->AdminCGIPath || MT->config->CGIPath
+             :                MT->config->CGIPath
+             ;
     $base =~ s!^https?://[^/]*/!/!;
     $base .= '/' unless $base =~ m!/$!;
     $path = $base . $path;
@@ -176,4 +178,5 @@ for my $id ( keys %CGI_SCRIPTS ) {
     my $filepath = File::Spec->catfile( $FindBin::Bin, $file );
     $urlmap->map( $url, $mt_cgi->( $filepath ) );
 }
+
 $urlmap->to_app;
