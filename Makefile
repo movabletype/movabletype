@@ -161,4 +161,4 @@ clean:
 	-rm -rf mt-static/css/main.css mt-static/css/simple.css
 	-rm -rf MANIFEST
 	-rm -rf build-language-stamp
-	-git checkout lib/MT.pm php/mt.php
+	-git checkout lib/MT.pm php/mt.php mt-check.cgi
