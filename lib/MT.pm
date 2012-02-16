@@ -35,7 +35,7 @@ BEGIN {
     ( $VERSION, $SCHEMA_VERSION ) = ( '5.07', '5.0019' );
     (   $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION,
         $VERSION_ID,   $PORTAL_URL
-    ) = ( '__PRODUCT_NAME__', 'MT', '5.07', '5.07rc3', '__PORTAL_URL__' );
+    ) = ( '__PRODUCT_NAME__', 'MT', '5.07', '5.07', '__PORTAL_URL__' );
 
   # To allow MT to run straight from svn, if no build process (pre-processing)
   # is run, then default to MTOS
