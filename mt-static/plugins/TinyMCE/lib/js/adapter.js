@@ -10,6 +10,9 @@
 MT.Editor.TinyMCE = function() { MT.Editor.apply(this, arguments) };
 
 $.extend(MT.Editor.TinyMCE, MT.Editor, {
+    isMobileOSWYSIWYGSupported: function() {
+        return false;
+    },
     config: {
         mode: "exact",
 

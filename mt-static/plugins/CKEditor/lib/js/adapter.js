@@ -10,6 +10,9 @@
 MT.Editor.CKEditor = function() { MT.Editor.apply(this, arguments) };
 
 $.extend(MT.Editor.CKEditor, MT.Editor, {
+    isMobileOSWYSIWYGSupported: function() {
+        return false;
+    },
     config: {
         resize_minWidth: 500,
         resize_dir: 'vertical',

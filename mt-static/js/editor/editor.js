@@ -15,8 +15,18 @@ MT.Editor = function(id) {
 
 // Class method
 $.extend(MT.Editor, {
+    isMobileOSWYSIWYGSupported: function() {
+        return true;
+    },
     formats: function() {
-        return ['wysiwyg', 'source'];
+        if (this.isMobileOSWYSIWYGSupported() ||
+            ! navigator.userAgent.match(/Android|i(Phone|Pad|Pod)/)
+        ) {
+            return ['wysiwyg', 'source'];
+        }
+        else {
+            return ['source'];
+        }
     },
     setupEnsureInitializedMethods: function(names) {
         var klass = this;

@@ -29,6 +29,16 @@ MT.App.prototype = $.extend({}, MT.App.prototype, {
     initEditor: function() {
         var format = $('#convert_breaks').val();
 
+        // Fall backing to the source editor when any WYSIWYG editor isn't
+        // available.
+        if (! MT.EditorManager.editorClass('wysiwyg')) {
+            if (format == 'richtext') {
+                $('#convert_breaks').val('0');
+            }
+            $('#convert_breaks option[value="richtext"]').remove();
+            format = '0';
+        }
+
         if (! this.editorStrategy) {
             this.editorStrategy = this.constructor.newEditorStrategy();
         }
@@ -59,7 +69,7 @@ MT.App.prototype = $.extend({}, MT.App.prototype, {
 
     insertHTML: function(html, field) {
         MT.EditorManager.insertContent(html, field);
-    },
+    }
 });
 
 })(jQuery);

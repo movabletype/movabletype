@@ -46,7 +46,7 @@ $.extend(MT.EditorManager, {
 
         if (this.map[format]) {
             var found = null;
-            $.each(this.editorsForFormat[format], function() {
+            $.each(this.editorsForFormat[format] || [], function() {
                 if (this.id == thisConstructor.map[format]) {
                     found = this;
                     return false;
