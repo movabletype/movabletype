@@ -16,9 +16,9 @@ $.extend(MT.Editor.CKEditor, MT.Editor, {
         skin: 'mt',
         plugins: 'list,table,mt,maximize,elementspath,basicstyles,sourcearea,removeformat,liststyle,link,button,format,contextmenu,justify,tab,horizontalrule,resize,blockquote,undo,image,enterkey,wysiwygarea,font,toolbar,indent,colordialog,colorbutton',
         toolbar_mt: [
-        ['mt_font_size_smaller', 'mt_font_size_larger', 'mt_bold', 'mt_italic', 'mt_underline', 'mt_strikethrough', 'mt_insert_link', 'mt_insert_email', 'mt_indent', 'mt_outdent', 'mt_insert_unordered_list', 'mt_insert_ordered_list', 'mt_justify_left', 'mt_justify_center', 'mt_justify_right', 'mt_insert_image', 'mt_insert_file', '-', 'Source'],
-        '/',
-        ['Undo','Redo','-','Link','Unlink','-','HorizontalRule','RemoveFormat','-','Table','Maximize'],['TextColor','BGColor'],['Format'],
+            ['mt_font_size_smaller', 'mt_font_size_larger', 'mt_bold', 'mt_italic', 'mt_underline', 'mt_strikethrough', 'mt_insert_link', 'mt_insert_email', 'mt_indent', 'mt_outdent', 'mt_insert_unordered_list', 'mt_insert_ordered_list', 'mt_justify_left', 'mt_justify_center', 'mt_justify_right', 'mt_insert_image', 'mt_insert_file', '-', 'Source'],
+            '/',
+            ['Undo','Redo','-','Link','Unlink','-','HorizontalRule','RemoveFormat','-','Table','Maximize'],['TextColor','BGColor'],['Format']
         ],
         toolbar: 'mt',
         on: {

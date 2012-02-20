@@ -514,14 +514,22 @@ sub edit {
         $param->{blog_file_extension} = $ext;
     }
 
-    if (my $editors = $app->registry('editors')) {
-        $param->{editor_templates} = [];
-        foreach my $editor_key (keys(%$editors)) {
-            my $reg = $editors->{$editor_key};
-            if ( my $rich_editor_tmpl
-                = $reg->{plugin}->load_tmpl( $reg->{template} ) )
-            {
-                push(@{ $param->{editor_templates} }, { tmpl => $rich_editor_tmpl });
+    if (my $editor_regss = MT::Component->registry('editors')) {
+        $param->{editors} = {};
+        foreach my $editors (@$editor_regss) {
+            foreach my $editor_key ( keys(%$editors) ) {
+                my $reg = $editors->{$editor_key};
+                my $tmpls = $param->{editors}{$editor_key} ||= {
+                    templates  => [],
+                    extensions => [],
+                };
+
+                foreach my $k ( 'template', 'extension' ) {
+                    if ( my $tmpl = $reg->{plugin}->load_tmpl( $reg->{$k} ) )
+                    {
+                        push( @{ $tmpls->{ $k . 's' } }, { tmpl => $tmpl } );
+                    }
+                }
             }
         }
 

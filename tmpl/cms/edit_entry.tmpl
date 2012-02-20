@@ -670,7 +670,7 @@
   <script type="text/javascript" src="<$mt:var name="static_uri"$>js/edit.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 </mt:setvarblock>
 
-<mt:unless name="editor_templates">
+<mt:unless name="editors">
 <mt:if name="rich_editor"><mt:var name="rich_editor_tmpl"><mt:else><mt:include name="include/archetype_editor.tmpl"></mt:if>
 <mt:else>
 <mt:setvarblock name="html_head" append="1">
@@ -706,7 +706,17 @@ MT.App.setDefaultEditorStrategy('<mt:var name="editor_strategy" escape="js" />')
 <textarea id="editor-input-content" name="text" style="display: none"><$mt:var name="text" escape="html"$></textarea>
 <textarea id="editor-input-extended" name="text_more" style="display: none"><$mt:var name="text_more" escape="html"$></textarea>
 </mt:setvarblock>
-<mt:loop name="editor_templates"><mt:var name="tmpl" /></mt:loop>
+<mt:loop name="editors">
+  <mt:var name="__value__" key="templates" setvar="templates" />
+  <mt:var name="__value__" key="extensions" setvar="extensions" />
+
+  <mt:loop name="templates">
+    <mt:var name="tmpl" />
+  </mt:loop>
+  <mt:loop name="extensions">
+    <mt:var name="tmpl" />
+  </mt:loop>
+</mt:loop>
 </mt:unless>
 
 <mt:setvarblock name="html_head" append="1">
@@ -776,7 +786,7 @@ MT.App.setDefaultEditorStrategy('<mt:var name="editor_strategy" escape="js" />')
           app.setEditorIframeHTML();
       }
 
-      <mt:unless name="editor_templates">
+      <mt:unless name="editors">
       function changedTextFormat() {
           var form = this.form;
           var option = this.options[this.selectedIndex].value;

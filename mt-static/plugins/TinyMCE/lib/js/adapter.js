@@ -11,8 +11,7 @@ MT.Editor.TinyMCE = function() { MT.Editor.apply(this, arguments) };
 
 $.extend(MT.Editor.TinyMCE, MT.Editor, {
     config: {
-        script_url: StaticURI +
-            'plugins/TinyMCE/tinymce/jscripts/tiny_mce/tiny_mce.js',
+        mode: "exact",
 
         plugins: "lists,style,table,inlinepopups,media,contextmenu,paste,fullscreen,xhtmlxtras,mt",
 
@@ -60,8 +59,9 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             init_instance_callback.apply(this, arguments);
             adapter._init_instance_callback.apply(adapter, arguments);
         };
+        config['elements'] = adapter.id;
 
-        $('#' + adapter.id).tinymce(config);
+        tinyMCE.init(config);
             
         if (MT.EditorManager.toMode(format) == 'source') {
             adapter.setFormat(format);
