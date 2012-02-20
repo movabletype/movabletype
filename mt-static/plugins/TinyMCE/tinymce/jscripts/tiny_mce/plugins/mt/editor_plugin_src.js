@@ -211,7 +211,7 @@
                             textSelected: textSelected
                         });
 				    },
-                    source: 'insertLink',
+                    source: 'insertLink'
                 }
             });
 
@@ -228,7 +228,7 @@
                             textSelected: textSelected
                         });
 				    },
-                    source: 'insertEmail',
+                    source: 'insertEmail'
                 }
             });
 

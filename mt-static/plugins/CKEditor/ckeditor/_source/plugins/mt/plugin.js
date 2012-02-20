@@ -263,7 +263,7 @@ init : function(ed) {
                     textSelected: textSelected
                 });
 			},
-            source: 'insertLink',
+            source: 'insertLink'
         },
 		icon: icon_path,
         iconOffset: 7
@@ -282,7 +282,7 @@ init : function(ed) {
                     textSelected: textSelected
                 });
 			},
-            source: 'insertEmail',
+            source: 'insertEmail'
         },
 		icon: icon_path,
         iconOffset: 8

@@ -20,7 +20,7 @@ $.extend(ES.Single.prototype, ES.prototype, {
             .attr('id', id)
             .insertBefore('#' + ids[0]);
         app.editor = new MT.EditorManager(id, {
-            format: format,
+            format: format
         });
     },
 

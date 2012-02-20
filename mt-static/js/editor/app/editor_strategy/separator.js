@@ -22,7 +22,7 @@ $.extend(ES.Separator.prototype, ES.prototype, {
             .attr('id', id)
             .insertBefore('#' + ids[0]);
         app.editor = new MT.EditorManager(id, {
-            format: format,
+            format: format
         });
 
         var content = $.map(ids, function(id, index) {
