@@ -68,7 +68,10 @@
         return ed.addButton(name, opts);
     };
 
-	tinymce.PluginManager.requireLangPack('mt');
+    tinymce
+        .ScriptLoader
+        .add(tinymce.PluginManager.urls['mt'] + '/langs/en.js');
+
 	tinymce.create('tinymce.plugins.MovableType', {
 		init : function(ed, url) {
             tinymce.DOM.loadCSS(url + '/css/mt.css');

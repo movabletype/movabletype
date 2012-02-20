@@ -89,7 +89,7 @@ function addMtButton(name, opts) {
 
 CKEDITOR.plugins.add('mt', {
 
-lang : [ 'en', 'ja' ],
+lang : [ 'en' ],
 
 init : function(ed) {
 	var id = ed.element['$'].id;
