@@ -23,6 +23,7 @@ my $mt_app = sub {
         my $cgi = CGI::PSGI->new($env);
         local *ENV = { %ENV, %$env }; # some MT::App method needs this
         my $app = $app_class->new( CGIObject => $cgi );
+        delete $app->{init_request};
         MT->set_instance($app);
 
         # Cheap hack to get the output
