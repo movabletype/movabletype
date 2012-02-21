@@ -15,6 +15,30 @@ use Symbol qw( gensym );
 use constant DEBUG => $ENV{MT_PSGI_DEBUG} || 0;
 MT->new();
 
+sub reboot {
+    my $pidfilepath = MT->config('PIDFilePath')
+        or return;
+    open my $pidfile, '<', $pidfilepath
+        or die "Failed to open pid file $pidfilepath: $!";
+    my $pid = do { local $/; <$pidfile> };
+    close $pidfile;
+    kill 1, $pid;
+}
+
+# Hook the MT::Touch::touch and if touching to 'config' object, that means restart in MT.
+require MT::Touch;
+MT::Touch->add_callback(
+    'pre_save',
+    5,
+    undef,
+    sub {
+        my ( $cb, $obj ) = @_;
+        if ( $obj->object_type eq 'config' ) {
+            reboot();
+        }
+    },
+);
+
 my $mt_app = sub {
     my $app_class = shift;
     eval "require $app_class";
