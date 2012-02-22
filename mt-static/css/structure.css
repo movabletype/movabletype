@@ -1591,14 +1591,13 @@ ul.tabs li a {
 }
 
 /* --- Line Numbers */
-.CodeMirror-line-numbers {
-    width: 2.2em;
+.CodeMirror-gutter-text pre {
     padding: 0.4em 0.3em 0 0;
+    overflow: hidden;
     border-right: 1px solid #dcdddd;
     color: #a3a3a2;
     text-align: right;
     font-family: monospace;
-    line-height: 16px;
 }
 
 /* -- Tags Field */

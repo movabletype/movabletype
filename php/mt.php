@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2004-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2004-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -10,8 +10,8 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '5.12');
-define('PRODUCT_VERSION', '5.12');
+define('VERSION', '5.13');
+define('PRODUCT_VERSION', '5.13');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -280,7 +280,6 @@ class MT {
         // path to handlers
         $cfg['phplibdir'] = $cfg['phpdir'] . DIRECTORY_SEPARATOR . 'lib';
 
-        $cfg['dbhost'] or $cfg['dbhost'] = 'localhost'; // default to localhost
         $driver = $cfg['objectdriver'];
         $driver = preg_replace('/^DB[ID]::/', '', $driver);
         $driver or $driver = 'mysql';
@@ -412,6 +411,8 @@ class MT {
             $cfg['usersessioncookietimeout'] = 60*60*4;
         isset($cfg['commenterregistration']) or
             $cfg['commenterregistration'] = array('allow' => 1 );
+        isset($cfg['userpasswordminlength']) or
+            $cfg['userpasswordminlength'] = 8;
     }
 
     function configure_paths($blog_site_path) {

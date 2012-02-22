@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -88,6 +88,19 @@ use vars qw( @ISA %Lexicon );
 
 ## php/lib/function.mtinclude.php
 	'\'parent\' modifier cannot be used with \'[_1]\'' => 'Die Option \'parent\' kann nicht zusammen mit \'[_1]\' verwendet werden.',
+
+## php/lib/function.mtpasswordvalidation.php
+	'Password should be longer than [_1] characters' => 'Passwörter müssen mindestens [_1] Zeichen lang sein', # Translate - New # OK
+	'Password should not include your Username' => 'Ihr Benutzername darf nicht Teil Ihres Passworts sein', # Translate - New # OK
+	'Password should include letters and numbers' => 'Passwörter müssen sowohl Buchstaben als auch Ziffern enthalten', # Translate - New # OK
+	'Password should include lowercase and uppercase letters' => 'Passwörter müssen sowohl Groß- als auch Kleinbuchstaben enthalten', # Translate - New # OK
+	'Password should contain symbols such as #!$%' => 'Passwörter müssen mindestens ein Sonderzeichen wie #!$% enthalten', # Translate - New # OK
+
+## php/lib/function.mtpasswordvalidationrule.php
+	'minimum length of [_1]' => 'Mindestlänge [_1] Zeichen', # Translate - New # OK
+	', uppercase and lowercase letters' => 'Groß- und Kleinbuchstaben', # Translate - New # OK
+	', letters and numbers' => 'Buchstaben und Ziffern', # Translate - New # OK
+	', symbols (such as #!$%)' => 'Sonderzeichen (#!$% usw.)', # Translate - New # OK
 
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
@@ -366,6 +379,16 @@ use vars qw( @ISA %Lexicon );
 	'[_1]Sign in[_2] to comment, or comment anonymously.' => '[_1]Anmelden[_2] um zu kommentieren oder anonym kommentieren',
 	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => 'Antwort auf den <a href="[_1]" onclick="[_2]">Kommentar von [_3]</a>',
 
+## default_templates/lockout-ip.mtml
+	'This email is to notify you that an IP address has been locked out.' => 'Eine IP-Adresse wurde automatisch gesperrt.', # Translate - New # OK
+	'IP Address: [_1]' => 'IP-Adresse: [_1]', # Translate - New # OK
+	'Recovery: [_1]' => 'Entsperren: [_1]', # Translate - New # OK
+
+## default_templates/lockout-user.mtml
+	'This email is to notify you that a Movable Type user account has been locked out.' => 'Ein Movable Type-Benutzerkonto wurde automatisch gesperrt.', # Translate - New # OK
+	'Display Name: [_1]' => 'Benutzername: [_1]', # Translate - New # OK
+	'If you want to unlock this user click the link below.' => 'Um das Benutzerkonto freizuschalten, klicken Sie auf folgenden Link.', # Translate - New # OK
+
 ## default_templates/main_index.mtml
 
 ## default_templates/main_index_widgets_group.mtml
@@ -584,6 +607,7 @@ use vars qw( @ISA %Lexicon );
 	'Recover Password(s)' => 'Passwort anfordern',
 	'Enable' => 'Aktivieren',
 	'Disable' => 'Deaktivieren',
+	'Unlock' => 'Entsperren', # Translate - New # OK
 	'Remove' => 'Entfernen',
 	'Refresh Template(s)' => 'Vorlage(n) zurücksetzen',
 	'Move blog(s) ' => 'Blog(s) verschieben',
@@ -666,15 +690,18 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t load template' => 'Kann Vorlage nicht laden',
 	'Failed comment attempt by pending registrant \'[_1]\'' => 'Fehlgeschlagener Kommentierungsversuch durch wartenden Kommentarautoren &#8222;[_1]&#8220;',
 	'Registered User' => 'Registrierter Benutzer',
+	'Invalid authentication parameter' => 'Ungültige Authentifizierungs-Parameter', # Translate - New # OK
 	'The sign-in attempt was not successful; please try again.' => 'Anmeldeversuch nicht erfolgreich. Bitte versuchen Sie es erneut.',
 	'Can\'t load entry #[_1].' => 'Kann Eintrag #[_1] nicht laden.',
 	'No entry was specified; perhaps there is a template problem?' => 'Es wurde kein Eintrag angegeben. Vielleicht gibt es ein Problem mit der Vorlage?',
 	'Somehow, the entry you tried to comment on does not exist' => 'Der Eintrag, den Sie kommentieren möchten, existiert nicht.',
 	'Invalid entry ID provided' => 'Ungültige Eintrags-ID angegeben',
+	'For improved security, please change your password' => 'Zur Steigerung Ihrer Sicherheit ändern Sie bitte Ihr Passwort.', # Translate - New # OK
 	'All required fields must have valid values.' => 'Alle erforderlichen Felder müssen gültige Werte aufweisen.',
 	'[_1] contains an invalid character: [_2]' => '[_1] enthält  ein ungültiges Zeichen: [_2]',
 	'Display Name' => 'Angezeigter Name',
 	'Passwords do not match.' => 'Passwörter stimmen nicht überein.',
+	'Failed to verify current password.' => 'Derzeitiges Passwort konnte nicht bestätigt werden.',
 	'Email Address is invalid.' => 'Die E-Mail-Adresse ist ungültig.',
 	'URL is invalid.' => 'Die Web-Adresse (URL) ist ungültig.',
 	'Commenter profile has successfully been updated.' => 'Das Profil des Kommentarautoren wurde erfolgreich aktualisiert.',
@@ -926,6 +953,9 @@ use vars qw( @ISA %Lexicon );
 	'Popup Page for [_1]' => 'Popup-Seite für [_1]',
 
 ## lib/MT/Asset.pm
+	'Deleted' => 'Gelöscht',
+	'Enabled' => 'Aktiviert',
+	'Disabled' => 'Deaktiviert',
 	'Could not remove asset file [_1] from filesystem: [_2]' => 'Konnte Asset-Datei [_1] nicht aus dem Dateisystem löschen: [_2]',
 	'Description' => 'Beschreibung',
 	'Location' => 'Ort',
@@ -938,9 +968,6 @@ use vars qw( @ISA %Lexicon );
 	'Pixel height' => 'Höhe in Pixeln',
 	'Except Userpic' => 'Benutzerbild ausnehmen',
 	'Author Status' => 'Status des Autors',
-	'Deleted' => 'Gelöscht',
-	'Enabled' => 'Aktiviert',
-	'Disabled' => 'Deaktiviert',
 	'Assets of this website' => 'Assets dieser Website',
 
 ## lib/MT/Asset/Video.pm
@@ -972,7 +999,6 @@ use vars qw( @ISA %Lexicon );
 	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'Zur Bestimmung von Höhe und Breite hochgeladener Bilddateien ist das Perl-Modul Image::Size erforderlich.',
 
 ## lib/MT/Auth/MT.pm
-	'Failed to verify current password.' => 'Derzeitiges Passwort konnte nicht bestätigt werden.',
 
 ## lib/MT/Auth/OpenID.pm
 	'Couldn\'t save the session' => 'Session konnte nicht gespeichert werden',
@@ -984,6 +1010,13 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Author.pm
 	'Users' => 'Benutzer',
+	'Active' => 'Aktiv',
+	'Pending' => 'Auf Moderation wartend',
+	'Not Locked Out' => 'Nicht gesperrt', # Translate - New # OK
+	'Locked Out' => 'Gesperrt', # Translate - New # OK
+	'__COMMENTER_APPROVED' => 'Bestätigt',
+	'Banned' => 'Gesperrt',
+	'MT Users' => 'MT-Benutzer',
 	'The approval could not be committed: [_1]' => 'Freigabe konnte nicht übernommen werden: [_1]',
 	'Userpic' => 'Benutzerbild',
 	'User Info' => 'Benutzerinfo',
@@ -991,19 +1024,16 @@ use vars qw( @ISA %Lexicon );
 	'__COMMENT_COUNT' => 'Kommentare',
 	'Created by' => 'Angelegt von',
 	'Status' => 'Status',
-	'Active' => 'Aktiv',
-	'Pending' => 'Auf Moderation wartend',
 	'Website URL' => 'Website',
 	'Privilege' => 'Privilegien',
+	'Lockout' => 'Sperrung', # Translate - New # OK
 	'Enabled Users' => 'Aktive Benutzerkonten',
 	'Disabled Users' => 'Deaktivierte Benutzerkonten',
 	'Pending Users' => 'Wartende Benutzerkonten',
-	'__COMMENTER_APPROVED' => 'Bestätigt',
-	'Banned' => 'Gesperrt',
+	'Locked out Users' => 'Gesperrte Benutzerkonten', # Translate - New # OK
 	'Enabled Commenters' => 'Aktive Kommentar-Autoren',
 	'Disabled Commenters' => 'Deaktivierte Kommentar-Autoren',
 	'Pending Commenters' => 'Wartende Kommentar-Autoren',
-	'MT Users' => 'MT-Benutzer',
 	'MT Native Users' => 'Native MT-Benutzer',
 	'Externally Authenticated Commenters' => 'Extern authentifizierte Kommentar-Autoren',
 
@@ -1234,7 +1264,6 @@ use vars qw( @ISA %Lexicon );
 	'Orphaned comment' => 'Verwaister Kommentar',
 
 ## lib/MT/CMS/Common.pm
-	'Permisison denied.' => 'Zugriff verweigert.',
 	'The Template Name and Output File fields are required.' => 'Die Felder Vorlagennamen und Ausgabedatei sind erforderlich.',
 	'Invalid type [_1]' => 'Ungültiger Typ [_1]',
 	'Invalid ID [_1]' => 'Ungültige ID [_1]',
@@ -1257,7 +1286,6 @@ use vars qw( @ISA %Lexicon );
 	'Removing [_1] failed: [_2]' => '[_1] konnte nicht entfernt werden: [_2]',
 	'System templates can not be deleted.' => 'Systemvorlagen können nicht gelöscht werden',
 	'The selected [_1] has been deleted from the database.' => 'Gewählte [_2] aus der Datenbank gelöscht.',
-	'Can\'t load [_1] #[_1].' => 'Kann [_1] #[_1] nicht laden.',
 	'Saving snapshot failed: [_1]' => 'Speichern des Snapshots fehlgeschlagen: [_1]',
 
 ## lib/MT/CMS/Dashboard.pm
@@ -1291,7 +1319,7 @@ use vars qw( @ISA %Lexicon );
 	'Ping \'[_1]\' failed: [_2]' => 'Ping &#8222;[_1]&#8220; fehlgeschlagen: [_2]',
 	'(user deleted - ID:[_1])' => '(Benutzer gelöscht - ID:[_1])',
 	'<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar, then click it when you are visiting a site that you want to blog about.' => '<a href="[_1]">QuickPost für [_2]</a> - Ziehen Sie diesen Link in die Lesezeichenleiste Ihres Browsers und klicken Sie darauf, wenn Sie sich auf einer Website befinden, über die Sie bloggen möchten.',
-	'Entry \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Eintrag &#8222;[_1]&#8220; (ID:[_2]) gelöscht von &#8222;[_3]&#8220;',
+	'[_1] \'[_2]\' (ID:[_3]) deleted by \'[_4]\'' => '[_1] &#8222;[_2]&#8220; (ID:[_3]) gelöscht von &#8222;[_4]&#8220;',
 	'Need a status to update entries' => 'Statusangabe erforderlich',
 	'Need entries to update status' => 'Einträge erforderlich',
 	'One of the entries ([_1]) did not actually exist' => 'Einer der Einträge ([_1]) existiert nicht',
@@ -1305,8 +1333,8 @@ use vars qw( @ISA %Lexicon );
 	'Failed to save filter: label is required.' => 'Filter nicht gespeichert: Bezeichnung erforderlich',
 	'Failed to save filter: label "[_1]" is duplicated.' => 'Filter nicht gespeichert: Bezeichnung "[_1]" bereits vorhanden.',
 	'No such filter' => 'Kein entsprechender Filter vorhanden',
-	'Failed to save filter: [_1]' => 'Filter nicht gespeichert: [_1]',
 	'Permission denied' => 'Zugriff verweigert',
+	'Failed to save filter: [_1]' => 'Filter nicht gespeichert: [_1]',
 	'Failed to delete filter(s): [_1]' => 'Filter nicht gelöscht: [_1]',
 	'Removed [_1] filters successfully.' => '[_1] Filter erfolgreich entfernt.',
 	'[_1] ( created by [_2] )' => '[_1] (angelegt von [_2])',
@@ -1435,10 +1463,10 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/Tools.pm
 	'Password Recovery' => 'Passwort anfordern',
-	'User not found' => 'Benutzer nicht gefunden',
 	'Error sending mail ([_1]); please fix the problem, then try again to recover your password.' => 'Beim Mailversand ist ein Fehler aufgetreten ([_1]). Überprüfen Sie die entsprechenden Einstellungen und versuchen Sie dann erneut, Ihr  Passwort anzufordern.',
 	'Password reset token not found' => 'Passwort Reset Token nicht gefunden',
 	'Email address not found' => 'E-Mail-Adresse nicht gefunden',
+	'User not found' => 'Benutzer nicht gefunden',
 	'Your request to change your password has expired.' => 'Ihre Anfrage auf Änderung Ihres Passworts ist abgelaufen.',
 	'Invalid password reset request' => 'Ungültige Anfrage zur Zurücksetzung des Passworts',
 	'Please confirm your new password' => 'Bitte bestätigen Sie Ihr neues Passwort',
@@ -1457,6 +1485,8 @@ use vars qw( @ISA %Lexicon );
 	'Performance logging is off' => 'Performance-Logging deaktiviert',
 	'Performance log path is [_1]' => 'Pfad der Performance-Logs: [_1]',
 	'Performance log threshold is [_1]' => 'Schwellenwert für Performance-Logging: [_1]',
+	'[_1] is [_2]' => '[_1] ist [_2]', # Translate - New # OK
+	'none' => 'Kein(e)',
 	'System Settings Changes Took Place' => 'Es wurden Änderungen an den Systemeinstellungen vorgenommen.',
 	'Invalid password recovery attempt; can\'t recover password in this configuration' => 'Ungültiger Versuch zur  Passwortanforderung. Passwörter können in dieser Konfiguration nicht angefordert werden.',
 	'Invalid author_id' => 'Ungültige Autoren-ID',
@@ -1500,6 +1530,12 @@ use vars qw( @ISA %Lexicon );
 	'Blog(s) (ID:[_1]) was/were successfully backed up by user \'[_2]\'' => 'Weblog(s) (ID:[_1]) erfolgreich gesichert von Benutzer &#8222;[_2]&#8220;',
 	'Movable Type system was successfully backed up by user \'[_1]\'' => 'Movable Type-System erfolgreich gesichert von Benutzer &#8222;[_1]&#8220;',
 	'Some [_1] were not restored because their parent objects were not restored.' => 'Einige [_1] wurden nicht wiederhergestellt, da ihre Elternobjekte nicht wiederhergestellt wurden.',
+	'Recipients for lockout notification' => 'Empfänger von Sperr-Benachrichtigungen', # Translate - New # OK
+	'User lockout limit' => 'Anzahl Versuche bis Kontosperrung', # Translate - New # OK
+	'User lockout interval' => 'Zeitraum bis Kontosperrung', # Translate - New # OK
+	'IP address lockout limit' => 'Anzahl Versuche bis  IP-Sperrung', # Translate - New # OK
+	'IP address lockout interval' => 'Zeitraum bis IP-Sperrung', # Translate - New # OK
+	'Lockout IP address whitelist' => 'Diese IP-Adresse nie sperren', # Translate - New # OK
 
 ## lib/MT/CMS/TrackBack.pm
 	'(Unlabeled category)' => '(Namenlose Kategorie)',
@@ -1565,14 +1601,14 @@ use vars qw( @ISA %Lexicon );
 	'(Deleted)' => '(Gelöscht)',
 	'Edit this [_1] commenter.' => 'Diesen [_1] Kommentar-Autor bearbeiten',
 	'Comments on [_1]: [_2]' => 'Kommentare zu [_1]: [_2]',
-	'All comments by [_1] \'[_2]\'' => 'Alle Kommentare von [_1] &#8222;[_2]&#8220;',
-	'Commenter' => 'Kommentarautor',
-	'Load of entry \'[_1]\' failed: [_2]' => 'Der Eintrag &#8222;[_1]&#8220; konnte nicht geladen werden: [_2]',
-	'Entry/Page' => 'Eintrag/Seite',
 	'Approved' => 'Freigeschaltet',
 	'Unapproved' => 'Nicht freigeschaltet',
 	'Not spam' => 'Nicht Spam',
 	'Reported as spam' => 'Als Spam gemeldet',
+	'All comments by [_1] \'[_2]\'' => 'Alle Kommentare von [_1] &#8222;[_2]&#8220;',
+	'Commenter' => 'Kommentarautor',
+	'Load of entry \'[_1]\' failed: [_2]' => 'Der Eintrag &#8222;[_1]&#8220; konnte nicht geladen werden: [_2]',
+	'Entry/Page' => 'Eintrag/Seite',
 	'Comments on My Entries/Pages' => 'Kommentare zu meinen Einträgen/Seiten',
 	'Commenter Status' => 'Kommentarautoren-Status',
 	'Non-spam comments' => 'Gültige Kommentare',
@@ -1686,6 +1722,7 @@ use vars qw( @ISA %Lexicon );
 	'Junk Folder Expiration' => 'Junk-Ordner-Einstellungen',
 	'Remove Temporary Files' => 'Temporäre Dateien löschen',
 	'Purge Stale Session Records' => 'Abgelaufene Sessiondaten löschen ',
+	'Remove expired lockout data' => 'Abgelaufene Sperrdaten löschen', # Translate - New # OK
 	'Manage Website' => 'Website verwalten',
 	'Manage Blog' => 'Blog verwalten',
 	'Manage Website with Blogs' => 'Website mit Blogs verwalten',
@@ -1751,14 +1788,20 @@ use vars qw( @ISA %Lexicon );
 	'New Ping' => 'Neuer Ping',
 	'Entry Notify' => 'Eintragsbenachrichtigung',
 	'Subscribe Verify' => 'Abonnementbestätigung',
+	'User Lockout' => 'Kontensperre', # Translate - New # OK
+	'IP Address Lockout' => 'IP-Sperre', # Translate - New # OK
 
 ## lib/MT/Entry.pm
-	'NONE' => 'KEIN(E)',
 	'[_1] ( id:[_2] ) does not exists.' => '[_1] (ID: [_2]) nicht vorhanden.',
 	'Entries from category: [_1]' => 'Einträge aus Kategorie [_1]',
+	'NONE' => 'KEIN(E)',
+	'Draft' => 'Entwurf',
+	'Published' => 'Veröffentlicht',
+	'Reviewing' => 'In Prüfung',
+	'Scheduled' => 'Zu bestimmtem Zeitpunkt',
+	'Junk' => 'Spam',
 	'Entries by [_1]' => 'Einträge nach [_1]',
 	'record does not exist.' => 'Eintrag nicht vorhanden.',
-	'Draft' => 'Entwurf',
 	'Review' => 'Zur Überprüfung',
 	'Future' => 'Künftig',
 	'Spam' => 'Spam',
@@ -1772,10 +1815,6 @@ use vars qw( @ISA %Lexicon );
 	'Primary Category' => 'Hauptkategorie',
 	'-' => '-',
 	'__PING_COUNT' => 'TrackBacks',
-	'Published' => 'Veröffentlicht',
-	'Reviewing' => 'In Prüfung',
-	'Scheduled' => 'Zu bestimmtem Zeitpunkt',
-	'Junk' => 'Spam',
 	'Date Commented' => 'Kommentardatum',
 	'Author ID' => 'ID des Autors',
 	'My Entries' => 'Meine Einträge',
@@ -1881,26 +1920,18 @@ use vars qw( @ISA %Lexicon );
 	'Failed to init auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'Initialisierung der Listeneigenschaft [_1] fehlgeschlagen.[_2]: Keine Definition für Spalte [_3] gefunden.',
 	'Failed to init auto list property [_1].[_2]: unsupported column type.' => 'Initialisierung der Listeneigenschaft [_1] fehlgeschlagen.[_2]:Spaltenart nicht unterstützt.',
 
+## lib/MT/Lockout.pm
+	'Can\'t find author for id \'[_1]\'' => 'Kein Autor mit ID \'[_1]\' vorhanden', # Translate - New # OK
+	'User was locked out. IP address: [_1], Username: [_2]' => 'Benutzerkonto gesperrt. IP-Adresse: [_1], Benutzername: [_2]', # Translate - New # OK
+	'User Was Locked Out' => 'Benutzerkonto gesperrt', # Translate - New # OK
+	'Error sending mail: [_1]' => 'Fehler beim Versenden von Mail: [_1]',
+	'IP address was locked out. IP address: [_1], Username: [_2]' => 'IP-Adresse gesperrt. IP-Adresse: [_1], Benutzername: [_2]', # Translate - New # OK
+	'IP address Was Locked Out' => 'IP-Adresse gesperrt', # Translate - New # OK
+	'User has been unlocked. Username: [_1]' => 'Benutzerkonto entsperrt. Benutzername: [_1]', # Translate - New # OK
+
 ## lib/MT/Log.pm
 	'Log message' => 'Protokolleintrag',
 	'Log messages' => 'Protokolleinträge',
-	'Showing only ID: [_1]' => 'Zeige nur ID [_1]',
-	'Page # [_1] not found.' => 'Seite #[_1] nicht gefunden.',
-	'Entry # [_1] not found.' => 'Eintrag #[_1] nicht gefunden.',
-	'Comment # [_1] not found.' => 'Kommentar #[_1] nicht gefunden.',
-	'TrackBack # [_1] not found.' => 'TrackBack #[_1] nicht gefunden.',
-	'blog' => 'Blog',
-	'website' => 'Website',
-	'search' => 'suchen', # Translate - Case
-	'author' => 'Autor', # Translate - Case
-	'ping' => 'Ping', # Translate - New
-	'theme' => 'Thema', # Translate - Case
-	'folder' => 'Ordner', # Translate - Case
-	'plugin' => 'Plugin', # Translate - New
-	'Message' => 'Mitteilung',
-	'By' => 'Von',
-	'Class' => 'Typ',
-	'Level' => 'Stufe',
 	'Security' => 'Sicherheit',
 	'Warning' => 'Warnung',
 	'Information' => 'Information',
@@ -1909,6 +1940,23 @@ use vars qw( @ISA %Lexicon );
 	'Security/error/warning' => 'Sicherheit/Fehler/Warnung',
 	'Not debug' => 'Kein Debug',
 	'Debug/error' => 'Debug/Fehler',
+	'Showing only ID: [_1]' => 'Zeige nur ID [_1]',
+	'Page # [_1] not found.' => 'Seite #[_1] nicht gefunden.',
+	'Entry # [_1] not found.' => 'Eintrag #[_1] nicht gefunden.',
+	'Comment # [_1] not found.' => 'Kommentar #[_1] nicht gefunden.',
+	'TrackBack # [_1] not found.' => 'TrackBack #[_1] nicht gefunden.',
+	'blog' => 'Blog',
+	'website' => 'Website',
+	'search' => 'suchen',
+	'author' => 'Autor',
+	'ping' => 'Ping',
+	'theme' => 'Thema',
+	'folder' => 'Ordner',
+	'plugin' => 'Plugin',
+	'Message' => 'Mitteilung',
+	'By' => 'Von',
+	'Class' => 'Typ',
+	'Level' => 'Stufe',
 	'Metadata' => 'Metadaten',
 	'Logs on This Website' => 'Logs dieser Website',
 	'Show only errors' => 'Nur Fehlermeldungen anzeigen',
@@ -1916,7 +1964,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Mail.pm
 	'Unknown MailTransfer method \'[_1]\'' => 'Unbekannte MailTransfer-Methode &#8222;[_1]&#8220;',
 	'Sending mail via SMTP requires that your server have Mail::Sendmail installed: [_1]' => 'Für das Versenden von E-Mail mittels SMTP ist Mail::Sendmail erforderlich: [_1]',
-	'Error sending mail: [_1]' => 'Fehler beim Versenden von Mail: [_1]',
 	'You do not have a valid path to sendmail on your machine. Perhaps you should try using SMTP?' => 'Kein gültiger Sendmail-Pfad gefunden. Versuchen Sie stattdessen SMTP zu verwenden.',
 	'Exec of sendmail failed: [_1]' => 'Sendmail konnte nicht ausgeführt werden: [_1]',
 
@@ -2011,6 +2058,8 @@ use vars qw( @ISA %Lexicon );
 	'Revision Number' => 'Revisionsnummer',
 
 ## lib/MT/Role.pm
+	'__ROLE_ACTIVE' => 'Aktiv',
+	'__ROLE_INACTIVE' => 'Inaktiv',
 	'Website Administrator' => 'Website-Administrator',
 	'Can administer the website.' => 'Kann die Website verwalten',
 	'Blog Administrator' => 'Blog-Administrator',
@@ -2028,8 +2077,6 @@ use vars qw( @ISA %Lexicon );
 	'Can comment and manage feedback.' => 'Kann kommentieren und Feedback verwalten',
 	'Can comment.' => 'Kann kommentieren',
 	'__ROLE_STATUS' => 'Status',
-	'__ROLE_ACTIVE' => 'Aktiv',
-	'__ROLE_INACTIVE' => 'Inaktiv',
 
 ## lib/MT/Scorable.pm
 	'Object must be saved first.' => 'Objekt muss zuerst gespeichert werden.',
@@ -2040,11 +2087,11 @@ use vars qw( @ISA %Lexicon );
 	'Session' => 'Sitzung',
 
 ## lib/MT/Tag.pm
+	'Private' => 'Privat',
+	'Not Private' => 'Nicht privat',
 	'Tag must have a valid name' => 'Tags müssen gültige Namen haben',
 	'This tag is referenced by others.' => 'Andere Tags verweisen auf dieses Tag.',
 	'Tags with Entries' => 'Tags mit Einträgen',
-	'Private' => 'Privat',
-	'Not Private' => 'Nicht privat',
 	'Tags with Pages' => 'Tags mit Seiten',
 	'Tags with Assets' => 'Tags mit Assets',
 
@@ -2928,7 +2975,7 @@ use vars qw( @ISA %Lexicon );
 	'More Aggressive' => 'aggressiv',
 	q{Apply 'nofollow' to URLs} => q{'nofollow' an URLs anhängen},
 	q{If enabled, all URLs in comments and TrackBacks will be assigned a 'nofollow' link relation.} => q{Aktivieren Sie diese Option, um bei Links in Kommentaren und TrackBacks das 'nofollow'-Attribut zu setzen.},
-	q{'nofollow' exception for trusted commenters} => q{'nofollow' nicht für vertraute Kommentarautoren setzen}, # Translate - New
+	q{'nofollow' exception for trusted commenters} => q{'nofollow' nicht für vertraute Kommentarautoren setzen},
 	q{Do not add the 'nofollow' attribute when a comment is submitted by a trusted commenter.} => q{&#8222;nofollow&#8220;-Attribut nicht in Feedback von vertrauten Autoren setzen.},
 	'Comment Settings' => 'Kommentar-Einstellungen',
 	'Note: Commenting is currently disabled at the system level.' => 'Hinweise: Die Kommentarfunktion ist derzeit für das Gesamtsystem ausgeschaltet.',
@@ -2961,7 +3008,6 @@ use vars qw( @ISA %Lexicon );
 	'Transform URLs in comment text into HTML links.' => 'In Kommentaren enthaltene URLs in HTML-Links umwandeln.',
 	'Specifies the Text Formatting option to use for formatting visitor comments.' => 'Legt fest, welche Textformatierungsoption standardmäßig für Kommentare verwendet werden soll.',
 	'CAPTCHA Provider' => 'CAPTCHA-Quelle',
-	'none' => 'Kein(e)',
 	'No CAPTCHA provider available' => 'Keine CAPTCHA-Quelle verfügbar',
 	q{No CAPTCHA provider is available in this system.  Please check to see if Image::Magick is installed and if the CaptchaSourceImageBase configuration directive points to a valid captcha-source directory within the 'mt-static/images' directory.} => q{Keine CAPTCHA-Quelle im System verfügbar.  Überprüfen Sie, ob Image::Magick installiert ist und ob das CaptchaSourceImageBase-Konfigurationsparameter auf ein gültiges Verzeichnis im Ordner &#8222;mt-static/images&#8220; zeigt.},
 	'Use Comment Confirmation Page' => 'Bei Abgabe von Kommentaren Bestätigungsseite anzeigen',
@@ -3142,6 +3188,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/cfg_system_general.tmpl
 	'A test email was sent.' => 'Testmail verschickt.',
 	'Your settings have been saved.' => 'Die Einstellungen wurden gespeichert.',
+	'(None selected)' => '(Kein Blog gewählt)',
 	'System Email' => 'System- E-Mail-Adresse',
 	q{This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, and a few other minor events.} => q{Diese Adresse wird von Movable Type für automatisch erzeugte E-Mails verwendet. Automatisch erzeugte Mails werden bei Passwortanforderungen, Registrierungen von Kommentarautoren, zur Benachrichtigung über Kommentare und TrackBack sowie bei einigen weiteren Ereignissen verschickt.},
 	'Send Test Email' => 'Testmail verschicken',
@@ -3172,6 +3219,16 @@ use vars qw( @ISA %Lexicon );
 	'(No Outbound TrackBacks)' => '(Kein TrackBack-Versand)',
 	'Only to blogs within this system' => 'Nur an Blogs in diesem System',
 	'Only to websites on the following domains:' => 'Nur zu  folgenden Domains:',
+	'Lockout Settings' => 'Sperr-Einstellungen', # Translate - New # OK
+	q{The system administrators whom you wish to notify if a user or an IP address is locked out.  If no administrators are selected, notifications will be sent to the 'System Email' address.} => q{Bitte wählen Sie, welcher Administrator über automatische IP- und Benutzerkonten-Sperrungen informiert werden soll. Wählen Sie keinen Administrator, wird die System-E-Mail-Adresse verwendet.}, # Translate - New # OK
+	'Clear' => 'zurücksetzen',
+	'Select' => 'Wählen',
+	'User lockout policy' => 'Kontensperrung', # Translate - New # OK
+	'A Movable Type user will be locked out if he or she submits an incorrect password [_1] or more times within [_2] seconds.' => 'Movable Type-Benutzerkonten  werden automatisch gesperrt, wenn das zugehörige Passwort binnen [_2] Sekunden mindestens [_1] mal in Folge falsch eingegeben wurde.', # Translate - New # OK
+	'IP address lockout policy' => 'IP-Sperrung', # Translate - New # OK
+	'An IP address will be locked out if [_1] or more incorrect login attempts are made within [_2] seconds from the same IP address.' => 'IP-Adresse werden automatisch gesperrt, wenn von ihr binnen [_2]  mindestens [_1] ungültige  Anmeldeversuche ausgingen.', # Translate - New # OK
+	q{However, the following IP addresses are 'whitelisted' and will never be locked out:} => q{Diese IP-Adressen werden nie gesperrt:}, # Translate - New # OK
+	'The list of IP addresses. If a remote IP address is included in this list, the failed login will not recorded. You can specify multiple IP addresses separated by commas or line breaks.' => 'IP-Liste. Sind nicht zum eigenen Netzwerk gehörende IP-Adressen enthalten, werden fehlgeschlagene Anmeldeversuche über diese nicht aufgezeichnet. Verwenden Sie pro Adresse eine Zeile oder trennen Sie die Adressen mit Kommas.', # Translate - New # OK
 	'Send Email To' => 'E-Mail schicken an',
 	'The email address that should receive a test email from Movable Type.' => 'Die Adresse, an die Movable Type Testmails verschicken soll.',
 	'Send' => 'Absenden',
@@ -3180,14 +3237,19 @@ use vars qw( @ISA %Lexicon );
 	'User Settings' => 'Benutzereinstellungen',
 	'(No website selected)' => '(Keine Website gewählt)',
 	'Select website' => 'Website wählen',
-	'(None selected)' => '(Kein Blog gewählt)',
 	'Allow Registration' => 'Registrierung erlauben',
 	'Select a system administrator you wish to notify when commenters successfully registered themselves.' => 'Bestimmen Sie, welcher Systemadministrator benachrichtigt werden soll, wenn ein Kommentarautor sich erfolgreich selbst registriert hat.',
 	'Allow commenters to register with blogs on this system.' => 'Kommentarautoren ermöglichen, sich mit Blogs an diesem System zu registrieren',
 	'Notify the following system administrators when a commenter registers:' => 'Folgende Systemadministratoren benachrichtigen, wenn sich ein Kommentarautor registriert hat:',
-	'Clear' => 'zurücksetzen',
 	'Select system administrators' => 'System-Administrator wählen',
 	'Note: System Email Address is not set in System > General Settings. Emails will not be sent.' => 'Hinweis: Sie haben noch keine System-E-Mail-Adresse eingerichtet. Benachrichtigungen können daher nicht verschickt werden. Die Adresse kann unter System > Grundeinstellungen eingerichtet werden.',
+	'Password Validation' => 'Passwortregeln', # Translate - New # OK
+	'Options' => 'Optionen',
+	'Should contain uppercase and lowercase letters.' => 'Klein- und Großbuchstaben erforderlich', # Translate - New # OK
+	'Should contain letters and numbers.' => 'Buchstaben und Ziffern erforderlich', # Translate - New # OK
+	'Should contain special characters.' => 'Sonderzeichen erforderlich', # Translate - New # OK
+	'Minimun Length' => 'Mindestlänge', # Translate - New # OK
+	'Characters' => 'Zeichen', # Translate - New # OK
 	'New User Defaults' => 'Voreinstellungen für neue Benutzer',
 	'Personal Blog' => 'Persönliches Blog',
 	'Have the system automatically create a new personal blog when a user is created. The user will be granted the blog administrator role on this blog.' => 'Automatisch persönliche Blogs für neue Benutzer anlegen. Dem Benutzer werden für sein persönliches Blog Administrationsrechte zugewiesen.',
@@ -3424,7 +3486,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/dialog/select_theme.tmpl
 	'Select Personal blog theme' => 'Thema für persönliche Blogs wählen',
-	'Select' => 'Wählen',
 
 ## tmpl/cms/dialog/theme_element_detail.tmpl
 
@@ -3439,8 +3500,6 @@ use vars qw( @ISA %Lexicon );
 	'Related Assets' => 'Verwandte Assets',
 	'[_1] is missing' => '[_1] fehlt',
 	'Embed Asset' => 'Asset einbetten',
-	'View this asset.' => 'Asset anzeigen',
-	'View' => 'Ansehen',
 	'Save changes to this asset (s)' => 'Änderungen des Assets speichern (s)',
 	'You must specify a name for the asset.' => 'Bitte geben Sie einen Namen für das Asset an.',
 
@@ -3448,8 +3507,11 @@ use vars qw( @ISA %Lexicon );
 	'Edit Profile' => 'Profil bearbeiten',
 	'This profile has been updated.' => 'Profil aktualisiert',
 	'A new password has been generated and sent to the email address [_1].' => 'Ein neues Passwort wurde erzeugt und an [_1] verschickt.',
+	'This profile has been unlocked.' => 'Benutzerkonto entsperrt', # Translate - New # OK
 	'This user was classified as pending.' => 'Benutzer auf wartend gesetzt.',
 	'This user was classified as disabled.' => 'Benutzerkonto deaktiviert.',
+	'This user was locked out.' => 'Benutzerkonto gesperrt', # Translate - New # OK
+	q{If you want to unlock this user click the 'Unlock' link. <a href="[_1]">Unlock</a>} => q{Um dieses Benutzerkonto zu entsperren, klicken Sie auf 'Entsperren'. <a href="[_1]">Entsperren</a>}, # Translate - New # OK
 	'User properties' => 'Benutzer-Eigenschaften',
 	'Your web services password is currently' => 'Ihr Passwort für Webdienste lautet derzeit',
 	'_WARNING_PASSWORD_RESET_SINGLE' => 'Sie sind dabei, das Passwort von [_1] zurückzusetzen. Dazu wird ein zufällig erzeugtes neues Passwort per E-Mail an [_2] verschickt werden.\n\nForsetzen?',
@@ -3492,7 +3554,6 @@ use vars qw( @ISA %Lexicon );
 	'For use by Activity feeds and with XML-RPC and Atom-enabled clients.' => 'Erforderlich für Aktivitätsfeeds und für externe Software, die über XML-RPC oder ATOM-API auf das Weblog zugreift',
 	'Reveal' => 'Anzeigen',
 	'System Permissions' => 'Berechtigungen',
-	'Options' => 'Optionen',
 	'Create personal blog for user' => 'Persönliches Blog für den Benutzer anlegen',
 	'Create User (s)' => 'Benutzerkonto anlegen (s)',
 	'Save changes to this author (s)' => 'Kontoänderungen speichern (s)',
@@ -3554,6 +3615,7 @@ use vars qw( @ISA %Lexicon );
 	'View all comments with this name' => 'Alle Kommentare mit diesem Autorennamen anzeigen',
 	'Identity' => 'Identität',
 	'The Identity of the commenter' => 'Identität des Kommentarautors',
+	'View' => 'Ansehen',
 	'The Email Address of the commenter' => 'E-Mail-Adresse des Kommentarautors',
 	'Withheld' => 'Zurückgehalten',
 	'View all comments with this email address' => 'Alle Kommentare von dieser E-Mail-Adresse anzeigen',
@@ -3631,8 +3693,8 @@ use vars qw( @ISA %Lexicon );
 	'Preview this entry (v)' => 'Vorschau (v)',
 	'Delete this entry (x)' => 'Eintrag löschen (x)',
 	'View Entry' => 'Eintrag ansehen',
-	'A saved version of this entry was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>' => 'Eintrag automatisch gespeichert [_2]. <a href="[_1]>Automatisch gespeicherte Version wiederherstellen</a>',
-	'A saved version of this page was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>' => 'Seite automatisch gespeichert [_2]. <a href="[_1]>Automatisch gespeicherte Version wiederherstellen</a>',
+	'A saved version of this entry was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>' => 'Eintrag automatisch gespeichert [_2]. <a href="[_1]">Automatisch gespeicherte Version wiederherstellen</a>',
+	'A saved version of this page was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>' => 'Seite automatisch gespeichert [_2]. <a href="[_1]">Automatisch gespeicherte Version wiederherstellen</a>',
 	'This entry has been saved.' => 'Eintrag gespeichert.',
 	'This page has been saved.' => 'Seite gesichert.',
 	'One or more errors occurred when sending update pings or TrackBacks.' => 'Es sind ein oder mehrere Fehler beim Senden von TrackBacks aufgetreten.',
@@ -3999,7 +4061,6 @@ use vars qw( @ISA %Lexicon );
 	'__FILTER_DATE_ORIGIN' => '[_1]',
 	'[_1] and [_2]' => '[_1] und [_2]',
 	'_FILTER_DATE_DAYS' => '[_1] Tage',
-	'<mt:var name="label">' => '<mt:var name="label">',
 
 ## tmpl/cms/include/blog_table.tmpl
 	'Some templates were not refreshed.' => 'Einige Vorlagen wurden nicht zurückgesetzt.',
@@ -4247,7 +4308,6 @@ use vars qw( @ISA %Lexicon );
 	'Alert' => 'Hinweis',
 
 ## tmpl/cms/list_common.tmpl
-	'Show' => 'Anzeigen',
 	'25 rows' => '25 Zeilen',
 	'50 rows' => '50 Zeilen',
 	'100 rows' => '100 Zeilen',
@@ -4316,6 +4376,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/listing/author_list_header.tmpl
 	'You have successfully disabled the selected user(s).' => 'Gewählte Benutzerkonten erfolgreich deaktiviert',
 	'You have successfully enabled the selected user(s).' => 'Gewählte Benutzerkonten erfolgreich aktiviert',
+	'You have successfully unlocked the selected user(s).' => 'Gewählte Benutzerkonten erfolgreich entsperrt', # Translate - New # OK
 	'You have successfully deleted the user(s) from the Movable Type system.' => 'Gewählte Benutzerkonten erfolgreich aus Movable Type gelöscht',
 	'The deleted user(s) still exist in the external directory. As such, they will still be able to login to Movable Type Advanced.' => 'Die gelöschten Benutzerkonten sind im externen Verzeichnis weiterhin vorhanden. Die Benutzer können sich daher weiterhin an Movable Type Advanced anmelden.',
 	q{You have successfully synchronized users' information with the external directory.} => q{Benutzerinformationen erfolgreich mit externem Verzeichnis synchronisiert.},
@@ -4345,6 +4406,8 @@ use vars qw( @ISA %Lexicon );
 	'No comments appear to be spam.' => 'Scheinbar ist kein Kommentar Spam.',
 
 ## tmpl/cms/listing/entry_list_header.tmpl
+
+## tmpl/cms/listing/filter_list_header.tmpl
 
 ## tmpl/cms/listing/log_list_header.tmpl
 	'All times are displayed in GMT[_1].' => 'Alle Zeiten in GMT[_1]',
@@ -4499,6 +4562,10 @@ use vars qw( @ISA %Lexicon );
 	'Publishing [_1] archives...' => 'Veröffentliche [_1]...',
 	'Publishing [_1] templates...' => 'Veröffentliche [_1]...',
 	'Complete [_1]%' => '[_1]% fertig',
+
+## tmpl/cms/recover_lockout.tmpl
+	'Recovered from lockout' => 'Entsperren', # Translate - New # OK
+	q{User '[_1]' has been unlocked.} => q{Benutzer '[_1]' entsperrt.}, # Translate - New # OK
 
 ## tmpl/cms/recover_password_result.tmpl
 	'Recover Passwords' => 'Passwörter anfordern',
@@ -4864,7 +4931,6 @@ use vars qw( @ISA %Lexicon );
 	'The wizard was unable to save the [_1] configuration file.' => 'Die [_1]-Konfigurationsdatei konnte nicht gespeichert werden.',
 	q{Confirm that your [_1] home directory (the directory that contains mt.cgi) is writable by your web server and then click 'Retry'.} => q{Stellen Sie sicher, daß Ihr Webserver Schreibrechte für Ihr [_1]-Wurzelverzeichnis hat (also für den Ordner, der die Datei mt.cgi enthält)  und klicken Sie dann auf  &#8222;Erneut versuchen&#8220;.},
 	q{Congratulations! You've successfully configured [_1].} => q{Herzlichen Glückwunsch! Sie haben die [_1] erfolgreich konfiguriert.},
-	'Your configuration settings have been written to the following file:' => 'Ihre Einstellungen wurden in folgender Datei gespeichert:',
 	'Show the mt-config.cgi file generated by the wizard' => 'Vom Konfigurationsassistenten erzeugte mt-config.cgi-Datei anzeigen',
 	'The mt-config.cgi file has been created manually.' => 'Die mt-congig.cgi-Konfigurationsdatei wurde manuell erstellt.',
 	'Retry' => 'Erneut versuchen',
@@ -4940,7 +5006,7 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Commercial.pack/config.yaml
 	'Professional designed, well structured and easily adaptable web site. You can customize default pages, footer and top navigation easily.' => 'Eine professionell gestaltete, übersichtlich strukturierte und leicht anpass- und erweiterbare Website. ',
-	q{_PWT_ABOUT_BODY} => q{
+	'_PWT_ABOUT_BODY' => '
 <p><strong>Platzhalter - Geben Sie hier Ihren eigenen Text ein.</strong></p>
 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In nec
 tellus sed turpis varius sagittis. Nullam pulvinar. Fusce dapibus neque
@@ -4954,27 +5020,14 @@ bibendum vitae, sagittis ac, nisi. Nulla et sapien. Class aptent taciti
 sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos.
 Ut condimentum turpis ut elit. Quisque ultricies sollicitudin justo.
 Duis vitae magna nec risus pulvinar ultricies.</p>
-<!-- Entfernen Sie diesen Link nach der Bearbeitung -->
-<p class="admin-edit-link">
-<a href="#" onclick="location.href=adminurl +
-'?__mode=view&_type=page&id=' + page_id + '&blog_id=' + blog_id; return
-false">Inhalt bearbeiten</a>
-</p>
-},
-	q{_PWT_CONTACT_BODY} => q{
+',
+	'_PWT_CONTACT_BODY' => '
 <p><strong>Platzhalter - Geben Sie hier Ihren eigenen Text ein.</strong></p>
 
 <p>Wir freuen uns darauf, von Ihnen zu hören. Schicken Sie Ihre E-Mail bitte an email (at) domainname.de</p>
-
-<!-- Entfernen Sie diesen Link nach der Bearbeitung  -->
-<p class="admin-edit-link">
-<a href="#" onclick="location.href=adminurl +
-'?__mode=view&_type=page&id=' + page_id + '&blog_id=' + blog_id; return
-false">Inhalt bearbeiten</a>
-</p>
-},
+',
 	'Welcome to our new website!' => 'Willkommen auf unserer neuen Website!',
-	q{_PWT_HOME_BODY} => q{
+	'_PWT_HOME_BODY' => '
 <p><strong>Platzhalter - Geben Sie hier Ihren eigenen Text ein.</strong></p>
 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In nec
 tellus sed turpis varius sagittis. Nullam pulvinar. Fusce dapibus neque
@@ -4995,14 +5048,10 @@ metus.</p>
 faucibus risus, pulvinar egestas enim elit sed ante. Curabitur orci
 diam, placerat a, faucibus id, condimentum vitae, magna. Etiam enim
 massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
-<!-- Entfernen Sie diesen Link nach der Bearbeitung  -->
-<p class="admin-edit-link">
-<a href="#" onclick="location.href=adminurl +
-'?__mode=view&_type=page&id=' + page_id + '&blog_id=' + blog_id; return
-false">Inhalt bearbeiten</a>
-</p>
-},
+',
 	'Create a blog as a part of structured website. This works best with Professional Website theme.' => 'Legen Sie ein Blog als Teil einer umfangreicheren Website an. Das funktioniert besonders gut mit der Vorlage &#8222;Professionelle Website&#8220;.',
+	'Unknown Type' => 'Unbekannter Typ',
+	'Unknown Object' => 'Unbekannts Objekt', # Translate - New # OK
 	'Not Required' => 'Nicht erforderlich',
 	'Are you sure you want to delete the selected CustomFields?' => 'Gewählte eigene Felder wirklich löschen?',
 	'Photo' => 'Foto',
@@ -5030,6 +5079,7 @@ false">Inhalt bearbeiten</a>
 	'Blog Archives' => 'Blog-Archive',
 
 ## addons/Commercial.pack/lib/CustomFields/App/CMS.pm
+	'Show' => 'Anzeigen',
 	'Date & Time' => 'Datum- und Uhrzeit',
 	'Date Only' => 'Nur Datum',
 	'Time Only' => 'Nur Uhrzeit',
@@ -5044,8 +5094,8 @@ false">Inhalt bearbeiten</a>
 	'Please ensure all required fields have been filled in.' => 'Bitte füllen Sie alle erforderlichen Felder aus.',
 	'The template tag \'[_1]\' is an invalid tag name.' => '\'[_1]\' ist ein ungültiger Befehlsname.',
 	'The template tag \'[_1]\' is already in use.' => 'Vorlagenbefehl \'[_1]\' bereits vorhanden',
-	'blog and the system' => 'Blog und das system', # Translate - New
-	'website and the system' => 'Website und das System', # Translate - New
+	'blog and the system' => 'Blog und das system',
+	'website and the system' => 'Website und das System',
 	'The basename \'[_1]\' is already in use. It must be unique within this [_2].' => 'Der Basisname \'[_1]\' wird bereits verwendent. Er muss auf dieser [_2] eindeutig sein.',
 	'You must select other type if object is the comment.' => 'Wählen Sie einen anderen Typ, wenn sich das Feld auf Kommentare bezieht.',
 	'type' => 'Typ',
@@ -5268,12 +5318,12 @@ false">Inhalt bearbeiten</a>
 	'Edit Custom Field' => 'Eigenes Feld bearbeiten',
 	'Create Custom Field' => 'Eigenes Feld anlegen',
 	'The selected fields(s) has been deleted from the database.' => 'Gewählten Felder aus Datenbank gelöscht.',
-	'You must enter information into the required fields highlighted below before the custom field can be created.' => 'Bitte füllen Sie alle hervorgehobenen Felder aus.', # Translate - Case
-	'You must save this custom field before setting a default value.' => 'Speichern Sie das Feld, um den Standardwert festlegen zu können.', # Translate - Case
-	'Choose the system object where this custom field should appear.' => 'Wählen Sie das Systemobjekt, auf das sich dieses Feld beziehen soll.', # Translate - Case
+	'You must enter information into the required fields highlighted below before the custom field can be created.' => 'Bitte füllen Sie alle hervorgehobenen Felder aus.',
+	'You must save this custom field before setting a default value.' => 'Speichern Sie das Feld, um den Standardwert festlegen zu können.',
+	'Choose the system object where this custom field should appear.' => 'Wählen Sie das Systemobjekt, auf das sich dieses Feld beziehen soll.',
 	'Required?' => 'Erforderlich?',
-	'Is data entry required in this custom field?' => 'Muss dieses Feld ausgefüllt werden?', # Translate - Case
-	'Must the user enter data into this custom field before the object may be saved?' => 'Sollen Benutzer dieses Feld ausfüllen müssen, bevor sie das Objekt speichern können?', # Translate - Case
+	'Is data entry required in this custom field?' => 'Muss dieses Feld ausgefüllt werden?',
+	'Must the user enter data into this custom field before the object may be saved?' => 'Sollen Benutzer dieses Feld ausfüllen müssen, bevor sie das Objekt speichern können?',
 	'Default' => 'Standardwert',
 	'The basename must be unique within this [_1].' => 'Der Basisname muss in diesem [_1] eindeutig sein.',
 	q{Warning: Changing this field's basename may require changes to existing templates.} => q{Hinweis: Eine Änderung des Basisnamens eines Feldes kann die Bearbeitung vorhandener Vorlagen notwendig machen.},
@@ -5716,11 +5766,11 @@ false">Inhalt bearbeiten</a>
 	'Advanced Pack' => 'Advanced-Pack',
 	'User/Group' => 'Benutzer/Gruppe',
 	'User/Group Name' => 'Benutzer-/Gruppen-Name',
-	'__GROUP_MEMBER_COUNT' => 'Mitglieder', # Translate - New
+	'__GROUP_MEMBER_COUNT' => 'Mitglieder',
 	'My Groups' => 'Meine Gruppen',
 	'Group Name' => 'Gruppenname',
 	'Manage Group Members' => 'Gruppenmitglieder verwalten',
-	'Group Members' => 'Gruppenmitglieder', # Translate - New
+	'Group Members' => 'Gruppenmitglieder',
 	'Group Member' => 'Groupmember',
 	'Permissions for Users' => 'Benutzer-Berechtigungen',
 	'Permissions for Groups' => 'Gruppen-Berechtigungen',
@@ -5978,15 +6028,12 @@ false">Inhalt bearbeiten</a>
 	'Some ([_1]) of the selected users could not be re-enabled because they are no longer found in LDAP.' => 'Einige ([_2]) der Benutzerkonten wurden nicht wieder aktiviert, da sie nicht mehr im LDAP vorhanden sind.',
 	'You successfully removed the users from this group.' => 'Benutzer erfolgreich aus Gruppe entfernt.',
 
-## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
-
-## plugins/FacebookCommenters/plugin.pl
+## plugins/FacebookCommenters/config.yaml
 	'Provides commenter registration through Facebook Connect.' => 'Ermöglicht es Kommentarautoren, sich über Facebook Connect zu registrieren',
-	'Set up Facebook Commenters plugin' => 'Facebook Kommentarautoren-Plugin einrichten',
-	'{*actor*} commented on the blog post <a href="{*post_url*}">{*post_title*}</a>.' => '{*actor*} hat den Blog-Eintrag <a href="{*post_url*}">{*post_title*}</a> kommentiert.',
-	'Could not register story template with Facebook: [_1]. Did you enter the correct application secret?' => 'Das Story Template konnte nicht bei Facebook registriert werden: [_1]. Haben Sie das Application Secret richtig eingegeben?',
-	'Could not register story template with Facebook: [_1]' => 'Das Story Template konnte nicht bei Facebook registriert werden: [_1]. ',
 	'Facebook' => 'Facebook',
+
+## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
+	'Set up Facebook Commenters plugin' => 'Facebook Kommentarautoren-Plugin einrichten',
 
 ## plugins/FacebookCommenters/tmpl/blog_config_template.tmpl
 	'Facebook Application Key' => 'Facebook Application Key',
@@ -6562,6 +6609,6 @@ false">Inhalt bearbeiten</a>
 
 );
 
-## New words: 16
+## New words: 326
 
 1;

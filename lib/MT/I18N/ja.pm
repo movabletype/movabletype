@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -68,12 +68,12 @@ my @ENCODINGS_ENCODE = qw( euc-jp shiftjis 7bit-jis iso-2022-jp
     jis0212-raw cp932 Macjapanese );
 
 {
-	no warnings 'redefine';
-	*MT::I18N::encode_text    = \&encode_text_ja;
-	*MT::I18N::guess_encoding = \&guess_encoding_ja;
-	*MT::I18N::wrap_text      = \&wrap_text_ja;
-	*MT::I18N::first_n        = \&first_n_ja;
-	*MT::I18N::first_n_text   = \&first_n_ja;
+    no warnings 'redefine';
+    *MT::I18N::encode_text    = \&encode_text_ja;
+    *MT::I18N::guess_encoding = \&guess_encoding_ja;
+    *MT::I18N::wrap_text      = \&wrap_text_ja;
+    *MT::I18N::first_n        = \&first_n_ja;
+    *MT::I18N::first_n_text   = \&first_n_ja;
 }
 
 sub encode_text_ja {

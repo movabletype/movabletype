@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -79,6 +79,19 @@ $Lexicon_nl = array(
 
 ## php/lib/function.mtinclude.php
 	'\'parent\' modifier cannot be used with \'[_1]\'' => '\'parent\' modifier kan niet worden gebruikt met \'[_1]\'',
+
+## php/lib/function.mtpasswordvalidation.php
+	'Password should be longer than [_1] characters' => 'Wachtwoord moet langer zijn dan [_1] karakters', # Translate - New
+	'Password should not include your Username' => 'Wachtwoord mag gebruikersnaam niet bevatten', # Translate - New
+	'Password should include letters and numbers' => 'Wachtwoorden moeten zowel letters als cijfers bevatten', # Translate - New
+	'Password should include lowercase and uppercase letters' => 'Wachtwoord moet zowel grote als kleine letters bevatten', # Translate - New
+	'Password should contain symbols such as #!$%' => 'Wachtwoord moet ook symbolen bevatten zoals #!$%', # Translate - New
+
+## php/lib/function.mtpasswordvalidationrule.php
+	'minimum length of [_1]' => 'minimale lengte van [_1]', # Translate - New
+	', uppercase and lowercase letters' => ', hoofdletters en kleine letters', # Translate - New
+	', letters and numbers' => ', letters en cijfers', # Translate - New
+	', symbols (such as #!$%)' => ', symbolen (zoals #!$%)', # Translate - New
 
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',

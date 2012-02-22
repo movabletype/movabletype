@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -10,20 +10,19 @@ use MT::Util qw( is_valid_email is_url dirify );
 use MT::I18N qw( wrap_text );
 
 sub entry_notify {
-    my $app  = shift;
-    my $user = $app->user;
-    return $app->permission_denied()
+    my $app = shift;
+    return $app->return_to_dashboard( permission => 1 )
         unless $app->can_do('open_entry_notification_screen');
-
-    my $q        = $app->param;
-    my $entry_id = $q->param('entry_id')
+    my $entry_id = $app->param('entry_id')
         or return $app->error( $app->translate("No entry ID provided") );
+
     require MT::Entry;
-    require MT::Blog;
     my $entry = MT::Entry->load($entry_id)
         or return $app->error(
         $app->translate( "No such entry '[_1]'", $entry_id ) );
-    my $blog  = MT::Blog->load( $entry->blog_id );
+    my $blog = $app->blog;
+    return $app->errtrans("Invalid request")
+        if $blog->id != $entry->blog_id;
     my $param = {};
     $param->{entry_id} = $entry_id;
     return $app->load_tmpl( "dialog/entry_notify.tmpl", $param );
@@ -223,15 +222,29 @@ sub export {
 }
 
 sub can_save {
-    my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
-    return $perms->can_do('save_addressbook');
+    my ( $eh, $app, $obj ) = @_;
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
+
+    if ( $obj && !ref $obj ) {
+        $obj = MT->model('notification')->load($obj);
+    }
+    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
+
+    return $author->permissions($blog_id)->can_do('save_addressbook');
 }
 
 sub can_delete {
-    my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
-    return $perms->can_do('delete_addressbook');
+    my ( $eh, $app, $obj ) = @_;
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
+
+    if ( $obj && !ref $obj ) {
+        $obj = MT->model('notification')->load($obj);
+    }
+    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
+
+    return $author->permissions($blog_id)->can_do('delete_addressbook');
 }
 
 sub save_filter {

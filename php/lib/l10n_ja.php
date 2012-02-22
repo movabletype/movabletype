@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -72,6 +72,9 @@ $Lexicon_ja = array(
 
 ## php/lib/function.mtcommentauthorlink.php
 
+## php/lib/function.mtcommenternamethunk.php
+	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'テンプレートタグ \'[_1]\' は廃止されました。代わりに \'[_2]\'を使用してください。',
+
 ## php/lib/function.mtcommentreplytolink.php
 	'Reply' => '返信',
 
@@ -82,6 +85,20 @@ $Lexicon_ja = array(
 
 ## php/lib/function.mtinclude.php
 	'\'parent\' modifier cannot be used with \'[_1]\'' => '\'parent\'属性を[_1]属性と同時に指定することは出来ません。',
+
+## php/lib/function.mtpasswordvalidation.php
+	'Password should be longer than [_1] characters' => 'パスワードは最低[_1]文字以上です。',
+	'Password should not include your Username' => 'パスワードにユーザー名を含む事は出来ません。',
+	'Password should include letters and numbers' => 'パスワードは文字と数字を含める必要があります。',
+	'Password should include lowercase and uppercase letters' => 'パスワードは大文字と小文字を含める必要があります。',
+	'Password should contain symbols such as #!$%' => 'パスワードは記号を含める必要があります。',
+	'You used an [_1] tag without a valid [_2] attribute.' => '[_1]タグでは[_2]属性は必須です。',
+
+## php/lib/function.mtpasswordvalidationrule.php
+	'minimum length of [_1]' => '[_1]文字以上',
+	', uppercase and lowercase letters' => '、大文字と小文字を含む',
+	', letters and numbers' => '、文字と数字を含む',
+	', symbols (such as #!$%)' => '、記号を含む',
 
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',

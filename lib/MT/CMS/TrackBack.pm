@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -89,7 +89,8 @@ sub edit {
         my $parent = $obj->parent;
         if ( $parent && ( $parent->isa('MT::Entry') ) ) {
             if ( $parent->status == MT::Entry::RELEASE() ) {
-                $param->{entry_permalink} = MT::Util::encode_html( $parent->permalink );
+                $param->{entry_permalink}
+                    = MT::Util::encode_html( $parent->permalink );
             }
         }
 
@@ -171,9 +172,10 @@ sub can_save {
 
         my $status_is_changed
             = $p->is_junk      ? ( 'junk'      ne $app->param('status') )
-            : $p->is_moderated ? ( 'moderated' ne $app->param('status') )
+            : $p->is_moderated ? ( 'moderate' ne $app->param('status') )
             : $p->is_published ? ( 'publish'   ne $app->param('status') )
             :                    1;
+
         return $status_is_changed
             ? $app->can_do('edit_own_entry_trackback_status')
             : $app->can_do('edit_own_entry_trackback_without_status');

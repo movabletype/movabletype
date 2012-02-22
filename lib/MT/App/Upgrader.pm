@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -233,6 +233,12 @@ sub init_user {
 
     $app->validate_magic or return;
 
+    my $class   = MT->model('author');
+    my $ddl     = $class->driver->dbd->ddl_class;
+    my $db_defs = $ddl->column_defs($class);
+    return $app->error( $app->translate('Invalid request') )
+        if $db_defs;
+
     my %param = $app->unserialize_config;
     if ( !$app->param('continue') ) {
         return $app->build_page( 'install.tmpl', \%param );
@@ -334,6 +340,12 @@ sub init_website {
     my $app = shift;
     my ($param) = @_;
     my %param;
+
+    my $class   = MT->model('website');
+    my $ddl     = $class->driver->dbd->ddl_class;
+    my $db_defs = $ddl->column_defs($class);
+    return $app->error( $app->translate('Invalid request') )
+        if $db_defs;
 
     $param{config}           = $param->{config} || $app->param('config');
     $param{website_name}     = $app->param('website_name');

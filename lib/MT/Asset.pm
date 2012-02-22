@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -574,7 +574,7 @@ sub remove_cached_files {
                 my $ext      = '.' . $asset->file_ext;
                 $basename =~ s/$ext$//;
                 my $cache_glob = File::Spec->catfile( $cache_dir,
-                    $basename . '-thumb-*' . $ext );
+                    $basename . '-thumb-*-' . $asset->id . $ext );
                 my @files = glob($cache_glob);
                 foreach my $file (@files) {
                     unless ( $fmgr->delete($file) ) {

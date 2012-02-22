@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1699,6 +1699,13 @@ sub search_by_meta {
     return unless @metaobjs;
     return grep defined,
         @{ $class->lookup_multi( [ map { $get_pk->($_) } @metaobjs ] ) };
+}
+
+sub lookup_multi {
+    my $class = shift;
+    my $objs = $class->SUPER::lookup_multi( @_ );
+    my @objs = $objs ? grep { defined $_ } @$objs : undef;
+    return \@objs;
 }
 
 package MT::Object::Meta;

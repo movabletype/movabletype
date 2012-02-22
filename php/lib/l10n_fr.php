@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -7,6 +7,7 @@
 
 global $Lexicon_fr;
 $Lexicon_fr = array(
+
 ## php/lib/archive_lib.php
 	'Individual' => 'Individuel',
 	'Page' => 'Page',
@@ -14,7 +15,7 @@ $Lexicon_fr = array(
 	'Monthly' => 'Mensuelles',
 	'Daily' => 'Journalières',
 	'Weekly' => 'Hebdomadaires',
-	'Author' => 'Par auteurs',
+	'Author' => 'Auteur',
 	'(Display Name not set)' => '(Nom pas spécifié)',
 	'Author Yearly' => 'Par auteurs et années',
 	'Author Monthly' => 'Par auteurs et mois',
@@ -29,14 +30,14 @@ $Lexicon_fr = array(
 	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" doit être utilisé en combinaison avec l\'espace de nom.',
 
 ## php/lib/block.mtauthorhasentry.php
-	'No author available' => 'Il n\'a pas d\'auteurs disponibles',
+	'No author available' => 'Il n\'a pas d\'auteur disponible',
 
 ## php/lib/block.mtauthorhaspage.php
 
 ## php/lib/block.mtentries.php
 
 ## php/lib/block.mtif.php
-	'You used a [_1] tag without a valid name attribute.' => 'Vous avez utilisé un tag [_1] sans un attribut de nom valide',
+	'You used a [_1] tag without a valid name attribute.' => 'Vous avez utilisé une balise [_1] sans un attribut de nom valide',
 	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3] est illégal.',
 
 ## php/lib/block.mtsethashvar.php
@@ -48,7 +49,7 @@ $Lexicon_fr = array(
 	'\'[_1]\' is not a valid function.' => '\'[_1]\' n\'est pas une fonction valide',
 
 ## php/lib/captcha_lib.php
-	'Captcha' => 'Captcha',
+	'Captcha' => 'CAPTCHA',
 	'Type the characters you see in the picture above.' => 'Saisissez les caractères que vous voyez dans l\'image ci-dessus.',
 
 ## php/lib/function.mtassettype.php
@@ -56,9 +57,9 @@ $Lexicon_fr = array(
 	'Image' => 'Image',
 	'file' => 'fichier',
 	'File' => 'Fichier',
-	'audio' => 'Audio',
+	'audio' => 'audio',
 	'Audio' => 'Audio',
-	'video' => 'Vidéo',
+	'video' => 'vidéo',
 	'Video' => 'Vidéo',
 
 ## php/lib/function.mtauthordisplayname.php
@@ -72,12 +73,25 @@ $Lexicon_fr = array(
 	'Reply' => 'Répondre',
 
 ## php/lib/function.mtentryclasslabel.php
-	'page' => 'Page',
+	'page' => 'page',
 	'entry' => 'note',
 	'Entry' => 'Note',
 
 ## php/lib/function.mtinclude.php
 	'\'parent\' modifier cannot be used with \'[_1]\'' => 'Le modifieur \'parent\' ne peut pas être utilisé avec \'[_1]\'',
+
+## php/lib/function.mtpasswordvalidation.php
+	'Password should be longer than [_1] characters' => 'Le mot de passe ne devrait pas dépasser [_1] caractères', # Translate - New
+	'Password should not include your Username' => 'Le mot de passe ne doit pas être composé de votre nom d\'utilisateur', # Translate - New
+	'Password should include letters and numbers' => 'Le mot de passe devrait être composé de lettres et de chiffres', # Translate - New
+	'Password should include lowercase and uppercase letters' => 'Le mot de passe devrait être composé de lettres en minuscule et majuscule', # Translate - New
+	'Password should contain symbols such as #!$%' => 'Le mot de passe devrait contenir des caractères spéciaux comme #1$%', # Translate - New
+
+## php/lib/function.mtpasswordvalidationrule.php
+	'minimum length of [_1]' => 'longueur minimum de [_1]', # Translate - New
+	', uppercase and lowercase letters' => ', lettres en minuscule et majuscule', # Translate - New
+	', letters and numbers' => ', lettres et chiffres', # Translate - New
+	', symbols (such as #!$%)' => ', caractères spéciaux (comme #!$%)', # Translate - New
 
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
@@ -105,6 +119,7 @@ $Lexicon_fr = array(
 
 ## php/mt.php
 	'Page not found - [_1]' => 'Page non trouvée - [_1]',
+
 );
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_fr;

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -28,7 +28,7 @@ our @EXPORT_OK
     epoch2ts ts2epoch escape_unicode unescape_unicode
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
-    extract_url_path break_up_text dir_separator deep_do deep_copy );
+    extract_url_path break_up_text dir_separator deep_do deep_copy realpath);
 
 {
     my $Has_Weaken;
@@ -2215,7 +2215,7 @@ sub unescape_unicode {
                 'XML::LibXML::SAX         1.70',
                 'XML::SAX::Expat          0.37',
             );
-            for my $parser ( @parsers ) {
+            for my $parser (@parsers) {
                 eval "use $parser";
                 next if $@;
                 my ($module) = split /\s+/, $parser;
@@ -2230,17 +2230,15 @@ sub unescape_unicode {
         init_sax() unless $initialized_sax;
         require XML::SAX::ParserFactory;
         my $f = XML::SAX::ParserFactory->new;
-        $f->parser(
-            LexicalHandler => 'MT::Util::XML::SAX::LexicalHandler',
-        );
+        $f->parser( LexicalHandler => 'MT::Util::XML::SAX::LexicalHandler', );
     }
 }
 
 sub expat_parser {
     my $parser = XML::Parser->new(
         Handlers => {
-            ExternEnt    => sub { die "External entities disabled."; '' },
-            ExternEntFin => sub {},
+            ExternEnt => sub { die "External entities disabled."; '' },
+            ExternEntFin => sub { },
         },
     );
     return $parser;
@@ -2629,8 +2627,7 @@ sub deep_copy {
     }
     elsif ( $ref eq 'HASH' ) {
         my $hash = $_[0];
-        +{
-            map( ( $_ => deep_copy( $hash->{$_}, $limit, $depth + 1 ) ),
+        +{  map( ( $_ => deep_copy( $hash->{$_}, $limit, $depth + 1 ) ),
                 keys(%$hash) )
         };
     }
@@ -2643,6 +2640,26 @@ sub deep_copy {
     else {
         $_[0];
     }
+}
+
+sub realpath {
+    my ($abs) = @_;
+    return '' unless $abs;
+
+    require File::Spec;
+    return $abs unless File::Spec->file_name_is_absolute($abs);
+
+    require Cwd;
+    my $abs_path;
+    eval { $abs_path = Cwd::realpath($abs); };
+    return $abs unless $abs_path;
+
+    my ( $vol, $dirs, $filename ) = File::Spec->splitpath($abs_path);
+    my @paths     = File::Spec->splitdir($dirs);
+    my $real_path = File::Spec->catdir(@paths);
+    $abs_path = File::Spec->catpath( $vol, $real_path, $filename );
+
+    return $abs_path;
 }
 
 package MT::Util::XML::SAX::LexicalHandler;
@@ -2849,6 +2866,12 @@ Returns the character of directory separator.
 
 Returns the value recursively copied from I<value>.
 If I<limit> is specified, this subroutine is not recursively copied from it.
+
+=head2 realpath
+
+Wrapper method to Cwd::realpath which returns true real path.
+Why? Because on Windows, Cwd::realpath returns wrong value.
+(died, or change path separator from backslash to slash)
 
 =head1 AUTHOR & COPYRIGHTS
 

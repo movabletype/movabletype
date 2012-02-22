@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -441,10 +441,12 @@ sub list_props {
                     :   { junk_status => NOT_JUNK() };
             },
             single_select_options => [
-                { label => MT->translate('Approved'),         value => 'approved', },
-                { label => MT->translate('Unapproved'),       value => 'pending', },
-                { label => MT->translate('Not spam'),         value => 'not_junk', },
-                { label => MT->translate('Reported as spam'), value => 'junk', },
+                { label => MT->translate('Approved'), value => 'approved', },
+                { label => MT->translate('Unapproved'), value => 'pending', },
+                { label => MT->translate('Not spam'), value => 'not_junk', },
+                {   label => MT->translate('Reported as spam'),
+                    value => 'junk',
+                },
             ],
         },
         ## Hide default author_name.

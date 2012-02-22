@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -99,9 +99,9 @@ sub global_perms {
 }
 
 sub perms_from_registry {
-    my $regs = MT::Component->registry('permissions');
-    my %keys = map { $_ => 1 } map { keys %$_ } @$regs;
-    my %perms = map { $_ => MT->registry('permissions' => $_ ) } keys %keys;
+    my $regs  = MT::Component->registry('permissions');
+    my %keys  = map { $_ => 1 } map { keys %$_ } @$regs;
+    my %perms = map { $_ => MT->registry( 'permissions' => $_ ) } keys %keys;
     \%perms;
 }
 
@@ -111,7 +111,7 @@ sub perms_from_registry {
 #    N      ||    N    || Author's Weblog level permissions
 #    0      ||    N    || Weblog default preferences of Entry Display (TBRemoved)
 #    0      ||    0    || !!BUG!!
-# Permissions are stored in database like 'Perm1','Perm_2','Pe_rm_3'.
+# Permissions are stored in database like 'Perm1','Perm_2','Perm_3'.
 {
     my @Perms;
 
@@ -488,12 +488,15 @@ sub can_edit_entry {
         $entry = MT::Entry->load($entry)
             or return;
     }
-    return $author->permissions( $entry->blog_id )->can_manage_pages
+
+    $perms = $author->permissions( $entry->blog_id )
+        or return;
+
+    return $perms->can_manage_pages
         unless $entry->is_entry;
 
     return 1
-        if $author->permissions( $entry->blog_id )
-            ->can_do('edit_all_entries');
+        if $perms->can_do('edit_all_entries');
 
     my $own_entry = $entry->author_id == $author->id;
 
@@ -507,6 +510,33 @@ sub can_edit_entry {
             ? $perms->can_do('edit_own_unpublished_entry')
             : $perms->can_do('edit_all_unpublished_entry');
     }
+}
+
+sub can_republish_entry {
+    my $perms = shift;
+    my ( $entry, $author ) = @_;
+    die unless $author->isa('MT::Author');
+    return 1 if $author->is_superuser();
+    unless ( ref $entry ) {
+        require MT::Entry;
+        $entry = MT::Entry->load($entry)
+            or return;
+    }
+
+    $perms = $author->permissions( $entry->blog_id )
+        or return;
+
+    return 1
+        if $perms->can_do('rebuild');
+
+    return $perms->can_do('manage_pages')
+        unless $entry->is_entry;
+
+    return
+           $perms->can_do('edit_all_entries')
+        || $perms->can_do('manage_feedback')
+        || ( $entry->author_id == $author->id
+        && $perms->can_do('publish_own_entry') );
 }
 
 sub can_upload {
@@ -716,6 +746,19 @@ sub _load_recursive {
         push @$perms, @$res if defined $res;
     }
 
+    return $perms;
+}
+
+sub load_permissions_from_action {
+    my $pkg = shift;
+    my ($action) = @_;
+    my $permissions ||= __PACKAGE__->perms_from_registry();
+    my $perms;
+
+    foreach my $p ( keys %$permissions ) {
+        push @$perms, $p
+            if $pkg->_confirm_action( $p, $action, $permissions );
+    }
     return $perms;
 }
 
@@ -958,6 +1001,16 @@ is always true if C<$author> is a superuser or can edit all posts or
 is a blog administrator for the blog that contains the entry. Otherwise,
 it returns true if the author has permission to post and the entry was
 authored by that author, false otherwise.
+
+The C<$entry> parameter can either be a I<MT::Entry> object or an entry id.
+
+=head2 $perms->can_republish_entry($entry, $author)
+
+Returns true if the C<$author> has rights to republish entry C<$entry>.
+This is always true if C<$author> is a superuser or can edit all posts or
+can rebuild or can manage feedback or is a blog administrator for the blog
+that contains the entry. Otherwise, it returns true if the author has
+permission to post and the entry was authored by that author, false otherwise.
 
 The C<$entry> parameter can either be a I<MT::Entry> object or an entry id.
 

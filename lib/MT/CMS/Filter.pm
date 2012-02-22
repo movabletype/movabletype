@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -13,7 +13,7 @@ sub save {
     my $app       = shift;
     my $q         = $app->param;
     my $fid       = $q->param('fid');
-    my $author_id = $q->param('author_id') || $app->user->id;
+    my $author_id = $app->user->id;
     my $blog_id   = $q->param('blog_id') || 0;
     my $label     = $q->param('label');
     my $ds        = $q->param('datasource');
@@ -53,7 +53,7 @@ sub save {
 
     # Search duplicate.
     if (my $dupe = $filter_class->load(
-            {   author_id => $app->user->id,
+            {   author_id => $author_id,
                 object_ds => $ds,
                 label     => $label,
                 ( $fid ? ( id => { not => $fid } ) : () ),
@@ -73,6 +73,8 @@ sub save {
     if ($fid) {
         $filter = $filter_class->load($fid)
             or return $app->json_error( $app->translate('No such filter') );
+        return $app->json_error( $app->translate('Permission denied') )
+            unless $filter->author_id == $author_id;
     }
     else {
         $filter = $filter_class->new;
@@ -113,7 +115,9 @@ sub save {
 }
 
 sub delete {
-    my $app          = shift;
+    my $app = shift;
+    $app->validate_magic
+        or return $app->json_error( $app->translate('Invalid request') );
     my $q            = $app->param;
     my $id           = $q->param('id');
     my $filter_class = MT->model('filter');
@@ -122,12 +126,16 @@ sub delete {
     my $blog_id = $q->param('blog_id') || 0;
     my $ds      = $q->param('datasource');
     my $user    = $app->user;
+
     if ( $filter->author_id != $user->id && !$user->is_superuser ) {
         return $app->json_error( $app->translate('Permission denied') );
     }
     $filter->remove
         or return $app->json_error(
-        $app->translate( 'Failed to delete filter(s): [_1]', $filter->errstr ) );
+        $app->translate(
+            'Failed to delete filter(s): [_1]', $filter->errstr
+        )
+        );
 
     my %res;
     my $list = $app->param('list');
@@ -147,6 +155,11 @@ sub delete {
 
 sub delete_filters {
     my $app = shift;
+    return $app->permission_denied
+        unless $app->can_do('delete_any_filters');
+    return $app->errtrans('Invalid request')
+        unless $app->validate_magic;
+
     my $id  = $app->param('id');
     my @ids = split ',', $id;
     my $res = MT->model('filter')->remove( { id => \@ids } )

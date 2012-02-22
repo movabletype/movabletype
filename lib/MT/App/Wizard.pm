@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -227,10 +227,11 @@ sub init_core_registry {
                 link  => 'http://search.cpan.org/dist/XML-Atom',
                 label => 'This module enables the use of the Atom API.',
             },
-    		'Cache::Memcached' => {
-                link  => 'http://search.cpan.org/dist/Cache-Memcached',
-                label => 'This module is required in order to use memcached as caching mechanism used by Movable Type.',
-    		},
+            'Cache::Memcached' => {
+                link => 'http://search.cpan.org/dist/Cache-Memcached',
+                label =>
+                    'This module is required in order to use memcached as caching mechanism used by Movable Type.',
+            },
             'Archive::Tar' => {
                 link => 'http://search.cpan.org/dist/Archive-Tar',
                 label =>
@@ -1112,7 +1113,6 @@ sub seed {
             close OUT;
         }
         $param{config_created} = 1 if -f $cfg_file;
-        $param{config_file} = $cfg_file;
         if ( ( !-f $cfg_file ) && $app->param->param('manually') ) {
             $param{file_not_found} = 1;
             $param{manually}       = 1;
@@ -1120,7 +1120,6 @@ sub seed {
     }
     elsif ( $app->param->param('manually') ) {
         $param{config_created} = 1 if -f $cfg_file;
-        $param{config_file} = $cfg_file;
     }
 
     # back to the complete screen

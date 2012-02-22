@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -91,6 +91,9 @@ sub save {
     elsif ( $type eq 'folder' ) {
         return $app->permission_denied()
             unless $app->can_do('save_folder');
+    }
+    else {
+        return $app->errtrans("Invalid request.");
     }
 
     $app->validate_magic() or return;
@@ -358,6 +361,7 @@ sub bulk_update {
     $app->forward( 'filtered_list', messages => \@messages );
 }
 
+# DEPRECATED: will be removed.
 sub category_add {
     my $app  = shift;
     my $q    = $app->param;
@@ -377,9 +381,12 @@ sub category_add {
 }
 
 sub category_do_add {
-    my $app    = shift;
-    my $q      = $app->param;
-    my $type   = $q->param('_type') || 'category';
+    my $app  = shift;
+    my $q    = $app->param;
+    my $type = $q->param('_type') || 'category';
+    return $app->errtrans("Invalid request.")
+        unless ( $type eq 'category' )
+        or ( $type eq 'folder' );
     my $author = $app->user;
     my $pkg    = $app->model($type);
     $app->validate_magic() or return;
@@ -433,7 +440,10 @@ sub js_add_category {
     my $blog_id = $app->param('blog_id');
     my $perms   = $app->permissions;
     my $type    = $app->param('_type') || 'category';
-    my $class   = $app->model($type);
+    return $app->json_error( $app->translate("Invalid request.") )
+        unless ( $type eq 'category' )
+        or ( $type eq 'folder' );
+    my $class = $app->model($type);
     if ( !$class ) {
         return $app->json_error( $app->translate("Invalid request.") );
     }
@@ -464,21 +474,21 @@ sub js_add_category {
     my $obj      = $class->new;
     my $original = $obj->clone;
 
-    if (!$app->run_callbacks(
-            'cms_save_permission.' . $type,
-            $app, $obj, $original
-        )
-        )
-    {
-        return $app->json_error( $app->translate("Permission denied.") );
-    }
-
     $obj->label($label);
     $obj->basename($basename)   if $basename;
     $obj->parent( $parent->id ) if $parent;
     $obj->blog_id($blog_id);
     $obj->author_id( $user->id );
     $obj->created_by( $user->id );
+
+    if (!$app->run_callbacks(
+            'cms_save_permission_filter.' . $type,
+            $app, $obj
+        )
+        )
+    {
+        return $app->json_error( $app->translate("Permission denied.") );
+    }
 
     if (!$app->run_callbacks(
             'cms_pre_save.' . $type, $app, $obj, $original
@@ -500,8 +510,19 @@ sub js_add_category {
 }
 
 sub can_view {
-    my ( $eh, $app, $id ) = @_;
-    return $app->can_do('open_category_edit_screen');
+    my ( $eh, $app, $obj ) = @_;
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
+
+    unless ( ref $obj ) {
+        $obj = MT->model('category')->load($obj)
+            or return;
+    }
+    return unless $obj->is_category;
+
+    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
+    return $author->permissions($blog_id)
+        ->can_do('open_category_edit_screen');
 }
 
 sub can_save {
@@ -516,7 +537,6 @@ sub can_save {
     return unless $obj->is_category;
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
-
     return $author->permissions($blog_id)->can_do('save_category');
 }
 

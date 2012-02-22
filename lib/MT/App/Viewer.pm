@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -24,11 +24,11 @@ sub init {
 
 my %view_handlers = (
     'index'      => \&_view_index,
-    'Individual' => \&_view_entry,
-    'Page'       => \&_view_entry,
-    'Category'   => \&_view_category,
-    'Author'     => \&_view_author,
-    '*'          => \&_view_archive,
+    'individual' => \&_view_entry,
+    'page'       => \&_view_entry,
+    'category'   => \&_view_category,
+    'author'     => \&_view_author,
+    '*'          => \&_view_date_archive,
 );
 
 sub view {
@@ -38,18 +38,25 @@ sub view {
     $R->stash( 'live_view', 1 );
 
     ## Process the path info.
-    my $uri = $app->param('uri') || $app->path_info;
-    my $blog_id = $app->param('blog_id');
+    my $uri = $app->param('uri') || $ENV{REQUEST_URI};
+    my $blog_id = $app->param('blog_id')
+        or return $app->errtrans("Invalid request.");
 
     ## Check ExcludeBlogs and IncludeBlogs to see if this blog is
     ## private or not.
     my $cfg = $app->config;
-    $app->{__blog_id} = $blog_id;
+    if ( my $inc_blogs = $cfg->IncludeBlogs ) {
+        return $app->errtrans('Invalid request')
+            unless grep { $_ == $blog_id } split ',', $inc_blogs;
+    }
+    if ( my $exc_blogs = $cfg->ExcludeBlogs ) {
+        return $app->errtrans('Invalid request')
+            if grep { $_ == $blog_id } split ',', $exc_blogs;
+    }
 
-    require MT::Blog;
-    my $blog = $app->{__blog} = MT::Blog->load($blog_id)
-        or return $app->error(
-        $app->translate( "Loading blog with ID [_1] failed", $blog_id ) );
+    my $blog = $app->{__blog} = MT->model('blog')->load($blog_id)
+        or
+        return $app->errtrans( "Loading blog with ID [_1] failed", $blog_id );
 
     my $idx = $cfg->IndexBasename   || 'index';
     my $ext = $blog->file_extension || '';
@@ -57,22 +64,47 @@ sub view {
 
     my @urls = ($uri);
     if ( $uri !~ m!\Q/$idx\E$! ) {
-        push @urls, $uri . '/' . $idx;
+        $uri .= '/' unless $uri =~ m!/$!;
+        push @urls, $uri . $idx;
     }
 
-    require MT::FileInfo;
-    my @fi = MT::FileInfo->load(
+    # Load fileinfo by URL
+    require MT::Template;
+    require MT::PublishOption;
+    local $Data::ObjectDriver::DEBUG = 1;
+    my $fi = MT->model('fileinfo')->load(
         {   blog_id => $blog_id,
-            url     => \@urls
+            url     => \@urls,
+        },
+        {   join => [
+                'MT::Template',
+                undef,
+                {   type       => { not => 'backup' },
+                    build_type => { not => MT::PublishOption->DISABLED() },
+                    id         => \' = fileinfo_template_id',
+                }
+            ],
         }
-    );
-    if (@fi) {
-        if ( my $tmpl = MT::Template->load( $fi[0]->template_id ) ) {
-            my $handler = $view_handlers{ $tmpl->type };
+
+    ) or return $app->errtrans("Invalid request.");
+
+    if ($fi) {
+        return $app->errtrans('Invalid request.')
+            if $fi->blog_id != $blog_id;
+
+        $app->{__blog_id} = $blog_id;
+
+        if ( my $tmpl = MT::Template->load( $fi->template_id ) ) {
+            my $type = lc $tmpl->type;
+            if ( 'archive' eq $type ) {
+                $type = lc $fi->archive_type;
+            }
+            my $handler = $view_handlers{$type};
             $handler ||= $view_handlers{'*'};
-            return $handler->( $app, $fi[0], $tmpl );
+            return $handler->( $app, $fi, $tmpl );
         }
     }
+
     if (my $tmpl = MT::Template->load(
             {   blog_id => $blog_id,
                 type    => 'dynamic_error'
@@ -85,7 +117,8 @@ sub view {
         $ctx->stash( 'blog_id', $blog_id );
         return $tmpl->output();
     }
-    return $app->error("File not found");
+
+    return $app->errtrans("File not found");
 }
 
 my %MimeTypes = (
@@ -138,31 +171,16 @@ sub _view_index {
 
 sub _view_date_archive {
     my $app = shift;
-    my ($spec) = @_;
-    my ( $start, $end, $at );
+    my ( $fi, $tmpl ) = @_;
+
+    my $archiver = MT->publisher->archiver( $fi->archive_type )
+        or return $app->errtrans( 'Unknown archive type: [_1]',
+        $fi->archive_type );
+    my ( $start, $end ) = $archiver->date_range( $fi->startdate );
+    my $at = $archiver->name;
+
     my $ctx = MT::Template::Context->new;
-    if ( $spec =~ m!^(\d{4})/(\d{2})/(\d{2})! ) {
-        my ( $y, $m, $d ) = ( $1, $2, $3 );
-        ( $start, $end )
-            = ( $y . $m . $d . '000000', $y . $m . $d . '235959' );
-        $at = $ctx->{current_archive_type} = 'Daily';
-    }
-    elsif ( $spec =~ m!^(\d{4})/(\d{2})! ) {
-        my ( $y, $m ) = ( $1, $2 );
-        my $days = MT::Util::days_in( $m, $y );
-        ( $start, $end )
-            = ( $1 . $2 . '01000000', $1 . $2 . $days . '235959' );
-        $at = $ctx->{current_archive_type} = 'Monthly';
-    }
-    elsif ( $spec =~ m!^week/(\d{4})/(\d{2})/(\d{2})! ) {
-        my ( $y, $m, $d ) = ( $1, $2, $3 );
-        ( $start, $end )
-            = MT::Util::start_end_week( "$1$2${3}000000", $app->{__blog} );
-        $at = $ctx->{current_archive_type} = 'Weekly';
-    }
-    else {
-        return $app->error( $app->translate("Invalid date spec") );
-    }
+    $ctx->{current_archive_type}  = $at;
     $ctx->{current_timestamp}     = $start;
     $ctx->{current_timestamp_end} = $end;
     my @entries = MT::Entry->load(
@@ -173,33 +191,41 @@ sub _view_date_archive {
         { range => { authored_on => 1 } }
     );
     $ctx->stash( 'entries', delay( sub { \@entries } ) );
-    require MT::TemplateMap;
-    my $map = MT::TemplateMap->load(
-        {   archive_type => $at,
-            blog_id      => $app->{__blog_id},
-            is_preferred => 1
-        }
-    ) or return $app->error( $app->translate("Can't load templatemap") );
-    my $tmpl = MT::Template->load( $map->template_id )
-        or return $app->error(
-        $app->translate( "Can't load template [_1]", $map->template_id ) );
+
+    if ( $archiver->category_based() ) {
+        my $cat = MT->model('category')->load( $fi->category_id );
+        $ctx->stash( 'archive_category', $cat );
+    }
+    elsif ( $archiver->author_based() ) {
+        my $author = MT->model('author')->load( $fi->author_id );
+        $ctx->stash( 'author', $author );
+    }
+
+    unless ($tmpl) {
+        $tmpl = MT::Template->load( $fi->template_id )
+            or return $app->errtrans( "Can't load template [_1]",
+            $fi->template_id );
+    }
+
     my $out = $tmpl->build($ctx)
-        or return $app->error(
-        $app->translate( "Archive publishing failed: [_1]", $tmpl->errstr ) );
+        or return $app->errtrans( "Archive publishing failed: [_1]",
+        $tmpl->errstr );
+
     $out;
 }
 
 sub _view_entry {
     my $app = shift;
-    my ( $entry_id, $template ) = @_;
-    my $entry = MT::Entry->load($entry_id)
-        or return $app->error(
-        $app->translate( "Invalid entry ID '[_1]'", $entry_id ) );
-    return $app->error(
-        $app->translate( "Entry [_1] is not published", $entry_id ) )
+    my ( $fi, $tmpl ) = @_;
+
+    my $entry_id = $fi->entry_id;
+    my $entry    = MT->model('entry')->load($entry_id)
+        or return $app->errtrans( "Invalid entry ID [_1]", $entry_id );
+    return $app->errtrans( "Entry [_1] is not published", $entry_id )
         unless $entry->status == MT::Entry::RELEASE();
+
     my $ctx = MT::Template::Context->new;
-    $ctx->{current_archive_type} = 'Individual';
+    $ctx->{current_archive_type} = $fi->archive_type;
     $ctx->{current_timestamp}    = $entry->authored_on;
     $ctx->stash( 'entry', $entry );
     my %cond = (
@@ -209,50 +235,33 @@ sub _view_entry {
         EntryIfExtended      => $entry->text_more ? 1 : 0,
     );
     require MT::TemplateMap;
-    my $tmpl;
+    unless ($tmpl) {
+        $tmpl = MT->model('template')->load( $fi->template_id )
+            or return $app->errtrans( "Can't load template [_1]",
+            $fi->template_id );
+    }
 
-    if ($template) {
-        $tmpl = MT::Template->load(
-            {   name    => $template,
-                blog_id => $app->{__blog_id}
-            }
-            )
-            or return $app->error(
-            $app->translate( "Can't load template [_1]", $template ) );
-    }
-    else {
-        my $map = MT::TemplateMap->load(
-            {   archive_type => 'Individual',
-                blog_id      => $app->{__blog_id},
-                is_preferred => 1
-            }
-            )
-            or
-            return $app->error( $app->translate("Can't load templatemap") );
-        $tmpl = MT::Template->load( $map->template_id )
-            or return $app->error(
-            $app->translate( "Can't load template [_1]", $map->template_id )
-            );
-    }
     my $out = $tmpl->build( $ctx, \%cond )
-        or return $app->error(
-        $app->translate( "Archive publishing failed: [_1]", $tmpl->errstr ) );
+        or return $app->errtrans( "Archive publishing failed: [_1]",
+        $tmpl->errstr );
+
     $out;
 }
 
 sub _view_category {
     my $app = shift;
-    my ($cat_id) = @_;
-    require MT::Category;
-    my $cat = MT::Category->load($cat_id)
-        or return $app->error(
-        $app->translate( "Invalid category ID '[_1]'", $cat_id ) );
-    my ( $start, $end, $at );
+    my ( $fi, $tmpl ) = @_;
+
+    my $cat_id = $fi->category_id;
+    my $cat    = MT->model('category')->load($cat_id)
+        or return $app->errtrans( "Invalid category ID '[_1]'", $cat_id );
+
     my $ctx = MT::Template::Context->new;
     $ctx->stash( 'archive_category', $cat );
     $ctx->{current_archive_type} = 'Category';
+
     require MT::Placement;
-    my @entries = MT::Entry->load(
+    my @entries = MT->model('entry')->load(
         {   blog_id => $app->{__blog_id},
             status  => MT::Entry::RELEASE()
         },
@@ -261,19 +270,50 @@ sub _view_category {
         }
     );
     $ctx->stash( 'entries', delay( sub { \@entries } ) );
-    require MT::TemplateMap;
-    my $map = MT::TemplateMap->load(
-        {   archive_type => 'Category',
-            blog_id      => $app->{__blog_id},
-            is_preferred => 1
-        }
-    );
-    my $tmpl = MT::Template->load( $map->template_id )
-        or return $app->error(
-        $app->translate( "Can't load template [_1]", $map->template_id ) );
+
+    unless ($tmpl) {
+        $tmpl = MT::Template->load( $fi->template_id )
+            or return $app->errtrans( "Can't load template [_1]",
+            $fi->template_id );
+    }
+
     my $out = $tmpl->build($ctx)
-        or return $app->error(
-        $app->translate( "Archive publishing failed: [_1]", $tmpl->errstr ) );
+        or return $app->errtrans( "Archive publishing failed: [_1]",
+        $tmpl->errstr );
+
+    $out;
+}
+
+sub _view_author {
+    my $app = shift;
+    my ( $fi, $tmpl ) = @_;
+
+    my $author_id = $fi->author_id;
+    my $author    = MT->model('author')->load($author_id)
+        or return $app->errtrans( "Invalid author ID '[_1]'", $author_id );
+
+    my $ctx = MT::Template::Context->new;
+    $ctx->stash( 'author', $author );
+    $ctx->{current_archive_type} = 'Author';
+
+    my @entries = MT::Entry->load(
+        {   blog_id   => $app->{__blog_id},
+            author_id => $author_id,
+            status    => MT::Entry::RELEASE()
+        },
+    );
+    $ctx->stash( 'entries', delay( sub { \@entries } ) );
+
+    unless ($tmpl) {
+        $tmpl = MT::Template->load( $fi->template_id )
+            or return $app->errtrans( "Can't load template [_1]",
+            $fi->template_id );
+    }
+
+    my $out = $tmpl->build($ctx)
+        or return $app->errtrans( "Archive publishing failed: [_1]",
+        $tmpl->errstr );
+
     $out;
 }
 

@@ -18,6 +18,14 @@
     <__trans phrase="Your settings have been saved.">
   </mtapp:statusmsg>
 </mt:if>
+<mt:if name="config_warning">
+  <mtapp:statusmsg
+     id="info"
+     class="info"
+     can_close="0">
+    <mt:var name="config_warning">
+  </mtapp:statusmsg>
+</mt:if>
 </mt:setvarblock>
 
 <mt:setvarblock name="html_head" append="1">
@@ -49,7 +57,7 @@ function clearNotifyUsers() {
 
 <mt:include name="include/header.tmpl">
 
-<form action="<mt:var name="script_url">" method="post">
+<form id="cfg_user_settings" action="<mt:var name="script_url">" method="post">
   <input type="hidden" name="__mode" value="save_cfg_system_users" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
@@ -79,6 +87,58 @@ function clearNotifyUsers() {
     </mtapp:setting>
   </mtapp:settinggroup>
 </mt:unless>
+
+<mt:if name="auth_mode_mt">
+  <h2><__trans phrase="Password Validation"></h2>
+  <mtapp:settinggroup id="password-validation">
+    <mtapp:setting
+       id="password-validation-options"
+       label="<__trans phrase="Options">">
+      <ul id="password-validation-options-setting-list" class="setting-list">
+        <li>
+          <input type="checkbox" name="combo_upper_lower" id="combo-upper-lower"<mt:if name="combo_upper_lower"> checked="checked"</mt:if>> <label for="combo-upper-lower"><__trans phrase="Should contain uppercase and lowercase letters."></label>
+        </li>
+        <li>
+          <input type="checkbox" name="combo_letter_number" id="combo-letter-number"<mt:if name="combo_letter_number"> checked="checked"</mt:if>> <label for="combo-letter-number"><__trans phrase="Should contain letters and numbers."></label>
+        </li>
+        <li>
+          <input type="checkbox" name="require_special_characters" id="require-special-characters"<mt:if name="require_special_characters"> checked="checked"</mt:if>> <label for="require-special-characters"><__trans phrase="Should contain special characters."></label>
+        </li>
+      </ul>
+    </mtapp:setting>
+    <mtapp:setting
+       id="minimum-length"
+       label="<__trans phrase="Minimun Length">">
+         <input type="text" name="minimum_length" id="minimum-length" class="positive-num num" value="<mt:var name="minimum_length">">
+    </mtapp:setting>
+  </mtapp:settinggroup>
+
+  <mt:setvarblock name="jq_js_include" append="1">
+
+    jQuery.mtValidateAddRules({
+      '.positive-num': function ($e) {
+        return /^\d+$/.test($e.val()) && ($e.val() > 0);
+      }
+    });
+    jQuery.mtValidateAddMessages({
+        '.positive-num': '<__trans phrase="This field must be a positive integer.">'
+    });
+
+    jQuery('#cfg_user_settings').submit( function () {
+        var ok = true;
+        jQuery(this).find('input:visible, select:visible').each( function () {
+            if ( jQuery(this).is('.positive-num') ) {
+                if ( !jQuery(this).mtValidate('simple', { '.digit, .num': function () { return true } } ) ) ok = false;
+            }
+            else {
+                if ( !jQuery(this).mtValidate('simple') ) ok = false;
+            }
+        });
+        return ok;
+    });
+
+  </mt:setvarblock>
+</mt:if>
 
   <h2><__trans phrase="New User Defaults"></h2>
   <mtapp:settinggroup id="new-user-defaults">

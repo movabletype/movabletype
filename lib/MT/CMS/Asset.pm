@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -40,7 +40,7 @@ sub edit {
             $param->{'auth_pref_tag_delim'} = $tag_delim;
         }
         require MT::ObjectTag;
-        $param->{tags_js} = MT::Util::to_json(
+        my $tags_js = MT::Util::to_json(
             [   map { $_->name } MT::Tag->load(
                     undef,
                     {   join => [
@@ -51,6 +51,8 @@ sub edit {
                 )
             ]
         );
+        $tags_js =~ s!/!\\/!g;
+        $param->{tags_js} = $tags_js;
 
         my @related;
         if ( $obj->parent ) {
@@ -167,11 +169,10 @@ sub dialog_list_asset {
         if !$blog_id && $mode_userpic ne 'upload_userpic';
 
     my $blog_class = $app->model('blog');
-    my $blog       = $blog_class->load($blog_id) if $blog_id;
-    my $perms      = $app->permissions;
+    my $blog = $blog_class->load($blog_id) if $blog_id;
+
     return $app->permission_denied()
-        if $mode_userpic ne 'upload_userpic'
-            && !$app->can_do('access_to_insert_asset_list');
+        if $blog_id && !$app->can_do('access_to_insert_asset_list');
 
     my $asset_class = $app->model('asset') or return;
     my %terms;
@@ -291,6 +292,12 @@ sub dialog_list_asset {
 
 sub insert {
     my $app = shift;
+
+    $app->validate_magic() or return;
+
+    return $app->permission_denied()
+        unless $app->can_do('insert_asset');
+
     my $text = $app->param('no_insert') ? "" : _process_post_upload($app);
     return unless defined $text;
     my $file_ext_changes = $app->param('changed_file_ext');
@@ -301,6 +308,7 @@ sub insert {
         $ext_from, $ext_to )
         if ( $ext_from && $ext_to );
     my $tmpl;
+
     if ($extension_message) {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
@@ -329,6 +337,8 @@ sub asset_userpic {
     my $app = shift;
     my ($param) = @_;
 
+    $app->validate_magic() or return;
+
     my ( $id, $asset );
     if ( $asset = $param->{asset} ) {
         $id = $asset->id;
@@ -343,6 +353,13 @@ sub asset_userpic {
     if ($user_id) {
         $user = $app->model('author')->load( { id => $user_id } );
         if ($user) {
+
+            my $appuser = $app->user;
+            if (   ( !$appuser->is_superuser )
+                && ( $user->id != $appuser->id ) )
+            {
+                return $app->permission_denied();
+            }
 
            # Delete the author's userpic thumb (if any); it'll be regenerated.
             if ( $user->userpic_asset_id != $asset->id ) {
@@ -438,6 +455,9 @@ sub complete_insert {
     my $app    = shift;
     my (%args) = @_;
     my $asset  = $args{asset};
+
+    $app->validate_magic() or return;
+
     if ( !$asset && $app->param('id') ) {
         require MT::Asset;
         $asset = MT::Asset->load( $app->param('id') )
@@ -468,8 +488,8 @@ sub complete_insert {
         fname       => $asset->file_name,
         is_image    => $args{is_image} || 0,
         url         => $asset->url,
-        middle_path => $app->param('middle_path') || '',
-        extra_path  => $app->param('extra_path') || '',
+        middle_path => scalar( $app->param('middle_path') ) || '',
+        extra_path  => scalar( $app->param('extra_path') ) || '',
     };
     for my $field (
         qw( direct_asset_insert edit_field entry_insert site_path
@@ -528,7 +548,7 @@ sub complete_insert {
         require MT::ObjectTag;
         my $q       = $app->param;
         my $blog_id = $q->param('blog_id');
-        $param->{tags_js} = MT::Util::to_json(
+        my $tags_js = MT::Util::to_json(
             [   map { $_->name } MT::Tag->load(
                     undef,
                     {   join => [
@@ -539,6 +559,8 @@ sub complete_insert {
                 )
             ]
         );
+        $tags_js =~ s!/!\\/!g;
+        $param->{tags_js} = $tags_js;
     }
 
     $param->{'no_insert'} = $app->param('no_insert');
@@ -584,15 +606,19 @@ sub complete_upload {
     require MT::Asset;
     $param{id} && ( $asset = MT::Asset->load( $param{id} ) )
         or return $app->errtrans("Invalid request.");
-    $asset->label( $param{label} )             if $param{label};
-    $asset->description( $param{description} ) if $param{description};
-    if ( $param{tags} ) {
-        require MT::Tag;
-        my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
-        my @tags = MT::Tag->split( $tag_delim, $param{tags} );
-        $asset->set_tags(@tags);
+
+    if ( $app->can('edit_assets') || $asset->created_by == $app->user->id ) {
+        $asset->label( $param{label} )             if $param{label};
+        $asset->description( $param{description} ) if $param{description};
+        if ( $param{tags} ) {
+            require MT::Tag;
+            my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
+            my @tags = MT::Tag->split( $tag_delim, $param{tags} );
+            $asset->set_tags(@tags);
+        }
+        $asset->save();
     }
-    $asset->save();
+
     $asset->on_upload( \%param );
 
     my $perms = $app->permissions;
@@ -609,7 +635,10 @@ sub complete_upload {
 }
 
 sub start_upload_entry {
-    my $app  = shift;
+    my $app = shift;
+
+    $app->validate_magic() or return;
+
     my $q    = $app->param;
     my $blog = $app->blog;
     my $type = 'entry';
@@ -769,7 +798,7 @@ sub build_asset_hasher {
         else {
             $row->{file_is_missing} = 1 if $file_path;
         }
-        $meta->{file_name} = $row->{file_name};
+        $meta->{file_name} = MT::Util::encode_html( $row->{file_name} );
         $row->{file_label} 
             = $row->{label} 
             = $obj->label
@@ -899,15 +928,18 @@ sub _process_post_upload {
     require MT::Asset;
     $param{id} && ( $asset = MT::Asset->load( $param{id} ) )
         or return $app->errtrans("Invalid request.");
-    $asset->label( $param{label} )             if $param{label};
-    $asset->description( $param{description} ) if $param{description};
-    if ( $param{tags} ) {
-        require MT::Tag;
-        my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
-        my @tags = MT::Tag->split( $tag_delim, $param{tags} );
-        $asset->set_tags(@tags);
+
+    if ( $app->can('edit_assets') || $asset->created_by == $app->user->id ) {
+        $asset->label( $param{label} )             if $param{label};
+        $asset->description( $param{description} ) if $param{description};
+        if ( $param{tags} ) {
+            require MT::Tag;
+            my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
+            my @tags = MT::Tag->split( $tag_delim, $param{tags} );
+            $asset->set_tags(@tags);
+        }
+        $asset->save();
     }
-    $asset->save();
 
     $asset->on_upload( \%param );
     return asset_insert_text( $app, \%param );
@@ -964,6 +996,14 @@ sub save {
             }
         )
     );
+}
+
+sub cms_save_filter {
+    my ( $cb, $app ) = @_;
+    if ( $app->param('file_name') || $app->param('file_path') ) {
+        return $app->errtrans("Invalid request.");
+    }
+    1;
 }
 
 sub _set_start_upload_params {
@@ -1080,11 +1120,11 @@ sub _upload_file {
     my $has_overwrite = $q->param('overwrite_yes')
         || $q->param('overwrite_no');
     my %param = (
-        entry_insert => $q->param('entry_insert'),
-        middle_path  => $q->param('middle_path'),
-        edit_field   => $q->param('edit_field'),
-        site_path    => $q->param('site_path'),
-        extra_path   => $q->param('extra_path'),
+        entry_insert => scalar( $q->param('entry_insert') ),
+        middle_path  => scalar( $q->param('middle_path') ),
+        edit_field   => scalar( $q->param('edit_field') ),
+        site_path    => scalar( $q->param('site_path') ),
+        extra_path   => scalar( $q->param('extra_path') ),
         upload_mode  => $app->mode,
     );
     return start_upload( $app, %param,
@@ -1251,21 +1291,16 @@ sub _upload_file {
         if ( $fmgr->exists($local_file) ) {
             if ($has_overwrite) {
                 my $tmp = $q->param('temp');
-                if ( $tmp =~ m!([^/]+)$! ) {
-                    $tmp = $1;
-                }
-                else {
-                    return $app->error(
-                        $app->translate(
-                            "Invalid temp file name '[_1]'", $tmp
-                        )
-                    );
-                }
+
+                return $app->error(
+                    $app->translate( "Invalid temp file name '[_1]'", $tmp ) )
+                    unless _is_valid_tempfile_basename($tmp);
+
                 my $tmp_dir = $app->config('TempDir');
                 my $tmp_file = File::Spec->catfile( $tmp_dir, $tmp );
                 if ( $q->param('overwrite_yes') ) {
                     $fh = gensym();
-                    open $fh, $tmp_file
+                    open $fh, '<', $tmp_file
                         or return $app->error(
                         $app->translate(
                             "Error opening '[_1]': [_2]",
@@ -1275,7 +1310,7 @@ sub _upload_file {
                 }
                 else {
                     if ( -e $tmp_file ) {
-                        unlink($tmp_file)
+                        $fmgr->delete($tmp_file)
                             or return $app->error(
                             $app->translate(
                                 "Error deleting '[_1]': [_2]", $tmp_file,
@@ -1455,15 +1490,13 @@ sub _upload_file {
     ## lying around. Delete it.
     if ( $q->param('overwrite_yes') ) {
         my $tmp = $q->param('temp');
-        if ( $tmp =~ m!([^/]+)$! ) {
-            $tmp = $1;
-        }
-        else {
-            return $app->error(
-                $app->translate( "Invalid temp file name '[_1]'", $tmp ) );
-        }
+
+        return $app->error(
+            $app->translate( "Invalid temp file name '[_1]'", $tmp ) )
+            unless _is_valid_tempfile_basename($tmp);
+
         my $tmp_file = File::Spec->catfile( $app->config('TempDir'), $tmp );
-        unlink($tmp_file)
+        $fmgr->delete($tmp_file)
             or return $app->error(
             $app->translate( "Error deleting '[_1]': [_2]", $tmp_file, "$!" )
             );
@@ -1607,6 +1640,13 @@ sub _upload_file {
     return ( $asset, $bytes );
 }
 
+sub _is_valid_tempfile_basename {
+    my ($filename) = @_;
+    $filename
+        && File::Basename::basename($filename) eq $filename
+        && $filename !~ m!^\.\.|\0|\|!;
+}
+
 sub _write_upload {
     my ( $upload_fh, $dest_fh ) = @_;
     my $fh = gensym();
@@ -1614,7 +1654,7 @@ sub _write_upload {
         $fh = $dest_fh;
     }
     else {
-        open $fh, ">$dest_fh" or return;
+        open $fh, '>', $dest_fh or return;
     }
     binmode $fh;
     binmode $upload_fh;

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -44,7 +44,8 @@ sub edit {
                 = substr( $param->{entry_title}, 0, $title_max_len ) . '...'
                 if $param->{entry_title}
                     && length( $param->{entry_title} ) > $title_max_len;
-            $param->{entry_permalink} = MT::Util::encode_html( $entry->permalink );
+            $param->{entry_permalink}
+                = MT::Util::encode_html( $entry->permalink );
             unless ( $param->{has_publish_access} ) {
                 $param->{has_publish_access}
                     = $app->can_do('edit_comment_status_of_own_entry') ? 1 : 0
@@ -194,14 +195,15 @@ sub save_commenter_perm {
     foreach my $id (@ids) {
         ( $id, $blog_id ) = @$id if ref $id eq 'ARRAY';
         my $perm_blog_id = MT->config->SingleCommunity ? 0 : $blog_id;
-        if ( $perm_blog_id ) {
-            my $perm = $permissions{ $perm_blog_id } ||= $author->permissions($perm_blog_id);
+        if ($perm_blog_id) {
+            my $perm = $permissions{$perm_blog_id}
+                ||= $author->permissions($perm_blog_id);
             if ( !$perm->can_do('edit_commenter_status') ) {
-                return $app->errtrans( "Permission denied." );
+                return $app->errtrans("Permission denied.");
             }
         }
         else {
-            return $app->errtrans( "Permission denied." )
+            return $app->errtrans("Permission denied.")
                 unless $app->can_do('edit_global_commenter_status');
         }
 
@@ -375,6 +377,9 @@ sub empty_junk {
     my $perms   = $app->permissions;
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
+
+    $app->validate_magic() or return;
+
     if ($blog_id) {
         $app->can_do('delete_junk_comments')
             or return $app->permission_denied();
@@ -408,10 +413,9 @@ sub handle_junk {
     my $blog_id = $app->param('blog_id');
     my ( %rebuild_entries, %rebuild_categories );
 
-    my @obj_ids = $app->param('id');
     if ( my $req_nonce = $app->param('nonce') ) {
-        if ( scalar @obj_ids == 1 ) {
-            my $cmt_id = $obj_ids[0];
+        if ( scalar @ids == 1 ) {
+            my $cmt_id = $ids[0];
             if ( my $obj = $class->load($cmt_id) ) {
                 my $nonce
                     = MT::Util::perl_sha1_digest_hex( $obj->id
@@ -443,22 +447,32 @@ sub handle_junk {
         $app->validate_magic() or return;
     }
 
-    my $perm_checked = $app->can_do('handle_junk');
-
     foreach my $id (@ids) {
         next unless $id;
 
         my $obj = $class->load($id) or die "No $class $id";
-        my $perms = $app->user->permissions($obj->blog_id);
+        my $perms = $app->user->permissions( $obj->blog_id )
+            or return $app->permission_denied();
+        my $perm_checked = $perms->can_do('handle_junk');
         my $old_visible = $obj->visible || 0;
         unless ($perm_checked) {
             if ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Entry') ) {
-                next if $obj->parent->author_id != $app->user->id;
+                return $app->permission_denied()
+                    if $obj->parent->author_id != $app->user->id;
+            }
+            elsif ($obj->isa('MT::TBPing')
+                && $obj->parent->isa('MT::Category') )
+            {
+                return $app->permission_denied()
+                    unless $perms->can_do(
+                            'handle_junk_for_category_trackback');
             }
             elsif ( $obj->isa('MT::Comment') ) {
-                next if $obj->entry->author_id != $app->user->id;
+                return $app->permission_denied()
+                    if $obj->entry->author_id != $app->user->id;
             }
-            next unless $perms->can_do('handle_junk_for_own_entry');
+            return $app->permission_denied()
+                unless $perms->can_do('handle_junk_for_own_entry');
         }
         $obj->junk;
         $app->run_callbacks( 'handle_spam', $app, $obj )
@@ -501,21 +515,32 @@ sub not_junk {
     my $class = $app->model($type);
     my %rebuild_set;
 
-    my $perm_checked = $app->can_do('handle_not_junk');
-
     foreach my $id (@ids) {
         next unless $id;
         my $obj = $class->load($id)
             or next;
-        my $perms = $app->user->permissions( $obj->blog_id );
+        my $perms = $app->user->permissions( $obj->blog_id )
+            or return $app->permission_denied();
+        my $perm_checked = $perms->can_do('handle_not_junk');
+
         unless ($perm_checked) {
             if ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Entry') ) {
-                next if $obj->parent->author_id != $app->user->id;
+                return $app->permission_denied()
+                    if $obj->parent->author_id != $app->user->id;
+            }
+            elsif ($obj->isa('MT::TBPing')
+                && $obj->parent->isa('MT::Category') )
+            {
+                return $app->permission_denied()
+                    unless $perms->can_do(
+                            'handle_junk_for_category_trackback');
             }
             elsif ( $obj->isa('MT::Comment') ) {
-                next if $obj->entry->author_id != $app->user->id;
+                return $app->permission_denied()
+                    if $obj->entry->author_id != $app->user->id;
             }
-            next unless $perms->can_do('handle_not_junk_for_own_entry');
+            return $app->permission_denied()
+                unless $perms->can_do('handle_not_junk_for_own_entry');
         }
         $obj->approve;
         $app->run_callbacks( 'handle_ham', $app, $obj );
@@ -642,7 +667,7 @@ sub do_reply {
         }
     );
     return $app->build_page( 'dialog/comment_reply.tmpl',
-        { closing => 1, return_url => $q->param('return_url') } );
+        { closing => 1, return_url => scalar( $q->param('return_url') ) } );
 }
 
 sub reply_preview {
@@ -661,7 +686,7 @@ sub reply_preview {
         reply_to    => $q->param('reply_to'),
         magic_token => $app->current_magic,
         blog_id     => $q->param('blog_id'),
-        return_url  => $q->param('return_url'),
+        return_url  => scalar( $q->param('return_url') ),
     };
     my ( $comment, $parent, $entry ) = _prepare_reply($app);
     return unless $comment;
@@ -755,7 +780,8 @@ sub dialog_post_comment {
         comment_text       => MT::Sanitize->sanitize( $parent->text, $spec ),
         comment_script_url => $app->config('CGIPath')
             . $app->config('CommentScript'),
-        return_url => ( $app->param('return_args')
+        return_url => (
+              $app->param('return_args')
             ? $app->base . $app->uri . '?' . $app->param('return_args')
             : $app->base
                 . $app->uri(
@@ -984,7 +1010,10 @@ sub set_item_visible {
     my $perms  = $app->permissions;
     my $author = $app->user;
 
-    my $type  = $app->param('_type');
+    my $type = $app->param('_type');
+    return $app->errtrans("Invalid request.")
+        unless grep { $_ eq $type } qw{comment ping tbping ping_cat};
+
     my $class = $app->model($type);
     $app->setup_filtered_ids
         if $app->param('all_selected');

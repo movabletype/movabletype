@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -38,14 +38,14 @@ sub list_props {
         blog_count => {
             label        => 'Blogs',
             filter_label => '__BLOG_COUNT',
-            order       => 200,
-            base        => '__virtual.object_count',
-            display     => 'default',
-            count_class => 'blog',
-            count_col   => 'parent_id',
-            filter_type => 'blog_id',
-            list_screen => 'blog',
-            count_terms => sub {
+            order        => 200,
+            base         => '__virtual.object_count',
+            display      => 'default',
+            count_class  => 'blog',
+            count_col    => 'parent_id',
+            filter_type  => 'blog_id',
+            list_screen  => 'blog',
+            count_terms  => sub {
                 my $prop = shift;
                 my ($opts) = @_;
                 return {}

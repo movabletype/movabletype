@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -8,10 +8,10 @@ package MT::CMS::Tag;
 use strict;
 
 sub rename_tag {
-    my $app     = shift;
+    my $app = shift;
     $app->validate_magic or return;
 
-    my $perms   = $app->permissions;
+    my $perms = $app->permissions;
     my $blog_id = $app->blog->id if $app->blog;
     $app->can_do('rename_tag')
         or return $app->permission_denied();
@@ -67,28 +67,30 @@ sub rename_tag {
         }
         else {
             my $anti_ot_terms = {
-                ( $blog_id ? ( blog_id => $blog_id ) : () ),
+                ( $blog_id ? ( blog_id => { not => $blog_id } ) : () ),
                 tag_id => $tag->id,
             };
             if ( my $ot_test = $ot_class->load($anti_ot_terms) ) {
                 $new_tag = $tag->clone;
                 $new_tag->name($name);
-                $new_tag->save();
+                $new_tag->id(undef);
+
+                my $ot_terms = {
+                    ( $blog_id ? ( blog_id => $blog_id ) : () ),
+                    tag_id => $tag->id,
+                };
+                my @ots = $ot_class->load($ot_terms);
+                if ( scalar @ots ) {
+                    $new_tag->save();
+                    for my $ot (@ots) {
+                        $ot->tag_id( $new_tag->id );
+                        $ot->save;
+                    }
+                }
             }
             else {
                 $tag->name($name);
                 $tag->save();
-            }
-        }
-        if ($new_tag) {
-            my $ot_terms = {
-                ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                tag_id => $tag->id,
-            };
-            my @ots = $ot_class->load($ot_terms);
-            for my $ot (@ots) {
-                $ot->tag_id( $new_tag->id );
-                $ot->save;
             }
         }
     }
@@ -116,7 +118,11 @@ sub rename_tag {
 }
 
 sub js_tag_check {
-    my $app       = shift;
+    my $app = shift;
+
+    return $app->json_error( $app->translate('Permission denied.') )
+        unless $app->can_do('edit_tags');
+
     my $name      = $app->param('tag_name');
     my $blog_id   = $app->param('blog_id');
     my $type      = $app->param('_type') || 'entry';
@@ -145,9 +151,13 @@ sub js_tag_check {
 }
 
 sub js_tag_list {
-    my $app     = shift;
+    my $app = shift;
+
+    return $app->json_error( $app->translate('Permission denied.') )
+        unless $app->can_do('create_post');
+
     my $blog_id = $app->param('blog_id');
-    my $type    = $app->param('_type') || 'entry';
+    my $type = $app->param('_type') || 'entry';
 
     my $class = $app->model($type)
         or return $app->json_error( $app->translate("Invalid request.") );
@@ -168,15 +178,27 @@ sub js_tag_list {
 }
 
 sub js_recent_entries_for_tag {
-    my $app          = shift;
-    my $user         = $app->user or return;
-    my $tag_class    = $app->model('tag') or return;
+    my $app = shift;
+
+    my $perms = $app->permissions;
+    if (( !$app->user->is_superuser )
+        && (   ( !$app->blog )
+            || ( !$perms )
+            || ( !$perms->permissions )
+            || ( $perms->permissions eq "'comment'" ) )
+        )
+    {
+        return $app->json_error( $app->translate('Permission denied.') );
+    }
+
+    my $user         = $app->user               or return;
+    my $tag_class    = $app->model('tag')       or return;
     my $objtag_class = $app->model('objecttag') or return;
-    my $limit        = $app->param('limit') || 10;
-    my $obj_ds       = $app->param('_type') || 'entry';
-    my $blog_id      = $app->param('blog_id');
-    my $obj_class    = $app->model($obj_ds) or return;
-    my $tag_name     = $app->param('tag') or return;
+    my $limit  = $app->param('limit') || 10;
+    my $obj_ds = $app->param('_type') || 'entry';
+    my $blog_id   = $app->param('blog_id');
+    my $obj_class = $app->model($obj_ds) or return;
+    my $tag_name  = $app->param('tag') or return;
 
     my $tag_obj = $tag_class->load( { name => $tag_name },
         { binary => { name => 1 } } );
@@ -233,12 +255,12 @@ sub add_tags_to_entries {
     require MT::Entry;
 
     my $user        = $app->user;
-    my $perms       = $app->permissions;
     my $entry_count = 0;
     foreach my $id (@id) {
         next unless $id;
         my $entry = MT::Entry->load($id) or next;
-        next
+        my $perms = $app->user->permissions( $entry->blog_id );
+        return $app->permission_denied()
             unless $entry && $perms->can_edit_entry( $entry, $user );
 
         $entry_count++;
@@ -277,12 +299,12 @@ sub remove_tags_from_entries {
 
     require MT::Entry;
 
-    my $user  = $app->user;
-    my $perms = $app->permissions;
+    my $user = $app->user;
     foreach my $id (@id) {
         next unless $id;
         my $entry = MT::Entry->load($id) or next;
-        next
+        my $perms = $app->user->permissions( $entry->blog_id );
+        return $app->permission_denied()
             unless $entry && $perms->can_edit_entry( $entry, $user );
         $entry->remove_tags(@tags);
         $entry->save
@@ -354,7 +376,7 @@ sub can_delete {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
-    return $author->permissions($app->blog->id)->can_do('remove_tag');
+    return $author->permissions( $app->blog->id )->can_do('remove_tag');
 }
 
 sub post_delete {

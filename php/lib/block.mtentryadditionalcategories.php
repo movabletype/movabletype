@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -11,16 +11,7 @@ function smarty_block_mtentryadditionalcategories($args, $content, &$ctx, &$repe
         $ctx->localize($localvars);
         $entry = $ctx->stash('entry');
         $args['entry_id'] = $entry->entry_id;
-        $primary_category_id = $entry->placement_category_id;
-        $categories = $ctx->mt->db()->fetch_categories($args);
-        if ($categories && $primary_category_id) {
-            $list = array();
-            foreach ($categories as $cat) {
-                if ($cat->category_id != $primary_category_id)
-                    $list[] = $cat;
-            }
-            $categories = $list;
-        }
+        $categories = $entry->categories( false );
         $ctx->stash('_categories', $categories);
         $ctx->stash('__out', false);
         $counter = 0;

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -32,13 +32,13 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '5.12', '5.0024' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '5.13', '5.0030' );
     (   $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION,
         $VERSION_ID,   $PORTAL_URL
         )
         = (
         '__PRODUCT_NAME__', 'MT',
-        '5.12',              '__PRODUCT_VERSION_ID__',
+        '5.13',             '__PRODUCT_VERSION_ID__',
         '__PORTAL_URL__'
         );
 
@@ -649,9 +649,7 @@ sub run_callback {
     my ( $cb, @args ) = @_;
 
     $cb->error();    # reset the error string
-    my $result = eval {
-        $cb->invoke(@args);
-    };
+    my $result = eval { $cb->invoke(@args); };
     if ( my $err = $@ ) {
         $cb->error($err);
         my $plugin = $cb->{plugin};
@@ -971,8 +969,8 @@ sub init_config {
 
         my $first_write = !-f $log_file;
 
-        open my $PERFLOG, ">>", $log_file 
-            or (warn("Failed to open preflog $log_file"), return);
+        open my $PERFLOG, ">>", $log_file
+            or ( warn("Failed to open preflog $log_file"), return );
         require Fcntl;
         flock( $PERFLOG, Fcntl::LOCK_EX() );
 
@@ -1003,7 +1001,9 @@ sub init_config {
             }
             my ( $drname, $drh ) = each %DBI::installed_drh;
             print $PERFLOG "# Database Library: DBI/"
-                . $DBI::VERSION . "; DBD/" . $drh->{Version} . "\n";
+                . $DBI::VERSION
+                . "; DBD/"
+                . $drh->{Version} . "\n";
             if ( $ENV{MOD_PERL} ) {
                 print $PERFLOG "# App Mode: mod_perl\n";
             }
@@ -1385,16 +1385,14 @@ sub init_plugins {
                 && !$PluginSwitch->{$plugin_sig} )
             )
         {
-            $Plugins{$plugin_sig}{full_path}
-                = $plugin_full_path;
-            $Plugins{$plugin_sig}{enabled} = 0;
+            $Plugins{$plugin_sig}{full_path} = $plugin_full_path;
+            $Plugins{$plugin_sig}{enabled}   = 0;
             return 0;
         }
         return 0 if exists $Plugins{$plugin_sig};
         $Plugins{$plugin_sig}{full_path} = $plugin_full_path;
         $timer->pause_partial if $timer;
-        eval "# line " . __LINE__ . " " . __FILE__
-            . "\nrequire '$plugin';";
+        eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire '$plugin';";
         $timer->mark( "Loaded plugin " . $sig ) if $timer;
         if ($@) {
             $Plugins{$plugin_sig}{error} = $@;
@@ -1406,8 +1404,7 @@ sub init_plugins {
                 require MT::Log;
                 $mt->log(
                     {   message => $mt->translate(
-                            "Plugin error: [_1] [_2]",
-                            $plugin,
+                            "Plugin error: [_1] [_2]", $plugin,
                             $Plugins{$plugin_sig}{error}
                         ),
                         class    => 'system',
@@ -1433,15 +1430,15 @@ sub init_plugins {
         }
         $Plugins{$plugin_sig}{enabled} = 1;
         return 1;
-    };
-    
+    }
+
     sub __load_plugin_with_yaml {
-        my ($use_plugins, $PluginSwitch, $plugin_dir) = @_;
+        my ( $use_plugins, $PluginSwitch, $plugin_dir ) = @_;
         my $pclass
             = $plugin_dir =~ m/\.pack$/
             ? 'MT::Component'
             : 'MT::Plugin';
-        
+
         # Don't process disabled plugin config.yaml files.
         if ($pclass eq 'MT::Plugin'
             && (!$use_plugins
@@ -1451,7 +1448,7 @@ sub init_plugins {
             )
         {
             $Plugins{$plugin_dir}{full_path} = $plugin_full_path;
-            $Plugins{$plugin_dir}{enabled} = 0;
+            $Plugins{$plugin_dir}{enabled}   = 0;
             return;
         }
         return if exists $Plugins{$plugin_dir};
@@ -1463,13 +1460,13 @@ sub init_plugins {
                 envelope => $plugin_envelope
             }
         );
-        
+
         # rebless? based on config?
         local $plugin_sig = $plugin_dir;
         MT->add_plugin($p);
         $p->init_callbacks();
     }
-    
+
     sub _init_plugins_core {
         my $mt = shift;
         my ( $PluginSwitch, $use_plugins, $PluginPaths ) = @_;
@@ -1494,26 +1491,28 @@ sub init_plugins {
                         = File::Spec->catfile( $PluginPath, $plugin );
                     if ( -f $plugin_full_path ) {
                         $plugin_envelope = $plugin_lastdir;
-                        __load_plugin($mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $plugin )
+                        __load_plugin( $mt, $timer, $PluginSwitch,
+                            $use_plugins, $plugin_full_path, $plugin )
                             if $plugin_full_path =~ /\.pl$/;
                         next;
                     }
-                    
+
                     my $plugin_dir = $plugin;
                     $plugin_envelope = "$plugin_lastdir/" . $plugin;
 
-
                     foreach my $lib (qw(lib extlib)) {
-                        my $plib = File::Spec->catdir( $plugin_full_path,
-                            $lib );
+                        my $plib
+                            = File::Spec->catdir( $plugin_full_path, $lib );
                         unshift @INC, $plib if -d $plib;
                     }
 
                     # handle config.yaml
-                    my $yaml = File::Spec->catdir( $plugin_full_path, 'config.yaml' );
+                    my $yaml = File::Spec->catdir( $plugin_full_path,
+                        'config.yaml' );
 
                     if ( -f $yaml ) {
-                        __load_plugin_with_yaml($use_plugins, $PluginSwitch, $plugin_dir);
+                        __load_plugin_with_yaml( $use_plugins, $PluginSwitch,
+                            $plugin_dir );
                         next;
                     }
 
@@ -1528,11 +1527,12 @@ sub init_plugins {
                     for my $plugin (@plugins) {
                         next if $plugin !~ /\.pl$/;
                         my $plugin_file
-                            = File::Spec->catfile( $plugin_full_path, $plugin );
+                            = File::Spec->catfile( $plugin_full_path,
+                            $plugin );
                         if ( -f $plugin_file ) {
-                            __load_plugin(
-                                $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $plugin_dir . '/' . $plugin
-                            );
+                            __load_plugin( $mt, $timer, $PluginSwitch,
+                                $use_plugins, $plugin_file,
+                                $plugin_dir . '/' . $plugin );
                         }
                     }
                 }
@@ -2143,7 +2143,7 @@ sub support_directory_path {
     my $app  = shift;
     my $path = $app->config('SupportDirectoryPath');
     if ($path) {
-        if ( $path !~ m{^/} ) {
+        if ( $path !~ m{^/|^[a-zA-Z]:\\|^\\\\[a-zA-Z0-9\.]+} ) {
             return File::Spec->catdir( $app->path, $path );
         }
         return $path;
@@ -2289,16 +2289,18 @@ sub load_tmpl {
 }
 
 sub _svn_revision {
-    my $mt = shift;
+    my $mt      = shift;
     my $wc_base = $mt->mt_dir;
     return unless -d File::Spec->catdir( $wc_base, '.git' );
 
     # Currently, we are on the Github.
-    return 
-        unless (-e $wc_base && open my $fh, '-|', "git status");
+    return
+        unless ( -e $wc_base && open my $fh, '-|', "git status" );
 
     my $revision = '';
-    if (-e $wc_base && open my $fh, '-|', "git log --pretty=format:'' | wc -l") {
+    if ( -e $wc_base && open my $fh,
+        '-|', "git log --pretty=format:'' | wc -l" )
+    {
         $revision = do { local $/ = undef; <$fh> };
         chomp $revision;
         $revision =~ s/\s*(.*)/r$1/;
@@ -2306,17 +2308,17 @@ sub _svn_revision {
     }
 
     my $hash = '';
-    if (-e $wc_base && open my $fh, '-|', "git log -1 | grep commit") {
+    if ( -e $wc_base && open my $fh, '-|', "git log -1 | grep commit" ) {
         $hash = do { local $/ = undef; <$fh> };
         chomp $hash;
         if ( $hash =~ s/commit (.*)/$1/ ) {
-            $hash = substr($hash, 0, 8 );
+            $hash = substr( $hash, 0, 8 );
         }
         close $fh;
     }
 
     my $branch = '';
-    if (-e $wc_base && open my $fh, '-|', "git branch") {
+    if ( -e $wc_base && open my $fh, '-|', "git branch" ) {
         $branch = do { local $/ = undef; <$fh> };
         chomp $branch;
         if ( $branch =~ m/\*\s(.*)/ ) {
@@ -4193,7 +4195,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2011 Six Apart.
+Except where otherwise noted, MT is Copyright 2001-2012 Six Apart.
 All rights reserved.
 
 =cut

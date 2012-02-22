@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -120,34 +120,21 @@ sub _hdlr_commenter_isauthor {
 =head2 CommenterNameThunk
 
 Used to populate the commenter_name Javascript variable. Deprecated in
-favor of the L<UserSessionState> tag.
+favor of the L<UserSessionState> tag. This tag has been removed.
 
-=for tags deprecated
+=for tags deprecated removed
 
 =cut
 
 sub _hdlr_commenter_name_thunk {
-    my $ctx  = shift;
-    my $cfg  = $ctx->{config};
-    my $blog = $ctx->stash('blog')
-        || MT::Blog->load( $ctx->stash('blog_id') );
+    my ($ctx) = @_;
     return $ctx->error(
-        MT->translate( 'Can\'t load blog #[_1].', $ctx->stash('blog_id') ) )
-        unless $blog;
-    my ($blog_domain) = $blog->archive_url =~ m|://([^/]*)|;
-    my $cgi_path      = $ctx->cgi_path;
-    my ($mt_domain)   = $cgi_path          =~ m|://([^/]*)|;
-    $mt_domain ||= '';
-
-    if ( $blog_domain ne $mt_domain ) {
-        my $cmt_script = $cfg->CommentScript;
-        return
-            "<script type='text/javascript' src='$cgi_path$cmt_script?__mode=cmtr_name_js'></script>";
-    }
-    else {
-        return
-            "<script type='text/javascript'>var commenter_name = getCookie('commenter_name')</script>";
-    }
+        MT->translate(
+            "This '[_1]' tag has been deprecated. Please use '[_2]' instead.",
+            'MTCommenterNameThunk',
+            'MTUserSessionState'
+        )
+    );
 }
 
 ###########################################################################

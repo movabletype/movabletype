@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -25,6 +25,9 @@ sub save {
     if ( my $hdlrs = $app->handlers_for_mode($save_mode) ) {
         return $app->forward($save_mode);
     }
+
+    return $app->errtrans("Invalid request.")
+        if is_disabled_mode( $app, 'save', $type );
 
     my $id = $q->param('id');
     $q->param( 'allow_pings', 0 )
@@ -499,7 +502,7 @@ sub save {
 }
 
 sub edit {
-    my $app  = shift;
+    my $app = shift;
 
     my $q    = $app->param;
     my $type = $q->param('_type');
@@ -515,6 +518,9 @@ sub edit {
     if ( my $hdlrs = $app->handlers_for_mode($edit_mode) ) {
         return $app->forward( $edit_mode, @_ );
     }
+
+    return $app->errtrans("Invalid request.")
+        if is_disabled_mode( $app, 'edit', $type );
 
     my %param = eval { $_[0] ? %{ $_[0] } : (); };
     die Carp::longmess if $@;
@@ -768,12 +774,18 @@ sub list {
 
     my @list_headers;
     push @list_headers,
-        File::Spec->catfile( MT->config->TemplatePath, $app->{template_dir},
-        'listing', $type . '_list_header.tmpl' );
+        {
+        filename => File::Spec->catfile(
+            MT->config->TemplatePath, $app->{template_dir},
+            'listing',                $type . '_list_header.tmpl'
+        ),
+        component => 'Core'
+        };
+
     for my $c (@list_components) {
         my $f = File::Spec->catfile( $c->path, 'tmpl', 'listing',
             $type . '_list_header.tmpl' );
-        push @list_headers, $f if -e $f;
+        push @list_headers, { filename => $f, component => $c->id } if -e $f;
     }
 
     my $screen_settings = MT->registry( listing_screens => $type )
@@ -1241,6 +1253,47 @@ sub filtered_list {
         }
     }
 
+    # Validate scope
+    if ( my $view = $setting->{view} ) {
+        $view = [$view] unless ref $view;
+        my %view = map { $_ => 1 } @$view;
+        if ( !$view{$scope} ) {
+            return $app->return_to_dashboard( redirect => 1, );
+        }
+    }
+
+    # Permission check
+    if ( defined $setting->{permission}
+        && !$app->user->is_superuser() )
+    {
+        my $list_permission = $setting->{permission};
+        my $inherit_blogs   = 1;
+        if ( 'HASH' eq ref $list_permission ) {
+            $inherit_blogs = $list_permission->{inherit}
+                if defined $list_permission->{inherit};
+            $list_permission = $list_permission->{permit_action};
+        }
+        my $allowed  = 0;
+        my @act      = split /\s*,\s*/, $list_permission;
+        my $blog_ids = undef;
+        if ($blog_id) {
+            push @$blog_ids, $blog_id;
+            if ( $scope eq 'website' && $inherit_blogs ) {
+                push @$blog_ids, $_->id foreach @{ $app->blog->blogs() };
+            }
+        }
+        foreach my $p (@act) {
+            $allowed = 1, last
+                if $app->user->can_do(
+                $p,
+                at_least_one => 1,
+                ( $blog_ids ? ( blog_id => $blog_ids ) : () )
+                );
+        }
+        return $app->permission_denied()
+            unless $allowed;
+    }
+
     my $class = $setting->{datasource} || MT->model($ds);
     my $filteritems;
     my $allpass = 0;
@@ -1404,7 +1457,8 @@ sub filtered_list {
             elsif ( $prop->has('html_link') ) {
                 for my $obj (@$objs) {
                     my $link = $prop->html_link( $obj, $app, \%load_options );
-                    my $raw = MT::Util::encode_html($prop->raw( $obj, $app, \%load_options ));
+                    my $raw = MT::Util::encode_html(
+                        $prop->raw( $obj, $app, \%load_options ) );
                     push @result,
                         ( $link ? qq{<a href="$link">$raw</a>} : $raw );
                 }
@@ -1520,6 +1574,9 @@ sub delete {
     if ( my $hdlrs = $app->handlers_for_mode($delete_mode) ) {
         return $app->forward($delete_mode);
     }
+
+    return $app->errtrans("Invalid request.")
+        if is_disabled_mode( $app, 'delete', $type );
 
     my $parent  = $q->param('parent');
     my $blog_id = $q->param('blog_id');
@@ -1858,25 +1915,23 @@ sub list_revision {
     my $id    = $q->param('id');
     my $rn    = $q->param('r');
 
-    $id =~ s/\D//g;
-    my $obj = $class->load($id)
-        or return $app->error(
-        $app->translate(
-            'Can\'t load [_1] #[_1].', $class->class_label, $id
-        )
-        );
-    my $blog = $obj->blog || MT::Blog->load( $q->param('blog_id') ) || undef;
-    my $author = $app->user;
-    return $app->permission_denied()
-        if $type eq 'entry'
-        ? (     $obj->author_id == $author->id
-                ? !$app->can_do('edit_own_entry')
-                : !$app->can_do('edit_all_entries')
-            )
-        : $type eq 'page'     ? !$app->can_do('edit_all_pages')
-        : $type eq 'template' ? !$app->can_do('edit_templates')
-        : 0;
+    return $app->errtrans('Invalid request')
+        unless $class->isa('MT::Revisable');
 
+    $id =~ s/\D//g;
+    require MT::Promise;
+    my $obj_promise = MT::Promise::delay(
+        sub {
+            return $class->load($id) || undef;
+        }
+    );
+
+    $app->run_callbacks( 'cms_view_permission_filter.' . $type,
+        $app, $id, $obj_promise )
+        || return $app->permission_denied();
+
+    my $obj = $obj_promise->force();
+    my $blog = $obj->blog || MT::Blog->load( $q->param('blog_id') ) || undef;
     my $js
         = "parent.location.href='"
         . $app->uri
@@ -1909,6 +1964,7 @@ sub list_revision {
     );
 }
 
+# Currently, not in use.
 sub save_snapshot {
     my $app   = shift;
     my $q     = $app->param;
@@ -2018,6 +2074,26 @@ sub save_snapshot {
 sub empty_dialog {
     my $app = shift;
     $app->build_page('dialog/empty_dialog.tmpl');
+}
+
+sub is_disabled_mode {
+    my $app = shift;
+    my ( $mode, $type ) = @_;
+
+    my $res;
+    if ( my $reg = $app->registry( 'disable_object_methods', $type ) ) {
+        if ( defined $reg->{$mode} ) {
+            if ( 'CODE' eq ref $reg->{$mode} ) {
+                my $code = $reg->{$mode};
+                $code = MT->handler_to_coderef($code);
+                $res  = $code->();
+            }
+            else {
+                $res = $reg->{$mode};
+            }
+        }
+    }
+    return $res;
 }
 
 1;

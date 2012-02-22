@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -97,7 +97,7 @@ sub list_props {
                         }
                     );
                     my $cnt        = $asc_count->{ $obj->id };
-                    my $name       = MT::Util::encode_html($obj->name);
+                    my $name       = MT::Util::encode_html( $obj->name );
                     my $status_img = MT->static_path
                         . (
                         $cnt
@@ -166,8 +166,12 @@ sub list_props {
                 }
             },
             single_select_options => [
-                { label => MT->translate('__ROLE_ACTIVE'),   value => 'active', },
-                { label => MT->translate('__ROLE_INACTIVE'), value => 'inactive', },
+                {   label => MT->translate('__ROLE_ACTIVE'),
+                    value => 'active',
+                },
+                {   label => MT->translate('__ROLE_INACTIVE'),
+                    value => 'inactive',
+                },
             ],
         },
         description => {
@@ -219,7 +223,10 @@ sub save {
 sub remove {
     my $role = shift;
     if ( ref $role ) {
+        my @assoc
+            = MT->model('association')->load( { role_id => $role->id } );
         $role->remove_children( { key => 'role_id' } ) or return;
+        $_->rebuild_permissions foreach @assoc;
     }
     $role->SUPER::remove(@_);
 }

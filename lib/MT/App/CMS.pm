@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -44,7 +44,10 @@ sub core_methods {
         'admin'     => "${pkg}Dashboard::dashboard",
 
         ## Generic handlers
-        'save'          => "${pkg}Common::save",
+        'save' => {
+            code      => "${pkg}Common::save",
+            no_direct => 1,
+        },
         'edit'          => "${pkg}Common::edit",
         'view'          => "${pkg}Common::edit",
         'list'          => "${pkg}Common::list",
@@ -56,10 +59,14 @@ sub core_methods {
             code     => "${pkg}Common::save_list_prefs",
             app_mode => 'JSON',
         },
-        'delete'         => "${pkg}Common::delete",
+        'delete' => {
+            code      => "${pkg}Common::delete",
+            no_direct => 1,
+        },
         'search_replace' => "${pkg}Search::search_replace",
         'list_revision'  => "${pkg}Common::list_revision",
-        'save_snapshot'  => "${pkg}Common::save_snapshot",
+
+ # 'save_snapshot'  => "${pkg}Common::save_snapshot", # Currently, not in use.
 
         ## Edit methods
         'edit_role'   => "${pkg}User::edit_role",
@@ -108,30 +115,62 @@ sub core_methods {
         'cfg_web_services' => "${pkg}Blog::cfg_web_services",
 
         ## Save
-        'save_cat'     => "${pkg}Category::save",
-        'save_entries' => "${pkg}Entry::save_entries",
-        'save_pages'   => "${pkg}Page::save_pages",
-        'save_entry'   => "${pkg}Entry::save",
-        'save_role'    => "${pkg}User::save_role",
-        'save_widget'  => "${pkg}Template::save_widget",
-        'save_filter'  => "${pkg}Filter::save",
+        'save_cat' => {
+            code      => "${pkg}Category::save",
+            no_direct => 1,
+        },
+        'save_entries' => {
+            code      => "${pkg}Entry::save_entries",
+            no_direct => 1,
+        },
+        'save_pages' => {
+            code      => "${pkg}Page::save_pages",
+            no_direct => 1,
+        },
+        'save_entry' => {
+            code      => "${pkg}Entry::save",
+            no_direct => 1,
+        },
+        'save_role' => {
+            code      => "${pkg}User::save_role",
+            no_direct => 1,
+        },
+        'save_widget' => {
+            code      => "${pkg}Template::save_widget",
+            no_direct => 1,
+        },
+        'save_filter' => {
+            code      => "${pkg}Filter::save",
+            no_direct => 1,
+        },
 
         ## Delete
-        'delete_entry'  => "${pkg}Entry::delete",
-        'delete_widget' => "${pkg}Template::delete_widget",
-        'delete_filter' => "${pkg}Filter::delete",
+        'delete_entry' => {
+            code      => "${pkg}Entry::delete",
+            no_direct => 1,
+        },
+        'delete_widget' => {
+            code      => "${pkg}Template::delete_widget",
+            no_direct => 1,
+        },
+        'delete_filter' => {
+            code      => "${pkg}Filter::delete",
+            no_direct => 1,
+        },
 
         ## List actions
         'enable_object'     => "${pkg}User::enable",
         'disable_object'    => "${pkg}User::disable",
+        'unlock'            => "${pkg}User::unlock",
         'list_action'       => "${pkg}Tools::do_list_action",
         'empty_junk'        => "${pkg}Comment::empty_junk",
         'handle_junk'       => "${pkg}Comment::handle_junk",
         'not_junk'          => "${pkg}Comment::not_junk",
         'open_batch_editor' => "${pkg}Entry::open_batch_editor",
         'delete_filters'    => {
-            code     => "${pkg}Filter::delete_filters",
-            app_mode => 'JSON',
+            code      => "${pkg}Filter::delete_filters",
+            no_direct => 1,
+            app_mode  => 'JSON',
         },
 
         'ping'               => "${pkg}Entry::send_pings",
@@ -162,6 +201,10 @@ sub core_methods {
         },
         'new_pw' => {
             code           => "${pkg}Tools::new_password",
+            requires_login => 0,
+        },
+        'recover_lockout' => {
+            code           => "${pkg}User::recover_lockout",
             requires_login => 0,
         },
 
@@ -201,7 +244,6 @@ sub core_methods {
             requires_login => 0,
         },
         'plugin_control'           => "${pkg}Plugin::plugin_control",
-        'recover_profile_password' => "${pkg}User::recover_profile_password",
         'rename_tag'               => "${pkg}Tag::rename_tag",
         'remove_user_assoc'        => "${pkg}User::remove_user_assoc",
         'revoke_role'              => "${pkg}User::revoke_role",
@@ -435,6 +477,14 @@ sub init_request {
         }
     }
 
+    # Global '_type' parameter check; if we get something
+    # special character, die
+    if ( my $type = $app->param('_type') ) {
+        if ( $type =~ /\W/ ) {
+            die $app->translate("Invalid request");
+        }
+    }
+
     unless ( defined $app->{upgrade_required} ) {
         $app->{upgrade_required} = 0;
         if (   ( $mode ne 'logout' )
@@ -480,7 +530,9 @@ sub core_content_actions {
                 return_args => 1,
                 order       => 100,
                 confirm_msg => sub {
-                    $app->translate('Are you sure you want to remove all trackbacks reported as spam?');
+                    $app->translate(
+                        'Are you sure you want to remove all trackbacks reported as spam?'
+                    );
                 },
                 permit_action => {
                     include_all => 1,
@@ -497,7 +549,9 @@ sub core_content_actions {
                 return_args => 1,
                 order       => 100,
                 confirm_msg => sub {
-                    MT->translate('Are you sure you want to remove all comments reported as spam?');
+                    MT->translate(
+                        'Are you sure you want to remove all comments reported as spam?'
+                    );
                 },
                 permit_action => {
                     include_all => 1,
@@ -535,9 +589,19 @@ sub core_content_actions {
                     );
                 },
                 mode => 'dialog_grant_role',
-                args => {
-                    type  => 'blog',
-                    _type => 'user',
+                args => sub {
+                    if ( $app->blog->is_blog ) {
+                        return {
+                            type  => 'blog',
+                            _type => 'user',
+                        };
+                    }
+                    else {
+                        return {
+                            type  => 'website',
+                            _type => 'user',
+                        };
+                    }
                 },
                 return_args => 1,
                 order       => 100,
@@ -546,12 +610,13 @@ sub core_content_actions {
         },
         'log' => {
             'reset_log' => {
-                class => 'icon-action',
-                label => 'Clear Activity Log',
-                mode  => 'reset_log',
-                order => 100,
+                class       => 'icon-action',
+                label       => 'Clear Activity Log',
+                mode        => 'reset_log',
+                order       => 100,
                 confirm_msg => sub {
-                    MT->translate('Are you sure you want to reset the activity log?');
+                    MT->translate(
+                        'Are you sure you want to reset the activity log?');
                 },
                 permit_action => {
                     permit_action => 'reset_blog_log',
@@ -626,11 +691,12 @@ sub core_list_actions {
                 },
             },
             'add_tags' => {
-                label         => "Add Tags...",
-                order         => 300,
-                code          => "${pkg}Tag::add_tags_to_entries",
-                input         => 1,
-#                xhr           => 1,
+                label => "Add Tags...",
+                order => 300,
+                code  => "${pkg}Tag::add_tags_to_entries",
+                input => 1,
+
+                #                xhr           => 1,
                 input_label   => 'Tags to add to selected entries',
                 permit_action => {
                     permit_action => 'add_tags_to_entry_via_list',
@@ -1241,6 +1307,17 @@ sub core_list_actions {
                     $app->can_do('access_to_system_author_list');
                 },
             },
+            'unlock' => {
+                label      => 'Unlock',
+                code       => "${pkg}User::unlock",
+                mode       => 'unlock',
+                order      => 120,
+                js_message => 'unlock',
+                button     => 1,
+                condition  => sub {
+                    $app->can_do('access_to_system_author_list');
+                },
+            },
         },
         'member' => {
             'remove_user_assoc' => {
@@ -1268,6 +1345,7 @@ sub core_list_actions {
                 permit_action => {
                     permit_action => 'refresh_template_via_list',
                     include_all   => 1,
+                    system_action => 'refresh_template_via_list',
                 },
                 condition => sub {
                     return 0 if $app->mode eq 'view';
@@ -1323,30 +1401,21 @@ sub core_list_actions {
                     require MT::CMS::Template;
                     MT::CMS::Template::refresh_all_templates( $app, @_ );
                 },
+                permit_action => {
+                    permit_action => 'refresh_template_via_list',
+                    include_all   => 1,
+                    system_action => 'refresh_template_via_list',
+                },
                 condition => sub {
                     return 0 if $app->mode eq 'view';
-                    return 1 if $app->user->is_superuser;
-
-                    require MT::Permission;
-                    my $iter = MT::Permission->load_iter(
-                        {   author_id => $app->user->id,
-                            blog_id   => { not => 0 },
-                        }
-                    );
-
-                    my $cond = 1;
-                    while ( my $p = $iter->() ) {
-                        next if $p->blog->is_blog;
-                        $cond = 0, last
-                            if !$p->can_do('refresh_template_via_list');
-                    }
-                    return $cond;
+                    return 1;
                 },
             },
             'delete' => {
-                label      => 'Delete',
-                code       => "${pkg}Common::delete",
-#                xhr        => 1,
+                label => 'Delete',
+                code  => "${pkg}Common::delete",
+
+                #                xhr        => 1,
                 order      => 110,
                 js_message => 'delete',
                 button     => 1,
@@ -1492,8 +1561,9 @@ sub core_list_actions {
                 mode       => 'delete_filters',
                 order      => 110,
                 js_message => 'delete',
-#                xhr        => 1,
-                button     => 1,
+
+                #                xhr        => 1,
+                button => 1,
             },
         },
     };
@@ -2335,6 +2405,122 @@ sub core_user_menus {
     };
 }
 
+sub core_disable_object_methods {
+    my $app = shift;
+    return {
+        association => {
+            edit => 1,
+            save => 1,
+        },
+        banlist   => { edit => 1, },
+        blocklist => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        config => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        fileinfo => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        folder => {
+            save => sub {
+                return 0 if $app->param('id');
+                return 1;
+            },
+            edit => sub {
+                return 0 if $app->param('id');
+                return 1;
+            },
+        },
+        log => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        notification => { edit => 1, },
+        objectasset  => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        objectscore => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        objecttag => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        permission => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        placement => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        plugindata => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        session => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        tag => {
+            save => 1,
+            edit => 1,
+        },
+        templatemap => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        touch => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        trackback => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        ts_error => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        ts_exitstatus => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        ts_funcmap => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        ts_job => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+    };
+}
+
 sub init_core_callbacks {
     my $app = shift;
     my $pkg = 'cms_';
@@ -2375,10 +2561,6 @@ sub init_core_callbacks {
             $pkg
                 . 'delete_permission_filter.association' =>
                 "${pfx}User::can_delete_association",
-            $pkg
-                . 'save_permission_filter.association' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
             $pkg
                 . 'pre_load_filtered_list.association' =>
                 "${pfx}User::cms_pre_load_filtered_list_assoc",
@@ -2606,11 +2788,10 @@ sub init_core_callbacks {
             $pkg . 'view_permission_filter.page' => "${pfx}Page::can_view",
             $pkg
                 . 'delete_permission_filter.page' => "${pfx}Page::can_delete",
-            $pkg
-                . 'save_permission_filter.page' => "${pfx}Page::can_save",
-            $pkg . 'pre_save.page'    => "${pfx}Page::pre_save",
-            $pkg . 'post_save.page'   => "${pfx}Page::post_save",
-            $pkg . 'post_delete.page' => "${pfx}Page::post_delete",
+            $pkg . 'save_permission_filter.page' => "${pfx}Page::can_save",
+            $pkg . 'pre_save.page'               => "${pfx}Page::pre_save",
+            $pkg . 'post_save.page'              => "${pfx}Page::post_save",
+            $pkg . 'post_delete.page'            => "${pfx}Page::post_delete",
             $pkg
                 . 'pre_load_filtered_list.page' =>
                 "${pfx}Page::cms_pre_load_filtered_list",
@@ -2655,10 +2836,6 @@ sub init_core_callbacks {
             $pkg
                 . 'pre_load_filtered_list.tag' =>
                 "${pfx}Tag::cms_pre_load_filtered_list",
-            $pkg
-                . 'save_permission_filter.tag' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
 
             # junk-related callbacks
             #'HandleJunk' => \&_builtin_spam_handler,
@@ -2671,12 +2848,11 @@ sub init_core_callbacks {
             $pkg
                 . 'delete_permission_filter.asset' =>
                 "${pfx}Asset::can_delete",
-            $pkg
-                . 'save_permission_filter.asset' =>
-                "${pfx}Asset::can_save",
-            $pkg . 'pre_save.asset'     => "${pfx}Asset::pre_save",
-            $pkg . 'post_save.asset'    => "${pfx}Asset::post_save",
+            $pkg . 'save_permission_filter.asset' => "${pfx}Asset::can_save",
+            $pkg . 'pre_save.asset'               => "${pfx}Asset::pre_save",
+            $pkg . 'post_save.asset'              => "${pfx}Asset::post_save",
             $pkg . 'post_delete.asset'  => "${pfx}Asset::post_delete",
+            $pkg . 'save_filter.asset'  => "${pfx}Asset::cms_save_filter",
             'template_param.edit_asset' => "${pfx}Asset::template_param_edit",
             $pkg
                 . 'pre_load_filtered_list.asset' =>
@@ -2687,164 +2863,6 @@ sub init_core_callbacks {
                 . 'pre_load_filtered_list.log' =>
                 "${pfx}Log::cms_pre_load_filtered_list",
             'list_template_param.log' => "${pfx}Log::template_param_list",
-            $pkg
-                . 'save_permission_filter.log' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.log' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # config
-            $pkg
-                . 'save_permission_filter.config' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.config' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # fileinfo
-            $pkg
-                . 'save_permission_filter.fileinfo' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.fileinfo' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # objectasset
-            $pkg
-                . 'save_permission_filter.objectasset' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.objectasset' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # objectscore
-            $pkg
-                . 'save_permission_filter.objectscore' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.objectscore' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # objecttag
-            $pkg
-                . 'save_permission_filter.objecttag' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.objecttag' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # permission
-            $pkg
-                . 'save_permission_filter.permission' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.permission' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # plaement
-            $pkg
-                . 'save_permission_filter.placement' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.placement' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # session
-            $pkg
-                . 'save_permission_filter.session' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.session' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # templatemap
-            $pkg
-                . 'save_permission_filter.templatemap' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.templatemap' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # touch
-            $pkg
-                . 'save_permission_filter.touch' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.touch' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # trackback
-            $pkg
-                . 'save_permission_filter.trackback' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.trackback' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # ts_error
-            $pkg
-                . 'save_permission_filter.ts_error' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.ts_error' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # ts_exitstatus
-            $pkg
-                . 'save_permission_filter.ts_exitstatus' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.ts_exitstatus' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # ts_funcmap
-            $pkg
-                . 'save_permission_filter.ts_funcmap' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.ts_funcmap' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-
-            # ts_job
-            $pkg
-                . 'save_permission_filter.ts_job' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
-            $pkg
-                . 'delete_permission_filter.ts_job' => sub {
-                $app->error( $app->translate("Invalid request.") );
-            },
 
             # role
             $pkg
@@ -2853,7 +2871,6 @@ sub init_core_callbacks {
             $pkg
                 . 'delete_permission_filter.role' =>
                 "${pfx}User::can_delete_role",
-
         }
     );
 }
@@ -2962,13 +2979,13 @@ sub set_default_tmpl_params {
             || $param->{can_edit_all_entries}
             || $param->{can_publish_post};
         require MT::CMS::Search;
-        $param->{can_search_replace} = MT::CMS::Search::can_search_replace($app);
-        $param->{can_edit_authors}   = $param->{can_administer_blog};
+        $param->{can_search_replace}
+            = MT::CMS::Search::can_search_replace($app);
+        $param->{can_edit_authors} = $param->{can_administer_blog};
         $param->{can_access_assets} 
             = $param->{can_create_post}
             || $param->{can_edit_all_posts}
             || $param->{can_edit_assets};
-        $param->{can_edit_commenters} = $param->{can_manage_feedback};
         $param->{has_manage_label} 
             = $param->{can_edit_templates}
             || $param->{can_administer_blog}
@@ -2992,6 +3009,15 @@ sub set_default_tmpl_params {
             || $param->{can_edit_all_posts};
         $param->{show_ip_info} = $app->config->ShowIPInformation
             && $param->{can_manage_feedback};
+
+        $param->{can_edit_commenters} = 1
+            if $app->user->is_superuser
+                || (   $app->config->SingleCommunity
+                    && !$blog
+                    && $param->{can_manage_feedback} )
+                || (  !$app->config->SingleCommunity
+                    && $blog
+                    && $param->{can_manage_feedback} );
     }
 
     my $static_app_url = $app->static_path;
@@ -3134,7 +3160,7 @@ sub build_blog_selector {
         if !$auth->is_superuser
             && !$auth->permissions(0)->can_do('edit_templates');
     $terms{class}     = 'blog';
-    $terms{parent_id} = \">0"; # baka editors ";
+    $terms{parent_id} = \">0";    # baka editors ";
     $args{limit}      = 6;        # Don't load over 6 blogs
     my @blogs = $blog_class->load( \%terms, \%args );
 
@@ -3181,13 +3207,15 @@ sub build_blog_selector {
         push @websites, @sites;
     }
 
-    if ( @fav_websites ) {
+    if (@fav_websites) {
         my $i;
-        my %sorted = map{ $_ => $i++ } @fav_websites;
-        foreach ( @websites ) {
-            $sorted{$_->id} = scalar @websites if !exists $sorted{$_->id};
+        my %sorted = map { $_ => $i++ } @fav_websites;
+        foreach (@websites) {
+            $sorted{ $_->id } = scalar @websites if !exists $sorted{ $_->id };
         }
-        @websites = sort { ( $sorted{$a->id} || 0 ) <=> ( $sorted{$b->id} || 0 ) } @websites;
+        @websites
+            = sort { ( $sorted{ $a->id } || 0 ) <=> ( $sorted{ $b->id } || 0 ) }
+            @websites;
     }
     unshift @websites, $blog->website if $blog && $blog->is_blog;
 
@@ -3260,8 +3288,10 @@ sub build_blog_selector {
     if (@blogs) {
 
         my $i;
-        my %sorted = map{ $_ => $i++ } @fav_blogs;
-        @blogs = sort { ( $sorted{$a->id} || 0 ) <=> ( $sorted{$b->id} || 0 ) } @blogs;
+        my %sorted = map { $_ => $i++ } @fav_blogs;
+        @blogs
+            = sort { ( $sorted{ $a->id } || 0 ) <=> ( $sorted{ $b->id } || 0 ) }
+            @blogs;
 
         foreach $b (@blogs) {
             if ( $blog && $blog->is_blog && $blog->id == $b->id ) {
@@ -4504,6 +4534,12 @@ sub rebuild_these {
         require MT::Entry;
         for my $id (@set) {
             my $e = ref $id ? $id : MT::Entry->load($id) or next;
+
+            my $perms = $app->user->permissions( $e->blog_id );
+            return $app->permission_denied()
+                unless $perms
+                    && $perms->can_republish_entry( $e, $app->user );
+
             my $type = $e->class;
 
             # Rebuilding something that isn't an entry, rebless as required

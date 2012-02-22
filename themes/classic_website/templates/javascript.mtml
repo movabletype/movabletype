@@ -718,6 +718,12 @@ function mtRelativeDate(ts, fds) {
  */
 </mt:Ignore>
 function mtEditLink(entry_id, author_id) {
+    <mt:Ignore>
+    // This function has been inactivated by default because of the security issue.
+    // You can activate this function if "AdminScript" is already known by visitor.
+    </mt:Ignore>
+    <mt:Ignore>
+
     var u = mtGetUser();
     if (! u) return;
     if (! entry_id) return;
@@ -725,6 +731,8 @@ function mtEditLink(entry_id, author_id) {
     if (u.id != author_id) return;
     var link = '<a href="<$mt:AdminScript$>?__mode=view&amp;_type=entry&amp;id=' + entry_id + '"><__trans phrase="Edit" escape="js"></a>';
     document.write(link);
+
+    </mt:Ignore>
 }
 
 <mt:Ignore>
@@ -910,11 +918,21 @@ function mtFetchUser(cb) {
         // we aren't using AJAX for this, since we may have to request
         // from a different domain. JSONP to the rescue.
         mtFetchedUser = true;
+        var u = mtGetUser();
         var script = document.createElement('script');
         var ts = new Date().getTime();
-        script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=session_js&blog_id=<$mt:BlogID$>&jsonp=' + cb + '&ts=' + ts;
+        script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=userinfo&blog_id=<$mt:BlogID$>&jsonp=' + cb + '&ts=' + ts + '&sid=' + u.sid;
         (document.getElementsByTagName('head'))[0].appendChild(script);
     }
+}
+
+function mtVerifySession(cb) {
+    if (!cb) return;
+    var script = document.createElement('script');
+    var ts = new Date().getTime();
+    var u = mtGetUser();
+    script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=verify_session&blog_id=<$mt:BlogID$>&jsonp=' + cb + '&ts=' + ts + '&sid=' + u.sid;
+    (document.getElementsByTagName('head'))[0].appendChild(script);
 }
 </mt:IfWebsite>
 
@@ -958,8 +976,7 @@ function mtCommentOnSubmit(f) {
         var u = mtGetUser();
         if ( !is_preview && ( u && u.is_authenticated ) ) {
             // validate session; then submit
-            mtFetchedUser = false;
-            mtFetchUser('mtCommentSessionVerify');
+            mtVerifySession('mtCommentSessionVerify');
             return false;
         }
 
@@ -969,9 +986,8 @@ function mtCommentOnSubmit(f) {
 }
 
 function mtCommentSessionVerify(app_user) {
-    var u = mtGetUser();
     var f = document['comments_form'];
-    if ( u && app_user && app_user.sid && ( u.sid == app_user.sid ) ) {
+    if ( app_user && app_user.verified ) {
         f.submit();
     } else {
         alert('<__trans phrase="Your session has expired. Please sign in again to comment." escape="js">');
@@ -1102,7 +1118,7 @@ function mtSignInOnClick(sign_in_element) {
         el.innerHTML = '<__trans phrase="Signing in..." escape="js"> <span class="status-indicator">&nbsp;</span>';
 
     mtClearUser(); // clear any 'anonymous' user cookie to allow sign in
-    mtFetchUser('mtSetUserOrLogin');
+    mtSignIn();
     return false;
 }
 
@@ -1182,7 +1198,7 @@ function mtShowGreeting() {
         } else {
             var user_link;
             if ( u.is_author ) {
-                user_link = '<a href="<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile&return_url=' + encodeURIComponent( location.href );
+                user_link = '<a href="<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile&blog_id=<mt:BlogID>&return_url=' + encodeURIComponent( location.href );
                 user_link += '">' + u.name + '</a>';
             } else {
                 // registered user, but not a user with posting rights
@@ -1315,9 +1331,9 @@ function mtClearUser() {
  */
 </mt:Ignore>
 function mtSetCookie(name, value, expires, path, domain, secure) {
-    if (domain && domain.match(/^\.?localhost$/))
+    if (domain && ( domain.match(/^\.?localhost$/) || domain.match(/^[0-9\.]+$/) ))
         domain = null;
-    var curCookie = name + "=" + escape(value) +
+    var curCookie = name + "=" + encodeURIComponent(value) +
         (expires ? "; expires=" + expires.toGMTString() : "") +
         (path ? "; path=" + path : "") +
         (domain ? "; domain=" + domain : "") +
@@ -1339,7 +1355,11 @@ function mtGetCookie(name) {
     var cookieEndIndex = c.indexOf(";", cookieStartIndex + prefix.length);
     if (cookieEndIndex == -1)
         cookieEndIndex = c.length;
-    return unescape(c.substring(cookieStartIndex + prefix.length, cookieEndIndex));
+    var this_cookie = c.substring(cookieStartIndex + prefix.length, cookieEndIndex);
+    if ( this_cookie.match(/\%u/i) ) {
+        return '';
+    }
+    return decodeURIComponent( this_cookie );
 }
 
 <mt:Ignore>
@@ -1415,6 +1435,11 @@ function mtInit() {
         window.onload();
         window.onload = function() {};
     }
+<mt:IfWebsite>
+<mt:IfRegistrationAllowed>
+    mtInitCommenter();
+</mt:IfRegistrationAllowed>
+</mt:IfWebsite>
 }
 
 /* for Mozilla/Opera9 */
@@ -1450,28 +1475,71 @@ window.onload = mtInit;
 
 <mt:IfWebsite>
 <mt:IfRegistrationAllowed>
-/***
- * If request contains a '#_login' or '#_logout' hash, use this to
- * also delete the blog-side user cookie, since we're coming back from
- * a login, logout or edit profile operation.
- */
-var clearCookie = ( window.location.hash && window.location.hash.match( /^#_log(in|out)/ ) ) ? true : false;
-if (clearCookie) {
-    // clear any logged in state
-    mtClearUser();
-    if (RegExp.$1 == 'in')
-        mtFetchUser();
-} else {
-    <mt:Ignore>
+
+function mtLoggedIn(ott) {
+    var script = document.createElement('script');
+    var ts = new Date().getTime();
+    script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=userinfo&jsonp=mtSaveUserInfo&ott=' + ott;
+    (document.getElementsByTagName('head'))[0].appendChild(script);
+}
+
+function mtRefreshUserInfo(sid) {
+    var script = document.createElement('script');
+    var ts = new Date().getTime();
+    script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=userinfo&jsonp=mtSaveUserInfo&sid=' + sid;
+    (document.getElementsByTagName('head'))[0].appendChild(script);
+}
+
+function mtSaveUserInfo (u) {
+    if ( u.error ) {
+        if ( !user ) {
+            alert('<__trans phrase="The sign-in attempt was not successful; please try again.">');
+        }
+        return;
+    }
+    user = null;
+    var cmtcookie = mtBakeUserCookie(u);
+    var now = new Date();
+    var cache_period = mtCookieTimeout * 1000;
+
+    // cache anonymous user info for a long period if the
+    // user has requested to be remembered
+    mtFixDate(now);
+    now.setTime(now.getTime() + cache_period);
+    mtSetCookie(mtCookieName, cmtcookie, now, mtCookiePath, mtCookieDomain,
+        location.protocol == 'https:');
+    mtFireEvent('usersignin');
+}
+
+function mtInitCommenter () {
     /***
-     * Uncondition this call to fetch the current user state (if available)
-     * from MT upon page load if no user cookie is already present.
-     * This is okay if you have a private install, such as an Intranet;
-     * not recommended for public web sites!
+     * If request contains a '#_login' or '#_logout' hash, use this to
+     * also delete the blog-side user cookie, since we're coming back from
+     * a login, logout or edit profile operation.
      */
-    </mt:Ignore>
-    if ( is_preview && !user )
-        mtFetchUser();
+
+    var hash = ( window.location.hash );
+    hash.match( /^#_(.*)$/ );
+    var command = RegExp.$1 || '';
+    if ( command === 'refresh' ) {
+        // Back from profile edit screen.
+        // Reload userinfo with current session ID.
+        var u = mtGetUser();
+        user  = null;
+        mtRefreshUserInfo(u.sid);
+    }
+    else if ( command === 'logout' ) {
+        // clear any logged in state
+        mtClearUser();
+        mtFireEvent('usersignin');
+    }
+    else if ( command.match( /^login_(.*)$/ ) ) {
+        var sid = RegExp.$1;
+        mtLoggedIn(sid);
+    }
+    else {
+        mtFireEvent('usersignin');
+    }
 }
 </mt:IfRegistrationAllowed>
 </mt:IfWebsite>

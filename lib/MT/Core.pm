@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -164,6 +164,7 @@ BEGIN {
             'objectasset'     => 'MT::ObjectAsset',
             'filter'          => 'MT::Filter',
             'touch'           => 'MT::Touch',
+            'failedlogin'     => 'MT::FailedLogin',
 
             # TheSchwartz tables
             'ts_job'        => 'MT::TheSchwartz::Job',
@@ -960,13 +961,13 @@ BEGIN {
                     grep  => \&MT::Filter::pack_grep,
                 },
                 blog_name => {
-                    label     => 'Website/Blog Name',
+                    label        => 'Website/Blog Name',
                     filter_label => '__WEBSITE_BLOG_NAME',
-                    order     => 10000,
-                    display   => 'default',
-                    site_name => 1,
-                    view      => [ 'system', 'website' ],
-                    bulk_html => sub {
+                    order        => 10000,
+                    display      => 'default',
+                    site_name    => 1,
+                    view         => [ 'system', 'website' ],
+                    bulk_html    => sub {
                         my $prop     = shift;
                         my ($objs)   = @_;
                         my %blog_ids = map { $_->blog_id => 1 } @$objs;
@@ -1696,6 +1697,7 @@ BEGIN {
             'NotifyScript'          => { default => 'mt-add-notify.cgi', },
             'PublishCharset'        => { default => 'utf-8', },
             'SafeMode'              => { default => 1, },
+            'AllowFileInclude'      => { default => 0, },
             'GlobalSanitizeSpec'    => {
                 default =>
                     'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre',
@@ -1830,18 +1832,20 @@ BEGIN {
                 handler => \&DefaultUserTagDelimiter,
                 default => 'comma',
             },
-            'AuthenticationModule'  => { default => 'MT', },
-            'AuthLoginURL'          => undef,
-            'AuthLogoutURL'         => undef,
-            'DefaultAssignments'    => { default => '' },
-            'AutoSaveFrequency'     => { default => 5 },
-            'FuturePostFrequency'   => { default => 1 },
-            'AssetCacheDir'         => { default => 'assets_c', },
-            'IncludesDir'           => { default => 'includes_c', },
-            'MemcachedServers'      => { type    => 'ARRAY', },
-            'MemcachedNamespace'    => undef,
-            'MemcachedDriver'       => { default => 'Cache::Memcached' },
-            'CommenterRegistration' => {
+            'UserPasswordValidation' => { type    => 'ARRAY', },
+            'UserPasswordMinLength'  => { default => 8, },
+            'AuthenticationModule'   => { default => 'MT', },
+            'AuthLoginURL'           => undef,
+            'AuthLogoutURL'          => undef,
+            'DefaultAssignments'     => { default => '' },
+            'AutoSaveFrequency'      => { default => 5 },
+            'FuturePostFrequency'    => { default => 1 },
+            'AssetCacheDir'          => { default => 'assets_c', },
+            'IncludesDir'            => { default => 'includes_c', },
+            'MemcachedServers'       => { type    => 'ARRAY', },
+            'MemcachedNamespace'     => undef,
+            'MemcachedDriver'        => { default => 'Cache::Memcached' },
+            'CommenterRegistration'  => {
                 type    => 'HASH',
                 default => {
                     Allow  => '1',
@@ -1879,9 +1883,12 @@ BEGIN {
             'DefaultBlogTheme'     => { default => 'classic_blog' },
             'ThemeStaticFileExtensions' => undef,
 
-            'AssetFileTypes'              => { type => 'HASH' },
-            'AssetFileExtensions'         => { default => undef },
-            'DeniedAssetFileExtensions'   => { default => q{ascx,asis,asp,aspx,bat,cfc,cfm,cgi,cmd,com,cpl,dll,exe,htaccess,htm,html,inc,jhtml,js,jsb,jsp,mht,mhtml,msi,php\d?,phps,phtm,phtml,pif,pl,pwml,py,reg,scr,sh,shtm,shtml,vbs,vxd} },
+            'AssetFileTypes'            => { type    => 'HASH' },
+            'AssetFileExtensions'       => { default => undef },
+            'DeniedAssetFileExtensions' => {
+                default =>
+                    q{ascx,asis,asp,aspx,bat,cfc,cfm,cgi,cmd,com,cpl,dll,exe,htaccess,htm,html,inc,jhtml,js,jsb,jsp,mht,mhtml,msi,php\d?,phps,phtm,phtml,pif,pl,pwml,py,reg,scr,sh,shtm,shtml,vbs,vxd,pm,so,rb,htc}
+            },
 
             'FastCGIMaxTime'     => { default => 60 * 60 },    # 1 hour
             'FastCGIMaxRequests' => { default => 1000 },       # 1000 requests
@@ -1896,6 +1903,15 @@ BEGIN {
             # Revision History
             'TrackRevisions'    => { default => 1 },
             'RevisioningDriver' => { default => 'Local' },
+
+            # User Lockout
+            'UserLockoutLimit'               => { default => 6 },
+            'UserLockoutInterval'            => { default => 1800 },
+            'IPLockoutLimit'                 => { default => 10 },
+            'IPLockoutInterval'              => { default => 1800 },
+            'FailedLoginExpirationFrequency' => { default => 86400 },
+            'LockoutIPWhitelist'             => undef,
+            'LockoutNotifyTo'                => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -1944,6 +1960,8 @@ BEGIN {
                 },
                 compose_menus => sub { MT->app->core_compose_menus() },
                 user_menus    => sub { MT->app->core_user_menus() },
+                disable_object_methods =>
+                    sub { MT->app->core_disable_object_methods() },
             },
             upgrade => {
                 handler => 'MT::App::Upgrader',
@@ -2179,6 +2197,14 @@ sub load_core_tasks {
                 MT::Core->purge_session_records;
                 }
         },
+        'CleanExpiredFailedLogin' => {
+            label     => 'Remove expired lockout data',
+            frequency => $cfg->FailedLoginExpirationFrequency,
+            code      => sub {
+                my $app = MT->instance;
+                $app->model('failedlogin')->cleanup($app);
+                }
+        },
     };
 }
 
@@ -2369,7 +2395,6 @@ sub load_core_permissions {
                 'open_new_entry_screen'                   => 1,
                 'open_own_entry_comment_edit_screen'      => 1,
                 'open_own_entry_trackback_edit_screen'    => 1,
-                'save_multiple_entries'                   => 1,
                 'view_feedback'                           => 1,
                 'use_entry:manage_menu'                   => 1,
                 'use_tools:search'                        => 1,
@@ -2410,6 +2435,10 @@ sub load_core_permissions {
                 'use_tools:search'                 => 1,
                 'get_entry_feed'                   => 1,
                 'save_multiple_entries'            => 1,
+                'open_select_author_dialog'        => 1,
+                'send_update_pings_entry'          => 1,
+                'insert_asset'                     => 1,
+                'access_to_insert_asset_list'      => 1,
             }
         },
         'blog.edit_assets' => {
@@ -2461,12 +2490,11 @@ sub load_core_permissions {
                 'edit_config'                  => 1,
                 'edit_junk_auto_delete'        => 1,
                 'export_blog'                  => 1,
+                'import_blog'                  => 1,
                 'import_blog_as_me'            => 1,
                 'load_next_scheduled_entry'    => 1,
                 'open_blog_config_screen'      => 1,
                 'open_start_import_screen'     => 1,
-                'save_banlist'                 => 1,
-                'delete_banlist'               => 1,
                 'save_blog_config'             => 1,
                 'update_welcome_message'       => 1,
             }
@@ -2594,6 +2622,9 @@ sub load_core_permissions {
                 'open_blog_listing_screen'        => 1,
                 'publish_page_via_list'           => 1,
                 'view_all_comments'               => 1,
+                'open_select_author_dialog'       => 1,
+                'send_update_pings_page'          => 1,
+                'insert_asset'                    => 1,
             }
         },
         'blog.manage_users' => {
@@ -2663,6 +2694,8 @@ sub load_core_permissions {
                 'use_tools:search'                      => 1,
                 'reply_comment_from_cms'                => 1,
                 'edit_comment_status_of_own_entry'      => 1,
+                'send_update_pings_entry'               => 1,
+                'edit_own_entry_comment'                => 1,
             }
         },
         'blog.rebuild' => {
@@ -2761,6 +2794,8 @@ sub load_core_permissions {
                 'open_system_check_screen'       => 1,
                 'use_tools:system_info_menu'     => 1,
                 'edit_commenter_status'          => 1,
+                'delete_any_filters'             => 1,
+                'open_dialog_select_theme'       => 1,
             }
         },
         'system.create_blog' => {
@@ -2805,7 +2840,8 @@ sub load_core_permissions {
                 'use_tools:search'             => 1,
                 'open_blog_listing_screen'     => 1,
                 'open_all_blog_listing_screen' => 1,
-                'refresh_templates'            => 1.
+                'refresh_templates'            => 1,
+                'refresh_template_via_list'    => 1,
             },
         },
         'system.manage_plugins' => {
@@ -2815,6 +2851,7 @@ sub load_core_permissions {
             'permitted_action' => {
                 'config_plugins'             => 1,
                 'manage_plugins'             => 1,
+                'reset_plugin_setting'       => 1,
                 'save_plugin_setting'        => 1,
                 'toggle_plugin_switch'       => 1,
                 'access_to_system_dashboard' => 1,

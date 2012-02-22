@@ -610,5 +610,6 @@
 { "r" : "1", "t" : "<mt:Authors need_entry='0' namespace='unit test' sort_by='score' offset='1'><mt:AuthorName>,</mt:Authors>", "e" : "Chuck D,Melody,"}, #609
 { "r" : "1", "t" : "<mt:Authors need_entry='0' namespace='unit test' sort_by='score' offset='2'><mt:AuthorName>,</mt:Authors>", "e" : "Melody,"}, #610
 { "r" : "1", "t" : "<MTEntries id=\"6\"><MTEntryPrimaryCategory><MTCategoryLabel></MTEntryPrimaryCategory></MTEntries>", "e" : "foo"}, #611
-{ "r" : "1", "t" : "<MTEntries id=\"6\"><MTEntryCategories type=\"primary\"><MTCategoryLabel></MTEntryCategories></MTEntries>", "e" : "foo"} #612
+{ "r" : "1", "t" : "<MTEntries id=\"6\"><MTEntryCategories type=\"primary\"><MTCategoryLabel></MTEntryCategories></MTEntries>", "e" : "foo"}, #612
+{ "r" : "1", "t" : "<MTPasswordValidationRule>", "e" : "minimum length of 8" } #613
 ]

@@ -9,7 +9,7 @@ use FindBin;
 use File::Spec;
 use MT::Test;
 
-use Test::More tests => 251;
+use Test::More;
 
 use_ok('MT::Bootstrap');
 use_ok('MT::ErrorHandler');
@@ -338,7 +338,13 @@ use_ok('MT::Theme::Pref');
 use_ok('MT::Theme::StaticFiles');
 use_ok('MT::Theme::TemplateSet');
 
+# Lockout
+use_ok('MT::FailedLogin');
+use_ok('MT::Lockout');
+
 test_all_modules_are_checked();
+
+done_testing();
 
 # compares the list of modules that this test checks with 
 # the actual modules that are on the file system

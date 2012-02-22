@@ -428,90 +428,90 @@ sub _create_asset {
     my %meta_hash;
     my $asset_values = { 'blog_id' => $blog->id };
     for my $hash (@$hashes) {
-        my @hash_array = %$hash;
-        my $key        = $hash_array[0];
-        my $value      = $hash_array[1];
-        if ( '_title' eq $key ) {
-            $asset_values->{'label'} = $value;
-        }
-        elsif ( '_link' eq $key ) {
+        for my $key ( keys %$hash ) {
+            my $value = $hash->{$key};
+            if ( '_title' eq $key ) {
+                $asset_values->{'label'} = $value;
+            }
+            elsif ( '_link' eq $key ) {
 
-            # skip
-        }
-        elsif ( '_pubDate' eq $key ) {
+                # skip
+            }
+            elsif ( '_pubDate' eq $key ) {
 
-            # skip - we use post_date_gmt;
-        }
-        elsif ( 'dc_creator' eq $key ) {
-            $asset_values->{'created_by'}
-                = $self->_get_author_id( $cb, $value );
-        }
-        elsif ( '_category' eq $key ) {
+                # skip - we use post_date_gmt;
+            }
+            elsif ( 'dc_creator' eq $key ) {
+                $asset_values->{'created_by'}
+                    = $self->_get_author_id( $cb, $value );
+            }
+            elsif ( '_category' eq $key ) {
 
-            # TODO: is it ok to make it tags?
-            push @tags, $value;
-        }
-        elsif ( '_guid' eq $key ) {
-            $asset_values->{'url'} = $value;
-        }
-        elsif ( '_description' eq $key ) {
+                # TODO: is it ok to make it tags?
+                push @tags, $value;
+            }
+            elsif ( '_guid' eq $key ) {
+                $asset_values->{'url'} = $value;
+            }
+            elsif ( '_description' eq $key ) {
 
-            # skip
-        }
-        elsif ( 'content_encoded' eq $key ) {
-            $asset_values->{'description'} = $value;
-        }
-        elsif ( 'wp_post_id' eq $key ) {
+                # skip
+            }
+            elsif ( 'content_encoded' eq $key ) {
+                $asset_values->{'description'} = $value;
+            }
+            elsif ( 'wp_post_id' eq $key ) {
 
-            # skip;
-        }
-        elsif ( 'wp_post_date' eq $key ) {
+                # skip;
+            }
+            elsif ( 'wp_post_date' eq $key ) {
 
-            # skip;
-        }
-        elsif ( 'wp_post_date_gmt' eq $key ) {
-            $asset_values->{'created_on'}
-                = $self->_gmt2blogtime( $value, $blog );
-        }
-        elsif ( 'wp_comment_status' eq $key ) {
+                # skip;
+            }
+            elsif ( 'wp_post_date_gmt' eq $key ) {
+                $asset_values->{'created_on'}
+                    = $self->_gmt2blogtime( $value, $blog );
+            }
+            elsif ( 'wp_comment_status' eq $key ) {
 
-            # skip
-        }
-        elsif ( 'wp_ping_status' eq $key ) {
+                # skip
+            }
+            elsif ( 'wp_ping_status' eq $key ) {
 
-            # skip
-        }
-        elsif ( 'wp_post_name' eq $key ) {
+                # skip
+            }
+            elsif ( 'wp_post_name' eq $key ) {
 
-            # skip - we don't have an equivalent.
-        }
-        elsif ( 'wp_status' eq $key ) {
+                # skip - we don't have an equivalent.
+            }
+            elsif ( 'wp_status' eq $key ) {
 
-            # skip possible values: inherit,
-        }
-        elsif ( 'wp_post_parent' eq $key ) {
+                # skip possible values: inherit,
+            }
+            elsif ( 'wp_post_parent' eq $key ) {
 
-            # skip - entry association?
-        }
-        elsif ( 'wp_postmeta' eq $key ) {
-            for my $meta_key ( keys %$value ) {
-                if ( '_wp_attached_file' eq $meta_key ) {
-                    $asset_values->{'file_path'} = $value->{$meta_key};
-                }
-                elsif ( '_wp_attachment_metadata' eq $meta_key ) {
-
-                    # only parse width and height
-                    my $serialized = $value->{$meta_key};
-                    if ( $serialized
-                        =~ m!s:5:"width";i:(\d+);s:6:"height";i:(\d+);!i )
-                    {
-                        $asset_values->{'image_width'}  = $1;
-                        $asset_values->{'image_height'} = $2;
+                # skip - entry association?
+            }
+            elsif ( 'wp_postmeta' eq $key ) {
+                for my $meta_key ( keys %$value ) {
+                    if ( '_wp_attached_file' eq $meta_key ) {
+                        $asset_values->{'file_path'} = $value->{$meta_key};
                     }
-                    $meta_hash{$meta_key} = $value->{$meta_key};
-                }
-                else {
-                    $meta_hash{$meta_key} = $value->{$meta_key};
+                    elsif ( '_wp_attachment_metadata' eq $meta_key ) {
+
+                        # only parse width and height
+                        my $serialized = $value->{$meta_key};
+                        if ( $serialized
+                            =~ m!s:5:"width";i:(\d+);s:6:"height";i:(\d+);!i )
+                        {
+                            $asset_values->{'image_width'}  = $1;
+                            $asset_values->{'image_height'} = $2;
+                        }
+                        $meta_hash{$meta_key} = $value->{$meta_key};
+                    }
+                    else {
+                        $meta_hash{$meta_key} = $value->{$meta_key};
+                    }
                 }
             }
         }

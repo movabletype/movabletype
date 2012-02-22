@@ -21,7 +21,7 @@
 
 <div class="listing line">
   <div class="unit size1of1">
-    <form id="<mt:var name="object_type">-listing-form" method="POST">
+    <form id="<mt:var name="object_type">-listing-form" method="POST" action="<mt:var name="script_url">">
       <input type="hidden" name="__mode" value="" />
       <input type="hidden" name="_type" value="<mt:var name="object_type">" />
       <input type="hidden" name="action_name" value="" />
@@ -127,6 +127,7 @@ function loginAgain(fn) {
             dialog.find('#msg-block').empty();
             jQuery.ajax({
               type: 'POST',
+              contentType: 'application/x-www-form-urlencoded; charset=utf-8',
               async: false,
               url: '<mt:var name="script_url">',
               dataType: 'json',
@@ -730,6 +731,7 @@ function renderNestedList() {
   };
   jQuery.ajax({
     type: 'POST',
+    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
     url: '<mt:var name="script_url">',
     dataType: 'json',
     data: params,
@@ -791,6 +793,7 @@ function bulkUpdateCategories() {
   });
   jQuery.ajax({
     type: 'POST',
+    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
     url: '<mt:var name="script_url">',
     dataType: 'json',
     data: {

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -57,7 +57,7 @@ sub handle {
         if ( my $class = $apps->{$subapp} ) {
             eval "require $class;";
             bless $app, $class;
-           $app->init_app;
+            $app->init_app;
         }
         my $out = $app->handle_request;
         return unless defined $out;
@@ -227,19 +227,23 @@ sub xml_body {
         if (LIBXML) {
             my $parser = MT::Util->libxml_parser;
             eval {
-                $app->{xml_body} = $parser->parse_string($app->request_content);
+                $app->{xml_body}
+                    = $parser->parse_string( $app->request_content );
             };
             if ($@) {
                 die "Error Parsing XML Input $@ ";
             }
         }
         else {
-           my $parser = MT::Util->expat_parser;
-           my $xp;
-           eval {
-               $xp = XML::XPath->new( xml => $app->request_content, parser => $parser );
-               $app->{xml_body} = ( $xp->find('/')->get_nodelist )[0];
-           };
+            my $parser = MT::Util->expat_parser;
+            my $xp;
+            eval {
+                $xp = XML::XPath->new(
+                    xml    => $app->request_content,
+                    parser => $parser
+                );
+                $app->{xml_body} = ( $xp->find('/')->get_nodelist )[0];
+            };
             if ($@) {
                 die "Error Parsing XML Input $@ ";
             }
@@ -253,19 +257,24 @@ sub atom_body {
     my $atom;
     my $xml = $app->xml_body;
     if ( $app->{is_soap} ) {
-        $atom = MT::Atom::Entry->new( Elem => first( $xml, NS_SOAP, 'Body' ), _prefix => $xml->getFirstChild->getPrefix)
-            or return $app->error( 500, MT::Atom::Entry->errstr );
+        $atom = MT::Atom::Entry->new(
+            Elem    => first( $xml, NS_SOAP, 'Body' ),
+            _prefix => $xml->getFirstChild->getPrefix
+        ) or return $app->error( 500, MT::Atom::Entry->errstr );
     }
     else {
-       my $parser;
+        my $parser;
         if (LIBXML) {
             $parser = MT::Util->libxml_parser;
         }
         else {
-           $parser = MT::Util->expat_parser;
+            $parser = MT::Util->expat_parser;
         }
-        $atom = MT::Atom::Entry->new(Stream => \$app->request_content, Parser => $parser, _prefix => $xml->getFirstChild->getPrefix)
-            or return $app->error( 500, MT::Atom::Entry->errstr );
+        $atom = MT::Atom::Entry->new(
+            Stream  => \$app->request_content,
+            Parser  => $parser,
+            _prefix => $xml->getFirstChild->getPrefix
+        ) or return $app->error( 500, MT::Atom::Entry->errstr );
     }
     $atom;
 }
@@ -387,7 +396,7 @@ sub apply_basename {
 }
 
 sub init_app {
-    $XML::Atom::ForceUnicode = 1;
+    $XML::Atom::ForceUnicode   = 1;
     $XML::Atom::DefaultVersion = 1.0;
 }
 
@@ -596,14 +605,14 @@ sub new_post {
     my $type    = $content->type;
     my $body    = $content->body;
     my $asset;
-    if ($type && $type eq 'text/plain') {
+    if ( $type && $type eq 'text/plain' ) {
         ## Check for LifeBlog Note & SMS records.
-        my $format = $atom->get(NS_DC, 'format');
-        if ($format && ($format eq 'Note' || $format eq 'SMS')) {
+        my $format = $atom->get( NS_DC, 'format' );
+        if ( $format && ( $format eq 'Note' || $format eq 'SMS' ) ) {
             $asset = $app->_upload_to_asset or return;
         }
     }
-    elsif ($type && $type !~ m!^(application/.*xml|text/.*|html)$! ) {
+    elsif ( $type && $type !~ m!^(application/.*xml|text/.*|html)$! ) {
         $asset = $app->_upload_to_asset or return;
     }
     if ( $atom->get( NS_TYPEPAD, 'standalone' ) && $asset ) {
@@ -945,7 +954,7 @@ sub delete_post {
     my %recipe = $app->publisher->rebuild_deleted_entry(
         Entry => $entry,
         Blog  => $blog
-    );
+    ) if $entry->status eq MT::Entry::RELEASE();
 
     # Remove object
     $entry->remove
@@ -1012,10 +1021,17 @@ sub _upload_to_asset {
         if $fname =~ m!/|\.\.|\0|\|!;
 
     if ( my $deny_exts = $app->config->DeniedAssetFileExtensions ) {
-        my @deny_exts = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $deny_exts;
+        my @deny_exts = map {
+            if   ( $_ =~ m/^\./ ) {qr/$_/i}
+            else                  {qr/\.$_/i}
+        } split '\s?,\s?', $deny_exts;
         my @ret = File::Basename::fileparse( $fname, @deny_exts );
-        return $app->error(500, MT->translate('The file([_1]) you uploaded is not allowed.', $fname))
-            if $ret[2];
+        return $app->error(
+            500,
+            MT->translate(
+                'The file([_1]) you uploaded is not allowed.', $fname
+            )
+        ) if $ret[2];
     }
 
     if ( my $allow_exts = MT->config('AssetFileExtensions') ) {
@@ -1201,7 +1217,7 @@ sub edit_link_rel         {'service.edit'}
 sub get_posts_order_field {'authored_on'}
 
 sub init_app {
-    $XML::Atom::ForceUnicode = 1;
+    $XML::Atom::ForceUnicode   = 1;
     $XML::Atom::DefaultVersion = 0.3;
 }
 

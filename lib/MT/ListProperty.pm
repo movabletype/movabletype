@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -345,7 +345,7 @@ sub make_common_label_html {
     );
     if ($label) {
         my $can_double_encode = 1;
-        $label = MT::Util::encode_html($label, $can_double_encode);
+        $label = MT::Util::encode_html( $label, $can_double_encode );
         return qq{<a href="$edit_link">$label</a>};
     }
     else {

@@ -1,5 +1,5 @@
 /*
- * Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+ * Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
  * This program is distributed under the terms of the
  * GNU General Public License, version 2.
  *
@@ -485,7 +485,16 @@ function close_dialog(url, fn) {
     }
     $('.mt-dialog').unbind('close');
     $('.mt-dialog').hide();
-    $('#mt-dialog-iframe').remove();
+
+    // Removing "iframe" in delay.
+    // Because IE9 will continue to run the script after closing,
+    // and raise error if removing "iframe".
+    var iframe = $('#mt-dialog-iframe').
+        attr('id', 'mt-dialog-iframe-removed');
+    setTimeout(function() {
+        iframe.remove();
+    }, 2000);
+
     if (url) {
         window.location = url;
     }
@@ -869,9 +878,10 @@ $.mtValidator = function ( ns, options ) {
 
 $.extend( $.mtValidator.prototype, {
     options: {},
-    validateElement: function ( $elem, val ) {
+    validateElement: function ( $elem, additionalRules ) {
         var validator  = this;
-        var rules = $.mtValidateRules;
+        if ( undefined === additionalRules ) additionalRules = {};
+        var rules = $.extend( {}, $.mtValidateRules, additionalRules );
         validator.error  = false;
         validator.errstr = undefined;
         $.each ( rules, function( selector, fn ) {
@@ -1028,9 +1038,11 @@ $.mtValidateMessages = {
 };
 
 $.fn.extend({
-    mtValidate: function( ns ) {
+    mtValidate: function( ns, rules ) {
+        if ( undefined === rules ) rules = {};
         this.each( function () {
             $.data( this, 'mtValidator', ns || 'default' );
+            $.data( this, 'mtValidateRules', rules );
         });
         return this.mtValid();
     },
@@ -1049,7 +1061,8 @@ $.fn.extend({
             var validator = $this.mtValidator();
             if ( !validator ) return true;
             var $current_error = $.data( this, 'mtValidateError' );
-            var res = validator.validateElement($this);
+            var rules = $.data( this, 'mtValidateRules' );
+            var res = validator.validateElement($this, rules);
             if ( res ) {
                 successes++;
                 if ( $current_error ) {
@@ -1088,7 +1101,7 @@ $.fn.extend({
         return errors == 0;
     },
     mtUnvalidate: function() {
-        this.each( function () { 
+        this.each( function () {
             var validator = $(this).mtValidator();
             if ( validator ) {
                 var $current_error = $.data( this, 'mtValidateError' );

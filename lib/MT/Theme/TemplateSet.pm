@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -235,11 +235,12 @@ sub export_template {
         my $type = $tmpl->type;
         return
               $known_section{$type} ? $type
-            : $type eq 'custom'     ? 'module'
-            : $type eq 'individual' ? ( $tmpl->identifier eq 'page' ? 'page' : 'individual' )
-            : $type eq 'page'       ? 'page'
-            : $type eq 'category'   ? 'archive'
-            :                         'system';
+            : $type eq 'custom' ? 'module'
+            : $type eq 'individual'
+            ? ( $tmpl->identifier eq 'page' ? 'page' : 'individual' )
+            : $type eq 'page'     ? 'page'
+            : $type eq 'category' ? 'archive'
+            :                       'system';
     }
 }
 

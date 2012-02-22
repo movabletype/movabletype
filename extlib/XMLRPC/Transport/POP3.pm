@@ -4,18 +4,17 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: POP3.pm 51 2004-11-14 19:30:50Z byrnereese $
+# $Id: POP3.pm 386 2011-08-18 19:48:31Z kutterma $
 #
 # ======================================================================
 
 package XMLRPC::Transport::POP3;
 
 use strict;
-use vars qw($VERSION);
-#$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name$ =~ /-(\d+)_([\d_]+)/);
-$VERSION = $XMLRPC::Lite::VERSION;
 
+our $VERSION = 0.714;
 use XMLRPC::Lite;
+
 use SOAP::Transport::POP3;
 
 # ======================================================================
@@ -43,12 +42,11 @@ XMLRPC::Transport::POP3 - Server side POP3 support for XMLRPC::Lite
   my $server = XMLRPC::Transport::POP3::Server
     -> new('pop://pop.mail.server')
     # if you want to have all in one place
-    # -> new('pop://user:password@pop.mail.server') 
+    # -> new('pop://user:password@pop.mail.server')
     # or, if you have server that supports MD5 protected passwords
-    # -> new('pop://user:password;AUTH=+APOP@pop.mail.server') 
+    # -> new('pop://user:password;AUTH=+APOP@pop.mail.server')
     # specify path to My/Examples.pm here
-    -> dispatch_to('/Your/Path/To/Deployed/Modules', 'Module::Name', 'Module::method') 
-  ;
+    -> dispatch_to('/Your/Path/To/Deployed/Modules', 'Module::Name', 'Module::method');
   # you don't need to use next line if you specified your password in new()
   $server->login('user' => 'password') or die "Can't authenticate to POP3 server\n";
 

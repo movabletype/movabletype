@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -119,6 +119,9 @@ sub new {
         elsif ( $type eq 'scalarref' ) {
             return $pkg->new_string( $param{source}, %param );
         }
+        else {
+            delete $param{source} if exists $param{source};
+        }
     }
     my $tmpl = $pkg->SUPER::new(@_);
     $tmpl->{include_path}   = $param{path};
@@ -164,13 +167,29 @@ sub new_string {
 sub load_file {
     my $tmpl = shift;
     my ($file) = @_;
-    unless ( File::Spec->file_name_is_absolute($file) ) {
+    die 'Template load error'
+        if $file =~ /\.\./;
+
+    if ( File::Spec->file_name_is_absolute($file) ) {
+        require Cwd;
+        my $ok            = 0;
+        my @paths         = @{ $tmpl->{include_path} || [] };
+        my $abs_file_path = MT::Util::realpath($file);
+        foreach my $path (@paths) {
+            next unless -d $path;
+            my $abs_path = MT::Util::realpath($path);
+            $ok = 1, last if $abs_file_path =~ /^\Q$abs_path\E/;
+        }
+        die "Template load error" unless $ok;
+    }
+    else {
         my @paths = @{ $tmpl->{include_path} || [] };
         foreach my $path (@paths) {
             my $test_file = File::Spec->catfile( $path, $file );
             $file = $test_file, last if -f $test_file;
         }
     }
+
     return $tmpl->trans_error( "File not found: [_1]", $file )
         unless -e $file;
     open my $fh, '<', $file
@@ -425,12 +444,14 @@ sub save {
         if ( $tmpl->blog_id ) {
             my $blog = $tmpl->blog;
             $scope = lc $blog->class_label;
-        } else {
+        }
+        else {
             $scope = MT->translate('system');
         }
         return $tmpl->error(
             MT->translate(
-                'Template name must be unique within this [_1].', $scope)
+                'Template name must be unique within this [_1].', $scope
+            )
         );
     }
 
@@ -584,6 +605,19 @@ sub _sync_from_disk {
         }
         return;
     }
+    if ( MT->config->SafeMode ) {
+        ## Check for a set of extensions that aren't allowed.
+        for my $ext (qw( pl pm cgi cfg )) {
+            if ( $lfile =~ /\.$ext$/i ) {
+                return $tmpl->error(
+                    MT->translate(
+                        "You cannot use a [_1] extension for a linked file.",
+                        ".$ext"
+                    )
+                );
+            }
+        }
+    }
     unless ( File::Spec->file_name_is_absolute($lfile) ) {
         if ( $tmpl->blog_id ) {
             my $blog = MT::Blog->load( $tmpl->blog_id )
@@ -596,16 +630,17 @@ sub _sync_from_disk {
             $lfile = File::Spec->catfile( MT->instance->server_path, $lfile );
         }
     }
-    return unless -e $lfile;
+    return unless -e $lfile && -w _;
     my ( $size, $mtime ) = ( stat _ )[ 7, 9 ];
     return
         if $size == $tmpl->linked_file_size
             && $mtime == $tmpl->linked_file_mtime;
-    local *FH;
-    open FH, $lfile or return;
+    # Use rw handle due to avoid that anyone do open unwritable file.
+    # ( -w file test operator can't detect windows ACL condition, so just try to open. )
+    open my $fh, '+<', $lfile or return;
     my $c;
-    do { local $/; $c = <FH> };
-    close FH;
+    do { local $/; $c = <$fh> };
+    close $fh;
     $tmpl->linked_file_size($size);
     $tmpl->linked_file_mtime($mtime);
     return $c;
@@ -640,16 +675,15 @@ sub _sync_to_disk {
             $lfile = File::Spec->catfile( MT->instance->server_path, $lfile );
         }
     }
-    local *FH;
     ## If the linked file already exists, and there is no template text
     ## (empty textarea, etc.), then we read the template text from the
     ## linked file, assuming that it should not be overwritten. If the
     ## file does not already exist, or if there is template text, assume
     ## that we should update the linked file.
     if ( -e $lfile && !$tmpl->SUPER::text ) {
-        open FH, $lfile or return;
-        do { local $/; $tmpl->SUPER::text(<FH>) };
-        close FH;
+        open my $fh, '+<', $lfile or return;
+        do { local $/; $tmpl->SUPER::text(<$fh>) };
+        close $fh;
     }
     else {
         my $umask = oct $cfg->HTMLUmask;
@@ -657,15 +691,15 @@ sub _sync_to_disk {
         ## Untaint. We assume that the user knows what he/she is doing,
         ## and allow anything.
         ($lfile) = $lfile =~ /(.+)/s;
-        open FH, ">$lfile"
+        open my $fh, '>', $lfile
             or return $tmpl->error(
             MT->translate(
                 "Opening linked file '[_1]' failed: [_2]",
                 $lfile, "$!"
             )
             );
-        print FH $text;
-        close FH;
+        print $fh $text;
+        close $fh;
         umask($old);
     }
     my ( $size, $mtime ) = ( stat $lfile )[ 7, 9 ];

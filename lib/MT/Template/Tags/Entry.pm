@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1113,10 +1113,10 @@ sub _hdlr_entries {
                         : sort { $b->$col() cmp $a->$col() } @entries;
                 }
             }
-            if ($post_sort_limit) {
+            if ( $post_sort_limit && ( scalar @entries ) > $post_sort_limit ) {
                 @entries
                     = @entries[ $post_sort_offset .. $post_sort_offset
-                    + $post_sort_limit 
+                    + $post_sort_limit
                     - 1 ];
             }
         }

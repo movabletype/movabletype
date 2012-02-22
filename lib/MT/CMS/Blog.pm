@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -595,7 +595,13 @@ sub rebuild_phase {
     elsif ( $type eq 'template' ) {
         require MT::Template;
         foreach (@ids) {
-            my $template = MT::Template->load($_);
+            my $template = MT::Template->load($_)
+                or return $app->errtrans( 'Can\'t load template #[_1].', $_ );
+
+            my $perms = $app->user->permissions( $template->blog_id );
+            return $app->permission_denied()
+                unless $perms && $perms->can_do('rebuild');
+
             $app->rebuild_indexes(
                 Template => $template,
                 Force    => 1
@@ -691,7 +697,13 @@ sub rebuild_pages {
             unless $perms->can_do('rebuild');
         my $tmpl_id = $1;
         require MT::Template;
-        $tmpl_saved = MT::Template->load($tmpl_id);
+        $tmpl_saved = MT::Template->load($tmpl_id)
+            or
+            return $app->errtrans( 'Can\'t load template #[_1].', $tmpl_id );
+        return $app->permission_denied()
+            unless $app->user->permissions( $tmpl_saved->blog_id )
+                ->can_do('rebuild');
+
         $app->rebuild_indexes(
             BlogID   => $blog_id,
             Template => $tmpl_saved,
@@ -704,7 +716,8 @@ sub rebuild_pages {
         require MT::Entry;
         my $entry = MT::Entry->load($entry_id);
         return $app->permission_denied()
-            unless $perms->can_edit_entry( $entry, $app->user );
+            if !$perms->can_edit_entry( $entry, $app->user )
+                && !$perms->can_republish_entry( $entry, $app->user );
         $app->rebuild_entry(
             Entry             => $entry,
             BuildDependencies => 1,
@@ -716,6 +729,23 @@ sub rebuild_pages {
     elsif ( $archiver && $archiver->category_based ) {
         return $app->permission_denied()
             unless $perms->can_do('rebuild');
+        if ($template_id) {
+            my $tmpl = MT->model('template')->load($template_id)
+                or return $app->errtrans( 'Can\'t load template #[_1].',
+                $template_id );
+            return $app->permission_denied()
+                unless $app->user->permissions( $tmpl->blog_id )
+                    ->can_do('rebuild');
+        }
+        elsif ($map_id) {
+            my $map = MT->model('templatemap')->load($map_id)
+                or return $app->errtrans( 'Can\'t load template #[_1].',
+                $map_id );
+            return $app->permission_denied()
+                unless $app->user->permissions( $map->blog_id )
+                    ->can_do('rebuild');
+        }
+
         $offset = $q->param('offset') || 0;
         my $start = time;
         my $count = 0;
@@ -769,6 +799,23 @@ sub rebuild_pages {
         if ( !$special ) {
             return $app->permission_denied()
                 unless $perms->can_do('rebuild');
+            if ($template_id) {
+                my $tmpl = MT->model('template')->load($template_id)
+                    or return $app->errtrans( 'Can\'t load template #[_1].',
+                    $template_id );
+                return $app->permission_denied()
+                    unless $app->user->permissions( $tmpl->blog_id )
+                        ->can_do('rebuild');
+            }
+            elsif ($map_id) {
+                my $map = MT->model('templatemap')->load($map_id)
+                    or return $app->errtrans( 'Can\'t load template #[_1].',
+                    $map_id );
+                return $app->permission_denied()
+                    unless $app->user->permissions( $map->blog_id )
+                        ->can_do('rebuild');
+            }
+
             $offset = $q->param('offset') || 0;
             if ( $offset < $total ) {
                 my $start = time;
@@ -980,6 +1027,9 @@ sub rebuild_pages {
 
 sub rebuild_new_phase {
     my ($app) = @_;
+
+    $app->validate_magic() or return;
+
     $app->setup_filtered_ids
         if $app->param('all_selected');
     require MT::CMS::Entry;
@@ -1149,7 +1199,8 @@ sub rebuild_confirm {
 
     if ( my $tmpl_id = $app->param('tmpl_id') ) {
         require MT::Template;
-        my $tmpl = MT::Template->load($tmpl_id)
+        my $tmpl
+            = MT::Template->load( { id => $tmpl_id, blog_id => $blog_id } )
             or return $app->error(
             $app->translate( 'Can\'t load template #[_1].', $tmpl_id ) );
         $param{index_tmpl_id}   = $tmpl->id;
@@ -1284,7 +1335,7 @@ sub dialog_select_weblog {
                 panel_description => $app->translate("Description"),
                 panel_type        => 'blog',
                 panel_multi       => defined $app->param('multi')
-                ? $app->param('multi')
+                ? scalar( $app->param('multi') )
                 : 0,
                 panel_searchable => 1,
                 panel_first      => 1,
@@ -1322,7 +1373,7 @@ sub can_save {
         }
 
         my $author = $app->user;
-        return $author->permissions($id->id)->can_do('edit_blog_config')
+        return $author->permissions( $id->id )->can_do('edit_blog_config')
             || ( $app->param('cfg_screen')
             && $app->param('cfg_screen') eq 'cfg_publish_profile' );
     }
@@ -1344,7 +1395,7 @@ sub can_delete {
     return unless $id->is_blog;
 
     my $author = $app->user;
-    return $author->permissions($id->id)->can_do('delete_blog');
+    return $author->permissions( $id->id )->can_do('delete_blog');
 }
 
 sub pre_save {
@@ -2628,8 +2679,7 @@ sub clone {
     my ($param) = {};
     my $user    = $app->user;
 
-    return $app->permission_denied()
-        if !$user->is_superuser && !$user->can('clone_blog');
+    $app->validate_magic() or return;
 
     my @id = $app->param('id');
 
@@ -2653,6 +2703,10 @@ sub clone {
         or return $app->error( $app->translate("Invalid blog_id") );
     return $app->error( $app->translate("This action cannot clone website.") )
         unless $blog->is_blog;
+
+    return $app->permission_denied()
+        unless $app->user->permissions( $blog->website->id )
+            ->can_do('clone_blog');
 
     $param->{'id'}            = $blog->id;
     $param->{'new_blog_name'} = $app->param('new_blog_name')

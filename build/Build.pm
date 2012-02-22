@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -190,10 +190,10 @@ sub setup {
               : $self->{'rc=s'}    ? "rc$self->{'rc=s'}"
               : '' );
         }
+        push @stamp, $self->{'short-lang=s'}
+            if $self->{'lang-stamp!'};
         # Add repo, date and ldap to the stamp if we are not production.
         unless( $self->{'prod'} ) {
-            push @stamp, $self->{'short-lang=s'}
-                if $self->{'lang-stamp!'};
             if( $self->{'rev!'} ) {
                 push @stamp, lc( fileparse $self->{'repo=s'} );
                 push @stamp, $self->{'revision=s'};
@@ -215,9 +215,6 @@ sub setup {
 
     # Set the full name to use for the distribution (e.g. MT-3.3b1-fr-r12345-20061225).
     $self->{'export-dir=s'} = "$self->{'pack=s'}-$self->{'stamp=s'}";
-    # Name the exported directory (and archive) with the language.
-    $self->{'export-dir=s'} .= "-$self->{'short-lang=s'}"
-        if $self->{'prod'} || $self->{'alpha=s'} || $self->{'beta=s'} || $self->{'rc=s'};
 }
 
 sub make {

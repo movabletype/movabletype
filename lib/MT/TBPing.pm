@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -103,9 +103,10 @@ sub list_props {
                     : $status eq 'Published' ? 'success.gif'
                     :                          'draft.gif';
 
-                my $blog_name = MT::Util::encode_html( $obj->blog_name  || '' );
-                my $title     = MT::Util::encode_html( $obj->title      || '' );
-                my $url       = MT::Util::encode_html( $obj->source_url || '' );
+                my $blog_name
+                    = MT::Util::encode_html( $obj->blog_name || '' );
+                my $title = MT::Util::encode_html( $obj->title      || '' );
+                my $url   = MT::Util::encode_html( $obj->source_url || '' );
                 my $view_img
                     = MT->static_path . 'images/status_icons/view.gif';
                 my $ping_from

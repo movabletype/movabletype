@@ -1,663 +1,895 @@
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<html>
   <head>
-    <title>CodeMirror user manual</title>
+    <title>CodeMirror: User Manual</title>
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans:bold"/>
     <link rel="stylesheet" type="text/css" href="css/docs.css"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <style>dl dl {margin: 0;}</style>
   </head>
   <body>
-    <h1 class="underline">CodeMirror user manual</h1>
+
+<h1><span class="logo-braces">{ }</span> <a href="http://codemirror.net/">CodeMirror</a></h1>
+
+<pre class="grey">
+<img src="css/baboon.png" class="logo" alt="logo"/>/* User manual and
+   reference guide */
+</pre>
+
+<div class="clear"><div class="leftbig blk">
+
+    <h2 id="overview">Overview</h2>
+
+    <p>CodeMirror is a code-editor component that can be embedded in
+    Web pages. It provides <em>only</em> the editor component, no
+    accompanying buttons
+    (see <a href="http://www.octolabs.com/javascripts/codemirror-ui/">CodeMirror
+    UI</a> for a drop-in button bar), auto-completion, or other IDE
+    functionality. It does provide a rich API on top of which such
+    functionality can be straightforwardly implemented.</p>
+
+    <p>CodeMirror works with language-specific modes. Modes are
+    JavaScript programs that help color (and optionally indent) text
+    written in a given language. The distribution comes with a few
+    modes (see the <code>mode/</code> directory), and it isn't hard
+    to <a href="#modeapi">write new ones</a> for other languages.</p>
+
+    <h2 id="usage">Basic Usage</h2>
+
+    <p>The easiest way to use CodeMirror is to simply load the script
+    and style sheet found under <code>lib/</code> in the distribution,
+    plus a mode script from one of the <code>mode/</code> directories
+    and a theme stylesheet from <code>theme/</code>. (See
+    also <a href="compress.html">the compression helper</a>.) For
+    example:</p>
+
+    <pre>&lt;script src="lib/codemirror.js">&lt;/script>
+&lt;link rel="stylesheet" href="lib/codemirror.css">
+&lt;script src="mode/javascript/javascript.js">&lt;/script>
+&lt;link rel="stylesheet" href="theme/default.css"></pre>
+
+    <p>(If you use a theme other than <code>default.css</code>, you
+    also have to specify the
+    <a href="#option_theme"><code>theme</code></a> option.) Having
+    done this, an editor instance can be created like this:</p>
+
+    <pre>var myCodeMirror = CodeMirror(document.body);</pre>
+
+    <p>The editor will be appended to the document body, will start
+    empty, and will use the mode that we loaded. To have more control
+    over the new editor, a configuration object can be passed
+    to <code>CodeMirror</code> as a second argument:</p>
+
+    <pre>var myCodeMirror = CodeMirror(document.body, {
+  value: "function myScript(){return 100;}\n",
+  mode:  "javascript"
+});</pre>
+
+    <p>This will initialize the editor with a piece of code already in
+    it, and explicitly tell it to use the JavaScript mode (which is
+    useful when multiple modes are loaded).
+    See <a href="#config">below</a> for a full discussion of the
+    configuration options that CodeMirror accepts.</p>
+
+    <p>In cases where you don't want to append the editor to an
+    element, and need more control over the way it is inserted, the
+    first argument to the <code>CodeMirror</code> function can also
+    be a function that, when given a DOM element, inserts it into the
+    document somewhere. This could be used to, for example, replace a
+    textarea with a real editor:</p>
+
+    <pre>var myCodeMirror = CodeMirror(function(elt) {
+  myTextArea.parentNode.replaceChild(elt, myTextArea);
+}, {value: myTextArea.value});</pre>
+
+    <p>However, for this use case, which is a common way to use
+    CodeMirror, the library provides a much more powerful
+    shortcut:</p>
+
+    <pre>var myCodeMirror = CodeMirror.fromTextArea(myTextArea);</pre>
+
+    <p>This will, among other things, ensure that the textarea's value
+    is updated when the form (if it is part of a form) is submitted.
+    See the <a href="#fromTextArea">API reference</a> for a full
+    description of this method.</p>
+
+    <h2 id="config">Configuration</h2>
+
+    <p>Both the <code>CodeMirror</code> function and
+    its <code>fromTextArea</code> method take as second (optional)
+    argument an object containing configuration options. Any option
+    not supplied like this will be taken
+    from <code>CodeMirror.defaults</code>, an object containing the
+    default options. You can update this object to change the defaults
+    on your page.</p>
+
+    <p>Options are not checked in any way, so setting bogus option
+    values is bound to lead to odd errors.</p>
+
+    <p>These are the supported options:</p>
+
+    <dl>
+      <dt id="option_value"><code>value (string)</code></dt>
+      <dd>The starting value of the editor.</dd>
+
+      <dt id="option_mode"><code>mode (string or object)</code></dt>
+      <dd>The mode to use. When not given, this will default to the
+      first mode that was loaded. It may be a string, which either
+      simply names the mode or is
+      a <a href="http://en.wikipedia.org/wiki/MIME">MIME</a> type
+      associated with the mode. Alternatively, it may be an object
+      containing configuration options for the mode, with
+      a <code>name</code> property that names the mode (for
+      example <code>{name: "javascript", json: true}</code>). The demo
+      pages for each mode contain information about what configuration
+      parameters the mode supports. You can ask CodeMirror which modes
+      and MIME types are loaded with
+      the <code>CodeMirror.listModes</code>
+      and <code>CodeMirror.listMIMEs</code> functions.</dd>
+
+      <dt id="option_theme"><code>theme (string)</code></dt>
+      <dd>The theme to style the editor with. You must make sure the
+      CSS file defining the corresponding <code>.cm-s-[name]</code>
+      styles is loaded (see
+      the <a href="theme/"><code>theme</code></a> directory in the
+      distribution).</dd>
+
+      <dt id="option_indentUnit"><code>indentUnit (integer)</code></dt>
+      <dd>How many spaces a block (whatever that means in the edited
+      language) should be indented. The default is 2.</dd>
+
+      <dt id="option_indentWithTabs"><code>indentWithTabs (boolean)</code></dt>
+      <dd>Whether, when indenting, the first N*8 spaces should be
+      replaced by N tabs. Default is false.</dd>
+
+      <dt id="option_tabMode"><code>tabMode (string)</code></dt>
+      <dd>Determines what happens when the user presses the tab key.
+      Must be one of the following:
+        <dl>
+          <dt><code>"classic" (the default)</code></dt>
+          <dd>When nothing is selected, insert a tab. Otherwise,
+          behave like the <code>"shift"</code> mode. (When shift is
+          held, this behaves like the <code>"indent"</code> mode.)</dd>
+          <dt><code>"shift"</code></dt>
+          <dd>Indent all selected lines by
+          one <a href="#option_indentUnit"><code>indentUnit</code></a>.
+          If shift was held while pressing tab, un-indent all selected
+          lines one unit.</dd>
+          <dt><code>"indent"</code></dt>
+          <dd>Indent the line the 'correctly', based on its syntactic
+          context. Only works if the
+          mode <a href="#indent">supports</a> it.</dd>
+          <dt><code>"default"</code></dt>
+          <dd>Do not capture tab presses, let the browser apply its
+          default behaviour (which usually means it skips to the next
+          control).</dd>
+        </dl></dd>
+
+      <dt id="option_enterMode"><code>enterMode (string)</code></dt>
+      <dd>Determines whether and how new lines are indented when the
+      enter key is pressed. The following modes are supported:
+        <dl>
+          <dt><code>"indent" (the default)</code></dt>
+          <dd>Use the mode's indentation rules to give the new line
+          the correct indentation.</dd>
+          <dt><code>"keep"</code></dt>
+          <dd>Indent the line the same as the previous line.</dd>
+          <dt><code>"flat"</code></dt>
+          <dd>Do not indent the new line.</dd>
+        </dl></dd>
+
+      <dt id="option_electricChars"><code>electricChars (boolean)</code></dt>
+      <dd>Configures whether the editor should re-indent the current
+      line when a character is typed that might change its proper
+      indentation (only works if the mode supports indentation).
+      Default is true.</dd>
+
+      <dt id="option_smartHome"><code>smartHome (boolean)</code></dt>
+      <dd>Configures whether the home key takes you to the first
+      non-whitespace character (unless already there) or to the start
+      of the line. On by default.</dd>
+
+      <dt id="option_pollForIME"><code>pollForIME (boolean)</code></dt>
+      <dd>When on (off by default), this will cause CodeMirror to poll
+      for input more agressively in an attempt to respond quickly to
+      IME (composed character) input.</dd>
+
+      <dt id="option_lineWrapping"><code>lineWrapping (boolean)</code></dt>
+      <dd>Whether CodeMirror should scroll or wrap for long lines.
+      Defaults to <code>false</code> (scroll).</dd>
+
+      <dt id="option_lineNumbers"><code>lineNumbers (boolean)</code></dt>
+      <dd>Whether to show line numbers to the left of the editor.</dd>
+
+      <dt id="option_firstLineNumber"><code>firstLineNumber (integer)</code></dt>
+      <dd>At which number to start counting lines. Default is 1.</dd>
+
+      <dt id="option_gutter"><code>gutter (boolean)</code></dt>
+      <dd>Can be used to force a 'gutter' (empty space on the left of
+      the editor) to be shown even when no line numbers are active.
+      This is useful for setting <a href="#setMarker">markers</a>.</dd>
+
+      <dt id="option_fixedGutter"><code>fixedGutter (boolean)</code></dt>
+      <dd>When enabled (off by default), this will make the gutter
+      stay visible when the document is scrolled horizontally.</dd>
+
+      <dt id="option_readOnly"><code>readOnly (boolean)</code></dt>
+      <dd>This disables editing of the editor content by the user.
+      (Changes through API functions will still be possible.) If you
+      also want to disable the cursor, use <code>"nocursor"</code> as
+      a value for this option, instead of <code>true</code>.</dd>
+
+      <dt id="option_onChange"><code>onChange (function)</code></dt>
+      <dd>When given, this function will be called every time the
+      content of the editor is changed. It will be given the editor
+      instance as only argument.</dd>
+
+      <dt id="option_onCursorActivity"><code>onCursorActivity (function)</code></dt>
+      <dd>Like <code>onChange</code>, but will also be called when the
+      cursor moves without any changes being made.</dd>
+
+      <dt id="option_onGutterClick"><code>onGutterClick (function)</code></dt>
+      <dd>When given, will be called whenever the editor gutter (the
+      line-number area) is clicked. Will be given the editor instance
+      as first argument, the (zero-based) number of the line that was
+      clicked as second argument, and the raw <code>mousedown</code>
+      event object as third argument.</dd>
+
+      <dt id="option_onFocus"><code>onFocus, onBlur (function)</code></dt>
+      <dd>The given functions will be called whenever the editor is
+      focused or unfocused.</dd>
+
+      <dt id="option_onScroll"><code>onScroll (function)</code></dt>
+      <dd>When given, will be called whenever the editor is
+      scrolled.</dd>
+
+      <dt id="option_onHighlightComplete"><code>onHighlightComplete (function)</code></dt>
+      <dd>Whenever the editor's content has been fully highlighted,
+      this function (if given) will be called. It'll be given a single
+      argument, the editor instance.</dd>
+
+      <dt id="option_matchBrackets"><code>matchBrackets (boolean)</code></dt>
+      <dd>Determines whether brackets are matched whenever the cursor
+      is moved next to a bracket.</dd>
+
+      <dt id="option_workTime"><code>workTime, workDelay (number)</code></dt>
+      <dd>Highlighting is done by a pseudo background-thread that will
+      work for <code>workTime</code> milliseconds, and then use
+      timeout to sleep for <code>workDelay</code> milliseconds. The
+      defaults are 200 and 300, you can change these options to make
+      the highlighting more or less aggressive.</dd>
+
+      <dt id="option_undoDepth"><code>undoDepth (integer)</code></dt>
+      <dd>The maximum number of undo levels that the editor stores.
+      Defaults to 40.</dd>
+
+      <dt id="option_tabindex"><code>tabindex (integer)</code></dt>
+      <dd>The <a href="http://www.w3.org/TR/html401/interact/forms.html#adef-tabindex">tab
+      index</a> to assign to the editor. If not given, no tab index
+      will be assigned.</dd>
+
+      <dt id="option_document"><code>document (DOM document)</code></dt>
+      <dd>Use this if you want to display the editor in another DOM.
+      By default it will use the global <code>document</code>
+      object.</dd>
+
+      <dt id="option_onKeyEvent"><code>onKeyEvent (function)</code></dt>
+      <dd>This provides a rather low-level hook into CodeMirror's key
+      handling. If provided, this function will be called on
+      every <code>keydown</code>, <code>keyup</code>,
+      and <code>keypress</code> event that CodeMirror captures. It
+      will be passed two arguments, the editor instance and the key
+      event. This key event is pretty much the raw key event, except
+      that a <code>stop()</code> method is always added to it. You
+      could feed it to, for example, <code>jQuery.Event</code> to
+      further normalize it.<br>This function can inspect the key
+      event, and handle it if it wants to. It may return true to tell
+      CodeMirror to ignore the event. Be wary that, on some browsers,
+      stopping a <code>keydown</code> does not stop
+      the <code>keypress</code> from firing, whereas on others it
+      does. If you respond to an event, you should probably inspect
+      its <code>type</code> property and only do something when it
+      is <code>keydown</code> (or <code>keypress</code> for actions
+      that need character data).</dd>
+    </dl>
+
+    <h2 id="styling">Customized Styling</h2>
+
+    <p>Up to a certain extent, CodeMirror's look can be changed by
+    modifying style sheet files. The style sheets supplied by modes
+    simply provide the colors for that mode, and can be adapted in a
+    very straightforward way. To style the editor itself, it is
+    possible to alter or override the styles defined
+    in <a href="lib/codemirror.css"><code>codemirror.css</code></a>.</p>
+
+    <p>Some care must be taken there, since a lot of the rules in this
+    file are necessary to have CodeMirror function properly. Adjusting
+    colors should be safe, of course, and with some care a lot of
+    other things can be changed as well. The CSS classes defined in
+    this file serve the following roles:</p>
+
+    <dl>
+      <dt id="class_CodeMirror"><code>CodeMirror</code></dt>
+      <dd>The outer element of the editor. This should be used for
+      borders and positioning. Can also be used to set styles that
+      should hold for everything inside the editor (such as font
+      and font size), or to set a background.</dd>
+
+      <dt id="class_CodeMirror_scroll"><code>CodeMirror-scroll</code></dt>
+      <dd>This determines whether the editor scrolls (<code>overflow:
+      auto</code> + fixed height). By default, it does. Giving
+      this <code>height: auto; overflow: visible;</code> will cause
+      the editor to resize to fit its content.</dd>
+
+      <dt id="class_CodeMirror_focused"><code>CodeMirror-focused</code></dt>
+      <dd>Whenever the editor is focused, the top element gets this
+      class. This is used to hide the cursor and give the selection a
+      different color when the editor is not focused.</dd>
+
+      <dt id="class_CodeMirror_gutter"><code>CodeMirror-gutter</code></dt>
+      <dd>Use this for giving a background or a border to the editor
+      gutter. Don't set any padding here,
+      use <code>CodeMirror-gutter-text</code> for that. By default,
+      the gutter is 'fluid', meaning it will adjust its width to the
+      maximum line number or line marker width. You can also set a
+      fixed width if you want.</dd>
+
+      <dt id="class_CodeMirror_gutter_text"><code>CodeMirror-gutter-text</code></dt>
+      <dd>Used to style the actual line numbers. For the numbers to
+      line up, you must make sure that the font in the gutter is the
+      same as the one in the rest of the editor, so you should
+      probably only set font style and size in
+      the <code>CodeMirror</code> class.</dd>
+
+      <dt id="class_CodeMirror_lines"><code>CodeMirror-lines</code></dt>
+      <dd>The visible lines. If this has vertical
+      padding, <code>CodeMirror-gutter</code> should have the same
+      padding.</dd>
+
+      <dt id="class_CodeMirror_cursor"><code>CodeMirror-cursor</code></dt>
+      <dd>The cursor is a block element that is absolutely positioned.
+      You can make it look whichever way you want.</dd>
+
+      <dt id="class_CodeMirror_selected"><code>CodeMirror-selected</code></dt>
+      <dd>The selection is represented by <code>span</code> elements
+      with this class.</dd>
+
+      <dt id="class_CodeMirror_matchingbracket"><code>CodeMirror-matchingbracket</code>,
+        <code>CodeMirror-nonmatchingbracket</code></dt>
+      <dd>These are used to style matched (or unmatched) brackets.</dd>
+    </dl>
+
+    <p>The actual lines, as well as the cursor, are represented
+    by <code>pre</code> elements. By default no text styling (such as
+    bold) that might change line height is applied. If you do want
+    such effects, you'll have to give <code>CodeMirror pre</code> a
+    fixed height. Also, you must still take care that character width
+    is constant.</p>
+
+    <p>If your page's style sheets do funky things to
+    all <code>div</code> or <code>pre</code> elements (you probably
+    shouldn't do that), you'll have to define rules to cancel these
+    effects out again for elements under the <code>CodeMirror</code>
+    class.</p>
+
+    <h2 id="api">Programming API</h2>
+
+    <p>A lot of CodeMirror features are only available through its API.
+    This has the disadvantage that you need to do work to enable them,
+    and the advantage that CodeMirror will fit seamlessly into your
+    application.</p>
+
+    <p>Whenever points in the document are represented, the API uses
+    objects with <code>line</code> and <code>ch</code> properties.
+    Both are zero-based. CodeMirror makes sure to 'clip' any positions
+    passed by client code so that they fit inside the document, so you
+    shouldn't worry too much about sanitizing your coordinates. If you
+    give <code>ch</code> a value of <code>null</code>, or don't
+    specify it, it will be replaced with the length of the specified
+    line.</p>
+
+    <dl>
+      <dt id="getValue"><code>getValue() → string</code></dt>
+      <dd>Get the current editor content.</dd>
+      <dt id="setValue"><code>setValue(string)</code></dt>
+      <dd>Set the editor content.</dd>
+
+      <dt id="getSelection"><code>getSelection() → string</code></dt>
+      <dd>Get the currently selected code.</dd>
+      <dt id="replaceSelection"><code>replaceSelection(string)</code></dt>
+      <dd>Replace the selection with the given string.</dd>
+
+      <dt id="focus"><code>focus()</code></dt>
+      <dd>Give the editor focus.</dd>
+
+      <dt id="setOption"><code>setOption(option, value)</code></dt>
+      <dd>Change the configuration of the editor. <code>option</code>
+      should the name of an <a href="#config">option</a>,
+      and <code>value</code> should be a valid value for that
+      option.</dd>
+      <dt id="getOption"><code>getOption(option) → value</code></dt>
+      <dd>Retrieves the current value of the given option for this
+      editor instance.</dd>
+
+      <dt id="cursorCoords"><code>cursorCoords(start) → object</code></dt>
+      <dd>Returns an <code>{x, y, yBot}</code> object containing the
+      coordinates of the cursor relative to the top-left corner of the
+      page. <code>yBot</code> is the coordinate of the bottom of the
+      cursor. <code>start</code> is a boolean indicating whether you
+      want the start or the end of the selection.</dd>
+      <dt id="charCoords"><code>charCoords(pos) → object</code></dt>
+      <dd>Like <code>cursorCoords</code>, but returns the position of
+      an arbitrary characters. <code>pos</code> should be
+      a <code>{line, ch}</code> object.</dd>
+      <dt id="coordsChar"><code>coordsChar(object) → pos</code></dt>
+      <dd>Given an <code>{x, y}</code> object (in page coordinates),
+      returns the <code>{line, ch}</code> position that corresponds to
+      it.</dd>
+
+      <dt id="undo"><code>undo()</code></dt>
+      <dd>Undo one edit (if any undo events are stored).</dd>
+      <dt id="redo"><code>redo()</code></dt>
+      <dd>Redo one undone edit.</dd>
+      <dt id="historySize"><code>historySize() → object</code></dt>
+      <dd>Returns an object with <code>{undo, redo}</code> properties,
+      both of which hold integers, indicating the amount of stored
+      undo and redo operations.</dd>
+      <dt id="clearHistory"><code>clearHistory()</code></dt>
+      <dd>Clears the editor's undo history.</dd>
+
+      <dt id="indentLine"><code>indentLine(line, dir)</code></dt>
+      <dd>Reset the given line's indentation to the indentation
+      prescribed by the mode. If the second argument is given,
+      indentation will be increased (if <code>dir</code> is true) or
+      decreased (if false) by an <a href="#option_indentUnit">indent
+      unit</a> instead.</dd>
+
+      <dt id="getSearchCursor"><code>getSearchCursor(query, start, caseFold) → cursor</code></dt>
+      <dd>Used to implement search/replace
+      functionality. <code>query</code> can be a regular expression or
+      a string (only strings will match across lines—if they contain
+      newlines). <code>start</code> provides the starting position of
+      the search. It can be a <code>{line, ch}</code> object, or can
+      be left off to default to the start of the
+      document. <code>caseFold</code> is only relevant when matching a
+      string. It will cause the search to be case-insensitive. A
+      search cursor has the following methods:
+        <dl>
+          <dt><code>findNext(), findPrevious() → boolean</code></dt>
+          <dd>Search forward or backward from the current position.
+          The return value indicates whether a match was found. If
+          matching a regular expression, the return value will be the
+          array returned by the <code>match</code> method, in case you
+          want to extract matched groups.</dd>
+          <dt><code>from(), to() → object</code></dt>
+          <dd>These are only valid when the last call
+          to <code>findNext</code> or <code>findPrevious</code> did
+          not return false. They will return <code>{line, ch}</code>
+          objects pointing at the start and end of the match.</dd>
+          <dt><code>replace(text)</code></dt>
+          <dd>Replaces the currently found match with the given text
+          and adjusts the cursor position to reflect the
+          replacement.</dd>
+        </dl></dd>
+
+      <dt id="getTokenAt"><code>getTokenAt(pos) → object</code></dt>
+      <dd>Retrieves information about the token the current mode found
+      at the given position (a <code>{line, ch}</code> object). The
+      returned object has the following properties:
+      <dl>
+        <dt><code>start</code></dt><dd>The character (on the given line) at which the token starts.</dd>
+        <dt><code>end</code></dt><dd>The character at which the token ends.</dd>
+        <dt><code>string</code></dt><dd>The token's string.</dd>
+        <dt><code>className</code></dt><dd>The class the mode assigned
+        to the token. (Can be null when no class was assigned.)</dd>
+        <dt><code>state</code></dt><dd>The mode's state at the end of this token.</dd>
+      </dl></dd>
+
+      <dt id="markText"><code>markText(from, to, className) → function</code></dt>
+      <dd>Can be used to mark a range of text with a specific CSS
+      class name. <code>from</code> and <code>to</code> should
+      be <code>{line, ch}</code> objects. The method will return an
+      object with two methods, <code>clear()</code>, which removes the
+      mark, and <code>find()</code>, which returns a <code>{from,
+      to}</code> (both document positions), indicating the current
+      position of the marked range.</dd>
+
+      <dt id="setMarker"><code>setMarker(line, text, className) → lineHandle</code></dt>
+      <dd>Add a gutter marker for the given line. Gutter markers are
+      shown in the line-number area (instead of the number for this
+      line). Both <code>text</code> and <code>className</code> are
+      optional. Setting <code>text</code> to a Unicode character like
+      ● tends to give a nice effect. To put a picture in the gutter,
+      set <code>text</code> to a space and <code>className</code> to
+      something that sets a background image. If you
+      specify <code>text</code>, the given text (which may contain
+      HTML) will, by default, replace the line number for that line.
+      If this is not what you want, you can include the
+      string <code>%N%</code> in the text, which will be replaced by
+      the line number.</dd>
+      <dt id="clearMarker"><code>clearMarker(line)</code></dt>
+      <dd>Clears a marker created
+      with <code>setMarker</code>. <code>line</code> can be either a
+      number or a handle returned by <code>setMarker</code> (since a
+      number may now refer to a different line if something was added
+      or deleted).</dd>
+      <dt id="setLineClass"><code>setLineClass(line, className) → lineHandle</code></dt>
+      <dd>Set a CSS class name for the given line. <code>line</code>
+      can be a number or a line handle (as returned
+      by <code>setMarker</code> or this function).
+      Pass <code>null</code> to clear the class for a line.</dd>
+      <dt id="hideLine"><code>hideLine(line) → lineHandle</code></dt>
+      <dd>Hide the given line (either by number or by handle). Hidden
+      lines don't show up in the editor, and their numbers are skipped
+      when <a href="#option_lineNumbers">line numbers</a> are enabled.
+      Deleting a region around them does delete them, and coping a
+      region around will include them in the copied text.</dd>
+      <dt id="showLine"><code>showLine(line) → lineHandle</code></dt>
+      <dd>The inverse of <code>hideLine</code>—re-shows a previously
+      hidden line, by number or by handle.</dd>
+
+      <dt id="lineInfo"><code>lineInfo(line) → object</code></dt>
+      <dd>Returns the line number, text content, and marker status of
+      the given line, which can be either a number or a handle
+      returned by <code>setMarker</code>. The returned object has the
+      structure <code>{line, text, markerText, markerClass}</code>.</dd>
+
+      <dt id="addWidget"><code>addWidget(pos, node, scrollIntoView)</code></dt>
+      <dd>Puts <code>node</code>, which should be an absolutely
+      positioned DOM node, into the editor, positioned right below the
+      given <code>{line, ch}</code> position.
+      When <code>scrollIntoView</code> is true, the editor will ensure
+      that the entire node is visible (if possible). To remove the
+      widget again, simply use DOM methods (move it somewhere else, or
+      call <code>removeChild</code> on its parent).</dd>
+
+      <dt id="matchBrackets"><code>matchBrackets()</code></dt>
+      <dd>Force matching-bracket-highlighting to happen.</dd>
+
+      <dt id="lineCount"><code>lineCount() → number</code></dt>
+      <dd>Get the number of lines in the editor.</dd>
+
+      <dt id="getCursor"><code>getCursor(start) → object</code></dt>
+      <dd><code>start</code> is a boolean indicating whether the start
+      or the end of the selection must be retrieved. If it is not
+      given, the current cursor pos, i.e. the side of the selection
+      that would move if you pressed an arrow key, is chosen.
+      A <code>{line, ch}</code> object will be returned.</dd>
+      <dt id="somethingSelected"><code>somethingSelected() → boolean</code></dt>
+      <dd>Return true if any text is selected.</dd>
+      <dt id="setCursor"><code>setCursor(pos)</code></dt>
+      <dd>Set the cursor position. You can either pass a
+      single <code>{line, ch}</code> object, or the line and the
+      character as two separate parameters.</dd>
+      <dt id="setSelection"><code>setSelection(start, end)</code></dt>
+      <dd>Set the selection range. <code>start</code>
+      and <code>end</code> should be <code>{line, ch}</code> objects.</dd>
+
+      <dt id="getLine"><code>getLine(n) → string</code></dt>
+      <dd>Get the content of line <code>n</code>.</dd>
+      <dt id="setLine"><code>setLine(n, text)</code></dt>
+      <dd>Set the content of line <code>n</code>.</dd>
+      <dt id="removeLine"><code>removeLine(n)</code></dt>
+      <dd>Remove the given line from the document.</dd>
+
+      <dt id="getRange"><code>getRange(from, to) → string</code></td>
+      <dd>Get the text between the given points in the editor, which
+      should be <code>{line, ch}</code> objects.</dd>
+      <dt id="replaceRange"><code>replaceRange(string, from, to)</code></dt>
+      <dd>Replace the part of the document between <code>from</code>
+      and <code>to</code> with the given string. <code>from</code>
+      and <code>to</code> must be <code>{line, ch}</code>
+      objects. <code>to</code> can be left off to simply insert the
+      string at position <code>from</code>.</dd>
+      
+      <dt id="coordsFromIndex"><code>coordsFromIndex(index) → object</code></dt>
+      <dd>Calculates and returns a <code>{line, ch}</code> object for a
+      zero-based <code>index</code> who's value is relative to the start of the
+      editor's text. If the <code>index</code> is out of range of the text then
+      the returned object is clipped to start or end of the text
+      respectively.</dd>
+    </dl>
+
+    <p>The following are more low-level methods:</p>
+
+    <dl>
+      <dt id="operation"><code>operation(func) → result</code></dt>
+      <dd>CodeMirror internally buffers changes and only updates its
+      DOM structure after it has finished performing some operation.
+      If you need to perform a lot of operations on a CodeMirror
+      instance, you can call this method with a function argument. It
+      will call the function, buffering up all changes, and only doing
+      the expensive update after the function returns. This can be a
+      lot faster. The return value from this method will be the return
+      value of your function.</dd>
+
+      <dt id="refresh"><code>refresh()</code></dt>
+      <dd>If your code does something to change the size of the editor
+      element (window resizes are already listened for), or unhides
+      it, you should probably follow up by calling this method to
+      ensure CodeMirror is still looking as intended.</dd>
+
+      <dt id="getInputField"><code>getInputField() → textarea</code></dt>
+      <dd>Returns the hiden textarea used to read input.</dd>
+      <dt id="getWrapperElement"><code>getWrapperElement() → node</code></dt>
+      <dd>Returns the DOM node that represents the editor. Remove this
+      from your tree to delete an editor instance.</dd>
+      <dt id="getScrollerElement"><code>getScrollerElement() → node</code></dt>
+      <dd>Returns the DOM node that is responsible for the sizing and
+      the scrolling of the editor. You can change
+      the <code>height</code> and <code>width</code> styles of this
+      element to resize an editor. (You might have to call
+      the <a href="#refresh"><code>refresh</code></a> method
+      afterwards.)</dd>
+      <dt id="getGutterElement"><code>getGutterElement() → node</code></dt>
+      <dd>Fetches the DOM node that represents the editor gutter.</dd>
+
+      <dt id="getStateAfter"><code>getStateAfter(line) → state</code></dt>
+      <dd>Returns the mode's parser state, if any, at the end of the
+      given line number. If no line number is given, the state at the
+      end of the document is returned. This can be useful for storing
+      parsing errors in the state, or getting other kinds of
+      contextual information for a line.</dd>
+    </dl>
+
+    <p id="fromTextArea">Finally, the <code>CodeMirror</code> object
+    itself has a method <code>fromTextArea</code>. This takes a
+    textarea DOM node as first argument and an optional configuration
+    object as second. It will replace the textarea with a CodeMirror
+    instance, and wire up the form of that textarea (if any) to make
+    sure the editor contents are put into the textarea when the form
+    is submitted. A CodeMirror instance created this way has two
+    additional methods:</p>
+
+    <dl>
+      <dt id="save"><code>save()</code></dt>
+      <dd>Copy the content of the editor into the textarea.</dd>
+
+      <dt id="toTextArea"><code>toTextArea()</code></dt>
+      <dd>Remove the editor, and restore the original textarea (with
+      the editor's current content).</dd>
+    </dl>
+
+    <p id="defineExtension">If you want to define extra methods in terms
+    of the CodeMirror API, it is possible to
+    use <code>CodeMirror.defineExtension(name, value)</code>. This
+    will cause the given value (usually a method) to be added to all
+    CodeMirror instances created from then on.</p>
+
+    <h2 id="modeapi">Writing CodeMirror Modes</h2>
+
+    <p>Modes typically consist of a JavaScript file and a CSS file.
+    The CSS file (see, for
+    example <a href="mode/javascript/javascript.css"><code>javascript.css</code></a>)
+    defines the classes that will be used to style the syntactic
+    elements of the code, and the script contains the logic to
+    actually assign these classes to the right pieces of text.</p>
+
+    <p>You'll usually want to use some kind of prefix for your CSS
+    classes, so that they are unlikely to clash with other classes,
+    both those used by other modes and those defined by the page in
+    which CodeMirror is embedded.</p>
+
+    <p id="defineMode">The mode script should
+    call <code>CodeMirror.defineMode</code> to register itself with
+    CodeMirror. This function takes two arguments. The first should be
+    the name of the mode, for which you should use a lowercase string,
+    preferably one that is also the name of the files that define the
+    mode (i.e. <code>"xml"</code> is defined <code>xml.js</code>). The
+    second argument should be a function that, given a CodeMirror
+    configuration object (the thing passed to
+    the <code>CodeMirror</code> function) and a mode configuration
+    object (as in the <a href="#option_mode"><code>mode</code></a>
+    option), returns a mode object.</p>
+
+    <p>Typically, you should use this second argument
+    to <code>defineMode</code> as your module scope function (modes
+    should not leak anything into the global scope!), i.e. write your
+    whole mode inside this function.</p>
+
+    <p>The main responsibility of a mode script is <em>parsing</em>
+    the content of the editor. Depending on the language and the
+    amount of functionality desired, this can be done in really easy
+    or extremely complicated ways. Some parsers can be stateless,
+    meaning that they look at one element (<em>token</em>) of the code
+    at a time, with no memory of what came before. Most, however, will
+    need to remember something. This is done by using a <em>state
+    object</em>, which is an object that can be mutated every time a
+    new token is read.</p>
+
+    <p id="startState">Modes that use a state must define
+    a <code>startState</code> method on their mode object. This is a
+    function of no arguments that produces a state object to be used
+    at the start of a document.</p>
+
+    <p id="token">The most important part of a mode object is
+    its <code>token(stream, state)</code> method. All modes must
+    define this method. It should read one token from the stream it is
+    given as an argument, optionally update its state, and return a
+    style string, or <code>null</code> for tokens that do not have to
+    be styled. For your styles, you can either use the 'standard' ones
+    defined in the themes (without the <code>cm-</code> prefix), or
+    define your own (as the <a href="../mode/diff/index.html">diff</a>
+    mode does) and have people include a custom theme for your
+    mode.<p>
+
+    <p id="StringStream">The stream object encapsulates a line of code
+    (tokens may never span lines) and our current position in that
+    line. It has the following API:</p>
+
+    <dl>
+      <dt><code>eol() → boolean</code></dt>
+      <dd>Returns true only if the stream is at the end of the
+      line.</dd>
+      <dt><code>sol() → boolean</code></dt>
+      <dd>Returns true only if the stream is at the start of the
+      line.</dd>
+
+      <dt><code>peek() → character</code></dt>
+      <dd>Returns the next character in the stream without advancing
+      it. Will return <code>undefined</code> at the end of the
+      line.</dd>
+      <dt><code>next() → character</code></dt>
+      <dd>Returns the next character in the stream and advances it.
+      Also returns <code>undefined</code> when no more characters are
+      available.</dd>
+
+      <dt><code>eat(match) → character</code></dt>
+      <dd><code>match</code> can be a character, a regular expression,
+      or a function that takes a character and returns a boolean. If
+      the next character in the stream 'matches' the given argument,
+      it is consumed and returned. Otherwise, <code>undefined</code>
+      is returned.</dd>
+      <dt><code>eatWhile(match) → boolean</code></dt>
+      <dd>Repeatedly calls <code>eat</code> with the given argument,
+      until it fails. Returns true if any characters were eaten.</dd>
+      <dt><code>eatSpace() → boolean</code></dt>
+      <dd>Shortcut for <code>eatWhile</code> when matching
+      white-space.</dd>
+      <dt><code>skipToEnd()</code></dt>
+      <dd>Moves the position to the end of the line.</dd>
+      <dt><code>skipTo(ch) → boolean</code></dt>
+      <dd>Skips to the next occurrence of the given character, if
+      found on the current line (doesn't advance the stream if the
+      character does not occur on the line). Returns true if the
+      character was found.</dd>
+      <dt><code>match(pattern, consume, caseFold) → boolean</code></dt>
+      <dd>Act like a
+      multi-character <code>eat</code>—if <code>consume</code> is true
+      or not given—or a look-ahead that doesn't update the stream
+      position—if it is false. <code>pattern</code> can be either a
+      string or a regular expression starting with <code>^</code>.
+      When it is a string, <code>caseFold</code> can be set to true to
+      make the match case-insensitive. When successfully matching a
+      regular expression, the returned value will be the array
+      returned by <code>match</code>, in case you need to extract
+      matched groups.</dd>
+
+      <dt><code>backUp(n)</code></dt>
+      <dd>Backs up the stream <code>n</code> characters. Backing it up
+      further than the start of the current token will cause things to
+      break, so be careful.</dd>
+      <dt><code>column() → integer</code></dt>
+      <dd>Returns the column (taking into account tabs) at which the
+      current token starts. Can be used to find out whether a token
+      starts a new line.</dd>
+      <dt><code>indentation() → integer</code></dt>
+      <dd>Tells you how far the current line has been indented, in
+      spaces. Corrects for tab characters.</dd>
+
+      <dt><code>current() → string</code></dt>
+      <dd>Get the string between the start of the current token and
+      the current stream position.</dd>
+    </dl>
+
+    <p id="blankLine">By default, blank lines are simply skipped when
+    tokenizing a document. For languages that have significant blank
+    lines, you can define a <code>blankLine(state)</code> method on
+    your mode that will get called whenever a blank line is passed
+    over, so that it can update the parser state.</p>
+
+    <p id="copyState">Because state object are mutated, and CodeMirror
+    needs to keep valid versions of a state around so that it can
+    restart a parse at any line, copies must be made of state objects.
+    The default algorithm used is that a new state object is created,
+    which gets all the properties of the old object. Any properties
+    which hold arrays get a copy of these arrays (since arrays tend to
+    be used as mutable stacks). When this is not correct, for example
+    because a mode mutates non-array properties of its state object, a
+    mode object should define a <code>copyState</code> method,
+    which is given a state and should return a safe copy of that
+    state.</p>
+
+    <p id="compareStates">By default, CodeMirror will stop re-parsing
+    a document as soon as it encounters a few lines that were
+    highlighted the same in the old parse as in the new one. It is
+    possible to provide an explicit way to test whether a state is
+    equivalent to another one, which CodeMirror will use (instead of
+    the unchanged-lines heuristic) to decide when to stop
+    highlighting. You do this by providing
+    a <code>compareStates</code> method on your mode object, which
+    takes two state arguments and returns a boolean indicating whether
+    they are equivalent. See the XML mode, which uses this to provide
+    reliable highlighting of bad closing tags, as an example.</p>
+
+    <p id="indent">If you want your mode to provide smart indentation
+    (see <a href="#option_enterMode"><code>entermode</code></a>
+    and <a href="#option_tabMode"><code>tabMode</code></a> when they
+    have a value of <code>"indent"</code>), you must define
+    an <code>indent(state, textAfter)</code> method on your mode
+    object.</p>
+
+    <p>The indentation method should inspect the given state object,
+    and optionally the <code>textAfter</code> string, which contains
+    the text on the line that is being indented, and return an
+    integer, the amount of spaces to indent. It should usually take
+    the <a href="#option_indentUnit"><code>indentUnit</code></a>
+    option into account.</p>
+
+    <p id="electricChars">Finally, a mode may define
+    an <code>electricChars</code> property, which should hold a string
+    containing all the characters that should trigger the behaviour
+    described for
+    the <a href="#option_electricChars"><code>electricChars</code></a>
+    option.</p>
+
+    <p>So, to summarize, a mode <em>must</em> provide
+    a <code>token</code> method, and it <em>may</em>
+    provide <code>startState</code>, <code>copyState</code>,
+    and <code>indent</code> methods. For an example of a trivial mode,
+    see the <a href="mode/diff/diff.js">diff mode</a>, for a more
+    involved example, see
+    the <a href="mode/javascript/javascript.js">JavaScript
+    mode</a>.</p>
+
+    <p>Sometimes, it is useful for modes to <em>nest</em>—to have one
+    mode delegate work to another mode. An example of this kind of
+    mode is the <a href="mode/htmlmixed/htmlmixed.js">mixed-mode HTML
+    mode</a>. To implement such nesting, it is usually necessary to
+    create mode objects and copy states yourself. To create a mode
+    object, there are <code>CodeMirror.getMode(options,
+    parserConfig)</code>, where the first argument is a configuration
+    object as passed to the mode constructor function, and the second
+    argument is a mode specification as in
+    the <a href="#option_mode"><code>mode</code></a> option. To copy a
+    state object, call <code>CodeMirror.copyState(mode, state)</code>,
+    where <code>mode</code> is the mode that created the given
+    state.</p>
+
+    <p>To make indentation work properly in a nested parser, it is
+    advisable to give the <code>startState</code> method of modes that
+    are intended to be nested an optional argument that provides the
+    base indentation for the block of code. The JavaScript and CSS
+    parser do this, for example, to allow JavaScript and CSS code
+    inside the mixed-mode HTML mode to be properly indented.</p>
+
+    <p>Finally, it is possible to associate your mode, or a certain
+    configuration of your mode, with
+    a <a href="http://en.wikipedia.org/wiki/MIME">MIME</a> type. For
+    example, the JavaScript mode associates itself
+    with <code>text/javascript</code>, and its JSON variant
+    with <code>application/json</code>. To do this,
+    call <code>CodeMirror.defineMIME(mime, modeSpec)</code>,
+    where <code>modeSpec</code> can be a string or object specifying a
+    mode, as in the <a href="#option_mode"><code>mode</code></a>
+    option.</p>
+
+</div><div class="rightsmall blk">
 
     <h2>Contents</h2>
 
     <ul>
-      <li><a href="#useage">Basic Useage</a></li>
-      <li><a href="#configuration">Configuration</a></li>
-      <li><a href="#parsers">Parsers</a></li>
-      <li><a href="#programming">Programming Interface</a></li>
-      <li><a href="#writeparser">Writing a Parser</a></li>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#usage">Basic Usage</a></li>
+      <li><a href="#config">Configuration</a></li>
+      <li><a href="#styling">Customized Styling</a></li>
+      <li><a href="#api">Programming API</a></li>
+      <li><a href="#modeapi">Writing CodeMirror Modes</a></li>
     </ul>
 
-    <h2 id="useage">Basic Usage</h2>
+</div></div>
 
-    <p>Inside the editor, the tab key is used to re-indent the current
-    selection (or the current line when nothing is selected), and
-    pressing enter will, apart from inserting a line break,
-    automatically indent the new line. Pressing control-enter will
-    cause the whole buffer to be re-coloured, which can be helpful
-    when some colouring has become out-of-date without the editor
-    noticing it.</p>
-
-    <p>The editor sports an undo/redo system, accessible with
-    control-z (undo) and control-y (redo). Safari will not allow
-    client scripts to capture control-z presses, but you can use
-    control-backspace instead on that browser.</p>
-
-    <p>The key-combination control-[ triggers a paren-blink: If the
-    cursor is directly after a '(', ')', '[', ']', '{', or '}', the
-    editor looks for the matching character, and highlights these
-    characters for a moment. There is an option to enable this to
-    happen any time the user types something or moves the cursor.</p>
-
-    <p>To use CodeMirror in a document, you should add a script tag to
-    load <a href="js/codemirror.js"><code>codemirror.js</code></a>. This
-    adds two objects to your environment, <code>CodeMirror</code> and
-    <code>CodeMirrorConfig</code>. The first is the interface to the
-    editor, the second can be used to configure it. (Note that this is
-    the only name-space pollution you can expect from CodeMirror --
-    all other cruft is kept inside the IFRAMEs that it creates when
-    you open an editor.)</p>
-
-    <p>To add an editor to a document, you must choose a place, a
-    parser, and a style-sheet for it. For example, to append an
-    XML editor to the body of the document, you do:</p>
-
-    <pre class="code">var editor = new CodeMirror(document.body, {
-  parserfile: "parsexml.js",
-  stylesheet: "xmlcolors.css"
-});</pre>
-
-    <p>The first argument to the <code>CodeMirror</code> constructor
-    can be a DOM node, in which case the editor gets appended to that
-    node, or a function, which will be called with the IFRAME node as
-    argument, and which is expected to place that node somewhere in
-    the document.</p>
-
-    <p>The second (optional) argument is an object that specifies
-    options. A set of default options (see below) is present in the
-    <code>CodeMirrorConfig</code> object, but each instance of the
-    editor can be given a set of specific options to override these
-    defaults. In this case, we specified that the parser should be
-    loaded from the <a
-    href="js/parsexml.js"><code>"parsexml.js"</code></a> file, and
-    that <a href="css/xmlcolors.css"><code>"xmlcolors.css"</code></a>
-    should be used to specify the colours of the code.</p>
-
-    <p>Another example:</p>
-
-    <pre class="code">var editor = new CodeMirror(CodeMirror.replace("inputfield"), {
-  parserfile: ["tokenizejavascript.js", "parsejavascript.js"],
-  path: "lib/codemirror/js/",
-  stylesheet: "lib/codemirror/css/jscolors.css",
-  content: document.getElementById("inputfield").value
-});</pre>
-
-    <p>Here we use the utility function
-    <code>CodeMirror.replace</code> to create a function that will
-    replace a node in the current document (given either directly or
-    by ID) with the editor. We also select the JavaScript parser this
-    time, and give a <code>path</code> option to tell the editor that
-    its files are not located in the same directory as the current
-    HTML page, but in <code>"lib/codemirror/"</code>.</p>
-
-    <p>There is a function
-    <code>CodeMirror.isProbablySupported()</code> that causes some
-    1998-style browser detection to happen, returning
-    <code>false</code> if CodeMirror is probably not supported on the
-    browser, <code>true</code> if it probably is, and
-    <code>null</code> if it has no idea. As the name suggests, this is
-    not something you can rely on, but it's usually better than
-    nothing.</p>
-
-    <p>Another utility function, <code>CodeMirror.fromTextArea</code>,
-    will, given a textarea node or the id of such a node, hide the
-    textarea and replace it with a CodeMirror frame. If the textarea
-    was part of a form, an <code>onsubmit</code> handler will be
-    registered with this form, which will load the content of the
-    editor into the textarea, so that it can be submitted as normal.
-    This function optionally takes a configuration object as second
-    argument.</p>
-
-    <pre class="code">var editor = CodeMirror.fromTextArea("inputfield", {
-  parserfile: ["tokenizejavascript.js", "parsejavascript.js"],
-  path: "lib/codemirror/js/",
-  stylesheet: "lib/codemirror/css/jscolors.css"
-});</pre>
-
-    <p>The reason that the script path has to be configured is that
-    CodeMirror will load in a bunch of extra files when an editor is
-    created (the parser script, among others). To be able to do this,
-    it has to know where to find them. These are all the JavaScript
-    files that are part of CodeMirror itself:</p>
-
-    <dl>
-      <dt><a href="js/codemirror.js"><code>codemirror.js</code></a></dt>
-      <dd>Main interface, takes care of default configuration and the
-      definition of editor frames. Include this in your HTML
-      document.</dd>
-      <dt><a href="js/editor.js"><code>editor.js</code></a></dt> <dd>The
-      code that takes care of reacting to user input, colouring text,
-      and indenting lines.</dd>
-      <dt><a href="js/util.js"><code>util.js</code></a></dt> <dd>A few
-      generic utility functions.</dd>
-      <dt><a
-      href="js/undo.js"><code>undo.js</code></a></dt>
-      <dd>Implements the undo history for the editor.</dd>
-      <dt><a
-      href="js/stringstream.js"><code>stringstream.js</code></a></dt>
-      <dd>Objects for wrapping the textual input to the parser.</dd>
-      <dt><a href="js/select.js"><code>select.js</code></a></dt> <dd>Some
-      helper utilities for working with selected text and cursor
-      positions.</dd>
-      <dt><a href="js/tokenize.js"><code>tokenize.js</code></a></dt>
-      <dd>Helper framework for writing tokenisers.</dd>
-    </dl>
-
-    <p>Most of these are rather full of comments, which can be useful
-    when you are trying to figure out how they work, but wastes a lot
-    of bandwidth in a production system. Take a look at the
-    description of the <code>basefiles</code> option below if you want
-    to concatenate and minimise the library.</p>
-
-    <p>Apart from these, there are files that implement the various
-    parsers. These all start with either <code>parse</code> or
-    <code>tokenize</code>.</p>
-
-    <h2 id="configuration">Configuration</h2>
-
-    <p>There are three ways to configure CodeMirror:</p>
-
-    <ul>
-      <li>If you define a global <code>CodeMirrorConfig</code> object
-      before loading <a
-      href="js/codemirror.js"><code>codemirror.js</code></a>, the
-      configuration options in that object will override the
-      defaults.</li>
-      <li>By assigning to the properties of the
-      <code>CodeMirrorConfig</code> object, configuration defaults can
-      be overridden after loading <a
-      href="js/codemirror.js"><code>codemirror.js</code></a>.</li>
-      <li>The <code>CodeMirror</code> constructor can be given a second
-      argument, an object, which will override some options for just
-      that editor. Options not mentioned in this object will default to
-      the values in the <code>CodeMirrorConfig</code> object.</li>
-    </ul>
-
-    <p>The options that can be specified are these (most have sensible
-    defaults specified in <a
-    href="js/codemirror.js"><code>codemirror.js</code></a>):</p>
-
-    <dl>
-
-      <dt><code>stylesheet</code></dt><dd>The file name of the style-sheet
-      that should be used to colour the code in the editor frame. See <a
-      href="css/jscolors.css"><code>jscolors.css</code></a> for an
-      example.</dd>
-
-      <dt><code>path</code></dt><dd>The path that is prefixed to
-      script file names when they are loaded into an IFRAME. (Note that
-      this is not applied to the style-sheet file name.)</dd>
-
-      <dt><code>parserfile</code></dt><dd>A file name string, or an
-      array of strings that name the files containing the parser. See
-      below for the interface that such a parser should
-      implement.</dd>
-
-      <dt><code>basefiles</code></dt><dd>An array of strings naming
-      the files containing the base CodeMirror functionality. Defaults
-      to <code>["util.js", "stringstream.js", "select.js", "undo.js",
-      "editor.js", "tokenize.js"]</code>, but if you put them all into
-      a single file to reduce latency, or add some functionality, you
-      might have to adjust that.</dd>
-
-      <dt><code>iframeClass</code></dt><dd>Set this to a string to
-      give the IFRAME node created for the editor a custom CSS class.
-      Defaults to <code>null</code>.</dd>
-      
-      <dt><code>passDelay</code></dt><dd>Gives the amount of
-      milliseconds between colouring passes. Defaults to 200.</dd>
-
-      <dt><code>passTime</code></dt><dd>Specifies the maximum amount
-      of time that the highlighter will spend in one shot. Setting
-      this too high will cause the editor to 'freeze' the browser for
-      noticeable intervals. Defaults to 50.</dd>
-
-      <dt><code>continuousScanning</code></dt><dd>Configure continuous
-      scanning of the document. When <code>false</code>, scanning is
-      disabled. When set to a number, say <code>N</code>, a
-      'background' process will scan the document for
-      <code>passTime</code> (see above) milliseconds every
-      <code>N</code> milliseconds, regardless of whether anything
-      changed. This makes sure non-local changes propagate through the
-      document, and will help keep everything consistent. It does add
-      extra processing cost, even for an idle editor. Default value is
-      <code>false</code>.</dd>
-
-      <dt><code>autoMatchParens</code></dt><dd>When <code>true</code>,
-      will cause parens to be matched every time a key is pressed or
-      the user clicks on the document. Defaults to <code>false</code>.
-      Might be expensive for big documents.</dd>
-
-      <dt><code>markParen</code>,
-      <code>unmarkParen</code></dt><dd>Functions. Can be used to
-      customise the way brackets are marked (and unmarked) when
-      matched. Both take the bracket's <code>SPAN</code> node as their
-      first argument, and <code>markParen</code> takes a second
-      boolean argument indicating whether a successful match was
-      found. The default is to make the brackets bold and green (or
-      red, if not matched).</dd>
-
-      <dt><code>saveFunction</code></dt><dd>If given a function
-      value, that function will be invoked when the user presses
-      control-s. You should advise your Opera users to use
-      control-shift-s instead, since plain control-s will bring up the
-      'save page' dialog. Defaults to <code>null</code>.</dd>
-
-      <dt><code>undoDepth</code></dt><dd>Maximum length of the undo
-      history. Default is 50. This setting is changeable with the
-      <code>setUndoDepth(depth)</code> method on CodeMirror
-      instances.</dd>
-
-      <dt><code>onChange</code></dt><dd>An optional function of zero
-      arguments that gets called whenever the document is changed.
-      Happens at undo-commit time, not instantaniously.</dd>
-
-      <dt><code>undoDelay</code></dt><dd>When nothing is done in the
-      editor for this amount of milliseconds, pending changes get
-      added to the undo history. Setting this lower will give the undo
-      functionality a finer granularity. Defaults to 800.</dd>
-
-      <dt><code>width</code>, <code>height</code></dt><dd>The size of
-      the editor frame, given as a style-sheet quantities (for example
-      <code>"600px"</code> or <code>"100%"</code>).</dd>
-
-      <dt><code>disableSpellcheck</code></dt><dd>Should the editor
-      disable spell-checking on browsers that support it (Firefox 2+).
-      Default is <code>true</code>, since for most code spell-checking
-      is useless. Can be changed with the
-      <code>setSpellCheck(on)</code> method.</dd>
-
-      <dt><code>textWrapping</code></dt><dd>Can be used to disable or
-      enable text-wrapping in the editor frame. Default is
-      <code>true</code>. Changeable with the
-      <code>setTextWrapping(on)</code> method.</dd>
-
-      <dt><code>lineNumbers</code></dt><dd>Show line numbers to the
-      left of the editor. This requires you to specify a style for the
-      <code>CodeMirror-line-numbers</code> CSS class (in the outer
-      document) to configure the width, font, colors, etcetera for the
-      line-number DIV. You have to make sure that lines in the
-      numbering element have the same height as lines in the editor.
-      This is most easily done by giving them both the same font and
-      an absolute ('pt' or 'px') font size. This option defaults to
-      <code>false</code>. Changeable with the
-      <code>setLineNumbers(on)</code> method.</dd>
-
-      <dt><code>lineNumberDelay</code>,
-      <code>lineNumberTime</code></dt><dd>When both line numbers are
-      and text wrapping are turned on, updating line numbers can be
-      expensive. These settings can be used to control how fast the
-      updating happens &#x2015; they work in the same way as
-      <code>passDelay</code> and <code>passTime</code>.</dd>
-
-      <dt><code>indentUnit</code></dt><dd>An integer that specifies
-      the amount of spaces one 'level' of indentation should add.
-      Default is <code>2</code>. Changeable in a running editor using
-      the <code>setIndentUnit(spaces)</code> method.</dd>
-
-      <dt><code>tabMode</code></dt><dd>Determines what the effect of
-      pressing tab is. Possibilities are:
-      <dl>
-        <dt><code>"indent"</code></dt><dd>The default. Causes tab to
-        adjust the indentation of the selection or current line using
-        the parser's rules.</dd>
-        <dt><code>"spaces"</code></dt><dd>Pressing tab simply inserts
-        four spaces.</dd>
-        <dt><code>"default"</code></dt><dd>CodeMirror does not
-        interfere with the tab key, but leaves it to the browser to
-        handle it. Binds shift-space to regular indentation
-        behaviour.</dd>
-        <dt><code>"shift"</code></dt><dd>Pressing tab indents the
-        current line (or selection) one <code>indentUnit</code>
-        deeper, pressing shift-tab, un-indents it.</dd>
-      </dl>
-      This option can be changed at run-time using the
-      <code>setTabMode(mode)</code> method.</dd>
-
-      <dt><code>reindentOnLoad</code></dt><dd>When <code>true</code>,
-      this causes the content of the editor to be reindented
-      immediately when the editor loads. Defaults to
-      <code>false</code>.</dd>
-
-      <dt><code>readOnly</code></dt><dd>When set to <code>true</code>,
-      the document is not editable.</dd>
-
-      <dt><code>initCallback</code></dt><dd>If set to a function, this
-      will be called (with the editor object as its argument) after
-      the editor has finished initialising.</dd>
-      
-      <dt><code>cursorActivity</code></dt><dd>A function that is
-      called every time the cursor moves, with the top-level node that
-      the cursor is inside or next to as an argument. Can be used to
-      have some controls react to the context of the cursor.</dd>
-
-      <dt><code>activeTokens</code></dt><dd>Can be set to a function
-      that will be called with <code>(spanNode, tokenObject,
-      editor)</code> arguments whenever a new token node is being
-      added to the document. Can be used to do things like add event
-      handlers to nodes. Should <em>not</em> change the DOM structure
-      of the node (so no turning the span into a link), since this
-      will greatly confuse the editor.</dd>
-
-      <dt id="parserConfig"><code>parserConfig</code></dt><dd>An
-      object value that is passed along to the parser to configure it.
-      What this object should look like depends on the parser
-      used.</dd>
-
-      <dt><code>content</code></dt><dd>The starting content of the
-      editor. You'll probably not want to provide a global default for
-      this, but add it to the <code>options</code> object passed to
-      individual editors as they are created.</dd>
-
-    </dl>
-
-    <h2 id="parsers">Parsers</h2>
-
-    <p>(If you want to use a CodeMirror parser to highlight a piece of
-    text, without creating an editor, see <a
-    href="highlight.html">this example</a>, and the <code><a
-    href="js/highlight.js">highlight.js</a></code> script.)</p>
-
-    <p>The following parsers come with the distribution of CodeMirror:</p>
-
-    <dl>
-      <dt><code><a href="js/parsexml.js">parsexml.js</a></code> (<a
-      href="htmltest.html">demo</a>)</dt><dd>A HTML/XML parser. Takes
-      a <code>useHTMLKludges</code> configuration option (see the
-      <code><a href="#parserConfig">parserConfig</a></code> option
-      above), which specifies whether the content of the editor is
-      HTML or XML, and things like self-closing tags (<code>br</code>,
-      <code>img</code>) exist. This defaults to <code>true</code>.
-      Example colours for the styles that this parser uses are defined
-      in <code><a
-      href="css/xmlcolors.css">css/xmlcolors.css</a></code>.</dd>
-
-      <dt><code><a
-      href="js/tokenizejavascript.js">tokenizejavascript.js</a></code>,
-      <code><a
-      href="js/parsejavascript.js">parseejavascript.js</a></code> (<a
-      href="jstest.html">demo</a>)</dt><dd>The JavaScript parser.
-      Example colours in <code><a
-      href="css/jscolors.css">css/jscolors.css</a></code>. Takes one
-      configuration option, <code>json</code>, that can be set when
-      the editor content is JSON data. It causes every opening brace
-      to be treated as the start of an object, rather than a
-      block.</dd>
-
-      <dt><code><a href="js/parsecss.js">parsecss.js</a></code> (<a
-      href="csstest.html">demo</a>)</dt><dd>A CSS parser. Styles in
-      <code><a
-      href="css/csscolors.css">css/csscolors.css</a></code></dd>
-
-      <dt><code><a
-      href="js/parsehtmlmixed.js">parsehtmlmixed.js</a></code> (<a
-      href="mixedtest.html">demo</a>)</dt><dd>A mixed-mode HTML
-      parser. Requires the XML, JavaScript, and CSS parsers to also be
-      loaded, so your <code>parserfile</code> option looks something
-      like <code>["parsexml.js", "parsecss.js",
-      "tokenizejavascript.js", "parsejavascript.js",
-      "parsehtmlmixed.js"]</code>.</dd>
-
-      <dt><code><a href="js/parsesparql.js">parsesparql.js</a></code>
-      (<a href="sparqltest.html">demo</a>)</dt><dd>Parses the <a
-      href="http://en.wikipedia.org/wiki/SPARQL">SPARQL</a> query
-      language. Example styles in <code><a
-      href="css/sparqlcolors.css">css/sparqlcolors.css</a></code></dd>
-
-      <dt><code><a
-      href="js/parsedummy.js">parsedummy.js</a></code></dt><dd>A
-      'dummy' parser to make it possible to edit plain text, or
-      documents for which no suitable parser exists.</dd>
-
-      <dt><code><a
-      href="contrib/php/js/parsephp.js">contrib/php/js/parsephp.js</a></code>
-      (<a href="contrib/php/index.html">demo</a>)</dt><dd>PHP
-      parser.</dd>
-
-      <dt><code><a
-      href="contrib/python/js/parsepython.js">contrib/python/js/parsepython.js</a></code>
-      (<a href="contrib/python/index.html">demo</a>)</dt><dd>Python
-      parser.</dd>
-
-      <dt><code><a href="contrib/lua/js/parselua.js">contrib/lua/js/parselua.js</a></code>
-      (<a href="contrib/lua/index.html">demo</a>)</dt><dd>Lua
-      parser.</dd>
-
-    </dl>
-
-    <h2 id="programming">Programming Interface</h2>
-
-    <p>To be as flexible as possible, CodeMirror implements a very
-    plain editable field, without any accompanying buttons, bells, and
-    whistles. <code>CodeMirror</code> objects do, however, provide a
-    number of methods and properties that make it possible to add
-    extra functionality around the editor. <a
-    href="js/mirrorframe.js"><code>mirrorframe.js</code></a> provides
-    a basic example of their usage.</p>
-
-    <h3>Properties</h3>
-
-    <dl>
-      <dt><code>frame</code></dt><dd>The editable frame.</dd>
-      <dt><code>win</code></dt><dd>The window of the editable frame.
-      Mostly useful for attaching event handlers.</dd>
-      <dt><code>wrapping</code></dt><dd>The <code>DIV</code> element
-      wrapped around the frame. This always has a CSS class of
-      <code>CodeMirror-wrapping</code>.</dd>
-    </dl>
-
-    <h3>Methods</h3>
-
-    <dl>
-      <dt><code>getCode()</code> &#8594;
-      <code>string</code></dt><dd>Returns the current content of the
-      editor, as a string.</dd>
-
-      <dt><code>setCode(string)</code></dt><dd>Replaces the current
-      content of the editor with the given value.</dd>
-
-      <dt><code>focus()</code></dt><dd>Gives focus to the editor
-      frame.</dd>
-
-      <dt><code>currentLine()</code> &#8594;
-      <code>number</code></dt><dd>Returns the line on which the cursor
-      is currently sitting. <span class="warn">(Deprecated, see the
-      line-based interface below)</span></dd>
-
-      <dt><code>jumpToLine(number)</code></dt><dd>Moves the cursor to
-      the start of the given line. <span
-      class="warn">(Deprecated)</span></dd>
-
-      <dt><code>selection()</code> &#8594;
-      <code>string</code></dt><dd>Returns the text that is currently
-      selected in the editor.</dd>
-
-      <dt><code>replaceSelection(string)</code></dt><dd>Replaces the
-      currently selected text with the given string. Will also cause
-      the editor frame to gain focus.</dd>
-
-      <dt><code>reindent()</code></dt><dd>Automatically re-indent the
-      whole document.</dd>
-
-      <dt><code>reindentSelection()</code></dt><dd>Automatically
-      re-indent the selected lines.</dd>
-
-      <dt><code>getSearchCursor(string, atCursor, caseFold)</code>
-      &#8594; <code>cursor</code></dt><dd>The first argument indicates
-      the string that should be searched for, and the second indicates
-      whether searching should start at the cursor (<code>true</code>)
-      or at the start of the document (<code>false</code>). When
-      <code>caseFold</code> is true, the search will be
-      case-insensivive. Returns an object that provides an interface
-      for searching. Call its <code>findNext()</code> method to search
-      for an occurrence of the given string. This returns
-      <code>true</code> if something is found, or <code>false</code>
-      if the end of document is reached. When an occurrence has been
-      found, you can call <code>select()</code> to select it, or
-      <code>replace(string)</code> to replace it with a given string.
-      Note that letting the user change the document, or
-      programmatically changing it in any way except for calling
-      <code>replace</code> on the cursor itself, might cause a cursor
-      object to skip back to the beginning of the document.</dd>
-
-      <dt><code>undo()</code></dt><dd>Undo one changeset, if available.</dd>
-      <dt><code>redo()</code></dt><dd>Redo one changeset, if available.</dd>
-      <dt><code>historySize() &#8594; object</code></dt><dd>Get a
-      <code>{undo, redo}</code> object holding the sizes of the undo
-      and redo histories.</dd>
-      <dt><code>clearHistory()</code></dt><dd>Drop all history
-      information.</dd>
-
-      <dt><code>grabKeys(callback, filter)</code></dt><dd>Route
-      keyboard input in the editor to a callback function. This
-      function is given a slightly normalised (see
-      <code>normalizeEvent</code> in <a
-      href="js/util.js"><code>util.js</code></a>) <code>keydown</code>
-      event object. If a second argument is given, this will be used
-      to determine which events to apply the callback to. It should
-      take a key code (as in <code>event.keyCode</code>), and return a
-      boolean, where <code>true</code> means the event should be
-      routed to the callback, and <code>false</code> leaves the key to
-      perform its normal behaviour.</dd>
-      <dt><code>ungrabKeys()</code></dt><dd>Revert the effect of
-      <code>grabKeys</code>.</dd>
-
-      <dt><code>setParser(name)</code></dt><dd>Change the active
-      parser. To use this you'll have to load more than one parser
-      (put the one you want to use as default at the end of the list).
-      Then call this function with a string containing the name of the
-      parser you want to switch to (see the parser script file to find
-      the name, it'll be something like <code>CSSParser</code>).</dd>
-    </dl>
-
-    <p>For detailed interaction with the content of the editor,
-    CodeMirror exposes a line-oriented interface, which allows you to
-    inspect and manipulate the document line by line. Line handles
-    should be considered opaque (they are in fact the <code>BR</code>
-    nodes at the start of the line), except that the value
-    <code>false</code> (but <em>not</em> <code>null</code>) always
-    denotes an invalid value. Since changing the document might cause
-    some line handles to become invalid, every function that takes
-    them as argument can throw
-    <code>CodeMirror.InvalidLineHandle</code>. These are the relevant
-    methods:</p>
-
-    <dl>
-      <dt><code>cursorPosition(start)</code> &#8594;
-      <code>object</code></dt><dd>Retrieve a <code>{line,
-      character}</code> object representing the cursor position.
-      <code>start</code> defaults to <code>true</code> and determines
-      if the startpoint or the endpoint of the selection is used.</dd>
-      <dt><code>firstLine()</code> &#8594;
-      <code>handle</code></dt><dd>Get the first line of the
-      document.</dd>
-      <dt><code>lastLine()</code> &#8594;
-      <code>handle</code></dt><dd>The last line.</dd>
-      <dt><code>nextLine(handle)</code> &#8594;
-      <code>handle</code></dt><dd>Get the line after the given one, or
-      <code>false</code> if that was the last line.</dd>
-      <dt><code>prevLine(handle)</code> &#8594;
-      <code>handle</code></dt><dd>Find the line before the given one,
-      return <code>false</code> if that was the first line.</dd>
-      <dt><code>nthLine(number)</code> &#8594;
-      <code>handle</code></dt><dd>Find the Nth line of the document.
-      Note that the first line counts as one, not zero. Returns
-      <code>false</code> if there is no such line.</dd>
-      <dt><code>lineContent(handle)</code> &#8594;
-      <code>string</code></dt><dd>Retrieve the content of the
-      line.</dd>
-      <dt><code>setLineContent(handle, string)</code></dt><dd>Replace
-      the content of the line with the given string.</dd>
-      <dt><code>removeLine(handle)</code></dt><dd>Remove the given
-      line from the editor. The handle will stay valid after this
-      operation, and now refers to the next line.</dd>
-      <dt><code>lineNumber(handle)</code> &#8594;
-      <code>number</code></dt><dd>Ask which line of the document
-      (1-based) the given line is.</dd>
-      <dt><code>selectLines(startHandle, startOffset,
-      endHandle, endOffset)</code></dt><dd>Move the selection to a
-      specific point. <code>endHandle</code> and
-      <code>endOffset</code> can be omitted to just place the cursor
-      somewhere without selecting any text.</dd>
-      <dt><code>insertIntoLine(handle, position,
-      text)</code></dt><dd>Insert a piece of text into a line.
-      <code>position</code> can be an integer, specifying the position
-      in the line where the text should be inserted, or the string
-      <code>"end"</code>, for the end of the line.</dd>
-    </dl>
-
-    <h2 id="writeparser">Writing a Parser</h2>
-
-    <p>A parser is implemented by one or more files (see
-    <code>parserfile</code> above) which, when loaded, add a
-    <code>Parser</code> property to the <code>Editor</code> object
-    defined by <a href="js/editor.js"><code>editor.js</code></a>. This
-    object must support the following interface:</p>
-
-    <dl>
-
-      <dt><code>make(stream)</code></dt><dd>A function that, given a
-      string stream (see <a
-      href="js/stringstream.js"><code>stringstream.js</code></a>),
-      creates a parser. The behaviour of this parser is described
-      below.</dd>
-
-      <dt><code>electricChars</code></dt><dd>An optional string
-      containing the characters that, when typed, should cause the
-      indentation of the current line to be recomputed (for example
-      <code>"{}"</code> for c-like languages).</dd>
-
-      <dt><code>configure(object)</code></dt><dd>An optional function
-      that can be used to configure the parser. If it exists, and an
-      editor is given a <code>parserConfig</code> option, it will be
-      called with the value of that option.</dd>
-
-      <dt><code>firstIndentation(chars, current,
-      direction)</code></dt><dd>An optional function that is used to
-      determine the proper indentation of the first line of a
-      document. When not provided, <code>0</code> is used.</dd>
-    </dl>
-
-    <p>When the <code>make</code> method is called with a string
-    stream, it should return a MochiKit-style iterator: an object with
-    a <code>next</code> method, which will raise
-    <code>StopIteration</code> when it is at its end (see <a
-    href="http://bob.pythonmac.org/archives/2005/07/06/iteration-in-javascript/">this</a>
-    for details). This iterator, when called, will consume input from
-    the string stream, and produce a token object.</p>
-
-    <p>Token objects represent a single significant piece of the text
-    that is being edited. A token object must have a
-    <code>value</code> property holding the text it stands for, and a
-    <code>style</code> property with the CSS class that should be used
-    to colour this element. This can be anything, except that any
-    whitespace at the start of a line should <em>always</em> have
-    class <code>"whitespace"</code>: The editor must be able to
-    recognize these when it indents lines. Furthermore, each newline
-    character <em>must</em> have its own separate token, which has an
-    <code>indentation</code> property holding a function that can be
-    used to determine the proper indentation level for the next line.
-    This function optionally takes the text in the first token of the
-    next line, the current indentation of the line, and the
-    'direction' of the indentation as arguments, which it can use to
-    adjust the indentation level. The direction argument is only
-    useful for modes in which lines do not have a fixed indentation,
-    and can be modified by multiple tab presses. It is
-    <code>null</code> for 'default' indentations (like what happens
-    when the user presses enter), <code>true</code> for regular tab
-    presses, and <code>false</code> for control-tab or shift-tab.</p>
-
-    <p>So far this should be pretty easy. The hard part is that this
-    iterator must also have a <code>copy</code> method. This method,
-    called without arguments, returns a function representing the
-    current state of the parser. When this state function is later
-    called with a string stream as its argument, it returns a parser
-    object that resumes parsing using the old state and the new input
-    stream. It may assume that only one parser is active at a time,
-    and can clobber the state of the old parser if it wants.</p>
-
-    <p>For examples, see <a
-    href="js/parsejavascript.js"><code>parsejavascript.js</code></a>,
-    <a href="js/parsexml.js"><code>parsexml.js</code></a>, and <a
-    href="js/parsecss.js"><code>parsecss.js</code></a>.</p>
+<div style="height: 2em">&nbsp;</div>
 
   </body>
 </html>

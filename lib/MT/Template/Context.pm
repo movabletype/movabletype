@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -165,6 +165,7 @@ sub var {
         elsif ( lc($1) eq 'config' ) {
             my $setting = $2;
             return '' if $setting =~ m/password/i;
+            return '' if $setting =~ m/secret/i;
             return MT->config($setting);
         }
         return '';

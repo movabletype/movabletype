@@ -6,7 +6,7 @@
   <input type="hidden" name="step" value="seed" />
   <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
   <input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<mt:var name=static_uri escape="html">">
-  <input type="hidden" name="default_language" value="<mt:var name="default_language">" />    
+  <input type="hidden" name="default_language" value="<mt:var name="default_language" escape="html">" />
 <mt:if name="file_not_found">
   <mtapp:statusmsg
      id="file_not_found"
@@ -31,10 +31,6 @@
      can_close="0">
     <__trans phrase="Congratulations! You've successfully configured [_1]." params="<mt:var name=MT_PRODUCT_NAME>">
   </mtapp:statusmsg>
-  <p><__trans phrase="Your configuration settings have been written to the following file:"></p>
-  <div class="mt-config-file-path">
-    <mt:var name="config_file">
-  </div>
   </mt:unless>
 </mt:if>
 <mt:unless name="config_created">
@@ -48,7 +44,7 @@
 </mt:unless>
 
   <div id="retry-buttons" class="actions-bar" <mt:if name="file_not_found">style="display:none;"</mt:if>>
-    <p><mt:var name="file_not_found"></p>
+    <p><mt:var name="file_not_found" escape="html"></p>
     <mt:unless name="config_created">
     <button
        name="retry"
@@ -57,7 +53,7 @@
        class="retry action primary button">
       <__trans phrase="Retry">
     </button>
-    <button 
+    <button
        name="back"
        type="submit"
        onclick="go('previous_step');"
@@ -74,7 +70,7 @@
     </button>
   </mt:unless>
   </div>
-  
+
   <div id="automatic-buttons" class="actions-bar" <mt:unless name="file_not_found">style="display:none;"</mt:unless>>
     <button
        name="retry"

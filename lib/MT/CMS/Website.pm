@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -322,7 +322,6 @@ sub can_view {
     }
 }
 
-
 sub can_view_website_list {
     my $app = shift;
 
@@ -338,8 +337,8 @@ sub can_view_website_list {
 
     require MT::Permission;
     my $cnt = MT::Permission->count(
-        {   author_id => $app->user->id,
-            blog_id => { not => 0 },
+        {   author_id   => $app->user->id,
+            blog_id     => { not => 0 },
             permissions => { not => 'comment' },
         }
     );
@@ -357,7 +356,7 @@ sub can_save {
         }
 
         my $author = $app->user;
-        return $author->permissions($id->id)->can_do('edit_blog_config')
+        return $author->permissions( $id->id )->can_do('edit_blog_config')
             || ( $app->param('cfg_screen')
             && $app->param('cfg_screen') eq 'cfg_publish_profile' );
     }
@@ -379,7 +378,7 @@ sub can_delete {
     return unless $id->isa('MT::Website');
 
     my $author = $app->user;
-    return $author->permissions($id->id)->can_do('delete_website');
+    return $author->permissions( $id->id )->can_do('delete_website');
 
 }
 
@@ -429,7 +428,7 @@ sub dialog_select_website {
                 panel_description => $app->translate("Description"),
                 panel_type        => 'blog',
                 panel_multi       => defined $app->param('multi')
-                ? $app->param('multi')
+                ? scalar( $app->param('multi') )
                 : 0,
                 panel_searchable => 1,
                 panel_first      => 1,
@@ -484,7 +483,7 @@ sub dialog_move_blogs {
                 panel_first       => 1,
                 panel_last        => 1,
                 list_noncron      => 1,
-                return_url        => $app->param('return_args'),
+                return_url        => ( $app->param('return_args') || '' ),
                 blog_ids          => $ids,
             },
         }
@@ -494,7 +493,7 @@ sub dialog_move_blogs {
 sub move_blogs {
     my $app = shift;
     return unless $app->validate_magic;
-    return $app->error($app->translate('Permission denied.'))
+    return $app->error( $app->translate('Permission denied.') )
         unless $app->can_do('move_blogs');
 
     my $website_class = $app->model('website');

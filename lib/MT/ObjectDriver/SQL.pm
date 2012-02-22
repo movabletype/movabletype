@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -395,7 +395,8 @@ sub as_aggregate {
         my $elements
             = ( ref($attribute) eq 'ARRAY' ) ? $attribute : [$attribute];
         foreach (@$elements) {
-            # Remove column alias                                                                                       
+
+            # Remove column alias
             if ( $_->{column} =~ /^([\w_\-\.]+\(.+\))+\s+AS\s+.+$/ ) {
                 $_->{column} = $1;
             }

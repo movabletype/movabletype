@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -85,7 +85,7 @@ sub handle_sign_in {
     if ( $q->param('sig') && !$cmntr ) {
         return 0;
     }
-    return $cmntr;
+    return ( $cmntr, $session );
 }
 
 my $SIG_WINDOW = 60 * 10;    # ten minute handoff between TP and MT

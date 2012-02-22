@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -201,8 +201,9 @@ sub upgrade_functions {
 sub _v5_migrate_blog {
     my $self = shift;
 
-    my $app  = $MT::Upgrade::App;
-    my $user = MT::Author->load( $app->{author}->id );
+    my $app     = $MT::Upgrade::App;
+    my $user_id = ref $app ? $app->{author}->id : $MT::Upgrade::SuperUser;
+    my $user    = MT::Author->load($user_id);
     return if $user->permissions(0)->has('administer_website');
 
     # Create generic website.
@@ -482,8 +483,9 @@ sub _v5_migrate_default_site {
         MT->config( 'DefaultSiteRoot',         undef,        1 );
 
         # Grant new role to system administrator
-        my $app         = $MT::Upgrade::App;
-        my $user        = MT::Author->load( $app->{author}->id );
+        my $app     = $MT::Upgrade::App;
+        my $user_id = ref $app ? $app->{author}->id : $MT::Upgrade::SuperUser;
+        my $user    = MT::Author->load($user_id);
         my $assoc_class = MT->model('association');
         return $self->error(
             $self->translate_escape(

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -6,7 +6,7 @@
 package MT::CMS::Theme;
 
 use strict;
-use MT::Util qw( remove_html dirify is_valid_url );
+use MT::Util qw( remove_html dirify is_valid_url encode_html );
 use MT::Theme;
 use File::Spec;
 
@@ -133,7 +133,7 @@ sub dialog_select_theme {
     $param{namefield}  = $app->param('namefield');
     $param{imagefield} = $app->param('imagefield');
     return $app->permission_denied()
-        unless $app->can_do('manage_themes');
+        unless $app->can_do('open_dialog_select_theme');
 
     my $cfg     = $app->config;
     my $blog    = $app->blog;
@@ -146,12 +146,12 @@ sub dialog_select_theme {
     $param{theme_json} = {
         map {
             $_->{theme_id} => {
-                label => (
+                label => encode_html(
                     'CODE' eq ref $_->{label}
                     ? $_->{label}->()
                     : $_->{label}
                 ),
-                description => $_->{description},
+                description => encode_html( $_->{description} ),
                 thumb       => $_->{thumbnail_url},
                 thumb_w     => $_->{thumb_w},
                 thumb_h     => $_->{thumb_h},
@@ -193,8 +193,11 @@ sub apply {
 
 sub uninstall {
     my $app = shift;
+
+    $app->validate_magic or return;
     $app->can_do('uninstall_theme_package')
         or return $app->permission_denied();
+
     my $q        = $app->param;
     my $theme_id = $q->param('theme_id');
     my $theme    = MT::Theme->load($theme_id);
@@ -378,8 +381,11 @@ sub element_dialog {
 
 sub save_detail {
     my $app = shift;
+
+    $app->validate_magic or return;
     $app->can_do('do_export_theme')
         or return $app->permission_denied();
+
     my $q = $app->param;
     my %param;
     my $blog        = $app->blog;
@@ -413,8 +419,11 @@ sub save_detail {
 
 sub do_export {
     my $app = shift;
+
+    $app->validate_magic or return;
     $app->can_do('do_export_theme')
         or return $app->permission_denied();
+
     my $q    = $app->param;
     my $blog = $app->blog;
     my $theme_id 

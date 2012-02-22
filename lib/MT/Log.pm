@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -33,7 +33,7 @@ __PACKAGE__->install_properties(
             'author_id' => 'integer',
             'level'     => 'integer',
             'category'  => 'string(255)',
-            'metadata'  => 'string(255)',
+            'metadata'  => 'text',
         },
         indexes => {
             created_on => 1,
@@ -189,7 +189,9 @@ sub list_props {
                 while ( my ( $count, $class ) = $iter->() ) {
                     push @options,
                         {
-                        label => $class ? MT->translate($class) : MT->translate('none'),
+                          label => $class
+                        ? MT->translate($class)
+                        : MT->translate('none'),
                         value => $class ? $class : '',
                         };
                 }
@@ -249,9 +251,9 @@ sub list_props {
                 return { level => \@types };
             },
             single_select_options => [
-                { label => MT->translate('Security'),    value => SECURITY() },
-                { label => MT->translate('Error'),       value => ERROR() },
-                { label => MT->translate('Warning'),     value => WARNING() },
+                { label => MT->translate('Security'), value => SECURITY() },
+                { label => MT->translate('Error'),    value => ERROR() },
+                { label => MT->translate('Warning'),  value => WARNING() },
                 { label => MT->translate('Information'), value => INFO() },
                 { label => MT->translate('Debug'),       value => DEBUG() },
                 {   label => MT->translate('Security or error'),
@@ -263,7 +265,9 @@ sub list_props {
                 {   label => MT->translate('Not debug'),
                     value => SECURITY() | ERROR() | WARNING() | INFO()
                 },
-                { label => MT->translate('Debug/error'), value => DEBUG() | ERROR() },
+                {   label => MT->translate('Debug/error'),
+                    value => DEBUG() | ERROR()
+                },
             ],
         },
         metadata => {
@@ -478,7 +482,7 @@ sub description {
 }
 
 # Hint for tranlsate
-# trans('blog'); 
+# trans('blog');
 # trans('website');
 # trans('search');
 # trans('author');

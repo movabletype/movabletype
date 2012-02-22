@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -391,6 +391,10 @@ sub core_tags {
             BuildTemplateID =>
                 \&MT::Template::Tags::System::_hdlr_build_template_id,
             ErrorMessage => \&MT::Template::Tags::System::_hdlr_error_message,
+            PasswordValidation =>
+                \&MT::Template::Tags::System::_hdlr_password_validation_script,
+            PasswordValidationRule =>
+                \&MT::Template::Tags::System::_hdlr_password_validation_rules,
 
             ## App
 
@@ -2438,7 +2442,7 @@ sub _hdlr_set_var {
         $val = _math_operation( $ctx, $op, $existing, $val );
     }
 
-    $val = deep_copy($val, MT->config->DeepCopyRecursiveLimit);
+    $val = deep_copy( $val, MT->config->DeepCopyRecursiveLimit );
 
     if ( defined $key ) {
         $data ||= {};
@@ -3807,7 +3811,10 @@ sub _hdlr_app_action_bar {
         ? ''
         : qq{\n        <mt:include name="include/pagination.tmpl" bar_position="$pos">};
     my $buttons = $ctx->var('action_buttons') || '';
-    my $buttons_html = $buttons =~ /\S/ ? qq{<div class="button-actions actions">$buttons</div>} : '';
+    my $buttons_html
+        = $buttons =~ /\S/
+        ? qq{<div class="button-actions actions">$buttons</div>}
+        : '';
 
     return $ctx->build(<<EOT);
 $form_id
@@ -4387,6 +4394,11 @@ B<Example:> Passing Parameters to a Template Module
 
     sub _include_file {
         my ( $ctx, $arg, $cond ) = @_;
+        if ( !MT->config->AllowFileInclude ) {
+            return $ctx->error(
+                'File include is disabled by "AllowFileInclude" config directive.'
+            );
+        }
         my $file = $arg->{file} or return;
         require File::Basename;
         my $base_filename = File::Basename::basename($file);
@@ -5711,6 +5723,167 @@ sub _hdlr_error_message {
     my ($ctx) = @_;
     my $err = $ctx->stash('error_message');
     defined $err ? $err : '';
+}
+
+###########################################################################
+
+=head2 PasswordValidation
+
+This tag add a password validation JavaScript to a form (user profile,
+new installation) where ever a user need to insert a new password
+
+As one of the rules are that the password should not include the user name,
+The script will try to fish inside the form for the username, (checking
+name, admin_name) and if not exists will use the logined user name
+
+B<Attributes:>
+
+=over 4
+
+=item * form
+
+The name of the form this tag will letch on
+
+=item * password
+
+The name of the password field in the form this tag will check
+
+=item * username
+
+The name of the usrname field in the form to be checked against the password
+If this name is empty string, the username will not be checked.
+
+=back
+
+B<Example:>
+
+    <$mt:PasswordValidation form="profile" password="pass" username="name"$>
+
+=cut
+
+sub _hdlr_password_validation_script {
+    my ( $ctx, $args ) = @_;
+    my $form_id    = $args->{form};
+    my $pass_field = $args->{password};
+    my $user_field = $args->{username};
+    my $app        = MT->instance;
+
+    return $ctx->error(
+        MT->translate(
+            "You used an [_1] tag without a valid [_2] attribute.",
+            "<MTPasswordValidation>", "form"
+        )
+    ) unless defined $form_id;
+
+    return $ctx->error(
+        MT->translate(
+            "You used an [_1] tag without a valid [_2] attribute.",
+            "<MTPasswordValidation>", "password"
+        )
+    ) unless defined $pass_field;
+
+    $user_field ||= '';
+    my @constrains = $app->config('UserPasswordValidation');
+    my $min_length = $app->config('UserPasswordMinLength');
+    if ( ( $min_length =~ m/\D/ ) or ( $min_length < 1 ) ) {
+        $min_length = $app->config->default('UserPasswordMinLength');
+    }
+
+    my $vs = "\n";
+    $vs .= << "JSCRIPT";
+        function verify_password(username, passwd) {
+          if (passwd.length < $min_length) {
+            return "<__trans phrase="Password should be longer than [_1] characters" params="$min_length">";
+          }
+          if (username && (passwd.toLowerCase().indexOf(username.toLowerCase()) > -1)) {
+            return "<__trans phrase="Password should not include your Username">";
+          }
+JSCRIPT
+
+    if ( grep { $_ eq 'letternumber' } @constrains ) {
+        $vs .= << 'JSCRIPT';
+            if ((passwd.search(/[a-zA-Z]/) == -1) || (passwd.search(/\d/) == -1)) {
+              return "<__trans phrase="Password should include letters and numbers">";
+            }
+JSCRIPT
+
+    }
+    if ( grep { $_ eq 'upperlower' } @constrains ) {
+        $vs .= << 'JSCRIPT';
+            if (( passwd.search(/[a-z]/) == -1) || (passwd.search(/[A-Z]/) == -1)) {
+              return "<__trans phrase="Password should include lowercase and uppercase letters">";
+            }
+JSCRIPT
+
+    }
+    if ( grep { $_ eq 'symbol' } @constrains ) {
+        $vs .= << 'JSCRIPT';
+            if ( passwd.search(/[!"#$%&'\(\|\)\*\+,-\.\/\\:;<=>\?@\[\]^_`{}~]/) == -1 ) {
+              return "<__trans phrase="Password should contain symbols such as #!$%">";
+            }
+JSCRIPT
+
+    }
+    $vs .= << 'JSCRIPT';
+          return "";
+        }
+JSCRIPT
+
+    $vs .= << "JSCRIPT";
+        jQuery(document).ready(function() {
+            jQuery("form#$form_id").submit(function(e){
+                var form = jQuery(this);
+                var passwd_input = form.find("input[name=$pass_field]");
+                if ( !passwd_input.is(":visible") ) {
+                    return true;
+                }
+                var passwd = passwd_input.val();
+                if (passwd == null || passwd == "") {
+                    return true;
+                }
+                var username = "$user_field" ? form.find("input[name=$user_field]").val() : "";
+                var error = verify_password(username, passwd);
+                if (error == "") {
+                    return true;
+                }
+                alert(error);
+                e.preventDefault();
+                return false;
+            });
+        });
+JSCRIPT
+
+    return $vs;
+}
+
+###########################################################################
+
+=head2 PasswordValidationRule
+
+A string explaining the effective password policy
+
+=cut
+
+sub _hdlr_password_validation_rules {
+    my ($ctx) = @_;
+
+    my $app = MT->instance;
+
+    my @constrains = $app->config('UserPasswordValidation');
+    my $min_length = $app->config('UserPasswordMinLength');
+    if ( ( $min_length =~ m/\D/ ) or ( $min_length < 1 ) ) {
+        $min_length = $app->config->default('UserPasswordMinLength');
+    }
+
+    my $msg = $app->translate( "minimum length of [_1]", $min_length );
+    $msg .= $app->translate(', uppercase and lowercase letters')
+        if grep { $_ eq 'upperlower' } @constrains;
+    $msg .= $app->translate(', letters and numbers')
+        if grep { $_ eq 'letternumber' } @constrains;
+    $msg .= $app->translate(', symbols (such as #!$%)')
+        if grep { $_ eq 'symbol' } @constrains;
+
+    return $msg;
 }
 
 1;

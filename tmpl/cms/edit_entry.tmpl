@@ -344,7 +344,7 @@
   <div class="revision-info">
       <mt:if name="rev_date">
     <p><__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">"></p>
-    <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id"$ escape="url">&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog" title="<__trans phrase="View revisions of this [_1]" params="<mt:var name="object_label">">"><__trans phrase="View revisions"></a>
+    <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id" escape="url"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog" title="<__trans phrase="View revisions of this [_1]" params="<mt:var name="object_label">">"><__trans phrase="View revisions"></a>
       <mt:else>
     <p class="zero-state"><__trans phrase="No revision(s) associated with this [_1]" params="<mt:var name="object_label" lower_case="1" escape="html">"></p>
       </mt:if>
@@ -706,7 +706,12 @@
       customizable_fields.push('assets');
       var default_fields = [<mt:loop name="disp_prefs_default_fields" glue=",">'<mt:var name="name" escape="js">'</mt:loop>];
       
-      function saveEntryFieldOptions(prefs) {
+      function saveEntryFieldOptions(options) {
+          var defaults = {
+              data: '',
+              sort_only: false
+          };
+          var opts = jQuery.extend(defaults, options);
           var mode = jQuery('#entry_prefs').val();
           var param = '__mode=save_entry_prefs'
               + '&_type=<mt:var name="object_type">'
@@ -714,7 +719,8 @@
               + '&entry_prefs=' + mode
               + '&magic_token=<mt:var name="magic_token">';
           if (mode == 'Custom') {
-              param += '&custom_prefs=' + prefs;
+              param += '&custom_prefs=' + opts.data;
+              param += '&sort_only=' + opts.sort_only;
           }
           var params = { uri: '<mt:var name="script_url">', method: 'POST', arguments: param };
           TC.Client.call(params);
@@ -735,16 +741,16 @@
           app.setEditorIframeHTML();
       }
       
-      function changedTextFormat(sel) {
-          var form = sel.form;
-          var option = sel.options[sel.selectedIndex].value;
+      function changedTextFormat() {
+          var form = this.form;
+          var option = this.options[this.selectedIndex].value;
           if ((cur_text_format != 'richtext') && (option == 'richtext')) {
               // warn user that changing to richtext is not reversible (easily)
               if (!confirm("<__trans phrase="Are you sure you want to use the Rich Text editor?" escape="js">")) {
                   // revert selection
-                  for (var i = 0; i < sel.options.length; i++) {
-                      if (sel.options[i].value == cur_text_format)
-                          sel.selectedIndex = i;
+                  for (var i = 0; i < this.options.length; i++) {
+                      if (this.options[i].value == cur_text_format)
+                          this.selectedIndex = i;
                   }
                   app.editor.focus();
                   return;
@@ -928,6 +934,7 @@
           cmtTableSelect.rowSelect = true;
           <mt:if name="tags_js">initTags();</mt:if>
           <mt:unless name="id">jQuery('#title').focus();</mt:unless>
+          jQuery('#convert_breaks').change(changedTextFormat);
       }
       
       var tagPos = 0;
@@ -980,7 +987,11 @@
           window.open('<mt:var name="script_url">?__mode=pinged_urls&entry_id=<mt:var name="id" escape="html">&blog_id=<mt:var name="blog_id" escape="html">', 'urls', 'width=400,height=400,resizable=yes,scrollbars=yes');
       }
 
-      function sendEntryPrefs () {
+      function sendEntryPrefs (options) {
+          var defaults = {
+              sort_only: false
+          };
+          var opts = jQuery.extend(defaults, options);
           var rex = RegExp('(.*)-field$');
           var data = [ 'title', 'text' ];
           var order = jQuery('#sortable').sortable('toArray');
@@ -996,7 +1007,10 @@
               data.push(this.value);
           });
 
-          saveEntryFieldOptions(data.toString());
+          saveEntryFieldOptions({
+              data: data.toString(),
+              sort_only: opts.sort_only
+          });
       }
 
     /* ]]> */
@@ -1117,7 +1131,7 @@
           </div>
           <div id="field-convert_breaks">
             <__trans phrase="Format:">
-            <select name="convert_breaks" id="convert_breaks" onchange="changedTextFormat(this)">
+            <select name="convert_breaks" id="convert_breaks">
             <mt:loop name="text_filters">
               <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
             </mt:loop>
@@ -1253,7 +1267,7 @@
         handle: '.field-header',
         containment: 'document',
         update: function () {
-            sendEntryPrefs();
+            sendEntryPrefs({ sort_only: true });
         }
     });
 

@@ -1,6 +1,6 @@
 # Zemanta plugin for Movable Type
 # Created by Tomaz Solc <tomaz@zemanta.com> Copyright (c) 2011 Zemanta Ltd.
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2, as
 # published by the Free Software Foundation
@@ -20,30 +20,30 @@ use warnings;
 use strict;
 
 sub _read_file {
-	my $path = shift;
-	open(CRED, "<", $path) or die("Can't read $path: $!\n");
+    my $path = shift;
+    open( CRED, "<", $path ) or die("Can't read $path: $!\n");
 
-	my $value;
-	while(defined($value = <CRED>)) {
-		last if $value and $value !~ /^#/;
-	}
-	close(CRED);
+    my $value;
+    while ( defined( $value = <CRED> ) ) {
+        last if $value and $value !~ /^#/;
+    }
+    close(CRED);
 
-	return if $value =~ /^#/;
+    return if $value =~ /^#/;
 
-	chomp($value);
-	return $value;
+    chomp($value);
+    return $value;
 }
 
 sub read_credential {
-	my $path = shift;
+    my $path = shift;
 
-	my $value = _read_file($path);
-	$value = _read_file($value) if( -e $value );
+    my $value = _read_file($path);
+    $value = _read_file($value) if ( -e $value );
 
-	die("No credential found in $path\n") unless $value;
+    die("No credential found in $path\n") unless $value;
 
-	return $value;
+    return $value;
 }
 
 1;
