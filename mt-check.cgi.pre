@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -135,12 +135,13 @@ if (!$view) {
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta http-equiv="content-language" content="$lang" />
-    
+    <meta name='robots' content='noindex,nofollow' />
+
     <title><MT_TRANS phrase="Movable Type System Check"> [mt-check.cgi]</title>
-    
+
     <style type=\"text/css\">
         <!--
-        
+
             body {
                 font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
                 font-size: 13px;
@@ -148,20 +149,20 @@ if (!$view) {
                 padding: 0;
                 background-color: #fff;
             }
-            
+
             body.has-static {
                 background: #fff url('$mt_static_path/images/chromeless/chromeless_top_bg.gif') repeat-x;
             }
-            
+
             body.has-static #header {
                 background: url('$mt_static_path/images/chromeless/movable-type-logo.gif') no-repeat 25px 15px;
                 height: 55px;
             }
-            
+
             #content {
                 margin: 20px 20px 100px;
             }
-            
+
             h1 {
                 margin: 0;
                 padding: 10px;
@@ -173,7 +174,7 @@ if (!$view) {
             body.has-static #header h1 {
                 display: none;
             }
-            
+
             h2 {
                 margin-top: 2em;
                 margin-bottom: .5em;
@@ -183,22 +184,22 @@ if (!$view) {
             h2#system-info {
                 margin-top: 1em;
             }
-            
+
             h3 {
                 color: #333;
                 font-size: 16px;
                 margin-bottom: 0px;
             }
-    
+
             p, ul {
                 margin: 0 0 .75em 0;
                 padding: 0;
             }
-            
+
             ul {
                 padding-left: 20px;
             }
-            
+
             .msg {
                 margin: 0 0 10px 0;
                 padding: 16px 10px 16px 46px;
@@ -211,12 +212,12 @@ if (!$view) {
                 border: 1px solid #999;
             }
 
-			.ready {
-				color: #fff;
-				background-color: #9C6;
+            .ready {
+                color: #fff;
+                background-color: #9C6;
                 border: 0;
                 padding-left: 5px;
-			}
+            }
 
             .msg-success {
                 background-color: #CFC;
@@ -253,11 +254,11 @@ if (!$view) {
                 padding-left: 10px;
                 margin-left: 20px;
             }
-            
+
             ul.version {
                 margin-bottom: 0;
             }
-        
+
         //-->
     </style>
 
@@ -338,9 +339,9 @@ my @CORE_OPT = (
     [ 'Archive::Tar', 0, 0, translate('Archive::Tar is required in order to archive files in backup/restore operation.')],
 
     [ 'IO::Compress::Gzip', 0, 0, translate('IO::Compress::Gzip is required in order to compress files in backup/restore operation.')],
-        
+
     [ 'IO::Uncompress::Gunzip', 0, 0, translate('IO::Uncompress::Gunzip is required in order to decompress files in backup/restore operation.')],
-    
+
     [ 'Archive::Zip', 0, 0, translate('Archive::Zip is required in order to archive files in backup/restore operation.')],
 
     [ 'XML::SAX', 0, 0, translate('XML::SAX and/or its dependencies is required in order to restore.')],
@@ -398,11 +399,11 @@ INFO
 }
 print trans_templ(<<INFO);
 <ul>
-	<li><strong><MT_TRANS phrase="Current working directory:"></strong> <code>$cwd</code></li>
-	<li><strong><MT_TRANS phrase="MT home directory:"></strong> <code>$ENV{MT_HOME}</code></li>
-	<li><strong><MT_TRANS phrase="Operating system:"></strong> $^O</li>
-	<li><strong><MT_TRANS phrase="Perl version:"></strong> <code>$ver</code></li>
-	<li><strong><MT_TRANS phrase="Perl include path:"></strong><br /> <code>$inc_path</code></li>
+    <li><strong><MT_TRANS phrase="Current working directory:"></strong> <code>$cwd</code></li>
+    <li><strong><MT_TRANS phrase="MT home directory:"></strong> <code>$ENV{MT_HOME}</code></li>
+    <li><strong><MT_TRANS phrase="Operating system:"></strong> $^O</li>
+    <li><strong><MT_TRANS phrase="Perl version:"></strong> <code>$ver</code></li>
+    <li><strong><MT_TRANS phrase="Perl include path:"></strong><br /> <code>$inc_path</code></li>
 INFO
 if ($server) {
 print trans_templ(<<INFO);
@@ -534,7 +535,7 @@ MSG
 if ($is_good && $cfg_exist) {
     if (!$view) {
     print trans_templ(<<HTML);
-    
+
     <div class="msg msg-success">
         <h2><MT_TRANS phrase="Movable Type System Check Successful"></h2>
         <p><strong><MT_TRANS phrase="You're ready to go!"></strong> <MT_TRANS phrase="Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions."></p>

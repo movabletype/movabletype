@@ -27,10 +27,10 @@ function go(mode) {
 <!--
 Commenting out until someone can input proper error checking if any
 <mt:if name="connect_error">
-<h4 class="error-message"><mt:var name="error"><mt:if name="error_more">&nbsp;&nbsp;<a href="javascript:void(0)" onclick="return toggleMore()">More</a>. <div id="error_more" style="display:none"><mt:var name="error_more"></div></mt:if></h4>
+<h4 class="error-message"><mt:var name="error" escape="html"><mt:if name="error_more">&nbsp;&nbsp;<a href="javascript:void(0)" onclick="return toggleMore()">More</a>. <div id="error_more" style="display:none"><mt:var name="error_more" escape="html"></div></mt:if></h4>
 <mt:else>
 <mt:if name="error">
-<h4 class="error-message"><mt:var name="error"></h4>
+<h4 class="error-message"><mt:var name="error" escape="html"></h4>
 </mt:if>
 </mt:if>
 -->

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -11,31 +11,30 @@ use base qw( MT::Object );
 
 # NOTE: Keep the role_mask fields defined here in sync with those in
 # MT::Permission.
-__PACKAGE__->install_properties({
-    column_defs => {
-        id           => 'integer not null auto_increment',
-        name         => 'string(255) not null',
-        description  => 'text',
-        is_system    => 'boolean',
-        role_mask    => 'integer',
-        role_mask2   => 'integer',  # for upgrades...
-        role_mask3   => 'integer',
-        role_mask4   => 'integer',
-        permissions  => 'text',
-    },
-    indexes => {
-        name => 1,
-        is_system => 1,
-        created_on => 1,
-    },
-    defaults => {
-        is_system => 0,
-    },
-    child_classes => ['MT::Association'],
-    audit => 1,
-    datasource => 'role',
-    primary_key => 'id',
-});
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            id          => 'integer not null auto_increment',
+            name        => 'string(255) not null',
+            description => 'text',
+            is_system   => 'boolean',
+            role_mask   => 'integer',
+            role_mask2  => 'integer',                        # for upgrades...
+            role_mask3  => 'integer',
+            role_mask4  => 'integer',
+            permissions => 'text',
+        },
+        indexes => {
+            name       => 1,
+            is_system  => 1,
+            created_on => 1,
+        },
+        defaults      => { is_system => 0, },
+        child_classes => ['MT::Association'],
+        audit         => 1,
+        datasource    => 'role',
+        primary_key   => 'id',
+    }
+);
 
 sub class_label {
     return MT->translate('Role');
@@ -50,13 +49,19 @@ sub save {
     my $res = $role->SUPER::save(@_) or return;
 
     require MT::Association;
+
     # now, update MT::Permissions to reflect role update
-    if (my $assoc_iter = MT::Association->load_iter({
-        type => [ MT::Association::USER_BLOG_ROLE(),
-                  MT::Association::GROUP_BLOG_ROLE() ],
-        role_id => $role->id,
-        })) {
-        while (my $assoc = $assoc_iter->()) {
+    if (my $assoc_iter = MT::Association->load_iter(
+            {   type => [
+                    MT::Association::USER_BLOG_ROLE(),
+                    MT::Association::GROUP_BLOG_ROLE()
+                ],
+                role_id => $role->id,
+            }
+        )
+        )
+    {
+        while ( my $assoc = $assoc_iter->() ) {
             $assoc->rebuild_permissions;
         }
     }
@@ -66,8 +71,8 @@ sub save {
 
 sub remove {
     my $role = shift;
-    if (ref $role) {
-        $role->remove_children({ key => 'role_id' }) or return;
+    if ( ref $role ) {
+        $role->remove_children( { key => 'role_id' } ) or return;
     }
     $role->SUPER::remove(@_);
 }
@@ -75,14 +80,14 @@ sub remove {
 sub load_same {
     my $class = shift;
     require MT::Permission;
-    MT::Permission::load_same($class, @_);
+    MT::Permission::load_same( $class, @_ );
 }
 
 sub load_by_permission {
     my $class = shift;
     my (@list) = @_;
     require MT::Permission;
-    MT::Permission::load_same($class, undef, undef, 0,  @list);
+    MT::Permission::load_same( $class, undef, undef, 0, @list );
 }
 
 # Lets you set a list of permissions by name.

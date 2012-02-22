@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -20,7 +20,7 @@ function smarty_function_mtvar($args, &$ctx) {
     $name or $name = $args['var'];
     if (preg_match('/^(config|request)\.(.+)$/i', $name, $m)) {
         if (strtolower($m[1]) == 'config') {
-            if (!preg_match('/password/i', $m[2])) {
+            if (!preg_match('/password|secret/i', $m[2])) {
                 global $mt;
                 return $mt->config[strtolower($m[2])];
             }
@@ -163,7 +163,7 @@ function smarty_function_mtvar($args, &$ctx) {
             if ( $op && isset($value) && !is_array($value) ) {
                 $return_val = _math_operation($op, $value, $rvalue);
                 if (!isset($return_val)) {
-                    return $ctx->error($ctx->mt->translate("[_1] [_2] [_3] is illegal.", $value, $op, $rvalue));
+                    return $ctx->error($ctx->mt->translate("[_1] [_2] [_3] is illegal.", array($value, $op, $rvalue)));
             }}
         }
     }

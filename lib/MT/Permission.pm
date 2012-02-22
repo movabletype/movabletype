@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -13,8 +13,7 @@ use MT::Object;
 @MT::Permission::ISA = qw(MT::Object);
 
 __PACKAGE__->install_properties(
-    {
-        column_defs => {
+    {   column_defs => {
             'id'        => 'integer not null auto_increment',
             'author_id' => 'integer not null',
             'blog_id'   => 'integer not null',
@@ -56,7 +55,6 @@ sub class_label_plural {
     MT->translate("Permissions");
 }
 
-
 sub user {
     my $perm = shift;
 
@@ -93,7 +91,8 @@ sub global_perms {
     $perm->cache_property(
         'global_perms',
         sub {
-            __PACKAGE__->load( { author_id => $perm->author_id, blog_id => 0 });
+            __PACKAGE__->load(
+                { author_id => $perm->author_id, blog_id => 0 } );
         }
     );
 }
@@ -248,10 +247,10 @@ sub global_perms {
                 foreach my $pk (%$perms) {
                     my ( $scope, $name ) = split /\./, $pk;
                     next unless $scope && $name;
-                    my $label =
-                      'CODE' eq ref( $perms->{$pk}{label} )
-                      ? $perms->{$pk}{label}->()
-                      : $perms->{$pk}{label};
+                    my $label
+                        = 'CODE' eq ref( $perms->{$pk}{label} )
+                        ? $perms->{$pk}{label}->()
+                        : $perms->{$pk}{label};
                     push @Perms, [ $name, $label || '', $scope ];
                 }
                 __mk_perm($_) foreach @Perms;
@@ -299,24 +298,27 @@ sub global_perms {
             else {
                 if ( my $author = $_[0]->author ) {
                     return 1
-                      if ( ( $meth ne 'can_administer' )
+                        if ( ( $meth ne 'can_administer' )
                         && $author->is_superuser );
                     return 1
-                      if ( ( $_[0]->blog_id )
+                        if ( ( $_[0]->blog_id )
                         && $_[0]->has('administer_blog') );
                 }
             }
+
             # return negative if a restriction is present
             return undef
-              if $_[0]->restrictions && $_[0]->restrictions =~ /'$perm'/i;
+                if $_[0]->restrictions && $_[0]->restrictions =~ /'$perm'/i;
+
             # return positive if permission is set in this permission set
             return 1 if defined($cur_perm) && $cur_perm =~ /'$perm'/i;
+
             # test for global-level permission
             return 1
-              if $_[0]->author_id
-              && $_[0]->blog_id
-              && $_[0]->global_perms
-              && $_[0]->global_perms->has($perm);
+                if $_[0]->author_id
+                    && $_[0]->blog_id
+                    && $_[0]->global_perms
+                    && $_[0]->global_perms->has($perm);
             return undef;
         };
     }
@@ -341,7 +343,7 @@ sub global_perms {
         foreach (@list) {
             my $ref = $Perms{$_};
             die "invalid permission" unless $ref;
-            next if $pkg->_check_if($perms, $column, $_);
+            next if $pkg->_check_if( $perms, $column, $_ );
             my $val = $perms->$column || '';
             $val .= ',' if $val ne '';
             $val .= "'" . $ref->[0] . "'";
@@ -415,23 +417,54 @@ sub can_edit_entry {
             or return;
     }
 
+    $perms = $author->permissions( $entry->blog_id )
+        or return;
+
     if ( !$entry->is_entry ) {
         return $perms->can_manage_pages;
     }
     return $perms->can_edit_all_posts
-      || (
+        || (
         defined $status
         ? ( $perms->can_publish_post && $entry->author_id == $author->id )
         : ( $perms->can_create_post && $entry->author_id == $author->id )
-      );
+        );
+}
+
+sub can_republish_entry {
+    my $perms = shift;
+    my ( $entry, $author ) = @_;
+    die unless $author->isa('MT::Author');
+    return 1 if $author->is_superuser();
+    unless ( ref $entry ) {
+        require MT::Entry;
+        $entry = MT::Entry->load($entry)
+            or return;
+    }
+
+    $perms = $author->permissions( $entry->blog_id )
+        or return;
+
+    return 1
+        if $perms->can_rebuild;
+
+    return $perms->can_manage_pages
+        unless $entry->is_entry;
+
+    return
+           $perms->can_edit_all_posts
+        || $perms->can_manage_feedback
+        || ( $entry->author_id == $author->id
+        && $perms->can_publish_post );
 }
 
 sub can_upload {
     my $perms = shift;
     if (@_) {
-        if (my $can = shift) {
+        if ( my $can = shift ) {
             $perms->set_these_permissions('upload');
-        } else {
+        }
+        else {
             $perms->clear_permissions('upload');
         }
     }
@@ -440,10 +473,10 @@ sub can_upload {
 
 sub can_view_feedback {
     my $perms = shift;
-         $perms->can_edit_all_posts
-      || $perms->can_create_post
-      || $perms->can_publish_post
-      || $perms->can_manage_feedback;
+           $perms->can_edit_all_posts
+        || $perms->can_create_post
+        || $perms->can_publish_post
+        || $perms->can_manage_feedback;
 }
 
 sub is_empty {
@@ -463,8 +496,7 @@ sub _static_rebuild {
                 my $iter = $grp->user_iter;
                 while ( my $user = $iter->() ) {
                     my $perm = MT::Permission->get_by_key(
-                        {
-                            author_id => $user->id,
+                        {   author_id => $user->id,
                             blog_id   => $assoc->blog_id
                         }
                     );
@@ -474,8 +506,7 @@ sub _static_rebuild {
             elsif ( $assoc->author_id ) {
                 my $user = $assoc->user or return;
                 my $perm = MT::Permission->get_by_key(
-                    {
-                        author_id => $user->id,
+                    {   author_id => $user->id,
                         blog_id   => $assoc->blog_id
                     }
                 );
@@ -496,8 +527,7 @@ sub _static_rebuild {
             if (@blogs) {
                 foreach my $blog_id (@blogs) {
                     my $perm = MT::Permission->get_by_key(
-                        {
-                            author_id => $assoc->author_id,
+                        {   author_id => $assoc->author_id,
                             blog_id   => $blog_id,
                         }
                     );
@@ -840,6 +870,16 @@ is always true if C<$author> is a superuser or can edit all posts or
 is a blog administrator for the blog that contains the entry. Otherwise,
 it returns true if the author has permission to post and the entry was
 authored by that author, false otherwise.
+
+The C<$entry> parameter can either be a I<MT::Entry> object or an entry id.
+
+=head2 $perms->can_republish_entry($entry, $author)
+
+Returns true if the C<$author> has rights to republish entry C<$entry>.
+This is always true if C<$author> is a superuser or can edit all posts or
+can rebuild or can manage feedback or is a blog administrator for the blog
+that contains the entry. Otherwise, it returns true if the author has
+permission to post and the entry was authored by that author, false otherwise.
 
 The C<$entry> parameter can either be a I<MT::Entry> object or an entry id.
 

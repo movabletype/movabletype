@@ -65,14 +65,14 @@ function mail_select(sel) {
     <mtapp:statusmsg
         id="send_error"
         class="error">
-        <__trans phrase="An error occurred while attempting to send mail: "><mt:var name="error">
+        <__trans phrase="An error occurred while attempting to send mail: "><mt:var name="error" escape="html">
     </mtapp:statusmsg>
 <mt:else>
 <mt:if name="error">
     <mtapp:statusmsg
         id="error"
         class="error">
-        <mt:var name="error">
+        <mt:var name="error" escape="html">
     </mtapp:statusmsg>
 </mt:if>
 </mt:if>

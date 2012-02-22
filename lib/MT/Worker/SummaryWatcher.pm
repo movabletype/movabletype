@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -20,14 +20,14 @@ sub work {
         my $meta_pkg = MT->model($summarizable)->meta_pkg('summary');
         my $summ_iter
             = $meta_pkg->search( { expired => MT::Summary::NEEDS_JOB(), } );
-        my $class = MT->model($summarizable);
+        my $class    = MT->model($summarizable);
         my $id_field = $class->datasource . '_id';
         while ( my $summary = $summ_iter->() ) {
             my $priority
                 = $registry->{summaries}->{$summarizable}->{ $summary->class }
                 ->{priority};
             $priority ||= undef;
-            my $id        = $summary->$id_field;
+            my $id         = $summary->$id_field;
             my $class_type = MT->model($summarizable)->class_type
                 || MT->model($summarizable)->datasource;
             MT::Summarizable->insert_summarize_worker( $class_type, $id,

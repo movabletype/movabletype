@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -9,21 +9,23 @@ package MT::TheSchwartz::ExitStatus;
 use strict;
 use base qw( MT::Object );
 
-__PACKAGE__->install_properties({
-    column_defs => {
-        jobid => 'integer not null primary key', # bigint unsigned primary key not null
-        funcid => 'integer not null', # int unsigned not null default 0
-        status => 'integer', # smallint unsigned
-        completion_time => 'integer', # integer unsigned
-        delete_after => 'integer', # integer unsigned
-    },
-    datasource => 'ts_exitstatus',
-    primary_key => 'jobid',
-    indexes => {
-        delete_after => 1,
-        funcid => 1,
-    },
-});
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            jobid => 'integer not null primary key'
+            ,    # bigint unsigned primary key not null
+            funcid => 'integer not null',    # int unsigned not null default 0
+            status => 'integer',             # smallint unsigned
+            completion_time => 'integer',    # integer unsigned
+            delete_after    => 'integer',    # integer unsigned
+        },
+        datasource  => 'ts_exitstatus',
+        primary_key => 'jobid',
+        indexes     => {
+            delete_after => 1,
+            funcid       => 1,
+        },
+    }
+);
 
 sub class_label {
     MT->translate("Job Exit Status");

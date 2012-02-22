@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -11,21 +11,22 @@ package MT::BasicSession;
 
 use MT::Object;
 @MT::BasicSession::ISA = qw( MT::Object );
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id' => 'string(80) not null primary key',
-        'data' => 'blob',
-        'email' => 'string(255)',
-        'name' => 'string(255)',
-        'kind' => 'string(2)',
-        'start' => 'integer not null',
-    },
-    indexes => {
-        'start' => 1,
-        'kind' => 1
-    },
-    datasource => 'session',
-});
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'    => 'string(80) not null primary key',
+            'data'  => 'blob',
+            'email' => 'string(255)',
+            'name'  => 'string(255)',
+            'kind'  => 'string(2)',
+            'start' => 'integer not null',
+        },
+        indexes => {
+            'start' => 1,
+            'kind'  => 1
+        },
+        datasource => 'session',
+    }
+);
 
 # sub load {
 #     SUPER::load(@_) or return undef;

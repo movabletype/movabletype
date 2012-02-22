@@ -10,8 +10,8 @@ sub start_import {
 
     my $perms = $app->permissions;
     return $app->return_to_dashboard( permission => 1 )
-      if $perms
-      && ( !( $perms->can_edit_config || $perms->can_administer_blog ) );
+        if $perms
+            && (!( $perms->can_edit_config || $perms->can_administer_blog ) );
     my %param;
 
     # FIXME: This should build a category hierarchy!
@@ -20,10 +20,10 @@ sub start_import {
     my @data;
     while ( my $cat = $iter->() ) {
         push @data,
-          {
+            {
             category_id    => $cat->id,
             category_label => $cat->label
-          };
+            };
     }
     @data = sort { $a->{category_label} cmp $b->{category_label} } @data;
     $param{category_loop} = \@data;
@@ -45,37 +45,40 @@ sub start_import {
         $mt        = $importer, next if $key eq 'import_mt';
         $mt_format = $importer, next if $key eq 'import_mt_format';
         push @$importer_loop,
-          {
+            {
             label       => $importer->{label},
             key         => $importer->{key},
             description => $importer->{description},
             importer_options_html =>
-              $imp->get_options_html( $importer->{key}, $blog_id ),
-          };
+                $imp->get_options_html( $importer->{key}, $blog_id ),
+            };
     }
     push @$importer_loop,
-      {
+        {
         label       => $mt_format->{label},
         key         => $mt_format->{key},
         description => $mt_format->{description},
         importer_options_html =>
-          $imp->get_options_html( $mt_format->{key}, $blog_id ),
-      };
+            $imp->get_options_html( $mt_format->{key}, $blog_id ),
+        };
     unshift @$importer_loop,
-      {
-        label                 => $mt->{label},
-        key                   => $mt->{key},
-        description           => $mt->{description},
-        importer_options_html => $imp->get_options_html( $mt->{key}, $blog_id ),
-      };
+        {
+        label       => $mt->{label},
+        key         => $mt->{key},
+        description => $mt->{description},
+        importer_options_html =>
+            $imp->get_options_html( $mt->{key}, $blog_id ),
+        };
 
     $param{importer_loop} = $importer_loop;
 
     if ($blog_id) {
         $param{blog_id} = $blog_id;
         my $blog = $app->model('blog')->load($blog_id)
-            or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
-        $param{text_filters} = $app->load_text_filters( $blog->convert_paras );
+            or return $app->error(
+            $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $param{text_filters}
+            = $app->load_text_filters( $blog->convert_paras );
     }
 
     $app->add_breadcrumb( $app->translate('Import/Export') );
@@ -88,24 +91,24 @@ sub do_import {
     my $q = $app->param;
     require MT::Blog;
     my $blog_id = $q->param('blog_id')
-      or return $app->error( $app->translate("Please select a blog.") );
+        or return $app->error( $app->translate("Please select a blog.") );
     my $blog = MT::Blog->load($blog_id)
-      or return $app->error(
+        or return $app->error(
         $app->translate(
-            "Load of blog '[_1]' failed: [_2]",
-            $blog_id, MT::Blog->errstr
+            "Load of blog '[_1]' failed: [_2]", $blog_id,
+            MT::Blog->errstr
         )
-      );
+        );
 
     if ( 'POST' ne $app->request_method ) {
         return $app->redirect(
             $app->uri(
                 'mode' => 'start_import',
-                args => { blog_id => $blog_id }
+                args   => { blog_id => $blog_id }
             )
         );
     }
-    
+
     my $import_as_me = $q->param('import_as_me');
 
     ## Determine the user as whom we will import the entries.
@@ -115,24 +118,24 @@ sub do_import {
         my $perms = $author->permissions($blog_id);
         return $app->error(
             $app->translate("You do not have import permissions") )
-          unless $perms
-          && ( $perms->can_edit_config || $perms->can_administer_blog );
+            unless $perms
+                && ( $perms->can_edit_config || $perms->can_administer_blog );
         if ( !$import_as_me ) {
             return $app->error(
-                $app->translate("You do not have permission to create users") )
-              unless $perms->can_administer_blog;
+                $app->translate("You do not have permission to create users")
+            ) unless $perms->can_administer_blog;
         }
     }
 
     my ($pass);
     if ( !$import_as_me ) {
         $pass = $q->param('password')
-          or return $app->error(
+            or return $app->error(
             $app->translate(
-                    "You need to provide a password if you are going to "
-                  . "create new users for each user listed in your blog."
+                      "You need to provide a password if you are going to "
+                    . "create new users for each user listed in your blog."
             )
-          ) if ( MT::Auth->password_exists );
+            ) if ( MT::Auth->password_exists );
     }
 
     $app->validate_magic() or return;
@@ -147,7 +150,8 @@ sub do_import {
     $app->send_http_header('text/html');
 
     my $param;
-    $param = { import_as_me => $import_as_me, import_upload => ($fh ? 1 : 0) };
+    $param
+        = { import_as_me => $import_as_me, import_upload => ( $fh ? 1 : 0 ) };
 
     $app->print( $app->build_page( 'include/import_start.tmpl', $param ) );
 
@@ -165,10 +169,10 @@ sub do_import {
 
     return $app->error(
         $app->translate( 'Importer type [_1] was not found.', $import_type ) )
-      unless $importer;
+        unless $importer;
 
     my %options = map { $_ => $q->param($_); } @{ $importer->{options} }
-      if $importer->{options};
+        if $importer->{options};
     my $import_result = $imp->import_contents(
         Key      => $import_type,
         Blog     => $blog,

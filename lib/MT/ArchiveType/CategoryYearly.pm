@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -20,13 +20,11 @@ sub archive_label {
 
 sub default_archive_templates {
     return [
-        {
-            label    => 'category/sub-category/yyyy/index.html',
+        {   label    => 'category/sub-category/yyyy/index.html',
             template => '%-c/%y/%i',
             default  => 1
         },
-        {
-            label    => 'category/sub_category/yyyy/index.html',
+        {   label    => 'category/sub_category/yyyy/index.html',
             template => '%c/%y/%i'
         },
     ];
@@ -58,8 +56,8 @@ sub archive_file {
 
     my $this_cat = $cat ? $cat : ( $entry ? $entry->category : undef );
     if ($file_tmpl) {
-        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} ) =
-          start_end_year( $timestamp, $blog );
+        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} )
+            = start_end_year( $timestamp, $blog );
         $ctx->stash( 'archive_category', $this_cat );
         $ctx->{inside_mt_categories} = 1;
         $ctx->{__stash}{category} = $this_cat;
@@ -85,8 +83,7 @@ sub archive_title {
     my ( $ctx, $entry_or_ts ) = @_;
     my $stamp = ref $entry_or_ts ? $entry_or_ts->authored_on : $entry_or_ts;
     my $start = start_end_year( $stamp, $ctx->stash('blog') );
-    my $year =
-      MT::Template::Context::_hdlr_date( $ctx,
+    my $year = MT::Template::Context::_hdlr_date( $ctx,
         { ts => $start, 'format' => "%Y" } );
     my $lang = lc MT->current_language || 'en_us';
     $lang = 'ja' if lc($lang) eq 'jp';
@@ -99,8 +96,8 @@ sub archive_group_iter {
     my $obj = shift;
     my ( $ctx, $args ) = @_;
     my $blog = $ctx->stash('blog');
-    my $sort_order =
-      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $sort_order
+        = ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
     my $cat_order = $args->{sort_order} ? $args->{sort_order} : 'ascend';
     my $order = ( $sort_order eq 'ascend' ) ? 'asc'                 : 'desc';
     my $limit = exists $args->{lastn}       ? delete $args->{lastn} : undef;
@@ -114,15 +111,18 @@ sub archive_group_iter {
     my $loop_sub = sub {
         my $c          = shift;
         my $entry_iter = MT::Entry->count_group_by(
-            {
-                blog_id => $blog->id,
+            {   blog_id => $blog->id,
                 status  => MT::Entry::RELEASE()
             },
-            {
-                group => ["extract(year from authored_on)"],
-                sort  => [ { column => "extract(year from authored_on)", desc => $order } ],
-                'join' =>
-                  [ 'MT::Placement', 'entry_id', { category_id => $c->id } ]
+            {   group => ["extract(year from authored_on)"],
+                sort  => [
+                    {   column => "extract(year from authored_on)",
+                        desc   => $order
+                    }
+                ],
+                'join' => [
+                    'MT::Placement', 'entry_id', { category_id => $c->id }
+                ]
             }
         ) or return $ctx->error("Couldn't get yearly archive list");
         while ( my @row = $entry_iter->() ) {
@@ -133,7 +133,7 @@ sub archive_group_iter {
             };
             push( @data, $hash );
             return $count + 1
-              if ( defined($limit) && ( $count + 1 ) == $limit );
+                if ( defined($limit) && ( $count + 1 ) == $limit );
             $count++;
         }
     };
@@ -156,8 +156,8 @@ sub archive_group_iter {
 
     return sub {
         if ( $curr < $loop ) {
-            my $date =
-              sprintf( "%04d%02d%02d000000", $data[$curr]->{year}, 1, 1 );
+            my $date
+                = sprintf( "%04d%02d%02d000000", $data[$curr]->{year}, 1, 1 );
             my ( $start, $end ) = start_end_year($date);
             my $count = $data[$curr]->{count};
             my %hash  = (
@@ -170,19 +170,20 @@ sub archive_group_iter {
             return ( $count, %hash );
         }
         undef;
-      }
+        }
 }
 
 sub archive_group_entries {
     my $obj = shift;
     my ( $ctx, %param ) = @_;
-    my $ts =
-        $param{year}
-    ? sprintf( "%04d%02d%02d000000", $param{year}, 1, 1 )
+    my $ts
+        = $param{year}
+        ? sprintf( "%04d%02d%02d000000", $param{year}, 1, 1 )
         : $ctx->stash('current_timestamp');
     my $cat = $param{category} || $ctx->stash('archive_category');
     my $limit = $param{limit};
-    $obj->dated_category_entries( $ctx, 'Category-Yearly', $cat, $ts, $limit );
+    $obj->dated_category_entries( $ctx, 'Category-Yearly', $cat, $ts,
+        $limit );
 }
 
 sub archive_entries_count {
@@ -191,8 +192,7 @@ sub archive_entries_count {
     $cat = $entry->category unless $cat;
     return 0 unless $cat;
     return $obj->SUPER::archive_entries_count(
-        {
-            Blog        => $blog,
+        {   Blog        => $blog,
             ArchiveType => $at,
             Timestamp   => $entry->authored_on,
             Category    => $cat

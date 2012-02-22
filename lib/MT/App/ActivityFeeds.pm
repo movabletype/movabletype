@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -59,7 +59,10 @@ sub login {
         $app->translate( "Error loading [_1]: [_2]", $user_class, $@ ) )
         if $@;
     my $author = $user_class->load( { name => $username, type => AUTHOR } );
-    if ( $author && $author->is_active && ( ( $author->api_password || '' ) ne '' ) ) {
+    if (   $author
+        && $author->is_active
+        && ( ( $author->api_password || '' ) ne '' ) )
+    {
         my $auth_token
             = perl_sha1_digest_hex( 'feed:' . $author->api_password );
         if ( $token eq $auth_token ) {
@@ -258,7 +261,10 @@ sub process_log_feed {
     $param->{loop_entries} = \@entries;
     my $str = qq();
     for my $key ( $app->param ) {
-        $str .= "&amp;" . encode_url($key) . "=" . encode_url($app->param($key));
+        $str
+            .= "&amp;"
+            . encode_url($key) . "="
+            . encode_url( $app->param($key) );
     }
     $str =~ s/^&amp;(.+)$/?$1/;
     $param->{feed_self} = $app->base . $app->app_path . $app->script . $str;

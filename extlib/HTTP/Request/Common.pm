@@ -1,5 +1,3 @@
-# $Id: Common.pm,v 1.19 2001/01/05 18:53:11 gisle Exp $
-#
 package HTTP::Request::Common;
 
 use strict;
@@ -10,18 +8,19 @@ $DYNAMIC_FILE_UPLOAD ||= 0;  # make it defined (don't know why)
 require Exporter;
 *import = \&Exporter::import;
 @EXPORT =qw(GET HEAD PUT POST);
-@EXPORT_OK = qw($DYNAMIC_FILE_UPLOAD);
+@EXPORT_OK = qw($DYNAMIC_FILE_UPLOAD DELETE);
 
 require HTTP::Request;
 use Carp();
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.19 $ =~ /(\d+)\.(\d+)/);
+$VERSION = "6.00";
 
 my $CRLF = "\015\012";   # "\r\n" is not portable
 
 sub GET  { _simple_req('GET',  @_); }
 sub HEAD { _simple_req('HEAD', @_); }
 sub PUT  { _simple_req('PUT' , @_); }
+sub DELETE { _simple_req('DELETE', @_); }
 
 sub POST
 {
@@ -33,14 +32,16 @@ sub POST
     while (($k,$v) = splice(@_, 0, 2)) {
 	if (lc($k) eq 'content') {
 	    $content = $v;
-	} else {
+	}
+	else {
 	    $req->push_header($k, $v);
 	}
     }
     my $ct = $req->header('Content-Type');
     unless ($ct) {
 	$ct = 'application/x-www-form-urlencoded';
-    } elsif ($ct eq 'form-data') {
+    }
+    elsif ($ct eq 'form-data') {
 	$ct = 'multipart/form-data';
     }
 
@@ -55,7 +56,7 @@ sub POST
 	    my $boundary_index;
 	    for (my @tmp = @v; @tmp;) {
 		my($k, $v) = splice(@tmp, 0, 2);
-		if (lc($k) eq "boundary") {
+		if ($k eq "boundary") {
 		    $boundary = $v;
 		    $boundary_index = @v - @tmp - 1;
 		    last;
@@ -66,12 +67,14 @@ sub POST
 
 	    if ($boundary_index) {
 		$v[$boundary_index] = $boundary;
-	    } else {
+	    }
+	    else {
 		push(@v, boundary => $boundary);
 	    }
 
 	    $ct = HTTP::Headers::Util::join_header_words(@v);
-	} else {
+	}
+	else {
 	    # We use a temporary URI object to format
 	    # the application/x-www-form-urlencoded content.
 	    require URI;
@@ -87,6 +90,9 @@ sub POST
 		     length($content)) unless ref($content);
 	$req->content($content);
     }
+    else {
+        $req->header('Content-Length' => 0);
+    }
     $req;
 }
 
@@ -96,12 +102,18 @@ sub _simple_req
     my($method, $url) = splice(@_, 0, 2);
     my $req = HTTP::Request->new($method => $url);
     my($k, $v);
+    my $content;
     while (($k,$v) = splice(@_, 0, 2)) {
 	if (lc($k) eq 'content') {
 	    $req->add_content($v);
-	} else {
+            $content++;
+	}
+	else {
 	    $req->push_header($k, $v);
 	}
+    }
+    if ($content && !defined($req->header("Content-Length"))) {
+        $req->header("Content-Length", length(${$req->content_ref}));
     }
     $req;
 }
@@ -119,34 +131,38 @@ sub form_data   # RFC1867
 	    $k =~ s/([\\\"])/\\$1/g;  # escape quotes and backslashes
 	    push(@parts,
 		 qq(Content-Disposition: form-data; name="$k"$CRLF$CRLF$v));
-	} else {
+	}
+	else {
 	    my($file, $usename, @headers) = @$v;
 	    unless (defined $usename) {
 		$usename = $file;
 		$usename =~ s,.*/,, if defined($usename);
 	    }
+            $k =~ s/([\\\"])/\\$1/g;
 	    my $disp = qq(form-data; name="$k");
-	    $disp .= qq(; filename="$usename") if $usename;
+            if (defined($usename) and length($usename)) {
+                $usename =~ s/([\\\"])/\\$1/g;
+                $disp .= qq(; filename="$usename");
+            }
 	    my $content = "";
 	    my $h = HTTP::Headers->new(@headers);
-	    my $ct = $h->header("Content-Type");
 	    if ($file) {
-		require Symbol;
-		my $fh = Symbol::gensym();
-		open($fh, $file) or Carp::croak("Can't open file $file: $!");
+		open(my $fh, "<", $file) or Carp::croak("Can't open file $file: $!");
 		binmode($fh);
 		if ($DYNAMIC_FILE_UPLOAD) {
-		    # will read file later
-		    $content = $fh;
-		} else {
+		    # will read file later, close it now in order to
+                    # not accumulate to many open file handles
+                    close($fh);
+		    $content = \$file;
+		}
+		else {
 		    local($/) = undef; # slurp files
 		    $content = <$fh>;
 		    close($fh);
-		    $h->header("Content-Length" => length($content));
 		}
-		unless ($ct) {
+		unless ($h->header("Content-Type")) {
 		    require LWP::MediaTypes;
-		    $ct = LWP::MediaTypes::guess_media_type($file, $h);
+		    LWP::MediaTypes::guess_media_type($file, $h);
 		}
 	    }
 	    if ($h->header("Content-Disposition")) {
@@ -162,14 +178,15 @@ sub form_data   # RFC1867
 			           $h->as_string($CRLF),
 			           "");
 	    if (ref $content) {
-		push(@parts, [$head, $content]);
+		push(@parts, [$head, $$content]);
 		$fhparts++;
-	    } else {
+	    }
+	    else {
 		push(@parts, $head . $content);
 	    }
 	}
     }
-    return "" unless @parts;
+    return ("", "none") unless @parts;
 
     my $content;
     if ($fhparts) {
@@ -199,7 +216,8 @@ sub form_data   # RFC1867
 		    last;
 		}
 	    	$length += $file_size + length $head;
-	    } else {
+	    }
+	    else {
 		$length += length;
 	    }
         }
@@ -220,12 +238,19 @@ sub form_data   # RFC1867
 		    return $p;
 		}
 		my($buf, $fh) = @$p;
+                unless (ref($fh)) {
+                    my $file = $fh;
+                    undef($fh);
+                    open($fh, "<", $file) || Carp::croak("Can't open file $file: $!");
+                    binmode($fh);
+                }
 		my $buflength = length $buf;
 		my $n = read($fh, $buf, 2048, $buflength);
 		if ($n) {
 		    $buflength += $n;
 		    unshift(@parts, ["", $fh]);
-		} else {
+		}
+		else {
 		    close($fh);
 		}
 		if ($buflength) {
@@ -235,7 +260,8 @@ sub form_data   # RFC1867
 	    }
 	};
 
-    } else {
+    }
+    else {
 	$boundary = boundary() unless $boundary;
 
 	my $bno = 0;
@@ -285,53 +311,83 @@ HTTP::Request::Common - Construct common HTTP::Request objects
 
 =head1 DESCRIPTION
 
-This module provide functions that return newly created HTTP::Request
+This module provide functions that return newly created C<HTTP::Request>
 objects.  These functions are usually more convenient to use than the
-standard HTTP::Request constructor for these common requests.  The
-following functions are provided.
+standard C<HTTP::Request> constructor for the most common requests.  The
+following functions are provided:
 
 =over 4
 
+=item GET $url
+
 =item GET $url, Header => Value,...
 
-The GET() function returns a HTTP::Request object initialized with the
-GET method and the specified URL.  Without additional arguments it
-is exactly equivalent to the following call
+The GET() function returns an C<HTTP::Request> object initialized with
+the "GET" method and the specified URL.  It is roughly equivalent to the
+following call
 
-  HTTP::Request->new(GET => $url)
+  HTTP::Request->new(
+     GET => $url,
+     HTTP::Headers->new(Header => Value,...),
+  )
 
-but is less cluttered.  It also reads better when used together with the
-LWP::UserAgent->request() method:
+but is less cluttered.  What is different is that a header named
+C<Content> will initialize the content part of the request instead of
+setting a header field.  Note that GET requests should normally not
+have a content, so this hack makes more sense for the PUT() and POST()
+functions described below.
 
-  my $ua = new LWP::UserAgent;
-  my $res = $ua->request(GET 'http://www.sn.no')
-  if ($res->is_success) { ...
+The get(...) method of C<LWP::UserAgent> exists as a shortcut for
+$ua->request(GET ...).
 
-You can also initialize header values in the request by specifying
-some key/value pairs as optional arguments.  For instance:
+=item HEAD $url
 
-  $ua->request(GET 'http://www.sn.no',
-	           If_Match => 'foo',
-                   From     => 'gisle@aas.no',
-              );
+=item HEAD $url, Header => Value,...
 
-A header key called 'Content' is special and when seen the value will
-initialize the content part of the request instead of setting a header.
+Like GET() but the method in the request is "HEAD".
 
-=item HEAD $url, [Header => Value,...]
+The head(...)  method of "LWP::UserAgent" exists as a shortcut for
+$ua->request(HEAD ...).
 
-Like GET() but the method in the request is HEAD.
+=item PUT $url
 
-=item PUT $url, [Header => Value,...]
+=item PUT $url, Header => Value,...
 
-Like GET() but the method in the request is PUT.
+=item PUT $url, Header => Value,..., Content => $content
 
-=item POST $url, [$form_ref], [Header => Value,...]
+Like GET() but the method in the request is "PUT".
 
-This works mostly like GET() with POST as the method, but this function
-also takes a second optional array or hash reference parameter
-($form_ref).  This argument can be used to pass key/value pairs for
-the form content.  By default we will initialize a request using the
+The content of the request can be specified using the "Content"
+pseudo-header.  This steals a bit of the header field namespace as
+there is no way to directly specify a header that is actually called
+"Content".  If you really need this you must update the request
+returned in a separate statement.
+
+=item DELETE $url
+
+=item DELETE $url, Header => Value,...
+
+Like GET() but the method in the request is "DELETE".  This function
+is not exported by default.
+
+=item POST $url
+
+=item POST $url, Header => Value,...
+
+=item POST $url, $form_ref, Header => Value,...
+
+=item POST $url, Header => Value,..., Content => $form_ref
+
+=item POST $url, Header => Value,..., Content => $content
+
+This works mostly like PUT() with "POST" as the method, but this
+function also takes a second optional array or hash reference
+parameter $form_ref.  As for PUT() the content can also be specified
+directly using the "Content" pseudo-header, and you may also provide
+the $form_ref this way.
+
+The $form_ref argument can be used to pass key/value pairs for the
+form content.  By default we will initialize a request using the
 C<application/x-www-form-urlencoded> content type.  This means that
 you can emulate a HTML E<lt>form> POSTing like this:
 
@@ -351,6 +407,9 @@ This will create a HTTP::Request object that looks like this:
 
   name=Gisle%20Aas&email=gisle%40aas.no&gender=M&born=1964&perc=3%25
 
+Multivalued form fields can be specified by either repeating the field
+name or by passing the value as an array reference.
+
 The POST method also supports the C<multipart/form-data> content used
 for I<Form-based File Upload> as specified in RFC 1867.  You trigger
 this content format by specifying a content type of C<'form-data'> as
@@ -359,14 +418,20 @@ an array reference, then it is treated as a file part specification
 with the following interpretation:
 
   [ $file, $filename, Header => Value... ]
+  [ undef, $filename, Header => Value,..., Content => $content ]
 
 The first value in the array ($file) is the name of a file to open.
 This file will be read and its content placed in the request.  The
-routine will croak if the file can't be opened.  Use an C<undef> as $file
-value if you want to specify the content directly.  The $filename is
-the filename to report in the request.  If this value is undefined,
-then the basename of the $file will be used.  You can specify an empty
-string as $filename if you don't want any filename in the request.
+routine will croak if the file can't be opened.  Use an C<undef> as
+$file value if you want to specify the content directly with a
+C<Content> header.  The $filename is the filename to report in the
+request.  If this value is undefined, then the basename of the $file
+will be used.  You can specify an empty string as $filename if you
+want to suppress sending the filename when you provide a $file value.
+
+If a $file is provided by no C<Content-Type> header, then C<Content-Type>
+and C<Content-Encoding> will be filled in automatically with the values
+returned by LWP::MediaTypes::guess_media_type()
 
 Sending my F<~/.profile> to the survey used as example above can be
 achieved by this:
@@ -390,24 +455,24 @@ different):
 
   --6G+f
   Content-Disposition: form-data; name="name"
-  
+
   Gisle Aas
   --6G+f
   Content-Disposition: form-data; name="email"
-  
+
   gisle@aas.no
   --6G+f
   Content-Disposition: form-data; name="gender"
-  
+
   M
   --6G+f
   Content-Disposition: form-data; name="born"
-  
+
   1964
   --6G+f
   Content-Disposition: form-data; name="init"; filename=".profile"
   Content-Type: text/plain
-  
+
   PATH=/local/perl/bin:$PATH
   export PATH
 
@@ -419,11 +484,14 @@ the content attribute.  This subroutine will read the content of any
 files on demand and return it in suitable chunks.  This allow you to
 upload arbitrary big files without using lots of memory.  You can even
 upload infinite files like F</dev/audio> if you wish; however, if
-the file is not a plain file, there will be no Content-Length header 
+the file is not a plain file, there will be no Content-Length header
 defined for the request.  Not all servers (or server
 applications) like this.  Also, if the file(s) change in size between
 the time the Content-Length is calculated and the time that the last
 chunk is delivered, the subroutine will C<Croak>.
+
+The post(...)  method of "LWP::UserAgent" exists as a shortcut for
+$ua->request(POST ...).
 
 =back
 
@@ -434,7 +502,7 @@ L<HTTP::Request>, L<LWP::UserAgent>
 
 =head1 COPYRIGHT
 
-Copyright 1997-2000, Gisle Aas
+Copyright 1997-2004, Gisle Aas
 
 This library is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.

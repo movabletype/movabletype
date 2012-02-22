@@ -3,12 +3,99 @@ package HTTP::Headers::Util;
 use strict;
 use vars qw($VERSION @ISA @EXPORT_OK);
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/);
+$VERSION = "6.00";
 
 require Exporter;
 @ISA=qw(Exporter);
 
-@EXPORT_OK=qw(split_header_words join_header_words);
+@EXPORT_OK=qw(split_header_words _split_header_words join_header_words);
+
+
+
+sub split_header_words {
+    my @res = &_split_header_words;
+    for my $arr (@res) {
+	for (my $i = @$arr - 2; $i >= 0; $i -= 2) {
+	    $arr->[$i] = lc($arr->[$i]);
+	}
+    }
+    return @res;
+}
+
+sub _split_header_words
+{
+    my(@val) = @_;
+    my @res;
+    for (@val) {
+	my @cur;
+	while (length) {
+	    if (s/^\s*(=*[^\s=;,]+)//) {  # 'token' or parameter 'attribute'
+		push(@cur, $1);
+		# a quoted value
+		if (s/^\s*=\s*\"([^\"\\]*(?:\\.[^\"\\]*)*)\"//) {
+		    my $val = $1;
+		    $val =~ s/\\(.)/$1/g;
+		    push(@cur, $val);
+		# some unquoted value
+		}
+		elsif (s/^\s*=\s*([^;,\s]*)//) {
+		    my $val = $1;
+		    $val =~ s/\s+$//;
+		    push(@cur, $val);
+		# no value, a lone token
+		}
+		else {
+		    push(@cur, undef);
+		}
+	    }
+	    elsif (s/^\s*,//) {
+		push(@res, [@cur]) if @cur;
+		@cur = ();
+	    }
+	    elsif (s/^\s*;// || s/^\s+//) {
+		# continue
+	    }
+	    else {
+		die "This should not happen: '$_'";
+	    }
+	}
+	push(@res, \@cur) if @cur;
+    }
+    @res;
+}
+
+
+sub join_header_words
+{
+    @_ = ([@_]) if @_ && !ref($_[0]);
+    my @res;
+    for (@_) {
+	my @cur = @$_;
+	my @attr;
+	while (@cur) {
+	    my $k = shift @cur;
+	    my $v = shift @cur;
+	    if (defined $v) {
+		if ($v =~ /[\x00-\x20()<>@,;:\\\"\/\[\]?={}\x7F-\xFF]/ || !length($v)) {
+		    $v =~ s/([\"\\])/\\$1/g;  # escape " and \
+		    $k .= qq(="$v");
+		}
+		else {
+		    # token
+		    $k .= "=$v";
+		}
+	    }
+	    push(@attr, $k);
+	}
+	push(@res, join("; ", @attr)) if @attr;
+    }
+    join(", ", @res);
+}
+
+
+1;
+
+__END__
 
 =head1 NAME
 
@@ -64,62 +151,26 @@ the requirement for tokens).
   value             = token | quoted-string
 
 Each I<header> is represented by an anonymous array of key/value
-pairs.  The value for a simple token (not part of a parameter) is C<undef>.
+pairs.  The keys will be all be forced to lower case.
+The value for a simple token (not part of a parameter) is C<undef>.
 Syntactically incorrect headers will not necessary be parsed as you
 would want.
 
 This is easier to describe with some examples:
 
-   split_header_words('foo="bar"; port="80,81"; discard, bar=baz')
-   split_header_words('text/html; charset="iso-8859-1");
-   split_header_words('Basic realm="\"foo\\bar\""');
+   split_header_words('foo="bar"; port="80,81"; DISCARD, BAR=baz');
+   split_header_words('text/html; charset="iso-8859-1"');
+   split_header_words('Basic realm="\\"foo\\\\bar\\""');
 
 will return
 
    [foo=>'bar', port=>'80,81', discard=> undef], [bar=>'baz' ]
    ['text/html' => undef, charset => 'iso-8859-1']
-   [Basic => undef, realm => '"foo\bar"']
+   [basic => undef, realm => "\"foo\\bar\""]
 
-=cut
-
-
-sub split_header_words
-{
-    my(@val) = @_;
-    my @res;
-    for (@val) {
-	my @cur;
-	while (length) {
-	    if (s/^\s*(=*[^\s=;,]+)//) {  # 'token' or parameter 'attribute'
-		push(@cur, $1);
-		# a quoted value
-		if (s/^\s*=\s*\"([^\"\\]*(?:\\.[^\"\\]*)*)\"//) {
-		    my $val = $1;
-		    $val =~ s/\\(.)/$1/g;
-		    push(@cur, $val);
-		# some unquoted value
-		} elsif (s/^\s*=\s*([^;,\s]*)//) {
-		    my $val = $1;
-		    $val =~ s/\s+$//;
-		    push(@cur, $val);
-		# no value, a lone token
-		} else {
-		    push(@cur, undef);
-		}
-	    } elsif (s/^\s*,//) {
-		push(@res, [@cur]) if @cur;
-		@cur = ();
-	    } elsif (s/^\s*;// || s/^\s+//) {
-		# continue
-	    } else {
-		die "This should not happen: '$_'";
-	    }
-	}
-	push(@res, \@cur) if @cur;
-    }
-    @res;
-}
-
+If you don't want the function to convert tokens and attribute keys to
+lower case you can call it as C<_split_header_words> instead (with a
+leading underscore).
 
 =item join_header_words( @arrays )
 
@@ -137,37 +188,6 @@ will both return the string:
 
    text/plain; charset="iso-8859/1"
 
-=cut
-
-sub join_header_words
-{
-    @_ = ([@_]) if @_ && !ref($_[0]);
-    my @res;
-    for (@_) {
-	my @cur = @$_;
-	my @attr;
-	while (@cur) {
-	    my $k = shift @cur;
-	    my $v = shift @cur;
-	    if (defined $v) {
-		if ($v =~ /^\w+$/) {
-		    $k .= "=$v";
-		} else {
-		    $v =~ s/([\"\\])/\\$1/g;  # escape " and \
-		    $k .= qq(="$v");
-		}
-	    }
-	    push(@attr, $k);
-	}
-	push(@res, join("; ", @attr)) if @attr;
-    }
-    join(", ", @res);
-}
-
-1;
-
-__END__
-
 =back
 
 =head1 COPYRIGHT
@@ -177,4 +197,3 @@ Copyright 1997-1998, Gisle Aas
 This library is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
 
-=cut

@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -103,6 +103,10 @@ $Lexicon_ja = array(
 	'Reply' => '返信',
 
 ## php/mt.php.pre
+
+## php/lib/function.mtcommenternamethunk.php
+	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'テンプレートタグ \'[_1]\' は廃止されました。代わりに \'[_2]\'を使用してください。',
+
 );
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_ja;

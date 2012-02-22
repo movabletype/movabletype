@@ -1,41 +1,10 @@
 package HTTP::Headers;
 
-# $Id: Headers.pm,v 1.43 2001/11/15 06:19:22 gisle Exp $
-
-=head1 NAME
-
-HTTP::Headers - Class encapsulating HTTP Message headers
-
-=head1 SYNOPSIS
-
- require HTTP::Headers;
- $h = HTTP::Headers->new;
-
- $h->header('Content-Type' => 'text/plain');  # set
- $ct = $h->header('Content-Type');            # get
- $h->remove_header('Content-Type');           # delete
-
-=head1 DESCRIPTION
-
-The C<HTTP::Headers> class encapsulates HTTP-style message headers.
-The headers consist of attribute-value pairs also called fields, which
-may be repeated, and which are printed in a particular order.
-
-Instances of this class are usually created as member variables of the
-C<HTTP::Request> and C<HTTP::Response> classes, internal to the
-library.
-
-The following methods are available:
-
-=over 4
-
-=cut
-
 use strict;
 use Carp ();
 
 use vars qw($VERSION $TRANSLATE_UNDERSCORE);
-$VERSION = sprintf("%d.%02d", q$Revision: 1.43 $ =~ /(\d+)\.(\d+)/);
+$VERSION = "6.00";
 
 # The $TRANSLATE_UNDERSCORE variable controls whether '_' can be used
 # as a replacement for '-' in header field names.
@@ -47,20 +16,35 @@ $TRANSLATE_UNDERSCORE = 1 unless defined $TRANSLATE_UNDERSCORE;
 #    - Response-Headers
 #    - Entity-Headers
 
-my @header_order = qw(
-   Cache-Control Connection Date Pragma Trailer Transfer-Encoding Upgrade
-   Via Warning
+my @general_headers = qw(
+    Cache-Control Connection Date Pragma Trailer Transfer-Encoding Upgrade
+    Via Warning
+);
 
-   Accept Accept-Charset Accept-Encoding Accept-Language
-   Authorization Expect From Host
-   If-Match If-Modified-Since If-None-Match If-Range If-Unmodified-Since
-   Max-Forwards Proxy-Authorization Range Referer TE User-Agent
+my @request_headers = qw(
+    Accept Accept-Charset Accept-Encoding Accept-Language
+    Authorization Expect From Host
+    If-Match If-Modified-Since If-None-Match If-Range If-Unmodified-Since
+    Max-Forwards Proxy-Authorization Range Referer TE User-Agent
+);
 
-   Accept-Ranges Age ETag Location Proxy-Authenticate Retry-After Server
-   Vary WWW-Authenticate
+my @response_headers = qw(
+    Accept-Ranges Age ETag Location Proxy-Authenticate Retry-After Server
+    Vary WWW-Authenticate
+);
 
-   Allow Content-Encoding Content-Language Content-Length Content-Location
-   Content-MD5 Content-Range Content-Type Expires Last-Modified
+my @entity_headers = qw(
+    Allow Content-Encoding Content-Language Content-Length Content-Location
+    Content-MD5 Content-Range Content-Type Expires Last-Modified
+);
+
+my %entity_header = map { lc($_) => 1 } @entity_headers;
+
+my @header_order = (
+    @general_headers,
+    @request_headers,
+    @response_headers,
+    @entity_headers,
 );
 
 # Make alternative representations of @header_order.  This is used
@@ -79,6 +63,417 @@ my %standard_case;
 
 
 
+sub new
+{
+    my($class) = shift;
+    my $self = bless {}, $class;
+    $self->header(@_) if @_; # set up initial headers
+    $self;
+}
+
+
+sub header
+{
+    my $self = shift;
+    Carp::croak('Usage: $h->header($field, ...)') unless @_;
+    my(@old);
+    my %seen;
+    while (@_) {
+	my $field = shift;
+        my $op = @_ ? ($seen{lc($field)}++ ? 'PUSH' : 'SET') : 'GET';
+	@old = $self->_header($field, shift, $op);
+    }
+    return @old if wantarray;
+    return $old[0] if @old <= 1;
+    join(", ", @old);
+}
+
+sub clear
+{
+    my $self = shift;
+    %$self = ();
+}
+
+
+sub push_header
+{
+    my $self = shift;
+    return $self->_header(@_, 'PUSH_H') if @_ == 2;
+    while (@_) {
+	$self->_header(splice(@_, 0, 2), 'PUSH_H');
+    }
+}
+
+
+sub init_header
+{
+    Carp::croak('Usage: $h->init_header($field, $val)') if @_ != 3;
+    shift->_header(@_, 'INIT');
+}
+
+
+sub remove_header
+{
+    my($self, @fields) = @_;
+    my $field;
+    my @values;
+    foreach $field (@fields) {
+	$field =~ tr/_/-/ if $field !~ /^:/ && $TRANSLATE_UNDERSCORE;
+	my $v = delete $self->{lc $field};
+	push(@values, ref($v) eq 'ARRAY' ? @$v : $v) if defined $v;
+    }
+    return @values;
+}
+
+sub remove_content_headers
+{
+    my $self = shift;
+    unless (defined(wantarray)) {
+	# fast branch that does not create return object
+	delete @$self{grep $entity_header{$_} || /^content-/, keys %$self};
+	return;
+    }
+
+    my $c = ref($self)->new;
+    for my $f (grep $entity_header{$_} || /^content-/, keys %$self) {
+	$c->{$f} = delete $self->{$f};
+    }
+    $c;
+}
+
+
+sub _header
+{
+    my($self, $field, $val, $op) = @_;
+
+    unless ($field =~ /^:/) {
+	$field =~ tr/_/-/ if $TRANSLATE_UNDERSCORE;
+	my $old = $field;
+	$field = lc $field;
+	unless(defined $standard_case{$field}) {
+	    # generate a %standard_case entry for this field
+	    $old =~ s/\b(\w)/\u$1/g;
+	    $standard_case{$field} = $old;
+	}
+    }
+
+    $op ||= defined($val) ? 'SET' : 'GET';
+    if ($op eq 'PUSH_H') {
+	# Like PUSH but where we don't care about the return value
+	if (exists $self->{$field}) {
+	    my $h = $self->{$field};
+	    if (ref($h) eq 'ARRAY') {
+		push(@$h, ref($val) eq "ARRAY" ? @$val : $val);
+	    }
+	    else {
+		$self->{$field} = [$h, ref($val) eq "ARRAY" ? @$val : $val]
+	    }
+	    return;
+	}
+	$self->{$field} = $val;
+	return;
+    }
+
+    my $h = $self->{$field};
+    my @old = ref($h) eq 'ARRAY' ? @$h : (defined($h) ? ($h) : ());
+
+    unless ($op eq 'GET' || ($op eq 'INIT' && @old)) {
+	if (defined($val)) {
+	    my @new = ($op eq 'PUSH') ? @old : ();
+	    if (ref($val) ne 'ARRAY') {
+		push(@new, $val);
+	    }
+	    else {
+		push(@new, @$val);
+	    }
+	    $self->{$field} = @new > 1 ? \@new : $new[0];
+	}
+	elsif ($op ne 'PUSH') {
+	    delete $self->{$field};
+	}
+    }
+    @old;
+}
+
+
+sub _sorted_field_names
+{
+    my $self = shift;
+    return [ sort {
+        ($header_order{$a} || 999) <=> ($header_order{$b} || 999) ||
+         $a cmp $b
+    } keys %$self ];
+}
+
+
+sub header_field_names {
+    my $self = shift;
+    return map $standard_case{$_} || $_, @{ $self->_sorted_field_names },
+	if wantarray;
+    return keys %$self;
+}
+
+
+sub scan
+{
+    my($self, $sub) = @_;
+    my $key;
+    for $key (@{ $self->_sorted_field_names }) {
+	next if substr($key, 0, 1) eq '_';
+	my $vals = $self->{$key};
+	if (ref($vals) eq 'ARRAY') {
+	    my $val;
+	    for $val (@$vals) {
+		$sub->($standard_case{$key} || $key, $val);
+	    }
+	}
+	else {
+	    $sub->($standard_case{$key} || $key, $vals);
+	}
+    }
+}
+
+
+sub as_string
+{
+    my($self, $endl) = @_;
+    $endl = "\n" unless defined $endl;
+
+    my @result = ();
+    for my $key (@{ $self->_sorted_field_names }) {
+	next if index($key, '_') == 0;
+	my $vals = $self->{$key};
+	if ( ref($vals) eq 'ARRAY' ) {
+	    for my $val (@$vals) {
+		my $field = $standard_case{$key} || $key;
+		$field =~ s/^://;
+		if ( index($val, "\n") >= 0 ) {
+		    $val = _process_newline($val, $endl);
+		}
+		push @result, $field . ': ' . $val;
+	    }
+	}
+	else {
+	    my $field = $standard_case{$key} || $key;
+	    $field =~ s/^://;
+	    if ( index($vals, "\n") >= 0 ) {
+		$vals = _process_newline($vals, $endl);
+	    }
+	    push @result, $field . ': ' . $vals;
+	}
+    }
+
+    join($endl, @result, '');
+}
+
+sub _process_newline {
+    local $_ = shift;
+    my $endl = shift;
+    # must handle header values with embedded newlines with care
+    s/\s+$//;        # trailing newlines and space must go
+    s/\n(\x0d?\n)+/\n/g;     # no empty lines
+    s/\n([^\040\t])/\n $1/g; # intial space for continuation
+    s/\n/$endl/g;    # substitute with requested line ending
+    $_;
+}
+
+
+
+if (eval { require Storable; 1 }) {
+    *clone = \&Storable::dclone;
+} else {
+    *clone = sub {
+	my $self = shift;
+	my $clone = HTTP::Headers->new;
+	$self->scan(sub { $clone->push_header(@_);} );
+	$clone;
+    };
+}
+
+
+sub _date_header
+{
+    require HTTP::Date;
+    my($self, $header, $time) = @_;
+    my($old) = $self->_header($header);
+    if (defined $time) {
+	$self->_header($header, HTTP::Date::time2str($time));
+    }
+    $old =~ s/;.*// if defined($old);
+    HTTP::Date::str2time($old);
+}
+
+
+sub date                { shift->_date_header('Date',                @_); }
+sub expires             { shift->_date_header('Expires',             @_); }
+sub if_modified_since   { shift->_date_header('If-Modified-Since',   @_); }
+sub if_unmodified_since { shift->_date_header('If-Unmodified-Since', @_); }
+sub last_modified       { shift->_date_header('Last-Modified',       @_); }
+
+# This is used as a private LWP extension.  The Client-Date header is
+# added as a timestamp to a response when it has been received.
+sub client_date         { shift->_date_header('Client-Date',         @_); }
+
+# The retry_after field is dual format (can also be a expressed as
+# number of seconds from now), so we don't provide an easy way to
+# access it until we have know how both these interfaces can be
+# addressed.  One possibility is to return a negative value for
+# relative seconds and a positive value for epoch based time values.
+#sub retry_after       { shift->_date_header('Retry-After',       @_); }
+
+sub content_type      {
+    my $self = shift;
+    my $ct = $self->{'content-type'};
+    $self->{'content-type'} = shift if @_;
+    $ct = $ct->[0] if ref($ct) eq 'ARRAY';
+    return '' unless defined($ct) && length($ct);
+    my @ct = split(/;\s*/, $ct, 2);
+    for ($ct[0]) {
+	s/\s+//g;
+	$_ = lc($_);
+    }
+    wantarray ? @ct : $ct[0];
+}
+
+sub content_type_charset {
+    my $self = shift;
+    require HTTP::Headers::Util;
+    my $h = $self->{'content-type'};
+    $h = $h->[0] if ref($h);
+    $h = "" unless defined $h;
+    my @v = HTTP::Headers::Util::split_header_words($h);
+    if (@v) {
+	my($ct, undef, %ct_param) = @{$v[0]};
+	my $charset = $ct_param{charset};
+	if ($ct) {
+	    $ct = lc($ct);
+	    $ct =~ s/\s+//;
+	}
+	if ($charset) {
+	    $charset = uc($charset);
+	    $charset =~ s/^\s+//;  $charset =~ s/\s+\z//;
+	    undef($charset) if $charset eq "";
+	}
+	return $ct, $charset if wantarray;
+	return $charset;
+    }
+    return undef, undef if wantarray;
+    return undef;
+}
+
+sub content_is_text {
+    my $self = shift;
+    return $self->content_type =~ m,^text/,;
+}
+
+sub content_is_html {
+    my $self = shift;
+    return $self->content_type eq 'text/html' || $self->content_is_xhtml;
+}
+
+sub content_is_xhtml {
+    my $ct = shift->content_type;
+    return $ct eq "application/xhtml+xml" ||
+           $ct eq "application/vnd.wap.xhtml+xml";
+}
+
+sub content_is_xml {
+    my $ct = shift->content_type;
+    return 1 if $ct eq "text/xml";
+    return 1 if $ct eq "application/xml";
+    return 1 if $ct =~ /\+xml$/;
+    return 0;
+}
+
+sub referer           {
+    my $self = shift;
+    if (@_ && $_[0] =~ /#/) {
+	# Strip fragment per RFC 2616, section 14.36.
+	my $uri = shift;
+	if (ref($uri)) {
+	    $uri = $uri->clone;
+	    $uri->fragment(undef);
+	}
+	else {
+	    $uri =~ s/\#.*//;
+	}
+	unshift @_, $uri;
+    }
+    ($self->_header('Referer', @_))[0];
+}
+*referrer = \&referer;  # on tchrist's request
+
+sub title             { (shift->_header('Title',            @_))[0] }
+sub content_encoding  { (shift->_header('Content-Encoding', @_))[0] }
+sub content_language  { (shift->_header('Content-Language', @_))[0] }
+sub content_length    { (shift->_header('Content-Length',   @_))[0] }
+
+sub user_agent        { (shift->_header('User-Agent',       @_))[0] }
+sub server            { (shift->_header('Server',           @_))[0] }
+
+sub from              { (shift->_header('From',             @_))[0] }
+sub warning           { (shift->_header('Warning',          @_))[0] }
+
+sub www_authenticate  { (shift->_header('WWW-Authenticate', @_))[0] }
+sub authorization     { (shift->_header('Authorization',    @_))[0] }
+
+sub proxy_authenticate  { (shift->_header('Proxy-Authenticate',  @_))[0] }
+sub proxy_authorization { (shift->_header('Proxy-Authorization', @_))[0] }
+
+sub authorization_basic       { shift->_basic_auth("Authorization",       @_) }
+sub proxy_authorization_basic { shift->_basic_auth("Proxy-Authorization", @_) }
+
+sub _basic_auth {
+    require MIME::Base64;
+    my($self, $h, $user, $passwd) = @_;
+    my($old) = $self->_header($h);
+    if (defined $user) {
+	Carp::croak("Basic authorization user name can't contain ':'")
+	  if $user =~ /:/;
+	$passwd = '' unless defined $passwd;
+	$self->_header($h => 'Basic ' .
+                             MIME::Base64::encode("$user:$passwd", ''));
+    }
+    if (defined $old && $old =~ s/^\s*Basic\s+//) {
+	my $val = MIME::Base64::decode($old);
+	return $val unless wantarray;
+	return split(/:/, $val, 2);
+    }
+    return;
+}
+
+
+1;
+
+__END__
+
+=head1 NAME
+
+HTTP::Headers - Class encapsulating HTTP Message headers
+
+=head1 SYNOPSIS
+
+ require HTTP::Headers;
+ $h = HTTP::Headers->new;
+
+ $h->header('Content-Type' => 'text/plain');  # set
+ $ct = $h->header('Content-Type');            # get
+ $h->remove_header('Content-Type');           # delete
+
+=head1 DESCRIPTION
+
+The C<HTTP::Headers> class encapsulates HTTP-style message headers.
+The headers consist of attribute-value pairs also called fields, which
+may be repeated, and which are printed in a particular order.  The
+field names are cases insensitive.
+
+Instances of this class are usually created as member variables of the
+C<HTTP::Request> and C<HTTP::Response> classes, internal to the
+library.
+
+The following methods are available:
+
+=over 4
 
 =item $h = HTTP::Headers->new
 
@@ -93,37 +488,33 @@ attribute-value pairs as parameters to the constructor.  I<E.g.>:
 The constructor arguments are passed to the C<header> method which is
 described below.
 
-=cut
+=item $h->clone
 
-sub new
-{
-    my($class) = shift;
-    my $self = bless {}, $class;
-    $self->header(@_); # set up initial headers
-    $self;
-}
+Returns a copy of this C<HTTP::Headers> object.
 
+=item $h->header( $field )
 
-=item $h->header($field [=> $value],...)
+=item $h->header( $field => $value )
 
-Get or set the value of one or more header fields.  The header field name
-($field) is not case sensitive.  To make the life easier for perl
+=item $h->header( $f1 => $v1, $f2 => $v2, ... )
+
+Get or set the value of one or more header fields.  The header field
+name ($field) is not case sensitive.  To make the life easier for perl
 users who wants to avoid quoting before the => operator, you can use
-'_' as a replacement for '-' in header names (this behaviour can be
-suppressed by setting the $HTTP::Headers::TRANSLATE_UNDERSCORE
-variable to a FALSE value).
+'_' as a replacement for '-' in header names.
 
 The header() method accepts multiple ($field => $value) pairs, which
 means that you can update several fields with a single invocation.
 
 The $value argument may be a plain string or a reference to an array
-of strings for a multi-valued field. If the $value is undefined or not
-given, then that header field will remain unchanged.
+of strings for a multi-valued field. If the $value is provided as
+C<undef> then the field is removed.  If the $value is not given, then
+that header field will remain unchanged.
 
 The old value (or values) of the last of the header fields is returned.
 If no such field exists C<undef> will be returned.
 
-A multi-valued field will be retuned as separate values in list
+A multi-valued field will be returned as separate values in list
 context and will be concatenated with ", " as separator in scalar
 context.  The HTTP spec (RFC 2616) promise that joining multiple
 values in this way will not change the semantic of a header field, but
@@ -140,22 +531,9 @@ Examples:
  @accepts = $header->header('Accept');  # get multiple values
  $accepts = $header->header('Accept');  # get values as a single string
 
-=cut
+=item $h->push_header( $field => $value )
 
-sub header
-{
-    my $self = shift;
-    my(@old);
-    while (my($field, $val) = splice(@_, 0, 2)) {
-	@old = $self->_header($field, $val);
-    }
-    return @old if wantarray;
-    return $old[0] if @old <= 1;
-    join(", ", @old);
-}
-
-
-=item $h->push_header($field, $value)
+=item $h->push_header( $f1 => $v1, $f2 => $v2, ... )
 
 Add a new field value for the specified header field.  Previous values
 for the same field are retained.
@@ -169,15 +547,7 @@ scalars.
  $header->push_header(Accept => 'image/jpeg');
  $header->push_header(Accept => [map "image/$_", qw(gif png tiff)]);
 
-=cut
-
-sub push_header
-{
-    Carp::croak('Usage: $h->push_header($field, $val)') if @_ != 3;
-    shift->_header(@_, 'PUSH');
-}
-
-=item $h->init_header($field, $value)
+=item $h->init_header( $field => $value )
 
 Set the specified header to the given value, but only if no previous
 value for that field is set.
@@ -188,18 +558,9 @@ can be used as a replacement for '-'.
 The $value argument may be a scalar or a reference to a list of
 scalars.
 
-=cut
+=item $h->remove_header( $field, ... )
 
-sub init_header
-{
-    Carp::croak('Usage: $h->init_header($field, $val)') if @_ != 3;
-    shift->_header(@_, 'INIT');
-}
-
-
-=item $h->remove_header($field,...)
-
-This function removes the headers fields with the specified names.
+This function removes the header fields with the specified names.
 
 The header field names ($field) are not case sensitive and '_'
 can be used as a replacement for '-'.
@@ -210,66 +571,30 @@ context the number of fields removed is returned.
 Note that if you pass in multiple field names then it is generally not
 possible to tell which of the returned values belonged to which field.
 
-=cut
+=item $h->remove_content_headers
 
-sub remove_header
-{
-    my($self, @fields) = @_;
-    my $field;
-    my @values;
-    foreach $field (@fields) {
-	$field =~ tr/_/-/ if $TRANSLATE_UNDERSCORE;
-	my $v = delete $self->{lc $field};
-	push(@values, ref($v) ? @$v : $v) if defined $v;
-    }
-    return @values;
-}
+This will remove all the header fields used to describe the content of
+a message.  All header field names prefixed with C<Content-> fall
+into this category, as well as C<Allow>, C<Expires> and
+C<Last-Modified>.  RFC 2616 denotes these fields as I<Entity Header
+Fields>.
 
+The return value is a new C<HTTP::Headers> object that contains the
+removed headers only.
 
-sub _header
-{
-    my($self, $field, $val, $op) = @_;
-    $field =~ tr/_/-/ if $TRANSLATE_UNDERSCORE;
+=item $h->clear
 
-    # $push is only used interally sub push_header
-    Carp::croak('Need a field name') unless length($field);
+This will remove all header fields.
 
-    my $lc_field = lc $field;
-    unless(defined $standard_case{$lc_field}) {
-	# generate a %standard_case entry for this field
-	$field =~ s/\b(\w)/\u$1/g;
-	$standard_case{$lc_field} = $field;
-    }
+=item $h->header_field_names
 
-    my $h = $self->{$lc_field};
-    my @old = ref($h) ? @$h : (defined($h) ? ($h) : ());
+Returns the list of distinct names for the fields present in the
+header.  The field names have case as suggested by HTTP spec, and the
+names are returned in the recommended "Good Practice" order.
 
-    $op ||= "";
-    $val = undef if $op eq 'INIT' && @old;
-    if (defined($val)) {
-	my @new = ($op eq 'PUSH') ? @old : ();
-	if (!ref($val)) {
-	    push(@new, $val);
-	} elsif (ref($val) eq 'ARRAY') {
-	    push(@new, @$val);
-	} else {
-	    Carp::croak("Unexpected field value $val");
-	}
-	$self->{$lc_field} = @new > 1 ? \@new : $new[0];
-    }
-    @old;
-}
+In scalar context return the number of distinct field names.
 
-
-# Compare function which makes it easy to sort headers in the
-# recommended "Good Practice" order.
-sub _header_cmp
-{
-    ($header_order{$a} || 999) <=> ($header_order{$b} || 999) || $a cmp $b;
-}
-
-
-=item $h->scan(\&doit)
+=item $h->scan( \&process_header_field )
 
 Apply a subroutine to each header field in turn.  The callback routine
 is called with two parameters; the name of the field and a single
@@ -279,89 +604,32 @@ callback routine has case as suggested by HTTP spec, and the headers
 will be visited in the recommended "Good Practice" order.
 
 Any return values of the callback routine are ignored.  The loop can
-be broken by raising an exception (C<die>).
+be broken by raising an exception (C<die>), but the caller of scan()
+would have to trap the exception itself.
 
-=cut
+=item $h->as_string
 
-sub scan
-{
-    my($self, $sub) = @_;
-    my $key;
-    foreach $key (sort _header_cmp keys %$self) {
-        next if $key =~ /^_/;
-	my $vals = $self->{$key};
-	if (ref($vals)) {
-	    my $val;
-	    for $val (@$vals) {
-		&$sub($standard_case{$key} || $key, $val);
-	    }
-	} else {
-	    &$sub($standard_case{$key} || $key, $vals);
-	}
-    }
-}
-
-
-=item $h->as_string([$endl])
+=item $h->as_string( $eol )
 
 Return the header fields as a formatted MIME header.  Since it
 internally uses the C<scan> method to build the string, the result
 will use case as suggested by HTTP spec, and it will follow
-recommended "Good Practice" of ordering the header fieds.  Long header
+recommended "Good Practice" of ordering the header fields.  Long header
 values are not folded.
 
-The optional $endl parameter specifies the line ending sequence to
+The optional $eol parameter specifies the line ending sequence to
 use.  The default is "\n".  Embedded "\n" characters in header field
-values will be substitued with this line ending sequence.
-
-=cut
-
-sub as_string
-{
-    my($self, $endl) = @_;
-    $endl = "\n" unless defined $endl;
-
-    my @result = ();
-    $self->scan(sub {
-	my($field, $val) = @_;
-	if ($val =~ /\n/) {
-	    # must handle header values with embedded newlines with care
-	    $val =~ s/\s+$//;          # trailing newlines and space must go
-	    $val =~ s/\n\n+/\n/g;      # no empty lines
-	    $val =~ s/\n([^\040\t])/\n $1/g;  # intial space for continuation
-	    $val =~ s/\n/$endl/g;      # substitute with requested line ending
-	}
-	push(@result, "$field: $val");
-    });
-
-    join($endl, @result, '');
-}
-
-
-=item $h->clone
-
-Returns a copy of this C<HTTP::Headers> object.
+values will be substituted with this line ending sequence.
 
 =back
-
-=cut
-
-sub clone
-{
-    my $self = shift;
-    my $clone = new HTTP::Headers;
-    $self->scan(sub { $clone->push_header(@_);} );
-    $clone;
-}
-
 
 =head1 CONVENIENCE METHODS
 
 The most frequently used headers can also be accessed through the
-following convenience methods.  These methods can both be used to read
+following convenience methods.  Most of these methods can both be used to read
 and to set the value of a header.  The header value is set if you pass
 an argument to the method.  The old header value is always returned.
-If the given header did not exists then C<undef> is returned.
+If the given header did not exist then C<undef> is returned.
 
 Methods that deal with dates/times always convert their value to system
 time (seconds since Jan 1, 1970) and they also expect this kind of
@@ -411,13 +679,41 @@ content. I<E.g.>:
 
 The value returned will be converted to lower case, and potential
 parameters will be chopped off and returned as a separate value if in
-an array context.  This makes it safe to do the following:
+an array context.  If there is no such header field, then the empty
+string is returned.  This makes it safe to do the following:
 
   if ($h->content_type eq 'text/html') {
      # we enter this place even if the real header value happens to
      # be 'TEXT/HTML; version=3.0'
      ...
   }
+
+=item $h->content_type_charset
+
+Returns the upper-cased charset specified in the Content-Type header.  In list
+context return the lower-cased bare content type followed by the upper-cased
+charset.  Both values will be C<undef> if not specified in the header.
+
+=item $h->content_is_text
+
+Returns TRUE if the Content-Type header field indicate that the
+content is textual.
+
+=item $h->content_is_html
+
+Returns TRUE if the Content-Type header field indicate that the
+content is some kind of HTML (including XHTML).  This method can't be
+used to set Content-Type.
+
+=item $h->content_is_xhtml
+
+Returns TRUE if the Content-Type header field indicate that the
+content is XHTML.  This method can't be used to set Content-Type.
+
+=item $h->content_is_xml
+
+Returns TRUE if the Content-Type header field indicate that the
+content is XML.  This method can't be used to set Content-Type.
 
 =item $h->content_encoding
 
@@ -448,7 +744,7 @@ standard.>
 This header field is used in request messages and contains information
 about the user agent originating the request.  I<E.g.>:
 
-  $h->user_agent('Mozilla/1.2');
+  $h->user_agent('Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 6.0)');
 
 =item $h->server
 
@@ -468,7 +764,7 @@ I<This header is no longer part of the HTTP standard.>
 =item $h->referer
 
 Used to specify the address (URI) of the document from which the
-requested resouce address was obtained.
+requested resource address was obtained.
 
 The "Free On-line Dictionary of Computing" as this to say about the
 word I<referer>:
@@ -486,6 +782,10 @@ By popular demand C<referrer> exists as an alias for this method so you
 can avoid this misspelling in your programs and still send the right
 thing on the wire.
 
+When setting the referrer, this method removes the fragment from the
+given URI if it is present, as mandated by RFC2616.  Note that
+the removal does I<not> happen automatically if using the header(),
+push_header() or init_header() methods to set the referrer.
 
 =item $h->www_authenticate
 
@@ -525,91 +825,25 @@ header instead.
 
 =back
 
-=cut
+=head1 NON-CANONICALIZED FIELD NAMES
 
-sub _date_header
-{
-    require HTTP::Date;
-    my($self, $header, $time) = @_;
-    my($old) = $self->_header($header);
-    if (defined $time) {
-	$self->_header($header, HTTP::Date::time2str($time));
-    }
-    HTTP::Date::str2time($old);
-}
+The header field name spelling is normally canonicalized including the
+'_' to '-' translation.  There are some application where this is not
+appropriate.  Prefixing field names with ':' allow you to force a
+specific spelling.  For example if you really want a header field name
+to show up as C<foo_bar> instead of "Foo-Bar", you might set it like
+this:
 
-sub date                { shift->_date_header('Date',                @_); }
-sub expires             { shift->_date_header('Expires',             @_); }
-sub if_modified_since   { shift->_date_header('If-Modified-Since',   @_); }
-sub if_unmodified_since { shift->_date_header('If-Unmodified-Since', @_); }
-sub last_modified       { shift->_date_header('Last-Modified',       @_); }
+  $h->header(":foo_bar" => 1);
 
-# This is used as a private LWP extention.  The Client-Date header is
-# added as a timestamp to a response when it has been received.
-sub client_date         { shift->_date_header('Client-Date',         @_); }
-
-# The retry_after field is dual format (can also be a expressed as
-# number of seconds from now), so we don't provide an easy way to
-# access it until we have know how both these interfaces can be
-# addressed.  One possibility is to return a negative value for
-# relative seconds and a positive value for epoch based time values.
-#sub retry_after       { shift->_date_header('Retry-After',       @_); }
-
-sub content_type      {
-  my $ct = (shift->_header('Content-Type', @_))[0];
-  return '' unless defined($ct) && length($ct);
-  my @ct = split(/\s*;\s*/, lc($ct));
-  wantarray ? @ct : $ct[0];
-}
-
-sub title             { (shift->_header('Title',            @_))[0] }
-sub content_encoding  { (shift->_header('Content-Encoding', @_))[0] }
-sub content_language  { (shift->_header('Content-Language', @_))[0] }
-sub content_length    { (shift->_header('Content-Length',   @_))[0] }
-
-sub user_agent        { (shift->_header('User-Agent',       @_))[0] }
-sub server            { (shift->_header('Server',           @_))[0] }
-
-sub from              { (shift->_header('From',             @_))[0] }
-sub referer           { (shift->_header('Referer',          @_))[0] }
-*referrer = \&referer;  # on tchrist's request
-sub warning           { (shift->_header('Warning',          @_))[0] }
-
-sub www_authenticate  { (shift->_header('WWW-Authenticate', @_))[0] }
-sub authorization     { (shift->_header('Authorization',    @_))[0] }
-
-sub proxy_authenticate  { (shift->_header('Proxy-Authenticate',  @_))[0] }
-sub proxy_authorization { (shift->_header('Proxy-Authorization', @_))[0] }
-
-sub authorization_basic       { shift->_basic_auth("Authorization",       @_) }
-sub proxy_authorization_basic { shift->_basic_auth("Proxy-Authorization", @_) }
-
-sub _basic_auth {
-    require MIME::Base64;
-    my($self, $h, $user, $passwd) = @_;
-    my($old) = $self->_header($h);
-    if (defined $user) {
-	Carp::croak("Basic authorization user name can't contain ':'")
-	  if $user =~ /:/;
-	$passwd = '' unless defined $passwd;
-	$self->_header($h => 'Basic ' .
-                             MIME::Base64::encode("$user:$passwd", ''));
-    }
-    if (defined $old && $old =~ s/^\s*Basic\s+//) {
-	my $val = MIME::Base64::decode($old);
-	return $val unless wantarray;
-	return split(/:/, $val, 2);
-    }
-    return;
-}
+These field names are returned with the ':' intact for
+$h->header_field_names and the $h->scan callback, but the colons do
+not show in $h->as_string.
 
 =head1 COPYRIGHT
 
-Copyright 1995-2001 Gisle Aas.
+Copyright 1995-2005 Gisle Aas.
 
 This library is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
 
-=cut
-
-1;

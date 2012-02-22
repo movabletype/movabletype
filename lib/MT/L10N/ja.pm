@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -676,6 +676,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'URL is invalid.' => 'URLが不正です。',
 	'Commenter profile has successfully been updated.' => 'コメント投稿者のユーザー情報を更新しました。',
 	'Commenter profile could not be updated: [_1]' => 'コメント投稿者のユーザー情報を更新できませんでした: [_1]',
+	'You are trying to redirect to external resources: [_1]' => '外部のサイトへリダイレクトしようとしています。[_1]',
 
 ## lib/MT/App/NotifyList.pm
 	'Please enter a valid email address.' => '正しいメールアドレスを入力してください。',
@@ -1109,7 +1110,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Plugin Settings' => 'プラグイン設定',
 	'New Blog' => '新しいブログ',
 	'Blog Activity Feed' => 'ブログのログフィード',
-	'Can\'t load template #[_1].' => 'テンプレート: [_1」をロードできませんでした。',
+	'Can\'t load template #[_1].' => 'テンプレート: [_1]をロードできませんでした。',
 	'index template \'[_1]\'' => 'インデックステンプレート「[_1]」',
 	'[_1] \'[_2]\'' => '[_1]「[_2]」',
 	'Publish Site' => 'サイトを再構築',
@@ -1817,6 +1818,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'name is required.' => 'nameを指定してください。',
 	'Specified WidgetSet \'[_1]\' not found.' => 'ウィジェットセット「[_1]」が見つかりません。',
 	'Can\'t find included template widget \'[_1]\'' => 'ウィジェット「[_1]」が見つかりません。',
+	q{This '[_1]' tag has been deprecated. Please use '[_2]' instead.} =>  q{テンプレートタグ '[_1]' は廃止されました。代わりに '[_2]'を使用してください。},
 
 ## lib/MT/Template.pm
 	'Template' => 'テンプレート',

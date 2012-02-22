@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -411,7 +411,9 @@ sub init_blog {
         user_lang        => $param{initial_lang},
         user_external_id => $param{initial_external_id},
     };
-    if ( my $email_system = $param{initial_use_system} || $param{use_system_email} ) {
+    if ( my $email_system = $param{initial_use_system}
+        || $param{use_system_email} )
+    {
         $new_user->{'use_system_email'} = $email_system;
     }
     $new_blog = {

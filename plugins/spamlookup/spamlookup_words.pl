@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2004-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2004-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -13,22 +13,26 @@ use MT;
 use MT::Plugin;
 
 use vars qw($VERSION);
+
 sub BEGIN {
     @MT::Plugin::SpamLookup::KeywordFilter::ISA = ('MT::Plugin');
-    $VERSION = '2.1';
+    $VERSION                                    = '2.1';
     my $plugin;
-    $plugin = new MT::Plugin::SpamLookup::KeywordFilter({
-        name => 'SpamLookup - Keyword Filter',
-        version => $VERSION,
-        description => '<MT_TRANS phrase="SpamLookup module for moderating and junking feedback using keyword filters.">',
-        doc_link => 'http://www.spamlookup.com/wiki/KeywordFilter',
-        author_name => 'Six Apart, Ltd.',
-        author_link => 'http://www.sixapart.com/',
-        config_template => 'word_config.tmpl',
-        l10n_class => 'spamlookup::L10N',
-        settings => new MT::PluginSettings([
-            ['wordlist_moderate'],
-            ['wordlist_junk', { Default => q{# Your Junk keyword list can contain words, phrases, patterns,
+    $plugin = new MT::Plugin::SpamLookup::KeywordFilter(
+        {   name    => 'SpamLookup - Keyword Filter',
+            version => $VERSION,
+            description =>
+                '<MT_TRANS phrase="SpamLookup module for moderating and junking feedback using keyword filters.">',
+            doc_link        => 'http://www.spamlookup.com/wiki/KeywordFilter',
+            author_name     => 'Six Apart, Ltd.',
+            author_link     => 'http://www.sixapart.com/',
+            config_template => 'word_config.tmpl',
+            l10n_class      => 'spamlookup::L10N',
+            settings        => new MT::PluginSettings(
+                [   ['wordlist_moderate'],
+                    [   'wordlist_junk',
+                        {   Default =>
+                                q{# Your Junk keyword list can contain words, phrases, patterns,
 # and domain names. Each item must be on a separate line.
 #
 # Words and phrases can be listed plainly. They are tested in a
@@ -40,17 +44,21 @@ cialis
 
 # You can optionally place a score at the end of the line to adjust
 # the penalty applied for matching that item.
-phentermine 4}} ],
-        ]),
-        registry => {
-            junk_filters => {
-                spamlookup_wordfilter => {
-                    label => "SpamLookup Keyword Filter",
-                    code => sub { $plugin->runner('wordfilter', @_) },
+phentermine 4}
+                        }
+                    ],
+                ]
+            ),
+            registry => {
+                junk_filters => {
+                    spamlookup_wordfilter => {
+                        label => "SpamLookup Keyword Filter",
+                        code  => sub { $plugin->runner( 'wordfilter', @_ ) },
+                    },
                 },
             },
-        },
-    });
+        }
+    );
     MT->add_plugin($plugin);
 }
 
@@ -58,22 +66,23 @@ sub runner {
     my $plugin = shift;
     my $method = shift;
     require spamlookup;
-    return $_->($plugin, @_) if $_ = \&{"spamlookup::$method"};
+    return $_->( $plugin, @_ ) if $_ = \&{"spamlookup::$method"};
     die "Failed to find spamlookup::$method";
 }
 
 sub apply_default_settings {
     my $plugin = shift;
-    my ($data, $scope) = @_;
-    if ($scope ne 'system') {
-        my $sys = $plugin->get_config_obj('system');
+    my ( $data, $scope ) = @_;
+    if ( $scope ne 'system' ) {
+        my $sys     = $plugin->get_config_obj('system');
         my $sysdata = $sys->data();
-        if ($plugin->{settings} && $sysdata) {
-            foreach (keys %$sysdata) {
+        if ( $plugin->{settings} && $sysdata ) {
+            foreach ( keys %$sysdata ) {
                 $data->{$_} = $sysdata->{$_} if !exists $data->{$_};
             }
         }
-    } else {
+    }
+    else {
         $plugin->SUPER::apply_default_settings(@_);
     }
 }

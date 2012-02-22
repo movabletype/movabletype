@@ -910,6 +910,15 @@ sub upload_userpic {
     return $app->errtrans("Invalid request.")
         if $app->param('blog_id');
 
+    my $user_id = $app->param('user_id');
+    my $user    = MT->model('author')->load($user_id)
+        or return $app->errtrans("Invalid request.");
+
+    my $appuser = $app->user;
+    if ( ( !$appuser->is_superuser ) && ( $user->id != $appuser->id ) ) {
+        return $app->return_to_dashboard( permission => 1 );
+    }
+
     require MT::CMS::Asset;
     my ( $asset, $bytes )
         = MT::CMS::Asset::_upload_file( $app, @_, require_type => 'image', );
@@ -918,8 +927,6 @@ sub upload_userpic {
 
     ## TODO: should this be layered into _upload_file somehow, so we don't
     ## save the asset twice?
-    my $user_id = $app->param('user_id');
-
     $asset->tags('@userpic');
     $asset->created_by($user_id);
     $asset->save;
@@ -1175,65 +1182,58 @@ sub grant_role {
     require MT::Blog;
     require MT::Role;
 
+    push @blogs, $blog_id if $blog_id;
     foreach (@blogs) {
         my $id = $_;
         $id =~ s/\D//g;
         $_ = MT::Blog->load($id);
     }
-    push @blogs, MT::Blog->load($blog_id) if $blog_id;
+    @blogs = grep { defined $_ } @blogs;
 
-    my $can_grant_administer = 1;
+    my @can_grant_administer = map 1, 1 .. @blogs;
     if ( !$user->is_superuser ) {
-        if ( ( scalar @blogs != 1 )
-            || !$user->permissions( $blogs[0] )->can_administer_blog )
-        {
-            $can_grant_administer = 0;
-            if ( !$user->permissions( $blogs[0] )->can_manage_users ) {
-                return $app->errtrans("Permission denied.");
+        for ( my $i = 0; $i < scalar(@blogs); $i++ ) {
+            my $perm = $user->permissions( $blogs[$i] );
+            if ( !$perm->can_do('grant_administer_role') ) {
+                $can_grant_administer[$i] = 0;
+                if ( !$perm->can_do('grant_role_for_blog') ) {
+                    return $app->return_to_dashboard( permission => 1 );
+                }
             }
         }
     }
 
-    my @roles;
-    foreach my $id (@role_ids) {
-        $id =~ s/\D//g;
-        my $role = MT::Role->load($id);
-        if ( $can_grant_administer || !$role->has('administer_blog') ) {
-            push @roles, $role;
-        }
-    }
-    push @roles, MT::Role->load($role_id) if $role_id;
+    push @role_ids, $role_id if $role_id;
+    my @roles = grep { defined $_ }
+        map { MT::Role->load($_) }
+        map { my $id = $_; $id =~ s/\D//g; $id } @role_ids;
 
+    push @authors, $author_id if $author_id;
     my $add_pseudo_new_user = 0;
     foreach (@authors) {
         my $id = $_;
-        if ( 'author-PSEUDO' eq $id ) {
+        if ( $id =~ /PSEUDO/ ) {
             $add_pseudo_new_user = 1;
             next;
         }
         $id =~ s/\D//g;
         $_ = MT::Author->load($id);
     }
+    @authors = grep { ref $_ } @authors;
     $app->error(undef);
-
-    if ($author_id) {
-        if ( $author_id eq 'PSEUDO' ) {
-            $add_pseudo_new_user = 1;
-        }
-        else {
-            push @authors, MT::Author->load($author_id);
-        }
-    }
-
-    require MT::Association;
 
     my @default_assignments;
 
+    # Load permission which has administer_blog
+    require MT::Association;
+
     # TBD: handle case for associating system roles to users/groups
     foreach my $blog (@blogs) {
-        next unless ref $blog;
+        my $can_grant_administer = shift @can_grant_administer;
         foreach my $role (@roles) {
-            next unless ref $role;
+            next
+                if ( ( !$can_grant_administer )
+                && ( $role->has('administer_blog') ) );
             if ($add_pseudo_new_user) {
                 push @default_assignments, $role->id . ',' . $blog->id;
             }
@@ -1257,7 +1257,24 @@ sub grant_role {
 }
 
 sub dialog_select_author {
-    my $app = shift;
+    my $app     = shift;
+    my $blog_id = $app->param('blog_id')
+        or return $app->errtrans('Invalid request');
+    my $type = $app->param('_type') || 'entry';
+    if ( !$app->user->is_superuser ) {
+        my $perms = $app->permissions;
+        if ( $type eq 'entry' ) {
+            return $app->return_to_dashboard( permission => 1 )
+                unless $perms->can_edit_all_posts;
+        }
+        elsif ( $type eq 'page' ) {
+            return $app->return_to_dashboard( permission => 1 )
+                unless $perms->can_manage_pages;
+        }
+        else {
+            return $app->errtrans('Invalid request');
+        }
+    }
 
     my $hasher = sub {
         my ( $obj, $row ) = @_;
@@ -1275,8 +1292,13 @@ sub dialog_select_author {
                 sort => 'name',
                 join => MT::Permission->join_on(
                     'author_id',
-                    {   permissions => "\%'create_post'\%",
-                        blog_id     => $app->blog->id,
+                    {   (   $type eq 'entry'
+                            ? ( permissions => "\%'create_post'\%" )
+                            : $type eq 'page'
+                            ? ( permissions => "\%'manage_pages'\%" )
+                            : ()
+                        ),
+                        blog_id => $app->blog->id,
                     },
                     { 'like' => { 'permissions' => 1 } }
                 ),
@@ -1298,8 +1320,8 @@ sub dialog_select_author {
                 panel_first      => 1,
                 panel_last       => 1,
                 list_noncron     => 1,
-                idfield          => $app->param('idfield'),
-                namefield        => $app->param('namefield'),
+                idfield          => scalar( $app->param('idfield') ),
+                namefield        => scalar( $app->param('namefield') ),
             },
         }
     );
@@ -1351,8 +1373,8 @@ sub dialog_select_sysadmin {
                 panel_first      => 1,
                 panel_last       => 1,
                 list_noncron     => 1,
-                idfield          => $app->param('idfield'),
-                namefield        => $app->param('namefield'),
+                idfield          => scalar( $app->param('idfield') ),
+                namefield        => scalar( $app->param('namefield') ),
             },
         }
     );
@@ -1577,8 +1599,13 @@ sub remove_userpic {
     $app->validate_magic() or return;
     my $q       = $app->param;
     my $user_id = $q->param('user_id');
-    my $user    = $app->model('author')->load( { id => $user_id } )
+    my $user    = $app->model('author')->load($user_id)
         or return;
+
+    my $appuser = $app->user;
+    if ( ( !$appuser->is_superuser ) && ( $user->id != $appuser->id ) ) {
+        return $app->return_to_dashboard( permission => 1 );
+    }
     if ( $user->userpic_asset_id ) {
         my $old_file = $user->userpic_file();
         my $fmgr     = MT::FileMgr->new('Local');
@@ -1723,7 +1750,7 @@ sub save_filter {
     return 1 if ( $pref ne 'MT' );
     if ( !$app->param('id') ) {    # it's a new object
         return $eh->error( $app->translate("User requires password") )
-            if ( !$app->param('pass') );
+            if ( 0 == length( scalar $app->param('pass') ) );
     }
     my $email = $app->param('email');
     return $eh->error(
@@ -1760,7 +1787,7 @@ sub pre_save {
     $obj->type( MT::Author::AUTHOR() );
 
     my $pass = $app->param('pass');
-    if ($pass) {
+    if ( length($pass) ) {
         $obj->set_password($pass);
     }
     elsif ( !$obj->id ) {

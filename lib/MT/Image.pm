@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -26,47 +26,49 @@ sub new {
 sub get_dimensions {
     my $image = shift;
     my %param = @_;
-    my($w, $h) = ($image->{width}, $image->{height});
-    if (my $pct = $param{Scale}) {
-        ($w, $h) = (int($w * $pct / 100), int($h * $pct / 100));
-    } else {
-        if ($param{Width} && $param{Height}) {
-            ($w, $h) = ($param{Width}, $param{Height});
-        } else {
-            my $x = $param{Width} || $w;
+    my ( $w, $h ) = ( $image->{width}, $image->{height} );
+    if ( my $pct = $param{Scale} ) {
+        ( $w, $h ) = ( int( $w * $pct / 100 ), int( $h * $pct / 100 ) );
+    }
+    else {
+        if ( $param{Width} && $param{Height} ) {
+            ( $w, $h ) = ( $param{Width}, $param{Height} );
+        }
+        else {
+            my $x = $param{Width}  || $w;
             my $y = $param{Height} || $h;
             my $w_pct = $x / $w;
             my $h_pct = $y / $h;
-            my $pct = $param{Width} ? $w_pct : $h_pct;
-            ($w, $h) = (int($w * $pct), int($h * $pct));
+            my $pct   = $param{Width} ? $w_pct : $h_pct;
+            ( $w, $h ) = ( int( $w * $pct ), int( $h * $pct ) );
         }
     }
-    ($w, $h);
+    ( $w, $h );
 }
 
 sub inscribe_square {
-    my $class = shift;
+    my $class  = shift;
     my %params = @_;
-    my ($w, $h) = @params{qw( Width Height )};
+    my ( $w, $h ) = @params{qw( Width Height )};
 
-    my ($dim, $x, $y);
+    my ( $dim, $x, $y );
 
-    if ($w > $h) {
+    if ( $w > $h ) {
         $dim = $h;
-        $x = int(($w - $dim) / 2);
-        $y = 0;
+        $x   = int( ( $w - $dim ) / 2 );
+        $y   = 0;
     }
     else {
         $dim = $w;
-        $x = 0;
-        $y = int(($h - $dim) / 2);
+        $x   = 0;
+        $y   = int( ( $h - $dim ) / 2 );
     }
 
-    return ( Size => $dim, X => $x, Y => $y ); 
+    return ( Size => $dim, X => $x, Y => $y );
 }
 
 sub make_square {
-    my $image = shift;
+    my $image  = shift;
     my %square = $image->inscribe_square(
         Width  => $image->{width},
         Height => $image->{height},
@@ -75,42 +77,55 @@ sub make_square {
 }
 
 sub check_upload {
-    my $class = shift;
+    my $class  = shift;
     my %params = @_;
 
-    my $fh = $params{Fh};
-    my $ext = $params{ext};
+    my $fh         = $params{Fh};
+    my $ext        = $params{ext};
     my $local_base = $params{LocalBase};
-    
-    ### 
-    # 
-    # Function to evaluate content of an image file to see if it contains HTML or JavaScript 
-    # content in the first 1K bytes.  Image files that contain embedded HTML or JavaScript are 
-    # prohibited in order to prevent a known IE 6 and 7 content-sniffing vulnerability. 
-    # 
-    # This code based on the ImageValidate plugin written by Six Apart. 
-    # 
-    ### 
-	     
-    if ( $ext =~ m/(jpe?g|png|gif|bmp|tiff?|ico)/i ) { 
 
-        my $data = ''; 
+    ###
+#
+# Function to evaluate content of an image file to see if it contains HTML or JavaScript
+# content in the first 1K bytes.  Image files that contain embedded HTML or JavaScript are
+# prohibited in order to prevent a known IE 6 and 7 content-sniffing vulnerability.
+#
+# This code based on the ImageValidate plugin written by Six Apart.
+#
+    ###
 
-        ## Read first 1k of image file 
-        binmode($fh); 
-        seek($fh, 0, 0); 
-        read $fh, $data, 1024; 
-        seek($fh, 0, 0); 
+    if ( $ext =~ m/(jpe?g|png|gif|bmp|tiff?|ico)/i ) {
 
-        ## Using an error message format that already exists in all localizations of Movable Type 4. 
-        if (( $data =~ m/^\s*<[!?]/ ) || 
-            ( $data =~ m/<(HTML|SCRIPT|TITLE|BODY|HEAD|PLAINTEXT|TABLE|IMG|PRE|A)/i ) || 
-            ( $data =~ m/text\/html/i ) || 
-            ( $data =~ m/^\s*<(FRAMESET|IFRAME|LINK|BASE|STYLE|DIV|P|FONT|APPLET)/i ) || 
-            ( $data =~ m/^\s*<(APPLET|META|CENTER|FORM|ISINDEX|H[123456]|B|BR)/i )) {
-            return $class->error(MT->translate("Saving [_1] failed: [_2]", $local_base, "Invalid image file format."));
+        my $data = '';
+
+        ## Read first 1k of image file
+        binmode($fh);
+        seek( $fh, 0, 0 );
+        read $fh, $data, 1024;
+        seek( $fh, 0, 0 );
+
+        ## Using an error message format that already exists in all localizations of Movable Type 4.
+        if (( $data =~ m/^\s*<[!?]/ )
+            || ( $data
+                =~ m/<(HTML|SCRIPT|TITLE|BODY|HEAD|PLAINTEXT|TABLE|IMG|PRE|A)/i
+            )
+            || ( $data =~ m/text\/html/i )
+            || ( $data
+                =~ m/^\s*<(FRAMESET|IFRAME|LINK|BASE|STYLE|DIV|P|FONT|APPLET)/i
+            )
+            || ( $data
+                =~ m/^\s*<(APPLET|META|CENTER|FORM|ISINDEX|H[123456]|B|BR)/i )
+            )
+        {
+            return $class->error(
+                MT->translate(
+                    "Saving [_1] failed: [_2]",
+                    $local_base,
+                    "Invalid image file format."
+                )
+            );
         }
-    }    
+    }
 
     ## Use Image::Size to check if the uploaded file is an image, and if so,
     ## record additional image info (width, height). We first rewind the
@@ -119,8 +134,8 @@ sub check_upload {
     eval { require Image::Size; };
     return $class->error(
         MT->translate(
-                "Perl module Image::Size is required to determine "
-              . "width and height of uploaded images."
+                  "Perl module Image::Size is required to determine "
+                . "width and height of uploaded images."
         )
     ) if $@;
     my ( $w, $h, $id ) = Image::Size::imgsize($fh);
@@ -131,43 +146,52 @@ sub check_upload {
 
     ## Check file size?
     my $file_size;
-    if ($params{Max}) {
+    if ( $params{Max} ) {
         ## Seek to the end of the handle to find the size.
-        seek $fh, 0, 2;  # wind to end
+        seek $fh, 0, 2;    # wind to end
         $file_size = tell $fh;
         seek $fh, 0, 0;
     }
 
     ## If the image exceeds the dimension limit, resize it before writing.
-    if (my $max_dim = $params{MaxDim}) {
-        if (defined($w) && defined($h) && ($w > $max_dim || $h > $max_dim)) {
+    if ( my $max_dim = $params{MaxDim} ) {
+        if (   defined($w)
+            && defined($h)
+            && ( $w > $max_dim || $h > $max_dim ) )
+        {
             my $uploaded_data = eval { local $/; <$fh> };
             my $img = $class->new( Data => $uploaded_data )
-                or return $class->error($class->errstr);
+                or return $class->error( $class->errstr );
 
-            if ($params{Square}) {
-                (undef, $w, $h) = $img->make_square()
-                    or return $class->error($img->errstr);
+            if ( $params{Square} ) {
+                ( undef, $w, $h ) = $img->make_square()
+                    or return $class->error( $img->errstr );
             }
-            (my($resized_data), $w, $h) = $img->scale(
-                (($w > $h) ? 'Width' : 'Height') => $max_dim )
-                    or return $class->error($img->errstr);
+            ( my ($resized_data), $w, $h )
+                = $img->scale(
+                ( ( $w > $h ) ? 'Width' : 'Height' ) => $max_dim )
+                or return $class->error( $img->errstr );
 
             $write_file = sub {
-                $params{Fmgr}->put_data( $resized_data, $params{Local}, 'upload' )
+                $params{Fmgr}
+                    ->put_data( $resized_data, $params{Local}, 'upload' );
             };
             $file_size = length $resized_data;
         }
     }
 
-    if (my $max_size = $params{Max}) {
-        if ($max_size < $file_size) {
-            return $class->error(MT->translate( "File size exceeds maximum allowed: [_1] > [_2]",
-                    $file_size, $max_size ) );
+    if ( my $max_size = $params{Max} ) {
+        if ( $max_size < $file_size ) {
+            return $class->error(
+                MT->translate(
+                    "File size exceeds maximum allowed: [_1] > [_2]",
+                    $file_size, $max_size
+                )
+            );
         }
     }
 
-    ($w, $h, $id, $write_file);
+    ( $w, $h, $id, $write_file );
 }
 
 package MT::Image::ImageMagick;
@@ -176,8 +200,9 @@ package MT::Image::ImageMagick;
 sub load_driver {
     my $image = shift;
     eval { require Image::Magick };
-    if (my $err = $@) {
-        return $image->error(MT->translate("Can't load Image::Magick: [_1]", $err));
+    if ( my $err = $@ ) {
+        return $image->error(
+            MT->translate( "Can't load Image::Magick: [_1]", $err ) );
     }
     1;
 }
@@ -185,70 +210,83 @@ sub load_driver {
 sub init {
     my $image = shift;
     my %param = @_;
-    my %arg = ();
-    if (my $type = $param{Type}) {
-        %arg = (magick => lc($type));
-    } elsif (my $file = $param{Filename}) {
-        (my $ext = $file) =~ s/.*\.//;
-        %arg = (magick => lc($ext));
+    my %arg   = ();
+    if ( my $type = $param{Type} ) {
+        %arg = ( magick => lc($type) );
+    }
+    elsif ( my $file = $param{Filename} ) {
+        ( my $ext = $file ) =~ s/.*\.//;
+        %arg = ( magick => lc($ext) );
     }
     my $magick = $image->{magick} = Image::Magick->new(%arg);
-    if (my $file = $param{Filename}) {
+    if ( my $file = $param{Filename} ) {
         my $x = $magick->Read($file);
-        return $image->error(MT->translate(
-            "Reading file '[_1]' failed: [_2]", $file, $x)) if $x;
-        ($image->{width}, $image->{height}) = $magick->Get('width', 'height');
-    } elsif ($param{Data}) {
-        my $x = $magick->BlobToImage($param{Data});
-        return $image->error(MT->translate(
-            "Reading image failed: [_1]", $x)) if $x;
-        ($image->{width}, $image->{height}) = $magick->Get('width', 'height');
+        return $image->error(
+            MT->translate( "Reading file '[_1]' failed: [_2]", $file, $x ) )
+            if $x;
+        ( $image->{width}, $image->{height} )
+            = $magick->Get( 'width', 'height' );
+    }
+    elsif ( $param{Data} ) {
+        my $x = $magick->BlobToImage( $param{Data} );
+        return $image->error(
+            MT->translate( "Reading image failed: [_1]", $x ) )
+            if $x;
+        ( $image->{width}, $image->{height} )
+            = $magick->Get( 'width', 'height' );
     }
     $image;
 }
 
 sub scale {
     my $image = shift;
-    my($w, $h) = $image->get_dimensions(@_);
+    my ( $w, $h ) = $image->get_dimensions(@_);
     my $magick = $image->{magick};
-    my $err = $magick->can('Resize') ?
-              $magick->Resize(width => $w, height => $h) :
-              $magick->Scale(width => $w, height => $h);
-    return $image->error(MT->translate(
-        "Scaling to [_1]x[_2] failed: [_3]", $w, $h, $err)) if $err;
+    my $err
+        = $magick->can('Resize')
+        ? $magick->Resize( width => $w, height => $h )
+        : $magick->Scale( width => $w, height => $h );
+    return $image->error(
+        MT->translate( "Scaling to [_1]x[_2] failed: [_3]", $w, $h, $err ) )
+        if $err;
     $magick->Profile("*") if $magick->can('Profile');
-    ($image->{width}, $image->{height}) = ($w, $h);
-    wantarray ? ($magick->ImageToBlob, $w, $h) : $magick->ImageToBlob;
+    ( $image->{width}, $image->{height} ) = ( $w, $h );
+    wantarray ? ( $magick->ImageToBlob, $w, $h ) : $magick->ImageToBlob;
 }
 
 sub crop {
     my $image = shift;
     my %param = @_;
-    my ($size, $x, $y) = @param{qw( Size X Y )};
+    my ( $size, $x, $y ) = @param{qw( Size X Y )};
     my $magick = $image->{magick};
 
-    my $err = $magick->Crop(width => $size, height => $size, x => $x, y => $y);
-    return $image->error(MT->translate(
-        "Cropping a [_1]x[_1] square at [_2],[_3] failed: [_4]", $size, $x,
-        $y, $err)) if $err;
+    my $err
+        = $magick->Crop( width => $size, height => $size, x => $x, y => $y );
+    return $image->error(
+        MT->translate(
+            "Cropping a [_1]x[_1] square at [_2],[_3] failed: [_4]",
+            $size, $x, $y, $err
+        )
+    ) if $err;
 
     ## Remove page offsets from the original image, per this thread:
     ## http://studio.imagemagick.org/pipermail/magick-users/2003-September/010803.html
     $magick->Set( page => '+0+0' );
 
-    ($image->{width}, $image->{height}) = ($size, $size);
-    wantarray ? ($magick->ImageToBlob, $size, $size) : $magick->ImageToBlob;
+    ( $image->{width}, $image->{height} ) = ( $size, $size );
+    wantarray ? ( $magick->ImageToBlob, $size, $size ) : $magick->ImageToBlob;
 }
 
 sub convert {
     my $image = shift;
     my %param = @_;
-    my $type = $param{Type};
+    my $type  = $param{Type};
 
     my $magick = $image->{magick};
     my $err = $magick->Set( magick => uc $type );
-    return $image->error(MT->translate(
-            "Converting image to [_1] failed: [_2]", $type, $err)) if $err;
+    return $image->error(
+        MT->translate( "Converting image to [_1] failed: [_2]", $type, $err )
+    ) if $err;
 
     $magick->ImageToBlob;
 }
@@ -259,8 +297,9 @@ package MT::Image::NetPBM;
 sub load_driver {
     my $image = shift;
     eval { require IPC::Run };
-    if (my $err = $@) {
-        return $image->error(MT->translate("Can't load IPC::Run: [_1]", $err));
+    if ( my $err = $@ ) {
+        return $image->error(
+            MT->translate( "Can't load IPC::Run: [_1]", $err ) );
     }
     my $pbm = $image->_find_pbm or return;
     1;
@@ -269,115 +308,123 @@ sub load_driver {
 sub init {
     my $image = shift;
     my %param = @_;
-    if (my $file = $param{Filename}) {
+    if ( my $file = $param{Filename} ) {
         $image->{file} = $file;
-        if (!defined $param{Type}) {
-            (my $ext = $file) =~ s/.*\.//;
+        if ( !defined $param{Type} ) {
+            ( my $ext = $file ) =~ s/.*\.//;
             $param{Type} = uc $ext;
         }
-    } elsif (my $blob = $param{Data}) {
+    }
+    elsif ( my $blob = $param{Data} ) {
         $image->{data} = $blob;
     }
-    my %Types = (jpg => 'jpeg', jpeg => 'jpeg', gif => 'gif', 'png' => 'png');
+    my %Types
+        = ( jpg => 'jpeg', jpeg => 'jpeg', gif => 'gif', 'png' => 'png' );
     my $type = $image->{type} = $Types{ lc $param{Type} };
-    if (!$type) {
-        return $image->error(MT->translate("Unsupported image file type: [_1]", $type));
+    if ( !$type ) {
+        return $image->error(
+            MT->translate( "Unsupported image file type: [_1]", $type ) );
     }
-    my($out, $err);
+    my ( $out, $err );
     my $pbm = $image->_find_pbm or return;
-    my @in = ("$pbm${type}topnm", ($image->{file} ? $image->{file} : ()));
-    my @out = ("${pbm}pnmfile", '-allimages');
-    IPC::Run::run(\@in, '<', ($image->{file} ? \undef : \$image->{data}), '|',
-        \@out, \$out, \$err)
-        or return $image->error(MT->translate(
-            "Reading image failed: [_1]", $err));
-    ($image->{width}, $image->{height}) = $out =~ /(\d+)\s+by\s+(\d+)/;
+    my @in = ( "$pbm${type}topnm", ( $image->{file} ? $image->{file} : () ) );
+    my @out = ( "${pbm}pnmfile", '-allimages' );
+    IPC::Run::run( \@in, '<', ( $image->{file} ? \undef : \$image->{data} ),
+        '|', \@out, \$out, \$err )
+        or return $image->error(
+        MT->translate( "Reading image failed: [_1]", $err ) );
+    ( $image->{width}, $image->{height} ) = $out =~ /(\d+)\s+by\s+(\d+)/;
     $image;
 }
 
 sub scale {
     my $image = shift;
-    my($w, $h) = $image->get_dimensions(@_);
+    my ( $w, $h ) = $image->get_dimensions(@_);
     my $type = $image->{type};
-    my($out, $err);
+    my ( $out, $err );
     my $pbm = $image->_find_pbm or return;
-    my @in = ("$pbm${type}topnm", ($image->{data} ? () : $image->{file} ? $image->{file} : ()));
-    my @scale = ("${pbm}pnmscale", '-width', $w, '-height', $h);
+    my @in = (
+        "$pbm${type}topnm",
+        ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
+    );
+    my @scale = ( "${pbm}pnmscale", '-width', $w, '-height', $h );
     my @out;
+
     for my $try (qw( ppm pnm )) {
         my $prog = "${pbm}${try}to$type";
         @out = ($prog), last if -x $prog;
     }
-    my(@quant);
-    if ($type eq 'gif') {
-        push @quant, ([ "${pbm}ppmquant", 256 ], '|');
+    my (@quant);
+    if ( $type eq 'gif' ) {
+        push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
     }
-    IPC::Run::run(\@in, '<', ($image->{data} ? \$image->{data} : \undef ), '|',
-        \@scale, '|',
-        @quant,
-        \@out, \$out, \$err)
-        or return $image->error(MT->translate(
-            "Scaling to [_1]x[_2] failed: [_3]", $w, $h, $err));
-    ($image->{width}, $image->{height}, $image->{data}) = ($w, $h, $out);
-    wantarray ? ($out, $w, $h) : $out;
+    IPC::Run::run( \@in, '<', ( $image->{data} ? \$image->{data} : \undef ),
+        '|', \@scale, '|', @quant, \@out, \$out, \$err )
+        or return $image->error(
+        MT->translate( "Scaling to [_1]x[_2] failed: [_3]", $w, $h, $err ) );
+    ( $image->{width}, $image->{height}, $image->{data} ) = ( $w, $h, $out );
+    wantarray ? ( $out, $w, $h ) : $out;
 }
 
 sub crop {
     my $image = shift;
     my %param = @_;
-    my ($size, $x, $y) = @param{qw( Size X Y )};
+    my ( $size, $x, $y ) = @param{qw( Size X Y )};
 
-    my($w, $h) = $image->get_dimensions(@_);
+    my ( $w, $h ) = $image->get_dimensions(@_);
     my $type = $image->{type};
-    my($out, $err);
+    my ( $out, $err );
     my $pbm = $image->_find_pbm or return;
-    my @in = ("$pbm${type}topnm", ($image->{data} ? () : $image->{file} ? $image->{file} : ()));
+    my @in = (
+        "$pbm${type}topnm",
+        ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
+    );
 
-    my @crop = ("${pbm}pnmcut", $x, $y, $size, $size);
+    my @crop = ( "${pbm}pnmcut", $x, $y, $size, $size );
     my @out;
     for my $try (qw( ppm pnm )) {
         my $prog = "${pbm}${try}to$type";
         @out = ($prog), last if -x $prog;
     }
-    my(@quant);
-    if ($type eq 'gif') {
-        push @quant, ([ "${pbm}ppmquant", 256 ], '|');
+    my (@quant);
+    if ( $type eq 'gif' ) {
+        push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
     }
-    IPC::Run::run(\@in, '<', ($image->{data} ? \$image->{data} : \undef), '|',
-        \@crop, '|',
-        @quant,
-        \@out, \$out, \$err)
-        or return $image->error(MT->translate(
-            "Cropping to [_1]x[_1] failed: [_2]", $size, $err));
-    ($image->{width}, $image->{height}, $image->{data}) = ($w, $h, $out);
-    wantarray ? ($out, $w, $h) : $out;
+    IPC::Run::run( \@in, '<', ( $image->{data} ? \$image->{data} : \undef ),
+        '|', \@crop, '|', @quant, \@out, \$out, \$err )
+        or return $image->error(
+        MT->translate( "Cropping to [_1]x[_1] failed: [_2]", $size, $err ) );
+    ( $image->{width}, $image->{height}, $image->{data} ) = ( $w, $h, $out );
+    wantarray ? ( $out, $w, $h ) : $out;
 }
 
 sub convert {
     my $image = shift;
     my %param = @_;
 
-    my $type = $image->{type};
+    my $type    = $image->{type};
     my $outtype = lc $param{Type};
 
-    my($out, $err);
+    my ( $out, $err );
     my $pbm = $image->_find_pbm or return;
-    my @in = ("$pbm${type}topnm", ($image->{data} ? () : $image->{file} ? $image->{file} : ()));
+    my @in = (
+        "$pbm${type}topnm",
+        ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
+    );
 
     my @out;
     for my $try (qw( ppm pnm )) {
         my $prog = "${pbm}${try}to$outtype";
         @out = ($prog), last if -x $prog;
     }
-    my(@quant);
-    if ($type eq 'gif') {
-        push @quant, ([ "${pbm}ppmquant", 256 ], '|');
+    my (@quant);
+    if ( $type eq 'gif' ) {
+        push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
     }
-    IPC::Run::run(\@in, '<', ($image->{data} ? \$image->{data} : \undef ), '|',
-        @quant,
-        \@out, \$out, \$err)
-        or return $image->error(MT->translate(
-            "Converting to [_1] failed: [_2]", $type, $err));
+    IPC::Run::run( \@in, '<', ( $image->{data} ? \$image->{data} : \undef ),
+        '|', @quant, \@out, \$out, \$err )
+        or return $image->error(
+        MT->translate( "Converting to [_1] failed: [_2]", $type, $err ) );
     $image->{data} = $out;
     $out;
 }
@@ -387,14 +434,16 @@ sub _find_pbm {
     return $image->{__pbm_path} if $image->{__pbm_path};
     my @NetPBM = qw( /usr/local/netpbm/bin /usr/local/bin /usr/bin );
     my $pbm;
-    for my $path (MT->config->NetPBMPath, @NetPBM) {
+    for my $path ( MT->config->NetPBMPath, @NetPBM ) {
         next unless $path;
         $path .= '/' unless $path =~ m!/$!;
         $pbm = $path, last if -x "${path}pnmscale";
     }
-    return $image->error(MT->translate(
-        "You do not have a valid path to the NetPBM tools on your machine."))
-        unless $pbm;
+    return $image->error(
+        MT->translate(
+            "You do not have a valid path to the NetPBM tools on your machine."
+        )
+    ) unless $pbm;
     $image->{__pbm_path} = $pbm;
 }
 
@@ -404,8 +453,8 @@ package MT::Image::GD;
 sub load_driver {
     my $image = shift;
     eval { require GD };
-    if (my $err = $@) {
-        return $image->error(MT->translate("Can't load GD: [_1]", $err));
+    if ( my $err = $@ ) {
+        return $image->error( MT->translate( "Can't load GD: [_1]", $err ) );
     }
     1;
 }
@@ -414,50 +463,57 @@ sub init {
     my $image = shift;
     my %param = @_;
 
-    if ((!defined $param{Type}) && (my $file = $param{Filename})) {
-    (my $ext = $file) =~ s/.*\.//;
-    $param{Type} = lc $ext;
+    if ( ( !defined $param{Type} ) && ( my $file = $param{Filename} ) ) {
+        ( my $ext = $file ) =~ s/.*\.//;
+        $param{Type} = lc $ext;
     }
-    my %Types = (jpg => 'jpeg', jpeg => 'jpeg', gif => 'gif', 'png' => 'png');
+    my %Types
+        = ( jpg => 'jpeg', jpeg => 'jpeg', gif => 'gif', 'png' => 'png' );
     $image->{type} = $Types{ lc $param{Type} }
-        or return $image->error(MT->translate("Unsupported image file type: [_1]", $param{Type}));
+        or return $image->error(
+        MT->translate( "Unsupported image file type: [_1]", $param{Type} ) );
 
-    if (my $file = $param{Filename}) {
-    $image->{gd} = GD::Image->new($file)
-        or return $image->error(MT->translate("Reading file '[_1]' failed: [_2]", $file, $@));
-    } elsif (my $blob = $param{Data}) {
-    $image->{gd} = GD::Image->new($blob)
-        or return $image->error(MT->translate("Reading image failed: [_1]", $@));
+    if ( my $file = $param{Filename} ) {
+        $image->{gd} = GD::Image->new($file)
+            or return $image->error(
+            MT->translate( "Reading file '[_1]' failed: [_2]", $file, $@ ) );
     }
-    ($image->{width}, $image->{height}) = $image->{gd}->getBounds();
+    elsif ( my $blob = $param{Data} ) {
+        $image->{gd} = GD::Image->new($blob)
+            or return $image->error(
+            MT->translate( "Reading image failed: [_1]", $@ ) );
+    }
+    ( $image->{width}, $image->{height} ) = $image->{gd}->getBounds();
     $image;
 }
 
 sub blob {
     my $image = shift;
-    my $type = $image->{type};
+    my $type  = $image->{type};
     $image->{gd}->$type;
 }
 
 sub scale {
     my $image = shift;
-    my($w, $h) = $image->get_dimensions(@_);
+    my ( $w, $h ) = $image->get_dimensions(@_);
     my $src = $image->{gd};
-    my $gd = GD::Image->new($w, $h, 1);  # True color image (24 bit)
-    $gd->copyResampled($src, 0, 0, 0, 0, $w, $h, $image->{width}, $image->{height});
-    ($image->{gd}, $image->{width}, $image->{height}) = ($gd, $w, $h);
-    wantarray ? ($image->blob, $w, $h) : $image->blob;
+    my $gd = GD::Image->new( $w, $h, 1 );    # True color image (24 bit)
+    $gd->copyResampled( $src, 0, 0, 0, 0, $w, $h, $image->{width},
+        $image->{height} );
+    ( $image->{gd}, $image->{width}, $image->{height} ) = ( $gd, $w, $h );
+    wantarray ? ( $image->blob, $w, $h ) : $image->blob;
 }
 
 sub crop {
     my $image = shift;
     my %param = @_;
-    my ($size, $x, $y) = @param{qw( Size X Y )};
+    my ( $size, $x, $y ) = @param{qw( Size X Y )};
     my $src = $image->{gd};
-    my $gd = GD::Image->new($size, $size, 1);  # True color image (24 bit)
-    $gd->copy($src, 0, 0, $x, $y, $size, $size);
-    ($image->{gd}, $image->{width}, $image->{height}) = ($gd, $size, $size);
-    wantarray ? ($image->blob, $size, $size) : $image->blob;
+    my $gd = GD::Image->new( $size, $size, 1 );    # True color image (24 bit)
+    $gd->copy( $src, 0, 0, $x, $y, $size, $size );
+    ( $image->{gd}, $image->{width}, $image->{height} )
+        = ( $gd, $size, $size );
+    wantarray ? ( $image->blob, $size, $size ) : $image->blob;
 }
 
 sub convert {

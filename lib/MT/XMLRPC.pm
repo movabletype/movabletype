@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -14,42 +14,46 @@ use MT::ErrorHandler;
 use MT::I18N qw( encode_text );
 
 sub weblogs_ping {
-    my $class = shift;
-    my($blog) = @_;
-    my $url = MT->config->WeblogsPingURL
-        or return $class->error(MT->translate(
-            "No WeblogsPingURL defined in the configuration file" ));
-    $class->ping_update('weblogUpdates.ping', $blog, $url);
+    my $class  = shift;
+    my ($blog) = @_;
+    my $url    = MT->config->WeblogsPingURL
+        or return $class->error(
+        MT->translate("No WeblogsPingURL defined in the configuration file")
+        );
+    $class->ping_update( 'weblogUpdates.ping', $blog, $url );
 }
 
 sub mt_ping {
-    my $class = shift;
-    my($blog) = @_;
-    my $url = MT->config->MTPingURL
-        or return $class->error(MT->translate(
-            "No MTPingURL defined in the configuration file" ));
-    if (!ref($blog)) {
+    my $class  = shift;
+    my ($blog) = @_;
+    my $url    = MT->config->MTPingURL
+        or return $class->error(
+        MT->translate("No MTPingURL defined in the configuration file") );
+    if ( !ref($blog) ) {
         require MT::Blog;
         $blog = MT::Blog->load($blog)
-            or return $class->error(MT->translate('Can\'t load blog #[_1].', $blog));
+            or return $class->error(
+            MT->translate( 'Can\'t load blog #[_1].', $blog ) );
     }
-    $class->ping_update('mtUpdates.ping', $blog, $url, $blog->mt_update_key);
+    $class->ping_update( 'mtUpdates.ping', $blog, $url,
+        $blog->mt_update_key );
 }
 
 sub ping_update {
     my $class = shift;
-    my($method, $blog, $url, $mt_key) = @_;
-    if (!ref($blog)) {
+    my ( $method, $blog, $url, $mt_key ) = @_;
+    if ( !ref($blog) ) {
         require MT::Blog;
         $blog = MT::Blog->load($blog)
-            or return $class->error(MT->translate('Can\'t load blog #[_1].', $blog));
+            or return $class->error(
+            MT->translate( 'Can\'t load blog #[_1].', $blog ) );
     }
     my $ua = MT->new_ua( { timeout => MT->config->PingTimeout } );
-    my $req = HTTP::Request->new('POST', $url);
-    $req->header('Content-Type' => 'text/xml');
-    my $blog_name = encode_xml(encode_text($blog->name, undef, 'utf-8'));
-    my $blog_url = encode_xml($blog->site_url);
-    my $text = <<XML;
+    my $req = HTTP::Request->new( 'POST', $url );
+    $req->header( 'Content-Type' => 'text/xml' );
+    my $blog_name = encode_xml( encode_text( $blog->name, undef, 'utf-8' ) );
+    my $blog_url  = encode_xml( $blog->site_url );
+    my $text      = <<XML;
 <?xml version="1.0"?>
 <methodCall>
     <methodName>$method</methodName>
@@ -66,16 +70,15 @@ XML
 XML
     $req->content($text);
     my $res = $ua->request($req);
-    if (substr($res->code, 0, 1) ne '2') {
-        return $class->error(MT->translate(
-            "HTTP error: [_1]", $res->status_line ));
+    if ( substr( $res->code, 0, 1 ) ne '2' ) {
+        return $class->error(
+            MT->translate( "HTTP error: [_1]", $res->status_line ) );
     }
     my $content = $res->content;
-    my($error) = $content =~ m!flerror.*?<boolean>(\d+)!s;
-    my($msg) = $content =~ m!message.*?<value>(.+?)</value>!s;
+    my ($error) = $content =~ m!flerror.*?<boolean>(\d+)!s;
+    my ($msg)   = $content =~ m!message.*?<value>(.+?)</value>!s;
     if ($error) {
-        return $class->error(MT->translate(
-            "Ping error: [_1]", $msg ));
+        return $class->error( MT->translate( "Ping error: [_1]", $msg ) );
     }
     $msg;
 }

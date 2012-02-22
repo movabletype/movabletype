@@ -122,7 +122,7 @@ function doSubmitFormConfirm( f, mode, message ) {
 }
 
 function checkChanged() {
-    var orig_roleName = "<mt:var name="name" escape="html">";
+    var orig_roleName = "<mt:var name="name" escape="js">";
     var roleName = getByID('name').value;
     if(permsChanged == "yes") {
         if(roleName == orig_roleName) {

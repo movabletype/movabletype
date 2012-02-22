@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -17,7 +17,7 @@ use vars qw( @EXPORT );
 use MT::Util qw( weaken );
 use MT::I18N qw( substr_text length_text );
 
-our (%Handlers, %Filters);
+our ( %Handlers, %Filters );
 
 sub new {
     my $class = shift;
@@ -28,45 +28,46 @@ sub new {
 
 sub init {
     my $ctx = shift;
-    weaken($ctx->{config} = MT->config);
-    $ctx->stash('vars', {});
+    weaken( $ctx->{config} = MT->config );
+    $ctx->stash( 'vars', {} );
     $ctx->init_handlers();
     $ctx;
 }
 
 sub clone {
-    my $ctx = shift;
+    my $ctx   = shift;
     my $clone = ref($ctx)->new;
-    for my $key (keys %{$ctx}) {
-	$clone->{$key} = $ctx->{$key}
+    for my $key ( keys %{$ctx} ) {
+        $clone->{$key} = $ctx->{$key};
     }
     return $clone;
 }
 
 sub init_handlers {
     my $ctx = shift;
-    my $mt = MT->instance;
-    if (!$mt->{__tag_handlers}) {
+    my $mt  = MT->instance;
+    if ( !$mt->{__tag_handlers} ) {
         my $h = $mt->{__tag_handlers} = {};
-        my $f = $mt->{__tag_filters} = {};
+        my $f = $mt->{__tag_filters}  = {};
         my $all_tags = MT::Component->registry('tags');
+
         # Put application-specific handlers in front of 'core'
         # tag set (allows MT::App::Search, etc to replace the
         # stubbed core handlers)
-        if ($mt->isa('MT::App')) {
-            my $app_tags = MT->registry("applications", $mt->id, "tags");
+        if ( $mt->isa('MT::App') ) {
+            my $app_tags = MT->registry( "applications", $mt->id, "tags" );
             unshift @$all_tags, $app_tags if $app_tags;
         }
-        for my $tag_set ( @$all_tags ) {
-            if (my $block = $tag_set->{block}) {
-                for my $orig_tag (keys %$block) {
+        for my $tag_set (@$all_tags) {
+            if ( my $block = $tag_set->{block} ) {
+                for my $orig_tag ( keys %$block ) {
                     next if $orig_tag eq 'plugin';
 
-                    my $tag = lc $orig_tag;
+                    my $tag  = lc $orig_tag;
                     my $type = 1;
 
                     # A '?' suffix identifies conditional tags
-                    if ($tag =~ m/\?$/) {
+                    if ( $tag =~ m/\?$/ ) {
                         $tag =~ s/\?$//;
                         $type = 2;
                     }
@@ -76,60 +77,71 @@ sub init_handlers {
                     # case of MT-Search). Non-core plugins can override
                     # other core routines and application level tags though.
                     my $prev_hdlr;
-                    if (exists $h->{$tag}) {
+                    if ( exists $h->{$tag} ) {
+
                         # a replaced handler
-                        next if ($block->{plugin}{id}||'') eq 'core';
+                        next if ( $block->{plugin}{id} || '' ) eq 'core';
                         $prev_hdlr = $h->{$tag};
                     }
-                    if (ref($block->{$orig_tag}) eq 'HASH') {
+                    if ( ref( $block->{$orig_tag} ) eq 'HASH' ) {
                         if ( $block->{$orig_tag}{handler} ) {
-                            $h->{$tag} = [ $block->{$orig_tag}{handler}, $type, $prev_hdlr ];
+                            $h->{$tag} = [
+                                $block->{$orig_tag}{handler}, $type,
+                                $prev_hdlr
+                            ];
                         }
-                    } else {
-                        $h->{$tag} = [ $block->{$orig_tag}, $type, $prev_hdlr ];
+                    }
+                    else {
+                        $h->{$tag}
+                            = [ $block->{$orig_tag}, $type, $prev_hdlr ];
                     }
                 }
             }
-            if (my $func = $tag_set->{function}) {
-                for my $orig_tag (keys %$func) {
+            if ( my $func = $tag_set->{function} ) {
+                for my $orig_tag ( keys %$func ) {
                     next if $orig_tag eq 'plugin';
 
                     my $tag = lc $orig_tag;
                     my $prev_hdlr;
-                    if (exists $h->{$tag}) {
+                    if ( exists $h->{$tag} ) {
+
                         # a replaced handler
-                        next if ($func->{plugin}{id}||'') eq 'core';
+                        next if ( $func->{plugin}{id} || '' ) eq 'core';
                         $prev_hdlr = $h->{$tag};
                     }
-                    if (ref($func->{$orig_tag}) eq 'HASH') {
-                        $h->{$tag} = [ $func->{$orig_tag}{handler}, 0, $prev_hdlr ];
-                    } else {
+                    if ( ref( $func->{$orig_tag} ) eq 'HASH' ) {
+                        $h->{$tag}
+                            = [ $func->{$orig_tag}{handler}, 0, $prev_hdlr ];
+                    }
+                    else {
                         $h->{$tag} = [ $func->{$orig_tag}, 0, $prev_hdlr ];
                     }
                 }
             }
-            if (my $mod = $tag_set->{modifier}) {
-                for my $orig_mod (keys %$mod) {
+            if ( my $mod = $tag_set->{modifier} ) {
+                for my $orig_mod ( keys %$mod ) {
                     next if $orig_mod eq 'plugin';
                     my $modifier = lc $orig_mod;
-                    next if exists $f->{$modifier} && ($mod->{plugin}{id} || '') eq 'core';
+                    next
+                        if exists $f->{$modifier}
+                            && ( $mod->{plugin}{id} || '' ) eq 'core';
                     $f->{$modifier} = $mod->{$orig_mod};
                 }
             }
         }
     }
     weaken( $ctx->{__handlers} = $mt->{__tag_handlers} );
-    weaken( $ctx->{__filters} = $mt->{__tag_filters} );
+    weaken( $ctx->{__filters}  = $mt->{__tag_filters} );
 }
 
 sub super_handler {
     my ($ctx) = @_;
     my $tag = lc $ctx->stash('tag');
-    my ($hdlr, $type, $orig_tag) = $ctx->handler_for($tag);
-    if ($orig_tag && $orig_tag->[0]) {
+    my ( $hdlr, $type, $orig_tag ) = $ctx->handler_for($tag);
+    if ( $orig_tag && $orig_tag->[0] ) {
         my $orig_hdlr = $orig_tag->[0];
-        unless (ref $orig_hdlr) {
-            $orig_tag->[0] = $orig_hdlr = MT->handler_to_coderef( $orig_hdlr );
+        unless ( ref $orig_hdlr ) {
+            $orig_tag->[0] = $orig_hdlr = MT->handler_to_coderef($orig_hdlr);
         }
         local $ctx->{__handlers}{$tag} = $orig_tag;
         return $orig_hdlr->(@_);
@@ -141,9 +153,10 @@ sub stash {
     my $ctx = shift;
     my $key = shift;
     return $ctx->{__stash}->{$key} = shift if @_;
-    if (ref $ctx->{__stash}->{$key} eq 'MT::Promise') {
-        return MT::Promise::force($ctx->{__stash}->{$key});
-    } else {
+    if ( ref $ctx->{__stash}->{$key} eq 'MT::Promise' ) {
+        return MT::Promise::force( $ctx->{__stash}->{$key} );
+    }
+    else {
         return $ctx->{__stash}->{$key};
     }
 }
@@ -151,23 +164,25 @@ sub stash {
 sub var {
     my $ctx = shift;
     my $key = lc shift;
-    if ($key =~ m/^(config|request)\.(.+)$/i) {
-        if (lc($1) eq 'request') {
+    if ( $key =~ m/^(config|request)\.(.+)$/i ) {
+        if ( lc($1) eq 'request' ) {
             my $mt = MT->instance;
             return '' unless $mt->isa('MT::App');
             return $mt->param($2);
         }
-        elsif (lc($1) eq 'config') {
+        elsif ( lc($1) eq 'config' ) {
             my $setting = $2;
             return '' if $setting =~ m/password/i;
+            return '' if $setting =~ m/secret/i;
             return MT->config($setting);
         }
         return '';
     }
     my $value = $ctx->{__stash}{vars}{$key};
+
     # protects $_ value set during template attribute interpolation
     local $_ = $_;
-    if (ref $value eq 'CODE') {
+    if ( ref $value eq 'CODE' ) {
         $value = $value->($ctx);
     }
     $ctx->{__stash}{vars}{$key} = shift if @_;
@@ -182,13 +197,15 @@ sub this_tag {
 sub tag {
     my $ctx = shift;
     my $tag = lc shift;
-    my ($h) = $ctx->handler_for($tag) or return $ctx->error("No handler for tag $tag");
+    my ($h) = $ctx->handler_for($tag)
+        or return $ctx->error("No handler for tag $tag");
     local $ctx->{__stash}{tag} = $tag;
-    my ($args, $cond) = @_;
+    my ( $args, $cond ) = @_;
     $args ||= {};
-    my $out = $h->($ctx, $args, $cond);
-    if (defined $out) {
-        if (my $ph = $ctx->post_process_handler) {
+    my $out = $h->( $ctx, $args, $cond );
+    if ( defined $out ) {
+
+        if ( my $ph = $ctx->post_process_handler ) {
             $out = $ph->( $ctx, $args, $out );
         }
     }
@@ -198,16 +215,17 @@ sub tag {
 sub handler_for {
     my $ctx = shift;
     my $tag = lc $_[0];
-    my $v = $ctx->{__handlers}{$tag};
-    if (ref($v) eq 'HASH') { 
-    $v = $ctx->{__handlers}{$tag} = $v->{handler};
+    my $v   = $ctx->{__handlers}{$tag};
+    if ( ref($v) eq 'HASH' ) {
+        $v = $ctx->{__handlers}{$tag} = $v->{handler};
     }
     my @h = ref($v) eq 'ARRAY' ? @$v : $v;
-    if (!ref($h[0])) {
-        $h[0] = MT->handler_to_coderef($h[0]);
-        if (ref($v)) {
+    if ( !ref( $h[0] ) ) {
+        $h[0] = MT->handler_to_coderef( $h[0] );
+        if ( ref($v) ) {
             $ctx->{__handlers}{$tag}[0] = $h[0];
-        } else {
+        }
+        else {
             $ctx->{__handlers}{$tag} = $h[0];
         }
     }
@@ -215,58 +233,68 @@ sub handler_for {
 }
 
 {
-    my (@order, %order);
+    my ( @order, %order );
+
     BEGIN {
         @order = qw(filters trim_to trim ltrim rtrim decode_html
-                    decode_xml remove_html dirify sanitize
-                    encode_html encode_xml encode_js encode_php
-                    encode_url upper_case lower_case strip_linefeeds
-                    space_pad zero_pad sprintf);
-        my $el = 0; %order = map { $_ => ++$el } @order;
+            decode_xml remove_html dirify sanitize
+            encode_html encode_xml encode_js encode_php
+            encode_url upper_case lower_case strip_linefeeds
+            space_pad zero_pad sprintf);
+        my $el = 0;
+        %order = map { $_ => ++$el } @order;
     }
+
     sub stock_post_process_handler {
-        my($ctx, $args, $str, $arglist) = @_;
+        my ( $ctx, $args, $str, $arglist ) = @_;
         my $filters = $ctx->{__filters};
         $arglist ||= [];
         if (@$arglist) {
+
             # In the event that $args was manipulated by handlers,
             # locate any new arguments and add them to $arglist for
             # processing
             my %arglist_keys = map { $_->[0] => $_->[1] } @$arglist;
-            if (scalar keys %arglist_keys != scalar keys %$args) {
+            if ( scalar keys %arglist_keys != scalar keys %$args ) {
                 my %more_args = %$args;
-                for (keys %arglist_keys) {
+                for ( keys %arglist_keys ) {
                     delete $more_args{$_} if exists $more_args{$_};
                 }
                 if (%more_args) {
-                    push @$arglist, [ $_ => $more_args{$_} ] foreach
-                        grep { exists $filters->{$_} }
+                    push @$arglist, [ $_ => $more_args{$_} ]
+                        foreach grep { exists $filters->{$_} }
                         keys %more_args;
                 }
             }
-        } elsif (keys %$args && !@$arglist) {
+        }
+        elsif ( keys %$args && !@$arglist ) {
+
             # in the event that we don't have arglist,
             # we'll build it using the hashref we do have
             # we might as well preserve the original ordering
             # of processing as well, since it's better than
             # the pseudo random order we get from retrieving the
             # keys from the hash.
-            push @$arglist, [ $_, $args->{$_} ] foreach
-                sort { exists $order{$a} && exists $order{$b} ? $order{$a} <=> $order{$b} : 0 }
+            push @$arglist, [ $_, $args->{$_} ] foreach sort {
+                exists $order{$a} && exists $order{$b}
+                    ? $order{$a} <=> $order{$b}
+                    : 0
+                }
                 grep { exists $filters->{$_} }
                 keys %$args;
         }
         for my $arg (@$arglist) {
-            my ($name, $val) = @$arg;
+            my ( $name, $val ) = @$arg;
             next unless exists $args->{$name};
-            if (my $code = $filters->{$name}) {
-                if (ref $code eq 'HASH') {
-                    $code = $code->{code} ||= MT->handler_to_coderef($code->{handler});
+            if ( my $code = $filters->{$name} ) {
+                if ( ref $code eq 'HASH' ) {
+                    $code = $code->{code}
+                        ||= MT->handler_to_coderef( $code->{handler} );
                 }
-                elsif (defined $code and ! ref $code) {
+                elsif ( defined $code and !ref $code ) {
                     $code = MT->handler_to_coderef($code);
                 }
-                $str = $code->($str, $val, $ctx);
+                $str = $code->( $str, $val, $ctx );
             }
         }
         $str;
@@ -278,54 +306,56 @@ sub post_process_handler {
 }
 
 sub slurp {
-    my ($ctx, $args, $cond) = @_;
-    my $tokens  = $ctx->stash('tokens');
+    my ( $ctx, $args, $cond ) = @_;
+    my $tokens = $ctx->stash('tokens');
     return '' unless $tokens;
-    my $result = $ctx->stash('builder')->build($ctx, $tokens, $cond);
-    return $ctx->error($ctx->stash('builder')->errstr)
+    my $result = $ctx->stash('builder')->build( $ctx, $tokens, $cond );
+    return $ctx->error( $ctx->stash('builder')->errstr )
         unless defined $result;
     return $result;
 }
 
 sub else {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $tokens = $ctx->stash('tokens_else');
     return '' unless $tokens;
-    my $result = $ctx->stash('builder')->build($ctx, $tokens, $cond);
-    return $ctx->error($ctx->stash('builder')->errstr)
+    my $result = $ctx->stash('builder')->build( $ctx, $tokens, $cond );
+    return $ctx->error( $ctx->stash('builder')->errstr )
         unless defined $result;
     return $result;
 }
 
 sub build {
-    my ($ctx, $tmpl, $cond) = @_;
+    my ( $ctx, $tmpl, $cond ) = @_;
     my $builder = $ctx->stash('builder');
-    my $tokens = $builder->compile($ctx, $tmpl)
-        or return $ctx->error($builder->errstr);
+    my $tokens = $builder->compile( $ctx, $tmpl )
+        or return $ctx->error( $builder->errstr );
     local $ctx->{stash}{tokens} = $tokens;
-    my $result = $builder->build($ctx, $tokens, $cond);
-    return $ctx->error($builder->errstr)
+    my $result = $builder->build( $ctx, $tokens, $cond );
+    return $ctx->error( $builder->errstr )
         unless defined $result;
     return $result;
 }
 
 sub set_blog_load_context {
-    my ($ctx, $attr, $terms, $args, $col) = @_;
+    my ( $ctx, $attr, $terms, $args, $col ) = @_;
     my $blog_id = $ctx->stash('blog_id');
     $col ||= 'blog_id';
 
     # Grab specified blog IDs
-    my $blog_ids = $attr->{blog_ids}
-                || $attr->{include_blogs}
-                || $attr->{exclude_blogs};
+    my $blog_ids 
+        = $attr->{blog_ids}
+        || $attr->{include_blogs}
+        || $attr->{exclude_blogs};
 
-    if (defined($blog_ids) && ($blog_ids =~ m/-/)) {
+    if ( defined($blog_ids) && ( $blog_ids =~ m/-/ ) ) {
         my @list = split /\s*,\s*/, $blog_ids;
         my @ids;
         foreach my $id (@list) {
-            if ($id =~ m/^(\d+)-(\d+)$/) {
-                push @ids, $_ for $1..$2;
-            } else {
+            if ( $id =~ m/^(\d+)-(\d+)$/ ) {
+                push @ids, $_ for $1 .. $2;
+            }
+            else {
                 push @ids, $id;
             }
         }
@@ -333,24 +363,31 @@ sub set_blog_load_context {
     }
 
     # If no blog IDs specified, use the current blog
-    if ( ! $blog_ids ) {
+    if ( !$blog_ids ) {
         $terms->{$col} = $blog_id if $blog_id && $col eq 'blog_id';
-    } 
+    }
+
     # If exclude blogs, set the terms and the NOT arg for load
     # 'All' is not a valid value for exclude_blogs
     elsif ( $attr->{exclude_blogs} ) {
-        return $ctx->error(MT->translate(
+        return $ctx->error(
+            MT->translate(
                 "The attribute exclude_blogs cannot take 'all' for a value."
-            )) if lc $args->{exclude_blogs} eq 'all';
+            )
+        ) if lc $args->{exclude_blogs} eq 'all';
 
         my @excluded_blogs = split /\s*,\s*/, $blog_ids;
-        $terms->{$col} = [ @excluded_blogs ];
+        $terms->{$col} = [@excluded_blogs];
         $args->{not}{$col} = 1;
-    # include_blogs="all" removes the blog_id/id constraint
-    } elsif (lc $blog_ids eq 'all') {
+
+        # include_blogs="all" removes the blog_id/id constraint
+    }
+    elsif ( lc $blog_ids eq 'all' ) {
         delete $terms->{$col} if exists $terms->{$col};
-    # Blogs are specified in include_blogs so set the terms
-    } else {
+
+        # Blogs are specified in include_blogs so set the terms
+    }
+    else {
         my $blogs = { map { $_ => 1 } split /\s*,\s*/, $blog_ids };
         $terms->{$col} = [ keys %{$blogs} ];
     }
@@ -358,43 +395,47 @@ sub set_blog_load_context {
 }
 
 sub compile_category_filter {
-    my ($ctx, $cat_expr, $cats, $param) = @_;
+    my ( $ctx, $cat_expr, $cats, $param ) = @_;
 
     $param ||= {};
-    $cats ||= [];
-    my $is_and = $param->{'and'} ? 1 : 0;
+    $cats  ||= [];
+    my $is_and   = $param->{'and'}      ? 1 : 0;
     my $children = $param->{'children'} ? 1 : 0;
 
     if ($cat_expr) {
-        my @cols = $cat_expr =~ m!/! ? qw(category_label_path label) : qw(label);
+        my @cols
+            = $cat_expr =~ m!/! ? qw(category_label_path label) : qw(label);
         my %cats_used;
         foreach my $col (@cols) {
             my %cats_replaced;
-            @$cats = sort {length($b->$col) <=> length($a->$col)} @$cats;
+            @$cats
+                = sort { length( $b->$col ) <=> length( $a->$col ) } @$cats;
 
             foreach my $cat (@$cats) {
                 next unless $cat;
-                my $catl = $cat->$col;
+                my $catl  = $cat->$col;
                 my $catid = $cat->id;
-                my @cats = ($cat);
+                my @cats  = ($cat);
                 my $repl;
                 if ($children) {
                     my @kids = ($cat);
-                    while (my $c = shift @kids) {
+                    while ( my $c = shift @kids ) {
                         push @cats, $c;
-                        push @kids, ($c->children_categories);
+                        push @kids, ( $c->children_categories );
                     }
                     $repl = '';
-                    $repl .= '||' . '#'.$_->id for @cats;
-                    $repl = '(' . substr($repl, 2) . ')';
-                } else {
+                    $repl .= '||' . '#' . $_->id for @cats;
+                    $repl = '(' . substr( $repl, 2 ) . ')';
+                }
+                else {
                     $repl = "#$catid";
                 }
-                if ($cat_expr =~ s/(?<![#\d])(?:\Q$catl\E)/$repl/g) {
-                    $cats_used{$_->id} = $_ for @cats;
+                if ( $cat_expr =~ s/(?<![#\d])(?:\Q$catl\E)/$repl/g ) {
+                    $cats_used{ $_->id } = $_ for @cats;
                 }
+
                 # for multi blog case
-                if ($cats_replaced{$catl}) {
+                if ( $cats_replaced{$catl} ) {
                     my $last_catid = $cats_replaced{$catl};
                     $cat_expr =~ s/(#$last_catid\b)/($1 OR #$catid)/g;
                     $cats_used{$catid} = $cat;
@@ -407,35 +448,39 @@ sub compile_category_filter {
         $cat_expr =~ s/\bAND\b/&&/gi;
         $cat_expr =~ s/\bOR\b/||/gi;
         $cat_expr =~ s/\bNOT\b/!/gi;
+
         # replace any other 'thing' with '(0)' since it's a
         # category that doesn't even exist.
-        $cat_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/$2?'(0)':$1/ge;
+        $cat_expr
+            =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/$2?'(0)':$1/ge;
 
         # strip out all the 'ok' stuff. if anything is left, we have
         # some invalid data in our expression:
         my $test_expr = $cat_expr;
         $test_expr =~ s/!|&&|\|\||\(0\)|\(|\)|\s|#\d+//g;
         return undef if $test_expr;
-    } else {
+    }
+    else {
         my %cats_used;
         $cat_expr = '';
         foreach my $cat (@$cats) {
             my $id = $cat->id;
-            $cat_expr .= ($is_and ? '&&' : '||') if $cat_expr ne '';
+            $cat_expr .= ( $is_and ? '&&' : '||' ) if $cat_expr ne '';
             if ($children) {
                 my @kids = ($cat);
                 my @cats;
-                while (my $c = shift @kids) {
+                while ( my $c = shift @kids ) {
                     push @cats, $c;
-                    push @kids, ($c->children_categories);
+                    push @kids, ( $c->children_categories );
                 }
                 my $repl = '';
-                $repl .= '||' . '#'.$_->id for @cats;
-                $cats_used{$_->id} = $_ for @cats;
-                $repl = '(' . substr($repl, 2) . ')';
+                $repl .= '||' . '#' . $_->id for @cats;
+                $cats_used{ $_->id } = $_ for @cats;
+                $repl = '(' . substr( $repl, 2 ) . ')';
                 $cat_expr .= $repl;
-            } else {
-                $cats_used{$cat->id} = $cat;
+            }
+            else {
+                $cats_used{ $cat->id } = $cat;
                 $cat_expr .= "#$id";
             }
         }
@@ -443,16 +488,16 @@ sub compile_category_filter {
     }
 
     $cat_expr =~ s/#(\d+)/(exists \$p->{$1})/g;
-    my $expr = 'sub{my($p)=@_;'.$cat_expr.';}';
+    my $expr  = 'sub{my($p)=@_;' . $cat_expr . ';}';
     my $cexpr = eval($expr);
     $@ ? undef : $cexpr;
 }
 
 sub compile_tag_filter {
-    my ($ctx, $tag_expr, $tags) = @_;
+    my ( $ctx, $tag_expr, $tags ) = @_;
 
     # Sort in descending order by length
-    @$tags = sort {length($b->name) <=> length($a->name)} @$tags;
+    @$tags = sort { length( $b->name ) <=> length( $a->name ) } @$tags;
 
     # Modify the tag argument, replacing the tag name with '#TagID'
     # Create a ID-based hash of the tags that are used in the arg
@@ -486,11 +531,13 @@ sub compile_tag_filter {
                     | \sOR\s
                     | \sNOT\s
                 )
-            /$1#$id$2/igx) # Change all matches to #$id (e.g. #932)
+            /$1#$id$2/igx
+            )    # Change all matches to #$id (e.g. #932)
         {
             $tags_used{$id} = $tag;
         }
     }
+
     # Populate array ref (passed in by reference) of used tags
     @$tags = values %tags_used;
 
@@ -532,19 +579,19 @@ sub compile_tag_filter {
     # Create an anonymous subroutine of that lookup function
     # and return it if all is well.  This code ref will be used
     # later to test for existence of specified tags in entries.
-    my $expr = 'sub{my($p)=@_;' . $tag_expr . '}';
+    my $expr  = 'sub{my($p)=@_;' . $tag_expr . '}';
     my $cexpr = eval $expr;
     $@ ? undef : $cexpr;
 }
 
 sub compile_role_filter {
-    my ($ctx, $role_expr, $roles) = @_;
+    my ( $ctx, $role_expr, $roles ) = @_;
 
     my %roles_used;
     foreach my $role (@$roles) {
         my $name = $role->name;
-        my $id = $role->id;
-        if ($role_expr =~ s/(?<![#\d])\Q$name\E/#$id/g) {
+        my $id   = $role->id;
+        if ( $role_expr =~ s/(?<![#\d])\Q$name\E/#$id/g ) {
             $roles_used{$id} = $role;
         }
     }
@@ -560,17 +607,17 @@ sub compile_role_filter {
     return undef if $test_expr;
 
     $role_expr =~ s/#(\d+)/(exists \$p->{\$e}{$1})/g;
-    my $expr = 'sub{my($e,$p)=@_;'.$role_expr.';}';
+    my $expr  = 'sub{my($e,$p)=@_;' . $role_expr . ';}';
     my $cexpr = eval $expr;
     $@ ? undef : $cexpr;
 }
 
 sub compile_status_filter {
-    my ($ctx, $status_expr, $status) = @_;
+    my ( $ctx, $status_expr, $status ) = @_;
 
     foreach my $s (@$status) {
         my $name = $s->{name};
-        my $id = $s->{id};
+        my $id   = $s->{id};
         $status_expr =~ s/(?<![#\d])\Q$name\E/#$id/g;
     }
 
@@ -582,23 +629,26 @@ sub compile_status_filter {
     return undef if $test_expr;
 
     $status_expr =~ s/#(\d+)/(\$_[0]->status == $1)/g;
-    my $expr = 'sub{'.$status_expr.';}';
+    my $expr  = 'sub{' . $status_expr . ';}';
     my $cexpr = eval $expr;
     $@ ? undef : $cexpr;
 }
 
 sub count_format {
     my $ctx = shift;
-    my ($count, $args) = @_;
+    my ( $count, $args ) = @_;
     my $phrase;
     $count ||= 0;
-    if ($count == 0) {
-        $phrase = exists $args->{none}
-            ? $args->{none}   : (exists $args->{plural}
-            ? $args->{plural} : '');
-    } elsif ($count == 1) {
+    if ( $count == 0 ) {
+        $phrase
+            = exists $args->{none}
+            ? $args->{none}
+            : ( exists $args->{plural} ? $args->{plural} : '' );
+    }
+    elsif ( $count == 1 ) {
         $phrase = exists $args->{singular} ? $args->{singular} : '';
-    } elsif ($count > 1) {
+    }
+    elsif ( $count > 1 ) {
         $phrase = exists $args->{plural} ? $args->{plural} : '';
     }
     return $count if $phrase eq '';
@@ -612,53 +662,68 @@ sub count_format {
 sub _no_author_error {
     my ($ctx) = @_;
     my $tag_name = $ctx->stash('tag');
-    return $ctx->error(MT->translate(
-        "You used an '[_1]' tag outside of the context of a author; " .
-        "perhaps you mistakenly placed it outside of an 'MTAuthors' " .
-        "container?", $tag_name
-    ));
+    return $ctx->error(
+        MT->translate(
+            "You used an '[_1]' tag outside of the context of a author; "
+                . "perhaps you mistakenly placed it outside of an 'MTAuthors' "
+                . "container?",
+            $tag_name
+        )
+    );
 }
 
 sub _no_entry_error {
     my ($ctx) = @_;
     my $tag_name = $ctx->stash('tag');
     $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
-    return $_[0]->error(MT->translate(
-        "You used an '[_1]' tag outside of the context of an entry; " .
-        "perhaps you mistakenly placed it outside of an 'MTEntries' container?", $tag_name
-    ));
+    return $_[0]->error(
+        MT->translate(
+            "You used an '[_1]' tag outside of the context of an entry; "
+                . "perhaps you mistakenly placed it outside of an 'MTEntries' container?",
+            $tag_name
+        )
+    );
 }
 
 sub _no_comment_error {
     my ($ctx) = @_;
     my $tag_name = $ctx->stash('tag');
     $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
-    return $ctx->error(MT->translate(
-        "You used an '[_1]' tag outside of the context of a comment; " .
-        "perhaps you mistakenly placed it outside of an 'MTComments' " .
-        "container?", $tag_name
-    ));
+    return $ctx->error(
+        MT->translate(
+            "You used an '[_1]' tag outside of the context of a comment; "
+                . "perhaps you mistakenly placed it outside of an 'MTComments' "
+                . "container?",
+            $tag_name
+        )
+    );
 }
 
 sub _no_ping_error {
     my ($ctx) = @_;
     my $tag_name = $ctx->stash('tag');
     $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
-    return $ctx->error(MT->translate(
-        "You used an '[_1]' tag outside of the context of " .
-        "a ping; perhaps you mistakenly placed it outside " .
-        "of an 'MTPings' container?", $tag_name
-    ));
+    return $ctx->error(
+        MT->translate(
+            "You used an '[_1]' tag outside of the context of "
+                . "a ping; perhaps you mistakenly placed it outside "
+                . "of an 'MTPings' container?",
+            $tag_name
+        )
+    );
 }
 
 sub _no_asset_error {
     my ($ctx) = @_;
     my $tag_name = $ctx->stash('tag');
     $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
-    return $ctx->error(MT->translate(
-        "You used an '[_1]' tag outside of the context of an asset; " .
-        "perhaps you mistakenly placed it outside of an 'MTAssets' container?", $tag_name
-    ));
+    return $ctx->error(
+        MT->translate(
+            "You used an '[_1]' tag outside of the context of an asset; "
+                . "perhaps you mistakenly placed it outside of an 'MTAssets' container?",
+            $tag_name
+        )
+    );
 
 }
 
@@ -666,11 +731,13 @@ sub _no_page_error {
     my ($ctx) = @_;
     my $tag_name = $ctx->stash('tag');
     $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
-    return $ctx->error(MT->translate(
-        "You used an '[_1]' tag outside of the context of a page; " .
-        "perhaps you mistakenly placed it outside of a 'MTPages' container?",
-        $tag_name
-    ));
+    return $ctx->error(
+        MT->translate(
+            "You used an '[_1]' tag outside of the context of a page; "
+                . "perhaps you mistakenly placed it outside of a 'MTPages' container?",
+            $tag_name
+        )
+    );
 }
 
 1;

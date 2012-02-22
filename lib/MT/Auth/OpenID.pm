@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -7,73 +7,80 @@
 package MT::Auth::OpenID;
 use strict;
 
-use MT::Util qw( decode_url is_valid_email escape_unicode ts2epoch expat_parser );
+use MT::Util
+    qw( decode_url is_valid_email escape_unicode ts2epoch expat_parser );
 use MT::I18N qw( encode_text );
 
-sub NS_OPENID_AX   { "http://openid.net/srv/ax/1.0" }
-sub NS_OPENID_SREG { "http://openid.net/extensions/sreg/1.1" }
+sub NS_OPENID_AX   {"http://openid.net/srv/ax/1.0"}
+sub NS_OPENID_SREG {"http://openid.net/extensions/sreg/1.1"}
 
-sub password_exists { 0 }
+sub password_exists {0}
 
 sub login {
-    my $class = shift;
-    my ($app) = @_;
-    my $q = $app->param;
-    my $blog = $app->model('blog')->load(scalar $q->param('blog_id'));
+    my $class    = shift;
+    my ($app)    = @_;
+    my $q        = $app->param;
+    my $blog     = $app->model('blog')->load( scalar $q->param('blog_id') );
     my $identity = $q->param('openid_url');
-    if (!$identity &&
-        (my $u = $q->param('openid_userid')) && $class->can('url_for_userid')) {
+    if (   !$identity
+        && ( my $u = $q->param('openid_userid') )
+        && $class->can('url_for_userid') )
+    {
         $identity = $class->url_for_userid($u);
     }
-    my $claimed_identity = $class->check_openid($app, $blog, $identity)
-        or return $app->error($app->errstr);
+    my $claimed_identity = $class->check_openid( $app, $blog, $identity )
+        or return $app->error( $app->errstr );
 
     my %params = $class->check_url_params( $app, $blog );
 
-    $class->set_extension_args( $claimed_identity );
+    $class->set_extension_args($claimed_identity);
 
-    my $check_url = $claimed_identity->check_url(
-        %params
-    );
+    my $check_url = $claimed_identity->check_url( %params );
 
     return $app->redirect($check_url);
 }
 
 sub handle_sign_in {
     my $class = shift;
-    my ($app, $auth_type) = @_;
-    my $q = $app->{query};
+    my ( $app, $auth_type ) = @_;
+    my $q        = $app->{query};
     my $INTERVAL = 60 * 60 * 24 * 7;
 
     $auth_type ||= 'OpenID';
 
-    my $blog = $app->model('blog')->load($q->param('blog_id'));
+    my $blog         = $app->model('blog')->load( $q->param('blog_id') );
     my $author_class = $app->model('author');
 
     my $cmntr;
     my $session;
 
     my %param = $app->param_hash;
-    my $csr = $class->get_csr(\%param, $blog) or return 0;
+    my $csr = $class->get_csr( \%param, $blog ) or return 0;
 
-    if(my $setup_url = $csr->user_setup_url( post_grant => 'return' )) {
+    if ( my $setup_url = $csr->user_setup_url( post_grant => 'return' ) ) {
         return $app->redirect($setup_url);
-    } elsif(my $vident = $csr->verified_identity) {
+    }
+    elsif ( my $vident = $csr->verified_identity ) {
         my $name = $vident->url;
         $cmntr = $author_class->load(
-            {
-                name => $name,
-                type => $author_class->COMMENTER(),
+            {   name      => $name,
+                type      => $author_class->COMMENTER(),
                 auth_type => $auth_type,
             }
         );
-        if ( $cmntr ) {
-            unless ( ( $cmntr->modified_on
-                && ( ts2epoch($blog, $cmntr->modified_on) > time - $INTERVAL ) )
-              || ( $cmntr->created_on
-                && ( ts2epoch($blog, $cmntr->created_on) > time - $INTERVAL ) ) )
+        if ($cmntr) {
+            unless (
+                (   $cmntr->modified_on
+                    && ( ts2epoch( $blog, $cmntr->modified_on )
+                        > time - $INTERVAL )
+                )
+                || ($cmntr->created_on
+                    && ( ts2epoch( $blog, $cmntr->created_on )
+                        > time - $INTERVAL )
+                )
+                )
             {
-                $class->set_commenter_properties($cmntr, $vident);
+                $class->set_commenter_properties( $cmntr, $vident );
                 $cmntr->save or return 0;
             }
         }
@@ -82,10 +89,10 @@ sub handle_sign_in {
                 name        => $name,
                 url         => $vident->url,
                 auth_type   => $auth_type,
-                external_id => _url_hash($vident->url),
+                external_id => _url_hash( $vident->url ),
             );
             if ($cmntr) {
-                $class->set_commenter_properties($cmntr, $vident);
+                $class->set_commenter_properties( $cmntr, $vident );
                 $cmntr->save or return 0;
             }
         }
@@ -94,62 +101,70 @@ sub handle_sign_in {
         # Signature was valid, so create a session, etc.
         $session = $app->make_commenter_session($cmntr);
         unless ($session) {
-            $app->error($app->errstr() || $app->translate("Couldn't save the session"));
+            $app->error( $app->errstr()
+                    || $app->translate("Couldn't save the session") );
             return 0;
         }
 
-        if (my $userpic = $cmntr->userpic) {
-            my @stat = stat($userpic->file_path());
+        if ( my $userpic = $cmntr->userpic ) {
+            my @stat  = stat( $userpic->file_path() );
             my $mtime = $stat[9];
             if ( $mtime > time - $INTERVAL ) {
+
                 # newer than 7 days ago, don't download the userpic
-                return $cmntr;
+                return ( $cmntr, $session );
             }
         }
 
         if ( my $userpic = $class->get_userpicasset($vident) ) {
             $userpic->tags('@userpic');
-            $userpic->created_by($cmntr->id);
+            $userpic->created_by( $cmntr->id );
             $userpic->save;
-            if (my $userpic = $cmntr->userpic) {
-                # Remove the old userpic thumb so the new userpic's will be generated
-                # in its place.
+            if ( my $userpic = $cmntr->userpic ) {
+
+         # Remove the old userpic thumb so the new userpic's will be generated
+         # in its place.
                 my $thumb_file = $cmntr->userpic_file();
-                my $fmgr = MT::FileMgr->new('Local');
-                if ($fmgr->exists($thumb_file)) {
+                my $fmgr       = MT::FileMgr->new('Local');
+                if ( $fmgr->exists($thumb_file) ) {
                     $fmgr->delete($thumb_file);
                 }
 
                 $userpic->remove;
             }
-            $cmntr->userpic_asset_id($userpic->id);
+            $cmntr->userpic_asset_id( $userpic->id );
             $cmntr->save;
         }
-    } else {
+    }
+    else {
+
         # If there's no signature, then we trust the cookie.
-        my %cookies = $app->cookies();
+        my %cookies     = $app->cookies();
         my $cookie_name = MT::App::COMMENTER_COOKIE_NAME();
-        if ($cookies{$cookie_name}
-            && ($session = $cookies{$cookie_name}->value())) 
+        if ( $cookies{$cookie_name}
+            && ( $session = $cookies{$cookie_name}->value() ) )
         {
             require MT::Session;
-            my $sess = MT::Session->load({id => $session});
+            my $sess = MT::Session->load( { id => $session } );
             if ($sess) {
-                $cmntr = $author_class->load({name => $sess->name,
-                                           type => $author_class->COMMENTER(),
-                                           auth_type => $auth_type});
+                $cmntr = $author_class->load(
+                    {   name      => $sess->name,
+                        type      => $author_class->COMMENTER(),
+                        auth_type => $auth_type
+                    }
+                );
             }
         }
     }
     unless ($cmntr) {
         return 0;
     }
-    return $cmntr;
+    return ( $cmntr, $session );
 }
 
 sub set_extension_args {
     my $class = shift;
-    my ( $claimed_identity ) = @_;
+    my ($claimed_identity) = @_;
 }
 
 sub check_openid {
@@ -158,26 +173,33 @@ sub check_openid {
     my $q = $app->param;
 
     my %param = $app->param_hash;
-    my $csr = $class->get_csr(\%param, $blog);
-    unless ( $csr ) {
+    my $csr = $class->get_csr( \%param, $blog );
+    unless ($csr) {
         $app->errtrans('Could not load Net::OpenID::Consumer.');
         return;
     }
 
     my $claimed_identity = $csr->claimed_identity($identity);
-    unless ( $claimed_identity ) {
-        my ($err_code, $err_msg) = ($csr->errcode, $csr->errtext);
-        if ($err_code eq 'no_head_tag' || $err_code eq 'no_identity_server' || $err_code eq 'url_gone') {
-            $err_msg = $app->translate('The address entered does not appear to be an OpenID');
+    unless ($claimed_identity) {
+        my ( $err_code, $err_msg ) = ( $csr->errcode, $csr->errtext );
+        if (   $err_code eq 'no_head_tag'
+            || $err_code eq 'no_identity_server'
+            || $err_code eq 'url_gone' )
+        {
+            $err_msg = $app->translate(
+                'The address entered does not appear to be an OpenID');
         }
-        elsif ($err_code eq 'empty_url' || $err_code eq 'bogus_url') {
-            $err_msg = $app->translate('The text entered does not appear to be a web address');
+        elsif ( $err_code eq 'empty_url' || $err_code eq 'bogus_url' ) {
+            $err_msg = $app->translate(
+                'The text entered does not appear to be a web address');
         }
-        elsif ($err_code eq 'url_fetch_error') {
+        elsif ( $err_code eq 'url_fetch_error' ) {
             $err_msg =~ s{ \A Error \s fetching \s URL: \s }{}xms;
-            $err_msg = $app->translate('Unable to connect to [_1]: [_2]', $identity, $err_msg);
+            $err_msg = $app->translate( 'Unable to connect to [_1]: [_2]',
+                $identity, $err_msg );
         }
-        return $app->errtrans("Could not verify the OpenID provided: [_1]", $err_msg);
+        return $app->errtrans( "Could not verify the OpenID provided: [_1]",
+            $err_msg );
     }
     return $claimed_identity;
 }
@@ -187,15 +209,16 @@ sub _get_ua {
 }
 
 sub _get_csr {
-    my ($params, $blog, $ua) = @_;
+    my ( $params, $blog, $ua ) = @_;
     my $secret = MT->config->SecretToken;
     $ua ||= _get_ua();
     return unless $ua;
     require Net::OpenID::Consumer;
     Net::OpenID::Consumer->new(
-        ua => $ua,
-        args => $params,
+        ua              => $ua,
+        args            => $params,
         consumer_secret => $secret,
+
         # debug => sub {
         # }
     );
@@ -209,7 +232,7 @@ sub get_csr {
 sub _get_declared_foaf {
     my ($vident) = @_;
     my $req      = MT::Request->instance();
-    my $foaf     = $req->stash( 'foaf:' . _url_hash($vident->url) );
+    my $foaf     = $req->stash( 'foaf:' . _url_hash( $vident->url ) );
     return $foaf if $foaf;
 
     my $ua = _get_ua() or return '';
@@ -218,7 +241,7 @@ sub _get_declared_foaf {
         my $resp = $ua->get($foaf_url);
         if ( $resp->is_success ) {
             $foaf = $resp->content;
-            $req->stash( 'foaf:' . _url_hash($vident->url), $foaf );
+            $req->stash( 'foaf:' . _url_hash( $vident->url ), $foaf );
             return $foaf;
         }
     }
@@ -241,13 +264,13 @@ sub _get_nickname {
 
         require XML::XPath;
         my $xml = XML::XPath->new( xml => $foaf, parser => expat_parser(), );
-        $xml->set_namespace('RDF', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#');
-        $xml->set_namespace('FOAF', 'http://xmlns.com/foaf/0.1/');
+        $xml->set_namespace( 'RDF',
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#' );
+        $xml->set_namespace( 'FOAF', 'http://xmlns.com/foaf/0.1/' );
         my ($name_el) = $xml->findnodes('/RDF:RDF/FOAF:Person/FOAF:name');
         ($name_el) = $xml->findnodes('/RDF:RDF/FOAF:Person/FOAF:nick')
             unless $name_el;
-        if ($name_el)
-        {
+        if ($name_el) {
             $name = $name_el->string_value;
         }
         $xml->cleanup;
@@ -256,15 +279,18 @@ sub _get_nickname {
     }
 
     ## Atom
-    if(my $atom_url = $vident->declared_atom) {
-        if (my $ua = _get_ua()) {
+    if ( my $atom_url = $vident->declared_atom ) {
+        if ( my $ua = _get_ua() ) {
             my $resp = $ua->get($atom_url);
-            if($resp->is_success) {
+            if ( $resp->is_success ) {
                 my $name;
 
                 require XML::XPath;
-                my $xml = XML::XPath->new( xml => $resp->content, parser => expat_parser() );
-                if ( my ($name_el) = $xml->findnodes('/feed/author/name')) {
+                my $xml = XML::XPath->new(
+                    xml    => $resp->content,
+                    parser => expat_parser()
+                );
+                if ( my ($name_el) = $xml->findnodes('/feed/author/name') ) {
                     $name = $name_el->string_value;
                 }
                 $xml->cleanup;
@@ -279,7 +305,7 @@ sub _get_nickname {
 
 sub get_email {
     my $class = shift;
-    my ( $vident ) = @_;
+    my ($vident) = @_;
     return q();
 }
 
@@ -292,10 +318,13 @@ sub get_userpicasset {
 
     require XML::XPath;
     my $xml = XML::XPath->new( xml => $foaf, parser => expat_parser() );
-    $xml->set_namespace('RDF', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#');
-    $xml->set_namespace('FOAF', 'http://xmlns.com/foaf/0.1/');
-    my $resource = $xml->getNodeText('/RDF:RDF/FOAF:Person/FOAF:img/@RDF:resource');
+    $xml->set_namespace( 'RDF',
+        'http://www.w3.org/1999/02/22-rdf-syntax-ns#' );
+    $xml->set_namespace( 'FOAF', 'http://xmlns.com/foaf/0.1/' );
+    my $resource
+        = $xml->getNodeText('/RDF:RDF/FOAF:Person/FOAF:img/@RDF:resource');
     my $url;
+
     if ($resource) {
         $url = $resource->value();
     }
@@ -307,7 +336,7 @@ sub get_userpicasset {
 
 sub _asset_from_url {
     my ($image_url) = @_;
-    my $ua   = _get_ua() or return;
+    my $ua = _get_ua() or return;
     my $resp = $ua->get($image_url);
     return undef unless $resp->is_success;
     my $image = $resp->content;
@@ -317,38 +346,43 @@ sub _asset_from_url {
     my $def_ext = {
         'image/jpeg' => '.jpg',
         'image/png'  => '.png',
-        'image/gif'  => '.gif'}->{$mimetype};
+        'image/gif'  => '.gif'
+    }->{$mimetype};
 
     require Image::Size;
-    my ( $w, $h, $id ) = Image::Size::imgsize(\$image);
+    my ( $w, $h, $id ) = Image::Size::imgsize( \$image );
 
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
 
     my $save_path  = '%s/support/uploads/';
-    my $local_path =
-      File::Spec->catdir( MT->instance->static_file_path, 'support', 'uploads' );
+    my $local_path = File::Spec->catdir( MT->instance->static_file_path,
+        'support', 'uploads' );
     $local_path =~ s|/$||
-      unless $local_path eq '/';    ## OS X doesn't like / at the end in mkdir().
+        unless $local_path eq
+            '/';    ## OS X doesn't like / at the end in mkdir().
     unless ( $fmgr->exists($local_path) ) {
         $fmgr->mkpath($local_path);
     }
-    my $filename = substr($image_url, rindex($image_url, '/'));
+    my $filename = substr( $image_url, rindex( $image_url, '/' ) );
     if ( $filename =~ m!\.\.|\0|\|! ) {
         return undef;
     }
-    my ($base, $uploaded_path, $ext) = File::Basename::fileparse($filename, '\.[^\.]*');
-    $ext = $def_ext if $def_ext;  # trust content type higher than extension
+    my ( $base, $uploaded_path, $ext )
+        = File::Basename::fileparse( $filename, '\.[^\.]*' );
+    $ext = $def_ext if $def_ext;    # trust content type higher than extension
 
     # Find unique name for the file.
-    my $i = 1;
+    my $i         = 1;
     my $base_copy = $base;
-    while ($fmgr->exists(File::Spec->catfile($local_path, $base . $ext))) {
+    while (
+        $fmgr->exists( File::Spec->catfile( $local_path, $base . $ext ) ) )
+    {
         $base = $base_copy . '_' . $i++;
     }
 
-    my $local_relative = File::Spec->catfile($save_path, $base . $ext);
-    my $local = File::Spec->catfile($local_path, $base . $ext);
+    my $local_relative = File::Spec->catfile( $save_path,  $base . $ext );
+    my $local          = File::Spec->catfile( $local_path, $base . $ext );
     $fmgr->put_data( $image, $local, 'upload' );
 
     require MT::Asset;
@@ -361,15 +395,15 @@ sub _asset_from_url {
     my $asset;
     $asset = $asset_pkg->new();
     $asset->file_path($local_relative);
-    $asset->file_name($base.$ext);
+    $asset->file_name( $base . $ext );
     my $ext_copy = $ext;
     $ext_copy =~ s/\.//;
     $asset->file_ext($ext_copy);
     $asset->blog_id(0);
 
     my $original = $asset->clone;
-    my $url = $local_relative;
-    $url  =~ s!\\!/!g;
+    my $url      = $local_relative;
+    $url =~ s!\\!/!g;
     $asset->url($url);
     $asset->image_width($w);
     $asset->image_height($h);
@@ -382,22 +416,35 @@ sub _asset_from_url {
 
     MT->run_callbacks(
         'api_upload_file.' . $asset->class,
-        File => $local, file => $local,
-        Url => $url, url => $url,
-        Size => length($image), size => length($image),
-        Asset => $asset, asset => $asset,
-        Type => $asset->class, type => $asset->class,
+        File  => $local,
+        file  => $local,
+        Url   => $url,
+        url   => $url,
+        Size  => length($image),
+        size  => length($image),
+        Asset => $asset,
+        asset => $asset,
+        Type  => $asset->class,
+        type  => $asset->class,
     );
     MT->run_callbacks(
         'api_upload_image',
-        File => $local, file => $local,
-        Url => $url, url => $url,
-        Size => length($image), size => length($image),
-        Asset => $asset, asset => $asset,
-        Height => $h, height => $h,
-        Width => $w, width => $w,
-        Type => 'image', type => 'image',
-        ImageType => $id, image_type => $id,
+        File       => $local,
+        file       => $local,
+        Url        => $url,
+        url        => $url,
+        Size       => length($image),
+        size       => length($image),
+        Asset      => $asset,
+        asset      => $asset,
+        Height     => $h,
+        height     => $h,
+        Width      => $w,
+        width      => $w,
+        Type       => 'image',
+        type       => 'image',
+        ImageType  => $id,
+        image_type => $id,
     );
 
     $asset;
@@ -406,7 +453,7 @@ sub _asset_from_url {
 sub _url_hash {
     my ($url) = @_;
 
-    if (eval { require Digest::MD5; 1; }) {
+    if ( eval { require Digest::MD5; 1; } ) {
         return Digest::MD5::md5_hex($url);
     }
     return substr $url, 0, 255;
@@ -418,7 +465,8 @@ sub check_url_params {
     my $q = $app->{query};
 
     my $path = MT->config->CGIPath;
-    if ($path =~ m!^/!) {
+    if ( $path =~ m!^/! ) {
+
         # relative path, prepend blog domain
         my ($blog_domain)
             = ( $blog ? $blog->archive_url : $app->base ) =~ m|(.+://[^/]+)|;
@@ -441,10 +489,14 @@ sub check_url_params {
     my $entry_id = $q->param('entry_id') || '';
     $entry_id =~ s/\D//g;
 
-    my $return_to = $path . '?__mode=handle_sign_in'
-        . '&blog_id=' . $blog_id
-        . '&static=' . $static
-        . '&key=' . $key;
+    my $return_to
+        = $path
+        . '?__mode=handle_sign_in'
+        . '&blog_id='
+        . $blog_id
+        . '&static='
+        . $static . '&key='
+        . $key;
     $return_to .= '&entry_id=' . $entry_id
         if $entry_id;
     ( trust_root => $path, return_to => $return_to );
@@ -453,10 +505,10 @@ sub check_url_params {
 sub set_commenter_properties {
     my $class = shift;
     my ( $commenter, $vident ) = @_;
-    my $nick = $class->get_nickname($vident);
+    my $nick  = $class->get_nickname($vident);
     my $email = $class->get_email($vident);
     $commenter->nickname($nick) if $nick;
-    $commenter->email($email) if $email;
+    $commenter->email($email)   if $email;
 }
 
 1;

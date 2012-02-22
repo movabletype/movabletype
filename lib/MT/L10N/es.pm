@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -818,6 +818,7 @@ que la dirección provista es correcta y le pertenece.',
 	'The address [_1] has been unsubscribed.' => 'Se desuscribió la dirección [_1].',
 
 ## lib/MT/App/Comments.pm
+	'Invalid authentication parameter' => 'Parámetro de autentificación no válido', # Translate - New
 	'Invalid request' => 'Petición no válida',
 	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => 'Error asignando permisos para comentar al usuario \'[_1] (ID: [_2])\' para el weblog \'[_3] (ID: [_4])\'. No se encontró un rol adecuado.',
 	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => 'Intento de identificación de comentarista no válido desde [_1] en el blog [_2](ID: [_3]) que no permite la autentificación nativa de Movable Type.',

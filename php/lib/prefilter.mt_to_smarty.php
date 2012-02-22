@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -93,7 +93,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                     }
                     if (preg_match('/^\$([A-Za-z_](\w|\.)*)$/', $attrs[$attr], $matches)) {
                         if (preg_match('/^(config|request)\.(.+)$/i', $matches[1], $m)) {
-                            if (strtolower($m[1]) == 'config') {
+                            if (strtolower($m[1]) == 'config' && !preg_match('/(password|secret)/i', $m[2]) ) {
                                 $attrs[$attr] = $mt->config[strtolower($m[2])];
                             }
                             elseif (strtolower($m[1]) == 'request') {
@@ -304,7 +304,7 @@ function _parse_modifier($str) {
             if (strlen($val)) {
                 if (preg_match('/^([\'"])\$([A-Za-z_]\w*)\1$/', $val, $matches)) {
                     if (preg_match('/^(config|request)\.(.+)$/i', $matches[2], $m)) {
-                        if (strtolower($m[1]) == 'config') {
+                        if (strtolower($m[1]) == 'config' && !preg_match('/(password|secret)/i', $m[2]) ) {
                             $val = $mt->config[strtolower($m[2])];
                         }
                         elseif (strtolower($m[1]) == 'request') {
