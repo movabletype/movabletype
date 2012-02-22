@@ -441,7 +441,7 @@ sub _pre_search_scope_terms_to_class {
 
                 # class term is in form "foo:*"; translate to a sql-compatible
                 # syntax of "like 'foo:%'"
-                $terms->{$col} = \"like '$1%'";
+                $terms->{$col} = \"like '$1%'"; # ";
             }
 
             # term has been explicitly given or explictly removed. make

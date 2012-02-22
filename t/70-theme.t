@@ -5,16 +5,18 @@ use lib qw( t/lib lib extlib ../lib ../extlib );
 
 BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $ENV{MT_APP} = 'MT::App::CMS';
 }
 
-use MT::Test qw(:db :data);
+use MT::Test qw(:app :db :data);
 use Test::More qw( no_plan );
 use YAML::Tiny;
 use File::Spec;
 use FindBin qw( $Bin );
 use MT;
 
-my $mt = MT->new();
+my $mt = MT->instance;
+$mt->user( MT::Author->load(1) );
 $mt->config->ThemesDirectory('t/themes');
 use_ok('MT::Theme', 'use MT::Theme');
 

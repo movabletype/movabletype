@@ -156,7 +156,7 @@ sub edit {
             unless ( exists $param->{'auth_pref_tag_delim'} );
     }
     $param->{text_filters} = $app->load_text_filters(
-        $obj ? $obj->text_format : $param->{'text_format'}, 'comment' );
+        $obj ? $obj->text_format : $param->{'text_format'}, 'entry' );
     unless ( exists $param->{'auth_pref_tag_delim'} ) {
         my $delim = chr( $auth_prefs->{tag_delim} );
         if ( $delim eq ',' ) {

@@ -1241,20 +1241,29 @@ sub save_favorite_blogs {
 
 sub cc_return {
     my $app   = shift;
-    my $code  = $app->param('license_code');
+    my $name  = $app->param('license_name');
     my $url   = $app->param('license_url');
     my $image = $app->param('license_button');
-    if ( $code eq '[license_code]' && $url ) {
-        ($code)
-            = $url =~ m!^http://creativecommons\.org/licenses/([a-z\-]+)/!ig;
+
+    my $code;
+    if ( $url =~ m!^http://creativecommons\.org/licenses/([a-z\-]+)!i ) {
+        $code = $1;
+    } 
+    elsif ( $url =~ m!^http://creativecommons.org/publicdomain/mark/!i ) {
+        $code = 'pd';
     }
-    my %param = ( license_name => MT::Util::cc_name($code) );
-    if ($url) {
-        $param{license_code} = "$code $url $image";
+    elsif ( $url =~ m!^http://creativecommons.org/publicdomain/zero/!i ) {
+        $code = 'pdd';
     }
     else {
-        $param{license_code} = $code;
+        return $app->error("MT is not aware of this license: " .
+            MT::Util::encode_html($name, 1));
     }
+
+    my %param = ( 
+        license_name => MT::Util::cc_name($code),
+        license_code => "$code $url $image",
+    );
     $app->load_tmpl( 'cc_return.tmpl', \%param );
 }
 

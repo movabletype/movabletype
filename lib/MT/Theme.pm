@@ -463,8 +463,8 @@ sub thumbnail {
         return ( $theme->default_theme_thumbnail(%param) );
     }
     my $file = $theme->_thumbnail_filename(%param);
-    my $url = join '/', MT->support_directory_url, _thumbnail_dir(),
-        $theme->{id}, $file;
+    my $url = MT->support_directory_url . 
+        join( '/', _thumbnail_dir(), $theme->{id}, $file );
     return ( $url, $theme->_thumbnail_size(%param) );
 }
 

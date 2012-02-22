@@ -1812,7 +1812,7 @@ sub _get_options_html {
     my $blog_id = $app->param('blog_id') || '';
     $blog_id =~ s/\D//g;
     my $static = MT::Util::remove_html(
-        $app->param('static') 
+        $app->param('static')  # unused - for compatibility
             || encode_url(
             $app->param('return_to') || $app->param('return_url') || ''
             )

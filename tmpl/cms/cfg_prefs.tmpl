@@ -88,7 +88,7 @@ function doRemoveLicense () {
 }
 
 function setLicense() {
-    var w = window.open('http://creativecommons.org/license/?partner=SixApart&amp;jurisdiction_choose=1&amp;exit_url=<mt:var name="script_full_url">?__mode=cc_return%26license_code=[license_code]%26license_url=[license_url]%26license_button=[license_button]', 'cc', 'width=600,height=650,scrollbars=yes,resizable=no');
+    var w = window.open('http://creativecommons.org/license/?partner=SixApart&amp;jurisdiction_choose=1&amp;exit_url=<mt:var name="script_full_url">?__mode=cc_return%26license_name=[license_name]%26license_url=[license_url]%26license_button=[license_button]', 'cc', 'width=600,height=650,scrollbars=yes,resizable=no');
     if ( w ) w.focus();
    return false;
 }

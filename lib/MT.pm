@@ -1729,21 +1729,7 @@ sub ping {
             push @tb_domains, MT::Util::extract_domains( $b->site_url );
         }
     }
-    my $tb_domains;
-    if (@tb_domains) {
-        $tb_domains = '';
-        my %seen;
-        local $_;
-        foreach (@tb_domains) {
-            next unless $_;
-            $_ = lc($_);
-            next if $seen{$_};
-            $tb_domains .= '|' if $tb_domains ne '';
-            $tb_domains .= quotemeta($_);
-            $seen{$_} = 1;
-        }
-        $tb_domains = '(' . $tb_domains . ')' if $tb_domains;
-    }
+    my %tb_domains = map { lc($_) => 1 } @tb_domains;
 
     ## Send TrackBack pings.
     if ( my $entry = $param{Entry} ) {
@@ -1773,7 +1759,7 @@ sub ping {
             $url =~ s/\s*$//;
             my $url_domain;
             ($url_domain) = MT::Util::extract_domains($url);
-            next if $tb_domains && lc($url_domain) !~ m/$tb_domains$/;
+            next if exists $tb_domains{lc($url_domain)};
 
             my $req = HTTP::Request->new( POST => $url );
             $req->content_type(
@@ -2344,16 +2330,21 @@ sub set_default_tmpl_params {
             $param->{mt_headers} = \%ENV;
         }
         unless ( $mt->{cookies} ) {
-            my $class = $ENV{MOD_PERL} ? 'Apache::Cookie' : 'CGI::Cookie';
-            eval "use $class;";
-            $mt->{cookies} = $class->fetch;
+            if ($ENV{MOD_PERL}) {
+                eval { require Apache::Cookie };
+                $mt->{cookies} = Apache::Cookie->fetch;
+            }
+            else {
+                eval { require CGI::Cookie };
+                $mt->{cookies} = CGI::Cookie->fetch;
+            }
         }
         if ( $mt->{cookies} ) {
             $param->{mt_cookies} = $mt->{cookies};
         }
         my %params = $mt->param_hash;
         $param->{mt_queries} = \%params;
-        if ( $param->{mt_debug} && 4 ) {
+        if ( $param->{mt_debug} & 4 ) {
             if ( my $profiler = Data::ObjectDriver->profiler ) {
                 my $stats = $profiler->statistics;
                 $param->{mt_sql_profile}{statistics} = $stats;
@@ -2426,7 +2417,7 @@ sub process_mt_template {
     @geis;
 
     # Strip out placeholder wrappers to facilitate tmpl_* callbacks
-    $body =~ s/<\/?MT_(\w+):(\w+)>//g;
+    $body =~ s/<\/?MT_\w+:\w+>//g;
     $body;
 }
 
@@ -2631,21 +2622,8 @@ sub build_email {
 
     my $ctx = $tmpl->context;
     $ctx->stash( 'blog_id', $blog->id )                 if $blog;
-    $ctx->stash( 'blog',    delete $param->{'blog'} )   if $param->{'blog'};
-    $ctx->stash( 'entry',   delete $param->{'entry'} )  if $param->{'entry'};
-    $ctx->stash( 'author',  delete $param->{'author'} ) if $param->{'author'};
-    $ctx->stash( 'commenter', delete $param->{'commenter'} )
-        if $param->{'commenter'};
-    $ctx->stash( 'comment', delete $param->{'comment'} )
-        if $param->{'comment'};
-    $ctx->stash( 'category', delete $param->{'category'} )
-        if $param->{'category'};
-    $ctx->stash( 'ping', delete $param->{'ping'} ) if $param->{'ping'};
-
-    foreach my $p (%$param) {
-        if ( ref($p) ) {
-            $tmpl->param( $p, $param->{$p} );
-        }
+    foreach my $name (qw{blog entry author commenter comment category ping}) {
+        $ctx->stash( $name, delete $param->{$name} ) if $param->{$name};
     }
 
     my $out = $mt->build_page_in_mem( $tmpl, $param );
@@ -2751,7 +2729,7 @@ sub _commenter_auth_params {
 }
 
 sub _openid_commenter_condition {
-    eval "require Digest::SHA1;";
+    eval { require Digest::SHA1; };
     return $@ ? 0 : 1;
 }
 
@@ -2793,9 +2771,7 @@ sub core_commenter_authenticators {
             class      => 'MT::Auth::GoogleOpenId',
             login_form => 'comment/auth_googleopenid.tmpl',
             condition  => sub {
-                eval "require Digest::SHA1;";
-                return 0 if $@;
-                eval "require Crypt::SSLeay;";
+                eval { require Digest::SHA1; require Crypt::SSLeay; };
                 return 0 if $@;
                 return 1;
             },
@@ -3098,14 +3074,12 @@ sub handler_to_coderef {
 sub help_url {
     my $pkg = shift;
     my ($append) = @_;
+    $append = '' unless defined $append;
 
     my $url = $pkg->config->HelpURL;
-    return $url if defined $url;
+    return $url.$append if defined $url;
     $url = $pkg->translate('http://www.movabletype.org/documentation/');
-    if ($append) {
-        $url .= $append;
-    }
-    $url;
+    $url . $append;
 }
 
 sub register_refresh_cache_event {

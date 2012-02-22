@@ -169,8 +169,8 @@ sub dialog_list_asset {
         if !$blog_id && $mode_userpic ne 'upload_userpic';
 
     my $blog_class = $app->model('blog');
-    my $blog = $blog_class->load($blog_id) if $blog_id;
-
+    my $blog;
+    $blog = $blog_class->load($blog_id) if $blog_id;
     return $app->permission_denied()
         if $blog_id && !$app->can_do('access_to_insert_asset_list');
 

@@ -822,6 +822,7 @@ sub decode_url {
             # re-replace &amp;#nnnn => &#nnnn
             $str =~ s/&amp;((\#([0-9]+)|\#x([0-9a-fA-F]+)).*?);/&$1;/g;
         }
+        $str =~ tr/\0-\x08\x0B\x0C\x0E-\x1F\x7F/     /;
         $str;
     }
 
@@ -1444,7 +1445,7 @@ sub discover_tb {
             requires => [qw( Attribution Notice )],
             permits  => [qw( Reproduction Distribution )],
         },
-        'by-nd-nc' => {
+        'by-nc-nd' => {
             name      => 'Attribution-NoDerivs-NonCommercial',
             requires  => [qw( Attribution Notice )],
             permits   => [qw( Reproduction Distribution )],
@@ -1499,6 +1500,10 @@ sub discover_tb {
             name    => 'PublicDomain',
             permits => [qw( Reproduction Distribution DerivativeWorks )],
         },
+        'pdd' => {
+            name    => 'PublicDomainDedication',
+            permits => [qw( Reproduction Distribution DerivativeWorks )],
+         },
     );
 
     sub cc_url {

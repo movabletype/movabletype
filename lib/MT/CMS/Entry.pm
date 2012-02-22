@@ -2859,35 +2859,25 @@ sub delete {
     if ( $app->config('RebuildAtDelete') ) {
         $app->run_callbacks('pre_build');
 
-        if ($can_background) {
-            my $res = MT::Util::start_background_task(
-                sub {
-                    foreach my $b_id ( keys %rebuild_recipe ) {
-                        my $b   = MT::Blog->load($b_id);
-                        my $res = $app->rebuild_archives(
-                            Blog   => $b,
-                            Recipe => $rebuild_recipe{$b_id},
-                        ) or return $app->publish_error();
-                        $app->rebuild_indexes( Blog => $b )
-                            or return $app->publish_error();
-                        $app->run_callbacks( 'rebuild', $b );
-                        1;
-                    }
+        my $rebuild_func =
+            sub {
+                foreach my $b_id ( keys %rebuild_recipe ) {
+                    my $b  = MT::Blog->load($b_id);
+                    my $res = $app->rebuild_archives(
+                        Blog  => $b,
+                        Recipe => $rebuild_recipe{$b_id},
+                    ) or return $app->publish_error();
+                    $app->rebuild_indexes( Blog => $b )
+                        or return $app->publish_error();
+                    $app->run_callbacks( 'rebuild', $b );
                 }
-            );
+            };
+        
+        if ($can_background) {
+            MT::Util::start_background_task($rebuild_func);
         }
         else {
-            foreach my $b_id ( keys %rebuild_recipe ) {
-                my $b = MT::Blog->load($b_id);
-                $app->rebuild_archives(
-                    Blog   => $b,
-                    Recipe => $rebuild_recipe{$b_id},
-                ) or return $app->publish_error();
-                $app->rebuild_indexes( Blog => $b )
-                    or return $app->publish_error();
-
-                $app->run_callbacks( 'rebuild', $b );
-            }
+            $rebuild_func->();
         }
 
         $app->add_return_arg( no_rebuild => 1 );

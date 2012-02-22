@@ -306,13 +306,10 @@ sub apply {
         = map { $app->param($_) || q{} }
         (qw( blog_id url layout name template_set ));
 
-    # Load the default stylesheet for this blog
-    my $tmpl = load_style_template($blog_id);
-
     $app->validate_magic
         or return $app->json_error( $app->translate("Invalid request") );
     return $app->json_error( $app->translate("Invalid request") )
-        unless $blog_id && $url && $tmpl;
+        unless $blog_id && $url;
 
     my $static_path = $app->static_file_path;
     if ( !-d $static_path ) {
@@ -374,9 +371,26 @@ sub apply {
             if $uri;
     }
 
+    # Load the default stylesheet for this blog
+    my $tmpl = load_style_template($blog_id);
+
+    unless ($tmpl) {
+
+        # Create one since this blog does not have it
+        $tmpl = new MT::Template;
+        $tmpl->blog_id($blog_id);
+        $tmpl->name( plugin()->translate('Stylesheet') );
+        $tmpl->type('index');
+        $tmpl->identifier('styles');
+        $tmpl->outfile("styles.css");
+        $tmpl->text(<<'EOT');
+@import url(<$MTStaticWebPath$>themes-base/blog.css);
+@import url(<$MTStaticWebPath$>themes/minimalist-red/styles.css);
+EOT
+    }
+
     # Replacing the theme import or adding a new one at the beginning
     my $template_text = $tmpl->text();
-    my $replaced      = 0;
     my $header
         = '/* This is the StyleCatcher theme addition. Do not remove this block. */';
     my $footer = '/* end StyleCatcher imports */';
@@ -388,9 +402,8 @@ $footer
 EOT
     if ( $template_text =~ s/\Q$header\E.*\Q$footer\E/$styles/s ) {
         $tmpl->text($template_text);
-        $replaced = 1;
     }
-    unless ($replaced) {
+    else {
 
         # we're dealing with a template that wasn't modified before now
         # we will need to backup the existing one to make sure the new
@@ -511,22 +524,6 @@ sub load_style_template {
             outfile => "styles-site.css"
         }
     );
-
-    unless ($tmpl) {
-
-        # Create one since we didn't find a candidate
-        $tmpl = new MT::Template;
-        $tmpl->blog_id($blog_id);
-        $tmpl->name( plugin()->translate('Stylesheet') );
-        $tmpl->type('index');
-        $tmpl->identifier('styles');
-        $tmpl->outfile("styles.css");
-        $tmpl->text(<<'EOT');
-@import url(<$MTStaticWebPath$>themes-base/blog.css);
-@import url(<$MTStaticWebPath$>themes/minimalist-red/styles.css);
-EOT
-        $tmpl->save();
-    }
 
     $tmpl;
 }
