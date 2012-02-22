@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Fault.pod 98 2007-10-09 09:41:55Z kutterma $
+# $Id: Fault.pod 381 2011-08-15 19:28:43Z kutterma $
 #
 # ======================================================================
 
@@ -16,7 +16,7 @@ SOAP::Fault - encapsulates SOAP faults prior to their serialization or after the
 
 =head1 DESCRIPTION
 
-This class encapsulates SOAP faults prior to their serialization or after their deserialization. The methods available are a constructor and four accessors. Each accessor creates an object on demand, just as the other classes do, when called as a static method. Like other accessors in the SOAP::Lite package, they return the object itself when setting the attribute. 
+This class encapsulates SOAP faults prior to their serialization or after their deserialization. The methods available are a constructor and four accessors. Each accessor creates an object on demand, just as the other classes do, when called as a static method. Like other accessors in the SOAP::Lite package, they return the object itself when setting the attribute.
 
 =head1 GENERATING A SOAP FAULT
 
@@ -63,11 +63,11 @@ Returns or sets the fault's detail element. Like the actor, this isn't always a 
 
 =back
 
-In addition to these methods, the SOAP::Fault package also provides detail as an alias for faultdetail. The former is the actual name of the element with SOAP faults, but the latter name is less ambiguous when regarded with the rest of the SOAP::Lite package. Objects of this class also have a special stringification enabled. If an object is printed or otherwise stringified, the value produced is faultcode: faultstring, with the attribute values of the object. 
+In addition to these methods, the SOAP::Fault package also provides detail as an alias for faultdetail. The former is the actual name of the element with SOAP faults, but the latter name is less ambiguous when regarded with the rest of the SOAP::Lite package. Objects of this class also have a special stringification enabled. If an object is printed or otherwise stringified, the value produced is faultcode: faultstring, with the attribute values of the object.
 
 =head1 SEE ALSO
 
-L<SOAP::Data>, L<SOAP::Header>, L<SOAP::SOM> 
+L<SOAP::Data>, L<SOAP::Header>, L<SOAP::SOM>
 
 =head1 ACKNOWLEDGEMENTS
 

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -8,14 +8,15 @@ package MT::Template::Tags::Entry;
 use strict;
 
 use MT;
-use MT::Util qw( offset_time_list encode_html remove_html spam_protect asset_cleanup );
+use MT::Util
+    qw( offset_time_list encode_html remove_html spam_protect asset_cleanup );
 use MT::Entry;
 use MT::I18N qw( first_n_text const );
 
 # returns an iterator that supplies entries, in the order of last comment
 # date (descending)
 sub _rco_entries_iter {
-    my ($entry_terms, $entry_args, $blog_terms, $blog_args) = @_;
+    my ( $entry_terms, $entry_args, $blog_terms, $blog_args ) = @_;
 
     my $offset = 0;
     my $limit = $entry_args->{limit} || 20;
@@ -26,39 +27,44 @@ sub _rco_entries_iter {
         if exists $entry_args->{sort};
 
     my $rco_iter = sub {
-        if (! @entries) {
+        if ( !@entries ) {
             require MT::Comment;
-            my $iter = MT::Comment->max_group_by({
-                visible => 1,
-                %$blog_terms,
-            }, {
-                join => MT::Entry->join_on(undef,
-                    {
-                        'id' => \'=comment_entry_id',
-                        %$entry_terms,
-                    }, { %$entry_args }),
-                %$blog_args,
-                group => ['entry_id'],
-                max => 'created_on',
-                offset => $offset,
-                limit => $limit,
-            });
+            my $iter = MT::Comment->max_group_by(
+                {   visible => 1,
+                    %$blog_terms,
+                },
+                {   join => MT::Entry->join_on(
+                        undef,
+                        {   'id' => \'=comment_entry_id',
+                            %$entry_terms,
+                        },
+                        {%$entry_args}
+                    ),
+                    %$blog_args,
+                    group  => ['entry_id'],
+                    max    => 'created_on',
+                    offset => $offset,
+                    limit  => $limit,
+                }
+            );
             my @ids;
             my %order;
             my $num = 0;
-            while (my ($max, $id) = $iter->()) {
+            while ( my ( $max, $id ) = $iter->() ) {
                 push @ids, $id;
                 $order{$id} = $num++;
             }
-            if ( @ids ) {
-                @entries = MT::Entry->load({ id => \@ids });
-                @entries = sort { $order{$a->id} <=> $order{$b->id} } @entries;
+            if (@ids) {
+                @entries = MT::Entry->load( { id => \@ids } );
+                @entries
+                    = sort { $order{ $a->id } <=> $order{ $b->id } } @entries;
             }
         }
-        if ( @entries ) {
+        if (@entries) {
             $offset++;
             return shift @entries;
-        } else {
+        }
+        else {
             return undef;
         }
     };
@@ -281,36 +287,42 @@ outputs something like this:
 =cut
 
 sub _hdlr_entries {
-    my($ctx, $args, $cond) = @_;
-    return $ctx->error(MT->translate('sort_by="score" must be used in combination with namespace.'))
-        if ((exists $args->{sort_by}) && ('score' eq $args->{sort_by}) && (!exists $args->{namespace}));
+    my ( $ctx, $args, $cond ) = @_;
+    return $ctx->error(
+        MT->translate(
+            'sort_by="score" must be used in combination with namespace.')
+        )
+        if ( ( exists $args->{sort_by} )
+        && ( 'score' eq $args->{sort_by} )
+        && ( !exists $args->{namespace} ) );
 
-    my $cfg = $ctx->{config};
-    my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
+    my $cfg     = $ctx->{config};
+    my $at      = $ctx->{current_archive_type} || $ctx->{archive_type};
     my $blog_id = $ctx->stash('blog_id');
-    my $blog = $ctx->stash('blog');
-    my (@filters, %blog_terms, %blog_args, %terms, %args);
+    my $blog    = $ctx->stash('blog');
+    my ( @filters, %blog_terms, %blog_args, %terms, %args );
 
     # for the case that we want to use mt:Entries with mt-search
     # send to MT::Template::Search if searh results are found
-    if ($ctx->stash('results') && $args->{search_results} == 1) {
+    if ( $ctx->stash('results') && $args->{search_results} == 1 ) {
         require MT::Template::Context::Search;
-        return MT::Template::Context::Search::_hdlr_results($ctx, $args, $cond);
+        return MT::Template::Context::Search::_hdlr_results( $ctx, $args,
+            $cond );
     }
 
-    $ctx->set_blog_load_context($args, \%blog_terms, \%blog_args)
-        or return $ctx->error($ctx->errstr);
+    $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
+        or return $ctx->error( $ctx->errstr );
     %terms = %blog_terms;
-    %args = %blog_args;
+    %args  = %blog_args;
 
-    my $class_type = $args->{class_type} || 'entry';
-    my $class = MT->model($class_type);
+    my $class_type     = $args->{class_type} || 'entry';
+    my $class          = MT->model($class_type);
     my $cat_class_type = $class->container_type();
-    my $cat_class = MT->model($cat_class_type);
+    my $cat_class      = MT->model($cat_class_type);
 
     my %fields;
     foreach my $arg ( keys %$args ) {
-        if ($arg =~ m/^field:(.+)$/) {
+        if ( $arg =~ m/^field:(.+)$/ ) {
             $fields{$1} = $args->{$arg};
         }
     }
@@ -323,20 +335,25 @@ sub _hdlr_entries {
     # prepopulate the entries stash and then invoke this handler
     # to permit further filtering of the entries.
     my $tag = lc $ctx->stash('tag');
-    if (($tag eq 'entries') || ($tag eq 'pages')) {
-        foreach my $args_key ('category', 'categories', 'tag', 'tags',
-            'author') {
-            if (exists($args->{$args_key})) {
+    if ( ( $tag eq 'entries' ) || ( $tag eq 'pages' ) ) {
+        foreach
+            my $args_key ( 'category', 'categories', 'tag', 'tags', 'author' )
+        {
+            if ( exists( $args->{$args_key} ) ) {
                 $use_stash = 0;
                 last;
             }
         }
     }
-    if ( $use_stash ) {
-        foreach my $args_key ('id', 'days', 'recently_commented_on',
-            'include_subcategories', 'include_blogs', 'exclude_blogs',
-            'blog_ids') {
-            if (exists($args->{$args_key})) {
+    if ($use_stash) {
+        foreach my $args_key (
+            'id',                    'days',
+            'recently_commented_on', 'include_subcategories',
+            'include_blogs',         'exclude_blogs',
+            'blog_ids'
+            )
+        {
+            if ( exists( $args->{$args_key} ) ) {
                 $use_stash = 0;
                 last;
             }
@@ -347,7 +364,7 @@ sub _hdlr_entries {
     }
 
     my $entries;
-    if ( $use_stash ) {
+    if ($use_stash) {
         $entries = $ctx->stash('entries');
         if ( !$entries && $at ) {
             my $archiver = MT->publisher->archiver($at);
@@ -358,7 +375,8 @@ sub _hdlr_entries {
     }
     if ( $entries && scalar @$entries ) {
         my $entry = @$entries[0];
-        if ( ! $entry->isa( $class ) ) {
+        if ( !$entry->isa($class) ) {
+
             # class types do not match; we can't use stashed entries
             undef $entries;
         }
@@ -370,46 +388,51 @@ sub _hdlr_entries {
     # handle automatic offset based on 'offset' query parameter
     # in case we're invoked through mt-view.cgi or some other
     # app.
-    if (($args->{offset} || '') eq 'auto') {
+    if ( ( $args->{offset} || '' ) eq 'auto' ) {
         $args->{offset} = 0;
-        if (($args->{lastn} || $args->{limit}) && (my $app = MT->instance)) {
-            if ($app->isa('MT::App')) {
-                if (my $offset = $app->param('offset')) {
+        if (   ( $args->{lastn} || $args->{limit} )
+            && ( my $app = MT->instance ) )
+        {
+            if ( $app->isa('MT::App') ) {
+                if ( my $offset = $app->param('offset') ) {
                     $args->{offset} = $offset;
                 }
             }
         }
     }
 
-    if (($args->{limit} || '') eq 'auto') {
-        my ($days, $limit);
+    if ( ( $args->{limit} || '' ) eq 'auto' ) {
+        my ( $days, $limit );
         my $blog = $ctx->stash('blog');
-        if ($blog && ($days = $blog->days_on_index)) {
-            my @ago = offset_time_list(time - 3600 * 24 * $days,
-                $blog_id);
+        if ( $blog && ( $days = $blog->days_on_index ) ) {
+            my @ago = offset_time_list( time - 3600 * 24 * $days, $blog_id );
             my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
-                $ago[5]+1900, $ago[4]+1, @ago[3,2,1,0];
-            $terms{authored_on} = [ $ago ];
+                $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
+            $terms{authored_on} = [$ago];
             $args{range_incl}{authored_on} = 1;
-        } elsif ($blog && ($limit = $blog->entries_on_index)) {
+        }
+        elsif ( $blog && ( $limit = $blog->entries_on_index ) ) {
             $args->{lastn} = $limit;
-        } else {
+        }
+        else {
             delete $args->{limit};
         }
-    } elsif ($args->{limit} && ($args->{limit} > 0)) {
+    }
+    elsif ( $args->{limit} && ( $args->{limit} > 0 ) ) {
         $args->{lastn} = $args->{limit};
     }
 
     $terms{status} = MT::Entry::RELEASE();
 
-    if (!$entries) {
-        if ($ctx->{inside_mt_categories}) {
-            if (my $cat = $ctx->stash('category')) {
-                $args->{category} ||= [ 'OR', [ $cat ] ]
+    if ( !$entries ) {
+        if ( $ctx->{inside_mt_categories} ) {
+            if ( my $cat = $ctx->stash('category') ) {
+                $args->{category} ||= [ 'OR', [$cat] ]
                     if $cat->class eq $cat_class_type;
             }
-        } elsif (my $cat = $ctx->stash('archive_category')) {
-            $args->{category} ||= [ 'OR', [ $cat ] ]
+        }
+        elsif ( my $cat = $ctx->stash('archive_category') ) {
+            $args->{category} ||= [ 'OR', [$cat] ]
                 if $cat->class eq $cat_class_type;
         }
     }
@@ -419,36 +442,52 @@ sub _hdlr_entries {
     #     * from an archive context-- entries are prepopulated
 
     # Adds a category filter to the filters list.
-    if (my $category_arg = $args->{category} || $args->{categories}) {
-        my ($cexpr, $cats);
-        if (ref $category_arg) {
-            my $is_and = (shift @{$category_arg}) eq 'AND';
-            $cats = [ @{ $category_arg->[0] } ];
-            $cexpr = $ctx->compile_category_filter(undef, $cats, { 'and' => $is_and,
-                children => 
-                    $cat_class_type eq 'category' ?
-                        ($args->{include_subcategories} ? 1 : 0) :
-                        ($args->{include_subfolders} ? 1 : 0)
-            });
-        } else {
-            if (($category_arg !~ m/\b(AND|OR|NOT)\b|[(|&]/i) &&
-                (($cat_class_type eq 'category' && !$args->{include_subcategories}) ||
-                 ($cat_class_type ne 'category' && !$args->{include_subfolders})))
+    if ( my $category_arg = $args->{category} || $args->{categories} ) {
+        my ( $cexpr, $cats );
+        if ( ref $category_arg ) {
+            my $is_and = ( shift @{$category_arg} ) eq 'AND';
+            $cats  = [ @{ $category_arg->[0] } ];
+            $cexpr = $ctx->compile_category_filter(
+                undef, $cats,
+                {   'and'    => $is_and,
+                    children => $cat_class_type eq 'category'
+                    ? ( $args->{include_subcategories} ? 1 : 0 )
+                    : ( $args->{include_subfolders} ? 1 : 0 )
+                }
+            );
+        }
+        else {
+            if (( $category_arg !~ m/\b(AND|OR|NOT)\b|[(|&]/i )
+                && ((   $cat_class_type eq 'category'
+                        && !$args->{include_subcategories}
+                    )
+                    || ( $cat_class_type ne 'category'
+                        && !$args->{include_subfolders} )
+                )
+                )
             {
-                my @cats = $ctx->cat_path_to_category($category_arg, [ \%blog_terms, \%blog_args ], $cat_class_type);
+                my @cats
+                    = $ctx->cat_path_to_category( $category_arg,
+                    [ \%blog_terms, \%blog_args ],
+                    $cat_class_type );
                 if (@cats) {
                     $cats = \@cats;
                 }
-                $cexpr = $ctx->compile_category_filter($category_arg, $cats);
-            } else {
-                my @cats = $cat_class->load(\%blog_terms, \%blog_args);
+                $cexpr
+                    = $ctx->compile_category_filter( $category_arg, $cats );
+            }
+            else {
+                my @cats = $cat_class->load( \%blog_terms, \%blog_args );
                 if (@cats) {
-                    $cats = \@cats;
-                    $cexpr = $ctx->compile_category_filter($category_arg, $cats,
-                        { children => $cat_class_type eq 'category' ?
-                            ($args->{include_subcategories} ? 1 : 0) :
-                            ($args->{include_subfolders} ? 1 : 0)
-                        });
+                    $cats  = \@cats;
+                    $cexpr = $ctx->compile_category_filter(
+                        $category_arg,
+                        $cats,
+                        {   children => $cat_class_type eq 'category'
+                            ? ( $args->{include_subcategories} ? 1 : 0 )
+                            : ( $args->{include_subfolders} ? 1 : 0 )
+                        }
+                    );
                 }
             }
         }
@@ -459,129 +498,166 @@ sub _hdlr_entries {
             my $preloader = sub {
                 my ($id) = @_;
                 my @c_ids = MT::Placement->load(
-                    { category_id => \@cat_ids, entry_id => $id },
-                    { fetchonly => ['category_id'], no_triggers => 1 }
+                    { category_id => \@cat_ids,       entry_id    => $id },
+                    { fetchonly   => ['category_id'], no_triggers => 1 }
                 );
                 my %map;
-                $map{$_->category_id} = 1 for @c_ids;
+                $map{ $_->category_id } = 1 for @c_ids;
                 \%map;
             };
             if ( !$entries ) {
-                if ($category_arg !~ m/\bNOT\b/i) {
-                    $args{join} = MT::Placement->join_on( 'entry_id', {
-                            category_id => \@cat_ids, %blog_terms
-                        }, { %blog_args, unique => 1 } );
+                if ( $category_arg !~ m/\bNOT\b/i ) {
+                    $args{join} = MT::Placement->join_on(
+                        'entry_id',
+                        {   category_id => \@cat_ids,
+                            %blog_terms
+                        },
+                        { %blog_args, unique => 1 }
+                    );
                 }
             }
-            push @filters, sub { $cexpr->( $preloader->($_[0]->id) ) };
-        } else {
-            return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $category_arg, $cat_class_type));
+            push @filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
+        }
+        else {
+            return $ctx->error(
+                MT->translate(
+                    "You have an error in your '[_2]' attribute: [_1]",
+                    $category_arg, $cat_class_type
+                )
+            );
         }
     }
+
     # Adds a tag filter to the filters list.
-    if (my $tag_arg = $args->{tags} || $args->{tag}) {
+    if ( my $tag_arg = $args->{tags} || $args->{tag} ) {
         require MT::Tag;
         require MT::ObjectTag;
 
         my $terms;
-        if ($tag_arg !~ m/\b(AND|OR|NOT)\b|\(|\)/i) {
-            my @tags = MT::Tag->split(',', $tag_arg);
+        if ( $tag_arg !~ m/\b(AND|OR|NOT)\b|\(|\)/i ) {
+            my @tags = MT::Tag->split( ',', $tag_arg );
             $terms = { name => \@tags };
             $tag_arg = join " or ", @tags;
         }
-        my $tags = [ MT::Tag->load($terms, {
-            ( $terms ? ( binary => { name => 1 } ) : () ),
-            join => MT::ObjectTag->join_on('tag_id', {
-                object_datasource => $class->datasource,
-                %blog_terms,
-            }, { %blog_args, unique => 1 } ),
-        }) ];
-        my $cexpr = $ctx->compile_tag_filter($tag_arg, $tags);
+        my $tags = [
+            MT::Tag->load(
+                $terms,
+                {   ( $terms ? ( binary => { name => 1 } ) : () ),
+                    join => MT::ObjectTag->join_on(
+                        'tag_id',
+                        {   object_datasource => $class->datasource,
+                            %blog_terms,
+                        },
+                        { %blog_args, unique => 1 }
+                    ),
+                }
+            )
+        ];
+        my $cexpr = $ctx->compile_tag_filter( $tag_arg, $tags );
         if ($cexpr) {
-            my @tag_ids = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @$tags;
+            my @tag_ids
+                = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @$tags;
             my $preloader = sub {
                 my ($entry_id) = @_;
                 my %map;
                 return \%map unless @tag_ids;
-                my $terms = { 
-                    tag_id => \@tag_ids,
-                    object_id => $entry_id,
+                my $terms = {
+                    tag_id            => \@tag_ids,
+                    object_id         => $entry_id,
                     object_datasource => $class->datasource,
                     %blog_terms,
                 };
                 my $args = {
                     %blog_args,
-                    fetchonly => ['tag_id'],
+                    fetchonly   => ['tag_id'],
                     no_triggers => 1
                 };
-                my @ot_ids = MT::ObjectTag->load($terms, $args) if @tag_ids;
-                $map{$_->tag_id} = 1 for @ot_ids;
+                my @ot_ids = MT::ObjectTag->load( $terms, $args ) if @tag_ids;
+                $map{ $_->tag_id } = 1 for @ot_ids;
                 \%map;
             };
-            if (!$entries) {
-                if ($tag_arg !~ m/\bNOT\b/i) {
+            if ( !$entries ) {
+                if ( $tag_arg !~ m/\bNOT\b/i ) {
                     return '' unless @tag_ids;
-                    $args{join} = MT::ObjectTag->join_on( 'object_id', {
-                        tag_id => \@tag_ids, object_datasource => 'entry',
-                        %blog_terms
-                    }, { %blog_args, unique => 1 } );
+                    $args{join} = MT::ObjectTag->join_on(
+                        'object_id',
+                        {   tag_id            => \@tag_ids,
+                            object_datasource => 'entry',
+                            %blog_terms
+                        },
+                        { %blog_args, unique => 1 }
+                    );
                 }
             }
-            push @filters, sub { $cexpr->($preloader->($_[0]->id)) };
-        } else {
-            return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $tag_arg, 'tag'));
+            push @filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
+        }
+        else {
+            return $ctx->error(
+                MT->translate(
+                    "You have an error in your '[_2]' attribute: [_1]",
+                    $tag_arg, 'tag'
+                )
+            );
         }
     }
 
     # Adds an author filter to the filters list.
-    if (my $author_name = $args->{author}) {
+    if ( my $author_name = $args->{author} ) {
         require MT::Author;
-        my $author = MT::Author->load({ name => $author_name }) or
-            return $ctx->error(MT->translate(
-                "No such user '[_1]'", $author_name ));
+        my $author = MT::Author->load( { name => $author_name } )
+            or return $ctx->error(
+            MT->translate( "No such user '[_1]'", $author_name ) );
         if ($entries) {
             push @filters, sub { $_[0]->author_id == $author->id };
-        } else {
+        }
+        else {
             $terms{author_id} = $author->id;
         }
     }
 
-    if ( my $f = MT::Component->registry("tags", "filters", "Entries") ) {
-        foreach my $set ( @$f ) {
+    if ( my $f = MT::Component->registry( "tags", "filters", "Entries" ) ) {
+        foreach my $set (@$f) {
             foreach my $fkey ( keys %$set ) {
-                if (exists $args->{$fkey}) {
-                    my $h = $set->{$fkey}{code} ||= MT->handler_to_coderef( $set->{$fkey}{handler} );
+                if ( exists $args->{$fkey} ) {
+                    my $h = $set->{$fkey}{code}
+                        ||= MT->handler_to_coderef( $set->{$fkey}{handler} );
                     next unless ref($h) eq 'CODE';
 
                     local $ctx->{filters} = \@filters;
-                    local $ctx->{terms} = \%terms;
-                    local $ctx->{args} = \%args;
-                    $h->($ctx, $args, $cond);
+                    local $ctx->{terms}   = \%terms;
+                    local $ctx->{args}    = \%args;
+                    $h->( $ctx, $args, $cond );
                 }
             }
         }
     }
 
     # Adds an ID filter to the filter list.
-    if ((my $target_id = $args->{id}) && (ref($args->{id}) || ($args->{id} =~ m/^\d+$/))) {
+    if (   ( my $target_id = $args->{id} )
+        && ( ref( $args->{id} ) || ( $args->{id} =~ m/^\d+$/ ) ) )
+    {
         if ($entries) {
-            if (ref $target_id eq 'ARRAY') {
+            if ( ref $target_id eq 'ARRAY' ) {
                 my %ids = map { $_ => 1 } @$target_id;
-                push @filters, sub { exists $ids{$_[0]->id} };
-            } else {
+                push @filters, sub { exists $ids{ $_[0]->id } };
+            }
+            else {
                 push @filters, sub { $_[0]->id == $target_id };
             }
-        } else {
+        }
+        else {
             $terms{id} = $target_id;
         }
     }
 
-    if ($args->{namespace}) {
+    if ( $args->{namespace} ) {
         my $namespace = $args->{namespace};
 
         my $need_join = 0;
-        for my $f qw( min_score max_score min_rate max_rate min_count max_count scored_by ) {
-            if ($args->{$f}) {
+        for my $f
+            qw( min_score max_score min_rate max_rate min_count max_count scored_by )
+        {
+            if ( $args->{$f} ) {
                 $need_join = 1;
                 last;
             }
@@ -590,109 +666,124 @@ sub _hdlr_entries {
             my $scored_by = $args->{scored_by} || undef;
             if ($scored_by) {
                 require MT::Author;
-                my $author = MT::Author->load({ name => $scored_by }) or
-                    return $ctx->error(MT->translate(
-                        "No such user '[_1]'", $scored_by ));
+                my $author = MT::Author->load( { name => $scored_by } )
+                    or return $ctx->error(
+                    MT->translate( "No such user '[_1]'", $scored_by ) );
                 $scored_by = $author;
             }
 
-            $args{join} = MT->model('objectscore')->join_on(undef,
-                {
-                    object_id => \'=entry_id',
+            $args{join} = MT->model('objectscore')->join_on(
+                undef,
+                {   object_id => \'=entry_id',
                     object_ds => 'entry',
                     namespace => $namespace,
-                    (!$entries && $scored_by ? (author_id => $scored_by->id) : ()),
-                }, {
-                    unique => 1,
-            });
-            if ($entries && $scored_by) {
-                push @filters, sub { $_[0]->get_score($namespace, $scored_by) };
+                    (   !$entries && $scored_by
+                        ? ( author_id => $scored_by->id )
+                        : ()
+                    ),
+                },
+                { unique => 1, }
+            );
+            if ( $entries && $scored_by ) {
+                push @filters,
+                    sub { $_[0]->get_score( $namespace, $scored_by ) };
             }
         }
 
         # Adds a rate or score filter to the filter list.
-        if ($args->{min_score}) {
-            push @filters, sub { $_[0]->score_for($namespace) >= $args->{min_score}; };
+        if ( $args->{min_score} ) {
+            push @filters,
+                sub { $_[0]->score_for($namespace) >= $args->{min_score}; };
         }
-        if ($args->{max_score}) {
-            push @filters, sub { $_[0]->score_for($namespace) <= $args->{max_score}; };
+        if ( $args->{max_score} ) {
+            push @filters,
+                sub { $_[0]->score_for($namespace) <= $args->{max_score}; };
         }
-        if ($args->{min_rate}) {
-            push @filters, sub { $_[0]->score_avg($namespace) >= $args->{min_rate}; };
+        if ( $args->{min_rate} ) {
+            push @filters,
+                sub { $_[0]->score_avg($namespace) >= $args->{min_rate}; };
         }
-        if ($args->{max_rate}) {
-            push @filters, sub { $_[0]->score_avg($namespace) <= $args->{max_rate}; };
+        if ( $args->{max_rate} ) {
+            push @filters,
+                sub { $_[0]->score_avg($namespace) <= $args->{max_rate}; };
         }
-        if ($args->{min_count}) {
-            push @filters, sub { $_[0]->vote_for($namespace) >= $args->{min_count}; };
+        if ( $args->{min_count} ) {
+            push @filters,
+                sub { $_[0]->vote_for($namespace) >= $args->{min_count}; };
         }
-        if ($args->{max_count}) {
-            push @filters, sub { $_[0]->vote_for($namespace) <= $args->{max_count}; };
+        if ( $args->{max_count} ) {
+            push @filters,
+                sub { $_[0]->vote_for($namespace) <= $args->{max_count}; };
         }
     }
 
     # Adds an count of comments filter to the filter list.
-    if (exists $args->{min_comment} && exists $args->{max_comment}) {
-        $terms{comment_count} = { 'between' => [ int($args->{min_comment}), int($args->{max_comment}) ] };
-    } elsif (exists $args->{min_comment}) {
-        $terms{comment_count} = { '>=' => int($args->{min_comment}) };
-    } elsif (exists $args->{max_comment}) {
-        $terms{comment_count} = { '<=' => int($args->{max_comment}) };
+    if ( exists $args->{min_comment} && exists $args->{max_comment} ) {
+        $terms{comment_count}
+            = { 'between' =>
+                [ int( $args->{min_comment} ), int( $args->{max_comment} ) ]
+            };
+    }
+    elsif ( exists $args->{min_comment} ) {
+        $terms{comment_count} = { '>=' => int( $args->{min_comment} ) };
+    }
+    elsif ( exists $args->{max_comment} ) {
+        $terms{comment_count} = { '<=' => int( $args->{max_comment} ) };
     }
 
     my $published = $ctx->{__stash}{entry_ids_published} ||= {};
-    if ($args->{unique}) {
-        push @filters, sub { !exists $published->{$_[0]->id} }
+    if ( $args->{unique} ) {
+        push @filters, sub { !exists $published->{ $_[0]->id } }
     }
 
-    my $namespace = $args->{namespace};
-    my $no_resort = 0;
-    my $score_limit = 0;
+    my $namespace    = $args->{namespace};
+    my $no_resort    = 0;
+    my $score_limit  = 0;
     my $score_offset = 0;
     my @entries;
-    if (!$entries) {
-        my ($start, $end) = ($ctx->{current_timestamp},
-                         $ctx->{current_timestamp_end});
-        if ($start && $end) {
-            $terms{authored_on} = [$start, $end];
+    if ( !$entries ) {
+        my ( $start, $end )
+            = ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} );
+        if ( $start && $end ) {
+            $terms{authored_on} = [ $start, $end ];
             $args{range_incl}{authored_on} = 1;
         }
-        if (my $days = $args->{days}) {
-            my @ago = offset_time_list(time - 3600 * 24 * $days,
-                $blog_id);
+        if ( my $days = $args->{days} ) {
+            my @ago = offset_time_list( time - 3600 * 24 * $days, $blog_id );
             my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
-                $ago[5]+1900, $ago[4]+1, @ago[3,2,1,0];
-            $terms{authored_on} = [ $ago ];
+                $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
+            $terms{authored_on} = [$ago];
             $args{range_incl}{authored_on} = 1;
-        } else {
+        }
+        else {
+
             # Check attributes
             my $found_valid_args = 0;
             foreach my $valid_key (
-                'lastn',      'category',
-                'categories', 'tag',
-                'tags',       'author',
-                'days',
-                'min_score',  'max_score',
-                'min_rate',    'max_rate',
-                'min_count',  'max_count'
-              )
+                'lastn',     'category', 'categories', 'tag',
+                'tags',      'author',   'days',       'min_score',
+                'max_score', 'min_rate', 'max_rate',   'min_count',
+                'max_count'
+                )
             {
-                if (exists($args->{$valid_key})) {
+                if ( exists( $args->{$valid_key} ) ) {
                     $found_valid_args = 1;
                     last;
                 }
             }
 
-            if (!$found_valid_args) {
+            if ( !$found_valid_args ) {
+
                 # Uses weblog settings
-                if (my $days = $blog ? $blog->days_on_index : 10) {
-                    my @ago = offset_time_list(time - 3600 * 24 * $days,
-                        $blog_id);
+                if ( my $days = $blog ? $blog->days_on_index : 10 ) {
+                    my @ago = offset_time_list( time - 3600 * 24 * $days,
+                        $blog_id );
                     my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
-                        $ago[5]+1900, $ago[4]+1, @ago[3,2,1,0];
-                    $terms{authored_on} = [ $ago ];
+                        $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
+                    $terms{authored_on} = [$ago];
                     $args{range_incl}{authored_on} = 1;
-                } elsif (my $limit = $blog ? $blog->entries_on_index : 10) {
+                }
+                elsif ( my $limit = $blog ? $blog->entries_on_index : 10 ) {
                     $args->{lastn} = $limit;
                 }
             }
@@ -702,17 +793,23 @@ sub _hdlr_entries {
         $terms{class} = $class_type;
 
         $args{'sort'} = 'authored_on';
-        if ($args->{sort_by}) {
-            $args->{sort_by} =~ s/:/./; # for meta:name => meta.name
-            $args->{sort_by} = 'ping_count' if $args->{sort_by} eq 'trackback_count';
-            if ($class->is_meta_column($args->{sort_by})) {
+        if ( $args->{sort_by} ) {
+            $args->{sort_by} =~ s/:/./;    # for meta:name => meta.name
+            $args->{sort_by} = 'ping_count'
+                if $args->{sort_by} eq 'trackback_count';
+            if ( $class->is_meta_column( $args->{sort_by} ) ) {
                 $no_resort = 0;
-            } elsif ($class->has_column($args->{sort_by})) {
+            }
+            elsif ( $class->has_column( $args->{sort_by} ) ) {
                 $args{sort} = $args->{sort_by};
                 $no_resort = 1;
-            } elsif ($args->{limit} && ('score' eq $args->{sort_by} || 'rate' eq $args->{sort_by})) {
-                $score_limit = delete($args->{limit}) || 0;
-                $score_offset = delete($args->{offset}) || 0;
+            }
+            elsif ( $args->{limit}
+                && (   'score' eq $args->{sort_by}
+                    || 'rate' eq $args->{sort_by} ) )
+            {
+                $score_limit  = delete( $args->{limit} )  || 0;
+                $score_offset = delete( $args->{offset} ) || 0;
                 if ( $score_limit || $score_offset ) {
                     delete $args->{lastn};
                 }
@@ -720,67 +817,82 @@ sub _hdlr_entries {
             }
         }
 
-        if ( %fields ) {
+        if (%fields) {
+
             # specifies we need a join with entry_meta;
             # for now, we support one join
             my ( $col, $val ) = %fields;
-            my $type = MT::Meta->metadata_by_name($class, 'field.' . $col);
-            $args{join} = [ $class->meta_pkg, undef,
-                { type => 'field.' . $col,
-                  $type->{type} => $val,
-                  'entry_id' => \'= entry_id' } ];
+            my $type = MT::Meta->metadata_by_name( $class, 'field.' . $col );
+            $args{join} = [
+                $class->meta_pkg,
+                undef,
+                {   type          => 'field.' . $col,
+                    $type->{type} => $val,
+                    'entry_id'    => \'= entry_id'
+                }
+            ];
         }
 
-        if (!@filters) {
-            if ((my $last = $args->{lastn}) && (!exists $args->{limit})) {
+        if ( !@filters ) {
+            if ( ( my $last = $args->{lastn} ) && ( !exists $args->{limit} ) )
+            {
                 $args{direction} = 'descend';
-                $args{sort} = 'authored_on';
-                $args{limit} = $last;
+                $args{sort}      = 'authored_on';
+                $args{limit}     = $last;
                 $no_resort = 0 if $args->{sort_by};
-            } else {
+            }
+            else {
                 $args{direction} = $args->{sort_order} || 'descend'
-                  if exists($args{sort});
+                    if exists( $args{sort} );
                 $no_resort = 1 unless $args->{sort_by};
-                if ((my $last = $args->{lastn}) && (exists $args->{limit})) {
+                if (   ( my $last = $args->{lastn} )
+                    && ( exists $args->{limit} ) )
+                {
                     $args{limit} = $last;
                 }
             }
             $args{offset} = $args->{offset} if $args->{offset};
 
-            if ($args->{recently_commented_on}) {
-                my $entries_iter = _rco_entries_iter(\%terms, \%args,
-                    \%blog_terms, \%blog_args);
+            if ( $args->{recently_commented_on} ) {
+                my $entries_iter
+                    = _rco_entries_iter( \%terms, \%args, \%blog_terms,
+                    \%blog_args );
                 my $limit = $args->{recently_commented_on};
-                while (my $e = $entries_iter->()) {
+                while ( my $e = $entries_iter->() ) {
                     push @entries, $e;
                     last unless --$limit;
                 }
                 $no_resort = $args->{sort_order} || $args->{sort_by} ? 0 : 1;
-            } else {
-                @entries = $class->load(\%terms, \%args);
             }
-        } else {
-            if (($args->{lastn}) && (!exists $args->{limit})) {
+            else {
+                @entries = $class->load( \%terms, \%args );
+            }
+        }
+        else {
+            if ( ( $args->{lastn} ) && ( !exists $args->{limit} ) ) {
                 $args{direction} = 'descend';
-                $args{sort} = 'authored_on';
+                $args{sort}      = 'authored_on';
                 $no_resort = 0 if $args->{sort_by};
-            } else {
+            }
+            else {
                 $args{direction} = $args->{sort_order} || 'descend';
                 $no_resort = 1 unless $args->{sort_by};
             }
             my $iter;
-            if ($args->{recently_commented_on}) {
+            if ( $args->{recently_commented_on} ) {
                 $args->{lastn} = $args->{recently_commented_on};
-                $iter = _rco_entries_iter(
-                    \%terms, \%args, \%blog_terms, \%blog_args);
+                $iter = _rco_entries_iter( \%terms, \%args, \%blog_terms,
+                    \%blog_args );
                 $no_resort = $args->{sort_order} || $args->{sort_by} ? 0 : 1;
-            } else {
-                $iter = $class->load_iter(\%terms, \%args);
             }
-            my $i = 0; my $j = 0;
+            else {
+                $iter = $class->load_iter( \%terms, \%args );
+            }
+            my $i   = 0;
+            my $j   = 0;
             my $off = $args->{offset} || 0;
-            my $n = $args->{lastn};
-            ENTRY: while (my $e = $iter->()) {
+            my $n   = $args->{lastn};
+        ENTRY: while ( my $e = $iter->() ) {
                 for (@filters) {
                     next ENTRY unless $_->($e);
                 }
@@ -790,51 +902,68 @@ sub _hdlr_entries {
                 $iter->end, last if $n && $i >= $n;
             }
         }
-    } else {
+    }
+    else {
+
         # Don't resort a predefined list that's not in a published archive
         # page when we didn't request sorting.
-        if ($args->{sort_by} || $args->{sort_order} || $ctx->{archive_type}) {
-            my $so = $args->{sort_order} || ($blog ? $blog->sort_order_posts : undef) || '';
+        if ( $args->{sort_by} || $args->{sort_order} || $ctx->{archive_type} )
+        {
+            my $so 
+                = $args->{sort_order}
+                || ( $blog ? $blog->sort_order_posts : undef )
+                || '';
             my $col = $args->{sort_by} || 'authored_on';
             if ( $col ne 'score' ) {
-                if (my $def = $class->column_def($col)) {
-                    if ($def->{type} =~ m/^integer|float$/) {
-                        @$entries = $so eq 'ascend' ?
-                            sort { $a->$col() <=> $b->$col() } @$entries :
-                            sort { $b->$col() <=> $a->$col() } @$entries;
-                    } else {
-                        @$entries = $so eq 'ascend' ?
-                            sort { $a->$col() cmp $b->$col() } @$entries :
-                            sort { $b->$col() cmp $a->$col() } @$entries;
+                if ( my $def = $class->column_def($col) ) {
+                    if ( $def->{type} =~ m/^integer|float$/ ) {
+                        @$entries
+                            = $so eq 'ascend'
+                            ? sort { $a->$col() <=> $b->$col() } @$entries
+                            : sort { $b->$col() <=> $a->$col() } @$entries;
+                    }
+                    else {
+                        @$entries
+                            = $so eq 'ascend'
+                            ? sort { $a->$col() cmp $b->$col() } @$entries
+                            : sort { $b->$col() cmp $a->$col() } @$entries;
                     }
                     $no_resort = 1;
-                } else{
+                }
+                else {
                     $col =~ s/(^field):(.*)/$1.$2/ig;
-                    if ($class->is_meta_column($col)) {
-                        my $type = MT::Meta->metadata_by_name($class, $col);
+                    if ( $class->is_meta_column($col) ) {
+                        my $type = MT::Meta->metadata_by_name( $class, $col );
                         no warnings;
-                        if ($type->{type} =~ m/integer|float/) {
-                            @$entries = $so eq 'ascend' ?
-                                sort { $a->$col() <=> $b->$col() } @$entries :
-                                    sort { $b->$col() <=> $a->$col() } @$entries;
-                        } else {
-                            @$entries = $so eq 'ascend' ?
-                                sort { $a->$col() cmp $b->$col() } @$entries :
-                                    sort { $b->$col() cmp $a->$col() } @$entries;
+                        if ( $type->{type} =~ m/integer|float/ ) {
+                            @$entries
+                                = $so eq 'ascend'
+                                ? sort { $a->$col() <=> $b->$col() } @$entries
+                                : sort { $b->$col() <=> $a->$col() }
+                                @$entries;
+                        }
+                        else {
+                            @$entries
+                                = $so eq 'ascend'
+                                ? sort { $a->$col() cmp $b->$col() } @$entries
+                                : sort { $b->$col() cmp $a->$col() }
+                                @$entries;
                         }
                         $no_resort = 1;
                     }
                 }
             }
-        } else {
+        }
+        else {
             $no_resort = 1;
         }
 
         if (@filters) {
-            my $i = 0; my $j = 0;
+            my $i   = 0;
+            my $j   = 0;
             my $off = $args->{offset} || 0;
-            my $n = $args->{lastn};
-            ENTRY2: foreach my $e (@$entries) {
+            my $n   = $args->{lastn};
+        ENTRY2: foreach my $e (@$entries) {
                 for (@filters) {
                     next ENTRY2 unless $_->($e);
                 }
@@ -843,20 +972,23 @@ sub _hdlr_entries {
                 $i++;
                 last if $n && $i >= $n;
             }
-        } else {
+        }
+        else {
             my $offset;
-            if ($offset = $args->{offset}) {
-                if ($offset < scalar @$entries) {
-                    @entries = @$entries[$offset..$#$entries];
-                } else {
+            if ( $offset = $args->{offset} ) {
+                if ( $offset < scalar @$entries ) {
+                    @entries = @$entries[ $offset .. $#$entries ];
+                }
+                else {
                     @entries = ();
                 }
-            } else {
+            }
+            else {
                 @entries = @$entries;
             }
-            if (my $last = $args->{lastn}) {
-                if (scalar @entries > $last) {
-                    @entries = @entries[0..$last-1];
+            if ( my $last = $args->{lastn} ) {
+                if ( scalar @entries > $last ) {
+                    @entries = @entries[ 0 .. $last - 1 ];
                 }
             }
         }
@@ -864,156 +996,195 @@ sub _hdlr_entries {
 
     # $entries were on the stash or were just loaded
     # based on a start/end range.
-    my $res = '';
-    my $tok = $ctx->stash('tokens');
+    my $res     = '';
+    my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
-    if (!$no_resort && (scalar @entries)) {
+    if ( !$no_resort && ( scalar @entries ) ) {
         my $col = $args->{sort_by} || 'authored_on';
-        if ('score' eq $col) {
+        if ( 'score' eq $col ) {
             my $so = $args->{sort_order} || '';
             my %e = map { $_->id => $_ } @entries;
             my @eid = keys %e;
             require MT::ObjectScore;
             my $scores = MT::ObjectScore->sum_group_by(
-                { 'object_ds' => $class_type, 'namespace' => $namespace, object_id => \@eid },
-                { 'sum' => 'score', group => ['object_id'],
-                  $so eq 'ascend' ? (direction => 'ascend') : (direction => 'descend'),
-                });
+                {   'object_ds' => $class_type,
+                    'namespace' => $namespace,
+                    object_id   => \@eid
+                },
+                {   'sum' => 'score',
+                    group => ['object_id'],
+                    $so eq 'ascend'
+                    ? ( direction => 'ascend' )
+                    : ( direction => 'descend' ),
+                }
+            );
             my @tmp;
             my $i = 0;
-            while (my ($score, $object_id) = $scores->()) {
+            while ( my ( $score, $object_id ) = $scores->() ) {
                 $i++, next if $score_offset && $i < $score_offset;
-                push @tmp, delete $e{ $object_id } if exists $e{ $object_id };
+                push @tmp, delete $e{$object_id} if exists $e{$object_id};
                 $scores->end, last unless %e;
                 $i++;
-                $scores->end, last if $score_limit && (scalar @tmp) >= $score_limit;
+                $scores->end, last
+                    if $score_limit && ( scalar @tmp ) >= $score_limit;
             }
 
-            if (!$score_limit || (scalar @tmp) < $score_limit) {
-                foreach (values %e) {
-                    if ($so eq 'ascend') {
+            if ( !$score_limit || ( scalar @tmp ) < $score_limit ) {
+                foreach ( values %e ) {
+                    if ( $so eq 'ascend' ) {
                         unshift @tmp, $_;
-                    } else {
+                    }
+                    else {
                         push @tmp, $_;
                     }
-                    last if $score_limit && (scalar @tmp) >= $score_limit;
+                    last if $score_limit && ( scalar @tmp ) >= $score_limit;
                 }
             }
             @entries = @tmp;
-        } elsif ('rate' eq $col) {
+        }
+        elsif ( 'rate' eq $col ) {
             my $so = $args->{sort_order} || '';
             my %e = map { $_->id => $_ } @entries;
             my @eid = keys %e;
             require MT::ObjectScore;
             my $scores = MT::ObjectScore->avg_group_by(
-                { 'object_ds' => $class_type, 'namespace' => $namespace, object_id => \@eid },
-                { 'avg' => 'score', group => ['object_id'],
-                  $so eq 'ascend' ? (direction => 'ascend') : (direction => 'descend'),
-                });
+                {   'object_ds' => $class_type,
+                    'namespace' => $namespace,
+                    object_id   => \@eid
+                },
+                {   'avg' => 'score',
+                    group => ['object_id'],
+                    $so eq 'ascend'
+                    ? ( direction => 'ascend' )
+                    : ( direction => 'descend' ),
+                }
+            );
             my @tmp;
             my $i = 0;
-            while (my ($score, $object_id) = $scores->()) {
+            while ( my ( $score, $object_id ) = $scores->() ) {
                 $i++, next if $score_offset && $i < $score_offset;
-                push @tmp, delete $e{ $object_id } if exists $e{ $object_id };
+                push @tmp, delete $e{$object_id} if exists $e{$object_id};
                 $scores->end, last unless %e;
                 $i++;
-                $scores->end, last if $score_limit && (scalar @tmp) >= $score_limit;
+                $scores->end, last
+                    if $score_limit && ( scalar @tmp ) >= $score_limit;
             }
-            if (!$score_limit || (scalar @tmp) < $score_limit) {
-                foreach (values %e) {
-                    if ($so eq 'ascend') {
+            if ( !$score_limit || ( scalar @tmp ) < $score_limit ) {
+                foreach ( values %e ) {
+                    if ( $so eq 'ascend' ) {
                         unshift @tmp, $_;
-                    } else {
+                    }
+                    else {
                         push @tmp, $_;
                     }
-                    last if $score_limit && (scalar @tmp) >= $score_limit;
+                    last if $score_limit && ( scalar @tmp ) >= $score_limit;
                 }
             }
             @entries = @tmp;
-        } elsif ( $col =~ m/^field.(.*)/ig ) {
+        }
+        elsif ( $col =~ m/^field.(.*)/ig ) {
             my $so = $args->{sort_order} || 'descend';
-            if ($class->is_meta_column($col)) {
-                my $type = MT::Meta->metadata_by_name($class, $col);
+            if ( $class->is_meta_column($col) ) {
+                my $type = MT::Meta->metadata_by_name( $class, $col );
                 no warnings;
-                if ($type->{type} =~ m/integer|float/) {
-                    @entries = $so eq 'ascend' ?
-                        sort { $a->$col() <=> $b->$col() } @entries :
-                        sort { $b->$col() <=> $a->$col() } @entries;
-                } else {
-                    @entries = $so eq 'ascend' ?
-                        sort { $a->$col() cmp $b->$col() } @entries :
-                        sort { $b->$col() cmp $a->$col() } @entries;
+                if ( $type->{type} =~ m/integer|float/ ) {
+                    @entries
+                        = $so eq 'ascend'
+                        ? sort { $a->$col() <=> $b->$col() } @entries
+                        : sort { $b->$col() <=> $a->$col() } @entries;
+                }
+                else {
+                    @entries
+                        = $so eq 'ascend'
+                        ? sort { $a->$col() cmp $b->$col() } @entries
+                        : sort { $b->$col() cmp $a->$col() } @entries;
                 }
             }
-        } else {
-            my $so = $args->{sort_order} || ($blog ? $blog->sort_order_posts : 'descend') || '';
-            if (my $def = $class->column_def($col)) {
-                if ($def->{type} =~ m/^integer|float$/) {
-                    @entries = $so eq 'ascend' ?
-                        sort { $a->$col() <=> $b->$col() } @entries :
-                        sort { $b->$col() <=> $a->$col() } @entries;
-                } else {
-                    @entries = $so eq 'ascend' ?
-                        sort { $a->$col() cmp $b->$col() } @entries :
-                        sort { $b->$col() cmp $a->$col() } @entries;
+        }
+        else {
+            my $so 
+                = $args->{sort_order}
+                || ( $blog ? $blog->sort_order_posts : 'descend' )
+                || '';
+            if ( my $def = $class->column_def($col) ) {
+                if ( $def->{type} =~ m/^integer|float$/ ) {
+                    @entries
+                        = $so eq 'ascend'
+                        ? sort { $a->$col() <=> $b->$col() } @entries
+                        : sort { $b->$col() <=> $a->$col() } @entries;
                 }
-            } elsif ($class->is_meta_column($col)) {
-                my $type = MT::Meta->metadata_by_name($class, $col);
+                else {
+                    @entries
+                        = $so eq 'ascend'
+                        ? sort { $a->$col() cmp $b->$col() } @entries
+                        : sort { $b->$col() cmp $a->$col() } @entries;
+                }
+            }
+            elsif ( $class->is_meta_column($col) ) {
+                my $type = MT::Meta->metadata_by_name( $class, $col );
                 no warnings;
-                if ($type->{type} =~ m/integer|float/) {
-                    @entries = $so eq 'ascend' ?
-                        sort { $a->$col() <=> $b->$col() } @entries :
-                        sort { $b->$col() <=> $a->$col() } @entries;
-                } else {
-                    @entries = $so eq 'ascend' ?
-                        sort { $a->$col() cmp $b->$col() } @entries :
-                        sort { $b->$col() cmp $a->$col() } @entries;
+                if ( $type->{type} =~ m/integer|float/ ) {
+                    @entries
+                        = $so eq 'ascend'
+                        ? sort { $a->$col() <=> $b->$col() } @entries
+                        : sort { $b->$col() <=> $a->$col() } @entries;
+                }
+                else {
+                    @entries
+                        = $so eq 'ascend'
+                        ? sort { $a->$col() cmp $b->$col() } @entries
+                        : sort { $b->$col() cmp $a->$col() } @entries;
                 }
             }
         }
     }
-    my($last_day, $next_day) = ('00000000') x 2;
+    my ( $last_day, $next_day ) = ('00000000') x 2;
     my $i = 0;
-    local $ctx->{__stash}{entries} = (@entries && defined $entries[0]) ? \@entries: undef;
+    local $ctx->{__stash}{entries}
+        = ( @entries && defined $entries[0] ) ? \@entries : undef;
     my $glue = $args->{glue};
     my $vars = $ctx->{__stash}{vars} ||= {};
     for my $e (@entries) {
-        local $vars->{__first__} = !$i;
-        local $vars->{__last__} = !defined $entries[$i+1];
-        local $vars->{__odd__} = ($i % 2) == 0; # 0-based $i
-        local $vars->{__even__} = ($i % 2) == 1;
-        local $vars->{__counter__} = $i+1;
+        local $vars->{__first__}    = !$i;
+        local $vars->{__last__}     = !defined $entries[ $i + 1 ];
+        local $vars->{__odd__}      = ( $i % 2 ) == 0;            # 0-based $i
+        local $vars->{__even__}     = ( $i % 2 ) == 1;
+        local $vars->{__counter__}  = $i + 1;
         local $ctx->{__stash}{blog} = $e->blog;
-        local $ctx->{__stash}{blog_id} = $e->blog_id;
-        local $ctx->{__stash}{entry} = $e;
-        local $ctx->{current_timestamp} = $e->authored_on;
-        local $ctx->{current_timestamp_end} = $e->authored_on;
+        local $ctx->{__stash}{blog_id}       = $e->blog_id;
+        local $ctx->{__stash}{entry}         = $e;
+        local $ctx->{current_timestamp}      = $e->authored_on;
+        local $ctx->{current_timestamp_end}  = $e->authored_on;
         local $ctx->{modification_timestamp} = $e->modified_on;
         my $this_day = substr $e->authored_on, 0, 8;
         my $next_day = $this_day;
-        my $footer = 0;
-        if (defined $entries[$i+1]) {
-            $next_day = substr($entries[$i+1]->authored_on, 0, 8);
+        my $footer   = 0;
+
+        if ( defined $entries[ $i + 1 ] ) {
+            $next_day = substr( $entries[ $i + 1 ]->authored_on, 0, 8 );
             $footer = $this_day ne $next_day;
-        } else { $footer++ }
+        }
+        else { $footer++ }
         my $allow_comments ||= 0;
-        $published->{$e->id}++;
-        my $out = $builder->build($ctx, $tok, {
-            %$cond,
-            DateHeader => ($this_day ne $last_day),
-            DateFooter => $footer,
-            EntriesHeader => !$i,
-            EntriesFooter => !defined $entries[$i+1],
-            PagesHeader => !$i,
-            PagesFooter => !defined $entries[$i+1],
-        });
+        $published->{ $e->id }++;
+        my $out = $builder->build(
+            $ctx, $tok,
+            {   %$cond,
+                DateHeader => ( $this_day ne $last_day ),
+                DateFooter => $footer,
+                EntriesHeader => !$i,
+                EntriesFooter => !defined $entries[ $i + 1 ],
+                PagesHeader   => !$i,
+                PagesFooter   => !defined $entries[ $i + 1 ],
+            }
+        );
         return $ctx->error( $builder->errstr ) unless defined $out;
         $last_day = $this_day;
         $res .= $glue if defined $glue && $i && length($res) && length($out);
         $res .= $out;
         $i++;
     }
-    if (!@entries) {
+    if ( !@entries ) {
         return MT::Template::Context::_hdlr_pass_tokens_else(@_);
     }
 
@@ -1052,7 +1223,7 @@ current entry in context (in terms of authored date).
 =cut
 
 sub _hdlr_entry_previous {
-    _hdlr_entry_nextprev('previous', @_);
+    _hdlr_entry_nextprev( 'previous', @_ );
 }
 
 ###########################################################################
@@ -1065,23 +1236,23 @@ current entry in context (in terms of authored date).
 =cut
 
 sub _hdlr_entry_next {
-    _hdlr_entry_nextprev('next', @_);
+    _hdlr_entry_nextprev( 'next', @_ );
 }
 
 sub _hdlr_entry_nextprev {
-    my($meth, $ctx, $args, $cond) = @_;
+    my ( $meth, $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $terms = { status => MT::Entry::RELEASE() };
-    $terms->{by_author} = 1 if $args->{by_author};
+    $terms->{by_author}   = 1 if $args->{by_author};
     $terms->{by_category} = 1 if $args->{by_category};
     my $entry = $e->$meth($terms);
-    my $res = '';
+    my $res   = '';
     if ($entry) {
         my $builder = $ctx->stash('builder');
         local $ctx->{__stash}->{entry} = $entry;
         local $ctx->{current_timestamp} = $entry->authored_on;
-        my $out = $builder->build($ctx, $ctx->stash('tokens'), $cond);
+        my $out = $builder->build( $ctx, $ctx->stash('tokens'), $cond );
         return $ctx->error( $builder->errstr ) unless defined $out;
         $res .= $out;
     }
@@ -1138,17 +1309,18 @@ field of the current entry in context.
 =cut
 
 sub _hdlr_entry_if_extended {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $entry = $ctx->stash('entry');
-    my $more = '';
+    my $more  = '';
     if ($entry) {
         $more = $entry->text_more;
         $more = '' unless defined $more;
         $more =~ s!(^\s+|\s+$)!!g;
     }
-    if ($more ne '') {
+    if ( $more ne '' ) {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -1169,9 +1341,9 @@ has written one or more entries that have been published.
 =cut
 
 sub _hdlr_author_has_entry {
-    my ($ctx)   = @_;
-    my $author  = $ctx->stash('author')
-      or return $ctx->_no_author_error();
+    my ($ctx) = @_;
+    my $author = $ctx->stash('author')
+        or return $ctx->_no_author_error();
 
     my %terms;
     $terms{blog_id}   = $ctx->stash('blog_id');
@@ -1197,53 +1369,55 @@ entries configured to publish on the blog's main index template).
 
 =cut
 
-sub _hdlr_entries_count {   
-    my ($ctx, $args, $cond) = @_;   
-    my $e = $ctx->stash('entries');   
+sub _hdlr_entries_count {
+    my ( $ctx, $args, $cond ) = @_;
+    my $e = $ctx->stash('entries');
 
     my $count;
     if ($e) {
         $count = scalar @$e;
-    } else {
+    }
+    else {
         my $class_type = $args->{class_type} || 'entry';
         my $class = MT->model($class_type);
-        my $cat_class = MT->model(
-            $class_type eq 'entry' ? 'category' : 'folder');
+        my $cat_class
+            = MT->model( $class_type eq 'entry' ? 'category' : 'folder' );
 
-        my (%terms, %args);
+        my ( %terms, %args );
         my $blog_id = $ctx->stash('blog_id');
 
         use MT::Entry;
         $terms{blog_id} = $blog_id;
-        $terms{status} = MT::Entry::RELEASE();
-        my ($days, $limit);
+        $terms{status}  = MT::Entry::RELEASE();
+        my ( $days, $limit );
         my $blog = $ctx->stash('blog');
-        if ($blog && ($days = $blog->days_on_index)) {
-            my @ago = offset_time_list(time - 3600 * 24 * $days,
-                $ctx->stash('blog_id'));
+        if ( $blog && ( $days = $blog->days_on_index ) ) {
+            my @ago = offset_time_list( time - 3600 * 24 * $days,
+                $ctx->stash('blog_id') );
             my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
-                $ago[5]+1900, $ago[4]+1, @ago[3,2,1,0];
-            $terms{authored_on} = [ $ago ];
+                $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
+            $terms{authored_on} = [$ago];
             $args{range_incl}{authored_on} = 1;
-        } elsif ($blog && ($limit = $blog->entries_on_index)) {
+        }
+        elsif ( $blog && ( $limit = $blog->entries_on_index ) ) {
             $args->{lastn} = $limit;
         }
         $args{'sort'} = 'authored_on';
         $args{direction} = 'descend';
 
-        my $iter = $class->load_iter(\%terms, \%args);
-        my $i = 0;
+        my $iter = $class->load_iter( \%terms, \%args );
+        my $i    = 0;
         my $last = $args->{lastn};
-        while (my $entry = $iter->()) {
-            if ($last && $last <= $i) {
-               return $i;
+        while ( my $entry = $iter->() ) {
+            if ( $last && $last <= $i ) {
+                return $i;
             }
             $i++;
         }
         $count = $i;
     }
-    return $ctx->count_format($count, $args);
-}  
+    return $ctx->count_format( $count, $args );
+}
 
 ###########################################################################
 
@@ -1264,10 +1438,10 @@ Adds leading zeros to create a 6 character string. The default is 0 (false). Thi
 =cut
 
 sub _hdlr_entry_id {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    return $args && $args->{pad} ? (sprintf "%06d", $e->id) : $e->id;
+    return $args && $args->{pad} ? ( sprintf "%06d", $e->id ) : $e->id;
 }
 
 ###########################################################################
@@ -1290,11 +1464,11 @@ the entry if the title is empty.
 =cut
 
 sub _hdlr_entry_title {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $title = defined $e->title ? $e->title : '';
-    $title = first_n_text($e->text, const('LENGTH_ENTRY_TITLE_FROM_TEXT'))
+    $title = first_n_text( $e->text, const('LENGTH_ENTRY_TITLE_FROM_TEXT') )
         if !$title && $args->{generate};
     return $title;
 }
@@ -1313,7 +1487,7 @@ sub _hdlr_entry_status {
     my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    return MT::Entry::status_text($e->status);
+    return MT::Entry::status_text( $e->status );
 }
 
 ###########################################################################
@@ -1336,14 +1510,19 @@ Accepts one of: 'allow_pings', 'allow_comments'.
 =cut
 
 sub _hdlr_entry_flag {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $flag = lc $args->{flag}
-        or return $ctx->error(MT->translate(
-            'You used <$MTEntryFlag$> without a flag.' ));
+        or return $ctx->error(
+        MT->translate('You used <$MTEntryFlag$> without a flag.') );
     $e->has_column($flag)
-        or return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $flag, 'flag'));
+        or return $ctx->error(
+        MT->translate(
+            "You have an error in your '[_2]' attribute: [_1]", $flag,
+            'flag'
+        )
+        );
     my $v = $e->$flag();
     ## The logic here: when we added the convert_breaks flag, we wanted it
     ## to default to checked, because we added it in 2.0, and people had
@@ -1352,9 +1531,10 @@ sub _hdlr_entry_flag {
     ## second test (else) (should we be looking at blog->convert_paras?).
     ## When we added allow_pings, we only want this to be applied if
     ## explicitly checked.
-    if ($flag eq 'allow_pings') {
+    if ( $flag eq 'allow_pings' ) {
         return defined $v ? $v : 0;
-    } else {
+    }
+    else {
         return defined $v ? $v : 1;
     }
 }
@@ -1385,28 +1565,28 @@ that are output.
 =cut
 
 sub _hdlr_entry_body {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $text = $e->text;
     $text = '' unless defined $text;
 
     # Strip the mt:asset-id attribute from any span tags...
-    if ($text =~ m/\smt:asset-id="\d+"/) {
+    if ( $text =~ m/\smt:asset-id="\d+"/ ) {
         $text = asset_cleanup($text);
     }
 
     my $blog = $ctx->stash('blog');
-    my $convert_breaks = exists $args->{convert_breaks} ?
-        $args->{convert_breaks} :
-            defined $e->convert_breaks ? $e->convert_breaks :
-                ( $blog ? $blog->convert_paras : '__default__' );
+    my $convert_breaks
+        = exists $args->{convert_breaks} ? $args->{convert_breaks}
+        : defined $e->convert_breaks     ? $e->convert_breaks
+        :   ( $blog ? $blog->convert_paras : '__default__' );
     if ($convert_breaks) {
         my $filters = $e->text_filters;
         push @$filters, '__default__' unless @$filters;
-        $text = MT->apply_text_filters($text, $filters, $ctx);
+        $text = MT->apply_text_filters( $text, $filters, $ctx );
     }
-    return first_n_text($text, $args->{words}) if exists $args->{words};
+    return first_n_text( $text, $args->{words} ) if exists $args->{words};
 
     return $text;
 }
@@ -1421,28 +1601,28 @@ L<EntryBody> tag for supported attributes.
 =cut
 
 sub _hdlr_entry_more {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $text = $e->text_more;
     $text = '' unless defined $text;
 
     # Strip the mt:asset-id attribute from any span tags...
-    if ($text =~ m/\smt:asset-id="\d+"/) {
+    if ( $text =~ m/\smt:asset-id="\d+"/ ) {
         $text = asset_cleanup($text);
     }
 
     my $blog = $ctx->stash('blog');
-    my $convert_breaks = exists $args->{convert_breaks} ?
-        $args->{convert_breaks} :
-            defined $e->convert_breaks ? $e->convert_breaks :
-                ($blog ? $blog->convert_paras : '__default__');
+    my $convert_breaks
+        = exists $args->{convert_breaks} ? $args->{convert_breaks}
+        : defined $e->convert_breaks     ? $e->convert_breaks
+        :   ( $blog ? $blog->convert_paras : '__default__' );
     if ($convert_breaks) {
         my $filters = $e->text_filters;
         push @$filters, '__default__' unless @$filters;
-        $text = MT->apply_text_filters($text, $filters, $ctx);
+        $text = MT->apply_text_filters( $text, $filters, $ctx );
     }
-    return first_n_text($text, $args->{words}) if exists $args->{words};
+    return first_n_text( $text, $args->{words} ) if exists $args->{words};
 
     return $text;
 }
@@ -1479,20 +1659,21 @@ content.
 =cut
 
 sub _hdlr_entry_excerpt {
-    my($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    if (my $excerpt = $e->excerpt) {
+    if ( my $excerpt = $e->excerpt ) {
         return $excerpt unless $args->{convert_breaks};
         my $filters = $e->text_filters;
         push @$filters, '__default__' unless @$filters;
-        return MT->apply_text_filters($excerpt, $filters, $ctx);
-    } elsif ($args->{no_generate}) {
+        return MT->apply_text_filters( $excerpt, $filters, $ctx );
+    }
+    elsif ( $args->{no_generate} ) {
         return '';
     }
-    my $blog = $ctx->stash('blog');
-    my $words = $args->{words} || $blog ? $blog->words_in_excerpt : 40;
-    my $excerpt = _hdlr_entry_body($ctx, { words => $words, %$args });
+    my $blog    = $ctx->stash('blog');
+    my $words   = $args->{words} || $blog ? $blog->words_in_excerpt : 40;
+    my $excerpt = _hdlr_entry_body( $ctx, { words => $words, %$args } );
     return '' unless $excerpt;
     return $excerpt . '...';
 }
@@ -1590,7 +1771,7 @@ Link to other entries by the current author (assuming Author archives are publis
 =cut
 
 sub _hdlr_entry_link {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $blog = $ctx->stash('blog');
@@ -1600,17 +1781,22 @@ sub _hdlr_entry_link {
 
     my $at = $args->{type} || $args->{archive_type};
     if ($at) {
-        return $ctx->error(MT->translate(
-            "You used an [_1] tag for linking into '[_2]' archives, but that archive type is not published.", '<$MTEntryLink$>', $at))
-            unless $blog->has_archive_type($at);
+        return $ctx->error(
+            MT->translate(
+                "You used an [_1] tag for linking into '[_2]' archives, but that archive type is not published.",
+                '<$MTEntryLink$>',
+                $at
+            )
+        ) unless $blog->has_archive_type($at);
     }
-    my $archive_filename = $e->archive_file($at
-                                            ? $at : ());
+    my $archive_filename = $e->archive_file( $at ? $at : () );
     if ($archive_filename) {
         my $link = $arch . $archive_filename;
-        $link = MT::Util::strip_index($link, $blog) unless $args->{with_index};
+        $link = MT::Util::strip_index( $link, $blog )
+            unless $args->{with_index};
         $link;
-    } else { return "" }
+    }
+    else { return "" }
 }
 
 ###########################################################################
@@ -1633,14 +1819,15 @@ returned.
 =cut
 
 sub _hdlr_entry_basename {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $basename = $e->basename() || '';
-    if (my $sep = $args->{separator}) {
-        if ($sep eq '-') {
+    if ( my $sep = $args->{separator} ) {
+        if ( $sep eq '-' ) {
             $basename =~ s/_/-/g;
-        } elsif ($sep eq '_') {
+        }
+        elsif ( $sep eq '_' ) {
             $basename =~ s/-/_/g;
         }
     }
@@ -1656,10 +1843,14 @@ Outputs the unique Atom ID for the current entry in context.
 =cut
 
 sub _hdlr_entry_atom_id {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    return $e->atom_id() || $e->make_atom_id() || $ctx->error(MT->translate("Could not create atom id for entry [_1]", $e->id));
+    return
+           $e->atom_id()
+        || $e->make_atom_id()
+        || $ctx->error(
+        MT->translate( "Could not create atom id for entry [_1]", $e->id ) );
 }
 
 ###########################################################################
@@ -1702,19 +1893,24 @@ If assigned, will retain any index filename at the end of the permalink.
 =cut
 
 sub _hdlr_entry_permalink {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $blog = $ctx->stash('blog');
     my $at = $args->{type} || $args->{archive_type};
     if ($at) {
-        return $ctx->error(MT->translate(
-            "You used an [_1] tag for linking into '[_2]' archives, but that archive type is not published.", '<$MTEntryPermalink$>', $at))
-            unless $blog->has_archive_type($at);
+        return $ctx->error(
+            MT->translate(
+                "You used an [_1] tag for linking into '[_2]' archives, but that archive type is not published.",
+                '<$MTEntryPermalink$>',
+                $at
+            )
+        ) unless $blog->has_archive_type($at);
     }
-    my $link = $e->permalink($args ? $at : undef, 
-                  { valid_html => $args->{valid_html} }) or return $ctx->error($e->errstr);
-    $link = MT::Util::strip_index($link, $blog) unless $args->{with_index};
+    my $link = $e->permalink( $args ? $at : undef,
+        { valid_html => $args->{valid_html} } )
+        or return $ctx->error( $e->errstr );
+    $link = MT::Util::strip_index( $link, $blog ) unless $args->{with_index};
     $link;
 }
 
@@ -1740,7 +1936,7 @@ B<Example:>
 =cut
 
 sub _hdlr_entry_class {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     $e->class;
@@ -1760,7 +1956,7 @@ B<Example:>
 =cut
 
 sub _hdlr_entry_class_label {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     $e->class_label;
@@ -1865,12 +2061,13 @@ by encoding any characters that will identify it as an email address
 =cut
 
 sub _hdlr_entry_author_email {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $a = $e->author;
     return '' unless $a && defined $a->email;
-    return $args && $args->{'spam_protect'} ? spam_protect($a->email) : $a->email;
+    return $args
+        && $args->{'spam_protect'} ? spam_protect( $a->email ) : $a->email;
 }
 
 ###########################################################################
@@ -1883,7 +2080,7 @@ current entry in context.
 =cut
 
 sub _hdlr_entry_author_url {
-    my($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $a = $e->author;
@@ -1932,7 +2129,7 @@ link published.
 =cut
 
 sub _hdlr_entry_author_link {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $a = $e->author;
@@ -1943,36 +2140,49 @@ sub _hdlr_entry_author_link {
     my $displayname = encode_html( remove_html( $a->nickname || '' ) );
     my $show_email = $args->{show_email} ? 1 : 0;
     my $show_url = 1 unless exists $args->{show_url} && !$args->{show_url};
+
     # Open the link in a new window if requested (with new_window="1").
     my $target = $args->{new_window} ? ' target="_blank"' : '';
     unless ($type) {
-        if ($show_url && $a->url && ($displayname ne '')) {
+        if ( $show_url && $a->url && ( $displayname ne '' ) ) {
             $type = 'url';
-        } elsif ($show_email && $a->email && ($displayname ne '')) {
+        }
+        elsif ( $show_email && $a->email && ( $displayname ne '' ) ) {
             $type = 'email';
         }
     }
-    if ($type eq 'url') {
-        if ($a->url && ($displayname ne '')) {
+    if ( $type eq 'url' ) {
+        if ( $a->url && ( $displayname ne '' ) ) {
+
             # Add vcard properties to link if requested (with hcard="1")
             my $hcard = $args->{show_hcard} ? ' class="fn url"' : '';
-            return sprintf qq(<a%s href="%s"%s>%s</a>), $hcard, encode_html( $a->url ), $target, $displayname;
+            return sprintf qq(<a%s href="%s"%s>%s</a>), $hcard,
+                encode_html( $a->url ), $target, $displayname;
         }
-    } elsif ($type eq 'email') {
-        if ($a->email && ($displayname ne '')) {
+    }
+    elsif ( $type eq 'email' ) {
+        if ( $a->email && ( $displayname ne '' ) ) {
+
             # Add vcard properties to email if requested (with hcard="1")
             my $hcard = $args->{show_hcard} ? ' class="fn email"' : '';
             my $str = "mailto:" . encode_html( $a->email );
             $str = spam_protect($str) if $args->{'spam_protect'};
-            return sprintf qq(<a%s href="%s">%s</a>), $hcard, $str, $displayname;
+            return sprintf qq(<a%s href="%s">%s</a>), $hcard, $str,
+                $displayname;
         }
-    } elsif ($type eq 'archive') {
+    }
+    elsif ( $type eq 'archive' ) {
         require MT::Author;
-        if ($a->type == MT::Author::AUTHOR()) {
+        if ( $a->type == MT::Author::AUTHOR() ) {
             local $ctx->{__stash}{author} = $a;
             local $ctx->{current_archive_type} = undef;
-            if (my $link = $ctx->invoke_handler('archivelink', { type => 'Author' }, $cond)) {
-                return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target, $displayname;
+            if (my $link = $ctx->invoke_handler(
+                    'archivelink', { type => 'Author' }, $cond
+                )
+                )
+            {
+                return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target,
+                    $displayname;
             }
         }
     }
@@ -2007,7 +2217,7 @@ currently in context.
 =cut
 
 sub _hdlr_author_entry_count {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $author = $ctx->stash('author');
     unless ($author) {
         my $e = $ctx->stash('entry');
@@ -2015,14 +2225,14 @@ sub _hdlr_author_entry_count {
     }
     return $ctx->_no_author_error() unless $author;
 
-    my (%terms, %args);
+    my ( %terms, %args );
     my $class = MT->model('entry');
-    $ctx->set_blog_load_context($args, \%terms, \%args)
-        or return $ctx->error($ctx->errstr);
+    $ctx->set_blog_load_context( $args, \%terms, \%args )
+        or return $ctx->error( $ctx->errstr );
     $terms{author_id} = $author->id;
     $terms{status}    = MT::Entry::RELEASE();
-    my $count = $class->count(\%terms, \%args);
-    return $ctx->count_format($count, $args);
+    my $count = $class->count( \%terms, \%args );
+    return $ctx->count_format( $count, $args );
 }
 
 ###########################################################################
@@ -2037,7 +2247,7 @@ See the L<Date> tag for supported attributes.
 =cut
 
 sub _hdlr_entry_date {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     $args->{ts} = $e->authored_on;
@@ -2056,7 +2266,7 @@ See the L<Date> tag for supported attributes.
 =cut
 
 sub _hdlr_entry_create_date {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     $args->{ts} = $e->created_on;
@@ -2075,7 +2285,7 @@ See the L<Date> tag for supported attributes.
 =cut
 
 sub _hdlr_entry_mod_date {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     $args->{ts} = $e->modified_on || $e->created_on;
@@ -2098,10 +2308,11 @@ B<Example:>
 =cut
 
 sub _hdlr_entry_blog_id {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    return $args && $args->{pad} ? (sprintf "%06d", $e->blog_id) : $e->blog_id;
+    return $args
+        && $args->{pad} ? ( sprintf "%06d", $e->blog_id ) : $e->blog_id;
 }
 
 ###########################################################################
@@ -2120,11 +2331,12 @@ B<Example:>
 =cut
 
 sub _hdlr_entry_blog_name {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $b = MT::Blog->load($e->blog_id)
-        or return $ctx->error(MT->translate('Can\'t load blog #[_1].', $e->blog_id));
+    my $b = MT::Blog->load( $e->blog_id )
+        or return $ctx->error(
+        MT->translate( 'Can\'t load blog #[_1].', $e->blog_id ) );
     return $b->name;
 }
 
@@ -2144,11 +2356,12 @@ B<Example:>
 =cut
 
 sub _hdlr_entry_blog_description {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $b = MT::Blog->load($e->blog_id)
-        or return $ctx->error(MT->translate('Can\'t load blog #[_1].', $e->blog_id));
+    my $b = MT::Blog->load( $e->blog_id )
+        or return $ctx->error(
+        MT->translate( 'Can\'t load blog #[_1].', $e->blog_id ) );
     my $d = $b->description;
     return defined $d ? $d : '';
 }
@@ -2168,11 +2381,12 @@ B<Example:>
 =cut
 
 sub _hdlr_entry_blog_url {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $b = MT::Blog->load($e->blog_id)
-        or return $ctx->error(MT->translate('Can\'t load blog #[_1].', $e->blog_id));
+    my $b = MT::Blog->load( $e->blog_id )
+        or return $ctx->error(
+        MT->translate( 'Can\'t load blog #[_1].', $e->blog_id ) );
     return $b->site_url;
 }
 
@@ -2203,28 +2417,38 @@ B<Example:>
 =cut
 
 sub _hdlr_entry_edit_link {
-    my($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $user = $ctx->stash('user') or return '';
     my $entry = $ctx->stash('entry')
-        or return $ctx->error(MT->translate(
+        or return $ctx->error(
+        MT->translate(
             'You used an [_1] tag outside of the proper context.',
-            '<$MTEntryEditLink$>' ));
+            '<$MTEntryEditLink$>'
+        )
+        );
     my $blog_id = $entry->blog_id;
-    my $cfg = MT->config;
-    my $url = $cfg->AdminCGIPath || $cfg->CGIPath;
+    my $cfg     = MT->config;
+    my $url     = $cfg->AdminCGIPath || $cfg->CGIPath;
     $url .= '/' unless $url =~ m!/$!;
     require MT::Permission;
-    my $perms = MT::Permission->load({ author_id => $user->id,
-                                       blog_id => $blog_id });
-    return '' unless $perms && $perms->can_edit_entry($entry, $user);
+    my $perms = MT::Permission->load(
+        {   author_id => $user->id,
+            blog_id   => $blog_id
+        }
+    );
+    return '' unless $perms && $perms->can_edit_entry( $entry, $user );
     my $app = MT->instance;
     my $edit_text = $args->{text} || $app->translate("Edit");
     return sprintf
-        q([<a href="%s%s%s">%s</a>]),
-        $url,
-        $cfg->AdminScript,
-        $app->uri_params('mode' => 'view',
-            args => {'_type' => $entry->class, id => $entry->id, blog_id => $blog_id}),
+        q([<a href="%s%s%s">%s</a>]), $url, $cfg->AdminScript,
+        $app->uri_params(
+        'mode' => 'view',
+        args   => {
+            '_type' => $entry->class,
+            id      => $entry->id,
+            blog_id => $blog_id
+        }
+        ),
         $edit_text;
 }
 
@@ -2240,15 +2464,15 @@ currently in context.
 =cut
 
 sub _hdlr_blog_entry_count {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $class_type = $args->{class_type} || 'entry';
     my $class = MT->model($class_type);
-    my (%terms, %args);
-    $ctx->set_blog_load_context($args, \%terms, \%args)
-        or return $ctx->error($ctx->errstr);
+    my ( %terms, %args );
+    $ctx->set_blog_load_context( $args, \%terms, \%args )
+        or return $ctx->error( $ctx->errstr );
     $terms{status} = MT::Entry::RELEASE();
-    my $count = $class->count(\%terms, \%args);
-    return $ctx->count_format($count, $args);
+    my $count = $class->count( \%terms, \%args );
+    return $ctx->count_format( $count, $args );
 }
 
 1;

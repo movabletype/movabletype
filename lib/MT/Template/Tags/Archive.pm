@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -46,20 +46,20 @@ archive links, at least).
 =cut
 
 sub _hdlr_archive_set {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     my $at = $args->{type} || $args->{archive_type} || $blog->archive_type;
     return '' if !$at || $at eq 'None';
-    my @at = split /,/, $at;
-    my $res = '';
-    my $tokens = $ctx->stash('tokens');
+    my @at      = split /,/, $at;
+    my $res     = '';
+    my $tokens  = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
-    my $old_at = $blog->archive_type_preferred();
+    my $old_at  = $blog->archive_type_preferred();
     foreach my $type (@at) {
         $blog->archive_type_preferred($type);
         local $ctx->{current_archive_type} = $type;
-        defined(my $out = $builder->build($ctx, $tokens, $cond)) or
-            return $ctx->error( $builder->errstr );
+        defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
+            or return $ctx->error( $builder->errstr );
         $res .= $out;
     }
     $blog->archive_type_preferred($old_at);
@@ -158,108 +158,125 @@ to publish something like this:
 =cut
 
 sub _hdlr_archives {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
-    my $at = $blog->archive_type;
+    my $at   = $blog->archive_type;
     return '' if !$at || $at eq 'None';
     my $arg_at;
-    if ($arg_at = $args->{type} || $args->{archive_type}) {
+    if ( $arg_at = $args->{type} || $args->{archive_type} ) {
         $at = $arg_at;
-    } elsif ($blog->archive_type_preferred) {
+    }
+    elsif ( $blog->archive_type_preferred ) {
         $at = $blog->archive_type_preferred;
-    } else {
-        $at = (split /,/, $at)[0];
+    }
+    else {
+        $at = ( split /,/, $at )[0];
     }
 
     my $archiver = MT->publisher->archiver($at);
     return '' unless $archiver;
 
     my $save_stamps;
-    if (!$ctx->{inside_archive_list} || $ctx->{current_archive_type} && $arg_at && ($ctx->{current_archive_type} eq $arg_at)) {
+    if (  !$ctx->{inside_archive_list}
+        || $ctx->{current_archive_type}
+        && $arg_at
+        && ( $ctx->{current_archive_type} eq $arg_at ) )
+    {
         $save_stamps = 1;
     }
 
     local $ctx->{current_archive_type} = $at;
     ## If we are producing a Category archive list, don't bother to
     ## handle it here--instead hand it over to <MTCategories>.
-    return $ctx->invoke_handler( 'categories', $args, $cond ) if $at eq 'Category';
+    return $ctx->invoke_handler( 'categories', $args, $cond )
+        if $at eq 'Category';
     my %args;
-    my $sort_order = lc ($args->{sort_order} || '') eq 'ascend' ? 'ascend' : 'descend';
+    my $sort_order
+        = lc( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
     $args{'sort'} = 'authored_on';
     $args{direction} = $sort_order;
 
-    my $tokens = $ctx->stash('tokens');
+    my $tokens  = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
-    my $res = '';
-    my $i = 0;
-    my $n = $args->{lastn};
+    my $res     = '';
+    my $i       = 0;
+    my $n       = $args->{lastn};
 
     my $save_ts;
     my $save_tse;
     my $tmpl = $ctx->stash('template');
 
-    if ( ($tmpl && $tmpl->type eq 'archive')
-         && $archiver->date_based)
+    if ( ( $tmpl && $tmpl->type eq 'archive' )
+        && $archiver->date_based )
     {
         my $uncompiled = $ctx->stash('uncompiled') || '';
-        if ($uncompiled =~ /<mt:?archivelist>?/i) {
+        if ( $uncompiled =~ /<mt:?archivelist>?/i ) {
             $save_stamps = 1;
         }
     }
 
     if ($save_stamps) {
-        $save_ts = $ctx->{current_timestamp};
-        $save_tse = $ctx->{current_timestamp_end};
-        $ctx->{current_timestamp} = undef;
+        $save_ts                      = $ctx->{current_timestamp};
+        $save_tse                     = $ctx->{current_timestamp_end};
+        $ctx->{current_timestamp}     = undef;
         $ctx->{current_timestamp_end} = undef;
     }
 
     my $order = $sort_order eq 'ascend' ? 'asc' : 'desc';
-    my $group_iter = $archiver->archive_group_iter($ctx, $args);
-    return $ctx->error(MT->translate("Group iterator failed."))
+    my $group_iter = $archiver->archive_group_iter( $ctx, $args );
+    return $ctx->error( MT->translate("Group iterator failed.") )
         unless defined($group_iter);
 
-    my ($cnt, %curr) = $group_iter->();
+    my ( $cnt, %curr ) = $group_iter->();
     my %save = map { $_ => $ctx->{__stash}{$_} } keys %curr;
     my $vars = $ctx->{__stash}{vars} ||= {};
-    while (defined($cnt)) {
+    while ( defined($cnt) ) {
         $i++;
-        my ($next_cnt, %next) = $group_iter->();
+        my ( $next_cnt, %next ) = $group_iter->();
         my $last;
-        $last = 1 if $n && ($i >= $n);
+        $last = 1 if $n && ( $i >= $n );
         $last = 1 unless defined $next_cnt;
 
-        my ($start, $end);
-        if ($archiver->date_based) {
-            ($start, $end) = ($curr{'start'}, $curr{'end'});
-        } else {
-            my $entry = $curr{entries}->[0] if exists($curr{entries});
-            ($start, $end) = (ref $entry ? $entry->authored_on : "");
+        my ( $start, $end );
+        if ( $archiver->date_based ) {
+            ( $start, $end ) = ( $curr{'start'}, $curr{'end'} );
         }
-        local $ctx->{current_timestamp} = $start;
-        local $ctx->{current_timestamp_end} = $end;
-        local $vars->{__first__} = $i == 1;
-        local $vars->{__last__} = $last;
-        local $vars->{__even__} = $i % 2 == 0;
-        local $vars->{__odd__} = $i % 2 == 1;
-        local $vars->{__counter__} = $i;
+        else {
+            my $entry = $curr{entries}->[0] if exists( $curr{entries} );
+            ( $start, $end ) = ( ref $entry ? $entry->authored_on : "" );
+        }
+        local $ctx->{current_timestamp}      = $start;
+        local $ctx->{current_timestamp_end}  = $end;
+        local $vars->{__first__}             = $i == 1;
+        local $vars->{__last__}              = $last;
+        local $vars->{__even__}              = $i % 2 == 0;
+        local $vars->{__odd__}               = $i % 2 == 1;
+        local $vars->{__counter__}           = $i;
         local $ctx->{__stash}{archive_count} = $cnt;
-        local $ctx->{__stash}{entries} = delay(sub{ 
-            $archiver->archive_group_entries($ctx, %curr)
-        }) if $archiver->group_based;
+        local $ctx->{__stash}{entries}       = delay(
+            sub {
+                $archiver->archive_group_entries( $ctx, %curr );
+            }
+        ) if $archiver->group_based;
         $ctx->{__stash}{$_} = $curr{$_} for keys %curr;
         local $ctx->{inside_archive_list} = 1;
 
-        defined(my $out = $builder->build($ctx, $tokens, { %$cond,
-            ArchiveListHeader => $i == 1, ArchiveListFooter => $last }))
-            or return $ctx->error( $builder->errstr );
+        defined(
+            my $out = $builder->build(
+                $ctx, $tokens,
+                {   %$cond,
+                    ArchiveListHeader => $i == 1,
+                    ArchiveListFooter => $last
+                }
+            )
+        ) or return $ctx->error( $builder->errstr );
         $res .= $out;
         last if $last;
-        ($cnt, %curr) = ($next_cnt, %next);
+        ( $cnt, %curr ) = ( $next_cnt, %next );
     }
 
     $ctx->{__stash}{$_} = $save{$_} for keys %save;
-    $ctx->{current_timestamp} = $save_ts if $save_ts;
+    $ctx->{current_timestamp}     = $save_ts  if $save_ts;
     $ctx->{current_timestamp_end} = $save_tse if $save_tse;
     $res;
 }
@@ -356,76 +373,105 @@ B<Example:>
 
 ## Archives
 sub _hdlr_archive_prev_next {
-    my($ctx, $args, $cond) = @_;
-    my $tag = lc $ctx->stash('tag');
+    my ( $ctx, $args, $cond ) = @_;
+    my $tag     = lc $ctx->stash('tag');
     my $is_prev = $tag eq 'archiveprevious';
-    my $res = '';
-    my $at = ($args->{type} || $args->{archive_type}) || $ctx->{current_archive_type} || $ctx->{archive_type};
+    my $res     = '';
+    my $at
+        = ( $args->{type} || $args->{archive_type} )
+        || $ctx->{current_archive_type}
+        || $ctx->{archive_type};
     my $arctype = MT->publisher->archiver($at);
     return '' unless $arctype;
 
     my $entry;
-    if ($arctype->date_based && $arctype->category_based) {
+    if ( $arctype->date_based && $arctype->category_based ) {
         my $param = {
             ts       => $ctx->{current_timestamp},
             blog_id  => $ctx->stash('blog_id'),
             category => $ctx->stash('archive_category'),
         };
-        $entry = $is_prev ? $arctype->previous_archive_entry($param) : $arctype->next_archive_entry($param);
-    } elsif ($arctype->date_based && $arctype->author_based) {
+        $entry
+            = $is_prev
+            ? $arctype->previous_archive_entry($param)
+            : $arctype->next_archive_entry($param);
+    }
+    elsif ( $arctype->date_based && $arctype->author_based ) {
         my $param = {
-            ts       => $ctx->{current_timestamp},
-            blog_id  => $ctx->stash('blog_id'),
-            author   => $ctx->stash('author'),
+            ts      => $ctx->{current_timestamp},
+            blog_id => $ctx->stash('blog_id'),
+            author  => $ctx->stash('author'),
         };
-        $entry = $is_prev ? $arctype->previous_archive_entry($param) : $arctype->next_archive_entry($param);
-    } elsif ($arctype->category_based) {
-        return $is_prev ? $ctx->invoke_handler( 'categoryprevious', $args, $cond )
-                        : $ctx->invoke_handler( 'categorynext',     $args, $cond );
-    } elsif ($arctype->author_based) {
+        $entry
+            = $is_prev
+            ? $arctype->previous_archive_entry($param)
+            : $arctype->next_archive_entry($param);
+    }
+    elsif ( $arctype->category_based ) {
+        return $is_prev
+            ? $ctx->invoke_handler( 'categoryprevious', $args, $cond )
+            : $ctx->invoke_handler( 'categorynext',     $args, $cond );
+    }
+    elsif ( $arctype->author_based ) {
         if ($is_prev) {
-            $ctx->stash('tag', 'AuthorPrevious');
-        } else {
-            $ctx->stash('tag', 'AuthorNext');
+            $ctx->stash( 'tag', 'AuthorPrevious' );
+        }
+        else {
+            $ctx->stash( 'tag', 'AuthorNext' );
         }
         require MT::Template::Tags::Author;
         return MT::Template::Tags::Author::_hdlr_author_next_prev(@_);
-    } elsif ($arctype->entry_based) {
+    }
+    elsif ( $arctype->entry_based ) {
         my $e = $ctx->stash('entry');
         if ($is_prev) {
             $entry = $e->previous(1);
-        } else {
+        }
+        else {
             $entry = $e->next(1);
         }
-    } else {
+    }
+    else {
         my $ts = $ctx->{current_timestamp}
-            or return $ctx->error(MT->translate(
-               "You used an [_1] tag without a date context set up.", "MT$tag" ));
-        return $ctx->error(MT->translate(
-            "[_1] can be used only with Daily, Weekly, or Monthly archives.",
-            "<MT$tag>" ))
-            unless $arctype->date_based;
+            or return $ctx->error(
+            MT->translate(
+                "You used an [_1] tag without a date context set up.",
+                "MT$tag"
+            )
+            );
+        return $ctx->error(
+            MT->translate(
+                "[_1] can be used only with Daily, Weekly, or Monthly archives.",
+                "<MT$tag>"
+            )
+        ) unless $arctype->date_based;
         my $param = {
-            ts => $ctx->{current_timestamp},
+            ts      => $ctx->{current_timestamp},
             blog_id => $ctx->stash('blog_id'),
         };
-        $entry = $is_prev ? $arctype->previous_archive_entry($param) : $arctype->next_archive_entry($param);
+        $entry
+            = $is_prev
+            ? $arctype->previous_archive_entry($param)
+            : $arctype->next_archive_entry($param);
     }
     if ($entry) {
         my $builder = $ctx->stash('builder');
-        local $ctx->{__stash}->{entries} = [ $entry ];
-        if (my($start, $end) = $arctype->date_range($entry->authored_on)) {
-            local $ctx->{current_timestamp} = $start;
+        local $ctx->{__stash}->{entries} = [$entry];
+        if ( my ( $start, $end )
+            = $arctype->date_range( $entry->authored_on ) )
+        {
+            local $ctx->{current_timestamp}     = $start;
             local $ctx->{current_timestamp_end} = $end;
-            defined(my $out = $builder->build($ctx, $ctx->stash('tokens'),
-                $cond))
+            defined( my $out
+                    = $builder->build( $ctx, $ctx->stash('tokens'), $cond ) )
                 or return $ctx->error( $builder->errstr );
             $res .= $out;
-        } else {
-            local $ctx->{current_timestamp} = $entry->authored_on;
+        }
+        else {
+            local $ctx->{current_timestamp}     = $entry->authored_on;
             local $ctx->{current_timestamp_end} = $entry->authored_on;
-            defined(my $out = $builder->build($ctx, $ctx->stash('tokens'),
-                $cond))
+            defined( my $out
+                    = $builder->build( $ctx, $ctx->stash('tokens'), $cond ) )
                 or return $ctx->error( $builder->errstr );
             $res .= $out;
         }
@@ -474,7 +520,7 @@ archives and the normal feed for all other templates:
 =cut
 
 sub _hdlr_if_archive_type {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $cat = $ctx->{current_archive_type} || $ctx->{archive_type} || '';
     my $at = $args->{type} || $args->{archive_type} || '';
     return 0 unless $at && $cat;
@@ -514,9 +560,9 @@ B<Example:>
 =cut
 
 sub _hdlr_archive_type_enabled {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $blog = $ctx->stash('blog');
-    my $at = ($args->{type} || $args->{archive_type});
+    my $at = ( $args->{type} || $args->{archive_type} );
     return $blog->has_archive_type($at);
 }
 
@@ -530,17 +576,20 @@ them by name.
 =cut
 
 sub _hdlr_index_list {
-    my ($ctx, $args, $cond) = @_;
-    my $tokens = $ctx->stash('tokens');
+    my ( $ctx, $args, $cond ) = @_;
+    my $tokens  = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
-    my $iter = MT::Template->load_iter({ type => 'index',
-                                         blog_id => $ctx->stash('blog_id') },
-                                       { 'sort' => 'name' });
+    my $iter    = MT::Template->load_iter(
+        {   type    => 'index',
+            blog_id => $ctx->stash('blog_id')
+        },
+        { 'sort' => 'name' }
+    );
     my $res = '';
-    while (my $tmpl = $iter->()) {
+    while ( my $tmpl = $iter->() ) {
         local $ctx->{__stash}{'index'} = $tmpl;
-        defined(my $out = $builder->build($ctx, $tokens, $cond)) or
-            return $ctx->error( $builder->errstr );
+        defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
+            or return $ctx->error( $builder->errstr );
         $res .= $out;
     }
     $res;
@@ -586,21 +635,23 @@ archives).
 =cut
 
 sub _hdlr_archive_link {
-    my($ctx, $args) = @_;
-    my $at = $args->{type}
-          || $args->{archive_type}
-          || $ctx->{current_archive_type}
-          || $ctx->{archive_type};
-    return $ctx->invoke_handler('categoryarchivelink', $args)
-        if ($at && ('Category' eq $at)) ||
-           ($ctx->{current_archive_type} && 'Category' eq $ctx->{current_archive_type});
+    my ( $ctx, $args ) = @_;
+    my $at 
+        = $args->{type}
+        || $args->{archive_type}
+        || $ctx->{current_archive_type}
+        || $ctx->{archive_type};
+    return $ctx->invoke_handler( 'categoryarchivelink', $args )
+        if ( $at && ( 'Category' eq $at ) )
+        || ( $ctx->{current_archive_type}
+        && 'Category' eq $ctx->{current_archive_type} );
 
     my $archiver = MT->publisher->archiver($at);
     return '' unless $archiver;
 
     my $blog = $ctx->stash('blog');
     my $entry;
-    if ($archiver->entry_based) {
+    if ( $archiver->entry_based ) {
         $entry = $ctx->stash('entry');
     }
     my $author = $ctx->stash('author');
@@ -611,20 +662,24 @@ sub _hdlr_archive_link {
     #    unless $ctx->{current_timestamp} || $entry;
 
     my $cat;
-    if ($archiver->category_based) {
+    if ( $archiver->category_based ) {
         $cat = $ctx->stash('category') || $ctx->stash('archive_category');
     }
 
-    return $ctx->error(MT->translate(
-        "You used an [_1] tag for linking into '[_2]' archives, but that archive type is not published.", '<$MTArchiveLink$>', $at))
-        unless $blog->has_archive_type($at);
+    return $ctx->error(
+        MT->translate(
+            "You used an [_1] tag for linking into '[_2]' archives, but that archive type is not published.",
+            '<$MTArchiveLink$>',
+            $at
+        )
+    ) unless $blog->has_archive_type($at);
 
     my $arch = $blog->archive_url;
     $arch = $blog->site_url if $entry && $entry->class eq 'page';
     $arch .= '/' unless $arch =~ m!/$!;
-    $arch .= archive_file_for($entry, $blog, $at, $cat, undef,
-                              $ctx->{current_timestamp}, $author);
-    $arch = MT::Util::strip_index($arch, $blog) unless $args->{with_index};
+    $arch .= archive_file_for( $entry, $blog, $at, $cat, undef,
+        $ctx->{current_timestamp}, $author );
+    $arch = MT::Util::strip_index( $arch, $blog ) unless $args->{with_index};
     return $arch;
 }
 
@@ -675,22 +730,23 @@ B<Example:>
 =cut
 
 sub _hdlr_archive_title {
-    my($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
 
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
 
     my $archiver = MT->publisher->archiver($at);
     my @entries;
-    if ($archiver->entry_based) {
+    if ( $archiver->entry_based ) {
         my $entries = $ctx->stash('entries');
-        if (!$entries && (my $e = $ctx->stash('entry'))) {
+        if ( !$entries && ( my $e = $ctx->stash('entry') ) ) {
             push @$entries, $e;
         }
-        if ($entries && ref($entries) eq 'ARRAY' && $at) {
+        if ( $entries && ref($entries) eq 'ARRAY' && $at ) {
             @entries = @$entries;
-        } else {
+        }
+        else {
             my $blog = $ctx->stash('blog');
-            if (!@entries) {
+            if ( !@entries ) {
                 ## This situation arises every once in awhile. We have
                 ## a date-based archive page, but no entries to go on it--this
                 ## might happen, for example, if you have daily archives, and
@@ -701,22 +757,28 @@ sub _hdlr_archive_title {
                 ## to the current timestamp (start of day/week/month).
 
                 ## But, it's not generally true that draft-izing an entry
-                ## erases all of its manifestations. The individual 
+                ## erases all of its manifestations. The individual
                 ## archive lingers, for example. --ez
-                if ($at && $archiver->date_based()) {
+                if ( $at && $archiver->date_based() ) {
                     my $e = MT::Entry->new;
-                    $e->authored_on($ctx->{current_timestamp});
+                    $e->authored_on( $ctx->{current_timestamp} );
                     @entries = ($e);
-                } else {
-                    return $ctx->error(MT->translate(
-                        "You used an [_1] tag outside of the proper context.",
-                        '<$MTArchiveTitle$>' ));
+                }
+                else {
+                    return $ctx->error(
+                        MT->translate(
+                            "You used an [_1] tag outside of the proper context.",
+                            '<$MTArchiveTitle$>'
+                        )
+                    );
                 }
             }
         }
     }
-    my $title = (@entries && $entries[0]) ? $archiver->archive_title($ctx, $entries[0])
-        : $archiver->archive_title($ctx, $ctx->{current_timestamp});
+    my $title
+        = ( @entries && $entries[0] )
+        ? $archiver->archive_title( $ctx, $entries[0] )
+        : $archiver->archive_title( $ctx, $ctx->{current_timestamp} );
     defined $title ? $title : '';
 }
 
@@ -731,7 +793,7 @@ of "Daily", "Weekly", "Monthly", "Yearly", "Category", "Individual",
 =cut
 
 sub _hdlr_archive_type {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
     $at = 'Category' if $ctx->{inside_mt_categories};
@@ -775,7 +837,7 @@ Related Tags: L<ArchiveType>
 =cut
 
 sub _hdlr_archive_label {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
     $at = 'Category' if $ctx->{inside_mt_categories};
@@ -784,15 +846,15 @@ sub _hdlr_archive_label {
 
     my $blog = $ctx->stash('blog');
     my $current_lang;
-    if ( $blog ) {
+    if ($blog) {
         $current_lang = MT->current_language;
-        MT->set_language($blog->language);
+        MT->set_language( $blog->language );
     }
     my $al = $archiver->archive_label;
     if ( 'CODE' eq ref($al) ) {
         $al = $al->();
     }
-    if ( $blog ) {
+    if ($blog) {
         MT->set_language($current_lang);
     }
     return $al;
@@ -824,19 +886,20 @@ B<Example:>
 =cut
 
 sub _hdlr_archive_count {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
     my $archiver = MT->publisher->archiver($at);
-    if ($ctx->{inside_mt_categories} && !$archiver->date_based) {
-        return $ctx->invoke_handler('categorycount', $args, $cond);
-    } elsif (my $count = $ctx->stash('archive_count')) {
-        return $ctx->count_format($count, $args);
+    if ( $ctx->{inside_mt_categories} && !$archiver->date_based ) {
+        return $ctx->invoke_handler( 'categorycount', $args, $cond );
+    }
+    elsif ( my $count = $ctx->stash('archive_count') ) {
+        return $ctx->count_format( $count, $args );
     }
 
-    my $e = $ctx->stash('entries');
+    my $e       = $ctx->stash('entries');
     my @entries = @$e if ref($e) eq 'ARRAY';
-    my $count = scalar @entries;
-    return $ctx->count_format($count, $args);
+    my $count   = scalar @entries;
+    return $ctx->count_format( $count, $args );
 }
 
 ###########################################################################
@@ -898,11 +961,14 @@ B<Example:>
 =cut
 
 sub _hdlr_archive_date_end {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $end = $ctx->{current_timestamp_end}
-        or return $ctx->error(MT->translate(
+        or return $ctx->error(
+        MT->translate(
             "[_1] can be used only with Daily, Weekly, or Monthly archives.",
-            '<$MTArchiveDateEnd$>' ));
+            '<$MTArchiveDateEnd$>'
+        )
+        );
     $args->{ts} = $end;
     return $ctx->build_date($args);
 }
@@ -940,28 +1006,31 @@ B<Example:>
 =cut
 
 sub _hdlr_archive_file {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
     $at = 'Category' if $ctx->{inside_mt_categories};
     my $archiver = MT->publisher->archiver($at);
     my $f;
-    if (!$at || ($archiver->entry_based)) {
+    if ( !$at || ( $archiver->entry_based ) ) {
         my $e = $ctx->stash('entry');
-        return $ctx->error(MT->translate("Could not determine entry")) if !$e;
+        return $ctx->error( MT->translate("Could not determine entry") )
+            if !$e;
         $f = $e->basename;
-    } else {
+    }
+    else {
         $f = $ctx->stash('_basename') || $ctx->{config}->IndexBasename;
     }
-    if (exists $args->{extension} && !$args->{extension}) {
-    } else {
+    if ( exists $args->{extension} && !$args->{extension} ) {
+    }
+    else {
         my $blog = $ctx->stash('blog');
-        if (my $ext = $blog->file_extension) {
+        if ( my $ext = $blog->file_extension ) {
             $f .= '.' . $ext;
         }
     }
-    if ($args->{separator}) {
-        if ($args->{separator} eq '-') {
+    if ( $args->{separator} ) {
+        if ( $args->{separator} eq '-' ) {
             $f =~ s/_/-/g;
         }
     }
@@ -989,14 +1058,14 @@ in the link.
 =cut
 
 sub _hdlr_index_link {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $idx = $ctx->stash('index');
     return '' unless $idx;
     my $blog = $ctx->stash('blog');
     my $path = $blog->site_url;
     $path .= '/' unless $path =~ m!/$!;
     $path .= $idx->outfile;
-    $path = MT::Util::strip_index($path, $blog) unless $args->{with_index};
+    $path = MT::Util::strip_index( $path, $blog ) unless $args->{with_index};
     $path;
 }
 
@@ -1010,7 +1079,7 @@ an L<IndexList> tag.
 =cut
 
 sub _hdlr_index_name {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $idx = $ctx->stash('index');
     return '' unless $idx;
     $idx->name || '';

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2006-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2006-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -16,11 +16,20 @@ use vars qw( %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
+## plugins/MultiBlog/lib/MultiBlog.pm
+	'The include_blogs, exclude_blogs, blog_ids and blog_id attributes cannot be used together.' => 'include_blogs、exclude_blogs、blog_ids、そしてblog_id属性は一緒に使えません。',
+	'The value of the blog_id attribute must be a single blog ID.' => 'blog_id属性にはブログIDをひとつしか指定できません。',
+	'The value for the include_blogs/exclude_blogs attributes must be one or more blog IDs, separated by commas.' => 'include_blogs/exclude_blogs属性はカンマで区切ったひとつ以上のIDを設定できます。',
+	'Restoring MultiBlog rebuild trigger for blog #[_1]...' => 'マルチブログの再構築により、てブログ(#[_1])をリストアしています...',
+
+## plugins/MultiBlog/lib/MultiBlog/Tags.pm
+	'MTMultiBlog tags cannot be nested.' => 'MTMultiBlogタグは入れ子にできません。',
+	'Unknown "mode" attribute value: [_1]. Valid values are "loop" and "context".' => 'mode属性が不正です。loopまたはcontextを指定してください。',
+
 ## plugins/MultiBlog/multiblog.pl
 	'MultiBlog allows you to publish content from other blogs and define publishing rules and access controls between them.' => 'MultiBlogを使うと他のブログのコンテンツを公開したりブログ同士での公開ルールの設定やアクセス制限を行うことができます。',
 	'MultiBlog' => 'マルチブログ',
 	'Create Trigger' => 'トリガーを作成',
-	'Weblog Name' => 'ブログ名',
 	'Search Weblogs' => 'ブログ検索',
 	'When this' => 'トリガー:',
 	'* All blogs in this website' => '* ウェブサイト内のすべてのブログ',
@@ -34,20 +43,8 @@ use vars qw( %Lexicon );
 	'rebuild indexes.' => 'インデックスを再構築する',
 	'rebuild indexes and send pings.' => 'インデックスを再構築して更新pingを送信する',
 
-## plugins/MultiBlog/lib/MultiBlog.pm
-	'The include_blogs, exclude_blogs, blog_ids and blog_id attributes cannot be used together.' => 'include_blogs、exclude_blogs、blog_ids、そしてblog_id属性は一緒に使えません。',
-	'The attribute exclude_blogs cannot take "all" for a value.' => 'exclude_blogs属性はallを設定できません。',
-	'The value of the blog_id attribute must be a single blog ID.' => 'blog_id属性にはブログIDをひとつしか指定できません。',
-	'The value for the include_blogs/exclude_blogs attributes must be one or more blog IDs, separated by commas.' => 'include_blogs/exclude_blogs属性はカンマで区切ったひとつ以上のIDを設定できます。',
-	'Restoring MultiBlog rebuild trigger for blog #[_1]...' => 'マルチブログの再構築により、てブログ(#[_1])をリストアしています...',
-
-## plugins/MultiBlog/lib/MultiBlog/Tags.pm
-	'MTMultiBlog tags cannot be nested.' => 'MTMultiBlogタグは入れ子にできません。',
-	'Unknown "mode" attribute value: [_1]. Valid values are "loop" and "context".' => 'mode属性が不正です。loopまたはcontextを指定してください。',
-
 ## plugins/MultiBlog/tmpl/blog_config.tmpl
 	'When' => ' ',
-	'Any Weblog' => 'すべてのブログ',
 	'Weblog' => 'ブログ',
 	'Trigger' => 'トリガー',
 	'Action' => 'アクション',
@@ -64,13 +61,13 @@ use vars qw( %Lexicon );
 	'Create Rebuild Trigger' => '再構築トリガーを作成',
 	'You have not defined any rebuild triggers.' => '再構築トリガーを設定していません。',
 
+## plugins/MultiBlog/tmpl/dialog_create_trigger.tmpl
+	'Create MultiBlog Trigger' => 'MultiBlog トリガーの作成',
+
 ## plugins/MultiBlog/tmpl/system_config.tmpl
 	'Default system aggregation policy' => '既定のアグリゲーションポリシー',
 	'Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.' => 'ブログをまたがったアグリゲーションが既定で許可されます。個別のブログレベルでのMultiBlogの設定で他のブログからのコンテンツへのアクセスを制限できます。',
 	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'ブログをまたがったアグリゲーションが既定で不許可になります。個別のブログレベルでのMultiBlogの設定で他のブログからのコンテンツへのアクセスを許可することもできます。',
-
-## plugins/MultiBlog/tmpl/dialog_create_trigger.tmpl
-	'Create MultiBlog Trigger' => 'MultiBlog トリガーの作成',
 
 );
 

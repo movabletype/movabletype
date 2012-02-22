@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -23,9 +23,9 @@ to show than currently appearing in the page.
 
 sub _hdlr_if_more_results {
     my ($ctx) = @_;
-    my $limit = $ctx->stash('limit') || 0;
+    my $limit  = $ctx->stash('limit')  || 0;
     my $offset = $ctx->stash('offset') || 0;
-    my $count = $ctx->stash('count') || 0;
+    my $count  = $ctx->stash('count')  || 0;
     return $limit + $offset >= $count ? 0 : 1;
 }
 
@@ -75,14 +75,14 @@ produces:
 =cut
 
 sub _hdlr_pager_block {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
-    my $build = $ctx->stash('builder');
+    my $build  = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
 
-    my $limit = $ctx->stash('limit');
+    my $limit  = $ctx->stash('limit');
     my $offset = $ctx->stash('offset');
-    my $count = $ctx->stash('count');
+    my $count  = $ctx->stash('count');
 
     my $glue = $args->{glue};
 
@@ -91,18 +91,23 @@ sub _hdlr_pager_block {
     my $pages = $limit ? POSIX::ceil( $count / $limit ) : 1;
     my $vars = $ctx->{__stash}{vars} ||= {};
     for ( my $i = 1; $i <= $pages; $i++ ) {
-        local $vars->{__first__} = $i == 1;
-        local $vars->{__last__} = $i == $pages;
-        local $vars->{__odd__} = ($i % 2 ) == 1;
-        local $vars->{__even__} = ($i % 2 ) == 0;
+        local $vars->{__first__}   = $i == 1;
+        local $vars->{__last__}    = $i == $pages;
+        local $vars->{__odd__}     = ( $i % 2 ) == 1;
+        local $vars->{__even__}    = ( $i % 2 ) == 0;
         local $vars->{__counter__} = $i;
-        local $vars->{__value__} = $i;
-        defined(my $out = $build->build($ctx, $tokens,
-            { %$cond, 
-              IfCurrentPage => $i == ( $limit ? $offset / $limit + 1 : 1 ),
-            }
-            )) or return $ctx->error( $build->errstr );
-        $output .= $glue if defined $glue && $i > 1 && length($output) && length($out);
+        local $vars->{__value__}   = $i;
+        defined(
+            my $out = $build->build(
+                $ctx, $tokens,
+                {   %$cond,
+                    IfCurrentPage => $i
+                        == ( $limit ? $offset / $limit + 1 : 1 ),
+                }
+            )
+        ) or return $ctx->error( $build->errstr );
+        $output .= $glue
+            if defined $glue && $i > 1 && length($output) && length($out);
         $output .= $out;
     }
     $output;
@@ -132,20 +137,20 @@ PagerBlock. The tag can only be used in the context of PagerBlock.
 =cut
 
 sub _hdlr_pager_link {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
 
     my $page = $ctx->var('__value__');
     return q() unless $page;
 
-    my $limit = $ctx->stash('limit');
+    my $limit  = $ctx->stash('limit');
     my $offset = $ctx->stash('offset');
     $offset = ( $page - 1 ) * $limit;
     my $template = $ctx->stash('template_id');
 
     my $link = $ctx->context_script($args);
 
-    if ( $link ) {
-        if ( index($link, '?') > 0 ) {
+    if ($link) {
+        if ( index( $link, '?' ) > 0 ) {
             $link .= '&';
         }
         else {
@@ -171,8 +176,8 @@ The number starts from 1.
 =cut
 
 sub _hdlr_current_page {
-    my ($ctx) = @_;
-    my $limit = $ctx->stash('limit');
+    my ($ctx)  = @_;
+    my $limit  = $ctx->stash('limit');
     my $offset = $ctx->stash('offset');
     return $limit ? $offset / $limit + 1 : 1;
 }
@@ -209,11 +214,11 @@ the current page that is being rendered.
 =cut
 
 sub _hdlr_previous_link {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
 
-    my $limit = $ctx->stash('limit');
+    my $limit  = $ctx->stash('limit');
     my $offset = $ctx->stash('offset');
-    my $count = $ctx->stash('count');
+    my $count  = $ctx->stash('count');
 
     return q() unless $offset;
     my $current_page = $limit ? $offset / $limit + 1 : 1;
@@ -235,11 +240,11 @@ that is being rendered.
 =cut
 
 sub _hdlr_next_link {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
 
-    my $limit = $ctx->stash('limit');
+    my $limit  = $ctx->stash('limit');
     my $offset = $ctx->stash('offset');
-    my $count = $ctx->stash('count');
+    my $count  = $ctx->stash('count');
 
     return q() if ( $limit + $offset ) >= $count;
     my $current_page = $limit ? $offset / $limit + 1 : 1;

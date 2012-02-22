@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -33,9 +33,9 @@ turned on.
 =cut
 
 sub _hdlr_if_commenter_registration_allowed {
-    my ($ctx) = @_;
+    my ($ctx)        = @_;
     my $registration = $ctx->{config}->CommenterRegistration;
-    my $blog = $ctx->stash('blog');
+    my $blog         = $ctx->stash('blog');
     return $registration->{Allow}
         && ( $blog && $blog->allow_commenter_regist );
 }
@@ -62,12 +62,13 @@ has been marked as trusted.
 =cut
 
 sub _hdlr_commenter_trusted {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $a = $ctx->stash('commenter');
     return '' unless $a;
-    if ($a->is_trusted($ctx->stash('blog_id'))) {
+    if ( $a->is_trusted( $ctx->stash('blog_id') ) ) {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -93,20 +94,21 @@ by the author of the current entry in context.
 =cut
 
 sub _hdlr_commenter_isauthor {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $a = $ctx->stash('commenter');
     return 0 unless $a;
-    if ($a->type == MT::Author::AUTHOR()) {
+    if ( $a->type == MT::Author::AUTHOR() ) {
         my $tag = lc $ctx->stash('tag');
-        if ($tag eq 'ifcommenterisentryauthor') {
+        if ( $tag eq 'ifcommenterisentryauthor' ) {
             my $c = $ctx->stash('comment');
             my $e = $c ? $c->entry : $ctx->stash('entry');
             if ($e) {
-                if ($e->author_id == $a->id) {
+                if ( $e->author_id == $a->id ) {
                     return 1;
                 }
             }
-        } else {
+        }
+        else {
             return 1;
         }
     }
@@ -118,27 +120,21 @@ sub _hdlr_commenter_isauthor {
 =head2 CommenterNameThunk
 
 Used to populate the commenter_name Javascript variable. Deprecated in
-favor of the L<UserSessionState> tag.
+favor of the L<UserSessionState> tag. This tag has been removed.
 
-=for tags deprecated
+=for tags deprecated removed
 
 =cut
 
 sub _hdlr_commenter_name_thunk {
     my $ctx = shift;
-    my $cfg = $ctx->{config};
-    my $blog = $ctx->stash('blog') || MT::Blog->load($ctx->stash('blog_id'));
-    return $ctx->error(MT->translate('Can\'t load blog #[_1].', $ctx->stash('blog_id'))) unless $blog;
-    my ($blog_domain) = $blog->archive_url =~ m|://([^/]*)|;
-    my $cgi_path = $ctx->cgi_path;
-    my ($mt_domain) = $cgi_path =~ m|://([^/]*)|;
-    $mt_domain ||= '';
-    if ($blog_domain ne $mt_domain) {
-        my $cmt_script = $cfg->CommentScript;
-        return "<script type='text/javascript' src='$cgi_path$cmt_script?__mode=cmtr_name_js'></script>";
-    } else {
-        return "<script type='text/javascript'>var commenter_name = getCookie('commenter_name')</script>";
-    }
+    return $ctx->error(
+        MT->translate(
+            "This '[_1]' tag has been deprecated. Please use '[_2]' instead.",
+            'MTCommenterNameThunk',
+            'MTUserSessionState'
+        )
+    );
 }
 
 ###########################################################################
@@ -264,12 +260,13 @@ B<Example:>
 =cut
 
 sub _hdlr_commenter_auth_icon_url {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $a = $ctx->stash('commenter');
     return q() unless $a;
     my $size = $args->{size} || 'logo_small';
     my $url = $a->auth_icon_url($size);
-    if ($url =~ m!^/!) {
+    if ( $url =~ m!^/! ) {
+
         # relative path, prepend blog domain
         my $blog = $ctx->stash('blog');
         if ($blog) {
@@ -328,7 +325,7 @@ currently logged in.
 =cut
 
 sub _hdlr_user_session_state {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $app = MT->app;
     return 'null' unless $app->can('session_state');
 
@@ -366,20 +363,20 @@ be evaluated for the blog in context.
 =cut
 
 sub _hdlr_user_session_cookie_path {
-    my ($ctx, $args, $cond) = @_;
-    my $blog = $ctx->stash('blog');
-    my $blog_id = $blog ? $blog->id : '0';
-    my $blog_path = $ctx->stash('blog_cookie_path_' . $blog_id);
-    if (!defined $blog_path) {
+    my ( $ctx, $args, $cond ) = @_;
+    my $blog      = $ctx->stash('blog');
+    my $blog_id   = $blog ? $blog->id : '0';
+    my $blog_path = $ctx->stash( 'blog_cookie_path_' . $blog_id );
+    if ( !defined $blog_path ) {
         $blog_path = $ctx->{config}->UserSessionCookiePath;
-        if ($blog_path =~ m/<\$?mt/i) { # hey, a MT tag! lets evaluate
+        if ( $blog_path =~ m/<\$?mt/i ) {    # hey, a MT tag! lets evaluate
             my $builder = $ctx->stash('builder');
-            my $tokens = $builder->compile($ctx, $blog_path);
-            return $ctx->error($builder->errstr) unless defined $tokens;
-            $blog_path = $builder->build($ctx, $tokens, $cond);
-            return $ctx->error($builder->errstr) unless defined $blog_path;
+            my $tokens = $builder->compile( $ctx, $blog_path );
+            return $ctx->error( $builder->errstr ) unless defined $tokens;
+            $blog_path = $builder->build( $ctx, $tokens, $cond );
+            return $ctx->error( $builder->errstr ) unless defined $blog_path;
         }
-        $ctx->stash('blog_cookie_path_' . $blog_id, $blog_path);
+        $ctx->stash( 'blog_cookie_path_' . $blog_id, $blog_path );
     }
     return $blog_path;
 }
@@ -400,23 +397,25 @@ be evaluated for the blog in context.
 =cut
 
 sub _hdlr_user_session_cookie_domain {
-    my ($ctx, $args, $cond) = @_;
-    my $blog = $ctx->stash('blog');
-    my $blog_id = $blog ? $blog->id : '0';
-    my $blog_domain = $ctx->stash('blog_cookie_domain_' . $blog_id);
-    if (!defined $blog_domain) {
+    my ( $ctx, $args, $cond ) = @_;
+    my $blog        = $ctx->stash('blog');
+    my $blog_id     = $blog ? $blog->id : '0';
+    my $blog_domain = $ctx->stash( 'blog_cookie_domain_' . $blog_id );
+    if ( !defined $blog_domain ) {
         $blog_domain = $ctx->{config}->UserSessionCookieDomain;
-        if ($blog_domain =~ m/<\$?mt/i) { # hey, a MT tag! lets evaluate
+        if ( $blog_domain =~ m/<\$?mt/i ) {    # hey, a MT tag! lets evaluate
             my $builder = $ctx->stash('builder');
-            my $tokens = $builder->compile($ctx, $blog_domain);
-            return $ctx->error($builder->errstr) unless defined $tokens;
-            $blog_domain = $builder->build($ctx, $tokens, $cond);
-            return $ctx->error($builder->errstr) unless defined $blog_domain;
+            my $tokens = $builder->compile( $ctx, $blog_domain );
+            return $ctx->error( $builder->errstr ) unless defined $tokens;
+            $blog_domain = $builder->build( $ctx, $tokens, $cond );
+            return $ctx->error( $builder->errstr )
+                unless defined $blog_domain;
         }
+
         # strip off common 'www' subdomain
         $blog_domain =~ s/^www\.//;
         $blog_domain = '.' . $blog_domain unless $blog_domain =~ m/^\./;
-        $ctx->stash('blog_cookie_domain_' . $blog_id, $blog_domain);
+        $ctx->stash( 'blog_cookie_domain_' . $blog_id, $blog_domain );
     }
     return $blog_domain;
 }
@@ -440,9 +439,9 @@ B<Example:>
 sub _hdlr_user_session_cookie_name {
     my ($ctx) = @_;
     my $name = $ctx->{config}->UserSessionCookieName;
-    if ($name =~ m/%b/) {
+    if ( $name =~ m/%b/ ) {
         my $blog_id = '0';
-        if (my $blog = $ctx->stash('blog')) {
+        if ( my $blog = $ctx->stash('blog') ) {
             $blog_id = $blog->id;
         }
         $name =~ s/%b/$blog_id/g;
@@ -452,12 +451,16 @@ sub _hdlr_user_session_cookie_name {
 
 # FIXME: Unused?
 sub _hdlr_if_commenter_pending {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $cmtr = $ctx->stash('commenter');
     my $blog = $ctx->stash('blog');
-    if ($cmtr && $blog && $cmtr->commenter_status($blog->id) == MT::Author::PENDING()) {
+    if (   $cmtr
+        && $blog
+        && $cmtr->commenter_status( $blog->id ) == MT::Author::PENDING() )
+    {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }

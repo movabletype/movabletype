@@ -20,7 +20,7 @@
 <input type="hidden" name="__mode" value="do_export_theme" />
 <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-<input type="hidden" name="theme_class" value="<mt:var name="theme_class" />" />
+<input type="hidden" name="theme_class" value="<mt:var name="theme_class" escape="html"/>" />
 <mt:unless name="select_output_method">
 <mt:loop name="output_methods"><input type="hidden" name="output" value="<mt:var name="id" />" /></mt:loop>
 </mt:unless>

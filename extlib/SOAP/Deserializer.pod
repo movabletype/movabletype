@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Deserializer.pod 98 2007-10-09 09:41:55Z kutterma $
+# $Id: Deserializer.pod 372 2010-04-29 18:32:31Z kutterma $
 #
 # ======================================================================
 
@@ -12,7 +12,7 @@
 
 =head1 NAME
 
-SOAP::Deserializer - the means by which the toolkit manages the conversion of XML into an object managable by a developer
+SOAP::Deserializer - the means by which the toolkit manages the conversion of XML into an object manageable by a developer
 
 =head1 DESCRIPTION
 

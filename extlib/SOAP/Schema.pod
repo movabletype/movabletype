@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Schema.pod 98 2007-10-09 09:41:55Z kutterma $
+# $Id: Schema.pod 381 2011-08-15 19:28:43Z kutterma $
 #
 # ======================================================================
 
@@ -16,7 +16,7 @@ SOAP::Schema - provides an umbrella for the way in which SOAP::Lite manages serv
 
 =head1 DESCRIPTION
 
-This class provides an umbrella for the way in which SOAP::Lite manages service description schemas. Currently, the only support present is for the Web Services Description Language (WSDL). This is another of the classes not generally designed to be directly instantiated by an application, though it can be if so desired. 
+This class provides an umbrella for the way in which SOAP::Lite manages service description schemas. Currently, the only support present is for the Web Services Description Language (WSDL). This is another of the classes not generally designed to be directly instantiated by an application, though it can be if so desired.
 
 =head1 METHODS
 
@@ -95,8 +95,8 @@ The default time to live is 0.
     $ua->agent("Fubar! 0.1");
     my $response = $client->service("http://localhost/some.wsdl")
                           ->someMethod("Foo");
-    
-Gets or sets the classes UserAgent used for retrieving schemas over the web. 
+
+Gets or sets the classes UserAgent used for retrieving schemas over the web.
 This allows users to have direct access to the UserAgent so that they may control
 the credentials passed to a remote server, or the specific configuration of their
 HTTP agent.

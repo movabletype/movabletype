@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -6,13 +6,13 @@
 package MT::Template::Handler;
 use strict;
 
-sub EL_CODE  { 0 };
-sub EL_TYPE  { 1 };
-sub EL_SUPER { 2 };
+sub EL_CODE  {0}
+sub EL_TYPE  {1}
+sub EL_SUPER {2}
 
 sub new {
     my $class = shift;
-    return bless [ @_ ], $class;
+    return bless [@_], $class;
 }
 
 sub code {
@@ -37,10 +37,10 @@ sub values { @{ $_[0] } }
 
 sub invoke {
     my $self = shift;
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $code = $self->[ EL_CODE() ];
     unless ( ref $code ) {
-        $code = $self->[ EL_CODE() ] = MT->handler_to_coderef( $code );
+        $code = $self->[ EL_CODE() ] = MT->handler_to_coderef($code);
         return unless $code;
         $self->[ EL_CODE() ] = $code;
     }
@@ -53,9 +53,9 @@ sub invoke_super {
     my ( $ctx, $args, $cond ) = @_;
     my $super = $self->super;
     return unless defined $super;
-    if (!ref $super || ref $super ne 'MT::Template::Handler' ) {
-        $super = $self->[ EL_SUPER() ] = MT::Template::Handler->new( @$super );
-    }  
+    if ( !ref $super || ref $super ne 'MT::Template::Handler' ) {
+        $super = $self->[ EL_SUPER() ] = MT::Template::Handler->new(@$super);
+    }
     my $tag = lc $ctx->stash('tag');
     local $ctx->{__handlers}{$tag} = $super;
     $super->invoke(@_);

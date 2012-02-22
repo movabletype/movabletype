@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -32,12 +32,12 @@ sub init {
 
 sub core_methods {
     return {
-        'main'        => \&main,
-        'install'     => \&upgrade,
-        'upgrade'     => \&upgrade,
-        'run_actions' => \&run_actions,
-        'init_user'   => \&init_user,
-        'init_website'   => \&init_website,
+        'main'         => \&main,
+        'install'      => \&upgrade,
+        'upgrade'      => \&upgrade,
+        'run_actions'  => \&run_actions,
+        'init_user'    => \&init_user,
+        'init_website' => \&init_website,
     };
 }
 
@@ -212,8 +212,9 @@ sub upgrade {
 
     $param{up_to_date} = $json_steps ? 0 : 1;
     $param{initial_steps} = $json_steps;
-    $param{mt_admin_url}  = ( $app->config->AdminCGIPath || $app->config->CGIPath )
-                            . $app->config->AdminScript;
+    $param{mt_admin_url}
+        = ( $app->config->AdminCGIPath || $app->config->CGIPath )
+        . $app->config->AdminScript;
 
     return $app->build_page( 'upgrade_runner.tmpl', \%param );
 }
@@ -231,6 +232,12 @@ sub init_user {
     }
 
     $app->validate_magic or return;
+
+    my $class   = MT->model('author');
+    my $ddl     = $class->driver->dbd->ddl_class;
+    my $db_defs = $ddl->column_defs($class);
+    return $app->error( $app->translate('Invalid request') )
+        if $db_defs;
 
     my %param = $app->unserialize_config;
     if ( !$app->param('continue') ) {
@@ -281,10 +288,10 @@ sub init_user {
             }
         }
         else {
-            $param{error}
-                = $app->translate(
+            $param{error} = $app->translate(
                 "Could not authenticate using the credentials provided: [_1].",
-                $err );
+                $err
+            );
             return $app->build_page( 'install.tmpl', \%param );
         }
     }
@@ -298,14 +305,12 @@ sub init_user {
                 $initial_password = $pass;
             }
             else {
-                $param{error} = $app->translate(
-                    "Both passwords must match.");
+                $param{error} = $app->translate("Both passwords must match.");
                 return $app->build_page( 'install.tmpl', \%param );
             }
         }
         else {
-            $param{error}
-                = $app->translate("You must supply a password.");
+            $param{error} = $app->translate("You must supply a password.");
             return $app->build_page( 'install.tmpl', \%param );
         }
     }
@@ -336,6 +341,12 @@ sub init_website {
     my ($param) = @_;
     my %param;
 
+    my $class   = MT->model('website');
+    my $ddl     = $class->driver->dbd->ddl_class;
+    my $db_defs = $ddl->column_defs($class);
+    return $app->error( $app->translate('Invalid request') )
+        if $db_defs;
+
     $param{config}           = $param->{config} || $app->param('config');
     $param{website_name}     = $app->param('website_name');
     $param{website_url}      = $app->param('website_url') || '';
@@ -345,23 +356,21 @@ sub init_website {
     $param{website_path} =~ s!(/|\\)$!!;
     $param{website_url} .= '/' if $param{website_url} !~ m!/$!;
 
-    my $tz = $app->param('website_timezone') || $app->config('DefaultTimezone');
+    my $tz = $app->param('website_timezone')
+        || $app->config('DefaultTimezone');
     my $param_name = 'website_timezone_' . $tz;
     $param_name =~ s/[\-\.]/_/g;
     $param{$param_name} = 1;
 
     require MT::Theme;
     my $themes = MT::Theme->load_all_themes;
-    my @theme_loop =
-        map {{
-            key   => $_->id,
-            label => $_->label,
-        }}
+    my @theme_loop
+        = map { { key => $_->id, label => $_->label, } }
         grep {
-            ( $_->{class} || '' ) eq 'both'
+               ( $_->{class} || '' ) eq 'both'
             || ( $_->{class} || '' ) eq 'website'
         } values %$themes;
-    $param{'theme_loop'} = \@theme_loop;
+    $param{'theme_loop'}  = \@theme_loop;
     $param{'theme_index'} = scalar @theme_loop;
 
     if ( $app->param('back') ) {
@@ -392,9 +401,10 @@ sub init_website {
         $site_path = File::Spec->catdir(@dirs);
     }
     if ( !-w $site_path ) {
-        $param{error}
-            = $app->translate( "The 'Publishing Path' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click 'Finish Install' again.",
-            $param{website_path} );
+        $param{error} = $app->translate(
+            "The 'Publishing Path' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click 'Finish Install' again.",
+            $param{website_path}
+        );
         return $app->build_page( 'setup_initial_website.tmpl', \%param );
     }
 
@@ -414,7 +424,9 @@ sub init_website {
         user_lang        => $param{initial_lang},
         user_external_id => $param{initial_external_id},
     };
-    if ( my $email_system = $param{initial_use_system} || $param{use_system_email} ) {
+    if ( my $email_system = $param{initial_use_system}
+        || $param{use_system_email} )
+    {
         $new_user->{'use_system_email'} = $email_system;
     }
     $new_website = {
@@ -434,7 +446,10 @@ sub init_website {
             Install => $install_mode,
             DryRun  => 1,
             App     => $app,
-            ( $install_mode ? ( User => $new_user, Website => $new_website ) : () )
+            (   $install_mode
+                ? ( User => $new_user, Website => $new_website )
+                : ()
+            )
         );
         my $steps = $app->response->{steps};
         my $fn    = \%MT::Upgrade::functions;
@@ -454,8 +469,9 @@ sub init_website {
     $param{installing}    = $install_mode;
     $param{up_to_date}    = $json_steps ? 0 : 1;
     $param{initial_steps} = $json_steps;
-    $param{mt_admin_url}  = ( $app->config->AdminCGIPath || $app->config->CGIPath )
-                            . $app->config->AdminScript;
+    $param{mt_admin_url}
+        = ( $app->config->AdminCGIPath || $app->config->CGIPath )
+        . $app->config->AdminScript;
 
     return $app->build_page( 'upgrade_runner.tmpl', \%param );
 }
@@ -600,9 +616,10 @@ sub serialize_config {
     my $ser = MT::Serialize->new('MT');
     my %set;
     foreach my $key (@keys) {
-        $set{$key} = Encode::is_utf8( $param{$key} ) ? Encode::encode( $app->charset, $param{$key} )
-                   :                                   $param{$key}
-                   ;
+        $set{$key}
+            = Encode::is_utf8( $param{$key} )
+            ? Encode::encode( $app->charset, $param{$key} )
+            : $param{$key};
     }
     my $set = \%set;
     unpack 'H*', $ser->serialize( \$set );
@@ -621,9 +638,10 @@ sub unserialize_config {
             my $saved_cfg = $$thawed;
             if ( keys %$saved_cfg ) {
                 foreach my $p ( keys %$saved_cfg ) {
-                    $config{$p} = Encode::is_utf8( $saved_cfg->{$p} ) ? $saved_cfg->{$p}
-                                :                                       Encode::decode( $app->charset, $saved_cfg->{$p} )
-                                ;
+                    $config{$p}
+                        = Encode::is_utf8( $saved_cfg->{$p} )
+                        ? $saved_cfg->{$p}
+                        : Encode::decode( $app->charset, $saved_cfg->{$p} );
                 }
             }
         }

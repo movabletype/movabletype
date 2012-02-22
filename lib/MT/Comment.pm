@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -10,65 +10,55 @@ use strict;
 use base qw( MT::Object MT::Scorable );
 use MT::Util qw( weaken );
 
-sub JUNK ()     { -1 }
-sub NOT_JUNK () { 1 }
+sub JUNK ()     {-1}
+sub NOT_JUNK () {1}
 
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id' => 'integer not null auto_increment',
-        'blog_id' => 'integer not null',
-        'entry_id' => 'integer not null',
-        'author' => 'string(100)',
-        'commenter_id' => 'integer',
-        'visible' => 'boolean',
-        'junk_status' => 'smallint',
-        'email' => 'string(127)',
-        'url' => 'string(255)',
-        'text' => 'text',
-        'ip' => 'string(50)',
-        'last_moved_on' => 'datetime not null',
-        'junk_score' => 'float',
-        'junk_log' => 'text',
-        'parent_id' => 'integer',
-    },
-    indexes => {
-        entry_visible => {
-            columns => [ 'entry_id', 'visible', 'created_on' ],
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'            => 'integer not null auto_increment',
+            'blog_id'       => 'integer not null',
+            'entry_id'      => 'integer not null',
+            'author'        => 'string(100)',
+            'commenter_id'  => 'integer',
+            'visible'       => 'boolean',
+            'junk_status'   => 'smallint',
+            'email'         => 'string(127)',
+            'url'           => 'string(255)',
+            'text'          => 'text',
+            'ip'            => 'string(50)',
+            'last_moved_on' => 'datetime not null',
+            'junk_score'    => 'float',
+            'junk_log'      => 'text',
+            'parent_id'     => 'integer',
         },
-		author => 1,
-        email => 1,
-        commenter_id => 1,
-        last_moved_on => 1, # used for junk expiration
+        indexes => {
+            entry_visible =>
+                { columns => [ 'entry_id', 'visible', 'created_on' ], },
+            author        => 1,
+            email         => 1,
+            commenter_id  => 1,
+            last_moved_on => 1,    # used for junk expiration
 
-        # For URL lookups to aid spam filtering
-        blog_url => {
-            columns => [ 'blog_id', 'visible', 'url' ],
+            # For URL lookups to aid spam filtering
+            blog_url => { columns => [ 'blog_id', 'visible', 'url' ], },
+            blog_stat =>
+                { columns => [ 'blog_id', 'junk_status', 'created_on' ], },
+            blog_visible =>
+                { columns => [ 'blog_id', 'visible', 'created_on', 'id' ], },
+            dd_coment_vis_mod => { columns => [ 'visible', 'modified_on' ], },
+            visible_date      => { columns => [ 'visible', 'created_on' ], },
+            blog_ip_date => { columns => [ 'blog_id', 'ip', 'created_on' ], },
         },
-        blog_stat => {
-            columns => [ 'blog_id', 'junk_status', 'created_on' ],
+        meta     => 1,
+        defaults => {
+            junk_status   => NOT_JUNK,
+            last_moved_on => '20000101000000',
         },
-        blog_visible => {
-            columns => [ 'blog_id', 'visible', 'created_on', 'id' ],
-        },
-		dd_coment_vis_mod => {
-			columns => [ 'visible', 'modified_on' ],
-		},
-        visible_date => {
-            columns => [ 'visible', 'created_on' ],
-        },
-        blog_ip_date => {
-            columns => [ 'blog_id', 'ip', 'created_on'],
-        },
-    },
-    meta => 1,
-    defaults => {
-        junk_status => NOT_JUNK,
-        last_moved_on => '20000101000000',
-    },
-    audit => 1,
-    datasource => 'comment',
-    primary_key => 'id',
-});
+        audit       => 1,
+        datasource  => 'comment',
+        primary_key => 'id',
+    }
+);
 
 my %blocklists = ();
 
@@ -88,25 +78,26 @@ sub is_not_junk {
     $_[0]->junk_status != JUNK;
 }
 
-sub is_not_blocked { 
-    my ($eh, $cmt) = @_;
-    
-    my($host, @hosts);
+sub is_not_blocked {
+    my ( $eh, $cmt ) = @_;
+
+    my ( $host, @hosts );
+
     # other URI schemes?
     require MT::Util;
-    @hosts = MT::Util::extract_urls($cmt->text);
-    
+    @hosts = MT::Util::extract_urls( $cmt->text );
+
     my $not_blocked = 1;
-    my $blog_id = $cmt->blog_id;
-    if (!$blocklists{$blog_id}) {
+    my $blog_id     = $cmt->blog_id;
+    if ( !$blocklists{$blog_id} ) {
         require MT::Blocklist;
         my @blocks = MT::Blocklist->load( { blog_id => $blog_id } );
-        $blocklists{$blog_id} = [ @blocks ];
+        $blocklists{$blog_id} = [@blocks];
     }
-    if (@{$blocklists{$blog_id}}) {
+    if ( @{ $blocklists{$blog_id} } ) {
         for my $h (@hosts) {
-            for my $b (@{$blocklists{$blog_id}}) {
-                $not_blocked = 0 if ($h eq $b->text);
+            for my $b ( @{ $blocklists{$blog_id} } ) {
+                $not_blocked = 0 if ( $h eq $b->text );
             }
         }
     }
@@ -115,23 +106,23 @@ sub is_not_blocked {
 
 sub next {
     my $comment = shift;
-    my($publish_only) = @_;
-    $publish_only = $publish_only ? {'visible' => 1} : {};
-    $comment->_nextprev('next', $publish_only);
+    my ($publish_only) = @_;
+    $publish_only = $publish_only ? { 'visible' => 1 } : {};
+    $comment->_nextprev( 'next', $publish_only );
 }
 
 sub previous {
     my $comment = shift;
-    my($publish_only) = @_;
-    $publish_only = $publish_only ? {'visible' => 1} : {};
-    $comment->_nextprev('previous', $publish_only);
+    my ($publish_only) = @_;
+    $publish_only = $publish_only ? { 'visible' => 1 } : {};
+    $comment->_nextprev( 'previous', $publish_only );
 }
 
 sub _nextprev {
-    my $obj = shift;
+    my $obj   = shift;
     my $class = ref($obj);
-    my ($direction, $terms) = @_;
-    return undef unless ($direction eq 'next' || $direction eq 'previous');
+    my ( $direction, $terms ) = @_;
+    return undef unless ( $direction eq 'next' || $direction eq 'previous' );
     my $next = $direction eq 'next';
 
     my $label = '__' . $direction;
@@ -142,7 +133,7 @@ sub _nextprev {
         terms     => { blog_id => $obj->blog_id, %$terms },
         by        => 'created_on',
     );
-    weaken($o->{$label} = $o) if $o;
+    weaken( $o->{$label} = $o ) if $o;
     return $o;
 }
 
@@ -153,9 +144,13 @@ sub entry {
         my $entry_id = $comment->entry_id;
         return undef unless $entry_id;
         require MT::Entry;
-        $entry = MT::Entry->load($entry_id) or
-            return $comment->error(MT->translate(
-            "Load of entry '[_1]' failed: [_2]", $entry_id, MT::Entry->errstr));
+        $entry = MT::Entry->load($entry_id)
+            or return $comment->error(
+            MT->translate(
+                "Load of entry '[_1]' failed: [_2]", $entry_id,
+                MT::Entry->errstr
+            )
+            );
         $comment->{__entry} = $entry;
     }
     return $entry;
@@ -167,9 +162,13 @@ sub blog {
     unless ($blog) {
         my $blog_id = $comment->blog_id;
         require MT::Blog;
-        $blog = MT::Blog->load($blog_id) or
-            return $comment->error(MT->translate(
-            "Load of blog '[_1]' failed: [_2]", $blog_id, MT::Blog->errstr));
+        $blog = MT::Blog->load($blog_id)
+            or return $comment->error(
+            MT->translate(
+                "Load of blog '[_1]' failed: [_2]", $blog_id,
+                MT::Blog->errstr
+            )
+            );
         $comment->{__blog} = $blog;
     }
     return $blog;
@@ -177,11 +176,15 @@ sub blog {
 
 sub junk {
     my ($comment) = @_;
-    if (($comment->junk_status || 0) != JUNK) {
+    if ( ( $comment->junk_status || 0 ) != JUNK ) {
         require MT::Util;
-        my @ts = MT::Util::offset_time_list(time, $comment->blog_id);
-        my $ts = sprintf("%04d%02d%02d%02d%02d%02d",
-                         $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0]);
+        my @ts = MT::Util::offset_time_list( time, $comment->blog_id );
+        my $ts = sprintf(
+            "%04d%02d%02d%02d%02d%02d",
+            $ts[5] + 1900,
+            $ts[4] + 1,
+            @ts[ 3, 2, 1, 0 ]
+        );
         $comment->last_moved_on($ts);
     }
     $comment->junk_status(JUNK);
@@ -204,21 +207,21 @@ sub approve {
 
 sub author {
     my $comment = shift;
-    if (!@_ && $comment->commenter_id) {
+    if ( !@_ && $comment->commenter_id ) {
         require MT::Author;
-        if (my $auth = MT::Author->load($comment->commenter_id)) {
+        if ( my $auth = MT::Author->load( $comment->commenter_id ) ) {
             return $auth->nickname;
         }
     }
-    return $comment->column('author', @_);
+    return $comment->column( 'author', @_ );
 }
 
 sub all_text {
     my $this = shift;
     my $text = $this->column('author') || '';
-    $text .= "\n" . ($this->column('email') || '');
-    $text .= "\n" . ($this->column('url') || '');
-    $text .= "\n" . ($this->column('text') || '');
+    $text .= "\n" . ( $this->column('email') || '' );
+    $text .= "\n" . ( $this->column('url')   || '' );
+    $text .= "\n" . ( $this->column('text')  || '' );
     $text;
 }
 
@@ -231,14 +234,15 @@ sub is_moderated {
 }
 
 sub log {
+
     # TBD: pre-load __junk_log when loading the comment
     my $comment = shift;
-    push @{$comment->{__junk_log}}, @_;
+    push @{ $comment->{__junk_log} }, @_;
 }
 
 sub save {
     my $comment = shift;
-    $comment->junk_log(join "\n", @{$comment->{__junk_log}})
+    $comment->junk_log( join "\n", @{ $comment->{__junk_log} } )
         if ref $comment->{__junk_log} eq 'ARRAY';
     my $ret = $comment->SUPER::save();
     delete $comment->{__changed}{visibility} if $ret;
@@ -246,34 +250,38 @@ sub save {
 }
 
 sub to_hash {
-    my $cmt = shift;
+    my $cmt  = shift;
     my $hash = $cmt->SUPER::to_hash();
 
-    $hash->{'comment.created_on_iso'} = sub { MT::Util::ts2iso($cmt->blog, $cmt->created_on) };
-    $hash->{'comment.modified_on_iso'} = sub { MT::Util::ts2iso($cmt->blog, $cmt->modified_on) };
-    if (my $blog = $cmt->blog) {
+    $hash->{'comment.created_on_iso'}
+        = sub { MT::Util::ts2iso( $cmt->blog, $cmt->created_on ) };
+    $hash->{'comment.modified_on_iso'}
+        = sub { MT::Util::ts2iso( $cmt->blog, $cmt->modified_on ) };
+    if ( my $blog = $cmt->blog ) {
         $hash->{'comment.text_html'} = sub {
             my $txt = defined $cmt->text ? $cmt->text : '';
             require MT::Util;
-            $txt = MT::Util::munge_comment($txt, $blog);
+            $txt = MT::Util::munge_comment( $txt, $blog );
             my $convert_breaks = $blog->convert_paras_comments;
-            $txt = $convert_breaks ?
-                MT->apply_text_filters($txt, $blog->comment_text_filters) :
-                $txt;
-            my $sanitize_spec = $blog->sanitize_spec ||
-                MT->config->GlobalSanitizeSpec;
+            $txt
+                = $convert_breaks
+                ? MT->apply_text_filters( $txt, $blog->comment_text_filters )
+                : $txt;
+            my $sanitize_spec = $blog->sanitize_spec
+                || MT->config->GlobalSanitizeSpec;
             require MT::Sanitize;
-            MT::Sanitize->sanitize($txt, $sanitize_spec);
-        }
+            MT::Sanitize->sanitize( $txt, $sanitize_spec );
+            }
     }
-    if (my $entry = $cmt->entry) {
+    if ( my $entry = $cmt->entry ) {
         my $entry_hash = $entry->to_hash;
         $hash->{"comment.$_"} = $entry_hash->{$_} foreach keys %$entry_hash;
     }
-    if ($cmt->commenter_id) {
+    if ( $cmt->commenter_id ) {
+
         # commenter record exists... populate it
         require MT::Author;
-        if (my $auth = MT::Author->load($cmt->commenter_id)) {
+        if ( my $auth = MT::Author->load( $cmt->commenter_id ) ) {
             my $auth_hash = $auth->to_hash;
             $hash->{"comment.$_"} = $auth_hash->{$_} foreach keys %$auth_hash;
         }
@@ -292,9 +300,10 @@ sub visible {
     my $is_visible = shift || 0;
 
     my $vis_delta = 0;
-    if (!$was_visible && $is_visible) {
+    if ( !$was_visible && $is_visible ) {
         $vis_delta = 1;
-    } elsif ($was_visible && !$is_visible) {
+    }
+    elsif ( $was_visible && !$is_visible ) {
         $vis_delta = -1;
     }
     $comment->{__changed}{visibility} ||= 0;
@@ -305,11 +314,14 @@ sub visible {
 
 sub parent {
     my $comment = shift;
-    $comment->cache_property('parent', sub {
-        if ($comment->parent_id) {
-            return MT::Comment->load($comment->parent_id);
+    $comment->cache_property(
+        'parent',
+        sub {
+            if ( $comment->parent_id ) {
+                return MT::Comment->load( $comment->parent_id );
+            }
         }
-    });
+    );
 }
 
 1;

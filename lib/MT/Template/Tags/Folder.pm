@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -40,11 +40,11 @@ B<Example:>
 =cut
 
 sub _hdlr_if_folder {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry');
-    return undef if ($e && !defined $e->category);
+    return undef if ( $e && !defined $e->category );
     return undef unless &_check_folder(@_);
-    return $ctx->invoke_handler('ifcategory', $args, $cond);
+    return $ctx->invoke_handler( 'ifcategory', $args, $cond );
 }
 
 ###########################################################################
@@ -112,12 +112,15 @@ sub _hdlr_has_parent_folder {
 
 sub _check_folder {
     my ($ctx) = @_;
-    my $e = $ctx->stash('entry');
-    my $cat = ($ctx->stash('category'))
-        || (($e = $ctx->stash('entry')) && $e->category)
-        or return $ctx->error(MT->translate(
+    my $e     = $ctx->stash('entry');
+    my $cat   = ( $ctx->stash('category') )
+        || ( ( $e = $ctx->stash('entry') ) && $e->category )
+        or return $ctx->error(
+        MT->translate(
             "You used an [_1] tag outside of the proper context.",
-            'MT' . $ctx->stash('tag') ));
+            'MT' . $ctx->stash('tag')
+        )
+        );
     1;
 }
 
@@ -132,13 +135,13 @@ A container tag which holds folder context relating to the page.
 =cut
 
 sub _hdlr_page_folder {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     return undef unless $ctx->check_page;
     require MT::Page;
     $args->{class_type} = MT::Page->properties->{class_type};
     local $ctx->{inside_mt_categories} = 1;
-    $ctx->invoke_handler('entrycategories', $args, $cond);
+    $ctx->invoke_handler( 'entrycategories', $args, $cond );
 }
 
 ###########################################################################
@@ -164,11 +167,11 @@ assigned.
 =cut
 
 sub _hdlr_folders {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     require MT::Folder;
     $args->{class_type} = MT::Folder->properties->{class_type};
-    $ctx->invoke_handler('categories', $args, $cond);
+    $ctx->invoke_handler( 'categories', $args, $cond );
 }
 
 ###########################################################################
@@ -194,13 +197,14 @@ relative to the current page folder or archived folder.
 =cut
 
 sub _hdlr_folder_prevnext {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     require MT::Folder;
     $args->{class_type} = MT::Folder->properties->{class_type};
     require MT::Template::Tags::Category;
-    MT::Template::Tags::Category::_hdlr_category_prevnext($ctx, $args, $cond);
-    
+    MT::Template::Tags::Category::_hdlr_category_prevnext( $ctx, $args,
+        $cond );
+
 }
 
 ###########################################################################
@@ -242,11 +246,11 @@ L<TopLevelFolders>.
 =cut
 
 sub _hdlr_sub_folders {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     require MT::Folder;
     $args->{class_type} = MT::Folder->properties->{class_type};
-    $ctx->invoke_handler('subcategories', $args, $cond);
+    $ctx->invoke_handler( 'subcategories', $args, $cond );
 }
 
 ###########################################################################
@@ -276,11 +280,11 @@ folder in the list.
 =cut
 
 sub _hdlr_parent_folders {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     require MT::Folder;
     $args->{class_type} = MT::Folder->properties->{class_type};
-    $ctx->invoke_handler('parentcategories', $args, $cond);
+    $ctx->invoke_handler( 'parentcategories', $args, $cond );
 }
 
 ###########################################################################
@@ -300,11 +304,11 @@ B<Example:>
 =cut
 
 sub _hdlr_parent_folder {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     require MT::Folder;
     $args->{class_type} = MT::Folder->properties->{class_type};
-    $ctx->invoke_handler('parentcategory', $args, $cond);
+    $ctx->invoke_handler( 'parentcategory', $args, $cond );
 }
 
 ###########################################################################
@@ -323,11 +327,11 @@ B<Example:>
 =cut
 
 sub _hdlr_top_level_folders {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     require MT::Folder;
     $args->{class_type} = MT::Folder->properties->{class_type};
-    $ctx->invoke_handler('toplevelcategories', $args, $cond);
+    $ctx->invoke_handler( 'toplevelcategories', $args, $cond );
 }
 
 ###########################################################################
@@ -342,11 +346,11 @@ the current folder.
 =cut
 
 sub _hdlr_top_level_folder {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     require MT::Folder;
     $args->{class_type} = MT::Folder->properties->{class_type};
-    $ctx->invoke_handler('toplevelcategory', $args, $cond);
+    $ctx->invoke_handler( 'toplevelcategory', $args, $cond );
 }
 
 ###########################################################################
@@ -381,7 +385,7 @@ B<Example:>
 
 sub _hdlr_folder_basename {
     return undef unless &_check_folder(@_);
-    shift->invoke_handler('categorybasename', @_);
+    shift->invoke_handler( 'categorybasename', @_ );
 }
 
 ###########################################################################
@@ -400,7 +404,7 @@ B<Example:>
 
 sub _hdlr_folder_description {
     return undef unless &_check_folder(@_);
-    shift->invoke_handler('categorydescription', @_);
+    shift->invoke_handler( 'categorydescription', @_ );
 }
 
 ###########################################################################
@@ -419,7 +423,7 @@ B<Example:>
 
 sub _hdlr_folder_id {
     return undef unless &_check_folder(@_);
-    shift->invoke_handler('categoryid', @_);
+    shift->invoke_handler( 'categoryid', @_ );
 }
 
 ###########################################################################
@@ -438,7 +442,7 @@ B<Example:>
 
 sub _hdlr_folder_label {
     return undef unless &_check_folder(@_);
-    shift->invoke_handler('categorylabel', @_);
+    shift->invoke_handler( 'categorylabel', @_ );
 }
 
 ###########################################################################
@@ -457,7 +461,7 @@ B<Example:>
 
 sub _hdlr_folder_count {
     return undef unless &_check_folder(@_);
-    shift->invoke_handler('categorycount', @_);
+    shift->invoke_handler( 'categorycount', @_ );
 }
 
 ###########################################################################
@@ -488,7 +492,7 @@ becomes foo/bar.
 
 sub _hdlr_folder_path {
     return undef unless &_check_folder(@_);
-    shift->invoke_handler('subcategorypath', @_);
+    shift->invoke_handler( 'subcategorypath', @_ );
 }
 
 ###########################################################################
@@ -541,11 +545,11 @@ Or more simply:
 =cut
 
 sub _hdlr_sub_folder_recurse {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     require MT::Folder;
     $args->{class_type} = MT::Folder->properties->{class_type};
-    $ctx->invoke_handler('subcatsrecurse', $args, $cond);
+    $ctx->invoke_handler( 'subcatsrecurse', $args, $cond );
 }
 
 1;

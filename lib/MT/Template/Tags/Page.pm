@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -8,7 +8,6 @@ package MT::Template::Tags::Page;
 use strict;
 
 use MT;
-
 
 ###########################################################################
 
@@ -22,9 +21,9 @@ has written one or more pages that have been published.
 =cut
 
 sub _hdlr_author_has_page {
-    my ($ctx)   = @_;
-    my $author  = $ctx->stash('author')
-      or return $ctx->_no_author_error();
+    my ($ctx) = @_;
+    my $author = $ctx->stash('author')
+        or return $ctx->_no_author_error();
 
     my %terms;
     $terms{blog_id}   = $ctx->stash('blog_id');
@@ -74,20 +73,21 @@ folder in context to be included.
 =cut
 
 sub _hdlr_pages {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $folder = $args->{folder} || $args->{folders};
     $args->{categories} = $folder if $folder;
 
-    if ($args->{no_folder}) {
+    if ( $args->{no_folder} ) {
         require MT::Folder;
         my $blog_id = $ctx->stash('blog_id');
-        my @fols = MT::Folder->load({blog_id => $blog_id});
+        my @fols = MT::Folder->load( { blog_id => $blog_id } );
         my $not_folder;
         foreach my $folder (@fols) {
             if ($not_folder) {
-                $not_folder .= " OR ".$folder->label;
-            } else {
+                $not_folder .= " OR " . $folder->label;
+            }
+            else {
                 $not_folder = $folder->label;
             }
         }
@@ -102,7 +102,7 @@ sub _hdlr_pages {
 
     require MT::Page;
     $args->{class_type} = MT::Page->properties->{class_type};
-    $ctx->invoke_handler('entries', $args, $cond);
+    $ctx->invoke_handler( 'entries', $args, $cond );
 }
 
 ###########################################################################
@@ -116,12 +116,12 @@ A container tag that create a context to the previous page.
 =cut
 
 sub _hdlr_page_previous {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     return undef unless $ctx->check_page;
     require MT::Page;
     $args->{class_type} = MT::Page->properties->{class_type};
-    $ctx->invoke_handler('entryprevious', $args, $cond);
+    $ctx->invoke_handler( 'entryprevious', $args, $cond );
 }
 
 ###########################################################################
@@ -135,12 +135,12 @@ A container tag that create a context to the next page.
 =cut
 
 sub _hdlr_page_next {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     require MT::Page;
     $args->{class_type} = MT::Page->properties->{class_type};
     return undef unless $ctx->check_page;
-    $ctx->invoke_handler('entrynext', $args, $cond);
+    $ctx->invoke_handler( 'entrynext', $args, $cond );
 }
 
 ###########################################################################
@@ -188,7 +188,7 @@ B<Example:>
 
 sub _hdlr_page_id {
     return undef unless $_[0]->check_page;
-    shift->invoke_handler('entryid', @_);
+    shift->invoke_handler( 'entryid', @_ );
 }
 
 ###########################################################################
@@ -207,7 +207,7 @@ B<Example:>
 
 sub _hdlr_page_title {
     return undef unless $_[0]->check_page;
-    shift->invoke_handler('entrytitle', @_);
+    shift->invoke_handler( 'entrytitle', @_ );
 }
 
 ###########################################################################
@@ -244,7 +244,7 @@ B<Example:>
 
 sub _hdlr_page_body {
     return undef unless $_[0]->check_page;
-    shift->invoke_handler('entrybody', @_);
+    shift->invoke_handler( 'entrybody', @_ );
 }
 
 ###########################################################################
@@ -277,7 +277,7 @@ B<Example:>
 
 sub _hdlr_page_more {
     return undef unless $_[0]->check_page;
-    shift->invoke_handler('entrymore', @_);
+    shift->invoke_handler( 'entrymore', @_ );
 }
 
 ###########################################################################
@@ -317,7 +317,7 @@ B<Example:>
 
 sub _hdlr_page_date {
     return undef unless $_[0]->check_page;
-    shift->invoke_handler('entrydate', @_);
+    shift->invoke_handler( 'entrydate', @_ );
 }
 
 ###########################################################################
@@ -357,7 +357,7 @@ B<Example:>
 
 sub _hdlr_page_modified_date {
     return undef unless $_[0]->check_page;
-    shift->invoke_handler('entrymodifieddate', @_);
+    shift->invoke_handler( 'entrymodifieddate', @_ );
 }
 
 ###########################################################################
@@ -374,7 +374,7 @@ B<Example:>
 
 sub _hdlr_page_keywords {
     return undef unless $_[0]->check_page;
-    shift->invoke_handler('entrykeywords', @_);
+    shift->invoke_handler( 'entrykeywords', @_ );
 }
 
 ###########################################################################
@@ -419,7 +419,7 @@ B<Example:>
 
 sub _hdlr_page_basename {
     return undef unless $_[0]->check_page;
-    shift->invoke_handler('entrybasename', @_);
+    shift->invoke_handler( 'entrybasename', @_ );
 }
 
 ###########################################################################
@@ -440,7 +440,7 @@ B<Example:>
 
 sub _hdlr_page_permalink {
     return undef unless $_[0]->check_page;
-    shift->invoke_handler('entrypermalink', @_);
+    shift->invoke_handler( 'entrypermalink', @_ );
 }
 
 ###########################################################################
@@ -460,7 +460,7 @@ B<Example:>
 
 sub _hdlr_page_author_display_name {
     return undef unless $_[0]->check_page;
-    shift->invoke_handler('entryauthordisplayname', @_);
+    shift->invoke_handler( 'entryauthordisplayname', @_ );
 }
 
 ###########################################################################
@@ -481,7 +481,7 @@ B<Example:>
 
 sub _hdlr_page_author_email {
     return undef unless $_[0]->check_page;
-    shift->invoke_handler('entryauthoremail', @_);
+    shift->invoke_handler( 'entryauthoremail', @_ );
 }
 
 ###########################################################################
@@ -524,7 +524,7 @@ B<Examples:>
 
 sub _hdlr_page_author_link {
     return undef unless $_[0]->check_page;
-    shift->invoke_handler('entryauthorlink', @_);
+    shift->invoke_handler( 'entryauthorlink', @_ );
 }
 
 ###########################################################################
@@ -541,7 +541,7 @@ B<Example:>
 
 sub _hdlr_page_author_url {
     return undef unless $_[0]->check_page;
-    shift->invoke_handler('entryauthorurl', @_);
+    shift->invoke_handler( 'entryauthorurl', @_ );
 }
 
 ###########################################################################
@@ -580,7 +580,7 @@ B<Example:>
 
 sub _hdlr_page_excerpt {
     return undef unless $_[0]->check_page;
-    shift->invoke_handler('entryexcerpt', @_);
+    shift->invoke_handler( 'entryexcerpt', @_ );
 }
 
 ###########################################################################
@@ -614,11 +614,11 @@ B<Example:>
 =cut
 
 sub _hdlr_blog_page_count {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     require MT::Page;
     $args->{class_type} = MT::Page->properties->{class_type};
-    $ctx->invoke_handler('blogentrycount', $args, $cond);
+    $ctx->invoke_handler( 'blogentrycount', $args, $cond );
 }
 
 1;

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -12,21 +12,22 @@ use MT::Serialize;
 use MT::Blog;
 use base qw( MT::Object );
 
-__PACKAGE__->install_properties ({
-    column_defs => {
-        'id' => 'integer not null auto_increment',
-        'plugin' => 'string(50) not null',
-        'key' => 'string(255) not null',
-        'data' => 'blob',
-    },
-    indexes => {
-        plugin => 1,
-        key => 1,
-    },
-    child_of => 'MT::Blog',
-    datasource => 'plugindata',
-    primary_key => 'id',
-});
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'     => 'integer not null auto_increment',
+            'plugin' => 'string(50) not null',
+            'key'    => 'string(255) not null',
+            'data'   => 'blob',
+        },
+        indexes => {
+            plugin => 1,
+            key    => 1,
+        },
+        child_of    => 'MT::Blog',
+        datasource  => 'plugindata',
+        primary_key => 'id',
+    }
+);
 
 sub class_label {
     MT->translate("Plugin Data");
@@ -34,17 +35,17 @@ sub class_label {
 
 sub load {
     my $pd = shift;
-    return $pd->SUPER::load( @_ ) if ref( $pd );
+    return $pd->SUPER::load(@_) if ref($pd);
 
     my ( $terms, $args ) = @_;
-    return $pd->SUPER::load(@_) unless $terms && exists($terms->{blog_id});
+    return $pd->SUPER::load(@_) unless $terms && exists( $terms->{blog_id} );
 
     my $blog_ids = delete $terms->{blog_id};
-    if ( 'ARRAY' ne ref( $blog_ids ) ) {
-       $blog_ids = [ $blog_ids ];
+    if ( 'ARRAY' ne ref($blog_ids) ) {
+        $blog_ids = [$blog_ids];
     }
 
-    my @keys = map { "configuration:blog:$_" } @$blog_ids;
+    my @keys = map {"configuration:blog:$_"} @$blog_ids;
     $terms->{key} = \@keys;
     $pd->SUPER::load( $terms, $args );
 }
@@ -54,47 +55,54 @@ sub remove {
     return $pd->SUPER::remove(@_) if ref($pd);
 
     # class method call - might have blog_id parameter
-    my ($terms, $args) = @_;
-    return $pd->SUPER::remove(@_) unless $terms && exists($terms->{blog_id});
+    my ( $terms, $args ) = @_;
+    return $pd->SUPER::remove(@_)
+        unless $terms && exists( $terms->{blog_id} );
 
     my $blog_ids = delete $terms->{blog_id};
     if ( 'ARRAY' ne ref($blog_ids) ) {
-        $blog_ids = [ $blog_ids ];
+        $blog_ids = [$blog_ids];
     }
 
-    my @keys = map { "configuration:blog:$_" } @$blog_ids;
+    my @keys = map {"configuration:blog:$_"} @$blog_ids;
     $terms->{key} = \@keys;
-    $pd->SUPER::remove($terms, $args);
+    $pd->SUPER::remove( $terms, $args );
 }
 
 {
     my $ser;
+
     sub data {
         my $self = shift;
-        $ser ||= MT::Serialize->new('MT');  # force MT serialization for plugins
+        $ser
+            ||= MT::Serialize->new('MT'); # force MT serialization for plugins
         if (@_) {
             my $data = shift;
-            if (ref($data)) {
-                $self->column('data', $ser->serialize( \$data ));
-            } else {
-                $self->column('data', $data);
+            if ( ref($data) ) {
+                $self->column( 'data', $ser->serialize( \$data ) );
+            }
+            else {
+                $self->column( 'data', $data );
             }
             $data;
-        } else {
+        }
+        else {
             my $data = $self->column('data');
             return undef unless defined $data;
-            if (substr($data, 0, 4) eq 'SERG') {
-                my $thawed = $ser->unserialize( $data );
+            if ( substr( $data, 0, 4 ) eq 'SERG' ) {
+                my $thawed = $ser->unserialize($data);
                 my $ret = defined $thawed ? $$thawed : undef;
                 return $ret;
-            } else {
+            }
+            else {
+
                 # signature is not a match, so the data must be stored
                 # using Storable...
                 require Storable;
-                my $thawed = eval { Storable::thaw( $data ) };
-                if ($@ =~ m/byte order/i) {
+                my $thawed = eval { Storable::thaw($data) };
+                if ( $@ =~ m/byte order/i ) {
                     $Storable::interwork_56_64bit = 1;
-                    $thawed = eval { Storable::thaw( $data ) };
+                    $thawed = eval { Storable::thaw($data) };
                 }
                 return undef if $@;
                 return $thawed;

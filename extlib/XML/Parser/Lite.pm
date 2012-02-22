@@ -5,15 +5,16 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Lite.pm 249 2008-05-05 20:35:05Z kutterma $
+# $Id: Lite.pm 386 2011-08-18 19:48:31Z kutterma $
 #
 # ======================================================================
 
 package XML::Parser::Lite;
 
 use strict;
-use vars qw($VERSION);
-use version; $VERSION = qv('0.710.05');
+use warnings;
+
+our $VERSION = 0.714;
 
 sub new {
     my $class = shift;
@@ -32,7 +33,8 @@ sub setHandlers {
     my $self = shift;
 
     # allow symbolic refs, avoid "subroutine redefined" warnings
-    no strict 'refs'; local $^W;
+    no strict 'refs';
+    no warnings qw(redefine);
     # clear all handlers if called without parameters
     if (not @_) {
         for (qw(Start End Char Final Init Comment Doctype XMLDecl)) {
@@ -126,6 +128,7 @@ my $REGEXP = _regexp('??');
 sub _parse_re {
     use re "eval";
     undef $^R;
+    no strict 'refs';
     1 while $_[0] =~ m{$REGEXP}go
 };
 
@@ -165,7 +168,8 @@ sub _final {
 sub _start {
     die "multiple roots, wrong element '$_[0]'\n" if $level++ && !@stack;
     push(@stack, $_[0]);
-    Start(__PACKAGE__, @_);
+    my $r=Start(__PACKAGE__, @_);
+    return ref($r) eq 'ARRAY' ? $r : undef;
 }
 
 sub _char {
@@ -182,21 +186,26 @@ sub _char {
 }
 
 sub _end {
+    no warnings qw(uninitialized);
     pop(@stack) eq $_[0] or die "mismatched tag '$_[0]'\n";
-    End(__PACKAGE__, $_[0]);
+    my $r=End(__PACKAGE__, $_[0]);
+    return ref($r) eq 'ARRAY' ? $r : undef;
 }
 
 sub comment {
-    Comment(__PACKAGE__, $_[0]);
+    my $r=Comment(__PACKAGE__, $_[0]);
+    return ref($r) eq 'ARRAY' ? $r : undef;
 }
 
 sub end {
-     pop(@stack) eq $_[0] or die "mismatched tag '$_[0]'\n";
-     End(__PACKAGE__, $_[0]);
- }
+    pop(@stack) eq $_[0] or die "mismatched tag '$_[0]'\n";
+    my $r=End(__PACKAGE__, $_[0]);
+    return ref($r) eq 'ARRAY' ? $r : undef;
+}
 
 sub _doctype {
-    Doctype(__PACKAGE__, $_[0]);
+    my $r=Doctype(__PACKAGE__, $_[0]);
+    return ref($r) eq 'ARRAY' ? $r : undef;
 }
 
 sub _xmldecl {

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -39,14 +39,14 @@ would iterate over only the blogs with IDs 1, 12, 19, 37 and 112.
 =cut
 
 sub _hdlr_blogs {
-    my($ctx, $args, $cond) = @_;
-    my (%terms, %args);
+    my ( $ctx, $args, $cond ) = @_;
+    my ( %terms, %args );
 
-    $ctx->set_blog_load_context($args, \%terms, \%args, 'id')
-        or return $ctx->error($ctx->errstr);
+    $ctx->set_blog_load_context( $args, \%terms, \%args, 'id' )
+        or return $ctx->error( $ctx->errstr );
 
     my $builder = $ctx->stash('builder');
-    my $tokens = $ctx->stash('tokens');
+    my $tokens  = $ctx->stash('tokens');
 
     local $ctx->{__stash}{entries} = undef
         if $args->{ignore_archive_context};
@@ -63,24 +63,24 @@ sub _hdlr_blogs {
     require MT::Blog;
     $args{'sort'} = 'name';
     $args{direction} = 'ascend';
-    my $iter = MT::Blog->load_iter(\%terms, \%args);
-    my $res = '';
+    my $iter  = MT::Blog->load_iter( \%terms, \%args );
+    my $res   = '';
     my $count = 0;
-    my $next = $iter->();
-    my $vars = $ctx->{__stash}{vars} ||= {};
+    my $next  = $iter->();
+    my $vars  = $ctx->{__stash}{vars} ||= {};
     while ($next) {
         my $blog = $next;
         $next = $iter->();
         $count++;
-        local $ctx->{__stash}{blog} = $blog;
+        local $ctx->{__stash}{blog}    = $blog;
         local $ctx->{__stash}{blog_id} = $blog->id;
-        local $vars->{__first__} = $count == 1;
-        local $vars->{__last__} = !$next;
-        local $vars->{__odd__} = ($count % 2) == 1;
-        local $vars->{__even__} = ($count % 2) == 0;
-        local $vars->{__counter__} = $count;
-        defined(my $out = $builder->build($ctx, $tokens, $cond))
-            or return $ctx->error($builder->errstr);
+        local $vars->{__first__}       = $count == 1;
+        local $vars->{__last__}        = !$next;
+        local $vars->{__odd__}         = ( $count % 2 ) == 1;
+        local $vars->{__even__}        = ( $count % 2 ) == 0;
+        local $vars->{__counter__}     = $count;
+        defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
+            or return $ctx->error( $builder->errstr );
         $res .= $out;
     }
     $res;
@@ -143,7 +143,7 @@ Outputs the numeric ID of the blog currently in context.
 =cut
 
 sub _hdlr_blog_id {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     $blog ? $blog->id : 0;
 }
@@ -159,7 +159,7 @@ Outputs the name of the blog currently in context.
 =cut
 
 sub _hdlr_blog_name {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     my $name = $blog->name;
@@ -177,7 +177,7 @@ Outputs the description field of the blog currently in context.
 =cut
 
 sub _hdlr_blog_description {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     my $d = $blog->description;
@@ -185,7 +185,7 @@ sub _hdlr_blog_description {
 }
 
 {
-    my %real_lang = (cz => 'cs', dk => 'da', jp => 'ja', si => 'sl');
+    my %real_lang = ( cz => 'cs', dk => 'da', jp => 'ja', si => 'sl' );
     ###########################################################################
 
 =head2 BlogLanguage
@@ -212,19 +212,23 @@ it to the IETF RFC # 3066.
 
 =cut
 
-sub _hdlr_blog_language {
-    my ($ctx, $args, $cond) = @_;
-    my $blog = $ctx->stash('blog');
-    my $lang_tag = ($blog ? $blog->language : $ctx->{config}->DefaultLanguage) || '';
-    $lang_tag = ($real_lang{$lang_tag} || $lang_tag);
-    if ($args->{'locale'}) {
-        $lang_tag =~ s/^(..)([-_](..))?$/$1 . '_' . uc($3||$1)/e;
-    } elsif ($args->{"ietf"}) {
-        # http://www.ietf.org/rfc/rfc3066.txt
-        $lang_tag =~ s/_/-/;
+    sub _hdlr_blog_language {
+        my ( $ctx, $args, $cond ) = @_;
+        my $blog = $ctx->stash('blog');
+        my $lang_tag
+            = ( $blog ? $blog->language : $ctx->{config}->DefaultLanguage )
+            || '';
+        $lang_tag = ( $real_lang{$lang_tag} || $lang_tag );
+        if ( $args->{'locale'} ) {
+            $lang_tag =~ s/^(..)([-_](..))?$/$1 . '_' . uc($3||$1)/e;
+        }
+        elsif ( $args->{"ietf"} ) {
+
+            # http://www.ietf.org/rfc/rfc3066.txt
+            $lang_tag =~ s/_/-/;
+        }
+        $lang_tag;
     }
-    $lang_tag;
-}
 }
 
 ###########################################################################
@@ -239,11 +243,12 @@ Outputs the Site URL field of the blog currently in context. An ending
 =cut
 
 sub _hdlr_blog_url {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog;
-    if ($args->{id} && ($args->{id} =~ m/^\d+$/)) {
-        $blog = MT::Blog->load($args->{id});
-    } else {
+    if ( $args->{id} && ( $args->{id} =~ m/^\d+$/ ) ) {
+        $blog = MT::Blog->load( $args->{id} );
+    }
+    else {
         $blog = $ctx->stash('blog');
     }
     return '' unless $blog;
@@ -265,11 +270,12 @@ Outputs the Archive URL of the blog currently in context. An ending
 =cut
 
 sub _hdlr_blog_archive_url {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog;
-    if ($args->{id} && ($args->{id} =~ m/^\d+$/)) {
-        $blog = MT::Blog->load($args->{id});
-    } else {
+    if ( $args->{id} && ( $args->{id} =~ m/^\d+$/ ) ) {
+        $blog = MT::Blog->load( $args->{id} );
+    }
+    else {
         $blog = $ctx->stash('blog');
     }
     return '' unless $blog;
@@ -290,19 +296,21 @@ Similar to the L<BlogURL> tag, but removes any domain name from the URL.
 =cut
 
 sub _hdlr_blog_relative_url {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog;
-    if ($args->{id} && ($args->{id} =~ m/^\d+$/)) {
-        $blog = MT::Blog->load($args->{id});
-    } else {
+    if ( $args->{id} && ( $args->{id} =~ m/^\d+$/ ) ) {
+        $blog = MT::Blog->load( $args->{id} );
+    }
+    else {
         $blog = $ctx->stash('blog');
     }
     return '' unless $blog;
     my $host = $blog->site_url;
     return '' unless defined $host;
-    if ($host =~ m!^https?://[^/]+(/.*)$!) {
+    if ( $host =~ m!^https?://[^/]+(/.*)$! ) {
         return $1;
-    } else {
+    }
+    else {
         return '';
     }
 }
@@ -319,11 +327,12 @@ Outputs the Site Root field of the blog currently in context. An ending
 =cut
 
 sub _hdlr_blog_site_path {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog;
-    if ($args->{id} && ($args->{id} =~ m/^\d+$/)) {
-        $blog = MT::Blog->load($args->{id});
-    } else {
+    if ( $args->{id} && ( $args->{id} =~ m/^\d+$/ ) ) {
+        $blog = MT::Blog->load( $args->{id} );
+    }
+    else {
         $blog = $ctx->stash('blog');
     }
 
@@ -363,20 +372,22 @@ underscores ("_").
 =cut
 
 sub _hdlr_blog_host {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     my $host = $blog->site_url;
-    if ($host =~ m!^https?://([^/:]+)(:\d+)?/?!) {
-        if ($args->{signature}) {
+    if ( $host =~ m!^https?://([^/:]+)(:\d+)?/?! ) {
+        if ( $args->{signature} ) {
+
             # using '_' to replace '.' since '-' is a valid
             # letter for domains
             my $sig = $1;
             $sig =~ s/\./_/g;
             return $sig;
         }
-        return $args->{exclude_port} ? $1 : $1 . ($2 || '');
-    } else {
+        return $args->{exclude_port} ? $1 : $1 . ( $2 || '' );
+    }
+    else {
         return '';
     }
 }
@@ -405,15 +416,15 @@ If specified, will produce the timezone without the ":" character
 =cut
 
 sub _hdlr_blog_timezone {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
-    my $so = $blog->server_offset;
-    my $no_colon = $args->{no_colon};
-    my $partial_hour_offset = 60 * abs($so - int($so));
-    sprintf("%s%02d%s%02d", $so < 0 ? '-' : '+',
-            abs($so), $no_colon ? '' : ':',
-            $partial_hour_offset);
+    my $so                  = $blog->server_offset;
+    my $no_colon            = $args->{no_colon};
+    my $partial_hour_offset = 60 * abs( $so - int($so) );
+    sprintf( "%s%02d%s%02d",
+        $so < 0   ? '-' : '+', abs($so),
+        $no_colon ? ''  : ':', $partial_hour_offset );
 }
 
 ###########################################################################
@@ -458,10 +469,10 @@ sub _hdlr_blog_cc_license_image {
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     my $cc = $blog->cc_license or return '';
-    my ($code, $license, $image_url) = $cc =~ /(\S+) (\S+) (\S+)/;
+    my ( $code, $license, $image_url ) = $cc =~ /(\S+) (\S+) (\S+)/;
     return $image_url if $image_url;
-    "http://creativecommons.org/images/public/" .
-        ($cc eq 'pd' ? 'norights' : 'somerights');
+    "http://creativecommons.org/images/public/"
+        . ( $cc eq 'pd' ? 'norights' : 'somerights' );
 }
 
 ###########################################################################
@@ -487,13 +498,13 @@ entry permalink published in the RDF block.
 =cut
 
 sub _hdlr_cc_license_rdf {
-    my $ctx = shift;
+    my $ctx   = shift;
     my ($arg) = @_;
-    my $blog = $ctx->stash('blog');
+    my $blog  = $ctx->stash('blog');
     return '' unless $blog;
-    my $cc = $blog->cc_license or return '';
+    my $cc     = $blog->cc_license or return '';
     my $cc_url = $blog->cc_license_url;
-    my $rdf = <<RDF;
+    my $rdf    = <<RDF;
 <!--
 <rdf:RDF xmlns="http://web.resource.org/cc/"
          xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -502,13 +513,16 @@ RDF
     ## SGML comments cannot contain double hyphens, so we convert
     ## any double hyphens to single hyphens.
     my $strip_hyphen = sub {
-        (my $s = $_[0]) =~ tr/\-//s;
+        ( my $s = $_[0] ) =~ tr/\-//s;
         $s;
     };
-    if (my $entry = $ctx->stash('entry')) {
-        my $link = $entry->permalink;
-        my $author_name = $entry->author ? $entry->author->nickname || '' : '';
-        $link = MT::Util::strip_index($entry->permalink, $blog) unless $arg->{with_index};
+    if ( my $entry = $ctx->stash('entry') ) {
+        my $link        = $entry->permalink;
+        my $author_name = $entry->author
+            ? $entry->author->nickname || ''
+            : '';
+        $link = MT::Util::strip_index( $entry->permalink, $blog )
+            unless $arg->{with_index};
         $rdf .= <<RDF;
 <Work rdf:about="$link">
 <dc:title>@{[ encode_xml($strip_hyphen->($entry->title)) ]}</dc:title>
@@ -519,7 +533,8 @@ RDF
 <license rdf:resource="$cc_url" />
 </Work>
 RDF
-    } else {
+    }
+    else {
         $rdf .= <<RDF;
 <Work rdf:about="@{[ $blog->site_url ]}">
 <dc:title>@{[ encode_xml($strip_hyphen->($blog->name)) ]}</dc:title>
@@ -545,7 +560,7 @@ string.
 =cut
 
 sub _hdlr_blog_file_extension {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     my $ext = $blog->file_extension || '';
@@ -591,7 +606,7 @@ Outputs applied theme's ID for the blog currently in context.
 =cut
 
 sub _hdlr_blog_theme_id {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return $ctx->_no_blog_error() unless $blog;
     my $id = $blog->theme_id

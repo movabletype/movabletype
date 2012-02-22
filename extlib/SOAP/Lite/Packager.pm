@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Packager.pm 180 2008-02-25 20:11:28Z kutterma $
+# $Id: Packager.pm 372 2010-04-29 18:32:31Z kutterma $
 #
 # ======================================================================
 
@@ -376,7 +376,7 @@ Instantiates a new instance of a SOAP::Lite::Packager.
 =item parts
 
 Contains an array of parts. The contents of this array and their types are completely
-dependant upon the Packager being used. For example, when using MIME, the content
+dependent upon the Packager being used. For example, when using MIME, the content
 of this array is MIME::Entity's.
 
 =item push_part

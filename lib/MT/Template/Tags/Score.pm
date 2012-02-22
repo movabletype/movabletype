@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -7,19 +7,18 @@ package MT::Template::Tags::Score;
 
 use strict;
 
-
 # FIXME: should this routine return an empty string?
 sub _object_score_for {
-    my ($stash_key, $ctx, $args, $cond) = @_;
+    my ( $stash_key, $ctx, $args, $cond ) = @_;
     my $key = $args->{namespace};
     return '' unless $key;
     my $object = $ctx->stash($stash_key);
     return '' unless $object;
     my $score = $object->score_for($key);
-    if ( !$score && exists($args->{default}) ) {
+    if ( !$score && exists( $args->{default} ) ) {
         return $args->{default};
     }
-    return $ctx->count_format($score, $args);
+    return $ctx->count_format( $score, $args );
 }
 
 ###########################################################################
@@ -50,7 +49,7 @@ B<Example:>
 =cut
 
 sub _hdlr_entry_score {
-    return _object_score_for('entry', @_);
+    return _object_score_for( 'entry', @_ );
 }
 
 ###########################################################################
@@ -81,7 +80,7 @@ B<Example:>
 =cut
 
 sub _hdlr_comment_score {
-    return _object_score_for('comment', @_);
+    return _object_score_for( 'comment', @_ );
 }
 
 ###########################################################################
@@ -112,7 +111,7 @@ B<Example:>
 =cut
 
 sub _hdlr_ping_score {
-    return _object_score_for('ping', @_);
+    return _object_score_for( 'ping', @_ );
 }
 
 ###########################################################################
@@ -143,7 +142,7 @@ B<Example:>
 =cut
 
 sub _hdlr_asset_score {
-    return _object_score_for('asset', @_);
+    return _object_score_for( 'asset', @_ );
 }
 
 ###########################################################################
@@ -174,11 +173,11 @@ B<Example:>
 =cut
 
 sub _hdlr_author_score {
-    return _object_score_for('author', @_);
+    return _object_score_for( 'author', @_ );
 }
 
 sub _object_score_high {
-    my ($stash_key, $ctx, $args, $cond) = @_;
+    my ( $stash_key, $ctx, $args, $cond ) = @_;
     my $key = $args->{namespace};
     return '' unless $key;
     my $object = $ctx->stash($stash_key);
@@ -214,7 +213,7 @@ B<Example:>
 =cut
 
 sub _hdlr_entry_score_high {
-    return _object_score_high('entry', @_);
+    return _object_score_high( 'entry', @_ );
 }
 
 ###########################################################################
@@ -245,7 +244,7 @@ B<Example:>
 =cut
 
 sub _hdlr_comment_score_high {
-    return _object_score_high('comment', @_);
+    return _object_score_high( 'comment', @_ );
 }
 
 ###########################################################################
@@ -276,7 +275,7 @@ B<Example:>
 =cut
 
 sub _hdlr_ping_score_high {
-    return _object_score_high('ping', @_);
+    return _object_score_high( 'ping', @_ );
 }
 
 ###########################################################################
@@ -307,7 +306,7 @@ B<Example:>
 =cut
 
 sub _hdlr_asset_score_high {
-    return _object_score_high('asset', @_);
+    return _object_score_high( 'asset', @_ );
 }
 
 ###########################################################################
@@ -338,11 +337,11 @@ B<Example:>
 =cut
 
 sub _hdlr_author_score_high {
-    return _object_score_high('author', @_);
+    return _object_score_high( 'author', @_ );
 }
 
 sub _object_score_low {
-    my ($stash_key, $ctx, $args, $cond) = @_;
+    my ( $stash_key, $ctx, $args, $cond ) = @_;
     my $key = $args->{namespace};
     return '' unless $key;
     my $object = $ctx->stash($stash_key);
@@ -378,7 +377,7 @@ B<Example:>
 =cut
 
 sub _hdlr_entry_score_low {
-    return _object_score_low('entry', @_);
+    return _object_score_low( 'entry', @_ );
 }
 
 ###########################################################################
@@ -409,7 +408,7 @@ B<Example:>
 =cut
 
 sub _hdlr_comment_score_low {
-    return _object_score_low('comment', @_);
+    return _object_score_low( 'comment', @_ );
 }
 
 ###########################################################################
@@ -438,7 +437,7 @@ B<Example:>
 =cut
 
 sub _hdlr_ping_score_low {
-    return _object_score_low('ping', @_);
+    return _object_score_low( 'ping', @_ );
 }
 
 ###########################################################################
@@ -469,7 +468,7 @@ B<Example:>
 =cut
 
 sub _hdlr_asset_score_low {
-    return _object_score_low('asset', @_);
+    return _object_score_low( 'asset', @_ );
 }
 
 ###########################################################################
@@ -500,18 +499,18 @@ B<Example:>
 =cut
 
 sub _hdlr_author_score_low {
-    return _object_score_low('author', @_);
+    return _object_score_low( 'author', @_ );
 }
 
 # FIXME: should this routine return an empty string?
 sub _object_score_avg {
-    my ($stash_key, $ctx, $args, $cond) = @_;
+    my ( $stash_key, $ctx, $args, $cond ) = @_;
     my $key = $args->{namespace};
     return '' unless $key;
     my $object = $ctx->stash($stash_key);
     return '' unless $object;
     my $avg = $object->score_avg($key);
-    return $ctx->count_format($avg, $args);
+    return $ctx->count_format( $avg, $args );
 }
 
 ###########################################################################
@@ -543,7 +542,7 @@ B<Example:>
 =cut
 
 sub _hdlr_entry_score_avg {
-    return _object_score_avg('entry', @_);
+    return _object_score_avg( 'entry', @_ );
 }
 
 ###########################################################################
@@ -575,7 +574,7 @@ B<Example:>
 =cut
 
 sub _hdlr_comment_score_avg {
-    return _object_score_avg('comment', @_);
+    return _object_score_avg( 'comment', @_ );
 }
 
 ###########################################################################
@@ -607,7 +606,7 @@ B<Example:>
 =cut
 
 sub _hdlr_ping_score_avg {
-    return _object_score_avg('ping', @_);
+    return _object_score_avg( 'ping', @_ );
 }
 
 ###########################################################################
@@ -639,7 +638,7 @@ B<Example:>
 =cut
 
 sub _hdlr_asset_score_avg {
-    return _object_score_avg('asset', @_);
+    return _object_score_avg( 'asset', @_ );
 }
 
 ###########################################################################
@@ -671,18 +670,18 @@ B<Example:>
 =cut
 
 sub _hdlr_author_score_avg {
-    return _object_score_avg('author', @_);
+    return _object_score_avg( 'author', @_ );
 }
 
 # FIXME: should this routine return an empty string?
 sub _object_score_count {
-    my ($stash_key, $ctx, $args, $cond) = @_;
+    my ( $stash_key, $ctx, $args, $cond ) = @_;
     my $key = $args->{namespace};
     return '' unless $key;
     my $object = $ctx->stash($stash_key);
     return '' unless $object;
     my $count = $object->vote_for($key);
-    return $ctx->count_format($count, $args);
+    return $ctx->count_format( $count, $args );
 }
 
 ###########################################################################
@@ -712,7 +711,7 @@ B<Example:>
 =cut
 
 sub _hdlr_entry_score_count {
-    return _object_score_count('entry', @_);
+    return _object_score_count( 'entry', @_ );
 }
 
 ###########################################################################
@@ -743,7 +742,7 @@ B<Example:>
 =cut
 
 sub _hdlr_comment_score_count {
-    return _object_score_count('comment', @_);
+    return _object_score_count( 'comment', @_ );
 }
 
 ###########################################################################
@@ -774,7 +773,7 @@ B<Example:>
 =cut
 
 sub _hdlr_ping_score_count {
-    return _object_score_count('ping', @_);
+    return _object_score_count( 'ping', @_ );
 }
 
 ###########################################################################
@@ -804,7 +803,7 @@ B<Example:>
 =cut
 
 sub _hdlr_asset_score_count {
-    return _object_score_count('asset', @_);
+    return _object_score_count( 'asset', @_ );
 }
 
 ###########################################################################
@@ -834,16 +833,16 @@ B<Example:>
 =cut
 
 sub _hdlr_author_score_count {
-    return _object_score_count('author', @_);
+    return _object_score_count( 'author', @_ );
 }
 
 sub _object_rank {
-    my ($stash_key, $dbd_args, $ctx, $args, $cond) = @_;
+    my ( $stash_key, $dbd_args, $ctx, $args, $cond ) = @_;
     my $key = $args->{namespace};
     return '' unless $key;
     my $object = $ctx->stash($stash_key);
     return '' unless $object;
-    return $object->rank_for($key, $args->{max}, $dbd_args);
+    return $object->rank_for( $key, $args->{max}, $dbd_args );
 }
 
 ###########################################################################
@@ -879,11 +878,9 @@ B<Example:>
 sub _hdlr_entry_rank {
     return _object_rank(
         'entry',
-        {
-            'join' => MT->model('entry')->join_on(
+        {   'join' => MT->model('entry')->join_on(
                 undef,
-                {
-                    id     => \'= objectscore_object_id',
+                {   id     => \'= objectscore_object_id',
                     status => MT::Entry::RELEASE()
                 }
             )
@@ -925,8 +922,7 @@ B<Example:>
 sub _hdlr_comment_rank {
     return _object_rank(
         'comment',
-        {
-            'join' => MT->model('comment')->join_on(
+        {   'join' => MT->model('comment')->join_on(
                 undef, { id => \'= objectscore_object_id', visible => 1, }
             )
         },
@@ -967,8 +963,7 @@ B<Example:>
 sub _hdlr_ping_rank {
     return _object_rank(
         'ping',
-        {
-            'join' => MT->model('ping')->join_on(
+        {   'join' => MT->model('ping')->join_on(
                 undef, { id => \'= objectscore_object_id', visible => 1, }
             )
         },
@@ -1007,7 +1002,7 @@ B<Example:>
 =cut
 
 sub _hdlr_asset_rank {
-    return _object_rank('asset', {}, @_);
+    return _object_rank( 'asset', {}, @_ );
 }
 
 ###########################################################################
@@ -1041,7 +1036,7 @@ B<Example:>
 =cut
 
 sub _hdlr_author_rank {
-    return _object_rank('author', {},  @_);
+    return _object_rank( 'author', {}, @_ );
 }
 
 1;

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -13,8 +13,7 @@ use MT::Object;
 @MT::Permission::ISA = qw(MT::Object);
 
 __PACKAGE__->install_properties(
-    {
-        column_defs => {
+    {   column_defs => {
             'id'        => 'integer not null auto_increment',
             'author_id' => 'integer not null',
             'blog_id'   => 'integer not null',
@@ -57,7 +56,6 @@ sub class_label_plural {
     MT->translate("Permissions");
 }
 
-
 sub user {
     my $perm = shift;
 
@@ -94,7 +92,8 @@ sub global_perms {
     $perm->cache_property(
         'global_perms',
         sub {
-            __PACKAGE__->load( { author_id => $perm->author_id, blog_id => 0 });
+            __PACKAGE__->load(
+                { author_id => $perm->author_id, blog_id => 0 } );
         }
     );
 }
@@ -137,22 +136,25 @@ sub global_perms {
         if ( my $more = $more_perm->permissions ) {
             if ( $more =~ /\'manage_member_blogs\'/ ) {
                 $more = _all_perms('blog');
-            } else {
+            }
+            else {
                 my @more = split ',', $more;
                 my @more_perms;
-                for my $p ( @more )  {
+                for my $p (@more) {
                     $p =~ s/'(.+)'/$1/;
                     if ( $perms->blog_id ) {
                         $p = "blog.$p";
-                    } else {
+                    }
+                    else {
                         $p = "system.$p";
                     }
-                    my $perms = __PACKAGE__->_load_inheritance_permissions($p);
+                    my $perms
+                        = __PACKAGE__->_load_inheritance_permissions($p);
                     push @more_perms, @$perms if $perms;
                 }
-                if ( @more_perms ) {
+                if (@more_perms) {
                     my %tmp;
-                    my @sort = grep(  !$tmp{$_}++, @more_perms );
+                    my @sort = grep( !$tmp{$_}++, @more_perms );
                     $more = join ',', @sort;
                 }
             }
@@ -267,10 +269,10 @@ sub global_perms {
                 foreach my $pk (%$perms) {
                     my ( $scope, $name ) = split /\./, $pk;
                     next unless $scope && $name;
-                    my $label =
-                      'CODE' eq ref( $perms->{$pk}{label} )
-                      ? $perms->{$pk}{label}->()
-                      : $perms->{$pk}{label};
+                    my $label
+                        = 'CODE' eq ref( $perms->{$pk}{label} )
+                        ? $perms->{$pk}{label}->()
+                        : $perms->{$pk}{label};
                     push @Perms, [ $name, $label || '', $scope ];
                 }
                 __mk_perm($_) foreach @Perms;
@@ -317,27 +319,30 @@ sub global_perms {
             else {
                 if ( my $author = $_[0]->author ) {
                     return 1
-                      if ( ( $meth ne 'can_administer' )
+                        if ( ( $meth ne 'can_administer' )
                         && $author->is_superuser );
                     return 1
-                      if ( ( $_[0]->blog && $_[0]->blog->is_blog )
+                        if ( ( $_[0]->blog && $_[0]->blog->is_blog )
                         && $_[0]->has('administer_blog') );
                     return 1
-                      if ( ( $_[0]->blog && !$_[0]->blog->is_blog )
+                        if ( ( $_[0]->blog && !$_[0]->blog->is_blog )
                         && $_[0]->has('administer_website') );
                 }
             }
+
             # return negative if a restriction is present
             return undef
-              if $_[0]->restrictions && $_[0]->restrictions =~ /'$perm'/i;
+                if $_[0]->restrictions && $_[0]->restrictions =~ /'$perm'/i;
+
             # return positive if permission is set in this permission set
             return 1 if defined($cur_perm) && $cur_perm =~ /'$perm'/i;
+
             # test for global-level permission
             return 1
-              if $_[0]->author_id
-              && $_[0]->blog_id
-              && $_[0]->global_perms
-              && $_[0]->global_perms->has($perm);
+                if $_[0]->author_id
+                    && $_[0]->blog_id
+                    && $_[0]->global_perms
+                    && $_[0]->global_perms->has($perm);
             return undef;
         };
     }
@@ -362,7 +367,7 @@ sub global_perms {
         foreach (@list) {
             my $ref = $Perms{$_};
             die "invalid permission" unless $ref;
-            next if $pkg->_check_if($perms, $column, $_);
+            next if $pkg->_check_if( $perms, $column, $_ );
             my $val = $perms->$column || '';
             $val .= ',' if $val ne '';
             $val .= "'" . $ref->[0] . "'";
@@ -410,15 +415,16 @@ sub global_perms {
 }
 
 sub can_do {
-    my $self = shift;
+    my $self   = shift;
     my $action = shift;
-    my @perms = split /,/, $self->permissions;
-    for my $perm ( @perms ) {
+    my @perms  = split /,/, $self->permissions;
+    for my $perm (@perms) {
         $perm =~ s/'(.+)'/$1/;
         return 1 if 'administer' eq $perm;
-        next if $self->is_restricted( $perm );
-        $perm = join( '.', (( $self->blog_id != 0 ? 'blog' : 'system' ), $perm));
-        my $result = __PACKAGE__->_confirm_action($perm, $action);
+        next if $self->is_restricted($perm);
+        $perm = join( '.',
+            ( ( $self->blog_id != 0 ? 'blog' : 'system' ), $perm ) );
+        my $result = __PACKAGE__->_confirm_action( $perm, $action );
         return $result if defined $result;
     }
     return;
@@ -426,21 +432,22 @@ sub can_do {
 
 sub _confirm_action {
     my $pkg = shift;
-    my ($perm_name, $action, $permissions) = @_;
+    my ( $perm_name, $action, $permissions ) = @_;
     $permissions ||= MT->registry('permissions');
     my $perm = $permissions->{$perm_name};
 
     ## No such permission.
     return unless defined $perm;
     if ( exists $perm->{permitted_action}{$action} ) {
-        return $perm->{permitted_action}{$action}
+        return $perm->{permitted_action}{$action};
     }
 
     ## search from ancestors
     my $inherits = $perm->{inherit_from};
     return unless defined $inherits;
-    for my $inherit ( @$inherits ) {
-        my $res = __PACKAGE__->_confirm_action($inherit, $action, $permissions);
+    for my $inherit (@$inherits) {
+        my $res
+            = __PACKAGE__->_confirm_action( $inherit, $action, $permissions );
         return $res if defined $res;
     }
     return;
@@ -472,27 +479,64 @@ sub can_edit_entry {
         $entry = MT::Entry->load($entry)
             or return;
     }
-    return $author->permissions( $entry->blog_id )->can_manage_pages
+
+    $perms = $author->permissions( $entry->blog_id )
+        or return;
+
+    return $perms->can_manage_pages
         unless $entry->is_entry;
+
+    return 1
+        if $perms->can_do('edit_all_entries');
 
     my $own_entry = $entry->author_id == $author->id;
 
     if ( defined $status ) {
-        return $own_entry ? $perms->can_do('edit_own_published_entry')
-                          : $perms->can_do('edit_all_published_entry');
+        return $own_entry
+            ? $perms->can_do('edit_own_published_entry')
+            : $perms->can_do('edit_all_published_entry');
     }
     else {
-        return $own_entry ? $perms->can_do('edit_own_unpublished_entry')
-                          : $perms->can_do('edit_all_unpublished_entry');
+        return $own_entry
+            ? $perms->can_do('edit_own_unpublished_entry')
+            : $perms->can_do('edit_all_unpublished_entry');
     }
+}
+
+sub can_republish_entry {
+    my $perms = shift;
+    my ( $entry, $author ) = @_;
+    die unless $author->isa('MT::Author');
+    return 1 if $author->is_superuser();
+    unless ( ref $entry ) {
+        require MT::Entry;
+        $entry = MT::Entry->load($entry)
+            or return;
+    }
+
+    $perms = $author->permissions( $entry->blog_id )
+        or return;
+
+    return 1
+        if $perms->can_do('rebuild');
+
+    return $perms->can_do('manage_pages')
+        unless $entry->is_entry;
+
+    return
+           $perms->can_do('edit_all_entries')
+        || $perms->can_do('handle_junk')
+        || ( $entry->author_id == $author->id
+        && $perms->can_do('publish_own_entry') );
 }
 
 sub can_upload {
     my $perms = shift;
     if (@_) {
-        if (my $can = shift) {
+        if ( my $can = shift ) {
             $perms->set_these_permissions('upload');
-        } else {
+        }
+        else {
             $perms->clear_permissions('upload');
         }
     }
@@ -521,8 +565,7 @@ sub _static_rebuild {
                 my $iter = $grp->user_iter;
                 while ( my $user = $iter->() ) {
                     my $perm = MT::Permission->get_by_key(
-                        {
-                            author_id => $user->id,
+                        {   author_id => $user->id,
                             blog_id   => $assoc->blog_id
                         }
                     );
@@ -532,8 +575,7 @@ sub _static_rebuild {
             elsif ( $assoc->author_id ) {
                 my $user = $assoc->user or return;
                 my $perm = MT::Permission->get_by_key(
-                    {
-                        author_id => $user->id,
+                    {   author_id => $user->id,
                         blog_id   => $assoc->blog_id
                     }
                 );
@@ -554,8 +596,7 @@ sub _static_rebuild {
             if (@blogs) {
                 foreach my $blog_id (@blogs) {
                     my $perm = MT::Permission->get_by_key(
-                        {
-                            author_id => $assoc->author_id,
+                        {   author_id => $assoc->author_id,
                             blog_id   => $blog_id,
                         }
                     );
@@ -660,14 +701,14 @@ sub to_hash {
 }
 
 sub _load_inheritance_permissions {
-    my $pkg = shift;
-    my ( $perm_name ) = @_;
+    my $pkg         = shift;
+    my ($perm_name) = @_;
     my $permissions = MT->registry('permissions');
-    my $perms = $pkg->_load_recursive( $perm_name, $permissions );
+    my $perms       = $pkg->_load_recursive( $perm_name, $permissions );
 
     my $hash;
-    if ( @$perms ) {
-        foreach ( @$perms ) {
+    if (@$perms) {
+        foreach (@$perms) {
             my ( $s, $p ) = split /\./, $_;
             $hash->{$p} = 1;
         }
@@ -691,7 +732,7 @@ sub _load_recursive {
     my $inherits = $permission->{inherit_from};
     return $perms unless $inherits;
 
-    foreach my $inherit ( @$inherits ) {
+    foreach my $inherit (@$inherits) {
         my $res = __PACKAGE__->_load_recursive( $inherit, $permissions );
         push @$perms, @$res if defined $res;
     }
@@ -938,6 +979,16 @@ is always true if C<$author> is a superuser or can edit all posts or
 is a blog administrator for the blog that contains the entry. Otherwise,
 it returns true if the author has permission to post and the entry was
 authored by that author, false otherwise.
+
+The C<$entry> parameter can either be a I<MT::Entry> object or an entry id.
+
+=head2 $perms->can_republish_entry($entry, $author)
+
+Returns true if the C<$author> has rights to republish entry C<$entry>.
+This is always true if C<$author> is a superuser or can edit all posts or
+can rebuild or can manage feedback or is a blog administrator for the blog
+that contains the entry. Otherwise, it returns true if the author has
+permission to post and the entry was authored by that author, false otherwise.
 
 The C<$entry> parameter can either be a I<MT::Entry> object or an entry id.
 

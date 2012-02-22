@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -8,18 +8,20 @@
 
 use strict;
 my $MT_DIR;
+
 sub BEGIN {
     require File::Spec;
-    if (!($MT_DIR = $ENV{MT_HOME})) {
-        if ($0 =~ m!(.*[/\\])!) {
+    if ( !( $MT_DIR = $ENV{MT_HOME} ) ) {
+        if ( $0 =~ m!(.*[/\\])! ) {
             $MT_DIR = $1;
-        } else {
+        }
+        else {
             $MT_DIR = './';
         }
         $ENV{MT_HOME} = $MT_DIR;
     }
-    unshift @INC, File::Spec->catdir($MT_DIR, 'lib');
-    unshift @INC, File::Spec->catdir($MT_DIR, 'extlib');
+    unshift @INC, File::Spec->catdir( $MT_DIR, 'lib' );
+    unshift @INC, File::Spec->catdir( $MT_DIR, 'extlib' );
 }
 
 use XMLRPC::Transport::HTTP;
@@ -34,6 +36,6 @@ use vars qw($server);
     ## the soap->action
     local $SIG{__WARN__} = sub { };
     $server = XMLRPC::Transport::HTTP::CGI->new;
-    $server->dispatch_to('blogger', 'metaWeblog', 'mt', 'wp');
+    $server->dispatch_to( 'blogger', 'metaWeblog', 'mt', 'wp' );
     $server->handle;
 }

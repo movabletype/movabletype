@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -10,47 +10,48 @@ use strict;
 use base qw( MT::Object );
 
 # use constant is slow
-sub INFO ()     { 1 }
-sub WARNING ()  { 2 }
-sub ERROR ()    { 4 }
-sub SECURITY () { 8 }
-sub DEBUG ()    { 16 }
+sub INFO ()     {1}
+sub WARNING ()  {2}
+sub ERROR ()    {4}
+sub SECURITY () {8}
+sub DEBUG ()    {16}
 
 use Exporter;
 *import = \&Exporter::import;
 our @EXPORT_OK = qw( INFO WARNING ERROR SECURITY DEBUG );
-our %EXPORT_TAGS = (constants => [ @EXPORT_OK ]);
+our %EXPORT_TAGS = ( constants => [@EXPORT_OK] );
 
 use MT::Blog;
 
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id' => 'integer not null auto_increment',
-        'message' => 'text',
-        'ip' => 'string(50)',
-        'blog_id' => 'integer',
-        'author_id' => 'integer',
-        'level' => 'integer',
-        'category' => 'string(255)',
-        'metadata' => 'string(255)',
-    },
-    indexes => {
-        created_on => 1,
-        blog_id => 1,
-        level => 1,
-    },
-    defaults => {
-        blog_id => 0,
-        author_id => 0,
-        level => 1,
-    },
-    child_of => 'MT::Blog',
-    datasource => 'log',
-    audit => 1,
-    primary_key => 'id',
-    class_column => 'class',
-    class_type => 'system',
-});
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'        => 'integer not null auto_increment',
+            'message'   => 'text',
+            'ip'        => 'string(50)',
+            'blog_id'   => 'integer',
+            'author_id' => 'integer',
+            'level'     => 'integer',
+            'category'  => 'string(255)',
+            'metadata'  => 'string(255)',
+        },
+        indexes => {
+            created_on => 1,
+            blog_id    => 1,
+            level      => 1,
+        },
+        defaults => {
+            blog_id   => 0,
+            author_id => 0,
+            level     => 1,
+        },
+        child_of     => 'MT::Blog',
+        datasource   => 'log',
+        audit        => 1,
+        primary_key  => 'id',
+        class_column => 'class',
+        class_type   => 'system',
+    }
+);
 
 sub class_label {
     return MT->translate('Log message');
@@ -65,7 +66,7 @@ sub init {
     $log->SUPER::init(@_);
     my @ts = gmtime(time);
     my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
-        $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
+        $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
     $log->created_on($ts);
     $log->modified_on($ts);
     $log;
@@ -74,26 +75,26 @@ sub init {
 sub description {
     my $log = shift;
     my $msg = '';
-    if ($log->message =~ m/\n/) {
+    if ( $log->message =~ m/\n/ ) {
         $msg = $log->message;
     }
-    if (defined $log->metadata && ($log->metadata ne '')) {
+    if ( defined $log->metadata && ( $log->metadata ne '' ) ) {
         $msg .= "\n\n" if $msg ne '';
         $msg .= $log->metadata;
     }
-    if ($msg ne '') {
+    if ( $msg ne '' ) {
         require MT::Util;
         $msg = MT::Util::encode_html($msg);
     }
-                            
+
     $msg;
 }
 
 sub metadata_object {
-    my $log = shift;
+    my $log   = shift;
     my $class = $log->metadata_class;
     return undef unless $class;
-    my $id = int($log->metadata);
+    my $id = int( $log->metadata );
     return undef unless $id;
     eval "require $class;" or return undef;
     $class->load($id);
@@ -102,28 +103,30 @@ sub metadata_object {
 sub metadata_class {
     my $log = shift;
     my $pkg = ref $log || $log;
-    if ($pkg =~ m/::Log::/) {
+    if ( $pkg =~ m/::Log::/ ) {
         $pkg =~ s/::Log::/::/;
         $pkg;
-    } else {
+    }
+    else {
         undef;
     }
 }
 
 sub to_hash {
-    my $log = shift;
+    my $log  = shift;
     my $hash = $log->SUPER::to_hash(@_);
-    $hash->{"log.level_" . $log->level} = 1 if $log->level;
-    $hash->{"log.class_" . $log->class} = 1 if $log->class;
-    $hash->{"log.category_" . $log->category} = 1 if $log->category;
+    $hash->{ "log.level_" . $log->level }       = 1 if $log->level;
+    $hash->{ "log.class_" . $log->class }       = 1 if $log->class;
+    $hash->{ "log.category_" . $log->category } = 1 if $log->category;
     $hash->{'log.description'} = $log->description;
-    if (my $obj = $log->metadata_object) {
+    if ( my $obj = $log->metadata_object ) {
         my $obj_hash = $obj->to_hash;
         $hash->{"log.$_"} = $obj_hash->{$_} foreach keys %$obj_hash;
     }
-    if ($log->author_id) {
+    if ( $log->author_id ) {
         require MT::Author;
-        if (my $auth = MT::Author->load($log->author_id)) {
+        if ( my $auth = MT::Author->load( $log->author_id ) ) {
+
             # prefix these hash keys with "log" since this
             # log record may also refer to an entry/comment that
             # has an associated author/commenter record and that
@@ -141,19 +144,18 @@ package MT::Log::Page;
 
 our @ISA = qw( MT::Log );
 
-__PACKAGE__->install_properties({
-    class_type => 'page',
-});
+__PACKAGE__->install_properties( { class_type => 'page', } );
 
 sub class_label { MT->translate("Pages") }
 
 sub description {
     my $log = shift;
     my $msg;
-    if (my $entry = $log->metadata_object) {
+    if ( my $entry = $log->metadata_object ) {
         $msg = $entry->to_hash->{'entry.text_html'};
-    } else {
-        $msg = MT->translate('Page # [_1] not found.', $log->metadata);
+    }
+    else {
+        $msg = MT->translate( 'Page # [_1] not found.', $log->metadata );
     }
 
     $msg;
@@ -163,19 +165,18 @@ package MT::Log::Entry;
 
 our @ISA = qw( MT::Log );
 
-__PACKAGE__->install_properties({
-    class_type => 'entry',
-});
+__PACKAGE__->install_properties( { class_type => 'entry', } );
 
 sub class_label { MT->translate("Entries") }
 
 sub description {
     my $log = shift;
     my $msg;
-    if (my $entry = $log->metadata_object) {
+    if ( my $entry = $log->metadata_object ) {
         $msg = $entry->to_hash->{'entry.text_html'};
-    } else {
-        $msg = MT->translate('Entry # [_1] not found.', $log->metadata);
+    }
+    else {
+        $msg = MT->translate( 'Entry # [_1] not found.', $log->metadata );
     }
 
     $msg;
@@ -185,9 +186,7 @@ package MT::Log::Comment;
 
 our @ISA = qw( MT::Log );
 
-__PACKAGE__->install_properties({
-    class_type => 'comment',
-});
+__PACKAGE__->install_properties( { class_type => 'comment', } );
 
 sub class_label { MT->translate("Comments") }
 
@@ -197,8 +196,9 @@ sub description {
     my $msg;
     if ($cmt) {
         $msg = $cmt->to_hash->{'comment.text_html'};
-    } else {
-        $msg = MT->translate("Comment # [_1] not found.", $log->metadata);
+    }
+    else {
+        $msg = MT->translate( "Comment # [_1] not found.", $log->metadata );
     }
     $msg;
 }
@@ -207,21 +207,20 @@ package MT::Log::TBPing;
 
 our @ISA = qw( MT::Log );
 
-__PACKAGE__->install_properties({
-    class_type => 'ping',
-});
+__PACKAGE__->install_properties( { class_type => 'ping', } );
 
 sub class_label { MT->translate("TrackBacks") }
 
 sub description {
-    my $log = shift;
-    my $id = int($log->metadata);
+    my $log  = shift;
+    my $id   = int( $log->metadata );
     my $ping = $log->metadata_object;
     my $msg;
     if ($ping) {
         $msg = $ping->to_hash->{'tbping.excerpt_html'};
-    } else {
-        $msg = MT->translate("TrackBack # [_1] not found.", $log->metadata);
+    }
+    else {
+        $msg = MT->translate( "TrackBack # [_1] not found.", $log->metadata );
     }
     $msg;
 }

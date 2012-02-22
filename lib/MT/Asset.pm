@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -7,38 +7,38 @@
 package MT::Asset;
 
 use strict;
-use MT::Tag; # Holds MT::Taggable
+use MT::Tag;    # Holds MT::Taggable
 use base qw( MT::Object MT::Taggable MT::Scorable );
 
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id' => 'integer not null auto_increment',
-        'blog_id' => 'integer not null',
-        'label' => 'string(255)',
-        'url' => 'string(255)',
-        'description' => 'text',
-        'file_path' => 'string(255)',
-        'file_name' => 'string(255)',
-        'file_ext' => 'string(20)',
-        'mime_type' => 'string(255)',
-        'parent' => 'integer',
-    },
-    indexes => {
-        label => 1,
-        file_ext => 1,
-        parent => 1,
-        created_by => 1,
-        created_on => 1,
-        blog_class_date => {
-            columns => ['blog_id','class','created_on'],
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'          => 'integer not null auto_increment',
+            'blog_id'     => 'integer not null',
+            'label'       => 'string(255)',
+            'url'         => 'string(255)',
+            'description' => 'text',
+            'file_path'   => 'string(255)',
+            'file_name'   => 'string(255)',
+            'file_ext'    => 'string(20)',
+            'mime_type'   => 'string(255)',
+            'parent'      => 'integer',
         },
-    },
-    class_type => 'file',
-    audit => 1,
-    meta => 1,
-    datasource => 'asset',
-    primary_key => 'id',
-});
+        indexes => {
+            label      => 1,
+            file_ext   => 1,
+            parent     => 1,
+            created_by => 1,
+            created_on => 1,
+            blog_class_date =>
+                { columns => [ 'blog_id', 'class', 'created_on' ], },
+        },
+        class_type  => 'file',
+        audit       => 1,
+        meta        => 1,
+        datasource  => 'asset',
+        primary_key => 'id',
+    }
+);
 
 require MT::Asset::Image;
 require MT::Asset::Audio;
@@ -63,43 +63,52 @@ sub extensions {
 # This property is a meta-property.
 sub file_path {
     my $asset = shift;
-    my $path = $asset->SUPER::file_path(@_);
-    return $path if defined($path) && ($path !~ m!^\$!) && (-f $path);
+    my $path  = $asset->SUPER::file_path(@_);
+    return $path if defined($path) && ( $path !~ m!^\$! ) && ( -f $path );
 
-    $path = $asset->cache_property(sub {
-        my $path = $asset->SUPER::file_path();
-        if ($path && ($path =~ m!^\%([ras])!)) {
-            my $blog = $asset->blog;
-            my $root = !$blog || $1 eq 's' ? MT->instance->support_directory_path
-                     : $1 eq 'r'           ? $blog->site_path
-                     :                       $blog->archive_path
-                     ;
-            $root =~ s!(/|\\)$!!;
-            $path =~ s!^\%[ras]!$root!;
-        }
-        $path;
-    }, @_);
+    $path = $asset->cache_property(
+        sub {
+            my $path = $asset->SUPER::file_path();
+            if ( $path && ( $path =~ m!^\%([ras])! ) ) {
+                my $blog = $asset->blog;
+                my $root
+                    = !$blog
+                    || $1 eq 's' ? MT->instance->support_directory_path
+                    : $1  eq 'r' ? $blog->site_path
+                    :              $blog->archive_path;
+                $root =~ s!(/|\\)$!!;
+                $path =~ s!^\%[ras]!$root!;
+            }
+            $path;
+        },
+        @_
+    );
     return $path;
 }
 
 sub url {
     my $asset = shift;
-    my $url = $asset->SUPER::url(@_);
-    return $url if defined($url) && ($url !~ m!^\%!) && ($url =~ m!^https://!);
+    my $url   = $asset->SUPER::url(@_);
+    return $url
+        if defined($url) && ( $url !~ m!^\%! ) && ( $url =~ m!^https://! );
 
-    $url = $asset->cache_property(sub {
-        my $url = $asset->SUPER::url();
-        if ($url =~ m!^\%([ras])!) {
-            my $blog = $asset->blog;
-            my $root = !$blog || $1 eq 's' ? MT->instance->support_directory_url
-                     : $1 eq 'r'           ? $blog->site_url
-                     :                       $blog->archive_url
-                     ;
-            $root =~ s!/$!!;
-            $url =~ s!^\%[ras]!$root!;
-        }
-        return $url;
-    }, @_);
+    $url = $asset->cache_property(
+        sub {
+            my $url = $asset->SUPER::url();
+            if ( $url =~ m!^\%([ras])! ) {
+                my $blog = $asset->blog;
+                my $root
+                    = !$blog
+                    || $1 eq 's' ? MT->instance->support_directory_url
+                    : $1  eq 'r' ? $blog->site_url
+                    :              $blog->archive_url;
+                $root =~ s!/$!!;
+                $url  =~ s!^\%[ras]!$root!;
+            }
+            return $url;
+        },
+        @_
+    );
     return $url;
 }
 
@@ -117,18 +126,18 @@ sub class_label_plural {
 # TBD: Should we track and remove any generated thumbnail files here too?
 sub remove {
     my $asset = shift;
-    if (ref $asset) {
-        my $blog = MT::Blog->load($asset->blog_id);
+    if ( ref $asset ) {
+        my $blog = MT::Blog->load( $asset->blog_id );
         require MT::FileMgr;
         my $fmgr = $blog ? $blog->file_mgr : MT::FileMgr->new('Local');
         my $file = $asset->file_path;
-        unless ($fmgr->delete($file)) {
+        unless ( $fmgr->delete($file) ) {
             my $app = MT->instance;
             $app->log(
-                {
-                    message => $app->translate(
+                {   message => $app->translate(
                         "Could not remove asset file [_1] from filesystem: [_2]",
-                        $file, $fmgr->errstr
+                        $file,
+                        $fmgr->errstr
                     ),
                     level    => MT::Log::ERROR(),
                     class    => 'asset',
@@ -140,15 +149,16 @@ sub remove {
 
         # remove children.
         my $class = ref $asset;
-        my $iter = __PACKAGE__->load_iter({ parent => $asset->id, class => '*' });
-        while(my $a = $iter->()) {
+        my $iter  = __PACKAGE__->load_iter(
+            { parent => $asset->id, class => '*' } );
+        while ( my $a = $iter->() ) {
             $a->remove;
         }
 
         # Remove MT::ObjectAsset records
         $class = MT->model('objectasset');
-        $iter = $class->load_iter({ asset_id => $asset->id });
-        while (my $o = $iter->()) {
+        $iter = $class->load_iter( { asset_id => $asset->id } );
+        while ( my $o = $iter->() ) {
             $o->remove;
         }
     }
@@ -158,11 +168,11 @@ sub remove {
 
 sub save {
     my $asset = shift;
-    if (defined $asset->file_ext) {
-        $asset->file_ext(lc($asset->file_ext));
+    if ( defined $asset->file_ext ) {
+        $asset->file_ext( lc( $asset->file_ext ) );
     }
 
-    unless ($asset->SUPER::save(@_)) {
+    unless ( $asset->SUPER::save(@_) ) {
         print STDERR "error during save: " . $asset->errstr . "\n";
         die $asset->errstr;
     }
@@ -170,29 +180,29 @@ sub save {
 
 sub remove_cached_files {
     my $asset = shift;
- 
+
     # remove any asset cache files that exist for this asset
     my $blog = $asset->blog;
-    if ($asset->id && $blog) {
+    if ( $asset->id && $blog ) {
         my $cache_dir = $asset->_make_cache_path;
         if ($cache_dir) {
             require MT::FileMgr;
             my $fmgr = $blog->file_mgr || MT::FileMgr->new('Local');
             if ($fmgr) {
                 my $basename = $asset->file_name;
-                my $ext = '.'.$asset->file_ext;
+                my $ext      = '.' . $asset->file_ext;
                 $basename =~ s/$ext$//;
-                my $cache_glob = File::Spec->catfile($cache_dir,
-                    $basename . '-thumb-*' . $ext);
+                my $cache_glob = File::Spec->catfile( $cache_dir,
+                    $basename . '-thumb-*' . $ext );
                 my @files = glob($cache_glob);
                 foreach my $file (@files) {
-                    unless ($fmgr->delete($file)) {
+                    unless ( $fmgr->delete($file) ) {
                         my $app = MT->instance;
                         $app->log(
-                            {
-                                message => $app->translate(
+                            {   message => $app->translate(
                                     "Could not remove asset file [_1] from filesystem: [_2]",
-                                    $file, $fmgr->errstr
+                                    $file,
+                                    $fmgr->errstr
                                 ),
                                 level    => MT::Log::ERROR(),
                                 class    => 'asset',
@@ -210,7 +220,10 @@ sub remove_cached_files {
 sub blog {
     my $asset = shift;
     my $blog_id = $asset->blog_id or return undef;
-    return $asset->{__blog} if $blog_id && $asset->{__blog} && ($asset->{__blog}->id == $blog_id);
+    return $asset->{__blog}
+        if $blog_id
+            && $asset->{__blog}
+            && ( $asset->{__blog}->id == $blog_id );
     require MT::Blog;
     return $asset->{__blog} = MT::Blog->load($blog_id)
         or return $asset->error("Failed to load blog for file");
@@ -219,11 +232,12 @@ sub blog {
 # Returns a true/false response based on whether the active package
 # has extensions registered that match the requested filename.
 sub can_handle {
-    my ($pkg, $filename) = @_;
+    my ( $pkg, $filename ) = @_;
+
     # undef is returned from fileparse if the extension is not known.
     require File::Basename;
     my $ext = $pkg->extensions || [];
-    return (File::Basename::fileparse($filename, @$ext))[2] ? 1 : 0;
+    return ( File::Basename::fileparse( $filename, @$ext ) )[2] ? 1 : 0;
 }
 
 # Given a filename, returns an appropriate MT::Asset class to associate
@@ -233,16 +247,17 @@ sub handler_for_file {
     my $pkg = shift;
     my ($filename) = @_;
     my $types;
+
     # special case to check for all registered classes, not just
     # those that are subclasses of this package.
-    if ($pkg eq 'MT::Asset') {
+    if ( $pkg eq 'MT::Asset' ) {
         $types = [ keys %{ $pkg->properties->{__type_to_class} || {} } ];
     }
     $types ||= $pkg->type_list;
     if ($types) {
         foreach my $type (@$types) {
             my $this_pkg = $pkg->class_handler($type);
-            if ($this_pkg->can_handle($filename)) {
+            if ( $this_pkg->can_handle($filename) ) {
                 return $this_pkg;
             }
         }
@@ -251,12 +266,12 @@ sub handler_for_file {
 }
 
 sub type_list {
-    my $pkg = shift;
-    my $props = $pkg->properties;
-    my $col = $props->{class_column};
+    my $pkg       = shift;
+    my $props     = $pkg->properties;
+    my $col       = $props->{class_column};
     my $this_type = $props->{class_type};
-    my @classes = values %{ $props->{__class_to_type} };
-    @classes = grep { m/^\Q$this_type\E:/ } @classes;
+    my @classes   = values %{ $props->{__class_to_type} };
+    @classes = grep {m/^\Q$this_type\E:/} @classes;
     push @classes, $this_type;
     return \@classes;
 }
@@ -264,16 +279,17 @@ sub type_list {
 sub metadata {
     my $asset = shift;
     return {
-        MT->translate("Tags") => MT::Tag->join(',', $asset->tags),
+        MT->translate("Tags")        => MT::Tag->join( ',', $asset->tags ),
         MT->translate("Description") => $asset->description,
-        MT->translate("Name") => $asset->label,
-        url => $asset->url,
-        MT->translate("URL") => $asset->url,
-        MT->translate("Location") => $asset->file_path,
-        name => $asset->file_name,
-        'class' => $asset->class,
-        ext => $asset->file_ext,
-        mime_type => $asset->mime_type,
+        MT->translate("Name")        => $asset->label,
+        url                          => $asset->url,
+        MT->translate("URL")         => $asset->url,
+        MT->translate("Location")    => $asset->file_path,
+        name                         => $asset->file_name,
+        'class'                      => $asset->class,
+        ext                          => $asset->file_ext,
+        mime_type                    => $asset->mime_type,
+
         # duration => $asset->duration,
     };
 }
@@ -299,14 +315,15 @@ sub thumbnail_url {
     my (%param) = @_;
 
     require File::Basename;
-    if (my ($thumbnail_file, $w, $h) = $asset->thumbnail_file(@_)) {
+    if ( my ( $thumbnail_file, $w, $h ) = $asset->thumbnail_file(@_) ) {
         return $asset->stock_icon_url(@_) if !defined $thumbnail_file;
-        my $file = File::Basename::basename($thumbnail_file);
+        my $file            = File::Basename::basename($thumbnail_file);
         my $asset_file_path = $asset->SUPER::file_path();
         my $site_url;
         my $blog = $asset->blog;
-        if (!$blog) {
-            $site_url = $param{Pseudo} ? '%s' : MT->instance->support_directory_url;
+        if ( !$blog ) {
+            $site_url
+                = $param{Pseudo} ? '%s' : MT->instance->support_directory_url;
         }
         elsif ( $asset_file_path =~ m/^%a/ ) {
             $site_url = $param{Pseudo} ? '%a' : $blog->archive_url;
@@ -315,22 +332,24 @@ sub thumbnail_url {
             $site_url = $param{Pseudo} ? '%r' : $blog->site_url;
         }
 
-        if ($file && $site_url) {
+        if ( $file && $site_url ) {
             require MT::Util;
             my $path = $param{Path};
-            if (!defined $path) {
-                $path = MT::Util::caturl(MT->config('AssetCacheDir'), unpack('A4A2', $asset->created_on));
-            } else {
+            if ( !defined $path ) {
+                $path = MT::Util::caturl( MT->config('AssetCacheDir'),
+                    unpack( 'A4A2', $asset->created_on ) );
+            }
+            else {
                 require File::Spec;
                 my @path = File::Spec->splitdir($path);
                 $path = '';
                 for my $p (@path) {
-                    $path = MT::Util::caturl($path, $p);
+                    $path = MT::Util::caturl( $path, $p );
                 }
             }
             $file = MT::Util::encode_url($file);
-            $site_url = MT::Util::caturl($site_url, $path, $file);
-            return ($site_url, $w, $h);
+            $site_url = MT::Util::caturl( $site_url, $path, $file );
+            return ( $site_url, $w, $h );
         }
     }
 
@@ -339,23 +358,24 @@ sub thumbnail_url {
 }
 
 sub as_html {
-    my $asset = shift;
+    my $asset   = shift;
     my ($param) = @_;
-    my $fname = $asset->file_name;
+    my $fname   = $asset->file_name;
     require MT::Util;
     my $text = sprintf '<a href="%s">%s</a>',
-        MT::Util::encode_html($asset->url),
+        MT::Util::encode_html( $asset->url ),
         MT::Util::encode_html($fname);
     my $app = MT->instance;
     return $param->{enclose} ? $asset->enclose($text) : $text;
 }
 
 sub enclose {
-    my $asset = shift;
+    my $asset  = shift;
     my ($html) = @_;
-    my $id = $asset->id;
-    my $type = $asset->class;
-    return qq{<form mt:asset-id="$id" class="mt-enclosure mt-enclosure-$type" style="display: inline;">$html</form>};
+    my $id     = $asset->id;
+    my $type   = $asset->class;
+    return
+        qq{<form mt:asset-id="$id" class="mt-enclosure mt-enclosure-$type" style="display: inline;">$html</form>};
 }
 
 # Return a HTML snippet of form options for inserting this asset
@@ -374,7 +394,7 @@ sub on_upload {
 
 sub edit_template_param {
     my $asset = shift;
-    my ($cb, $app, $param, $tmpl) = @_;
+    my ( $cb, $app, $param, $tmpl ) = @_;
     return;
 }
 
@@ -390,7 +410,7 @@ sub set_values_from_query {
         $values{$field} = $q->param($field)
             if defined $q->param($field);
     }
-    $asset->set_values(\%values);
+    $asset->set_values( \%values );
 
     1;
 }
@@ -399,21 +419,22 @@ sub set_values_from_query {
 # root instead of blog site path
 sub _make_cache_path {
     my $asset = shift;
-    my ($path, $pseudo) = @_;
+    my ( $path, $pseudo ) = @_;
     my $blog = $asset->blog;
 
     require File::Spec;
-    my $year_stamp = '';
+    my $year_stamp  = '';
     my $month_stamp = '';
-    if  (!defined $path) {
-        $year_stamp = unpack 'A4', $asset->created_on;
+    if ( !defined $path ) {
+        $year_stamp  = unpack 'A4',    $asset->created_on;
         $month_stamp = unpack 'x4 A2', $asset->created_on;
-        $path = MT->config('AssetCacheDir');
-    } else {
+        $path        = MT->config('AssetCacheDir');
+    }
+    else {
         my $merge_path = '';
-        my @split = File::Spec->splitdir($path);
+        my @split      = File::Spec->splitdir($path);
         for my $p (@split) {
-            $merge_path = File::Spec->catfile($merge_path, $p);
+            $merge_path = File::Spec->catfile( $merge_path, $p );
         }
         $path = $merge_path if $merge_path;
     }
@@ -422,28 +443,29 @@ sub _make_cache_path {
     my $format;
     my $root_path;
     if ( !$blog ) {
-        $format = '%s';
+        $format    = '%s';
         $root_path = MT->instance->support_directory_path;
     }
     elsif ( $asset_file_path =~ m/^%a/ ) {
-        $format = '%a';
+        $format    = '%a';
         $root_path = $blog->archive_path;
     }
     else {
-        $format = '%r';
+        $format    = '%r';
         $root_path = $blog->site_path;
     }
 
-    my $real_cache_path = File::Spec->catdir($root_path, $path, $year_stamp,
-        $month_stamp);
-    if (!-d $real_cache_path) {
+    my $real_cache_path
+        = File::Spec->catdir( $root_path, $path, $year_stamp, $month_stamp );
+    if ( !-d $real_cache_path ) {
         require MT::FileMgr;
         my $fmgr = $blog ? $blog->file_mgr : MT::FileMgr->new('Local');
         $fmgr->mkpath($real_cache_path) or return undef;
     }
 
-    my $asset_cache_path = File::Spec->catdir(($pseudo ? $format : $root_path),
-        $path, $year_stamp, $month_stamp);
+    my $asset_cache_path
+        = File::Spec->catdir( ( $pseudo ? $format : $root_path ),
+        $path, $year_stamp, $month_stamp );
     $asset_cache_path;
 }
 

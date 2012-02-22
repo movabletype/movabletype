@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -6,18 +6,19 @@
 package MT::CMS::TrackBack;
 
 use strict;
-use MT::Util qw( format_ts relative_date encode_url encode_html break_up_text );
+use MT::Util
+    qw( format_ts relative_date encode_url encode_html break_up_text );
 use MT::I18N qw( const );
 
 sub edit {
     my $cb = shift;
-    my ($app, $id, $obj, $param) = @_;
+    my ( $app, $id, $obj, $param ) = @_;
 
-    my $q = $app->param;
-    my $perms = $app->permissions;
-    my $blog = $app->blog;
+    my $q       = $app->param;
+    my $perms   = $app->permissions;
+    my $blog    = $app->blog;
     my $blog_id = $q->param('blog_id');
-    my $type = $q->param('_type');
+    my $type    = $q->param('_type');
 
     if ($id) {
         $param->{nav_trackbacks} = 1;
@@ -32,9 +33,9 @@ sub edit {
         $param->{approved}           = $app->param('approved');
         $param->{unapproved}         = $app->param('unapproved');
         $param->{has_publish_access} = 1 if $app->user->is_superuser;
-        $param->{has_publish_access} = (
-            $app->can_do('publish_trackback') ? 1 : 0
-        ) unless $app->user->is_superuser;
+        $param->{has_publish_access}
+            = ( $app->can_do('publish_trackback') ? 1 : 0 )
+            unless $app->user->is_superuser;
         require MT::Trackback;
 
         if ( my $tb = MT::Trackback->load( $obj->tb_id ) ) {
@@ -45,14 +46,15 @@ sub edit {
                     $param->{entry_title} = $entry->title;
                     $param->{entry_id}    = $entry->id;
                     unless ( $param->{has_publish_access} ) {
-                        $param->{has_publish_access} =
-                          ( $perms->can_do('publish_own_entry_trackback')
-                              && ( $app->user->id == $entry->author_id ) )
-                          ? 1
-                          : 0;
+                        $param->{has_publish_access}
+                            = ( $perms->can_do('publish_own_entry_trackback')
+                                && ( $app->user->id == $entry->author_id ) )
+                            ? 1
+                            : 0;
                     }
                     $param->{target_type} = $entry->class;
-                    $param->{target_label} = MT->model($entry->class)->class_label;
+                    $param->{target_label}
+                        = MT->model( $entry->class )->class_label;
                 }
             }
             elsif ( $tb->category_id ) {
@@ -66,8 +68,8 @@ sub edit {
         }
 
         $param->{"ping_approved"} = $obj->is_published
-          or $param->{"ping_pending"} = $obj->is_moderated
-          or $param->{"is_junk"}      = $obj->is_junk;
+            or $param->{"ping_pending"} = $obj->is_moderated
+            or $param->{"is_junk"}      = $obj->is_junk;
 
         ## Load next and previous entries for next/previous links
         if ( my $next = $obj->next ) {
@@ -79,19 +81,28 @@ sub edit {
         my $parent = $obj->parent;
         if ( $parent && ( $parent->isa('MT::Entry') ) ) {
             if ( $parent->status == MT::Entry::RELEASE() ) {
-                $param->{entry_permalink} = MT::Util::encode_html( $parent->permalink );
+                $param->{entry_permalink}
+                    = MT::Util::encode_html( $parent->permalink );
             }
         }
 
         if ( $obj->junk_log ) {
             require MT::CMS::Comment;
-            MT::CMS::Comment::build_junk_table( $app, param => $param, object => $obj );
+            MT::CMS::Comment::build_junk_table(
+                $app,
+                param  => $param,
+                object => $obj
+            );
         }
 
-        $param->{created_on_time_formatted} =
-          format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(), $obj->created_on(), $blog, $app->user ? $app->user->preferred_language : undef );
-        $param->{created_on_day_formatted} =
-          format_ts( MT::App::CMS::LISTING_DATE_FORMAT(), $obj->created_on(), $blog, $app->user ? $app->user->preferred_language : undef );
+        $param->{created_on_time_formatted}
+            = format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(),
+            $obj->created_on(), $blog,
+            $app->user ? $app->user->preferred_language : undef );
+        $param->{created_on_day_formatted}
+            = format_ts( MT::App::CMS::LISTING_DATE_FORMAT(),
+            $obj->created_on(), $blog,
+            $app->user ? $app->user->preferred_language : undef );
 
         $param->{search_label} = $app->translate('TrackBacks');
         $param->{object_type}  = 'ping';
@@ -111,16 +122,15 @@ sub list {
 
     my $can_empty_junk = 1;
     my $state_editable = 1;
-    my $admin = $app->user->is_superuser
-      || ( $perms && $perms->can_administer_blog );
+    my $admin          = $app->user->is_superuser
+        || ( $perms && $perms->can_administer_blog );
     if ($perms) {
         $app->can_do('access_to_trackback_list')
             or return $app->error( $app->translate("Permission denied.") );
         $can_empty_junk = $admin
-          || $app->can_do('delete_junk_trackbacks')
-          ? 1 : 0;
+            || $app->can_do('delete_junk_trackbacks') ? 1 : 0;
         $state_editable = $admin
-          || $app->can_do('edit_trackback_status') ? 1 : 0;
+            || $app->can_do('edit_trackback_status') ? 1 : 0;
     }    # otherwise we simply filter the list of objects
 
     my $list_pref = $app->list_pref('ping');
@@ -146,7 +156,7 @@ sub list {
     ## page of next entries to link to. Obviously we only display $limit
     ## entries.
     my %arg;
-    $arg{'sort'}    = 'created_on';
+    $arg{'sort'} = 'created_on';
     $arg{direction} = $sort_direction;
     require MT::TBPing;
     if ( ( $app->param('tab') || '' ) eq 'junk' ) {
@@ -174,8 +184,7 @@ sub list {
         {
             $arg{join} = $app->model('trackback')->join_on(
                 undef,
-                {
-                    id          => \'= tbping_tb_id',
+                {   id          => \'= tbping_tb_id',
                     $filter_col => $val,
                     $blog_id ? ( blog_id => $blog_id ) : (),
                 }
@@ -185,7 +194,7 @@ sub list {
                 my $entry = $pkg->load($val);
                 if ($entry) {
                     $param{filter_phrase} = $app->translate(
-    "TrackBacks where <strong>[_1]</strong> is &quot;[_2]&quot;.",
+                        "TrackBacks where <strong>[_1]</strong> is &quot;[_2]&quot;.",
                         $entry->class_label,
                         encode_html( $entry->title )
                     );
@@ -196,7 +205,7 @@ sub list {
                 my $cat = $pkg->load($val);
                 if ($cat) {
                     $param{filter_phrase} = $app->translate(
-    "TrackBacks where <strong>[_1]</strong> is &quot;[_2]&quot;.",
+                        "TrackBacks where <strong>[_1]</strong> is &quot;[_2]&quot;.",
                         $cat->class_label,
                         encode_html( $cat->label )
                     );
@@ -215,19 +224,23 @@ sub list {
                 $terms{$filter_col} = $val;
             }
         }
-        $param{filter_args} = "&filter=" . encode_url($filter_col) . "&filter_val=" . encode_url($val);
+        $param{filter_args}
+            = "&filter="
+            . encode_url($filter_col)
+            . "&filter_val="
+            . encode_url($val);
         $param{filter}     ||= $filter_col;
         $param{filter_val} ||= $val;
         $param{is_filtered} = 1;
         $param{is_ip_filter} = $filter_col eq "ip";
     }
     elsif ($filter_key) {
-        my $filters = $app->registry("list_filters", "ping") || {};
+        my $filters = $app->registry( "list_filters", "ping" ) || {};
         if ( my $filter = $filters->{$filter_key} ) {
             if ( my $code = $filter->{code}
                 || $app->handler_to_coderef( $filter->{handler} ) )
             {
-                $param{filter} = 1;
+                $param{filter}       = 1;
                 $param{filter_key}   = $filter_key;
                 $param{filter_label} = $filter->{label};
                 $code->( \%terms, \%arg );
@@ -236,8 +249,8 @@ sub list {
     }
 
     my $ping_class = $app->model('ping');
-    my $total      = $ping_class->count( \%terms, \%arg ) || 0;
-    $arg{limit}     = $limit + 1;
+    my $total = $ping_class->count( \%terms, \%arg ) || 0;
+    $arg{limit} = $limit + 1;
     if ( $total <= $limit ) {
         delete $arg{limit};
         $offset = 0;
@@ -277,7 +290,7 @@ sub list {
     $param{state_editable}     = $state_editable;
     $param{can_empty_junk}     = $can_empty_junk;
     $param{saved_deleted_ping} = $q->param('saved_deleted')
-      || $q->param('saved_deleted_ping');
+        || $q->param('saved_deleted_ping');
     $param{object_type}         = 'ping';
     $param{object_label}        = $ping_class->class_label;
     $param{object_label_plural} = $ping_class->class_label_plural;
@@ -290,22 +303,21 @@ sub list {
         ? int( $param{list_total} / $limit ) * $limit
         : 0;
     $param{page_actions} = $app->page_actions('list_pings')
-      || $app->page_actions('list_ping');
+        || $app->page_actions('list_ping');
     $param{nav_trackbacks}    = 1;
     $param{has_expanded_mode} = 1;
     $param{tab}               = $app->param('tab') || 'pings';
     $param{ "tab_" . ( $app->param('tab') || 'pings' ) } = 1;
 
     $param{blog_view} = 1 if $blog->is_blog;
-    $param{filter_spam} =
-      ( $app->param('filter_key') && $app->param('filter_key') eq 'spam' );
+    $param{filter_spam} = ( $app->param('filter_key')
+            && $app->param('filter_key') eq 'spam' );
     if ( $param{'tab'} ne 'junk' ) {
         $param{feed_name} = $app->translate("TrackBack Activity Feed");
-        $param{feed_url} =
-          $app->make_feed_link( 'ping',
+        $param{feed_url}  = $app->make_feed_link( 'ping',
             $blog_id ? { blog_id => $blog_id } : undef );
     }
-    $param{screen_id} = "list-ping";
+    $param{screen_id}      = "list-ping";
     $param{listing_screen} = 1;
     $app->add_breadcrumb( $app->translate('TrackBacks') );
     $app->load_tmpl( "list_ping.tmpl", \%param );
@@ -322,17 +334,19 @@ sub can_view {
         if ( $tb->entry_id ) {
             require MT::Entry;
             my $entry = MT::Entry->load( $tb->entry_id );
-            return ( !$entry
-                  || ( $entry->author_id == $app->user->id
-                       && $app->can_do('open_own_entry_trackback_edit_screen') )
-                  || $perms->can_do('open_all_trackback_edit_screen') );
+            return (
+                !$entry 
+                    || ( $entry->author_id == $app->user->id
+                    && $app->can_do('open_own_entry_trackback_edit_screen') )
+                    || $perms->can_do('open_all_trackback_edit_screen')
+            );
         }
         elsif ( $tb->category_id ) {
             require MT::Category;
             my $cat = MT::Category->load( $tb->category_id );
-            return $cat && $perms->can_do('open_category_trackback_edit_screen');
+            return $cat
+                && $perms->can_do('open_category_trackback_edit_screen');
         }
-
 
     }
     else {
@@ -349,7 +363,7 @@ sub can_save {
     my $perms = $app->permissions;
     return 1
         if $app->can_do('save_all_trackback');
-    my $p      = MT::TBPing->load($id)
+    my $p = MT::TBPing->load($id)
         or return 0;
     my $tbitem = $p->parent;
     if ( $tbitem->isa('MT::Entry') ) {
@@ -360,11 +374,10 @@ sub can_save {
             = $p->is_junk      ? ( 'junk'      ne $app->param('status') )
             : $p->is_moderated ? ( 'moderated' ne $app->param('status') )
             : $p->is_published ? ( 'publish'   ne $app->param('status') )
-            :                    1
-            ;
-        return $status_is_changed ? $app->can_do('edit_own_entry_trackback_status')
-                                  : $app->can_do('edit_own_entry_trackback_without_status')
-                                  ;
+            :                    1;
+        return $status_is_changed
+            ? $app->can_do('edit_own_entry_trackback_status')
+            : $app->can_do('edit_own_entry_trackback_without_status');
     }
     else {
         return $app->can_do('save_category_trackback');
@@ -386,13 +399,13 @@ sub can_delete {
 
         # publish_post allows entry author to delete comment.
         return 1
-          if $perms->can_do('delete_all_trackbacks')
-          || ( $perms->can_edit_entry( $entry, $author, 1 )
-               && $perms->can_do('delete_own_entry_trackback') );
+            if $perms->can_do('delete_all_trackbacks')
+                || (   $perms->can_edit_entry( $entry, $author, 1 )
+                    && $perms->can_do('delete_own_entry_trackback') );
         return 0
-          if $obj->visible;    # otherwise, visible comment can't be deleted.
+            if $obj->visible;   # otherwise, visible comment can't be deleted.
         return $perms->can_edit_entry( $entry, $author )
-               && $perms->can_do('delete_own_entry_unpublished_trackback');
+            && $perms->can_do('delete_own_entry_unpublished_trackback');
     }
     elsif ( $tb->category_id ) {
         $perms ||= $author->permissions( $tb->blog_id );
@@ -406,12 +419,12 @@ sub pre_save {
     my ( $app, $obj, $original ) = @_;
     my $perms = $app->permissions;
 
-    PERMCHECK: {
+PERMCHECK: {
         last PERMCHECK
             if $app->can_do('handle_junk_for_all_trackbacks');
         require MT::Trackback;
         my $tb = MT::Trackback->load( $obj->tb_id )
-            or return 0; # wrong trackback id. callback was failed.
+            or return 0;    # wrong trackback id. callback was failed.
         if ( $tb->entry_id ) {
             require MT::Entry;
             my $entry = MT::Entry->load( $tb->entry_id );
@@ -457,7 +470,8 @@ sub post_save {
     require MT::Category;
     if ( my $tb = MT::Trackback->load( $obj->tb_id ) ) {
         my ( $entry, $cat );
-        if ( $tb->entry_id && ( $entry = MT::Entry->load( $tb->entry_id ) ) ) {
+        if ( $tb->entry_id && ( $entry = MT::Entry->load( $tb->entry_id ) ) )
+        {
             if ( $obj->visible
                 || ( ( $obj->visible || 0 ) != ( $original->visible || 0 ) ) )
             {
@@ -481,23 +495,23 @@ sub post_delete {
     my ( $message, $title );
     my $obj_parent = $obj->parent();
     if ( $obj_parent->isa('MT::Category') ) {
-        $title = $obj_parent->label || $app->translate('(Unlabeled category)');
-        $message =
-          $app->translate(
+        $title = $obj_parent->label
+            || $app->translate('(Unlabeled category)');
+        $message
+            = $app->translate(
             "Ping (ID:[_1]) from '[_2]' deleted by '[_3]' from category '[_4]'",
             $obj->id, $obj->blog_name, $app->user->name, $title );
     }
     else {
         $title = $obj_parent->title || $app->translate('(Untitled entry)');
-        $message =
-          $app->translate(
+        $message
+            = $app->translate(
             "Ping (ID:[_1]) from '[_2]' deleted by '[_3]' from entry '[_4]'",
             $obj->id, $obj->blog_name, $app->user->name, $title );
     }
 
     $app->log(
-        {
-            message  => $message,
+        {   message  => $message,
             level    => MT::Log::INFO(),
             class    => 'system',
             category => 'delete'
@@ -533,33 +547,36 @@ sub build_ping_table {
 
     my @data;
     my ( %blogs, %entries, %cats, %perms );
-    my $excerpt_max_len = const('DISPLAY_LENGTH_EDIT_PING_TITLE_FROM_EXCERPT');
-    my $title_max_len   = const('DISPLAY_LENGTH_EDIT_PING_BREAK_UP');
+    my $excerpt_max_len
+        = const('DISPLAY_LENGTH_EDIT_PING_TITLE_FROM_EXCERPT');
+    my $title_max_len = const('DISPLAY_LENGTH_EDIT_PING_BREAK_UP');
     while ( my $obj = $iter->() ) {
         my $row = $obj->get_values;
         my $blog = $blogs{ $obj->blog_id } ||= $obj->blog if $obj->blog_id;
         $row->{excerpt} = '[' . $app->translate("No Excerpt") . ']'
-          unless ( $row->{excerpt} || '' ) ne '';
+            unless ( $row->{excerpt} || '' ) ne '';
         if ( ( $row->{title} || '' ) eq ( $row->{source_url} || '' ) ) {
             $row->{title} = '[' . $app->translate("No Title") . ']';
         }
         if ( !defined( $row->{title} ) ) {
-            $row->{title} =
-              substr( $row->{excerpt} || "", 0, $excerpt_max_len ) . '...';
+            $row->{title}
+                = substr( $row->{excerpt} || "", 0, $excerpt_max_len )
+                . '...';
         }
         $row->{excerpt} ||= '';
-        $row->{title}     = break_up_text( $row->{title},     $title_max_len );
-        $row->{excerpt}   = break_up_text( $row->{excerpt},   $title_max_len );
-        $row->{blog_name} = break_up_text( $row->{blog_name}, $title_max_len );
-        $row->{object}    = $obj;
+        $row->{title}   = break_up_text( $row->{title},   $title_max_len );
+        $row->{excerpt} = break_up_text( $row->{excerpt}, $title_max_len );
+        $row->{blog_name}
+            = break_up_text( $row->{blog_name}, $title_max_len );
+        $row->{object} = $obj;
         push @data, $row;
 
         my $entry;
         my $cat;
         if ( my $tb_center = MT::Trackback->load( $obj->tb_id ) ) {
             if ( $tb_center->entry_id ) {
-                $entry = $entries{ $tb_center->entry_id } ||=
-                  $app->model('entry')->load( $tb_center->entry_id );
+                $entry = $entries{ $tb_center->entry_id }
+                    ||= $app->model('entry')->load( $tb_center->entry_id );
                 my $class = $entry->class || 'entry';
                 if ($entry) {
                     $row->{target_title} = $entry->title;
@@ -574,17 +591,17 @@ sub build_ping_table {
                     );
                 }
                 else {
-                    $row->{target_title} =
-                      ( '* ' . $app->translate('Orphaned TrackBack') . ' *' );
+                    $row->{target_title} = (
+                        '* ' . $app->translate('Orphaned TrackBack') . ' *' );
                 }
                 $row->{target_type} = $app->translate($class);
             }
             elsif ( $tb_center->category_id ) {
-                $cat = $cats{ $tb_center->category_id } ||=
-                  MT::Category->load( $tb_center->category_id );
+                $cat = $cats{ $tb_center->category_id }
+                    ||= MT::Category->load( $tb_center->category_id );
                 if ($cat) {
-                    $row->{target_title} =
-                      ( '* ' . $app->translate('Orphaned TrackBack') . ' *' );
+                    $row->{target_title} = (
+                        '* ' . $app->translate('Orphaned TrackBack') . ' *' );
                     $row->{target_title} = $cat->label;
                     $row->{target_link}  = $app->uri(
                         'mode' => 'view',
@@ -600,10 +617,14 @@ sub build_ping_table {
             }
         }
         if ( my $ts = $obj->created_on ) {
-            $row->{created_on_time_formatted} =
-              format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(), $ts, $blog, $app->user ? $app->user->preferred_language : undef );
-            $row->{created_on_formatted} =
-              format_ts( MT::App::CMS::LISTING_DATE_FORMAT(), $ts, $blog, $app->user ? $app->user->preferred_language : undef );
+            $row->{created_on_time_formatted}
+                = format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(),
+                $ts, $blog,
+                $app->user ? $app->user->preferred_language : undef );
+            $row->{created_on_formatted}
+                = format_ts( MT::App::CMS::LISTING_DATE_FORMAT(),
+                $ts, $blog,
+                $app->user ? $app->user->preferred_language : undef );
             $row->{created_on_relative} = relative_date( $ts, time, $blog );
         }
         if ($blog) {
@@ -611,29 +632,29 @@ sub build_ping_table {
             $row->{weblog_name} = $blog->name;
         }
         else {
-            $row->{weblog_name} =
-              '* ' . $app->translate('Orphaned TrackBack') . ' *';
+            $row->{weblog_name}
+                = '* ' . $app->translate('Orphaned TrackBack') . ' *';
         }
         if ( $author->is_superuser() ) {
             $row->{has_edit_access} = 1;
             $row->{has_bulk_access} = 1;
         }
         else {
-            my $perms = $perms{ $obj->blog_id } ||=
-              $author->permissions( $obj->blog_id );
+            my $perms = $perms{ $obj->blog_id }
+                ||= $author->permissions( $obj->blog_id );
             my $own_entry = $entry && $author->id == $entry->author_id;
 
             $row->{has_bulk_access}
-                = $cat       ? $perms->can_do('bulk_edit_category_trackbacks')
-                : $own_entry ? $perms->can_do('bulk_edit_own_entry_trackbacks')
-                :              $perms->can_do('bulk_edit_all_entry_trackbacks')
-                ;
+                = $cat ? $perms->can_do('bulk_edit_category_trackbacks')
+                : $own_entry
+                ? $perms->can_do('bulk_edit_own_entry_trackbacks')
+                : $perms->can_do('bulk_edit_all_entry_trackbacks');
 
             $row->{has_edit_access}
-                = $cat       ? $perms->can_do('open_category_trackback_edit_screen')
-                : $own_entry ? $perms->can_do('open_own_entry_trackback_edit_screen')
-                :              $perms->can_do('open_all_trackback_edit_screen')
-                ;
+                = $cat ? $perms->can_do('open_category_trackback_edit_screen')
+                : $own_entry
+                ? $perms->can_do('open_own_entry_trackback_edit_screen')
+                : $perms->can_do('open_all_trackback_edit_screen');
         }
     }
     return [] unless @data;

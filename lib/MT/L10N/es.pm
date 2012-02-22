@@ -625,6 +625,7 @@ use vars qw( @ISA %Lexicon );
 	'Website' => 'Website',
 
 ## lib/MT/App/Comments.pm
+	'Invalid authentication parameter' => 'Parámetro de autentificación no válido', # Translate - New
 	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => 'Error asignando permisos para comentar al usuario \'[_1] (ID: [_2])\' para el weblog \'[_3] (ID: [_4])\'. No se encontró un rol adecuado.',
 	'Can\'t load blog #[_1].' => 'No se pudo cargar el blog nº[_1].',
 	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => 'Intento de identificación de comentarista no válido desde [_1] en el blog [_2](ID: [_3]) que no permite la autentificación nativa de Movable Type.',
@@ -4540,6 +4541,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Tagged: [_1]' => 'Etiquetas: [_1]',
 	'View all entries' => 'Mostrar todas las entradas',
 	'No entries have been created in this blog. <a href="[_1]">Create a entry</a>' => 'No se han creado entradas en este blog. <a href="[_1]">Crear una entrada</a>',
+	'No entries have been created in this blog.' => 'No se han creado entradas en este blog.',
 
 ## tmpl/cms/widget/blog_stats_recent_entries.tmpl
 	'[quant,_1,entry,entries] tagged &ldquo;[_2]&rdquo;' => '[quant,_1,entrada etiquetada,entradas etiquetadas] &ldquo;[_2]&rdquo;',

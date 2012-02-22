@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -10,26 +10,26 @@ use strict;
 use warnings;
 use base qw( MT::ObjectDriver::DDL );
 
-sub can_add_column { 1 }
-sub can_drop_column { 1 }
-sub can_alter_column { 1 }
+sub can_add_column   {1}
+sub can_drop_column  {1}
+sub can_alter_column {1}
 
 sub index_defs {
-    my $ddl = shift;
-    my ($class) = @_;
-    my $driver = $class->driver;
-    my $dbh = $driver->r_handle;
+    my $ddl          = shift;
+    my ($class)      = @_;
+    my $driver       = $class->driver;
+    my $dbh          = $driver->r_handle;
     my $field_prefix = $class->datasource;
-    my $table_name = $class->table_name;
+    my $table_name   = $class->table_name;
     local $dbh->{RaiseError} = 0;
-    my $sth = $dbh->prepare('SHOW INDEX FROM ' . $table_name)
+    my $sth = $dbh->prepare( 'SHOW INDEX FROM ' . $table_name )
         or return undef;
     $sth->execute or return undef;
 
-    my $bags = {};
+    my $bags   = {};
     my $unique = {};
-    my $sizes = {};
-    while (my $row = $sth->fetchrow_hashref) {
+    my $sizes  = {};
+    while ( my $row = $sth->fetchrow_hashref ) {
         my $key = $row->{'Key_name'};
         next unless $key =~ m/^(mt_)?\Q$field_prefix\E_/;
         $key = 'mt_' . $key unless $key =~ m/^mt_/;
@@ -51,27 +51,33 @@ sub index_defs {
         $unique->{$key} = 1 unless $non_unique;
         $sizes->{$key}->{$col} = $size if defined $size;
         my $idx_bag = $bags->{$key} ||= [];
-        $idx_bag->[$seq - 1] = $col;
+        $idx_bag->[ $seq - 1 ] = $col;
     }
     $sth->finish;
-    if (!%$bags) {
+    if ( !%$bags ) {
         return undef;
     }
 
     my $defs = {};
-    foreach my $key (keys %$bags) {
+    foreach my $key ( keys %$bags ) {
         my $cols = $bags->{$key};
         my %sizes = %{ $sizes->{$key} || {} };
-        if ($unique->{$key}) {
-            $defs->{$key} = { columns => $cols, unique => 1,
-                %sizes ? (sizes => \%sizes) : (), };
+        if ( $unique->{$key} ) {
+            $defs->{$key} = {
+                columns => $cols,
+                unique  => 1,
+                %sizes ? ( sizes => \%sizes ) : (),
+            };
         }
         else {
-            if ((@$cols == 1) && ($key eq $cols->[0]) && !%sizes) {
+            if ( ( @$cols == 1 ) && ( $key eq $cols->[0] ) && !%sizes ) {
                 $defs->{$key} = 1;
-            } else {
-                $defs->{$key} = { columns => $cols,
-                    %sizes ? (sizes => \%sizes) : (), };
+            }
+            else {
+                $defs->{$key} = {
+                    columns => $cols,
+                    %sizes ? ( sizes => \%sizes ) : (),
+                };
             }
         }
     }
@@ -83,39 +89,45 @@ sub column_defs {
     my $ddl = shift;
     my ($class) = @_;
 
-    my $driver = $class->driver;
-    my $dbh = $driver->r_handle;
+    my $driver       = $class->driver;
+    my $dbh          = $driver->r_handle;
     my $field_prefix = $class->datasource;
-    my $table_name = $class->table_name;
+    my $table_name   = $class->table_name;
 
     # Disable RaiseError if set, since the table we're about to describe
     # may not actually exist (in which case, the return value is undef,
     # signalling an nonexistent table to the caller).
     local $dbh->{RaiseError} = 0;
-    my $sth = $dbh->prepare('describe ' . $table_name) or return undef;
+    my $sth = $dbh->prepare( 'describe ' . $table_name ) or return undef;
     $sth->execute or return undef;
     my $defs = {};
-    while (my $row = $sth->fetchrow_hashref) {
+    while ( my $row = $sth->fetchrow_hashref ) {
         my $colname = lc $row->{Field};
         next if $colname !~ m/^\Q$field_prefix\E_/i;
         $colname =~ s/^\Q$field_prefix\E_//i;
         my $coltype = $row->{Type};
-        my ($size) = ($coltype =~ m/(?:var)?char\((\d+)\)/i ? $1 : undef);
+        my ($size) = ( $coltype =~ m/(?:var)?char\((\d+)\)/i ? $1 : undef );
         $coltype = $ddl->db2type($coltype);
         $defs->{$colname}{type} = $coltype;
-        $defs->{$colname}{auto} = ($row->{Extra} =~ m/auto_increment/i) ? 1 : 0;
-        $defs->{$colname}{key}  = $row->{Key} eq 'PRI' ? 1 : 0;
-        if (($coltype eq 'string') && $size) {
+        $defs->{$colname}{auto}
+            = ( $row->{Extra} =~ m/auto_increment/i ) ? 1 : 0;
+        $defs->{$colname}{key} = $row->{Key} eq 'PRI' ? 1 : 0;
+
+        if ( ( $coltype eq 'string' ) && $size ) {
             $defs->{$colname}{size} = $size;
         }
-        if ( !$row->{Null} || $row->{Null} eq 'NO' || ($coltype eq 'timestamp') ) {
+        if (  !$row->{Null}
+            || $row->{Null} eq 'NO'
+            || ( $coltype eq 'timestamp' ) )
+        {
             $defs->{$colname}{not_null} = 1;
-        } else {
+        }
+        else {
             $defs->{$colname}{not_null} = 0;
         }
     }
     $sth->finish;
-    if (!%$defs) {
+    if ( !%$defs ) {
         return undef;
     }
     return $defs;
@@ -126,40 +138,55 @@ sub db2type {
     my ($type) = @_;
     $type = lc $type;
     $type =~ s/\(.+//;
-    if ($type eq 'int') {
+    if ( $type eq 'int' ) {
         return 'integer';
-    } elsif ($type eq 'smallint') {
+    }
+    elsif ( $type eq 'smallint' ) {
         return 'smallint';
-    } elsif ($type eq 'bigint') {
+    }
+    elsif ( $type eq 'bigint' ) {
         return 'bigint';
-    } elsif ($type eq 'mediumint') {
+    }
+    elsif ( $type eq 'mediumint' ) {
         return 'integer';
-    } elsif ($type eq 'bigint') {
+    }
+    elsif ( $type eq 'bigint' ) {
         return 'integer';
-    } elsif ($type eq 'varchar') {
+    }
+    elsif ( $type eq 'varchar' ) {
         return 'string';
-    } elsif ($type eq 'varbinary') {
+    }
+    elsif ( $type eq 'varbinary' ) {
         return 'string';
-    } elsif ($type eq 'char') {
+    }
+    elsif ( $type eq 'char' ) {
         return 'string';
-    } elsif ($type eq 'mediumtext') {
+    }
+    elsif ( $type eq 'mediumtext' ) {
         return 'text';
-    } elsif ($type eq 'blob') {
+    }
+    elsif ( $type eq 'blob' ) {
         return 'blob';
-    } elsif ($type eq 'mediumblob') {
+    }
+    elsif ( $type eq 'mediumblob' ) {
         return 'blob';
-    } elsif ($type eq 'tinyint') {
+    }
+    elsif ( $type eq 'tinyint' ) {
         return 'boolean';
-    } elsif ($type eq 'datetime') {
+    }
+    elsif ( $type eq 'datetime' ) {
         return 'datetime';
-    } elsif ($type eq 'timestamp') {
+    }
+    elsif ( $type eq 'timestamp' ) {
         return 'timestamp';
-    } elsif ($type eq 'text') {
+    }
+    elsif ( $type eq 'text' ) {
         return 'text';
-    } elsif ($type eq 'float') {
+    }
+    elsif ( $type eq 'float' ) {
         return 'float';
     }
-    Carp::croak("undefined type: " . $type);
+    Carp::croak( "undefined type: " . $type );
 }
 
 sub type2db {
@@ -167,34 +194,43 @@ sub type2db {
     my ($def) = @_;
     return undef if !defined $def;
     my $type = $def->{type};
-    if ($type eq 'string') {
+    if ( $type eq 'string' ) {
         return 'varchar(' . $def->{size} . ')';
-    } elsif ($type eq 'smallint' ) {
+    }
+    elsif ( $type eq 'smallint' ) {
         return 'smallint';
-    } elsif ($type eq 'bigint' ) {
+    }
+    elsif ( $type eq 'bigint' ) {
         return 'bigint';
-    } elsif ($type eq 'boolean') {
+    }
+    elsif ( $type eq 'boolean' ) {
         return 'tinyint';
-    } elsif ($type eq 'datetime') {
+    }
+    elsif ( $type eq 'datetime' ) {
         return 'datetime';
-    } elsif ($type eq 'timestamp') {
+    }
+    elsif ( $type eq 'timestamp' ) {
         return 'timestamp';
-    } elsif ($type eq 'integer') {
+    }
+    elsif ( $type eq 'integer' ) {
         return 'integer';
-    } elsif ($type eq 'blob') {
+    }
+    elsif ( $type eq 'blob' ) {
         return 'mediumblob';
-    } elsif ($type eq 'text') {
+    }
+    elsif ( $type eq 'text' ) {
         return 'mediumtext';
-    } elsif ($type eq 'float') {
+    }
+    elsif ( $type eq 'float' ) {
         return 'float';
     }
-    Carp::croak("undefined type: ". $type);
+    Carp::croak( "undefined type: " . $type );
 }
 
 sub column_sql {
     my $ddl = shift;
-    my ($class, $name) = @_;
-    my $sql = $ddl->SUPER::column_sql($class, $name);
+    my ( $class, $name ) = @_;
+    my $sql = $ddl->SUPER::column_sql( $class, $name );
     my $def = $class->column_def($name);
     $sql .= ' auto_increment' if $def->{auto};
     return $sql;
@@ -202,28 +238,29 @@ sub column_sql {
 
 sub cast_column_sql {
     my $ddl = shift;
-    my ($class, $name, $from_def) = @_;
+    my ( $class, $name, $from_def ) = @_;
 
-    my $def = $class->column_def($name);
+    my $def          = $class->column_def($name);
     my $field_prefix = $class->datasource;
-    my %cast_type = (
-        'string' => 'char',
-        'smallint' => 'signed',
-        'bigint' => 'signed',
-        'integer' => 'signed',
-        'blob' => 'binary',
-        'text' => 'char',
-        'datetime' => 'datetime',
+    my %cast_type    = (
+        'string'    => 'char',
+        'smallint'  => 'signed',
+        'bigint'    => 'signed',
+        'integer'   => 'signed',
+        'blob'      => 'binary',
+        'text'      => 'char',
+        'datetime'  => 'datetime',
         'timestamp' => 'timestamp',
-        'boolean' => 'signed',
-        'float' => 'signed',
+        'boolean'   => 'signed',
+        'float'     => 'signed',
     );
-    return "CAST(${field_prefix}_$name AS " . $cast_type{$def->{type}} . ')';
+    return
+        "CAST(${field_prefix}_$name AS " . $cast_type{ $def->{type} } . ')';
 }
 
 sub drop_table_sql {
-    my $ddl = shift;
-    my ($class) = @_;
+    my $ddl        = shift;
+    my ($class)    = @_;
     my $table_name = $class->table_name;
     return "DROP TABLE IF EXISTS $table_name";
 }

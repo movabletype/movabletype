@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -29,10 +29,10 @@ sub start_import {
     my @data;
     while ( my $cat = $iter->() ) {
         push @data,
-          {
+            {
             category_id    => $cat->id,
             category_label => $cat->label
-          };
+            };
     }
     @data = sort { $a->{category_label} cmp $b->{category_label} } @data;
     $param{category_loop} = \@data;
@@ -54,37 +54,40 @@ sub start_import {
         $mt        = $importer, next if $key eq 'import_mt';
         $mt_format = $importer, next if $key eq 'import_mt_format';
         push @$importer_loop,
-          {
+            {
             label       => $importer->{label},
             key         => $importer->{key},
             description => $importer->{description},
             importer_options_html =>
-              $imp->get_options_html( $importer->{key}, $blog_id ),
-          };
+                $imp->get_options_html( $importer->{key}, $blog_id ),
+            };
     }
     push @$importer_loop,
-      {
+        {
         label       => $mt_format->{label},
         key         => $mt_format->{key},
         description => $mt_format->{description},
         importer_options_html =>
-          $imp->get_options_html( $mt_format->{key}, $blog_id ),
-      };
+            $imp->get_options_html( $mt_format->{key}, $blog_id ),
+        };
     unshift @$importer_loop,
-      {
-        label                 => $mt->{label},
-        key                   => $mt->{key},
-        description           => $mt->{description},
-        importer_options_html => $imp->get_options_html( $mt->{key}, $blog_id ),
-      };
+        {
+        label       => $mt->{label},
+        key         => $mt->{key},
+        description => $mt->{description},
+        importer_options_html =>
+            $imp->get_options_html( $mt->{key}, $blog_id ),
+        };
 
     $param{importer_loop} = $importer_loop;
 
     if ($blog_id) {
         $param{blog_id} = $blog_id;
         my $blog = $app->model('blog')->load($blog_id)
-            or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
-        $param{text_filters} = $app->load_text_filters( $blog->convert_paras );
+            or return $app->error(
+            $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $param{text_filters}
+            = $app->load_text_filters( $blog->convert_paras );
     }
 
     $app->add_breadcrumb( $app->translate('Import/Export') );
@@ -97,15 +100,15 @@ sub do_import {
     my $q = $app->param;
     require MT::Blog;
     my $blog_id = $q->param('blog_id')
-      or return $app->return_to_dashboard( redirect => 1 );
+        or return $app->return_to_dashboard( redirect => 1 );
 
     my $blog = MT::Blog->load($blog_id)
-      or return $app->error(
+        or return $app->error(
         $app->translate(
-            "Load of blog '[_1]' failed: [_2]",
-            $blog_id, MT::Blog->errstr
+            "Load of blog '[_1]' failed: [_2]", $blog_id,
+            MT::Blog->errstr
         )
-      );
+        );
 
     return $app->return_to_dashboard( redirect => 1 )
         if !$blog->is_blog;
@@ -114,10 +117,13 @@ sub do_import {
         return $app->redirect(
             $app->uri(
                 'mode' => 'start_import',
-                args => { blog_id => $blog_id }
+                args   => { blog_id => $blog_id }
             )
         );
     }
+
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->user->permissions($blog_id)->can_do('import_blog');
 
     my $import_as_me = $q->param('import_as_me');
 
@@ -126,23 +132,23 @@ sub do_import {
     my $author_id = $author->id;
 
     $app->can_do('import_blog_as_me')
-        or $app->error(
-            $app->translate('You do not have import permission') );
+        or return $app->error(
+        $app->translate('You do not have import permission') );
     if ( !$import_as_me ) {
         $app->can_do('import_blog_with_authors')
-            or $app->error(
-                $app->translate('You do not have permission to create users'));
+            or return $app->error(
+            $app->translate('You do not have permission to create users') );
     }
 
     my ($pass);
     if ( !$import_as_me ) {
         $pass = $q->param('password')
-          or return $app->error(
+            or return $app->error(
             $app->translate(
-                    "You need to provide a password if you are going to "
-                  . "create new users for each user listed in your blog."
+                      "You need to provide a password if you are going to "
+                    . "create new users for each user listed in your blog."
             )
-          ) if ( MT::Auth->password_exists );
+            ) if ( MT::Auth->password_exists );
     }
 
     $app->validate_magic() or return;
@@ -157,9 +163,11 @@ sub do_import {
     $app->send_http_header('text/html');
 
     my $param;
-    $param = { import_as_me => $import_as_me, import_upload => ($fh ? 1 : 0) };
+    $param
+        = { import_as_me => $import_as_me, import_upload => ( $fh ? 1 : 0 ) };
 
-    $app->print_encode( $app->build_page( 'include/import_start.tmpl', $param ) );
+    $app->print_encode(
+        $app->build_page( 'include/import_start.tmpl', $param ) );
 
     require MT::Entry;
     require MT::Placement;
@@ -175,15 +183,15 @@ sub do_import {
 
     return $app->error(
         $app->translate( 'Importer type [_1] was not found.', $import_type ) )
-      unless $importer;
+        unless $importer;
 
     my %options = map { $_ => $q->param($_); } @{ $importer->{options} }
-      if $importer->{options};
+        if $importer->{options};
     my $import_result = $imp->import_contents(
         Key      => $import_type,
         Blog     => $blog,
         Stream   => $stream,
-        Callback => sub { $app->print_encode( @_ ) },
+        Callback => sub { $app->print_encode(@_) },
         Encoding => $encoding,
         ($import_as_me)
         ? ( ImportAs => $author )
@@ -197,7 +205,8 @@ sub do_import {
     $param->{import_success} = $import_result;
     $param->{error} = $importer->{type}->errstr unless $import_result;
 
-    $app->print_encode( $app->build_page( "include/import_end.tmpl", $param ) );
+    $app->print_encode(
+        $app->build_page( "include/import_end.tmpl", $param ) );
 
     close $fh if $fh;
     1;

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -14,85 +14,137 @@ use Encode;
 
 sub send {
     my $class = shift;
-    my($hdrs_arg, $body) = @_;
+    my ( $hdrs_arg, $body ) = @_;
 
     local $hdrs_arg->{id} = $hdrs_arg->{id};
     my $id = delete $hdrs_arg->{id};
 
     my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
-    foreach my $h (keys %hdrs) {
-        if (ref($hdrs{$h}) eq 'ARRAY') {
-            map { y/\n\r/  / } @{$hdrs{$h}};
-        } else {
-            $hdrs{$h} =~ y/\n\r/  / unless (ref($hdrs{$h}));
+    foreach my $h ( keys %hdrs ) {
+        if ( ref( $hdrs{$h} ) eq 'ARRAY' ) {
+            map {y/\n\r/  /} @{ $hdrs{$h} };
+        }
+        else {
+            $hdrs{$h} =~ y/\n\r/  / unless ( ref( $hdrs{$h} ) );
         }
     }
-    
-    my $mgr = MT->config;
+
+    my $mgr  = MT->config;
     my $xfer = $mgr->MailTransfer;
 
-    my $mail_enc = uc ($mgr->MailEncoding || $mgr->PublishCharset);
+    my $mail_enc = uc( $mgr->MailEncoding || $mgr->PublishCharset );
     $mail_enc = lc $mail_enc;
 
     require MT::I18N::default;
-    $body = MT::I18N::default->encode_text_encode($body, undef, $mail_enc);
+    $body = MT::I18N::default->encode_text_encode( $body, undef, $mail_enc );
 
     eval "require MIME::EncWords;";
     unless ($@) {
-        foreach my $header (keys %hdrs) {
+        foreach my $header ( keys %hdrs ) {
             my $val = $hdrs{$header};
 
-            if (ref $val eq 'ARRAY') {
+            if ( ref $val eq 'ARRAY' ) {
                 foreach (@$val) {
-                    if (($mail_enc ne 'iso-8859-1') || (m/[^[:print:]]/)) {
-                        if ($header =~ m/^(From|To|Reply|B?cc)/i) {
+                    if ( ( $mail_enc ne 'iso-8859-1' ) || (m/[^[:print:]]/) )
+                    {
+                        if ( $header =~ m/^(From|To|Reply|B?cc)/i ) {
                             if (m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
                                 $_ = MIME::EncWords::encode_mimeword(
-                                    MT::I18N::default->encode_text_encode($1, undef, $mail_enc), 'b', $mail_enc) . ' ' . $2;
+                                    MT::I18N::default->encode_text_encode(
+                                        $1, undef, $mail_enc
+                                    ),
+                                    'b',
+                                    $mail_enc
+                                    )
+                                    . ' '
+                                    . $2;
                             }
-                        } elsif ($header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i) {
+                        }
+                        elsif ( $header
+                            !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i
+                            )
+                        {
                             $_ = MIME::EncWords::encode_mimeword(
-                                    MT::I18N::default->encode_text_encode($_, undef, $mail_enc), 'b', $mail_enc);
+                                MT::I18N::default->encode_text_encode(
+                                    $_, undef, $mail_enc
+                                ),
+                                'b',
+                                $mail_enc
+                            );
                         }
                     }
                 }
-            } else {
-                if (($mail_enc ne 'iso-8859-1') || ($val =~ /[^[:print:]]/)) {
-                    if ($header =~ m/^(From|To|Reply|B?cc)/i) {
-                        if ($val =~ m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
+            }
+            else {
+                if (   ( $mail_enc ne 'iso-8859-1' )
+                    || ( $val =~ /[^[:print:]]/ ) )
+                {
+                    if ( $header =~ m/^(From|To|Reply|B?cc)/i ) {
+                        if ( $val =~ m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/ ) {
                             $hdrs{$header} = MIME::EncWords::encode_mimeword(
-                                    MT::I18N::default->encode_text_encode($1, undef, $mail_enc), 'b', $mail_enc) . ' ' . $2;
+                                MT::I18N::default->encode_text_encode(
+                                    $1, undef, $mail_enc
+                                ),
+                                'b',
+                                $mail_enc
+                                )
+                                . ' '
+                                . $2;
                         }
-                    } elsif ($header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i) {
+                    }
+                    elsif ( $header
+                        !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i
+                        )
+                    {
                         $hdrs{$header} = MIME::EncWords::encode_mimeword(
-                            MT::I18N::default->encode_text_encode($val, undef, $mail_enc), 'b', $mail_enc);
+                            MT::I18N::default->encode_text_encode(
+                                $val, undef, $mail_enc
+                            ),
+                            'b',
+                            $mail_enc
+                        );
                     }
                 }
             }
         }
-    } else {
-        $hdrs{Subject} = MT::I18N::default->encode_text_encode($hdrs{Subject}, undef, $mail_enc);
-        $hdrs{From} = MT::I18N::default->encode_text_encode($hdrs{From}, undef, $mail_enc);
+    }
+    else {
+        $hdrs{Subject}
+            = MT::I18N::default->encode_text_encode( $hdrs{Subject}, undef,
+            $mail_enc );
+        $hdrs{From}
+            = MT::I18N::default->encode_text_encode( $hdrs{From}, undef,
+            $mail_enc );
     }
     $hdrs{'Content-Type'} ||= qq(text/plain; charset=") . $mail_enc . q(");
-    $hdrs{'Content-Transfer-Encoding'} = (($mail_enc) !~ m/utf-?8/) ? '7bit' : '8bit';
+    $hdrs{'Content-Transfer-Encoding'}
+        = ( ($mail_enc) !~ m/utf-?8/ ) ? '7bit' : '8bit';
     $hdrs{'MIME-Version'} ||= "1.0";
 
     $hdrs{From} = $mgr->EmailAddressMain unless exists $hdrs{From};
 
-    return 1 unless
-        MT->run_callbacks('mail_filter', args => $hdrs_arg, headers => \%hdrs,
-            body => \$body, transfer => \$xfer, ( $id ? ( id => $id ) : () ) );
+    return 1
+        unless MT->run_callbacks(
+                'mail_filter',
+                args     => $hdrs_arg,
+                headers  => \%hdrs,
+                body     => \$body,
+                transfer => \$xfer,
+                ( $id ? ( id => $id ) : () )
+        );
 
-    if ($xfer eq 'sendmail') {
-        return $class->_send_mt_sendmail(\%hdrs, $body, $mgr);
-    } elsif ($xfer eq 'smtp') {
-        return $class->_send_mt_smtp(\%hdrs, $body, $mgr);
-    } elsif ($xfer eq 'debug') {
-        return $class->_send_mt_debug(\%hdrs, $body, $mgr);
-    } else {
-        return $class->error(MT->translate(
-            "Unknown MailTransfer method '[_1]'", $xfer ));
+    if ( $xfer eq 'sendmail' ) {
+        return $class->_send_mt_sendmail( \%hdrs, $body, $mgr );
+    }
+    elsif ( $xfer eq 'smtp' ) {
+        return $class->_send_mt_smtp( \%hdrs, $body, $mgr );
+    }
+    elsif ( $xfer eq 'debug' ) {
+        return $class->_send_mt_debug( \%hdrs, $body, $mgr );
+    }
+    else {
+        return $class->error(
+            MT->translate( "Unknown MailTransfer method '[_1]'", $xfer ) );
     }
 }
 
@@ -100,12 +152,14 @@ use MT::Util qw(is_valid_email);
 
 sub _send_mt_debug {
     my $class = shift;
-    my($hdrs, $body, $mgr) = @_;
-    $hdrs->{To} = $mgr->DebugEmailAddress 
-        if (is_valid_email($mgr->DebugEmailAddress||''));
-    for my $key (keys %$hdrs) {
-        my @arr = ref($hdrs->{$key}) eq 'ARRAY' ?
-            @{ $hdrs->{$key} } : ($hdrs->{$key});
+    my ( $hdrs, $body, $mgr ) = @_;
+    $hdrs->{To} = $mgr->DebugEmailAddress
+        if ( is_valid_email( $mgr->DebugEmailAddress || '' ) );
+    for my $key ( keys %$hdrs ) {
+        my @arr
+            = ref( $hdrs->{$key} ) eq 'ARRAY'
+            ? @{ $hdrs->{$key} }
+            : ( $hdrs->{$key} );
         print STDERR map "$key: $_\n", @arr;
     }
     print STDERR "\n";
@@ -115,52 +169,64 @@ sub _send_mt_debug {
 
 sub _send_mt_smtp {
     my $class = shift;
-    my($hdrs, $body, $mgr) = @_;
+    my ( $hdrs, $body, $mgr ) = @_;
     eval { require Mail::Sendmail; };
-    return $class->error(MT->translate(
-        "Sending mail via SMTP requires that your server " .
-        "have Mail::Sendmail installed: [_1]", $@ )) if $@;
+    return $class->error(
+        MT->translate(
+            "Sending mail via SMTP requires that your server "
+                . "have Mail::Sendmail installed: [_1]",
+            $@
+        )
+    ) if $@;
     my %hdrs = %$hdrs;
     $hdrs{Message} = $body;
-    $hdrs{Smtp} = $mgr->SMTPServer;
+    $hdrs{Smtp}    = $mgr->SMTPServer;
     for my $h (qw( Cc Bcc )) {
-        if ($hdrs{$h}) {
+
+        if ( $hdrs{$h} ) {
             $hdrs{$h} = join ', ', @{ $hdrs{$h} };
         }
     }
     my $ret = Mail::Sendmail::sendmail(%hdrs);
-    $ret or return $class->error(MT->translate(
-        "Error sending mail: [_1]", $Mail::Sendmail::error ));
+    $ret
+        or return $class->error(
+        MT->translate( "Error sending mail: [_1]", $Mail::Sendmail::error ) );
     1;
 }
 
-my @Sendmail = qw( /usr/lib/sendmail /usr/sbin/sendmail /usr/ucblib/sendmail );
+my @Sendmail
+    = qw( /usr/lib/sendmail /usr/sbin/sendmail /usr/ucblib/sendmail );
+
 sub _send_mt_sendmail {
     my $class = shift;
-    my($hdrs, $body, $mgr) = @_;
-    $hdrs->{To} = $mgr->DebugEmailAddress 
-        if (is_valid_email($mgr->DebugEmailAddress||''));
+    my ( $hdrs, $body, $mgr ) = @_;
+    $hdrs->{To} = $mgr->DebugEmailAddress
+        if ( is_valid_email( $mgr->DebugEmailAddress || '' ) );
     my $sm_loc;
-    for my $loc ($mgr->SendMailPath, @Sendmail) {
+    for my $loc ( $mgr->SendMailPath, @Sendmail ) {
         next unless $loc;
         $sm_loc = $loc, last if -x $loc && !-d $loc;
     }
-    return $class->error(MT->translate(
-        "You do not have a valid path to sendmail on your machine. " .
-        "Perhaps you should try using SMTP?" ))
-        unless $sm_loc;
-    local $SIG{PIPE} = { };
+    return $class->error(
+        MT->translate(
+                  "You do not have a valid path to sendmail on your machine. "
+                . "Perhaps you should try using SMTP?"
+        )
+    ) unless $sm_loc;
+    local $SIG{PIPE} = {};
     my $pid = open MAIL, '|-';
     local $SIG{ALRM} = sub { CORE::exit() };
     return unless defined $pid;
-    if (!$pid) {
-        exec $sm_loc, "-oi", "-t" or
-            return $class->error(MT->translate(
-                "Exec of sendmail failed: [_1]", "$!" ));
+    if ( !$pid ) {
+        exec $sm_loc, "-oi", "-t"
+            or return $class->error(
+            MT->translate( "Exec of sendmail failed: [_1]", "$!" ) );
     }
-    for my $key (keys %$hdrs) {
-        my @arr = ref($hdrs->{$key}) eq 'ARRAY' ?
-            @{ $hdrs->{$key} } : ($hdrs->{$key});
+    for my $key ( keys %$hdrs ) {
+        my @arr
+            = ref( $hdrs->{$key} ) eq 'ARRAY'
+            ? @{ $hdrs->{$key} }
+            : ( $hdrs->{$key} );
         print MAIL map "$key: $_\n", @arr;
     }
     print MAIL "\n";

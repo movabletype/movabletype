@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -9,36 +9,37 @@ use strict;
 
 use base qw(MT::Object);
 
-__PACKAGE__->install_properties({
-    column_defs => {
-        'id' => 'integer not null auto_increment',
-        'blog_id' => 'integer not null',
-        'entry_id' => 'integer',
-        'url' => 'string(255)',
-        'file_path' => 'text',
-        'templatemap_id' => 'integer',
-        'template_id' => 'integer',
-        'archive_type' => 'string(255)',
-        'category_id' => 'integer',
-        'author_id' => 'integer',
-        'startdate' => 'string(80)',
-        'virtual' => 'boolean',
-    },
-    indexes => {
-        blog_id => 1,
-        entry_id => 1,
-        template_id => 1,
-        templatemap_id => 1,
-        archive_type => 1,
-        url => 1,
-        startdate => 1,
-        category_id => 1,
-        author_id => 1,
-    },
-    datasource => 'fileinfo',
-    primary_key => 'id',
-    cacheable => 0,
-});
+__PACKAGE__->install_properties(
+    {   column_defs => {
+            'id'             => 'integer not null auto_increment',
+            'blog_id'        => 'integer not null',
+            'entry_id'       => 'integer',
+            'url'            => 'string(255)',
+            'file_path'      => 'text',
+            'templatemap_id' => 'integer',
+            'template_id'    => 'integer',
+            'archive_type'   => 'string(255)',
+            'category_id'    => 'integer',
+            'author_id'      => 'integer',
+            'startdate'      => 'string(80)',
+            'virtual'        => 'boolean',
+        },
+        indexes => {
+            blog_id        => 1,
+            entry_id       => 1,
+            template_id    => 1,
+            templatemap_id => 1,
+            archive_type   => 1,
+            url            => 1,
+            startdate      => 1,
+            category_id    => 1,
+            author_id      => 1,
+        },
+        datasource  => 'fileinfo',
+        primary_key => 'id',
+        cacheable   => 0,
+    }
+);
 
 =pod
 
@@ -94,38 +95,40 @@ TemplateMap should be given.
 
 sub set_info_for_url {
     my $class = shift;
-    my ($url, $file_path, $archive_type, $args) = @_;
+    my ( $url, $file_path, $archive_type, $args ) = @_;
     my $url_map = MT::FileInfo->new();
-    $url_map->blog_id($args->{Blog});
-    if ($archive_type eq 'index') {
-        $url_map->template_id($args->{Template});
-    } else {
-        $url_map->templatemap_id($args->{TemplateMap}) if $args->{TemplateMap};
-        $url_map->template_id($args->{Template}) if $args->{Template};
+    $url_map->blog_id( $args->{Blog} );
+    if ( $archive_type eq 'index' ) {
+        $url_map->template_id( $args->{Template} );
+    }
+    else {
+        $url_map->templatemap_id( $args->{TemplateMap} )
+            if $args->{TemplateMap};
+        $url_map->template_id( $args->{Template} ) if $args->{Template};
         $args->{Entry} = $args->{Entry}->id if ref $args->{Entry};
-        $url_map->entry_id($args->{Entry}) if $args->{Entry};
-        $url_map->startdate($args->{StartDate}) if $args->{StartDate};
+        $url_map->entry_id( $args->{Entry} )      if $args->{Entry};
+        $url_map->startdate( $args->{StartDate} ) if $args->{StartDate};
         $args->{Category} = $args->{Category}->id if ref $args->{Category};
-        $url_map->category_id($args->{Category}) if $args->{Category};
+        $url_map->category_id( $args->{Category} ) if $args->{Category};
         $args->{Author} = $args->{Author}->id if ref $args->{Author};
-        $url_map->author_id($args->{Author}) if $args->{Author};
+        $url_map->author_id( $args->{Author} ) if $args->{Author};
     }
     $url_map->archive_type($archive_type);
     $url_map->url($url);
     $url_map->file_path($file_path);
-    $url_map->save() || return $class->error($url_map->errstr());
+    $url_map->save() || return $class->error( $url_map->errstr() );
     return $url_map;
 }
 
 sub parent_names {
-    my $obj = shift;
+    my $obj     = shift;
     my $parents = {
-        blog => 'MT::Blog',
-        template => 'MT::Template',
+        blog        => 'MT::Blog',
+        template    => 'MT::Template',
         templatemap => 'MT::TemplateMap',
-        category => 'MT::Category',
-        entry => 'MT::Entry',
-        author => 'MT::Author',
+        category    => 'MT::Category',
+        entry       => 'MT::Entry',
+        author      => 'MT::Author',
     };
     $parents;
 }

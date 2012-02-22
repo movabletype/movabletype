@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -185,6 +185,10 @@ function smarty_function_mtinclude($args, &$ctx) {
             $_include_cache[$cache_id] = $_var_compiled;
         }
     } elseif (isset($args['file']) && ($args['file'])) {
+        $mt = MT::get_instance();
+        if ( !$mt->config('AllowFileInclude') ) {
+            return $ctx->error('File include is disabled by "AllowFileInclude" config directive.');
+        }
         $file = $args['file'];
         $cache_id = 'file::' . $blog_id . '::' . $file;
         if (isset($_include_cache[$cache_id])) {

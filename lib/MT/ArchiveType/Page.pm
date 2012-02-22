@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -47,15 +47,17 @@ sub archive_file {
 
     my $file;
     Carp::croak("archive_file_for Page archive needs a page")
-      unless $page && $page->isa('MT::Page');
+        unless $page && $page->isa('MT::Page');
     unless ($file_tmpl) {
         my $basename = $page->basename();
         my $folder   = $page->folder;
         my $folder_path;
         if ($folder) {
             $folder_path = $folder->publish_path || '';
-            $file =
-              $folder_path ne '' ? $folder_path . '/' . $basename : $basename;
+            $file
+                = $folder_path ne ''
+                ? $folder_path . '/' . $basename
+                : $basename;
         }
         else {
             $file = $basename;
@@ -68,18 +70,16 @@ sub archive_group_iter {
     my $obj = shift;
     my ( $ctx, $args ) = @_;
 
-    my $order =
-      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $order
+        = ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
 
     require MT::Page;
     my $blog_id = $ctx->stash('blog')->id;
     my $iter    = MT::Page->load_iter(
-        {
-            blog_id => $blog_id,
+        {   blog_id => $blog_id,
             status  => MT::Entry::RELEASE()
         },
-        {
-            'sort'    => 'authored_on',
+        {   'sort'    => 'authored_on',
             direction => $order,
             $args->{lastn} ? ( limit => $args->{lastn} ) : ()
         }
@@ -89,28 +89,22 @@ sub archive_group_iter {
             return ( 1, entries => [$entry], entry => $entry );
         }
         undef;
-      }
+        }
 }
 
 sub default_archive_templates {
     return [
-        {
-            label    => MT->translate('folder-path/page-basename.html'),
+        {   label    => MT->translate('folder-path/page-basename.html'),
             template => '%-c/%-f',
             default  => 1
         },
-        {
-            label =>
-              MT->translate('folder-path/page-basename/index.html'),
+        {   label    => MT->translate('folder-path/page-basename/index.html'),
             template => '%-c/%-b/%i'
         },
-        {
-            label    => MT->translate('folder_path/page_basename.html'),
+        {   label    => MT->translate('folder_path/page_basename.html'),
             template => '%c/%f'
         },
-        {
-            label =>
-              MT->translate('folder_path/page_basename/index.html'),
+        {   label    => MT->translate('folder_path/page_basename/index.html'),
             template => '%c/%b/%i'
         },
     ];

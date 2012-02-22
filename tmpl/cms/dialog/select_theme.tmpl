@@ -11,9 +11,10 @@ var dialog;
 var themes = <mt:var theme_json to_json="1" >;
 function returnSelectedTheme(ok, id) {
     if (ok) {
-        var el_id = parent.jQuery('#<mt:var name="idfield" escape="js">')[0];
-        var el_name = parent.jQuery('#<mt:var name="namefield" escape="js">')[0];
-        parent.jQuery('#<mt:var name="imagefield" escape="js">').empty().append(
+        var $parent_html = parent.jQuery('html');
+        var el_id = $parent_html.find('#<mt:var name="idfield" escape="js">')[0];
+        var el_name = $parent_html.find('#<mt:var name="namefield" escape="js">')[0];
+        $parent_html.find('#<mt:var name="imagefield" escape="js">').empty().append(
             '<img src="' + themes[id]['thumb']
                 + '" width="' + themes[id]['thumb_w']
                 + '" height="' + themes[id]['thumb_h'] + '" />'
@@ -44,8 +45,8 @@ function init() {    // setup
             </a>
         </div>
         <div class="theme-meta">
-            <h2 class="theme-title"><mt:var name="label"></h2>
-            <p class="theme-description description"><mt:var name="description"></p>
+            <h2 class="theme-title"><mt:var name="label" escape="html"></h2>
+            <p class="theme-description description"><mt:var name="description" escape="html"></p>
             <span class="action-link">
                 <a href="javascript:returnSelectedTheme(1,'<mt:var name="theme_id">')"><__trans phrase="Apply"></a>
             </span>

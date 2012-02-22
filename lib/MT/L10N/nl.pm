@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -625,6 +625,7 @@ use vars qw( @ISA %Lexicon );
 	'Website' => 'Website',
 
 ## lib/MT/App/Comments.pm
+	'Invalid authentication parameter' => 'Ongeldige authenticatieparameter', # Translate - New
 	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => 'Fout bij het toekennen van reactierechten aan gebruiker \'[_1] (ID: [_2])\' op weblog \'[_3] (ID: [_4])\'.  Er werd geen geschikte reageerder-rol gevonden.',
 	'Can\'t load blog #[_1].' => 'Kan blog niet laden #[_1].',
 	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => 'Ongeldige aanmeldpoging van een reageerder [_1] op blog [_2](ID: [_3]) waar geenMovable Type native authenticatie is toegelaten.',
@@ -4511,6 +4512,7 @@ use vars qw( @ISA %Lexicon );
 	'Tagged: [_1]' => 'Getagd: [_1]',
 	'View all entries' => 'Alle berichten bekijken',
 	'No entries have been created in this blog. <a href="[_1]">Create a entry</a>' => 'Er werden nog geen berichten aangemaakt in deze blog <a href="[_1]">Bericht aanmaken</a>',
+	'No entries have been created in this blog.' => 'Er werden nog geen berichten aangemaakt in deze blog',
 
 ## tmpl/cms/widget/blog_stats_recent_entries.tmpl
 	'[quant,_1,entry,entries] tagged &ldquo;[_2]&rdquo;' => '[quant,_1,bericht,berichten] getagd &ldquo;[_2]&rdquo;',

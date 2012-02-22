@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -12,12 +12,14 @@ use base qw( MT::Component );
 sub init {
     my $plugin = shift;
     $plugin->{__settings} = {};
-    if (exists $plugin->{app_action_links}
+    if (   exists $plugin->{app_action_links}
         || exists $plugin->{app_itemset_actions}
         || exists $plugin->{upgrade_functions}
         || exists $plugin->{app_methods}
         || exists $plugin->{junk_filters}
-        || exists $plugin->{object_classes}) {
+        || exists $plugin->{object_classes} )
+    {
+
         # Found in MT::Compat::v3
         $plugin->legacy_init();
     }
@@ -27,46 +29,51 @@ sub init {
 
 sub id {
     my $plugin = shift;
-    my $id = $plugin->SUPER::id(@_);
+    my $id     = $plugin->SUPER::id(@_);
     return $id || $plugin->{plugin_sig};
 }
 
-sub key { &MT::Component::_getset(shift, 'key', @_) }
-sub author_name { &MT::Component::_getset_translate(shift, 'author_name', @_) }
-sub author_link { &MT::Component::_getset(shift, 'author_link', @_) }
-sub plugin_link { &MT::Component::_getset(shift, 'plugin_link', @_) }
-sub config_link { &MT::Component::_getset(shift, 'config_link', @_) }
-sub doc_link { &MT::Component::_getset(shift, 'doc_link', @_) }
-sub description { &MT::Component::_getset_translate(shift, 'description', @_) }
+sub key { &MT::Component::_getset( shift, 'key', @_ ) }
+sub author_name {
+    &MT::Component::_getset_translate( shift, 'author_name', @_ );
+}
+sub author_link { &MT::Component::_getset( shift, 'author_link', @_ ) }
+sub plugin_link { &MT::Component::_getset( shift, 'plugin_link', @_ ) }
+sub config_link { &MT::Component::_getset( shift, 'config_link', @_ ) }
+sub doc_link    { &MT::Component::_getset( shift, 'doc_link',    @_ ) }
+sub description {
+    &MT::Component::_getset_translate( shift, 'description', @_ );
+}
+
 sub settings {
     my $plugin = shift;
-    my $s = &MT::Component::_getset($plugin, 'settings', @_);
-    unless (ref($s) eq 'MT::PluginSettings') {
+    my $s = &MT::Component::_getset( $plugin, 'settings', @_ );
+    unless ( ref($s) eq 'MT::PluginSettings' ) {
         $s = MT::PluginSettings->new($s);
-        &MT::Component::_getset($plugin, 'settings', $s);
+        &MT::Component::_getset( $plugin, 'settings', $s );
     }
     return $s;
 }
-sub icon { &MT::Component::_getset(shift, 'icon', @_) }
+sub icon { &MT::Component::_getset( shift, 'icon', @_ ) }
 
 # Plugin-specific: configuration settings and data
 sub load_config {
     my $plugin = shift;
-    my ($param, $scope) = @_;
+    my ( $param, $scope ) = @_;
     my $setting_obj = $plugin->get_config_obj($scope);
-    my $settings = $setting_obj->data;
+    my $settings    = $setting_obj->data;
     %$param = %$settings;
-    foreach my $key (keys %$settings) {
+    foreach my $key ( keys %$settings ) {
         next unless defined $key;
         my $value = $settings->{$key};
         next if !defined $value or $value =~ m/\s/ or length($value) > 100;
-        $param->{$key.'_'.$value} = 1;
+        $param->{ $key . '_' . $value } = 1;
     }
 }
 
 sub save_config {
     my $plugin = shift;
-    my ($param, $scope) = @_;
+    my ( $param, $scope ) = @_;
     my $pdata = $plugin->get_config_obj($scope);
     $scope =~ s/:.*//;
     my @vars = $plugin->config_vars($scope);
@@ -75,38 +82,42 @@ sub save_config {
         $data->{$_} = exists $param->{$_} ? $param->{$_} : undef;
     }
     $pdata->data($data);
-    MT->request('plugin_config.'.$plugin->id, undef);
+    MT->request( 'plugin_config.' . $plugin->id, undef );
     $pdata->save() or die $pdata->errstr;
 }
 
 sub reset_config {
-    my $plugin = shift;
+    my $plugin  = shift;
     my ($scope) = @_;
-    my $obj = $plugin->get_config_obj($scope);
-    MT->request('plugin_config.'.$plugin->id, undef);
+    my $obj     = $plugin->get_config_obj($scope);
+    MT->request( 'plugin_config.' . $plugin->id, undef );
     $obj->remove if $obj->id;
 }
 
 sub config_template {
     my $plugin = shift;
-    my ($param, $scope) = @_;
+    my ( $param, $scope ) = @_;
     if ($scope) {
         $scope =~ s/:.*//;
-    } else {
+    }
+    else {
         $scope = 'system';
     }
     my $r = $plugin->registry;
-    if (my $tmpl = $r->{"${scope}_config_template"} ||
-        $r->{"config_template"} ||
-        $plugin->{"${scope}_config_template"} ||
-        $plugin->{'config_template'}) {
-        if (ref $tmpl eq 'HASH') {
-            $tmpl = MT->handler_to_coderef($tmpl->{code});
+    if ( my $tmpl 
+           = $r->{"${scope}_config_template"}
+        || $r->{"config_template"}
+        || $plugin->{"${scope}_config_template"}
+        || $plugin->{'config_template'} )
+    {
+        if ( ref $tmpl eq 'HASH' ) {
+            $tmpl = MT->handler_to_coderef( $tmpl->{code} );
         }
-        return $tmpl->($plugin, @_) if ref $tmpl eq 'CODE';
-        if ($tmpl =~ /\s/) {
+        return $tmpl->( $plugin, @_ ) if ref $tmpl eq 'CODE';
+        if ( $tmpl =~ /\s/ ) {
             return $tmpl;
-        } else { # no spaces in $tmpl; must be a filename...
+        }
+        else {    # no spaces in $tmpl; must be a filename...
             return $plugin->load_tmpl($tmpl);
         }
     }
@@ -118,9 +129,9 @@ sub config_vars {
     my ($scope) = @_;
     $scope ||= 'system';
     my @settings;
-    if (my $s = $plugin->settings) {
+    if ( my $s = $plugin->settings ) {
         foreach my $setting (@$s) {
-            my ($name, $param) = @$setting;
+            my ( $name, $param ) = @$setting;
             next if $scope && $param->{scope} && $param->{scope} ne $scope;
             push @settings, $name;
         }
@@ -130,12 +141,13 @@ sub config_vars {
 
 sub set_config_value {
     my $plugin = shift;
-    my ($vars, $scope);
-    if (ref $_[0] eq 'HASH') {
-        ($vars, $scope) = @_;
-    } else {
-        my ($variable, $value);
-        ($variable, $value, $scope) = @_;
+    my ( $vars, $scope );
+    if ( ref $_[0] eq 'HASH' ) {
+        ( $vars, $scope ) = @_;
+    }
+    else {
+        my ( $variable, $value );
+        ( $variable, $value, $scope ) = @_;
         $vars = { $variable => $value };
     }
     my $pdata_obj = $plugin->get_config_obj($scope);
@@ -150,49 +162,55 @@ sub get_config_obj {
     my ($scope_id) = @_;
     my $key;
     my $scope = $scope_id;
-    if ($scope && $scope ne 'system') {
-        $scope =~ s/:.*//; # strip off id, leave identifier
-        $key = 'configuration:'.$scope_id;
-    } else {
-        $scope_id = 'system';
-        $scope = 'system';
-        $key = 'configuration';
+    if ( $scope && $scope ne 'system' ) {
+        $scope =~ s/:.*//;    # strip off id, leave identifier
+        $key = 'configuration:' . $scope_id;
     }
-    my $cfg = MT->request('plugin_config.'.$plugin->id);
+    else {
+        $scope_id = 'system';
+        $scope    = 'system';
+        $key      = 'configuration';
+    }
+    my $cfg = MT->request( 'plugin_config.' . $plugin->id );
     unless ($cfg) {
         $cfg = {};
-        MT->request('plugin_config.'.$plugin->id, $cfg);
+        MT->request( 'plugin_config.' . $plugin->id, $cfg );
     }
     return $cfg->{$scope_id} if $cfg->{$scope_id};
     require MT::PluginData;
+
     # calling "name" directly here to avoid localization
-    my $pdata_obj = MT::PluginData->load({plugin => $plugin->key || $plugin->{name},
-                                          key => $key});
-    if (!$pdata_obj) {
+    my $pdata_obj = MT::PluginData->load(
+        {   plugin => $plugin->key || $plugin->{name},
+            key => $key
+        }
+    );
+    if ( !$pdata_obj ) {
         $pdata_obj = MT::PluginData->new();
-        $pdata_obj->plugin($plugin->key || $plugin->{name});
+        $pdata_obj->plugin( $plugin->key || $plugin->{name} );
         $pdata_obj->key($key);
     }
     $cfg->{$scope_id} = $pdata_obj;
     my $data = $pdata_obj->data() || {};
-    $plugin->apply_default_settings($data, $scope_id);
+    $plugin->apply_default_settings( $data, $scope_id );
     $pdata_obj->data($data);
     $pdata_obj;
 }
 
 sub apply_default_settings {
     my $plugin = shift;
-    my ($data, $scope_id) = @_;
+    my ( $data, $scope_id ) = @_;
     my $scope = $scope_id;
-    if ($scope =~ m/:/) {
+    if ( $scope =~ m/:/ ) {
         $scope =~ s/:.*//;
-    } else {
+    }
+    else {
         $scope_id = 'system';
     }
     my $defaults;
     my $s = $plugin->settings;
-    if ($s && ($defaults = $s->defaults($scope))) {
-        foreach (keys %$defaults) {
+    if ( $s && ( $defaults = $s->defaults($scope) ) ) {
+        foreach ( keys %$defaults ) {
             $data->{$_} = $defaults->{$_} if !exists $data->{$_};
         }
     }
@@ -205,11 +223,10 @@ sub get_config_hash {
 
 sub get_config_value {
     my $plugin = shift;
-    my ($var, $scope) = @_;
+    my ( $var, $scope ) = @_;
     my $config = $plugin->get_config_hash($scope);
-    return exists $config->{$_[0]} ? $config->{$_[0]} : undef;
+    return exists $config->{ $_[0] } ? $config->{ $_[0] } : undef;
 }
-
 
 package MT::PluginSettings;
 
@@ -217,36 +234,40 @@ sub new {
     my $pkg = shift;
     my ($self) = @_;
     $self ||= [];
-    if (ref $self eq 'HASH') {
+    if ( ref $self eq 'HASH' ) {
+
         # convert a hash-style setting structure into what PluginSettings
         # expects
         my $settings = [];
-        foreach my $key (keys %$self) {
-            if (defined $self->{$key}) {
+        foreach my $key ( keys %$self ) {
+            if ( defined $self->{$key} ) {
                 push @$settings, [ $key, $self->{$key} ];
             }
             else {
-                push @$settings, [ $key ];
+                push @$settings, [$key];
             }
         }
-        @$settings = sort { ( $a->[1] ? $a->[1]->{order} || 0 : 0 )
-            <=> ( $b->[1] ? $b->[1]->{order} || 0 : 0 ) } @$settings;
+        @$settings = sort {
+            ( $a->[1] ? $a->[1]->{order} || 0 : 0 )
+                <=> ( $b->[1] ? $b->[1]->{order} || 0 : 0 )
+        } @$settings;
         $self = $settings;
     }
+
     # Lowercase all settings keys
     foreach my $setting (@$self) {
-        my ($name, $param) = @$setting;
-        $param->{lc $_} = $param->{$_} for keys %$param;
+        my ( $name, $param ) = @$setting;
+        $param->{ lc $_ } = $param->{$_} for keys %$param;
     }
     bless $self, $pkg;
 }
 
 sub defaults {
     my $settings = shift;
-    my ($scope) = @_;
+    my ($scope)  = @_;
     my $defaults = {};
     foreach my $setting (@$settings) {
-        my ($name, $param) = @$setting;
+        my ( $name, $param ) = @$setting;
         next unless exists $param->{default};
         next if $scope && $param->{scope} && $param->{scope} ne $scope;
         $defaults->{$name} = $param->{default};

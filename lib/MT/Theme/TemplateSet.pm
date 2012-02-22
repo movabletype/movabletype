@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -12,49 +12,49 @@ sub apply {
     my ( $element, $theme, $obj_to_apply, $opts ) = @_;
     my $set = $element->{data};
     if ( !ref $set ) {
-        $set = MT->registry('template_sets', $set);
+        $set = MT->registry( 'template_sets', $set );
     }
 
     ## deep localize for labels
     $theme->__deep_localize_labels($set);
 
     ## taken from MT::CMS::Template
-    my $backup = exists $opts->{backup} ? $opts->{backup} : 1;
-    my $blog = $obj_to_apply;
+    my $backup  = exists $opts->{backup} ? $opts->{backup} : 1;
+    my $blog    = $obj_to_apply;
     my $blog_id = $blog->id;
-    my $t = time;
-    my @ts = MT::Util::offset_time_list( $t, $blog_id );
-    my $ts = sprintf "%04d-%02d-%02d %02d:%02d:%02d",
+    my $t       = time;
+    my @ts      = MT::Util::offset_time_list( $t, $blog_id );
+    my $ts      = sprintf "%04d-%02d-%02d %02d:%02d:%02d",
         $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
 
-    my $tmpl_iter = MT->model('template')->load_iter({
-        blog_id => $blog->id,
-        type => { not => 'backup' },
-    });
+    my $tmpl_iter = MT->model('template')->load_iter(
+        {   blog_id => $blog->id,
+            type    => { not => 'backup' },
+        }
+    );
 
-    while (my $tmpl = $tmpl_iter->()) {
+    while ( my $tmpl = $tmpl_iter->() ) {
         if ($backup) {
+
             # zap all template maps
             require MT::TemplateMap;
-            MT::TemplateMap->remove({
-                template_id => $tmpl->id,
-            });
-            $tmpl->name( $tmpl->name
-                    . ' (Backup from '
-                    . $ts . ') '
-                    . $tmpl->type );
+            MT::TemplateMap->remove( { template_id => $tmpl->id, } );
+            $tmpl->name(
+                $tmpl->name . ' (Backup from ' . $ts . ') ' . $tmpl->type );
             $tmpl->type('backup');
             $tmpl->identifier(undef);
             $tmpl->rebuild_me(0);
             $tmpl->linked_file(undef);
             $tmpl->outfile('');
             $tmpl->save;
-        } else {
+        }
+        else {
             $tmpl->remove;
         }
     }
 
     if ($blog_id) {
+
         # Create the default templates and mappings for the selected
         # set here, instead of below.
         if ( ref $set ) {
@@ -62,7 +62,7 @@ sub apply {
         }
 
         local MT->app->{component} = $theme->id;
-        $blog->create_default_templates( $set );
+        $blog->create_default_templates($set);
     }
 
     return 1;
@@ -72,36 +72,36 @@ sub info {
     my ( $element, $theme, $blog ) = @_;
     my $set = $element->{data};
     if ( !ref $set ) {
-        $set = MT->registry('template_sets' => $set );
+        $set = MT->registry( 'template_sets' => $set );
     }
     return unless 'HASH' eq ref $set;
-    my $templates = $set->{templates} eq '*' ? MT->registry("default_templates")
-                  :                            $set->{templates}
-                  ;
+    my $templates
+        = $set->{templates} eq '*'
+        ? MT->registry("default_templates")
+        : $set->{templates};
     return unless 'HASH' eq ref $templates;
     my %counts = ( widget => 0, widgetset => 0, template => 0 );
     for my $group_key ( keys %$templates ) {
         next if 'HASH' ne ref $templates->{$group_key};
-        my $group = $group_key eq 'widget'    ? 'widget'
-                  : $group_key eq 'widgetset' ? 'widgetset'
-                  :                             'template'
-                  ;
+        my $group
+            = $group_key eq 'widget'    ? 'widget'
+            : $group_key eq 'widgetset' ? 'widgetset'
+            :                             'template';
         $counts{$group} += scalar keys %{ $templates->{$group_key} };
     }
     return sub {
         MT->translate(
             'A template set containing [_1] templates, [_2] widgets, and [_3] widget sets.',
-            $counts{template},
-            $counts{widget},
-            $counts{widgetset},
-        );
+            $counts{template}, $counts{widget}, $counts{widgetset}, );
     };
 }
 
 sub condition {
-    my ( $blog ) = @_;
+    my ($blog) = @_;
+
     # Export if at least one template;
-    my $tmpl = MT->model('template')->load({ blog_id => $blog->id }, { limit => 1 });
+    my $tmpl = MT->model('template')
+        ->load( { blog_id => $blog->id }, { limit => 1 } );
     return defined $tmpl ? 1 : 0;
 }
 
@@ -110,13 +110,14 @@ sub export_template {
     my ( $blog, $saved ) = @_;
     require MT::CMS::Template;
     my %checked;
-    if ( $saved ) {
-        %checked = map { $_ => 1 } @{$saved->{template_set_export_ids}};
+    if ($saved) {
+        %checked = map { $_ => 1 } @{ $saved->{template_set_export_ids} };
     }
-    my @templates = MT->model('template')->load({
-        blog_id => $blog->id,
-        type    => { 'not' => 'backup'},
-    });
+    my @templates = MT->model('template')->load(
+        {   blog_id => $blog->id,
+            type    => { 'not' => 'backup' },
+        }
+    );
 
     my %types = (
         'index' => {
@@ -149,10 +150,8 @@ sub export_template {
         },
     );
     my %tmpl_groups;
-    my %id_map = map {
-        $_->name => $_->id,
-    } @templates;
-    for my $tmpl ( @templates ) {
+    my %id_map = map { $_->name => $_->id, } @templates;
+    for my $tmpl (@templates) {
         my $type = $tmpl->type;
         my $template_type;
         if ( $type =~ m/^(individual|page|category|archive)$/ ) {
@@ -184,66 +183,62 @@ sub export_template {
             object_loop         => [],
         };
         my $obj = {
-            tmpl_label    => $tmpl->name,
-            tmpl_id       => $tmpl->id,
-            checked       => $saved ? $checked{$tmpl->id} : 1,
+            tmpl_label => $tmpl->name,
+            tmpl_id    => $tmpl->id,
+            checked    => $saved ? $checked{ $tmpl->id } : 1,
         };
         if ( $template_type =~ /index/ ) {
             $obj->{outfile} = $tmpl->outfile;
         }
         if ( $template_type eq 'archive' ) {
-            $obj->{archive_types} = MT::CMS::Template::_populate_archive_loop( $app, $blog, $tmpl );
+            $obj->{archive_types}
+                = MT::CMS::Template::_populate_archive_loop( $app, $blog,
+                $tmpl );
         }
 
-        my $tokens = $tmpl->compile;
+        my $tokens   = $tmpl->compile;
         my @includes = (
             @{ $tokens->getElementsByTagName('include')      || [] },
             @{ $tokens->getElementsByTagName('includeblock') || [] },
         );
-        for my $include ( @includes ) {
+        for my $include (@includes) {
             my $module = $include->getAttribute('module')
-                      || $include->getAttribute('widget');
+                || $include->getAttribute('widget');
             my $module_id = $id_map{$module};
-            push @{$obj->{includes} ||= []}, $module_id if $module_id;
+            push @{ $obj->{includes} ||= [] }, $module_id if $module_id;
         }
         push @{ $group->{templates} }, $obj;
     }
 
     for my $group ( values %tmpl_groups ) {
-        $group->{templates} = [
-            sort {
-                $a->{tmpl_label} cmp $b->{tmpl_label}
-            }
-            @{ $group->{templates} }
-        ];
+        $group->{templates} = [ sort { $a->{tmpl_label} cmp $b->{tmpl_label} }
+                @{ $group->{templates} } ];
     }
-    my %param = (
-        tmpl_groups => [
-            sort { $a->{order} <=> $b->{order} }
-            values %tmpl_groups
-        ],
-    );
-    return $app->load_tmpl('include/theme_exporters/templateset.tmpl', \%param);
+    my %param = ( tmpl_groups =>
+            [ sort { $a->{order} <=> $b->{order} } values %tmpl_groups ], );
+    return $app->load_tmpl( 'include/theme_exporters/templateset.tmpl',
+        \%param );
 }
 
 {
     my %known_section = (
-        index      => 1,
-        archive    => 1,
-        module     => 1,
-        widget     => 1,
-        widgetset  => 1,
+        index     => 1,
+        archive   => 1,
+        module    => 1,
+        widget    => 1,
+        widgetset => 1,
     );
 
     sub _type {
         my $tmpl = shift;
         my $type = $tmpl->type;
-        return $known_section{$type} ? $type
-             : $type eq 'custom'     ? 'module'
-             : $type eq 'individual' ? ( $tmpl->identifier eq 'page' ? 'page' : 'individual' )
-             : $type eq 'page'       ? 'page'
-             :                         'system'
-             ;
+        return
+              $known_section{$type} ? $type
+            : $type eq 'custom' ? 'module'
+            : $type eq 'individual'
+            ? ( $tmpl->identifier eq 'page' ? 'page' : 'individual' )
+            : $type eq 'page' ? 'page'
+            :                   'system';
     }
 }
 
@@ -252,42 +247,42 @@ sub export {
     my ( $blog, $setting ) = @_;
     my @templates;
     if ($setting) {
-        @templates = MT->model('template')->load({
-            id => $setting->{template_set_export_ids}
-        });
+        @templates = MT->model('template')
+            ->load( { id => $setting->{template_set_export_ids} } );
     }
     else {
-        @templates = MT->model('template')->load({
-            blog_id => $blog->id,
-            type    => { not => 'backup' }
-        });
+        @templates = MT->model('template')->load(
+            {   blog_id => $blog->id,
+                type    => { not => 'backup' }
+            }
+        );
     }
     return unless scalar @templates;
 
     my $data = {};
     for my $t (@templates) {
-        my $type = _type( $t );
+        my $type = _type($t);
         $data->{$type} ||= {};
-        my $this = {
-            label => $t->name,
-        };
+        my $this = { label => $t->name, };
         if ( $type eq 'index' ) {
             $this->{outfile}    = $t->outfile;
             $this->{rebuild_me} = $t->rebuild_me;
-        };
-        if ( $type eq 'archive' || $type eq 'individual' || $type eq 'page' ) {
-            my @maps = MT->model('templatemap')->load({ template_id => $t->id });
+        }
+        if ( $type eq 'archive' || $type eq 'individual' || $type eq 'page' )
+        {
+            my @maps
+                = MT->model('templatemap')->load( { template_id => $t->id } );
             $this->{mappings} = {} if scalar @maps;
             my %type_count;
-            for my $map ( @maps ) {
+            for my $map (@maps) {
                 my $map_data = {
                     archive_type => $map->archive_type,
                     preferred    => $map->is_preferred,
                 };
                 $map_data->{file_template} = $map->file_template
                     if $map->file_template;
-                my $type_count = $type_count{$map->archive_type}++;
-                my $map_id = dirify( $map->archive_type );
+                my $type_count = $type_count{ $map->archive_type }++;
+                my $map_id     = dirify( $map->archive_type );
                 $map_id .= "_$type_count" if $type_count > 0;
                 $this->{mappings}->{$map_id} = $map_data;
             }
@@ -296,7 +291,7 @@ sub export {
             ## FIXME: this regex.
             my @widgets = $t->text =~ /<mt:include widget="([^\"]+)">/g;
             $this->{widgets} = \@widgets;
-            $this->{order} = 1000;
+            $this->{order}   = 1000;
         }
         $data->{$type}->{ $t->identifier || 'template_' . $t->id } = $this;
     }
@@ -304,7 +299,7 @@ sub export {
         label     => 'exported_template set',
         base_path => 'templates',
         templates => $data,
-        objs       => \@templates,
+        objs      => \@templates,
 
     };
 }
@@ -321,21 +316,24 @@ sub finalize {
     require File::Spec;
     my $fmgr = MT::FileMgr->new('Local');
     my $outdir = File::Spec->catdir( $tmpdir, 'templates' );
-    $fmgr->mkpath( $outdir )
+    $fmgr->mkpath($outdir)
         or return $app->error(
-            $app->translate(
-                'Failed to make templates directory: [_1]',
-                $fmgr->errstr,
-        ));
+        $app->translate(
+            'Failed to make templates directory: [_1]',
+            $fmgr->errstr,
+        )
+        );
+
     for my $t (@$templates) {
         my $tmpl_id = $t->identifier || 'template_' . $t->id;
         my $path = File::Spec->catfile( $outdir, $tmpl_id . '.mtml' );
         defined $fmgr->put_data( $t->text, $path )
             or return $app->error(
-                $app->translate(
-                    'Failed to publish template file: [_1]',
-                    $fmgr->errstr,
-            ));
+            $app->translate(
+                'Failed to publish template file: [_1]',
+                $fmgr->errstr,
+            )
+            );
     }
     return 1;
 }

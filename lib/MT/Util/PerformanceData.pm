@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -81,10 +81,11 @@ sub _request_data {
 }
 
 sub report {
-    my $self         = shift;
-    my %param        = @_;
-    my $sys_info     = $self->{system_info};
-    my $request_data = $self->_sort_data( $self->{request_data}, $param{sort} );
+    my $self     = shift;
+    my %param    = @_;
+    my $sys_info = $self->{system_info};
+    my $request_data
+        = $self->_sort_data( $self->{request_data}, $param{sort} );
 
     # temporary data dump
     use Data::Dumper;
@@ -96,10 +97,12 @@ sub _sort_data {
     my $self = shift;
     my ( $data, $sort_key ) = @_;
     return $data if !$sort_key;
-    my @sorted =
-      map  { $_->[0] }
-      sort { $b->[1] <=> $a->[1] }               # sort data in descending order
-      map  { [ $_, $_->{$sort_key} ] } @$data;
+    my @sorted
+        = map { $_->[0] }
+        sort {
+        $b->[1] <=> $a->[1]
+        }    # sort data in descending order
+        map { [ $_, $_->{$sort_key} ] } @$data;
     \@sorted;
 }
 

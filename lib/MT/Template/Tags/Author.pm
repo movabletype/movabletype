@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -11,23 +11,31 @@ use MT;
 use MT::Util qw( spam_protect );
 
 sub _get_author {
-    my ($author_name, $blog_id, $order) = @_;
+    my ( $author_name, $blog_id, $order ) = @_;
 
-    if ($order eq 'previous') {
+    if ( $order eq 'previous' ) {
         $order = 'descend';
-    } else {
+    }
+    else {
         $order = 'ascend';
     }
     require MT::Entry;
     require MT::Author;
-    my $author = MT::Author->load(undef,
-        { 'sort' => 'name',
-          direction => $order,
-          start_val => $author_name,
-          'join' => ['MT::Entry', 'author_id',
-            { status => MT::Entry::RELEASE(),
-              blog_id => $blog_id },
-            { unique => 1}]});
+    my $author = MT::Author->load(
+        undef,
+        {   'sort'    => 'name',
+            direction => $order,
+            start_val => $author_name,
+            'join'    => [
+                'MT::Entry',
+                'author_id',
+                {   status  => MT::Entry::RELEASE(),
+                    blog_id => $blog_id
+                },
+                { unique => 1 }
+            ]
+        }
+    );
     $author;
 }
 
@@ -152,104 +160,125 @@ List all Authors and Commenters for a blog:
 =cut
 
 sub _hdlr_authors {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $blog_id = $ctx->stash('blog_id');
     my $builder = $ctx->stash('builder');
-    my $tokens = $ctx->stash('tokens');
+    my $tokens  = $ctx->stash('tokens');
 
     require MT::Entry;
     require MT::Author;
 
-    my (%blog_terms, %blog_args);
-    $ctx->set_blog_load_context($args, \%blog_terms, \%blog_args)
-        or return $ctx->error($ctx->errstr);
-    my (@filters, %terms, %args);
+    my ( %blog_terms, %blog_args );
+    $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
+        or return $ctx->error( $ctx->errstr );
+    my ( @filters, %terms, %args );
 
-    if( (defined $args->{id}) && (my $user_id = $args->{id}) ) {
-        return $ctx->error(MT->translate("The '[_2]' attribute will only accept an integer: [_1]", $user_id, 'user_id')) unless($user_id =~ m/^[\d]+$/);
+    if ( ( defined $args->{id} ) && ( my $user_id = $args->{id} ) ) {
+        return $ctx->error(
+            MT->translate(
+                "The '[_2]' attribute will only accept an integer: [_1]",
+                $user_id, 'user_id'
+            )
+        ) unless ( $user_id =~ m/^[\d]+$/ );
         $terms{id} = $args->{id};
-    } elsif ( defined $args->{username} ) {
+    }
+    elsif ( defined $args->{username} ) {
         $terms{name} = $args->{username};
-    } elsif ( defined $args->{display_name} ) {
+    }
+    elsif ( defined $args->{display_name} ) {
         $terms{nickname} = $args->{display_name};
     }
 
-    if (my $status_arg = $args->{status} || 'enabled') {
-        if ($status_arg !~ m/\b(OR)\b|\(|\)/i) {
-            my @status = MT::Tag->split(',', $status_arg);
+    if ( my $status_arg = $args->{status} || 'enabled' ) {
+        if ( $status_arg !~ m/\b(OR)\b|\(|\)/i ) {
+            my @status = MT::Tag->split( ',', $status_arg );
             $status_arg = join " or ", @status;
         }
         my $status = [
-            { name => 'enabled', id  => 1 },
-            { name => 'disabled', id  => 2 },
+            { name => 'enabled',  id => 1 },
+            { name => 'disabled', id => 2 },
         ];
-        my $cexpr = $ctx->compile_status_filter($status_arg, $status);
+        my $cexpr = $ctx->compile_status_filter( $status_arg, $status );
         if ($cexpr) {
             push @filters, $cexpr;
         }
     }
     my $role_arg;
-    if ($role_arg = $args->{role} || $args->{roles}) {
-        if ($role_arg !~ m/\b(OR)\b|\(|\)/i) {
-            my @roles = MT::Tag->split(',', $role_arg);
+    if ( $role_arg = $args->{role} || $args->{roles} ) {
+        if ( $role_arg !~ m/\b(OR)\b|\(|\)/i ) {
+            my @roles = MT::Tag->split( ',', $role_arg );
             $role_arg = join " or ", @roles;
         }
         require MT::Association;
         require MT::Role;
-        my $roles = [ MT::Role->load(undef, { sort => 'name' }) ];
-        my $cexpr = $ctx->compile_role_filter($role_arg, $roles);
+        my $roles = [ MT::Role->load( undef, { sort => 'name' } ) ];
+        my $cexpr = $ctx->compile_role_filter( $role_arg, $roles );
         if ($cexpr) {
             my %map;
             for my $role (@$roles) {
-                my $iter = MT::Association->load_iter({
-                    role_id => $role->id,
-                    %blog_terms
-                }, \%blog_args);
-                while (my $as = $iter->()) {
-                    $map{$as->author_id}{$role->id}++;
+                my $iter = MT::Association->load_iter(
+                    {   role_id => $role->id,
+                        %blog_terms
+                    },
+                    \%blog_args
+                );
+                while ( my $as = $iter->() ) {
+                    $map{ $as->author_id }{ $role->id }++;
                 }
             }
-            push @filters, sub { $cexpr->($_[0]->id, \%map) };
+            push @filters, sub { $cexpr->( $_[0]->id, \%map ) };
         }
     }
+
     # if need_entry is NOT defined AND any_type=1, then need_entry=0
-    unless (defined $args->{need_entry}) {
-        $args->{need_entry} = 0 if (defined $args->{any_type} && $args->{any_type} == 1);
+    unless ( defined $args->{need_entry} ) {
+        $args->{need_entry} = 0
+            if ( defined $args->{any_type} && $args->{any_type} == 1 );
     }
-    if ((defined $args->{need_entry} ? $args->{need_entry} : 1) && !(defined $args->{id} || defined $args->{username})) {
-        $blog_args{'unique'} = 1;
+    if ( ( defined $args->{need_entry} ? $args->{need_entry} : 1 )
+        && !( defined $args->{id} || defined $args->{username} ) )
+    {
+        $blog_args{'unique'}  = 1;
         $blog_terms{'status'} = MT::Entry::RELEASE();
-        $args{'join'} = MT::Entry->join_on('author_id',
-            \%blog_terms, \%blog_args);
-    } else {
+        $args{'join'}
+            = MT::Entry->join_on( 'author_id', \%blog_terms, \%blog_args );
+    }
+    else {
         $blog_args{'unique'} = 1;
-        if (!$role_arg) {
+        if ( !$role_arg ) {
             require MT::Permission;
-            $args{'join'} =
-                MT::Permission->join_on(
-                  'author_id',
-                  exists($args->{need_association}) && $args->{need_association}
-                    ? \%blog_terms
-                    : undef,
-                  \%blog_args
-                );
-            if ( ! $args->{any_type} ) {
+            $args{'join'} = MT::Permission->join_on(
+                'author_id',
+                exists( $args->{need_association} )
+                    && $args->{need_association}
+                ? \%blog_terms
+                : undef,
+                \%blog_args
+            );
+            if ( !$args->{any_type} ) {
                 push @filters, sub {
                     my @blog_ids;
                     if ( $blog_terms{blog_id} ) {
                         push @blog_ids, 0;
-                        push @blog_ids, ref ($blog_terms{blog_id}) eq 'ARRAY' ? @{$blog_terms{blog_id}} : $blog_terms{blog_id};
+                        push @blog_ids,
+                            ref( $blog_terms{blog_id} ) eq 'ARRAY'
+                            ? @{ $blog_terms{blog_id} }
+                            : $blog_terms{blog_id};
                     }
-                    my $perm_iter = MT::Permission->load_iter({
-                        author_id => $_[0]->id,
-                        ( @blog_ids ? ( blog_id => \@blog_ids ) : () ), }, \%blog_args );
+                    my $perm_iter = MT::Permission->load_iter(
+                        {   author_id => $_[0]->id,
+                            ( @blog_ids ? ( blog_id => \@blog_ids ) : () ),
+                        },
+                        \%blog_args
+                    );
                     while ( my $perm = $perm_iter->() ) {
                         $perm_iter->end(), return 1
                             if $perm->can_do('create_post');
                     }
                     return 0;
                 };
-            } else {
+            }
+            else {
                 push @filters, sub {
                     my $blog_id;
                     if ( $blog_terms{blog_id} ) {
@@ -269,102 +298,130 @@ sub _hdlr_authors {
             }
         }
     }
-    if ($args->{'needs_userpic'}) {
+    if ( $args->{'needs_userpic'} ) {
         push @filters, sub { $_[0]->userpic_asset_id > 0; };
     }
-    if ($args->{namespace}) {
+    if ( $args->{namespace} ) {
         my $namespace = $args->{namespace};
         if ( my $scoring_to = $args->{scoring_to} ) {
-            return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $scoring_to, 'scoring_to'))
-                unless exists $ctx->{__stash}{$scoring_to};
+            return $ctx->error(
+                MT->translate(
+                    "You have an error in your '[_2]' attribute: [_1]",
+                    $scoring_to, 'scoring_to'
+                )
+            ) unless exists $ctx->{__stash}{$scoring_to};
             my $scored_object = $ctx->{__stash}{$scoring_to};
-            if ($args->{min_score}) {
-                push @filters, sub { $scored_object->get_score($namespace, $_[0]) >= $args->{min_score}; };
+            if ( $args->{min_score} ) {
+                push @filters, sub {
+                    $scored_object->get_score( $namespace, $_[0] )
+                        >= $args->{min_score};
+                };
             }
-            if ($args->{max_score}) {
-                push @filters, sub { $scored_object->get_score($namespace, $_[0]) <= $args->{max_score}; };
+            if ( $args->{max_score} ) {
+                push @filters, sub {
+                    $scored_object->get_score( $namespace, $_[0] )
+                        <= $args->{max_score};
+                };
             }
             if ( !exists $args->{max_score} && !exists $args->{min_score} ) {
-                push @filters, sub { defined $scored_object->get_score($namespace, $_[0]); };
+                push @filters, sub {
+                    defined $scored_object->get_score( $namespace, $_[0] );
+                };
             }
         }
         else {
             my $need_join = 0;
-            if ($args->{sort_by} && ($args->{sort_by} eq 'score' || $args->{sort_by} eq 'rate')) {
+            if ( $args->{sort_by}
+                && (   $args->{sort_by} eq 'score'
+                    || $args->{sort_by} eq 'rate' ) )
+            {
                 $need_join = 1;
             }
             else {
-                for my $f qw( min_score max_score min_rate max_rate min_count max_count scored_by ) {
-                    if ($args->{$f}) {
+                for my $f
+                    qw( min_score max_score min_rate max_rate min_count max_count scored_by )
+                {
+                    if ( $args->{$f} ) {
                         $need_join = 1;
                         last;
                     }
                 }
             }
             if ($need_join) {
-                $args{join} = MT->model('objectscore')->join_on(undef,
-                    {
-                        object_id => \'=author_id',
+                $args{join} = MT->model('objectscore')->join_on(
+                    undef,
+                    {   object_id => \'=author_id',
                         object_ds => 'author',
                         namespace => $namespace,
-                    }, {
-                        unique => 1,
-                });
+                    },
+                    { unique => 1, }
+                );
             }
 
             # Adds a rate or score filter to the filter list.
-            if ($args->{min_score}) {
-                push @filters, sub { $_[0]->score_for($namespace) >= $args->{min_score}; };
+            if ( $args->{min_score} ) {
+                push @filters, sub {
+                    $_[0]->score_for($namespace) >= $args->{min_score};
+                };
             }
-            if ($args->{max_score}) {
-                push @filters, sub { $_[0]->score_for($namespace) <= $args->{max_score}; };
+            if ( $args->{max_score} ) {
+                push @filters, sub {
+                    $_[0]->score_for($namespace) <= $args->{max_score};
+                };
             }
-            if ($args->{min_rate}) {
-                push @filters, sub { $_[0]->score_avg($namespace) >= $args->{min_rate}; };
+            if ( $args->{min_rate} ) {
+                push @filters,
+                    sub { $_[0]->score_avg($namespace) >= $args->{min_rate}; };
             }
-            if ($args->{max_rate}) {
-                push @filters, sub { $_[0]->score_avg($namespace) <= $args->{max_rate}; };
+            if ( $args->{max_rate} ) {
+                push @filters,
+                    sub { $_[0]->score_avg($namespace) <= $args->{max_rate}; };
             }
-            if ($args->{min_count}) {
-                push @filters, sub { $_[0]->vote_for($namespace) >= $args->{min_count}; };
+            if ( $args->{min_count} ) {
+                push @filters,
+                    sub { $_[0]->vote_for($namespace) >= $args->{min_count}; };
             }
-            if ($args->{max_count}) {
-                push @filters, sub { $_[0]->vote_for($namespace) <= $args->{max_count}; };
+            if ( $args->{max_count} ) {
+                push @filters,
+                    sub { $_[0]->vote_for($namespace) <= $args->{max_count}; };
             }
         }
     }
 
-    my $re_sort = 0;
-    my $score_limit = 0;
+    my $re_sort      = 0;
+    my $score_limit  = 0;
     my $score_offset = 0;
     $args{'sort'} = 'created_on';
-    if ($args->{'sort_by'}) {
-        if (lc $args->{'sort_by'} eq 'display_name') {
+    if ( $args->{'sort_by'} ) {
+        if ( lc $args->{'sort_by'} eq 'display_name' ) {
             $args{'sort'} = 'nickname';
-        } elsif ('score' eq $args->{sort_by} || 'rate' eq $args->{sort_by}) {
-            $score_limit = delete($args->{lastn}) || 0;
-            $score_offset = delete($args->{offset}) || 0;
-            $re_sort = 1;
-        } elsif (MT::Author->has_column($args->{sort_by})) {
+        }
+        elsif ( 'score' eq $args->{sort_by} || 'rate' eq $args->{sort_by} ) {
+            $score_limit  = delete( $args->{lastn} )  || 0;
+            $score_offset = delete( $args->{offset} ) || 0;
+            $re_sort      = 1;
+        }
+        elsif ( MT::Author->has_column( $args->{sort_by} ) ) {
             $args{'sort'} = $args->{sort_by};
         }
     }
-    if ($args->{'limit'}) {
+    if ( $args->{'limit'} ) {
         $args{limit} = $args->{limit};
     }
 
     if ($re_sort) {
         $args{'direction'} = 'ascend';
-    } else{
+    }
+    else {
         $args{'direction'} = $args->{sort_order} || 'ascend';
     }
 
-    my $iter = MT::Author->load_iter(\%terms, \%args);
+    my $iter  = MT::Author->load_iter( \%terms, \%args );
     my $count = 0;
-    my $next = $iter->();
-    my $n = $args->{lastn};
+    my $next  = $iter->();
+    my $n     = $args->{lastn};
     my @authors;
-    AUTHOR: while ($next) {
+AUTHOR: while ($next) {
         my $author = $next;
         $next = $iter->();
         for (@filters) {
@@ -372,50 +429,65 @@ sub _hdlr_authors {
         }
         push @authors, $author;
         $count++;
-        if ($n && ($count >= $n)) {
+        if ( $n && ( $count >= $n ) ) {
             $iter->end;
             last;
         }
     }
 
-    if ($re_sort && (scalar @authors)) {
-        my $col = $args->{sort_by};
+    if ( $re_sort && ( scalar @authors ) ) {
+        my $col       = $args->{sort_by};
         my $namespace = $args->{'namespace'};
-        if ('score' eq $col) {
+        if ( 'score' eq $col ) {
             my $so = $args->{sort_order} || '';
             my %a = map { $_->id => $_ } @authors;
             my @aid = keys %a;
             require MT::ObjectScore;
             my $scores = MT::ObjectScore->sum_group_by(
-                { 'object_ds' => 'author', 'namespace' => $namespace, object_id => \@aid },
-                { 'sum' => 'score', group => ['object_id'],
-                  $so eq 'ascend' ? (direction => 'ascend') : (direction => 'descend'),
-                });
+                {   'object_ds' => 'author',
+                    'namespace' => $namespace,
+                    object_id   => \@aid
+                },
+                {   'sum' => 'score',
+                    group => ['object_id'],
+                    $so eq 'ascend'
+                    ? ( direction => 'ascend' )
+                    : ( direction => 'descend' ),
+                }
+            );
             my @tmp;
             my $i = 0;
-            while (my ($score, $object_id) = $scores->()) {
-                next if $score_offset && ($i + 1) < $score_offset;
-                push @tmp, delete $a{ $object_id } if exists $a{ $object_id };
+            while ( my ( $score, $object_id ) = $scores->() ) {
+                next if $score_offset && ( $i + 1 ) < $score_offset;
+                push @tmp, delete $a{$object_id} if exists $a{$object_id};
                 $scores->end, last unless %a;
                 $i++;
                 $scores->end, last if $score_limit && $i >= $score_limit;
             }
             @authors = @tmp;
-        } elsif ('rate' eq $col) {
+        }
+        elsif ( 'rate' eq $col ) {
             my $so = $args->{sort_order} || '';
             my %a = map { $_->id => $_ } @authors;
             my @aid = keys %a;
             require MT::ObjectScore;
             my $scores = MT::ObjectScore->avg_group_by(
-                { 'object_ds' => 'author', 'namespace' => $namespace, object_id => \@aid },
-                { 'avg' => 'score', group => ['object_id'],
-                  $so eq 'ascend' ? (direction => 'ascend') : (direction => 'descend'),
-                });
+                {   'object_ds' => 'author',
+                    'namespace' => $namespace,
+                    object_id   => \@aid
+                },
+                {   'avg' => 'score',
+                    group => ['object_id'],
+                    $so eq 'ascend'
+                    ? ( direction => 'ascend' )
+                    : ( direction => 'descend' ),
+                }
+            );
             my @tmp;
             my $i = 0;
-            while (my ($score, $object_id) = $scores->()) {
-                next if $score_offset && ($i + 1) < $score_offset;
-                push @tmp, delete $a{ $object_id } if exists $a{ $object_id };
+            while ( my ( $score, $object_id ) = $scores->() ) {
+                next if $score_offset && ( $i + 1 ) < $score_offset;
+                push @tmp, delete $a{$object_id} if exists $a{$object_id};
                 $scores->end, last unless %a;
                 $i++;
                 $scores->end, last if $score_limit && $i >= $score_limit;
@@ -429,14 +501,15 @@ sub _hdlr_authors {
     $count = 0;
     for my $author (@authors) {
         $count++;
-        local $ctx->{__stash}{author} = $author;
+        local $ctx->{__stash}{author}    = $author;
         local $ctx->{__stash}{author_id} = $author->id;
-        local $vars->{__first__} = $count == 1;
-        local $vars->{__last__} = !defined $authors[$count] || ($n && ($count == $n));
-        local $vars->{__odd__} = ($count % 2) == 1;
-        local $vars->{__even__} = ($count % 2) == 0;
+        local $vars->{__first__}         = $count == 1;
+        local $vars->{__last__}          = !defined $authors[$count]
+            || ( $n && ( $count == $n ) );
+        local $vars->{__odd__}     = ( $count % 2 ) == 1;
+        local $vars->{__even__}    = ( $count % 2 ) == 0;
         local $vars->{__counter__} = $count;
-        defined(my $out = $builder->build($ctx, $tokens, $cond))
+        defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $out;
     }
@@ -480,20 +553,23 @@ B<Example:>
 =cut
 
 sub _hdlr_author_next_prev {
-    my($ctx, $args, $cond) = @_;
-    my $tag = $ctx->stash('tag');
+    my ( $ctx, $args, $cond ) = @_;
+    my $tag     = $ctx->stash('tag');
     my $is_prev = $tag eq 'AuthorPrevious';
-    my $author = $ctx->stash('author')
-        or return $ctx->error(MT->translate(
-            "You used an [_1] without a author context set up.", "<MT$tag>"));
+    my $author  = $ctx->stash('author')
+        or return $ctx->error(
+        MT->translate(
+            "You used an [_1] without a author context set up.", "<MT$tag>"
+        )
+        );
     my $blog = $ctx->stash('blog');
-    my @args = ($author->name, $blog->id, $is_prev ? 'previous' : 'next');
-    my $res = '';
-    if (my $next = _get_author(@args)) {
+    my @args = ( $author->name, $blog->id, $is_prev ? 'previous' : 'next' );
+    my $res  = '';
+    if ( my $next = _get_author(@args) ) {
         my $builder = $ctx->stash('builder');
         local $ctx->{__stash}->{author} = $next;
-        defined(my $out = $builder->build($ctx, $ctx->stash('tokens'),
-            $cond))
+        defined( my $out
+                = $builder->build( $ctx, $ctx->stash('tokens'), $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $out;
     }
@@ -534,8 +610,8 @@ sub _hdlr_author_id {
     my ($ctx) = @_;
     my $author = $ctx->stash('author');
     unless ($author) {
-        my $e = $ctx->stash('entry'); 
-        $author = $e->author if $e; 
+        my $e = $ctx->stash('entry');
+        $author = $e->author if $e;
     }
     return $ctx->_no_author_error() unless $author;
     return $author->id;
@@ -558,8 +634,8 @@ sub _hdlr_author_name {
     my ($ctx) = @_;
     my $author = $ctx->stash('author');
     unless ($author) {
-        my $e = $ctx->stash('entry'); 
-        $author = $e->author if $e; 
+        my $e = $ctx->stash('entry');
+        $author = $e->author if $e;
     }
     return $ctx->_no_author_error() unless $author;
     return $author->name;
@@ -576,15 +652,15 @@ is in context, it will use the author of the entry or page in context.
 
 =cut
 
-sub _hdlr_author_display_name { 
+sub _hdlr_author_display_name {
     my ($ctx) = @_;
-    my $a = $ctx->stash('author'); 
-    unless ($a) { 
-        my $e = $ctx->stash('entry'); 
-        $a = $e->author if $e; 
+    my $a = $ctx->stash('author');
+    unless ($a) {
+        my $e = $ctx->stash('entry');
+        $a = $e->author if $e;
     }
     return $ctx->_no_author_error() unless $a;
-    return $a->nickname || MT->translate('(Display Name not set)', $a->id);
+    return $a->nickname || MT->translate( '(Display Name not set)', $a->id );
 }
 
 ###########################################################################
@@ -601,11 +677,11 @@ B<NOTE:> it is not recommended to publish the author's email address.
 =cut
 
 sub _hdlr_author_email {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $author = $ctx->stash('author');
     unless ($author) {
-        my $e = $ctx->stash('entry'); 
-        $author = $e->author if $e; 
+        my $e = $ctx->stash('entry');
+        $author = $e->author if $e;
     }
     return $ctx->_no_author_error() unless $author;
     my $email = $author->email;
@@ -628,8 +704,8 @@ sub _hdlr_author_url {
     my ($ctx) = @_;
     my $author = $ctx->stash('author');
     unless ($author) {
-        my $e = $ctx->stash('entry'); 
-        $author = $e->author if $e; 
+        my $e = $ctx->stash('entry');
+        $author = $e->author if $e;
     }
     return $ctx->_no_author_error() unless $author;
     my $url = $author->url;
@@ -651,8 +727,8 @@ sub _hdlr_author_auth_type {
     my ($ctx) = @_;
     my $author = $ctx->stash('author');
     unless ($author) {
-        my $e = $ctx->stash('entry'); 
-        $author = $e->author if $e; 
+        my $e = $ctx->stash('entry');
+        $author = $e->author if $e;
     }
     return $ctx->_no_author_error() unless $author;
     my $auth_type = $author->auth_type;
@@ -693,16 +769,17 @@ B<Example:>
 =cut
 
 sub _hdlr_author_auth_icon_url {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $author = $ctx->stash('author');
-    unless ($author) { 
-        my $e = $ctx->stash('entry'); 
-        $author = $e->author if $e; 
+    unless ($author) {
+        my $e = $ctx->stash('entry');
+        $author = $e->author if $e;
     }
     return $ctx->_no_author_error() unless $author;
     my $size = $args->{size} || 'logo_small';
     my $url = $author->auth_icon_url($size);
-    if ($url =~ m!^/!) {
+    if ( $url =~ m!^/! ) {
+
         # relative path, prepend blog domain
         my $blog = $ctx->stash('blog');
         if ($blog) {
@@ -735,15 +812,16 @@ returned.
 =cut
 
 sub _hdlr_author_basename {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $author = $ctx->stash('author')
         or return $ctx->_no_author_error();
     my $name = $author->basename;
     $name = MT::Util::make_unique_author_basename($author) if !$name;
-    if (my $sep = $args->{separator}) {
-        if ($sep eq '-') {
+    if ( my $sep = $args->{separator} ) {
+        if ( $sep eq '-' ) {
             $name =~ s/_/-/g;
-        } elsif ($sep eq '_') {
+        }
+        elsif ( $sep eq '_' ) {
             $name =~ s/-/_/g;
         }
     }

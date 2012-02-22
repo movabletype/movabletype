@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2004-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2004-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -10,9 +10,9 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '5.06');
-define('VERSION_ID', '5.06');
-define('PRODUCT_VERSION', '5.06');
+define('VERSION', '5.07');
+define('VERSION_ID', '5.07');
+define('PRODUCT_VERSION', '5.07');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')

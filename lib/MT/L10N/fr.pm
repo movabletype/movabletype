@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -625,6 +625,7 @@ use vars qw( @ISA %Lexicon );
 	'Website' => 'Website',
 
 ## lib/MT/App/Comments.pm
+	'Invalid authentication parameter' => 'Paramètre d\'authentification invalide', # Translate - New
 	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => 'Erreur en assignant les droits de commenter à l\'utilisateur \'[_1] (ID: [_2])\' pour le blog \'[_3] (ID: [_4])\'. Aucun rôle de commentaire adéquat n\'a été trouvé.',
 	'Can\'t load blog #[_1].' => 'Impossible de charger le blog #[_1].',
 	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => 'Tentative d\'identification échouée pour l\'auteur de commentaires [_1] sur le blog [_2](ID: [_3]) qui n\'autorise pas l\'authentification native de Movable Type.',
@@ -4513,6 +4514,7 @@ use vars qw( @ISA %Lexicon );
 	'Tagged: [_1]' => 'avec le tag : [_1]',
 	'View all entries' => 'Voir toutes les notes',
 	'No entries have been created in this blog. <a href="[_1]">Create a entry</a>' => 'Aucune note n\'a été créé dans ce blog. <a href="[_1]">Créer une note</a>',
+	'No entries have been created in this blog.' => 'Aucune note n\'a été créé dans ce blog.',
 
 ## tmpl/cms/widget/blog_stats_recent_entries.tmpl
 	'[quant,_1,entry,entries] tagged &ldquo;[_2]&rdquo;' => '[quant,_1,note,notes] avec le tag &ldquo;[_2]&rdquo;',

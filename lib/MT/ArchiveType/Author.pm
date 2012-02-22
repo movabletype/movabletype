@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -21,13 +21,11 @@ sub archive_label {
 
 sub default_archive_templates {
     return [
-        {
-            label    => 'author/author-basename/index.html',
+        {   label    => 'author/author-basename/index.html',
             template => 'author/%-a/%f',
             default  => 1
         },
-        {
-            label    => 'author/author_basename/index.html',
+        {   label    => 'author/author_basename/index.html',
             template => 'author/%a/%f'
         },
     ];
@@ -48,10 +46,14 @@ sub template_params {
 }
 
 sub archive_title {
-    my $obj = shift;
+    my $obj   = shift;
     my ($ctx) = @_;
-    my $a = $ctx->stash('author');
-    encode_html( remove_html( $a ? $a->nickname || MT->translate( '(Display Name not set)' ) : '' ) );
+    my $a     = $ctx->stash('author');
+    encode_html(
+        remove_html(
+            $a ? $a->nickname || MT->translate('(Display Name not set)') : ''
+        )
+    );
 }
 
 sub archive_file {
@@ -75,8 +77,8 @@ sub archive_group_iter {
     my $obj = shift;
     my ( $ctx, $args ) = @_;
     my $blog = $ctx->stash('blog');
-    my $sort_order =
-      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $sort_order
+        = ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
     my $auth_order = $args->{sort_order} ? $args->{sort_order} : 'ascend';
     my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
     my $limit = exists $args->{lastn} ? delete $args->{lastn} : undef;
@@ -84,8 +86,7 @@ sub archive_group_iter {
     require MT::Author;
     my $auth_iter = MT::Author->load_iter(
         undef,
-        {
-            sort      => 'name',
+        {   sort      => 'name',
             direction => $auth_order,
             join      => [
                 'MT::Entry', 'author_id',
@@ -100,8 +101,7 @@ sub archive_group_iter {
         while ( my $a = $auth_iter->() ) {
             last if defined($limit) && $i == $limit;
             my $count = MT::Entry->count(
-                {
-                    blog_id   => $blog->id,
+                {   blog_id   => $blog->id,
                     status    => MT::Entry::RELEASE(),
                     author_id => $a->id
                 }
@@ -117,8 +117,8 @@ sub archive_group_iter {
 sub archive_group_entries {
     my $obj = shift;
     my ( $ctx, %param ) = @_;
-    my $blog = $ctx->stash('blog');
-    my $a = $param{author} || $ctx->stash('author');
+    my $blog  = $ctx->stash('blog');
+    my $a     = $param{author} || $ctx->stash('author');
     my $limit = $param{limit};
     if ( $limit && ( $limit eq 'auto' ) ) {
         my $blog = $ctx->stash('blog');
@@ -127,13 +127,11 @@ sub archive_group_entries {
     return [] unless $a;
     require MT::Entry;
     my @entries = MT::Entry->load(
-        {
-            blog_id   => $blog->id,
+        {   blog_id   => $blog->id,
             author_id => $a->id,
             status    => MT::Entry::RELEASE()
         },
-        {
-            'sort'      => 'authored_on',
+        {   'sort'      => 'authored_on',
             'direction' => 'descend',
             ( $limit ? ( 'limit' => $limit ) : () ),
         }
@@ -147,8 +145,7 @@ sub archive_entries_count {
     return $obj->SUPER::archive_entries_count(@_) unless $entry;
     my $auth = $entry->author;
     return $obj->SUPER::archive_entries_count(
-        {
-            Blog        => $blog,
+        {   Blog        => $blog,
             ArchiveType => $at,
             Author      => $auth
         }
@@ -156,23 +153,23 @@ sub archive_entries_count {
 }
 
 sub display_name {
-    my $obj = shift;
-    my ($ctx)    = shift;
-    my $tmpl     = $ctx->stash('template');
-    my $at       = $ctx->{archive_type};
-    my $author   = '';
-    if (   ( $tmpl && ($tmpl->type eq 'index' || $tmpl->type eq 'widget') )
+    my $obj    = shift;
+    my ($ctx)  = shift;
+    my $tmpl   = $ctx->stash('template');
+    my $at     = $ctx->{archive_type};
+    my $author = '';
+    if (   ( $tmpl && ( $tmpl->type eq 'index' || $tmpl->type eq 'widget' ) )
         || !$obj
         || ( $obj && !$obj->author_based )
         || !$ctx->{inside_archive_list} )
     {
         $author = $ctx->stash('author');
-        $author =
-            $author
-          ? $author->nickname
-          ? $author->nickname . ": "
-          : MT->translate( '(Display Name not set)' )
-          : '';
+        $author
+            = $author
+            ? $author->nickname
+                ? $author->nickname . ": "
+                : MT->translate('(Display Name not set)')
+            : '';
     }
     return $author;
 }
@@ -189,7 +186,7 @@ sub date_based_author_entries {
     my $obj = shift;
     my ( $ctx, $at, $author, $ts ) = @_;
 
-    my $blog     = $ctx->stash('blog');
+    my $blog = $ctx->stash('blog');
     my ( $start, $end );
     if ($ts) {
         ( $start, $end ) = $obj->date_range($ts);
@@ -199,15 +196,13 @@ sub date_based_author_entries {
         $end   = $ctx->{current_timestamp_end};
     }
     my @entries = MT::Entry->load(
-        {
-            blog_id     => $blog->id,
+        {   blog_id     => $blog->id,
             author_id   => $author->id,
             status      => MT::Entry::RELEASE(),
             authored_on => [ $start, $end ]
         },
-        {
-            range => { authored_on => 1 },
-            'sort' => 'authored_on',
+        {   range       => { authored_on => 1 },
+            'sort'      => 'authored_on',
             'direction' => 'descend',
         }
     ) or return $ctx->error("Couldn't get $at archive list");

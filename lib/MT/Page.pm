@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -10,24 +10,33 @@ use strict;
 use base qw( MT::Entry );
 use MT::Util qw( archive_file_for );
 
-__PACKAGE__->install_properties({
-    class_type => 'page',
-    child_of => 'MT::Blog',
-    child_classes => ['MT::Comment','MT::Placement','MT::Trackback','MT::FileInfo'],
-});
+__PACKAGE__->install_properties(
+    {   class_type    => 'page',
+        child_of      => 'MT::Blog',
+        child_classes => [
+            'MT::Comment',   'MT::Placement',
+            'MT::Trackback', 'MT::FileInfo'
+        ],
+    }
+);
 
 # Callbacks: clean list of changed columns to only
 # include versioned columns
-MT->add_callback( 'api_pre_save.' . 'page', 1, undef, \&MT::Revisable::mt_presave_obj );
-MT->add_callback( 'cms_pre_save.' . 'page', 1, undef, \&MT::Revisable::mt_presave_obj );
+MT->add_callback( 'api_pre_save.' . 'page',
+    1, undef, \&MT::Revisable::mt_presave_obj );
+MT->add_callback( 'cms_pre_save.' . 'page',
+    1, undef, \&MT::Revisable::mt_presave_obj );
 
-# Callbacks: object-level callbacks could not be 
+# Callbacks: object-level callbacks could not be
 # prioritized and thus caused problems with plugins
-# registering a post_save and saving     
-MT->add_callback( 'api_post_save.' . 'page', 9, undef, \&MT::Revisable::mt_postsave_obj );
-MT->add_callback( 'cms_post_save.' . 'page', 9, undef, \&MT::Revisable::mt_postsave_obj );               
+# registering a post_save and saving
+MT->add_callback( 'api_post_save.' . 'page',
+    9, undef, \&MT::Revisable::mt_postsave_obj );
+MT->add_callback( 'cms_post_save.' . 'page',
+    9, undef, \&MT::Revisable::mt_postsave_obj );
 
-__PACKAGE__->add_callback( 'post_remove', 0, MT->component('core'), \&MT::Revisable::mt_postremove_obj );
+__PACKAGE__->add_callback( 'post_remove', 0, MT->component('core'),
+    \&MT::Revisable::mt_postremove_obj );
 
 sub class_label {
     return MT->translate("Page");
@@ -51,17 +60,17 @@ sub folder {
 
 sub archive_file {
     my $page = shift;
-    my $blog = $page->blog() || return $page->error(MT->translate(
-                                                     "Load of blog failed: [_1]",
-                                                     MT::Blog->errstr));
-    return archive_file_for($page, $blog, 'Page');
+    my $blog = $page->blog()
+        || return $page->error(
+        MT->translate( "Load of blog failed: [_1]", MT::Blog->errstr ) );
+    return archive_file_for( $page, $blog, 'Page' );
 }
 
 sub archive_url {
     my $page = shift;
-    my $blog = $page->blog() || return $page->error(MT->translate(
-                                                     "Load of blog failed: [_1]",
-                                                     MT::Blog->errstr));
+    my $blog = $page->blog()
+        || return $page->error(
+        MT->translate( "Load of blog failed: [_1]", MT::Blog->errstr ) );
     my $url = $blog->site_url || "";
     $url .= '/' unless $url =~ m!/$!;
     return $url . $page->archive_file(@_);
@@ -74,7 +83,7 @@ sub permalink {
 
 sub all_permalinks {
     my $page = shift;
-    return ($page->permalink(@_));
+    return ( $page->permalink(@_) );
 }
 
 1;

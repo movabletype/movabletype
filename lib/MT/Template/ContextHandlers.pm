@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apar,t Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apar,t Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -11,20 +11,24 @@ use strict;
 use MT::Util qw( format_ts relative_date );
 use Time::Local qw( timelocal );
 
-sub init_default_handlers {}
-sub init_default_filters {}
+sub init_default_handlers { }
+sub init_default_filters  { }
 
 sub core_tags {
     my $tags = {
-        help_url => sub { MT->translate('http://www.movabletype.org/documentation/appendices/tags/%t.html') },
+        help_url => sub {
+            MT->translate(
+                'http://www.movabletype.org/documentation/appendices/tags/%t.html'
+            );
+        },
         block => {
 
             ## Core
-            Ignore         => sub { '' },
-            'If?'          => \&MT::Template::Tags::Core::_hdlr_if,
-            'Unless?'      => \&MT::Template::Tags::Core::_hdlr_unless,
-            'Else'         => \&MT::Template::Tags::Core::_hdlr_else,
-            'ElseIf'       => \&MT::Template::Tags::Core::_hdlr_elseif,
+            Ignore    => sub {''},
+            'If?'     => \&MT::Template::Tags::Core::_hdlr_if,
+            'Unless?' => \&MT::Template::Tags::Core::_hdlr_unless,
+            'Else'    => \&MT::Template::Tags::Core::_hdlr_else,
+            'ElseIf'  => \&MT::Template::Tags::Core::_hdlr_elseif,
             'IfNonEmpty?'  => \&MT::Template::Tags::Core::_hdlr_if_nonempty,
             'IfNonZero?'   => \&MT::Template::Tags::Core::_hdlr_if_nonzero,
             Loop           => \&MT::Template::Tags::Core::_hdlr_loop,
@@ -41,173 +45,267 @@ sub core_tags {
             Section      => \&MT::Template::Tags::System::_hdlr_section,
 
             ## App
-            'App:Setting'      => \&MT::Template::Tags::App::_hdlr_app_setting,
-            'App:Widget'       => \&MT::Template::Tags::App::_hdlr_app_widget,
-            'App:StatusMsg'    => \&MT::Template::Tags::App::_hdlr_app_statusmsg,
-            'App:Listing'      => \&MT::Template::Tags::App::_hdlr_app_listing,
-            'App:SettingGroup' => \&MT::Template::Tags::App::_hdlr_app_setting_group,
-            'App:Form'         => \&MT::Template::Tags::App::_hdlr_app_form,
+            'App:Setting'   => \&MT::Template::Tags::App::_hdlr_app_setting,
+            'App:Widget'    => \&MT::Template::Tags::App::_hdlr_app_widget,
+            'App:StatusMsg' => \&MT::Template::Tags::App::_hdlr_app_statusmsg,
+            'App:Listing'   => \&MT::Template::Tags::App::_hdlr_app_listing,
+            'App:SettingGroup' =>
+                \&MT::Template::Tags::App::_hdlr_app_setting_group,
+            'App:Form' => \&MT::Template::Tags::App::_hdlr_app_form,
 
             ## Blog
-            Blogs              => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
-            'IfBlog?'          => '$Core::MT::Template::Tags::Blog::_hdlr_if_blog',
-            'BlogIfCCLicense?' => '$Core::MT::Template::Tags::Blog::_hdlr_blog_if_cc_license',
+            Blogs     => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
+            'IfBlog?' => '$Core::MT::Template::Tags::Blog::_hdlr_if_blog',
+            'BlogIfCCLicense?' =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_if_cc_license',
 
             ## Website
-            Websites              => '$Core::MT::Template::Tags::Website::_hdlr_websites',
-            'IfWebsite?'          => '$Core::MT::Template::Tags::Website::_hdlr_website_id',
-            'WebsiteIfCCLicense?' => '$Core::MT::Template::Tags::Website::_hdlr_website_if_cc_license',
-            'WebsiteHasBlog?'      => '$Core::MT::Template::Tags::Website::_hdlr_website_has_blog',
-            BlogParentWebsite  => '$Core::MT::Template::Tags::Website::_hdlr_blog_parent_website',
+            Websites => '$Core::MT::Template::Tags::Website::_hdlr_websites',
+            'IfWebsite?' =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_id',
+            'WebsiteIfCCLicense?' =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_if_cc_license',
+            'WebsiteHasBlog?' =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_has_blog',
+            BlogParentWebsite =>
+                '$Core::MT::Template::Tags::Website::_hdlr_blog_parent_website',
 
             ## Author
-            Authors            => '$Core::MT::Template::Tags::Author::_hdlr_authors',
-            AuthorNext         => '$Core::MT::Template::Tags::Author::_hdlr_author_next_prev',
-            AuthorPrevious     => '$Core::MT::Template::Tags::Author::_hdlr_author_next_prev',
-            'IfAuthor?'        => '$Core::MT::Template::Tags::Author::_hdlr_if_author',
+            Authors => '$Core::MT::Template::Tags::Author::_hdlr_authors',
+            AuthorNext =>
+                '$Core::MT::Template::Tags::Author::_hdlr_author_next_prev',
+            AuthorPrevious =>
+                '$Core::MT::Template::Tags::Author::_hdlr_author_next_prev',
+            'IfAuthor?' =>
+                '$Core::MT::Template::Tags::Author::_hdlr_if_author',
 
             ## Commenter
-            'IfExternalUserManagement?'       => '$Core::MT::Template::Tags::Commenter::_hdlr_if_external_user_management',
-            'IfCommenterRegistrationAllowed?' => '$Core::MT::Template::Tags::Commenter::_hdlr_if_commenter_registration_allowed',
-            'IfCommenterTrusted?'             => '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_trusted',
-            'CommenterIfTrusted?'             => '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_trusted',
-            'IfCommenterIsAuthor?'            => '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_isauthor',
-            'IfCommenterIsEntryAuthor?'       => '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_isauthor',
+            'IfExternalUserManagement?' =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_if_external_user_management',
+            'IfCommenterRegistrationAllowed?' =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_if_commenter_registration_allowed',
+            'IfCommenterTrusted?' =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_trusted',
+            'CommenterIfTrusted?' =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_trusted',
+            'IfCommenterIsAuthor?' =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_isauthor',
+            'IfCommenterIsEntryAuthor?' =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_isauthor',
 
             ## Archive
-            Archives                => '$Core::MT::Template::Tags::Archive::_hdlr_archive_set',
-            ArchiveList             => '$Core::MT::Template::Tags::Archive::_hdlr_archives',
-            ArchiveListHeader       => \&slurp,
-            ArchiveListFooter       => \&slurp,
-            ArchivePrevious         => '$Core::MT::Template::Tags::Archive::_hdlr_archive_prev_next',
-            ArchiveNext             => '$Core::MT::Template::Tags::Archive::_hdlr_archive_prev_next',
-            'IfArchiveType?'        => '$Core::MT::Template::Tags::Archive::_hdlr_if_archive_type',
-            'IfArchiveTypeEnabled?' => '$Core::MT::Template::Tags::Archive::_hdlr_archive_type_enabled',
-            IndexList               => '$Core::MT::Template::Tags::Archive::_hdlr_index_list',
+            Archives =>
+                '$Core::MT::Template::Tags::Archive::_hdlr_archive_set',
+            ArchiveList =>
+                '$Core::MT::Template::Tags::Archive::_hdlr_archives',
+            ArchiveListHeader => \&slurp,
+            ArchiveListFooter => \&slurp,
+            ArchivePrevious =>
+                '$Core::MT::Template::Tags::Archive::_hdlr_archive_prev_next',
+            ArchiveNext =>
+                '$Core::MT::Template::Tags::Archive::_hdlr_archive_prev_next',
+            'IfArchiveType?' =>
+                '$Core::MT::Template::Tags::Archive::_hdlr_if_archive_type',
+            'IfArchiveTypeEnabled?' =>
+                '$Core::MT::Template::Tags::Archive::_hdlr_archive_type_enabled',
+            IndexList =>
+                '$Core::MT::Template::Tags::Archive::_hdlr_index_list',
 
             ## Entry
-            Entries            => '$Core::MT::Template::Tags::Entry::_hdlr_entries',
-            EntriesHeader      => \&slurp,
-            EntriesFooter      => \&slurp,
-            EntryPrevious      => '$Core::MT::Template::Tags::Entry::_hdlr_entry_previous',
-            EntryNext          => '$Core::MT::Template::Tags::Entry::_hdlr_entry_next',
-            DateHeader         => \&slurp,
-            DateFooter         => \&slurp,
-            'EntryIfExtended?' => '$Core::MT::Template::Tags::Entry::_hdlr_entry_if_extended',
-            'AuthorHasEntry?'  => '$Core::MT::Template::Tags::Entry::_hdlr_author_has_entry',
+            Entries => '$Core::MT::Template::Tags::Entry::_hdlr_entries',
+            EntriesHeader => \&slurp,
+            EntriesFooter => \&slurp,
+            EntryPrevious =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_previous',
+            EntryNext => '$Core::MT::Template::Tags::Entry::_hdlr_entry_next',
+            DateHeader => \&slurp,
+            DateFooter => \&slurp,
+            'EntryIfExtended?' =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_if_extended',
+            'AuthorHasEntry?' =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_author_has_entry',
 
             ## Comment
-            'IfCommentsModerated?'       => '$Core::MT::Template::Tags::Comment::_hdlr_comments_moderated',
-            'BlogIfCommentsOpen?'        => '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
-            'WebsiteIfCommentsOpen?'     => '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
-            Comments                     => '$Core::MT::Template::Tags::Comment::_hdlr_comments',
-            CommentsHeader               => \&slurp,
-            CommentsFooter               => \&slurp,
-            CommentEntry                 => '$Core::MT::Template::Tags::Comment::_hdlr_comment_entry',
-            'CommentIfModerated?'        => '$Core::MT::Template::Tags::Comment::_hdlr_comment_if_moderated',
-            CommentParent                => '$Core::MT::Template::Tags::Comment::_hdlr_comment_parent',
-            CommentReplies               => '$Core::MT::Template::Tags::Comment::_hdlr_comment_replies',
-            'IfCommentParent?'           => '$Core::MT::Template::Tags::Comment::_hdlr_if_comment_parent',
-            'IfCommentReplies?'          => '$Core::MT::Template::Tags::Comment::_hdlr_if_comment_replies',
-            'IfRegistrationRequired?'    => '$Core::MT::Template::Tags::Comment::_hdlr_reg_required',
-            'IfRegistrationNotRequired?' => '$Core::MT::Template::Tags::Comment::_hdlr_reg_not_required',
-            'IfRegistrationAllowed?'     => '$Core::MT::Template::Tags::Comment::_hdlr_reg_allowed',
-            'IfTypeKeyToken?'            => '$Core::MT::Template::Tags::Comment::_hdlr_if_typekey_token',
-            'IfAllowCommentHTML?'        => '$Core::MT::Template::Tags::Comment::_hdlr_if_allow_comment_html',
-            'IfCommentsAllowed?'         => '$Core::MT::Template::Tags::Comment::_hdlr_if_comments_allowed',
-            'IfCommentsAccepted?'        => '$Core::MT::Template::Tags::Comment::_hdlr_if_comments_accepted',
-            'IfCommentsActive?'          => '$Core::MT::Template::Tags::Comment::_hdlr_if_comments_active',
-            'IfNeedEmail?'               => '$Core::MT::Template::Tags::Comment::_hdlr_if_need_email',
-            'IfRequireCommentEmails?'    => '$Core::MT::Template::Tags::Comment::_hdlr_if_need_email',
-            'EntryIfAllowComments?'      => '$Core::MT::Template::Tags::Comment::_hdlr_entry_if_allow_comments',
-            'EntryIfCommentsOpen?'       => '$Core::MT::Template::Tags::Comment::_hdlr_entry_if_comments_open',
+            'IfCommentsModerated?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comments_moderated',
+            'BlogIfCommentsOpen?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
+            'WebsiteIfCommentsOpen?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
+            Comments => '$Core::MT::Template::Tags::Comment::_hdlr_comments',
+            CommentsHeader => \&slurp,
+            CommentsFooter => \&slurp,
+            CommentEntry =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_entry',
+            'CommentIfModerated?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_if_moderated',
+            CommentParent =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_parent',
+            CommentReplies =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_replies',
+            'IfCommentParent?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_if_comment_parent',
+            'IfCommentReplies?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_if_comment_replies',
+            'IfRegistrationRequired?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_reg_required',
+            'IfRegistrationNotRequired?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_reg_not_required',
+            'IfRegistrationAllowed?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_reg_allowed',
+            'IfTypeKeyToken?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_if_typekey_token',
+            'IfAllowCommentHTML?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_if_allow_comment_html',
+            'IfCommentsAllowed?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_if_comments_allowed',
+            'IfCommentsAccepted?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_if_comments_accepted',
+            'IfCommentsActive?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_if_comments_active',
+            'IfNeedEmail?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_if_need_email',
+            'IfRequireCommentEmails?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_if_need_email',
+            'EntryIfAllowComments?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_entry_if_allow_comments',
+            'EntryIfCommentsOpen?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_entry_if_comments_open',
 
             ## Ping
-            Pings                    => '$Core::MT::Template::Tags::Ping::_hdlr_pings',
-            PingsHeader              => \&slurp,
-            PingsFooter              => \&slurp,
-            PingsSent                => '$Core::MT::Template::Tags::Ping::_hdlr_pings_sent',
-            PingEntry                => '$Core::MT::Template::Tags::Ping::_hdlr_ping_entry',
-            'IfPingsAllowed?'        => '$Core::MT::Template::Tags::Ping::_hdlr_if_pings_allowed',
-            'IfPingsAccepted?'       => '$Core::MT::Template::Tags::Ping::_hdlr_if_pings_accepted',
-            'IfPingsActive?'         => '$Core::MT::Template::Tags::Ping::_hdlr_if_pings_active',
-            'IfPingsModerated?'      => '$Core::MT::Template::Tags::Ping::_hdlr_if_pings_moderated',
-            'EntryIfAllowPings?'     => '$Core::MT::Template::Tags::Ping::_hdlr_entry_if_allow_pings',
-            'CategoryIfAllowPings?'  => '$Core::MT::Template::Tags::Ping::_hdlr_category_allow_pings',
+            Pings       => '$Core::MT::Template::Tags::Ping::_hdlr_pings',
+            PingsHeader => \&slurp,
+            PingsFooter => \&slurp,
+            PingsSent => '$Core::MT::Template::Tags::Ping::_hdlr_pings_sent',
+            PingEntry => '$Core::MT::Template::Tags::Ping::_hdlr_ping_entry',
+            'IfPingsAllowed?' =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_if_pings_allowed',
+            'IfPingsAccepted?' =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_if_pings_accepted',
+            'IfPingsActive?' =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_if_pings_active',
+            'IfPingsModerated?' =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_if_pings_moderated',
+            'EntryIfAllowPings?' =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_entry_if_allow_pings',
+            'CategoryIfAllowPings?' =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_category_allow_pings',
 
             ## Category
-            Categories                => '$Core::MT::Template::Tags::Category::_hdlr_categories',
-            CategoryPrevious          => '$Core::MT::Template::Tags::Category::_hdlr_category_prevnext',
-            CategoryNext              => '$Core::MT::Template::Tags::Category::_hdlr_category_prevnext',
-            SubCategories             => '$Core::MT::Template::Tags::Category::_hdlr_sub_categories',
-            TopLevelCategories        => '$Core::MT::Template::Tags::Category::_hdlr_top_level_categories',
-            ParentCategory            => '$Core::MT::Template::Tags::Category::_hdlr_parent_category',
-            ParentCategories          => '$Core::MT::Template::Tags::Category::_hdlr_parent_categories',
-            TopLevelParent            => '$Core::MT::Template::Tags::Category::_hdlr_top_level_parent',
-            EntriesWithSubCategories  => '$Core::MT::Template::Tags::Category::_hdlr_entries_with_sub_categories',
-            'IfCategory?'             => '$Core::MT::Template::Tags::Category::_hdlr_if_category',
-            'EntryIfCategory?'        => '$Core::MT::Template::Tags::Category::_hdlr_if_category',
-            'SubCatIsFirst?'          => '$Core::MT::Template::Tags::Category::_hdlr_sub_cat_is_first',
-            'SubCatIsLast?'           => '$Core::MT::Template::Tags::Category::_hdlr_sub_cat_is_last',
-            'HasSubCategories?'       => '$Core::MT::Template::Tags::Category::_hdlr_has_sub_categories',
-            'HasNoSubCategories?'     => '$Core::MT::Template::Tags::Category::_hdlr_has_no_sub_categories',
-            'HasParentCategory?'      => '$Core::MT::Template::Tags::Category::_hdlr_has_parent_category',
-            'HasNoParentCategory?'    => '$Core::MT::Template::Tags::Category::_hdlr_has_no_parent_category',
-            'IfIsAncestor?'           => '$Core::MT::Template::Tags::Category::_hdlr_is_ancestor',
-            'IfIsDescendant?'         => '$Core::MT::Template::Tags::Category::_hdlr_is_descendant',
-            EntryCategories           => '$Core::MT::Template::Tags::Category::_hdlr_entry_categories',
-            EntryAdditionalCategories => '$Core::MT::Template::Tags::Category::_hdlr_entry_additional_categories',
+            Categories =>
+                '$Core::MT::Template::Tags::Category::_hdlr_categories',
+            CategoryPrevious =>
+                '$Core::MT::Template::Tags::Category::_hdlr_category_prevnext',
+            CategoryNext =>
+                '$Core::MT::Template::Tags::Category::_hdlr_category_prevnext',
+            SubCategories =>
+                '$Core::MT::Template::Tags::Category::_hdlr_sub_categories',
+            TopLevelCategories =>
+                '$Core::MT::Template::Tags::Category::_hdlr_top_level_categories',
+            ParentCategory =>
+                '$Core::MT::Template::Tags::Category::_hdlr_parent_category',
+            ParentCategories =>
+                '$Core::MT::Template::Tags::Category::_hdlr_parent_categories',
+            TopLevelParent =>
+                '$Core::MT::Template::Tags::Category::_hdlr_top_level_parent',
+            EntriesWithSubCategories =>
+                '$Core::MT::Template::Tags::Category::_hdlr_entries_with_sub_categories',
+            'IfCategory?' =>
+                '$Core::MT::Template::Tags::Category::_hdlr_if_category',
+            'EntryIfCategory?' =>
+                '$Core::MT::Template::Tags::Category::_hdlr_if_category',
+            'SubCatIsFirst?' =>
+                '$Core::MT::Template::Tags::Category::_hdlr_sub_cat_is_first',
+            'SubCatIsLast?' =>
+                '$Core::MT::Template::Tags::Category::_hdlr_sub_cat_is_last',
+            'HasSubCategories?' =>
+                '$Core::MT::Template::Tags::Category::_hdlr_has_sub_categories',
+            'HasNoSubCategories?' =>
+                '$Core::MT::Template::Tags::Category::_hdlr_has_no_sub_categories',
+            'HasParentCategory?' =>
+                '$Core::MT::Template::Tags::Category::_hdlr_has_parent_category',
+            'HasNoParentCategory?' =>
+                '$Core::MT::Template::Tags::Category::_hdlr_has_no_parent_category',
+            'IfIsAncestor?' =>
+                '$Core::MT::Template::Tags::Category::_hdlr_is_ancestor',
+            'IfIsDescendant?' =>
+                '$Core::MT::Template::Tags::Category::_hdlr_is_descendant',
+            EntryCategories =>
+                '$Core::MT::Template::Tags::Category::_hdlr_entry_categories',
+            EntryAdditionalCategories =>
+                '$Core::MT::Template::Tags::Category::_hdlr_entry_additional_categories',
 
             ## Page
-            'AuthorHasPage?' => '$Core::MT::Template::Tags::Page::_hdlr_author_has_page',
-            Pages            => '$Core::MT::Template::Tags::Page::_hdlr_pages',
-            PagePrevious     => '$Core::MT::Template::Tags::Page::_hdlr_page_previous',
-            PageNext         => '$Core::MT::Template::Tags::Page::_hdlr_page_next',
-            PagesHeader      => \&slurp,
-            PagesFooter      => \&slurp,
+            'AuthorHasPage?' =>
+                '$Core::MT::Template::Tags::Page::_hdlr_author_has_page',
+            Pages => '$Core::MT::Template::Tags::Page::_hdlr_pages',
+            PagePrevious =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_previous',
+            PageNext    => '$Core::MT::Template::Tags::Page::_hdlr_page_next',
+            PagesHeader => \&slurp,
+            PagesFooter => \&slurp,
 
             ## Folder
-            'IfFolder?'        => '$Core::MT::Template::Tags::Folder::_hdlr_if_folder',
-            'FolderHeader?'    => '$Core::MT::Template::Tags::Folder::_hdlr_folder_header',
-            'FolderFooter?'    => '$Core::MT::Template::Tags::Folder::_hdlr_folder_footer',
-            'HasSubFolders?'   => '$Core::MT::Template::Tags::Folder::_hdlr_has_sub_folders',
-            'HasParentFolder?' => '$Core::MT::Template::Tags::Folder::_hdlr_has_parent_folder',
-            PageFolder         => '$Core::MT::Template::Tags::Folder::_hdlr_page_folder',
-            Folders            => '$Core::MT::Template::Tags::Folder::_hdlr_folders',
-            FolderPrevious     => '$Core::MT::Template::Tags::Folder::_hdlr_folder_prevnext',
-            FolderNext         => '$Core::MT::Template::Tags::Folder::_hdlr_folder_prevnext',
-            SubFolders         => '$Core::MT::Template::Tags::Folder::_hdlr_sub_folders',
-            ParentFolders      => '$Core::MT::Template::Tags::Folder::_hdlr_parent_folders',
-            ParentFolder       => '$Core::MT::Template::Tags::Folder::_hdlr_parent_folder',
-            TopLevelFolders    => '$Core::MT::Template::Tags::Folder::_hdlr_top_level_folders',
-            TopLevelFolder     => '$Core::MT::Template::Tags::Folder::_hdlr_top_level_folder',
+            'IfFolder?' =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_if_folder',
+            'FolderHeader?' =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_folder_header',
+            'FolderFooter?' =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_folder_footer',
+            'HasSubFolders?' =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_has_sub_folders',
+            'HasParentFolder?' =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_has_parent_folder',
+            PageFolder =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_page_folder',
+            Folders => '$Core::MT::Template::Tags::Folder::_hdlr_folders',
+            FolderPrevious =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_folder_prevnext',
+            FolderNext =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_folder_prevnext',
+            SubFolders =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_sub_folders',
+            ParentFolders =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_parent_folders',
+            ParentFolder =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_parent_folder',
+            TopLevelFolders =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_top_level_folders',
+            TopLevelFolder =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_top_level_folder',
 
             ## Asset
-            EntryAssets       => '$Core::MT::Template::Tags::Asset::_hdlr_assets',
-            PageAssets        => '$Core::MT::Template::Tags::Asset::_hdlr_assets',
-            Assets            => '$Core::MT::Template::Tags::Asset::_hdlr_assets',
-            Asset             => '$Core::MT::Template::Tags::Asset::_hdlr_asset',
+            EntryAssets => '$Core::MT::Template::Tags::Asset::_hdlr_assets',
+            PageAssets  => '$Core::MT::Template::Tags::Asset::_hdlr_assets',
+            Assets      => '$Core::MT::Template::Tags::Asset::_hdlr_assets',
+            Asset       => '$Core::MT::Template::Tags::Asset::_hdlr_asset',
             AssetIsFirstInRow => \&slurp,
             AssetIsLastInRow  => \&slurp,
             AssetsHeader      => \&slurp,
             AssetsFooter      => \&slurp,
 
             ## Userpic
-            AuthorUserpicAsset      => '$Core::MT::Template::Tags::Userpic::_hdlr_author_userpic_asset',
-            EntryAuthorUserpicAsset => '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic_asset',
-            CommenterUserpicAsset   => '$Core::MT::Template::Tags::Userpic::_hdlr_commenter_userpic_asset',
+            AuthorUserpicAsset =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_author_userpic_asset',
+            EntryAuthorUserpicAsset =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic_asset',
+            CommenterUserpicAsset =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_commenter_userpic_asset',
 
             ## Tag
-            Tags             => '$Core::MT::Template::Tags::Tag::_hdlr_tags',
-            EntryTags        => '$Core::MT::Template::Tags::Tag::_hdlr_entry_tags',
-            PageTags         => '$Core::MT::Template::Tags::Tag::_hdlr_page_tags',
-            AssetTags        => '$Core::MT::Template::Tags::Tag::_hdlr_asset_tags',
-            'EntryIfTagged?' => '$Core::MT::Template::Tags::Tag::_hdlr_entry_if_tagged',
-            'PageIfTagged?'  => '$Core::MT::Template::Tags::Tag::_hdlr_page_if_tagged',
-            'AssetIfTagged?' => '$Core::MT::Template::Tags::Tag::_hdlr_asset_if_tagged',
+            Tags      => '$Core::MT::Template::Tags::Tag::_hdlr_tags',
+            EntryTags => '$Core::MT::Template::Tags::Tag::_hdlr_entry_tags',
+            PageTags  => '$Core::MT::Template::Tags::Tag::_hdlr_page_tags',
+            AssetTags => '$Core::MT::Template::Tags::Tag::_hdlr_asset_tags',
+            'EntryIfTagged?' =>
+                '$Core::MT::Template::Tags::Tag::_hdlr_entry_if_tagged',
+            'PageIfTagged?' =>
+                '$Core::MT::Template::Tags::Tag::_hdlr_page_if_tagged',
+            'AssetIfTagged?' =>
+                '$Core::MT::Template::Tags::Tag::_hdlr_asset_if_tagged',
 
             ## Calendar
-            Calendar            => '$Core::MT::Template::Tags::Calendar::_hdlr_calendar',
+            Calendar => '$Core::MT::Template::Tags::Calendar::_hdlr_calendar',
             CalendarWeekHeader  => \&slurp,
             CalendarWeekFooter  => \&slurp,
             CalendarIfBlank     => \&slurp,
@@ -216,25 +314,29 @@ sub core_tags {
             CalendarIfNoEntries => \&slurp,
 
             ## Pager
-            'IfMoreResults?'     => '$Core::MT::Template::Tags::Pager::_hdlr_if_more_results',
-            'IfPreviousResults?' => '$Core::MT::Template::Tags::Pager::_hdlr_if_previous_results',
-            PagerBlock           => '$Core::MT::Template::Tags::Pager::_hdlr_pager_block',
-            IfCurrentPage        => \&slurp,
+            'IfMoreResults?' =>
+                '$Core::MT::Template::Tags::Pager::_hdlr_if_more_results',
+            'IfPreviousResults?' =>
+                '$Core::MT::Template::Tags::Pager::_hdlr_if_previous_results',
+            PagerBlock =>
+                '$Core::MT::Template::Tags::Pager::_hdlr_pager_block',
+            IfCurrentPage => \&slurp,
 
             ## Search
-            IfTagSearch         => sub { '' },
-            SearchResults       => sub { '' },
-            IfStraightSearch    => sub { '' },
+            IfTagSearch         => sub {''},
+            SearchResults       => sub {''},
+            IfStraightSearch    => sub {''},
             NoSearchResults     => \&slurp,
             NoSearch            => \&slurp,
-            SearchResultsHeader => sub { '' },
-            SearchResultsFooter => sub { '' },
-            BlogResultHeader    => sub { '' },
-            BlogResultFooter    => sub { '' },
-            IfMaxResultsCutoff  => sub { '' },
+            SearchResultsHeader => sub {''},
+            SearchResultsFooter => sub {''},
+            BlogResultHeader    => sub {''},
+            BlogResultFooter    => sub {''},
+            IfMaxResultsCutoff  => sub {''},
 
             ## Misc
-            'IfImageSupport?' => '$Core::MT::Template::Tags::Misc::_hdlr_if_image_support',
+            'IfImageSupport?' =>
+                '$Core::MT::Template::Tags::Misc::_hdlr_if_image_support',
         },
         function => {
 
@@ -242,399 +344,653 @@ sub core_tags {
             SetVar       => \&MT::Template::Tags::Core::_hdlr_set_var,
             GetVar       => \&MT::Template::Tags::Core::_hdlr_get_var,
             Var          => \&MT::Template::Tags::Core::_hdlr_get_var,
-            TemplateNote => sub { '' },
+            TemplateNote => sub {''},
 
             ## System
-            Include             => \&MT::Template::Tags::System::_hdlr_include,
-            Link                => \&MT::Template::Tags::System::_hdlr_link,
-            Date                => \&MT::Template::Tags::System::_hdlr_sys_date,
-            AdminScript         => \&MT::Template::Tags::System::_hdlr_admin_script,
-            CommentScript       => \&MT::Template::Tags::System::_hdlr_comment_script,
-            TrackbackScript     => \&MT::Template::Tags::System::_hdlr_trackback_script,
-            SearchScript        => \&MT::Template::Tags::System::_hdlr_search_script,
-            XMLRPCScript        => \&MT::Template::Tags::System::_hdlr_xmlrpc_script,
-            AtomScript          => \&MT::Template::Tags::System::_hdlr_atom_script,
-            NotifyScript        => \&MT::Template::Tags::System::_hdlr_notify_script,
-            CGIHost             => \&MT::Template::Tags::System::_hdlr_cgi_host,
-            CGIPath             => \&MT::Template::Tags::System::_hdlr_cgi_path,
-            AdminCGIPath        => \&MT::Template::Tags::System::_hdlr_admin_cgi_path,
-            CGIRelativeURL      => \&MT::Template::Tags::System::_hdlr_cgi_relative_url,
-            CGIServerPath       => \&MT::Template::Tags::System::_hdlr_cgi_server_path,
-            StaticWebPath       => \&MT::Template::Tags::System::_hdlr_static_path,
-            StaticFilePath      => \&MT::Template::Tags::System::_hdlr_static_file_path,
-            SupportDirectoryURL => \&MT::Template::Tags::System::_hdlr_support_directory_url,
-            Version             => \&MT::Template::Tags::System::_hdlr_mt_version,
-            ProductName         => \&MT::Template::Tags::System::_hdlr_product_name,
-            PublishCharset      => \&MT::Template::Tags::System::_hdlr_publish_charset,
-            DefaultLanguage     => \&MT::Template::Tags::System::_hdlr_default_language,
-            ConfigFile          => \&MT::Template::Tags::System::_hdlr_config_file,
-            IndexBasename       => \&MT::Template::Tags::System::_hdlr_index_basename,
-            HTTPContentType     => \&MT::Template::Tags::System::_hdlr_http_content_type,
-            FileTemplate        => \&MT::Template::Tags::System::_hdlr_file_template,
-            TemplateCreatedOn   => \&MT::Template::Tags::System::_hdlr_template_created_on,
-            BuildTemplateID     => \&MT::Template::Tags::System::_hdlr_build_template_id,
-            ErrorMessage        => \&MT::Template::Tags::System::_hdlr_error_message,
+            Include     => \&MT::Template::Tags::System::_hdlr_include,
+            Link        => \&MT::Template::Tags::System::_hdlr_link,
+            Date        => \&MT::Template::Tags::System::_hdlr_sys_date,
+            AdminScript => \&MT::Template::Tags::System::_hdlr_admin_script,
+            CommentScript =>
+                \&MT::Template::Tags::System::_hdlr_comment_script,
+            TrackbackScript =>
+                \&MT::Template::Tags::System::_hdlr_trackback_script,
+            SearchScript => \&MT::Template::Tags::System::_hdlr_search_script,
+            XMLRPCScript => \&MT::Template::Tags::System::_hdlr_xmlrpc_script,
+            AtomScript   => \&MT::Template::Tags::System::_hdlr_atom_script,
+            NotifyScript => \&MT::Template::Tags::System::_hdlr_notify_script,
+            CGIHost      => \&MT::Template::Tags::System::_hdlr_cgi_host,
+            CGIPath      => \&MT::Template::Tags::System::_hdlr_cgi_path,
+            AdminCGIPath =>
+                \&MT::Template::Tags::System::_hdlr_admin_cgi_path,
+            CGIRelativeURL =>
+                \&MT::Template::Tags::System::_hdlr_cgi_relative_url,
+            CGIServerPath =>
+                \&MT::Template::Tags::System::_hdlr_cgi_server_path,
+            StaticWebPath => \&MT::Template::Tags::System::_hdlr_static_path,
+            StaticFilePath =>
+                \&MT::Template::Tags::System::_hdlr_static_file_path,
+            SupportDirectoryURL =>
+                \&MT::Template::Tags::System::_hdlr_support_directory_url,
+            Version     => \&MT::Template::Tags::System::_hdlr_mt_version,
+            ProductName => \&MT::Template::Tags::System::_hdlr_product_name,
+            PublishCharset =>
+                \&MT::Template::Tags::System::_hdlr_publish_charset,
+            DefaultLanguage =>
+                \&MT::Template::Tags::System::_hdlr_default_language,
+            ConfigFile => \&MT::Template::Tags::System::_hdlr_config_file,
+            IndexBasename =>
+                \&MT::Template::Tags::System::_hdlr_index_basename,
+            HTTPContentType =>
+                \&MT::Template::Tags::System::_hdlr_http_content_type,
+            FileTemplate => \&MT::Template::Tags::System::_hdlr_file_template,
+            TemplateCreatedOn =>
+                \&MT::Template::Tags::System::_hdlr_template_created_on,
+            BuildTemplateID =>
+                \&MT::Template::Tags::System::_hdlr_build_template_id,
+            ErrorMessage => \&MT::Template::Tags::System::_hdlr_error_message,
 
             ## App
 
-            'App:PageActions' => \&MT::Template::Tags::App::_hdlr_app_page_actions,
-            'App:ListFilters' => \&MT::Template::Tags::App::_hdlr_app_list_filters,
-            'App:ActionBar'   => \&MT::Template::Tags::App::_hdlr_app_action_bar,
-            'App:Link'        => \&MT::Template::Tags::App::_hdlr_app_link,
+            'App:PageActions' =>
+                \&MT::Template::Tags::App::_hdlr_app_page_actions,
+            'App:ListFilters' =>
+                \&MT::Template::Tags::App::_hdlr_app_list_filters,
+            'App:ActionBar' =>
+                \&MT::Template::Tags::App::_hdlr_app_action_bar,
+            'App:Link' => \&MT::Template::Tags::App::_hdlr_app_link,
 
             ## Blog
-            BlogID             => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
-            BlogName           => '$Core::MT::Template::Tags::Blog::_hdlr_blog_name',
-            BlogDescription    => '$Core::MT::Template::Tags::Blog::_hdlr_blog_description',
-            BlogLanguage       => '$Core::MT::Template::Tags::Blog::_hdlr_blog_language',
-            BlogURL            => '$Core::MT::Template::Tags::Blog::_hdlr_blog_url',
-            BlogArchiveURL     => '$Core::MT::Template::Tags::Blog::_hdlr_blog_archive_url',
-            BlogRelativeURL    => '$Core::MT::Template::Tags::Blog::_hdlr_blog_relative_url',
-            BlogSitePath       => '$Core::MT::Template::Tags::Blog::_hdlr_blog_site_path',
-            BlogHost           => '$Core::MT::Template::Tags::Blog::_hdlr_blog_host',
-            BlogTimezone       => '$Core::MT::Template::Tags::Blog::_hdlr_blog_timezone',
-            BlogCCLicenseURL   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_url',
-            BlogCCLicenseImage => '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_image',
-            CCLicenseRDF       => '$Core::MT::Template::Tags::Blog::_hdlr_cc_license_rdf',
-            BlogFileExtension  => '$Core::MT::Template::Tags::Blog::_hdlr_blog_file_extension',
-            BlogTemplateSetID  => '$Core::MT::Template::Tags::Blog::_hdlr_blog_template_set_id',
-            BlogThemeID        => '$Core::MT::Template::Tags::Blog::_hdlr_blog_theme_id',
-
+            BlogID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
+            BlogName => '$Core::MT::Template::Tags::Blog::_hdlr_blog_name',
+            BlogDescription =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_description',
+            BlogLanguage =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_language',
+            BlogURL => '$Core::MT::Template::Tags::Blog::_hdlr_blog_url',
+            BlogArchiveURL =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_archive_url',
+            BlogRelativeURL =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_relative_url',
+            BlogSitePath =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_site_path',
+            BlogHost => '$Core::MT::Template::Tags::Blog::_hdlr_blog_host',
+            BlogTimezone =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_timezone',
+            BlogCCLicenseURL =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_url',
+            BlogCCLicenseImage =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_image',
+            CCLicenseRDF =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_cc_license_rdf',
+            BlogFileExtension =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_file_extension',
+            BlogTemplateSetID =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_template_set_id',
+            BlogThemeID =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_theme_id',
 
             ## Website
-            WebsiteID             => '$Core::MT::Template::Tags::Website::_hdlr_website_id',
-            WebsiteName           => '$Core::MT::Template::Tags::Website::_hdlr_website_name',
-            WebsiteDescription    => '$Core::MT::Template::Tags::Website::_hdlr_website_description',
-            WebsiteLanguage       => '$Core::MT::Template::Tags::Website::_hdlr_website_language',
-            WebsiteURL            => '$Core::MT::Template::Tags::Website::_hdlr_website_url',
-            WebsitePath           => '$Core::MT::Template::Tags::Website::_hdlr_website_path',
-            WebsiteTimezone       => '$Core::MT::Template::Tags::Website::_hdlr_website_timezone',
-            WebsiteCCLicenseURL   => '$Core::MT::Template::Tags::Website::_hdlr_website_cc_license_url',
-            WebsiteCCLicenseImage => '$Core::MT::Template::Tags::Website::_hdlr_website_cc_license_image',
-            WebsiteFileExtension  => '$Core::MT::Template::Tags::Website::_hdlr_website_file_extension',
-            WebsiteHost           => '$Core::MT::Template::Tags::Website::_hdlr_website_host',
-            WebsiteRelativeURL    => '$Core::MT::Template::Tags::Website::_hdlr_website_relative_url',
-            WebsiteThemeID        => '$Core::MT::Template::Tags::Website::_hdlr_website_theme_id',
+            WebsiteID =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_id',
+            WebsiteName =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_name',
+            WebsiteDescription =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_description',
+            WebsiteLanguage =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_language',
+            WebsiteURL =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_url',
+            WebsitePath =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_path',
+            WebsiteTimezone =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_timezone',
+            WebsiteCCLicenseURL =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_cc_license_url',
+            WebsiteCCLicenseImage =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_cc_license_image',
+            WebsiteFileExtension =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_file_extension',
+            WebsiteHost =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_host',
+            WebsiteRelativeURL =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_relative_url',
+            WebsiteThemeID =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_theme_id',
 
             ## Author
-            AuthorID           => '$Core::MT::Template::Tags::Author::_hdlr_author_id',
-            AuthorName         => '$Core::MT::Template::Tags::Author::_hdlr_author_name',
-            AuthorDisplayName  => '$Core::MT::Template::Tags::Author::_hdlr_author_display_name',
-            AuthorEmail        => '$Core::MT::Template::Tags::Author::_hdlr_author_email',
-            AuthorURL          => '$Core::MT::Template::Tags::Author::_hdlr_author_url',
-            AuthorAuthType     => '$Core::MT::Template::Tags::Author::_hdlr_author_auth_type',
-            AuthorAuthIconURL  => '$Core::MT::Template::Tags::Author::_hdlr_author_auth_icon_url',
-            AuthorBasename     => '$Core::MT::Template::Tags::Author::_hdlr_author_basename',
-            AuthorCommentCount => '$Core::MT::Summary::Author::_hdlr_author_comment_count',
-            AuthorEntriesCount => '$Core::MT::Summary::Author::_hdlr_author_entries_count',
+            AuthorID => '$Core::MT::Template::Tags::Author::_hdlr_author_id',
+            AuthorName =>
+                '$Core::MT::Template::Tags::Author::_hdlr_author_name',
+            AuthorDisplayName =>
+                '$Core::MT::Template::Tags::Author::_hdlr_author_display_name',
+            AuthorEmail =>
+                '$Core::MT::Template::Tags::Author::_hdlr_author_email',
+            AuthorURL =>
+                '$Core::MT::Template::Tags::Author::_hdlr_author_url',
+            AuthorAuthType =>
+                '$Core::MT::Template::Tags::Author::_hdlr_author_auth_type',
+            AuthorAuthIconURL =>
+                '$Core::MT::Template::Tags::Author::_hdlr_author_auth_icon_url',
+            AuthorBasename =>
+                '$Core::MT::Template::Tags::Author::_hdlr_author_basename',
+            AuthorCommentCount =>
+                '$Core::MT::Summary::Author::_hdlr_author_comment_count',
+            AuthorEntriesCount =>
+                '$Core::MT::Summary::Author::_hdlr_author_entries_count',
 
             ## Commenter
-            CommenterNameThunk       => '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_name_thunk',
-            CommenterUsername        => '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_username', 
-            CommenterName            => '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_name',
-            CommenterEmail           => '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_email',
-            CommenterAuthType        => '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_auth_type',
-            CommenterAuthIconURL     => '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_auth_icon_url',
-            CommenterID              => '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_id',
-            CommenterURL             => '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_url',
-            UserSessionState         => '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_state',
-            UserSessionCookieTimeout => '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_cookie_timeout',
-            UserSessionCookieName    => '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_cookie_name',
-            UserSessionCookiePath    => '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_cookie_path',
-            UserSessionCookieDomain  => '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_cookie_domain',
+            CommenterNameThunk =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_name_thunk',
+            CommenterUsername =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_username',
+            CommenterName =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_name',
+            CommenterEmail =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_email',
+            CommenterAuthType =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_auth_type',
+            CommenterAuthIconURL =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_auth_icon_url',
+            CommenterID =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_id',
+            CommenterURL =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_url',
+            UserSessionState =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_state',
+            UserSessionCookieTimeout =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_cookie_timeout',
+            UserSessionCookieName =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_cookie_name',
+            UserSessionCookiePath =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_cookie_path',
+            UserSessionCookieDomain =>
+                '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_cookie_domain',
 
             ## Archive
-            ArchiveLink      => '$Core::MT::Template::Tags::Archive::_hdlr_archive_link',
-            ArchiveTitle     => '$Core::MT::Template::Tags::Archive::_hdlr_archive_title',
-            ArchiveType      => '$Core::MT::Template::Tags::Archive::_hdlr_archive_type',
-            ArchiveTypeLabel => '$Core::MT::Template::Tags::Archive::_hdlr_archive_label',
-            ArchiveLabel     => '$Core::MT::Template::Tags::Archive::_hdlr_archive_label',
-            ArchiveCount     => '$Core::MT::Template::Tags::Archive::_hdlr_archive_count',
-            ArchiveDate      => \&build_date,
-            ArchiveDateEnd   => '$Core::MT::Template::Tags::Archive::_hdlr_archive_date_end',
-            ArchiveFile      => '$Core::MT::Template::Tags::Archive::_hdlr_archive_file',
-            IndexLink        => '$Core::MT::Template::Tags::Archive::_hdlr_index_link',
-            IndexName        => '$Core::MT::Template::Tags::Archive::_hdlr_index_name',
+            ArchiveLink =>
+                '$Core::MT::Template::Tags::Archive::_hdlr_archive_link',
+            ArchiveTitle =>
+                '$Core::MT::Template::Tags::Archive::_hdlr_archive_title',
+            ArchiveType =>
+                '$Core::MT::Template::Tags::Archive::_hdlr_archive_type',
+            ArchiveTypeLabel =>
+                '$Core::MT::Template::Tags::Archive::_hdlr_archive_label',
+            ArchiveLabel =>
+                '$Core::MT::Template::Tags::Archive::_hdlr_archive_label',
+            ArchiveCount =>
+                '$Core::MT::Template::Tags::Archive::_hdlr_archive_count',
+            ArchiveDate => \&build_date,
+            ArchiveDateEnd =>
+                '$Core::MT::Template::Tags::Archive::_hdlr_archive_date_end',
+            ArchiveFile =>
+                '$Core::MT::Template::Tags::Archive::_hdlr_archive_file',
+            IndexLink =>
+                '$Core::MT::Template::Tags::Archive::_hdlr_index_link',
+            IndexName =>
+                '$Core::MT::Template::Tags::Archive::_hdlr_index_name',
 
             ## Entry
-            EntriesCount           => '$Core::MT::Template::Tags::Entry::_hdlr_entries_count',
-            EntryID                => '$Core::MT::Template::Tags::Entry::_hdlr_entry_id',
-            EntryTitle             => '$Core::MT::Template::Tags::Entry::_hdlr_entry_title',
-            EntryStatus            => '$Core::MT::Template::Tags::Entry::_hdlr_entry_status',
-            EntryFlag              => '$Core::MT::Template::Tags::Entry::_hdlr_entry_flag',
-            EntryBody              => '$Core::MT::Template::Tags::Entry::_hdlr_entry_body',
-            EntryMore              => '$Core::MT::Template::Tags::Entry::_hdlr_entry_more',
-            EntryExcerpt           => '$Core::MT::Template::Tags::Entry::_hdlr_entry_excerpt',
-            EntryKeywords          => '$Core::MT::Template::Tags::Entry::_hdlr_entry_keywords',
-            EntryLink              => '$Core::MT::Template::Tags::Entry::_hdlr_entry_link',
-            EntryBasename          => '$Core::MT::Template::Tags::Entry::_hdlr_entry_basename',
-            EntryAtomID            => '$Core::MT::Template::Tags::Entry::_hdlr_entry_atom_id',
-            EntryPermalink         => '$Core::MT::Template::Tags::Entry::_hdlr_entry_permalink',
-            EntryClass             => '$Core::MT::Template::Tags::Entry::_hdlr_entry_class',
-            EntryClassLabel        => '$Core::MT::Template::Tags::Entry::_hdlr_entry_class_label',
-            EntryAuthor            => '$Core::MT::Template::Tags::Entry::_hdlr_entry_author',
-            EntryAuthorDisplayName => '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_display_name',
-            EntryAuthorNickname    => '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_nick',
-            EntryAuthorUsername    => '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_username',
-            EntryAuthorEmail       => '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_email',
-            EntryAuthorURL         => '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_url',
-            EntryAuthorLink        => '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_link',
-            EntryAuthorID          => '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_id',
+            EntriesCount =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entries_count',
+            EntryID => '$Core::MT::Template::Tags::Entry::_hdlr_entry_id',
+            EntryTitle =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_title',
+            EntryStatus =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_status',
+            EntryFlag => '$Core::MT::Template::Tags::Entry::_hdlr_entry_flag',
+            EntryBody => '$Core::MT::Template::Tags::Entry::_hdlr_entry_body',
+            EntryMore => '$Core::MT::Template::Tags::Entry::_hdlr_entry_more',
+            EntryExcerpt =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_excerpt',
+            EntryKeywords =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_keywords',
+            EntryLink => '$Core::MT::Template::Tags::Entry::_hdlr_entry_link',
+            EntryBasename =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_basename',
+            EntryAtomID =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_atom_id',
+            EntryPermalink =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_permalink',
+            EntryClass =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_class',
+            EntryClassLabel =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_class_label',
+            EntryAuthor =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_author',
+            EntryAuthorDisplayName =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_display_name',
+            EntryAuthorNickname =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_nick',
+            EntryAuthorUsername =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_username',
+            EntryAuthorEmail =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_email',
+            EntryAuthorURL =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_url',
+            EntryAuthorLink =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_link',
+            EntryAuthorID =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_id',
 
-            AuthorEntryCount       => '$Core::MT::Template::Tags::Entry::_hdlr_author_entry_count',
-            EntryDate              => '$Core::MT::Template::Tags::Entry::_hdlr_entry_date',
-            EntryCreatedDate       => '$Core::MT::Template::Tags::Entry::_hdlr_entry_create_date',
-            EntryModifiedDate      => '$Core::MT::Template::Tags::Entry::_hdlr_entry_mod_date',
+            AuthorEntryCount =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_author_entry_count',
+            EntryDate => '$Core::MT::Template::Tags::Entry::_hdlr_entry_date',
+            EntryCreatedDate =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_create_date',
+            EntryModifiedDate =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_mod_date',
 
-            EntryBlogID            => '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_id',
-            EntryBlogName          => '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_name',
-            EntryBlogDescription   => '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_description',
-            EntryBlogURL           => '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_url',
-            EntryEditLink          => '$Core::MT::Template::Tags::Entry::_hdlr_entry_edit_link',
-            BlogEntryCount         => '$Core::MT::Template::Tags::Entry::_hdlr_blog_entry_count',
+            EntryBlogID =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_id',
+            EntryBlogName =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_name',
+            EntryBlogDescription =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_description',
+            EntryBlogURL =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_url',
+            EntryEditLink =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_edit_link',
+            BlogEntryCount =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_blog_entry_count',
 
             ## Comment
-            CommentID                 => '$Core::MT::Template::Tags::Comment::_hdlr_comment_id',
-            CommentBlogID             => '$Core::MT::Template::Tags::Comment::_hdlr_comment_blog_id',
-            CommentEntryID            => '$Core::MT::Template::Tags::Comment::_hdlr_comment_entry_id',
-            CommentName               => '$Core::MT::Template::Tags::Comment::_hdlr_comment_author',
-            CommentIP                 => '$Core::MT::Template::Tags::Comment::_hdlr_comment_ip',
-            CommentAuthor             => '$Core::MT::Template::Tags::Comment::_hdlr_comment_author',
-            CommentAuthorLink         => '$Core::MT::Template::Tags::Comment::_hdlr_comment_author_link',
-            CommentAuthorIdentity     => '$Core::MT::Template::Tags::Comment::_hdlr_comment_author_identity',
-            CommentEmail              => '$Core::MT::Template::Tags::Comment::_hdlr_comment_email',
-            CommentLink               => '$Core::MT::Template::Tags::Comment::_hdlr_comment_link',
-            CommentURL                => '$Core::MT::Template::Tags::Comment::_hdlr_comment_url',
-            CommentBody               => '$Core::MT::Template::Tags::Comment::_hdlr_comment_body',
-            CommentOrderNumber        => '$Core::MT::Template::Tags::Comment::_hdlr_comment_order_num',
-            CommentDate               => '$Core::MT::Template::Tags::Comment::_hdlr_comment_date',
-            CommentParentID           => '$Core::MT::Template::Tags::Comment::_hdlr_comment_parent_id',
-            CommentReplyToLink        => '$Core::MT::Template::Tags::Comment::_hdlr_comment_reply_link',
-            CommentPreviewAuthor      => '$Core::MT::Template::Tags::Comment::_hdlr_comment_author',
-            CommentPreviewIP          => '$Core::MT::Template::Tags::Comment::_hdlr_comment_ip',
-            CommentPreviewAuthorLink  => '$Core::MT::Template::Tags::Comment::_hdlr_comment_author_link',
-            CommentPreviewEmail       => '$Core::MT::Template::Tags::Comment::_hdlr_comment_email',
-            CommentPreviewURL         => '$Core::MT::Template::Tags::Comment::_hdlr_comment_url',
-            CommentPreviewBody        => '$Core::MT::Template::Tags::Comment::_hdlr_comment_body',
-            CommentPreviewDate        => \&build_date,
-            CommentPreviewState       => '$Core::MT::Template::Tags::Comment::_hdlr_comment_prev_state',
-            CommentPreviewIsStatic    => '$Core::MT::Template::Tags::Comment::_hdlr_comment_prev_static',
-            CommentRepliesRecurse     => '$Core::MT::Template::Tags::Comment::_hdlr_comment_replies_recurse',
-            BlogCommentCount          => '$Core::MT::Template::Tags::Comment::_hdlr_blog_comment_count',
-            WebsiteCommentCount       => '$Core::MT::Template::Tags::Comment::_hdlr_blog_comment_count',
-            EntryCommentCount         => '$Core::MT::Template::Tags::Comment::_hdlr_entry_comments',
-            CategoryCommentCount      => '$Core::MT::Template::Tags::Comment::_hdlr_category_comment_count',
-            TypeKeyToken              => '$Core::MT::Template::Tags::Comment::_hdlr_typekey_token',
-            CommentFields             => '$Core::MT::Template::Tags::Comment::_hdlr_comment_fields',
-            RemoteSignOutLink         => '$Core::MT::Template::Tags::Comment::_hdlr_remote_sign_out_link',
-            RemoteSignInLink          => '$Core::MT::Template::Tags::Comment::_hdlr_remote_sign_in_link',
-            SignOutLink               => '$Core::MT::Template::Tags::Comment::_hdlr_sign_out_link',
-            SignInLink                => '$Core::MT::Template::Tags::Comment::_hdlr_sign_in_link',
-            SignOnURL                 => '$Core::MT::Template::Tags::Comment::_hdlr_signon_url',
+            CommentID =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_id',
+            CommentBlogID =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_blog_id',
+            CommentEntryID =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_entry_id',
+            CommentName =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author',
+            CommentIP =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_ip',
+            CommentAuthor =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author',
+            CommentAuthorLink =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author_link',
+            CommentAuthorIdentity =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author_identity',
+            CommentEmail =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_email',
+            CommentLink =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_link',
+            CommentURL =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_url',
+            CommentBody =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_body',
+            CommentOrderNumber =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_order_num',
+            CommentDate =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_date',
+            CommentParentID =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_parent_id',
+            CommentReplyToLink =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_reply_link',
+            CommentPreviewAuthor =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author',
+            CommentPreviewIP =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_ip',
+            CommentPreviewAuthorLink =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author_link',
+            CommentPreviewEmail =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_email',
+            CommentPreviewURL =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_url',
+            CommentPreviewBody =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_body',
+            CommentPreviewDate => \&build_date,
+            CommentPreviewState =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_prev_state',
+            CommentPreviewIsStatic =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_prev_static',
+            CommentRepliesRecurse =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_replies_recurse',
+            BlogCommentCount =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_blog_comment_count',
+            WebsiteCommentCount =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_blog_comment_count',
+            EntryCommentCount =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_entry_comments',
+            CategoryCommentCount =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_category_comment_count',
+            TypeKeyToken =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_typekey_token',
+            CommentFields =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_comment_fields',
+            RemoteSignOutLink =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_remote_sign_out_link',
+            RemoteSignInLink =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_remote_sign_in_link',
+            SignOutLink =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_sign_out_link',
+            SignInLink =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_sign_in_link',
+            SignOnURL =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_signon_url',
 
             ## Ping', => {
-            PingsSentURL           => '$Core::MT::Template::Tags::Ping::_hdlr_pings_sent_url',
-            PingTitle              => '$Core::MT::Template::Tags::Ping::_hdlr_ping_title',
-            PingID                 => '$Core::MT::Template::Tags::Ping::_hdlr_ping_id',
-            PingURL                => '$Core::MT::Template::Tags::Ping::_hdlr_ping_url',
-            PingExcerpt            => '$Core::MT::Template::Tags::Ping::_hdlr_ping_excerpt',
-            PingBlogName           => '$Core::MT::Template::Tags::Ping::_hdlr_ping_blog_name',
-            PingIP                 => '$Core::MT::Template::Tags::Ping::_hdlr_ping_ip',
-            PingDate               => '$Core::MT::Template::Tags::Ping::_hdlr_ping_date',
-            BlogPingCount          => '$Core::MT::Template::Tags::Ping::_hdlr_blog_ping_count',
-            WebsitePingCount       => '$Core::MT::Template::Tags::Ping::_hdlr_blog_ping_count',
-            EntryTrackbackCount    => '$Core::MT::Template::Tags::Ping::_hdlr_entry_ping_count',
-            EntryTrackbackLink     => '$Core::MT::Template::Tags::Ping::_hdlr_entry_tb_link',
-            EntryTrackbackData     => '$Core::MT::Template::Tags::Ping::_hdlr_entry_tb_data',
-            EntryTrackbackID       => '$Core::MT::Template::Tags::Ping::_hdlr_entry_tb_id',
-            CategoryTrackbackLink  => '$Core::MT::Template::Tags::Ping::_hdlr_category_tb_link',
-            CategoryTrackbackCount => '$Core::MT::Template::Tags::Ping::_hdlr_category_tb_count',
+            PingsSentURL =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_pings_sent_url',
+            PingTitle => '$Core::MT::Template::Tags::Ping::_hdlr_ping_title',
+            PingID    => '$Core::MT::Template::Tags::Ping::_hdlr_ping_id',
+            PingURL   => '$Core::MT::Template::Tags::Ping::_hdlr_ping_url',
+            PingExcerpt =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_ping_excerpt',
+            PingBlogName =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_ping_blog_name',
+            PingIP   => '$Core::MT::Template::Tags::Ping::_hdlr_ping_ip',
+            PingDate => '$Core::MT::Template::Tags::Ping::_hdlr_ping_date',
+            BlogPingCount =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_blog_ping_count',
+            WebsitePingCount =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_blog_ping_count',
+            EntryTrackbackCount =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_entry_ping_count',
+            EntryTrackbackLink =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_entry_tb_link',
+            EntryTrackbackData =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_entry_tb_data',
+            EntryTrackbackID =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_entry_tb_id',
+            CategoryTrackbackLink =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_category_tb_link',
+            CategoryTrackbackCount =>
+                '$Core::MT::Template::Tags::Ping::_hdlr_category_tb_count',
 
             ## Category
-            CategoryID          => '$Core::MT::Template::Tags::Category::_hdlr_category_id',
-            CategoryLabel       => '$Core::MT::Template::Tags::Category::_hdlr_category_label',
-            CategoryBasename    => '$Core::MT::Template::Tags::Category::_hdlr_category_basename',
-            CategoryDescription => '$Core::MT::Template::Tags::Category::_hdlr_category_desc',
-            CategoryArchiveLink => '$Core::MT::Template::Tags::Category::_hdlr_category_archive',
-            CategoryCount       => '$Core::MT::Template::Tags::Category::_hdlr_category_count',
-            SubCatsRecurse      => '$Core::MT::Template::Tags::Category::_hdlr_sub_cats_recurse',
-            SubCategoryPath     => '$Core::MT::Template::Tags::Category::_hdlr_sub_category_path',
-            BlogCategoryCount   => '$Core::MT::Template::Tags::Category::_hdlr_blog_category_count',
-            ArchiveCategory     => '$Core::MT::Template::Tags::Category::_hdlr_archive_category',
-            EntryCategory       => '$Core::MT::Template::Tags::Category::_hdlr_entry_category',
+            CategoryID =>
+                '$Core::MT::Template::Tags::Category::_hdlr_category_id',
+            CategoryLabel =>
+                '$Core::MT::Template::Tags::Category::_hdlr_category_label',
+            CategoryBasename =>
+                '$Core::MT::Template::Tags::Category::_hdlr_category_basename',
+            CategoryDescription =>
+                '$Core::MT::Template::Tags::Category::_hdlr_category_desc',
+            CategoryArchiveLink =>
+                '$Core::MT::Template::Tags::Category::_hdlr_category_archive',
+            CategoryCount =>
+                '$Core::MT::Template::Tags::Category::_hdlr_category_count',
+            SubCatsRecurse =>
+                '$Core::MT::Template::Tags::Category::_hdlr_sub_cats_recurse',
+            SubCategoryPath =>
+                '$Core::MT::Template::Tags::Category::_hdlr_sub_category_path',
+            BlogCategoryCount =>
+                '$Core::MT::Template::Tags::Category::_hdlr_blog_category_count',
+            ArchiveCategory =>
+                '$Core::MT::Template::Tags::Category::_hdlr_archive_category',
+            EntryCategory =>
+                '$Core::MT::Template::Tags::Category::_hdlr_entry_category',
 
             ## Page
-            PageID                => '$Core::MT::Template::Tags::Page::_hdlr_page_id',
-            PageTitle             => '$Core::MT::Template::Tags::Page::_hdlr_page_title',
-            PageBody              => '$Core::MT::Template::Tags::Page::_hdlr_page_body', 
-            PageMore              => '$Core::MT::Template::Tags::Page::_hdlr_page_more',
-            PageDate              => '$Core::MT::Template::Tags::Page::_hdlr_page_date',
-            PageModifiedDate      => '$Core::MT::Template::Tags::Page::_hdlr_page_modified_date',
-            PageKeywords          => '$Core::MT::Template::Tags::Page::_hdlr_page_keywords',
-            PageBasename          => '$Core::MT::Template::Tags::Page::_hdlr_page_basename',
-            PagePermalink         => '$Core::MT::Template::Tags::Page::_hdlr_page_permalink',
-            PageAuthorDisplayName => '$Core::MT::Template::Tags::Page::_hdlr_page_author_display_name',
-            PageAuthorEmail       => '$Core::MT::Template::Tags::Page::_hdlr_page_author_email',
-            PageAuthorLink        => '$Core::MT::Template::Tags::Page::_hdlr_page_author_link',
-            PageAuthorURL         => '$Core::MT::Template::Tags::Page::_hdlr_page_author_url',
-            PageExcerpt           => '$Core::MT::Template::Tags::Page::_hdlr_page_excerpt',
-            BlogPageCount         => '$Core::MT::Template::Tags::Page::_hdlr_blog_page_count',
-            WebsitePageCount      => '$Core::MT::Template::Tags::Page::_hdlr_blog_page_count',
+            PageID    => '$Core::MT::Template::Tags::Page::_hdlr_page_id',
+            PageTitle => '$Core::MT::Template::Tags::Page::_hdlr_page_title',
+            PageBody  => '$Core::MT::Template::Tags::Page::_hdlr_page_body',
+            PageMore  => '$Core::MT::Template::Tags::Page::_hdlr_page_more',
+            PageDate  => '$Core::MT::Template::Tags::Page::_hdlr_page_date',
+            PageModifiedDate =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_modified_date',
+            PageKeywords =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_keywords',
+            PageBasename =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_basename',
+            PagePermalink =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_permalink',
+            PageAuthorDisplayName =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_author_display_name',
+            PageAuthorEmail =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_author_email',
+            PageAuthorLink =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_author_link',
+            PageAuthorURL =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_author_url',
+            PageExcerpt =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_excerpt',
+            BlogPageCount =>
+                '$Core::MT::Template::Tags::Page::_hdlr_blog_page_count',
+            WebsitePageCount =>
+                '$Core::MT::Template::Tags::Page::_hdlr_blog_page_count',
 
             ## Folder
-            FolderBasename    => '$Core::MT::Template::Tags::Folder::_hdlr_folder_basename',
-            FolderCount       => '$Core::MT::Template::Tags::Folder::_hdlr_folder_count',
-            FolderDescription => '$Core::MT::Template::Tags::Folder::_hdlr_folder_description',
-            FolderID          => '$Core::MT::Template::Tags::Folder::_hdlr_folder_id',
-            FolderLabel       => '$Core::MT::Template::Tags::Folder::_hdlr_folder_label',
-            FolderPath        => '$Core::MT::Template::Tags::Folder::_hdlr_folder_path',
-            SubFolderRecurse  => '$Core::MT::Template::Tags::Folder::_hdlr_sub_folder_recurse',
+            FolderBasename =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_folder_basename',
+            FolderCount =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_folder_count',
+            FolderDescription =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_folder_description',
+            FolderID => '$Core::MT::Template::Tags::Folder::_hdlr_folder_id',
+            FolderLabel =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_folder_label',
+            FolderPath =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_folder_path',
+            SubFolderRecurse =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_sub_folder_recurse',
 
             ## Asset
-            AssetID            => '$Core::MT::Template::Tags::Asset::_hdlr_asset_id',
-            AssetFileName      => '$Core::MT::Template::Tags::Asset::_hdlr_asset_file_name',
-            AssetLabel         => '$Core::MT::Template::Tags::Asset::_hdlr_asset_label',
-            AssetURL           => '$Core::MT::Template::Tags::Asset::_hdlr_asset_url',
-            AssetType          => '$Core::MT::Template::Tags::Asset::_hdlr_asset_type',
-            AssetMimeType      => '$Core::MT::Template::Tags::Asset::_hdlr_asset_mime_type',
-            AssetFilePath      => '$Core::MT::Template::Tags::Asset::_hdlr_asset_file_path',
-            AssetDateAdded     => '$Core::MT::Template::Tags::Asset::_hdlr_asset_date_added',
-            AssetAddedBy       => '$Core::MT::Template::Tags::Asset::_hdlr_asset_added_by',
-            AssetProperty      => '$Core::MT::Template::Tags::Asset::_hdlr_asset_property',
-            AssetFileExt       => '$Core::MT::Template::Tags::Asset::_hdlr_asset_file_ext',
-            AssetThumbnailURL  => '$Core::MT::Template::Tags::Asset::_hdlr_asset_thumbnail_url',
-            AssetLink          => '$Core::MT::Template::Tags::Asset::_hdlr_asset_link',
-            AssetThumbnailLink => '$Core::MT::Template::Tags::Asset::_hdlr_asset_thumbnail_link',
-            AssetDescription   => '$Core::MT::Template::Tags::Asset::_hdlr_asset_description',
-            AssetCount         => '$Core::MT::Template::Tags::Asset::_hdlr_asset_count',
+            AssetID => '$Core::MT::Template::Tags::Asset::_hdlr_asset_id',
+            AssetFileName =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_file_name',
+            AssetLabel =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_label',
+            AssetURL  => '$Core::MT::Template::Tags::Asset::_hdlr_asset_url',
+            AssetType => '$Core::MT::Template::Tags::Asset::_hdlr_asset_type',
+            AssetMimeType =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_mime_type',
+            AssetFilePath =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_file_path',
+            AssetDateAdded =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_date_added',
+            AssetAddedBy =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_added_by',
+            AssetProperty =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_property',
+            AssetFileExt =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_file_ext',
+            AssetThumbnailURL =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_thumbnail_url',
+            AssetLink => '$Core::MT::Template::Tags::Asset::_hdlr_asset_link',
+            AssetThumbnailLink =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_thumbnail_link',
+            AssetDescription =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_description',
+            AssetCount =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_count',
 
             ## Userpic
-            AuthorUserpic         => '$Core::MT::Template::Tags::Userpic::_hdlr_author_userpic',
-            AuthorUserpicURL      => '$Core::MT::Template::Tags::Userpic::_hdlr_author_userpic_url',
-            EntryAuthorUserpic    => '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic',
-            EntryAuthorUserpicURL => '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic_url',
-            CommenterUserpic      => '$Core::MT::Template::Tags::Userpic::_hdlr_commenter_userpic',
-            CommenterUserpicURL   => '$Core::MT::Template::Tags::Userpic::_hdlr_commenter_userpic_url',
+            AuthorUserpic =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_author_userpic',
+            AuthorUserpicURL =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_author_userpic_url',
+            EntryAuthorUserpic =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic',
+            EntryAuthorUserpicURL =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic_url',
+            CommenterUserpic =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_commenter_userpic',
+            CommenterUserpicURL =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_commenter_userpic_url',
 
             ## Tag
-            TagName       => '$Core::MT::Template::Tags::Tag::_hdlr_tag_name',
-            TagLabel      => '$Core::MT::Template::Tags::Tag::_hdlr_tag_name',
-            TagID         => '$Core::MT::Template::Tags::Tag::_hdlr_tag_id',
-            TagCount      => '$Core::MT::Template::Tags::Tag::_hdlr_tag_count',
-            TagRank       => '$Core::MT::Template::Tags::Tag::_hdlr_tag_rank',
-            TagSearchLink => '$Core::MT::Template::Tags::Tag::_hdlr_tag_search_link',
+            TagName  => '$Core::MT::Template::Tags::Tag::_hdlr_tag_name',
+            TagLabel => '$Core::MT::Template::Tags::Tag::_hdlr_tag_name',
+            TagID    => '$Core::MT::Template::Tags::Tag::_hdlr_tag_id',
+            TagCount => '$Core::MT::Template::Tags::Tag::_hdlr_tag_count',
+            TagRank  => '$Core::MT::Template::Tags::Tag::_hdlr_tag_rank',
+            TagSearchLink =>
+                '$Core::MT::Template::Tags::Tag::_hdlr_tag_search_link',
 
             ## Calendar
-            CalendarDay        => '$Core::MT::Template::Tags::Calendar::_hdlr_calendar_day',
-            CalendarCellNumber => '$Core::MT::Template::Tags::Calendar::_hdlr_calendar_cell_num',
-            CalendarDate       => \&build_date,
+            CalendarDay =>
+                '$Core::MT::Template::Tags::Calendar::_hdlr_calendar_day',
+            CalendarCellNumber =>
+                '$Core::MT::Template::Tags::Calendar::_hdlr_calendar_cell_num',
+            CalendarDate => \&build_date,
 
             ## Score
             # Rating related handlers
-            EntryScore   => '$Core::MT::Template::Tags::Score::_hdlr_entry_score',
-            CommentScore => '$Core::MT::Template::Tags::Score::_hdlr_comment_score',
-            PingScore    => '$Core::MT::Template::Tags::Score::_hdlr_ping_score',
-            AssetScore   => '$Core::MT::Template::Tags::Score::_hdlr_asset_score',
-            AuthorScore  => '$Core::MT::Template::Tags::Score::_hdlr_author_score',
+            EntryScore =>
+                '$Core::MT::Template::Tags::Score::_hdlr_entry_score',
+            CommentScore =>
+                '$Core::MT::Template::Tags::Score::_hdlr_comment_score',
+            PingScore => '$Core::MT::Template::Tags::Score::_hdlr_ping_score',
+            AssetScore =>
+                '$Core::MT::Template::Tags::Score::_hdlr_asset_score',
+            AuthorScore =>
+                '$Core::MT::Template::Tags::Score::_hdlr_author_score',
 
-            EntryScoreHigh   => '$Core::MT::Template::Tags::Score::_hdlr_entry_score_high',
-            CommentScoreHigh => '$Core::MT::Template::Tags::Score::_hdlr_comment_score_high',
-            PingScoreHigh    => '$Core::MT::Template::Tags::Score::_hdlr_ping_score_high',
-            AssetScoreHigh   => '$Core::MT::Template::Tags::Score::_hdlr_asset_score_high',
-            AuthorScoreHigh  => '$Core::MT::Template::Tags::Score::_hdlr_author_score_high',
+            EntryScoreHigh =>
+                '$Core::MT::Template::Tags::Score::_hdlr_entry_score_high',
+            CommentScoreHigh =>
+                '$Core::MT::Template::Tags::Score::_hdlr_comment_score_high',
+            PingScoreHigh =>
+                '$Core::MT::Template::Tags::Score::_hdlr_ping_score_high',
+            AssetScoreHigh =>
+                '$Core::MT::Template::Tags::Score::_hdlr_asset_score_high',
+            AuthorScoreHigh =>
+                '$Core::MT::Template::Tags::Score::_hdlr_author_score_high',
 
-            EntryScoreLow   => '$Core::MT::Template::Tags::Score::_hdlr_entry_score_low',
-            CommentScoreLow => '$Core::MT::Template::Tags::Score::_hdlr_comment_score_low',
-            PingScoreLow    => '$Core::MT::Template::Tags::Score::_hdlr_ping_score_low',
-            AssetScoreLow   => '$Core::MT::Template::Tags::Score::_hdlr_asset_score_low',
-            AuthorScoreLow  => '$Core::MT::Template::Tags::Score::_hdlr_author_score_low',
+            EntryScoreLow =>
+                '$Core::MT::Template::Tags::Score::_hdlr_entry_score_low',
+            CommentScoreLow =>
+                '$Core::MT::Template::Tags::Score::_hdlr_comment_score_low',
+            PingScoreLow =>
+                '$Core::MT::Template::Tags::Score::_hdlr_ping_score_low',
+            AssetScoreLow =>
+                '$Core::MT::Template::Tags::Score::_hdlr_asset_score_low',
+            AuthorScoreLow =>
+                '$Core::MT::Template::Tags::Score::_hdlr_author_score_low',
 
-            EntryScoreAvg   => '$Core::MT::Template::Tags::Score::_hdlr_entry_score_avg',
-            CommentScoreAvg => '$Core::MT::Template::Tags::Score::_hdlr_comment_score_avg',
-            PingScoreAvg    => '$Core::MT::Template::Tags::Score::_hdlr_ping_score_avg',
-            AssetScoreAvg   => '$Core::MT::Template::Tags::Score::_hdlr_asset_score_avg',
-            AuthorScoreAvg  => '$Core::MT::Template::Tags::Score::_hdlr_author_score_avg',
+            EntryScoreAvg =>
+                '$Core::MT::Template::Tags::Score::_hdlr_entry_score_avg',
+            CommentScoreAvg =>
+                '$Core::MT::Template::Tags::Score::_hdlr_comment_score_avg',
+            PingScoreAvg =>
+                '$Core::MT::Template::Tags::Score::_hdlr_ping_score_avg',
+            AssetScoreAvg =>
+                '$Core::MT::Template::Tags::Score::_hdlr_asset_score_avg',
+            AuthorScoreAvg =>
+                '$Core::MT::Template::Tags::Score::_hdlr_author_score_avg',
 
-            EntryScoreCount   => '$Core::MT::Template::Tags::Score::_hdlr_entry_score_count',
-            CommentScoreCount => '$Core::MT::Template::Tags::Score::_hdlr_comment_score_count',
-            PingScoreCount    => '$Core::MT::Template::Tags::Score::_hdlr_ping_score_count',
-            AssetScoreCount   => '$Core::MT::Template::Tags::Score::_hdlr_asset_score_count',
-            AuthorScoreCount  => '$Core::MT::Template::Tags::Score::_hdlr_author_score_count',
+            EntryScoreCount =>
+                '$Core::MT::Template::Tags::Score::_hdlr_entry_score_count',
+            CommentScoreCount =>
+                '$Core::MT::Template::Tags::Score::_hdlr_comment_score_count',
+            PingScoreCount =>
+                '$Core::MT::Template::Tags::Score::_hdlr_ping_score_count',
+            AssetScoreCount =>
+                '$Core::MT::Template::Tags::Score::_hdlr_asset_score_count',
+            AuthorScoreCount =>
+                '$Core::MT::Template::Tags::Score::_hdlr_author_score_count',
 
-            EntryRank   => '$Core::MT::Template::Tags::Score::_hdlr_entry_rank',
-            CommentRank => '$Core::MT::Template::Tags::Score::_hdlr_comment_rank',
-            PingRank    => '$Core::MT::Template::Tags::Score::_hdlr_ping_rank',
-            AssetRank   => '$Core::MT::Template::Tags::Score::_hdlr_asset_rank',
-            AuthorRank  => '$Core::MT::Template::Tags::Score::_hdlr_author_rank',
+            EntryRank => '$Core::MT::Template::Tags::Score::_hdlr_entry_rank',
+            CommentRank =>
+                '$Core::MT::Template::Tags::Score::_hdlr_comment_rank',
+            PingRank  => '$Core::MT::Template::Tags::Score::_hdlr_ping_rank',
+            AssetRank => '$Core::MT::Template::Tags::Score::_hdlr_asset_rank',
+            AuthorRank =>
+                '$Core::MT::Template::Tags::Score::_hdlr_author_rank',
 
             ## Pager
-            PagerLink    => '$Core::MT::Template::Tags::Pager::_hdlr_pager_link',
-            NextLink     => '$Core::MT::Template::Tags::Pager::_hdlr_next_link',
-            PreviousLink => '$Core::MT::Template::Tags::Pager::_hdlr_previous_link',
-            CurrentPage  => '$Core::MT::Template::Tags::Pager::_hdlr_current_page',
-            TotalPages   => '$Core::MT::Template::Tags::Pager::_hdlr_total_pages',
+            PagerLink => '$Core::MT::Template::Tags::Pager::_hdlr_pager_link',
+            NextLink  => '$Core::MT::Template::Tags::Pager::_hdlr_next_link',
+            PreviousLink =>
+                '$Core::MT::Template::Tags::Pager::_hdlr_previous_link',
+            CurrentPage =>
+                '$Core::MT::Template::Tags::Pager::_hdlr_current_page',
+            TotalPages =>
+                '$Core::MT::Template::Tags::Pager::_hdlr_total_pages',
 
             ## Search
             # stubs for mt-search tags used in template includes
-            SearchString       => sub { '' },
-            SearchResultCount  => sub { 0 }, 
-            MaxResults         => sub { '' },
-            SearchMaxResults   => '$Core::MT::Template::Tags::Search::_hdlr_search_max_results',
-            SearchIncludeBlogs => sub { '' },
-            SearchTemplateID   => sub { 0 },
+            SearchString      => sub {''},
+            SearchResultCount => sub {0},
+            MaxResults        => sub {''},
+            SearchMaxResults =>
+                '$Core::MT::Template::Tags::Search::_hdlr_search_max_results',
+            SearchIncludeBlogs => sub {''},
+            SearchTemplateID   => sub {0},
 
             ## Misc
-            FeedbackScore => '$Core::MT::Template::Tags::Misc::_hdlr_feedback_score',
-            ImageURL      => '$Core::MT::Template::Tags::Misc::_hdlr_image_url',
-            ImageWidth    => '$Core::MT::Template::Tags::Misc::_hdlr_image_width',
-            ImageHeight   => '$Core::MT::Template::Tags::Misc::_hdlr_image_height',
-            WidgetManager => '$Core::MT::Template::Tags::Misc::_hdlr_widget_manager',
-            WidgetSet     => '$Core::MT::Template::Tags::Misc::_hdlr_widget_manager',
-            CaptchaFields => '$Core::MT::Template::Tags::Misc::_hdlr_captcha_fields',
+            FeedbackScore =>
+                '$Core::MT::Template::Tags::Misc::_hdlr_feedback_score',
+            ImageURL => '$Core::MT::Template::Tags::Misc::_hdlr_image_url',
+            ImageWidth =>
+                '$Core::MT::Template::Tags::Misc::_hdlr_image_width',
+            ImageHeight =>
+                '$Core::MT::Template::Tags::Misc::_hdlr_image_height',
+            WidgetManager =>
+                '$Core::MT::Template::Tags::Misc::_hdlr_widget_manager',
+            WidgetSet =>
+                '$Core::MT::Template::Tags::Misc::_hdlr_widget_manager',
+            CaptchaFields =>
+                '$Core::MT::Template::Tags::Misc::_hdlr_captcha_fields',
         },
         modifier => {
-            'numify'           => '$Core::MT::Template::Tags::Filters::_fltr_numify',
-            'mteval'           => '$Core::MT::Template::Tags::Filters::_fltr_mteval',
-            'filters'          => '$Core::MT::Template::Tags::Filters::_fltr_filters',
-            'trim_to'          => '$Core::MT::Template::Tags::Filters::_fltr_trim_to',
-            'trim'             => '$Core::MT::Template::Tags::Filters::_fltr_trim',
-            'ltrim'            => '$Core::MT::Template::Tags::Filters::_fltr_ltrim',
-            'rtrim'            => '$Core::MT::Template::Tags::Filters::_fltr_rtrim',
-            'decode_html'      => '$Core::MT::Template::Tags::Filters::_fltr_decode_html',
-            'decode_xml'       => '$Core::MT::Template::Tags::Filters::_fltr_decode_xml',
-            'remove_html'      => '$Core::MT::Template::Tags::Filters::_fltr_remove_html',
-            'dirify'           => '$Core::MT::Template::Tags::Filters::_fltr_dirify',
-            'sanitize'         => '$Core::MT::Template::Tags::Filters::_fltr_sanitize',
-            'encode_sha1'      => '$Core::MT::Template::Tags::Filters::_fltr_sha1',
-            'encode_html'      => '$Core::MT::Template::Tags::Filters::_fltr_encode_html',
-            'encode_xml'       => '$Core::MT::Template::Tags::Filters::_fltr_encode_xml',
-            'encode_js'        => '$Core::MT::Template::Tags::Filters::_fltr_encode_js',
-            'encode_php'       => '$Core::MT::Template::Tags::Filters::_fltr_encode_php',
-            'encode_url'       => '$Core::MT::Template::Tags::Filters::_fltr_encode_url',
-            'upper_case'       => '$Core::MT::Template::Tags::Filters::_fltr_upper_case',
-            'lower_case'       => '$Core::MT::Template::Tags::Filters::_fltr_lower_case',
-            'strip_linefeeds'  => '$Core::MT::Template::Tags::Filters::_fltr_strip_linefeeds',
-            'space_pad'        => '$Core::MT::Template::Tags::Filters::_fltr_space_pad',
-            'zero_pad'         => '$Core::MT::Template::Tags::Filters::_fltr_zero_pad',
-            'sprintf'          => '$Core::MT::Template::Tags::Filters::_fltr_sprintf',
-            'regex_replace'    => '$Core::MT::Template::Tags::Filters::_fltr_regex_replace',
-            'capitalize'       => '$Core::MT::Template::Tags::Filters::_fltr_capitalize',
-            'count_characters' => '$Core::MT::Template::Tags::Filters::_fltr_count_characters',
-            'cat'              => '$Core::MT::Template::Tags::Filters::_fltr_cat',
-            'count_paragraphs' => '$Core::MT::Template::Tags::Filters::_fltr_count_paragraphs',
-            'count_words'      => '$Core::MT::Template::Tags::Filters::_fltr_count_words',
-            'escape'           => '$Core::MT::Template::Tags::Filters::_fltr_escape',
-            'indent'           => '$Core::MT::Template::Tags::Filters::_fltr_indent',
-            'nl2br'            => '$Core::MT::Template::Tags::Filters::_fltr_nl2br',
-            'replace'          => '$Core::MT::Template::Tags::Filters::_fltr_replace',
-            'spacify'          => '$Core::MT::Template::Tags::Filters::_fltr_spacify',
-            'string_format'    => '$Core::MT::Template::Tags::Filters::_fltr_sprintf',
-            'strip'            => '$Core::MT::Template::Tags::Filters::_fltr_strip',
-            'strip_tags'       => '$Core::MT::Template::Tags::Filters::_fltr_strip_tags',
-            '_default'         => '$Core::MT::Template::Tags::Filters::_fltr_default',
-            'nofollowfy'       => '$Core::MT::Template::Tags::Filters::_fltr_nofollowfy',
-            'wrap_text'        => '$Core::MT::Template::Tags::Filters::_fltr_wrap_text',
-            'setvar'           => '$Core::MT::Template::Tags::Filters::_fltr_setvar',
+            'numify'  => '$Core::MT::Template::Tags::Filters::_fltr_numify',
+            'mteval'  => '$Core::MT::Template::Tags::Filters::_fltr_mteval',
+            'filters' => '$Core::MT::Template::Tags::Filters::_fltr_filters',
+            'trim_to' => '$Core::MT::Template::Tags::Filters::_fltr_trim_to',
+            'trim'    => '$Core::MT::Template::Tags::Filters::_fltr_trim',
+            'ltrim'   => '$Core::MT::Template::Tags::Filters::_fltr_ltrim',
+            'rtrim'   => '$Core::MT::Template::Tags::Filters::_fltr_rtrim',
+            'decode_html' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_decode_html',
+            'decode_xml' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_decode_xml',
+            'remove_html' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_remove_html',
+            'dirify' => '$Core::MT::Template::Tags::Filters::_fltr_dirify',
+            'sanitize' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_sanitize',
+            'encode_sha1' => '$Core::MT::Template::Tags::Filters::_fltr_sha1',
+            'encode_html' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_encode_html',
+            'encode_xml' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_encode_xml',
+            'encode_js' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_encode_js',
+            'encode_php' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_encode_php',
+            'encode_url' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_encode_url',
+            'upper_case' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_upper_case',
+            'lower_case' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_lower_case',
+            'strip_linefeeds' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_strip_linefeeds',
+            'space_pad' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_space_pad',
+            'zero_pad' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_zero_pad',
+            'sprintf' => '$Core::MT::Template::Tags::Filters::_fltr_sprintf',
+            'regex_replace' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_regex_replace',
+            'capitalize' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_capitalize',
+            'count_characters' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_count_characters',
+            'cat' => '$Core::MT::Template::Tags::Filters::_fltr_cat',
+            'count_paragraphs' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_count_paragraphs',
+            'count_words' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_count_words',
+            'escape'  => '$Core::MT::Template::Tags::Filters::_fltr_escape',
+            'indent'  => '$Core::MT::Template::Tags::Filters::_fltr_indent',
+            'nl2br'   => '$Core::MT::Template::Tags::Filters::_fltr_nl2br',
+            'replace' => '$Core::MT::Template::Tags::Filters::_fltr_replace',
+            'spacify' => '$Core::MT::Template::Tags::Filters::_fltr_spacify',
+            'string_format' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_sprintf',
+            'strip' => '$Core::MT::Template::Tags::Filters::_fltr_strip',
+            'strip_tags' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_strip_tags',
+            '_default' => '$Core::MT::Template::Tags::Filters::_fltr_default',
+            'nofollowfy' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_nofollowfy',
+            'wrap_text' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_wrap_text',
+            'setvar' => '$Core::MT::Template::Tags::Filters::_fltr_setvar',
         },
     };
     return $tags;
@@ -642,23 +998,24 @@ sub core_tags {
 
 ## used in both Comment.pm and Ping.pm
 sub sanitize_on {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     ## backward compatibility. in MT4, this didn't take $ctx.
-    if (!UNIVERSAL::isa( $ctx, 'MT::Template::Context' ) ) {
+    if ( !UNIVERSAL::isa( $ctx, 'MT::Template::Context' ) ) {
         $args = $ctx;
     }
     unless ( exists $args->{'sanitize'} ) {
+
         # Important to come before other manipulation attributes
         # like encode_xml
-        unshift @{$args->{'@'} ||= []}, ['sanitize' => 1];
+        unshift @{ $args->{'@'} ||= [] }, [ 'sanitize' => 1 ];
         $args->{'sanitize'} = 1;
     }
 }
 
 ## used in Ping.pm
 sub nofollowfy_on {
-    my ($ctx, $args) = @_;
-    unless ( exists$args->{'nofollowfy'} ) {
+    my ( $ctx, $args ) = @_;
+    unless ( exists $args->{'nofollowfy'} ) {
         $args->{'nofollowfy'} = 1;
     }
 }
@@ -666,118 +1023,146 @@ sub nofollowfy_on {
 ## used in both Category.pm and Entry.pm.
 sub cat_path_to_category {
     ## for backward compatibility.
-    shift if UNIVERSAL::isa($_[0], 'MT::Template::Context');
-    my ($path, $blog_id, $class_type) = @_;
+    shift if UNIVERSAL::isa( $_[0], 'MT::Template::Context' );
+    my ( $path, $blog_id, $class_type ) = @_;
 
     my $class = MT->model($class_type);
-    
-    # The argument version always takes precedence
-    # followed by the current category (i.e. MTCategories/MTSubCategories style)
-    # then the current category for the archive
-    # then undef
-    my @cat_path = $path =~ m@(\[[^]]+?\]|[^]/]+)@g;   # split on slashes, fields quoted by []
-    @cat_path = map { $_ =~ s/^\[(.*)\]$/$1/; $_ } @cat_path;       # remove any []
+
+  # The argument version always takes precedence
+  # followed by the current category (i.e. MTCategories/MTSubCategories style)
+  # then the current category for the archive
+  # then undef
+    my @cat_path = $path
+        =~ m@(\[[^]]+?\]|[^]/]+)@g;    # split on slashes, fields quoted by []
+    @cat_path = map { $_ =~ s/^\[(.*)\]$/$1/; $_ } @cat_path;  # remove any []
     my $last_cat_id = 0;
     my $cat;
-    my (%blog_terms, %blog_args);
-    if (ref $blog_id eq 'ARRAY') {
-        %blog_terms = %{$blog_id->[0]};
-        %blog_args = %{$blog_id->[1]};
-    } elsif ($blog_id) {
+    my ( %blog_terms, %blog_args );
+    if ( ref $blog_id eq 'ARRAY' ) {
+        %blog_terms = %{ $blog_id->[0] };
+        %blog_args  = %{ $blog_id->[1] };
+    }
+    elsif ($blog_id) {
         $blog_terms{blog_id} = $blog_id;
     }
 
-    my $top = shift @cat_path;
-    my @cats = $class->load({ label => $top,
-                                    parent => 0,
-                                    %blog_terms }, \%blog_args);
+    my $top  = shift @cat_path;
+    my @cats = $class->load(
+        {   label  => $top,
+            parent => 0,
+            %blog_terms
+        },
+        \%blog_args
+    );
     if (@cats) {
         for my $label (@cat_path) {
             my @parents = map { $_->id } @cats;
-            @cats = $class->load({ label => $label,
-                                         parent => \@parents,
-                                         %blog_terms }, \%blog_args)
-                    or last;
+            @cats = $class->load(
+                {   label  => $label,
+                    parent => \@parents,
+                    %blog_terms
+                },
+                \%blog_args
+            ) or last;
         }
     }
-    if (!@cats && $path) {
-        @cats = ($class->load({
-            label => $path,
-            %blog_terms,
-        }, \%blog_args));
+    if ( !@cats && $path ) {
+        @cats = (
+            $class->load(
+                {   label => $path,
+                    %blog_terms,
+                },
+                \%blog_args
+            )
+        );
     }
     @cats;
 }
 
 ## for backward compatibility
-sub _hdlr_pass_tokens { shift->slurp(@_) }
+sub _hdlr_pass_tokens      { shift->slurp(@_) }
 sub _hdlr_pass_tokens_else { shift->else(@_) }
 
 sub build_date {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $ts = $args->{ts} || $ctx->{current_timestamp};
     my $tag = $ctx->stash('tag');
-    return $ctx->error(MT->translate(
-        "You used an [_1] tag without a date context set up.", "MT$tag" ))
-        unless defined $ts;
+    return $ctx->error(
+        MT->translate(
+            "You used an [_1] tag without a date context set up.", "MT$tag"
+        )
+    ) unless defined $ts;
     my $blog = $ctx->stash('blog');
-    unless (ref $blog) {
+    unless ( ref $blog ) {
         my $blog_id = $blog || $args->{offset_blog_id};
         if ($blog_id) {
             $blog = MT->model('blog')->load($blog_id);
-            return $ctx->error( MT->translate( 'Can\'t load blog #[_1].', $blog_id ) )
-              unless $blog;
+            return $ctx->error(
+                MT->translate( 'Can\'t load blog #[_1].', $blog_id ) )
+                unless $blog;
         }
     }
-    my $lang = $args->{language} || $ctx->var('local_lang_id')
-        || ($blog && $blog->language);
-    if ($args->{utc}) {
-        my($y, $mo, $d, $h, $m, $s) = $ts =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
+    my $lang 
+        = $args->{language}
+        || $ctx->var('local_lang_id')
+        || ( $blog && $blog->language );
+    if ( $args->{utc} ) {
+        my ( $y, $mo, $d, $h, $m, $s )
+            = $ts
+            =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
         $mo--;
-        my $server_offset = ($blog && $blog->server_offset) || MT->config->TimeOffset;
-        if ((localtime (timelocal ($s, $m, $h, $d, $mo, $y )))[8]) {
+        my $server_offset = ( $blog && $blog->server_offset )
+            || MT->config->TimeOffset;
+        if ( ( localtime( timelocal( $s, $m, $h, $d, $mo, $y ) ) )[8] ) {
             $server_offset += 1;
         }
-        my $four_digit_offset = sprintf('%.02d%.02d', int($server_offset),
-                                        60 * abs($server_offset
-                                                 - int($server_offset)));
+        my $four_digit_offset = sprintf( '%.02d%.02d',
+            int($server_offset),
+            60 * abs( $server_offset - int($server_offset) ) );
         require MT::DateTime;
         my $tz_secs = MT::DateTime->tz_offset_as_seconds($four_digit_offset);
-        my $ts_utc = Time::Local::timegm_nocheck($s, $m, $h, $d, $mo, $y);
+        my $ts_utc = Time::Local::timegm_nocheck( $s, $m, $h, $d, $mo, $y );
         $ts_utc -= $tz_secs;
-        ($s, $m, $h, $d, $mo, $y) = gmtime( $ts_utc );
-        $y += 1900; $mo++;
-        $ts = sprintf("%04d%02d%02d%02d%02d%02d", $y, $mo, $d, $h, $m, $s);
+        ( $s, $m, $h, $d, $mo, $y ) = gmtime($ts_utc);
+        $y += 1900;
+        $mo++;
+        $ts = sprintf( "%04d%02d%02d%02d%02d%02d", $y, $mo, $d, $h, $m, $s );
     }
-    if (my $format = lc ($args->{format_name} || '')) {
+    if ( my $format = lc( $args->{format_name} || '' ) ) {
         my $tz = 'Z';
-        unless ($args->{utc}) {
-            my $so = ($blog && $blog->server_offset) || MT->config->TimeOffset;
-            my $partial_hour_offset = 60 * abs($so - int($so));
-            if ($format eq 'rfc822') {
-                $tz = sprintf("%s%02d%02d", $so < 0 ? '-' : '+',
-                    abs($so), $partial_hour_offset);
+        unless ( $args->{utc} ) {
+            my $so = ( $blog && $blog->server_offset )
+                || MT->config->TimeOffset;
+            my $partial_hour_offset = 60 * abs( $so - int($so) );
+            if ( $format eq 'rfc822' ) {
+                $tz = sprintf( "%s%02d%02d",
+                    $so < 0 ? '-' : '+',
+                    abs($so), $partial_hour_offset );
             }
-            elsif ($format eq 'iso8601') {
-                $tz = sprintf("%s%02d:%02d", $so < 0 ? '-' : '+',
-                    abs($so), $partial_hour_offset);
+            elsif ( $format eq 'iso8601' ) {
+                $tz = sprintf( "%s%02d:%02d",
+                    $so < 0 ? '-' : '+',
+                    abs($so), $partial_hour_offset );
             }
         }
-        if ($format eq 'rfc822') {
+        if ( $format eq 'rfc822' ) {
             ## RFC-822 dates must be in English.
             $args->{'format'} = '%a, %d %b %Y %H:%M:%S ' . $tz;
             $lang = 'en';
         }
-        elsif ($format eq 'iso8601') {
+        elsif ( $format eq 'iso8601' ) {
             $args->{format} = '%Y-%m-%dT%H:%M:%S' . $tz;
         }
     }
-    if (my $r = $args->{relative}) {
-        if ($r eq 'js') {
+    if ( my $r = $args->{relative} ) {
+        if ( $r eq 'js' ) {
+
             # output javascript here to render relative date
-            my($y, $mo, $d, $h, $m, $s) = $ts =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
+            my ( $y, $mo, $d, $h, $m, $s )
+                = $ts
+                =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
             $mo--;
-            my $fds = format_ts($args->{'format'}, $ts, $blog, $lang);
+            my $fds = format_ts( $args->{'format'}, $ts, $blog, $lang );
             my $js = <<EOT;
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -786,22 +1171,24 @@ document.write(mtRelativeDate(new Date($y,$mo,$d,$h,$m,$s), '$fds'));
 </script><noscript>$fds</noscript>
 EOT
             return $js;
-        } else {
+        }
+        else {
             my $old_lang = MT->current_language;
-            MT->set_language($lang) if $lang && ($lang ne $old_lang);
-            my $date = relative_date($ts, time, $blog, $args->{format}, $r);
-            MT->set_language($old_lang) if $lang && ($lang ne $old_lang);
+            MT->set_language($lang) if $lang && ( $lang ne $old_lang );
+            my $date = relative_date( $ts, time, $blog, $args->{format}, $r );
+            MT->set_language($old_lang) if $lang && ( $lang ne $old_lang );
             if ($date) {
                 return $date;
-            } else {
-                if (!$args->{format}) {
+            }
+            else {
+                if ( !$args->{format} ) {
                     return '';
                 }
             }
         }
     }
     my $mail_flag = $args->{mail} || 0;
-    return format_ts($args->{'format'}, $ts, $blog, $lang, $mail_flag);
+    return format_ts( $args->{'format'}, $ts, $blog, $lang, $mail_flag );
 }
 
 *_hdlr_date = *build_date;
@@ -809,9 +1196,10 @@ EOT
 sub cgi_path {
     my ($ctx) = @_;
     my $path = $ctx->{config}->CGIPath;
-    if ($path =~ m!^/!) {
+    if ( $path =~ m!^/! ) {
+
         # relative path, prepend blog domain
-        if (my $blog = $ctx->stash('blog')) {
+        if ( my $blog = $ctx->stash('blog') ) {
             my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
             $path = $blog_domain . $path;
         }
@@ -834,12 +1222,16 @@ package MT::Template::Tags::Core;
 use strict;
 
 sub _math_operation {
-    my ($ctx, $op, $lvalue, $rvalue) = @_;
+    my ( $ctx, $op, $lvalue, $rvalue ) = @_;
     return $lvalue
         unless ( $lvalue =~ m/^\-?[\d\.]+$/ )
-            && ( ( defined($rvalue) && ( $rvalue =~ m/^\-?[\d\.]+$/ ) )
-              || ( ( $op eq 'inc' ) || ( $op eq 'dec' ) || ( $op eq '++' ) || ( $op eq '--' ) )
-            );
+        && (
+        ( defined($rvalue) && ( $rvalue =~ m/^\-?[\d\.]+$/ ) )
+        || (   ( $op eq 'inc' )
+            || ( $op eq 'dec' )
+            || ( $op eq '++' )
+            || ( $op eq '--' ) )
+        );
     if ( ( '+' eq $op ) || ( 'add' eq $op ) ) {
         return $lvalue + $rvalue;
     }
@@ -861,6 +1253,7 @@ sub _math_operation {
         return $lvalue / $rvalue;
     }
     elsif ( ( '%' eq $op ) || ( 'mod' eq $op ) ) {
+
         # Perl % is integer only
         $lvalue = int($lvalue);
         $rvalue = int($rvalue);
@@ -1085,138 +1478,152 @@ Test a variable using Perl:
 =cut
 
 sub _hdlr_if {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $var = $args->{name} || $args->{var};
     my $value;
-    if (defined $var) {
+    if ( defined $var ) {
+
         # pick off any {...} or [...] from the name.
-        my ($index, $key);
-        if ($var =~ m/^(.+)([\[\{])(.+)[\]\}]$/) {
+        my ( $index, $key );
+        if ( $var =~ m/^(.+)([\[\{])(.+)[\]\}]$/ ) {
             $var = $1;
-            my $br = $2;
+            my $br  = $2;
             my $ref = $3;
-            if ($ref =~ m/^\$(.+)/) {
+            if ( $ref =~ m/^\$(.+)/ ) {
                 $ref = $ctx->var($1);
             }
             $br eq '[' ? $index = $ref : $key = $ref;
-        } else {
+        }
+        else {
             $index = $args->{index} if exists $args->{index};
-            $key = $args->{key} if exists $args->{key};
+            $key   = $args->{key}   if exists $args->{key};
         }
 
         $value = $ctx->var($var);
-        if (ref($value)) {
-            if (UNIVERSAL::isa($value, 'MT::Template')) {
+        if ( ref($value) ) {
+            if ( UNIVERSAL::isa( $value, 'MT::Template' ) ) {
                 local $value->{context} = $ctx;
                 $value = $value->output();
-            } elsif (UNIVERSAL::isa($value, 'MT::Template::Tokens')) {
+            }
+            elsif ( UNIVERSAL::isa( $value, 'MT::Template::Tokens' ) ) {
                 local $ctx->{__stash}{tokens} = $value;
-                $value = $ctx->slurp($args, $cond) or return;
-            } elsif (ref($value) eq 'ARRAY') {
+                $value = $ctx->slurp( $args, $cond ) or return;
+            }
+            elsif ( ref($value) eq 'ARRAY' ) {
                 $value = $value->[$index] if defined $index;
-            } elsif (ref($value) eq 'HASH') {
+            }
+            elsif ( ref($value) eq 'HASH' ) {
                 $value = $value->{$key} if defined $key;
             }
         }
     }
-    elsif (defined(my $tag = $args->{tag})) {
+    elsif ( defined( my $tag = $args->{tag} ) ) {
         $tag =~ s/^MT:?//i;
         $value = $ctx->tag( $tag, $args, $cond );
     }
 
     $ctx->{__stash}{vars}{__cond_value__} = $value;
-    $ctx->{__stash}{vars}{__cond_name__} = $var;
+    $ctx->{__stash}{vars}{__cond_name__}  = $var;
 
     if ( my $op = $args->{op} ) {
         my $rvalue = $args->{'value'};
-        if ( $op && (defined $value) && !ref($value) ) {
-            $value = _math_operation($ctx, $op, $value, $rvalue);
+        if ( $op && ( defined $value ) && !ref($value) ) {
+            $value = _math_operation( $ctx, $op, $value, $rvalue );
         }
     }
 
     my $numeric = qr/^[-]?\d+(\.\d+)?$/;
     no warnings;
-    if (exists $args->{eq}) {
+    if ( exists $args->{eq} ) {
         return 0 unless defined($value);
         my $eq = $args->{eq};
-        if ($value =~ m/$numeric/ && $eq =~ m/$numeric/) {
+        if ( $value =~ m/$numeric/ && $eq =~ m/$numeric/ ) {
             return $value == $eq;
-        } else {
+        }
+        else {
             return $value eq $eq;
         }
     }
-    elsif (exists $args->{ne}) {
+    elsif ( exists $args->{ne} ) {
         return 0 unless defined($value);
         my $ne = $args->{ne};
-        if ($value =~ m/$numeric/ && $ne =~ m/$numeric/) {
+        if ( $value =~ m/$numeric/ && $ne =~ m/$numeric/ ) {
             return $value != $ne;
-        } else {
+        }
+        else {
             return $value ne $ne;
         }
     }
-    elsif (exists $args->{gt}) {
+    elsif ( exists $args->{gt} ) {
         return 0 unless defined($value);
         my $gt = $args->{gt};
-        if ($value =~ m/$numeric/ && $gt =~ m/$numeric/) {
+        if ( $value =~ m/$numeric/ && $gt =~ m/$numeric/ ) {
             return $value > $gt;
-        } else {
+        }
+        else {
             return $value gt $gt;
         }
     }
-    elsif (exists $args->{lt}) {
+    elsif ( exists $args->{lt} ) {
         return 0 unless defined($value);
         my $lt = $args->{lt};
-        if ($value =~ m/$numeric/ && $lt =~ m/$numeric/) {
+        if ( $value =~ m/$numeric/ && $lt =~ m/$numeric/ ) {
             return $value < $lt;
-        } else {
+        }
+        else {
             return $value lt $lt;
         }
     }
-    elsif (exists $args->{ge}) {
+    elsif ( exists $args->{ge} ) {
         return 0 unless defined($value);
         my $ge = $args->{ge};
-        if ($value =~ m/$numeric/ && $ge =~ m/$numeric/) {
+        if ( $value =~ m/$numeric/ && $ge =~ m/$numeric/ ) {
             return $value >= $ge;
-        } else {
+        }
+        else {
             return $value ge $ge;
         }
     }
-    elsif (exists $args->{le}) {
+    elsif ( exists $args->{le} ) {
         return 0 unless defined($value);
         my $le = $args->{le};
-        if ($value =~ m/$numeric/ && $le =~ m/$numeric/) {
+        if ( $value =~ m/$numeric/ && $le =~ m/$numeric/ ) {
             return $value <= $le;
-        } else {
+        }
+        else {
             return $value le $le;
         }
     }
-    elsif (exists $args->{like}) {
+    elsif ( exists $args->{like} ) {
         my $like = $args->{like};
-        if (!ref $like) {
-            if ($like =~ m!^/.+/([si]+)?$!s) {
+        if ( !ref $like ) {
+            if ( $like =~ m!^/.+/([si]+)?$!s ) {
                 my $opt = $1;
-                $like =~ s!^/|/([si]+)?$!!g; # /abc/ => abc
+                $like =~ s!^/|/([si]+)?$!!g;    # /abc/ => abc
                 $like = "(?$opt)" . $like if defined $opt;
             }
-            my $re = eval { qr/$like/ };
+            my $re = eval {qr/$like/};
             return 0 unless $re;
             $args->{like} = $like = $re;
         }
-        return defined($value) && ($value =~ m/$like/) ? 1 : 0;
+        return defined($value) && ( $value =~ m/$like/ ) ? 1 : 0;
     }
-    elsif (exists $args->{test}) {
+    elsif ( exists $args->{test} ) {
         my $expr = $args->{'test'};
         my $safe = $ctx->{__safe_compartment};
-        if (!$safe) {
+        if ( !$safe ) {
             $safe = eval { require Safe; new Safe; }
-                or return $ctx->error("Cannot evaluate expression [$expr]: Perl 'Safe' module is required.");
+                or return $ctx->error(
+                "Cannot evaluate expression [$expr]: Perl 'Safe' module is required."
+                );
             $ctx->{__safe_compartment} = $safe;
         }
         my $vars = $ctx->{__stash}{vars};
-        my $ns = $safe->root;
+        my $ns   = $safe->root;
         {
             no strict 'refs';
-            foreach my $v (keys %$vars) {
+            foreach my $v ( keys %$vars ) {
+
                 # or should we be using $ctx->var here ?
                 # can we limit this step to just the variables
                 # mentioned in $expr ??
@@ -1227,12 +1634,13 @@ sub _hdlr_if {
         my @warnings;
         my $res;
         {
-            local $SIG{__WARN__} = sub { push(@warnings, $_[0]); };
+            local $SIG{__WARN__} = sub { push( @warnings, $_[0] ); };
             $res = $safe->reval($expr);
         }
         if ($@) {
             return $ctx->error("Error in expression [$expr]: $@");
         }
+
         # THINK: should return error if there are some warnings?
         # if (@warnings) {
         #     return $ctx->error("Warning in expression [$expr]: @warnings");
@@ -1240,8 +1648,8 @@ sub _hdlr_if {
 
         return $res;
     }
-    if ((defined $value) && $value) {
-        if (ref($value) eq 'ARRAY') {
+    if ( ( defined $value ) && $value ) {
+        if ( ref($value) eq 'ARRAY' ) {
             return @$value ? 1 : 0;
         }
         return 1;
@@ -1261,7 +1669,7 @@ attributes supported by the L<If> tag are also supported for this tag.
 =cut
 
 sub _hdlr_unless {
-    defined(my $r = &_hdlr_if) or return;
+    defined( my $r = &_hdlr_if ) or return;
     !$r;
 }
 
@@ -1291,11 +1699,11 @@ B<Example:>
 =cut
 
 sub _hdlr_else {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     local $args->{'@'};
     delete $args->{'@'};
-    if  ((keys %$args) >= 1) {
-        unless ($args->{name} || $args->{var} || $args->{tag}) {
+    if ( ( keys %$args ) >= 1 ) {
+        unless ( $args->{name} || $args->{var} || $args->{tag} ) {
             if ( my $t = $ctx->var('__cond_tag__') ) {
                 $args->{tag} = $t;
             }
@@ -1305,7 +1713,7 @@ sub _hdlr_else {
         }
     }
     if (%$args) {
-        defined(my $res = _hdlr_if(@_)) or return;
+        defined( my $res = _hdlr_if(@_) ) or return;
         return $res ? $ctx->slurp(@_) : $ctx->else();
     }
     return $ctx->slurp(@_);
@@ -1322,8 +1730,8 @@ An alias for the 'Else' tag.
 =cut
 
 sub _hdlr_elseif {
-    my ($ctx, $args, $cond) = @_;
-    unless ($args->{name} || $args->{var} || $args->{tag}) {
+    my ( $ctx, $args, $cond ) = @_;
+    unless ( $args->{name} || $args->{var} || $args->{tag} ) {
         if ( my $t = $ctx->var('__cond_tag__') ) {
             $args->{tag} = $t;
         }
@@ -1331,7 +1739,7 @@ sub _hdlr_elseif {
             $args->{name} = $n;
         }
     }
-    return _hdlr_else($ctx, $args, $cond);
+    return _hdlr_else( $ctx, $args, $cond );
 }
 
 ###########################################################################
@@ -1360,19 +1768,22 @@ A variable whose contents are tested for non-emptiness.
 =cut
 
 sub _hdlr_if_nonempty {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $value;
-    if (exists $args->{tag}) {
+    if ( exists $args->{tag} ) {
         $args->{tag} =~ s/^MT:?//i;
-        $value = $ctx->tag($args->{tag}, $args, $cond);
-    } elsif (exists $args->{name}) {
-        $value = $ctx->var($args->{name});
-    } elsif (exists $args->{var}) {
-        $value = $ctx->var($args->{var});
+        $value = $ctx->tag( $args->{tag}, $args, $cond );
     }
-    if (defined($value) && $value ne '') { # want to include "0" here
+    elsif ( exists $args->{name} ) {
+        $value = $ctx->var( $args->{name} );
+    }
+    elsif ( exists $args->{var} ) {
+        $value = $ctx->var( $args->{var} );
+    }
+    if ( defined($value) && $value ne '' ) {    # want to include "0" here
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -1403,19 +1814,22 @@ A variable whose contents are tested for non-zeroness.
 =cut
 
 sub _hdlr_if_nonzero {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $value;
-    if (exists $args->{tag}) {
+    if ( exists $args->{tag} ) {
         $args->{tag} =~ s/^MT:?//i;
-        $value = $ctx->tag($args->{tag}, $args, $cond);
-    } elsif (exists $args->{name}) {
-        $value = $ctx->var($args->{name});
-    } elsif (exists $args->{var}) {
-        $value = $ctx->var($args->{var});
+        $value = $ctx->tag( $args->{tag}, $args, $cond );
     }
-    if (defined($value) && $value) {
+    elsif ( exists $args->{name} ) {
+        $value = $ctx->var( $args->{name} );
+    }
+    elsif ( exists $args->{var} ) {
+        $value = $ctx->var( $args->{var} );
+    }
+    if ( defined($value) && $value ) {
         return 1;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -1498,12 +1912,12 @@ currently in context.
 =cut
 
 sub _hdlr_loop {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $name = $args->{name} || $args->{var};
     my $var = $ctx->var($name);
-    return '' unless $var
-      && ( (ref($var) eq 'ARRAY') && (scalar @$var) )
-        || ( (ref($var) eq 'HASH') && (scalar(keys %$var)) );
+    return ''
+        unless $var && ( ( ref($var) eq 'ARRAY' ) && ( scalar @$var ) )
+            || ( ( ref($var) eq 'HASH' ) && ( scalar( keys %$var ) ) );
 
     my $hash_var;
     if ( 'HASH' eq ref($var) ) {
@@ -1511,73 +1925,86 @@ sub _hdlr_loop {
         my @keys = keys %$var;
         $var = \@keys;
     }
-    if (my $sort = $args->{sort_by}) {
+    if ( my $sort = $args->{sort_by} ) {
         $sort = lc $sort;
-        if ($sort =~ m/\bkey\b/) {
-            @$var = sort {$a cmp $b} @$var;
-        } elsif ($sort =~ m/\bvalue\b/) {
+        if ( $sort =~ m/\bkey\b/ ) {
+            @$var = sort { $a cmp $b } @$var;
+        }
+        elsif ( $sort =~ m/\bvalue\b/ ) {
             no warnings;
-            if ($sort =~ m/\bnumeric\b/) {
+            if ( $sort =~ m/\bnumeric\b/ ) {
                 no warnings;
-                if (defined $hash_var) {
-                    @$var = sort {$hash_var->{$a} <=> $hash_var->{$b}} @$var;
-                } else {
-                    @$var = sort {$a <=> $b} @$var;
+                if ( defined $hash_var ) {
+                    @$var
+                        = sort { $hash_var->{$a} <=> $hash_var->{$b} } @$var;
                 }
-            } else {
-                if (defined $hash_var) {
-                    @$var = sort {$hash_var->{$a} cmp $hash_var->{$b}} @$var;
-                } else {
-                    @$var = sort {$a cmp $b} @$var;
+                else {
+                    @$var = sort { $a <=> $b } @$var;
+                }
+            }
+            else {
+                if ( defined $hash_var ) {
+                    @$var
+                        = sort { $hash_var->{$a} cmp $hash_var->{$b} } @$var;
+                }
+                else {
+                    @$var = sort { $a cmp $b } @$var;
                 }
             }
         }
-        if ($sort =~ m/\breverse\b/) {
+        if ( $sort =~ m/\breverse\b/ ) {
             @$var = reverse @$var;
         }
     }
 
     my $builder = $ctx->stash('builder');
-    my $tokens = $ctx->stash('tokens');
-    my $out = '';
-    my $i = 1;
-    my $vars = $ctx->{__stash}{vars} ||= {};
-    my $glue = $args->{glue};
+    my $tokens  = $ctx->stash('tokens');
+    my $out     = '';
+    my $i       = 1;
+    my $vars    = $ctx->{__stash}{vars} ||= {};
+    my $glue    = $args->{glue};
     foreach my $item (@$var) {
-        local $vars->{__first__} = $i == 1;
-        local $vars->{__last__} = $i == scalar @$var;
-        local $vars->{__odd__} = ($i % 2 ) == 1;
-        local $vars->{__even__} = ($i % 2 ) == 0;
+        local $vars->{__first__}   = $i == 1;
+        local $vars->{__last__}    = $i == scalar @$var;
+        local $vars->{__odd__}     = ( $i % 2 ) == 1;
+        local $vars->{__even__}    = ( $i % 2 ) == 0;
         local $vars->{__counter__} = $i;
         my @names;
-        if (UNIVERSAL::isa($item, 'MT::Object')) {
+        if ( UNIVERSAL::isa( $item, 'MT::Object' ) ) {
             @names = @{ $item->column_names };
-        } else {
-            if (ref($item) eq 'HASH') {
+        }
+        else {
+            if ( ref($item) eq 'HASH' ) {
                 @names = keys %$item;
-            } elsif ( $hash_var ) {
+            }
+            elsif ($hash_var) {
                 @names = ( '__key__', '__value__' );
-            } else {
+            }
+            else {
                 @names = '__value__';
             }
         }
         my @var_names;
         push @var_names, lc $_ for @names;
         local @{$vars}{@var_names};
-        if (UNIVERSAL::isa($item, 'MT::Object')) {
-            $vars->{lc($_)} = $item->column($_) for @names;
-        } elsif (ref($item) eq 'HASH') {
-            $vars->{lc($_)} = $item->{$_} for @names;
-        } elsif ( $hash_var ) {
-            $vars->{'__key__'} = $item;
+        if ( UNIVERSAL::isa( $item, 'MT::Object' ) ) {
+            $vars->{ lc($_) } = $item->column($_) for @names;
+        }
+        elsif ( ref($item) eq 'HASH' ) {
+            $vars->{ lc($_) } = $item->{$_} for @names;
+        }
+        elsif ($hash_var) {
+            $vars->{'__key__'}   = $item;
             $vars->{'__value__'} = $hash_var->{$item};
-        } else {
+        }
+        else {
             $vars->{'__value__'} = $item;
         }
-        my $res = $builder->build($ctx, $tokens, $cond);
-        return $ctx->error($builder->errstr) unless defined $res;
-        if ($res ne '') {
-            $out .= $glue if defined $glue && $i > 1 && length($out) && length($res);
+        my $res = $builder->build( $ctx, $tokens, $cond );
+        return $ctx->error( $builder->errstr ) unless defined $res;
+        if ( $res ne '' ) {
+            $out .= $glue
+                if defined $glue && $i > 1 && length($out) && length($res);
             $out .= $res;
             $i++;
         }
@@ -1675,34 +2102,36 @@ Produces:
 =cut
 
 sub _hdlr_for {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
-    my $start = (exists $args->{from} ? $args->{from} : $args->{start}) || 0;
+    my $start = ( exists $args->{from} ? $args->{from} : $args->{start} )
+        || 0;
     $start = 0 unless $start =~ /^-?\d+$/;
-    my $end = (exists $args->{to} ? $args->{to} : $args->{end}) || 0;
+    my $end = ( exists $args->{to} ? $args->{to} : $args->{end} ) || 0;
     return q() unless $end =~ /^-?\d+$/;
     my $incr = $args->{increment} || $args->{step} || 1;
+
     # FIXME: support negative "step" values
     $incr = 1 unless $incr =~ /^\d+$/;
     $incr = 1 unless $incr;
 
     my $builder = $ctx->stash('builder');
-    my $tokens = $ctx->stash('tokens');
-    my $cnt = 1;
-    my $out = '';
-    my $vars = $ctx->{__stash}{vars} ||= {};
-    my $glue = $args->{glue};
-    my $var = $args->{var};
-    for (my $i = $start; $i <= $end; $i += $incr) {
-        local $vars->{__first__} = $i == $start;
-        local $vars->{__last__} = $i == $end;
-        local $vars->{__odd__} = ($cnt % 2 ) == 1;
-        local $vars->{__even__} = ($cnt % 2 ) == 0;
-        local $vars->{__index__} = $i;
+    my $tokens  = $ctx->stash('tokens');
+    my $cnt     = 1;
+    my $out     = '';
+    my $vars    = $ctx->{__stash}{vars} ||= {};
+    my $glue    = $args->{glue};
+    my $var     = $args->{var};
+    for ( my $i = $start; $i <= $end; $i += $incr ) {
+        local $vars->{__first__}   = $i == $start;
+        local $vars->{__last__}    = $i == $end;
+        local $vars->{__odd__}     = ( $cnt % 2 ) == 1;
+        local $vars->{__even__}    = ( $cnt % 2 ) == 0;
+        local $vars->{__index__}   = $i;
         local $vars->{__counter__} = $cnt;
         local $vars->{$var} = $i if defined $var;
-        my $res = $builder->build($ctx, $tokens, $cond);
-        return $ctx->error($builder->errstr) unless defined $res;
+        my $res = $builder->build( $ctx, $tokens, $cond );
+        return $ctx->error( $builder->errstr ) unless defined $res;
         $out .= $glue
             if defined $glue && $cnt > 1 && length($out) && length($res);
         $out .= $res;
@@ -1807,19 +2236,19 @@ Then later:
 =cut
 
 sub _hdlr_set_vars {
-    my($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $tag = lc $ctx->stash('tag');
     my $val = $ctx->slurp($args);
     $val =~ s/(^\s+|\s+$)//g;
     my @pairs = split /\r?\n/, $val;
     foreach my $line (@pairs) {
         next if $line =~ m/^\s*$/;
-        my ($var, $value) = split /\s*=/, $line, 2;
-        unless (defined($var) && defined($value)) {
+        my ( $var, $value ) = split /\s*=/, $line, 2;
+        unless ( defined($var) && defined($value) ) {
             return $ctx->error("Invalid variable assignment: $line");
         }
         $var =~ s/^\s+//;
-        $ctx->var($var, $value);
+        $ctx->var( $var, $value );
     }
     return '';
 }
@@ -1848,18 +2277,20 @@ Then later:
 =cut
 
 sub _hdlr_set_hashvar {
-    my($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $tag = lc $ctx->stash('tag');
     my $name = $args->{name} || $args->{var};
-    if ($name =~ m/^\$/) {
+    if ( $name =~ m/^\$/ ) {
         $name = $ctx->var($name);
     }
-    return $ctx->error(MT->translate(
-        "You used a [_1] tag without a valid name attribute.", "<MT$tag>" ))
-        unless defined $name;
+    return $ctx->error(
+        MT->translate(
+            "You used a [_1] tag without a valid name attribute.", "<MT$tag>"
+        )
+    ) unless defined $name;
 
     my $hash = $ctx->var($name) || {};
-    return $ctx->error(MT->translate( "[_1] is not a hash.", $name ))
+    return $ctx->error( MT->translate( "[_1] is not a hash.", $name ) )
         unless 'HASH' eq ref($hash);
 
     {
@@ -1870,7 +2301,7 @@ sub _hdlr_set_hashvar {
         $parent_hash->{$name} = $hash;
     }
     else {
-        $ctx->var($name, $hash);
+        $ctx->var( $name, $hash );
     }
     return q();
 }
@@ -1917,52 +2348,61 @@ for the template variable.
 =cut
 
 sub _hdlr_set_var {
-    my($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $tag = lc $ctx->stash('tag');
     my $name = $args->{name} || $args->{var};
 
-    return $ctx->error(MT->translate(
-        "You used a [_1] tag without a valid name attribute.", "<MT$tag>" ))
-        unless defined $name;
+    return $ctx->error(
+        MT->translate(
+            "You used a [_1] tag without a valid name attribute.", "<MT$tag>"
+        )
+    ) unless defined $name;
 
-    my ($func, $key, $index, $value);
-    if ($name =~ m/^(\w+)\((.+)\)$/) {
+    my ( $func, $key, $index, $value );
+    if ( $name =~ m/^(\w+)\((.+)\)$/ ) {
         $func = $1;
         $name = $2;
-    } else {
+    }
+    else {
         $func = $args->{function} if exists $args->{function};
     }
 
     # pick off any {...} or [...] from the name.
-    if ($name =~ m/^(.+)([\[\{])(.+)[\]\}]$/) {
+    if ( $name =~ m/^(.+)([\[\{])(.+)[\]\}]$/ ) {
         $name = $1;
-        my $br = $2;
+        my $br  = $2;
         my $ref = $3;
-        if ($ref =~ m/^\$(.+)/) {
+        if ( $ref =~ m/^\$(.+)/ ) {
             $ref = $ctx->var($1);
             $ref = chr(0) unless defined $ref;
         }
         $br eq '[' ? $index = $ref : $key = $ref;
-    } else {
+    }
+    else {
         $index = $args->{index} if exists $args->{index};
-        $key = $args->{key} if exists $args->{key};
+        $key   = $args->{key}   if exists $args->{key};
     }
 
-    if ($name =~ m/^\$/) {
+    if ( $name =~ m/^\$/ ) {
         $name = $ctx->var($name);
-        return $ctx->error(MT->translate(
-            "You used a [_1] tag without a valid name attribute.", "<MT$tag>" ))
-            unless defined $name;
+        return $ctx->error(
+            MT->translate(
+                "You used a [_1] tag without a valid name attribute.",
+                "<MT$tag>"
+            )
+        ) unless defined $name;
     }
 
-    my $val = '';
+    my $val  = '';
     my $data = $ctx->var($name);
-    if (($tag eq 'setvar') || ($tag eq 'var')) {
+    if ( ( $tag eq 'setvar' ) || ( $tag eq 'var' ) ) {
         $val = defined $args->{value} ? $args->{value} : '';
-    } elsif ($tag eq 'setvarblock') {
+    }
+    elsif ( $tag eq 'setvarblock' ) {
         $val = $ctx->slurp($args);
         return unless defined($val);
-    } elsif ($tag eq 'setvartemplate') {
+    }
+    elsif ( $tag eq 'setvartemplate' ) {
         $val = $ctx->stash('tokens');
         return unless defined($val);
         $val = bless $val, 'MT::Template::Tokens';
@@ -1971,64 +2411,68 @@ sub _hdlr_set_var {
     my $existing = $ctx->var($name);
     $existing = '' unless defined $existing;
     if ( 'HASH' eq ref($existing) ) {
-        $existing = $existing->{ $key };
+        $existing = $existing->{$key};
     }
     elsif ( 'ARRAY' eq ref($existing) ) {
-        $existing = ( defined $index && ( $index =~ /^-?\d+$/ ) )
-          ? $existing->[ $index ] 
-          : undef;
+        $existing
+            = ( defined $index && ( $index =~ /^-?\d+$/ ) )
+            ? $existing->[$index]
+            : undef;
     }
     $existing = '' unless defined $existing;
 
-    if ($args->{prepend}) {
+    if ( $args->{prepend} ) {
         $val = $val . $existing;
     }
-    elsif ($args->{append}) {
+    elsif ( $args->{append} ) {
         $val = $existing . $val;
     }
     elsif ( $existing ne '' && ( my $op = $args->{op} ) ) {
-        $val = _math_operation($ctx, $op, $existing, $val);
+        $val = _math_operation( $ctx, $op, $existing, $val );
     }
 
     if ( defined $key ) {
         $data ||= {};
-        return $ctx->error( MT->translate("'[_1]' is not a hash.", $name) )
+        return $ctx->error( MT->translate( "'[_1]' is not a hash.", $name ) )
             unless 'HASH' eq ref($data);
 
-        if ( ( defined $func )
-          && ( 'delete' eq lc( $func ) ) ) {
-            delete $data->{ $key };
+        if (   ( defined $func )
+            && ( 'delete' eq lc($func) ) )
+        {
+            delete $data->{$key};
         }
         else {
-            $data->{ $key } = $val;
+            $data->{$key} = $val;
         }
     }
     elsif ( defined $index ) {
         $data ||= [];
-        return $ctx->error( MT->translate("'[_1]' is not an array.", $name) )
+        return $ctx->error(
+            MT->translate( "'[_1]' is not an array.", $name ) )
             unless 'ARRAY' eq ref($data);
         return $ctx->error( MT->translate("Invalid index.") )
             unless $index =~ /^-?\d+$/;
-        $data->[ $index ] = $val;
+        $data->[$index] = $val;
     }
     elsif ( defined $func ) {
-        if ( 'undef' eq lc( $func ) ) {
+        if ( 'undef' eq lc($func) ) {
             $data = undef;
         }
         else {
             $data ||= [];
-            return $ctx->error( MT->translate("'[_1]' is not an array.", $name) )
+            return $ctx->error(
+                MT->translate( "'[_1]' is not an array.", $name ) )
                 unless 'ARRAY' eq ref($data);
-            if ( 'push' eq lc( $func ) ) {
+            if ( 'push' eq lc($func) ) {
                 push @$data, $val;
             }
-            elsif ( 'unshift' eq lc( $func ) ) {
+            elsif ( 'unshift' eq lc($func) ) {
                 $data ||= [];
                 unshift @$data, $val;
             }
             else {
                 return $ctx->error(
-                    MT->translate("'[_1]' is not a valid function.", $func)
+                    MT->translate( "'[_1]' is not a valid function.", $func )
                 );
             }
         }
@@ -2041,7 +2485,7 @@ sub _hdlr_set_var {
         $hash->{$name} = $data;
     }
     else {
-        $ctx->var($name, $data);
+        $ctx->var( $name, $data );
     }
     return '';
 }
@@ -2225,58 +2669,66 @@ values of the array together.
 =cut
 
 sub _hdlr_get_var {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     if ( exists( $args->{value} )
-      && !exists( $args->{op} ) ) {
+        && !exists( $args->{op} ) )
+    {
         return &_hdlr_set_var(@_);
     }
     my $name = $args->{name} || $args->{var};
-    return $ctx->error(MT->translate(
-        "You used a [_1] tag without a valid name attribute.", "<MT" . $ctx->stash('tag') . ">" ))
-        unless defined $name;
+    return $ctx->error(
+        MT->translate(
+            "You used a [_1] tag without a valid name attribute.",
+            "<MT" . $ctx->stash('tag') . ">"
+        )
+    ) unless defined $name;
 
-    my ($func, $key, $index, $value);
-    if ($name =~ m/^(\w+)\((.+)\)$/) {
+    my ( $func, $key, $index, $value );
+    if ( $name =~ m/^(\w+)\((.+)\)$/ ) {
         $func = $1;
         $name = $2;
-    } else {
+    }
+    else {
         $func = $args->{function} if exists $args->{function};
     }
 
     # pick off any {...} or [...] from the name.
-    if ($name =~ m/^(.+)([\[\{])(.+)[\]\}]$/) {
+    if ( $name =~ m/^(.+)([\[\{])(.+)[\]\}]$/ ) {
         $name = $1;
-        my $br = $2;
+        my $br  = $2;
         my $ref = $3;
-        if ($ref =~ m/^\$(.+)/) {
+        if ( $ref =~ m/^\$(.+)/ ) {
             $ref = $ctx->var($1);
             $ref = chr(0) unless defined $ref;
         }
         $br eq '[' ? $index = $ref : $key = $ref;
-    } else {
+    }
+    else {
         $index = $args->{index} if exists $args->{index};
-        $key = $args->{key} if exists $args->{key};
+        $key   = $args->{key}   if exists $args->{key};
     }
 
-    if ($name =~ m/^\$/) {
+    if ( $name =~ m/^\$/ ) {
         $name = $ctx->var($name);
     }
 
-    if (defined $name) {
+    if ( defined $name ) {
         $value = $ctx->var($name);
-        if (ref($value) eq 'CODE') { # handle coderefs
+        if ( ref($value) eq 'CODE' ) {    # handle coderefs
             $value = $value->(@_);
         }
-        if (ref($value)) {
-            if (UNIVERSAL::isa($value, 'MT::Template')) {
-                local $args->{name} = undef;
-                local $args->{var} = undef;
+        if ( ref($value) ) {
+            if ( UNIVERSAL::isa( $value, 'MT::Template' ) ) {
+                local $args->{name}     = undef;
+                local $args->{var}      = undef;
                 local $value->{context} = $ctx;
                 $value = $value->output($args);
-            } elsif (UNIVERSAL::isa($value, 'MT::Template::Tokens')) {
+            }
+            elsif ( UNIVERSAL::isa( $value, 'MT::Template::Tokens' ) ) {
                 local $ctx->{__stash}{tokens} = $value;
-                local $args->{name} = undef;
-                local $args->{var} = undef;
+                local $args->{name}           = undef;
+                local $args->{var}            = undef;
+
                 # Pass through SetVarTemplate arguments as variables
                 # so that they do not affect the global stash
                 my $vars = $ctx->{__stash}{vars} ||= {};
@@ -2284,14 +2736,16 @@ sub _hdlr_get_var {
                 my @var_names;
                 push @var_names, lc $_ for @names;
                 local @{$vars}{@var_names};
-                $vars->{lc($_)} = $args->{$_} for @names;
+                $vars->{ lc($_) } = $args->{$_} for @names;
                 $value = $ctx->slurp($args) or return;
-            } elsif (ref($value) eq 'ARRAY') {
+            }
+            elsif ( ref($value) eq 'ARRAY' ) {
                 if ( defined $index ) {
-                    if ($index =~ /^-?\d+$/) {
-                        $value = $value->[ $index ];
-                    } else {
-                        $value = undef; # fall through to any 'default'
+                    if ( $index =~ /^-?\d+$/ ) {
+                        $value = $value->[$index];
+                    }
+                    else {
+                        $value = undef;    # fall through to any 'default'
                     }
                 }
                 elsif ( defined $func ) {
@@ -2307,30 +2761,40 @@ sub _hdlr_get_var {
                     }
                     else {
                         return $ctx->error(
-                            MT->translate("'[_1]' is not a valid function for an array.", $func)
+                            MT->translate(
+                                "'[_1]' is not a valid function for an array.",
+                                $func
+                            )
                         );
                     }
                 }
                 else {
-                    unless ($args->{to_json}) {
+                    unless ( $args->{to_json} ) {
                         my $glue = exists $args->{glue} ? $args->{glue} : "";
                         $value = join $glue, @$value;
                     }
                 }
-            } elsif ( ref($value) eq 'HASH' ) {
+            }
+            elsif ( ref($value) eq 'HASH' ) {
                 if ( defined $key ) {
                     if ( defined $func ) {
                         if ( 'delete' eq lc($func) ) {
                             $value = delete $value->{$key};
-                        } else {
+                        }
+                        else {
                             return $ctx->error(
-                                MT->translate("'[_1]' is not a valid function for a hash.", $func)
+                                MT->translate(
+                                    "'[_1]' is not a valid function for a hash.",
+                                    $func
+                                )
                             );
                         }
-                    } else {
-                        if ($key ne chr(0)) {
+                    }
+                    else {
+                        if ( $key ne chr(0) ) {
                             $value = $value->{$key};
-                        } else {
+                        }
+                        else {
                             $value = undef;
                         }
                     }
@@ -2341,7 +2805,10 @@ sub _hdlr_get_var {
                     }
                     else {
                         return $ctx->error(
-                            MT->translate("'[_1]' is not a valid function for a hash.", $func)
+                            MT->translate(
+                                "'[_1]' is not a valid function for a hash.",
+                                $func
+                            )
                         );
                     }
                 }
@@ -2349,18 +2816,18 @@ sub _hdlr_get_var {
         }
         if ( my $op = $args->{op} ) {
             my $rvalue = $args->{'value'};
-            if ( $op && (defined $value) && !ref($value) ) {
-                $value = _math_operation($ctx, $op, $value, $rvalue);
+            if ( $op && ( defined $value ) && !ref($value) ) {
+                $value = _math_operation( $ctx, $op, $value, $rvalue );
             }
         }
     }
-    if ((!defined $value) || ($value eq '')) {
-        if (exists $args->{default}) {
+    if ( ( !defined $value ) || ( $value eq '' ) ) {
+        if ( exists $args->{default} ) {
             $value = $args->{default};
         }
     }
 
-    if (ref($value) && $args->{to_json}) {
+    if ( ref($value) && $args->{to_json} ) {
         return MT::Util::to_json($value);
     }
     return defined $value ? $value : "";
@@ -2506,63 +2973,75 @@ The basic structural output of a setting tag looks like this:
 =cut
 
 sub _hdlr_app_setting {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $id = $args->{id};
     return $ctx->error("'id' attribute missing") unless $id;
 
-    my $label = $args->{label};
-    my $show_label = exists $args->{show_label} ? $args->{show_label} : 1;
-    my $shown = exists $args->{shown} ? ($args->{shown} ? 1 : 0) : 1;
+    my $label       = $args->{label};
+    my $show_label  = exists $args->{show_label} ? $args->{show_label} : 1;
+    my $shown       = exists $args->{shown} ? ( $args->{shown} ? 1 : 0 ) : 1;
     my $label_class = $args->{label_class} || "";
     my $content_class = $args->{content_class} || "";
-    my $hint = $args->{hint} || "";
-    my $show_hint = $args->{show_hint} || 0;
-    my $warning = $args->{warning} || "";
-    my $show_warning = $args->{show_warning} || 0;
-    my $indent = $args->{indent};
+    my $hint          = $args->{hint} || "";
+    my $show_hint     = $args->{show_hint} || 0;
+    my $warning       = $args->{warning} || "";
+    my $show_warning  = $args->{show_warning} || 0;
+    my $indent        = $args->{indent};
     my $help;
+
     # Formatting for help link, placed at the end of the hint.
-    if ($help = $args->{help_page} || "") {
+    if ( $help = $args->{help_page} || "" ) {
         my $section = $args->{help_section} || '';
         $section = qq{, '$section'} if $section;
-        $help = qq{ <a href="javascript:void(0)" onclick="return openManual('$help'$section)" class="help-link">?</a><br />};
+        $help
+            = qq{ <a href="javascript:void(0)" onclick="return openManual('$help'$section)" class="help-link">?</a><br />};
     }
     my $label_help = "";
-    if ($label && $show_label) {
+    if ( $label && $show_label ) {
+
         # do nothing;
-    } else {
-        $label = ''; # zero it out, because the user turned it off
     }
-    if ($hint && $show_hint) {
+    else {
+        $label = '';    # zero it out, because the user turned it off
+    }
+    if ( $hint && $show_hint ) {
         $hint = "\n<div class=\"hint\">$hint$help</div>";
-    } else {
-        $hint = ''; # hiding hint because it is either empty or should not be shown
     }
-    if ($warning && $show_warning) {
-        $warning = qq{\n<p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
+    else {
+        $hint = ''
+            ;  # hiding hint because it is either empty or should not be shown
+    }
+    if ( $warning && $show_warning ) {
+        $warning
+            = qq{\n<p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
 <span class="alert-warning-inline">$warning</span></p>\n};
-    } else {
-        $warning = ''; # hiding hint because it is either empty or should not be shown
+    }
+    else {
+        $warning = ''
+            ;  # hiding hint because it is either empty or should not be shown
     }
     unless ($label_class) {
         $label_class = 'field-left-label';
-    } else {
+    }
+    else {
         $label_class = 'field-' . $label_class;
     }
     my $indent_css = "";
     if ($indent) {
-        $indent_css = " style=\"padding-left: ".$indent."px;\""
+        $indent_css = " style=\"padding-left: " . $indent . "px;\"";
     }
+
     # 'Required' indicator plus CSS class
-    my $req = $args->{required} ? " *" : "";
+    my $req       = $args->{required} ? " *"        : "";
     my $req_class = $args->{required} ? " required" : "";
 
-    my $insides = $ctx->slurp($args, $cond);
+    my $insides = $ctx->slurp( $args, $cond );
+
     # $insides =~ s/^\s*(<textarea)\b/<div class="textarea-wrapper">$1/g;
     # $insides =~ s/(<\/textarea>)\s*$/$1<\/div>/g;
 
     my $class = $args->{class} || "";
-    $class = ($class eq '') ? 'hidden' : $class . ' hidden' unless $shown;
+    $class = ( $class eq '' ) ? 'hidden' : $class . ' hidden' unless $shown;
 
     return $ctx->build(<<"EOT");
 <div id="$id-field" class="field$req_class $label_class $class"$indent_css>
@@ -2637,53 +3116,69 @@ B<Example:>
 =cut
 
 sub _hdlr_app_widget {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $hosted_widget = $ctx->var('widget_id') ? 1 : 0;
-    my $id = $args->{id} || $ctx->var('widget_id') || '';
-    my $label = $args->{label};
-    my $class = $args->{class} || $id;
-    my $label_link = $args->{label_link} || "";
+    my $id            = $args->{id} || $ctx->var('widget_id') || '';
+    my $label         = $args->{label};
+    my $class         = $args->{class} || $id;
+    my $label_link    = $args->{label_link} || "";
     my $label_onclick = $args->{label_onclick} || "";
     my $header_action = $args->{header_action} || "";
-    my $closable = $args->{can_close} ? 1 : 0;
+    my $closable      = $args->{can_close} ? 1 : 0;
     if ($closable) {
-        $header_action = qq{<a title="<__trans phrase="Remove this widget">" onclick="javascript:removeWidget('$id'); return false;" href="javascript:void(0);" class="widget-close-link"><span>close</span></a>};
+        $header_action
+            = qq{<a title="<__trans phrase="Remove this widget">" onclick="javascript:removeWidget('$id'); return false;" href="javascript:void(0);" class="widget-close-link"><span>close</span></a>};
     }
     my $widget_header = "";
-    if ($label_link && $label_onclick) {
-        $widget_header = "\n<h3 class=\"widget-label\"><a href=\"$label_link\" onclick=\"$label_onclick\"><span>$label</span></a></h3>";
-    } elsif ($label_link) {
-        $widget_header = "\n<h3 class=\"widget-label\"><a href=\"$label_link\"><span>$label</span></a></h3>";
-    } else {
-        $widget_header = "\n<h3 class=\"widget-label\"><span>$label</span></h3>";
+    if ( $label_link && $label_onclick ) {
+        $widget_header
+            = "\n<h3 class=\"widget-label\"><a href=\"$label_link\" onclick=\"$label_onclick\"><span>$label</span></a></h3>";
     }
-    my $token = $ctx->var('magic_token') || '';
-    my $scope = $ctx->var('widget_scope') || 'system';
+    elsif ($label_link) {
+        $widget_header
+            = "\n<h3 class=\"widget-label\"><a href=\"$label_link\"><span>$label</span></a></h3>";
+    }
+    else {
+        $widget_header
+            = "\n<h3 class=\"widget-label\"><span>$label</span></h3>";
+    }
+    my $token    = $ctx->var('magic_token')     || '';
+    my $scope    = $ctx->var('widget_scope')    || 'system';
     my $singular = $ctx->var('widget_singular') || '';
+
     # Make certain widget_id is set
     my $vars = $ctx->{__stash}{vars};
-    local $vars->{widget_id} = $id;
+    local $vars->{widget_id}     = $id;
     local $vars->{widget_header} = '';
     local $vars->{widget_footer} = '';
     my $app = MT->instance;
     my $blog = $app->can('blog') ? $app->blog : $ctx->stash('blog');
-    my $blog_field = $blog ? qq{<input type="hidden" name="blog_id" value="} . $blog->id . q{" />} : "";
+    my $blog_field
+        = $blog
+        ? qq{<input type="hidden" name="blog_id" value="}
+        . $blog->id . q{" />}
+        : "";
     local $vars->{blog_id} = $blog->id if $blog;
-    my $insides = $ctx->slurp($args, $cond);
-    my $widget_footer = ($ctx->var('widget_footer') || '');
-    my $var_header = ($ctx->var('widget_header') || '');
-    if ($var_header =~ m/<h3[ >]/i) {
+    my $insides = $ctx->slurp( $args, $cond );
+    my $widget_footer = ( $ctx->var('widget_footer') || '' );
+    my $var_header    = ( $ctx->var('widget_header') || '' );
+
+    if ( $var_header =~ m/<h3[ >]/i ) {
         $widget_header = $var_header;
-    } else {
+    }
+    else {
         $widget_header .= $var_header;
     }
-    my $corners = $args->{corners} ? '<div class="corners"><b></b><u></u><s></s><i></i></div>' : "";
-    my $tabbed = $args->{tabbed} ? ' mt:delegate="tab-container"' : "";
-    my $header_class = $tabbed ? 'widget-header-tabs' : '';
+    my $corners
+        = $args->{corners}
+        ? '<div class="corners"><b></b><u></u><s></s><i></i></div>'
+        : "";
+    my $tabbed       = $args->{tabbed} ? ' mt:delegate="tab-container"' : "";
+    my $header_class = $tabbed         ? 'widget-header-tabs'           : '';
     my $return_args = $app->make_return_args;
-    $return_args = encode_html( $return_args );
+    $return_args = encode_html($return_args);
     my $cgi = $app->uri;
-    if ($hosted_widget && (!$insides !~ m/<form\s/i)) {
+    if ( $hosted_widget && ( !$insides !~ m/<form\s/i ) ) {
         $insides = <<"EOT";
         <form id="$id-form" method="post" action="$cgi" onsubmit="updateWidget('$id'); return false">
         <input type="hidden" name="__mode" value="update_widget_prefs" />
@@ -2739,24 +3234,29 @@ Accepted values: "all", "index".
 =cut
 
 sub _hdlr_app_statusmsg {
-    my ($ctx, $args, $cond) = @_;
-    my $id = $args->{id};
-    my $class = $args->{class} || 'info';
-    my $msg = $ctx->slurp;
+    my ( $ctx, $args, $cond ) = @_;
+    my $id      = $args->{id};
+    my $class   = $args->{class} || 'info';
+    my $msg     = $ctx->slurp;
     my $rebuild = $args->{rebuild} || '';
     my $blog_id = $ctx->var('blog_id');
-    my $blog = $ctx->stash('blog');
-    if (!$blog && $blog_id) {
+    my $blog    = $ctx->stash('blog');
+    if ( !$blog && $blog_id ) {
         $blog = MT->model('blog')->load($blog_id);
     }
     $rebuild = '' if $blog && $blog->custom_dynamic_templates eq 'all';
-    $rebuild = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild">%%</a>">} if $rebuild eq 'all';
-    $rebuild = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">%%</a>">} if $rebuild eq 'index';
+    $rebuild
+        = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild">%%</a>">}
+        if $rebuild eq 'all';
+    $rebuild
+        = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">%%</a>">}
+        if $rebuild eq 'index';
     my $close = '';
-    if ($id && ($args->{can_close} || (!exists $args->{can_close}))) {
-        $close = qq{<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg" />};
+    if ( $id && ( $args->{can_close} || ( !exists $args->{can_close} ) ) ) {
+        $close
+            = qq{<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg" />};
     }
-    $id = defined $id ? qq{ id="$id"} : "";
+    $id    = defined $id    ? qq{ id="$id"}      : "";
     $class = defined $class ? qq{msg msg-$class} : "msg";
     return $ctx->build(<<"EOT");
     <div$id class="$class"><p>$msg $rebuild</p>$close</div>
@@ -2888,54 +3388,72 @@ processed are shown or not. If unspecified, actions are shown.
 =cut
 
 sub _hdlr_app_listing {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
 
     my $type = $args->{type} || $ctx->var('object_type');
     my $class = MT->model($type) if $type;
     my $loop = $args->{loop} || 'object_loop';
     my $loop_obj = $ctx->var($loop);
 
-    unless ((ref($loop_obj) eq 'ARRAY') && (@$loop_obj)) {
+    unless ( ( ref($loop_obj) eq 'ARRAY' ) && (@$loop_obj) ) {
         my @else = @{ $ctx->stash('tokens_else') || [] };
         return MT::Template::Context::_hdlr_pass_tokens_else(@_) if @else;
-        my $msg = $args->{empty_message} || MT->translate("No [_1] could be found.", $class ? lc($class->class_label_plural) : ($type ? $type : MT->translate("records")));
-        return $ctx->build(qq{<mtapp:statusmsg
+        my $msg = $args->{empty_message} || MT->translate(
+            "No [_1] could be found.",
+            $class
+            ? lc( $class->class_label_plural )
+            : ( $type ? $type : MT->translate("records") )
+        );
+        return $ctx->build(
+            qq{<mtapp:statusmsg
             id="zero-state"
             class="info zero-state">
             $msg
-            </mtapp:statusmsg>});
+            </mtapp:statusmsg>}
+        );
     }
 
-    my $id = $args->{id} || ($type ? $type . '-listing' : 'listing');
-    $id =~ s/:/\-/g; # meta and revision uses colon as a separator
+    my $id = $args->{id} || ( $type ? $type . '-listing' : 'listing' );
+    $id =~ s/:/\-/g;    # meta and revision uses colon as a separator
     my $listing_class = $args->{listing_class} || "";
-    my $hide_pager = $args->{hide_pager} || 0;
-    $hide_pager = 1 if ($ctx->var('screen_class') || '') eq 'search-replace';
-    my $show_actions = exists $args->{show_actions} ? $args->{show_actions} : 1;
+    my $hide_pager    = $args->{hide_pager}    || 0;
+    $hide_pager = 1
+        if ( $ctx->var('screen_class') || '' ) eq 'search-replace';
+    my $show_actions
+        = exists $args->{show_actions} ? $args->{show_actions} : 1;
     my $return_args = $ctx->var('return_args') || '';
-    my $search_options = ( $ctx->var('search_options') || '' ) if MT->app->param('__mode') eq 'search_replace';
+    my $search_options = ( $ctx->var('search_options') || '' )
+        if MT->app->param('__mode') eq 'search_replace';
     $return_args = encode_html( $return_args . $search_options );
-    $return_args = qq{\n        <input type="hidden" name="return_args" value="$return_args" />} if $return_args;
+    $return_args
+        = qq{\n        <input type="hidden" name="return_args" value="$return_args" />}
+        if $return_args;
     my $blog_id = $ctx->var('blog_id') || '';
-    $blog_id = qq{\n        <input type="hidden" name="blog_id" value="$blog_id" />} if $blog_id;
+    $blog_id
+        = qq{\n        <input type="hidden" name="blog_id" value="$blog_id" />}
+        if $blog_id;
     my $token = $ctx->var('magic_token') || MT->app->current_magic || '';
     my $action = $args->{action} || '<mt:var name="script_url">' || '';
-    my $target = defined $args->{target} ? ' target="' . $args->{target} . '"' : '';
+    my $target
+        = defined $args->{target} ? ' target="' . $args->{target} . '"' : '';
 
-    my $actions_top = "";
+    my $actions_top    = "";
     my $actions_bottom = "";
-    my $form_id = "$id-form";
+    my $form_id        = "$id-form";
     if ($show_actions) {
-        $actions_top = qq{<\$MTApp:ActionBar bar_position="top" hide_pager="$hide_pager" form_id="$form_id"\$>};
-        $actions_bottom = qq{<\$MTApp:ActionBar bar_position="bottom" hide_pager="$hide_pager" form_id="$form_id"\$>};
-    } else {
+        $actions_top
+            = qq{<\$MTApp:ActionBar bar_position="top" hide_pager="$hide_pager" form_id="$form_id"\$>};
+        $actions_bottom
+            = qq{<\$MTApp:ActionBar bar_position="bottom" hide_pager="$hide_pager" form_id="$form_id"\$>};
+    }
+    else {
         $listing_class .= " hide_actions";
     }
 
     my $insides;
     {
         local $args->{name} = $loop;
-        defined($insides = $ctx->invoke_handler('loop', $args, $cond))
+        defined( $insides = $ctx->invoke_handler( 'loop', $args, $cond ) )
             or return;
     }
     my $listing_header = $ctx->var('listing_header') || '';
@@ -3018,16 +3536,16 @@ B<Example:>
 =cut
 
 sub _hdlr_app_setting_group {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $id = $args->{id};
     return $ctx->error("'id' attribute missing") unless $id;
 
     my $class = $args->{class} || "";
-    my $shown = exists $args->{shown} ? ($args->{shown} ? 1 : 0) : 1;
-    $class .= ($class ne '' ? " " : "") . "hidden" unless $shown;
+    my $shown = exists $args->{shown} ? ( $args->{shown} ? 1 : 0 ) : 1;
+    $class .= ( $class ne '' ? " " : "" ) . "hidden" unless $shown;
     $class = qq{ class="$class"} if $class ne '';
 
-    my $insides = $ctx->slurp($args, $cond);
+    my $insides = $ctx->slurp( $args, $cond );
     return <<"EOT";
 <fieldset id="$id"$class>
     $insides
@@ -3111,19 +3629,20 @@ Producing:
 =cut
 
 sub _hdlr_app_form {
-    my ($ctx, $args, $cond) = @_;
-    my $app = MT->instance;
+    my ( $ctx, $args, $cond ) = @_;
+    my $app    = MT->instance;
     my $action = $args->{action} || $app->uri;
     my $method = $args->{method} || 'POST';
     my @fields;
-    my $token = $ctx->var('magic_token');
-    my $return = $ctx->var('return_args');
-    my $id = $args->{object_id} || $ctx->var('id');
-    my $blog_id = $args->{blog_id} || $ctx->var('blog_id');
-    my $type = $args->{object_type} || $ctx->var('type');
-    my $form_id = $args->{id} || $type . '-form';
+    my $token     = $ctx->var('magic_token');
+    my $return    = $ctx->var('return_args');
+    my $id        = $args->{object_id} || $ctx->var('id');
+    my $blog_id   = $args->{blog_id} || $ctx->var('blog_id');
+    my $type      = $args->{object_type} || $ctx->var('type');
+    my $form_id   = $args->{id} || $type . '-form';
     my $form_name = $args->{name} || $args->{id};
-    my $enctype = $args->{enctype} ? " enctype=\"" . $args->{enctype} . "\"" : "";
+    my $enctype
+        = $args->{enctype} ? " enctype=\"" . $args->{enctype} . "\"" : "";
     my $mode = $args->{mode};
     push @fields, qq{<input type="hidden" name="__mode" value="$mode" />}
         if defined $mode;
@@ -3133,14 +3652,16 @@ sub _hdlr_app_form {
         if defined $id;
     push @fields, qq{<input type="hidden" name="blog_id" value="$blog_id" />}
         if defined $blog_id;
-    push @fields, qq{<input type="hidden" name="magic_token" value="$token" />}
+    push @fields,
+        qq{<input type="hidden" name="magic_token" value="$token" />}
         if defined $token;
     $return = encode_html($return) if $return;
-    push @fields, qq{<input type="hidden" name="return_args" value="$return" />}
+    push @fields,
+        qq{<input type="hidden" name="return_args" value="$return" />}
         if defined $return;
     my $fields = '';
-    $fields = join("\n", @fields) if @fields;
-    my $insides = $ctx->slurp($args, $cond);
+    $fields = join( "\n", @fields ) if @fields;
+    my $insides = $ctx->slurp( $args, $cond );
     return <<"EOT";
 <form id="$form_id" name="$form_name" action="$action" method="$method"$enctype>
 $fields
@@ -3166,13 +3687,13 @@ B<Example:>
 =cut
 
 sub _hdlr_app_page_actions {
-    my ($ctx, $args, $cond) = @_;
-    my $app = MT->instance;
+    my ( $ctx, $args, $cond ) = @_;
+    my $app  = MT->instance;
     my $from = $args->{from} || $app->mode;
     my $loop = $ctx->var('page_actions');
-    return '' if (ref($loop) ne 'ARRAY') || (! @$loop);
+    return '' if ( ref($loop) ne 'ARRAY' ) || ( !@$loop );
     my $mt = '&amp;magic_token=' . $app->current_magic;
-    return $ctx->build(<<EOT, $cond);
+    return $ctx->build( <<EOT, $cond );
     <mtapp:widget
         id="page_actions"
         label="<__trans phrase="Actions">">
@@ -3204,15 +3725,15 @@ B<Example:>
 =cut
 
 sub _hdlr_app_list_filters {
-    my ($ctx, $args, $cond) = @_;
-    my $app = MT->app;
+    my ( $ctx, $args, $cond ) = @_;
+    my $app     = MT->app;
     my $filters = $ctx->var("list_filters");
-    return '' if (ref($filters) ne 'ARRAY') || (! @$filters );
-    my $mode = $app->mode;
-    my $type = $app->param('_type');
+    return '' if ( ref($filters) ne 'ARRAY' ) || ( !@$filters );
+    my $mode       = $app->mode;
+    my $type       = $app->param('_type');
     my $type_param = "";
     $type_param = "&amp;_type=" . encode_url($type) if defined $type;
-    return $ctx->build(<<EOT, $cond);
+    return $ctx->build( <<EOT, $cond );
     <mt:loop name="list_filters">
         <mt:if name="__first__">
     <ul>
@@ -3258,10 +3779,15 @@ given form element.
 =cut
 
 sub _hdlr_app_action_bar {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $pos = $args->{bar_position} || 'top';
-    my $form_id = $args->{form_id} ? qq{<mt:setvar name="form_id" value="$args->{form_id}">} : "";
-    my $pager = $args->{hide_pager} ? ''
+    my $form_id
+        = $args->{form_id}
+        ? qq{<mt:setvar name="form_id" value="$args->{form_id}">}
+        : "";
+    my $pager
+        = $args->{hide_pager}
+        ? ''
         : qq{\n        <mt:include name="include/pagination.tmpl" bar_position="$pos">};
     my $buttons = $ctx->var('action_buttons') || '';
     return $ctx->build(<<EOT);
@@ -3314,30 +3840,32 @@ which will encode these to HTML entities.
 =cut
 
 sub _hdlr_app_link {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $app = MT->instance;
 
     my %args = %$args;
 
     # eliminate special '@' argument (and anything other refs that may exist)
-    ref($args{$_}) && delete $args{$_} for keys %args;
+    ref( $args{$_} ) && delete $args{$_} for keys %args;
 
     # strip off any arguments that are actually global filters
-    my $filters = MT->registry('tags', 'modifier');
-    exists($filters->{$_}) && delete $args{$_} for keys %args;
+    my $filters = MT->registry( 'tags', 'modifier' );
+    exists( $filters->{$_} ) && delete $args{$_} for keys %args;
 
     # remap 'type' attribute since we always express this as
     # a '_type' query parameter.
-    my $mode = delete $args{mode} or return $ctx->error("mode attribute is required");
+    my $mode = delete $args{mode}
+        or return $ctx->error("mode attribute is required");
     $args{_type} = delete $args{type} if exists $args{type};
-    if (exists $args{blog_id} && !($args{blog_id})) {
+    if ( exists $args{blog_id} && !( $args{blog_id} ) ) {
         delete $args{blog_id};
-    } else {
-        if (my $blog_id = $ctx->var('blog_id')) {
+    }
+    else {
+        if ( my $blog_id = $ctx->var('blog_id') ) {
             $args{blog_id} = $blog_id;
         }
     }
-    return $app->uri(mode => $mode, args => \%args);
+    return $app->uri( mode => $mode, args => \%args );
 }
 
 package MT::Template::Tags::System;
@@ -3352,7 +3880,7 @@ use MT::Request;
     my %include_stack;
     my %restricted_include_filenames = (
         'mt-config.cgi' => 1,
-        'passwd' => 1
+        'passwd'        => 1
     );
 
 ###########################################################################
@@ -3394,21 +3922,22 @@ L<IncludeBlock> tag. If unassigned, the "contents" variable is used.
 
 =cut
 
-sub _hdlr_include_block {
-    my($ctx, $args, $cond) = @_;
-    my $name = delete $args->{var} || 'contents';
-    # defer the evaluation of the child tokens until used inside
-    # the block (so any variables/context changes made in that template
-    # affect the contained template code)
-    my $tokens = $ctx->stash('tokens');
-    local $ctx->{__stash}{vars}{$name} = sub {
-        my $builder = $ctx->stash('builder');
-        my $html = $builder->build($ctx, $tokens, $cond);
-        return $ctx->error($builder->errstr) unless defined $html;
-        return $html;
-    };
-    return $ctx->tag('include', $args, $cond);
-}
+    sub _hdlr_include_block {
+        my ( $ctx, $args, $cond ) = @_;
+        my $name = delete $args->{var} || 'contents';
+
+        # defer the evaluation of the child tokens until used inside
+        # the block (so any variables/context changes made in that template
+        # affect the contained template code)
+        my $tokens = $ctx->stash('tokens');
+        local $ctx->{__stash}{vars}{$name} = sub {
+            my $builder = $ctx->stash('builder');
+            my $html = $builder->build( $ctx, $tokens, $cond );
+            return $ctx->error( $builder->errstr ) unless defined $html;
+            return $html;
+        };
+        return $ctx->tag( 'include', $args, $cond );
+    }
 
 ###########################################################################
 
@@ -3531,314 +4060,399 @@ B<Example:> Passing Parameters to a Template Module
 
 =cut
 
-sub _hdlr_include {
-    my ($ctx, $arg, $cond) = @_;
+    sub _hdlr_include {
+        my ( $ctx, $arg, $cond ) = @_;
 
-    # Pass through include arguments as variables to included template
-    my $vars = $ctx->{__stash}{vars} ||= {};
-    my @names = keys %$arg;
-    my @var_names;
-    push @var_names, lc $_ for @names;
-    local @{$vars}{@var_names};
-    $vars->{lc($_)} = $arg->{$_} for @names;
+        # Pass through include arguments as variables to included template
+        my $vars = $ctx->{__stash}{vars} ||= {};
+        my @names = keys %$arg;
+        my @var_names;
+        push @var_names, lc $_ for @names;
+        local @{$vars}{@var_names};
+        $vars->{ lc($_) } = $arg->{$_} for @names;
 
-    # Run include process
-    my $out = $arg->{module}     ? _include_module(@_)
+        # Run include process
+        my $out
+            = $arg->{module}     ? _include_module(@_)
             : $arg->{widget}     ? _include_module(@_)
             : $arg->{identifier} ? _include_module(@_)
             : $arg->{file}       ? _include_file(@_)
             : $arg->{name}       ? _include_name(@_)
-            :                      $ctx->error(MT->translate(
-                                       'No template to include specified'))
-            ;
+            : $ctx->error(
+            MT->translate('No template to include specified') );
 
-    return $out;
-}
-
-sub _include_module {
-    my ($ctx, $arg, $cond) = @_;
-    my $tmpl_name = $arg->{module} || $arg->{widget} || $arg->{identifier}
-        or return;
-    my $name = $arg->{widget} ? 'widget' : $arg->{identifier} ? 'identifier' : 'module';
-    my $type = $arg->{widget} ? 'widget' : 'custom';
-    if (($type eq 'custom') && ($tmpl_name =~ m/^Widget:/)) {
-        # handle old-style widget include references
-        $type = 'widget';
-        $tmpl_name =~ s/^Widget: ?//;
-    }
-    my $_stash_blog = $ctx->stash('blog');
-    my $blog_id = $arg->{global}
-        ? 0
-        : defined($arg->{blog_id})
-            ? $arg->{blog_id}
-            : $_stash_blog
-                ? $_stash_blog->id
-                : 0;
-    $blog_id = $ctx->stash('local_blog_id') if $arg->{local};
-    ## Don't know why but hash key has to be encoded
-    my $stash_id = Encode::encode_utf8('template_' . $type . '::' . $blog_id . '::' . $tmpl_name);
-    return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
-        if $include_stack{$stash_id};
-    local $include_stack{$stash_id} = 1;
-
-    my $req = MT::Request->instance;
-    my ($tmpl, $tokens);
-    if (my $tmpl_data = $req->stash($stash_id)) {
-        ($tmpl, $tokens) = @$tmpl_data;
-    }
-    else {
-        my %terms = $arg->{identifier} ? ( identifier => $tmpl_name )
-                  :                      ( name => $tmpl_name,
-                                           type => $type )
-                  ;
-        $terms{blog_id} = !exists $arg->{global} ? [ $blog_id, 0 ]
-                        : $arg->{global}         ? 0
-                        :                          $blog_id
-                        ;
-        ($tmpl) = MT->model('template')->load(\%terms, {
-            sort      => 'blog_id',
-            direction => 'descend',
-        }) or return $ctx->error(MT->translate(
-            "Can't find included template [_1] '[_2]'", MT->translate($name), $tmpl_name ));
-
-        my $cur_tmpl = $ctx->stash('template');
-        return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
-            if $cur_tmpl && $cur_tmpl->id && ($cur_tmpl->id == $tmpl->id);
-
-        $req->stash($stash_id, [ $tmpl, undef ]);
+        return $out;
     }
 
-    my $blog = $ctx->stash('blog') || MT->model('blog')->load($blog_id);
+    sub _include_module {
+        my ( $ctx, $arg, $cond ) = @_;
+        my $tmpl_name = $arg->{module} || $arg->{widget} || $arg->{identifier}
+            or return;
+        my $name
+            = $arg->{widget}     ? 'widget'
+            : $arg->{identifier} ? 'identifier'
+            :                      'module';
+        my $type = $arg->{widget} ? 'widget' : 'custom';
+        if ( ( $type eq 'custom' ) && ( $tmpl_name =~ m/^Widget:/ ) ) {
 
-    my %include_recipe;
-    my $use_ssi = $blog && $blog->include_system
-        && ($arg->{ssi} || $tmpl->include_with_ssi) ? 1 : 0;
-    if ($use_ssi) {
-        # disable SSI for templates that are system templates;
-        # easiest way to determine this is from the variable
-        # space setting.
-        if ($ctx->var('system_template')) {
-            $use_ssi = 0;
-        } else {
-            my $extra_path = ($arg->{cache_key} || $arg->{key}) ? $arg->{cache_key} || $arg->{key}
-                : $tmpl->cache_path ? $tmpl->cache_path
-                    : '';
-           %include_recipe = (
+            # handle old-style widget include references
+            $type = 'widget';
+            $tmpl_name =~ s/^Widget: ?//;
+        }
+        my $_stash_blog = $ctx->stash('blog');
+        my $blog_id
+            = $arg->{global}             ? 0
+            : defined( $arg->{blog_id} ) ? $arg->{blog_id}
+            : $_stash_blog               ? $_stash_blog->id
+            :                              0;
+        $blog_id = $ctx->stash('local_blog_id') if $arg->{local};
+        ## Don't know why but hash key has to be encoded
+        my $stash_id = Encode::encode_utf8(
+            'template_' . $type . '::' . $blog_id . '::' . $tmpl_name );
+        return $ctx->error(
+            MT->translate(
+                "Recursion attempt on [_1]: [_2]", MT->translate($name),
+                $tmpl_name
+            )
+        ) if $include_stack{$stash_id};
+        local $include_stack{$stash_id} = 1;
+
+        my $req = MT::Request->instance;
+        my ( $tmpl, $tokens );
+        if ( my $tmpl_data = $req->stash($stash_id) ) {
+            ( $tmpl, $tokens ) = @$tmpl_data;
+        }
+        else {
+            my %terms
+                = $arg->{identifier}
+                ? ( identifier => $tmpl_name )
+                : (
                 name => $tmpl_name,
-                id   => $tmpl->id,
-                path => $extra_path,
+                type => $type
+                );
+            $terms{blog_id}
+                = !exists $arg->{global} ? [ $blog_id, 0 ]
+                : $arg->{global}         ? 0
+                :                          $blog_id;
+            ($tmpl) = MT->model('template')->load(
+                \%terms,
+                {   sort      => 'blog_id',
+                    direction => 'descend',
+                }
+                )
+                or return $ctx->error(
+                MT->translate(
+                    "Can't find included template [_1] '[_2]'",
+                    MT->translate($name), $tmpl_name
+                )
+                );
+
+            my $cur_tmpl = $ctx->stash('template');
+            return $ctx->error(
+                MT->translate(
+                    "Recursion attempt on [_1]: [_2]", MT->translate($name),
+                    $tmpl_name
+                )
+                )
+                if $cur_tmpl
+                    && $cur_tmpl->id
+                    && ( $cur_tmpl->id == $tmpl->id );
+
+            $req->stash( $stash_id, [ $tmpl, undef ] );
+        }
+
+        my $blog = $ctx->stash('blog') || MT->model('blog')->load($blog_id);
+
+        my %include_recipe;
+        my $use_ssi 
+            = $blog
+            && $blog->include_system
+            && ( $arg->{ssi} || $tmpl->include_with_ssi ) ? 1 : 0;
+        if ($use_ssi) {
+
+            # disable SSI for templates that are system templates;
+            # easiest way to determine this is from the variable
+            # space setting.
+            if ( $ctx->var('system_template') ) {
+                $use_ssi = 0;
+            }
+            else {
+                my $extra_path
+                    = ( $arg->{cache_key} || $arg->{key} ) ? $arg->{cache_key}
+                    || $arg->{key}
+                    : $tmpl->cache_path ? $tmpl->cache_path
+                    :                     '';
+                %include_recipe = (
+                    name => $tmpl_name,
+                    id   => $tmpl->id,
+                    path => $extra_path,
+                );
+            }
+        }
+
+        # Try to read from cache
+        my $enc               = MT->config->PublishCharset;
+        my $cache_expire_type = 0;
+        my $cache_enabled 
+            = $blog
+            && $blog->include_cache
+            && (
+               ( $arg->{cache} && $arg->{cache} > 0 )
+            || $arg->{cache_key}
+            || $arg->{key}
+            || ( exists $arg->{ttl} )
+            || ( ( $cache_expire_type = ( $tmpl->cache_expire_type || 0 ) )
+                != 0 )
+            ) ? 1 : 0;
+        my $cache_key = $arg->{cache_key} || $arg->{key};
+        if ( !$cache_key ) {
+            require Digest::MD5;
+            $cache_key = Digest::MD5::md5_hex(
+                Encode::encode_utf8(
+                          'blog::' 
+                        . $blog_id
+                        . '::template_'
+                        . $type . '::'
+                        . $tmpl_name
+                )
             );
         }
-    }
+        my $ttl
+            = exists $arg->{ttl}          ? $arg->{ttl}
+            : ( $cache_expire_type == 1 ) ? $tmpl->cache_expire_interval
+            : ( $cache_expire_type == 2 ) ? 0
+            :                               60 * 60;    # default 60 min.
 
-    # Try to read from cache
-    my $enc = MT->config->PublishCharset;
-    my $cache_expire_type = 0;
-    my $cache_enabled =
-         $blog
-      && $blog->include_cache
-      && ( ( $arg->{cache} && $arg->{cache} > 0 )
-        || $arg->{cache_key}
-        || $arg->{key}
-        || ( exists $arg->{ttl} )
-        || ( ( $cache_expire_type = ( $tmpl->cache_expire_type || 0 ) ) != 0 ) ) ? 1 : 0;
-    my $cache_key = $arg->{cache_key} || $arg->{key};
-    if ( !$cache_key ) {
-        require Digest::MD5;
-        $cache_key = Digest::MD5::md5_hex(
-            Encode::encode_utf8(
-                'blog::' . $blog_id . '::template_' . $type . '::' . $tmpl_name
-            )
-        );
-    }
-    my $ttl =
-      exists $arg->{ttl} ? $arg->{ttl}
-          : ( $cache_expire_type == 1 ) ? $tmpl->cache_expire_interval
-              : ( $cache_expire_type == 2 ) ? 0
-                  :   60 * 60;    # default 60 min.
+        if ( $cache_expire_type == 2 ) {
+            my @types = split /,/, ( $tmpl->cache_expire_event || '' );
+            if (@types) {
+                require MT::Touch;
+                if ( my $latest
+                    = MT::Touch->latest_touch( $blog_id, @types ) )
+                {
+                    if ($use_ssi) {
 
-    if ( $cache_expire_type == 2 ) {
-        my @types = split /,/, ($tmpl->cache_expire_event || '');
-        if (@types) {
-            require MT::Touch;
-            if (my $latest = MT::Touch->latest_touch($blog_id, @types)) {
-                if ($use_ssi) {
-                    # base cache expiration on physical file timestamp
-                    my $include_file = $blog->include_path(\%include_recipe);
-                    my $fmgr = $blog->file_mgr;
-                    my $mtime = $fmgr->file_mod_time($include_file);
-                    if ($mtime && (MT::Util::ts2epoch(undef, $latest) > $mtime ) ) {
-                        $ttl = 1; # bound to force an update
+                        # base cache expiration on physical file timestamp
+                        my $include_file
+                            = $blog->include_path( \%include_recipe );
+                        my $fmgr  = $blog->file_mgr;
+                        my $mtime = $fmgr->file_mod_time($include_file);
+                        if ( $mtime
+                            && ( MT::Util::ts2epoch( undef, $latest )
+                                > $mtime ) )
+                        {
+                            $ttl = 1;    # bound to force an update
+                        }
                     }
-                } else {
-                    $ttl = time - MT::Util::ts2epoch(undef, $latest);
+                    else {
+                        $ttl = time - MT::Util::ts2epoch( undef, $latest );
+                    }
                 }
             }
         }
-    }
 
-    my $cache_driver;
-    if ($cache_enabled) {
-        my $tmpl_mod = $tmpl->modified_on;
-        my $tmpl_ts = MT::Util::ts2epoch($tmpl->blog_id ? $tmpl->blog : undef, $tmpl_mod);
-        if (($ttl == 0) || (time - $tmpl_ts < $ttl)) {
-            $ttl = time - $tmpl_ts;
-        }
-        require MT::Cache::Negotiate;
-        $cache_driver = MT::Cache::Negotiate->new( ttl => $ttl );
-        my $cache_value = $cache_driver->get($cache_key);
-        $cache_value = Encode::decode( $enc, $cache_value );
-        if ($cache_value) {
-            return $cache_value if !$use_ssi;
+        my $cache_driver;
+        if ($cache_enabled) {
+            my $tmpl_mod = $tmpl->modified_on;
+            my $tmpl_ts
+                = MT::Util::ts2epoch( $tmpl->blog_id ? $tmpl->blog : undef,
+                $tmpl_mod );
+            if ( ( $ttl == 0 ) || ( time - $tmpl_ts < $ttl ) ) {
+                $ttl = time - $tmpl_ts;
+            }
+            require MT::Cache::Negotiate;
+            $cache_driver = MT::Cache::Negotiate->new( ttl => $ttl );
+            my $cache_value = $cache_driver->get($cache_key);
+            $cache_value = Encode::decode( $enc, $cache_value );
+            if ($cache_value) {
+                return $cache_value if !$use_ssi;
 
-            # The template may still be cached from before we were using SSI
-            # for this template, so check that it's also on disk.
-            my $include_file = $blog->include_path(\%include_recipe);
-            if ($blog->file_mgr->exists($include_file)) {
-                return $blog->include_statement(\%include_recipe);
+              # The template may still be cached from before we were using SSI
+              # for this template, so check that it's also on disk.
+                my $include_file = $blog->include_path( \%include_recipe );
+                if ( $blog->file_mgr->exists($include_file) ) {
+                    return $blog->include_statement( \%include_recipe );
+                }
             }
         }
-    }
 
-    my $builder = $ctx->{__stash}{builder};
-    if (!$tokens) {
-        # Compile the included template against the includ*ing* template's
-        # context.
-        $tokens = $builder->compile($ctx, $tmpl->text);
-        unless (defined $tokens) {
-            $req->cache('build_template', $tmpl);
-            return $ctx->error($builder->errstr);
+        my $builder = $ctx->{__stash}{builder};
+        if ( !$tokens ) {
+
+            # Compile the included template against the includ*ing* template's
+            # context.
+            $tokens = $builder->compile( $ctx, $tmpl->text );
+            unless ( defined $tokens ) {
+                $req->cache( 'build_template', $tmpl );
+                return $ctx->error( $builder->errstr );
+            }
+            $tmpl->tokens($tokens);
+
+            $req->stash( $stash_id, [ $tmpl, $tokens ] );
         }
-        $tmpl->tokens( $tokens );
 
-        $req->stash($stash_id, [ $tmpl, $tokens ]);
+     # Build the included template against the includ*ing* template's context.
+        my $ret = $tmpl->build( $ctx, $cond );
+        if ( !defined $ret ) {
+            $req->cache( 'build_template', $tmpl ) if $tmpl;
+            return $ctx->error(
+                MT->translate(
+                    "Error in [_1] [_2]: [_3]", MT->translate($name),
+                    $tmpl_name,                 $tmpl->errstr
+                )
+            );
+        }
+
+        if ($cache_enabled) {
+            $cache_driver->replace( $cache_key, Encode::encode( $enc, $ret ),
+                $ttl );
+        }
+
+        if ($use_ssi) {
+            my ( $include_file, $path, $filename )
+                = $blog->include_path( \%include_recipe );
+            my $fmgr = $blog->file_mgr;
+            if ( !$fmgr->exists($path) ) {
+                if ( !$fmgr->mkpath($path) ) {
+                    return $ctx->error(
+                        MT->translate(
+                            "Error making path '[_1]': [_2]", $path,
+                            $fmgr->errstr
+                        )
+                    );
+                }
+            }
+            defined( $fmgr->put_data( $ret, $include_file ) )
+                or return $ctx->error(
+                MT->translate(
+                    "Writing to '[_1]' failed: [_2]", $include_file,
+                    $fmgr->errstr
+                )
+                );
+
+            MT->upload_file_to_sync(
+                url  => $blog->include_url( \%include_recipe ),
+                file => $include_file,
+                blog => $blog,
+            );
+
+            my $stat = $blog->include_statement( \%include_recipe );
+            return $stat;
+        }
+
+        return $ret;
     }
 
-    # Build the included template against the includ*ing* template's context.
-    my $ret = $tmpl->build( $ctx, $cond );
-    if (!defined $ret) {
-        $req->cache('build_template', $tmpl) if $tmpl;
+    sub _include_file {
+        my ( $ctx, $arg, $cond ) = @_;
+        if ( !MT->config->AllowFileInclude ) {
+            return $ctx->error(
+                'File include is disabled by "AllowFileInclude" config directive.'
+            );
+        }
+        my $file = $arg->{file} or return;
+        require File::Basename;
+        my $base_filename = File::Basename::basename($file);
+        if ( exists $restricted_include_filenames{ lc $base_filename } ) {
+            return $ctx->error(
+                "You cannot include a file with this name: $base_filename");
+        }
+
+        my $blog_id = $arg->{blog_id} || $ctx->{__stash}{blog_id} || 0;
+        my $stash_id = 'template_file::' . $blog_id . '::' . $file;
+        return $ctx->error( "Recursion attempt on file: [_1]", $file )
+            if $include_stack{$stash_id};
+        local $include_stack{$stash_id} = 1;
+        my $req  = MT::Request->instance;
+        my $cref = $req->stash($stash_id);
+        my $tokens;
+        my $builder = $ctx->{__stash}{builder};
+
+        if ($cref) {
+            $tokens = $cref;
+        }
+        else {
+            my $blog = $ctx->stash('blog');
+            if ( $blog && $blog->id != $blog_id ) {
+                $blog = MT::Blog->load($blog_id)
+                    or return $ctx->error(
+                    MT->translate( "Can't find blog for id '[_1]", $blog_id )
+                    );
+            }
+            my @paths = ($file);
+            push @paths,
+                map { File::Spec->catfile( $_, $file ) }
+                ( $blog->site_path, $blog->archive_path )
+                if $blog;
+            my $path;
+            for my $p (@paths) {
+                $path = $p, last if -e $p && -r _;
+            }
+            return $ctx->error(
+                MT->translate( "Can't find included file '[_1]'", $file ) )
+                unless $path;
+            local *FH;
+            open FH, $path
+                or return $ctx->error(
+                MT->translate(
+                    "Error opening included file '[_1]': [_2]",
+                    $path, $!
+                )
+                );
+            my $c;
+            local $/;
+            $c = <FH>;
+            close FH;
+            $tokens = $builder->compile( $ctx, $c );
+            return $ctx->error( $builder->errstr ) unless defined $tokens;
+            $req->stash( $stash_id, $tokens );
+        }
+        my $ret = $builder->build( $ctx, $tokens, $cond );
+        return
+            defined($ret)
+            ? $ret
+            : $ctx->error( "error in file $file: " . $builder->errstr );
+    }
+
+    sub _include_name {
+        my ( $ctx, $arg, $cond ) = @_;
+        my $app_file = $arg->{name};
+
+        # app template include mode
+        my $mt = MT->instance;
+        local $mt->{component} = $arg->{component}
+            if exists $arg->{component};
+        my $stash_id = 'template_file::' . $app_file;
         return $ctx->error(
-            MT->translate("Error in [_1] [_2]: [_3]", MT->translate($name), $tmpl_name, $tmpl->errstr) );
-    }
+            MT->translate( "Recursion attempt on file: [_1]", $app_file ) )
+            if $include_stack{$stash_id};
+        local $include_stack{$stash_id} = 1;
+        my $tmpl = $mt->load_tmpl($app_file);
+        if ($tmpl) {
+            $tmpl->name($app_file);
 
-    if ($cache_enabled) {
-        $cache_driver->replace($cache_key, Encode::encode( $enc, $ret), $ttl);
-    }
-
-    if ($use_ssi) {
-        my ($include_file, $path, $filename) =
-            $blog->include_path(\%include_recipe);
-        my $fmgr = $blog->file_mgr;
-        if (!$fmgr->exists($path)) {
-            if (!$fmgr->mkpath($path)) {
-                return $ctx->error(MT->translate("Error making path '[_1]': [_2]",
-                    $path, $fmgr->errstr));
+            my $tmpl_file = $app_file;
+            if ($tmpl_file) {
+                $tmpl_file = File::Basename::basename($tmpl_file);
+                $tmpl_file =~ s/\.tmpl$//;
+                $tmpl_file = '.' . $tmpl_file;
             }
+            $mt->run_callbacks( 'template_param' . $tmpl_file,
+                $mt, $tmpl->param, $tmpl );
+
+            # propagate our context
+            local $tmpl->{context} = $ctx;
+            my $out = $tmpl->output();
+            return $ctx->error( $tmpl->errstr ) unless defined $out;
+
+            $mt->run_callbacks( 'template_output' . $tmpl_file,
+                $mt, \$out, $tmpl->param, $tmpl );
+            return $out;
         }
-        defined($fmgr->put_data($ret, $include_file))
-            or return $ctx->error(MT->translate("Writing to '[_1]' failed: [_2]",
-                $include_file, $fmgr->errstr));
-
-        MT->upload_file_to_sync(
-            url  => $blog->include_url(\%include_recipe),
-            file => $include_file,
-            blog => $blog,
-        );
-
-        my $stat = $blog->include_statement(\%include_recipe);
-        return $stat;
-    }
-
-    return $ret;
-}
-
-sub _include_file {
-    my ($ctx, $arg, $cond) = @_;
-    my $file = $arg->{file} or return;
-    require File::Basename;
-    my $base_filename = File::Basename::basename($file);
-    if (exists $restricted_include_filenames{lc $base_filename}) {
-        return $ctx->error("You cannot include a file with this name: $base_filename");
-    }
-
-    my $blog_id = $arg->{blog_id} || $ctx->{__stash}{blog_id} || 0;
-    my $stash_id = 'template_file::' . $blog_id . '::' . $file;
-    return $ctx->error("Recursion attempt on file: [_1]", $file)
-        if $include_stack{$stash_id};
-    local $include_stack{$stash_id} = 1;
-    my $req = MT::Request->instance;
-    my $cref = $req->stash($stash_id);
-    my $tokens;
-    my $builder = $ctx->{__stash}{builder};
-    if ($cref) {
-        $tokens = $cref;
-    } else {
-        my $blog = $ctx->stash('blog');
-        if ($blog && $blog->id != $blog_id) {
-            $blog = MT::Blog->load($blog_id)
-                or return $ctx->error(MT->translate(
-                    "Can't find blog for id '[_1]", $blog_id));
+        else {
+            return defined $arg->{default} ? $arg->{default} : '';
         }
-        my @paths = ($file);
-        push @paths, map { File::Spec->catfile($_, $file) }
-            ($blog->site_path, $blog->archive_path)
-            if $blog;
-        my $path;
-        for my $p (@paths) {
-            $path = $p, last if -e $p && -r _;
-        }
-        return $ctx->error(MT->translate(
-            "Can't find included file '[_1]'", $file )) unless $path;
-        local *FH;
-        open FH, $path
-            or return $ctx->error(MT->translate(
-                "Error opening included file '[_1]': [_2]", $path, $! ));
-        my $c;
-        local $/; $c = <FH>;
-        close FH;
-        $tokens = $builder->compile($ctx, $c);
-        return $ctx->error($builder->errstr) unless defined $tokens;
-        $req->stash($stash_id, $tokens);
     }
-    my $ret = $builder->build($ctx, $tokens, $cond);
-    return defined($ret) ? $ret : $ctx->error("error in file $file: " . $builder->errstr);
-}
-
-sub _include_name {
-    my ($ctx, $arg, $cond) = @_;
-    my $app_file = $arg->{name};
-
-    # app template include mode
-    my $mt = MT->instance;
-    local $mt->{component} = $arg->{component} if exists $arg->{component};
-    my $stash_id = 'template_file::' . $app_file;
-    return $ctx->error(MT->translate("Recursion attempt on file: [_1]", $app_file))
-        if $include_stack{$stash_id};
-    local $include_stack{$stash_id} = 1;
-    my $tmpl = $mt->load_tmpl($app_file);
-    if ($tmpl) {
-        $tmpl->name($app_file);
-
-        my $tmpl_file = $app_file;
-        if ($tmpl_file) {
-            $tmpl_file = File::Basename::basename($tmpl_file);
-            $tmpl_file =~ s/\.tmpl$//;
-            $tmpl_file = '.' . $tmpl_file;
-        }
-        $mt->run_callbacks('template_param' . $tmpl_file, $mt, $tmpl->param, $tmpl);
-
-        # propagate our context
-        local $tmpl->{context} = $ctx;
-        my $out = $tmpl->output();
-        return $ctx->error($tmpl->errstr) unless defined $out;
-
-        $mt->run_callbacks('template_output' . $tmpl_file, $mt, \$out, $tmpl->param, $tmpl);
-        return $out;
-    } else {
-        return defined $arg->{default} ? $arg->{default} : '';
-    }
-}
 }
 
 ###########################################################################
@@ -3922,7 +4536,7 @@ is added to the wrapping HTML tag.
 =cut
 
 sub _hdlr_section {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $app = MT->instance;
     my $out;
     my $cache_require;
@@ -3932,37 +4546,36 @@ sub _hdlr_section {
     my $cache_id = $args->{cache_prefix} || undef;
 
     my $tmpl = $ctx->{__stash}{template};
-    $cache_id .= ':'.$tmpl->id if $tmpl && $tmpl->id;
+    $cache_id .= ':' . $tmpl->id if $tmpl && $tmpl->id;
 
     # read timeout. if timeout == 0 then, content is never cached.
     my $timeout = $args->{period};
     $timeout = $app->config('DashboardCachePeriod') if !defined $timeout;
-    if (defined $timeout && ($timeout > 0)) {
-        if (defined $cache_id) {
-            if ($args->{by_blog}) {
+    if ( defined $timeout && ( $timeout > 0 ) ) {
+        if ( defined $cache_id ) {
+            if ( $args->{by_blog} ) {
                 my $blog = $app->blog;
                 $cache_id .= ':blog_id=';
                 $cache_id .= $blog ? $blog->id : '0';
             }
-            if ($args->{by_user}) {
+            if ( $args->{by_user} ) {
                 my $author = $app->user
-                    or return $ctx->error(MT->translate(
-                        "Can't load user."));
-                $cache_id .= ':user_id='.$author->id;
+                    or
+                    return $ctx->error( MT->translate("Can't load user.") );
+                $cache_id .= ':user_id=' . $author->id;
             }
 
             # try to load from session
             require MT::Session;
-            my $sess = MT::Session::get_unexpired_value(
-                $timeout,
-                { id => $cache_id, kind => 'CO' }); # CO == Cache Object
-            if (defined $sess) {
+            my $sess = MT::Session::get_unexpired_value( $timeout,
+                { id => $cache_id, kind => 'CO' } );    # CO == Cache Object
+            if ( defined $sess ) {
                 ## need to decode by hand for blob typed column.
                 my $data = $sess->data();
                 $data = MT::I18N::utf8_off($data) if MT::I18N::is_utf8($data);
                 my $out = Encode::decode( $enc, $data );
                 if ($out) {
-                    if (my $wrap_tag = $args->{html_tag}) {
+                    if ( my $wrap_tag = $args->{html_tag} ) {
                         my $id = $args->{id};
                         $id = " id=\"$id\"" if $id;
                         $id = '' unless defined $id;
@@ -3978,24 +4591,28 @@ sub _hdlr_section {
     }
 
     # build content
-    defined($out = $ctx->stash('builder')->build($ctx, $ctx->stash('tokens'), $cond))
-        or return $ctx->error($ctx->stash('builder')->errstr);
+    defined( $out
+            = $ctx->stash('builder')
+            ->build( $ctx, $ctx->stash('tokens'), $cond ) )
+        or return $ctx->error( $ctx->stash('builder')->errstr );
 
-    if ($cache_require && (defined $cache_id)) {
-        my $sess = MT::Session->load({
-            id => $cache_id, kind => 'CO'});
+    if ( $cache_require && ( defined $cache_id ) ) {
+        my $sess = MT::Session->load( { id => $cache_id, kind => 'CO' } );
         if ($sess) {
             $sess->remove();
         }
         $sess = MT::Session->new;
-        $sess->set_values({ id    => $cache_id,
-                            kind  => 'CO',
-                            start => time,
-                            data  => Encode::encode( $enc, $out) });
+        $sess->set_values(
+            {   id    => $cache_id,
+                kind  => 'CO',
+                start => time,
+                data  => Encode::encode( $enc, $out )
+            }
+        );
         $sess->save();
     }
 
-    if (my $wrap_tag = $args->{html_tag}) {
+    if ( my $wrap_tag = $args->{html_tag} ) {
         my $id = $args->{id};
         $id = " id=\"$id\"" if $id;
         $id = '' unless defined $id;
@@ -4049,35 +4666,49 @@ B<Examples:>
 =cut
 
 sub _hdlr_link {
-    my($ctx, $arg, $cond) = @_;
+    my ( $ctx, $arg, $cond ) = @_;
     my $curr_blog = $ctx->stash('blog');
-    if (my $tmpl_name = $arg->{template}) {
-        my $blog = $arg->{blog_id}
+    if ( my $tmpl_name = $arg->{template} ) {
+        my $blog
+            = $arg->{blog_id}
             ? MT->model('blog')->load( $arg->{blog_id} )
             : $curr_blog;
         my $blog_id = $blog->id;
         require MT::Template;
-        my $tmpl = MT::Template->load({ identifier => $tmpl_name,
-                type => 'index', blog_id => $blog_id })
-            || MT::Template->load({ name => $tmpl_name,
-                                        type => 'index',
-                                        blog_id => $blog_id })
-                || MT::Template->load({ outfile => $tmpl_name,
-                                        type => 'index',
-                                        blog_id => $blog_id })
-            or return $ctx->error(MT->translate(
-                "Can't find template '[_1]'", $tmpl_name ));
+        my $tmpl = MT::Template->load(
+            {   identifier => $tmpl_name,
+                type       => 'index',
+                blog_id    => $blog_id
+            }
+            )
+            || MT::Template->load(
+            {   name    => $tmpl_name,
+                type    => 'index',
+                blog_id => $blog_id
+            }
+            )
+            || MT::Template->load(
+            {   outfile => $tmpl_name,
+                type    => 'index',
+                blog_id => $blog_id
+            }
+            )
+            or return $ctx->error(
+            MT->translate( "Can't find template '[_1]'", $tmpl_name ) );
         my $site_url = $blog->site_url;
         $site_url .= '/' unless $site_url =~ m!/$!;
         my $link = $site_url . $tmpl->outfile;
-        $link = MT::Util::strip_index($link, $curr_blog) unless $arg->{with_index};
+        $link = MT::Util::strip_index( $link, $curr_blog )
+            unless $arg->{with_index};
         $link;
-    } elsif (my $entry_id = $arg->{entry_id}) {
+    }
+    elsif ( my $entry_id = $arg->{entry_id} ) {
         my $entry = MT::Entry->load($entry_id)
-            or return $ctx->error(MT->translate(
-                "Can't find entry '[_1]'", $entry_id ));
+            or return $ctx->error(
+            MT->translate( "Can't find entry '[_1]'", $entry_id ) );
         my $link = $entry->permalink;
-        $link = MT::Util::strip_index($link, $curr_blog) unless $arg->{with_index};
+        $link = MT::Util::strip_index( $link, $curr_blog )
+            unless $arg->{with_index};
         $link;
     }
 }
@@ -4252,12 +4883,12 @@ setting as a default.
 =cut
 
 sub _hdlr_sys_date {
-    my ($ctx, $args) = @_;
-    unless ($args->{ts}) {
+    my ( $ctx, $args ) = @_;
+    unless ( $args->{ts} ) {
         my $t = time;
-        my @ts = offset_time_list($t, $ctx->stash('blog_id'));
+        my @ts = offset_time_list( $t, $ctx->stash('blog_id') );
         $args->{ts} = sprintf "%04d%02d%02d%02d%02d%02d",
-            $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
+            $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
     }
     return $ctx->build_date($args);
 }
@@ -4397,11 +5028,12 @@ If set, exclude the port number from the CGIHost.
 =cut
 
 sub _hdlr_cgi_host {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $path = $ctx->cgi_path;
-    if ($path =~ m!^https?://([^/:]+)(:\d+)?/!) {
-        return $args->{exclude_port} ? $1 : $1 . ($2 || '');
-    } else {
+    if ( $path =~ m!^https?://([^/:]+)(:\d+)?/! ) {
+        return $args->{exclude_port} ? $1 : $1 . ( $2 || '' );
+    }
+    else {
         return '';
     }
 }
@@ -4444,7 +5076,8 @@ sub _hdlr_admin_cgi_path {
     my ($ctx) = @_;
     my $cfg = $ctx->{config};
     my $path = $cfg->AdminCGIPath || $cfg->CGIPath;
-    if ($path =~ m!^/!) {
+    if ( $path =~ m!^/! ) {
+
         # relative path, prepend blog domain
         my $blog = $ctx->stash('blog');
         my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
@@ -4470,7 +5103,7 @@ sub _hdlr_cgi_relative_url {
     my ($ctx) = @_;
     my $url = $ctx->{config}->CGIPath;
     $url .= '/' unless $url =~ m!/$!;
-    if ($url =~ m!^https?://[^/]+(/.*)$!) {
+    if ( $url =~ m!^https?://[^/]+(/.*)$! ) {
         return $1;
     }
     return $url;
@@ -4508,9 +5141,9 @@ guaranteed to end with a "/" character.
 
 sub _hdlr_static_file_path {
     my ($ctx) = @_;
-    my $cfg = $ctx->{config};
-    my $path = $cfg->StaticFilePath;
-    if (!$path) {
+    my $cfg   = $ctx->{config};
+    my $path  = $cfg->StaticFilePath;
+    if ( !$path ) {
         $path = MT->instance->{mt_dir};
         $path .= '/' unless $path =~ m!/$!;
         $path .= 'mt-static/';
@@ -4538,14 +5171,15 @@ B<Example:>
 
 sub _hdlr_static_path {
     my ($ctx) = @_;
-    my $cfg = $ctx->{config};
-    my $path = $cfg->StaticWebPath;
-    if (!$path) {
+    my $cfg   = $ctx->{config};
+    my $path  = $cfg->StaticWebPath;
+    if ( !$path ) {
         $path = $cfg->CGIPath;
         $path .= '/' unless $path =~ m!/$!;
         $path .= 'mt-static/';
     }
-    if ($path =~ m!^/!) {
+    if ( $path =~ m!^/! ) {
+
         # relative path, prepend blog domain
         my $blog = $ctx->stash('blog');
         if ($blog) {
@@ -4621,12 +5255,13 @@ for the MTOS edition, this would output:
 =cut
 
 sub _hdlr_product_name {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     require MT;
-    my $short_name = MT->translate(MT->product_name);
-    if ($args->{version}) {
-        return MT->translate("[_1] [_2]", $short_name, MT->version_id);
-    } else {
+    my $short_name = MT->translate( MT->product_name );
+    if ( $args->{version} ) {
+        return MT->translate( "[_1] [_2]", $short_name, MT->version_id );
+    }
+    else {
         return $short_name;
     }
 }
@@ -4706,13 +5341,13 @@ If specified, will append the blog's configured file extension.
 =cut
 
 sub _hdlr_index_basename {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $name = $ctx->{config}->IndexBasename;
-    if (!$args->{extension}) {
+    if ( !$args->{extension} ) {
         return $name;
     }
     my $blog = $ctx->stash('blog');
-    my $ext = $blog->file_extension;
+    my $ext  = $blog->file_extension;
     $ext = '.' . $ext if $ext;
     $name . $ext;
 }
@@ -4754,9 +5389,9 @@ B<Example:>
 =cut
 
 sub _hdlr_http_content_type {
-    my($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $type = $args->{type};
-    $ctx->stash('content_type', $type);
+    $ctx->stash( 'content_type', $type );
     return qq{};
 }
 
@@ -4905,74 +5540,83 @@ B<Example:>
 =for tags archives
 
 =cut
+
 {
-my %tokens_cache;
-sub _hdlr_file_template {
-    my ($ctx, $args, $cond) = @_;
+    my %tokens_cache;
 
-    my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
-    $at = 'Category' if $ctx->{inside_mt_categories};
-    my $format = $args->{format};
-    unless ($format) {
-        my $archiver = MT->publisher->archiver($at);
-        $format = $archiver->default_archive_templates if $archiver;
-    }
-    return $ctx->error(MT->translate("Unspecified archive template")) unless $format;
+    sub _hdlr_file_template {
+        my ( $ctx, $args, $cond ) = @_;
 
-    my ($dir, $sep);
-    if ($args->{separator}) {
-        $dir = "dirify='$args->{separator}'";
-        $sep = "separator='$args->{separator}'";
-    } else {
-        $dir = "dirify='1'";
-        $sep = "";
+        my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
+        $at = 'Category' if $ctx->{inside_mt_categories};
+        my $format = $args->{format};
+        unless ($format) {
+            my $archiver = MT->publisher->archiver($at);
+            $format = $archiver->default_archive_templates if $archiver;
+        }
+        return $ctx->error( MT->translate("Unspecified archive template") )
+            unless $format;
+
+        my ( $dir, $sep );
+        if ( $args->{separator} ) {
+            $dir = "dirify='$args->{separator}'";
+            $sep = "separator='$args->{separator}'";
+        }
+        else {
+            $dir = "dirify='1'";
+            $sep = "";
+        }
+        my %f = (
+            'a'  => "<MTAuthorBasename $dir>",
+            '-a' => "<MTAuthorBasename separator='-'>",
+            '_a' => "<MTAuthorBasename separator='_'>",
+            'b'  => "<MTEntryBasename $sep>",
+            '-b' => "<MTEntryBasename separator='-'>",
+            '_b' => "<MTEntryBasename separator='_'>",
+            'c'  => "<MTSubCategoryPath $sep>",
+            '-c' => "<MTSubCategoryPath separator='-'>",
+            '_c' => "<MTSubCategoryPath separator='_'>",
+            'C'  => "<MTCategoryBasename $sep>",
+            '-C' => "<MTCategoryBasename separator='-'>",
+            'd'  => "<MTArchiveDate format='%d'>",
+            'D'  => "<MTArchiveDate format='%e' trim='1'>",
+            'e'  => "<MTEntryID pad='1'>",
+            'E'  => "<MTEntryID pad='0'>",
+            'f'  => "<MTArchiveFile $sep>",
+            '-f' => "<MTArchiveFile separator='-'>",
+            'F'  => "<MTArchiveFile extension='0' $sep>",
+            '-F' => "<MTArchiveFile extension='0' separator='-'>",
+            'h'  => "<MTArchiveDate format='%H'>",
+            'H'  => "<MTArchiveDate format='%k' trim='1'>",
+            'i'  => '<MTIndexBasename extension="1">',
+            'I'  => "<MTIndexBasename>",
+            'j' => "<MTArchiveDate format='%j'>",    # 3-digit day of year
+            'm' => "<MTArchiveDate format='%m'>",    # 2-digit month
+            'M' => "<MTArchiveDate format='%b'>",    # 3-letter month
+            'n' => "<MTArchiveDate format='%M'>",    # 2-digit minute
+            's' => "<MTArchiveDate format='%S'>",    # 2-digit second
+            'x' => "<MTBlogFileExtension>",
+            'y' => "<MTArchiveDate format='%Y'>",    # year
+            'Y' => "<MTArchiveDate format='%y'>",    # 2-digit year
+            'p' =>
+                "<mt:PagerBlock><mt:IfCurrentPage><mt:Var name='__value__'></mt:IfCurrentPage></mt:PagerBlock>"
+            ,                                        # current page number
+        );
+        $format =~ s!%([_-]?[A-Za-z])!$f{$1}!g if defined $format;
+
+        # now build this template and return result
+        my $builder = $ctx->stash('builder');
+        my $tok     = $tokens_cache{$format}
+            ||= $builder->compile( $ctx, $format );
+        return $ctx->error(
+            MT->translate( "Error in file template: [_1]", $args->{format} ) )
+            unless defined $tok;
+        defined( my $file = $builder->build( $ctx, $tok, $cond ) )
+            or return $ctx->error( $builder->errstr );
+        $file =~ s!/{2,}!/!g;
+        $file =~ s!(^/|/$)!!g;
+        $file;
     }
-    my %f = (
-        'a' => "<MTAuthorBasename $dir>",
-        '-a' => "<MTAuthorBasename separator='-'>",
-        '_a' => "<MTAuthorBasename separator='_'>",
-        'b' => "<MTEntryBasename $sep>",
-        '-b' => "<MTEntryBasename separator='-'>",
-        '_b' => "<MTEntryBasename separator='_'>",
-        'c' => "<MTSubCategoryPath $sep>",
-        '-c' => "<MTSubCategoryPath separator='-'>",
-        '_c' => "<MTSubCategoryPath separator='_'>",
-        'C' => "<MTCategoryBasename $sep>",
-        '-C' => "<MTCategoryBasename separator='-'>",
-        'd' => "<MTArchiveDate format='%d'>",
-        'D' => "<MTArchiveDate format='%e' trim='1'>",
-        'e' => "<MTEntryID pad='1'>",
-        'E' => "<MTEntryID pad='0'>",
-        'f' => "<MTArchiveFile $sep>",
-        '-f' => "<MTArchiveFile separator='-'>",
-        'F' => "<MTArchiveFile extension='0' $sep>",
-        '-F' => "<MTArchiveFile extension='0' separator='-'>",
-        'h' => "<MTArchiveDate format='%H'>",
-        'H' => "<MTArchiveDate format='%k' trim='1'>",
-        'i' => '<MTIndexBasename extension="1">',
-        'I' => "<MTIndexBasename>",
-        'j' => "<MTArchiveDate format='%j'>",  # 3-digit day of year
-        'm' => "<MTArchiveDate format='%m'>",  # 2-digit month
-        'M' => "<MTArchiveDate format='%b'>",  # 3-letter month
-        'n' => "<MTArchiveDate format='%M'>",  # 2-digit minute
-        's' => "<MTArchiveDate format='%S'>",  # 2-digit second
-        'x' => "<MTBlogFileExtension>",
-        'y' => "<MTArchiveDate format='%Y'>",  # year
-        'Y' => "<MTArchiveDate format='%y'>",  # 2-digit year
-        'p' => "<mt:PagerBlock><mt:IfCurrentPage><mt:Var name='__value__'></mt:IfCurrentPage></mt:PagerBlock>", # current page number
-    );
-    $format =~ s!%([_-]?[A-Za-z])!$f{$1}!g if defined $format;
-    # now build this template and return result
-    my $builder = $ctx->stash('builder');
-    my $tok = $tokens_cache{$format} ||= $builder->compile($ctx, $format);
-    return $ctx->error(MT->translate("Error in file template: [_1]", $args->{format}))
-        unless defined $tok;
-    defined(my $file = $builder->build($ctx, $tok, $cond))
-        or return $ctx->error($builder->errstr);
-    $file =~ s!/{2,}!/!g;
-    $file =~ s!(^/|/$)!!g;
-    $file;
-}
 }
 ###########################################################################
 
@@ -4991,9 +5635,9 @@ B<Example:>
 =cut
 
 sub _hdlr_template_created_on {
-    my($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $template = $ctx->stash('template')
-        or return $ctx->error(MT->translate("Can't load template"));
+        or return $ctx->error( MT->translate("Can't load template") );
     $args->{ts} = $template->created_on;
     $ctx->build_date($args);
 }
@@ -5008,9 +5652,9 @@ being built.
 =cut
 
 sub _hdlr_build_template_id {
-    my ($ctx, $args, $cond) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $tmpl = $ctx->stash('template');
-    if ($tmpl && $tmpl->id) {
+    if ( $tmpl && $tmpl->id ) {
         return $tmpl->id;
     }
     return 0;

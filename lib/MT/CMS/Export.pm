@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -15,7 +15,7 @@ sub start_export {
 
     my $perms = $app->permissions;
     return $app->return_to_dashboard( permission => 1 )
-      if !$app->can_do('open_blog_export_screen');
+        if !$app->can_do('open_blog_export_screen');
 
     my $blog = $app->model('blog')->load($blog_id);
     return $app->return_to_dashboard( redirect => 1 )
@@ -26,28 +26,30 @@ sub start_export {
 }
 
 sub export {
-    my $app = shift;
+    my $app     = shift;
     my $charset = $app->charset;
     require MT::Blog;
     my $blog_id = $app->param('blog_id')
-      or return $app->error( $app->translate("Please select a blog.") );
+        or return $app->error( $app->translate("Please select a blog.") );
     my $blog = MT::Blog->load($blog_id)
-      or return $app->error(
+        or return $app->error(
         $app->translate(
-            "Load of blog '[_1]' failed: [_2]",
-            $blog_id, MT::Blog->errstr
+            "Load of blog '[_1]' failed: [_2]", $blog_id,
+            MT::Blog->errstr
         )
-      );
+        );
     my $perms = $app->permissions;
-    return $app->error( $app->translate("You do not have export permissions") )
-      unless $perms && $perms->can_do('export_blog');
+    return $app->error(
+        $app->translate("You do not have export permissions") )
+        unless $perms && $perms->can_do('export_blog');
     $app->validate_magic() or return;
     my $file = dirify( $blog->name ) . ".txt";
 
     if ( $file eq ".txt" ) {
         my @ts = localtime(time);
         $file = sprintf "export-%06d-%04d%02d%02d%02d%02d%02d.txt",
-          $app->param('blog_id'), $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+            $app->param('blog_id'), $ts[5] + 1900, $ts[4] + 1,
+            @ts[ 3, 2, 1, 0 ];
     }
 
     $app->{no_print_body} = 1;
@@ -60,8 +62,8 @@ sub export {
         : 'text/plain'
     );
     require MT::ImportExport;
-    MT::ImportExport->export( $blog, sub { $app->print_encode( @_ ) } )
-      or return $app->error( MT::ImportExport->errstr );
+    MT::ImportExport->export( $blog, sub { $app->print_encode(@_) } )
+        or return $app->error( MT::ImportExport->errstr );
     1;
 }
 
