@@ -178,7 +178,6 @@ my %CGI_SCRIPTS = (
     wizard  => 'mt-wizard.cgi',
     check   => 'mt-check.cgi', # TBD: This will fail since no entry is in core registry.
     upgrade => MT->config->UpgradeScript,
-    xmlrpc  => MT->config->XMLRPCScript,
 );
 
 # FIXME: Should move this map to registry.
@@ -226,6 +225,22 @@ for my $id ( keys %CGI_SCRIPTS ) {
     my $filepath = File::Spec->catfile( $FindBin::Bin, $file );
     DEBUG && warn "Mount CGI File ($filepath) in ($url)\n";
     $urlmap->map( $url, $mt_cgi->( $filepath ) );
+}
+
+## Special case: Mount XMLRPC Server with using XMLRPC::Transport::HTTP::Plack
+{
+    use Plack::Request;
+    use XMLRPC::Transport::HTTP::Plack;
+    use MT::XMLRPCServer;
+    my $server;
+    $server = XMLRPC::Transport::HTTP::Plack->new;
+    $server->dispatch_to( 'blogger', 'metaWeblog', 'mt', 'wp' );
+    my $url = url_for('xmlrpc');
+    $urlmap->map( $url, sub {
+        my $env = shift;
+        my $req = Plack::Request->new($env);
+        $server->handle($req);
+    });
 }
 
 $urlmap->to_app;
