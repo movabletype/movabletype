@@ -195,6 +195,13 @@ sub init_request {
     }
 }
 
+sub takedown {
+    my $app = shift;
+    delete $app->{searchparam};
+    delete $app->{search_string};
+    $app->SUPER::takedown(@_);
+}
+
 sub generate_cache_keys {
     my $app = shift;
 
