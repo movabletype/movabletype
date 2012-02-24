@@ -181,26 +181,50 @@ my %CGI_SCRIPTS = (
     xmlrpc  => MT->config->XMLRPCScript,
 );
 
-my $urlmap = Plack::App::URLMap->new;
-for my $id ( keys %DAEMON_SCRIPTS ) {
-    my $app = MT->registry( applications => $id ) or next;
-    my $handler = $app->{handler};
-    my $path = $DAEMON_SCRIPTS{$id};
+# FIXME: Should move this map to registry.
+my %SCRIPT_NAME = (
+    cms        => MT->config->AdminScript,
+    feeds      => MT->config->ActivityFeedScript,
+    comments   => MT->config->CommentScript,
+    tb         => MT->config->TrackbackScript,
+    new_search => MT->config->SearchScript,
+    view       => MT->config->ViewScript,
+    atom       => MT->config->AtomScript,
+    notify     => MT->config->NotifyScript,
+    community  => MT->config->CommunityScript,
+    wizard     => 'mt-wizard.cgi',
+    check      => 'mt-check.cgi', # TBD: This will fail since no entry is in core registry.
+    upgrade    => MT->config->UpgradeScript,
+    xmlrpc     => MT->config->XMLRPCScript,
+);
+
+sub url_for {
+    my ( $id ) = @_;
     my $base = $id eq 'cms' ? MT->config->AdminCGIPath || MT->config->CGIPath
              :                MT->config->CGIPath
              ;
     $base =~ s!^https?://[^/]*/!/!;
-    $base .= '/' unless $base =~ m!/$!;
-    $path = $base . $path;
-    DEBUG && warn "Mount $handler in $path\n";
-    $urlmap->map( $path, $mt_app->($handler) );
+    $base =~ s!/$!!;
+    my $script = $SCRIPT_NAME{$id} || $id;
+    $script =~ s!^/!!;
+    return $base . '/' . $script;
+}
+
+my $urlmap = Plack::App::URLMap->new;
+for my $id ( keys %DAEMON_SCRIPTS ) {
+    my $app = MT->registry( applications => $id ) or next;
+    my $handler = $app->{handler};
+    my $url = url_for($id);
+    DEBUG && warn "Mount $handler in $url\n";
+    $urlmap->map( $url, $mt_app->($handler) );
 }
 
 for my $id ( keys %CGI_SCRIPTS ) {
     my $app = MT->registry( applications => $id ) or next;
     my $file = $CGI_SCRIPTS{$id};
-    my $url = ( $file =~ m!^/! ? '' : '/' ) . $file;
+    my $url = url_for($id);
     my $filepath = File::Spec->catfile( $FindBin::Bin, $file );
+    DEBUG && warn "Mount CGI File ($filepath) in ($url)\n";
     $urlmap->map( $url, $mt_cgi->( $filepath ) );
 }
 
