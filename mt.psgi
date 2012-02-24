@@ -243,4 +243,11 @@ for my $id ( keys %CGI_SCRIPTS ) {
     });
 }
 
+## Special case: Mount mt-static directory
+use Plack::App::Directory;
+my $url = MT->config->StaticWebPath;
+$url =~ s!^https?://[^/]*!!;
+my $path = MT->config->StaticFilePath;
+$urlmap->map( $url, Plack::App::Directory->new({ root => MT->config->StaticFilePath }) );
+
 $urlmap->to_app;
