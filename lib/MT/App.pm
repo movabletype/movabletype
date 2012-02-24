@@ -2902,6 +2902,37 @@ sub pre_run {
 
 sub post_run { MT->run_callbacks( ( ref $_[0] ) . '::post_run', $_[0] ); 1 }
 
+sub reboot {
+    my $app = shift;
+    if ( $ENV{FAST_CGI} ) {
+        require MT::Touch;
+        MT::Touch->touch( 0, 'config' );
+    }
+    if ( my $pidfile = MT->config->PIDFilePath ) {
+        require MT::FileMgr;
+        my $fmgr = MT::FileMgr->new('Local');
+        my $pid;
+        unless ( $pid = $fmgr->get_data($pidfile) ) {
+            $app->log(
+                $app->translate(
+                    "Failed to open pid file [_1]: [_2]", $pidfile,
+                    $fmgr->errstr,
+                )
+            );
+            return 1;
+        }
+        chomp $pid;
+        unless ( kill 'HUP', int($pid) ) {
+            $app->log(
+                $app->translate( "Failed to send reboot signal: [_1]", $!, )
+            );
+            return 1;
+        }
+    }
+    1;
+}
+
+
 sub run {
     my $app = shift;
     my $q   = $app->param;
@@ -4259,6 +4290,12 @@ Example:
         $app->SUPER::init_request(@_);
         $app->{requires_login} = 1 unless $app->mode eq 'unprotected';
     }
+
+=head2 $app->reboot
+
+Reboot all MT instance. Now, this method sends SIGHUP to the process manager
+which specified by PIDFilePath config directive. If PIDFilePath isn't set, no
+signals would be sent.
 
 =head2 $app->run
 

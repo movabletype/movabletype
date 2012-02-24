@@ -737,8 +737,7 @@ sub save_cfg_system_general {
         }
     }
     $cfg->save_config();
-    require MT::Touch;
-    MT::Touch->touch( 0, 'config' );
+    $app->reboot();
     $app->redirect(
         $app->uri(
             'mode' => 'cfg_system_general',

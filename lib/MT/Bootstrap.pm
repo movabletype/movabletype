@@ -104,9 +104,10 @@ sub import {
                     FCGI::FAIL_ACCEPT_ON_INTR() );
                 my ( $max_requests, $max_time, $cfg );
 
-                # catch SIGUSR1 and SIGTERM and allow request to finish before
+                # catch SIGHUP, SIGUSR1 and SIGTERM and allow request to finish before
                 # exiting.
                 # TODO: handle SIGPIPE more gracefully.
+                $SIG{HUP}  = \&fcgi_sig_handler;
                 $SIG{USR1} = \&fcgi_sig_handler;
                 $SIG{TERM} = \&fcgi_sig_handler;
                 $SIG{PIPE} = 'IGNORE';

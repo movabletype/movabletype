@@ -1589,6 +1589,7 @@ BEGIN {
             'DBPort'                => undef,
             'DBUser'                => undef,
             'DBPassword'            => undef,
+            'PIDFilePath'           => undef,
             'DefaultLanguage'       => { default => 'en_US', },
             'LocalPreviews'         => { default => 0 },
             'DefaultCommenterAuth' =>
