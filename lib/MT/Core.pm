@@ -1969,6 +1969,7 @@ BEGIN {
             'cms' => {
                 handler         => 'MT::App::CMS',
                 script          => sub { MT->config->AdminScript },
+                cgi_path        => sub { MT->config->AdminCGIPath },
                 cgi_base        => 'mt',
                 page_actions    => sub { MT->app->core_page_actions(@_) },
                 content_actions => sub { MT->app->core_content_actions(@_) },
