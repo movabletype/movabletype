@@ -6,20 +6,23 @@ use MT;
 use CGI::PSGI;
 use Plack::App::URLMap;
 use Plack::App::WrapCGI;
+use Plack::Builder;
 use CGI::Parse::PSGI;
 use IPC::Open3;
 use IO::Select;
-use POSIX ":sys_wait_h";
 use Symbol qw( gensym );
+use Plack::Request;
+use XMLRPC::Transport::HTTP::Plack;
+use Plack::App::Directory;
 
 use constant DEBUG => $ENV{MT_PSGI_DEBUG} || 0;
 MT->new();
 
 my $mt_app = sub {
     my $app_class = shift;
-    eval "require $app_class";
     return sub {
         my $env = shift;
+        eval "require $app_class";
         my $cgi = CGI::PSGI->new($env);
         local *ENV = { %ENV, %$env }; # some MT::App method needs this
         my $app = $app_class->new( CGIObject => $cgi );
@@ -138,92 +141,63 @@ sub run_cgi_without_buffering {
     };
 }
 
-my %DAEMON_SCRIPTS = (
-    cms        => MT->config->AdminScript,
-    feeds      => MT->config->ActivityFeedScript,
-    comments   => MT->config->CommentScript,
-    tb         => MT->config->TrackbackScript,
-    new_search => MT->config->SearchScript,
-    view       => MT->config->ViewScript,
-    atom       => MT->config->AtomScript,
-    notify     => MT->config->NotifyScript,
-    community  => MT->config->CommunityScript,
-);
-
-my %CGI_SCRIPTS = (
-    wizard  => 'mt-wizard.cgi',
-    check   => 'mt-check.cgi', # TBD: This will fail since no entry is in core registry.
-    upgrade => MT->config->UpgradeScript,
-);
-
-# FIXME: Should move this map to registry.
-my %SCRIPT_NAME = (
-    cms        => MT->config->AdminScript,
-    feeds      => MT->config->ActivityFeedScript,
-    comments   => MT->config->CommentScript,
-    tb         => MT->config->TrackbackScript,
-    new_search => MT->config->SearchScript,
-    view       => MT->config->ViewScript,
-    atom       => MT->config->AtomScript,
-    notify     => MT->config->NotifyScript,
-    community  => MT->config->CommunityScript,
-    wizard     => 'mt-wizard.cgi',
-    check      => 'mt-check.cgi', # TBD: This will fail since no entry is in core registry.
-    upgrade    => MT->config->UpgradeScript,
-    xmlrpc     => MT->config->XMLRPCScript,
-);
-
 sub url_for {
-    my ( $id ) = @_;
-    my $base = $id eq 'cms' ? MT->config->AdminCGIPath || MT->config->CGIPath
-             :                MT->config->CGIPath
-             ;
-    $base =~ s!^https?://[^/]*/!/!;
-    $base =~ s!/$!!;
-    my $script = $SCRIPT_NAME{$id} || $id;
+    my ( $id, $script ) = @_;
+    my $base
+        = $id eq 'cms'
+        ? MT->config->AdminCGIPath || MT->config->CGIPath
+        : MT->config->CGIPath;
+    $base   =~ s!^https?://[^/]*/!/!;
+    $base   =~ s!/$!!;
     $script =~ s!^/!!;
     return $base . '/' . $script;
 }
 
 my $urlmap = Plack::App::URLMap->new;
-for my $id ( keys %DAEMON_SCRIPTS ) {
+my %APPS   = map {
+    map { $_ => 1 } keys %$_
+} @{ MT::Component->registry('applications') };
+
+for my $id ( keys %APPS ) {
     my $app = MT->registry( applications => $id ) or next;
-    my $handler = $app->{handler};
-    my $url = url_for($id);
-    DEBUG && warn "Mount $handler in $url\n";
-    $urlmap->map( $url, $mt_app->($handler) );
+    my $script = $app->{script};
+    $script = MT->handler_to_coderef($script) unless ref $script;
+    $script = $script->();
+    my $type = $app->{type};
+    if ( $type eq 'run_once' ) {
+        my $url = url_for( $id, $script );
+        my $filepath = File::Spec->catfile( $FindBin::Bin, $script );
+        DEBUG && warn "Mount CGI File ($filepath) in ($url)\n";
+        $urlmap->map( $url, $mt_cgi->($filepath) );
+    }
+    elsif ( $type eq 'xmlrpc' ) {
+        my $handler = $app->{handler};
+        my $server;
+        $server = XMLRPC::Transport::HTTP::Plack->new;
+        $server->dispatch_to( 'blogger', 'metaWeblog', 'mt', 'wp' );
+        my $url = url_for( $id, $script );
+        DEBUG && warn "Mount xmlrpc server $handler in $url\n";
+        $urlmap->map( $url, sub {
+            eval "require $handler";
+            my $env = shift;
+            my $req = Plack::Request->new($env);
+            $server->handle($req);
+        });
+    }
+    else {
+        my $handler = $app->{handler};
+        my $url = url_for( $id, $script );
+        DEBUG && warn "Mount $handler in $url\n";
+        $urlmap->map( $url, $mt_app->($handler) );
+    }
 }
 
-for my $id ( keys %CGI_SCRIPTS ) {
-    my $app = MT->registry( applications => $id ) or next;
-    my $file = $CGI_SCRIPTS{$id};
-    my $url = url_for($id);
-    my $filepath = File::Spec->catfile( $FindBin::Bin, $file );
-    DEBUG && warn "Mount CGI File ($filepath) in ($url)\n";
-    $urlmap->map( $url, $mt_cgi->( $filepath ) );
-}
-
-## Special case: Mount XMLRPC Server with using XMLRPC::Transport::HTTP::Plack
-{
-    use Plack::Request;
-    use XMLRPC::Transport::HTTP::Plack;
-    use MT::XMLRPCServer;
-    my $server;
-    $server = XMLRPC::Transport::HTTP::Plack->new;
-    $server->dispatch_to( 'blogger', 'metaWeblog', 'mt', 'wp' );
-    my $url = url_for('xmlrpc');
-    $urlmap->map( $url, sub {
-        my $env = shift;
-        my $req = Plack::Request->new($env);
-        $server->handle($req);
-    });
-}
-
-## Special case: Mount mt-static directory
-use Plack::App::Directory;
+## Mount mt-static directory
 my $url = MT->config->StaticWebPath;
 $url =~ s!^https?://[^/]*!!;
 my $path = MT->config->StaticFilePath;
 $urlmap->map( $url, Plack::App::Directory->new({ root => MT->config->StaticFilePath }) );
 
-$urlmap->to_app;
+builder {
+    $urlmap->to_app;
+}

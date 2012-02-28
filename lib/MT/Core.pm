@@ -1915,25 +1915,50 @@ BEGIN {
             'LockoutNotifyTo'                => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
-        applications      => {
-            'xmlrpc'   => { handler => 'MT::XMLRPCServer', },
-            'atom'     => { handler => 'MT::AtomServer', },
-            'feeds'    => { handler => 'MT::App::ActivityFeeds', },
-            'view'     => { handler => 'MT::App::Viewer', },
-            'notify'   => { handler => 'MT::App::NotifyList', },
-            'tb'       => { handler => 'MT::App::Trackback', },
-            'upgrade'  => { handler => 'MT::App::Upgrade', },
-            'wizard'   => { handler => 'MT::App::Wizard', },
+        applications => {
+            'xmlrpc' => {
+                handler => 'MT::XMLRPCServer',
+                script  => sub { MT->config->XMLRPCScript },
+                type    => 'xmlrpc',
+            },
+            'atom' => {
+                handler => 'MT::AtomServer',
+                script  => sub { MT->config->AtomScript },
+            },
+            'feeds' => {
+                handler => 'MT::App::ActivityFeeds',
+                script  => sub { MT->config->ActivityFeedScript },
+            },
+            'view' => {
+                handler => 'MT::App::Viewer',
+                script  => sub { MT->config->ViewScript },
+            },
+            'notify' => {
+                handler => 'MT::App::NotifyList',
+                script  => sub { MT->config->NotifyScript },
+            },
+            'tb' => {
+                handler => 'MT::App::Trackback',
+                script  => sub { MT->config->TrackbackScript },
+            },
+            'wizard' => {
+                handler => 'MT::App::Wizard',
+                script  => sub { 'mt-wizard.cgi' },
+                type    => 'run_once',
+            },
             'comments' => {
                 handler => 'MT::App::Comments',
+                script  => sub { MT->config->CommentScript },
                 tags    => sub { MT->app->load_core_tags },
             },
             'search' => {
                 handler => 'MT::App::Search::Legacy',
+                script  => sub { MT->config->SearchScript },
                 tags    => sub { MT->app->load_core_tags },
             },
             'new_search' => {
                 handler => 'MT::App::Search',
+                script  => sub { MT->config->SearchScript },
                 tags    => sub {
                     require MT::Template::Context::Search;
                     return MT::Template::Context::Search->load_core_tags();
@@ -1943,6 +1968,7 @@ BEGIN {
             },
             'cms' => {
                 handler         => 'MT::App::CMS',
+                script          => sub { MT->config->AdminScript },
                 cgi_base        => 'mt',
                 page_actions    => sub { MT->app->core_page_actions(@_) },
                 content_actions => sub { MT->app->core_content_actions(@_) },
@@ -1967,6 +1993,8 @@ BEGIN {
             upgrade => {
                 handler => 'MT::App::Upgrader',
                 methods => '$Core::MT::App::Upgrader::core_methods',
+                script  => sub { MT->config->UpgradeScript },
+                type    => 'run_once',
             },
         },
         archive_types => \&load_archive_types,
