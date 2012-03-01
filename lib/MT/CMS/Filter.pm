@@ -59,7 +59,7 @@ sub save {
                 ( $fid ? ( id => { not => $fid } ) : () ),
             },
             {   limit      => 1,
-                fetch_only => { id => 1 },
+                fetchonly => { id => 1 },
             }
         )
         )
