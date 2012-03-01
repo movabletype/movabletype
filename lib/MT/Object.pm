@@ -410,6 +410,7 @@ sub _post_load_rebless_object {
             }
         }
     }
+    return;
 }
 
 # A pre-search trigger for classed objects
