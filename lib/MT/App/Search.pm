@@ -96,8 +96,10 @@ sub init_request {
     my $q = $app->param;
 
     my $cfg = $app->config;
-    my $blog_id = $q->param('blog_id')
-        or return $app->errtrans( 'Invalid [_1] parameter.', 'blog_id' );
+    my $blog_id
+        = defined $q->param('blog_id')
+        ? $q->param('blog_id')
+        : $app->first_blog_id();
     my $blog = $app->model('blog')->load($blog_id)
         or return $app->errtrans( 'Can\'t load blog #[_1].',
         MT::Util::encode_html($blog_id) );
@@ -614,7 +616,7 @@ sub _log_search {
     unless ( $app->param('Template')
         && ( 'feed' eq $app->param('Template') ) )
     {
-        my $blog_id = $app->param('blog_id');
+        my $blog_id = $app->first_blog_id();
         require MT::Log;
         $app->log(
             {   message => $app->translate(
@@ -634,6 +636,36 @@ sub template_paths {
     my $app   = shift;
     my @paths = $app->SUPER::template_paths;
     ( $app->config->SearchTemplatePath, @paths );
+}
+
+sub first_blog_id {
+    my $app = shift;
+    my $q   = $app->param;
+
+    my $blog_id;
+    if ( $q->param('IncludeBlogs') ) {
+
+        # if IncludeBlogs is empty or all, get the first blog id available
+        if (   $q->param('IncludeBlogs') eq ''
+            || $q->param('IncludeBlogs') eq 'all' )
+        {
+            my @blogs = $app->model('blog')->load();
+            $blog_id = $blogs[0];
+        }
+
+        # all other normal requests with a list of blog ids
+        else {
+            my @ids = split ',', $q->param('IncludeBlogs');
+            $blog_id = $ids[0];
+        }
+    }
+    elsif ( exists( $app->{searchparam}{IncludeBlogs} )
+        && @{ $app->{searchparam}{IncludeBlogs} } )
+    {
+        my @blog_ids = $app->{searchparam}{IncludeBlogs};
+        $blog_id = $blog_ids[0] if @blog_ids;
+    }
+    $blog_id;
 }
 
 sub prepare_context {
@@ -668,11 +700,16 @@ sub prepare_context {
     $ctx->stash( 'limit', $q->param('count') || $q->param('limit') );
     $ctx->stash( 'format', $q->param('format') ) if $q->param('format');
 
-    my $blog_id = $q->param('blog_id');
-    my $blog = $app->model('blog')->load($blog_id);
-    $app->blog($blog);
-    $ctx->stash( 'blog_id', $blog_id );
-    $ctx->stash( 'blog',    $blog );
+    my $blog_id
+        = defined $q->param('blog_id')
+        ? $q->param('blog_id')
+        : $app->first_blog_id();
+    if ($blog_id) {
+        my $blog = $app->model('blog')->load($blog_id);
+        $app->blog($blog);
+        $ctx->stash( 'blog_id', $blog_id );
+        $ctx->stash( 'blog',    $blog );
+    }
 
     # some basic search parameters
     for my $key (
