@@ -649,8 +649,8 @@ sub first_blog_id {
         if (   $q->param('IncludeBlogs') eq ''
             || $q->param('IncludeBlogs') eq 'all' )
         {
-            my @blogs = $app->model('blog')->load();
-            $blog_id = $blogs[0];
+            my @blogs = $app->model('blog')->load({}, {limit => 1});
+            $blog_id = @blogs ? $blogs[0]->id : undef;
         }
 
         # all other normal requests with a list of blog ids
