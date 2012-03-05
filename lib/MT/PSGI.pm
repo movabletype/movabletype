@@ -256,3 +256,97 @@ sub call {
 1;
 
 __END__
+
+=head1 NAME
+
+MT::PSGI - Movable Type as PSGI application
+
+
+=head1 SYNOPSIS
+
+    # Full stack Movable Type server
+    use MT::PSGI;
+    use Plack::Builder;
+    builder {
+        MT::PSGI->new()->to_app();
+    }
+
+    # Or, get single MT::App based application
+    my $app = MT::PSGI->new( application => 'cms' )->to_app();
+
+
+=head1 DESCRIPTION
+
+MT::PSGI compiles MT::App into a PSGI application.
+
+
+=head1 OPTIONS
+
+=over 4
+
+=item application
+
+If application is given, returns single application instance of given application
+ID.
+
+    my $cms = MT::PSGI->new( application => 'cms' )->to_app();
+
+Otherwise, returns full stack MT instance, includes all MT applications and
+static file servers. Applications will automatically be dispatched according to
+Config Directives, e.g. CGIPath, AdminScript, etc.
+
+=back
+
+
+=head1 REGISTRY
+
+MT::PSGI looks up MT's registry to set up the behavior of application. When
+you create a new MT based application and run it on MT::PSGI, need to set proper
+values to your application registry.
+
+=over 4
+
+=item applications/YOURAPP/script
+
+Subroutine reference that returns your script's endpoint name. Typically it might
+looks like this:
+
+    script => sub { MT->config->MyAppScript },
+
+=item applications/YOURAPP/cgi_path
+
+If you want to mount your application on the path different from other
+applications, you can set subroutine reference that returns path to your
+application. for example;
+
+    cgi_path => sub { MT->config->MyAlternativeCGIPath },
+
+By default, the value of CGIPath config directive will be used.
+
+=item applications/YOURAPP/type
+
+Specify the application type. Only 'run_once' and 'xmlrpc' are acceptable value.
+If type is not given, standard persistent PSGI application will be compiled.
+
+=over 8
+
+=item run_once
+
+Run as non-persistent CGI script with C<fork>/C<exec> model. It's good for
+the kind of applications which be excuted infrequently like MT::Upgrader.
+Also usable to run old script who have no good cleanup process at exiting.
+
+=item xmlrpc
+
+Special mode for apps which constructed on XMLRPC::Lite. Make PSGI app with
+using XMLRPC::Transport::HTTP::Plack.
+
+=back
+
+=back
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut
