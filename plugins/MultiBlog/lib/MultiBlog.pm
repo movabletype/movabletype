@@ -24,6 +24,7 @@ sub preprocess_native_tags {
     # parameters available.
     unless ( $args->{blog_id}
         || $args->{blog_ids}
+        || $args->{site_ids}
         || $args->{include_blogs}
         || $args->{exclude_blogs}
         || $args->{include_websites}
