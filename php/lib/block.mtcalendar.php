@@ -20,7 +20,7 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
         if ($prefix) {
             if ($prefix == 'this') {
                 $ts = $ctx->stash('current_timestamp');
-                $prefix = substr($ts, 0, 6);
+                $prefix = $ts ? substr($ts, 0, 6) : $today;
             } elseif ($prefix == 'last') {
                 $year = substr($today, 0, 4);
                 $month = substr($today, 4, 2);

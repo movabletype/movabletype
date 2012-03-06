@@ -62,13 +62,7 @@ sub _hdlr_calendar {
     my $today = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 1;
     if ( $prefix = lc( $args->{month} || '' ) ) {
         if ( $prefix eq 'this' ) {
-            my $ts = $ctx->{current_timestamp}
-                or return $ctx->error(
-                MT->translate(
-                    "You used an [_1] tag without a date context set up.",
-                    qq(<MTCalendar month="this">)
-                )
-                );
+            my $ts = $ctx->{current_timestamp} || $today;
             $prefix = substr $ts, 0, 6;
         }
         elsif ( $prefix eq 'last' ) {
