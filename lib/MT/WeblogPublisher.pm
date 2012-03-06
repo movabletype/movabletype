@@ -1118,7 +1118,6 @@ sub rebuild_file {
         $entry = MT::Entry->load($entry) if !ref $entry;
         $ctx->var( 'entry_archive', 1 );
         $ctx->{__stash}{entry} = $entry;
-        $start = $entry->authored_on;
     }
     if ( $archiver->date_based ) {
 
@@ -1656,7 +1655,6 @@ sub rebuild_indexes {
 
         require MT::Request;
         MT::Request->instance->cache( 'build_template', $tmpl );
-        local $ctx->{current_timestamp} = MT::Util::epoch2ts( $blog, time );
 
         my $html = $tmpl->build($ctx);
         unless ( defined $html ) {
