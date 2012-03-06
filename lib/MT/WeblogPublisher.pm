@@ -1118,7 +1118,6 @@ sub rebuild_file {
         $entry = MT::Entry->load($entry) if !ref $entry;
         $ctx->var( 'entry_archive', 1 );
         $ctx->{__stash}{entry} = $entry;
-        $start = $entry->authored_on;
     }
     if ( $archiver->date_based ) {
 
