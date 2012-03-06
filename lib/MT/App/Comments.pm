@@ -378,7 +378,7 @@ sub do_signup {
     my $param = {};
     $param->{$_} = $q->param($_)
         foreach
-        qw(blog_id entry_id static email url username nickname email return_url );
+        qw(blog_id entry_id static email url username nickname return_url );
 
     return $app->errtrans("Invalid request")
         unless $param->{blog_id};
