@@ -2205,6 +2205,14 @@ sub load_core_tasks {
                 $app->model('failedlogin')->cleanup($app);
                 }
         },
+        'CleanFileInfoRecords' => {
+            label     => 'Purge Unused FileInfo Records',
+            frequency => 60 * 60 * 24,   # once a day
+            code      => sub {
+                my $app = MT->instance;
+                $app->model('fileinfo')->cleanup;
+                }
+        },
     };
 }
 

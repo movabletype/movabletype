@@ -133,4 +133,21 @@ sub parent_names {
     $parents;
 }
 
+sub cleanup {
+    my $class = shift;
+    my $iter  = $class->load_iter(
+        undef,
+        {   'join' => MT::Template->join_on(
+                undef,
+                {   'type' => 'backup',
+                    'id'   => \'= fileinfo_template_id',
+                }
+            )
+        }
+    );
+    while ( my $obj = $iter->() ) {
+        $obj->remove;
+    }
+}
+
 1;
