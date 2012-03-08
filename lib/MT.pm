@@ -2576,6 +2576,8 @@ sub new_ua {
     $ua->max_size($max_size) if ( defined $max_size ) && $ua->can('max_size');
     $ua->agent($agent);
     $ua->timeout($timeout) if defined $timeout;
+    eval { require HTML::HeadParser; };
+    $ua->parse_head(0) if $@;
     if ( defined $proxy ) {
         $ua->proxy( http => $proxy );
         my @domains = split( /,\s*/, $no_proxy ) if $no_proxy;
