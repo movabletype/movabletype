@@ -193,19 +193,6 @@ sub upgrade_functions {
                 },
             },
         },
-        'v5_delete_unused_fileinfos' => {
-            version_limit => 5.0031,
-            priority      => 3.2,
-            updater       => {
-                type  => 'template',
-                label => 'Deleting unused Fileinfo records...',
-                condition => sub { $_[0]->type eq 'backup' },
-                code  => sub {
-                    my ($template) = @_;
-                    MT->model('fileinfo')->remove({ template_id => $template->id });
-                },
-            },
-        },
     };
 }
 
