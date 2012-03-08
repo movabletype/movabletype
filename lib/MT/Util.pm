@@ -1451,6 +1451,12 @@ sub discover_tb {
             permits   => [qw( Reproduction Distribution )],
             prohibits => [qw( CommercialUse)],
         },
+        'by-nd-nc' => {
+            name      => 'Attribution-NoDerivs-NonCommercial',
+            requires  => [qw( Attribution Notice )],
+            permits   => [qw( Reproduction Distribution )],
+            prohibits => [qw( CommercialUse)],
+        },
         'by-nc' => {
             name      => 'Attribution-NonCommercial',
             requires  => [qw( Attribution Notice )],
