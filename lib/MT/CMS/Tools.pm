@@ -1712,6 +1712,7 @@ sub adjust_sitepath {
             'site_path'        => $blog->site_path,
             'site_url'         => $blog->site_url,
         };
+        next unless %asset_ids;
 
         my $fmgr = ( $site_path || $archive_path ) ? $blog->file_mgr : undef;
         next unless defined $fmgr;
