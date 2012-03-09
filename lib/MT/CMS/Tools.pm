@@ -1458,7 +1458,8 @@ sub restore {
                 $param->{open_dialog} = 1;
                 $param->{blog_ids} = join( ',', @$blog_ids )
                     if defined $blog_ids;
-                $param->{asset_ids} = join( ',', @$asset_ids )
+                # the asset list can get very long, so we put it in the session
+                $app->session->set('restore_asset_ids', join( ',', @$asset_ids ))
                     if defined $asset_ids;
                 $param->{tmp_dir} = $tmp;
             }
@@ -1499,8 +1500,6 @@ sub restore {
             . $app->current_magic
             . '&amp;blog_ids='
             . $param->{blog_ids}
-            . '&amp;asset_ids='
-            . $param->{asset_ids}
             . '&amp;tmp_dir='
             . encode_url( $param->{tmp_dir} );
         if ( ( $param->{restore_upload} ) && ( $param->{restore_upload} ) ) {
@@ -1587,7 +1586,8 @@ sub adjust_sitepath {
     my $q         = $app->param;
     my $tmp_dir   = $q->param('tmp_dir');
     my $error     = $q->param('error') || q();
-    my %asset_ids = split ',', $q->param('asset_ids');
+    my %asset_ids = split ',', $app->session->get('restore_asset_ids');
+    $app->session->set('restore_asset_ids', undef);
 
     $app->{no_print_body} = 1;
 
@@ -2073,7 +2073,6 @@ sub dialog_adjust_sitepath {
     my $error      = $q->param('error') || q();
     my $uploaded   = $q->param('restore_upload') || 0;
     my @blog_ids   = split ',', $q->param('blog_ids');
-    my $asset_ids  = $q->param('asset_ids');
     my $blog_class = $app->model('blog');
     my @blogs      = $blog_class->load( { id => \@blog_ids } );
     my ( @blogs_loop, @website_loop );
@@ -2150,7 +2149,6 @@ sub dialog_adjust_sitepath {
     $param = { blogs_loop => \@blogs_loop, tmp_dir => $tmp_dir, %$param };
     $param->{error}          = $error         if $error;
     $param->{restore_upload} = $uploaded      if $uploaded;
-    $param->{asset_ids}      = $asset_ids     if $asset_ids;
     $param->{website_loop}   = \@website_loop if @website_loop;
     $param->{all_websites}   = \@all_websites if @all_websites;
     $param->{path_separator} = MT::Util->dir_separator;
