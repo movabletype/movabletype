@@ -429,7 +429,7 @@ sub restore_file {
     my $deferred = {};
     my $errors   = [];
 
-    my ( $blog_ids, $asset_ids ) = eval {
+    my ( $blog_ids ) = eval {
         $class->restore_process_single_file( $fh, $objects, $deferred,
             $errors, $schema_version, $overwrite, $callback );
     };
@@ -475,7 +475,7 @@ sub restore_process_single_file {
     }
 
     my @blog_ids;
-    my @asset_ids;
+    my @non_blog_asset_ids;
 
     while ( my ( $key, $value ) = each %$objects ) {
         if ( 'blog' eq $value->datasource ) {
@@ -484,12 +484,13 @@ sub restore_process_single_file {
         }
         elsif ( 'asset' eq $value->datasource ) {
             my ($old_id) = $key =~ /^.+#(\d+)$/;
-            push @asset_ids, $value->id, $old_id;
+            next unless $value->blog_id == 0;
+            push @non_blog_asset_ids, $value->id, $old_id;
         }
     }
 
-    my $blog_ids  = scalar(@blog_ids)  ? \@blog_ids  : undef;
-    my $asset_ids = scalar(@asset_ids) ? \@asset_ids : undef;
+    my $blog_ids  = scalar(@blog_ids) ? \@blog_ids  : undef;
+    my $asset_ids = scalar(@non_blog_asset_ids) ? \@non_blog_asset_ids : undef;
     ( $blog_ids, $asset_ids );
 }
 
@@ -1661,7 +1662,8 @@ information (created by backup subroutine).
 
 TODO A method which will do the actual heavy lifting of the
 process to restore objects from an XML file.  Returns array of blog_ids
-which are restored in the very session, and hash of asset_ids.
+which are restored in the very session, a flag if asset were restored,
+and hash of non-blog-asset_ids. (such as userpics)
 
 =head2 restore_directory
 
