@@ -1499,8 +1499,6 @@ sub restore {
             . $app->current_magic
             . '&amp;blog_ids='
             . $param->{blog_ids}
-            . '&amp;asset_ids='
-            . $param->{asset_ids}
             . '&amp;tmp_dir='
             . encode_url( $param->{tmp_dir} );
         if ( ( $param->{restore_upload} ) && ( $param->{restore_upload} ) ) {
@@ -2154,6 +2152,13 @@ sub dialog_adjust_sitepath {
     $param->{website_loop}   = \@website_loop if @website_loop;
     $param->{all_websites}   = \@all_websites if @all_websites;
     $param->{path_separator} = MT::Util->dir_separator;
+    # There is a danger that the asset_id list will ballon and make a request
+    # URL that is longer then allowed. This function have two ways to be called:
+    # 1. As open-dialog command, from the restore window, and with GET 
+    # 2. a part of dialog chain, from dialog_restore_upload, with POST
+    # if this was called using GET, then the asset list will be read from
+    # the calling page
+    $param->{request_method} = $app->request_method();
     for my $key (
         qw(files assets last redirect is_dirty is_asset objects_json deferred_json)
         )
