@@ -57,9 +57,11 @@
 .sortable-item .item-basename {
     margin-left: 3px;
 }
+.sortable-item .item-label, 
 .sortable-item .item-label a, 
 .sortable-item .item-basename-text {
-    max-width: 12em;
+    display: inline-block;
+    max-width: 18em;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
