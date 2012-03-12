@@ -479,6 +479,7 @@ sub init_website {
 
 sub finish {
     my $app = shift;
+    $app->reboot();
 
     if ( $app->{author} ) {
         require MT::Author;
