@@ -229,6 +229,7 @@ sub mount_applications {
         my $base
             = $app->{cgi_path} ? $app->{cgi_path}->() : $mt->config->CGIPath;
         $base =~ s!/$!!;
+        $base =~ s!^https?://[^/]*!!;
         my $script = $app->{script};
         $script = MT->handler_to_coderef($script) unless ref $script;
         $script = $script->();
