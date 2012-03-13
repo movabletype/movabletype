@@ -2032,7 +2032,7 @@ ul#asset-list .asset-type-video {
 }
 .template-options-toggle {
     float: left;
-    height: 30px;
+    height: 30xp;
     line-height: 30px;
     margin: 0;
     font-weight: bold;
@@ -2042,7 +2042,7 @@ ul#asset-list .asset-type-video {
 }
 .template-options-summary {
     float: right;
-    height: 30px;
+    height: 30xp;
     line-height: 30px;
     color: #7b7c7d;
     font-size: 90%;
