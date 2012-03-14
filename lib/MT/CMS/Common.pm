@@ -976,7 +976,6 @@ sub list {
     my @list_columns;
     for my $prop ( values %$list_props ) {
         next if !$prop->can_display($scope);
-        my $col;
         my $id = $prop->id;
         my $disp = $prop->display || 'optional';
         my $show
@@ -991,13 +990,14 @@ sub list {
 
         if ( my $subfields = $prop->sub_fields ) {
             for my $sub (@$subfields) {
+                my $sdisp = $sub->{display} || 'optional';
                 push @subfields,
                     {
-                    display => $cols{ $id . '.' . $sub->{class} }
-                        || $sub->{display} eq 'default',
+                    display => ( $cols{ $id . '.' . $sub->{class} }
+                        || $sdisp ) eq 'default',
                     class      => $sub->{class},
                     label      => $app->translate( $sub->{label} ),
-                    is_default => $sub->{display} eq 'default' ? 1 : 0,
+                    is_default => $sdisp eq 'default' ? 1 : 0,
                     };
             }
         }
