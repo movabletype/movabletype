@@ -784,6 +784,14 @@ abstract class MTDatabase {
             $entry_filter = '';
         }
 
+        # special case for selecting some particular entries
+        if (isset($args['entry_ids'])) {
+            $entry_filter .=
+                ' and entry_id IN (' .
+                join(',', preg_grep('/\A\d+\z/', $args['entry_ids'])) .
+                ')';
+        }
+
         # special case for excluding a particular entry
         if (isset($args['not_entry_id'])) {
             $entry_filter .= ' and entry_id != '.$args['not_entry_id'];
