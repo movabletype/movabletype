@@ -2904,6 +2904,11 @@ sub post_run { MT->run_callbacks( ( ref $_[0] ) . '::post_run', $_[0] ); 1 }
 
 sub reboot {
     my $app = shift;
+    $app->{do_reboot} = 1;
+}
+
+sub do_reboot {
+    my $app = shift;
     if ( $ENV{FAST_CGI} ) {
         require MT::Touch;
         MT::Touch->touch( 0, 'config' );
@@ -3301,6 +3306,7 @@ sub takedown {
 
     $app->request->finish;
     delete $app->{request};
+    $app->do_reboot if $app->{do_reboot};
 
 }
 
