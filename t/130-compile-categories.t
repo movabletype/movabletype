@@ -90,6 +90,34 @@ foreach (2,25,26,23) {
 	ok( !$expr->( { $_ => 1 } ), "expr false for $_" );
 }
 
+@cats = values %cats_hash;
+$expr = $ctx->compile_category_filter("bbb/aaa", \@cats, { children => 1 });
+ok( !$expr->( { 1 => 1, 25 => 1 } ), "expr false for 1, 25" );
+ok( $expr->( { 26 => 1 } ), "expr true for 26" );
+ok( $expr->( { 27 => 1 } ), "expr true for 27" );
+
+@cats = values %cats_hash;
+$expr = $ctx->compile_category_filter("bbb/aaa", \@cats);
+ok( !$expr->( { 1 => 1, 25 => 1, 27 => 1 } ), "expr false for 1, 25, 27" );
+ok( $expr->( { 26 => 1 } ), "expr true for 26" );
+
+@cats = values %cats_hash;
+$expr = $ctx->compile_category_filter("bbb/aaa OR foo", \@cats);
+ok( !$expr->( { 3 => 1, 25 => 1, 23 => 1 } ), "expr false for 3, 25, 23" );
+foreach (1, 26, 27) {
+	ok( $expr->( { $_ => 1 } ), "expr true for $_" );
+}
+
+@cats = values %cats_hash;
+$expr = $ctx->compile_category_filter("bbb/aaa OR foo", \@cats, { children => 1 });
+foreach (2,25) {
+	ok( !$expr->( { $_ => 1 } ), "expr false for $_" );
+}
+foreach (1, 3, 24, 26, 27) {
+	ok( $expr->( { $_ => 1 } ), "expr true for $_" );
+}
+
+
 done_testing();
 
 sub add_category {
@@ -109,5 +137,8 @@ id: 1 parent: 0 name: foo
 id: 2 parent: 0 name: bar
 id: 3 parent: 1 name: subfoo
 ----
-id: 23 parent: 2 name: foo
-id: 24 parent: 3 name: subsubfoo
+Built category tree:
+foo(1)->subfoo(3)->subsubfoo(24)
+bar(2)
+aaa(23)
+bbb(25)->aaa(26)->foo(27)
