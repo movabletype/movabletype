@@ -3076,12 +3076,14 @@ sub handler_to_coderef {
 sub help_url {
     my $pkg = shift;
     my ($append) = @_;
-    $append = '' unless defined $append;
 
     my $url = $pkg->config->HelpURL;
-    return $url.$append if defined $url;
+    return $url if defined $url;
     $url = $pkg->translate('http://www.movabletype.org/documentation/');
-    $url . $append;
+    if ($append) {
+        $url .= $append;
+    }
+    $url;
 }
 
 sub register_refresh_cache_event {
