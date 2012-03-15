@@ -268,8 +268,8 @@ sub elements {
             id    => $_,
             %{ $elements->{$_} },
             )
-        } 
-        sort { $eh->{$a}->{order} <=> $eh->{$b}->{order} } 
+        }
+        sort { $eh->{$a}->{order} <=> $eh->{$b}->{order} }
         keys %$elements;
 }
 
@@ -284,6 +284,8 @@ sub apply {
     MT->run_callbacks( 'pre_apply_theme', $theme, $blog );
     my $importer_filter = $opts{importer_filter};
     $theme->{warning_on_apply} = 0;
+    my $curr_lang = MT->current_language;
+    MT->set_language( $blog->language );
 
     ## run all element handlers.
     my @elements = $theme->elements;
@@ -325,6 +327,7 @@ sub apply {
             }
         }
     }
+    MT->set_language($curr_lang);
 
     ## also do copy static files to mt-static directory.
     my $src_dir = $theme->{static_path} || 'static';
@@ -468,8 +471,8 @@ sub thumbnail {
         return ( $theme->default_theme_thumbnail(%param) );
     }
     my $file = $theme->_thumbnail_filename(%param);
-    my $url = MT->support_directory_url . 
-        join( '/', _thumbnail_dir(), $theme->{id}, $file );
+    my $url  = MT->support_directory_url
+        . join( '/', _thumbnail_dir(), $theme->{id}, $file );
     return ( $url, $theme->_thumbnail_size(%param) );
 }
 
