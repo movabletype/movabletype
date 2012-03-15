@@ -12,7 +12,7 @@ use MT::Test qw(:db :data);
 use MT;
 use constant HAS_LEAKTRACE => eval { require Test::LeakTrace };
 use Test::More HAS_LEAKTRACE
-    ? ( tests => 18 )
+    ? ( tests => 36 )
     : ( skip_all => 'require Test::LeakTrace' );
 use Test::LeakTrace;
 
@@ -28,23 +28,31 @@ $request->{__stash} = {};
 # otherwise the cache will hold the leaked object, and it won't be seen as leak
 
 my $tests = [
-	['website', 2],
-	['blog', 1],
-	['entry', 1],
-	['page', 20],
-	['category', 1],
-	['folder', 20],
+	# normal loading
+	[qw{ website website 2 }],
+	[qw{ blog blog 1 }],
+	[qw{ entry entry 1 }],
+	[qw{ page page 20 }],
+	[qw{ category category 1 }],
+	[qw{ folder folder 20 }],
+	# reblessed loading
+	[qw{ blog website 2 }],
+	[qw{ website blog 1 }],
+	[qw{ page entry 1 }],
+	[qw{ entry page 20 }],
+	[qw{ folder category 1 }],
+	[qw{ category folder 20 }],
 ];
 
 foreach my $rec (@$tests) {
-	my ($model, $id) = @$rec;
+	my ($model, $expected, $id) = @$rec;
 	no_leaks_ok {
 		$mt->model($model)->load($id);
 	}
 	"$model should not leak";
-	my $class = $mt->model($model);
-	my $obj = $class->load($id);
+	my $expected_class = $mt->model($expected);
+	my $obj = $mt->model($model)->load($id);
 	isnt($obj, undef, "Object $model loaded");
-	is(ref($obj), $class, "Object $model of type $class");
+	is(ref($obj), $expected_class, "Object $model of type $expected_class");
 }
 
