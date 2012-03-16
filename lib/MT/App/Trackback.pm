@@ -32,6 +32,12 @@ sub init {
     $app;
 }
 
+sub init_callbacks {
+    my $app = shift;
+    MT->add_callback( 'TBPingThrottleFilter', 1, undef,
+        \&MT::App::Trackback::_builtin_throttle );
+}
+
 sub validate_request_params {
     my $app = shift;
 
@@ -229,9 +235,6 @@ sub ping {
         $cat = MT::Category->load( $tb->category_id );
     }
     $blog_id = $tb->blog_id;
-
-    MT->add_callback( 'TBPingThrottleFilter', 1, undef,
-        \&MT::App::Trackback::_builtin_throttle );
 
     my $passed_filter
         = MT->run_callbacks( 'TBPingThrottleFilter', $app, $tb );
