@@ -21,6 +21,7 @@ use Plack::Request;
 use Plack::App::URLMap;
 use Plack::App::WrapCGI;
 use Plack::App::Directory;
+use Plack::App::File;
 use IPC::Open3;
 use IO::Select;
 use Symbol qw( gensym );
@@ -245,6 +246,19 @@ sub mount_applications {
     my $staticpath = MT->config->StaticFilePath;
     $urlmap->map( $staticurl,
         Plack::App::Directory->new( { root => $staticpath } ) );
+
+    ## Mount support directory
+    my $supporturl = MT->config->SupportURL;
+    $supporturl =~ s!^https?://[^/]*!!;
+    my $supportpath = MT->config->SupportDirectoryPath;
+    $urlmap->map( $supporturl,
+        Plack::App::Directory->new( { root => $supportpath } ) );
+
+    ## Mount favicon.ico
+    my $static = MT->config->StaticFilePath;
+    $static .= '/' unless $static =~ m!/$!;
+    my $favicon = $static . 'images/favicon.ico';
+    $urlmap->map( '/favicon.ico' => Plack::App::File->new( { file => $favicon } ));
 
     $self->_app( $urlmap->to_app );
 }
