@@ -1248,8 +1248,11 @@ sub init_debug_mode {
     }
 }
 
+{
+my $callbacks_added;
 sub init_callbacks {
     my $mt = shift;
+    return if $callbacks_added;
     MT->_register_core_callbacks(
         {   'build_file_filter' =>
                 sub { MT->publisher->queue_build_file_filter(@_) },
@@ -1259,6 +1262,8 @@ sub init_callbacks {
                 '$Core::MT::Summary::Triggers::post_init_add_triggers',
         }
     );
+    $callbacks_added = 1;
+}
 }
 
 sub core_upload_file_to_sync {

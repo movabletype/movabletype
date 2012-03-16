@@ -833,15 +833,20 @@ sub run_callbacks {
     return $app->SUPER::run_callbacks( $meth, @param );
 }
 
+{
+my $callbacks_added;
 sub init_callbacks {
     my $app = shift;
     $app->SUPER::init_callbacks(@_);
+    return if $callbacks_added;
     MT->add_callback( 'post_save',             0, $app, \&_cb_mark_blog );
     MT->add_callback( 'post_remove',           0, $app, \&_cb_mark_blog );
     MT->add_callback( 'MT::Blog::post_remove', 0, $app, \&_cb_unmark_blog );
     MT->add_callback( 'pre_build', 9, $app, sub { $app->touch_blogs() } );
     MT->add_callback( 'new_user_provisioning', 5, $app,
         \&_cb_user_provisioning );
+    $callbacks_added = 1;
+}
 }
 
 sub init_request {

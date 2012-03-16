@@ -8,8 +8,10 @@ package MT::Summary::Triggers;
 use strict;
 use warnings;
 
+{
+my $triggers_added;
 sub post_init_add_triggers {
-
+    return if $triggers_added;
     # post_save triggers for summary expiration
     my $summaries = MT->registry('summaries');
     my %class_triggers;
@@ -78,6 +80,8 @@ sub post_init_add_triggers {
             }
         );
     }
+    $triggers_added = 1;
+}
 }
 
 sub pre_save_trigger {
