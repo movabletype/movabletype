@@ -4353,7 +4353,7 @@ B<Example:> Passing Parameters to a Template Module
         }
 
         if ($cache_enabled) {
-            $cache_driver->replace( $cache_key, Encode::encode( $enc, $ret ),
+            $cache_driver->set( $cache_key, Encode::encode( $enc, $ret ),
                 $ttl );
         }
 
