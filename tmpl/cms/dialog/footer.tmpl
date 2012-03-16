@@ -10,6 +10,7 @@ jQuery(function() {
     jQuery.mtAddEdgeClass();
     jQuery('button.mt-close-dialog').click(function() {
         parent.jQuery.fn.mtDialog.close();
+        return false;
     });
     jQuery('input').each(function() {
         jQuery(this).addClass(jQuery(this).attr('type'));
