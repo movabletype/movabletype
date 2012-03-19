@@ -107,7 +107,7 @@ function smarty_function_mtinclude($args, &$ctx) {
     # Try to read from cache
     $cache_enable = false;
     $cache_id = '';
-    $cacje_key = '';
+    $cache_key = '';
     $cache_ttl = 0;
     if (!empty($load_type) &&
         isset($blog) && $blog->blog_include_cache == 1 &&
@@ -121,9 +121,9 @@ function smarty_function_mtinclude($args, &$ctx) {
         $cache_enable = true;
         $cache_key = isset($args['key'])
             ? $args['key']
-            : isset($args['cache_key'])
+            : ( isset($args['cache_key'])
                 ? $args['cache_key']
-                : 'blog::' . $cache_blog_id . '::template_' . $load_type  . '::' . $load_name;
+                : 'blog::' . $cache_blog_id . '::template_' . $load_type  . '::' . $load_name );
 
         if (isset($args['ttl']))
             $cache_ttl = $args['ttl'];
