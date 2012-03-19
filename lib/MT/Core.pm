@@ -1655,6 +1655,11 @@ BEGIN {
             'MailEncoding'         => { default => 'ISO-8859-1', },
             'MailTransfer'         => { default => 'sendmail' },
             'SMTPServer'           => { default => 'localhost', },
+            'SMTPAuth'             => { default => 0, },
+            'SMTPUseSSL'           => { default => 0, },
+            'SMTPUser'             => undef,
+            'SMTPPassword'         => undef,
+            'SMTPPort'             => undef,
             'DebugEmailAddress'    => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>
