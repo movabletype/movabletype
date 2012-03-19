@@ -612,5 +612,6 @@
 { "r" : "1", "t" : "<MTEntries id=\"6\"><MTEntryPrimaryCategory><MTCategoryLabel></MTEntryPrimaryCategory></MTEntries>", "e" : "foo"}, #611
 { "r" : "1", "t" : "<MTEntries id=\"6\"><MTEntryCategories type=\"primary\"><MTCategoryLabel></MTEntryCategories></MTEntries>", "e" : "foo"}, #612
 { "r" : "1", "t" : "<MTPasswordValidationRule>", "e" : "minimum length of 8" }, #613
-{ "r" : "1", "t" : "<$MTSetVar name=\"foo614{b}\" value=\"b\"$><$MTIf name=\"foo614{a}\"$>true<MTElse>false</MTIf>", "e" : "false" } #614
+{ "r" : "1", "t" : "<$MTSetVar name=\"foo614{b}\" value=\"b\"$><$MTIf name=\"foo614{a}\"$>true<MTElse>false</MTIf>", "e" : "false" }, #614
+{ "r" : "1", "t" : "<mt:setvar name=\"array615\" value=\"one\" index=\"1\"><mt:setvar name=\"array615\" value=\"two\" index=\"2\"><mt:setvar name=\"array615\" value=\"three\" index=\"3\"><mt:getvar name=\"array615\" index=\"1\">;<mt:getvar name=\"array615\">", "e" : "one;onetwothree" } #615
 ]
