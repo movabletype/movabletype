@@ -11,6 +11,7 @@ use strict;
 use MT;
 use base qw( MT::ErrorHandler );
 use Encode;
+use Sys::Hostname;
 
 sub send {
     my $class = shift;
@@ -170,27 +171,126 @@ sub _send_mt_debug {
 sub _send_mt_smtp {
     my $class = shift;
     my ( $hdrs, $body, $mgr ) = @_;
-    eval { require Mail::Sendmail; };
-    return $class->error(
-        MT->translate(
-            "Sending mail via SMTP requires that your server "
-                . "have Mail::Sendmail installed: [_1]",
-            $@
-        )
-    ) if $@;
-    my %hdrs = %$hdrs;
-    $hdrs{Message} = $body;
-    $hdrs{Smtp}    = $mgr->SMTPServer;
-    for my $h (qw( Cc Bcc )) {
 
-        if ( $hdrs{$h} ) {
-            $hdrs{$h} = join ', ', @{ $hdrs{$h} };
+    # SMTP Configuration
+    my $host      = $mgr->SMTPServer;
+    my $user      = $mgr->SMTPUser;
+    my $pass      = $mgr->SMTPPassword;
+    my $localhost = hostname() || 'localhost';
+    my $port
+        = $mgr->SMTPPort   ? $mgr->SMTPPort
+        : $mgr->SMTPUseSSL ? 465
+        :                    25;
+    my ( $auth, $tls );
+    if ( $mgr->SMTPAuth ) {
+
+        if ( 'tls' eq $mgr->SMTPAuth ) {
+            $tls = 1;
+        }
+        else {
+            $auth = 1;
         }
     }
-    my $ret = Mail::Sendmail::sendmail(%hdrs);
-    $ret
-        or return $class->error(
-        MT->translate( "Error sending mail: [_1]", $Mail::Sendmail::error ) );
+    my $ssl = $mgr->SMTPUseSSL ? 1 : 0;
+
+    return $class->error(
+        MT->translate(
+            "Username and password is required for SMTP Authentication."
+        )
+        )
+        if ( $tls or $auth )
+        and ( !$user or !$pass );
+
+    # Check required modules;
+    my $mod_reqd;
+    my @modules = qw { Net::SMTP MIME::Base64 };
+    push @modules, qw { Authen::SASL }                               if $auth;
+    push @modules, qw { Net::SMTP::SSL IO::Socket::SSL Net::SSLeay } if $ssl;
+    push @modules, qw { Net::SMTP::TLS IO::Socket::SSL Net::SSLeay } if $tls;
+    for my $module (@modules) {
+        eval "use $module;";
+        $mod_reqd
+            .= ( MT->translate( "Required module '[_1]' not found", $module )
+                . "\n" )
+            if $@;
+    }
+    return $class->error($mod_reqd) if $mod_reqd;
+
+    # Setup headers
+    my $hdr;
+    foreach my $k ( keys %$hdrs ) {
+        $hdr .= "$k: " . $hdrs->{$k} . "\r\n";
+    }
+
+    # Make a smtp object
+    my $smtp;
+
+    if ($tls) {
+        $smtp = Net::SMTP::TLS->new(
+            $host,
+            Port     => $port,
+            User     => $user,
+            Password => $pass,
+            Timeout  => 60,
+            Hello    => $localhost,
+            Debug    => 1,
+            )
+            or return $class->error(
+            MT->translate(
+                'Error connecting to SMTP server [_1]:[_2]',
+                $host, $port
+            )
+            );
+    }
+    elsif ($ssl) {
+        $smtp = Net::SMTP::SSL->new(
+            $host,
+            Port    => $port,
+            Timeout => 60,
+            Hello   => $localhost,
+            Debug   => 1,
+            )
+            or return $class->error(
+            MT->translate(
+                'Error connecting to SMTP server [_1]:[_2]',
+                $host, $port
+            )
+            );
+    }
+    else {
+        $smtp = Net::SMTP->new(
+            $host,
+            Port    => $port,
+            Timeout => 60,
+            Hello   => $localhost,
+            Debug   => 1,
+            )
+            or return $class->error(
+            MT->translate(
+                'Error connecting to SMTP server [_1]:[_2]',
+                $host, $port
+            )
+            );
+    }
+
+    if ($auth) {
+        if ( !$smtp->auth( $user, $pass ) ) {
+            return $class->error(
+                MT->translate(
+                    "Authentication failure: [_1]", $smtp->errstr
+                )
+            );
+        }
+    }
+
+    # Sending mail
+    $smtp->mail( $hdrs->{From} );
+    $smtp->to( $hdrs->{To} );
+    $smtp->data();
+    $smtp->datasend($hdr);
+    $smtp->datasend("\n");
+    $smtp->datasend($body);
+    $smtp->quit;
     1;
 }
 
