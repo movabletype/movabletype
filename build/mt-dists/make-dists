@@ -144,6 +144,7 @@ for my $lang (@languages) {
     verbose_command("gzip $options --best $distname.tar");
     $options = $silent ? '-rq' : '-r';
     verbose_command("zip $options $distname.zip $distname -x $distname/extras/\*.gz");
+    verbose_command("zip $options $distname-nd.zip ./* -x $distname/extras/\*.gz");
 
     verbose_command("rm -rf $distname");
     unlink("MANIFEST");
