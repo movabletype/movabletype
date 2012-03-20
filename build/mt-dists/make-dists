@@ -147,7 +147,7 @@ for my $lang (@languages) {
 
     chdir($distname);
     verbose_command("zip $options ../$distname-nd.zip ./* -x extras/\*.gz");
-    chdir(..);
+    chdir( '..' );
 
     verbose_command("rm -rf $distname");
     unlink("MANIFEST");
