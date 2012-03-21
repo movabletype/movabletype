@@ -97,9 +97,4 @@ sub clear_cache {
     return;
 }
 
-sub cache_key {
-    my ($driver, $class, $id) = @_;
-    return join ':', $class->datasource, ref($id) eq 'ARRAY' ? @$id : $id;
-}
-
 1;
