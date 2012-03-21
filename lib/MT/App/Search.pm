@@ -693,6 +693,9 @@ sub prepare_context {
     $ctx->stash( 'maxresults', $app->{searchparam}{SearchMaxResults} );
     $ctx->stash( 'include_blogs', join ',',
         @{ $app->{searchparam}{IncludeBlogs} } );
+    $ctx->stash( 'exclude_blogs', join ',',
+        @{ $app->{searchparam}{ExcludeBlogs} } )
+        if $app->{searchparam}{ExcludeBlogs};
     $ctx->stash( 'results', $iter );
     $ctx->stash( 'count',   $count );
     $ctx->stash( 'offset',
