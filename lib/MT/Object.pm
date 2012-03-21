@@ -1709,6 +1709,11 @@ sub lookup_multi {
     return \@objs;
 }
 
+sub cache_class {
+    my $class = shift;
+    return MT->model($class->datasource);
+}
+
 package MT::Object::Meta;
 
 use base qw( Data::ObjectDriver::BaseObject );
