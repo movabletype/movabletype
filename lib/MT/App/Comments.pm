@@ -2029,12 +2029,6 @@ sub save_commenter_profile {
                 = $app->translate('Failed to verify current password.');
             return $app->build_page( 'profile.tmpl', \%param );
         }
-        if (    ( $cmntr->column('password') !~ /^\$6\$/ )
-            and ( not $param{error} ) )
-        {
-            $param{error} = $app->translate(
-                "For improved security, please change your password");
-        }
     }
     my $email = $param{email};
     if ( $email && !is_valid_email($email) ) {
@@ -2066,6 +2060,14 @@ sub save_commenter_profile {
     $cmntr->url( $param{url} )           if $param{url};
     $cmntr->set_password( $param{password} )
         if $param{password} && 'MT' eq $cmntr->auth_type;
+    if (    ( $cmntr->column('password') !~ /^\$6\$/ )
+        and ( 'MT' eq $cmntr->auth_type )
+        and ( not $param{error} ) )
+    {
+        $param{error} = $app->translate(
+            "For improved security, please change your password");
+    }
+
     $cmntr->modified_on( epoch2ts( undef, time ) );
     if ( $cmntr->save ) {
         $app->run_callbacks( 'api_post_save.author', $app, $cmntr,
