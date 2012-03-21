@@ -20,6 +20,33 @@ sub preprocess_native_tags {
     my $plugin = MT::Plugin::MultiBlog->instance;
     my $tag    = lc $ctx->stash('tag');
 
+    # If we're running under MT-Search, set the context based on the search
+    # parameters available.
+    unless ( $args->{blog_id}
+        || $args->{blog_ids}
+        || $args->{site_ids}
+        || $args->{include_blogs}
+        || $args->{exclude_blogs}
+        || $args->{include_websites}
+        || $args->{exclude_websites} )
+    {
+        my $app = MT->instance;
+        if ( $app->isa('MT::App::Search') && !$ctx->stash('inside_blogs') ) {
+            if ( my $excl = $app->{searchparam}{ExcludeBlogs} ) {
+                $args->{exclude_blogs} ||= join ',', @$excl;
+            }
+            elsif ( my $incl = $app->{searchparam}{IncludeBlogs} ) {
+                $args->{include_blogs} = join ',', @$incl;
+            }
+
+            if ( ( $args->{include_blogs} || $args->{exclude_blogs} )
+                && $args->{blog_id} )
+            {
+                delete $args->{blog_id};
+            }
+        }
+    }
+
     # Load multiblog access control list
     my $incl 
         = $args->{include_blogs}
