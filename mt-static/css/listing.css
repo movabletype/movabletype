@@ -179,7 +179,9 @@ tfoot .col.head{
 }
 .col .icon {
     display: inline-block;
+    min-width: 15px;
     margin-right: 3px;
+    text-align: center;
 }
 .col .comment.status {
     float: left;
