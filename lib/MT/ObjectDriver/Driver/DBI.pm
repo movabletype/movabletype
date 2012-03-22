@@ -127,7 +127,7 @@ sub count {
                 $col = $class->properties->{primary_key};
             }
             my $dbcol
-                = $driver->dbd->db_column_name( $class->datasource, $col );
+                = $driver->dbd->db_column_name( $class->datasource, $col, $args->{alias} );
             $select = "COUNT(DISTINCT $dbcol)";
         }
     }
@@ -370,11 +370,11 @@ sub _select_aggregate {
 
 sub _decorate_column_names_in {
     my $driver = shift;
-    my ( $hash, $class ) = @_;
+    my ( $hash, $class, $alias ) = @_;
 
     my $dbd = $driver->dbd;
     for my $col ( keys %$hash ) {
-        my $new_col = $dbd->db_column_name( $class->datasource, $col );
+        my $new_col = $dbd->db_column_name( $class->datasource, $col, $alias );
         $hash->{$new_col} = delete $hash->{$col};
     }
 
@@ -383,8 +383,9 @@ sub _decorate_column_names_in {
 
 sub _decorate_column_name {
     my $driver = shift;
-    my ( $class, $col ) = @_;
-    return $driver->dbd->db_column_name( $class->datasource, $col );
+    my ( $class, $col, $alias ) = @_;
+    my $name = $driver->dbd->db_column_name( $class->datasource, $col, $alias );
+    $name;
 }
 
 sub prepare_statement {
@@ -397,6 +398,7 @@ sub prepare_statement {
         ( $args->{joins} ? @{ $args->{joins} } : () ),
     );
     my %stmt_args;
+    my $alias = $orig_args->{alias};
 
     ## Statements don't know anything about table/column name decoration,
     ## so for any set of column names we send the statement, we must pre-
@@ -408,7 +410,7 @@ sub prepare_statement {
     {
         if ( exists $args->{$arg} ) {
             my %stmt_data = %{ $args->{$arg} };
-            $driver->_decorate_column_names_in( \%stmt_data, $class );
+            $driver->_decorate_column_names_in( \%stmt_data, $class, $alias );
             $stmt_args{$arg} = \%stmt_data;
         }
     }
@@ -417,7 +419,7 @@ sub prepare_statement {
     if ( my $date_columns = $class->columns_of_type('datetime') ) {
         my %date_columns_hash;
         @date_columns_hash{@$date_columns} = (1) x scalar @$date_columns;
-        $driver->_decorate_column_names_in( \%date_columns_hash, $class );
+        $driver->_decorate_column_names_in( \%date_columns_hash, $class, $alias );
         $stmt_args{date_columns} = \%date_columns_hash;
     }
 
@@ -425,7 +427,7 @@ sub prepare_statement {
     if ( my $lob_columns = $class->columns_of_type( 'text', 'blob' ) ) {
         my %lob_columns_hash;
         @lob_columns_hash{@$lob_columns} = (1) x scalar @$lob_columns;
-        $driver->_decorate_column_names_in( \%lob_columns_hash, $class );
+        $driver->_decorate_column_names_in( \%lob_columns_hash, $class, $alias );
         $stmt_args{lob_columns} = \%lob_columns_hash;
     }
 
@@ -485,11 +487,10 @@ sub prepare_statement {
             if ( keys %fetch ) {
                 next unless $fetch{$col};
             }
-            my $dbcol = $dbd->db_column_name( $tbl, $col );
+            my $dbcol = $dbd->db_column_name( $tbl, $col, $alias );
             $stmt->add_select( $dbcol => $col );
         }
-
-        if ( my $alias = $orig_args->{alias} ) {
+        if ( $alias ) {
             $stmt->from( ["$tbl $alias"] );
         }
         else {
@@ -501,10 +502,7 @@ sub prepare_statement {
             $stmt->column_mutator(
                 sub {
                     my ($col) = @_;
-                    my $db_col = $dbd->db_column_name( $tbl, $col );
-                    if ( my $alias = $orig_args->{alias} ) {
-                        $db_col = "$alias.$db_col";
-                    }
+                    my $db_col = $dbd->db_column_name( $tbl, $col, $alias );
                     if ( $mutator && 'CODE' eq ref($mutator) ) {
                         $db_col = $mutator->($db_col);
                     }
@@ -516,7 +514,7 @@ sub prepare_statement {
             }
             else {
                 for my $col ( keys %$terms ) {
-                    $stmt->add_where( join( '.', $tbl, $col ),
+                    $stmt->add_where( join( '.', $alias || $tbl, $col ),
                         $terms->{$col} );
                 }
             }
@@ -526,12 +524,11 @@ sub prepare_statement {
         ## Set statement's ORDER clause if any.
         if ( $args->{sort} || $args->{direction} ) {
             my $order = $args->{sort} || 'id';
-            my $pfx = $orig_args->{alias} ? $orig_args->{alias} . '.' : '';
             if ( !ref($order) ) {
                 my $dir = $args->{direction}
                     && $args->{direction} eq 'descend' ? 'DESC' : 'ASC';
                 $stmt->order(
-                    {   column => $pfx . $dbd->db_column_name( $tbl, $order ),
+                    {   column => $dbd->db_column_name( $tbl, $order, $alias ),
                         desc   => $dir,
                     }
                 );
@@ -541,9 +538,8 @@ sub prepare_statement {
                 foreach my $ord (@$order) {
                     push @order,
                         {
-                        column => $pfx
-                            . $dbd->db_column_name( $tbl, $ord->{column} ),
-                        desc => $ord->{desc},
+                        column => $dbd->db_column_name( $tbl, $ord->{column}, $alias ),
+                        desc   => $ord->{desc},
                         };
                 }
                 $stmt->order( \@order );
@@ -551,7 +547,7 @@ sub prepare_statement {
         }
 
         if ( my $ft_arg = $args->{'freetext'} ) {
-            my @columns = map { $dbd->db_column_name( $tbl, $_ ) }
+            my @columns = map { $dbd->db_column_name( $tbl, $_, $alias ) }
                 @{ $ft_arg->{'columns'} };
             $stmt->add_freetext_where( \@columns,
                 $ft_arg->{'search_string'} );
@@ -657,19 +653,16 @@ sub prepare_statement {
             else {
                 $cond = [$cond] unless ref $cond;
                 my $tuple = $to_class->primary_key_tuple;
-                my $alias = $j_args->{alias};
+                my $j_alias = $j_args->{alias};
             COLUMN: foreach my $i ( 0 .. $#$cond ) {
                     next unless defined $cond->[$i];
                     my $t = $tuple->[$i];
                     my $c = $cond->[$i];
 
                     my $where_col
-                        = $driver->_decorate_column_name( $to_class, $t );
+                        = $driver->_decorate_column_name( $to_class, $t, $j_alias );
                     my $dec_j_col
-                        = $alias
-                        ? $alias . '.'
-                        . $driver->_decorate_column_name( $j_class, $c )
-                        : $driver->_decorate_column_name( $j_class, $c );
+                        = $driver->_decorate_column_name( $j_class, $c, $j_alias );
                     my $where_val = "$dec_j_col";
                     $cond_query .= ' AND ' if $cond_query;
                     $cond_query .= "$where_col = $where_val";
@@ -697,19 +690,16 @@ sub prepare_statement {
                 ? MT->model( $j_args->{to} )
                 : $class;
             my $tuple = $to_class->primary_key_tuple;
-            my $alias = $j_args->{alias};
+            my $j_alias = $j_args->{alias};
         COLUMN: foreach my $i ( 0 .. $#$j_col ) {
                 next unless defined $j_col->[$i];
                 my $t = $tuple->[$i];
                 my $c = $j_col->[$i];
 
                 my $where_col
-                    = $driver->_decorate_column_name( $to_class, $t );
+                    = $driver->_decorate_column_name( $to_class, $t, $j_alias );
                 my $dec_j_col
-                    = $alias
-                    ? $alias . '.'
-                    . $driver->_decorate_column_name( $j_class, $c )
-                    : $driver->_decorate_column_name( $j_class, $c );
+                    = $driver->_decorate_column_name( $j_class, $c, $j_alias );
                 my $where_val = "= $dec_j_col";
                 $stmt->add_where( $where_col, \$where_val );
             }
