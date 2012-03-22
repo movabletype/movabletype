@@ -64,7 +64,7 @@ function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat) {
 # Multiblog's "context" mode:
 # The container's contents are evaluated once with a multi-blog context
 function multiblog_context($args, $content, &$ctx, &$repeat) {
-    $localvars = array('multiblog_context', 'multiblog_blog_ids');
+    $localvars = array('multiblog_context', 'multiblog_blog_ids', 'local_blog_id');
 
     if (!isset($content)) {
         $ctx->localize($localvars);
