@@ -277,7 +277,7 @@ sub _send_mt_smtp {
         if ( !$smtp->auth( $user, $pass ) ) {
             return $class->error(
                 MT->translate(
-                    "Authentication failure: [_1]", $smtp->errstr
+                    "Authentication failure: [_1]", $smtp->message
                 )
             );
         }
