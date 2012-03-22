@@ -461,7 +461,7 @@ sub cfg_system_general {
         require MT::Mail;
         MT::Mail->send( \%head, $body )
             or return $app->error(
-            $app->translate("Mail was not properly sent") );
+            $app->translate("Mail was not properly sent: [_1]", MT::Mail->errstr) );
 
         $app->log(
             {   message => $app->translate(
