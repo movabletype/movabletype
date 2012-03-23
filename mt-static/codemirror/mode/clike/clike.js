@@ -59,7 +59,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
         escaped = !escaped && next == "\\";
       }
       if (end || !(escaped || multiLineStrings))
-        state.tokenize = null;
+        state.tokenize = tokenBase;
       return "string";
     };
   }
@@ -68,7 +68,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
     var maybeEnd = false, ch;
     while (ch = stream.next()) {
       if (ch == "/" && maybeEnd) {
-        state.tokenize = null;
+        state.tokenize = tokenBase;
         break;
       }
       maybeEnd = (ch == "*");
@@ -136,9 +136,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
 
     indent: function(state, textAfter) {
       if (state.tokenize != tokenBase && state.tokenize != null) return 0;
-      var ctx = state.context, firstChar = textAfter && textAfter.charAt(0);
-      if (ctx.type == "statement" && firstChar == "}") ctx = ctx.prev;
-      var closing = firstChar == ctx.type;
+      var firstChar = textAfter && textAfter.charAt(0), ctx = state.context, closing = firstChar == ctx.type;
       if (ctx.type == "statement") return ctx.indented + (firstChar == "{" ? 0 : indentUnit);
       else if (ctx.align) return ctx.column + (closing ? 0 : 1);
       else return ctx.indented + (closing ? 0 : indentUnit);
@@ -226,6 +224,21 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
           state.tokenize = tokenAtString;
           return tokenAtString(stream, state);
         }
+        stream.eatWhile(/[\w\$_]/);
+        return "meta";
+      }
+    }
+  });
+  CodeMirror.defineMIME("text/x-groovy", {
+    name: "clike",
+    keywords: words("abstract as assert boolean break byte case catch char class const continue def default " +
+                    "do double else enum extends final finally float for goto if implements import " +
+                    "in instanceof int interface long native new package property private protected public " +
+                    "return short static strictfp super switch synchronized this throw throws transient " +
+                    "try void volatile while"),
+    atoms: words("true false null"),
+    hooks: {
+      "@": function(stream, state) {
         stream.eatWhile(/[\w\$_]/);
         return "meta";
       }

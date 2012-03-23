@@ -15,7 +15,6 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
     var STYLE_ATTRIBUTE = "attribute";
     var STYLE_WORD = "string";
     var STYLE_TEXT = "atom";
-    var STYLE_ENTITIES = "string";
 
     var TAG_INSTRUCTION = "!instruction";
     var TAG_CDATA = "!cdata";
@@ -291,10 +290,6 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
                 state.tokenize = parseElementTagName;
                 return STYLE_ELEMENT_NAME;
             }
-        } else if(stream.eat("&")) {
-            stream.eatWhile(/[^;]/);
-            stream.eat(";");
-            return STYLE_ENTITIES;
         } else {
             // new context: text
             pushContext(state, TAG_TEXT);
@@ -417,7 +412,7 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
     ///////////////////////////////////////////////////////////////////////////
     // returned object
     return {
-        electricChars: "/[",
+        electricChars: "/",
         
         startState: function() {
             return {
@@ -463,12 +458,8 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
                     return;
                 }
                 if(textAfter.match(/^<\/.*/)) {
-                    // end-tag - indent back to last context
+                    // eng-tag - indent back to last context
                     return state.context.indent;
-                }
-                if(textAfter.match(/^<!\[CDATA\[/)) {
-                    // a stand-alone CDATA start-tag - indent back to column 0
-                    return 0;                
                 }
                 // indent to last context + regular indent unit
                 return state.context.indent + indentUnit;

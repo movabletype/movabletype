@@ -73,7 +73,7 @@ CodeMirror.defineMode('rst', function(config, options) {
 
             if (i >= 3 && stream.match(/^\s*$/)) {
                 setNormal(state, null);
-                return 'header';
+                return 'section';
             } else {
                 stream.backUp(i + 1);
             }
@@ -83,7 +83,8 @@ CodeMirror.defineMode('rst', function(config, options) {
             if (!stream.eol()) {
                 setState(state, directive);
             }
-            return 'meta';
+
+            return 'directive-marker';
         }
 
         if (stream.match(reVerbatimMarker)) {
@@ -97,13 +98,14 @@ CodeMirror.defineMode('rst', function(config, options) {
                     local: mode.startState()
                 });
             }
-            return 'meta';
+
+            return 'verbatim-marker';
         }
 
         if (sol && stream.match(reExamples, false)) {
             if (!pythonMode) {
                 setState(state, verbatim);
-                return 'meta';
+                return 'verbatim-marker';
             } else {
                 var mode = pythonMode;
 
@@ -114,6 +116,12 @@ CodeMirror.defineMode('rst', function(config, options) {
 
                 return null;
             }
+        }
+
+        if (sol && (stream.match(reEnumeratedList) ||
+                    stream.match(reBulletedList))) {
+            setNormal(state, stream);
+            return 'list';
         }
 
         function testBackward(re) {
@@ -145,9 +153,9 @@ CodeMirror.defineMode('rst', function(config, options) {
                 var token;
 
                 if (ch === ':') {
-                    token = 'builtin';
+                    token = 'role';
                 } else {
-                    token = 'atom';
+                    token = 'replacement';
                 }
 
                 setState(state, inline, {
@@ -175,9 +183,9 @@ CodeMirror.defineMode('rst', function(config, options) {
                     var token;
 
                     if (orig === '*') {
-                        token = wide ? 'strong' : 'em';
+                        token = wide ? 'strong' : 'emphasis';
                     } else {
-                        token = wide ? 'string' : 'string-2';
+                        token = wide ? 'inline' : 'interpreted';
                     }
 
                     setState(state, inline, {
@@ -239,13 +247,13 @@ CodeMirror.defineMode('rst', function(config, options) {
         var token = null;
 
         if (stream.match(reDirective)) {
-            token = 'attribute';
+            token = 'directive';
         } else if (stream.match(reHyperlink)) {
-            token = 'link';
+            token = 'hyperlink';
         } else if (stream.match(reFootnote)) {
-            token = 'quote';
+            token = 'footnote';
         } else if (stream.match(reCitation)) {
-            token = 'quote';
+            token = 'citation';
         } else {
             stream.eatSpace();
 
@@ -259,7 +267,6 @@ CodeMirror.defineMode('rst', function(config, options) {
             }
         }
 
-        // FIXME this is unreachable
         setState(state, body, {start: true});
         return token;
     }
@@ -283,7 +290,7 @@ CodeMirror.defineMode('rst', function(config, options) {
 
     function verbatim(stream, state) {
         if (!verbatimMode) {
-            return block(stream, state, 'meta');
+            return block(stream, state, 'verbatim');
         } else {
             if (stream.sol()) {
                 if (!stream.eatSpace()) {

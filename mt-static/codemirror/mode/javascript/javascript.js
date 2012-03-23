@@ -11,8 +11,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     return {
       "if": A, "while": A, "with": A, "else": B, "do": B, "try": B, "finally": B,
       "return": C, "break": C, "continue": C, "new": C, "delete": C, "throw": C,
-      "var": kw("var"), "const": kw("var"), "let": kw("var"),
-      "function": kw("function"), "catch": kw("catch"),
+      "var": kw("var"), "function": kw("function"), "catch": kw("catch"),
       "for": kw("for"), "switch": kw("switch"), "case": kw("case"), "default": kw("default"),
       "in": operator, "typeof": operator, "instanceof": operator,
       "true": atom, "false": atom, "null": atom, "undefined": atom, "NaN": atom, "Infinity": atom
@@ -69,7 +68,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       else if (state.reAllowed) {
         nextUntilUnescaped(stream, "/");
         stream.eatWhile(/[gimy]/); // 'y' is "sticky" option in Mozilla
-        return ret("regexp", "string-2");
+        return ret("regexp", "string");
       }
       else {
         stream.eatWhile(isOperatorChar);
@@ -87,7 +86,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     else {
       stream.eatWhile(/[\w\$_]/);
       var word = stream.current(), known = keywords.propertyIsEnumerable(word) && keywords[word];
-      return (known && state.kwAllowed) ? ret(known.type, known.style, word) :
+      return known ? ret(known.type, known.style, word) :
                      ret("variable", "variable", word);
     }
   }
@@ -230,7 +229,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     if (atomicTypes.hasOwnProperty(type)) return cont(maybeoperator);
     if (type == "function") return cont(functiondef);
     if (type == "keyword c") return cont(maybeexpression);
-    if (type == "(") return cont(pushlex(")"), maybeexpression, expect(")"), poplex, maybeoperator);
+    if (type == "(") return cont(pushlex(")"), expression, expect(")"), poplex, maybeoperator);
     if (type == "operator") return cont(expression);
     if (type == "[") return cont(pushlex("]"), commasep(expression, "]"), poplex, maybeoperator);
     if (type == "{") return cont(pushlex("}"), commasep(objprop, "}"), poplex, maybeoperator);
@@ -316,7 +315,6 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       return {
         tokenize: jsTokenBase,
         reAllowed: true,
-        kwAllowed: true,
         cc: [],
         lexical: new JSLexical((basecolumn || 0) - indentUnit, 0, "block", false),
         localVars: null,
@@ -335,7 +333,6 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       var style = state.tokenize(stream, state);
       if (type == "comment") return style;
       state.reAllowed = type == "operator" || type == "keyword c" || type.match(/^[\[{}\(,;:]$/);
-      state.kwAllowed = type != '.';
       return parseJS(state, style, type, content, stream);
     },
 

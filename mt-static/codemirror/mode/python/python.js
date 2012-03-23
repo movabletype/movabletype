@@ -18,35 +18,28 @@ CodeMirror.defineMode("python", function(conf, parserConf) {
                           'for', 'from', 'global', 'if', 'import',
                           'lambda', 'pass', 'raise', 'return',
                           'try', 'while', 'with', 'yield'];
-    var commonBuiltins = ['abs', 'all', 'any', 'bin', 'bool', 'bytearray', 'callable', 'chr',
-                          'classmethod', 'compile', 'complex', 'delattr', 'dict', 'dir', 'divmod',
-                          'enumerate', 'eval', 'filter', 'float', 'format', 'frozenset',
-                          'getattr', 'globals', 'hasattr', 'hash', 'help', 'hex', 'id',
-                          'input', 'int', 'isinstance', 'issubclass', 'iter', 'len',
-                          'list', 'locals', 'map', 'max', 'memoryview', 'min', 'next',
-                          'object', 'oct', 'open', 'ord', 'pow', 'property', 'range',
-                          'repr', 'reversed', 'round', 'set', 'setattr', 'slice',
-                          'sorted', 'staticmethod', 'str', 'sum', 'super', 'tuple',
-                          'type', 'vars', 'zip', '__import__', 'NotImplemented',
-                          'Ellipsis', '__debug__'];
-    var py2 = {'builtins': ['apply', 'basestring', 'buffer', 'cmp', 'coerce', 'execfile',
-                            'file', 'intern', 'long', 'raw_input', 'reduce', 'reload',
-                            'unichr', 'unicode', 'xrange', 'False', 'True', 'None'],
+    var commontypes = ['bool', 'classmethod', 'complex', 'dict', 'enumerate',
+                       'float', 'frozenset', 'int', 'list', 'object',
+                       'property', 'reversed', 'set', 'slice', 'staticmethod',
+                       'str', 'super', 'tuple', 'type'];
+    var py2 = {'types': ['basestring', 'buffer', 'file', 'long', 'unicode',
+                         'xrange'],
                'keywords': ['exec', 'print']};
-    var py3 = {'builtins': ['ascii', 'bytes', 'exec', 'print'],
-               'keywords': ['nonlocal', 'False', 'True', 'None']};
+    var py3 = {'types': ['bytearray', 'bytes', 'filter', 'map', 'memoryview',
+                         'open', 'range', 'zip'],
+               'keywords': ['nonlocal']};
 
     if (!!parserConf.version && parseInt(parserConf.version, 10) === 3) {
         commonkeywords = commonkeywords.concat(py3.keywords);
-        commonBuiltins = commonBuiltins.concat(py3.builtins);
+        commontypes = commontypes.concat(py3.types);
         var stringPrefixes = new RegExp("^(([rb]|(br))?('{3}|\"{3}|['\"]))", "i");
     } else {
         commonkeywords = commonkeywords.concat(py2.keywords);
-        commonBuiltins = commonBuiltins.concat(py2.builtins);
+        commontypes = commontypes.concat(py2.types);
         var stringPrefixes = new RegExp("^(([rub]|(ur)|(br))?('{3}|\"{3}|['\"]))", "i");
     }
     var keywords = wordRegexp(commonkeywords);
-    var builtins = wordRegexp(commonBuiltins);
+    var types = wordRegexp(commontypes);
 
     var indentInfo = null;
 
@@ -136,12 +129,12 @@ CodeMirror.defineMode("python", function(conf, parserConf) {
             return null;
         }
         
-        if (stream.match(keywords)) {
-            return 'keyword';
+        if (stream.match(types)) {
+            return 'builtin';
         }
         
-        if (stream.match(builtins)) {
-            return 'builtin';
+        if (stream.match(keywords)) {
+            return 'keyword';
         }
         
         if (stream.match(identifiers)) {
@@ -190,10 +183,6 @@ CodeMirror.defineMode("python", function(conf, parserConf) {
         type = type || 'py';
         var indentUnit = 0;
         if (type === 'py') {
-            if (state.scopes[0].type !== 'py') {
-                state.scopes[0].offset = stream.indentation();
-                return;
-            }
             for (var i = 0; i < state.scopes.length; ++i) {
                 if (state.scopes[i].type === 'py') {
                     indentUnit = state.scopes[i].offset + conf.indentUnit;
@@ -209,8 +198,7 @@ CodeMirror.defineMode("python", function(conf, parserConf) {
         });
     }
     
-    function dedent(stream, state, type) {
-        type = type || 'py';
+    function dedent(stream, state) {
         if (state.scopes.length == 1) return;
         if (state.scopes[0].type === 'py') {
             var _indent = stream.indentation();
@@ -229,16 +217,8 @@ CodeMirror.defineMode("python", function(conf, parserConf) {
             }
             return false
         } else {
-            if (type === 'py') {
-                state.scopes[0].offset = stream.indentation();
-                return false;
-            } else {
-                if (state.scopes[0].type != type) {
-                    return true;
-                }
-                state.scopes.shift();
-                return false;
-            }
+            state.scopes.shift();
+            return false;
         }
     }
 
@@ -251,7 +231,7 @@ CodeMirror.defineMode("python", function(conf, parserConf) {
         if (current === '.') {
             style = state.tokenize(stream, state);
             current = stream.current();
-            if (style === 'variable' || style === 'builtin') {
+            if (style === 'variable') {
                 return 'variable';
             } else {
                 return ERRORCLASS;
@@ -290,7 +270,7 @@ CodeMirror.defineMode("python", function(conf, parserConf) {
         }
         delimiter_index = '])}'.indexOf(current);
         if (delimiter_index !== -1) {
-            if (dedent(stream, state, current)) {
+            if (dedent(stream, state)) {
                 return ERRORCLASS;
             }
         }

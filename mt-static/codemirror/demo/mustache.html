@@ -1,12 +1,13 @@
 <!doctype html>
 <html>
   <head>
-    <title>CodeMirror: Overlay Parser Demo</title>
+    <title>CodeMirror 2: Overlay Parser Demo</title>
     <link rel="stylesheet" href="../lib/codemirror.css">
     <script src="../lib/codemirror.js"></script>
     <script src="../lib/util/overlay.js"></script>
+    <link rel="stylesheet" href="../theme/default.css">
     <script src="../mode/xml/xml.js"></script>
-    <link rel="stylesheet" href="../doc/docs.css">
+    <link rel="stylesheet" href="../css/docs.css">
 
     <style type="text/css">
       .CodeMirror {border: 1px solid black;}
@@ -14,7 +15,7 @@
     </style>
   </head>
   <body>
-    <h1>CodeMirror: Overlay Parser Demo</h1>
+    <h1>CodeMirror 2: Overlay Parser Demo</h1>
 
     <form><textarea id="code" name="code">
 <html>
@@ -32,7 +33,6 @@
 CodeMirror.defineMode("mustache", function(config, parserConfig) {
   var mustacheOverlay = {
     token: function(stream, state) {
-      var ch;
       if (stream.match("{{")) {
         while ((ch = stream.next()) != null)
           if (ch == "}" && stream.next() == "}") break;
