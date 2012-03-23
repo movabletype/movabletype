@@ -946,7 +946,7 @@ $.mtValidator('simple', {
 $.mtValidator('default', {
     wrapError: function ( $target, msg ) {
         return $('<label style="position: absolute;" />')
-            .attr('for', $target.attr('id') )
+            .attr('for', $target.attr('id') || '')
             .addClass('msg-error msg-balloon validate-error')
             .text(msg);
     },
