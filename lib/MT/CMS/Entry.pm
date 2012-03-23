@@ -1732,66 +1732,53 @@ sub save {
     ## Now that the object is saved, we can be certain that it has an
     ## ID. So we can now add/update/remove the primary placement.
     require MT::Placement;
-    my $place
-        = MT::Placement->load( { entry_id => $obj->id, is_primary => 1 } );
-    if ($cat_id) {
-        unless ($place) {
-            $place = MT::Placement->new;
-            $place->entry_id( $obj->id );
-            $place->blog_id( $obj->blog_id );
-            $place->is_primary(1);
-        }
-        $place->category_id($cat_id);
-        $place->save;
-        my $cat = $cat_class->load($cat_id);
-        $obj->cache_property( 'category', undef, $cat );
-    }
-    else {
-        if ($place) {
-            $place->remove;
-            $obj->cache_property( 'category', undef, undef );
-        }
-    }
+    my ($place, @place) = 
+        sort { $b->is_primary <=> $a->is_primary } 
+        MT::Placement->load( { entry_id => $obj->id } );
+    my %old_places = 
+        map { ( $_->category_id, $_ ) } 
+        grep $_, ($place, @place);
+    my %new_places;
+    my %cat_objects;
 
-    my $placements_updated;
-
-    # save secondary placements...
-    my @place = MT::Placement->load(
-        {   entry_id   => $obj->id,
-            is_primary => 0
-        }
-    );
-    for my $place (@place) {
-        $place->remove;
-        $placements_updated = 1;
-    }
-    my @add_cat_obj;
-    for my $cat_id (@add_cat) {
-        my $cat = $cat_class->load($cat_id);
-
+    foreach my $cat ($cat_id, @add_cat) {
+        next unless defined $cat;
         # blog_id sanity check
-        next if !$cat || $cat->blog_id != $obj->blog_id;
+        my $c_obj = $cat_class->load($cat);
+        next if !$c_obj || $c_obj->blog_id != $c_obj->blog_id;
+        $cat_objects{$cat} = $c_obj;
 
-        my $place = MT::Placement->new;
-        $place->entry_id( $obj->id );
-        $place->blog_id( $obj->blog_id );
-        $place->is_primary(0);
-        $place->category_id($cat_id);
-        $place->save
-            or return $app->error(
-            $app->translate(
-                "Saving placement failed: [_1]", $place->errstr
-            )
-            );
-        $placements_updated = 1;
-        push @add_cat_obj, $cat;
+        if (exists $old_places{$cat}) {
+            $new_places{$cat} = delete $old_places{$cat};
+            $new_places{$cat}->is_primary($cat == $cat_id ? 1 : 0);
+            next;
+        }
+
+        my $cat_place = MT::Placement->new;
+        $cat_place->entry_id( $obj->id );
+        $cat_place->blog_id( $obj->blog_id );
+        $cat_place->is_primary($cat == $cat_id ? 1 : 0);
+        $cat_place->category_id($cat);
+        $new_places{$cat} = $cat_place;
     }
-    if ($placements_updated) {
-        unshift @add_cat_obj, $obj->cache_property('category')
-            if $obj->cache_property('category');
-        $obj->cache_property( 'categories', undef, [] );
-        $obj->cache_property( 'categories', undef, \@add_cat_obj );
+
+    $_->remove() foreach values %old_places;
+    $_->save() 
+        or return $app->errtrans("Saving placement failed: [_1]", $place->errstr) 
+        foreach values %new_places;
+
+    if ($cat_id) {
+        if (!$place or $place->category_id != $cat_id) {
+            my $cat = $cat_class->load($cat_id);
+            $obj->cache_property( 'category', undef, $cat );
+        }
     }
+    elsif ($place) {
+        $obj->cache_property( 'category', undef, undef );
+    }
+
+    $obj->cache_property( 'categories', undef, 
+        [ map $new_places{$_}, grep $_, ($cat_id, @add_cat) ] );
 
     $app->run_callbacks( 'cms_post_save.' . $type, $app, $obj, $orig_obj );
 
@@ -1857,7 +1844,8 @@ sub save {
                             ? ( old_previous => $previous_old->id )
                             : ()
                         ),
-                        ( $next_old ? ( old_next => $next_old->id ) : () )
+                        ( $next_old ? ( old_next => $next_old->id ) : () ),
+                        ( %old_places ? ( old_cats => join(',', keys %old_places ) ) : () ),
                     }
                 )
             );
