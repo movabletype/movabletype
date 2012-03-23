@@ -1681,6 +1681,7 @@ BEGIN {
             'HTTPSProxy'            => undef,
             'PingNoProxy'           => { default => 'localhost', },
             'HTTPNoProxy'           => { default => 'localhost', },
+            'HeaderCacheControl'    => undef,
             'ImageDriver'           => { default => 'ImageMagick', },
             'NetPBMPath'            => undef,
             'AdminScript'           => { default => 'mt.cgi', },

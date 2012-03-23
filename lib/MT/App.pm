@@ -2911,6 +2911,10 @@ sub run {
         $timer = $app->get_timer();
         $timer->pause_partial();
     }
+    
+    if ( my $cache_control = $app->config->HeaderCacheControl ) {
+        $app->set_header( 'Cache-Control' => $cache_control );
+    }
 
     my ($body);
 
