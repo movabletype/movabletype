@@ -6,11 +6,7 @@
 # $Id$
 
 if (MULTIBLOG_ENABLED) {
-function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat) {
-
-    # Set default mode for backwards compatibility
-    $mode = $args['mode'];
-    $mode or $mode = 'loop';
+function smarty_block_mtmultiblog(&$args, $content, &$ctx, &$repeat) {
 
     if (!isset($content)) {
 
@@ -46,10 +42,14 @@ function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat) {
             # No blog-level config set
             # Set mode to context as this will mimic no MTMultiBlog tag
             else {
-                $mode = 'context';  # Override 'loop' mode
+                $args['mode'] = 'context';  # Override 'loop' mode
             }
         }
     }
+
+    # Set default mode for backwards compatibility
+    $mode = $args['mode'];
+    $mode or $mode = 'loop';
 
     # Run MultiBlog in specified mode
     if ($mode == 'loop') {

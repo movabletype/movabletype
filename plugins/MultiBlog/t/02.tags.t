@@ -268,6 +268,19 @@ template-module:2
 { 1 => 2 }
 
 
+=== mt:Include after Multiblog with mode="loop"
+--- template
+<mt:Entries blog_ids="1">
+<mt:MultiBlog mode="loop">
+</mt:MultiBlog>
+</mt:Entries>
+<mt:Include module="template-module" />
+--- expected
+template-module:2
+--- access_overrides
+{ 1 => 2 }
+
+
 === mt:BlogCategoryCount
 --- template
 <mt:BlogCategoryCount include_blogs="1,2,3" />
