@@ -2834,8 +2834,8 @@ by supporting metadata column as well.
 
 Issues a call to any Class::Trigger triggers installed for the given object.
 Also invokes any MT callbacks that are registered using MT's callback
-system. "pre" callbacks are invoked prior to triggers; "post" callbacks
-are invoked after triggers are called.
+system. "pre" callbacks are invoked after triggers are called; "post"
+callbacks are invoked prior to triggers.
 
 =item * $obj->deflate
 
