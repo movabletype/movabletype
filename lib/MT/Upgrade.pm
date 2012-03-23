@@ -148,6 +148,9 @@ sub init {
         %functions = ( %functions, %$fn_set )
             if $fn_set && ( ref($fn_set) eq 'HASH' );
     }
+
+    # Clear RAM cache
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
 }
 
 # Step execution...
