@@ -777,7 +777,7 @@ sub build_asset_hasher {
         require MT::FileMgr;
         my $fmgr = MT::FileMgr->new('Local');
         ## TBD: Make sure $file_path is file, not directory.
-        if ( $file_path && $fmgr->exists($file_path) ) {
+        if ( $file_path && $fmgr->file_size($file_path) ) {
             $row->{file_path} = $file_path;
             $row->{file_name} = File::Basename::basename($file_path);
             my $size = $fmgr->file_size($file_path);

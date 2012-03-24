@@ -109,7 +109,7 @@ sub thumbnail_file {
     return undef unless $fmgr;
 
     my $file_path = $asset->file_path;
-    return undef unless $fmgr->exists($file_path);
+    return undef unless $fmgr->file_size($file_path);
 
     require MT::Util;
     my $asset_cache_path = $asset->_make_cache_path( $param{Path} );
