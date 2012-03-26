@@ -2058,7 +2058,9 @@ sub login {
         );
         return $app->error($message);
     }
-    elsif ( $res == MT::Auth::INVALID_PASSWORD() ) {
+    elsif ($res == MT::Auth::INVALID_PASSWORD()
+        || $res == MT::Auth::SESSION_EXPIRED() )
+    {
 
         # Login invlaid (password error, etc...)
         return $app->error( $app->translate('Invalid login.') );

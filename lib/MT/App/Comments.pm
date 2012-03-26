@@ -311,7 +311,9 @@ sub do_login {
         $message = $app->translate(
             "Login failed: permission denied for user '[_1]'", $name );
     }
-    elsif ( MT::Auth::INVALID_PASSWORD() == $result ) {
+    elsif (MT::Auth::INVALID_PASSWORD() == $result
+        || MT::Auth::SESSION_EXPIRED() == $result )
+    {
         $message = $app->translate(
             "Login failed: password was wrong for user '[_1]'", $name );
     }
