@@ -26,6 +26,8 @@ sub do_import {
 sub import_contents {
     my $class = shift;
     my %param = @_;
+    ## Init error buffer.
+    __PACKAGE__->error();
     my $iter  = $param{Iter};
     my $blog  = $param{Blog}
         or return __PACKAGE__->error( MT->translate("No Blog") );
