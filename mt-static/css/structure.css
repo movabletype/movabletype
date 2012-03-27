@@ -2094,7 +2094,7 @@ ul#asset-list .asset-type-video {
     margin: 15px 0;
 }
 .widget-item {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     cursor: move;
     box-shadow: 0 1px 0 #fff;
     -webkit-box-shadow: 0 1px 0 #fff;
@@ -2102,7 +2102,7 @@ ul#asset-list .asset-type-video {
 }
 #available-column-items, 
 #installed-column-items {
-    min-height: 100px;
+    min-height: 38px;
 }
 #available-widgets {
     margin: 0 10px 0 0;
