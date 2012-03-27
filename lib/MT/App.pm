@@ -132,7 +132,8 @@ sub filter_conditional_list {
     my $user  = $app->user;
     my $admin = ( $user && $user->is_superuser() )
         || ( $perms && $perms->blog_id && $perms->has('administer_blog') );
-    my $system_perms = $user->permissions(0) unless $perms && $perms->blog_id;
+    my $system_perms;
+    $system_perms = $user->permissions(0) unless $perms && $perms->blog_id;
 
     my $test = sub {
         my ($item) = @_;
