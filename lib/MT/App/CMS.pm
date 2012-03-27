@@ -71,7 +71,7 @@ sub core_methods {
         'list_template' => "${pkg}Template::list",
         'list_widget'   => "${pkg}Template::list_widget",
         'list_asset'    => {
-            code      => "${pkg}Asset::dialog_select_insert_asset",
+            code      => "${pkg}Asset::dialog_list_asset",
             condition => sub {
                 my $app = shift;
                 return 0 unless $app->param('dialog_view');
@@ -245,8 +245,7 @@ sub core_methods {
         'dialog_grant_role'        => "${pkg}User::dialog_grant_role",
         'dialog_select_assoc_type' => "${pkg}User::dialog_select_assoc_type",
         'dialog_select_author'     => "${pkg}User::dialog_select_author",
-        'dialog_list_asset'        => "${pkg}Asset::dialog_select_insert_asset",
-        'dialog_select_asset'      => "${pkg}Asset::dialog_list_asset",
+        'dialog_list_asset'        => "${pkg}Asset::dialog_list_asset",
 
         ## AJAX handlers
         'delete_map'        => "${pkg}Template::delete_map",

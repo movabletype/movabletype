@@ -160,108 +160,6 @@ sub edit {
 
 sub dialog_list_asset {
     my $app = shift;
-    $app->param(_type => 'asset');
-    $app->param('dialog_view', 0);
-    require MT::CMS::Common;
-    my $tmpl = MT::CMS::Common::list($app);
-    my $includes = $tmpl->getElementsByTagName('include');
-    my $params = $tmpl->param();
-    foreach (qw( edit_field upload_mode require_type next_mode asset_select )) {
-        $params->{$_} = $app->param($_) || '';
-    }
-    _set_start_upload_params( $app, $params );
-
-    foreach my $inc (@$includes) {
-        if ($inc->getAttribute('name') eq 'include/header.tmpl') {
-            $inc->setAttribute('name', 'dialog/header.tmpl');
-            my $dol1 = $tmpl->createTextNode('<div id="list-assets-dialog"><div class="mod panel-header">');
-            my $dol2 = $params->{can_upload} 
-                ? $tmpl->createElement( 'var', { name => 'upload_new_file_link' } )
-                : $dol1;
-
-            my $dol3 = $tmpl->createTextNode('
-                <div id="display-options" class="display-options">
-                    <a href="#" class="toggle-link detail-link"><__trans phrase="Display Options"> <span class="toggle-button"><img src="'.$app->static_path().'images/arrow/arrow-toggle.png" /></span></a>');
-            my $dol4 = $tmpl->createElement( 'var', { name => 'display_options' } );
-            my $dol5 = $tmpl->createTextNode('</div>');
-            my $dol6 = $tmpl->createTextNode('<style type="text/css">.dialog .actions-bar {margin: 0;}</style>');
-            $tmpl->insertAfter($dol1, $inc);
-            $tmpl->insertAfter($dol2, $dol1) if $params->{can_upload};
-            $tmpl->insertAfter($dol3, $dol2);
-            $tmpl->insertAfter($dol4, $dol3);
-            $tmpl->insertAfter($dol5, $dol4);
-            $tmpl->insertAfter($dol6, $dol5);
-        } 
-        elsif ($inc->getAttribute('name') eq 'include/footer.tmpl') {
-            $inc->setAttribute('name', 'dialog/footer.tmpl');
-            my $btns = $tmpl->createTextNode('
-                <form action="" method="get" onsubmit="return false">
-                    <button
-                       type="submit"
-                       id="insert"
-                       accesskey="s"
-                       title="<__trans phrase="Insert (s)">"
-                       class="action primary button close">
-                      <__trans phrase="Insert"></button>
-                    <button
-                       type="submit"
-                       accesskey="x"
-                       class="cancel action button mt-close-dialog"
-                       title="<__trans phrase="Cancel (x)">">
-                      <__trans phrase="Cancel"></button>
-                  </form>
-                </div></div><!-- /List Assets Dialog -->
-                <div id="upload-asset-dialog" class="hidden">
-              ');
-            my $var = $tmpl->createElement('setvar', {
-                name => "jq_js_include",
-                append => "1",
-                value => "
-                    itemset_options['insert'] = {type:'core',mode:'complete_insert', no_prompt:1};
-                    jQuery('#insert').click(function() {
-                      var action = 'insert';
-                      var id = 'asset-listing-form';
-                      var singlar = 'asset';
-                      var plural = 'assets';
-                      var phrase = '<__trans phrase=\"insert\">';
-                      doForMarked(id, action, singlar, plural, phrase);
-                      return false;
-                    });
-                ",
-            });
-            $tmpl->insertBefore($btns, $inc);
-            $tmpl->insertBefore(
-                $tmpl->createElement('include', {name => 'include/asset_upload.tmpl'}), $inc);
-            $tmpl->insertBefore($tmpl->createTextNode('</div><!-- /Upload Asset Dialog -->'), $inc);
-            $tmpl->insertBefore($var, $inc);
-        }
-    }
-    $params->{page_title} = $app->translate('Insert Asset');
-    $params->{has_pulldown_actions} = 0;
-    $params->{use_actions} = 0;
-    $params->{no_insert} = $app->param('no_insert') ? 1 : 0;
-    $app->param('entry_insert', 1) unless $app->param('asset_select');
-    my $upload_link = '<img src="'.$app->static_path().'images/status_icons/create.gif" alt="<__trans phrase="Upload New File">" width="9" height="9" />';
-    $upload_link .= 
-        '<a href="'.$app->uri.'?__mode=start_upload&amp;_type=asset&amp;'
-        .'blog_id='.$params->{blog_id}.'&amp;no_insert='.$params->{no_insert}.'&amp;'
-        .'dialog_view=1&amp;';
-    $upload_link .= $app->param('asset_select') ? 'asset_select=1' : 'entry_insert=1';
-    $upload_link .= '&amp;edit_field='.encode_url($params->{edit_field}).'&amp;';
-    $upload_link .= 'upload_mode='.encode_url($params->{upload_mode}).'&amp;';
-    $upload_link .= 'require_type='.$params->{require_type}.'&amp' if $params->{require_type};
-    $upload_link .= 'return_args='.encode_url($params->{return_args});
-    $upload_link .= '&amp;user_id='.encode_url($params->{user_id}) if $params->{user_id};
-    $upload_link .= '" onclick="toggleHidden(\'list-assets-dialog\'); toggleHidden(\'upload-asset-dialog\'); return false"><__trans phrase="Upload New File"></a>';
-
-    $params->{upload_new_file_link} = $upload_link;
-    $params->{included_upload_asset} = 1;
-
-    return $tmpl;
-}
-
-sub dialog_select_insert_asset {
-    my $app = shift;
 
     my $blog_id = $app->param('blog_id');
     my $mode_userpic = $app->param('upload_mode') || '';
@@ -403,21 +301,28 @@ sub insert {
         = $app->translate( "Extension changed from [_1] to [_2]",
         $ext_from, $ext_to )
         if ( $ext_from && $ext_to );
-    my $tmpl = $app->load_tmpl(
-        'dialog/asset_insert.tmpl',
-        {   upload_html => $text || '',
-            edit_field => scalar $app->param('edit_field') || '',
-            ($extension_message ? ( extension_message => $extension_message ) : () ),
-        },
-    );
-    my $ctx = $tmpl->context;
-    my @ids = $app->param('id') or return $app->errtrans("Invalid request.");
-    my @assets;
-    foreach my $id (@ids) {
-        my $asset = MT::Asset->load($id) or return $app->errtrans("Invalid request.");
-        push @assets, $asset;
+    my $tmpl;
+    if ($extension_message) {
+        $tmpl = $app->load_tmpl(
+            'dialog/asset_insert.tmpl',
+            {   upload_html => $text || '',
+                edit_field => scalar $app->param('edit_field') || '',
+                extension_message => $extension_message,
+            },
+        );
     }
-    $ctx->stash( 'assets', \@assets );
+    else {
+        $tmpl = $app->load_tmpl(
+            'dialog/asset_insert.tmpl',
+            {   upload_html => $text || '',
+                edit_field => scalar $app->param('edit_field') || '',
+            },
+        );
+    }
+    my $ctx = $tmpl->context;
+    my $id = $app->param('id') or return $app->errtrans("Invalid request.");
+    my $asset = MT::Asset->load($id);
+    $ctx->stash( 'asset', $asset );
     return $tmpl;
 }
 
@@ -594,9 +499,6 @@ sub complete_insert {
         $asset = MT::Asset->load( $app->param('id') )
             || return $app->errtrans( "Can't load file #[_1].",
             $app->param('id') );
-    } elsif ( $asset && !$app->param('id') ) {
-        # we came directly from upload
-        $app->param('id', $asset->id);
     }
     return $app->errtrans('Invalid request.') unless $asset;
 
@@ -612,6 +514,7 @@ sub complete_insert {
 
     # caller wants asset without any option step, so insert immediately
     if ( $app->param('asset_select') || $app->param('no_insert') ) {
+        $app->param( 'id', $asset->id );
         return insert($app);
     }
 
@@ -652,6 +555,7 @@ sub complete_insert {
     {
         my $html = $asset->insert_options($param);
         if ( $param->{direct_asset_insert} && !$html ) {
+            $app->param( 'id', $asset->id );
             return insert($app);
         }
         $param->{options_snippet} = $html;
