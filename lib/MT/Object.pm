@@ -442,7 +442,7 @@ sub _pre_search_scope_terms_to_class {
 
                 # class term is in form "foo:*"; translate to a sql-compatible
                 # syntax of "like 'foo:%'"
-                $terms->{$col} = \"like '$1%'"; # ";
+                $terms->{$col} = \"like '$1%'";    # ";
             }
 
             # term has been explicitly given or explictly removed. make
@@ -1704,14 +1704,16 @@ sub search_by_meta {
 
 sub lookup_multi {
     my $class = shift;
-    my $objs = $class->SUPER::lookup_multi( @_ );
-    my @objs = $objs ? grep { defined $_ } @$objs : undef;
+    my $objs  = $class->SUPER::lookup_multi(@_);
+    my @objs  = $objs ? grep { defined $_ } @$objs : undef;
     return \@objs;
 }
 
 sub cache_class {
     my $class = shift;
-    return MT->model($class->datasource);
+    my $ds    = $class->datasource;
+    my $model = MT->model($ds);
+    return $model ? $model : $class;
 }
 
 package MT::Object::Meta;
