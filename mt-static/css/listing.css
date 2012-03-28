@@ -261,6 +261,18 @@ tfoot .col.head{
 .col.asset-thumbnail .thumbnail {
     margin: 0 auto;
 }
+.asset-no-thumbnail .thumbnail {
+    border: 0;
+}
+.col.asset-type-video .thumbnail {
+    background: transparent url(../images/asset/video-45.png) no-repeat;
+}
+.col.asset-type-file .thumbnail {
+    background: transparent url(../images/asset/file-45.png) no-repeat;
+}
+.col.asset-type-audio .thumbnail {
+    background: transparent url(../images/asset/audio-45.png) no-repeat;
+}
 
 /* - Filter */
 .filter-block {
