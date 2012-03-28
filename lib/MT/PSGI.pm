@@ -43,6 +43,7 @@ my $mt_app = sub {
 
         # Cheap hack to get the output
         my ( $header_sent, $body );
+        no warnings qw(redefine);
         local *MT::App::send_http_header = sub {
             my $self = shift;
             $self->{response_content_type} = $_[0] if $_[0];
