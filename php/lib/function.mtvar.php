@@ -80,7 +80,7 @@ function smarty_function_mtvar($args, &$ctx) {
 
     $return_val = $value;
     if (isset($name)) {
-        if (is_array($value)) {
+        if (is_hash($value)) {
             if ( isset($key) ) {
                 if ( isset($func) ) {
                     if ( 'delete' == strtolower($func) ) {
@@ -100,7 +100,28 @@ function smarty_function_mtvar($args, &$ctx) {
                     }
                 }
             }
-            elseif ( isset($index) ) {
+            elseif ( isset($func) ) {
+                if ( 'count' == strtolower($func) ) {
+                    $return_val = count(array_keys($value));
+                }
+                else {
+                    return $ctx->error(
+                        $ctx->mt->translate("'[_1]' is not a valid function for a hash.", $func)
+                    );
+                }
+            }
+            else {
+                if (array_key_exists('to_json', $args) && $args['to_json']) {
+                    if (function_exists('json_encode')) {
+                        $return_val = json_encode($value);
+                    } else {
+                        $return_val = '';
+                    }
+                }
+            }
+        }
+        elseif (is_array($value)) {
+            if ( isset($index) ) {
                 if (is_numeric($index)) {
                     $return_val = $value[ $index ];
                 } else {
@@ -134,7 +155,7 @@ function smarty_function_mtvar($args, &$ctx) {
                 }
             }
             else {
-                $return_val = join( "", array_values($value));
+                $return_val = implode($value);
             }
         }
         if ( array_key_exists('op', $args) ) {
