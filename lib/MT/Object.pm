@@ -263,6 +263,9 @@ sub install_properties {
             post_load => _get_date_translator( \&_db2ts, 0 ) );
     }
 
+    # Treat blank string with number field
+    $class->add_trigger( pre_save => \&_translate_numeric_fields );
+
     # inherit parent's metadata setup
     if ( $props->{meta} )
     {    # if ($super_props && $super_props->{meta_installed}) {
@@ -967,6 +970,24 @@ sub _get_date_translator {
             }
         }
     };
+}
+
+sub _translate_numeric_fields {
+    my ( $obj, $orig_obj ) = @_;
+
+    for my $field (
+        @{  $obj->columns_of_type(
+                'integer',  'boolean', 'smallint', 'float'
+            )
+        }
+        )
+    {
+        next unless exists $obj->{changed_cols}->{$field};
+
+        my $value = $obj->column($field);
+        delete $obj->{changed_cols}->{$field}
+            if defined $value and '' eq $value;
+    }
 }
 
 sub _translate_audited_fields {
