@@ -159,9 +159,7 @@ sub install_properties {
 
     $props->{get_driver} ||= sub {
         require MT::ObjectDriverFactory;
-        my $coderef = MT::ObjectDriverFactory->driver_for_class($class);
-        $class->get_driver($coderef);
-        return $coderef->(@_);
+        return MT::ObjectDriverFactory->instance;
     };
 
     $class->SUPER::install_properties($props);
