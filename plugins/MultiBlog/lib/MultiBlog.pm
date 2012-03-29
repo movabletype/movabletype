@@ -251,6 +251,12 @@ sub perform_mb_action {
     }
 }
 
+sub filter_blogs_from_args {
+    my ($plugin, $ctx, $args) = @_;
+    my %acl = load_multiblog_acl( $plugin, $ctx );
+    $args->{ $acl{mode} } = $acl{acl};
+}
+
 sub load_multiblog_acl {
     my $plugin = shift;
     my ($ctx) = @_;
