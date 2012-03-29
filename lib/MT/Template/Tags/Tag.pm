@@ -48,13 +48,10 @@ sub _tags_for_blog {
             #clear cached count
             $tag->{__entry_count} = 0 if exists $tag->{__entry_count};
         }
-        my %tags = map { $_->id => $_ } @tags;
+        my %tags       = map { $_->id => $_ } @tags;
+        my $ext_terms  = $class->terms_for_tags();
         my $count_iter = $class->count_group_by(
-            {   'asset' eq lc $type
-                ? ()
-                : ( status => MT::Entry::RELEASE() ),
-                %$terms,
-            },
+            { ( $ext_terms ? (%$ext_terms) : () ), %$terms, },
             {   group  => ['objecttag_tag_id'],
                 'join' => MT::ObjectTag->join_on(
                     'object_id',
@@ -909,18 +906,14 @@ sub _hdlr_tag_rank {
 
     my $class_type = $ctx->stash('class_type')
         || 'entry';    # FIXME: defaults to?
-    my $class = MT->model($class_type);
-    my $ds    = $class->datasource;
-    my %term
-        = $class_type eq 'entry' || $class_type eq 'page'
-        ? ( status => MT::Entry::RELEASE() )
-        : ();
-
-    my $ntags = $ctx->stash('all_tag_count');
+    my $class     = MT->model($class_type);
+    my $ds        = $class->datasource;
+    my $ext_terms = $class->terms_for_tags();
+    my $ntags     = $ctx->stash('all_tag_count');
     unless ($ntags) {
         require MT::ObjectTag;
         $ntags = $class->count(
-            { %term, %blog_terms, },
+            { ( $ext_terms ? (%$ext_terms) : () ), %blog_terms, },
             {   'join' => MT::ObjectTag->join_on(
                     'object_id', { object_datasource => $ds, %blog_terms },
                     \%blog_args
@@ -957,7 +950,7 @@ sub _hdlr_tag_rank {
     my $count = $ctx->stash('tag_entry_count');
     unless ( defined $count ) {
         $count = $class->count(
-            { %term, %blog_terms, },
+            { ( $ext_terms ? (%$ext_terms) : () ), %blog_terms, },
             {   'join' => MT::ObjectTag->join_on(
                     'object_id',
                     {   tag_id            => $tag->id,
