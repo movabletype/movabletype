@@ -2280,7 +2280,6 @@ sub open_batch_editor {
         { class => $type, id => \@ids, blog_id => \@blog_ids },
         { sort => 'authored_on', direction => 'descend' }
     );
-    local $Data::ObjectDriver::DEBUG = 0;
 
     my $list_pref = $app->list_pref($type);
     my %param     = %$list_pref;
