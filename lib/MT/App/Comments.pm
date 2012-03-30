@@ -2062,7 +2062,7 @@ sub save_commenter_profile {
     $cmntr->url( $param{url} )           if $param{url};
     $cmntr->set_password( $param{password} )
         if $param{password} && 'MT' eq $cmntr->auth_type;
-    if (    ( $cmntr->column('password') !~ /^\$6\$/ )
+    if (    ( $cmntr->column('password') !~ /^\$6\$|{SHA}/ )
         and ( 'MT' eq $cmntr->auth_type )
         and ( not $param{error} ) )
     {
