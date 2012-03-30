@@ -294,7 +294,6 @@ sub rebuild_categories {
         if ($fcb) {
             $fcb->($cat) or last;
         }
-        next unless $param{Force} or $cat->entry_count > 0;
         $mt->_rebuild_entry_archive_type(
             Blog        => $blog,
             Category    => $cat,
@@ -614,46 +613,6 @@ sub rebuild_entry {
                         ? ( TemplateMap => $param{TemplateMap} )
                         : (),
                     ) or return;
-                }
-                if ($param{OldCats}) {
-                    my $c_class = MT->model('category');
-                    my @cat_ids = split ',', $param{OldCats};
-                    my @old_cats = 
-                        grep $_->blog_id == $entry->blog_id,
-                        $c_class->load({ id => \@cat_ids });
-                    require MT::Placement;
-                    foreach my $cat (@old_cats) {
-                        my ( $start, $end ) = $archiver->date_range( $entry->authored_on )
-                            if $archiver->date_based() && $archiver->can('date_range');
-                        my $count = MT::Placement->count({ category_id => $cat->id, blog_id => $blog->id });
-                        if (( $count == 0 ) && MT->config('DeleteFilesAtRebuild')) {
-                            $mt->remove_fileinfo(
-                                ArchiveType => $at,
-                                Blog        => $blog->id,
-                                Category    => $cat->id,
-                                (   $archiver->date_based()
-                                    ? ( startdate => $start )
-                                    : ()
-                                ),
-                            );
-                            $mt->remove_entry_archive_file(
-                                Entry       => $entry,
-                                ArchiveType => $at,
-                                Category    => $cat,
-                            );
-                        } else {
-                            $mt->_rebuild_entry_archive_type(
-                                Entry       => $entry,
-                                Blog        => $blog,
-                                ArchiveType => $at,
-                                Category    => $cat,
-                                NoStatic    => $param{NoStatic},
-                                $param{TemplateMap}
-                                ? ( TemplateMap => $param{TemplateMap} )
-                                : (),
-                            ) or return;
-                        }
-                    }
                 }
             }
             else {

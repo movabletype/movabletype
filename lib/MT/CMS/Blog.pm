@@ -722,8 +722,7 @@ sub rebuild_pages {
             Entry             => $entry,
             BuildDependencies => 1,
             OldPrevious       => $q->param('old_previous'),
-            OldNext           => $q->param('old_next'),
-            OldCats           => $q->param('old_cats'),
+            OldNext           => $q->param('old_next')
         ) or return $app->publish_error();
         $order = "entry '" . $entry->title . "'";
     }
@@ -1137,7 +1136,7 @@ sub start_rebuild_pages {
             MT::Util::encode_html( $entry->title ) );
         $param{is_entry} = 1;
         $param{entry_id} = $entry_id;
-        for my $col (qw( is_new old_status old_next old_previous old_cats)) {
+        for my $col (qw( is_new old_status old_next old_previous )) {
             $param{$col} = $q->param($col);
         }
     }
