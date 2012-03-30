@@ -67,6 +67,12 @@
     white-space: nowrap;
     word-wrap: normal;
 }
+.sortable-item .item-basename-text::before {
+    content: "\0028";
+}
+.sortable-item .item-basename-text::after {
+    content: "\0029";
+}
 .sortable-item .item-ctrl {
     display: none;
     margin-left: 10px;
