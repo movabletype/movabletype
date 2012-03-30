@@ -1719,20 +1719,8 @@ sub delete {
             }
         }
         elsif ( $type eq 'author' ) {
-            if ( $app->config->ExternalUserManagement ) {
-                require MT::LDAP;
-                my $ldap = MT::LDAP->new
-                    or return $app->error(
-                    MT->translate(
-                        "Loading MT::LDAP failed: [_1].",
-                        MT::LDAP->errstr
-                    )
-                    );
-                my $dn = $ldap->get_dn( $obj->name );
-                if ($dn) {
-                    $return_arg{author_ldap_found} = 1;
-                }
-            }
+            $app->run_callbacks( 'cms_delete_ext_author_filter',
+                $app, $obj, \%return_arg) || return;
         }
         elsif ( $type eq 'website' ) {
             my $blog_class = $app->model('blog');
