@@ -9,7 +9,7 @@ package StyleCatcher::CMS;
 use strict;
 use File::Basename qw( basename dirname );
 
-use MT::Util qw( remove_html decode_html );
+use MT::Util qw( remove_html decode_html caturl );
 
 our $DEFAULT_STYLE_LIBRARY;
 
@@ -209,10 +209,10 @@ sub download_theme {
     my $app = shift;
     my ($url) = @_;
 
-    my $static_path = $app->static_file_path;
-    my $themeroot   = File::Spec->catdir( $static_path, 'support', 'themes' );
-    my $ua          = $app->new_ua( { max_size => 500_000 } );
-    my $filemgr     = file_mgr()
+    my $support_path = $app->support_directory_path;
+    my $themeroot    = File::Spec->catdir( $support_path, 'themes' );
+    my $ua           = $app->new_ua( { max_size => 500_000 } );
+    my $filemgr      = file_mgr()
         or return;
 
     my @url                 = split( /\//, $url );
@@ -322,11 +322,11 @@ sub apply {
 
     # if this isn't a local url, then we have to grab some files from
     # yonder...
-    my $static_url = $app->static_path;
-    if ( $url !~ m{ \A \Q$static_url\E (?:support/)? themes/ }xms ) {
+    my $support_url = $app->support_directory_url;
+    if ( $url !~ m{ \Q$support_url\E theme_static/ }xms ) {
         my $basename = download_theme( $app, $url )
             or return;
-        $url = "${static_url}support/themes/$basename/$basename.css";
+        $url = caturl( $support_url, 'themes', $basename, "$basename.css" );
     }
 
     my $blog = MT->model('blog')->load($blog_id)
