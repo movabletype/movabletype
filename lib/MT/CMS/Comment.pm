@@ -373,31 +373,38 @@ sub unapprove_item {
 }
 
 sub empty_junk {
-    my $app     = shift;
-    my $perms   = $app->permissions;
-    my $user    = $app->user;
-    my $blog_id = $app->param('blog_id');
+    my $app      = shift;
+    my $perms    = $app->permissions;
+    my $user     = $app->user;
+    my $blog     = $app->blog;
+    my $blog_ids = [];
 
     $app->validate_magic() or return;
 
-    if ($blog_id) {
-        $app->can_do('delete_junk_comments')
-            or return $app->permission_denied();
+    if ($blog) {
+        push @$blog_ids, $blog->id
+            if $user->permissions( $blog->id )
+                ->can_do('delete_junk_comments');
+        if ( !$blog->is_blog ) {
+            foreach my $b ( @{ $blog->blogs } ) {
+                push @$blog_ids, $b->id
+                    if $user->permissions( $b->id )
+                        ->can_do('delete_junk_comments');
+            }
+        }
+        return $app->permission_denied() unless @$blog_ids;
     }
     else {
         $app->can_do('delete_all_junk_comments')
             or return $app->permission_denied();
     }
 
-    my $blog_ids = $app->_load_child_blog_ids($blog_id);
-    push @$blog_ids, $blog_id if $blog_id;
-
     my $type  = $app->param('_type');
     my $class = $app->model($type);
     my $arg   = {};
     require MT::Comment;
     $arg->{junk_status} = MT::Comment::JUNK();
-    $arg->{blog_id} = $blog_ids if $blog_id;
+    $arg->{blog_id} = $blog_ids if @$blog_ids;
     $class->remove($arg);
     $app->add_return_arg( 'emptied' => 1 );
     $app->call_return;
