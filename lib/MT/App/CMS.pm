@@ -2303,6 +2303,7 @@ sub core_compose_menus {
     my $app = shift;
     return {
         'entry' => {
+            id         => 'entry',
             label      => "Entry",
             order      => 100,
             mode       => 'view',
@@ -2311,6 +2312,7 @@ sub core_compose_menus {
             view       => "blog",
         },
         'page' => {
+            id         => 'page',
             label      => "Page",
             order      => 200,
             mode       => 'view',
@@ -2319,6 +2321,7 @@ sub core_compose_menus {
             view       => [ "blog", 'website' ],
         },
         'asset' => {
+            id         => 'asset',
             label      => "Asset",
             order      => 300,
             mode       => 'start_upload',
@@ -2326,6 +2329,7 @@ sub core_compose_menus {
             view       => [ "blog", 'website' ],
         },
         'website' => {
+            id            => 'website',
             label         => "Website",
             order         => 200,
             mode          => 'view',
@@ -2334,6 +2338,7 @@ sub core_compose_menus {
             view          => "system",
         },
         'user' => {
+            id         => 'user',
             label      => "User",
             order      => 100,
             mode       => "view",
@@ -2345,6 +2350,7 @@ sub core_compose_menus {
             view => "system",
         },
         'blog:create' => {
+            id            => 'blog',
             label         => "Blog",
             order         => 400,
             mode          => 'view',
