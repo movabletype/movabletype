@@ -403,14 +403,22 @@ function validate (f, rebuild) {
         alert('<__trans phrase="You must set the Template Name." escape="js">');
         return false;
     }
-    else if (f.outfile && !f.outfile.value) {
+    if (f.outfile && !f.outfile.value) {
         alert('<__trans phrase="You must set the template Output File." escape="js">');
         return false;
     }
-    else {
-        app.clearDirty();
-        if (rebuild) setRebuild(f);
-    }
+
+    app.clearDirty();
+    var area = DOM.getElement('text');
+    var str = area.value;
+    if ( !defined( str ) ) str = '';
+    str = str.replace(/[\0-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+    area.value = str;
+    str = editor.getValue();
+    if ( !defined( str ) ) str = '';
+    str = str.replace(/[\0-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+    editor.setValue(str);
+    if (rebuild) setRebuild(f);
     return true;
 }
 function saveArchiveMapChange(param) {
