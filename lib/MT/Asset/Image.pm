@@ -87,8 +87,14 @@ sub image_width {
     return $w;
 }
 
+our $computed_thumbnail_cache = undef;
+
 sub has_thumbnail {
-    1;
+    if ( !defined $computed_thumbnail_cache ) {
+        eval { require MT::Image; MT::Image->new or die; };
+        $computed_thumbnail_cache = $@ ? 0 : 1;
+    }
+    $computed_thumbnail_cache;
 }
 
 sub thumbnail_path {
