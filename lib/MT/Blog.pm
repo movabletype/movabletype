@@ -70,8 +70,8 @@ __PACKAGE__->install_properties(
             'use_comment_confirmation'  => 'boolean',
             'allow_commenter_regist'    => 'boolean',
             'use_revision'              => 'boolean',
-            'archive_url'             => 'string(255)',
-            'archive_path'            => 'string(255)',
+            'archive_url'               => 'string(255)',
+            'archive_path'              => 'string(255)',
             ## Have to keep these around for use in mt-upgrade.cgi.
             'old_style_archive_links' => 'boolean',
             'archive_tmpl_daily'      => 'string(255)',
@@ -79,7 +79,7 @@ __PACKAGE__->install_properties(
             'archive_tmpl_monthly'    => 'string(255)',
             'archive_tmpl_category'   => 'string(255)',
             'archive_tmpl_individual' => 'string(255)',
-            ## end of fields for mt-upgrade.cgi 
+            ## end of fields for mt-upgrade.cgi
 
             # meta properties
             'image_default_wrap_text'  => 'integer meta',
@@ -780,7 +780,8 @@ sub include_path_parts {
     my ($param) = @_;
 
     my $filestem = MT::Util::dirify( $param->{name} )
-        || 'template_' . $param->{id};
+        || 'template';
+    $filestem .= '_' . $param->{id};
     my $filename = join q{.}, $filestem, $blog->file_extension;
     my $path = $param->{path} || '';
     my @path;
@@ -1762,7 +1763,7 @@ The file extension to be used for archive pages.
 
 =item * email_new_comments
 
-A three-states boolean flag specifying whether authors should be notified 
+A three-states boolean flag specifying whether authors should be notified
 of all new comments posted on entries they have written, just moderated
 comments or don't send at all
 
@@ -1815,7 +1816,7 @@ The default value for the I<allow_pings> field in the I<MT::Entry> object.
 
 The default value for the I<status> field in the I<MT::Entry> object.
 
-=item * allow_anon_comments 
+=item * allow_anon_comments
 
 A boolean flag specifying whether anonymous comments (those posted without
 a name or an email address) are allowed.
@@ -1832,9 +1833,9 @@ with a validated email/password pair) are allowed.
 
 =item * moderate_unreg_comments
 
-Specifying which comments will not be displayed until approved by the 
+Specifying which comments will not be displayed until approved by the
 entry author. can be MT::Blog::MODERATE_NONE, (all comments are to be
-published immediately) MODERATE_UNTRSTD, (unused) MODERATE_UNAUTHD, 
+published immediately) MODERATE_UNTRSTD, (unused) MODERATE_UNAUTHD,
 (moderate only comments from unauthenticated users) or MODERATE_ALL
 
 =item * manual_approve_commenters
@@ -1862,7 +1863,7 @@ Allow blog-level pings
 
 =item * email_new_pings
 
-A flag wether MT should email the blog owner for all new pings, just 
+A flag wether MT should email the blog owner for all new pings, just
 moderated pings, or not at all
 
 =item * ping_weblogs
@@ -1906,7 +1907,7 @@ Search entries for links and upgrade them to pings
 
 =item * internal_autodiscovery
 
-Search entries for links to the same domain of this blog, and upgrade 
+Search entries for links to the same domain of this blog, and upgrade
 them to pings
 
 =item * sanitize_spec
@@ -1934,10 +1935,10 @@ changed - new entry was added, or an entry was edited
 
 =item * custom_dynamic_templates
 
-When using dynamic publishing, this field controls when a template will be 
-converted to a PHP page. possible values: 'all' - all templates are to 
-built dynamically. 'none' - all the template will be build on-demand. 
-'async_all' - all the template will be build a-synchronically. 
+When using dynamic publishing, this field controls when a template will be
+converted to a PHP page. possible values: 'all' - all templates are to
+built dynamically. 'none' - all the template will be build on-demand.
+'async_all' - all the template will be build a-synchronically.
 'async_partial' - the main index, feed and the preferred archive type
 are to by build on-demand, and the rest will be built a-synchronically.
 'archives' - only the index is to be build on-demand, all the rest will
@@ -1948,7 +1949,7 @@ be built dynamically
 When a new comment is entered, it is checked if it is spam using spam
 filters. each filter is voting by returning a number between -10 to 10,
 (or ABSTAIN) and then numbers are merged to a single spam score. if this
-score is bigger then junk_score_threshold, this comment is considered 
+score is bigger then junk_score_threshold, this comment is considered
 spam
 
 =item * basename_limit
@@ -1972,7 +1973,7 @@ Should contain all desired HTML formatting.
 
 =item * use_revision
 
-If the global TrackRevisions configuration is enabled, enables the 
+If the global TrackRevisions configuration is enabled, enables the
 revision tracking for this blog
 
 =item * archive_path
@@ -2028,7 +2029,7 @@ If true, force typepad commenters to enter their email
 
 =item * nofollow_urls
 
-If true, add a 'nofollow' tag to all the URLs in the comments and 
+If true, add a 'nofollow' tag to all the URLs in the comments and
 TrackBacks
 
 =item * follow_auth_links
@@ -2048,14 +2049,14 @@ captcha option is off, and there is a built-in captcha generator named
 
 =item * publish_queue
 
-The flag is set to 1 if custom_dynamic_templates is async_all or 
+The flag is set to 1 if custom_dynamic_templates is async_all or
 async_partially, acting as a flag to use TheSchwartz publishing queue
-instead of publishing immediately (in the case of static publishing) 
+instead of publishing immediately (in the case of static publishing)
 
 =item * nwc_smart_replace
 
-Replace UTF-8 characters frequently used by word processors with their 
-more common web equivalents. possible values: 2 - don't replace. 1 - 
+Replace UTF-8 characters frequently used by word processors with their
+more common web equivalents. possible values: 2 - don't replace. 1 -
 replace to HTML entities. 0 - replace to ASCII characters
 
 =item * nwc_replace_field
@@ -2077,7 +2078,7 @@ and 'm' for medium
 
 =item * include_system
 
-If this meta field exists, turns the mt:Include tags to Server Side 
+If this meta field exists, turns the mt:Include tags to Server Side
 Includes. It can specify one of these include systems: shtml,
 php, jsp or asp
 
@@ -2098,7 +2099,7 @@ many revision to keep for each template
 A hash that remembers the last configuration a theme was exported from
 this blog. contains at least a "core" key, that contains a hash
 with all the configuration, such as name, version, author etc. If there
-are plugins with theme exporters installed, they will have an entry in 
+are plugins with theme exporters installed, they will have an entry in
 this hash as well
 
 =item * category_order
@@ -2119,7 +2120,7 @@ Set default values to all of the data fields
 
 =head2 $blog->is_blog
 
-returns true if this object is a blog and not some subclass (such as 
+returns true if this object is a blog and not some subclass (such as
 MT::Website)
 
 =head2 MT::Blog->create_default_blog( [ $blog_name, $blog_template, $website_id ] )
@@ -2132,12 +2133,12 @@ Apply a set of default templates to the blog, from a given template set
 
 =head2 $blog->current_timestamp
 
-Create a time stamp for the blog's time zone, in the "YYYYMMDDHHMMSS" 
+Create a time stamp for the blog's time zone, in the "YYYYMMDDHHMMSS"
 format
 
 =head2 $blog->website
 
-Returns the blog's parent MT::Website object, or undef if it does not 
+Returns the blog's parent MT::Website object, or undef if it does not
 have one
 
 =head2 $blog->theme
@@ -2192,18 +2193,18 @@ true if it is OK to publish comments from thrusted commenters
 
 =head2 $blog->publish_authd_untrusted_commenters
 
-true if it is OK to publish comments from authenticated but non-thrusted 
+true if it is OK to publish comments from authenticated but non-thrusted
 commenters
 
 =head2 $blog->publish_unauthd_commenters
 
-true if it is OK to publish comments even from un-authenticated 
+true if it is OK to publish comments even from un-authenticated
 commenters - everyone
 
 =head2 $blog->include_path_parts( %$param )
 
 Accept $param hashref that should contain either a "name" key, for a file
-name, or an "id" key for template_id. from these keys a filename will 
+name, or an "id" key for template_id. from these keys a filename will
 be created
 
 the path to this file can be passed by the "path" key. if not passed or
@@ -2212,15 +2213,15 @@ configuration directive
 
 returns ($filename, @path). for using these:
 
-    $file = File::Spec->catfile( 
-        File::Spec->catdir($blog->site_path, @path), 
-        $filename 
+    $file = File::Spec->catfile(
+        File::Spec->catdir($blog->site_path, @path),
+        $filename
         );
 
 =head2 $blog->include_path
 
 Similar to include_path_parts, but will calculate that final path for you.
-In scalar context, returns the final path. in list context returns 
+In scalar context, returns the final path. in list context returns
 (full path, directory, filename)
 
 =head2 $blog->include_url
@@ -2248,7 +2249,7 @@ commenters, and have authenticators to let them register
 
 =head2 $blog->accepts_comments
 
-returns true if commenting is allowed for registered and unregistered 
+returns true if commenting is allowed for registered and unregistered
 commenters
 
 =head2 $blog->count_static_templates( $archive_type )
@@ -2296,7 +2297,7 @@ this blog, returns whatever is configured in the global NwcReplaceField
 
 =head2 $blog->apply_theme( [ $theme_id ] )
 
-apply a theme to the blog. if not specify, try to re-apply the current 
+apply a theme to the blog. if not specify, try to re-apply the current
 theme, and if not exists, apply the default theme
 
 =head1 NOTES
