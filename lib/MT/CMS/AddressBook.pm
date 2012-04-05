@@ -48,10 +48,6 @@ sub send_notify {
         unless $perms->can_do('send_entry_notification');
 
     my $author = $entry->author;
-    $author = $user unless $author; # in case author was deleted
-    return $app->error(
-        $app->translate( "No email address for user '[_1]'", $author->name ) )
-        unless $author->email;
 
     my $cols = 72;
     my %params;
@@ -104,18 +100,24 @@ sub send_notify {
         $app->translate(
             "No valid recipients found for the entry notification.")
         );
+    my $address;
+    if ($author) {
+        $address = defined $author->nickname 
+            ? $author->nickname . ' <' . $author->email . '>'
+            : $author->email;
+    } else {
+        $address = $app->config('EmailAddressMain');
+        $params{from_address} = $address;
+    }
 
-    my $body = $app->build_email( 'notify-entry.tmpl', \%params );
+    my $body = $app->build_email( 'notify-entry.tmpl', \%params )
+        or return;
 
     my $subj
         = $app->translate( "[_1] Update: [_2]", $blog->name, $entry->title );
     if ( $app->current_language ne 'ja' ) {   # FIXME perhaps move to MT::I18N
         $subj =~ s![\x80-\xFF]!!g;
     }
-    my $address
-        = defined $author->nickname
-        ? $author->nickname . ' <' . $author->email . '>'
-        : $author->email;
     my %head = (
         id      => 'notify_entry',
         To      => $address,
@@ -127,13 +129,12 @@ sub send_notify {
     $head{'Content-Type'} = qq(text/plain; charset="$charset");
     my $i = 1;
     require MT::Mail;
-    MT::Mail->send( \%head, $body )
-        or return $app->error(
-        $app->translate(
-            "Error sending mail ([_1]); try another MailTransfer setting?",
-            MT::Mail->errstr
-        )
-        );
+    unless (exists $params{from_address}) {
+        MT::Mail->send( \%head, $body )
+            or return $app->errtrans(
+                "Error sending mail ([_1]); try another MailTransfer setting?",
+                MT::Mail->errstr );
+    }
     delete $head{To};
     
     my @email_to_send;
