@@ -167,28 +167,39 @@ sub new_string {
 sub load_file {
     my $tmpl = shift;
     my ($file) = @_;
-    die 'Template load error'
-        if $file =~ /\.\./;
 
-    if ( File::Spec->file_name_is_absolute($file) ) {
-        require Cwd;
-        my $ok            = 0;
-        my @paths         = @{ $tmpl->{include_path} || [] };
-        my $abs_file_path = MT::Util::realpath($file);
-        foreach my $path (@paths) {
-            next unless -d $path;
-            my $abs_path = MT::Util::realpath($path);
-            $ok = 1, last if $abs_file_path =~ /^\Q$abs_path\E/;
-        }
-        die "Template load error" unless $ok;
-    }
-    else {
+    # If file is not absolute path, try to load
+    # the file from include path.
+    unless ( File::Spec->file_name_is_absolute($file) ) {
         my @paths = @{ $tmpl->{include_path} || [] };
         foreach my $path (@paths) {
             my $test_file = File::Spec->catfile( $path, $file );
-            $file = $test_file, last if -f $test_file;
+            $test_file = MT::Util::canonicalize_path($test_file);
+            $test_file = MT::Util::realpath($test_file);
+            $file      = $test_file, last if -f $test_file;
         }
+        die MT->translate( "Template load error: [_1]",
+            MT->translate( "No such file or directory: '[_1]'", $file ) )
+            unless File::Spec->file_name_is_absolute($file);
     }
+
+    require Cwd;
+    my $ok            = 0;
+    my @paths         = @{ $tmpl->{include_path} || [] };
+    my $abs_file_path = MT::Util::canonicalize_path($file);
+    $abs_file_path = MT::Util::realpath($abs_file_path);
+    foreach my $path (@paths) {
+        next unless -d $path;
+        my $abs_path = MT::Util::realpath($path);
+        $ok = 1, last if $abs_file_path =~ /^\Q$abs_path\E/;
+    }
+    die MT->translate(
+        "Template load error: [_1]",
+        MT->translate(
+            "Tried to load the file from outside of the include path '[_1]'",
+            $file
+        )
+    ) unless $ok;
 
     return $tmpl->trans_error( "File not found: [_1]", $file )
         unless -e $file;
