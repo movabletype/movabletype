@@ -32,13 +32,13 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '5.13', '5.0030' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '5.14', '5.0030' );
     (   $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION,
         $VERSION_ID,   $PORTAL_URL
         )
         = (
         '__PRODUCT_NAME__', 'MT',
-        '5.13',             '__PRODUCT_VERSION_ID__',
+        '5.14',             '__PRODUCT_VERSION_ID__',
         '__PORTAL_URL__'
         );
 
