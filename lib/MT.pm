@@ -2143,7 +2143,6 @@ sub support_directory_path {
 sub template_paths {
     my $mt = shift;
     my @paths;
-    my $path = $mt->config->TemplatePath;
     if ( $mt->{plugin_template_path} ) {
         if (File::Spec->file_name_is_absolute( $mt->{plugin_template_path} ) )
         {
@@ -2178,6 +2177,16 @@ sub template_paths {
         push @paths, File::Spec->catdir( $addon->{path}, 'tmpl' );
     }
 
+    foreach my $sig ( keys %MT::Plugins ) {
+        my $obj = $MT::Plugins{$sig}{object};
+        next if $obj && !$obj->isa('MT::Plugin');
+
+        my $full_path = $obj->{full_path};
+        push @paths, File::Spec->catdir( $full_path, 'tmpl' )
+            if -d $full_path;
+    }
+
+    my $path = $mt->config->TemplatePath;
     push @paths, File::Spec->catdir( $path, $mt->{template_dir} )
         if $mt->{template_dir};
     push @paths, $path;
@@ -2331,7 +2340,7 @@ sub set_default_tmpl_params {
             $param->{mt_headers} = \%ENV;
         }
         unless ( $mt->{cookies} ) {
-            if ($ENV{MOD_PERL}) {
+            if ( $ENV{MOD_PERL} ) {
                 eval { require Apache::Cookie };
                 $mt->{cookies} = Apache::Cookie->fetch;
             }
@@ -2624,7 +2633,7 @@ sub build_email {
     return unless $tmpl;
 
     my $ctx = $tmpl->context;
-    $ctx->stash( 'blog_id', $blog->id )                 if $blog;
+    $ctx->stash( 'blog_id', $blog->id ) if $blog;
     foreach my $name (qw{blog entry author commenter comment category ping}) {
         $ctx->stash( $name, delete $param->{$name} ) if $param->{$name};
     }

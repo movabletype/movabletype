@@ -28,7 +28,7 @@ our @EXPORT_OK
     epoch2ts ts2epoch escape_unicode unescape_unicode
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
-    extract_url_path break_up_text dir_separator deep_do deep_copy realpath);
+    extract_url_path break_up_text dir_separator deep_do deep_copy realpath canonicalize_path);
 
 {
     my $Has_Weaken;
@@ -1509,7 +1509,7 @@ sub discover_tb {
         'pdd' => {
             name    => 'PublicDomainDedication',
             permits => [qw( Reproduction Distribution DerivativeWorks )],
-         },
+        },
     );
 
     sub cc_url {
@@ -2673,6 +2673,42 @@ sub realpath {
     return $abs_path;
 }
 
+sub canonicalize_path {
+    my $path  = shift;
+    my @parts = ();
+
+    require File::Spec;
+    my $is_abs = File::Spec->file_name_is_absolute($path) ? 1 : 0;
+
+    my ( $vol, $dirs, $filename ) = File::Spec->splitpath($path);
+    my @paths = File::Spec->splitdir($dirs);
+    @parts = ('') if $is_abs;
+
+    foreach my $path (@paths) {
+        if ( $path eq File::Spec->updir ) {
+            if ( @parts == 0 ) {
+                @parts = ( File::Spec->updir );
+            }
+            elsif ( @parts == 1 and '' eq $parts[0] ) {
+                return undef;
+            }
+            elsif ( $parts[$#parts] eq File::Spec->updir ) {
+                push @parts, File::Spec->updir;
+            }
+            else {
+                pop @parts;
+            }
+        }
+        elsif ( $path and $path ne File::Spec->curdir ) {
+            push @parts, $path;
+        }
+    }
+    my $sep = dir_separator();
+    $path = (@parts) ? join( $sep, @parts ) : undef;
+    $path =~ s/^\Q$sep\E// unless $is_abs;
+    return $path ? File::Spec->catfile( $path, $filename ) : $filename;
+}
+
 package MT::Util::XML::SAX::LexicalHandler;
 
 sub start_dtd {
@@ -2883,6 +2919,10 @@ If I<limit> is specified, this subroutine is not recursively copied from it.
 Wrapper method to Cwd::realpath which returns true real path.
 Why? Because on Windows, Cwd::realpath returns wrong value.
 (died, or change path separator from backslash to slash)
+
+=head2 canonicalize_path
+
+Returns canonical path
 
 =head1 AUTHOR & COPYRIGHTS
 

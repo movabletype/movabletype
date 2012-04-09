@@ -167,32 +167,43 @@ sub new_string {
 sub load_file {
     my $tmpl = shift;
     my ($file) = @_;
-    die 'Template load error'
-        if $file =~ /\.\./;
 
-    if ( File::Spec->file_name_is_absolute($file) ) {
-        require Cwd;
-        my $ok            = 0;
-        my @paths         = @{ $tmpl->{include_path} || [] };
-        my $abs_file_path = MT::Util::realpath($file);
-        foreach my $path (@paths) {
-            next unless -d $path;
-            my $abs_path = MT::Util::realpath($path);
-            $ok = 1, last if $abs_file_path =~ /^\Q$abs_path\E/;
-        }
-        die "Template load error" unless $ok;
-    }
-    else {
+    # Canonicalize
+    my $real_file = MT::Util::canonicalize_path($file);
+    $real_file = MT::Util::realpath($file);
+
+    # Find template via include_path
+    unless ( File::Spec->file_name_is_absolute($real_file) ) {
         my @paths = @{ $tmpl->{include_path} || [] };
+        my $ok = 0;
         foreach my $path (@paths) {
-            my $test_file = File::Spec->catfile( $path, $file );
-            $file = $test_file, last if -f $test_file;
+            my $test_file = File::Spec->catfile( $path, $real_file );
+            $test_file = MT::Util::canonicalize_path($test_file);
+            $test_file = MT::Util::realpath($test_file);
+            $real_file = $test_file, $ok = 1, last if -f $test_file;
         }
+        return $tmpl->trans_error( "File not found: [_1]", $file )
+            unless -e $real_file;
     }
+
+    my $ok = 0;
+    my @paths = @{ $tmpl->{include_path} || [] };
+    foreach my $path (@paths) {
+        my $real_path = MT::Util::realpath($path);
+        next unless -d $real_path;
+        $ok = 1, last if $real_file =~ /^\Q$real_path\E/;
+    }
+    die MT->translate(
+        "Template load error: [_1]",
+        MT->translate(
+            "Tried to load the file from outside of the include path '[_1]'",
+            $file
+        )
+    ) unless $ok;
 
     return $tmpl->trans_error( "File not found: [_1]", $file )
-        unless -e $file;
-    open my $fh, '<', $file
+        unless -e $real_file;
+    open my $fh, '<', $real_file
         or
         return $tmpl->trans_error( "Error reading file '[_1]': [_2]", $file,
         $! );
@@ -635,8 +646,9 @@ sub _sync_from_disk {
     return
         if $size == $tmpl->linked_file_size
             && $mtime == $tmpl->linked_file_mtime;
-    # Use rw handle due to avoid that anyone do open unwritable file.
-    # ( -w file test operator can't detect windows ACL condition, so just try to open. )
+
+# Use rw handle due to avoid that anyone do open unwritable file.
+# ( -w file test operator can't detect windows ACL condition, so just try to open. )
     open my $fh, '+<', $lfile or return;
     my $c;
     do { local $/; $c = <$fh> };
