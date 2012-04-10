@@ -1241,17 +1241,15 @@ sub _extend_commenter_session {
     my %cookies     = $app->cookies();
     my $cookie_name = $app->commenter_cookie;
     my $session_key = $app->cookie_val($cookie_name) || "";
+    my $duration    = $param{Duration};
+    die "Support only one year session extension" 
+        unless $duration eq "+1y";
     $session_key =~ y/+/ /;
     my $sessobj = MT::Session->load( { id => $session_key, kind => 'SI' } );
     return
         if !$sessobj
     ;    # no point changing the cookie if the session's already lost.
-    my ( $sign, $number, $units ) = $param{Duration} =~ /([+-]?)(\d+)(\w+)/;
-    $number *= $sign eq '-' ? -1 : +1;
-    $number *=
-          $units eq 'y' ? 60 * 60 * 24 * 365
-        : $units eq 'd' ? 60 * 60 * 24
-        :                 1; # 's'
+    my $number = 60 * 60 * 24 * 365; # one year
     $sessobj->start( $sessobj->start + $number );
     $sessobj->save();
     my %sess_cookie = (
