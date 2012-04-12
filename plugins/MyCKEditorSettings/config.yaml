@@ -1,7 +1,0 @@
-id: MyCKEditorSettings
-name: MyCKEditorSettings
-version: 1
-
-editors:
-    ckeditor:
-        extension: extension.tmpl

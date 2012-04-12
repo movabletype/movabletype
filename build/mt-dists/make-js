@@ -16,7 +16,6 @@ $js .= `cat mt-static/js/edit.js`;
 $js .= `cat mt-static/js/archetype_editor.js`;
 $js .= `cat mt-static/js/dialog.js`;
 $js .= `cat mt-static/js/assetdetail.js`;
-$js .= `cat mt-static/plugins/CKEditor/ckeditor/plugins/mt/lang/en.js`;
 $js .= `cat mt-static/plugins/TinyMCE/tinymce/jscripts/tiny_mce/plugins/mt/langs/en.js`;
 $js .= `cat tmpl/cms/edit_template.tmpl`;
 $js .= `cat tmpl/cms/edit_entry.tmpl`;

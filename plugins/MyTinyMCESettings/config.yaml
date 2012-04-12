@@ -1,7 +1,0 @@
-id: MyTinyMCESettings
-name: MyTinyMCESettings
-version: 1
-
-editors:
-    tinymce:
-        extension: extension.tmpl
