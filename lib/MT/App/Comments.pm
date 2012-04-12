@@ -1251,7 +1251,7 @@ sub _extend_commenter_session {
     $number *=
           $units eq 'y' ? 60 * 60 * 24 * 365
         : $units eq 'd' ? 60 * 60 * 24
-        :                 1; # 's'
+        :                 $number;
     $sessobj->start( $sessobj->start + $number );
     $sessobj->save();
     my %sess_cookie = (
