@@ -2705,7 +2705,9 @@ sub canonicalize_path {
     }
     my $sep = dir_separator();
     $path = (@parts) ? join( $sep, @parts ) : undef;
-    $path =~ s/^\Q$sep\E// unless $is_abs;
+    if ( $path ) {
+        $path =~ s/^\Q$sep\E// unless $is_abs;
+    }
     return $path ? File::Spec->catfile( $path, $filename ) : $filename;
 }
 
