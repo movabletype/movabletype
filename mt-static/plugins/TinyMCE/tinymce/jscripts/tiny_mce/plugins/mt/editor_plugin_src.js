@@ -80,7 +80,7 @@
 	        var id      = ed.id;
 	        var blogId  = $('#blog-id').val() || 0;
 	        var proxies = {};
-            var disabledControls = [];
+            var hiddenControls = [];
 
             var supportedButtonsCache = {};
             function supportedButtons(mode, format) {
@@ -108,30 +108,59 @@
                 return ed.mtEditorStatus;
             });
 
-            ed.addCommand('mtSetStatus', function(status) {
+            function updateButtonVisibility() {
                 var s = ed.mtEditorStatus;
-                $.extend(s, status);
-
-                $.each(disabledControls, function() {
+                $.each(hiddenControls, function(i, k) {
+                    $('#' + k).show().removeClass('mce_mt_button_hidden').css({
+                        display: 'block'
+                    });
                     ed.controlManager.setDisabled(this, false);
                 });
-                disabledControls = [];
+                hiddenControls = [];
+
+                var supporteds = {};
+                $.each(supportedButtons(s.mode, s.format), function(k, v) {
+                    supporteds[id + '_' + k] = 1;
+                });
 
                 if (s.mode == 'source') {
                     proxies.source.setFormat(s.format);
-
-                    var supporteds = {};
-                    $.each(supportedButtons(s.mode, s.format), function(k, v) {
-                        supporteds[id + '_' + k] = 1;
-                    });
-
                     $.each(ed.controlManager.controls, function(k, c) {
-                        if (! c.disabled && ! supporteds[k]) {
-                            ed.controlManager.setDisabled(k, true);
-                            disabledControls.push(k);
+                        if (! c.classPrefix) {
+                            return;
+                        }
+
+                        if (! supporteds[k]) {
+                            $('#' + k).hide().addClass('mce_mt_button_hidden');
+                            hiddenControls.push(k);
                         }
                     });
                 }
+                else {
+                    $.each(ed.mtButtons, function(name, button) {
+                        var k = id + '_' + name;
+                        if (! supporteds[k]) {
+                            $('#' + k).hide().addClass('mce_mt_button_hidden');
+                            hiddenControls.push(k);
+                        }
+                    });
+                }
+                $('table', '#' + id + '_toolbargroup').each(function() {
+                    var $this = $(this);
+                    $this.show();
+                    if ($this.find('a.mceButton:not(.mce_mt_button_hidden)').length == 0) {
+                        $this.hide();
+                    }
+                });
+                ed.theme.resizeBy(0, 0);
+            }
+            ed.onInit.add(function() {
+                updateButtonVisibility();
+            });
+
+            ed.addCommand('mtSetStatus', function(status) {
+                $.extend(ed.mtEditorStatus, status);
+                updateButtonVisibility();
             });
 
             ed.addCommand('mtGetProxies', function() {
