@@ -17,7 +17,7 @@
 
         var modes = {};
         var funcs = opts['onclickFunctions'];
-        if (opts['onclickFunctions']) {
+        if (funcs) {
             opts['onclick'] = function() {
                 var mode = ed.mtEditorStatus['mode'];
                 var func = funcs[mode];
@@ -26,6 +26,10 @@
                 }
                 else {
                     func.apply(ed, arguments);
+                }
+
+                if (mode == 'source') {
+                    ed.onMTSourceButtonClick.dispatch(ed, ed.controlManager);
                 }
             };
             for (k in funcs) {
@@ -38,17 +42,14 @@
 
         if (! opts['isSupported']) {
             opts['isSupported'] = function(mode, format) {
-                if (mode == 'wysiwyg') {
-                    return true;
-                }
-                else if (! modes[mode]) {
+                if (! modes[mode]) {
                     return false;
                 }
 
-                if (funcs) {
-                    var func = funcs[ed.mtEditorStatus['mode']];
+                if (funcs && mode == 'source') {
+                    var func = funcs[mode];
                     if (typeof(func) == 'string') {
-                        return ed.mtProxies['source'].isSupported(func);
+                        return ed.mtProxies['source'].isSupported(func, format);
                     }
                     else {
                         return true;
@@ -321,6 +322,48 @@
 				}
 			});
 
+            ed.addMtButton('mt_source_bold', {
+                title : 'mt.bold',
+				onclickFunctions : {
+                    source: 'bold'
+                }
+            });
+
+            ed.addMtButton('mt_source_italic', {
+                title : 'mt.italic',
+				onclickFunctions : {
+                    source: 'italic'
+                }
+            });
+
+            ed.addMtButton('mt_source_blockquote', {
+                title : 'mt.blockquote',
+				onclickFunctions : {
+                    source: 'blockquote'
+                }
+            });
+
+            ed.addMtButton('mt_source_unordered_list', {
+                title : 'mt.insert_unordered_list',
+				onclickFunctions : {
+                    source: 'insertUnorderedList'
+                }
+            });
+
+            ed.addMtButton('mt_source_ordered_list', {
+                title : 'mt.insert_ordered_list',
+				onclickFunctions : {
+                    source: 'insertOrderedList'
+                }
+            });
+
+            ed.addMtButton('mt_source_list_item', {
+                title : 'mt.list_item',
+				onclickFunctions : {
+                    source: 'insertListItem'
+                }
+            });
+
             ed.addMtButton('mt_source_mode', {
 				title : 'mt.source_mode',
 				onclickFunctions : {
@@ -339,6 +382,7 @@
                 'mt_italic': 'italic',
                 'mt_underline': 'underline',
                 'mt_strikethrough': 'strikethrough',
+                'mt_insert_link': 'link',
                 'mt_justify_left': 'justifyleft',
                 'mt_justify_center': 'justifycenter',
                 'mt_justify_right': 'justifyright'
@@ -356,16 +400,45 @@
                     cm.setDisabled('mt_source_mode', true);
                 }
                 else {
-                    var disabled =
-                        ed.mtEditorStatus['mode'] == 'source' &&
-                        ed.mtEditorStatus['format'] != 'none.tinymce_temp';
-                    cm.setDisabled('mt_source_mode', disabled);
+                    if (ed.mtEditorStatus['mode'] == 'source' &&
+                        ed.mtEditorStatus['format'] != 'none.tinymce_temp'
+                    ) {
+                        $('#' + id + '_mt_source_mode').hide();
+                    }
+                    else {
+                        $('#' + id + '_mt_source_mode').show();
+                    }
 
                     var active =
                         ed.mtEditorStatus['mode'] == 'source' &&
                         ed.mtEditorStatus['format'] == 'none.tinymce_temp';
                     cm.setActive('mt_source_mode', active);
                 }
+
+                if (! ed.mtProxies['source']) {
+                    return;
+                }
+
+                $.each(sourceButtons, function(k, command) {
+                    cm.setActive(k, ed.mtProxies['source'].isStateActive(command));
+                });
+            });
+
+            if (! ed.onMTSourceButtonClick) {
+			    ed.onMTSourceButtonClick = new tinymce.util.Dispatcher(ed);
+            }
+            var sourceButtons = {
+                'mt_source_bold': 'bold',
+                'mt_source_italic': 'italic',
+                'mt_source_blockquote': 'blockquote',
+                'mt_source_unordered_list': 'insertUnorderedList',
+                'mt_source_ordered_list': 'insertOrderedList',
+                'mt_source_list_item': 'insertListItem'
+            }
+            ed.onMTSourceButtonClick.add(function(ed, cm) {
+                $.each(sourceButtons, function(k, command) {
+                    cm.setActive(k, ed.mtProxies['source'].isStateActive(command));
+                });
             });
 		},
 

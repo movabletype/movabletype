@@ -14,7 +14,13 @@
 .mtSkin span.mce_mt_justify_center,
 .mtSkin span.mce_mt_justify_right,
 .mtSkin span.mce_mt_insert_image,
-.mtSkin span.mce_mt_insert_file {
+.mtSkin span.mce_mt_insert_file,
+.mtSkin span.mce_mt_source_bold,
+.mtSkin span.mce_mt_source_italic,
+.mtSkin span.mce_mt_source_blockquote,
+.mtSkin span.mce_mt_source_unordered_list,
+.mtSkin span.mce_mt_source_ordered_list,
+.mtSkin span.mce_mt_source_list_item {
     background: url('../../../../../../../../images/buttons/toolbar/toolbar.gif');
 }
 
@@ -34,7 +40,13 @@
 .mtSkin span.mce_mt_justify_center:hover,
 .mtSkin span.mce_mt_justify_right:hover,
 .mtSkin span.mce_mt_insert_image:hover,
-.mtSkin span.mce_mt_insert_file:hover {
+.mtSkin span.mce_mt_insert_file:hover,
+.mtSkin span.mce_mt_source_bold:hover,
+.mtSkin span.mce_mt_source_italic:hover,
+.mtSkin span.mce_mt_source_blockquote:hover,
+.mtSkin span.mce_mt_source_unordered_list:hover,
+.mtSkin span.mce_mt_source_ordered_list:hover,
+.mtSkin span.mce_mt_source_list_item:hover {
     background: url('../../../../../../../../images/buttons/toolbar/toolbar-hover.gif');
 }
 
@@ -54,7 +66,13 @@
 .mtSkin .mceButtonActive span.mce_mt_justify_center,
 .mtSkin .mceButtonActive span.mce_mt_justify_right,
 .mtSkin .mceButtonActive span.mce_mt_insert_image,
-.mtSkin .mceButtonActive span.mce_mt_insert_file {
+.mtSkin .mceButtonActive span.mce_mt_insert_file,
+.mtSkin .mceButtonActive span.mce_mt_source_bold,
+.mtSkin .mceButtonActive span.mce_mt_source_italic,
+.mtSkin .mceButtonActive span.mce_mt_source_blockquote,
+.mtSkin .mceButtonActive span.mce_mt_source_unordered_list,
+.mtSkin .mceButtonActive span.mce_mt_source_ordered_list,
+.mtSkin .mceButtonActive span.mce_mt_source_list_item {
     background: url('../../../../../../../../images/buttons/toolbar/toolbar-active.gif');
 }
 
@@ -175,4 +193,42 @@
 .mtSkin .mceButtonActive span.mce_mt_source_mode,
 .mtSkin span.mce_mt_source_mode:hover {
     background-position: -22px 0;
+}
+
+
+.mtSkin span.mce_mt_source_bold,
+.mtSkin .mceButtonActive span.mce_mt_source_bold,
+.mtSkin span.mce_mt_source_bold:hover {
+    background-position: -44px 0;
+}
+
+.mtSkin span.mce_mt_source_italic,
+.mtSkin .mceButtonActive span.mce_mt_source_italic,
+.mtSkin span.mce_mt_source_italic:hover {
+    background-position: -66px 0;
+}
+
+.mtSkin span.mce_mt_source_blockquote,
+.mtSkin .mceButtonActive span.mce_mt_source_blockquote,
+.mtSkin span.mce_mt_source_blockquote:hover {
+    background-position: -198px 0;
+}
+
+.mtSkin span.mce_mt_source_unordered_list,
+.mtSkin .mceButtonActive span.mce_mt_source_unordered_list,
+.mtSkin span.mce_mt_source_unordered_list:hover {
+    background-position: -242px 0;
+}
+
+.mtSkin span.mce_mt_source_ordered_list,
+.mtSkin .mceButtonActive span.mce_mt_source_ordered_list,
+.mtSkin span.mce_mt_source_ordered_list:hover {
+    background-position: -264px 0;
+}
+
+.mtSkin span.mce_mt_source_list_item,
+.mtSkin .mceButtonActive span.mce_mt_source_list_item,
+.mtSkin span.mce_mt_source_list_item:hover {
+    background-position: -242px 12px;
+    background-repeat: no-repeat;
 }

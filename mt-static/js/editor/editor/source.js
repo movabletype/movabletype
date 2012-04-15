@@ -86,7 +86,7 @@ $.extend(MT.Editor.Source.prototype, MT.Editor.prototype, {
         }
     },
 
-    setSelection: function( txt ) {
+    setSelection: function( txt, select_inserted_content ) {
         var el = this.textarea;
         var selection = this.getSelection();
         if ( selection.createRange ) {
@@ -96,7 +96,9 @@ $.extend(MT.Editor.Source.prototype, MT.Editor.prototype, {
                 range = selection.createRange();
             }
             range.text = txt;
-            range.select();
+            if ( select_inserted_content ) {
+                range.select();
+            }
         } else {
             var scrollTop = el.scrollTop;
             var length = el.textLength;
@@ -105,8 +107,14 @@ $.extend(MT.Editor.Source.prototype, MT.Editor.prototype, {
             if ( end == 1 || end == 2 && defined( length ) )
                 end = length;
             el.value = el.value.substring( 0, start ) + txt + el.value.substr( end, length );
-            el.selectionStart = start;
-            el.selectionEnd = start + txt.length;
+            if ( select_inserted_content ) {
+                el.selectionStart = start;
+                el.selectionEnd = start + txt.length;
+            }
+            else {
+                el.selectionStart = start + txt.length;
+                el.selectionEnd = start + txt.length;
+            }
             el.scrollTop = scrollTop;
         }
         this.focus();

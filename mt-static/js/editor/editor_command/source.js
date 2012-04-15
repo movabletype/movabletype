@@ -14,10 +14,11 @@ MT.EditorCommand.Source = function(editor) {
 $.extend(MT.EditorCommand.Source.prototype, MT.EditorCommand.prototype, {
     setFormat: function(format) {
         this.format = format;
+        this.commandStates = {};
     },
 
-    isSupported: function( command ) {
-        var format = this.format;
+    isSupported: function(command, format) {
+        var format = format || this.format;
         if (! this.commands[format]) {
             format = 'default';
         }
@@ -26,28 +27,6 @@ $.extend(MT.EditorCommand.Source.prototype, MT.EditorCommand.prototype, {
     },
 
     execCommand: function( command, userInterface, argument ) {
-        /* Possible commands:
-         * fontSizeSmaller
-         * fontSizeLarger
-         * -
-         * bold
-         * italic
-         * underline
-         * strikethrough
-         * -
-         * createLink
-         * -
-         * indent
-         * outdent
-         * -
-         * insertUnorderedList
-         * insertOrderedList
-         * -
-         * justifyLeft
-         * justifyCenter
-         * justifyRight
-         */
-
         var text = this.e.getSelectedText();
         if ( !defined( text ) )
             text = '';
@@ -65,32 +44,59 @@ $.extend(MT.EditorCommand.Source.prototype, MT.EditorCommand.prototype, {
         return this.editor.setDirty();
     },
 
+    commandStates: {},
+
+    isStateActive: function(command) {
+        return this.commandStates[command] ? true : false;
+    },
+
+    execEnclosingCommand: function(command, open, close, text, selectedCallback) {
+        if (! text) {
+            if (! this.isStateActive(command)) {
+                this.e.setSelection(open);
+                this.commandStates[command] = true;
+            }
+            else {
+                this.e.setSelection(close);
+                this.commandStates[command] = false;
+            }
+        }
+        else {
+            if (selectedCallback) {
+                selectedCallback();
+            }
+            else {
+                this.e.setSelection( open + text + close );
+            }
+        }
+    },
+
     commands: {}
 });
 
 MT.EditorCommand.Source.prototype.commands['default'] = {
     fontSizeSmaller: function(command, userInterface, argument, text) {
-        this.e.setSelection( "<small>" + text + "</small>" );
+        this.execEnclosingCommand(command, '<small>', '</small>', text);
     },
 
     fontSizeLarger: function(command, userInterface, argument, text) {
-        this.e.setSelection( "<big>" + text + "</big>" );
+        this.execEnclosingCommand(command, '<big>', '</big>', text);
     },
 
     bold: function(command, userInterface, argument, text) {
-        this.e.setSelection( "<strong>" + text + "</strong>" );
+        this.execEnclosingCommand(command, '<strong>', '</strong>', text);
     },
 
     italic: function(command, userInterface, argument, text) {
-        this.e.setSelection( "<em>" + text + "</em>" );
+        this.execEnclosingCommand(command, '<em>', '</em>', text);
     },
 
     underline: function(command, userInterface, argument, text) {
-        this.e.setSelection( "<u>" + text + "</u>" );
+        this.execEnclosingCommand(command, '<u>', '</u>', text);
     },
 
     strikethrough: function(command, userInterface, argument, text) {
-        this.e.setSelection( "<strike>" + text + "</strike>" );
+        this.execEnclosingCommand(command, '<strike>', '</strike>', text);
     },
 
     insertLink: function(command, userInterface, argument, text) {
@@ -106,46 +112,58 @@ MT.EditorCommand.Source.prototype.commands['default'] = {
     },
 
     indent: function(command, userInterface, argument, text) {
-        this.e.setSelection( "<blockquote>" + text + "</blockquote>" );
+        this.execEnclosingCommand(command, '<blockquote>', '</blockquote>', text);
+    },
+
+    blockquote: function(command, userInterface, argument, text) {
+        this.execEnclosingCommand(command, '<blockquote>', '</blockquote>', text);
     },
 
     insertUnorderedList: function(command, userInterface, argument, text) {
-        var list = text.split( /\r?\n/ );
-        var li = [];
-        for ( var i = 0; i < list.length; i++ )
-            list[ i ] = "\t<li>" + list[ i ] + "</li>";
-        this.e.setSelection( "<ul>\n" + list.join( "\n" ) + "\n</ul>" );
+        this.execEnclosingCommand(command, '<ul>', '</ul>', text, function() {
+            var list = text.split( /\r?\n/ );
+            var li = [];
+            for ( var i = 0; i < list.length; i++ )
+                list[ i ] = "\t<li>" + list[ i ] + "</li>";
+            this.e.setSelection( "<ul>\n" + list.join( "\n" ) + "\n</ul>" );
+        });
     },
 
     insertOrderedList: function(command, userInterface, argument, text) {
-        var list = text.split( /\r?\n/ );
-        var li = [];
-        for ( var i = 0; i < list.length; i++ )
-            list[ i ] = "\t<li>" + list[ i ] + "</li>";
-        this.e.setSelection( "<ol>\n" + list.join( "\n" ) + "\n</ol>" );
+        this.execEnclosingCommand(command, '<ol>', '</ol>', text, function() {
+            var list = text.split( /\r?\n/ );
+            var li = [];
+            for ( var i = 0; i < list.length; i++ )
+                list[ i ] = "\t<li>" + list[ i ] + "</li>";
+            this.e.setSelection( "<ul>\n" + list.join( "\n" ) + "\n</ul>" );
+        });
+    },
+
+    insertListItem: function(command, userInterface, argument, text) {
+        this.execEnclosingCommand(command, '<li>', '</li>\n', text);
     },
 
     justifyLeft: function(command, userInterface, argument, text) {
-        this.e.setSelection( '<div style="text-align: left;">' + text + "</div>" );
+        this.execEnclosingCommand(command, '<div style="text-align: left;">', '</div>', text);
     },
 
     justifyCenter: function(command, userInterface, argument, text) {
-        this.e.setSelection( '<div style="text-align: center;">' + text + "</div>" );
+        this.execEnclosingCommand(command, '<div style="text-align: center;">', '</div>', text);
     },
 
     justifyRight: function(command, userInterface, argument, text) {
-        this.e.setSelection( '<div style="text-align: right;">' + text + "</div>" );
+        this.execEnclosingCommand(command, '<div style="text-align: right;">', '</div>', text);
     }
 };
 
 MT.EditorCommand.Source.prototype.commands['markdown'] =
 MT.EditorCommand.Source.prototype.commands['markdown_with_smartypants'] = {
     bold: function(command, userInterface, argument, text) {
-        this.e.setSelection( "**" + text + "**" );
+        this.execEnclosingCommand(command, '**', '**', text);
     },
 
     italic: function(command, userInterface, argument, text) {
-        this.e.setSelection( "*" + text + "*" );
+        this.execEnclosingCommand(command, '*', '*', text);
     },
 
     insertLink: function(command, userInterface, argument, text) {
@@ -167,32 +185,39 @@ MT.EditorCommand.Source.prototype.commands['markdown_with_smartypants'] = {
         this.e.setSelection( list.join( "\n" ) );
     },
 
+    blockquote: function(command, userInterface, argument, text) {
+        var list = text.split( /\r?\n/ );
+        for ( var i = 0; i < list.length; i++ )
+            list[ i ] = "> " + list[ i ];
+        this.e.setSelection( list.join( "\n" ) );
+    },
+
     insertUnorderedList: function(command, userInterface, argument, text) {
         var list = text.split( /\r?\n/ );
         for ( var i = 0; i < list.length; i++ )
             list[ i ] = " - " + list[ i ];
-        this.e.setSelection( "\n" + list.join( "\n" ) + "\n" );
+        this.e.setSelection( "\n" + list.join( "\n" ) );
     },
 
     insertOrderedList: function(command, userInterface, argument, text) {
         var list = text.split( /\r?\n/ );
         for ( var i = 0; i < list.length; i++ )
             list[ i ] = " " + ( i + 1 ) + ".  " + list[ i ];
-        this.e.setSelection( "\n" + list.join( "\n" ) + "\n" );
+        this.e.setSelection( "\n" + list.join( "\n" ) );
     }
 };
 
 MT.EditorCommand.Source.prototype.commands['textile_2'] = {
     bold: function(command, userInterface, argument, text) {
-        this.e.setSelection( "**" + text + "**" );
+        this.execEnclosingCommand(command, '**', '**', text);
     },
 
     italic: function(command, userInterface, argument, text) {
-        this.e.setSelection( "_" + text + "_" );
+        this.execEnclosingCommand(command, '_', '_', text);
     },
 
     strikethrough: function(command, userInterface, argument, text) {
-        this.e.setSelection( "-" + text + "-" );
+        this.execEnclosingCommand(command, '-', '-', text);
     },
 
     insertLink: function(command, userInterface, argument, text) {
@@ -211,22 +236,26 @@ MT.EditorCommand.Source.prototype.commands['textile_2'] = {
         this.e.setSelection( "bq. " + text );
     },
 
+    blockquote: function(command, userInterface, argument, text) {
+        this.e.setSelection( "bq. " + text );
+    },
+
     underline: function(command, userInterface, argument, text) {
-        this.e.setSelection( "<u>" + text + "</u>" );
+        this.execEnclosingCommand(command, '<u>', '<u>', text);
     },
 
     insertUnorderedList: function(command, userInterface, argument, text) {
         var list = text.split( /\r?\n/ );
         for ( var i = 0; i < list.length; i++ )
             list[ i ] = "* " + list[ i ];
-        this.e.setSelection( "\n" + list.join( "\n" ) + "\n" );
+        this.e.setSelection( "\n" + list.join( "\n" ) );
     },
 
     insertOrderedList: function(command, userInterface, argument, text) {
         var list = text.split( /\r?\n/ );
         for ( var i = 0; i < list.length; i++ )
             list[ i ] = "# " + list[ i ];
-        this.e.setSelection( "\n" + list.join( "\n" ) + "\n" );
+        this.e.setSelection( "\n" + list.join( "\n" ) );
     },
 
     justifyLeft: function(command, userInterface, argument, text) {
@@ -242,11 +271,11 @@ MT.EditorCommand.Source.prototype.commands['textile_2'] = {
     },
 
     fontSizeSmaller: function(command, userInterface, argument, text) {
-        this.e.setSelection( "<small>" + text + "</small>" );
+        this.execEnclosingCommand(command, '<small>', '<small>', text);
     },
 
     fontSizeLarger: function(command, userInterface, argument, text) {
-        this.e.setSelection( "<big>" + text + "</big>" );
+        this.execEnclosingCommand(command, '<big>', '<big>', text);
     }
 };
 
