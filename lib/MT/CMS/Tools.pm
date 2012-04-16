@@ -364,7 +364,7 @@ sub do_list_action {
         if ( !defined $res && !$app->errstr ) {
             return $app->json_error(
                 MT->translate(
-                    q{Error occured while act [_1]: [_2]},
+                    q{Error occurred while attempting to [_1]: [_2]},
                     $the_action->label,
                     $app->errstr
                 )

@@ -352,7 +352,7 @@ BEGIN {
                                 if ( $key eq 'days' ) {
                                     return $prop->error(
                                         MT->translate(
-                                            q{Days can't include non numeriacal characters.}
+                                            q{Days must be a number.}
                                         )
                                     ) if $args->{days} =~ /\D/;
                                 }
