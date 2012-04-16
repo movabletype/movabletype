@@ -132,7 +132,8 @@ sub filter_conditional_list {
     my $user  = $app->user;
     my $admin = ( $user && $user->is_superuser() )
         || ( $perms && $perms->blog_id && $perms->has('administer_blog') );
-    my $system_perms = $user->permissions(0) unless $perms && $perms->blog_id;
+    my $system_perms;
+    $system_perms = $user->permissions(0) unless $perms && $perms->blog_id;
 
     my $test = sub {
         my ($item) = @_;
@@ -1817,7 +1818,7 @@ sub _get_options_html {
     my $blog_id = $app->param('blog_id') || '';
     $blog_id =~ s/\D//g;
     my $static = MT::Util::remove_html(
-        $app->param('static') 
+        $app->param('static')  # unused - for compatibility
             || encode_url(
             $app->param('return_to') || $app->param('return_url') || ''
             )
@@ -2062,7 +2063,9 @@ sub login {
         );
         return $app->error($message);
     }
-    elsif ( $res == MT::Auth::INVALID_PASSWORD() ) {
+    elsif ($res == MT::Auth::INVALID_PASSWORD()
+        || $res == MT::Auth::SESSION_EXPIRED() )
+    {
 
         # Login invlaid (password error, etc...)
         return $app->error( $app->translate('Invalid login.') );
@@ -2951,6 +2954,10 @@ sub run {
     if ( $app->config->PerformanceLogging ) {
         $timer = $app->get_timer();
         $timer->pause_partial();
+    }
+    
+    if ( my $cache_control = $app->config->HeaderCacheControl ) {
+        $app->set_header( 'Cache-Control' => $cache_control );
     }
 
     my ($body);

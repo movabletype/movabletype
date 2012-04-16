@@ -656,8 +656,8 @@ sub first_blog_id {
         if (   $q->param('IncludeBlogs') eq ''
             || $q->param('IncludeBlogs') eq 'all' )
         {
-            my @blogs = $app->model('blog')->load();
-            $blog_id = $blogs[0];
+            my @blogs = $app->model('blog')->load({}, {limit => 1});
+            $blog_id = @blogs ? $blogs[0]->id : undef;
         }
 
         # all other normal requests with a list of blog ids
@@ -1203,8 +1203,10 @@ sub _default_throttle {
     return $$result if defined $$result;
 
     ## Get login information if user is logged in (via cookie).
-    ## If no login cookie, this fails silently, and that's fine.
     ( $app->{user} ) = $app->login;
+    ## If session ID saved on cookie has been expired, this fails with error.
+    ## Should clear error.
+    $app->error(undef);
 
     ## Don't throttle MT registered users
     if ( $app->{user} && $app->{user}->type == MT::Author::AUTHOR() ) {

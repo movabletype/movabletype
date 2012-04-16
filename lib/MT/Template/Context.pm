@@ -507,46 +507,44 @@ sub compile_category_filter {
     my $children = $param->{'children'} ? 1 : 0;
 
     if ($cat_expr) {
-        my @cols
-            = $cat_expr =~ m!/! ? qw(category_label_path label) : qw(label);
+        # we got an expression, and a list of categories to try to fit in
+        my $use_ex_names = $cat_expr =~ m!/! ? 1 : 0;
+        my %cats_dir;
+        foreach my $cat (@$cats) {
+            my @ex_cat;
+            if ($children) {
+                my @kids = ($cat);
+                while ( my $c = shift @kids ) {
+                    push @ex_cat, $c;
+                    push @kids, ( $c->children_categories );
+                }
+            } 
+            else {
+                @ex_cat = ($cat);
+            }
+            push @{ $cats_dir{ $cat->label } ||= [] }, @ex_cat;
+            next unless $use_ex_names;
+            next if $cat->label eq $cat->category_label_path;
+            push @{ $cats_dir{ $cat->category_label_path } ||= [] }, @ex_cat;
+        }
+        my $new_expr = '';
         my %cats_used;
-        foreach my $col (@cols) {
-            my %cats_replaced;
-            @$cats
-                = sort { length( $b->$col ) <=> length( $a->$col ) } @$cats;
-
-            foreach my $cat (@$cats) {
-                next unless $cat;
-                my $catl  = $cat->$col;
-                my $catid = $cat->id;
-                my @cats  = ($cat);
-                my $repl;
-                if ($children) {
-                    my @kids = ($cat);
-                    while ( my $c = shift @kids ) {
-                        push @cats, $c;
-                        push @kids, ( $c->children_categories );
-                    }
-                    $repl = '';
-                    $repl .= '||' . '#' . $_->id for @cats;
-                    $repl = '(' . substr( $repl, 2 ) . ')';
-                }
-                else {
-                    $repl = "#$catid";
-                }
-                if ( $cat_expr =~ s/(?<![#\d])(?:\Q$catl\E)/$repl/g ) {
-                    $cats_used{ $_->id } = $_ for @cats;
-                }
-
-                # for multi blog case
-                if ( $cats_replaced{$catl} ) {
-                    my $last_catid = $cats_replaced{$catl};
-                    $cat_expr =~ s/(#$last_catid\b)/($1 OR #$catid)/g;
-                    $cats_used{$catid} = $cat;
-                }
-                $cats_replaced{$catl} = $catid;
+        my @split_expr = split /(\s+|\(|\))/, $cat_expr;
+        foreach my $token (@split_expr) {
+            if (not exists $cats_dir{$token}) {
+                $new_expr .= $token;
+                next;
+            }
+            $cats_used{$_->id} = $_ foreach @{ $cats_dir{$token} };
+            if (1 == @{ $cats_dir{$token} }) {
+                $new_expr .= "#" . $cats_dir{$token}->[0]->id;
+            }
+            else {
+                my $str = join('||', map "#".$_->id, @{ $cats_dir{$token} });
+                $new_expr .= "($str)"
             }
         }
+        $cat_expr = $new_expr;
         @$cats = values %cats_used;
 
         $cat_expr =~ s/\bAND\b/&&/gi;

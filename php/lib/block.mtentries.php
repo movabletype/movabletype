@@ -24,12 +24,23 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
                  isset($args['author']) ))
                 $ctx->__stash['entries'] = null;
         }
-        if ($ctx->__stash['entries'] &&
-            (isset($args['id']) ||
-             isset($args['recently_commented_on']) ||
-             isset($args['include_subcategories']) ||
-             isset($args['days']) ))
-            $ctx->__stash['entries'] = null;
+        if ($ctx->__stash['entries']) {
+            if (isset($args['id']) ||
+                isset($args['recently_commented_on']) ||
+                isset($args['include_subcategories']) ||
+                isset($args['days']) ) {
+                $ctx->__stash['entries'] = null;
+            }
+            else if (isset($args['sort_by'])) {
+                $ids = array();
+                foreach ($ctx->__stash['entries'] as $e) {
+                    $ids[] = $e->entry_id;
+                }
+                $ctx->__stash['entries'] = null;
+                $args['entry_ids'] = $ids;
+            }
+        }
+
         $counter = 0;
         $lastn = $args['lastn'];
         $ctx->stash('_entries_lastn', $lastn);

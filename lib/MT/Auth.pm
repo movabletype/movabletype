@@ -19,6 +19,7 @@ sub NEW_LOGIN ()        {7}
 sub NEW_USER ()         {8}
 sub PENDING ()          {9}
 sub LOCKED_OUT ()       {10}
+sub SESSION_EXPIRED ()  {11}
 
 {
     my $auth_module;

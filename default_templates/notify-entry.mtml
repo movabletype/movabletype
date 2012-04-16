@@ -22,4 +22,4 @@
 
 <__trans phrase="You are receiving this email either because you have elected to receive notifications about new content on [_1], or the author of the post thought you would be interested. If you no longer wish to receive these emails, please contact the following person:" params="<$mt:BlogName$>">
 
-<$mt:AuthorDisplayName$> <<$mt:AuthorEmail$>>
+<mt:if name="author"><$mt:AuthorDisplayName$> <<$mt:AuthorEmail$>><mt:else><$mt:var name="from_address"$></mt:if>

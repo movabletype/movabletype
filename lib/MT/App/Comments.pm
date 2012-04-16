@@ -311,7 +311,9 @@ sub do_login {
         $message = $app->translate(
             "Login failed: permission denied for user '[_1]'", $name );
     }
-    elsif ( MT::Auth::INVALID_PASSWORD() == $result ) {
+    elsif (MT::Auth::INVALID_PASSWORD() == $result
+        || MT::Auth::SESSION_EXPIRED() == $result )
+    {
         $message = $app->translate(
             "Login failed: password was wrong for user '[_1]'", $name );
     }
@@ -378,7 +380,7 @@ sub do_signup {
     my $param = {};
     $param->{$_} = $q->param($_)
         foreach
-        qw(blog_id entry_id static email url username nickname email return_url );
+        qw(blog_id entry_id static email url username nickname return_url );
 
     return $app->errtrans("Invalid request")
         unless $param->{blog_id};
@@ -457,7 +459,8 @@ sub _send_signup_confirmation {
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
-    my $entry = MT::Entry->load($entry_id)
+    my $entry;
+    $entry = MT::Entry->load($entry_id)
         if $entry_id;
     my $author = $entry ? $entry->author : q();
 
@@ -1986,12 +1989,6 @@ sub save_commenter_profile {
                 = $app->translate('Failed to verify current password.');
             return $app->build_page( 'profile.tmpl', \%param );
         }
-        if (    ( $cmntr->column('password') !~ /^\$6\$/ )
-            and ( not $param{error} ) )
-        {
-            $param{error} = $app->translate(
-                "For improved security, please change your password");
-        }
     }
     my $email = $param{email};
     if ( $email && !is_valid_email($email) ) {
@@ -2023,6 +2020,14 @@ sub save_commenter_profile {
     $cmntr->url( $param{url} )           if $param{url};
     $cmntr->set_password( $param{password} )
         if $param{password} && 'MT' eq $cmntr->auth_type;
+    if (    ( $cmntr->column('password') !~ /^\$6\$|{SHA}/ )
+        and ( 'MT' eq $cmntr->auth_type )
+        and ( not $param{error} ) )
+    {
+        $param{error} = $app->translate(
+            "For improved security, please change your password");
+    }
+
     $cmntr->modified_on( epoch2ts( undef, time ) );
     if ( $cmntr->save ) {
         $app->run_callbacks( 'api_post_save.author', $app, $cmntr,

@@ -258,6 +258,9 @@ sub elements {
     my $elements = $theme->{elements};
     delete $elements->{plugin} if exists $elements->{plugin};
 
+    my $eh = MT->registry('theme_element_handlers');
+    $eh->{$_}->{order} ||= 9999 foreach keys %$elements;
+
     require MT::Theme::Element;
     map {
         MT::Theme::Element->new(
@@ -265,7 +268,9 @@ sub elements {
             id    => $_,
             %{ $elements->{$_} },
             )
-    } keys %{$elements};
+        }
+        sort { $eh->{$a}->{order} <=> $eh->{$b}->{order} }
+        keys %$elements;
 }
 
 sub apply {
@@ -279,6 +284,8 @@ sub apply {
     MT->run_callbacks( 'pre_apply_theme', $theme, $blog );
     my $importer_filter = $opts{importer_filter};
     $theme->{warning_on_apply} = 0;
+    my $curr_lang = MT->current_language;
+    MT->set_language( $blog->language );
 
     ## run all element handlers.
     my @elements = $theme->elements;
@@ -320,6 +327,7 @@ sub apply {
             }
         }
     }
+    MT->set_language($curr_lang);
 
     ## also do copy static files to mt-static directory.
     my $src_dir = $theme->{static_path} || 'static';
@@ -463,8 +471,8 @@ sub thumbnail {
         return ( $theme->default_theme_thumbnail(%param) );
     }
     my $file = $theme->_thumbnail_filename(%param);
-    my $url = join '/', MT->support_directory_url, _thumbnail_dir(),
-        $theme->{id}, $file;
+    my $url  = MT->support_directory_url
+        . join( '/', _thumbnail_dir(), $theme->{id}, $file );
     return ( $url, $theme->_thumbnail_size(%param) );
 }
 
@@ -608,6 +616,7 @@ sub core_theme_element_handlers {
     return {
         default_prefs => {
             label    => 'Default Prefs',
+            order    => 100,
             importer => {
                 import => '$Core::MT::Theme::Pref::apply',
                 info   => '$Core::MT::Theme::Pref::info',
@@ -615,6 +624,7 @@ sub core_theme_element_handlers {
         },
         default_categories => {
             label    => 'Categories',
+            order    => 400,
             importer => {
                 import => '$Core::MT::Theme::Category::import_categories',
                 info   => '$Core::MT::Theme::Category::info_categories',
@@ -629,6 +639,7 @@ sub core_theme_element_handlers {
         },
         default_folders => {
             label    => 'Folders',
+            order    => 200,
             importer => {
                 import => '$Core::MT::Theme::Category::import_folders',
                 info   => '$Core::MT::Theme::Category::info_folders',
@@ -643,6 +654,7 @@ sub core_theme_element_handlers {
         },
         template_set => {
             label    => 'Template Set',
+            order    => 500,
             importer => {
                 import => '$Core::MT::Theme::TemplateSet::apply',
                 info   => '$Core::MT::Theme::TemplateSet::info',
@@ -657,6 +669,7 @@ sub core_theme_element_handlers {
         },
         blog_static_files => {
             label    => 'Static Files',
+            order    => 600,
             importer => {
                 import => '$Core::MT::Theme::StaticFiles::apply',
 
@@ -671,6 +684,7 @@ sub core_theme_element_handlers {
         },
         default_pages => {
             label    => 'Default Pages',
+            order    => 300,
             importer => {
                 import => '$Core::MT::Theme::Entry::import_pages',
                 info   => '$Core::MT::Theme::Entry::info_pages',

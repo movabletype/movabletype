@@ -113,6 +113,8 @@ function doRemoveItems (f, singular, plural, nameRestrict, args, params) {
     }
     if (confirm(count == 1 ? trans(singularMessage, singular, verb) : trans(pluralMessage, count, plural, verb))) {
         return doForMarkedInThisWindow(f, singular, plural, nameRestrict, mode, args);
+    } else {
+        return false;
     }
 }
 

@@ -1682,6 +1682,7 @@ BEGIN {
             'HTTPSProxy'            => undef,
             'PingNoProxy'           => { default => 'localhost', },
             'HTTPNoProxy'           => { default => 'localhost', },
+            'HeaderCacheControl'    => undef,
             'ImageDriver'           => { default => 'ImageMagick', },
             'NetPBMPath'            => undef,
             'AdminScript'           => { default => 'mt.cgi', },
@@ -2233,6 +2234,14 @@ sub load_core_tasks {
             code      => sub {
                 my $app = MT->instance;
                 $app->model('failedlogin')->cleanup($app);
+                }
+        },
+        'CleanFileInfoRecords' => {
+            label     => 'Purge Unused FileInfo Records',
+            frequency => 60 * 60 * 24,   # once a day
+            code      => sub {
+                my $app = MT->instance;
+                $app->model('fileinfo')->cleanup;
                 }
         },
     };

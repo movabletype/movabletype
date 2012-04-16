@@ -41,7 +41,13 @@
                             <div id="comment-respons-content">
                                 <h1 id="page-title" class="content-header"><$mt:Var name="page_title"$></h1>
                                 <$mt:Var name="message"$>
-                                <p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<mt:If name="comment_error">javascript:history.back()<mt:Else><$mt:EntryLink$></mt:If>"></p>
+                                <p>
+                                <mt:If name="comment_error">
+                                    <__trans phrase="Return to <a href="[_1]">your comment</a>." params="javascript:history.back()">
+                                <mt:Else>
+                                    <__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<$mt:EntryLink$>">
+                                </mt:If>
+                                </p>
                             </div>
 
                         </div>

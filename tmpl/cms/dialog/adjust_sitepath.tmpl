@@ -441,6 +441,9 @@ function init() {
 
     jQuery('#adjust_sitepath').submit( function () {
         if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') ) return false;
+        <mt:if name="request_method" op="eq" value="GET">
+        jQuery(this).find('input[name=asset_ids]').val(window.parent.RestoredAssetIds());
+        </mt:if>
     });
 
     jQuery('.website-path-text').change( function () {

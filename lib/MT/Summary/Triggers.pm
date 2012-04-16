@@ -54,17 +54,17 @@ sub post_init_add_triggers {
         eval "require $class";
         $class->add_trigger(
             pre_save => sub {
-                \&pre_save_trigger( $class_triggers{$class}, @_ );
+                &pre_save_trigger( $class_triggers{$class}, @_ );
             }
         );
         $class->add_trigger(
             post_save => sub {
-                \&post_trigger( 'save', $class_triggers{$class}, @_ );
+                &post_trigger( 'save', $class_triggers{$class}, @_ );
             }
         );
         $class->add_trigger(
             post_remove => sub {
-                \&post_trigger( 'remove', $class_triggers{$class}, @_ );
+                &post_trigger( 'remove', $class_triggers{$class}, @_ );
             }
         );
         $class->add_callback(

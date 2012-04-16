@@ -105,6 +105,7 @@ function smarty_function_mtsetvar($args, &$ctx) {
         }
     }
     elseif ( isset($index) ) {
+        $data = array_pad((isset($data) ? $data : array()), $index, NULL);
         $data[$index] = $value;
     }
     elseif ( isset($func) ) {

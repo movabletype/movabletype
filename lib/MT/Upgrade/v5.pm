@@ -154,7 +154,7 @@ sub upgrade_functions {
                         { blog_id => $blog->id, },
                         {   sort       => 'label',
                             direction  => 'ascend',
-                            fetch_only => { id => 1 },
+                            fetchonly => { id => 1 },
                         }
                     );
                     my $order = join ',', ( map { $_->id } @cats );
@@ -163,7 +163,7 @@ sub upgrade_functions {
                         { blog_id => $blog->id, },
                         {   sort       => 'label',
                             direction  => 'ascend',
-                            fetch_only => { id => 1 },
+                            fetchonly => { id => 1 },
                         }
                     );
                     my $folder_order = join ',', ( map { $_->id } @folders );
@@ -184,7 +184,7 @@ sub upgrade_functions {
                         { blog_id => $site->id, },
                         {   sort       => 'label',
                             direction  => 'ascend',
-                            fetch_only => { id => 1 },
+                            fetchonly => { id => 1 },
                         }
                     );
                     my $folder_order = join ',', ( map { $_->id } @folders );

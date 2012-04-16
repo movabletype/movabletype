@@ -976,7 +976,6 @@ sub list {
     my @list_columns;
     for my $prop ( values %$list_props ) {
         next if !$prop->can_display($scope);
-        my $col;
         my $id = $prop->id;
         my $disp = $prop->display || 'optional';
         my $show
@@ -991,13 +990,15 @@ sub list {
 
         if ( my $subfields = $prop->sub_fields ) {
             for my $sub (@$subfields) {
+                my $sdisp = $sub->{display} || 'optional';
                 push @subfields,
                     {
-                    display => $cols{ $id . '.' . $sub->{class} }
-                        || $sub->{display} eq 'default',
+                    display =>
+                        ( $cols{ $id . '.' . $sub->{class} } || $sdisp ) eq
+                        'default',
                     class      => $sub->{class},
                     label      => $app->translate( $sub->{label} ),
-                    is_default => $sub->{display} eq 'default' ? 1 : 0,
+                    is_default => $sdisp eq 'default' ? 1 : 0,
                     };
             }
         }
@@ -1718,20 +1719,8 @@ sub delete {
             }
         }
         elsif ( $type eq 'author' ) {
-            if ( $app->config->ExternalUserManagement ) {
-                require MT::LDAP;
-                my $ldap = MT::LDAP->new
-                    or return $app->error(
-                    MT->translate(
-                        "Loading MT::LDAP failed: [_1].",
-                        MT::LDAP->errstr
-                    )
-                    );
-                my $dn = $ldap->get_dn( $obj->name );
-                if ($dn) {
-                    $return_arg{author_ldap_found} = 1;
-                }
-            }
+            $app->run_callbacks( 'cms_delete_ext_author_filter',
+                $app, $obj, \%return_arg) || return;
         }
         elsif ( $type eq 'website' ) {
             my $blog_class = $app->model('blog');
