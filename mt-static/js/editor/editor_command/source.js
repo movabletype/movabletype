@@ -63,7 +63,7 @@ $.extend(MT.EditorCommand.Source.prototype, MT.EditorCommand.prototype, {
         }
         else {
             if (selectedCallback) {
-                selectedCallback();
+                selectedCallback.apply(this, []);
             }
             else {
                 this.e.setSelection( open + text + close );
