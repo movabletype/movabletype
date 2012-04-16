@@ -94,6 +94,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                 }
 
                 this.$editorIframe.hide();
+                this.$editorPathRow.hide();
                 this.$editorTextarea.show();
 
                 this.editor = this.source;
@@ -112,6 +113,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             });
 
             this.$editorIframe.show();
+            this.$editorPathRow.show();
             this.$editorTextarea.hide();
 
             this.editor = this.tinymce;
@@ -189,6 +191,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
 
         adapter.$editorIframe = $('#' + adapter.id + '_ifr');
         adapter.$editorElement = adapter.$editorIframe;
+        adapter.$editorPathRow = $('#' + adapter.id + '_path_row');
 
         var resizeTo = ed.theme.resizeTo;
         ed.theme.resizeTo = function(width, height, store) {
