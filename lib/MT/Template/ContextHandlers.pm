@@ -4252,8 +4252,19 @@ B<Example:> Passing Parameters to a Template Module
             || ( ( $cache_expire_type = ( $tmpl->cache_expire_type || 0 ) )
                 != 0 )
             ) ? 1 : 0;
-        my $cache_key = 
-            $arg->{cache_key} || $arg->{key} || $tmpl->get_cache_key();
+        my $cache_key = $arg->{cache_key} || $arg->{key};
+        if ( !$cache_key ) {
+            require Digest::MD5;
+            $cache_key = Digest::MD5::md5_hex(
+                Encode::encode_utf8(
+                          'blog::'
+                        . $blog_id
+                        . '::template_'
+                        . $type . '::'
+                        . $tmpl_name
+                )
+            );
+        }
         my $ttl
             = exists $arg->{ttl}          ? $arg->{ttl}
             : ( $cache_expire_type == 1 ) ? $tmpl->cache_expire_interval

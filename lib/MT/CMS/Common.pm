@@ -382,10 +382,6 @@ sub save {
                 }
             );
         }
-        if ($id) {
-            my $cache_key = $original->get_cache_key();
-            $app->model('session')->remove({ id => $cache_key, kind => 'CO' });
-        }
     }
 
     # TODO: convert this to use $app->call_return();
@@ -1734,25 +1730,24 @@ sub delete {
                 next;
             }
         }
-        elsif ( $type eq 'template' ) {
-            my $cache_key = $obj->get_cache_key();
-            $app->model('session')->remove({ id => $cache_key, kind => 'CO' });
-            # FIXME: enumeration of types
-            if ($obj->type
-                !~ /(custom|index|archive|page|individual|category|widget|backup)/)
-            {
-                $required_items++;
-                next;
-            }
-        }
 
-        $obj->remove
-            or return $app->errtrans(
-            'Removing [_1] failed: [_2]',
-            $app->translate($type),
-            $obj->errstr
-            );
-        $app->run_callbacks( 'cms_post_delete.' . $type, $app, $obj );
+        # FIXME: enumeration of types
+        if (   $type eq 'template'
+            && $obj->type
+            !~ /(custom|index|archive|page|individual|category|widget|backup)/o
+            )
+        {
+            $required_items++;
+        }
+        else {
+            $obj->remove
+                or return $app->errtrans(
+                'Removing [_1] failed: [_2]',
+                $app->translate($type),
+                $obj->errstr
+                );
+            $app->run_callbacks( 'cms_post_delete.' . $type, $app, $obj );
+        }
         $delete_count++;
     }
 
