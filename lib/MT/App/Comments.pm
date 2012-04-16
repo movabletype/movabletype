@@ -960,11 +960,6 @@ sub post {
         )
     ) if ( $commenter && !$q->param('sid') );
 
-    my $remember = $q->param('bakecookie') || 0;
-    $remember = 0 if $remember eq 'Forget Info';    # another value for '0'
-    if ( $commenter && $remember ) {
-        $app->_extend_commenter_session( Duration => "+1y" );
-    }
     if ( !$blog->allow_unreg_comments ) {
         if ( !$commenter ) {
             return $app->handle_error(
@@ -1229,43 +1224,6 @@ sub eval_comment {
     #mark
 
     $comment;
-}
-
-# only handles Duration => +xxxu where u is one of y, d, s
-sub _extend_commenter_session {
-    my $app         = shift;
-    my %param       = @_;
-    my %cookies     = $app->cookies();
-    my $cookie_name = $app->commenter_cookie;
-    my $session_key = $app->cookie_val($cookie_name) || "";
-    $session_key =~ y/+/ /;
-    my $sessobj = MT::Session->load( { id => $session_key, kind => 'SI' } );
-    return
-        if !$sessobj
-    ;    # no point changing the cookie if the session's already lost.
-    my ( $sign, $number, $units ) = $param{Duration} =~ /([+-]?)(\d+)(\w+)/;
-    $number *= $sign eq '-' ? -1 : +1;
-    $number *=
-          $units eq 'y' ? 60 * 60 * 24 * 365
-        : $units eq 'd' ? 60 * 60 * 24
-        :                 $number;
-    $sessobj->start( $sessobj->start + $number );
-    $sessobj->save();
-    my %sess_cookie = (
-        -name    => $cookie_name,
-        -value   => $session_key,
-        -path    => '/',
-        -expires => "+${number}s"
-    );
-    $app->bake_cookie(%sess_cookie);
-    my %name_kookee = (
-        -name    => "commenter_name",
-        -value   => $cookies{commenter_name}->value,
-        -path    => '/',
-        -expires => "+${number}s"
-    );
-    $app->bake_cookie(%name_kookee);
-    1;
 }
 
 sub _check_commenter_author {
