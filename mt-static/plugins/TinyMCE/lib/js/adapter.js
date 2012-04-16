@@ -66,12 +66,14 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
 
         tinyMCE.init(config);
             
-        if (MT.EditorManager.toMode(format) == 'source') {
-            adapter.setFormat(format);
-        }
+        adapter.setFormat(format, true);
     },
 
-    setFormat: function(format) {
+    setFormat: function(format, calledInInit) {
+        if (calledInInit && MT.EditorManager.toMode(format) != 'source') {
+            return;
+        }
+
         var mode = MT.EditorManager.toMode(format);
 
         this.tinymce.execCommand('mtSetStatus', {
@@ -86,9 +88,11 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                     .height(this.$editorIframe.height())
                     .data('base-height', this.$editorIframe.height());
 
-                this.ignoreSetDirty(function() {
-                    this.editor.save();
-                });
+                if (! calledInInit) {
+                    this.ignoreSetDirty(function() {
+                        this.editor.save();
+                    });
+                }
 
                 this.$editorIframe.hide();
                 this.$editorTextarea.show();
