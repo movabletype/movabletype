@@ -854,6 +854,14 @@ sub _make_cache_path {
     $asset_cache_path;
 }
 
+sub tagged_count {
+    my $obj = shift;
+    my ( $tag_id, $terms ) = @_;
+    $terms ||= {};
+    $terms->{class} = '*';
+    return $obj->SUPER::tagged_count($tag_id, $terms);
+}
+
 1;
 
 __END__
