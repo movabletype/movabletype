@@ -529,10 +529,24 @@ sub compile_category_filter {
         }
         my $new_expr = '';
         my %cats_used;
-        my @split_expr = split /(\s+|\(|\))/, $cat_expr;
+        my @split_expr = split /(\bOR\b|\bAND\b|\bNOT\b|\(|\))/, $cat_expr;
         foreach my $token (@split_expr) {
-            if (not exists $cats_dir{$token}) {
+            if (grep {$token eq $_} qw{OR AND NOT ( )}) {
                 $new_expr .= $token;
+                next;
+            }
+            if ($token =~ m/^\s*$/) {
+                $new_expr .= $token;
+                next;
+            }
+            my ($b_space) = $token =~ m/^(\s*)/;
+            my ($e_space) = $token =~ m/(\s*)$/;
+            substr($token, 0, length($b_space), '');
+            substr($token, -length($e_space), length($e_space), '') 
+                if length($e_space);
+            $new_expr .= $b_space;
+            if (not exists $cats_dir{$token}) {
+                $new_expr .= $token . $e_space;
                 next;
             }
             $cats_used{$_->id} = $_ foreach @{ $cats_dir{$token} };
@@ -543,6 +557,7 @@ sub compile_category_filter {
                 my $str = join('||', map "#".$_->id, @{ $cats_dir{$token} });
                 $new_expr .= "($str)"
             }
+            $new_expr .= $e_space;
         }
         $cat_expr = $new_expr;
         @$cats = values %cats_used;
