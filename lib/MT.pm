@@ -797,7 +797,9 @@ sub find_config {
         File::Spec->catfile( $param->{Directory}, 'mt-config.cgi' ),
         'mt-config.cgi' )
     {
-        return $cfg_file if $cfg_file && -r $cfg_file && -f $cfg_file;
+        if ((-f $cfg_file) && (open my $fh, "<", $cfg_file)) {
+            return $cfg_file;
+        }
     }
     return undef;
 }
