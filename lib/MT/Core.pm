@@ -1645,7 +1645,7 @@ BEGIN {
             'StaticWebPath'        => { default => '', },
             'StaticFilePath'       => undef,
             'CGIPath'              => { default => '/cgi-bin/', },
-            'AdminCGIPath'         => undef,
+            'AdminCGIPath'         => { default => sub { $_[0]->CGIPath } },
             'CookieDomain'         => undef,
             'CookiePath'           => undef,
             'MailEncoding'         => { default => 'ISO-8859-1', },
@@ -1779,10 +1779,10 @@ BEGIN {
             'EmailNotificationBcc'  => { default => 1, },
             'CommentSessionTimeout' => { default => 60 * 60 * 24 * 3, },
             'UserSessionTimeout'    => { default => 60 * 60 * 4, },
-            'UserSessionCookieName' => { handler => \&UserSessionCookieName },
+            'UserSessionCookieName' => { default => \&UserSessionCookieName },
             'UserSessionCookieDomain' =>
                 { default => '<$MTBlogHost exclude_port="1"$>' },
-            'UserSessionCookiePath' => { handler => \&UserSessionCookiePath },
+            'UserSessionCookiePath' => { default => \&UserSessionCookiePath },
             'UserSessionCookieTimeout' => { default => 60 * 60 * 4, },
             'LaunchBackgroundTasks'    => { default => 0 },
             'TypeKeyVersion'           => { default => '1.1' },
@@ -1855,7 +1855,7 @@ BEGIN {
                 },
             },
             'CaptchaSourceImageBase' => undef,
-            'SecretToken'            => { handler => \&SecretToken, },
+            'SecretToken'            => { default => \&SecretToken, },
             ## NaughtyWordChars settings
             'NwcSmartReplace' => { default => 0, },
             'NwcReplaceField' =>
@@ -1877,7 +1877,7 @@ BEGIN {
             'PerformanceLoggingPath' =>
                 { handler => \&PerformanceLoggingPath },
             'PerformanceLoggingThreshold' => { default => 0.1 },
-            'ProcessMemoryCommand' => { handler => \&ProcessMemoryCommand },
+            'ProcessMemoryCommand' => { default => \&ProcessMemoryCommand },
             'EnableAddressBook'    => { default => 0 },
             'SingleCommunity'      => { default => 1 },
             'DefaultTemplateSet'   => { default => 'mt_blog' },
@@ -3005,36 +3005,29 @@ sub PerformanceLoggingPath {
 
 sub ProcessMemoryCommand {
     my $cfg = shift;
-    $cfg->set_internal( 'ProcessMemoryCommand', @_ ) if @_;
-    my $cmd = $cfg->get_internal('ProcessMemoryCommand');
-    unless ($cmd) {
-        my $os = $^O;
-        if ( $os eq 'darwin' ) {
-            $cmd = 'ps $$ -o rss=';
-        }
-        elsif ( $os eq 'linux' ) {
-            $cmd = 'ps -p $$ -o rss=';
-        }
-        elsif ( $os eq 'MSWin32' ) {
-            $cmd = {
-                command => q{tasklist /FI "PID eq $$" /FO TABLE /NH},
-                regex   => qr/([\d,]+) K/
-            };
-        }
+    my $os = $^O;
+    my $cmd;
+    if ( $os eq 'darwin' ) {
+        $cmd = 'ps $$ -o rss=';
+    }
+    elsif ( $os eq 'linux' ) {
+        $cmd = 'ps -p $$ -o rss=';
+    }
+    elsif ( $os eq 'MSWin32' ) {
+        $cmd = {
+            command => q{tasklist /FI "PID eq $$" /FO TABLE /NH},
+            regex   => qr/([\d,]+) K/
+        };
     }
     return $cmd;
 }
 
 sub SecretToken {
     my $cfg = shift;
-    $cfg->set_internal( 'SecretToken', @_ ) if @_;
-    my $secret = $cfg->get_internal('SecretToken');
-    unless ($secret) {
-        my @alpha = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
-        $secret = join '', map $alpha[ rand @alpha ], 1 .. 40;
-        $secret = $cfg->set_internal( 'SecretToken', $secret, 1 );
-        $cfg->save_config();
-    }
+    my @alpha = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
+    my $secret = join '', map $alpha[ rand @alpha ], 1 .. 40;
+    $secret = $cfg->set_internal( 'SecretToken', $secret, 1 );
+    $cfg->save_config();
     return $secret;
 }
 
@@ -3062,9 +3055,6 @@ sub NewUserAutoProvisioning {
 
 sub UserSessionCookieName {
     my $mgr = shift;
-    return $mgr->set_internal( 'UserSessionCookieName', @_ ) if @_;
-    my $name = $mgr->get_internal('UserSessionCookieName');
-    return $name if defined $name;
     if ( $mgr->get_internal('SingleCommunity') ) {
         return 'mt_blog_user';
     }
@@ -3075,9 +3065,6 @@ sub UserSessionCookieName {
 
 sub UserSessionCookiePath {
     my $mgr = shift;
-    return $mgr->set_internal( 'UserSessionCookiePath', @_ ) if @_;
-    my $path = $mgr->get_internal('UserSessionCookiePath');
-    return $path if defined $path;
     if ( $mgr->get_internal('SingleCommunity') ) {
         return '/';
     }
