@@ -8,6 +8,7 @@ package MT;
 
 use strict;
 use base qw( MT::ErrorHandler );
+use filetest 'access';
 use File::Spec;
 use File::Basename;
 use MT::Util qw( weaken );
@@ -797,9 +798,7 @@ sub find_config {
         File::Spec->catfile( $param->{Directory}, 'mt-config.cgi' ),
         'mt-config.cgi' )
     {
-        if ((-f $cfg_file) && (open my $fh, "<", $cfg_file)) {
-            return $cfg_file;
-        }
+        return $cfg_file if $cfg_file && -r $cfg_file && -f $cfg_file;
     }
     return undef;
 }
