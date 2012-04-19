@@ -246,7 +246,7 @@ sub mount_applications {
     }
 
     ## Mount mt-static directory
-    my my $staticurl = $mt->static_path();
+    my $staticurl = $mt->static_path();
     $staticurl =~ s!^https?://[^/]*!!;
     my $staticpath = $mt->static_file_path();
     $urlmap->map( $staticurl,
