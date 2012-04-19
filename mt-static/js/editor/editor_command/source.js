@@ -120,27 +120,15 @@ MT.EditorCommand.Source.prototype.commands['default'] = {
     },
 
     insertUnorderedList: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<ul>', '</ul>', text, function() {
-            var list = text.split( /\r?\n/ );
-            var li = [];
-            for ( var i = 0; i < list.length; i++ )
-                list[ i ] = "\t<li>" + list[ i ] + "</li>";
-            this.e.setSelection( "<ul>\n" + list.join( "\n" ) + "\n</ul>" );
-        });
+        this.execEnclosingCommand(command, '<ul>', '</ul>', text);
     },
 
     insertOrderedList: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<ol>', '</ol>', text, function() {
-            var list = text.split( /\r?\n/ );
-            var li = [];
-            for ( var i = 0; i < list.length; i++ )
-                list[ i ] = "\t<li>" + list[ i ] + "</li>";
-            this.e.setSelection( "<ul>\n" + list.join( "\n" ) + "\n</ul>" );
-        });
+        this.execEnclosingCommand(command, '<ol>', '</ol>', text);
     },
 
     insertListItem: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<li>', '</li>\n', text);
+        this.execEnclosingCommand(command, '<li>', '</li>', text);
     },
 
     justifyLeft: function(command, userInterface, argument, text) {
