@@ -1,4 +1,8 @@
 <mt:setvarblock name="js_include" append="1">
+<mt:if name="optimize_ui">
 <script type="text/javascript" src="<mt:Var name="static_uri" />/plugins/TinyMCE/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+<mt:else>
+<script type="text/javascript" src="<mt:Var name="static_uri" />/plugins/TinyMCE/tinymce/jscripts/tiny_mce/tiny_mce_src.js"></script>
+</mt:if>
 <script type="text/javascript" src="<mt:Var name="static_uri" />/plugins/TinyMCE/lib/js/adapter.js"></script>
 </mt:setvarblock>
