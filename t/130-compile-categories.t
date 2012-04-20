@@ -18,12 +18,14 @@ add_category(24, 'subsubfoo', 3, 1);
 add_category(25, 'bbb', 0, 1);
 add_category(26, 'aaa', 25, 1);
 add_category(27, 'foo', 26, 1);
+add_category(28, 'buz buz', 0, 1);
 # foreach my $c (values %cats_hash) {
 # 	print STDERR "id: ", $c->id, " parent: ", $c->parent, " name: ", $c->label, "\n";
 # }
 my $ctx = MT::Template::Context->new();
 my @cats;
 my $expr;
+my $cat_filter;
 
 @cats = ( $cats_hash{1} );
 $expr = $ctx->compile_category_filter(undef, \@cats);
@@ -117,6 +119,34 @@ foreach (1, 3, 24, 26, 27) {
 	ok( $expr->( { $_ => 1 } ), "expr true for $_" );
 }
 
+$cat_filter = "NOT (aaa OR bbb)";
+@cats = ( @cats_hash{2, 23, 25} );
+$expr = $ctx->compile_category_filter($cat_filter, \@cats, { children => 1 });
+@cats = sort { $a->id <=> $b->id } @cats;
+ok( $expr->( { 2 => 1 } ), "$cat_filter: expr true for 2" );
+ok( !$expr->( { 23 => 1 } ), "$cat_filter: expr false for 23" );
+ok( !$expr->( { 25 => 1 } ), "$cat_filter: expr false for 25" );
+
+
+$cat_filter = "NOT (buz buz OR bbb)";
+@cats = ( @cats_hash{2, 23, 25, 28} );
+$expr = $ctx->compile_category_filter($cat_filter, \@cats, { children => 1 });
+@cats = sort { $a->id <=> $b->id } @cats;
+ok( $expr->( { 2 => 1 } ), "$cat_filter: expr true for 2" );
+ok( $expr->( { 23 => 1 } ), "$cat_filter: expr false for 23" );
+ok( !$expr->( { 25 => 1 } ), "$cat_filter: expr false for 25" );
+ok( !$expr->( { 28 => 1 } ), "$cat_filter: expr false for 28" );
+
+
+$cat_filter = "buz buz OR bar";
+@cats = ( @cats_hash{2, 28} );
+$expr = $ctx->compile_category_filter($cat_filter, \@cats, { children => 1 });
+@cats = sort { $a->id <=> $b->id } @cats;
+is_deeply([map $_->id, @cats], [2, 28], "$cat_filter: nothing else was added");
+ok( $expr->( { 2 => 1 } ), "$cat_filter: expr true for 2" );
+ok( $expr->( { 28 => 1 } ), "$cat_filter: expr true for 28" );
+ok( $expr->( { 2 => 1, 28 => 1 } ), "$cat_filter: expr true for 2 AND 28" );
+
 
 done_testing();
 
@@ -142,3 +172,4 @@ foo(1)->subfoo(3)->subsubfoo(24)
 bar(2)
 aaa(23)
 bbb(25)->aaa(26)->foo(27)
+buz buz(28)

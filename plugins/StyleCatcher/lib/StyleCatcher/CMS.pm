@@ -322,8 +322,11 @@ sub apply {
 
     # if this isn't a local url, then we have to grab some files from
     # yonder...
+    my $static_url = $app->static_path;
     my $support_url = $app->support_directory_url;
-    if ( $url !~ m{ \Q$support_url\E theme_static/ }xms ) {
+    $support_url = $app->base .  $support_url
+        if $support_url =~ m!^/!;
+    if ( $url !~ m{ \A \Q$static_url\E (?:support/)? themes/|\Q$support_url\E theme_static/ }xms ) {
         my $basename = download_theme( $app, $url )
             or return;
         $url = caturl( $support_url, 'themes', $basename, "$basename.css" );
@@ -444,6 +447,7 @@ EOT
 
     my $p = plugin();
     $name =~ s/^repo_\d+:/local:/;
+    $name =~ s/^repo-\w+:/local:/;
     $name =~ s/\.css$//;
     $p->set_config_value( 'current_theme_' . $blog_id, $name );
     if ($layout) {
@@ -668,8 +672,7 @@ sub make_themes {
         $themes->{$theme}{prefix} = 'default';
     }
 
-    my $themeroot
-        = File::Spec->catdir( $app->static_file_path, 'support', 'themes' );
+    my $themeroot = File::Spec->catfile( $app->support_directory_path(), 'themes' );
 
     # Generate our list of themes within the themeroot directory
     my @themeroot_list = glob( File::Spec->catfile( $themeroot, "*" ) );
@@ -680,7 +683,7 @@ sub make_themes {
         $theme =~ s/.*[\\\/]//;
         $themes->{$theme} = metadata_for_theme(
             path => $theme_dir,
-            url  => $app->static_path . "support/themes/$theme/",
+            url  => caturl( $app->support_directory_url(), 'themes', "$theme/" ),
             tags => ['collection:my-designs'],
         );
         $themes->{$theme}{prefix} = 'local';
