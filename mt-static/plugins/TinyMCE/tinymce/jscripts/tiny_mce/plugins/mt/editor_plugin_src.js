@@ -147,6 +147,11 @@
                 }
                 $('table', '#' + id + '_toolbargroup').each(function() {
                     var $this = $(this);
+
+                    if ($this.hasClass('mceSplitButton')) {
+                        return;
+                    }
+
                     $this.show();
                     if ($this.find('a.mceButton:not(.mce_mt_button_hidden)').length == 0) {
                         $this.hide();
