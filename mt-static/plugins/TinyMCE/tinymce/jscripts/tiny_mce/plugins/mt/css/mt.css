@@ -20,7 +20,8 @@
 .mtSkin span.mce_mt_source_blockquote,
 .mtSkin span.mce_mt_source_unordered_list,
 .mtSkin span.mce_mt_source_ordered_list,
-.mtSkin span.mce_mt_source_list_item {
+.mtSkin span.mce_mt_source_list_item,
+.mtSkin span.mce_mt_source_link {
     background: url('../../../../../../../../images/buttons/toolbar/toolbar.gif');
 }
 
@@ -46,7 +47,8 @@
 .mtSkin span.mce_mt_source_blockquote:hover,
 .mtSkin span.mce_mt_source_unordered_list:hover,
 .mtSkin span.mce_mt_source_ordered_list:hover,
-.mtSkin span.mce_mt_source_list_item:hover {
+.mtSkin span.mce_mt_source_list_item:hover,
+.mtSkin span.mce_mt_source_link:hover {
     background: url('../../../../../../../../images/buttons/toolbar/toolbar-hover.gif');
 }
 
@@ -72,7 +74,8 @@
 .mtSkin .mceButtonActive span.mce_mt_source_blockquote,
 .mtSkin .mceButtonActive span.mce_mt_source_unordered_list,
 .mtSkin .mceButtonActive span.mce_mt_source_ordered_list,
-.mtSkin .mceButtonActive span.mce_mt_source_list_item {
+.mtSkin .mceButtonActive span.mce_mt_source_list_item,
+.mtSkin .mceButtonActive span.mce_mt_source_link {
     background: url('../../../../../../../../images/buttons/toolbar/toolbar-active.gif');
 }
 
@@ -231,4 +234,10 @@
 .mtSkin span.mce_mt_source_list_item:hover {
     background-position: -242px 12px;
     background-repeat: no-repeat;
+}
+
+.mtSkin span.mce_mt_source_link,
+.mtSkin .mceButtonActive span.mce_mt_source_link,
+.mtSkin span.mce_mt_source_link:hover {
+    background-position: -154px 0;
 }

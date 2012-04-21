@@ -21,6 +21,9 @@ MT.Editor.Source = function(id) {
             editor.saveSelection();
             editor.setDirty();
         })
+        .keyup(function() {
+            editor.saveSelection();
+        })
         .mouseup(function() {
             editor.saveSelection();
         });
@@ -78,8 +81,8 @@ $.extend(MT.Editor.Source.prototype, MT.Editor.prototype, {
             return range.text;
         } else {
             var length = this.textarea.textLength;
-            var start = this.textarea.selectionStart;
-            var end = this.textarea.selectionEnd;
+            var start = this.selectionStart || this.textarea.selectionStart;
+            var end = this.selectionEnd || this.textarea.selectionEnd;
             if ( end == 1 || end == 2 && defined( length ) )
                 end = length;
             return this.textarea.value.substring( start, end );
@@ -102,9 +105,9 @@ $.extend(MT.Editor.Source.prototype, MT.Editor.prototype, {
         } else {
             var scrollTop = el.scrollTop;
             var length = el.textLength;
-            var start = el.selectionStart;
-            var end = el.selectionEnd;
-            if ( end == 1 || end == 2 && defined( length ) )
+            var start = this.selectionStart || el.selectionStart;
+            var end = this.selectionEnd || el.selectionEnd;
+            if ( (end == 1 || end == 2) && defined( length ) )
                 end = length;
             el.value = el.value.substring( 0, start ) + txt + el.value.substr( end, length );
             if ( select_inserted_content ) {
@@ -117,12 +120,43 @@ $.extend(MT.Editor.Source.prototype, MT.Editor.prototype, {
             }
             el.scrollTop = scrollTop;
         }
+        if ( !select_inserted_content ) {
+            this.saveSelection();
+        }
         this.focus();
     },
+
     saveSelection: function() {
         var selection = this.getSelection();
+        var data = {};
         if ( selection.createRange ) {
-            this.range = selection.createRange().duplicate();
+            data.range = this.range = selection.createRange().duplicate();
+        }
+        else {
+            data.selectionStart = this.selectionStart =
+                this.textarea.selectionStart;
+            data.selectionEnd   = this.selectionEnd   =
+                this.textarea.selectionEnd;
+        }
+        return data;
+    },
+
+    restoreSelection: function( data ) {
+        if ( !data ) {
+            data = this;
+        }
+
+        if (! data.range && ! data.selectionStart) {
+            return;
+        }
+
+        var selection = this.getSelection();
+        if ( selection.createRange ) {
+            data.range.select();
+        }
+        else {
+            this.textarea.selectionStart = data.selectionStart;
+            this.textarea.selectionEnd   = data.selectionEnd;
         }
     }
 });

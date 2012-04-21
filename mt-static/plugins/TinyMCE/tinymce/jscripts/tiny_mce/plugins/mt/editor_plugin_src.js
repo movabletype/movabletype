@@ -398,6 +398,69 @@
                 }
             });
 
+            function setPopupWindowLoadedHook(callback) {
+			    $.each(ed.windowManager.windows, function(k, w) {
+                    var iframe  = w.iframeElement;
+                    $('#' + iframe.id).load(function() {
+                        var win = this.contentWindow;
+                        var context = {
+                            '$contents': $(this).contents(),
+                            'window': win
+                        };
+                        callback(context, function() {
+                            win.tinyMCEPopup.close();
+
+				            //Move focus if webkit so that navigation back will read the item.
+				            if (tinymce.isWebKit) {
+                                $('#convert_breaks').focus();
+				            }
+                            proxies.source.focus();
+                        });
+                    });
+                });
+            }
+
+            function mtSourceLinkDialog(c, close) {
+                function onSubmit() {
+                    var $form = $(this);
+                    proxies
+                        .source
+                        .execCommand(
+                            'createLink',
+                            null,
+                            $form.find('#href').val(),
+                            {
+                                'target': $form.find('#target_list').val(),
+                                'title': $form.find('#linktitle').val()
+                            }
+                        );
+                    close();
+                };
+
+                c['$contents']
+                    .find('form')
+                    .attr('onsubmit', '')
+                    .submit(onSubmit);
+
+                if (! proxies.source.isSupported('createLink', ed.mtEditorStatus['format'], 'target')) {
+                    c['$contents']
+                        .find('#targetlistlabel')
+                        .closest('tr')
+                        .hide();
+                }
+            }
+
+            ed.addMtButton('mt_source_link', {
+                title : 'mt.source_link',
+				onclickFunctions : {
+                    source: function(cmd, ui, val) {
+			            tinymce._setActive(ed);
+                        this.theme['_mceLink'].apply(this.theme);
+                        setPopupWindowLoadedHook(mtSourceLinkDialog);
+				    }
+                }
+            });
+
             ed.addMtButton('mt_source_mode', {
 				title : 'mt.source_mode',
 				onclickFunctions : {
@@ -416,7 +479,6 @@
                 'mt_italic': 'italic',
                 'mt_underline': 'underline',
                 'mt_strikethrough': 'strikethrough',
-                'mt_insert_link': 'link',
                 'mt_justify_left': 'justifyleft',
                 'mt_justify_center': 'justifycenter',
                 'mt_justify_right': 'justifyright'
@@ -467,7 +529,8 @@
                 'mt_source_blockquote': 'blockquote',
                 'mt_source_unordered_list': 'insertUnorderedList',
                 'mt_source_ordered_list': 'insertOrderedList',
-                'mt_source_list_item': 'insertListItem'
+                'mt_source_list_item': 'insertListItem',
+                'mt_source_link': 'createLink',
             }
             ed.onMTSourceButtonClick.add(function(ed, cm) {
                 $.each(sourceButtons, function(k, command) {

@@ -82,6 +82,10 @@ $.extend(MT.EditorCommand.prototype, {
             linkedText = prompt( Editor.strings.enterTextToLinkTo, "" );
 
         this.insertLink( { url: "mailto:" + url, linkedText: linkedText, anchor: anchor } );
+    },
+
+    focus: function() {
+        this.editor.focus();
     }
 });
 

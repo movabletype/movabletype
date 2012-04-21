@@ -17,16 +17,20 @@ $.extend(MT.EditorCommand.Source.prototype, MT.EditorCommand.prototype, {
         this.commandStates = {};
     },
 
-    isSupported: function(command, format) {
+    isSupported: function(command, format, feature) {
         var format = format || this.format;
         if (! this.commands[format]) {
             format = 'default';
         }
 
+        if (feature) {
+            command += '-' + feature;
+        }
+
         return this.commands[format][command];
     },
 
-    execCommand: function( command, userInterface, argument ) {
+    execCommand: function( command, userInterface, argument, options ) {
         var text = this.e.getSelectedText();
         if ( !defined( text ) )
             text = '';
@@ -38,7 +42,7 @@ $.extend(MT.EditorCommand.Source.prototype, MT.EditorCommand.prototype, {
 
         var func = this.commands[format][command];
         if (func) {
-            func.apply(this, [command, userInterface, argument, text]);
+            func.apply(this, [command, userInterface, argument, text, options]);
         }
 
         return this.editor.setDirty();
@@ -68,6 +72,23 @@ $.extend(MT.EditorCommand.Source.prototype, MT.EditorCommand.prototype, {
             else {
                 this.e.setSelection( open + text + close );
             }
+        }
+    },
+
+    execLinkCommand: function(command, open, close, text) {
+        var selection;
+
+        this.e.setSelection( open );
+        if ( text ) {
+            this.e.setSelection( text );
+        }
+        else {
+            selection = this.e.saveSelection();
+        }
+        this.e.setSelection( close );
+
+        if ( selection ) {
+            this.e.restoreSelection( selection );
         }
     },
 
@@ -107,9 +128,22 @@ MT.EditorCommand.Source.prototype.commands['default'] = {
         this.createLink();
     },
 
-    createLink: function(command, userInterface, argument, text) {
-        this.e.setSelection( '<a href="' + argument + '">' + text + "</a>" );
+    createLink: function(command, userInterface, argument, text, options) {
+        var open = '<a href="' + argument + '"';
+        if (options) {
+            if (options['target']) {
+                open += ' target="' + options['target'] + '"';
+            }
+            if (options['title']) {
+                open += ' title="' + options['title'] + '"';
+            }
+        }
+        open += '>';
+
+        this.execLinkCommand(command, open, '</a>', text);
     },
+
+    'createLink-target': true,
 
     indent: function(command, userInterface, argument, text) {
         this.execEnclosingCommand(command, '<blockquote>', '</blockquote>', text);
@@ -162,8 +196,16 @@ MT.EditorCommand.Source.prototype.commands['markdown_with_smartypants'] = {
         this.createLink();
     },
 
-    createLink: function(command, userInterface, argument, text) {
-        this.e.setSelection( "[" + text + "](" + argument + ")" );
+    createLink: function(command, userInterface, argument, text, options) {
+        var close = "](" + argument;
+        if (options) {
+            if (options['title']) {
+                close += ' "' + options['title'] + '"';
+            }
+        }
+        close += ')';
+
+        this.execLinkCommand(command, "[", close, text);
     },
 
     indent: function(command, userInterface, argument, text) {
@@ -216,8 +258,16 @@ MT.EditorCommand.Source.prototype.commands['textile_2'] = {
         this.createLink();
     },
 
-    createLink: function(command, userInterface, argument, text) {
-        this.e.setSelection( '"' + text + '":' + argument );
+    createLink: function(command, userInterface, argument, text, options) {
+        var close = '';
+        if (options) {
+            if (options['title']) {
+                close += '(' + options['title'] + ')';
+            }
+        }
+        close += '":' + argument;
+
+        this.execLinkCommand(command, '"', close, text);
     },
 
     indent: function(command, userInterface, argument, text) {
