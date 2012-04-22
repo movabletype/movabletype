@@ -32,11 +32,8 @@ MT.App.prototype = $.extend({}, MT.App.prototype, {
         // Fall backing to the source editor when any WYSIWYG editor isn't
         // available.
         if (! MT.EditorManager.editorClass('wysiwyg')) {
-            if (format == 'richtext') {
-                $('#convert_breaks').val('0');
-            }
             $('#convert_breaks option[value="richtext"]').remove();
-            format = '0';
+            format = $('#convert_breaks').val();
         }
 
         if (! this.editorStrategy) {
