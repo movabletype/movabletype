@@ -15,9 +15,18 @@ MT.Editor = function(id) {
 
 // Class method
 $.extend(MT.Editor, {
+    defaultCommonOptions: {
+        content_css_list: []
+    },
+
+    updateDefaultCommonOptions: function(options) {
+        $.extend(this.defaultCommonOptions, options);
+    },
+
     isMobileOSWYSIWYGSupported: function() {
         return true;
     },
+
     formats: function() {
         if (this.isMobileOSWYSIWYGSupported() ||
             ! navigator.userAgent.match(/Android|i(Phone|Pad|Pod)/)
@@ -28,6 +37,7 @@ $.extend(MT.Editor, {
             return ['source'];
         }
     },
+
     setupEnsureInitializedMethods: function(names) {
         var klass = this;
         $.each(names, function() {
@@ -43,7 +53,9 @@ $.extend(MT.Editor, {
 $.extend(MT.Editor.prototype, {
     isIgnoreAppSetDirty: false,
 
-    init: function() {
+    init: function(commonOptions) {
+        this.commonOptions =
+            $.extend({}, this.constructor.defaultCommonOptions, commonOptions);
         this.initialized = true;
         this.initEditor.apply(this, arguments);
     },

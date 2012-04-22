@@ -699,9 +699,12 @@ Editor.strings = {
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor.js"></script>
 </mt:unless>
 <script type="text/javascript">
-MT.EditorManager.setMap({
+MT.EditorManager.updateMap({
     wysiwyg: '<mt:var name="wysiwyg_editor" escape="js" />',
     source: '<mt:var name="source_editor" escape="js" />'
+});
+MT.Editor.updateDefaultCommonOptions({
+    content_css_list: ['<mt:var name="content_css" escape="js" />']
 });
 MT.App.setDefaultEditorStrategy('<mt:var name="editor_strategy" escape="js" />');
 </script>

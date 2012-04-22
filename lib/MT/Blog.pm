@@ -72,6 +72,8 @@ __PACKAGE__->install_properties(
             'use_revision'              => 'boolean',
             'archive_url'               => 'string(255)',
             'archive_path'              => 'string(255)',
+            'content_css_entry'         => 'string(255)',
+            'content_css_page'          => 'string(255)',
             ## Have to keep these around for use in mt-upgrade.cgi.
             'old_style_archive_links' => 'boolean',
             'archive_tmpl_daily'      => 'string(255)',

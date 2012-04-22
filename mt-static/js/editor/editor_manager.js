@@ -32,8 +32,8 @@ $.extend(MT.EditorManager, {
         });
     },
 
-    setMap: function(map) {
-        this.map = map;
+    updateMap: function(map) {
+        $.extend(this.map, map);
     },
 
     toMode: function(format) {

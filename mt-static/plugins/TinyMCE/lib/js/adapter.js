@@ -67,6 +67,9 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         };
         config['elements'] = adapter.id;
 
+        config['content_css'] =
+            adapter.commonOptions['content_css_list'].join(',');
+
         tinyMCE.init(config);
             
         adapter.setFormat(format, true);

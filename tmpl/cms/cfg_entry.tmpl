@@ -196,6 +196,22 @@
     </mtapp:setting>
   </mtapp:settinggroup>
 
+  <h2><__trans phrase="WYSIWYG Editor Setting"></h2>
+  <mtapp:settinggroup id="wysiwyg-editor-setting">
+    <mtapp:setting
+       id="content_css_entry"
+       label="<__trans phrase="Content CSS For Entry">"
+       hint="<__trans phrase="The URL of CSS file inserted for entry">">
+       <input type="text" name="content_css_entry" value="<mt:var name="content_css_entry">" />
+    </mtapp:setting>
+    <mtapp:setting
+       id="content_css_page"
+       label="<__trans phrase="Content CSS For Page">"
+       hint="<__trans phrase="The URL of CSS file inserted for page">">
+       <input type="text" name="content_css_page" value="<mt:var name="content_css_page">" />
+    </mtapp:setting>
+  </mtapp:settinggroup>
+
   <h2><__trans phrase="Punctuation Replacement Setting"></h2>
   <mtapp:settinggroup id="smart-replace-setting">
 
