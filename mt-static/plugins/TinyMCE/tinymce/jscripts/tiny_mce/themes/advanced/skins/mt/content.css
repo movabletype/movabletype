@@ -30,3 +30,10 @@ scrollbar-highlight-color:#F0F0EE;
 scrollbar-shadow-color:#F0F0EE;
 scrollbar-track-color:#F5F5F5;
 }
+
+.mceItemMedia {
+    border: 1px dotted #C00;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #FFC;
+}
