@@ -2934,8 +2934,8 @@ sub PerformanceLoggingPath {
     return $cfg->set_internal( 'PerformanceLoggingPath', @_ ) if @_;
 
     unless ( $path = $cfg->get_internal('PerformanceLoggingPath') ) {
-        $path = $default = File::Spec->catdir( MT->instance->static_file_path,
-            'support', 'logs' );
+        $path = $default = File::Spec->catdir( 
+            MT->instance->support_directory_path, 'logs' );
     }
 
     # If the $path is not a writeable directory, we need to

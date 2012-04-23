@@ -415,7 +415,6 @@ sub create_stats_directory {
     my $user    = $app->user;
     my $user_id = $user->id;
 
-    my $static_path      = $app->static_path;
     my $static_file_path = $app->static_file_path;
 
     if ( -f File::Spec->catfile( $static_file_path, "mt.js" ) ) {
@@ -429,7 +428,7 @@ sub create_stats_directory {
     my $sub_dir = sprintf( "%03d", $blog_id % 1000 );
     my $top_dir = $blog_id > $sub_dir ? $blog_id - $sub_dir : 0;
     $param->{support_path}
-        = File::Spec->catdir( $static_file_path, 'support', 'dashboard',
+        = File::Spec->catdir( $app->support_directory_path(), 'dashboard',
         'stats', $top_dir, $sub_dir, $low_dir );
 
     require MT::FileMgr;
@@ -439,15 +438,14 @@ sub create_stats_directory {
         unless ( $fmgr->exists( $param->{support_path} ) ) {
 
             # the path didn't exist - change the warning a little
-            $param->{support_path}
-                = File::Spec->catdir( $app->static_file_path, 'support' );
+            $param->{support_path} = $app->support_directory_path();
             return;
         }
     }
 
     return
-          $static_path
-        . 'support/dashboard/stats/'
+          $app->support_directory_url()
+        . 'dashboard/stats/'
         . $top_dir . '/'
         . $sub_dir . '/'
         . $low_dir;
