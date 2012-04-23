@@ -1246,7 +1246,7 @@ use vars qw( @ISA %Lexicon );
 	'The [_1] must be given a name!' => '[_1] muss einen Namen erhalten!',
 	'Failed to update [_1]: some of [_2] were changed after you opened this screen.' => 'Fehler bei der Aktualisierung von [_1]: mindestens ein(e) [_2] wurde zwischenzeitlich bearbeitet.',
 	'Tried to update [_1]([_2]), but the object was not found.' => 'Konnte [_1] ([_2]) nicht aktualisieren: Objekt nicht gefunden.',
-	'Your changes have been made (added [_1], edited [_2] and deleted [_3]). <a href="#" onclick="[_4]" class="mt-rebuild">Publish your site</a> to see these changes take effect.' => 'Ihre Änderungen wurden übernommen ([_1] hinzugefügt, [_2] bearbeitet, [_3] gelöscht). <a href="#" onclick="[_4]" class="mt-rebuild">Veröffentlichen Sie IHre Site</a>, um die Änderungen wirksam werden zu lassen.',
+ 	'Your changes have been made (added [_1], edited [_2] and deleted [_3]). <a href="#" onclick="[_4]" class="mt-rebuild">Publish your site</a> to see these changes take effect.' => 'Ihre Änderungen wurden übernommen ([_1] hinzugefügt, [_2] bearbeitet, [_3] gelöscht). <a href="#" onclick="[_4]" class="mt-rebuild">Veröffentlichen Sie Ihre Site</a>, um die Änderungen wirksam werden zu lassen.',
 	'Add a [_1]' => '[_1] hinzufügen',
 	'No label' => 'Keine Bezeichnung',
 	'Category name cannot be blank.' => 'Kategorienamen dürfen nicht leer sein.',
@@ -3990,8 +3990,8 @@ use vars qw( @ISA %Lexicon );
 	'If enabled, visitors must provide a valid e-mail address when commenting.' => 'Wenn diese Option aktiv ist, müssen Kommentarautoren eine gültige E-Mail-Adresse angeben.',
 
 ## tmpl/cms/include/archetype_editor.tmpl
-	'Decrease Text Size' => 'Größerer Text',
-	'Increase Text Size' => 'Kleinerer Text',
+	'Decrease Text Size' => 'Kleinerer Text',
+	'Increase Text Size' => 'Größerer Text',
 	'Bold' => 'Fett',
 	'Italic' => 'Kursiv',
 	'Underline' => 'Unterstreichen',
@@ -4642,7 +4642,7 @@ use vars qw( @ISA %Lexicon );
 	'Create Your First Website' => 'Erstellen Sie Ihre erste Website',
 	q{In order to properly publish your website, you must provide Movable Type with your website's URL and the filesystem path where its files should be published.} => q{Geben Sie die gewünschte URL und den gewünschten Pfad im Dateisystem Ihres Servers an, unter denen Movable Type Ihre Website veröffentlichen soll.},
 	'My First Website' => 'Meine erste Website',
-	q{The 'Website Root' is the directory in your web server's filesystem where Movable Type will publish the files for your website. The web server must have write access to this directory.} => q{Das Wurzelverzeichnis der Website ist das Verzeichnis auf IHrem Webserver, in dem Movable Type die Dateien Ihrer Website ablegt. Der Webserver muss daher über Schreibrechte für dieses Verzeichnis verfügen.},
+ 	q{The 'Website Root' is the directory in your web server's filesystem where Movable Type will publish the files for your website. The web server must have write access to this directory.} => q{Das Wurzelverzeichnis der Website ist das Verzeichnis auf Ihrem Webserver, in dem Movable Type die Dateien Ihrer Website ablegt. Der Webserver muss daher über Schreibrechte für dieses Verzeichnis verfügen.},
 	'Select the theme you wish to use for this new website.' => 'Wählen Sie das Thema, das Sie für die neue Website verwenden möchten.',
 	'Finish install (s)' => 'Installation abschließen (s)',
 	'Finish install' => 'Installation abschließen',
