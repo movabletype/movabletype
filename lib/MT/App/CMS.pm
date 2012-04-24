@@ -410,7 +410,9 @@ sub core_page_actions {
                 label     => "Refresh Templates",
                 mode      => 'dialog_refresh_templates',
                 condition => sub {
-                    MT->app->blog;
+                    my $blog = MT->app->blog;
+                    return 0 unless $blog;
+                    return $blog->theme_id || $blog->template_set;
                 },
                 order  => 1000,
                 dialog => 1
@@ -1452,9 +1454,10 @@ sub core_list_actions {
                 condition     => sub {
                     my $app = MT->app;
                     my $tmpl_type = $app->param('filter_key') || '';
-                    return $tmpl_type eq 'backup_templates'
-                        ? 0
-                        : 1;
+                    return 0 if $tmpl_type eq 'backup_templates';
+                    my $blog = $app->blog;
+                    return 1 unless $blog;
+                    return $blog->theme_id || $blog->template_set;
                 },
             },
 
