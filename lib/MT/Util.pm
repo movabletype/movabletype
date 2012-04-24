@@ -608,7 +608,7 @@ sub offset_time_list { gmtime offset_time(@_) }
 sub offset_time {
     my ( $ts, $blog, $dir ) = @_;
     my $offset;
-    if ( defined $blog ) {
+    if ( $blog ) {
         if ( !ref($blog) ) {
             require MT::Blog;
             $blog = MT::Blog->load($blog);
