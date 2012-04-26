@@ -266,7 +266,7 @@ sub thumbnail_filename {
     $file =~ s/\.\w+$//;
     my $base = File::Basename::basename($file);
     my $id   = $asset->id;
-    my $ext  = lc( $param{Type} ) || $asset->file_ext || '';
+    my $ext  = lc( $param{Type} || '' ) || $asset->file_ext || '';
     $ext = '.' . $ext;
     $format =~ s/%w/$width/g;
     $format =~ s/%h/$height/g;

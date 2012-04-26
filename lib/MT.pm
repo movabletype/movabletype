@@ -2185,7 +2185,7 @@ sub template_paths {
 
     foreach my $sig ( keys %MT::Plugins ) {
         my $obj = $MT::Plugins{$sig}{object};
-        next if $obj && !$obj->isa('MT::Plugin');
+        next if !$obj || ( $obj && !$obj->isa('MT::Plugin') );
 
         my $full_path = $obj->{full_path};
         push @paths, File::Spec->catdir( $full_path, 'tmpl' )

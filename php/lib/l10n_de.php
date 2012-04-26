@@ -33,6 +33,9 @@ $Lexicon_de = array(
 
 ## php/lib/block.mtauthorhaspage.php
 
+## php/lib/block.mtcalendar.php
+	'You used an [_1] tag without a date context set up.' => 'Sie haben einen [_1]-Vorlagenbefehl ohne Datumskontext verwendet.',
+
 ## php/lib/block.mtentries.php
 
 ## php/lib/block.mtif.php
@@ -68,6 +71,9 @@ $Lexicon_de = array(
 
 ## php/lib/function.mtcommentauthor.php
 
+## php/lib/function.mtcommenternamethunk.php
+	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'Der Befehl \'[_1]\' wird nicht mehr unterstützt. Verwenden Sie stattdessen den Befehl \'[_2]\'.', # Translate - New # OK
+
 ## php/lib/function.mtcommentreplytolink.php
 	'Reply' => 'Antworten',
 
@@ -80,17 +86,18 @@ $Lexicon_de = array(
 	'\'parent\' modifier cannot be used with \'[_1]\'' => 'Die Option \'parent\' kann nicht zusammen mit \'[_1]\' verwendet werden.',
 
 ## php/lib/function.mtpasswordvalidation.php
-	'Password should be longer than [_1] characters' => 'Passwörter müssen mindestens [_1] Zeichen lang sein', # Translate - New # OK
-	'Password should not include your Username' => 'Ihr Benutzername darf nicht Teil Ihres Passworts sein', # Translate - New # OK
-	'Password should include letters and numbers' => 'Passwörter müssen sowohl Buchstaben als auch Ziffern enthalten', # Translate - New # OK
-	'Password should include lowercase and uppercase letters' => 'Passwörter müssen sowohl Groß- als auch Kleinbuchstaben enthalten', # Translate - New # OK
-	'Password should contain symbols such as #!$%' => 'Passwörter müssen mindestens ein Sonderzeichen wie #!$% enthalten', # Translate - New # OK
+	'Password should be longer than [_1] characters' => 'Passwörter müssen mindestens [_1] Zeichen lang sein',
+	'Password should not include your Username' => 'Ihr Benutzername darf nicht Teil Ihres Passworts sein',
+	'Password should include letters and numbers' => 'Passwörter müssen sowohl Buchstaben als auch Ziffern enthalten',
+	'Password should include lowercase and uppercase letters' => 'Passwörter müssen sowohl Groß- als auch Kleinbuchstaben enthalten',
+	'Password should contain symbols such as #!$%' => 'Passwörter müssen mindestens ein Sonderzeichen wie #!$% enthalten',
+	'You used an [_1] tag without a valid [_2] attribute.' => '[_1]-Befehl ohne gültiges [_2]-Attribut verwendet.', # Translate - New # OK
 
 ## php/lib/function.mtpasswordvalidationrule.php
-	'minimum length of [_1]' => 'Mindestlänge [_1] Zeichen', # Translate - New # OK
-	', uppercase and lowercase letters' => 'Groß- und Kleinbuchstaben', # Translate - New # OK
-	', letters and numbers' => 'Buchstaben und Ziffern', # Translate - New # OK
-	', symbols (such as #!$%)' => 'Sonderzeichen (#!$% usw.)', # Translate - New # OK
+	'minimum length of [_1]' => 'Mindestlänge [_1] Zeichen',
+	', uppercase and lowercase letters' => 'Groß- und Kleinbuchstaben',
+	', letters and numbers' => 'Buchstaben und Ziffern',
+	', symbols (such as #!$%)' => 'Sonderzeichen (#!$% usw.)',
 
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',

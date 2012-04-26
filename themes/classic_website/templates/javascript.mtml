@@ -1493,7 +1493,7 @@ function mtRefreshUserInfo(sid) {
 function mtSaveUserInfo (u) {
     if ( u.error ) {
         if ( !user ) {
-            alert('<__trans phrase="The sign-in attempt was not successful; please try again.">');
+            alert('<__trans phrase="The sign-in attempt was not successful; please try again." escape="js">');
         }
         return;
     }
