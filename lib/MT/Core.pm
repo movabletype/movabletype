@@ -1883,7 +1883,8 @@ BEGIN {
             'DefaultTemplateSet'   => { default => 'mt_blog' },
             'DefaultWebsiteTheme'  => { default => 'classic_website' },
             'DefaultBlogTheme'     => { default => 'classic_blog' },
-            'ThemeStaticFileExtensions' => undef,
+            'ThemeStaticFileExtensions' => 
+                { default => 'html jpg jpeg gif png js css ico flv swf otf ttf' },
 
             'AssetFileTypes'            => { type    => 'HASH' },
             'AssetFileExtensions'       => { default => undef },

@@ -349,18 +349,12 @@ sub apply {
 
 sub install_static_files {
     my $pkg = shift;
-    my ( $src, $dst, %opts ) = @_;
-    my $default_allowed_extentions = [
-        qw(
-            html    css    js
-            png     jpeg   jpg   gif
-            )
-    ];
-    my $allowed
-        = 'ARRAY' eq ref $opts{allow}
-        ? $opts{allow}
-        : $default_allowed_extentions;
-    my %allowed = map { ( lc $_ ) => 1 } @$allowed;
+    my ( $src, $dst ) = @_;
+    my %allowed = 
+        map { ( lc $_ ) => 1 }
+        grep { defined $_ and $_ ne ''}
+        split /[\s,]+/, 
+        MT->config->ThemeStaticFileExtensions;
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
     require File::Find;
