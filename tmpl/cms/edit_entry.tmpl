@@ -683,6 +683,7 @@ Editor.strings = {
 </script>
 </mt:setvarblock>
 <mt:setvarblock name="js_include" append="1">
+<mt:unless name="optimize_ui">
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_manager.js"></script>
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_command.js"></script>
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_command/wysiwyg.js"></script>
@@ -694,6 +695,9 @@ Editor.strings = {
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy/multi.js"></script>
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy/separator.js"></script>
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor/source.js"></script>
+<mt:else>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor.js"></script>
+</mt:unless>
 <script type="text/javascript">
 MT.EditorManager.setMap({
     wysiwyg: '<mt:var name="wysiwyg_editor" escape="js" />',

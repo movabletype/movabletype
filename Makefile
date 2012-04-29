@@ -29,6 +29,18 @@ core_js = mt-static/js/common/Core.js \
           mt-static/js/tc.js \
           mt-static/js/tc/tableselect.js
 
+editor_js = mt-static/js/editor/editor_manager.js \
+          mt-static/js/editor/editor_command.js \
+          mt-static/js/editor/editor_command/wysiwyg.js \
+          mt-static/js/editor/editor_command/source.js \
+          mt-static/js/editor/app.js \
+          mt-static/js/editor/editor.js \
+          mt-static/js/editor/app/editor_strategy.js \
+          mt-static/js/editor/app/editor_strategy/single.js \
+          mt-static/js/editor/app/editor_strategy/multi.js \
+          mt-static/js/editor/app/editor_strategy/separator.js \
+          mt-static/js/editor/editor/source.js
+
 main_css = mt-static/css/reset.css \
 	mt-static/css/structure.css \
 	mt-static/css/form.css \
@@ -52,6 +64,10 @@ mt-static/js/mt_core_compact.js: $(core_js)
 	cat $(core_js) > mt-static/js/mt_core_compact.js
 	./build/minifier.pl mt-static/js/mt_core_compact.js
 
+mt-static/js/editor.js: $(editor_js)
+	cat $(editor_js) > mt-static/js/editor.js
+	./build/minifier.pl mt-static/js/editor.js
+
 mt-static/css/main.css: $(main_css)
 	cat $(main_css) > mt-static/css/main.css
 	./build/minifier.pl mt-static/css/main.css
@@ -64,6 +80,7 @@ mt-static/css/simple.css: $(simple_css)
 	code-es code-ja
 code_common = lib/MT.pm php/mt.php mt-check.cgi version_file \
         mt-static/js/mt_core_compact.js \
+        mt-static/js/editor.js \
         mt-static/css/main.css \
         mt-static/css/simple.css
 
@@ -171,6 +188,7 @@ me:
 clean:
 	-rm -rf $(local_js)
 	-rm -rf mt-static/js/mt_core_compact.js
+	-rm -rf mt-static/js/editor.js
 	-rm -rf mt-static/css/main.css mt-static/css/simple.css
 	-rm -rf MANIFEST
 	-rm -rf build-language-stamp
