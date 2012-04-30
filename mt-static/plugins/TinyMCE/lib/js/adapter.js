@@ -73,11 +73,11 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
     },
 
     setFormat: function(format, calledInInit) {
-        if (calledInInit && MT.EditorManager.toMode(format) != 'source') {
+        var mode = MT.EditorManager.toMode(format);
+
+        if (calledInInit && mode != 'source') {
             return;
         }
-
-        var mode = MT.EditorManager.toMode(format);
 
         this.tinymce.execCommand('mtSetStatus', {
             mode: mode,
@@ -123,6 +123,32 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             this.editor = this.tinymce;
             this.$editorElement = this.$editorIframe;
         }
+        this.resetUndo();
+        this.tinymce.nodeChanged();
+    },
+
+    setFormatFullscreen: function(format) {
+        var mode = MT.EditorManager.toMode(format);
+
+        this.tinymce.execCommand('mtSetStatus', {
+            mode: mode,
+            format: format
+        });
+
+        if (mode == 'source') {
+            this.source.setContent(this.tinymce.getContent());
+            this.$editorIframe.hide();
+            this.$editorPathRow.hide();
+            this.$editorTextarea.show();
+        }
+        else {
+            this.tinymce.setContent(this.source.getContent());
+            this.$editorTextarea.hide();
+            this.$editorIframe.show();
+            this.$editorPathRow.show();
+        }
+
+        this._fixFullscreenEditorSize();
         this.resetUndo();
         this.tinymce.nodeChanged();
     },
@@ -173,15 +199,52 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         return this.editor.getDoc();
     },
 
-    _init_instance_callback: function(ed) {
-        if (ed.getParam('fullscreen_is_enabled')) {
-            return;
+    _fixFullscreenEditorSize: function(ed) {
+        var $t = $('#mce_fullscreen_tbl')
+        var t_h = $t.height();
+        var t_w = $t.width();
+
+        var $i = $('.mceIframeContainer', $t);
+        var i_h = $i.height();
+        var i_w = $i.width();
+
+        var $w = $(window);
+        var w_h = $w.height();
+        var w_w = $w.width();
+
+        if (! ed) {
+            ed = this.tinymce;
         }
 
+        ed.theme.resizeTo(w_w - t_w + i_w, w_h - t_h + i_h);
+    },
+
+    _init_instance_callback: function(ed) {
         var adapter = this;
 
+        if (ed.getParam('fullscreen_is_enabled')) {
+            adapter = $.extend(adapter);
+
+            ed.addCommand('mtSetFormat', function(format) {
+                adapter.setFormatFullscreen(format);
+            });
+
+            adapter.$editorIframe   = $('#mce_fullscreen_ifr');
+            adapter.$editorTextarea = $('<textarea />')
+                .attr('id', 'mce_fullscreen_textarea')
+                .css({
+                    background: 'white',
+                    resize: 'none'
+                })
+                .insertAfter(adapter.$editorIframe)
+                .hide();
+            adapter.$editorPathRow = $('#mce_fullscreen_path_row');
+            adapter._fixFullscreenEditorSize(ed);
+        }
+
         adapter.tinymce = adapter.editor = ed;
-        adapter.source = new MT.Editor.Source(adapter.id);
+        adapter.source =
+            new MT.Editor.Source(adapter.$editorTextarea.attr('id'));
         adapter.proxies = {
             source: new MT.EditorCommand.Source(adapter.source),
             wysiwyg: new MT.EditorCommand.WYSIWYG(adapter)
@@ -189,13 +252,6 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
 
         ed.execCommand('mtSetProxies', adapter.proxies);
 
-        $('#' + adapter.id + '_tbl').css({
-            width: '100%'
-        });
-
-        adapter.$editorIframe = $('#' + adapter.id + '_ifr');
-        adapter.$editorElement = adapter.$editorIframe;
-        adapter.$editorPathRow = $('#' + adapter.id + '_path_row');
 
         var resizeTo = ed.theme.resizeTo;
         ed.theme.resizeTo = function(width, height, store) {
@@ -207,8 +263,24 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                         .data('base-height', base+height);
                 }
             }
+            else {
+                adapter.$editorTextarea.width(width);
+                adapter.$editorTextarea.height(height);
+            }
             resizeTo.apply(ed.theme, arguments);
         };
+
+        if (ed.getParam('fullscreen_is_enabled')) {
+            return;
+        }
+
+        $('#' + adapter.id + '_tbl').css({
+            width: '100%'
+        });
+
+        adapter.$editorIframe = $('#' + adapter.id + '_ifr');
+        adapter.$editorElement = adapter.$editorIframe;
+        adapter.$editorPathRow = $('#' + adapter.id + '_path_row');
 
         var save = ed.save;
         ed.save = function () {

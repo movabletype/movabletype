@@ -503,24 +503,19 @@
                     cm.setDisabled('mt_outdent', !ed.queryCommandState('Outdent'));
                 }
 
-                if (ed.getParam('fullscreen_is_enabled')) {
-                    cm.setDisabled('mt_source_mode', true);
+                if (ed.mtEditorStatus['mode'] == 'source' &&
+                    ed.mtEditorStatus['format'] != 'none.tinymce_temp'
+                ) {
+                    $('#' + id + '_mt_source_mode').hide();
                 }
                 else {
-                    if (ed.mtEditorStatus['mode'] == 'source' &&
-                        ed.mtEditorStatus['format'] != 'none.tinymce_temp'
-                    ) {
-                        $('#' + id + '_mt_source_mode').hide();
-                    }
-                    else {
-                        $('#' + id + '_mt_source_mode').show();
-                    }
-
-                    var active =
-                        ed.mtEditorStatus['mode'] == 'source' &&
-                        ed.mtEditorStatus['format'] == 'none.tinymce_temp';
-                    cm.setActive('mt_source_mode', active);
+                    $('#' + id + '_mt_source_mode').show();
                 }
+
+                var active =
+                    ed.mtEditorStatus['mode'] == 'source' &&
+                    ed.mtEditorStatus['format'] == 'none.tinymce_temp';
+                cm.setActive('mt_source_mode', active);
 
                 if (! ed.mtProxies['source']) {
                     return;
