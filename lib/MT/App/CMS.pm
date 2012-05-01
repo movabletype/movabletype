@@ -170,7 +170,6 @@ sub core_methods {
         'delete_filters'    => {
             code      => "${pkg}Filter::delete_filters",
             no_direct => 1,
-            app_mode  => 'JSON',
         },
 
         'ping'               => "${pkg}Entry::send_pings",
