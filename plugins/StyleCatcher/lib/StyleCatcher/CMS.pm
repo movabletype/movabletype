@@ -547,7 +547,7 @@ sub fetch_themes {
     my $request    = HTTP::Request->new( GET => $url );
     my $response   = $user_agent->request($request);
 
-    # Make a repo if you've got a ton of links or an automagic entry if
+    # Make a repo if you've got a ton of links or an automatic entry if
     # you're a css file
     my $type = $response->headers->{'content-type'};
     $type = shift @$type if ref $type eq 'ARRAY';
