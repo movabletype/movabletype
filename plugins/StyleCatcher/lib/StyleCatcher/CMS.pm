@@ -30,23 +30,8 @@ sub listify {
     my ($data) = @_;
     my @list;
     foreach my $k ( keys %$data ) {
-        my %entry = %{ $data->{$k} };
-        $entry{key} = $k;
-        delete $entry{plugin};
-        if ( ref( $entry{label} ) ) {
-            $entry{label} = $entry{label}->();
-        }
-        else {
-            $entry{label} = MT->translate( $entry{label} );
-        }
-        if ( ref( $entry{description_label} ) ) {
-            $entry{description_label} = $entry{description_label}->();
-        }
-        else {
-            $entry{description_label}
-                = MT->translate( $entry{description_label} );
-        }
-        push @list, \%entry;
+        my $lib = StyleCatcher::Library->new($k);
+        push @list, $lib->listify;
     }
     @list = sort { $a->{order} <=> $b->{order} } @list;
     \@list;

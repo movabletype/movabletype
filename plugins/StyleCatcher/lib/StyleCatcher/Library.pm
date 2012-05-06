@@ -18,9 +18,10 @@ sub new {
     my ($id) = @_;
     my $reg = MT->registry( stylecatcher_libraries => $id )
         or return;
-    my $inst_class = 'StyleCatcher::Library::' . ($reg->{class} || 'Default');
-    eval "require $inst_class";
-    my $obj = bless { key => $id, }, $inst_class;
+    my $class = $reg->{class} || 'Default';
+    my $inst_class = 'StyleCatcher::Library::' . $class;
+    do { eval "require $inst_class"; 1; } or die $@;
+    my $obj = bless { key => $id }, $inst_class;
     return $obj->init($reg);
 }
 
@@ -33,6 +34,22 @@ sub init {
 
 sub component {
     return MT->component('StyleCatcher');
+}
+
+sub listify {
+    my $self = shift;
+    my $hash = {
+        key               => $self->key,
+        url               => $self->url,
+        order             => $self->order,
+        label             => $self->label,
+        description_label => $self->description_label,
+    };
+    for (qw( label description_label )) {
+        $hash->{$_} = $hash->{$_}->()
+            if ref $hash->{$_};
+    }
+    return $hash;
 }
 
 sub themes { die "Abstract method!" }
