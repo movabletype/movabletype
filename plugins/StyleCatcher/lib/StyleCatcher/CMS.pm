@@ -10,6 +10,7 @@ use strict;
 use File::Basename qw( basename dirname );
 
 use MT::Util qw( remove_html decode_html caturl );
+use StyleCatcher::Library;
 
 our $DEFAULT_STYLE_LIBRARY;
 
