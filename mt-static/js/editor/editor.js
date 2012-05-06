@@ -104,11 +104,11 @@ $.extend(MT.Editor.prototype, {
     },
 
     clearDirty: function() {
-        // Should be overried.
+        // Should be overridden.
     },
 
     initEditor: function(id, format, opts, callback) {
-        // Should be overried.
+        // Should be overridden.
     }
 });
 
