@@ -163,7 +163,7 @@ $.extend(MT.EditorManager.prototype, {
 $.each([
     'focus',
     'getContent', 'setContent', 'insertContent',
-    'getHeight', 'setHeight', 'resetUndo'
+    'getHeight', 'setHeight', 'resetUndo', 'domUpdated'
 ], function() {
     var method = this;
     MT.EditorManager.prototype[method] = function() {

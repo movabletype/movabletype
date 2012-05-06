@@ -202,6 +202,20 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         return this.editor.getDoc();
     },
 
+    domUpdated: function() {
+        if (this.tinymce) {
+            var format = this.tinymce.execCommand('mtGetStatus')['format'];
+            try {
+                this.tinymce.remove();
+            }
+            catch(e) {
+                $('#' + this.id + '_parent').remove();
+                delete tinyMCE.editors[this.id];
+            }
+            this.initEditor(format);
+        }
+    },
+
     _fixFullscreenEditorSize: function(ed) {
         var $t = $('#mce_fullscreen_tbl')
         var t_h = $t.height();

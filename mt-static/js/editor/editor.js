@@ -109,6 +109,10 @@ $.extend(MT.Editor.prototype, {
 
     initEditor: function(id, format, opts, callback) {
         // Should be overridden.
+    },
+
+    domUpdated: function() {
+        // Should be overridden, if needed.
     }
 });
 
