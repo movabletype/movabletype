@@ -9,6 +9,7 @@ use strict;
 use warnings;
 use MT;
 use base qw( MT::ErrorHandler Class::Accessor::Fast );
+use StyleCatcher::Util;
 
 my @KEYS = qw(description_label label order url class);
 __PACKAGE__->mk_accessors('key', @KEYS);
@@ -36,6 +37,11 @@ sub component {
     return MT->component('StyleCatcher');
 }
 
+sub translate {
+    my $self = shift;
+    return $self->component->translate(@_);
+}
+
 sub listify {
     my $self = shift;
     my $hash = {
@@ -55,5 +61,7 @@ sub listify {
 sub themes { die "Abstract method!" }
 sub theme  { die "Abstract method!" }
 sub apply  { die "Abstract method!" }
+
+
 
 1;
