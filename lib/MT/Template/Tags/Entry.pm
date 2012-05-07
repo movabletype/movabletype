@@ -1163,6 +1163,7 @@ sub _hdlr_entries {
         = ( @entries && defined $entries[0] ) ? \@entries : undef;
     my $glue = $args->{glue};
     my $vars = $ctx->{__stash}{vars} ||= {};
+    MT::Meta::Proxy->bulk_load_meta_objects(\@entries);
     for my $e (@entries) {
         local $vars->{__first__}    = !$i;
         local $vars->{__last__}     = !defined $entries[ $i + 1 ];

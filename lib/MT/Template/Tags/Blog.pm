@@ -64,19 +64,17 @@ sub _hdlr_blogs {
     $terms{class} = 'blog' unless $terms{class};
     $args{'sort'} = 'name';
     $args{direction} = 'ascend';
-    my $iter  = MT::Blog->load_iter( \%terms, \%args );
+    my @blogs = MT::Blog->load( \%terms, \%args );
     my $res   = '';
     my $count = 0;
-    my $next  = $iter->();
     my $vars  = $ctx->{__stash}{vars} ||= {};
-    while ($next) {
-        my $blog = $next;
-        $next = $iter->();
+    MT::Meta::Proxy->bulk_load_meta_objects(\@blogs);
+    for my $blog (@blogs) {
         $count++;
         local $ctx->{__stash}{blog}    = $blog;
         local $ctx->{__stash}{blog_id} = $blog->id;
         local $vars->{__first__}       = $count == 1;
-        local $vars->{__last__}        = !$next;
+        local $vars->{__last__}        = $count == scalar(@blogs);
         local $vars->{__odd__}         = ( $count % 2 ) == 1;
         local $vars->{__even__}        = ( $count % 2 ) == 0;
         local $vars->{__counter__}     = $count;
