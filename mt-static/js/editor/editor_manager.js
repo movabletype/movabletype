@@ -135,19 +135,15 @@ $.extend(MT.EditorManager.prototype, {
     },
 
     hide: function() {
-        this.parentElement.hide();
+        if (this.parentElement) {
+            this.parentElement.hide();
+        }
     },
 
     show: function() {
-        this.parentElement.show();
-    },
-
-    insertContent: function(html) {
-        this.currentEditor.insertContent(html);
-    },
-
-    focus: function() {
-        this.currentEditor.focus();
+        if (this.parentElement) {
+            this.parentElement.show();
+        }
     },
 
     ignoreSetDirty: function(callback) {
