@@ -4970,6 +4970,58 @@ sub setup_filtered_ids {
     $app->param( 'id', map( $_->[0], @{ $data{objects} } ) );
 }
 
+sub setup_editor_param {
+    my $app = shift;
+    my ($param) = @_;
+
+    if ( my $editor_regs = MT::Component->registry('editors') ) {
+        $param->{editors} = {};
+        foreach my $editors (@$editor_regs) {
+            foreach my $editor_key ( keys(%$editors) ) {
+                my $reg = $editors->{$editor_key};
+                my $tmpls = $param->{editors}{$editor_key} ||= {
+                    templates  => [],
+                    extensions => [],
+                };
+
+                foreach my $k ( 'template', 'extension' ) {
+                    if ( my $tmpl = $reg->{plugin}->load_tmpl( $reg->{$k} ) )
+                    {
+                        push( @{ $tmpls->{ $k . 's' } }, { tmpl => $tmpl } );
+                    }
+                }
+            }
+        }
+
+        my $editor = lc( $app->config('Editor') );
+        $param->{wysiwyg_editor}
+            = lc( $app->config('WYSIWYGEditor') || $editor );
+        $param->{source_editor}
+            = lc( $app->config('SourceEditor') || $editor );
+        $param->{editor_strategy} = lc( $app->config('EditorStrategy') );
+    }
+    else {
+        my $rte;
+        if ( $param->{convert_breaks} =~ m/richtext/ ) {
+            ## Rich Text editor
+            $rte = lc( $app->config('RichTextEditor') );
+        }
+        else {
+            $rte = 'archetype';
+        }
+        my $editors = $app->registry("richtext_editors");
+        my $edit_reg = $editors->{$rte} || $editors->{archetype};
+
+        my $rich_editor_tmpl;
+        if ( $rich_editor_tmpl
+            = $edit_reg->{plugin}->load_tmpl( $edit_reg->{template} ) )
+        {
+            $param->{rich_editor}      = $rte;
+            $param->{rich_editor_tmpl} = $rich_editor_tmpl;
+        }
+    }
+}
+
 1;
 __END__
 

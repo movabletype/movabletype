@@ -673,57 +673,11 @@
 <mt:unless name="editors">
 <mt:if name="rich_editor"><mt:var name="rich_editor_tmpl"><mt:else><mt:include name="include/archetype_editor.tmpl"></mt:if>
 <mt:else>
-<mt:setvarblock name="html_head" append="1">
-<script type="text/javascript">
-Editor = {};
-Editor.strings = {
-    enterLinkAddress: "Enter the link address:",
-    enterTextToLinkTo: "Enter the text to link to:"
-};
-</script>
-</mt:setvarblock>
-<mt:setvarblock name="js_include" append="1">
-<mt:unless name="optimize_ui">
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_manager.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_command.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_command/wysiwyg.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_command/source.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy/single.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy/multi.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy/separator.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor/source.js"></script>
-<mt:else>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor.js"></script>
-</mt:unless>
-<script type="text/javascript">
-MT.EditorManager.updateMap({
-    wysiwyg: '<mt:var name="wysiwyg_editor" escape="js" />',
-    source: '<mt:var name="source_editor" escape="js" />'
-});
-MT.Editor.updateDefaultCommonOptions({
-    content_css_list: ['<mt:var name="content_css" escape="js" />']
-});
-MT.App.setDefaultEditorStrategy('<mt:var name="editor_strategy" escape="js" />');
-</script>
-</mt:setvarblock>
+<mt:include name="include/editor_script.tmpl" id="editor_script_include">
 <mt:setvarblock name="editor_content">
 <textarea id="editor-input-content" name="text" style="display: none"><$mt:var name="text" escape="html"$></textarea>
 <textarea id="editor-input-extended" name="text_more" style="display: none"><$mt:var name="text_more" escape="html"$></textarea>
 </mt:setvarblock>
-<mt:loop name="editors">
-  <mt:var name="__value__" key="templates" setvar="templates" />
-  <mt:var name="__value__" key="extensions" setvar="extensions" />
-
-  <mt:loop name="templates">
-    <mt:var name="tmpl" />
-  </mt:loop>
-  <mt:loop name="extensions">
-    <mt:var name="tmpl" />
-  </mt:loop>
-</mt:loop>
 </mt:unless>
 
 <mt:setvarblock name="html_head" append="1">
