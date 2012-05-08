@@ -82,6 +82,7 @@ function validate (f) {
       <input type="text" name="system_debug_mode" id="system-debug-mode" class="text num" maxlength="3" value="<mt:var name="system_debug_mode" escape="html">" />
     </mt:app:setting>
 
+    <mt:unless name="preflogging_hidden">
     <mtapp:setting
        id="system-performance-logging"
        class="has-option"
@@ -109,6 +110,7 @@ function validate (f) {
         <input type="text" name="system_performance_logging_threshold" id="system-performance-logging-threshold" class="text num" maxlength="3" value="<mt:var name="system_performance_logging_threshold" escape="html">" />
       </mt:app:setting>
     </div>
+    </mt:unless>
 
     <mtapp:setting
        id="track-revisions"

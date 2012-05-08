@@ -1648,6 +1648,7 @@ BEGIN {
             'AdminCGIPath'         => { default => sub { $_[0]->CGIPath } },
             'BaseSitePath'         => undef,
             'HideBaseSitePath'     => { default => 0, },
+            'HidePaformanceLoggingSettings' => { default => 0, },
             'CookieDomain'         => undef,
             'CookiePath'           => undef,
             'MailEncoding'         => { default => 'ISO-8859-1', },
