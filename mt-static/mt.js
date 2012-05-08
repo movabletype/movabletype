@@ -1526,7 +1526,6 @@ MT.App = new Class( App, {
             this.cpeList.forEach( function( cpe ) { cpe.onSubmit() } );
 
         form.submitted = true;
-        this.stopAutoSave();
     },
 
 
@@ -1816,11 +1815,6 @@ MT.App = new Class( App, {
                     areas[ i ].innerHTML = ''
     },
 
-    stopAutoSave: function() {
-        if ( defined( this.autoSaveTimer ) ) {
-            this.autoSaveTimer.stop();
-        }
-    },
 
     setDirtyKeyDown: function( event ) {
         if ( this.dirtyKeyDownTimer )
@@ -1850,9 +1844,7 @@ MT.App = new Class( App, {
 
         if ( defined( this.autoSaveTimer ) )
             return this.autoSaveTimer.reset();
-        if ( !form.submitted ) {
-            this.autoSaveTimer = new Timer( this.getIndirectMethod( "autoSave" ), autoSaveDelay, 1 );
-        }
+        this.autoSaveTimer = new Timer( this.getIndirectMethod( "autoSave" ), autoSaveDelay, 1 );
     },
 
 
