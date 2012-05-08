@@ -15,7 +15,6 @@ use MT::Util qw( remove_html decode_html );
 our @EXPORT = qw( metadata_for_theme file_mgr );
 
 sub metadata_for_theme {
-    my $app   = MT->app;
     my %param = @_;
     my ( $url, $path, $tags, $default_metadata )
         = @param{qw( url path tags metadata )};
@@ -44,12 +43,13 @@ sub metadata_for_theme {
     my $data = {
         name        => $theme{id},
         description => $metadata{description} || q{},
-        title       => $metadata{title} || $app->translate('(Untitled)'),
-        url         => $url,
-        imageSmall  => $thumbnails{thumbnail},
-        imageBig    => $thumbnails{thumbnail_large},
-        layouts     => $metadata{layouts} || q{},
-        sort        => lc( $metadata{title} || $theme{id} || q{} ),
+        title       => $metadata{title}
+            || MT->component('StyleCatcher')->translate('(Untitled)'),
+        url        => $url,
+        imageSmall => $thumbnails{thumbnail},
+        imageBig   => $thumbnails{thumbnail_large},
+        layouts    => $metadata{layouts} || q{},
+        sort       => lc( $metadata{title} || $theme{id} || q{} ),
         tags => $tags || [],
         blogs              => [],
         author             => $metadata{author},
@@ -121,9 +121,8 @@ sub metadata_for_stylesheet {
 
 sub theme_for_url {
     my %param = @_;
-    my ( $url, $path, $tags, $baseurl, $basepath )
-        = @param{qw( url path tags baseurl basepath )};
-    my $app = MT->instance;
+    my ( $url, $path, $baseurl, $basepath )
+        = @param{qw( url path baseurl basepath )};
 
     my %theme;
     if ( $path && -e $path ) {
@@ -131,7 +130,7 @@ sub theme_for_url {
         $theme{id}         = basename( dirname($path) );
     }
     elsif ($url) {
-        my $user_agent = $app->new_ua;
+        my $user_agent = MT->new_ua;
         my $response   = $user_agent->get($url);
         return if !$response->is_success();
         $theme{stylesheet} = $response->content;
@@ -148,7 +147,6 @@ sub theme_for_url {
 sub thumbnails_for_theme {
     my %param = @_;
     my ( $url, $path, $metadata ) = @param{qw( url path metadata )};
-    my $app = MT->instance;
 
     my %thumbnails;
 THUMB: for my $thumb (qw( thumbnail thumbnail_large )) {
@@ -174,7 +172,7 @@ THUMB: for my $thumb (qw( thumbnail thumbnail_large )) {
             my $url_uri = URI->new_abs( $thumb_filename, $url );
             my $thumb_url = $url_uri->as_string();
 
-            my $user_agent = $app->new_ua;
+            my $user_agent = MT->new_ua;
             my $response   = $user_agent->head($thumb_url);
             if ( $response->is_success() ) {
                 $thumbnails{$thumb} = $thumb_url;
@@ -183,7 +181,7 @@ THUMB: for my $thumb (qw( thumbnail thumbnail_large )) {
 
         # Use plugin's default thumbnail if necessary.
         $thumbnails{$thumb}
-            ||= $app->static_path
+            ||= MT->static_path
             . 'plugins/StyleCatcher/'
             . 'images/'
             . $thumb_filename;
@@ -193,10 +191,9 @@ THUMB: for my $thumb (qw( thumbnail thumbnail_large )) {
 }
 
 sub file_mgr {
-    my $app = MT->instance;
     require MT::FileMgr;
     my $filemgr = MT::FileMgr->new('Local')
-        or return $app->error( MT::FileMgr->errstr );
+        or die MT::FileMgr->errstr;
     $filemgr;
 }
 
