@@ -60,7 +60,7 @@ function validate (f) {
 /* ]]> */
 </script>
 
-<form action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">
+<form id="sys_conf" action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">
   <input type="hidden" name="__mode" value="save_cfg_system_general" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
@@ -117,6 +117,20 @@ function validate (f) {
       <input type="checkbox" name="track_revisions" id="track-revisions" <mt:if name="track_revisions"> checked="checked"</mt:if> /> <label for="track_revisions"><__trans phrase="Track revision history"></label>
     </mtapp:setting>
 </mtapp:settinggroup>
+
+<mt:unless name="sitepath_limit_hidden">
+<h2><__trans phrase="Blog-path Limitation"></h2>
+<mtapp:settinggroup id="system-blog-sitepath-limit">
+    <mtapp:setting
+       id="sitepath-limit"
+       label="<__trans phrase="Blog Site Path Limitation">"
+       hint="<__trans phrase="Allow blogs to be placed only under this directory">"
+       show_hint="1">
+      <input type="text" name="sitepath_limit" id="sitepath-limit" class="text med absolute-site_path"<mt:if name="sitepath_limit"> value="<mt:var name="sitepath_limit" escape="html">"</mt:if> />
+    </mt:app:setting>
+</mtapp:settinggroup>
+</mt:unless>
+
 
 <h2><__trans phrase="System-wide Feedback Controls"></h2>
 <mtapp:settinggroup id="system-feedback-controls">
@@ -245,9 +259,31 @@ function validate (f) {
         jQuery('#test-email-dialog').dialog('open');
         return false;
     });
+
+    function is_valid_absolute_path(path_) {
+        if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
+            return true;
+        }
+        return false;
+    }
+
     jQuery('input#system_performance_logging').click(function() {
         jQuery('div#system_performance_logging_prefs').toggleClass('hidden');
     });
+    jQuery.mtValidateAddRules({
+        '.absolute-site_path': function ($e) {
+            if ($e.val().length == 0) return 1;
+            return is_valid_absolute_path($e.val());
+        },
+    });
+
+    jQuery.mtValidateAddMessages({
+        '.absolute-site_path': '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
+    });
+    jQuery('#sys_conf').submit( function () {
+        if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') ) return false;
+    });
+
 </mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">

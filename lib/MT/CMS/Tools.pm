@@ -558,6 +558,8 @@ sub cfg_system_general {
         = $cfg->FailedLoginExpirationFrequency;
     ( $param{lockout_ip_address_whitelist} = $cfg->LockoutIPWhitelist || '' )
         =~ s/,/\n/g;
+    $param{sitepath_limit}        = $cfg->BaseSitePath;
+    $param{sitepath_limit_hidden} = $cfg->HideBaseSitePath;
 
     $param{saved}        = $app->param('saved');
     $param{screen_class} = "settings-screen system-feedback-settings";
@@ -628,6 +630,20 @@ sub save_cfg_system_general {
     $app->config( 'PerformanceLoggingThreshold',
         $app->param('system_performance_logging_threshold'), 1 )
         if ( $app->param('system_performance_logging_threshold') =~ /\d+/ );
+
+    if (not $cfg->HideBaseSitePath) {
+        if (not $app->param('sitepath_limit')) {
+            $app->config( 'BaseSitePath', undef, 1 );
+        }
+        elsif (File::Spec->file_name_is_absolute($app->param('sitepath_limit')) &&
+            -d $app->param('sitepath_limit')) 
+        {
+            $app->config( 'BaseSitePath', $app->param('sitepath_limit'), 1 );
+        }
+        else {
+            return $app->errtrans("Invalid SitePath: Should be valid and absolute");
+        }
+    }
 
     # construct the message to the activity log
 
