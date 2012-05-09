@@ -191,6 +191,17 @@ sub save {
                     @$names;
             }
         }
+        if ($values{site_path} and 
+            $app->config->BaseSitePath and 
+            ( 0 != index( $values{site_path}, $app->config->BaseSitePath )))
+        {
+            return $app->errtrans("Website root must be under the set root");
+        }
+        if ($values{site_path} 
+            and not File::Spec->file_name_is_absolute($values{site_path}) )
+        {
+            return $app->errtrans("Invalid request.");
+        }
     }
 
     if ( $type eq 'author' ) {
