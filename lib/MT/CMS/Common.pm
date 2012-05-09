@@ -741,6 +741,19 @@ sub edit {
     $param{search_label} ||= $class->class_label;
     $param{screen_id}    ||= "edit-$type";
     $param{screen_class} .= " edit-$type";
+
+    # If this object came from non core component,
+    # set component for template loading
+    my @compo = MT::Component->select;
+    my $component;
+    foreach my $c ( @compo ) {
+        my $r = $c->registry( 'object_types' => $type );
+        if ( $r ) {
+            $component = $c->id;
+            last;
+        }
+    }
+    local $app->{component} = $component if $component;
     return $app->load_tmpl( $tmpl_file, \%param );
 }
 
@@ -773,14 +786,14 @@ sub list {
     } MT::Component->select;
 
     my @list_headers;
+    my $core_include = File::Spec->catfile(
+        MT->config->TemplatePath, $app->{template_dir},
+        'listing',                $type . '_list_header.tmpl' );
     push @list_headers,
         {
-        filename => File::Spec->catfile(
-            MT->config->TemplatePath, $app->{template_dir},
-            'listing',                $type . '_list_header.tmpl'
-        ),
+        filename => $core_include,
         component => 'Core'
-        };
+    } if -e $core_include;
 
     for my $c (@list_components) {
         my $f = File::Spec->catfile( $c->path, 'tmpl', 'listing',
@@ -1157,7 +1170,22 @@ sub list {
         $param{search_label} = MT->translate('Entries');
     }
 
-    my $template = $screen_settings->{template} || 'list_common.tmpl';
+    my $template = $screen_settings->{template};
+    my $component;
+    if ( $template ) {
+        # If this object came from non core component,
+        # set component for template loading
+        my @compo = MT::Component->select;
+        foreach my $c ( @compo ) {
+            my $r = $c->registry( 'object_types' => $type );
+            if ( $r ) {
+                $component = $c->id;
+                last;
+            }
+        }
+    } else {
+        $template = 'list_common.tmpl';
+    }
 
     my $feed_link = $screen_settings->{feed_link};
     $feed_link = $feed_link->($app)
@@ -1186,6 +1214,7 @@ sub list {
         }
         if $MT::DebugMode;
 
+    local $app->{component} = $component if $component;
     my $tmpl = $app->load_tmpl( $template, \%param )
         or return;
     $app->run_callbacks( 'list_template_param.' . $type,

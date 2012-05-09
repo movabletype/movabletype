@@ -3020,9 +3020,12 @@ sub run {
             $app->pre_run;
             foreach my $code (@handlers) {
 
+                my $local_component;
                 if ( ref $code eq 'HASH' ) {
                     my $meth_info = $code;
                     $code = $meth_info->{code} || $meth_info->{handler};
+                    $local_component = $meth_info->{component}
+                        if $meth_info->{component};
 
                     my $set 
                         = $meth_info->{permission}
@@ -3061,6 +3064,8 @@ sub run {
                     my @forward_params = @{ $app->{forward_params} }
                         if $app->{forward_params};
                     $app->{forward_params} = undef;
+                    local $app->{component} = $local_component
+                        if $local_component;
                     my $content = $code->( $app, @forward_params );
                     $app->response_content($content)
                         if defined $content;
@@ -3201,15 +3206,33 @@ sub handlers_for_mode {
 
     $code ||= $app->{vtbl}{$mode};
 
-    if ( $code && ref $code eq 'HASH' && $code->{condition} ) {
-        my $cond = $code->{condition};
-        if ( !ref($cond) ) {
-            $cond = $code->{condition} = $app->handler_to_coderef($cond);
-        }
-        return undef unless $cond->($app);
-    }
+    return undef unless $code;
 
-    return $code;
+    my @code;
+    @code = ref( $code ) eq 'ARRAY' ? @$code : ( $code );
+
+    foreach my $hdlr ( @code ) {
+        if ( $hdlr && ref $hdlr eq 'HASH' ) {
+            if ( $hdlr->{condition} ) {
+                my $cond = $hdlr->{condition};
+                if ( !ref($cond) ) {
+                    $cond = $hdlr->{condition} = $app->handler_to_coderef($cond);
+                }
+                return undef unless $cond->($app);
+            }
+
+            my $handler = $hdlr->{code} || $hdlr->{handler} || undef;
+            if ( $handler && $handler !~ m/->/ ) {
+                $hdlr->{component} = $1
+                    if $hdlr->{code} =~ m/^\$?(\w+)::/;
+            }
+        } else {
+            if ( $hdlr =~ m/^\$?(\w+)::/ ) {
+                $hdlr = { code => $hdlr, component => $1 };
+            }
+        }
+    }
+    return \@code;
 }
 
 sub mode {

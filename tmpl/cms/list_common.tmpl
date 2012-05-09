@@ -31,7 +31,9 @@
 </mt:if></mt:setvarblock>
 
 <mt:loop name="list_headers">
-  <mt:include name="$filename" component="$component">
+  <mt:if name="filename">
+    <mt:include name="$filename" component="$component">
+  </mt:if>
 </mt:loop>
 
 <mt:setvarblock name="system_msg" append="1">
