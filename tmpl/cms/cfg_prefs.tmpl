@@ -242,14 +242,14 @@ function setLicense() {
       <div class="relative-site_path content-path">
         <span class="website-path"><mt:var name="website_path" encode_html="1"></span><span class="extra-path"><input type="text" name="site_path" id="site_path" value="<mt:if name="is_blog"><mt:unless name="site_path_absolute"><mt:var name="site_path" escape="html" default="$suggested_site_path"></mt:unless><mt:else><mt:var name="site_path" escape="html" default="$suggested_site_path"></mt:if>" class="<mt:if name="is_blog"> blog-path-text path<mt:else> mt-edit-field website-path-field required</mt:if> hide-input" /></span>
       </div>
-    <mt:if name="is_blog">
+    <mt:if name="is_blog"><mt:unless name="sitepth_limited">
       <div class="absolute-site_path content-path">
         <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" size="50" class="text blog-path-text hide-input" />
       </div>
       <div class="use-absolute option">
         <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
       </div>
-    </mt:if>
+    </mt:unless></mt:if>
       <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none"><__trans phrase="Warning: Changing the [_1] root requires a complete publish of your [_1]." params="<mt:var name="object_label" capitalize="1">"></p>
 
       <div class="hint relative-site_path-hint">
@@ -327,12 +327,14 @@ function setLicense() {
         <div class="relative-site_path content-path">
           <span class="website-path"><mt:var name="website_path" encode_html="1"></span><span class="extra-path"><input type="text" name="archive_path" id="archive_path" value="<mt:unless name="archive_path_absolute"><mt:var name="archive_path" escape="html"></mt:unless>" class="blog-path-text blog-path-text path<mt:unless name="enable_archive_paths"> show-input</mt:unless> required" /></span>
         </div>
+        <mt:unless name="sitepth_limited">
         <div class="absolute-site_path content-path">
           <input type="text" name="archive_path_absolute" id="archive_path_absolute" value="<mt:if name="archive_path_absolute"><mt:var name="archive_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="blog-path-text<mt:unless name="enable_archive_paths"> show-input</mt:unless>" />
         </div>
         <div class="use-absolute option">
           <input type="checkbox" name="use_absolute_archive" id="use_absolute_archive" value="1"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
         </div>
+      </mt:unless>
         <p class="alert-warning-inline icon-left icon-warning" id="archive_path-warning" style="display: none"><__trans phrase="Warning: Changing the archive path can result in breaking all the links in your blog."></p>
         <div class="hint relative-site_path-hint">
           <__trans phrase="The path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog">
