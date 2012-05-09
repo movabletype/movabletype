@@ -746,9 +746,9 @@ sub edit {
     # set component for template loading
     my @compo = MT::Component->select;
     my $component;
-    foreach my $c ( @compo ) {
+    foreach my $c (@compo) {
         my $r = $c->registry( 'object_types' => $type );
-        if ( $r ) {
+        if ($r) {
             $component = $c->id;
             last;
         }
@@ -786,14 +786,15 @@ sub list {
     } MT::Component->select;
 
     my @list_headers;
-    my $core_include = File::Spec->catfile(
-        MT->config->TemplatePath, $app->{template_dir},
-        'listing',                $type . '_list_header.tmpl' );
+    my $core_include
+        = File::Spec->catfile( MT->config->TemplatePath, $app->{template_dir},
+        'listing', $type . '_list_header.tmpl' );
     push @list_headers,
         {
-        filename => $core_include,
+        filename  => $core_include,
         component => 'Core'
-    } if -e $core_include;
+        }
+        if -e $core_include;
 
     for my $c (@list_components) {
         my $f = File::Spec->catfile( $c->path, 'tmpl', 'listing',
@@ -997,6 +998,7 @@ sub list {
             : scalar %cols ? $cols{$id}
             : $disp eq 'default' ? 1
             :                      0;
+
         my $force   = $disp eq 'force'   ? 1 : 0;
         my $default = $disp eq 'default' ? 1 : 0;
         my @subfields;
@@ -1006,9 +1008,11 @@ sub list {
                 my $sdisp = $sub->{display} || 'optional';
                 push @subfields,
                     {
-                    display =>
-                        ( $cols{ $id . '.' . $sub->{class} } || $sdisp ) eq
-                        'default',
+                      display => $sdisp eq 'force' ? 1
+                    : $sdisp eq 'none' ? 0
+                    : scalar %cols ? $cols{ $id . '.' . $sub->{class} }
+                    : $sdisp eq 'default' ? 1
+                    : 0,
                     class      => $sub->{class},
                     label      => $app->translate( $sub->{label} ),
                     is_default => $sdisp eq 'default' ? 1 : 0,
@@ -1172,18 +1176,20 @@ sub list {
 
     my $template = $screen_settings->{template};
     my $component;
-    if ( $template ) {
+    if ($template) {
+
         # If this object came from non core component,
         # set component for template loading
         my @compo = MT::Component->select;
-        foreach my $c ( @compo ) {
+        foreach my $c (@compo) {
             my $r = $c->registry( 'object_types' => $type );
-            if ( $r ) {
+            if ($r) {
                 $component = $c->id;
                 last;
             }
         }
-    } else {
+    }
+    else {
         $template = 'list_common.tmpl';
     }
 
@@ -1749,7 +1755,8 @@ sub delete {
         }
         elsif ( $type eq 'author' ) {
             $app->run_callbacks( 'cms_delete_ext_author_filter',
-                $app, $obj, \%return_arg) || return;
+                $app, $obj, \%return_arg )
+                || return;
         }
         elsif ( $type eq 'website' ) {
             my $blog_class = $app->model('blog');
