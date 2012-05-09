@@ -273,17 +273,19 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
 
         var resizeTo = ed.theme.resizeTo;
         ed.theme.resizeTo = function(width, height, store) {
-            var base = adapter.$editorTextarea.data('base-height');
-            if (base) {
-                adapter.$editorTextarea.height(base+height);
-                if (store) {
-                    adapter.$editorTextarea
-                        .data('base-height', base+height);
-                }
-            }
-            else {
+            if (ed.getParam('fullscreen_is_enabled')) {
                 adapter.$editorTextarea.width(width);
                 adapter.$editorTextarea.height(height);
+            }
+            else {
+                var base = adapter.$editorTextarea.data('base-height');
+                if (base) {
+                    adapter.$editorTextarea.height(base+height);
+                    if (store) {
+                        adapter.$editorTextarea
+                            .data('base-height', base+height);
+                    }
+                }
             }
             resizeTo.apply(ed.theme, arguments);
         };
