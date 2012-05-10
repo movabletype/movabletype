@@ -15,6 +15,7 @@ MT.Editor.Source = function(id) {
     this.textarea = this.$textarea.get(0);
     this.range = null;
 
+    var focused = false;
     this.$textarea
         .keydown(function() {
             // Save the position of cursor for the insertion of asset. (IE)
@@ -26,6 +27,18 @@ MT.Editor.Source = function(id) {
         })
         .mouseup(function() {
             editor.saveSelection();
+        })
+        .focus(function() {
+            focused = true;
+        })
+        .blur(function() {
+            focused = false;
+        });
+
+        $(document).bind('touchend', function() {
+            if (focused) {
+                editor.saveSelection();
+            }
         });
 };
 $.extend(MT.Editor.Source, MT.Editor, {
