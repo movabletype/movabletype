@@ -16,7 +16,7 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
     config: {
         mode: "exact",
 
-        plugins: "lists,style,table,inlinepopups,media,contextmenu,paste,fullscreen,xhtmlxtras,mt",
+        plugins: "lists,style,table,inlinepopups,media,paste,fullscreen,xhtmlxtras,mt",
 
         language: $('html').attr('lang'),
 
