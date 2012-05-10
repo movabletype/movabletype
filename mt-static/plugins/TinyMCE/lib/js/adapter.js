@@ -143,12 +143,14 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             this.$editorIframe.hide();
             this.$editorPathRow.hide();
             this.$editorTextarea.show();
+            this.editor = this.source;
         }
         else {
             this.tinymce.setContent(this.source.getContent());
             this.$editorTextarea.hide();
             this.$editorIframe.show();
             this.$editorPathRow.show();
+            this.editor = this.tinymce;
         }
 
         this._fixFullscreenEditorSize();
@@ -257,6 +259,8 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                 .hide();
             adapter.$editorPathRow = $('#mce_fullscreen_path_row');
             adapter._fixFullscreenEditorSize(ed);
+
+            $('#mce_fullscreen').data('mt-editor', adapter);
         }
 
         adapter.tinymce = adapter.editor = ed;
