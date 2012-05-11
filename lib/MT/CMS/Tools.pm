@@ -1620,6 +1620,7 @@ sub adjust_sitepath {
     my $asset_class = $app->model('asset');
     my %error_assets;
     my %blogs_meta;
+    my $path_limit = $app->config->BaseSitePath;
     my @p = $q->param;
     foreach my $p (@p) {
         next unless $p =~ /^site_path_(\d+)/;
@@ -1643,6 +1644,12 @@ sub adjust_sitepath {
 
         if ($use_absolute) {
             $site_path = scalar $q->param("site_path_absolute_$id") || q();
+            if ($path_limit and (0 != index($site_path, $path_limit))) {
+                $site_path = $path_limit;
+            }
+        }
+        elsif ($site_path =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)!) {
+            $site_path = $path_limit;
         }
         $blog->site_path($site_path);
 
@@ -1688,6 +1695,12 @@ sub adjust_sitepath {
 
         if ($use_absolute_archive) {
             $archive_path = $archive_path_absolute;
+            if ($path_limit and (0 != index($archive_path, $path_limit))) {
+                $archive_path = $path_limit;
+            }
+        }
+        elsif ($archive_path =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)!) {
+            $archive_path = $path_limit;
         }
         $blog->archive_path($archive_path);
 
@@ -2175,6 +2188,7 @@ sub dialog_adjust_sitepath {
     $param->{website_loop}   = \@website_loop if @website_loop;
     $param->{all_websites}   = \@all_websites if @all_websites;
     $param->{path_separator} = MT::Util->dir_separator;
+    $param->{sitepth_limited}= $app->config->BaseSitePath;
     # There is a danger that the asset_id list will ballon and make a request
     # URL that is longer then allowed. This function have two ways to be called:
     # 1. As open-dialog command, from the restore window, and with GET 
