@@ -381,7 +381,7 @@ sub init_website {
     if ( !$app->param('finish') ) {
 
         # suggest site_path & site_url
-        my $path = $app->document_root();
+        my $path = $param{'sitepth_limited'} || $app->document_root();
         $param{website_path} = File::Spec->catdir($path);
 
         my $url = $app->base . '/';
