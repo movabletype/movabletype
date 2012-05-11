@@ -188,11 +188,23 @@ sub load_file {
 
     my $ok = 0;
     my @paths = @{ $tmpl->{include_path} || [] };
+
+    # Add plugin's load path for check
+    foreach my $sig ( keys %MT::Plugins ) {
+        my $obj = $MT::Plugins{$sig}{object};
+        next if !$obj || ( $obj && !$obj->isa('MT::Plugin') );
+
+        my $full_path = $obj->{full_path};
+        push @paths, File::Spec->catdir( $full_path, 'tmpl' )
+            if -d $full_path;
+    }
+
     foreach my $path (@paths) {
         my $real_path = MT::Util::realpath($path);
         next unless -d $real_path;
         $ok = 1, last if $real_file =~ /^\Q$real_path\E/;
     }
+
     die MT->translate(
         "Template load error: [_1]",
         MT->translate(

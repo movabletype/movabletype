@@ -324,6 +324,7 @@ sub construct {
     sub model {
         my $pkg = shift;
         my ($k) = @_;
+
         $object_types{$k} = $_[1] if scalar @_ > 1;
         return $object_types{$k} if exists $object_types{$k};
 
@@ -2181,15 +2182,6 @@ sub template_paths {
             File::Spec->catdir( $addon->{path}, 'tmpl', $mt->{template_dir} )
             if $mt->{template_dir};
         push @paths, File::Spec->catdir( $addon->{path}, 'tmpl' );
-    }
-
-    foreach my $sig ( keys %MT::Plugins ) {
-        my $obj = $MT::Plugins{$sig}{object};
-        next if !$obj || ( $obj && !$obj->isa('MT::Plugin') );
-
-        my $full_path = $obj->{full_path};
-        push @paths, File::Spec->catdir( $full_path, 'tmpl' )
-            if -d $full_path;
     }
 
     my $path = $mt->config->TemplatePath;
