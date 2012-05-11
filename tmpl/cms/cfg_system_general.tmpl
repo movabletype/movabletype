@@ -121,12 +121,12 @@ function validate (f) {
 </mtapp:settinggroup>
 
 <mt:unless name="sitepath_limit_hidden">
-<h2><__trans phrase="Blog-path Limitation"></h2>
+<h2><__trans phrase="Site Path Limitation"></h2>
 <mtapp:settinggroup id="system-blog-sitepath-limit">
     <mtapp:setting
        id="sitepath-limit"
-       label="<__trans phrase="Blog Site Path Limitation">"
-       hint="<__trans phrase="Allow blogs to be placed only under this directory">"
+       label="<__trans phrase="Base Site Path">"
+       hint="<__trans phrase="Allow sites to be placed only under this directory">"
        show_hint="1">
       <input type="text" name="sitepath_limit" id="sitepath-limit" class="text med absolute-site_path"<mt:if name="sitepath_limit"> value="<mt:var name="sitepath_limit" escape="html">"</mt:if> />
     </mt:app:setting>
