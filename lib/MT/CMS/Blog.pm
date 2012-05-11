@@ -2194,10 +2194,12 @@ sub cfg_prefs_save {
             $blog->archive_url("$subdomain/::/$path");
         }
         $blog->site_path( $app->param('site_path_absolute') )
-            if $app->param('use_absolute')
+            if ! $app->config->BaseSitePath
+                && $app->param('use_absolute')
                 && $app->param('site_path_absolute');
         $blog->archive_path( $app->param('archive_path_absolute') )
-            if $app->param('enable_archive_paths')
+            if ! $app->config->BaseSitePath
+                && $app->param('enable_archive_paths')
                 && $app->param('use_absolute_archive')
                 && $app->param('archive_path_absolute');
     }
@@ -2886,7 +2888,11 @@ sub clone {
             }
         }
     }
-
+    $param->{'sitepth_limited'} = $app->config->BaseSitePath;
+    if ($param->{'sitepth_limited'}) {
+        $param->{'use_absolute'}         = 0;
+        $param->{'use_absolute_archive'} = 0;
+    }
     $param = _has_valid_form( $app, $blog, $param );
 
     if ( $blog_id && $app->param('clone') && $param->{'isValidForm'} ) {
@@ -3015,7 +3021,7 @@ HTML
         );
 
         $new_blog->site_path(
-              $param->{'use_absolute'}
+              $param->{'use_absolute'} && !$app->config->BaseSitePath
             ? $param->{'site_path_absolute'}
             : $param->{'site_path'}
         );
@@ -3033,7 +3039,7 @@ HTML
 
         if ( $param->{enable_archive_paths} ) {
             $new_blog->archive_path(
-                  $param->{'use_absolute_archive'}
+                  $param->{'use_absolute_archive'} && !$app->config->BaseSitePath
                 ? $param->{'archive_path_absolute'}
                 : $param->{'archive_path'}
             );
