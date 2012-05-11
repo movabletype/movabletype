@@ -2158,11 +2158,16 @@ sub dialog_adjust_sitepath {
             push @blogs_loop, $params;
         }
         else {
+            my $sitepath = $blog->column('site_path');
+            my $limited = $app->config->BaseSitePath;
+            if ($limited and ( 0 != index($sitepath, $limited) ) ) {
+                $sitepath = $limited;
+            }
             push @website_loop,
                 {
                 name          => $blog->name,
                 id            => $blog->id,
-                old_site_path => $blog->column('site_path'),
+                old_site_path => $sitepath,
                 old_site_url  => $blog->column('site_url'),
                 };
         }
