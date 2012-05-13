@@ -80,6 +80,8 @@
         var display = mixer.addSelectedDisplay( "display-details-content" );
         display.entryProperties['template_set'] = 'Template Set';
         mixer.onselect = selectDesign;
+        mixer.imageFallbackSmall  = '<mt:var name="static_uri">plugins/StyleCatcher/images/thumbnail.gif';
+        mixer.imageFallbackBig    = '<mt:var name="static_uri">plugins/StyleCatcher/images/thumbnail-large.gif';
     }
 
     function initCategories() {

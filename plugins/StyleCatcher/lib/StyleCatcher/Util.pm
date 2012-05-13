@@ -163,28 +163,14 @@ THUMB: for my $thumb (qw( thumbnail thumbnail_large )) {
                 = File::Spec->splitpath($path);
             my $thumb_path
                 = File::Spec->catpath( $volume, $dir, $thumb_filename );
-            if ( -e $thumb_path ) {
-                my $url_uri = URI->new_abs( $thumb_filename, $url );
-                $thumbnails{$thumb} = $url_uri->as_string();
-            }
+            my $url_uri = URI->new_abs( $thumb_filename, $url );
+            $thumbnails{$thumb} = $url_uri->as_string();
         }
         elsif ($url) {
             my $url_uri = URI->new_abs( $thumb_filename, $url );
             my $thumb_url = $url_uri->as_string();
-
-            my $user_agent = MT->new_ua;
-            my $response   = $user_agent->head($thumb_url);
-            if ( $response->is_success() ) {
-                $thumbnails{$thumb} = $thumb_url;
-            }
+            $thumbnails{$thumb} = $thumb_url;
         }
-
-        # Use plugin's default thumbnail if necessary.
-        $thumbnails{$thumb}
-            ||= MT->static_path
-            . 'plugins/StyleCatcher/'
-            . 'images/'
-            . $thumb_filename;
     }
 
     return %thumbnails;
