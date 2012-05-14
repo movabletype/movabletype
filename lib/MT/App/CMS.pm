@@ -3881,7 +3881,7 @@ sub show_error {
     $param = { error => $param } unless ref($param) && ref($param) eq 'HASH';
     my $method_info = MT->request('method_info') || {};
     my $mode = $app->mode;
-    if ( $method_info->{app_mode} && $method_info->{app_mode} eq 'JSON' ) {
+    if ( $app->param('xhr') or (($method_info->{app_mode} || '') eq 'JSON' )) {
         return $app->json_error( $param->{error}, $param->{status} );
     }
     elsif ( $mode eq 'rebuild' ) {
@@ -3945,7 +3945,7 @@ sub show_error {
 sub show_login {
     my $app = shift;
     my $method_info = MT->request('method_info') || {};
-    if ( $method_info->{app_mode} && $method_info->{app_mode} eq 'JSON' ) {
+    if ( $app->param('xhr') or (($method_info->{app_mode} || '') eq 'JSON' )) {
         $app->{login_again} = 1;
         return $app->show_error( { error => 'Unauthorized', status => 401 } );
     }
