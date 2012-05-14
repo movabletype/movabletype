@@ -12,7 +12,8 @@ use Getopt::Long;
 GetOptions( "old:s" => \my($old_config),
             "new:s" => \my($new_config));
 
-use lib qw( lib extlib );
+use FindBin;
+use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
 use File::Spec;
 use MT;
 
