@@ -50,7 +50,7 @@ sub _hdlr_archive_set {
     my $blog = $ctx->stash('blog');
     my $at = $args->{type} || $args->{archive_type} || $blog->archive_type;
     return '' if !$at || $at eq 'None';
-    my @at      = split /,/, $at;
+    my @at      = split /\s*,\s*/, $at;
     my $res     = '';
     my $tokens  = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
