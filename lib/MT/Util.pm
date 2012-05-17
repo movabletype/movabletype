@@ -2795,6 +2795,22 @@ use a language-specific default format; if a language-specific format is not
 defined, or if I<$blog> is unspecified, the default format used is
 C<%B %e, %Y %I:%M %p>.
 
+Formating rules:
+%Y - Year, 4 digits. %y - year, 2 digits.
+%m - Month, 2 digits. %B - month name, translated. %b - month name, translated and shortend to 3 letters
+%d - month day, 2 digits. %e - month day, 1 or 2 digits
+%H - hour, 24 hours style, 2 digits. %k - hour, 24 hours style, 1 or 2 digits.
+%I - hour, 12 hours style, 2 digits. %l - hour, 12 hours style, 1 or 2 digits.
+%p - AM or PM
+%M - minutes, 2 digits. %S - seconds, 2 digits.
+%w - Day of the week, 1 digit. %A - day of the week, translated. %a - day of the week, translated and shortened
+%j - Day in the year, 3 digits
+%Z - empty string. %x - localized date. %X - localized time
+
+Special handling: the following combination is localized:
+For Japanese: /%B %Y/, /%B %E,? %Y/i, /%b. %e, %Y/i, /%B %E/i
+For Italian: s/%b %e/%e %b/
+
 =head2 days_in($month, $year)
 
 Returns the number of days in the month I<$month> in the year I<$year>.
