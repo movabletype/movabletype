@@ -31,7 +31,9 @@
 </mt:if></mt:setvarblock>
 
 <mt:loop name="list_headers">
-  <mt:include name="$filename" component="$component">
+  <mt:if name="filename">
+    <mt:include name="$filename" component="$component">
+  </mt:if>
 </mt:loop>
 
 <mt:setvarblock name="system_msg" append="1">
@@ -836,10 +838,12 @@ function renderList(mode, columns, values, limit, page ) {
   jQuery('.indicator, #listing-table-overlay').show();
   jQuery('div.pagination').hide();
   jQuery('#msg-block div.msg-error.filtered-list-msg').remove()
+  // adding random bits to avoid cache in Android.
+  var script_url = '<mt:var name="script_url">?.r=' + Math.random(1);
   jQuery.ajax({
     type: 'POST',
     contentType: 'application/x-www-form-urlencoded; charset=utf-8',
-    url: '<mt:var name="script_url">',
+    url: script_url,
     dataType: 'json',
     data: params,
     success: function(data) {

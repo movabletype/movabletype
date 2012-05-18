@@ -71,7 +71,6 @@ sub view {
     # Load fileinfo by URL
     require MT::Template;
     require MT::PublishOption;
-    local $Data::ObjectDriver::DEBUG = 1;
     my $fi = MT->model('fileinfo')->load(
         {   blog_id => $blog_id,
             url     => \@urls,

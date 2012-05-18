@@ -20,6 +20,16 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
         if ($prefix) {
             if ($prefix == 'this') {
                 $ts = $ctx->stash('current_timestamp');
+                if (!$ts) {
+                    $entry = $ctx->stash('entry');
+                    if ($entry) {
+                        $ts = $entry->entry_authored_on;
+                    } else {
+                        return $ctx->error($ctx->mt->translate(
+                            'You used an [_1] tag without a date context set up.', 
+                            '<MTCalendar month="this">') );
+                    }
+                }
                 $prefix = substr($ts, 0, 6);
             } elseif ($prefix == 'last') {
                 $year = substr($today, 0, 4);

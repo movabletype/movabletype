@@ -164,7 +164,7 @@ the address you provided is correct and belongs to you.',
     'UTC+11' => 'UTC+11 (East Australian Daylight Savings Time)',
     'UTC+10' => 'UTC+10 (East Australian Standard Time)',
 
-    '_POWERED_BY' => 'Powered by <a href="http://www.movabletype.com/" rel="generator"><$MTProductName$></a>',
+    '_POWERED_BY' => 'Powered by <a href="http://www.movabletype.org/"><$MTProductName$></a>',
     '_DISPLAY_OPTIONS_SHOW' => 'Show',
      '_WARNING_DELETE_USER_EUM' => 'Deleting a user is an irrevocable action which creates orphans of the user\'s entries. If you wish to retire a user or remove their access to the system, disabling their account is the recommended course of action. Are you sure you want to delete the selected user(s)? They will be able to re-create themselves if selected user(s) still exist in your external directory.',
      '_WARNING_DELETE_USER' => 'Deleting a user is an irrevocable action which creates orphans of the user\'s entries. If you wish to retire a user or remove their access to the system, disabling their account is the recommended course of action. Are you sure you want to delete the selected user(s)?',

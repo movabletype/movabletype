@@ -87,8 +87,14 @@ sub image_width {
     return $w;
 }
 
+our $computed_thumbnail_cache = undef;
+
 sub has_thumbnail {
-    1;
+    if ( !defined $computed_thumbnail_cache ) {
+        eval { require MT::Image; MT::Image->new or die; };
+        $computed_thumbnail_cache = $@ ? 0 : 1;
+    }
+    $computed_thumbnail_cache;
 }
 
 sub thumbnail_path {
@@ -109,7 +115,7 @@ sub thumbnail_file {
     return undef unless $fmgr;
 
     my $file_path = $asset->file_path;
-    return undef unless $fmgr->exists($file_path);
+    return undef unless $fmgr->file_size($file_path);
 
     require MT::Util;
     my $asset_cache_path = $asset->_make_cache_path( $param{Path} );
@@ -260,7 +266,7 @@ sub thumbnail_filename {
     $file =~ s/\.\w+$//;
     my $base = File::Basename::basename($file);
     my $id   = $asset->id;
-    my $ext  = lc( $param{Type} ) || $asset->file_ext || '';
+    my $ext  = lc( $param{Type} || '' ) || $asset->file_ext || '';
     $ext = '.' . $ext;
     $format =~ s/%w/$width/g;
     $format =~ s/%h/$height/g;

@@ -36,6 +36,9 @@ function smarty_block_mtsethashvar($args, $content, &$ctx, &$repeat) {
             $ctx->stash('__inside_set_hashvar', $parent_hash);
         }
         else {
+            if (array_key_exists('__inside_set_hashvar', $ctx->__stash))
+                unset($ctx->__stash['__inside_set_hashvar']);
+
             if (is_array($vars)) {
                 $vars[$name] = $hash;
             } else {

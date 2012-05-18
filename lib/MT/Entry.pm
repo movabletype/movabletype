@@ -1682,6 +1682,10 @@ sub is_entry {
     return $class->class eq 'entry' ? 1 : 0;
 }
 
+sub terms_for_tags {
+    return { status => MT::Entry::RELEASE() };
+}
+
 #trans('Draft')
 #trans('Review')
 #trans('Future')
