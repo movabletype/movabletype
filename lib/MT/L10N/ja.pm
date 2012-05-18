@@ -301,6 +301,7 @@ use vars qw( @ISA %Lexicon );
 	'Your comment has been received and held for approval by the blog owner.' => 'コメントは現在承認されるまで公開を保留されています。',
 	'Comment Submission Error' => 'コメント投稿エラー',
 	'Your comment submission failed for the following reasons: [_1]' => 'コメントを投稿できませんでした。エラー: [_1]',
+	'Return to <a href="[_1]">your comment</a>.' => '<a href="[_1]">元のコメント</a>に戻る',
 	'Return to the <a href="[_1]">original entry</a>.' => '<a href="[_1]">元の記事</a>に戻る',
 
 ## default_templates/comment_throttle.mtml
@@ -853,13 +854,15 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/App/Viewer.pm
 	'Loading blog with ID [_1] failed' => 'ブログ (ID：[_1]) の読み込みに失敗しました',
+	'File not found' => 'ファイルが見つかりません',
 	'Template publishing failed: [_1]' => 'テンプレートの出力に失敗しました: [_1]',
-	'Invalid date spec' => '日付の指定が不正です',
-	'Can\'t load templatemap' => 'テンプレートマップを読み込めませんでした',
+	'Unknown archive type: [_1]' => 'アーカイブタイプが不明です: [_1]',
 	'Can\'t load template [_1]' => 'テンプレートを読み込めませんでした [_1]',
 	'Archive publishing failed: [_1]' => 'アーカイブの公開に失敗しました: [_1]',
+	'Invalid entry ID [_1]' => 'エントリーIDが不正です: [_1]',
 	'Entry [_1] is not published' => 'ブログ記事 [_1] は公開されていません',
 	'Invalid category ID \'[_1]\'' => 'カテゴリのIDが不正です: [_1]',
+	'Invalid author ID \'[_1]\'' => 'ユーザーIDが不正です: [_1]',
 
 ## lib/MT/App/Wizard.pm
 	'The [_1] driver is required to use [_2].' => '[_2]を使うには[_1]のドライバが必要です。',
@@ -1457,6 +1460,7 @@ use vars qw( @ISA %Lexicon );
 	'sample, entry, preview' => 'サンプル、ブログ記事、プレビュー',
 	'Populating blog with default templates failed: [_1]' => 'ブログに既定のテンプレートを設定できませんでした: [_1]',
 	'Setting up mappings failed: [_1]' => 'テンプレートマップを作成できませんでした: [_1]',
+	'Can\'t load templatemap' => 'テンプレートマップをロードできませんでした',
 	'Saving map failed: [_1]' => 'テンプレートマップを保存できませんでした: [_1]',
 	'You should not be able to enter 0 as the time.' => '時間に0を入れることはできません。',
 	'You must select at least one event checkbox.' => '少なくとも1つのイベントにチェックを入れてください。',
@@ -1504,7 +1508,7 @@ use vars qw( @ISA %Lexicon );
 	'Please confirm your new password' => '新しいパスワードを確認してください。',
 	'Passwords do not match' => 'パスワードが一致していません。',
 	'That action ([_1]) is apparently not implemented!' => 'アクション([_1])が実装されていません。',
-	'Error occured while act [_1]: [_2]' => '[_1]の実行中にエラーが発生しました: [_2]',
+	'Error occurred while attempting to [_1]: [_2]' => '[_1]の実行中にエラーが発生しました: [_2]',
 	'You don\'t have a system email address configured.  Please set this first, save it, then try the test email again.' => 'システムメールアドレスの設定がされていません。最初に設定を保存してから、再度テストメール送信を行ってください。',
 	'Please enter a valid email address' => '正しいメールアドレスを入力してください',
 	'Test email from Movable Type' => 'Movable Typeからのテストメール',
@@ -1684,7 +1688,7 @@ use vars qw( @ISA %Lexicon );
 	'The physical file path for your SQLite database. ' => 'SQLiteのデータベースファイルのパス',
 	'[_1] in [_2]: [_3]' => '[_2]に \'[_3]\' を含む[_1]',
 	'option is required' => '条件は必須です。',
-	'Days can\'t include non numeriacal characters.' => '日数には数値を指定してください。',
+	'Days must be a number.' => '日数には数値を指定してください。',
 	'Invalid date.' => '無効な日付フォーマットです。',
 	'[_1] [_2] between [_3] and [_4]' => '[_2]が[_3]から[_4]の期間内の[_1]',
 	'[_1] [_2] since [_3]' => '[_2]が[_3]より後の[_1]',
@@ -1767,6 +1771,7 @@ use vars qw( @ISA %Lexicon );
 	'Remove Temporary Files' => 'テンポラリファイルの削除',
 	'Purge Stale Session Records' => '古いセッションレコードの消去',
 	'Remove expired lockout data' => '古いログインの失敗レコードの消去',
+	'Purge Unused FileInfo Records' => '古いファイル情報レコードの消去',
 	'Manage Website' => 'ウェブサイトの管理',
 	'Manage Blog' => 'ブログの管理',
 	'Manage Website with Blogs' => 'ウェブサイトと所属ブログの管理',
@@ -2132,6 +2137,8 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Template.pm
 	'Template' => 'テンプレート',
 	'File not found: [_1]' => 'ファイルが見つかりません: [_1]',
+	'Template load error: [_1]' => 'テンプレートファイルの読み込みが出来ませんでした: [_1]',
+	'Tried to load the template file from outside of the include path \'[_1]\'' => '許可されない場所からテンプレートファイルを読み込もうとしました。\'[_1]\'',
 	'Error reading file \'[_1]\': [_2]' => 'ファイル: [_1]を読み込めませんでした: [_2]',
 	'Publish error in template \'[_1]\': [_2]' => 'テンプレート「[_1]」の再構築中にエラーが発生しました: [_2]',
 	'Template name must be unique within this [_1].' => 'テンプレート名は[_1]で一意でなければなりません。',
@@ -3855,6 +3862,8 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want to remove this template map?' => 'テンプレートマップを削除してよろしいですか?',
 	'Module Body' => 'モジュール本体',
 	'Template Body' => 'テンプレートの内容',
+	'Syntax highlighting On' => '構文強調表示を有効にする',
+	'Syntax highlighting Off' => '構文強調表示を無効にする',
 	'Template Options' => 'テンプレートの設定',
 	'Output file: <strong>[_1]</strong>' => '出力ファイル: <strong>[_1]</strong>',
 	'Enabled Mappings: [_1]' => 'アーカイブマッピング: [_1]',

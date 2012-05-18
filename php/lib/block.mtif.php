@@ -55,8 +55,9 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
                         }
                     }
                 }
-                if (!isset($val))
+                else {
                     $val = $value;
+                }
             }
         } elseif (isset($args['tag'])) {
             $tag = $args['tag'];

@@ -10,7 +10,7 @@ function smarty_block_mtifmoreresults($args, $content, &$ctx, &$repeat) {
         $limit = $ctx->stash('__pager_limit');
         $count = $ctx->stash('__pager_total_count');
         $offset = $ctx->stash('__pager_offset');
-        if ( $limit && !$offset ) $offset += $limit;
+        if ( $limit && !$offset ) $offset += 0;
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, ( $limit + $offset ) < $count);
     } else {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);

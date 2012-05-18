@@ -161,7 +161,7 @@ sub validate_credentials {
                 }
                 else {
                     $app->errtrans("Invalid request.");
-                    $result = MT::Auth::INVALID_PASSWORD();
+                    $result = MT::Auth::SESSION_EXPIRED();
                 }
             }
             else {

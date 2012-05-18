@@ -43,6 +43,9 @@ use vars qw( @ISA %Lexicon );
 
 ## php/lib/block.mtauthorhaspage.php
 
+## php/lib/block.mtcalendar.php
+	'You used an [_1] tag without a date context set up.' => 'Usó una etiqueta [_1] sin un contexto de fecha configurado.',
+
 ## php/lib/block.mtentries.php
 
 ## php/lib/block.mtif.php
@@ -78,6 +81,9 @@ use vars qw( @ISA %Lexicon );
 
 ## php/lib/function.mtcommentauthor.php
 
+## php/lib/function.mtcommenternamethunk.php
+	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'Esta etiqueta \'[_1]\' está obsoleta. Por favor, en su lugar use \'[_2]\'.', # Translate - New
+
 ## php/lib/function.mtcommentreplytolink.php
 	'Reply' => 'Responder',
 
@@ -90,17 +96,18 @@ use vars qw( @ISA %Lexicon );
 	'\'parent\' modifier cannot be used with \'[_1]\'' => 'el modificador \'parent\' no puede usarse con \'[_1]\'',
 
 ## php/lib/function.mtpasswordvalidation.php
-	'Password should be longer than [_1] characters' => 'La clave debe tener más de [_1] caracteres', # Translate - New
-	'Password should not include your Username' => 'La clave no debe incluir el nombre de usuario', # Translate - New
-	'Password should include letters and numbers' => 'La clave debe incluir letras y números', # Translate - New
-	'Password should include lowercase and uppercase letters' => 'La clave debe incluir letras en mayúsculas y minúsculas', # Translate - New
-	'Password should contain symbols such as #!$%' => 'La clave debe contener símbolos como #!$%', # Translate - New
+	'Password should be longer than [_1] characters' => 'La clave debe tener más de [_1] caracteres',
+	'Password should not include your Username' => 'La clave no debe incluir el nombre de usuario',
+	'Password should include letters and numbers' => 'La clave debe incluir letras y números',
+	'Password should include lowercase and uppercase letters' => 'La clave debe incluir letras en mayúsculas y minúsculas',
+	'Password should contain symbols such as #!$%' => 'La clave debe contener símbolos como #!$%',
+	'You used an [_1] tag without a valid [_2] attribute.' => 'Utilizó una etiqueta [_1] sin un atributo [_2] válido.', # Translate - New
 
 ## php/lib/function.mtpasswordvalidationrule.php
-	'minimum length of [_1]' => 'longitud mínima de [_1]', # Translate - New
-	', uppercase and lowercase letters' => ', letras mayúsculas y minúsculas', # Translate - New
-	', letters and numbers' => ', letras y números', # Translate - New
-	', symbols (such as #!$%)' => ', símbolos (como #!$%)', # Translate - New
+	'minimum length of [_1]' => 'longitud mínima de [_1]',
+	', uppercase and lowercase letters' => ', letras mayúsculas y minúsculas',
+	', letters and numbers' => ', letras y números',
+	', symbols (such as #!$%)' => ', símbolos (como #!$%)',
 
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
@@ -243,7 +250,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] ([_2])' => '[_1] ([_2])',
 
 ## default_templates/banner_footer.mtml
-	'_POWERED_BY' => 'Motor <a href="http://www.movabletype.org/sitees/" rel="generator"><$MTProductName$></a>',
+	'_POWERED_BY' => 'Motor <a href="http://www.movabletype.org/"><$MTProductName$></a>',
 	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'Este blog tiene una <a href="[_1]">Licencia Creative Commons</a>.',
 
 ## default_templates/calendar.mtml
@@ -314,6 +321,7 @@ use vars qw( @ISA %Lexicon );
 	'Your comment has been received and held for approval by the blog owner.' => 'El comentario que envió fue recibido y está retenido para su aprobación por parte del administrador del weblog.',
 	'Comment Submission Error' => 'Error en el envío de comentarios',
 	'Your comment submission failed for the following reasons: [_1]' => 'El envío del comentario falló por alguna de las siguientes razones: [_1]',
+	'Return to <a href="[_1]">your comment</a>.' => 'Regrese a <a href="[_1]">su comentario</a>.', # Translate - New
 	'Return to the <a href="[_1]">original entry</a>.' => 'Volver a la <a href="[_1]">entrada original</a>.',
 
 ## default_templates/comments.mtml
@@ -380,14 +388,14 @@ use vars qw( @ISA %Lexicon );
 	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => 'Respondiendo al <a href="[_1]" onclick="[_2]">comentario de [_3]</a>',
 
 ## default_templates/lockout-ip.mtml
-	'This email is to notify you that an IP address has been locked out.' => 'Este correo es para notificarle que se ha bloqueado una dirección IP.', # Translate - New
-	'IP Address: [_1]' => 'Dirección IP: [_1]', # Translate - New
-	'Recovery: [_1]' => 'Recuperación: [_1]', # Translate - New
+	'This email is to notify you that an IP address has been locked out.' => 'Este correo es para notificarle que se ha bloqueado una dirección IP.',
+	'IP Address: [_1]' => 'Dirección IP: [_1]',
+	'Recovery: [_1]' => 'Recuperación: [_1]',
 
 ## default_templates/lockout-user.mtml
-	'This email is to notify you that a Movable Type user account has been locked out.' => 'Este correo es para notificarle que se ha bloqueado una cuenta de usuario de Movable Type.', # Translate - New
-	'Display Name: [_1]' => 'Nombre: [_1]', # Translate - New
-	'If you want to unlock this user click the link below.' => 'Haga clic en el enlace de abajo si desea desbloquear al usuario', # Translate - New
+	'This email is to notify you that a Movable Type user account has been locked out.' => 'Este correo es para notificarle que se ha bloqueado una cuenta de usuario de Movable Type.',
+	'Display Name: [_1]' => 'Nombre: [_1]',
+	'If you want to unlock this user click the link below.' => 'Haga clic en el enlace de abajo si desea desbloquear al usuario',
 
 ## default_templates/main_index.mtml
 
@@ -607,7 +615,7 @@ use vars qw( @ISA %Lexicon );
 	'Recover Password(s)' => 'Recuperar contraseña/s',
 	'Enable' => 'Activar',
 	'Disable' => 'Desactivar',
-	'Unlock' => 'Desbloquear', # Translate - New
+	'Unlock' => 'Desbloquear',
 	'Remove' => 'Borrar',
 	'Refresh Template(s)' => 'Refrescar plantilla/s',
 	'Move blog(s) ' => 'Trasladar blog(s) ',
@@ -658,6 +666,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid login' => 'Inicio de sesión no válido',
 	'Successfully authenticated but signing up is not allowed.  Please contact system administrator.' => 'La identificación se ha producido con suceso pero la conexión ha sido rechazada.  Por favor contacte el administrador del sistema.',
 	'You need to sign up first.' => 'Primero identifíquese',
+	'The login could not be confirmed because of a database error ([_1])' => 'No se pudo confirmar el acceso debido a un error de la base de datos ([_1])',
 	'Permission denied.' => 'Permiso denegado.',
 	'Login failed: permission denied for user \'[_1]\'' => 'Falló la identificación: permiso denegado al usuario \'[_1]\'',
 	'Login failed: password was wrong for user \'[_1]\'' => 'Falló la identificación: contraseña errónea del usuario \'[_1]\'',
@@ -666,6 +675,8 @@ use vars qw( @ISA %Lexicon );
 	'Signing up is not allowed.' => 'No está permitida la inscripción.',
 	'Movable Type Account Confirmation' => 'Confirmación de cuenta - Movable Type',
 	'System Email Address is not configured.' => 'La dirección de correo del sistema no está configurada.',
+	'Your confirmation have expired. Please register again.' => 'Su confirmación ha caducado. Por favor, regístrese de nuevo.',
+	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">Regresar a la página original.</a>',
 	'Commenter \'[_1]\' (ID:[_2]) has been successfully registered.' => 'El comentarista \'[_1]\' (ID:[_2]) se inscribió con éxito.',
 	'Thanks for the confirmation.  Please sign in to comment.' => 'Gracias por la confirmación. Por favor, identifíquese para comentar.',
 	'[_1] registered to the blog \'[_2]\'' => '[_1] registrado en el blog \'[_2]\'',
@@ -690,13 +701,13 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t load template' => 'No se pudo cargar la plantilla',
 	'Failed comment attempt by pending registrant \'[_1]\'' => 'Falló el intento de comentar por el comentarista pendiente \'[_1]\'',
 	'Registered User' => 'Usuario registrado',
-	'Invalid authentication parameter' => 'Parámetro de autentificación no válido', # Translate - New
 	'The sign-in attempt was not successful; please try again.' => 'El intento de registro no tuvo éxito; por favor, inténtelo de nuevo.',
 	'Can\'t load entry #[_1].' => 'No se pudo cargar la entrada #[_1].',
+	'You are trying to redirect to external resources. If you can trust the site, please click the link: [_1]' => 'Está intentando redireccionar a recursos externos. Si confía en el sitio, por favor, haga clic en el enlace: [_1]', # Translate - New
 	'No entry was specified; perhaps there is a template problem?' => 'No se especificó ninguna entrada; ¿quizás hay un problema con la plantilla?',
 	'Somehow, the entry you tried to comment on does not exist' => 'De alguna manera, la entrada en la que intentó comentar no existe',
 	'Invalid entry ID provided' => 'ID de entrada provisto no válido',
-	'For improved security, please change your password' => 'Para mejorar la seguridad, por favor cambie su contraseña', # Translate - New
+	'For improved security, please change your password' => 'Para mejorar la seguridad, por favor cambie su contraseña',
 	'All required fields must have valid values.' => 'Todos los campos obligatorios deben tener valores válidos.',
 	'[_1] contains an invalid character: [_2]' => '[_1] contiene un caracter no válido: [_2]',
 	'Display Name' => 'Nombre público',
@@ -729,7 +740,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Blog \'[_1] (ID: [_2])\' for user \'[_3] (ID: [_4])\' has been created.' => 'Blog \'[_1] (ID: [_2])\' para el usuario \'[_3] (ID: [_4])\' ha sido creado.',
 	'Error assigning blog administration rights to user \'[_1] (ID: [_2])\' for blog \'[_3] (ID: [_4])\'. No suitable blog administrator role was found.' => 'Error de asignación de los derechos para el usuario \'[_1] (ID: [_2])\' para el blog \'[_3] (ID: [_4])\'. Ningún rol de administrador adecuado ha sido encontrado.',
 	'Internal Error: Login user is not initialized.' => 'Error interno: Inicio de sesión de usuarios no inicializada.',
-	'The login could not be confirmed because of a database error ([_1])' => 'No se pudo confirmar el acceso debido a un error de la base de datos ([_1])',
 	'Our apologies, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.' => 'Lo sentimos, pero no tiene permisos para acceder a ningún blog o sitio web en esta instalación. Si cree que este mensaje se le muestra por error, por favor, contacte con el administrador de la instalación de Movable Type.',
 	'This account has been disabled. Please see your system administrator for access.' => 'Esta cuenta fue deshabilitada. Por favor, póngase en contacto con el administrador del sistema.',
 	'Failed login attempt by pending user \'[_1]\'' => 'Intento fallido de inicio de sesión de un usuario pendiente \'[_1]\'',
@@ -813,13 +823,15 @@ que la dirección provista es correcta y le pertenece.',
 
 ## lib/MT/App/Viewer.pm
 	'Loading blog with ID [_1] failed' => 'Fallo al cargar el blog con el ID [_1]',
+	'File not found' => 'Fichero no encontrado', # Translate - New
 	'Template publishing failed: [_1]' => 'Fallo al publicar la plantilla: [_1]',
-	'Invalid date spec' => 'Formato de fecha no válido',
-	'Can\'t load templatemap' => 'No se pudo cargar el mapa de plantillas',
+	'Unknown archive type: [_1]' => 'Tipo de archivo desconocido: [_1]', # Translate - New
 	'Can\'t load template [_1]' => 'No se pudo cargar la plantilla [_1]',
 	'Archive publishing failed: [_1]' => 'Fallo al publicar los archivos: [_1]',
+	'Invalid entry ID [_1]' => 'Entrada no válida, ID [_1]', # Translate - New
 	'Entry [_1] is not published' => 'La entrada [_1] no está publicada',
 	'Invalid category ID \'[_1]\'' => 'Identificador de categoría no válido \'[_1]\'',
+	'Invalid author ID \'[_1]\'' => 'Autor no válido, ID \'[_1]\'', # Translate - New
 
 ## lib/MT/App/Wizard.pm
 	'The [_1] driver is required to use [_2].' => 'Es necesario el controlador [_1] para usar [_2].',
@@ -1001,6 +1013,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'El módulo de Perl Image::Size es necesario para obtener las dimensiones de las imágenes transferidas.',
 
 ## lib/MT/Auth/MT.pm
+	'Missing Required Modules' => 'Módulos necesarios no encontrados',
 
 ## lib/MT/Auth/OpenID.pm
 	'Couldn\'t save the session' => 'No se pudo guardar la sesión',
@@ -1014,8 +1027,8 @@ que la dirección provista es correcta y le pertenece.',
 	'Users' => 'Usuarios',
 	'Active' => 'Activo',
 	'Pending' => 'Pendiente',
-	'Not Locked Out' => 'No bloqueado', # Translate - New
-	'Locked Out' => 'Bloqueado', # Translate - New
+	'Not Locked Out' => 'No bloqueado',
+	'Locked Out' => 'Bloqueado',
 	'__COMMENTER_APPROVED' => 'Aprobado',
 	'Banned' => 'Bloqueado',
 	'MT Users' => 'Usuarios de MT',
@@ -1028,11 +1041,11 @@ que la dirección provista es correcta y le pertenece.',
 	'Status' => 'Estado',
 	'Website URL' => 'URL del sitio',
 	'Privilege' => 'Privilegio',
-	'Lockout' => 'Bloquear', # Translate - New
+	'Lockout' => 'Bloquear',
 	'Enabled Users' => 'Usuarios habilitados',
 	'Disabled Users' => 'Usuarios deshabilitados',
 	'Pending Users' => 'Usuarios pendientes',
-	'Locked out Users' => 'Bloquear usuarios', # Translate - New
+	'Locked out Users' => 'Bloquear usuarios',
 	'Enabled Commenters' => 'Comentaristas habilitados',
 	'Disabled Commenters' => 'Comentaristas deshabilitados',
 	'Pending Commenters' => 'Comentaristas pendientes',
@@ -1147,7 +1160,6 @@ que la dirección provista es correcta y le pertenece.',
 ## lib/MT/CMS/AddressBook.pm
 	'No entry ID provided' => 'ID de entrada no provista',
 	'No such entry \'[_1]\'' => 'No existe la entrada \'[_1]\'',
-	'No email address for user \'[_1]\'' => 'No hay dirección de correo electrónico asociada al usuario \'[_1]\'',
 	'No valid recipients found for the entry notification.' => 'No se encontraron destinatarios válidos para la notificación de la entrada.',
 	'[_1] Update: [_2]' => '[_1] Actualiza: [_2]',
 	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Error enviando correo electrónico ([_1]); ¿quizás probando con otra configuración para MailTransfer?',
@@ -1275,6 +1287,7 @@ que la dirección provista es correcta y le pertenece.',
 	'\'[_1]\' edited the global template \'[_2]\'' => '\'[_1]\' editó la plantilla global \'[_2]\'',
 	'Load failed: [_1]' => 'Fallo carga: [_1]',
 	'(no reason given)' => '(ninguna razón ofrecida)',
+	'Invalid filter: [_1]' => 'Filtro no válido: [_1]', # Translate - New
 	'New Filter' => 'Nuevo filtro',
 	'__SELECT_FILTER_VERB' => 'es',
 	'All [_1]' => 'Todos los/las [_1]',
@@ -1284,7 +1297,6 @@ que la dirección provista es correcta y le pertenece.',
 	'An error occured while counting objects: [_1]' => 'Ocurrió un error durante la contabilización de objetos: [_1]',
 	'An error occured while loading objects: [_1]' => 'Ocurrió un error durante la carga de objetos: [_1]',
 	'Removing tag failed: [_1]' => 'Falló el borrado de la etiqueta: [_1]',
-	'Loading MT::LDAP failed: [_1].' => 'Falló la carga de MT::LDAP: [_1].',
 	'Removing [_1] failed: [_2]' => 'Falló el borrado de [_1]: [_2]',
 	'System templates can not be deleted.' => 'Las plantillas del sistema no se pueden borrar.',
 	'The selected [_1] has been deleted from the database.' => 'El [_1] seleccionado fue borrado de la base de datos.',
@@ -1427,6 +1439,7 @@ que la dirección provista es correcta y le pertenece.',
 	'sample, entry, preview' => 'sample, entry, preview',
 	'Populating blog with default templates failed: [_1]' => 'Falló el guardando del blog con las plantillas por defecto: [_1]',
 	'Setting up mappings failed: [_1]' => 'Fallo la configuración de mapeos: [_1]',
+	'Can\'t load templatemap' => 'No se pudo cargar el mapa de plantillas',
 	'Saving map failed: [_1]' => 'Fallo guardando mapa: [_1]',
 	'You should not be able to enter 0 as the time.' => 'No debería poder introducir 0 en estos momentos.',
 	'You must select at least one event checkbox.' => 'Debe seleccionar al menos una casilla de eventos.',
@@ -1474,6 +1487,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Please confirm your new password' => 'Por favor, confirme su nueva contraseña',
 	'Passwords do not match' => 'Las contraseñas no coinciden',
 	'That action ([_1]) is apparently not implemented!' => '¡La acción ([_1]) aparentemente no está implementada!',
+	'Error occurred while attempting to [_1]: [_2]' => 'Ocurrió un error intentando [_1]: [_2]', # Translate - New
 	'You don\'t have a system email address configured.  Please set this first, save it, then try the test email again.' => 'No tiene configurada una dirección de correo para el sistema. Por favor, configúrela primero, guárdela y luego intente enviar el correo de prueba.',
 	'Please enter a valid email address' => 'Por favor, introduzca una dirección de correo válida',
 	'Test email from Movable Type' => 'Correo de prueba de Movable Type',
@@ -1487,7 +1501,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Performance logging is off' => 'El histórico de rendimiento está desactivado',
 	'Performance log path is [_1]' => 'La ruta del histórico de rendimiento es [_1]',
 	'Performance log threshold is [_1]' => 'El umbral del histórico de rendimiento es [_1]',
-	'[_1] is [_2]' => '[_1] es [_2]', # Translate - New
+	'[_1] is [_2]' => '[_1] es [_2]',
 	'none' => 'ninguno',
 	'System Settings Changes Took Place' => 'Se realizaron los cambios en la configuración del sistema',
 	'Invalid password recovery attempt; can\'t recover password in this configuration' => 'Intento de recuperación de contraseña no válido; no se pudo recuperar la clave con esta configuración',
@@ -1532,12 +1546,12 @@ que la dirección provista es correcta y le pertenece.',
 	'Blog(s) (ID:[_1]) was/were successfully backed up by user \'[_2]\'' => 'Las copias de seguridad de el/los blog(s) (ID:[_1]) se hizo/hicieron correctamente por el usuario  \'[_2]\'',
 	'Movable Type system was successfully backed up by user \'[_1]\'' => 'El usuario \'[_1]\' realizó con éxito una copia de seguridad del sistema de Movable Type',
 	'Some [_1] were not restored because their parent objects were not restored.' => 'Algunos [_1] no se restauraron porque sus objetos ascendentes no se restauraron.',
-	'Recipients for lockout notification' => 'Destinatarios de las notificaciones de bloqueos', # Translate - New
-	'User lockout limit' => 'Límite de bloqueo de usuarios', # Translate - New
-	'User lockout interval' => 'Intervalo de bloqueo de usuarios', # Translate - New
-	'IP address lockout limit' => 'Límite de bloqueo de direcciones IP', # Translate - New
-	'IP address lockout interval' => 'Intervalo de bloqueo de direcciones IP', # Translate - New
-	'Lockout IP address whitelist' => 'Lista blanca de bloqueo de direcciones IP', # Translate - New
+	'Recipients for lockout notification' => 'Destinatarios de las notificaciones de bloqueos',
+	'User lockout limit' => 'Límite de bloqueo de usuarios',
+	'User lockout interval' => 'Intervalo de bloqueo de usuarios',
+	'IP address lockout limit' => 'Límite de bloqueo de direcciones IP',
+	'IP address lockout interval' => 'Intervalo de bloqueo de direcciones IP',
+	'Lockout IP address whitelist' => 'Lista blanca de bloqueo de direcciones IP',
 
 ## lib/MT/CMS/TrackBack.pm
 	'(Unlabeled category)' => '(Categoría sin título)',
@@ -1558,6 +1572,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Invalid type' => 'Tipo no válido',
 	'Invalid ID given for personal blog theme.' => 'ID inválido para un tema de blog personal.',
 	'Invalid ID given for personal blog clone location ID.' => 'ID inválido para el ID de localización de clonación de blog personal.',
+	'Minimum password length must be integer and greater than zero.' => 'La longitud mínima de la clave debe ser un número entero mayor que cero.', # Translate - New
 	'If personal blog is set, the personal blog location are required.' => 'Si el blog personal está establecido, se necesita la localización del blog personal.',
 	'Select a entry author' => 'Seleccione un autor de entradas',
 	'Select a page author' => 'Seleccione un autor de páginas',
@@ -1578,6 +1593,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Roles Selected' => 'Roles seleccionados',
 	'Grant Permissions' => 'Otorgar permisos',
 	'You cannot delete your own association.' => 'No puede borrar sus propias asociaciones.',
+	'[_1]\'s Assciations' => 'Asociaciones de [_1]', # Translate - New
 	'You cannot delete your own user record.' => 'No puede borrar el registro de su propio usuario.',
 	'You have no permission to delete the user [_1].' => 'No tiene permisos para borrar el usuario [_1].',
 	'User requires username' => 'El usuario necesita un nombre de usuario',
@@ -1644,6 +1660,8 @@ que la dirección provista es correcta y le pertenece.',
 	'The physical file path for your SQLite database. ' => 'La ruta física del fichero de la base de datos SQLite.',
 	'[_1] in [_2]: [_3]' => '[_1] en [_2]: [_3]',
 	'option is required' => 'opción es obligatoria',
+	'Days must be a number.' => 'Los días deben ser un número.', # Translate - New
+	'Invalid date.' => 'Fecha no válida.', # Translate - New
 	'[_1] [_2] between [_3] and [_4]' => '[_1] [_2] entre [_3] y [_4]',
 	'[_1] [_2] since [_3]' => '[_1] [_2] desde [_3]',
 	'[_1] [_2] or before [_3]' => '[_1] [_2] o antes de [_3]',
@@ -1724,7 +1742,8 @@ que la dirección provista es correcta y le pertenece.',
 	'Junk Folder Expiration' => 'Caducidad de la carpeta basura',
 	'Remove Temporary Files' => 'Borrar ficheros temporales',
 	'Purge Stale Session Records' => 'Eliminar registros de sesión caducados',
-	'Remove expired lockout data' => 'Eliminar datos cacudados de bloqueos', # Translate - New
+	'Remove expired lockout data' => 'Eliminar datos cacudados de bloqueos',
+	'Purge Unused FileInfo Records' => 'Purgar registros FileInfo no utilizados', # Translate - New
 	'Manage Website' => 'Administrar sitio web',
 	'Manage Blog' => 'Administrar blog',
 	'Manage Website with Blogs' => 'Administrar sitio web con blogs',
@@ -1790,8 +1809,8 @@ que la dirección provista es correcta y le pertenece.',
 	'New Ping' => 'Nuevo ping',
 	'Entry Notify' => 'Notificación de entradas',
 	'Subscribe Verify' => 'Verificación de suscripciones',
-	'User Lockout' => 'Bloqueo de usuarios', # Translate - New
-	'IP Address Lockout' => 'Bloqueo de direcciones IP', # Translate - New
+	'User Lockout' => 'Bloqueo de usuarios',
+	'IP Address Lockout' => 'Bloqueo de direcciones IP',
 
 ## lib/MT/Entry.pm
 	'[_1] ( id:[_2] ) does not exists.' => '[_1] ( id:[_2] ) no existe.',
@@ -1919,17 +1938,18 @@ que la dirección provista es correcta y le pertenece.',
 	'Composite score: [_1]' => 'Puntuación compuesta: [_1]',
 
 ## lib/MT/ListProperty.pm
+	'Can\'t initialize list property [_1].[_2].' => 'No se pudo inicializar la propiedad de listas [_1].[_2].', # Translate - New
 	'Failed to init auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'Falló al iniciar la propiedad de auto lista [_1].[_2]: No se encontró la definición de la columna [_3].',
 	'Failed to init auto list property [_1].[_2]: unsupported column type.' => 'Falló al iniciar Failed la propiedad de auto lista [_1].[_2]: tipo de columna no soportado.',
 
 ## lib/MT/Lockout.pm
-	'Can\'t find author for id \'[_1]\'' => 'No se pudo encontrar al autor con el id \'[_1]\'', # Translate - New
-	'User was locked out. IP address: [_1], Username: [_2]' => 'Se desbloqueó al usuario. Dirección IP: [_1], Usuario: [_2]', # Translate - New
-	'User Was Locked Out' => 'Se desbloqueó al usuario.', # Translate - New
+	'Can\'t find author for id \'[_1]\'' => 'No se pudo encontrar al autor con el id \'[_1]\'',
+	'User was locked out. IP address: [_1], Username: [_2]' => 'Se desbloqueó al usuario. Dirección IP: [_1], Usuario: [_2]',
+	'User Was Locked Out' => 'Se desbloqueó al usuario.',
 	'Error sending mail: [_1]' => 'Error enviado correo: [_1]',
-	'IP address was locked out. IP address: [_1], Username: [_2]' => 'Se desbloqueó la dirección IP. Dirección IP: [_1], Usuario: [_2]', # Translate - New
-	'IP address Was Locked Out' => 'Se desbloqueó la dirección IP.', # Translate - New
-	'User has been unlocked. Username: [_1]' => 'Se desbloqueó al usuario. Usuario: [_1]', # Translate - New
+	'IP address was locked out. IP address: [_1], Username: [_2]' => 'Se desbloqueó la dirección IP. Dirección IP: [_1], Usuario: [_2]',
+	'IP address Was Locked Out' => 'Se desbloqueó la dirección IP.',
+	'User has been unlocked. Username: [_1]' => 'Se desbloqueó al usuario. Usuario: [_1]',
 
 ## lib/MT/Log.pm
 	'Log message' => 'Mensaje del registro',
@@ -2127,7 +2147,6 @@ que la dirección provista es correcta y le pertenece.',
 	'[_1]Publish[_2] your site to see these changes take effect.' => '[_1]Publique[_2] el sitio para que los cambios tomen efecto.',
 	'Actions' => 'Acciones',
 	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'http://www.movabletype.org/documentation/appendices/tags/%t.html',
-	'You used an [_1] tag without a date context set up.' => 'Usó una etiqueta [_1] sin un contexto de fecha configurado.',
 	'Division by zero.' => 'División por cero.',
 	'[_1] is not a hash.' => '[_1] no es un hash.',
 	'No [_1] could be found.' => 'No se encontraron [_1].',
@@ -2166,6 +2185,8 @@ que la dirección provista es correcta y le pertenece.',
 ## lib/MT/Template.pm
 	'Template' => 'Plantilla',
 	'File not found: [_1]' => 'Fichero no encontrado: [_1]',
+	'Template load error: [_1]' => 'Error al cargar plantilla: [_1]', # Translate - New
+	'Tried to load the template file from outside of the include path \'[_1]\'' => 'Tried to load the template file from outside of the include path \'[_1]\'', # Translate - New
 	'Error reading file \'[_1]\': [_2]' => 'Error leyendo fichero \'[_1]\': [_2]',
 	'Publish error in template \'[_1]\': [_2]' => 'Error de publicación en la plantilla \'[_1]\': [_2]',
 	'Template name must be unique within this [_1].' => 'El nombre de la plantilla debe ser único en este [_1].',
@@ -2558,6 +2579,7 @@ que la dirección provista es correcta y le pertenece.',
 	'enable' => 'habilitar',
 	'disable' => 'deshabilitar',
 	'publish' => 'Publicar',
+	'unlock' => 'desbloquear', # Translate - Case
 	'You did not select any [_1] to [_2].' => 'No seleccionó ninguna [_1] sobre la que [_2].',
 	'Are you sure you want to [_2] this [_1]?' => '¿Está seguro de que desea [_2] esta [_1]?',
 	'Are you sure you want to [_3] the [_1] selected [_2]?' => '¿Está seguro de que desea [_3] el/los [_1] seleccionado/s [_2]?',
@@ -3221,16 +3243,16 @@ que la dirección provista es correcta y le pertenece.',
 	'(No Outbound TrackBacks)' => '(Ningún Trackback saliente)',
 	'Only to blogs within this system' => 'Solo a los blogs en este sistema',
 	'Only to websites on the following domains:' => 'Solo a los sitios web en los siguientes dominios:',
-	'Lockout Settings' => 'Configuración de bloqueos', # Translate - New
-	q{The system administrators whom you wish to notify if a user or an IP address is locked out.  If no administrators are selected, notifications will be sent to the 'System Email' address.} => q{Los administradores del sistema a quienes desee notificar los bloqueos de usuarios y direcciones IP. Si no hay administradores seleccionados, se enviarán las notificaciones a la dirección del 'Correo del sistema'.}, # Translate - New
+	'Lockout Settings' => 'Configuración de bloqueos',
+	q{The system administrators whom you wish to notify if a user or an IP address is locked out.  If no administrators are selected, notifications will be sent to the 'System Email' address.} => q{Los administradores del sistema a quienes desee notificar los bloqueos de usuarios y direcciones IP. Si no hay administradores seleccionados, se enviarán las notificaciones a la dirección del 'Correo del sistema'.},
 	'Clear' => 'Limpiar',
 	'Select' => 'Seleccionar',
-	'User lockout policy' => 'Política de bloqueo de usuarios', # Translate - New
-	'A Movable Type user will be locked out if he or she submits an incorrect password [_1] or more times within [_2] seconds.' => 'Si el usuario envía una clave incorrecta [_1] o más veces en menos de [_2] segundos, se bloqueará al usuario de Movable Type.', # Translate - New
-	'IP address lockout policy' => 'Política de bloqueo de direcciones IP.', # Translate - New
-	'An IP address will be locked out if [_1] or more incorrect login attempts are made within [_2] seconds from the same IP address.' => 'Si se realizzan [_1] o más intentos de inicio de sesión en menos de [_2] segundos desde la misma dirección IP, se bloqueará la dirección IP.', # Translate - New
-	q{However, the following IP addresses are 'whitelisted' and will never be locked out:} => q{Sin embargo, las siguientes direcciones IP están en una 'lista blanca' y nunca serán bloqueadas:}, # Translate - New
-	'The list of IP addresses. If a remote IP address is included in this list, the failed login will not recorded. You can specify multiple IP addresses separated by commas or line breaks.' => 'La lista de direcciones IP. El inicio de sesión no será registrado si la dirección IP remota está incluída en esta lista. Puede especificar múltiples direcciones IP separadas por comas o saltos de línea.', # Translate - New
+	'User lockout policy' => 'Política de bloqueo de usuarios',
+	'A Movable Type user will be locked out if he or she submits an incorrect password [_1] or more times within [_2] seconds.' => 'Si el usuario envía una clave incorrecta [_1] o más veces en menos de [_2] segundos, se bloqueará al usuario de Movable Type.',
+	'IP address lockout policy' => 'Política de bloqueo de direcciones IP.',
+	'An IP address will be locked out if [_1] or more incorrect login attempts are made within [_2] seconds from the same IP address.' => 'Si se realizzan [_1] o más intentos de inicio de sesión en menos de [_2] segundos desde la misma dirección IP, se bloqueará la dirección IP.',
+	q{However, the following IP addresses are 'whitelisted' and will never be locked out:} => q{Sin embargo, las siguientes direcciones IP están en una 'lista blanca' y nunca serán bloqueadas:},
+	'The list of IP addresses. If a remote IP address is included in this list, the failed login will not recorded. You can specify multiple IP addresses separated by commas or line breaks.' => 'La lista de direcciones IP. El inicio de sesión no será registrado si la dirección IP remota está incluída en esta lista. Puede especificar múltiples direcciones IP separadas por comas o saltos de línea.',
 	'Send Email To' => 'Enviar correo a',
 	'The email address that should receive a test email from Movable Type.' => 'La direción de correo que debe recibir el correo de prueba de Movable Type.',
 	'Send' => 'Enviar',
@@ -3245,13 +3267,13 @@ que la dirección provista es correcta y le pertenece.',
 	'Notify the following system administrators when a commenter registers:' => 'Notificar a los siguientes administradores del sistema el registro de comentaristas:',
 	'Select system administrators' => 'Seleccione los administradores de sistemas',
 	'Note: System Email Address is not set in System > General Settings. Emails will not be sent.' => 'Nota: La dirección de correo del sistema no está configurada en Sistema > Configuración general. Los mensajes no se enviarán.',
-	'Password Validation' => 'Comprobación de clave', # Translate - New
+	'Password Validation' => 'Comprobación de clave',
 	'Options' => 'Opciones',
-	'Should contain uppercase and lowercase letters.' => 'Debe contener letras en mayúsculas y minúsculas.', # Translate - New
-	'Should contain letters and numbers.' => 'Debe contener letras y números.', # Translate - New
-	'Should contain special characters.' => 'Debe contener caracteres especiales.', # Translate - New
-	'Minimun Length' => 'Longitud mínima', # Translate - New
-	'Characters' => 'Caracteres', # Translate - New
+	'Should contain uppercase and lowercase letters.' => 'Debe contener letras en mayúsculas y minúsculas.',
+	'Should contain letters and numbers.' => 'Debe contener letras y números.',
+	'Should contain special characters.' => 'Debe contener caracteres especiales.',
+	'Minimun Length' => 'Longitud mínima',
+	'This field must be a positive integer.' => 'Este campo debe ser un positivo entero.', # Translate - New
 	'New User Defaults' => 'Valores predefinidos para los nuevos usuarios',
 	'Personal Blog' => 'Blog Personal',
 	'Have the system automatically create a new personal blog when a user is created. The user will be granted the blog administrator role on this blog.' => 'Hace que el sistema cree automáticamente un blog personal al crear un nuevo usuario. El usuario obtendrá el rol de administrador en ese blog.',
@@ -3411,6 +3433,7 @@ que la dirección provista es correcta y le pertenece.',
 
 ## tmpl/cms/dialog/new_password.tmpl
 	'Change Password' => 'Cambiar Contraseña',
+	'Enter the new password.' => 'Introduzca la nueva contraseña.',
 	'New Password' => 'Nueva contraseña',
 	'Confirm New Password' => 'Confirmar nueva contraseña',
 	'Change' => 'cambiar',
@@ -3509,11 +3532,11 @@ que la dirección provista es correcta y le pertenece.',
 	'Edit Profile' => 'Editar Perfil',
 	'This profile has been updated.' => 'Este perfil ha sido actualizado.',
 	'A new password has been generated and sent to the email address [_1].' => 'Se ha generado y enviado a la dirección de correo electrónico [_1] una nueva contraseña.',
-	'This profile has been unlocked.' => 'Este perfil ha sido desbloqueado.', # Translate - New
+	'This profile has been unlocked.' => 'Este perfil ha sido desbloqueado.',
 	'This user was classified as pending.' => 'Este usuario está clasificado como pendiente.',
 	'This user was classified as disabled.' => 'Este usuario está clasificado como deshabilitado.',
-	'This user was locked out.' => 'Este usuario ha sido bloqueado.', # Translate - New
-	q{If you want to unlock this user click the 'Unlock' link. <a href="[_1]">Unlock</a>} => q{Si desea desbloquear a este usuario, haga clic en el enlace 'Desbloquear'. <a href="[_1]">Desbloquear</a>}, # Translate - New
+	'This user was locked out.' => 'Este usuario ha sido bloqueado.',
+	q{If you want to unlock this user click the 'Unlock' link. <a href="[_1]">Unlock</a>} => q{Si desea desbloquear a este usuario, haga clic en el enlace 'Desbloquear'. <a href="[_1]">Desbloquear</a>},
 	'User properties' => 'Propiedades del usuario',
 	'Your web services password is currently' => 'Actualmente la contraseña de los servicios web es',
 	'_WARNING_PASSWORD_RESET_SINGLE' => 'Va a reiniciar la contraseña de "[_1]". Se enviará una nueva contraseña aleatoria que se enviará directamente a su dirección de correo electrónico ([_2]). ¿Desea continuar?',
@@ -3535,7 +3558,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Existing password required to create a new password.' => 'La contraseña actual es necesaria para crear una nueva.',
 	'Initial Password' => 'Contraseña inicial',
 	'Enter preferred password.' => 'Introduzca la contraseña elegida.',
-	'Enter the new password.' => 'Introduzca la nueva contraseña.',
 	'Confirm Password' => 'Confirmar contraseña',
 	'Repeat the password for confirmation.' => 'Repita la contraseña para confirmación.',
 	'Password recovery word/phrase' => 'Palabra/frase para la recuperación de contraseña',
@@ -3847,6 +3869,8 @@ que la dirección provista es correcta y le pertenece.',
 	'Are you sure you want to remove this template map?' => '¿Está seguro que desea borrar este mapa de plantilla?',
 	'Module Body' => 'Cuerpo del módulo',
 	'Template Body' => 'Cuerpo de la plantilla',
+	'Syntax highlighting On' => 'Coloreado de sintaxis activado', # Translate - New
+	'Syntax highlighting Off' => 'Coloreado de sintaxis desactivado', # Translate - New
 	'Template Options' => 'Opciones de plantillas',
 	'Output file: <strong>[_1]</strong>' => 'Fichero de salida: <strong>[_1]</strong>',
 	'Enabled Mappings: [_1]' => 'Habilitar mapas: [_1]',
@@ -4378,7 +4402,7 @@ que la dirección provista es correcta y le pertenece.',
 ## tmpl/cms/listing/author_list_header.tmpl
 	'You have successfully disabled the selected user(s).' => 'Ha deshabilitado con éxito el/los usuario/s seleccionado/s.',
 	'You have successfully enabled the selected user(s).' => 'Ha habilitado con éxito el/los usuario/s seleccionado/s.',
-	'You have successfully unlocked the selected user(s).' => 'Ha desbloqueado con éxito el/los usuario/s seleccionado/s.', # Translate - New
+	'You have successfully unlocked the selected user(s).' => 'Ha desbloqueado con éxito el/los usuario/s seleccionado/s.',
 	'You have successfully deleted the user(s) from the Movable Type system.' => 'Ha borrado con éxito el/los usuario/s seleccionado/s del sistema de Movable Type.',
 	'The deleted user(s) still exist in the external directory. As such, they will still be able to login to Movable Type Advanced.' => 'Este usuario borrado aún existe en el directorio externo. Como tal, aún podrán acceder a Movable Type Advanced.',
 	q{You have successfully synchronized users' information with the external directory.} => q{Sincronizó con éxito la información de los usuarios con el directorio externo.},
@@ -4566,8 +4590,8 @@ que la dirección provista es correcta y le pertenece.',
 	'Complete [_1]%' => '[_1]% completado',
 
 ## tmpl/cms/recover_lockout.tmpl
-	'Recovered from lockout' => 'Recuperado del bloqueo.', # Translate - New
-	q{User '[_1]' has been unlocked.} => q{El usuario '[_1]' ha sido desbloqueado.}, # Translate - New
+	'Recovered from lockout' => 'Recuperado del bloqueo.',
+	q{User '[_1]' has been unlocked.} => q{El usuario '[_1]' ha sido desbloqueado.},
 
 ## tmpl/cms/recover_password_result.tmpl
 	'Recover Passwords' => 'Recuperar contraseñas',
@@ -4981,7 +5005,6 @@ que la dirección provista es correcta y le pertenece.',
 	q{Some optional Perl modules could not be found. You may continue without installing these optional Perl modules. They may be installed at any time if they are needed. Click 'Retry' to test for the modules again.} => q{No se encontraron algunos módulos opcionales de Perl. Puede continuar sin instalarlos. Podrá instalarlos cuando le sean necesarios. Haga clic en 'Reintentar' para comprobar los módulos otra vez.},
 	'Missing Database Modules' => 'Módulos de base de datos no encontrados',
 	'Missing Optional Modules' => 'Módulos opcionales no encontrados',
-	'Missing Required Modules' => 'Módulos necesarios no encontrados',
 	'Minimal version requirement: [_1]' => 'Versión mínima requerida: [_1]',
 	'http://www.movabletype.org/documentation/installation/perl-modules.html' => 'http://www.movabletype.org/documentation/installation/perl-modules.html',
 	'Learn more about installing Perl modules.' => 'Más información sobre la instalación de módulos de Perl.',
@@ -5309,7 +5332,7 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Commercial.pack/tmpl/edit_field.tmpl
 	'Edit Custom Field' => 'Editar campo personalizado',
 	'Create Custom Field' => 'Crear campo personalizado',
-	'The selected fields(s) has been deleted from the database.' => 'Los campos seleccionados han sido borrados de la base de datos.',
+	'The selected field(s) has been deleted from the database.' => 'Los campos seleccionados han sido borrados de la base de datos.',
 	'You must enter information into the required fields highlighted below before the custom field can be created.' => 'Antes de que pueda crear el campo personalizado debe introducir la información en los campos obligatorios resaltados abajo.',
 	'You must save this custom field before setting a default value.' => 'Debe guardar este campo personalizado antes de indicar un valor predefinido.',
 	'Choose the system object where this custom field should appear.' => 'Seleccione el objeto del sistema donde aparecerá el campo personalizado.',
@@ -5328,6 +5351,8 @@ que la dirección provista es correcta y le pertenece.',
 
 ## addons/Commercial.pack/tmpl/export_field.tmpl
 	'Object' => 'Objeto',
+
+## addons/Commercial.pack/tmpl/listing/field_list_header.tmpl
 
 ## addons/Commercial.pack/tmpl/reorder_fields.tmpl
 	'open' => 'abrir',
@@ -5396,8 +5421,8 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Community.pack/lib/MT/App/Community.pm
 	'No login form template defined' => 'No hay ninguna plantilla de formulario definida',
 	'Before you can sign in, you must authenticate your email address. <a href="[_1]">Click here</a> to resend the verification email.' => 'Antes de que pueda iniciar una sesión, debe autentificar su dirección de correo. <a href="[_1]">Haga clic aquí</a> para reenviar el correo de verificación.',
+	'You are trying to redirect to external resources: [_1]' => 'Está intentando redireccionar a recursos externos: [_1]', # Translate - New
 	'(No email address)' => '(Sin dirección de correo)',
-	'Your confirmation have expired. Please register again.' => 'Su confirmación ha caducado. Por favor, regístrese de nuevo.',
 	'User \'[_1]\' (ID:[_2]) has been successfully registered.' => 'El usuario \'[_1]\' (ID:[_2]) se registró con éxito.',
 	'Thanks for the confirmation.  Please sign in.' => 'Gracias por la confirmación. Por favor, inicie la sesión.',
 	'[_1] registered to Movable Type.' => '[_1] se registró en Movable Type.',
@@ -5696,7 +5721,6 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Community.pack/templates/global/register_confirmation.mtml
 	'Authentication Email Sent' => 'Correo de autentificación enviado.',
 	'Profile Created' => 'Perfil creado',
-	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">Regresar a la página original.</a>',
 
 ## addons/Community.pack/templates/global/register_form.mtml
 
@@ -5736,6 +5760,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Groups ([_1])' => 'Grupos ([_1])',
 	'Are you sure you want to delete the selected group(s)?' => '¿Está seguro de querer borrar el(los) grupo(s) seleccionados?',
 	'Are you sure you want to remove the selected member(s) from the group?' => '¿Está seguro de querer borrar los miembros seleccionados del grupo?',
+	'[_1]\'s Group' => 'Grupo de [_1]', # Translate - New
 	'Groups' => 'Grupos',
 	'Manage Member' => 'Administrar miembros',
 	'Bulk Author Export' => 'Exportación masiva de autores',
@@ -5807,6 +5832,9 @@ que la dirección provista es correcta y le pertenece.',
 	'Members added: ' => 'Miembros añadidos:',
 	'Memberships in the group \'[_2]\' (#[_3]) were changed as a result of synchronizing with the external directory.' => 'Se modificó la pertenencia en el grupo \'[_2]\' (#[_3]) por la sincronización con el directorio externo.',
 	'LDAPUserGroupMemberAttribute must be set to enable synchronizing of members of groups.' => 'Debe configurar LDAPUserGroupMemberAttribute para permitir la sincronización de los miembros de los grupos.',
+
+## addons/Enterprise.pack/lib/MT/Enterprise/Author.pm
+	'Loading MT::LDAP failed: [_1].' => 'Falló la carga de MT::LDAP: [_1].',
 
 ## addons/Enterprise.pack/lib/MT/Enterprise/BulkCreation.pm
 	'Formatting error at line [_1]: [_2]' => 'Error de formato en la línea [_1]: [_2]',
@@ -6242,7 +6270,6 @@ que la dirección provista es correcta y le pertenece.',
 ## plugins/Motion/templates/Motion/register_confirmation.mtml
 	'Authentication Email Sent' => 'Correo de autentificación enviado.',
 	'Profile Created' => 'Perfil creado',
-	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">Regresar a la página original.</a>',
 
 ## plugins/Motion/templates/Motion/register.mtml
 	'Enter a password for yourself.' => 'Introduzca su contraseña.',
@@ -6601,6 +6628,6 @@ que la dirección provista es correcta y le pertenece.',
 
 );
 
-## New words: 324
+## New words: 147
 
 1;

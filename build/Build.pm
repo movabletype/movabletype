@@ -666,9 +666,9 @@ sub set_repo {
     $self->{'repo-uri=s'} = qx{ git config remote.origin.url };
     chomp $self->{'repo-uri=s'};
 
-    my $repo = qx{ git branch -r | grep origin/HEAD };
+    my $repo = qx{ git branch | grep '* ' };
     chomp $repo;
-    $repo =~ s/\s*origin\/HEAD -> (.*)/$1/;
+    $repo =~ s/^\*\s(.*)$/$1/;
     $self->{'repo=s'} = $repo;
 }
 

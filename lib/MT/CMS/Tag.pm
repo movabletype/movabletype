@@ -321,8 +321,9 @@ sub add_tags_to_assets {
     $app->validate_magic or return;
 
     my @id = $app->param('id');
+    my $blog_id = $app->param('blog_id');
     return $app->call_return
-        unless $app->can_do('add_tags_to_assets');
+        if $blog_id and !$app->can_do('add_tags_to_assets');
     require MT::Tag;
     my $tags      = $app->param('itemset_action_input');
     my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
@@ -330,9 +331,24 @@ sub add_tags_to_assets {
     return $app->call_return unless @tags;
 
     require MT::Asset;
+    my %approved_blogs;
     foreach my $id (@id) {
         next unless $id;
         my $asset = MT::Asset->load($id) or next;
+        if ($blog_id) {
+            next unless $asset->blog_id == $blog_id;
+        } elsif ($asset->blog_id) {
+            if (not $approved_blogs{$asset->blog_id}) {
+                next unless 
+                    $app->user->can_do(
+                        'add_tags_to_assets', 
+                        blog_id => $asset->blog_id, 
+                        at_least_one => 1);
+                $approved_blogs{$asset->blog_id} = 1;
+            }
+        } else {
+            next unless $app->user->is_superuser;
+        }
         $asset->add_tags(@tags);
         $asset->save
             or return $app->trans_error( "Error saving file: [_1]",
@@ -347,9 +363,10 @@ sub remove_tags_from_assets {
     my $app = shift;
     $app->validate_magic or return;
 
-    return $app->call_return
-        unless $app->can_do('remove_tags_from_assets');
     my @id = $app->param('id');
+    my $blog_id = $app->param('blog_id');
+    return $app->call_return
+        if $blog_id and !$app->can_do('remove_tags_from_assets');
 
     require MT::Tag;
     my $tags      = $app->param('itemset_action_input');
@@ -358,9 +375,24 @@ sub remove_tags_from_assets {
     return $app->call_return unless @tags;
 
     require MT::Asset;
+    my %approved_blogs;
     foreach my $id (@id) {
         next unless $id;
         my $asset = MT::Asset->load($id) or next;
+        if ($blog_id) {
+            next unless $asset->blog_id == $blog_id;
+        } elsif ($asset->blog_id) {
+            if (not $approved_blogs{$asset->blog_id}) {
+                next unless 
+                    $app->user->can_do(
+                        'remove_tags_from_assets', 
+                        blog_id => $asset->blog_id, 
+                        at_least_one => 1);
+                $approved_blogs{$asset->blog_id} = 1;
+            }
+        } else {
+            next unless $app->user->is_superuser;
+        }
         $asset->remove_tags(@tags);
         $asset->save
             or return $app->trans_error( "Error saving file: [_1]",

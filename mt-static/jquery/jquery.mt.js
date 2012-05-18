@@ -464,7 +464,7 @@ function open_dialog(href, opts) {
     });
     $('.mt-dialog-overlay').show();
     if (opts.esckeyclose) {
-        $(document).keyup(function(event){
+        $(document).bind('keyup.mt-dialog', function(event){
             if (event.keyCode == 27) {
                 close_dialog();
             }
@@ -483,6 +483,7 @@ function close_dialog(url, fn) {
     if (fn) {
         $('.mt-dialog').trigger('close', fn);
     }
+    $(document).unbind('keyup.mt-dialog');
     $('.mt-dialog').unbind('close');
     $('.mt-dialog').hide();
 
@@ -945,7 +946,7 @@ $.mtValidator('simple', {
 $.mtValidator('default', {
     wrapError: function ( $target, msg ) {
         return $('<label style="position: absolute;" />')
-            .attr('for', $target.attr('id') )
+            .attr('for', $target.attr('id') || '')
             .addClass('msg-error msg-balloon validate-error')
             .text(msg);
     },

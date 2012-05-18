@@ -1109,7 +1109,7 @@ sub build_date {
                 unless $blog;
         }
     }
-    my $lang 
+    my $lang
         = $args->{language}
         || $ctx->var('local_lang_id')
         || ( $blog && $blog->language );
@@ -2213,7 +2213,7 @@ B<Example:>
     <mt:SetVarTemplate name="entry_title">
         <h1><$MTEntryTitle$></h1>
     </mt:SetVarTemplate>
-    
+
     <mt:Entries>
         <$mt:Var name="entry_title"$>
     </mt:Entries>
@@ -2526,7 +2526,7 @@ B<Attributes:>
 =item * name (or var)
 
 Identifies the template variable. The 'name' attribute supports a variety
-of expressions. In order to not conflict with variable interpolation, 
+of expressions. In order to not conflict with variable interpolation,
 the value of the name attribute should only contain uppercase letters,
 lowercase letters, numbers and underscores. The typical case is a simple
 variable name:
@@ -2664,7 +2664,7 @@ for an excellent way to conditionally initialize variables. The
 following sets the "max_pages" variable to 10 if and only if it does
 not yet have a value.
 
-    <mt:var name="max_pages" default="10" setvar="max_pages"> 
+    <mt:var name="max_pages" default="10" setvar="max_pages">
 
 =item * to_json
 
@@ -4212,7 +4212,7 @@ B<Example:> Passing Parameters to a Template Module
         my $blog = $ctx->stash('blog') || MT->model('blog')->load($blog_id);
 
         my %include_recipe;
-        my $use_ssi 
+        my $use_ssi
             = $blog
             && $blog->include_system
             && ( $arg->{ssi} || $tmpl->include_with_ssi ) ? 1 : 0;
@@ -4231,9 +4231,9 @@ B<Example:> Passing Parameters to a Template Module
                     : $tmpl->cache_path ? $tmpl->cache_path
                     :                     '';
                 %include_recipe = (
-                    name => $tmpl_name,
-                    id   => $tmpl->id,
-                    path => $extra_path,
+                    name    => $tmpl_name,
+                    id      => $tmpl->id,
+                    path    => $extra_path,
                 );
             }
         }
@@ -4241,7 +4241,7 @@ B<Example:> Passing Parameters to a Template Module
         # Try to read from cache
         my $enc               = MT->config->PublishCharset;
         my $cache_expire_type = 0;
-        my $cache_enabled 
+        my $cache_enabled
             = $blog
             && $blog->include_cache
             && (
@@ -4257,7 +4257,7 @@ B<Example:> Passing Parameters to a Template Module
             require Digest::MD5;
             $cache_key = Digest::MD5::md5_hex(
                 Encode::encode_utf8(
-                          'blog::' 
+                          'blog::'
                         . $blog_id
                         . '::template_'
                         . $type . '::'
@@ -4353,7 +4353,7 @@ B<Example:> Passing Parameters to a Template Module
         }
 
         if ($cache_enabled) {
-            $cache_driver->replace( $cache_key, Encode::encode( $enc, $ret ),
+            $cache_driver->set( $cache_key, Encode::encode( $enc, $ret ),
                 $ttl );
         }
 
@@ -4707,7 +4707,7 @@ B<Examples:>
     <a href="<mt:Link template="About Page">">My About Page</a>
 
     <a href="<mt:Link template="main_index">">Blog Home</a>
-    
+
     <a href="<mt:Link entry_id="221">">the entry about my vacation</a>
 
 =for tags archives

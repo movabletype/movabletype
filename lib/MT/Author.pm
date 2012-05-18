@@ -673,7 +673,7 @@ sub _bulk_author_name_html {
                 <img alt="$auth_label" src="$auth_img" width="12" height="12" class="icon auth-type" />
             </div>
             <span class="icon status $status_label">
-                <img alt="$status_label" src="$status_img" class="icon status $lc_status_label" />
+                <img alt="$status_label" src="$status_img" class="status $lc_status_label" />
             </span>
         };
 

@@ -169,8 +169,8 @@ sub dialog_list_asset {
         if !$blog_id && $mode_userpic ne 'upload_userpic';
 
     my $blog_class = $app->model('blog');
-    my $blog = $blog_class->load($blog_id) if $blog_id;
-
+    my $blog;
+    $blog = $blog_class->load($blog_id) if $blog_id;
     return $app->permission_denied()
         if $blog_id && !$app->can_do('access_to_insert_asset_list');
 
@@ -777,7 +777,7 @@ sub build_asset_hasher {
         require MT::FileMgr;
         my $fmgr = MT::FileMgr->new('Local');
         ## TBD: Make sure $file_path is file, not directory.
-        if ( $file_path && $fmgr->exists($file_path) ) {
+        if ( $file_path && $fmgr->file_size($file_path) ) {
             $row->{file_path} = $file_path;
             $row->{file_name} = File::Basename::basename($file_path);
             my $size = $fmgr->file_size($file_path);

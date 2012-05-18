@@ -883,6 +883,10 @@ sub tagged_count {
     $pkg->count( $terms, $args );
 }
 
+sub terms_for_tags {
+    return undef;
+}
+
 1;
 __END__
 

@@ -2148,7 +2148,9 @@ BLOG: for my $blog_id (@id) {
                     type    => { not => 'backup' },
                 }
             );
+            my @removed_tids;
             while ( my $tmpl = $tmpl_iter->() ) {
+                push @removed_tids, $tmpl->id;
                 if ($backup) {
 
                     # zap all template maps
@@ -2168,6 +2170,9 @@ BLOG: for my $blog_id (@id) {
                 else {
                     $tmpl->remove;
                 }
+            }
+            if (@removed_tids) {
+                $app->model('fileinfo')->remove({ template_id => \@removed_tids });
             }
 
             if ($blog_id) {

@@ -132,7 +132,8 @@ sub filter_conditional_list {
     my $user  = $app->user;
     my $admin = ( $user && $user->is_superuser() )
         || ( $perms && $perms->blog_id && $perms->has('administer_blog') );
-    my $system_perms = $user->permissions(0) unless $perms && $perms->blog_id;
+    my $system_perms;
+    $system_perms = $user->permissions(0) unless $perms && $perms->blog_id;
 
     my $test = sub {
         my ($item) = @_;
@@ -149,8 +150,9 @@ sub filter_conditional_list {
 
              # Return true if user has system level privilege for this action.
                         return 1
-                            if $system_perms && $system_perms->can_do(
-                                    $action->{system_action} );
+                            if $system_perms
+                            && $system_perms->can_do(
+                            $action->{system_action} );
                     }
 
                     $include_all = $action->{include_all} || 0;
@@ -1553,7 +1555,8 @@ sub make_commenter_session {
     }
 
     # test
-    $session_key = $app->param('sig') if $user && $user->auth_type eq 'TypeKey';
+    $session_key = $app->param('sig')
+        if $user && $user->auth_type eq 'TypeKey';
 
     require MT::Session;
     my $sess_obj = MT::Session->new();
@@ -1581,12 +1584,11 @@ sub bake_commenter_cookie {
 
     my $session_key = $sess_obj->id;
 
-    my $enc          = $app->charset;
-    my $nick_escaped = $nick
-        ? MT::Util::escape_unicode($nick)
-        : $user
-            ? MT::Util::escape_unicode( $user->nickname )
-            : '';
+    my $enc = $app->charset;
+    my $nick_escaped
+        = $nick ? MT::Util::escape_unicode($nick)
+        : $user ? MT::Util::escape_unicode( $user->nickname )
+        :         '';
 
     my $timeout;
     if ( $user && $user->type == MT::Author::AUTHOR() ) {
@@ -1812,7 +1814,7 @@ sub _get_options_html {
     my $blog_id = $app->param('blog_id') || '';
     $blog_id =~ s/\D//g;
     my $static = MT::Util::remove_html(
-        $app->param('static') 
+        $app->param('static')    # unused - for compatibility
             || encode_url(
             $app->param('return_to') || $app->param('return_url') || ''
             )
@@ -2057,7 +2059,9 @@ sub login {
         );
         return $app->error($message);
     }
-    elsif ( $res == MT::Auth::INVALID_PASSWORD() ) {
+    elsif ($res == MT::Auth::INVALID_PASSWORD()
+        || $res == MT::Auth::SESSION_EXPIRED() )
+    {
 
         # Login invlaid (password error, etc...)
         return $app->error( $app->translate('Invalid login.') );
@@ -2155,6 +2159,7 @@ sub login {
         # Login valid
         if ($new_login) {
             my $commenter_blog_id = $app->_is_commenter($author);
+
             # $commenter_blog_id
             #  0: user has more permissions than comment
             #  N: user has only comment permission on some blog
@@ -2912,6 +2917,10 @@ sub run {
         $timer->pause_partial();
     }
 
+    if ( my $cache_control = $app->config->HeaderCacheControl ) {
+        $app->set_header( 'Cache-Control' => $cache_control );
+    }
+
     my ($body);
 
     # Declare these variables here for Perl 5.6.x
@@ -3013,9 +3022,12 @@ sub run {
             $app->pre_run;
             foreach my $code (@handlers) {
 
+                my $local_component;
                 if ( ref $code eq 'HASH' ) {
                     my $meth_info = $code;
                     $code = $meth_info->{code} || $meth_info->{handler};
+                    $local_component = $meth_info->{component}
+                        if $meth_info->{component};
 
                     my $set 
                         = $meth_info->{permission}
@@ -3054,6 +3066,8 @@ sub run {
                     my @forward_params = @{ $app->{forward_params} }
                         if $app->{forward_params};
                     $app->{forward_params} = undef;
+                    local $app->{component} = $local_component
+                        if $local_component;
                     my $content = $code->( $app, @forward_params );
                     $app->response_content($content)
                         if defined $content;
@@ -3194,15 +3208,35 @@ sub handlers_for_mode {
 
     $code ||= $app->{vtbl}{$mode};
 
-    if ( $code && ref $code eq 'HASH' && $code->{condition} ) {
-        my $cond = $code->{condition};
-        if ( !ref($cond) ) {
-            $cond = $code->{condition} = $app->handler_to_coderef($cond);
-        }
-        return undef unless $cond->($app);
-    }
+    return undef unless $code;
 
-    return $code;
+    my @code;
+    @code = ref($code) eq 'ARRAY' ? @$code : ($code);
+
+    foreach my $hdlr (@code) {
+        if ( $hdlr && ref $hdlr eq 'HASH' ) {
+            if ( $hdlr->{condition} ) {
+                my $cond = $hdlr->{condition};
+                if ( !ref($cond) ) {
+                    $cond = $hdlr->{condition}
+                        = $app->handler_to_coderef($cond);
+                }
+                return undef unless $cond->($app);
+            }
+
+            my $handler = $hdlr->{code} || $hdlr->{handler} || undef;
+            if ( $handler && $handler !~ m/->/ ) {
+                $hdlr->{component} = $1
+                    if $hdlr->{code} =~ m/^\$?(\w+)::/;
+            }
+        }
+        else {
+            if ( $hdlr =~ m/^\$?(\w+)::/ ) {
+                $hdlr = { code => $hdlr, component => $1 };
+            }
+        }
+    }
+    return \@code;
 }
 
 sub mode {

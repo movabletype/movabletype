@@ -59,7 +59,7 @@ sub save {
                 ( $fid ? ( id => { not => $fid } ) : () ),
             },
             {   limit      => 1,
-                fetch_only => { id => 1 },
+                fetchonly => { id => 1 },
             }
         )
         )
@@ -160,8 +160,10 @@ sub delete_filters {
     return $app->errtrans('Invalid request')
         unless $app->validate_magic;
 
-    my $id  = $app->param('id');
-    my @ids = split ',', $id;
+    my @ids  = $app->param('id');
+    # handling either AJAX request and normal request
+    @ids = split ',', join ',', @ids;
+
     my $res = MT->model('filter')->remove( { id => \@ids } )
         or return $app->json_error(
         MT->translate(

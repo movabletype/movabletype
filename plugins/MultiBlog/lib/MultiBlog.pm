@@ -24,6 +24,7 @@ sub preprocess_native_tags {
     # parameters available.
     unless ( $args->{blog_id}
         || $args->{blog_ids}
+        || $args->{site_ids}
         || $args->{include_blogs}
         || $args->{exclude_blogs}
         || $args->{include_websites}
@@ -248,6 +249,12 @@ sub perform_mb_action {
             $app->ping( BlogID => $blog_id );
         }
     }
+}
+
+sub filter_blogs_from_args {
+    my ($plugin, $ctx, $args) = @_;
+    my %acl = load_multiblog_acl( $plugin, $ctx );
+    $args->{ $acl{mode} } = $acl{acl};
 }
 
 sub load_multiblog_acl {

@@ -534,6 +534,7 @@ sub _hdlr_blog_parent_website {
     my $res = '';
     local $ctx->{__stash}{blog}    = $website;
     local $ctx->{__stash}{blog_id} = $website->id;
+    local $ctx->{__stash}{inside_blogs} = 1;
     defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
         or return $ctx->error( $builder->errstr );
     $res .= $out;

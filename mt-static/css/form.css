@@ -134,9 +134,12 @@ fieldset {
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
 }
-.readonly { 
-    background-color: #dcdddd ! important;
-    color: #7b7c7d;
+.text.readonly { 
+    border-color: #dcdddd;
+    background-color: #f3f3f3 ! important;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
 }
 
 select { 
