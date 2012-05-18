@@ -613,5 +613,6 @@
 { "r" : "1", "t" : "<MTEntries id=\"6\"><MTEntryCategories type=\"primary\"><MTCategoryLabel></MTEntryCategories></MTEntries>", "e" : "foo"}, #612
 { "r" : "1", "t" : "<MTPasswordValidationRule>", "e" : "minimum length of 8" }, #613
 { "r" : "1", "t" : "<$MTSetVar name=\"foo614{b}\" value=\"b\"$><$MTIf name=\"foo614{a}\"$>true<MTElse>false</MTIf>", "e" : "false" }, #614
-{ "r" : "1", "t" : "<mt:Archives type=\"Page, Individual, Category\">[<$mt:ArchiveType$>]</mt:Archives>", "e" : "[Page][Individual][Category]" } #615
+{ "r" : "1", "t" : "<mt:Archives type=\"Page, Individual, Category\">[<$mt:ArchiveType$>]</mt:Archives>", "e" : "[Page][Individual][Category]" }, #615
+{ "r" : "1", "t" : "<$mt:Date ts=\"THREE_DAYS_AGO\" relative=\"1\"$>", "e" : "3 days ago" } #616
 ]
