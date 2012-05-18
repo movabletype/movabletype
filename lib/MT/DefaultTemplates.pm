@@ -278,58 +278,71 @@ sub templates {
                     $base_path = $weblog_templates_path;
                 }
 
-                my $tmpl = { %{ $tmpl_hash->{$tmpl_set}{$tmpl_id} } };
+                my $tmpl_data = { %{ $tmpl_hash->{$tmpl_set}{$tmpl_id} } };
+                foreach my $key (keys %$tmpl_data) {
+                    if ('CODE' eq ref $tmpl_data->{$key}) {
+                        $tmpl_data->{$key} = $tmpl_data->{$key}->(); 
+                    }
+                }
                 my $type = $tmpl_set;
+                $type = 'custom' if $type eq 'module';
+                $type = $tmpl_id if $type eq 'system';
+                $tmpl_data->{type}       = $type;
+                $tmpl_data->{key}        = $tmpl_id;
+                $tmpl_data->{identifier} = $tmpl_id;
+                $tmpl_data->{name}       = $tmpl_data->{label};
+
+                my $tmpl = MT->model('template')->new();
+                while (my ($key, $value) = each %$tmpl_data  ) {
+                    $tmpl->{$key} = $value;
+                    $tmpl->column($key, $value) if $tmpl->has_column($key);
+                }
+
+                my $p_or_mt = $plugin || 'MT';
+                if (exists $tmpl_data->{text}) {
+                    $tmpl->text(
+                        $p_or_mt->translate_templatized($tmpl_data->{text}));
+                }
+
                 if ( $tmpl_set =~ m/^global:/ ) {
                     $type =~ s/^global://;
                     $tmpl->{global} = 1;
+                    $tmpl->blog_id(0);
                 }
                 $tmpl->{set} = $type;    # system, index, archive, etc.
                 $tmpl->{order} = 0 unless exists $tmpl->{order};
-
-                $type = 'custom' if $type eq 'module';
-                $type = $tmpl_id if $type eq 'system';
-                my $name = $tmpl->{label};
-                if ( ref $name eq 'CODE' ) {
-                    $name = $name->();
-                }
-                $tmpl->{name}       = $name;
-                $tmpl->{type}       = $type;
-                $tmpl->{key}        = $tmpl_id;
-                $tmpl->{identifier} = $tmpl_id;
 
                 if ( exists $tmpl->{widgets} ) {
                     my $widgets = $tmpl->{widgets};
                     my @widgets;
                     foreach my $widget (@$widgets) {
-                        if ($plugin) {
-                            push @widgets, $plugin->translate($widget);
-                        }
-                        else {
-                            push @widgets, MT->translate($widget);
-                        }
+                        push @widgets, $p_or_mt->translate($widget);
                     }
                     $tmpl->{widgets} = \@widgets if @widgets;
+                    my $text = 
+                        join '', 
+                        map { '<mt:include widget="' . $_ . '">' } 
+                        @widgets;
+                    $tmpl->text($text);
                 }
-                else {
+                elsif ( !exists $tmpl->{text} ) {
 
                     # load template if it hasn't been loaded already
-                    if ( !exists $tmpl->{text} ) {
-                        my $filename = $tmpl->{filename}
-                            || ( $tmpl_id . '.mtml' );
-                        my $file
-                            = File::Spec->catfile( $base_path, $filename );
-                        if ( ( -e $file ) && ( -r $file ) ) {
-                            local $/ = undef;
-                            open my $fin, '<', $file;
-                            my $data = <$fin>;
-                            close $fin;
-                            $tmpl->{text} = $data;
-                        }
-                        else {
-                            $tmpl->{text} = '';
-                        }
+                    my $filename = $tmpl->{filename}
+                        || ( $tmpl_id . '.mtml' );
+                    my $file
+                        = File::Spec->catfile( $base_path, $filename );
+                    if ( ( -e $file ) && ( -r $file ) ) {
+                        local $/ = undef;
+                        open my $fin, '<', $file;
+                        my $data = <$fin>;
+                        close $fin;
+                        $tmpl->{text} = $data;
                     }
+                    else {
+                        $tmpl->{text} = '';
+                    }
+                    $tmpl->text($p_or_mt->translate_templatized($tmpl->{text}));
                 }
 
                 my $local_global_tmpls
