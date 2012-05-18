@@ -6,7 +6,7 @@ body.has-dialog {
 /* - Modal Overlay */
 .mt-dialog-overlay {
     display: none;
-    z-index: 1100;
+    z-index: 2000;
     width: 100%;
     min-width: 960px;
     height: 200%;
@@ -31,7 +31,7 @@ body.has-dialog {
 .mt-dialog {
     display: none;
     position: fixed;
-    z-index: 1101;
+    z-index: 2001;
     top: 30px;
     left: 50%;
     width: 680px;
