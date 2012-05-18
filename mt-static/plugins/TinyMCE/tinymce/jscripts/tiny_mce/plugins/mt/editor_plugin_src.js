@@ -536,7 +536,7 @@
                 'mt_source_unordered_list': 'insertUnorderedList',
                 'mt_source_ordered_list': 'insertOrderedList',
                 'mt_source_list_item': 'insertListItem',
-                'mt_source_link': 'createLink',
+                'mt_source_link': 'createLink'
             };
             $.each(sourceButtons, function(k, v) {
                 if (button_settings.indexOf(k) == -1) {
