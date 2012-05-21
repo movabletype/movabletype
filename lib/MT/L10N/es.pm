@@ -3504,10 +3504,10 @@ que la dirección provista es correcta y le pertenece.',
 	'Please upload the file [_1]' => 'Por favor, suba el fichero [_1]',
 
 ## tmpl/cms/dialog/select_association_type.tmpl
-	'Grant website permission to a user' => 'Conceder permiso de sitio web a un usuario',
-	'Grant blog permission to a user' => 'Conceder permiso de blog a un usuario',
-	'Grant website permission to a group' => 'Conceder permiso de sitio web a un grupo',
-	'Grant blog permission to a group' => 'Conceder permiso de blog a un grupo',
+	'Grant website permission to user' => 'Conceder permiso de sitio web a un usuario',
+	'Grant blog permission to user' => 'Conceder permiso de blog a un usuario',
+	'Grant website permission to group' => 'Conceder permiso de sitio web a un grupo',
+	'Grant blog permission to group' => 'Conceder permiso de blog a un grupo',
 
 ## tmpl/cms/dialog/select_theme.tmpl
 	'Select Personal blog theme' => 'Seleccione un tema para el blog personal',

@@ -3498,10 +3498,10 @@ use vars qw( @ISA %Lexicon );
 	'Please upload the file [_1]' => '[_1]をアップロードしてください。',
 
 ## tmpl/cms/dialog/select_association_type.tmpl
-	'Grant website permission to a user' => 'ユーザーにウェブサイトの権限を割り当てる',
-	'Grant blog permission to a user' => 'ユーザーにブログの権限を割り当てる',
-	'Grant website permission to a group' => 'グループにウェブサイトの権限を割り当てる',
-	'Grant blog permission to a group' => 'グループにブログの権限を割り当てる',
+	'Grant website permission to user' => 'ユーザーにウェブサイトの権限を割り当てる',
+	'Grant blog permission to user' => 'ユーザーにブログの権限を割り当てる',
+	'Grant website permission to group' => 'グループにウェブサイトの権限を割り当てる',
+	'Grant blog permission to group' => 'グループにブログの権限を割り当てる',
 
 ## tmpl/cms/dialog/select_theme.tmpl
 	'Select Personal blog theme' => '個人用ブログテーマの選択',

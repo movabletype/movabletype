@@ -3502,10 +3502,10 @@ use vars qw( @ISA %Lexicon );
 	'Please upload the file [_1]' => 'Bitte laden Sie die Datei [_1] hoch',
 
 ## tmpl/cms/dialog/select_association_type.tmpl
-	'Grant website permission to a user' => 'Website-Berechtigung an Benutzer zuweisen',
-	'Grant blog permission to a user' => 'Blog-Berechtigung an Benutzer zuweisen',
-	'Grant website permission to a group' => 'Website-Berechtigung an Gruppe zuweisen',
-	'Grant blog permission to a group' => 'Blog-Berechtigung an Gruppe zuweisen',
+	'Grant website permission to user' => 'Website-Berechtigung an Benutzer zuweisen',
+	'Grant blog permission to user' => 'Blog-Berechtigung an Benutzer zuweisen',
+	'Grant website permission to group' => 'Website-Berechtigung an Gruppe zuweisen',
+	'Grant blog permission to group' => 'Blog-Berechtigung an Gruppe zuweisen',
 
 ## tmpl/cms/dialog/select_theme.tmpl
 	'Select Personal blog theme' => 'Thema für persönliche Blogs wählen',
