@@ -2214,6 +2214,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Template/Tags/Calendar.pm
 	'Invalid month format: must be YYYYMM' => 'YYYYMM形式でなければなりません。',
+	'Invalid weeks_start_with format: must be Sun|Mon|Tue|Wed|Thu|Fri|Sat' => 'Sun、Mon、Tue、Wed、Thu、Fri、Satのいずれかでなければなりません。',
 	'No such category \'[_1]\'' => '[_1]というカテゴリはありません。',
 
 ## lib/MT/Template/Tags/Category.pm
