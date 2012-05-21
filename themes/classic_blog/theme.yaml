@@ -1,7 +1,7 @@
 label: Classic Blog
 id: classic_blog
 author_name: Six Apart, Ltd.
-author_link: http://www.sixapart.com/
+author_link: http://www.movabletype.org/
 version: 1.0
 class: blog
 protected: 1
