@@ -585,10 +585,14 @@ sub refresh {
 
 sub deflate {
     my $self = shift;
-    {   __objects => {
-            map { $_ => $self->{__objects}{$_}->deflate }
-                keys %{ $self->{__objects} }
-        },
+
+    my %objects = ();
+    if ( $self->{__objects} ) {
+        %objects = map { $_ => $self->{__objects}{$_}->deflate }
+            keys %{ $self->{__objects} };
+    }
+
+    +{  %objects,
         status => {
             __loaded_all_objects => $self->{__loaded_all_objects} ? 1 : 0,
         },
