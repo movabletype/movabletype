@@ -278,7 +278,7 @@ sub _hdlr_comments {
             ? sort { $a->created_on cmp $b->created_on } @$comments
             : sort { $b->created_on cmp $a->created_on } @$comments;
         $no_resort = 1
-            unless $args->{sort_order} || $args->{sort_by};
+            if $col eq 'created_on';
         if (@filters) {
             my $offset = $args->{offset} || 0;
             my $j = 0;
