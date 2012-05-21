@@ -287,9 +287,13 @@ sub lazy_load_objects {
     my $proxy = shift;
     my ($col) = @_;
     $proxy->load_objects
-        if !exists $proxy->{__objects}
-            && $proxy->{__pkeys}
-            && ( ($col) ? ( !exists $proxy->{__objects}->{$col} ) : (1) );
+        if $proxy->{__pkeys}
+            && (!$proxy->{__objects}
+                || ($col
+                    ? !exists $proxy->{__objects}->{$col}
+                    : !$proxy->{__loaded_all_objects}
+                )
+            );
 }
 
 sub lazier_load_objects {
@@ -462,7 +466,11 @@ sub load_objects {
     my @objs = $meta_pkg->search(
         { %{ $proxy->{__pkeys} }, $col ? ( type => $col ) : () } );
 
-    $proxy->prepare_objects(\@objs);
+    if ( !$col ) {
+        $proxy->{__loaded_all_objects} = 1;
+    }
+
+    $proxy->prepare_objects( \@objs );
 }
 
 # FIXME: copied from MT::Object
