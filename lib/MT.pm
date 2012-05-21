@@ -1315,7 +1315,13 @@ sub init_addons {
     my $cfg = $mt->config;
     my @PluginPaths;
 
-    unshift @PluginPaths, File::Spec->catdir( $MT_DIR, 'addons' );
+    foreach my $path ($cfg->AddonsPath) {
+        if (not File::Spec->file_name_is_absolute( $path )) {
+            $path = File::Spec->catdir( $MT_DIR, $path );
+        } 
+        push @PluginPaths, $path;
+    }
+
     return $mt->_init_plugins_core( {}, 1, \@PluginPaths );
 }
 
