@@ -1629,6 +1629,7 @@ BEGIN {
             'ThemesDirectory' => {
                 default => 'themes',
                 path    => 1,
+                type    => 'ARRAY',
             },
             'SupportDirectoryPath' => { default => '', },
             'SupportDirectoryURL'  => { default => '' },

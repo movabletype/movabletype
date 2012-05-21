@@ -96,16 +96,18 @@ sub load_all_themes {
 
 sub _theme_packages {
     my $pkg      = shift;
-    my $base_dir = MT->config('ThemesDirectory');
-    require DirHandle;
-    my $d = DirHandle->new($base_dir);
-    die "Can't open theme directory" unless $d;
+    my @dir_list = MT->config('ThemesDirectory');
     my @ids;
-    while ( defined( my $id = $d->read ) ) {
-        next if $id =~ /^\./;
-        die "Bad theme filename $id"
-            if $id !~ /^([-\\\/\@\:\w\.\s~]+)$/;
-        push @ids, $id;
+    foreach my $base_dir (@dir_list) {
+        require DirHandle;
+        my $d = DirHandle->new($base_dir);
+        die "Can't open theme directory" unless $d;
+        while ( defined( my $id = $d->read ) ) {
+            next if $id =~ /^\./;
+            die "Bad theme filename $id"
+                if $id !~ /^([-\\\/\@\:\w\.\s~]+)$/;
+            push @ids, $id;
+        }
     }
     return @ids;
 }
@@ -150,11 +152,15 @@ sub _load_from_registry {
 sub _load_from_themes_directory {
     my $pkg        = shift;
     my ($theme_id) = @_;
-    my $base_dir   = MT->config('ThemesDirectory');
+    my @dir_list   = MT->config('ThemesDirectory');
 
     require File::Spec;
-    my $dir = File::Spec->catdir( $base_dir, $theme_id );
-    my $path = File::Spec->catfile( $dir, 'theme.yaml' );
+    my ($dir, $path);
+    foreach my $base_dir (@dir_list) {
+        $dir = File::Spec->catdir( $base_dir, $theme_id );
+        $path = File::Spec->catfile( $dir, 'theme.yaml' );
+        last if -f $path;
+    }
 
     return unless -f $path;
     require MT::Util::YAML;
