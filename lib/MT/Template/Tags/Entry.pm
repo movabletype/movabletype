@@ -655,7 +655,7 @@ sub _hdlr_entries {
 
         my $need_join = 0;
         for my $f
-            qw( min_score max_score min_rate max_rate min_count max_count scored_by )
+            (qw{ min_score max_score min_rate max_rate min_count max_count scored_by })
         {
             if ( $args->{$f} ) {
                 $need_join = 1;
