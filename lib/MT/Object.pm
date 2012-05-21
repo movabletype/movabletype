@@ -1740,7 +1740,7 @@ sub deflate {
     my $data = $self->SUPER::deflate(@_);
 
     if ( $self->has_meta ) {
-        $data->{meta} = $self->{__meta}->deflate;
+        $data->{meta} = $self->{__meta}->deflate_meta;
     }
 
     $data;
@@ -1752,7 +1752,7 @@ sub inflate {
     my $obj        = $class->SUPER::inflate(@_);
 
     if ( $class->has_meta && $deflated->{meta} ) {
-        $obj->{__meta}->inflate( $deflated->{meta} );
+        $obj->{__meta}->inflate_meta( $deflated->{meta} );
     }
 
     $obj;

@@ -553,45 +553,6 @@ sub serialize_blob {
 }
 
 sub deflate_meta {
-    my $proxy = shift;
-
-    $proxy->lazier_load_objects;
-
-    my $meta = {};
-    for my $field ( keys %{ $proxy->{__objects} } ) {
-        next if $field eq '';
-        if ( $proxy->{__loaded}->{$field} ) {
-            $meta->{$field} = $proxy->get($field);
-        }
-    }
-    $meta->{__loaded} = $proxy->{__loaded};
-    $meta;
-}
-
-sub inflate_meta {
-    my $proxy = shift;
-    my ($deflated) = @_;
-    for my $key ( keys %$deflated ) {
-        next if ( $key eq '__loaded' );
-        my $value
-            = eval { $proxy->create_meta_object( $key, $deflated->{$key} ) };
-        next
-            if $@; ## probably 2 versions of the code using the same memcached
-        $proxy->{__objects}{$key} = $value;
-        $proxy->{__objects}{$key}{changed_cols} = {};
-    }
-    $proxy->{__loaded} = $deflated->{__loaded};
-}
-
-sub refresh {
-    my $proxy = shift;
-
-    # just delete and let the Proxy lazy load it afterwards
-    delete $proxy->{__objects};
-    return 1;
-}
-
-sub deflate {
     my $self = shift;
 
     my %objects = ();
@@ -607,7 +568,7 @@ sub deflate {
     };
 }
 
-sub inflate {
+sub inflate_meta {
     my $self       = shift;
     my ($data)     = @_;
     my $meta_class = $self->meta_pkg;
@@ -625,6 +586,14 @@ sub inflate {
         }
     }
     $self->prepare_objects;
+}
+
+sub refresh {
+    my $proxy = shift;
+
+    # just delete and let the Proxy lazy load it afterwards
+    delete $proxy->{__objects};
+    return 1;
 }
 
 1;
