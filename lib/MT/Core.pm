@@ -1616,11 +1616,6 @@ BEGIN {
                 path    => 1,
                 type    => 'ARRAY',
             },
-            'AddonsPath' => {
-                default => 'addons',
-                path    => 1,
-                type    => 'ARRAY',
-            },
             'LocalLib' => {
                 default => undef,
                 path    => 1,
