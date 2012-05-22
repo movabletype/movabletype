@@ -761,7 +761,6 @@ sub save_cfg_system_general {
         }
     }
     $cfg->save_config();
-    $app->reboot();
     $app->redirect(
         $app->uri(
             'mode' => 'cfg_system_general',

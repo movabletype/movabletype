@@ -136,7 +136,6 @@ sub plugin_control {
     $cfg->save_config;
 
     $app->add_return_arg( 'switched' => 1 );
-    $app->reboot;
     $app->call_return;
 }
 
