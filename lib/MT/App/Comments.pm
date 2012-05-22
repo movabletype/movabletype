@@ -1131,7 +1131,7 @@ sub post {
                 = MT::DefaultTemplates->load( { type => 'comment_response' } )
                 or return $app->handle_error(
                 $app->translate("Can\'t load template") );
-            $tmpl->blog_id( $entry->blog_id );
+            $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
         my $ctx = $tmpl->context;
         $tmpl->param(
@@ -1823,7 +1823,7 @@ sub do_preview {
                 = MT::DefaultTemplates->load( { type => 'comment_response' } )
                 or
                 return $app->error( $app->translate("Can\'t load template") );
-            $tmpl->blog_id( $entry->blog_id );
+            $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
         if ( $err eq 'pending' ) {
             $tmpl->context($ctx);
@@ -1861,7 +1861,7 @@ sub do_preview {
                 = MT::DefaultTemplates->load( { type => 'comment_preview' } )
                 or
                 return $app->error( $app->translate("Can\'t load template") );
-            $tmpl->blog_id( $entry->blog_id );
+            $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
         $tmpl->context($ctx);
         $tmpl->param(
