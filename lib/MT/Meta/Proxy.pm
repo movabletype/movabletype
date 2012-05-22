@@ -563,6 +563,7 @@ sub deflate_meta {
 
     +{  %objects,
         status => {
+            __loaded             => $self->{__loaded},
             __loaded_all_objects => $self->{__loaded_all_objects} ? 1 : 0,
         },
     };
