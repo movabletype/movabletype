@@ -23,7 +23,6 @@ sub BEGIN {
             version => $VERSION,
             description =>
                 '<MT_TRANS phrase="SpamLookup module for moderating and junking feedback using keyword filters.">',
-            doc_link        => 'http://www.spamlookup.com/wiki/KeywordFilter',
             author_name     => 'Six Apart, Ltd.',
             author_link     => 'http://www.sixapart.com/',
             config_template => 'word_config.tmpl',

@@ -23,7 +23,6 @@ sub BEGIN {
             version => $VERSION,
             description =>
                 '<MT_TRANS phrase="SpamLookup module for using blacklist lookup services to filter feedback.">',
-            doc_link        => 'http://www.spamlookup.com/wiki/LookupFilter',
             author_name     => 'Six Apart, Ltd.',
             author_link     => 'http://www.movabletype.org/',
             config_template => 'lookup_config.tmpl',

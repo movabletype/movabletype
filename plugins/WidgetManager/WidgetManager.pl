@@ -27,6 +27,7 @@ my $plugin = MT::Plugin::WidgetManager->new(
         version        => $VERSION,
         schema_version => $VERSION,
         author_name    => 'Six Apart, Ltd.',
+        author_link    => 'http://www.movabletype.org/',
         key            => 'widget-manager',
         l10n_class     => 'WidgetManager::L10N',
     }
