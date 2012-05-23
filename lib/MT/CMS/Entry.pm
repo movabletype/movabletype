@@ -273,7 +273,7 @@ sub edit {
                     else {
                         $asset_1 = {
                             asset_id   => $asset->id,
-                            asset_name => $asset->file_name
+                            asset_name => $asset->label
                         };
                     }
                     push @{$assets}, $asset_1;
@@ -315,7 +315,7 @@ sub edit {
                 else {
                     $asset_1 = {
                         asset_id   => $asset->id,
-                        asset_name => $asset->file_name,
+                        asset_name => $asset->label,
                         asset_type => $asset->class
                     };
                 }
