@@ -531,23 +531,21 @@
     </div>
   </div>
 
-<mt:if name="can_publish_post">
-  <mt:if name="id">
-  <div class="delete-action">
-    <a
-       href="javascript:void(0)"
-       mt:command="do-remove-items"
-       mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">"
-       mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">"
-       mt:object-type="<mt:var name="object_type" escape="html">" mt:blog-id="<mt:var name="blog_id">"
-       type="submit"
-       title="<mt:var name="delete_button_title">"
-       class="delete"
-       accesskey="x">
-      <__trans phrase="Delete">
-    </a>
-  </div>
-  </mt:if>
+<mt:if name="id">
+<div class="delete-action">
+  <a
+     href="javascript:void(0)"
+     mt:command="do-remove-items"
+     mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">"
+     mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">"
+     mt:object-type="<mt:var name="object_type" escape="html">" mt:blog-id="<mt:var name="blog_id">"
+     type="submit"
+     title="<mt:var name="delete_button_title">"
+     class="delete"
+     accesskey="x">
+    <__trans phrase="Delete">
+  </a>
+</div>
 </mt:if>
 
 <mt:unless name="sitepath_configured">
