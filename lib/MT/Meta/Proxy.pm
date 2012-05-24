@@ -555,18 +555,21 @@ sub serialize_blob {
 sub deflate_meta {
     my $self = shift;
 
-    my %objects = ();
-    if ( $self->{__objects} ) {
-        %objects = map { $_ => $self->{__objects}{$_}->deflate }
-            keys %{ $self->{__objects} };
-    }
-
-    +{  %objects,
+    my %data = (
         status => {
             __loaded             => $self->{__loaded},
             __loaded_all_objects => $self->{__loaded_all_objects} ? 1 : 0,
         },
-    };
+    );
+
+    if ( $self->{__objects} ) {
+        $data{__objects} = {
+            map { $_ => $self->{__objects}{$_}->deflate }
+                keys %{ $self->{__objects} }
+        };
+    }
+
+    \%data;
 }
 
 sub inflate_meta {
