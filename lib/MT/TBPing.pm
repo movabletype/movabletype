@@ -165,6 +165,8 @@ sub list_props {
                     if scalar keys %categories;
                 my %category_map = map { $_->id => $_ } @categories;
                 my ( $title_col, $alt_label );
+                require MT::Promise;
+                my $user = $app->user;
                 my @res;
 
                 for my $obj (@$objs) {
@@ -180,10 +182,24 @@ sub list_props {
                         $title_col = 'label';
                         $alt_label = 'No label';
                     }
-                    my $title_html
-                        = MT::ListProperty::make_common_label_html( $obj,
-                        $app, $title_col, $alt_label );
+                    my $title_html;
                     my $type = $obj->class_type;
+                    my $obj_promise
+                        = MT::Promise::delay( sub { return $obj; } );
+                    if ($user->is_superuser
+                        or $app->run_callbacks(
+                            'cms_view_permission_filter.' . $type,
+                            $app, $obj->id, $obj_promise
+                        )
+                        )
+                    {
+                        $title_html
+                            = MT::ListProperty::make_common_label_html( $obj,
+                            $app, $title_col, $alt_label );
+                    }
+                    else {
+                        $title_html = $obj->$title_col || $alt_label;
+                    }
                     $type = 'categories' if $type eq 'category';
                     my $img
                         = MT->static_path
