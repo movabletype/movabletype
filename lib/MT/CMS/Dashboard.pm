@@ -415,7 +415,6 @@ sub create_stats_directory {
     my $user    = $app->user;
     my $user_id = $user->id;
 
-    my $static_path      = $app->static_path;
     my $static_file_path = $app->static_file_path;
 
     if ( -f File::Spec->catfile( $static_file_path, "mt.js" ) ) {
@@ -429,8 +428,8 @@ sub create_stats_directory {
     my $sub_dir = sprintf( "%03d", $blog_id % 1000 );
     my $top_dir = $blog_id > $sub_dir ? $blog_id - $sub_dir : 0;
     $param->{support_path}
-        = File::Spec->catdir( $static_file_path, 'support', 'dashboard',
-        'stats', $top_dir, $sub_dir, $low_dir );
+        = File::Spec->catdir( $app->support_directory_path(),
+        'dashboard', 'stats', $top_dir, $sub_dir, $low_dir );
 
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
@@ -439,15 +438,14 @@ sub create_stats_directory {
         unless ( $fmgr->exists( $param->{support_path} ) ) {
 
             # the path didn't exist - change the warning a little
-            $param->{support_path}
-                = File::Spec->catdir( $app->static_file_path, 'support' );
+            $param->{support_path} = $app->support_directory_path();
             return;
         }
     }
 
     return
-          $static_path
-        . 'support/dashboard/stats/'
+          $app->support_directory_url()
+        . 'dashboard/stats/'
         . $top_dir . '/'
         . $sub_dir . '/'
         . $low_dir;
@@ -965,12 +963,15 @@ sub _build_favorite_blogs_data {
     my $commnet_iter = MT::Comment->count_group_by(
         { blog_id => \@blog_ids, },
         {   group => ['blog_id'],
-            join  => $app->model('entry')->join_on(
-                undef,
-                {   id => \'=comment_entry_id',
-                    $param->{my_posts} ? ( author_id => $user->id ) : (),
-                },
-            ),
+            $param->{my_posts}
+            ? ( join => $app->model('entry')->join_on(
+                    undef,
+                    {   id        => \'=comment_entry_id',
+                        author_id => $user->id,
+                    },
+                )
+                )
+            : (),
         }
     );
     while ( my ( $count, $blog_id ) = $commnet_iter->() ) {

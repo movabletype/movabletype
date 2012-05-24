@@ -45,8 +45,11 @@ sub system_check {
 
     $param{server_modperl} = 1 if $ENV{MOD_PERL};
     $param{server_fastcgi} = 1 if $ENV{FAST_CGI};
-
-    $param{syscheck_html} = get_syscheck_content($app) || '';
+    # just check this instance is running on PSGI servers.
+    $param{server_psgi}    = $ENV{'psgi.version'} ? 1 : 0;
+    if ( !$param{server_psgi} ) {
+        $param{syscheck_html} = get_syscheck_content($app) || '';
+    }
 
     $app->load_tmpl( 'system_check.tmpl', \%param );
 }
@@ -364,7 +367,7 @@ sub do_list_action {
         if ( !defined $res && !$app->errstr ) {
             return $app->json_error(
                 MT->translate(
-                    q{Error occured while act [_1]: [_2]},
+                    q{Error occurred while attempting to [_1]: [_2]},
                     $the_action->label,
                     $app->errstr
                 )
@@ -555,6 +558,9 @@ sub cfg_system_general {
         = $cfg->FailedLoginExpirationFrequency;
     ( $param{lockout_ip_address_whitelist} = $cfg->LockoutIPWhitelist || '' )
         =~ s/,/\n/g;
+    $param{sitepath_limit}        = $cfg->BaseSitePath;
+    $param{sitepath_limit_hidden} = $cfg->HideBaseSitePath;
+    $param{preflogging_hidden}    = $cfg->HidePaformanceLoggingSettings;
 
     $param{saved}        = $app->param('saved');
     $param{screen_class} = "settings-screen system-feedback-settings";
@@ -587,44 +593,62 @@ sub save_cfg_system_general {
             $app->param('system_debug_mode')
         )
     ) if ( $app->param('system_debug_mode') =~ /\d+/ );
-    if ( $app->param('system_performance_logging') ) {
-        push( @meta_messages, $app->translate('Performance logging is on') );
+    if (not $cfg->HidePaformanceLoggingSettings) {
+        if ( $app->param('system_performance_logging') ) {
+            push( @meta_messages, $app->translate('Performance logging is on') );
+        }
+        else {
+            push( @meta_messages, $app->translate('Performance logging is off') );
+        }
+        push(
+            @meta_messages,
+            $app->translate(
+                'Performance log path is [_1]',
+                $app->param('system_performance_logging_path')
+            )
+        ) if ( $app->param('system_performance_logging_path') =~ /\w+/ );
+        push(
+            @meta_messages,
+            $app->translate(
+                'Performance log threshold is [_1]',
+                $app->param('system_performance_logging_threshold')
+            )
+        ) if ( $app->param('system_performance_logging_threshold') =~ /\d+/ );
     }
-    else {
-        push( @meta_messages, $app->translate('Performance logging is off') );
-    }
-    push(
-        @meta_messages,
-        $app->translate(
-            'Performance log path is [_1]',
-            $app->param('system_performance_logging_path')
-        )
-    ) if ( $app->param('system_performance_logging_path') =~ /\w+/ );
-    push(
-        @meta_messages,
-        $app->translate(
-            'Performance log threshold is [_1]',
-            $app->param('system_performance_logging_threshold')
-        )
-    ) if ( $app->param('system_performance_logging_threshold') =~ /\d+/ );
 
     # actually assign the changes
     $app->config( 'EmailAddressMain',
         $app->param('system_email_address') || undef, 1 );
     $app->config( 'DebugMode', $app->param('system_debug_mode'), 1 )
         if ( $app->param('system_debug_mode') =~ /\d+/ );
-    if ( $app->param('system_performance_logging') ) {
-        $app->config( 'PerformanceLogging', 1, 1 );
+    if (not $cfg->HidePaformanceLoggingSettings) {
+        if ( $app->param('system_performance_logging') ) {
+            $app->config( 'PerformanceLogging', 1, 1 );
+        }
+        else {
+            $app->config( 'PerformanceLogging', 0, 1 );
+        }
+        $app->config( 'PerformanceLoggingPath',
+            $app->param('system_performance_logging_path'), 1 )
+            if ( $app->param('system_performance_logging_path') =~ /\w+/ );
+        $app->config( 'PerformanceLoggingThreshold',
+            $app->param('system_performance_logging_threshold'), 1 )
+            if ( $app->param('system_performance_logging_threshold') =~ /\d+/ );
     }
-    else {
-        $app->config( 'PerformanceLogging', 0, 1 );
+
+    if (not $cfg->HideBaseSitePath) {
+        if (not $app->param('sitepath_limit')) {
+            $app->config( 'BaseSitePath', undef, 1 );
+        }
+        elsif (File::Spec->file_name_is_absolute($app->param('sitepath_limit')) &&
+            -d $app->param('sitepath_limit')) 
+        {
+            $app->config( 'BaseSitePath', $app->param('sitepath_limit'), 1 );
+        }
+        else {
+            return $app->errtrans("Invalid SitePath: Should be valid and absolute");
+        }
     }
-    $app->config( 'PerformanceLoggingPath',
-        $app->param('system_performance_logging_path'), 1 )
-        if ( $app->param('system_performance_logging_path') =~ /\w+/ );
-    $app->config( 'PerformanceLoggingThreshold',
-        $app->param('system_performance_logging_threshold'), 1 )
-        if ( $app->param('system_performance_logging_threshold') =~ /\d+/ );
 
     # construct the message to the activity log
 
@@ -737,7 +761,6 @@ sub save_cfg_system_general {
         }
     }
     $cfg->save_config();
-    $app->reboot();
     $app->redirect(
         $app->uri(
             'mode' => 'cfg_system_general',
@@ -1498,8 +1521,6 @@ sub restore {
             . $app->current_magic
             . '&amp;blog_ids='
             . $param->{blog_ids}
-            . '&amp;asset_ids='
-            . $param->{asset_ids}
             . '&amp;tmp_dir='
             . encode_url( $param->{tmp_dir} );
         if ( ( $param->{restore_upload} ) && ( $param->{restore_upload} ) ) {
@@ -1598,6 +1619,7 @@ sub adjust_sitepath {
     my $asset_class = $app->model('asset');
     my %error_assets;
     my %blogs_meta;
+    my $path_limit = $app->config->BaseSitePath;
     my @p = $q->param;
     foreach my $p (@p) {
         next unless $p =~ /^site_path_(\d+)/;
@@ -1621,6 +1643,12 @@ sub adjust_sitepath {
 
         if ($use_absolute) {
             $site_path = scalar $q->param("site_path_absolute_$id") || q();
+            if ($path_limit and (0 != index($site_path, $path_limit))) {
+                $site_path = $path_limit;
+            }
+        }
+        elsif ($site_path =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)!) {
+            $site_path = $path_limit;
         }
         $blog->site_path($site_path);
 
@@ -1666,6 +1694,12 @@ sub adjust_sitepath {
 
         if ($use_absolute_archive) {
             $archive_path = $archive_path_absolute;
+            if ($path_limit and (0 != index($archive_path, $path_limit))) {
+                $archive_path = $path_limit;
+            }
+        }
+        elsif ($archive_path =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)!) {
+            $archive_path = $path_limit;
         }
         $blog->archive_path($archive_path);
 
@@ -2123,11 +2157,16 @@ sub dialog_adjust_sitepath {
             push @blogs_loop, $params;
         }
         else {
+            my $sitepath = $blog->column('site_path');
+            my $limited = $app->config->BaseSitePath;
+            if ($limited and ( 0 != index($sitepath, $limited) ) ) {
+                $sitepath = $limited;
+            }
             push @website_loop,
                 {
                 name          => $blog->name,
                 id            => $blog->id,
-                old_site_path => $blog->column('site_path'),
+                old_site_path => $sitepath,
                 old_site_url  => $blog->column('site_url'),
                 };
         }
@@ -2153,6 +2192,14 @@ sub dialog_adjust_sitepath {
     $param->{website_loop}   = \@website_loop if @website_loop;
     $param->{all_websites}   = \@all_websites if @all_websites;
     $param->{path_separator} = MT::Util->dir_separator;
+    $param->{sitepth_limited}= $app->config->BaseSitePath;
+    # There is a danger that the asset_id list will ballon and make a request
+    # URL that is longer then allowed. This function have two ways to be called:
+    # 1. As open-dialog command, from the restore window, and with GET 
+    # 2. a part of dialog chain, from dialog_restore_upload, with POST
+    # if this was called using GET, then the asset list will be read from
+    # the calling page
+    $param->{request_method} = $app->request_method();
     for my $key (
         qw(files assets last redirect is_dirty is_asset objects_json deferred_json)
         )

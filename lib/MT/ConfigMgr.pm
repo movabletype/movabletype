@@ -126,6 +126,9 @@ sub default {
     my $var = lc shift;
     my $def = $mgr->{__settings}{$var}{default};
     return wantarray ? () : undef unless defined $def;
+    if (ref($def) eq 'CODE') {
+        $def = $def->($mgr, $var, $mgr->{__settings}{$var}) 
+    }
     if ( my $type = $mgr->{__settings}{$var}{type} ) {
         if ( $type eq 'ARRAY' ) {
             return wantarray ? ($def) : $def;
@@ -305,15 +308,15 @@ sub read_config_file {
     my ($cfg_file) = @_;
     my $mgr        = $class->instance;
     $mgr->{__var} = {};
-    local ( *FH, $_, $/ );
-    $/ = "\n";
+    local $_;
+    local $/ = "\n";
     die "Can't read config without config file name" if !$cfg_file;
-    open FH, $cfg_file
+    open my $FH, "<", $cfg_file
         or return $class->error(
         MT->translate( "Error opening file '[_1]': [_2]", $cfg_file, "$!" ) );
-    my $line;
+    my $line = 0;
 
-    while (<FH>) {
+    while (<$FH>) {
         chomp;
         $line++;
         next if !/\S/ || /^#/;
@@ -328,7 +331,7 @@ sub read_config_file {
         next unless $var && defined($val);
         $mgr->set( $var, $val );
     }
-    close FH;
+    close $FH;
     1;
 }
 

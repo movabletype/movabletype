@@ -60,38 +60,48 @@ sub rename_tag {
         $_->save foreach @tagged_objects;
 
     }
+    elsif (
+        !$tag2
+        and (
+            !$blog_id
+            or not $ot_class->exist(
+                { tag_id => $tag->id, blog_id => { not => $blog_id }, }
+            )
+        )
+        )
+    {
+        $tag->name($name);
+        $tag->save();
+    }
     else {
-        my $new_tag;
-        if ($tag2) {
-            $new_tag = $tag2;
+        my @b_terms = ( $blog_id ? ( blog_id => $blog_id ) : () );
+        my %already_tagged;
+        if ( !$tag2 ) {
+            $tag2 = $tag->clone();
+            $tag2->name($name);
+            $tag2->id(undef);
+            $tag2->save();
         }
         else {
-            my $anti_ot_terms = {
-                ( $blog_id ? ( blog_id => { not => $blog_id } ) : () ),
-                tag_id => $tag->id,
-            };
-            if ( my $ot_test = $ot_class->load($anti_ot_terms) ) {
-                $new_tag = $tag->clone;
-                $new_tag->name($name);
-                $new_tag->id(undef);
+            %already_tagged
+                = map { ( $_->object_id . '|' . $_->object_datasource, 1 ) }
+                $ot_class->load( { @b_terms, tag_id => $tag2->id } );
+        }
 
-                my $ot_terms = {
-                    ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                    tag_id => $tag->id,
-                };
-                my @ots = $ot_class->load($ot_terms);
-                if ( scalar @ots ) {
-                    $new_tag->save();
-                    for my $ot (@ots) {
-                        $ot->tag_id( $new_tag->id );
-                        $ot->save;
-                    }
-                }
+        my $iter = $ot_class->load_iter( { @b_terms, tag_id => $tag->id } );
+        while ( my $ot = $iter->() ) {
+            my $tag_sign = $ot->object_id . '|' . $ot->object_datasource;
+            if ( exists $already_tagged{$tag_sign} ) {
+                $ot->remove();
             }
             else {
-                $tag->name($name);
-                $tag->save();
+                $ot->tag_id( $tag2->id );
+                $ot->save;
             }
+        }
+        if ( not $blog_id or not $ot_class->exist( { tag_id => $tag->id } ) )
+        {
+            $tag->remove();
         }
     }
 
@@ -321,8 +331,9 @@ sub add_tags_to_assets {
     $app->validate_magic or return;
 
     my @id = $app->param('id');
+    my $blog_id = $app->param('blog_id');
     return $app->call_return
-        unless $app->can_do('add_tags_to_assets');
+        if $blog_id and !$app->can_do('add_tags_to_assets');
     require MT::Tag;
     my $tags      = $app->param('itemset_action_input');
     my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
@@ -330,9 +341,24 @@ sub add_tags_to_assets {
     return $app->call_return unless @tags;
 
     require MT::Asset;
+    my %approved_blogs;
     foreach my $id (@id) {
         next unless $id;
         my $asset = MT::Asset->load($id) or next;
+        if ($blog_id) {
+            next unless $asset->blog_id == $blog_id;
+        } elsif ($asset->blog_id) {
+            if (not $approved_blogs{$asset->blog_id}) {
+                next unless 
+                    $app->user->can_do(
+                        'add_tags_to_assets', 
+                        blog_id => $asset->blog_id, 
+                        at_least_one => 1);
+                $approved_blogs{$asset->blog_id} = 1;
+            }
+        } else {
+            next unless $app->user->is_superuser;
+        }
         $asset->add_tags(@tags);
         $asset->save
             or return $app->trans_error( "Error saving file: [_1]",
@@ -347,9 +373,10 @@ sub remove_tags_from_assets {
     my $app = shift;
     $app->validate_magic or return;
 
-    return $app->call_return
-        unless $app->can_do('remove_tags_from_assets');
     my @id = $app->param('id');
+    my $blog_id = $app->param('blog_id');
+    return $app->call_return
+        if $blog_id and !$app->can_do('remove_tags_from_assets');
 
     require MT::Tag;
     my $tags      = $app->param('itemset_action_input');
@@ -358,9 +385,24 @@ sub remove_tags_from_assets {
     return $app->call_return unless @tags;
 
     require MT::Asset;
+    my %approved_blogs;
     foreach my $id (@id) {
         next unless $id;
         my $asset = MT::Asset->load($id) or next;
+        if ($blog_id) {
+            next unless $asset->blog_id == $blog_id;
+        } elsif ($asset->blog_id) {
+            if (not $approved_blogs{$asset->blog_id}) {
+                next unless 
+                    $app->user->can_do(
+                        'remove_tags_from_assets', 
+                        blog_id => $asset->blog_id, 
+                        at_least_one => 1);
+                $approved_blogs{$asset->blog_id} = 1;
+            }
+        } else {
+            next unless $app->user->is_superuser;
+        }
         $asset->remove_tags(@tags);
         $asset->save
             or return $app->trans_error( "Error saving file: [_1]",

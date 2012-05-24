@@ -34,6 +34,9 @@ $Lexicon_es = array(
 
 ## php/lib/block.mtauthorhaspage.php
 
+## php/lib/block.mtcalendar.php
+	'You used an [_1] tag without a date context set up.' => 'Usó una etiqueta [_1] sin un contexto de fecha configurado.',
+
 ## php/lib/block.mtentries.php
 
 ## php/lib/block.mtif.php
@@ -69,6 +72,9 @@ $Lexicon_es = array(
 
 ## php/lib/function.mtcommentauthor.php
 
+## php/lib/function.mtcommenternamethunk.php
+	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'Esta etiqueta \'[_1]\' está obsoleta. Por favor, en su lugar use \'[_2]\'.', # Translate - New
+
 ## php/lib/function.mtcommentreplytolink.php
 	'Reply' => 'Responder',
 
@@ -81,17 +87,18 @@ $Lexicon_es = array(
 	'\'parent\' modifier cannot be used with \'[_1]\'' => 'el modificador \'parent\' no puede usarse con \'[_1]\'',
 
 ## php/lib/function.mtpasswordvalidation.php
-	'Password should be longer than [_1] characters' => 'La clave debe tener más de [_1] caracteres', # Translate - New
-	'Password should not include your Username' => 'La clave no debe incluir el nombre de usuario', # Translate - New
-	'Password should include letters and numbers' => 'La clave debe incluir letras y números', # Translate - New
-	'Password should include lowercase and uppercase letters' => 'La clave debe incluir letras en mayúsculas y minúsculas', # Translate - New
-	'Password should contain symbols such as #!$%' => 'La clave debe contener símbolos como #!$%', # Translate - New
+	'Password should be longer than [_1] characters' => 'La clave debe tener más de [_1] caracteres',
+	'Password should not include your Username' => 'La clave no debe incluir el nombre de usuario',
+	'Password should include letters and numbers' => 'La clave debe incluir letras y números',
+	'Password should include lowercase and uppercase letters' => 'La clave debe incluir letras en mayúsculas y minúsculas',
+	'Password should contain symbols such as #!$%' => 'La clave debe contener símbolos como #!$%',
+	'You used an [_1] tag without a valid [_2] attribute.' => 'Utilizó una etiqueta [_1] sin un atributo [_2] válido.', # Translate - New
 
 ## php/lib/function.mtpasswordvalidationrule.php
-	'minimum length of [_1]' => 'longitud mínima de [_1]', # Translate - New
-	', uppercase and lowercase letters' => ', letras mayúsculas y minúsculas', # Translate - New
-	', letters and numbers' => ', letras y números', # Translate - New
-	', symbols (such as #!$%)' => ', símbolos (como #!$%)', # Translate - New
+	'minimum length of [_1]' => 'longitud mínima de [_1]',
+	', uppercase and lowercase letters' => ', letras mayúsculas y minúsculas',
+	', letters and numbers' => ', letras y números',
+	', symbols (such as #!$%)' => ', símbolos (como #!$%)',
 
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
@@ -119,6 +126,27 @@ $Lexicon_es = array(
 
 ## php/mt.php
 	'Page not found - [_1]' => 'Página no encontrada - [_1]',
+
+## php/lib/MTViewer.php
+	'moments from now' => 'dentro de unos momentos',
+	'[quant,_1,hour,hours] from now' => 'dentro de [quant,_1,hora,horas]',
+	'[quant,_1,minute,minutes] from now' => 'dentro de [quant,_1,minuto,minutos]',
+	'[quant,_1,day,days] from now' => 'dentro de [quant,_1,día,días]',
+	'less than 1 minute from now' => 'dentro de menos de un minuto',
+	'less than 1 minute ago' => 'hace menos de un minuto',
+	'[quant,_1,hour,hours], [quant,_2,minute,minutes] from now' => 'dentro de [quant,_1,hora,horas], [quant,_2,minuto,minutos]',
+	'[quant,_1,hour,hours], [quant,_2,minute,minutes] ago' => 'hace [quant,_1,hora,horas], [quant,_2,minuto,minutos]',
+	'[quant,_1,day,days], [quant,_2,hour,hours] from now' => 'dentro de [quant,_1,día,días], [quant,_2,hora,horas]',
+	'[quant,_1,day,days], [quant,_2,hour,hours] ago' => 'hace [quant,_1,día,días], [quant,_2,hora,horas]',
+	'[quant,_1,second,seconds] from now' => 'dentro de [quant,_1,segundo,segundos]',
+	'[quant,_1,second,seconds]' => '[quant,_1,segundo,segundos]',
+	'[quant,_1,minute,minutes], [quant,_2,second,seconds] from now' => 'dentro de [quant,_1,minuto,minutos], [quant,_2,segundo,segundos]',
+	'[quant,_1,minute,minutes], [quant,_2,second,seconds]' => '[quant,_1,minuto,minutos], [quant,_2,segundo,segundos]',
+	'[quant,_1,minute,minutes]' => '[quant,_1,minuto,minutos]',
+	'[quant,_1,hour,hours], [quant,_2,minute,minutes]' => '[quant,_1,hora,horas], [quant,_2,minuto,minutos]',
+	'[quant,_1,hour,hours]' => '[quant,_1,hora,horas]',
+	'[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,día,días], [quant,_2,hora,horas]',
+	'[quant,_1,day,days]' => '[quant,_1,día,días]',
 
 );
 function translate_phrase($str, $params = null) {

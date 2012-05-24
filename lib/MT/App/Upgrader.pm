@@ -371,8 +371,9 @@ sub init_website {
                ( $_->{class} || '' ) eq 'both'
             || ( $_->{class} || '' ) eq 'website'
         } values %$themes;
-    $param{'theme_loop'}  = \@theme_loop;
-    $param{'theme_index'} = scalar @theme_loop;
+    $param{'theme_loop'}      = \@theme_loop;
+    $param{'theme_index'}     = scalar @theme_loop;
+    $param{'sitepth_limited'} = $app->config->BaseSitePath;
 
     if ( $app->param('back') ) {
         return $app->init_user;
@@ -380,7 +381,7 @@ sub init_website {
     if ( !$app->param('finish') ) {
 
         # suggest site_path & site_url
-        my $path = $app->document_root();
+        my $path = $param{'sitepth_limited'} || $app->document_root();
         $param{website_path} = File::Spec->catdir($path);
 
         my $url = $app->base . '/';
@@ -400,6 +401,14 @@ sub init_website {
         my @dirs = File::Spec->splitdir( $param{website_path} );
         pop @dirs;
         $site_path = File::Spec->catdir(@dirs);
+    }
+    if ( $param{'sitepth_limited'} 
+        && ( 0 != index($site_path, $param{'sitepth_limited'}) ) )
+    {
+        $param{error} = $app->translate(
+            "The 'Publishing Path' provided below is not allowed"
+        );
+        return $app->build_page( 'setup_initial_website.tmpl', \%param );
     }
     if ( !-w $site_path ) {
         $param{error} = $app->translate(
@@ -657,10 +666,10 @@ sub main {
 
     my $ver = $^V ? join( '.', unpack 'C*', $^V ) : $];
     my $perl_ver_check = '';
-    if ( $] < 5.006001 ) {    # our minimal requirement for support
+    if ( $] < 5.008001 ) {    # our minimal requirement for support
         $param->{version_warning} = 1;
         $param->{perl_version}    = $ver;
-        $param->{perl_minimum}    = '5.6.1';
+        $param->{perl_minimum}    = '5.8.1';
     }
 
     my $driver       = MT::Object->driver;

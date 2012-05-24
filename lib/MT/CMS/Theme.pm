@@ -425,6 +425,7 @@ sub do_export {
         or return $app->permission_denied();
 
     my $q    = $app->param;
+    my $cfg  = $app->config;
     my $blog = $app->blog;
     my $theme_id 
         = dirify( $q->param('theme_id') )
@@ -440,8 +441,16 @@ sub do_export {
     my $output = $q->param('output') || 'themedir';
 
     ## Abort if theme directory is not okey for output.
-    my $hdlrs       = MT->registry('theme_element_handlers');
-    my $theme_dir   = MT->config('ThemesDirectory');
+    my $hdlrs         = MT->registry('theme_element_handlers');
+    my @dir_list      = $cfg->ThemesDirectory;
+    my ($default_dir) = $cfg->default('ThemesDirectory');
+    my $theme_dir;
+    if (grep $_ eq $default_dir, @dir_list) {
+        $theme_dir = $default_dir;
+    }
+    else {
+        $theme_dir = $dir_list[0];
+    }
     my $output_path = File::Spec->catdir( $theme_dir, $theme_id );
     if ( $output eq 'themedir' && !$fmgr->can_write($theme_dir) ) {
         return $app->error(

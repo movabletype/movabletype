@@ -4,9 +4,8 @@
 <div id="msg-block"></div>
 </mt:setvarblock>
 
-<mt:loop name="list_components">
-  <mt:setvarblock name="object_listing">listing/<mt:var name="object_type">_list_header.tmpl</mt:setvarblock>
-  <mt:include name="$object_listing" component="$__value__">
+<mt:loop name="list_headers">
+  <mt:include name="$filename" component="$component">
 </mt:loop>
 
 <mt:setvarblock name="list_actions">
@@ -95,10 +94,7 @@ jQuery('div.indicator')
     jQuery(this).hide();
   });
 
-var checked = [];
-var total = 0;
 var dummy = 1;
-var itemlist = [];
 var checksum = '';
 var isdirty = false;
 var indent = 35;
@@ -209,7 +205,7 @@ function createItem(id, parent, label, basename, number) {
   var line = '<span class="sort-tab"></span>';
   line += '<span class="item-label">'+label+'</span>';
   if ( basename )
-    line += '<span class="item-basename">(<span class="item-basename-text">'+basename+'</span>)</span>';
+    line += '<span class="item-basename"><span class="item-basename-text">'+basename+'</span></span>';
   line += ' <span class="item-ctrl"></span>';
   line += ' <span class="count">'+number+'</span>';
   var $item = jQuery('<div id="'+id+'" class="'+parent+'" />').append(line);
@@ -400,7 +396,6 @@ function addItem(parent, label) {
   var nestLevel = nest.length;
   jQuery('#opt-'+parent).after('<option id="opt-'+id+'" value="'+id+'">'+nestedLabel(nestLevel, label)+'</option>');
 
-  itemlist.push(label);
   dummy++;
   setDirty(true);
   fixZeroStateMessage();
@@ -435,7 +430,6 @@ function removeItems(id) {
 }
 
 function setItemList() {
-  itemlist = [];
   jQuery('#itemlist option').not(':first').remove();
   jQuery('.sortable-item:visible').each(function() {
     var $item = jQuery(this);
@@ -444,7 +438,6 @@ function setItemList() {
     var nest = countNested(id, []);
     var nestLevel = nest.length - 1;
     jQuery('#itemlist').append('<option id="opt-'+id+'" value="'+id+'">'+nestedLabel(nestLevel, label)+'</option>');
-    itemlist.push(label);
   });
 }
 
@@ -687,7 +680,6 @@ function renderItems(data) {
   jQuery('#root').empty();
   jQuery('#itemlist option').not(':first').remove();
   jQuery('<div id="0" class="0 sortable-item" />').hide().appendTo('#root');
-  total = parseInt(data.result.count);
   var objs = data.result.objects;
   var count = objs.length;
   for (var i = 0; i < count; i++) {
@@ -702,7 +694,6 @@ function renderItems(data) {
     var nest = countNested(parent, []);
     var nestLevel = nest.length;
     jQuery('#itemlist').append('<option id="opt-'+id+'" value="'+id+'">'+nestedLabel(nestLevel, label)+'</option>');
-    itemlist.push(jQuery(label).text());
   }
   fixZeroStateMessage();
   checksum = data.result.checksum;

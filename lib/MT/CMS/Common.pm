@@ -134,6 +134,12 @@ sub save {
         )
         )
     {
+        if ($values{site_path} and 
+            $values{site_path} =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)!)
+        {
+            return $app->errtrans("Invalid request.");
+        }
+
         unless ( $obj->id ) {
             my $subdomain = $q->param('site_url_subdomain');
             $subdomain = '' if !$q->param('use_subdomain');
@@ -143,7 +149,8 @@ sub save {
             $values{site_url} = "$subdomain/::/$path";
 
             $values{site_path} = $app->param('site_path_absolute')
-                if $app->param('use_absolute')
+                if ! $app->config->BaseSitePath
+                    && $app->param('use_absolute')
                     && $app->param('site_path_absolute');
         }
 
@@ -155,8 +162,7 @@ sub save {
                 delete $values{site_path};
                 delete $values{archive_url};
                 delete $values{archive_path};
-                delete $values{site_path_absolute}
-                    if $values{site_path_absolute};
+                delete $values{site_path_absolute};
             }
             if ( $id && !( $perms->can_do('save_blog_config') ) ) {
                 delete $values{$_} foreach grep {
@@ -184,6 +190,17 @@ sub save {
                     foreach grep { $_ ne 'site_path' && $_ ne 'site_url' }
                     @$names;
             }
+        }
+        if ($values{site_path} and 
+            $app->config->BaseSitePath and 
+            ( 0 != index( $values{site_path}, $app->config->BaseSitePath )))
+        {
+            return $app->errtrans("Website root must be under the set root");
+        }
+        if ($values{site_path} 
+            and not File::Spec->file_name_is_absolute($values{site_path}) )
+        {
+            return $app->errtrans("Invalid request.");
         }
     }
 
@@ -382,6 +399,11 @@ sub save {
                 }
             );
         }
+        if ($id) {
+            my $cache_key = $original->get_cache_key();
+            require MT::Cache::Negotiate;
+            MT::Cache::Negotiate->new()->delete( $cache_key );
+         }
     }
 
     # TODO: convert this to use $app->call_return();
@@ -701,6 +723,7 @@ sub edit {
                 } values %$themes
         ];
         $param{'master_revision_switch'} = $app->config->TrackRevisions;
+        $param{'sitepth_limited'} = $cfg->BaseSitePath;
     }
 
     my $res = $app->run_callbacks( 'cms_edit.' . $type, $app, $id, $obj,
@@ -741,6 +764,19 @@ sub edit {
     $param{search_label} ||= $class->class_label;
     $param{screen_id}    ||= "edit-$type";
     $param{screen_class} .= " edit-$type";
+
+    # If this object came from non core component,
+    # set component for template loading
+    my @compo = MT::Component->select;
+    my $component;
+    foreach my $c (@compo) {
+        my $r = $c->registry( 'object_types' => $type );
+        if ($r) {
+            $component = $c->id;
+            last;
+        }
+    }
+    local $app->{component} = $component if $component;
     return $app->load_tmpl( $tmpl_file, \%param );
 }
 
@@ -773,14 +809,15 @@ sub list {
     } MT::Component->select;
 
     my @list_headers;
+    my $core_include
+        = File::Spec->catfile( MT->config->TemplatePath, $app->{template_dir},
+        'listing', $type . '_list_header.tmpl' );
     push @list_headers,
         {
-        filename => File::Spec->catfile(
-            MT->config->TemplatePath, $app->{template_dir},
-            'listing',                $type . '_list_header.tmpl'
-        ),
+        filename  => $core_include,
         component => 'Core'
-        };
+        }
+        if -e $core_include;
 
     for my $c (@list_components) {
         my $f = File::Spec->catfile( $c->path, 'tmpl', 'listing',
@@ -976,7 +1013,6 @@ sub list {
     my @list_columns;
     for my $prop ( values %$list_props ) {
         next if !$prop->can_display($scope);
-        my $col;
         my $id = $prop->id;
         my $disp = $prop->display || 'optional';
         my $show
@@ -985,19 +1021,24 @@ sub list {
             : scalar %cols ? $cols{$id}
             : $disp eq 'default' ? 1
             :                      0;
+
         my $force   = $disp eq 'force'   ? 1 : 0;
         my $default = $disp eq 'default' ? 1 : 0;
         my @subfields;
 
         if ( my $subfields = $prop->sub_fields ) {
             for my $sub (@$subfields) {
+                my $sdisp = $sub->{display} || 'optional';
                 push @subfields,
                     {
-                    display => $cols{ $id . '.' . $sub->{class} }
-                        || $sub->{display} eq 'default',
+                      display => $sdisp eq 'force' ? 1
+                    : $sdisp eq 'none' ? 0
+                    : scalar %cols ? $cols{ $id . '.' . $sub->{class} }
+                    : $sdisp eq 'default' ? 1
+                    : 0,
                     class      => $sub->{class},
                     label      => $app->translate( $sub->{label} ),
-                    is_default => $sub->{display} eq 'default' ? 1 : 0,
+                    is_default => $sdisp eq 'default' ? 1 : 0,
                     };
             }
         }
@@ -1156,7 +1197,24 @@ sub list {
         $param{search_label} = MT->translate('Entries');
     }
 
-    my $template = $screen_settings->{template} || 'list_common.tmpl';
+    my $template = $screen_settings->{template};
+    my $component;
+    if ($template) {
+
+        # If this object came from non core component,
+        # set component for template loading
+        my @compo = MT::Component->select;
+        foreach my $c (@compo) {
+            my $r = $c->registry( 'object_types' => $type );
+            if ($r) {
+                $component = $c->id;
+                last;
+            }
+        }
+    }
+    else {
+        $template = 'list_common.tmpl';
+    }
 
     my $feed_link = $screen_settings->{feed_link};
     $feed_link = $feed_link->($app)
@@ -1185,6 +1243,7 @@ sub list {
         }
         if $MT::DebugMode;
 
+    local $app->{component} = $component if $component;
     my $tmpl = $app->load_tmpl( $template, \%param )
         or return;
     $app->run_callbacks( 'list_template_param.' . $type,
@@ -1718,20 +1777,9 @@ sub delete {
             }
         }
         elsif ( $type eq 'author' ) {
-            if ( $app->config->ExternalUserManagement ) {
-                require MT::LDAP;
-                my $ldap = MT::LDAP->new
-                    or return $app->error(
-                    MT->translate(
-                        "Loading MT::LDAP failed: [_1].",
-                        MT::LDAP->errstr
-                    )
-                    );
-                my $dn = $ldap->get_dn( $obj->name );
-                if ($dn) {
-                    $return_arg{author_ldap_found} = 1;
-                }
-            }
+            $app->run_callbacks( 'cms_delete_ext_author_filter',
+                $app, $obj, \%return_arg )
+                || return;
         }
         elsif ( $type eq 'website' ) {
             my $blog_class = $app->model('blog');
@@ -1741,24 +1789,26 @@ sub delete {
                 next;
             }
         }
+        elsif ( $type eq 'template' ) {
+            my $cache_key = $obj->get_cache_key();
+            require MT::Cache::Negotiate;
+            MT::Cache::Negotiate->new()->delete( $cache_key );
+            # FIXME: enumeration of types
+            if ($obj->type
+                !~ /(custom|index|archive|page|individual|category|widget|backup)/)
+            {
+                $required_items++;
+                next;
+            }
+        }
 
-        # FIXME: enumeration of types
-        if (   $type eq 'template'
-            && $obj->type
-            !~ /(custom|index|archive|page|individual|category|widget|backup)/o
-            )
-        {
-            $required_items++;
-        }
-        else {
-            $obj->remove
-                or return $app->errtrans(
-                'Removing [_1] failed: [_2]',
-                $app->translate($type),
-                $obj->errstr
-                );
-            $app->run_callbacks( 'cms_post_delete.' . $type, $app, $obj );
-        }
+        $obj->remove
+            or return $app->errtrans(
+            'Removing [_1] failed: [_2]',
+            $app->translate($type),
+            $obj->errstr
+            );
+        $app->run_callbacks( 'cms_post_delete.' . $type, $app, $obj );
         $delete_count++;
     }
 

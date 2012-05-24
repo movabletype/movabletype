@@ -287,9 +287,13 @@ sub lazy_load_objects {
     my $proxy = shift;
     my ($col) = @_;
     $proxy->load_objects
-        if !exists $proxy->{__objects}
-            && $proxy->{__pkeys}
-            && ( ($col) ? ( !exists $proxy->{__objects}->{$col} ) : (1) );
+        if $proxy->{__pkeys}
+            && (!$proxy->{__objects}
+                || ($col
+                    ? !exists $proxy->{__objects}->{$col}
+                    : !$proxy->{__loaded_all_objects}
+                )
+            );
 }
 
 sub lazier_load_objects {
@@ -310,18 +314,112 @@ sub lazier_load_objects {
     }
 }
 
-sub load_objects {
-    my $proxy = shift;
+sub bulk_load_meta_objects {
+    my $class = shift;
+    my ($objs) = @_;
 
-    return unless $proxy->{__pkeys};
-    my ($col)    = @_;
+    return if !( $objs && @$objs );
+
+    my $first    = $objs->[0]->meta_obj;
+    my $pkg      = $first->{pkg};
+    my $meta_pkg = $first->meta_pkg;
+
+
+    # Supported only for single primary key.
+    return if scalar keys %{ $first->{__pkeys} } > 1;
+
+
+    my ($primary_key_col) = %{ $first->{__pkeys} };
+    my @primary_keys      = ();
+    my %proxies           = ();
+
+    foreach my $obj (@$objs) {
+        my $proxy = $obj->meta_obj;
+        if ( !$proxy->{__loaded_all_objects} ) {
+            my $key = $proxy->{__pkeys}{$primary_key_col};
+            push( @primary_keys, $key );
+            $proxies{$key} = $proxy;
+        }
+    }
+
+    return if !@primary_keys;
+
+
+    my $limit = MT->config->BulkLoadMetaObjectsLimit;
+
+    my $primary_keys_len = scalar @primary_keys;
+    for ( my $from = 0; $from < $primary_keys_len; $from += $limit ) {
+        my $to = $from + $limit - 1;
+        if ( $to >= $primary_keys_len ) {
+            $to = $primary_keys_len - 1;
+        }
+
+        my @objs = $meta_pkg->search(
+            { $primary_key_col => [ @primary_keys[ $from .. $to ] ] } );
+
+        foreach my $meta_obj (@objs) {
+            my $proxy = $proxies{ $meta_obj->$primary_key_col } or next;
+
+            my $type_id = $meta_obj->type;
+
+            my $field = $proxy->META_CLASS()->metadata_by_id( $pkg, $type_id )
+                or next;
+
+            my $name = $field->{name};
+            my $type = $field->{type};
+
+            my $meta_col_def = $meta_obj->column_def($type);
+            if ($meta_col_def) {
+                if ( $meta_col_def->{type} eq 'blob' ) {
+                    unserialize_blob($meta_obj);
+                }
+                elsif ( $meta_col_def->{type} eq 'datetime' ) {
+                    $meta_obj->$type( _db2ts( $meta_obj->$type ) );
+                }
+
+                my $enc = MT->config->PublishCharset || 'UTF-8';
+                my $data = $meta_obj->$type;
+                unless ( ref $data ) {
+                    $data = Encode::decode( $enc, $data )
+                        unless Encode::is_utf8($data);
+                }
+                $meta_obj->$type( $data, { no_changed_flag => 1 } );
+            }
+            $proxy->{__objects}->{$name} = $meta_obj;
+            $proxy->{__loaded} ||= {};
+            if ( !$proxy->{__loaded}->{$name} ) {
+                $proxy->{__loaded}->{$name} = 1;
+            }
+        }
+    }
+
+
+    foreach my $proxy ( values(%proxies) ) {
+        if ( $proxy->{__loaded} ) {
+            $proxy->{__pkeys}->{type}
+                = { not => [ keys %{ $proxy->{__loaded} } ] };
+        }
+        $proxy->{__loaded_all_objects} = 1;
+    }
+
+    if ( MT::Memcached->is_available ) {
+        foreach my $obj (@$objs) {
+            $obj->driver->uncache_object($obj);
+            $obj->driver->cache_object($obj);
+        }
+    }
+}
+
+sub prepare_objects {
+    my $proxy = shift;
+    my ($objs) = @_;
+
+    $objs ||= [ values %{ $proxy->{__objects} } ];
+
     my $pkg      = $proxy->{pkg};
     my $meta_pkg = $proxy->meta_pkg;
 
-    my @objs = $meta_pkg->search(
-        { %{ $proxy->{__pkeys} }, $col ? ( type => $col ) : () } );
-
-    foreach my $meta_obj (@objs) {
+    foreach my $meta_obj (@$objs) {
         my $type_id = $meta_obj->type;
 
         my $field = $proxy->META_CLASS()->metadata_by_id( $pkg, $type_id )
@@ -355,6 +453,24 @@ sub load_objects {
                 = { not => [ keys %{ $proxy->{__loaded} } ] };
         }
     }
+}
+
+sub load_objects {
+    my $proxy = shift;
+
+    return unless $proxy->{__pkeys};
+    my ($col)    = @_;
+    my $pkg      = $proxy->{pkg};
+    my $meta_pkg = $proxy->meta_pkg;
+
+    my @objs = $meta_pkg->search(
+        { %{ $proxy->{__pkeys} }, $col ? ( type => $col ) : () } );
+
+    if ( !$col ) {
+        $proxy->{__loaded_all_objects} = 1;
+    }
+
+    $proxy->prepare_objects( \@objs );
 }
 
 # FIXME: copied from MT::Object
@@ -437,34 +553,40 @@ sub serialize_blob {
 }
 
 sub deflate_meta {
-    my $proxy = shift;
+    my $self = shift;
 
-    $proxy->lazier_load_objects;
-
-    my $meta = {};
-    for my $field ( keys %{ $proxy->{__objects} } ) {
-        next if $field eq '';
-        if ( $proxy->{__loaded}->{$field} ) {
-            $meta->{$field} = $proxy->get($field);
-        }
+    my %objects = ();
+    if ( $self->{__objects} ) {
+        %objects = map { $_ => $self->{__objects}{$_}->deflate }
+            keys %{ $self->{__objects} };
     }
-    $meta->{__loaded} = $proxy->{__loaded};
-    $meta;
+
+    +{  %objects,
+        status => {
+            __loaded             => $self->{__loaded},
+            __loaded_all_objects => $self->{__loaded_all_objects} ? 1 : 0,
+        },
+    };
 }
 
 sub inflate_meta {
-    my $proxy = shift;
-    my ($deflated) = @_;
-    for my $key ( keys %$deflated ) {
-        next if ( $key eq '__loaded' );
-        my $value
-            = eval { $proxy->create_meta_object( $key, $deflated->{$key} ) };
-        next
-            if $@; ## probably 2 versions of the code using the same memcached
-        $proxy->{__objects}{$key} = $value;
-        $proxy->{__objects}{$key}{changed_cols} = {};
+    my $self       = shift;
+    my ($data)     = @_;
+    my $meta_class = $self->meta_pkg;
+
+    if ( my $objects = $data->{__objects} ) {
+        $self->{__objects} ||= {};
+        foreach my $key ( keys %$objects ) {
+            $self->{__objects}{$key}
+                = $meta_class->inflate( $objects->{$key} );
+        }
     }
-    $proxy->{__loaded} = $deflated->{__loaded};
+    if ( my $meta_status = $data->{status} ) {
+        foreach my $key ( keys %$meta_status ) {
+            $self->{$key} = $meta_status->{$key};
+        }
+    }
+    $self->prepare_objects;
 }
 
 sub refresh {

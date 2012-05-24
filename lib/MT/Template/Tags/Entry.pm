@@ -655,7 +655,7 @@ sub _hdlr_entries {
 
         my $need_join = 0;
         for my $f
-            qw( min_score max_score min_rate max_rate min_count max_count scored_by )
+            (qw{ min_score max_score min_rate max_rate min_count max_count scored_by })
         {
             if ( $args->{$f} ) {
                 $need_join = 1;
@@ -1163,6 +1163,7 @@ sub _hdlr_entries {
         = ( @entries && defined $entries[0] ) ? \@entries : undef;
     my $glue = $args->{glue};
     my $vars = $ctx->{__stash}{vars} ||= {};
+    MT::Meta::Proxy->bulk_load_meta_objects(\@entries);
     for my $e (@entries) {
         local $vars->{__first__}    = !$i;
         local $vars->{__last__}     = !defined $entries[ $i + 1 ];

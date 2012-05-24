@@ -92,7 +92,7 @@ sub info {
     }
     return sub {
         MT->translate(
-            'A template set containing [_1] templates, [_2] widgets, and [_3] widget sets.',
+            'A template set containing [quant,_1,template,templates], [quant,_2,widget,widgets], and [quant,_3,widget set,widget sets].',
             $counts{template}, $counts{widget}, $counts{widgetset}, );
     };
 }

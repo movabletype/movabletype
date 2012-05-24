@@ -57,7 +57,8 @@ sub is_locked_out_user {
 
     return 0 if ( !$app->config->UserLockoutLimit ) || ( !$username );
 
-    my $user = $app->model('author')->load( { name => $username } )
+    my $user = $app->user
+        || $app->model('author')->load( { name => $username } )
         or return 0;
 
     $user->locked_out;
@@ -87,10 +88,12 @@ sub recover_token {
 
     my $sha256_hex;
     if ( eval { require Digest::SHA } ) {
+
         # Can use SHA256
         $sha256_hex = \&Digest::SHA::sha256_hex;
     }
     else {
+
         # Maybe cannot use SHA256
         $sha256_hex = \&MT::Util::perl_sha1_digest_hex;
     }
@@ -344,7 +347,11 @@ sub process_login_result {
     }
     elsif ( grep { $_ == $result } @for_clear ) {
         $app->model('failedlogin')->remove( { remote_ip => $remote_ip } );
-        if ( my $user = $app->model('author')->load( { name => $username } ) )
+        if (my $user = (
+                       $app->user
+                    || $app->model('author')->load( { name => $username } )
+            )
+            )
         {
             $class->clear_failedlogin($user);
         }

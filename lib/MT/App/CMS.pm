@@ -170,7 +170,6 @@ sub core_methods {
         'delete_filters'    => {
             code      => "${pkg}Filter::delete_filters",
             no_direct => 1,
-            app_mode  => 'JSON',
         },
 
         'ping'               => "${pkg}Entry::send_pings",
@@ -410,7 +409,9 @@ sub core_page_actions {
                 label     => "Refresh Templates",
                 mode      => 'dialog_refresh_templates',
                 condition => sub {
-                    MT->app->blog;
+                    my $blog = MT->app->blog;
+                    return 0 unless $blog;
+                    return $blog->theme_id || $blog->template_set;
                 },
                 order  => 1000,
                 dialog => 1
@@ -1371,6 +1372,9 @@ sub core_list_actions {
                 permit_action => 'clone_blog',
                 max           => 1,
                 dialog        => 1,
+                condition     => sub {
+                    return $app->blog ? 1 : 0;
+                },
             },
             'delete' => {
                 label         => 'Delete',
@@ -1449,9 +1453,10 @@ sub core_list_actions {
                 condition     => sub {
                     my $app = MT->app;
                     my $tmpl_type = $app->param('filter_key') || '';
-                    return $tmpl_type eq 'backup_templates'
-                        ? 0
-                        : 1;
+                    return 0 if $tmpl_type eq 'backup_templates';
+                    my $blog = $app->blog;
+                    return 1 unless $blog;
+                    return $blog->theme_id || $blog->template_set;
                 },
             },
 
@@ -2300,6 +2305,7 @@ sub core_compose_menus {
     my $app = shift;
     return {
         'entry' => {
+            id         => 'entry',
             label      => "Entry",
             order      => 100,
             mode       => 'view',
@@ -2308,6 +2314,7 @@ sub core_compose_menus {
             view       => "blog",
         },
         'page' => {
+            id         => 'page',
             label      => "Page",
             order      => 200,
             mode       => 'view',
@@ -2316,6 +2323,7 @@ sub core_compose_menus {
             view       => [ "blog", 'website' ],
         },
         'asset' => {
+            id         => 'asset',
             label      => "Asset",
             order      => 300,
             mode       => 'start_upload',
@@ -2323,6 +2331,7 @@ sub core_compose_menus {
             view       => [ "blog", 'website' ],
         },
         'website' => {
+            id            => 'website',
             label         => "Website",
             order         => 200,
             mode          => 'view',
@@ -2331,6 +2340,7 @@ sub core_compose_menus {
             view          => "system",
         },
         'user' => {
+            id         => 'user',
             label      => "User",
             order      => 100,
             mode       => "view",
@@ -2342,6 +2352,7 @@ sub core_compose_menus {
             view => "system",
         },
         'blog:create' => {
+            id            => 'blog',
             label         => "Blog",
             order         => 400,
             mode          => 'view',
@@ -3870,7 +3881,7 @@ sub show_error {
     $param = { error => $param } unless ref($param) && ref($param) eq 'HASH';
     my $method_info = MT->request('method_info') || {};
     my $mode = $app->mode;
-    if ( $method_info->{app_mode} && $method_info->{app_mode} eq 'JSON' ) {
+    if ( $app->param('xhr') or (($method_info->{app_mode} || '') eq 'JSON' )) {
         return $app->json_error( $param->{error}, $param->{status} );
     }
     elsif ( $mode eq 'rebuild' ) {
@@ -3934,7 +3945,7 @@ sub show_error {
 sub show_login {
     my $app = shift;
     my $method_info = MT->request('method_info') || {};
-    if ( $method_info->{app_mode} && $method_info->{app_mode} eq 'JSON' ) {
+    if ( $app->param('xhr') or (($method_info->{app_mode} || '') eq 'JSON' )) {
         $app->{login_again} = 1;
         return $app->show_error( { error => 'Unauthorized', status => 401 } );
     }

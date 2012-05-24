@@ -250,6 +250,89 @@ abstract class BaseObject extends ADOdb_Active_Record
         return $obj;
     }
 
+    public static function bulk_load_meta(&$objs) {
+        if (empty($objs)) {
+            return;
+        }
+
+        $obj = $objs[0];
+
+        $extras = array();
+        $table = $obj->TableInfo();
+        $meta_table = $obj->_table . '_meta';
+
+        if(empty($table->_hasMany[$meta_table])) {
+            return;
+        }
+
+        $child_class = $table->_hasMany[$meta_table];
+        $foreign_key = $child_class->foreignKey;
+        $key         = reset($table->keys);
+        $hash        = array();
+
+        foreach ($objs as &$obj) {
+            $id = @$obj->$key;
+            if (!is_numeric($id)) {
+                $db = $obj->DB();
+                $id = $db->qstr($id);
+            }
+            $obj_hash[$id] =& $obj;
+        }
+
+
+        $mt = MT::get_instance();
+        $limit  = $mt->config('BulkLoadMetaObjectsLimit');
+        $length = sizeof($obj_hash);
+
+        for ( $from = 0; $from < $length; $from += $limit ) {
+            $children = $child_class->Find($foreign_key.' IN ('.join(',', array_slice(array_keys($obj_hash), $from, $limit)). ')',false,false);
+            $meta_hash = array();
+            if ($children) {
+                foreach ($children as &$child) {
+                    $k = $child->$foreign_key;
+                    if (! $meta_hash[$k]) {
+                        $meta_hash[$k] = array();
+                    }
+                    $meta_hash[$k][] = $child;
+                }
+            }
+
+            foreach ($meta_hash as $k => &$v) {
+                $obj_hash[$k]->$meta_table = $v;
+            }
+
+            unset($meta_hash);
+        }
+        unset($obj_hash);
+
+
+        foreach ($objs as &$obj) {
+            $meta_info =& $obj->$meta_table;
+            if (! $meta_info) {
+                continue;
+            }
+            foreach ($meta_info as &$meta) {
+                $col_name = $obj->_prefix . 'meta_type';
+                $meta_name = $meta->$col_name;
+                $value = null;
+                $is_blob = false;
+                foreach ($obj->_meta_fields as $f) {
+                    $col_name = $obj->_prefix . 'meta_' . $f;
+                    $value = $meta->$col_name;
+                    if (!is_null($value))
+                        break;
+                    if (preg_match("/^BIN:SERG/", $value)) {
+                        $mt = MT::get_instance();
+                        $value = preg_replace("/^BIN:/", "", $value);
+                        $value = $mt->db()->unserialize($value);
+                    }
+                }
+                $obj->$meta_name = $value;
+                $obj->_original[] = $value;
+            }
+        }
+    }
+
     public function count($args = null) {
         $join = '';
         if (isset($args['join'])) {

@@ -34,6 +34,9 @@ $Lexicon_nl = array(
 
 ## php/lib/block.mtauthorhaspage.php
 
+## php/lib/block.mtcalendar.php
+	'You used an [_1] tag without a date context set up.' => 'U gebruikte een [_1] tag zonder dat er een datumcontext ingesteld was.',
+
 ## php/lib/block.mtentries.php
 
 ## php/lib/block.mtif.php
@@ -69,6 +72,9 @@ $Lexicon_nl = array(
 
 ## php/lib/function.mtcommentauthor.php
 
+## php/lib/function.mtcommenternamethunk.php
+	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'Deze \'[_1]\' tag word niet meer gebruikt.  Gelieve \'[_2]\' te gebruiken.', # Translate - New
+
 ## php/lib/function.mtcommentreplytolink.php
 	'Reply' => 'Antwoorden',
 
@@ -81,17 +87,18 @@ $Lexicon_nl = array(
 	'\'parent\' modifier cannot be used with \'[_1]\'' => '\'parent\' modifier kan niet worden gebruikt met \'[_1]\'',
 
 ## php/lib/function.mtpasswordvalidation.php
-	'Password should be longer than [_1] characters' => 'Wachtwoord moet langer zijn dan [_1] karakters', # Translate - New
-	'Password should not include your Username' => 'Wachtwoord mag gebruikersnaam niet bevatten', # Translate - New
-	'Password should include letters and numbers' => 'Wachtwoorden moeten zowel letters als cijfers bevatten', # Translate - New
-	'Password should include lowercase and uppercase letters' => 'Wachtwoord moet zowel grote als kleine letters bevatten', # Translate - New
-	'Password should contain symbols such as #!$%' => 'Wachtwoord moet ook symbolen bevatten zoals #!$%', # Translate - New
+	'Password should be longer than [_1] characters' => 'Wachtwoord moet langer zijn dan [_1] karakters',
+	'Password should not include your Username' => 'Wachtwoord mag gebruikersnaam niet bevatten',
+	'Password should include letters and numbers' => 'Wachtwoorden moeten zowel letters als cijfers bevatten',
+	'Password should include lowercase and uppercase letters' => 'Wachtwoord moet zowel grote als kleine letters bevatten',
+	'Password should contain symbols such as #!$%' => 'Wachtwoord moet ook symbolen bevatten zoals #!$%',
+	'You used an [_1] tag without a valid [_2] attribute.' => 'U gebruikte een [_1] tag zonder geldig [_2] attribuut.', # Translate - New
 
 ## php/lib/function.mtpasswordvalidationrule.php
-	'minimum length of [_1]' => 'minimale lengte van [_1]', # Translate - New
-	', uppercase and lowercase letters' => ', hoofdletters en kleine letters', # Translate - New
-	', letters and numbers' => ', letters en cijfers', # Translate - New
-	', symbols (such as #!$%)' => ', symbolen (zoals #!$%)', # Translate - New
+	'minimum length of [_1]' => 'minimale lengte van [_1]',
+	', uppercase and lowercase letters' => ', hoofdletters en kleine letters',
+	', letters and numbers' => ', letters en cijfers',
+	', symbols (such as #!$%)' => ', symbolen (zoals #!$%)',
 
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
@@ -119,6 +126,27 @@ $Lexicon_nl = array(
 
 ## php/mt.php
 	'Page not found - [_1]' => 'Pagina niet gevonden - [_1]',
+
+## php/lib/MTViewer.php
+	'moments from now' => 'ogenblikken in de toekomst',
+	'[quant,_1,hour,hours] from now' => 'over [quant,_1,uur,uur]',
+	'[quant,_1,minute,minutes] from now' => 'over [quant,_1,minuut,minuten]',
+	'[quant,_1,day,days] from now' => 'over [quant,_1,dag,dagen]',
+	'less than 1 minute from now' => 'binnen minder dan 1 minuut',
+	'less than 1 minute ago' => 'minder dan 1 minuut geleden',
+	'[quant,_1,hour,hours], [quant,_2,minute,minutes] from now' => 'over [quant,_1,uur,uur] en [quant,_2,minuut,minuten]',
+	'[quant,_1,hour,hours], [quant,_2,minute,minutes] ago' => '[quant,_1,uur,uur], [quant,_2,minuut,minuten] geleden',
+	'[quant,_1,day,days], [quant,_2,hour,hours] from now' => 'over [quant,_1,dag,dagen] en [quant,_2,uur,uur]',
+	'[quant,_1,day,days], [quant,_2,hour,hours] ago' => '[quant,_1,dag,dagen] en [quant,_2,uur,uur] geleden',
+	'[quant,_1,second,seconds] from now' => 'over [quant,_1,seconde,seconden]',
+	'[quant,_1,second,seconds]' => '[quant,_1,seconde,seconden]',
+	'[quant,_1,minute,minutes], [quant,_2,second,seconds] from now' => 'over [quant,_1,minuut,minuten], [quant,_2,seconde,seconden]',
+	'[quant,_1,minute,minutes], [quant,_2,second,seconds]' => '[quant,_1,minuut,minuten], [quant,_2,seconde,seconden]',
+	'[quant,_1,minute,minutes]' => '[quant,_1,minuut,minuten]',
+	'[quant,_1,hour,hours], [quant,_2,minute,minutes]' => '[quant,_1,uur,uren], [quant,_2,minuut,minuten]',
+	'[quant,_1,hour,hours]' => '[quant,_1,uur,uren]',
+	'[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,dag,dagen], [quant,_2,uur,uren]',
+	'[quant,_1,day,days]' => '[quant,_1,dag,dagen]',
 
 );
 function translate_phrase($str, $params = null) {

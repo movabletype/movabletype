@@ -236,7 +236,7 @@ sub perms_from_registry {
         for my $perm_name (@perms) {
             $cur_rest =~ s/'$perm_name',?//i;
         }
-        $perms->restrictions($cur_rest);
+        $perms->restrictions($cur_rest || undef);
     }
 
     # Clears all permissions or those in a particular set

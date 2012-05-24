@@ -413,6 +413,8 @@ class MT {
             $cfg['commenterregistration'] = array('allow' => 1 );
         isset($cfg['userpasswordminlength']) or
             $cfg['userpasswordminlength'] = 8;
+        isset($cfg['bulkloadmetaobjectslimit']) or
+            $cfg['bulkloadmetaobjectslimit'] = 100;
     }
 
     function configure_paths($blog_site_path) {
@@ -929,9 +931,27 @@ function offset_time($ts, $blog = null, $dir = null) {
 }
 
 function translate_phrase_param($str, $params = null) {
-    if (is_array($params) && (strpos($str, '[_') !== false)) {
-        for ($i = 1; $i <= count($params); $i++) {
-            $str = preg_replace("/\\[_$i\\]/", $params[$i-1], $str);
+    if (is_array($params)) {
+        if (strpos($str, '[_') !== false) {
+            for ($i = 1; $i <= count($params); $i++) {
+                $str = preg_replace("/\\[_$i\\]/", $params[$i-1], $str);
+            }
+        }
+        $start = 0;
+        while (preg_match("/\\[quant,_(\d+),([^\\],]*)(?:,([^\\],]*))?(?:,([^\\],]*))?\\]/", $str, $matches, PREG_OFFSET_CAPTURE, $start)) {
+            $id = $matches[1][0];
+            $num = $params[$id-1];
+            if ( ($num === 0) && (count($matches) > 4) ) { 
+                $part = $matches[4][0];
+            } 
+            elseif ( $num === 1 ) {
+                $part = $num . ' ' . $matches[2][0];
+            }
+            else {
+                $part = $num . ' ' . ( count($matches) > 3 ? $matches[3][0] : ( $matches[2][0] . 's' ) );
+            }
+            $str = substr_replace($str, $part, $matches[0][1], strlen($matches[0][0]));
+            $start = $matches[0][1] + strlen($part);
         }
     }
     return $str;

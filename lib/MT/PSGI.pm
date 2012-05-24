@@ -43,7 +43,12 @@ my $mt_app = sub {
 
         # Cheap hack to get the output
         my ( $header_sent, $body );
-        local *MT::App::send_http_header = sub { $header_sent++ };
+        no warnings qw(redefine);
+        local *MT::App::send_http_header = sub {
+            my $self = shift;
+            $self->{response_content_type} = $_[0] if $_[0];
+            $header_sent++;
+        };
         local *MT::App::print
             = sub { my $self = shift; $body .= "@_" if $header_sent };
 
@@ -241,9 +246,9 @@ sub mount_applications {
     }
 
     ## Mount mt-static directory
-    my $staticurl = MT->config->StaticWebPath;
+    my $staticurl = $mt->static_path();
     $staticurl =~ s!^https?://[^/]*!!;
-    my $staticpath = MT->config->StaticFilePath;
+    my $staticpath = $mt->static_file_path();
     $urlmap->map( $staticurl,
         Plack::App::Directory->new( { root => $staticpath } ) );
 
@@ -255,7 +260,7 @@ sub mount_applications {
         Plack::App::Directory->new( { root => $supportpath } ) );
 
     ## Mount favicon.ico
-    my $static = MT->config->StaticFilePath;
+    my $static = $staticpath;
     $static .= '/' unless $static =~ m!/$!;
     my $favicon = $static . 'images/favicon.ico';
     $urlmap->map( '/favicon.ico' => Plack::App::File->new( { file => $favicon } ));

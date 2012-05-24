@@ -68,7 +68,7 @@ sub list_props {
                         join      => MT->model('tag')->join_on(
                             undef,
                             {   name => '@userpic',
-                                id   => \'= objecttag_tag_id'
+                                id   => \'= objecttag_tag_id', # baka editors ',
                             }
                         ),
                     }
@@ -265,7 +265,7 @@ sub list_props {
                     MT->model('asset')->meta_pkg->join_on(
                     undef,
                     {   type     => $prop->meta_type,
-                        asset_id => \"= asset_id",
+                        asset_id => \"= asset_id", # baka editor ",
                         %$super_terms,
                     },
                     );
@@ -304,13 +304,15 @@ sub list_props {
                         undef,
                         [   [   { tag_id => { not => $tag->id }, },
                                 '-or',
-                                { tag_id => \'IS NULL', },
+                                { tag_id => \'IS NULL', # baka editors ',
+                                }, 
                             ],
                             '-and',
                             [   {   object_datasource => MT::Asset->datasource
                                 },
                                 '-or',
-                                { object_datasource => \'IS NULL' },
+                                { object_datasource => \'IS NULL' # baka editors ',
+                                }, 
                             ],
                         ],
                         {   unique    => 1,
@@ -334,9 +336,11 @@ sub list_props {
                     push @{ $base_args->{joins} },
                         MT->model('author')->join_on(
                         undef,
-                        { id => \'is null', },
+                        { id => \'is null', # baka editors ',
+                        },
                         {   type      => 'left',
-                            condition => { id => \'= asset_created_by' },
+                            condition => { id => \'= asset_created_by' # baka editors ',
+                            },
                         },
                         );
                 }
@@ -351,7 +355,7 @@ sub list_props {
                     push @{ $base_args->{joins} },
                         MT->model('author')->join_on(
                         undef,
-                        {   id     => \'= asset_created_by',
+                        {   id     => \'= asset_created_by', # baka editors ',
                             status => $status,
                         },
                         );
@@ -471,7 +475,7 @@ sub url {
     my $asset = shift;
     my $url   = $asset->SUPER::url(@_);
     return $url
-        if defined($url) && ( $url !~ m!^\%! ) && ( $url =~ m!^https://! );
+        if defined($url) && ( $url !~ m!^\%! ) && ( $url =~ m!^https?://! );
 
     $url = $asset->cache_property(
         sub {
@@ -850,6 +854,14 @@ sub _make_cache_path {
     $asset_cache_path;
 }
 
+sub tagged_count {
+    my $obj = shift;
+    my ( $tag_id, $terms ) = @_;
+    $terms ||= {};
+    $terms->{class} = '*';
+    return $obj->SUPER::tagged_count($tag_id, $terms);
+}
+
 1;
 
 __END__
@@ -862,24 +874,166 @@ MT::Asset
 
     use MT::Asset;
 
-    # Example
+    $asset = MT::Asset->load( $asset_id );
+    print $asset->as_html();
+    
+    $asset_pkg = MT::Asset->handler_for_file($basename);
+    $asset = $asset_pkg->new();
+    $asset->file_path($filepath);
+    $asset->file_name($basename);
+    $asset->file_ext($ext);
+    $asset->blog_id($blog_id);
+    $asset->label($basename);
+    $asset->created_by( $app->user->id );
+    $asset->save();
 
 =head1 DESCRIPTION
 
-This module provides an object definition for a file that is placed under
-MT's control for publishing.
+This module provides an object definition for a general file that is placed under
+MT's control for publishing. There are sub-classes for specific file-types,
+such as L<MT::Asset::Image>, L<MT::Asset::Audio> and L<MT::Asset::Video>
+
+This module is subclass of L<MT::Object>, L<MT::Taggable> and L<MT::Scorable>
 
 =head1 METHODS
+
+=head2 MT::Asset->handler_for_file($filename)
+
+Returns a I<MT::Asset> subclass suitable for the filename given. This
+determination is typically made based on the file's extension.
 
 =head2 MT::Asset->new
 
 Constructs a new asset object. The base class is the generic asset object,
 which represents a generic file.
 
-=head2 MT::Asset->handler_for_file($filename)
+=head2 Data access methods:
 
-Returns a I<MT::Asset> package suitable for the filename given. This
-determination is typically made based on the file's extension.
+=over 4
+
+=item $asset->id
+
+=item $asset->blog_id - The blog that this asset is belong to
+
+=item $asset->label
+
+=item $asset->url
+
+The URL on which this asset can be accessed at. can contain shortcuts
+to build upon: %r for site url, %s for the support directory and
+%a for the archive url
+
+=item $asset->description
+
+=item $asset->file_path
+
+Local path for the file. can contain shortcuts similar to the url method
+
+=item $asset->file_name - i.e. document.pdf
+
+=item $asset->file_ext - the extention, without the leading dot
+
+=item $asset->mime_type
+
+=item $asset->parent
+
+An asset can have a parent-asset, in which case the parent asset id is
+stored here
+
+=back
+
+=head2 $asset->blog
+
+returns a Blog object, to which this asset is belong to
+
+=head2 $asset_pkg->can_handle( $filename )
+
+return true if $asset_pkt can handle files as such as $filename
+
+=head2 $asset->metadata()
+
+returns a hashref containing all the fields of this asset with
+translated keys, making it ready for presentation
+
+=head2 $asset_pkt->extensions
+
+an internal function used by can_handle to decide if this module
+can handle a specific file. 
+
+subclasses are expected to override this method and supply their
+own list of handled extensions
+
+=head2 $asset_pkt->type_list()
+
+returns the type-name that this package handles. this is the reverse
+function for $pkg->class_handler($type)
+
+=head2 $asset->has_thumbnail
+
+=head2 $asset->thumbnail_file
+
+=head2 $asset->thumbnail_filename
+
+=head2 $asset->stock_icon_url
+
+MT::Asset returns false for all these thumbnail functions, as it handles
+a general file. subclasses should override them with relevant information
+
+=head2 $asset->thumbnail_url( %params )
+
+Tries to retrive thumbnail url base on the thumbnail_file method, or 
+if fails stock_icon_url. %params is passed directly to them. 
+
+If %param contains a 'Pseudo' key, will return the URL with %r, %s or %a
+in the beginning, as explained in $asset->url
+
+=head2 $asset->as_html( [ $params ] )
+
+returns a HTML string containing link with the asset URL and filename
+If $param->{enclose} is true, the HTML contains a form
+
+=head2 $asset->insert_options( [ $params ] )
+
+Return a HTML snippet of form options for inserting this asset
+into a web page. Default behavior is no options.
+
+=head2 $asset->on_upload( [ $param ] )
+
+post-upload action. There is nothing to do for a generic file, but
+subclasses can process the file, create thumbnails and so on.
+
+=head2 $asset->edit_template_param($cb, $app, $param, $tmpl)
+
+Called before the template rendering, and gives an asset a chance
+to add parameters. Default behavior is to do nothing
+
+=head2 $asset->set_values_from_query( $q )
+
+The Asset will collect from a query's parameters any data that it 
+finds relevant. By default search if any of it's data fields 
+exists in the query, and if they do saves them. Subclasses can
+opt out or decorate this behavior by overriding the method
+
+=head2 $asset->remove_cached_files()
+
+Remove all the thumbnails generated for $asset
+
+=head2 $asset->_make_cache_path( [ $path, $pseudo ] )
+
+Returns a suitable place for caching asset-related files. for example,
+thumbnails. This place is basically root_path/cache-directory, where 
+root_path changes if the asset is blog-related, archives or in the 
+site-root. also cache-directory is taken from $path, or if not
+supplied it is taken from the AssetCacheDir configuration directive,
+added with the year and the month $asset was created on.
+
+If $pseudo is true, returns a path starting with %r, %s or %a, 
+as explained in $asset->url
+
+=head2 $asset->remove()
+
+Remove this asset from the database, the filesystem and any associated
+tags. also removes child assets and ObjectAsset records
 
 =head1 AUTHORS & COPYRIGHT
 

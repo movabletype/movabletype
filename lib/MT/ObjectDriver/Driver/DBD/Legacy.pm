@@ -47,11 +47,12 @@ sub new {
 
 sub db_column_name {
     my $dbd = shift;
-    my ( $table, $col ) = @_;
+    my ( $table, $col, $alias ) = @_;
     return $1 if $col =~ m/\!(.*)\!/;
 
     $table =~ s{ \A mt_ }{}xms;
-    return join( '_', $table, $col );
+    my $col_name = join( '_', $table, $col );
+    $alias ? "$alias.$col_name" : $col_name;
 }
 
 sub configure { }

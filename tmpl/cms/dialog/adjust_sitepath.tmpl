@@ -192,12 +192,14 @@ function init() {
           <div class="relative-site_path content-path">
             <span class="website-path"><span class="parent_site_path_<mt:var name="id">">&nbsp;</span></span><input type="text" name="site_path_<mt:var name="id" escape="html">" id="site_path_<mt:var name="id" escape="html">" class="blog-path-text text path" value="<mt:unless name="site_path_absolute"><$mt:var name="old_site_path" escape="html"$></mt:unless>" />
           </div>
+          <mt:unless name="sitepth_limited">
           <div class="absolute-site_path content-path">
             <input type="text" name="site_path_absolute_<mt:var name="id" escape="html">" id="site_path_absolute_<mt:var name="id" escape="html">" value="<$mt:var name="old_site_path" escape="html"$>" class="blog-path-text text" />
           </div>
           <div class="option use-absolute<mt:if name="site_path_absolute"> default-absolute</mt:if>">
             <input type="checkbox" name="use_absolute_<mt:var name="id" escape="html">" id="use_absolute_<mt:var name="id" escape="html">" value="1" class="cb" /> <label for="use_absolute_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
           </div>
+          </mt:unless>
           <div class="hint relative-site_path-hint"><__trans phrase="Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
           <div class="hint absolute-site_path-hint"><__trans phrase="Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></div>
         </mtapp:setting>
@@ -249,12 +251,14 @@ function init() {
           <div class="relative-site_path content-path">
             <span class="website-path"><span class="parent_site_path_<mt:var name="id">">&nbsp;</span></span><input type="text" name="archive_path_<mt:var name="id" escape="html">" id="archive_path_<mt:var name="id" escape="html">" class="blog-path-text archive-path text path" value="<mt:unless name="archive_path_absolute"><mt:var name="old_archive_path" escape="html"></mt:unless>" />
           </div>
+          <mt:unless name="sitepth_limited">
           <div class="absolute-site_path content-path">
             <input type="text" name="archive_path_absolute_<mt:var name="id" escape="html">" id="archive_path_absolute_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_path" escape="html">" class="blog-path-text archive-path text" />
           </div>
           <div class="option use-absolute<mt:if name="archive_path_absolute"> default-absolute</mt:if>">
             <input type="checkbox" name="use_absolute_archive_<mt:var name="id" escape="html">" id="use_absolute_archive_<mt:var name="id" escape="html">" value="1" class="cb"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> /> <label for="use_absolute_archive_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
           </div>
+          </mt:unless>
           <div class="hint relative-site_path-hint"><__trans phrase="Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
           <div class="hint absolute-site_path-hint"><__trans phrase="Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></div>
         </mtapp:setting>
@@ -339,7 +343,13 @@ function init() {
             }
             if (parent_path == '' && $e.val() == '')
                 return false;
-            return is_valid_path(parent_path + $e.val());
+            var full_path = parent_path + $e.val();
+            <mt:if name="sitepth_limited">
+            if (0 != full_path.indexOf('<mt:var name="sitepth_limited" escape="singlequotes">')) {
+                return false;
+            }
+            </mt:if>
+            return is_valid_path(full_path);
         },
         // Blog paths
         '.relative-site_path .blog-path-text': function ($e) {
@@ -372,6 +382,11 @@ function init() {
                 var b_id = RegExp.$1;
                 if ( jQuery('#use_absolute_' + b_id + ':checked').length &&
                      !jQuery('#site_path_absolute_' + b_id + ':hidden').length  ) {
+                    <mt:if name="sitepth_limited">
+                    if (0 != $e.val().indexOf('<mt:var name="sitepth_limited" escape="singlequotes">')) {
+                        return false;
+                    }
+                    </mt:if>
                     return is_valid_absolute_path($e.val());
                 }
             }
@@ -441,6 +456,9 @@ function init() {
 
     jQuery('#adjust_sitepath').submit( function () {
         if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') ) return false;
+        <mt:if name="request_method" op="eq" value="GET">
+        jQuery(this).find('input[name=asset_ids]').val(window.parent.RestoredAssetIds());
+        </mt:if>
     });
 
     jQuery('.website-path-text').change( function () {

@@ -124,6 +124,28 @@ $Lexicon_ja = array(
 ## php/mt.php
 	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
 
+## php/lib/MTViewer.php
+	'moments from now' => '今から',
+	'[quant,_1,hour,hours] from now' => '[quant,_1,時間,時間]後',
+	'[quant,_1,minute,minutes] from now' => '[quant,_1,分,分]後',
+	'[quant,_1,day,days] from now' => '[quant,_1,日,日]後',
+	'less than 1 minute from now' => '1分後以内',
+	'less than 1 minute ago' => '1分以内',
+	'[quant,_1,hour,hours], [quant,_2,minute,minutes] from now' => '[quant,_1,時間,時間], [quant,_2,分,分]後',
+	'[quant,_1,hour,hours], [quant,_2,minute,minutes] ago' => '[quant,_1,時間,時間], [quant,_2,分,分]前',
+	'[quant,_1,day,days], [quant,_2,hour,hours] from now' => '[quant,_1,日,日], [quant,_2,時間,時間]後',
+	'[quant,_1,day,days], [quant,_2,hour,hours] ago' => '[quant,_1,日,日], [quant,_2,時間,時間]前',
+	'[quant,_1,second,seconds] from now' => '[quant,_1,秒,秒]後',
+	'[quant,_1,second,seconds]' => '[quant,_1,秒,秒]',
+	'[quant,_1,minute,minutes], [quant,_2,second,seconds] from now' => '[quant,_1,分,分], [quant,_2,秒,秒]後',
+	'[quant,_1,minute,minutes], [quant,_2,second,seconds]' => '[quant,_1,分,分], [quant,_2,秒,秒]',
+	'[quant,_1,minute,minutes]' => '[quant,_1,分,分]',
+	'[quant,_1,hour,hours], [quant,_2,minute,minutes]' => '[quant,_1,時間,時間], [quant,_2,分,分]',
+	'[quant,_1,hour,hours]' => '[quant,_1,時間,時間]',
+	'[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,日,日], [quant,_2,時間,時間]',
+	'[quant,_1,day,days]' => '[quant,_1,日,日]',
+
+
 );
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_ja;

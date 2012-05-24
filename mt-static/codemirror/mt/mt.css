@@ -1,3 +1,7 @@
+.CodeMirror pre {
+    max-height: none;
+}
+
 .CodeMirror-scroll {
     height: 550px;
 }

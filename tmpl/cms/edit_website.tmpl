@@ -172,6 +172,14 @@ jQuery(function() {
         if (str.match(/\.\./)) {
             return false;
         }
+        if (!str.match(/^(\/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)/)) {
+            return false;
+        }
+        <mt:if name="sitepth_limited">
+        if (0 != str.indexOf('<mt:var name="sitepth_limited" escape="singlequotes">')) {
+            return false;
+        }
+        </mt:if>
         return true;
     }
 

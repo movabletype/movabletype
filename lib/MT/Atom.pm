@@ -186,7 +186,45 @@ __END__
 
 =head1 NAME
 
-MT::Atom
+MT::Atom::Entry - A single record in the MT::AtomServer's reply
+
+=head1 SYNOPSIS
+
+    use MT::Atom;
+    
+    $atom = MT::Atom::Entry->new_from_comment($comment);
+
+=head1 DESCRIPTION
+
+This module represent a single record in reply to an Atom request. 
+this record can be a blog entry, asset or comment. 
+
+Subclass of L<XML::Atom::Entry>
+
+=head1 METHODS
+
+=head2 MT::Atom::Entry->new_with_entry( $entry, %param )
+
+An Atom record represents an entry. includes info about the author
+and categories of this entry. $entry should be a MT::Entry object,
+and %params are sent to any XML::Atom object that is created.
+
+=head2 MT::Atom::Entry->new_with_asset( $asset, %param )
+
+An Atom record represents an asset - that is just an URL and mime_type.
+$asset should be a MT::Asset object,
+and %params are sent to any XML::Atom object that is created.
+
+=head2 MT::Atom::Entry->new_with_comment( $comment, %param )
+
+An Atom record represents an entry. includes info about the author. 
+$comment should be a MT::Comment object,
+and %params are sent to any XML::Atom object that is created.
+
+=head2 MT::Atom::Entry::_create_issued( $ts, $blog )
+
+Create a time stamp for usage in Atom reply. $ts should be a string 
+in the format "YYYYMMDDHHMMSS", and $blog is a MT::Blog object
 
 =head1 AUTHOR & COPYRIGHT
 

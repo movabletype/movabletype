@@ -287,11 +287,8 @@ sub ping {
     my $ping;
 
     # Check for duplicates...
-    my @pings = MT::TBPing->load( { tb_id => $tb->id } );
-    foreach (@pings) {
-        if ( $_->source_url eq $url ) {
-            return $app->_response();
-        }
+    if ( 0 < MT::TBPing->count( { tb_id => $tb->id, source_url => $url } ) ) {
+        return $app->_response();
     }
 
     if ( !$ping ) {

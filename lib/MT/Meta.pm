@@ -130,6 +130,10 @@ sub install {
         $params->{blob_zip_cfg}{ $_->{name} } = $_->{zip} if $_->{zip};
     }
 
+    if (MT->config->DisableMetaObjectCache) {
+        $params->{cacheable} = 0;
+    }
+
     ## build subclass
     $class->_build_subclass( $pkg, $params, $which );
 

@@ -40,6 +40,11 @@ in which the archive falls.
 An optional attribute that specifies the name of a category from which
 to return entries.
 
+=item * weeks_start_with
+
+weeks_start_with accepts the following values:
+Sun | Mon | Tue | Wed | Thu | Fri | Sat
+
 =back
 
 B<Example:>
@@ -60,15 +65,38 @@ sub _hdlr_calendar {
     my ($prefix);
     my @ts = offset_time_list( time, $blog_id );
     my $today = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 1;
+    my $start_with_offset = 0;
+    if ( my $start_with = lc( $args->{weeks_start_with} || '' ) ) {
+        $start_with_offset = {
+            sun => 0,
+            mon => 6,
+            tue => 5,
+            wed => 4,
+            thu => 3,
+            fri => 2,
+            sat => 1,
+        }->{ substr( $start_with, 0, 3 ) };
+
+        if ( !defined($start_with_offset) ) {
+            return $ctx->error(
+                MT->translate(
+"Invalid weeks_start_with format: must be Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+                )
+            );
+        }
+    }
     if ( $prefix = lc( $args->{month} || '' ) ) {
         if ( $prefix eq 'this' ) {
-            my $ts = $ctx->{current_timestamp}
-                or return $ctx->error(
-                MT->translate(
+            my $ts = $ctx->{current_timestamp};
+            if (not $ts and ( my $entry = $ctx->stash('entry') )) {
+                $ts = $entry->authored_on();
+            }
+            if (not $ts) {
+                return $ctx->error( MT->translate(
                     "You used an [_1] tag without a date context set up.",
                     qq(<MTCalendar month="this">)
-                )
-                );
+                ));
+            }
             $prefix = substr $ts, 0, 6;
         }
         elsif ( $prefix eq 'last' ) {
@@ -118,8 +146,8 @@ sub _hdlr_calendar {
     my ( $start, $end ) = start_end_month($prefix);
     my ( $y, $m ) = unpack 'A4A2', $prefix;
     my $days_in_month = days_in( $m, $y );
-    my $pad_start = wday_from_ts( $y, $m, 1 );
-    my $pad_end = 6 - wday_from_ts( $y, $m, $days_in_month );
+    my $pad_start = (wday_from_ts($y, $m, 1) + $start_with_offset) % 7;
+    my $pad_end = 6 - ((wday_from_ts($y, $m, $days_in_month) + $start_with_offset) % 7);
     my $iter = MT::Entry->load_iter(
         {   blog_id     => $blog_id,
             authored_on => [ $start, $end ],

@@ -297,6 +297,104 @@ class MTViewer extends Smarty {
         return '';
     }
 
+    function relative_date($ts1, $ts2, $style) {
+        // $ts1 and $ts2 (now) should be timestamps
+        // $style is a number 1..3, or false, which will default to 1
+        $style or $style = 1;
+        $mt = $this->mt;
+
+        $future = 0;
+        $delta = $ts2 - $ts1;
+
+        if ( ($delta >= 0) && ($delta <= 60) ) { # last minute
+            return 
+                $style == 1 ? $mt->translate("moments ago") :
+                ( $style == 2 ? $mt->translate("less than 1 minute ago") :
+                $mt->translate( "[quant,_1,second,seconds]", $delta ) );
+        }
+        if ( ($delta < 0) && ($delta >= -60) ) { # next minute
+            return 
+                $style == 1 ? $mt->translate("moments from now") :
+                ( $style == 2 ? $mt->translate("less than 1 minute from now") :
+                $mt->translate( "[quant,_1,second,seconds] from now", -$delta ) );
+        }
+        if ( ($delta > 60) && ($delta <= 3600) ) { # last hour
+            $min = (int) ( $delta / 60 );
+            $sec = $delta % 60;
+            return 
+                $style == 1 ?   $mt->translate("[quant,_1,minute,minutes] ago", $min) :
+                ( $style == 2 ? $mt->translate("[quant,_1,minute,minutes] ago", $min) :
+                ( $sec === 0 ?  $mt->translate("[quant,_1,minute,minutes]", $min ) :
+                $mt->translate( "[quant,_1,minute,minutes], [quant,_2,second,seconds]", array($min, $sec) ) ) );
+        }
+        if ( ($delta < -60) && ($delta >= -3600) ) { # next hour
+            $delta = -$delta;
+            $min = (int) ( $delta / 60 );
+            $sec = $delta % 60;
+            return 
+                $style == 1 ?   $mt->translate("[quant,_1,minute,minutes] from now", $min) :
+                ( $style == 2 ? $mt->translate("[quant,_1,minute,minutes] from now", $min) :
+                ( $sec === 0 ?  $mt->translate("[quant,_1,minute,minutes] from now", $min ) :
+                $mt->translate( "[quant,_1,minute,minutes], [quant,_2,second,seconds] from now", array($min, $sec) ) ) );
+        }
+        if ( ($delta > 3600) && ($delta <= 86400) ) { # last day
+            $hours = (int) ( $delta / 3600 );
+            $min = (int) ( ( $delta % 3600 ) / 60 );
+            return 
+                $style == 1 ? $mt->translate("[quant,_1,hour,hours] ago", $hours) :
+                ( $style == 2 ? ( 
+                    $min === 0 ? $mt->translate("[quant,_1,hour,hours] ago", $hours) : 
+                    $mt->translate("[quant,_1,hour,hours], [quant,_2,minute,minutes] ago", array($hours, $min) ) ) :
+                ( $min === 0 ? $mt->translate("[quant,_1,hour,hours]", $hours) :
+                $mt->translate("[quant,_1,hour,hours], [quant,_2,minute,minutes]", array($hours, $min) ) ) );
+        }
+        if ( ($delta < -3600) && ($delta >= -86400) ) { # next day
+            $delta = -$delta;
+            $hours = (int) ( $delta / 3600 );
+            $min = (int) ( ( $delta % 3600 ) / 60 );
+            return 
+                $style == 1 ? $mt->translate("[quant,_1,hour,hours] from now", $hours) :
+                ( $style == 2 ? ( 
+                    $min === 0 ? $mt->translate("[quant,_1,hour,hours] from now", $hours) : 
+                    $mt->translate("[quant,_1,hour,hours], [quant,_2,minute,minutes] from now", array($hours, $min) ) ) :
+                ( $min === 0 ? $mt->translate("[quant,_1,hour,hours] from now", $hours) :
+                $mt->translate("[quant,_1,hour,hours], [quant,_2,minute,minutes] from now", array($hours, $min) ) ) );
+        }
+        if ( ($delta > 86400) && ($delta <= 604800) ) { # last week
+            $days = (int) ( $delta / 86400 );
+            $hours = (int) ( ( $delta % 86400 ) / 3600 );
+            return 
+                $style == 1 ? $mt->translate("[quant,_1,day,days] ago", $days) :
+                ( $style == 2 ? ( 
+                    $hours === 0 ? $mt->translate("[quant,_1,day,days] ago", $days) : 
+                    $mt->translate("[quant,_1,day,days], [quant,_2,hour,hours] ago", array($days, $hours) ) ) :
+                ( $hours === 0 ? $mt->translate("[quant,_1,day,days]", $days) :
+                $mt->translate("[quant,_1,day,days], [quant,_2,hour,hours]", array($days, $hours) ) ) );
+        }
+        if ( ($delta < -86400) && ($delta >= -604800) ) { # next week
+            $delta = -$delta;
+            $days = (int) ( $delta / 86400 );
+            $hours = (int) ( ( $delta % 86400 ) / 3600 );
+            return 
+                $style == 1 ? $mt->translate("[quant,_1,day,days] from now", $days) :
+                ( $style == 2 ? ( 
+                    $hours === 0 ? $mt->translate("[quant,_1,day,days] from now", $days) : 
+                    $mt->translate("[quant,_1,day,days], [quant,_2,hour,hours] from now", array($days, $hours) ) ) :
+                ( $hours === 0 ? $mt->translate("[quant,_1,day,days] from now", $days) :
+                $mt->translate("[quant,_1,day,days], [quant,_2,hour,hours] from now", array($days, $hours) ) ) );
+        }
+        if ( $style > 1 ) return '';
+        $ts1_d = getdate($ts1);
+        $ts2_d = getdate($ts2);
+        if ( $ts1_d['year'] === $ts2_d['year'] ) {
+            $fmt = "%b %e";
+        }
+        else {
+            $fmt = "%b %e %Y";
+        }
+        return array('format' => $fmt);
+    }
+
     function _hdlr_date($args, &$ctx) {
         $ts = null;
         if (isset($args['ts'])) {
@@ -375,6 +473,19 @@ document.write(mtRelativeDate(new Date($y,$mo,$d,$h,$m,$s), '$fds'));
 </script><noscript>$fds</noscript>
 EOT;
                 return $js;
+            }
+            else {
+                preg_match('/(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)/', $ts, $matches);
+                list($all, $y, $mo, $d, $h, $m, $s) = $matches;
+                $unix_ts = mktime($h, $m, $s, $mo, $d, $y);
+                $now_ts = offset_time(time(), $blog);
+                $relative = $this->relative_date($unix_ts, $now_ts, $style);
+                if (is_array($relate)) {
+                    return format_ts($relate['format'], $ts, $blog, isset($args['language']) ? $args['language'] : null);
+                }
+                elseif ($relative) {
+                    return $relative;
+                }
             }
         }
         return $fds;

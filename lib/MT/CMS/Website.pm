@@ -259,7 +259,9 @@ sub edit {
 
     if ( !$param->{id} ) {
         if ( !$param->{site_path} ) {
-            my $cwd = $app->document_root;
+            my $cwd = $cfg->BaseSitePath 
+                ? $cfg->BaseSitePath 
+                : $app->document_root;
             $cwd = File::Spec->catdir( $cwd, 'WEBSITE-NAME' )
                 ;    # for including the end of directory separator
             $cwd =~ s!WEBSITE-NAME\z!!;    # canonpath() remove it

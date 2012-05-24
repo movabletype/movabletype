@@ -352,7 +352,7 @@ BEGIN {
                                 if ( $key eq 'days' ) {
                                     return $prop->error(
                                         MT->translate(
-                                            q{Days can't include non numeriacal characters.}
+                                            q{Days must be a number.}
                                         )
                                     ) if $args->{days} =~ /\D/;
                                 }
@@ -1629,6 +1629,7 @@ BEGIN {
             'ThemesDirectory' => {
                 default => 'themes',
                 path    => 1,
+                type    => 'ARRAY',
             },
             'SupportDirectoryPath' => { default => '', },
             'SupportDirectoryURL'  => { default => '' },
@@ -1645,7 +1646,10 @@ BEGIN {
             'StaticWebPath'        => { default => '', },
             'StaticFilePath'       => undef,
             'CGIPath'              => { default => '/cgi-bin/', },
-            'AdminCGIPath'         => undef,
+            'AdminCGIPath'         => { default => sub { $_[0]->CGIPath } },
+            'BaseSitePath'         => undef,
+            'HideBaseSitePath'     => { default => 0, },
+            'HidePaformanceLoggingSettings' => { default => 0, },
             'CookieDomain'         => undef,
             'CookiePath'           => undef,
             'MailEncoding'         => { default => 'ISO-8859-1', },
@@ -1687,6 +1691,7 @@ BEGIN {
             'HTTPSProxy'            => undef,
             'PingNoProxy'           => { default => 'localhost', },
             'HTTPNoProxy'           => { default => 'localhost', },
+            'HeaderCacheControl'    => undef,
             'ImageDriver'           => { default => 'ImageMagick', },
             'NetPBMPath'            => undef,
             'AdminScript'           => { default => 'mt.cgi', },
@@ -1731,16 +1736,18 @@ BEGIN {
                 type    => 'ARRAY',
                 default => 'feed results_feed.tmpl',
             },
-            'SearchSortBy'           => undef,
-            'SearchSortOrder'        => { default => 'ascend', },
-            'SearchNoOverride'       => { default => 'SearchMaxResults', },
-            'SearchResultDisplay'    => { alias => 'ResultDisplay', },
-            'SearchExcerptWords'     => { alias => 'ExcerptWords', },
-            'SearchDefaultTemplate'  => { alias => 'DefaultTemplate', },
-            'SearchMaxResults'       => { alias => 'MaxResults', },
-            'SearchAltTemplate'      => { alias => 'AltTemplate' },
-            'SearchPrivateTags'      => { default => 0 },
-            'DeepCopyRecursiveLimit' => { default => 2 },
+            'SearchSortBy'             => undef,
+            'SearchSortOrder'          => { default => 'ascend', },
+            'SearchNoOverride'         => { default => 'SearchMaxResults', },
+            'SearchResultDisplay'      => { alias   => 'ResultDisplay', },
+            'SearchExcerptWords'       => { alias   => 'ExcerptWords', },
+            'SearchDefaultTemplate'    => { alias   => 'DefaultTemplate', },
+            'SearchMaxResults'         => { alias   => 'MaxResults', },
+            'SearchAltTemplate'        => { alias   => 'AltTemplate' },
+            'SearchPrivateTags'        => { default => 0 },
+            'DeepCopyRecursiveLimit'   => { default => 2 },
+            'BulkLoadMetaObjectsLimit' => { default => 100 },
+            'DisableMetaObjectCache'   => { default => 1, },
             'RegKeyURL' =>
                 { default => 'http://www.typekey.com/extras/regkeys.txt', },
             'IdentitySystem' =>
@@ -1783,10 +1790,10 @@ BEGIN {
             'EmailNotificationBcc'  => { default => 1, },
             'CommentSessionTimeout' => { default => 60 * 60 * 24 * 3, },
             'UserSessionTimeout'    => { default => 60 * 60 * 4, },
-            'UserSessionCookieName' => { handler => \&UserSessionCookieName },
+            'UserSessionCookieName' => { default => \&UserSessionCookieName },
             'UserSessionCookieDomain' =>
                 { default => '<$MTBlogHost exclude_port="1"$>' },
-            'UserSessionCookiePath' => { handler => \&UserSessionCookiePath },
+            'UserSessionCookiePath' => { default => \&UserSessionCookiePath },
             'UserSessionCookieTimeout' => { default => 60 * 60 * 4, },
             'LaunchBackgroundTasks'    => { default => 0 },
             'TypeKeyVersion'           => { default => '1.1' },
@@ -1859,7 +1866,7 @@ BEGIN {
                 },
             },
             'CaptchaSourceImageBase' => undef,
-            'SecretToken'            => { handler => \&SecretToken, },
+            'SecretToken'            => { default => \&SecretToken, },
             ## NaughtyWordChars settings
             'NwcSmartReplace' => { default => 0, },
             'NwcReplaceField' =>
@@ -1881,13 +1888,14 @@ BEGIN {
             'PerformanceLoggingPath' =>
                 { handler => \&PerformanceLoggingPath },
             'PerformanceLoggingThreshold' => { default => 0.1 },
-            'ProcessMemoryCommand' => { handler => \&ProcessMemoryCommand },
+            'ProcessMemoryCommand' => { default => \&ProcessMemoryCommand },
             'EnableAddressBook'    => { default => 0 },
             'SingleCommunity'      => { default => 1 },
             'DefaultTemplateSet'   => { default => 'mt_blog' },
             'DefaultWebsiteTheme'  => { default => 'classic_website' },
             'DefaultBlogTheme'     => { default => 'classic_blog' },
-            'ThemeStaticFileExtensions' => undef,
+            'ThemeStaticFileExtensions' => 
+                { default => 'html jpg jpeg gif png js css ico flv swf otf ttf' },
 
             'AssetFileTypes'            => { type    => 'HASH' },
             'AssetFileExtensions'       => { default => undef },
@@ -2238,6 +2246,14 @@ sub load_core_tasks {
             code      => sub {
                 my $app = MT->instance;
                 $app->model('failedlogin')->cleanup($app);
+                }
+        },
+        'CleanFileInfoRecords' => {
+            label     => 'Purge Unused FileInfo Records',
+            frequency => 60 * 60 * 24,   # once a day
+            code      => sub {
+                my $app = MT->instance;
+                $app->model('fileinfo')->cleanup;
                 }
         },
     };
@@ -2930,8 +2946,8 @@ sub PerformanceLoggingPath {
     return $cfg->set_internal( 'PerformanceLoggingPath', @_ ) if @_;
 
     unless ( $path = $cfg->get_internal('PerformanceLoggingPath') ) {
-        $path = $default = File::Spec->catdir( MT->instance->static_file_path,
-            'support', 'logs' );
+        $path = $default = File::Spec->catdir( 
+            MT->instance->support_directory_path, 'logs' );
     }
 
     # If the $path is not a writeable directory, we need to
@@ -3001,36 +3017,29 @@ sub PerformanceLoggingPath {
 
 sub ProcessMemoryCommand {
     my $cfg = shift;
-    $cfg->set_internal( 'ProcessMemoryCommand', @_ ) if @_;
-    my $cmd = $cfg->get_internal('ProcessMemoryCommand');
-    unless ($cmd) {
-        my $os = $^O;
-        if ( $os eq 'darwin' ) {
-            $cmd = 'ps $$ -o rss=';
-        }
-        elsif ( $os eq 'linux' ) {
-            $cmd = 'ps -p $$ -o rss=';
-        }
-        elsif ( $os eq 'MSWin32' ) {
-            $cmd = {
-                command => q{tasklist /FI "PID eq $$" /FO TABLE /NH},
-                regex   => qr/([\d,]+) K/
-            };
-        }
+    my $os = $^O;
+    my $cmd;
+    if ( $os eq 'darwin' ) {
+        $cmd = 'ps $$ -o rss=';
+    }
+    elsif ( $os eq 'linux' ) {
+        $cmd = 'ps -p $$ -o rss=';
+    }
+    elsif ( $os eq 'MSWin32' ) {
+        $cmd = {
+            command => q{tasklist /FI "PID eq $$" /FO TABLE /NH},
+            regex   => qr/([\d,]+) K/
+        };
     }
     return $cmd;
 }
 
 sub SecretToken {
     my $cfg = shift;
-    $cfg->set_internal( 'SecretToken', @_ ) if @_;
-    my $secret = $cfg->get_internal('SecretToken');
-    unless ($secret) {
-        my @alpha = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
-        $secret = join '', map $alpha[ rand @alpha ], 1 .. 40;
-        $secret = $cfg->set_internal( 'SecretToken', $secret, 1 );
-        $cfg->save_config();
-    }
+    my @alpha = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
+    my $secret = join '', map $alpha[ rand @alpha ], 1 .. 40;
+    $secret = $cfg->set_internal( 'SecretToken', $secret, 1 );
+    $cfg->save_config();
     return $secret;
 }
 
@@ -3058,9 +3067,6 @@ sub NewUserAutoProvisioning {
 
 sub UserSessionCookieName {
     my $mgr = shift;
-    return $mgr->set_internal( 'UserSessionCookieName', @_ ) if @_;
-    my $name = $mgr->get_internal('UserSessionCookieName');
-    return $name if defined $name;
     if ( $mgr->get_internal('SingleCommunity') ) {
         return 'mt_blog_user';
     }
@@ -3071,9 +3077,6 @@ sub UserSessionCookieName {
 
 sub UserSessionCookiePath {
     my $mgr = shift;
-    return $mgr->set_internal( 'UserSessionCookiePath', @_ ) if @_;
-    my $path = $mgr->get_internal('UserSessionCookiePath');
-    return $path if defined $path;
     if ( $mgr->get_internal('SingleCommunity') ) {
         return '/';
     }

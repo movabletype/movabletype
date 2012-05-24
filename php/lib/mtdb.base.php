@@ -784,6 +784,14 @@ abstract class MTDatabase {
             $entry_filter = '';
         }
 
+        # special case for selecting some particular entries
+        if (isset($args['entry_ids'])) {
+            $entry_filter .=
+                ' and entry_id IN (' .
+                join(',', preg_grep('/\A\d+\z/', $args['entry_ids'])) .
+                ')';
+        }
+
         # special case for excluding a particular entry
         if (isset($args['not_entry_id'])) {
             $entry_filter .= ' and entry_id != '.$args['not_entry_id'];
@@ -1211,7 +1219,6 @@ abstract class MTDatabase {
                     }
                 }
             }
-            Entry::load_meta($e);
             $_total_count++;
             if ( !is_null($total_count) ) {
                 if ( ($orig_limit > 0)
@@ -1232,6 +1239,8 @@ abstract class MTDatabase {
                 if (($limit > 0) && (count($entries) >= $limit)) break;
             }
         }
+        Entry::bulk_load_meta($entries);
+
         if ( !is_null($total_count) )
             $total_count = $_total_count;
 
@@ -1555,7 +1564,11 @@ abstract class MTDatabase {
             $tag = new Tag;
             $tag->tag_id = $rs->Fields('tag_id');
             $tag->tag_name = $rs->Fields('tag_name');
-            $tag->tag_count = $rs->Fields('tag_count');
+            if (isset($asset_filter)) {
+                $tag->tag_count = '';
+            } else {
+                $tag->tag_count = $rs->Fields('tag_count');
+            }
             $tags[] = $tag;
             $rs->MoveNext();
         }
@@ -2559,17 +2572,19 @@ abstract class MTDatabase {
     public function tags_entry_count($tag_id, $class = 'entry') {
         $tag_id = intval($tag_id);
 
-        $where = "objecttag_tag_id = $tag_id
-                  and entry_status = 2
-                  and entry_class = '$class'";
+        $where = "objecttag_tag_id = $tag_id";
+
+        if ($class == 'entry') {
+            $where .= "and entry_status = 2 and entry_class = '$class'";
+        }
 
         $join['mt_objecttag'] = 
             array(
-                "condition" => "entry_id = objecttag_object_id and objecttag_object_datasource='entry'"
+                "condition" => "${class}_id = objecttag_object_id and objecttag_object_datasource='$class'"
                 );
 
-        require_once('class.mt_entry.php');
-        $entry = new entry;
+        require_once("class.mt_$class.php");
+        $entry = new $class();
         $count = $entry->count(array('where' => $where, 'join' => $join));
         return $count;
     }

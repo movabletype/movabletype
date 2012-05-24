@@ -9,7 +9,7 @@ package StyleCatcher::CMS;
 use strict;
 use File::Basename qw( basename dirname );
 
-use MT::Util qw( remove_html decode_html );
+use MT::Util qw( remove_html decode_html caturl );
 
 our $DEFAULT_STYLE_LIBRARY;
 
@@ -209,10 +209,10 @@ sub download_theme {
     my $app = shift;
     my ($url) = @_;
 
-    my $static_path = $app->static_file_path;
-    my $themeroot   = File::Spec->catdir( $static_path, 'support', 'themes' );
-    my $ua          = $app->new_ua( { max_size => 500_000 } );
-    my $filemgr     = file_mgr()
+    my $support_path = $app->support_directory_path;
+    my $themeroot    = File::Spec->catdir( $support_path, 'themes' );
+    my $ua           = $app->new_ua( { max_size => 500_000 } );
+    my $filemgr      = file_mgr()
         or return;
 
     my @url                 = split( /\//, $url );
@@ -306,13 +306,10 @@ sub apply {
         = map { $app->param($_) || q{} }
         (qw( blog_id url layout name template_set ));
 
-    # Load the default stylesheet for this blog
-    my $tmpl = load_style_template($blog_id);
-
     $app->validate_magic
         or return $app->json_error( $app->translate("Invalid request") );
     return $app->json_error( $app->translate("Invalid request") )
-        unless $blog_id && $url && $tmpl;
+        unless $blog_id && $url;
 
     my $static_path = $app->static_file_path;
     if ( !-d $static_path ) {
@@ -326,10 +323,13 @@ sub apply {
     # if this isn't a local url, then we have to grab some files from
     # yonder...
     my $static_url = $app->static_path;
-    if ( $url !~ m{ \A \Q$static_url\E (?:support/)? themes/ }xms ) {
+    my $support_url = $app->support_directory_url;
+    $support_url = $app->base .  $support_url
+        if $support_url =~ m!^/!;
+    if ( $url !~ m{ \A \Q$static_url\E (?:support/)? themes/|\Q$support_url\E theme_static/ }xms ) {
         my $basename = download_theme( $app, $url )
             or return;
-        $url = "${static_url}support/themes/$basename/$basename.css";
+        $url = caturl( $support_url, 'themes', $basename, "$basename.css" );
     }
 
     my $blog = MT->model('blog')->load($blog_id)
@@ -374,9 +374,26 @@ sub apply {
             if $uri;
     }
 
+    # Load the default stylesheet for this blog
+    my $tmpl = load_style_template($blog_id);
+
+    unless ($tmpl) {
+
+        # Create one since this blog does not have it
+        $tmpl = new MT::Template;
+        $tmpl->blog_id($blog_id);
+        $tmpl->name( plugin()->translate('Stylesheet') );
+        $tmpl->type('index');
+        $tmpl->identifier('styles');
+        $tmpl->outfile("styles.css");
+        $tmpl->text(<<'EOT');
+@import url(<$MTStaticWebPath$>themes-base/blog.css);
+@import url(<$MTStaticWebPath$>themes/minimalist-red/styles.css);
+EOT
+    }
+
     # Replacing the theme import or adding a new one at the beginning
     my $template_text = $tmpl->text();
-    my $replaced      = 0;
     my $header
         = '/* This is the StyleCatcher theme addition. Do not remove this block. */';
     my $footer = '/* end StyleCatcher imports */';
@@ -388,9 +405,8 @@ $footer
 EOT
     if ( $template_text =~ s/\Q$header\E.*\Q$footer\E/$styles/s ) {
         $tmpl->text($template_text);
-        $replaced = 1;
     }
-    unless ($replaced) {
+    else {
 
         # we're dealing with a template that wasn't modified before now
         # we will need to backup the existing one to make sure the new
@@ -431,6 +447,7 @@ EOT
 
     my $p = plugin();
     $name =~ s/^repo_\d+:/local:/;
+    $name =~ s/^repo-\w+:/local:/;
     $name =~ s/\.css$//;
     $p->set_config_value( 'current_theme_' . $blog_id, $name );
     if ($layout) {
@@ -511,22 +528,6 @@ sub load_style_template {
             outfile => "styles-site.css"
         }
     );
-
-    unless ($tmpl) {
-
-        # Create one since we didn't find a candidate
-        $tmpl = new MT::Template;
-        $tmpl->blog_id($blog_id);
-        $tmpl->name( plugin()->translate('Stylesheet') );
-        $tmpl->type('index');
-        $tmpl->identifier('styles');
-        $tmpl->outfile("styles.css");
-        $tmpl->text(<<'EOT');
-@import url(<$MTStaticWebPath$>themes-base/blog.css);
-@import url(<$MTStaticWebPath$>themes/minimalist-red/styles.css);
-EOT
-        $tmpl->save();
-    }
 
     $tmpl;
 }
@@ -671,8 +672,7 @@ sub make_themes {
         $themes->{$theme}{prefix} = 'default';
     }
 
-    my $themeroot
-        = File::Spec->catdir( $app->static_file_path, 'support', 'themes' );
+    my $themeroot = File::Spec->catfile( $app->support_directory_path(), 'themes' );
 
     # Generate our list of themes within the themeroot directory
     my @themeroot_list = glob( File::Spec->catfile( $themeroot, "*" ) );
@@ -683,7 +683,7 @@ sub make_themes {
         $theme =~ s/.*[\\\/]//;
         $themes->{$theme} = metadata_for_theme(
             path => $theme_dir,
-            url  => $app->static_path . "support/themes/$theme/",
+            url  => caturl( $app->support_directory_url(), 'themes', "$theme/" ),
             tags => ['collection:my-designs'],
         );
         $themes->{$theme}{prefix} = 'local';

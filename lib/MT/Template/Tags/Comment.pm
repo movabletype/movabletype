@@ -201,7 +201,7 @@ sub _hdlr_comments {
         }
         else {
             for my $f
-                qw( min_score max_score min_rate max_rate min_count max_count scored_by )
+                (qw{ min_score max_score min_rate max_rate min_count max_count scored_by })
             {
                 if ( $args->{$f} ) {
                     $need_join = 1;
@@ -278,7 +278,7 @@ sub _hdlr_comments {
             ? sort { $a->created_on cmp $b->created_on } @$comments
             : sort { $b->created_on cmp $a->created_on } @$comments;
         $no_resort = 1
-            unless $args->{sort_order} || $args->{sort_by};
+            if $col eq 'created_on';
         if (@filters) {
             my $offset = $args->{offset} || 0;
             my $j = 0;
@@ -491,6 +491,7 @@ sub _hdlr_comments {
     local $ctx->{__stash}{commenter} = $ctx->{__stash}{commenter};
     my $vars = $ctx->{__stash}{vars} ||= {};
     my $glue = $args->{glue};
+    MT::Meta::Proxy->bulk_load_meta_objects(\@comments);
     for my $c (@comments) {
         local $vars->{__first__}        = $i == 1;
         local $vars->{__last__}         = ( $i == scalar @comments );
@@ -692,6 +693,7 @@ sub _hdlr_comment_replies {
 
     local $ctx->{__stash}{commenter} = $ctx->{__stash}{commenter};
     my $vars = $ctx->{__stash}{vars} ||= {};
+    MT::Meta::Proxy->bulk_load_meta_objects(\@comments);
     for my $c (@comments) {
         local $vars->{__first__}        = $i == 1;
         local $vars->{__last__}         = ( $i == scalar @comments );
@@ -1790,6 +1792,7 @@ sub _hdlr_comment_replies_recurse {
 
     local $ctx->{__stash}{commenter} = $ctx->{__stash}{commenter};
     my $vars = $ctx->{__stash}{vars} ||= {};
+    MT::Meta::Proxy->bulk_load_meta_objects(\@comments);
     for my $c (@comments) {
         local $vars->{__first__}        = $i == 1;
         local $vars->{__last__}         = ( $i == scalar @comments );
