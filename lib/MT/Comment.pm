@@ -307,7 +307,14 @@ sub list_props {
                       <img alt="$auth_label" src="$auth_img" class="auth-type-icon" />
                     </span>
                     <span class="commenter">
-                      <a href="$link" title="$link_title">$name</a>
+                    };
+                if ($app->can_do('view_commenter')) {
+                    $out .= qq{<a href="$link" title="$link_title">$name</a>};
+                }
+                else {
+                    $out .= $name;
+                }
+                $out .= qq{
                     </span>
                     <span class="status $lc_status_class">
                       $status_img
