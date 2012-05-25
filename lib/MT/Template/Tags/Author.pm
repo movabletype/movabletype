@@ -223,7 +223,21 @@ sub _hdlr_authors {
                     \%blog_args
                 );
                 while ( my $as = $iter->() ) {
-                    $map{ $as->author_id }{ $role->id }++;
+                    if (   ( $as->type == MT::Association::GROUP_BLOG_ROLE() )
+                        or ( $as->type == MT::Association::GROUP_ROLE() ) )
+                    {
+                        my $iter2 = MT::Association->load_iter(
+                            {   group_id => $as->group_id,
+                                type     => MT::Association::USER_GROUP(),
+                            },
+                        );
+                        while ( my $as2 = $iter2->() ) {
+                            $map{ $as2->author_id }{ $role->id }++;
+                        }
+                    }
+                    else {
+                        $map{ $as->author_id }{ $role->id }++;
+                    }
                 }
             }
             push @filters, sub { $cexpr->( $_[0]->id, \%map ) };
@@ -506,7 +520,7 @@ AUTHOR: while ($next) {
     my $res = '';
     my $vars = $ctx->{__stash}{vars} ||= {};
     $count = 0;
-    MT::Meta::Proxy->bulk_load_meta_objects(\@authors);
+    MT::Meta::Proxy->bulk_load_meta_objects( \@authors );
     for my $author (@authors) {
         $count++;
         local $ctx->{__stash}{author}    = $author;
