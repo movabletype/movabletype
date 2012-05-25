@@ -2687,7 +2687,7 @@ sub _log_dirty_restore {
 
 sub login_json {
     my $app = shift;
-    return $app->json_result(1);
+    return $app->json_result( { magic_token => $app->current_magic, } );
 }
 
 1;

@@ -133,8 +133,18 @@ function loginAgain(fn) {
                 password: dialog.find('#password').val()
               },
               success: function(data) {
+                var token = data.result['magic_token'];
+                if (token) {
+                  jQuery('input[name="magic_token"]').val(token);
+                  jQuery('a[href*="magic_token="]').each(function() {
+                    var replace = jQuery(this)
+                      .attr('href')
+                      .replace(/magic_token=[\d\w]+/, 'magic_token=' + token);
+                    jQuery(this).attr('href', replace);
+                  });
+                }
                 jQuery.fn.mtDialog.close();
-                fn();
+                fn(data);
                 return false;
               },
               error: function(data) {
@@ -793,7 +803,7 @@ function bulkUpdateCategories() {
       blog_id: <mt:var name="blog_id">,
       checksum: checksum,
       objects: jQuery.toJSON(items),
-      magic_token: '<mt:var name="magic_token">'
+      magic_token: jQuery('input[name="magic_token"]').val()
     },
     success: function(data) {
       if ( !handleMessages(data) ) return;
