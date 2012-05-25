@@ -12,7 +12,7 @@ use MT::Test;
 use Cwd;
 use File::Spec;
 use File::Temp qw( tempfile );
-use Test::More tests => 16;
+use Test::More tests => 19;
 
 use MT;
 use MT::ConfigMgr;
@@ -60,6 +60,12 @@ is(($cfg->AltTemplate)[1], 'baz quux', 'baz quux');
 ## Test bug in early version of ConfigMgr where space was not
 ## stripped from the ends of values
 is($cfg->ObjectDriver, 'DBI::SQLite', 'ObjectDriver=SQLite');
+
+is($cfg->AdminCGIPath, $cfg->CGIPath, 'By default, AdminCGIPath is CGIPath');
+$cfg->set('AdminCGIPath', '/cgi-bin/mt/');
+isnt($cfg->AdminCGIPath, $cfg->CGIPath, 'after change, AdminCGIPath is not CGIPath');
+is($cfg->AdminCGIPath, '/cgi-bin/mt/', 'AdminCGIPath is now set');
+
 
 mkdir $db_dir;
 
