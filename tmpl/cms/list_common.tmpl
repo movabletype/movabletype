@@ -281,7 +281,6 @@ var initial_filter = <mt:var name="initial_filter">;
 var allpass_filter = <mt:var name="allpass_filter">;
 var current_id = initial_filter.id;
 var currentPage = 1;
-var magic_token = '<mt:var name="magic_token">';
 var inputCount = 0;
 var initial_load = true;
 
@@ -364,8 +363,18 @@ function loginAgain(fn) {
                 password: dialog.find('#password').val()
               },
               success: function(data) {
+                var token = data.result['magic_token'];
+                if (token) {
+                  jQuery('input[name="magic_token"]').val(token);
+                  jQuery('a[href*="magic_token="]').each(function() {
+                    var replace = jQuery(this)
+                      .attr('href')
+                      .replace(/magic_token=[\d\w]+/, 'magic_token=' + token);
+                    jQuery(this).attr('href', replace);
+                  });
+                }
                 jQuery.fn.mtDialog.close();
-                fn();
+                fn(data);
                 return false;
               },
               error: function(data) {
@@ -562,7 +571,8 @@ function renameFilter(index, fid, name) {
       fid: fid,
       label: name,
       items: jQuery.toJSON(filters[index].items),
-      list: 0
+      list: 0,
+      magic_token: jQuery('input[name="magic_token"]').val()
     },
     success: function(data) {
       if ( !handleMessages(data) ) return;
@@ -613,8 +623,8 @@ function removeFilter(element) {
         id: filters[index].id,
         datasource: '<mt:var name="list_type">',
         blog_id: <mt:var name="blog_id">,
-        magic_token: '<mt:var name="magic_token">',
-        list: 0
+        list: 0,
+        magic_token: jQuery('input[name="magic_token"]').val()
       },
       success: function(data) {
         if ( !handleMessages(data) ) return;
@@ -808,7 +818,7 @@ function renderList(mode, columns, values, limit, page ) {
   }
   limit = parseInt(limit);
   if ( args['magic_token'] ) {
-    args['magic_token'] = magic_token;
+    args['magic_token'] = jQuery('input[name="magic_token"]').val();
   }
   var params = {
     __mode: mode,
@@ -816,7 +826,8 @@ function renderList(mode, columns, values, limit, page ) {
     blog_id: <mt:var name="blog_id">,
     columns: columns.join(','),
     limit: limit,
-    page: page
+    page: page,
+    magic_token: jQuery('input[name="magic_token"]').val()
   };
   params = jQuery.extend( params, args );
 
