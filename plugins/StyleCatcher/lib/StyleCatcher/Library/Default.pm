@@ -9,6 +9,7 @@ use strict;
 use warnings;
 use base qw( StyleCatcher::Library );
 use StyleCatcher::Util;
+use MT::Util qw( caturl );
 
 
 # pulls a list of themes available from a particular url
@@ -96,6 +97,97 @@ sub fetch_themes {
     }
 
     $data;
+}
+
+sub download_theme {
+    my $self = shift;
+    my ($url) = @_;
+
+    my $support_path = MT->app->support_directory_path;
+    my $themeroot    = File::Spec->catdir( $support_path, 'themes' );
+    my $ua           = MT->new_ua( { max_size => 500_000 } );
+    my $filemgr      = file_mgr()
+        or return;
+
+    my @url                 = split( /\//, $url );
+    my $stylesheet_filename = pop @url;
+    my $theme_url           = join( q{/}, @url ) . '/';
+
+    my ( $basename, $extension ) = split /\./, $stylesheet_filename;
+    if ( $basename eq 'screen' || $basename eq 'style' ) {
+        $basename = $url[-1];
+    }
+
+    # Pick up the stylesheet
+    my $stylesheet_res = $ua->get($url);
+
+    my @images = files_from_response( $stylesheet_res, css => 1 );
+
+    my $theme_path = File::Spec->catdir( $themeroot, $basename );
+    if ( !$filemgr->mkpath($theme_path) ) {
+        my $error = $self->translate(
+            "Could not create [_1] folder - Check that your 'themes' folder is webserver-writable.",
+            $basename
+        );
+        return $self->error($error);
+    }
+
+    $filemgr->put_data( $stylesheet_res->content,
+        File::Spec->catfile( $theme_path, $basename . '.css' ) );
+
+    # Pick up the images we parsed earlier and write them to the theme folder
+    my %got_files;
+    my @files = ( 'thumbnail.gif', 'thumbnail-large.gif', @images );
+FILE: while ( my $rel_url = shift @files ) {
+
+        # Is this safe to get?
+        require URI;
+        my $full_url = URI->new_abs( $rel_url, $theme_url );
+        next FILE if !$full_url;
+        my $url = $full_url->as_string();
+        next FILE if $url !~ m{ \A \Q$theme_url\E }xms;
+
+        next FILE if $got_files{$url};
+        $got_files{$url} = 1;
+        my $res = $ua->get($url);
+
+      # Skip files that don't download; we were accidentally doing so already.
+        next FILE if !$res->is_success();
+
+        my $canon_rel_url  = URI->new($rel_url)->rel($theme_url);
+        my @image_path     = split /\//, $canon_rel_url->as_string();
+        my $image_filename = pop @image_path;
+
+        my $image_path = File::Spec->catdir( $theme_path, @image_path );
+        if (   !$filemgr->exists($image_path)
+            && !$filemgr->mkpath($image_path) )
+        {
+            my $error = $self->translate(
+                "Could not create [_1] folder - Check that your 'themes' folder is webserver-writable.",
+                $basename
+            );
+            return $self->error($error);
+        }
+
+        my $image_full_path
+            = File::Spec->catfile( $image_path, $image_filename );
+        $filemgr->put_data( $res->content, $image_full_path, 'upload' )
+            or return $self->error( $filemgr->errstr );
+
+        if ( $image_filename =~ m{ \.css \z }xmsi ) {
+            my @new_files = files_from_response( $res, css => 0 );
+
+            # Schedule these as full URLs so relative references aren't
+            # misabsolved relative to the theme directory.
+            @new_files = map {
+                my $uri = URI->new_abs( $_, $url );
+                $uri ? $uri->as_string() : ();
+            } @new_files;
+            push @files, @new_files;
+        }
+    }
+
+    return caturl( MT->app->support_directory_url, 'themes', $basename, "$basename.css" );
 }
 
 1;

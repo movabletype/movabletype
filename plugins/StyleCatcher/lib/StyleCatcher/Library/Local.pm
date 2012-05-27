@@ -105,4 +105,9 @@ sub fetch_themes {
     $data;
 }
 
+sub download_theme {
+    # No task here. Just echo back the given URL.
+    return $_[1];
+}
+
 1;

@@ -12,7 +12,7 @@ use base qw( Exporter );
 use File::Basename qw( basename dirname );
 use MT::Util qw( remove_html decode_html );
 
-our @EXPORT = qw( metadata_for_theme file_mgr );
+our @EXPORT = qw( metadata_for_theme file_mgr files_from_response );
 
 sub metadata_for_theme {
     my %param = @_;
@@ -174,6 +174,27 @@ THUMB: for my $thumb (qw( thumbnail thumbnail_large )) {
     }
 
     return %thumbnails;
+}
+
+sub files_from_response {
+    my ( $res, %param ) = @_;
+
+    my $extensions
+        = $param{css}
+        ? qr{ (?:gif|jpe?g|png|css) }xms
+        : qr{ (?:gif|jpe?g|png)     }xms;
+
+    my $stylesheet = $res->content;
+    $stylesheet =~ s!/\*.*?\*/!!gs;    # strip all comments first
+    my @images = $stylesheet =~ m{
+        \b url\( \s*                          # opening url() reference
+        ['"]?
+        ( [\w\.\-/]+\.$extensions )  # a filename ending in an image extension
+        ['"]?
+        \s* \)                                # close of url() reference
+    }xmsgi;
+
+    return @images;
 }
 
 sub file_mgr {
