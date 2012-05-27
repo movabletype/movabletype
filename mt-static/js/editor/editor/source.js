@@ -25,9 +25,6 @@ MT.Editor.Source = function(id) {
         .keyup(function() {
             editor.saveSelection();
         })
-        .mouseup(function() {
-            editor.saveSelection();
-        })
         .focus(function() {
             focused = true;
         })
@@ -35,11 +32,13 @@ MT.Editor.Source = function(id) {
             focused = false;
         });
 
-        $(document).bind('touchend', function() {
+    $.each(['mouseup', 'touchend'], function(index, event) {
+        $(document).bind(event, function() {
             if (focused) {
                 editor.saveSelection();
             }
         });
+    });
 };
 $.extend(MT.Editor.Source, MT.Editor, {
     formats: function() {
