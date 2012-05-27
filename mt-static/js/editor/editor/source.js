@@ -95,8 +95,6 @@ $.extend(MT.Editor.Source.prototype, MT.Editor.prototype, {
             var length = this.textarea.textLength;
             var start = this.selectionStart || this.textarea.selectionStart;
             var end = this.selectionEnd || this.textarea.selectionEnd;
-            if ( end == 1 || end == 2 && defined( length ) )
-                end = length;
             return this.textarea.value.substring( start, end );
         }
     },
@@ -119,8 +117,6 @@ $.extend(MT.Editor.Source.prototype, MT.Editor.prototype, {
             var length = el.textLength;
             var start = this.selectionStart || el.selectionStart;
             var end = this.selectionEnd || el.selectionEnd;
-            if ( (end == 1 || end == 2) && defined( length ) )
-                end = length;
             el.value = el.value.substring( 0, start ) + txt + el.value.substr( end, length );
             if ( select_inserted_content ) {
                 el.selectionStart = start;
