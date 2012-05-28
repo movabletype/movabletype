@@ -1543,7 +1543,7 @@ sub _hdlr_if {
         }
     }
 
-    my $numeric = qr/^[-]?\d+(\.\d+)?$/;
+    my $numeric = qr/^[-]?[0-9]+(\.[0-9]+)?$/;
     no warnings;
     if ( exists $args->{eq} ) {
         return 0 unless defined($value);
