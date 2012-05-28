@@ -29,10 +29,12 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
 
         theme_advanced_statusbar_location: "bottom",
         theme_advanced_buttons1: 'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,mt_source_link,bold,italic,underline,strikethrough,link,unlink,blockquote,indent,outdent,unordered_list,bullist,numlist,justifyleft,justifycenter,justifyright,mt_insert_file,|,mt_source_mode',
-        theme_advanced_buttons2: 'undo,redo,|,removeformat,hr,|,table,|,fullscreen,|,forecolor,backcolor',
+        theme_advanced_buttons2: 'undo,redo,|,removeformat,hr,|,table,|,fullscreen,|,forecolor,backcolor,formatselect',
         theme_advanced_buttons3: '',
         theme_advanced_buttons4: '',
         theme_advanced_buttons5: '',
+
+        theme_advanced_blockformats: 'h1,h2,h3,h4,h5,h6,p,pre',
 
         convert_urls: false,
         media_strict: false,

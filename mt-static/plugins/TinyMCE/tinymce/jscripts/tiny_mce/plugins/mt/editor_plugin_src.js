@@ -148,7 +148,10 @@
                 $('table', '#' + id + '_toolbargroup').each(function() {
                     var $this = $(this);
 
-                    if ($this.hasClass('mceSplitButton')) {
+                    if (
+                        $this.hasClass('mceSplitButton') ||
+                        $this.hasClass('mceListBox')
+                    ) {
                         return;
                     }
 
