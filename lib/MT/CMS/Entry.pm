@@ -1108,9 +1108,9 @@ sub _build_entry_preview {
     if (@tag_names) {
         my @tags;
         foreach my $tag_name (@tag_names) {
-            next if $tag_name =~ m/^@/;
             my $tag = MT::Tag->new;
             $tag->name($tag_name);
+            $tag->is_private($tag_name =~ m/^@/ ? 1 : 0);
             push @tags, $tag;
         }
         $entry->{__tags}        = \@tag_names;
