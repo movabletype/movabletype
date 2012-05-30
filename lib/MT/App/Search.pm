@@ -9,7 +9,7 @@ package MT::App::Search;
 use strict;
 use base qw( MT::App );
 
-use MT::Util qw( encode_html encode_url perl_sha1_digest_hex );
+use MT::Util qw( encode_html encode_url );
 
 sub id {'new_search'}
 
@@ -217,11 +217,9 @@ sub generate_cache_keys {
     }
 
     $app->{cache_keys} = {
-        result        => $key,
-        result_hashed => perl_sha1_digest_hex($key),
-        count         => $count_key,
-        count_hashed  => perl_sha1_digest_hex($count_key),
-        content_type  => "HTTP_CONTENT_TYPE::$key"
+        result       => $key,
+        count        => $count_key,
+        content_type => "HTTP_CONTENT_TYPE::$key"
     };
 }
 
@@ -324,29 +322,15 @@ sub create_blog_list {
 sub check_cache {
     my $app = shift;
 
-    my $cache_keys = $app->{cache_keys};
-    my $cache = $app->{cache_driver}->get_multi( values %$cache_keys );
+    my $cache
+        = $app->{cache_driver}->get_multi( values %{ $app->{cache_keys} } );
 
-    my $count;
-    if (exists $cache->{ $cache_keys->{count_hashed} } ) {
-        $count = $cache->{ $cache_keys->{count_hashed} };
-        my $count_url = $cache_keys->{count};
-        if (substr($count, 0, length($count_url), '') ne $count_url) {
-            $count = undef;
-        }
-    }
-
-    my $result;
-    if (exists $cache->{ $cache_keys->{result_hashed} } ) {
-        $result = $cache->{ $cache_keys->{result_hashed} };
-        my $result_url = $cache_keys->{result};
-        if (substr($result, 0, length($result_url), '') ne $result_url) {
-            $result = undef;
-        }
-    }
-
-    if ( exists $cache->{ $cache_keys->{content_type} } ) {
-        my $content_type = $cache->{ $cache_keys->{content_type} };
+    my $count = $cache->{ $app->{cache_keys}{count} }
+        if exists $cache->{ $app->{cache_keys}{count} };
+    my $result = $cache->{ $app->{cache_keys}{result} }
+        if exists $cache->{ $app->{cache_keys}{result} };
+    if ( exists $cache->{ $app->{cache_keys}{content_type} } ) {
+        my $content_type = $cache->{ $app->{cache_keys}{content_type} };
         $app->{response_content_type} = $content_type;
     }
     if ( !Encode::is_utf8($result) ) {
@@ -423,21 +407,15 @@ sub process {
 sub count {
     my $app = shift;
     my ( $class, $terms, $args ) = @_;
-    my $cache_keys = $app->{cache_keys};
-    my $cache_driver = $app->{cache_driver};
-    my $count_url = $cache_keys->{count};
-    my $count = $cache_driver->get( $cache_keys->{count_hashed} );
-    if (defined $count) {
-        if (substr($count, 0, length($count_url), '') eq $count_url) {
-            return $count;
-        }
-    }
+    my $count = $app->{cache_driver}->get( $app->{cache_keys}{count} );
+    return $count if defined $count;
 
     $count = $class->count( $terms, $args );
     return $app->error( $class->errstr ) unless defined $count;
 
-    $cache_driver->set( $cache_keys->{count_hashed},
-        $count_url . $count, $app->config->SearchCacheTTL );
+    my $cache_driver = $app->{cache_driver};
+    $cache_driver->set( $app->{cache_keys}{count},
+        $count, $app->config->SearchCacheTTL );
 
     $count;
 }
@@ -625,14 +603,13 @@ sub _cache_out {
         $result = Encode::encode( $enc, $result );
     }
     my $cache_driver = $app->{cache_driver};
-    my $cache_keys = $app->{cache_keys};
-    $cache_driver->set( $cache_keys->{result_hashed},
-        $cache_keys->{result} . $result, $app->config->SearchCacheTTL );
+    $cache_driver->set( $app->{cache_keys}{result},
+        $result, $app->config->SearchCacheTTL );
     if ( exists( $app->{response_content_type} )
         && ( 'text/html' ne $app->{response_content_type} ) )
     {
         $cache_driver->set(
-            $cache_keys->{content_type},
+            $app->{cache_keys}{content_type},
             $app->{response_content_type},
             $app->config->SearchCacheTTL
         );
