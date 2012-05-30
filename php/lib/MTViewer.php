@@ -477,9 +477,9 @@ EOT;
             else {
                 preg_match('/(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)/', $ts, $matches);
                 list($all, $y, $mo, $d, $h, $m, $s) = $matches;
-                $unix_ts = mktime($h, $m, $s, $mo, $d, $y);
-                $now_ts = offset_time(time(), $blog);
-                $relative = $this->relative_date($unix_ts, $now_ts, $style);
+                $unix_ts = offset_time(gmmktime($h, $m, $s, $mo, $d, $y), $blog, '-');
+                $now_ts = time();
+                $relative = $this->relative_date($unix_ts, $now_ts, $args['relative']);
                 if (is_array($relate)) {
                     return format_ts($relate['format'], $ts, $blog, isset($args['language']) ? $args['language'] : null);
                 }
