@@ -127,31 +127,6 @@ $Lexicon_fr = array(
 ## php/mt.php
 	'Page not found - [_1]' => 'Page non trouvée - [_1]',
 
-## php/lib/MTViewer.php
-	'moments from now' => 'maintenant',
-	'[quant,_1,hour,hours] from now' => 'dans [quant,_1,heure,heures]',
-	'[quant,_1,minute,minutes] from now' => 'dans [quant,_1,minute,minutes]',
-	'[quant,_1,day,days] from now' => 'dans [quant,_1,jour,jours]',
-	'less than 1 minute from now' => 'moins d\'une minute à partir de maintenant',
-	'less than 1 minute ago' => 'il y a moins d\'une minute',
-	'[quant,_1,hour,hours], [quant,_2,minute,minutes] from now' => 'dans [quant,_1,heure,heures], [quant,_2,minute,minutes]',
-	'[quant,_1,hour,hours], [quant,_2,minute,minutes] ago' => 'il y a [quant,_1,heure,heures], [quant,_2,minute,minutes]',
-	'[quant,_1,day,days], [quant,_2,hour,hours] from now' => 'dans [quant,_1,jour,jours], [quant,_2,heure,heures]',
-	'[quant,_1,day,days], [quant,_2,hour,hours] ago' => 'il y a [quant,_1,jour,jours], [quant,_2,heure,heures]',
-	'[quant,_1,second,seconds] from now' => 'dans [quant,_1,seconde,secondes]',
-	'[quant,_1,second,seconds]' => '[quant,_1,seconde,secondes]',
-	'[quant,_1,minute,minutes], [quant,_2,second,seconds] from now' => 'dans [quant,_1,minute,minutes], [quant,_2,seconde,secondes]',
-	'[quant,_1,minute,minutes], [quant,_2,second,seconds]' => '[quant,_1,minute,minutes], [quant,_2,seconde,secondes]',
-	'[quant,_1,minute,minutes]' => '[quant,_1,minute,minutes]',
-	'[quant,_1,hour,hours], [quant,_2,minute,minutes]' => '[quant,_1,heure,heures], [quant,_2,minute,minutes]',
-	'[quant,_1,hour,hours]' => '[quant,_1,heure,heures]',
-	'[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,jour,jours], [quant,_2,heure,heures]',
-	'[quant,_1,day,days]' => '[quant,_1,jour,jours]',
-	'moments ago' => 'il y a quelques instants',
-	'[quant,_1,hour,hours] ago' => 'il y a [quant,_1,heure,heures]',
-	'[quant,_1,minute,minutes] ago' => 'il y a [quant,_1,minute,minutes]',
-	'[quant,_1,day,days] ago' => 'il y a [quant,_1,jour,jours]',
-
 );
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_fr;
