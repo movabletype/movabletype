@@ -216,11 +216,12 @@ sub generate_cache_keys {
         }
     }
 
-    $key = perl_sha1_digest_hex($key);
+    $key       = perl_sha1_digest_hex($key);
+    $count_key = perl_sha1_digest_hex($count_key);
 
     $app->{cache_keys} = {
         result       => $key,
-        count        => perl_sha1_digest_hex($count_key),
+        count        => $count_key,
         content_type => "HTTP_CONTENT_TYPE::$key"
     };
 }
