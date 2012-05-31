@@ -20,6 +20,7 @@ my $stamp = '';
 my $package = '';
 my $license = '';
 my $silent = 0;
+my $rpm = 0;
 
 no warnings;
 # WHY, oh why?
@@ -72,6 +73,7 @@ GetOptions(
     'silent' => \$silent,
     'license:s' => \$license,
     'stamp:s' => \$stamp,
+    'rpm' => \$rpm,
 ) or die "ERROR: Couldn't get the command-line options";
 
 my %options;
@@ -138,12 +140,23 @@ for my $lang (@languages) {
     verbose_command("chmod +x $distname/*.cgi"); 
     verbose_command("chmod +x $distname/tools/*"); 
 
-    my $options = $silent ? 'cf' : 'cvf';
-    verbose_command("tar $options $distname.tar --wildcards --exclude '*.zip' $distname");
-    $options = $silent ? '-q' : '';
-    verbose_command("gzip $options --best $distname.tar");
-    $options = $silent ? '-rq' : '-r';
-    verbose_command("zip $options $distname.zip $distname -x $distname/extras/\*.gz");
+    my $options;
+    if ( $rpm ) {
+        # Special build
+        require MT;
+        require File::Spec;
+        my $mt_ver = MT->VERSION;
+        my $abs_path = File::Spec->rel2abs( $distname );
+        verbose_command("makerpm $abs_path movabletype-$mt_ver-$lang");
+    }
+    else {
+        $options = $silent ? 'cf' : 'cvf';
+        verbose_command("tar $options $distname.tar --wildcards --exclude '*.zip' $distname");
+        $options = $silent ? '-q' : '';
+        verbose_command("gzip $options --best $distname.tar");
+        $options = $silent ? '-rq' : '-r';
+        verbose_command("zip $options $distname.zip $distname -x $distname/extras/\*.gz");
+    }
 
     verbose_command("rm -rf $distname");
     unlink("MANIFEST");

@@ -97,6 +97,7 @@ sub get_options {
       'rev!'            => 1,  # Toggle revision stamping.
       'revision=s'      => undef,  # Constructed at run-time.
       'revision_hash=s' => undef,  # Constructed at run-time.
+      'rpm!'            => 0, # Make rpm package
       'stage'           => 0,  # Command-line --option alias
       'stage-dir=s'     => '',
       'stage-uri=s'     => '',
@@ -229,13 +230,15 @@ sub make {
     }
 
     if( $self->{'build!'} ) {
+        
         $self->verbose_command( sprintf(
-            '%s build/mt-dists/make-dists --package=%s --language=%s --stamp=%s %s --license=%s',
+            '%s build/mt-dists/make-dists --package=%s --language=%s --stamp=%s %s %s --license=%s',
             $^X,
             $self->{'pack=s'},
             $self->{'lang=s'},
             $self->{'export-dir=s'},
             ($self->{'verbose!'} ? '--silent' : ''),
+            ($self->{'rpm!'} ? '--rpm' : ''),
             $self->{'license=s'} || '',
         ));
     }
