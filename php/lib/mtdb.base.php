@@ -1956,8 +1956,15 @@ abstract class MTDatabase {
                     $role_list[] = $role->role_id;
                 }
                 $as = $this->fetch_associations(array('blog_id' => $blog_id, 'role_id' => $role_list));
-                if ($as) {
-                    foreach ($as as $a) {
+                foreach ($as as $a) {
+                    if (($a->association_type == 2) || ($a->association_type == 5)) {
+                        $as2 = $this->fetch_associations(
+                            array('group_id' => array($a->association_group_id), 'type' => 3, 'blog_id' => 0));
+                        foreach ($as2 as $a2) {
+                            $rmap[$a2->association_author_id][$a->association_role_id]++;
+                        }
+                    }
+                    else {
                         $rmap[$a->association_author_id][$a->association_role_id]++;
                     }
                 }
@@ -2191,24 +2198,32 @@ abstract class MTDatabase {
     }
 
     public function fetch_associations($args) {
-        $id_list = null;
-        if (isset($args['role_id']))
+        $where_list = array();
+        if (isset($args['role_id'])) {
             $id_list = implode(",", $args['role_id']);
-        if (empty($id_list))
+            $where_list[] = "association_role_id in ($id_list)";
+        }
+        if (isset($args['group_id'])) {
+            $id_list = implode(",", $args['group_id']);
+            $where_list[] = "association_group_id in ($id_list)";            
+        }
+        if (isset($args['type'])) {
+            $where_list[] = "association_type=".intval($args['type']);
+        }
+        if (empty($where_list))
             return;
 
         // Blog Filter
         if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and association_blog_id  ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            $blog_filter = 'and association_blog_id = ' . intval($args['blog_id']);
+            $where_list[] = 'association_blog_id  ' . $sql;
         }
 
         require_once('class.mt_association.php');
         $assoc = new Association;
-        $where = "association_role_id in ($id_list)
-                  $blog_filter";
+        $where = implode(' and ', $where_list);
         $result = $assoc->Find($where);
+        if (!$result)
+            return array();
         return $result;
     }
 
