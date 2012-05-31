@@ -745,12 +745,10 @@ sub thumbnail_url {
 sub as_html {
     my $asset   = shift;
     my ($param) = @_;
-    my $fname   = $asset->file_name;
     require MT::Util;
     my $text = sprintf '<a href="%s">%s</a>',
         MT::Util::encode_html( $asset->url ),
-        MT::Util::encode_html($fname);
-    my $app = MT->instance;
+        MT::Util::encode_html( $asset->label );
     return $param->{enclose} ? $asset->enclose($text) : $text;
 }
 
