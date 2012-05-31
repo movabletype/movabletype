@@ -147,6 +147,10 @@ $Lexicon_fr = array(
 	'[quant,_1,hour,hours]' => '[quant,_1,heure,heures]',
 	'[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,jour,jours], [quant,_2,heure,heures]',
 	'[quant,_1,day,days]' => '[quant,_1,jour,jours]',
+	'moments ago' => 'il y a quelques instants',
+	'[quant,_1,hour,hours] ago' => 'il y a [quant,_1,heure,heures]',
+	'[quant,_1,minute,minutes] ago' => 'il y a [quant,_1,minute,minutes]',
+	'[quant,_1,day,days] ago' => 'il y a [quant,_1,jour,jours]',
 
 );
 function translate_phrase($str, $params = null) {

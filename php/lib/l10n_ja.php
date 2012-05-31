@@ -143,7 +143,11 @@ $Lexicon_ja = array(
 	'[quant,_1,hour,hours], [quant,_2,minute,minutes]' => '[quant,_1,時間,時間], [quant,_2,分,分]',
 	'[quant,_1,hour,hours]' => '[quant,_1,時間,時間]',
 	'[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,日,日], [quant,_2,時間,時間]',
+	'moments ago' => '直前',
 	'[quant,_1,day,days]' => '[quant,_1,日,日]',
+	'[quant,_1,hour,hours] ago' => '[quant,_1,時間,時間]前',
+	'[quant,_1,minute,minutes] ago' => '[quant,_1,分,分]前',
+	'[quant,_1,day,days] ago' => '[quant,_1,日,日]前',
 
 
 );

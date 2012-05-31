@@ -147,6 +147,10 @@ $Lexicon_nl = array(
 	'[quant,_1,hour,hours]' => '[quant,_1,uur,uren]',
 	'[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,dag,dagen], [quant,_2,uur,uren]',
 	'[quant,_1,day,days]' => '[quant,_1,dag,dagen]',
+	'moments ago' => 'ogenblikken geleden',
+	'[quant,_1,hour,hours] ago' => '[quant,_1,uur,uur] geleden',
+	'[quant,_1,minute,minutes] ago' => '[quant,_1,minuut,minuten] geleden',
+	'[quant,_1,day,days] ago' => '[quant,_1,dag,dagen] geleden',
 
 );
 function translate_phrase($str, $params = null) {
