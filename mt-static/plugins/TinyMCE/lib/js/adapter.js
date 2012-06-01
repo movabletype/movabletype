@@ -29,8 +29,8 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
 
         theme_advanced_statusbar_location: "bottom",
         theme_advanced_buttons1: 'mt_source_mode',
-        theme_advanced_buttons2: 'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,mt_source_link,bold,italic,underline,strikethrough,forecolor,backcolor,|,link,unlink,mt_insert_image,mt_insert_file,|,blockquote,bullist,numlist,indent,outdent',
-        theme_advanced_buttons3: 'undo,redo,|,table,hr,removeformat,|,justifyleft,justifycenter,justifyright,|,formatselect,|,fullscreen',
+        theme_advanced_buttons2: 'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,mt_source_link,bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,indent,outdent,|,link,unlink,mt_insert_image,mt_insert_file',
+        theme_advanced_buttons3: 'undo,redo,|,table,hr,removeformat,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,|,formatselect,|,fullscreen',
         theme_advanced_buttons4: '',
         theme_advanced_buttons5: '',
         theme_advanced_buttons6: '',
