@@ -37,6 +37,27 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
 
         theme_advanced_blockformats: 'h1,h2,h3,h4,h5,h6,p,pre',
 
+        formats: {
+            strikethrough: {inline: 'del', attributes: {'datetime': function() {
+                function z(str) {
+                    return ('0' + str).slice(-2);
+                }
+
+                var now = new Date();
+                var m = now.toString().match(/(\-|\+)(\d{2}).?(\d{2})/);
+
+                return [
+                    now.getFullYear(),
+                    z(now.getMonth()+1),
+                    z(now.getDate())
+                ].join('-') + 'T' + [
+                    z(now.getHours()),
+                    z(now.getMinutes()),
+                    z(now.getSeconds())
+                ].join(':') + m[1] + m[2] + ':' + m[3];
+            }}}
+        },
+
         convert_urls: false,
         media_strict: false,
         verify_html: false,
