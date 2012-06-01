@@ -250,10 +250,8 @@ sub edit {
             || POSIX::strftime( "%H:%M:%S", @now );
     }
 
-    if ( $type eq 'entry' || $type eq 'page' ) {
-        my $key = 'content_css_' . $type;
-        my $css = $blog->$key;
-        if ( $css && $css !~ m#\A(https?)?/# ) {
+    if ( my $css = $blog->content_css ) {
+        if ( $css !~ m#\A(https?)?/# ) {
             $css = MT::Util::caturl( $blog->site_url, $css );
         }
         $param->{content_css} = $css;
