@@ -131,9 +131,7 @@ sub init_core_registry {
                         smtp_port smtp_auth smtp_auth_username
                         smtp_auth_password smtp_auth_ssl smtp_auth_tls )
                 ],
-                secure_these => [
-                    qw(smtp_auth_password)
-                ],
+                secure_these => [ qw(smtp_auth_password) ],
             },
             cfg_dir => {
                 order     => 300,
@@ -368,7 +366,8 @@ sub run_step {
         foreach ( @{ $keys->{$curr_step} } ) {
             if ( defined $app->param($_) ) {
                 $param{$_} = $app->param($_);
-            } else {
+            }
+            else {
                 delete $param{$_}
                     if exists $param{$_};
             }
@@ -929,11 +928,11 @@ sub optional {
     $param{config}                           = $app->serialize_config(%param);
 
     require MT::Mail;
-    $param{has_net_smtp} = MT::Mail->can_use_smtp ? 1 : 0;
-    $param{has_net_smtp_auth} = MT::Mail->can_use_smtpauth ? 1 : 0;
-    $param{has_net_smtp_ssl} = MT::Mail->can_use_smtpauth_ssl ? 1 : 0;
+    $param{has_net_smtp}      = MT::Mail->can_use_smtp         ? 1 : 0;
+    $param{has_net_smtp_auth} = MT::Mail->can_use_smtpauth     ? 1 : 0;
+    $param{has_net_smtp_ssl}  = MT::Mail->can_use_smtpauth_ssl ? 1 : 0;
     $param{has_net_smtp_ssl_msg} = MT::Mail->errstr;
-    $param{has_net_smtp_tls} = MT::Mail->can_use_smtpauth_tls ? 1 : 0;
+    $param{has_net_smtp_tls}     = MT::Mail->can_use_smtpauth_tls ? 1 : 0;
     $param{has_net_smtp_tls_msg} = MT::Mail->errstr;
 
     my $ok = 1;
@@ -954,7 +953,7 @@ sub optional {
             if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' ) {
                 $cfg->SMTPServer( $param{smtp_server} )
                     if $param{smtp_server};
-                $cfg->SMTPAuth( 1 )
+                $cfg->SMTPAuth(1)
                     if $param{smtp_auth};
                 if ( $cfg->SMTPAuth ) {
                     $cfg->SMTPUser( $param{smtp_auth_username} )
@@ -963,9 +962,9 @@ sub optional {
                         if $param{smtp_auth_password};
                     $cfg->SMTPpassword( $param{smtp_auth_password} )
                         if $param{smtp_auth_password};
-                    $cfg->SMTPUseSSL( 1 )
+                    $cfg->SMTPUseSSL(1)
                         if $param{smtp_auth_ssl};
-                    $cfg->SMTPAuth( 'tls' )
+                    $cfg->SMTPAuth('tls')
                         if $param{smtp_auth_tls};
                 }
             }
@@ -1139,7 +1138,7 @@ sub seed {
     my $steps = $app->registry("wizard_steps");
     foreach my $s ( keys %$steps ) {
         next unless exists $steps->{$s}->{secure_these};
-        foreach my $p ( @{$steps->{$s}->{secure_these}} ) {
+        foreach my $p ( @{ $steps->{$s}->{secure_these} } ) {
             $param{$p} = encrypt_base64( $param{$p} )
                 if exists $param{$p};
         }

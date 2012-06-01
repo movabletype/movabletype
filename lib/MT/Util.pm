@@ -609,7 +609,7 @@ sub offset_time_list { gmtime offset_time(@_) }
 sub offset_time {
     my ( $ts, $blog, $dir ) = @_;
     my $offset;
-    if ( $blog ) {
+    if ($blog) {
         if ( !ref($blog) ) {
             require MT::Blog;
             $blog = MT::Blog->load($blog);
@@ -2706,14 +2706,14 @@ sub canonicalize_path {
     }
     my $sep = dir_separator();
     $path = (@parts) ? join( $sep, @parts ) : undef;
-    if ( $path ) {
+    if ($path) {
         $path =~ s/^\Q$sep\E// unless $is_abs;
     }
     return $path ? File::Spec->catfile( $path, $filename ) : $filename;
 }
 
 sub encrypt_base64 {
-    my ( $text ) = @_;
+    my ($text) = @_;
     return $text unless $text;
 
     require MIME::Base64;
@@ -2723,13 +2723,13 @@ sub encrypt_base64 {
 }
 
 sub decrypt_base64 {
-    my ( $text ) = @_;
+    my ($text) = @_;
 
     if ( $text =~ m!Base64::(.*)! ) {
         my $encrypted = $1;
 
         require MIME::Base64;
-        return MIME::Base64::decode( $encrypted );
+        return MIME::Base64::decode($encrypted);
     }
 
     return $text;

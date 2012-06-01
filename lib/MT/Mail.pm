@@ -201,7 +201,7 @@ sub _send_mt_smtp {
         if ( $tls or $auth )
         and ( !$user or !$pass );
 
-    $pass = MT::Util::decrypt_base64( $pass );
+    $pass = MT::Util::decrypt_base64($pass);
 
     # Check required modules;
     my $mod_reqd;
@@ -279,7 +279,8 @@ sub _send_mt_smtp {
         if ( !$smtp->auth( $user, $pass ) ) {
             return $class->error(
                 MT->translate(
-                    "Authentication failure: [_1]", $smtp->message
+                    "Authentication failure: [_1]",
+                    $smtp->message
                 )
             );
         }
@@ -339,7 +340,7 @@ sub _send_mt_sendmail {
 
 sub can_use {
     my $class = shift;
-    my ( $mods ) = @_;
+    my ($mods) = @_;
     return unless $mods;
 
     my @err;
@@ -349,8 +350,13 @@ sub can_use {
             if $@;
     }
 
-    if ( @err ) {
-        $class->error( MT->translate( "Following required module(s) were not found: ([_1])", ( join ', ', @err ) ) );
+    if (@err) {
+        $class->error(
+            MT->translate(
+                "Following required module(s) were not found: ([_1])",
+                ( join ', ', @err )
+            )
+        );
         return;
     }
 
@@ -359,11 +365,10 @@ sub can_use {
 
 sub can_use_smtp {
     my $class = shift;
-    my @mods = qw { Net::SMTP MIME::Base64 };
+    my @mods  = qw { Net::SMTP MIME::Base64 };
 
     return $class->can_use( \@mods );
 }
-
 
 sub can_use_smtpauth {
     my $class = shift;
