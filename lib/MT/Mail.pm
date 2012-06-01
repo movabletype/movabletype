@@ -201,6 +201,8 @@ sub _send_mt_smtp {
         if ( $tls or $auth )
         and ( !$user or !$pass );
 
+    $pass = MT::Util::decrypt_base64( $pass );
+
     # Check required modules;
     my $mod_reqd;
     my @modules = qw { Net::SMTP MIME::Base64 };
@@ -333,6 +335,71 @@ sub _send_mt_sendmail {
     print MAIL $body;
     close MAIL;
     1;
+}
+
+sub can_use {
+    my $class = shift;
+    my ( $mods ) = @_;
+    return unless $mods;
+
+    my @err;
+    for my $module ( @{$mods} ) {
+        eval "use $module;";
+        push @err, $module
+            if $@;
+    }
+
+    if ( @err ) {
+        $class->error( MT->translate( "Following required module(s) were not found: ([_1])", ( join ', ', @err ) ) );
+        return;
+    }
+
+    return 1;
+}
+
+sub can_use_smtp {
+    my $class = shift;
+    my @mods = qw { Net::SMTP MIME::Base64 };
+
+    return $class->can_use( \@mods );
+}
+
+
+sub can_use_smtpauth {
+    my $class = shift;
+
+    # return if we cannot use smtp modules
+    return unless $class->can_use_smtp;
+
+    my @mods = qw { Authen::SASL };
+    return $class->can_use( \@mods );
+}
+
+sub can_use_smtpauth_ssl {
+    my $class = shift;
+
+    # return if we cannot use smtp modules
+    return unless $class->can_use_smtp;
+
+    # return if we cannot use smtpauth modules
+    return unless $class->can_use_smtpauth;
+
+    my @mods = qw { Net::SMTP::SSL IO::Socket::SSL Net::SSLeay };
+    return $class->can_use( \@mods );
+}
+
+sub can_use_smtpauth_tls {
+    my $class = shift;
+
+    # return if we cannot use smtp modules
+    return unless $class->can_use_smtp;
+
+    # return if we cannot use smtpauth modules
+    return unless $class->can_use_smtpauth;
+
+    my @mods = qw { Net::SMTP::TLS IO::Socket::SSL Net::SSLeay };
+
+    return $class->can_use( \@mods );
 }
 
 1;

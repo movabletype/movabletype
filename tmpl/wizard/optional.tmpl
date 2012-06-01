@@ -46,6 +46,16 @@
     </mtapp:statusmsg>
     </mt:if>
   </mt:if>
+  
+    <!-- EmailAddressMain -->
+      <mtapp:setting
+         id="email_address_main"
+         label="<__trans phrase="System EMail Address:">"
+         label_class="top-label"
+         hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
+         show_hint="1">
+        <input type="text" id="email_address_main" class="text full" name="email_address_main" value="<mt:if name="email_address_main"><mt:var name="email_address_main" escape="html"></mt:if>" />
+      </mtapp:setting>
 
     <!-- MailTransfer -->
       <mtapp:setting
@@ -78,26 +88,78 @@
              id="smtp_server"
              label="<__trans phrase="Outbound Mail Server (SMTP)">"
              label_class="top-label"
-             hint="<__trans phrase="Address of your SMTP Server.">">
+             hint="<__trans phrase="Address of your SMTP Server.">"
+             show_hint="1">
             <input type="text" id="smtp_server" class="text full" name="smtp_server" value="<mt:if name="smtp_server"><mt:var name="smtp_server" escape="html"></mt:if>" />
           </mtapp:setting>
+
+      <!-- SMTPPort -->
+          <mtapp:setting
+             id="smtp_port"
+             label="<__trans phrase="Port number for Outboud Mail Server">"
+             label_class="top-label"
+             hint="<__trans phrase="Port number  of your SMTP Server.">"
+             show_hint="1">
+            <input type="text" id="smtp_server" class="text full" name="smtp_port" value="<mt:if name="smtp_port"><mt:var name="smtp_port" escape="html"></mt:if>" />
+          </mtapp:setting>
+
+      <!-- SMTPAuth -->
+          <mt:if name="has_net_smtp_auth">
+            <p>
+              <input type="checkbox" name="smtp_auth" id="smtp_auth" class="cb" value="1" <mt:if name="has_net_smtp"><mt:if name="smtp_auth">checked</mt:if><mt:else>disabled="1" </mt:if> />
+              <label for="smtp_auth"><__trans phrase="Use SMTP Auth"></label>
+            </p>
+            <div id="smtpauth_params" <mt:unless name="smtp_auth">style="display: none"</mt:unless>>
+      <!-- SMTPAuth Username -->
+              <mtapp:setting
+                 id="smtp_auth_username"
+                 label="<__trans phrase="SMTP Auth Username">"
+                 label_class="top-label"
+                 hint="<__trans phrase="Username for your SMTP Server.">"
+                 show_hint="1">
+                <input type="text" id="smtp_auth_username" class="text full" name="smtp_auth_username" value="<mt:if name="smtp_auth_username"><mt:var name="smtp_auth_username" escape="html"></mt:if>" />
+              </mtapp:setting>
+
+      <!-- SMTPAuth Password -->
+              <mtapp:setting
+                 id="smtp_auth_password"
+                 label="<__trans phrase="SMTP Auth Password">"
+                 label_class="top-label"
+                 hint="<__trans phrase="Password for your SMTP Server.">"
+                 show_hint="1">
+                <input type="password" id="smtp_auth_password" class="text full" name="smtp_auth_password" value="<mt:if name="smtp_auth_password"><mt:var name="smtp_auth_password" escape="html"></mt:if>" />
+              </mtapp:setting>
+
+      <!-- SMTPAuth SSL -->
+            <mt:unless name="has_net_smtp_ssl">
+            <mtapp:statusmsg
+               id="no_smtp_auth_ssl"
+               class="info"
+               can_close="0">
+              <mt:var name="has_net_smtp_ssl_msg" escape="html">
+            </mtapp:statusmsg>
+            </mt:unless>
+            <p>
+              <input type="checkbox" name="smtp_auth_ssl" id="smtp_auth_ssl" class="cb" value="1" <mt:if name="has_net_smtp_ssl"><mt:if name="smtp_auth_ssl">checked</mt:if><mt:else>disabled="1" </mt:if> />
+              <label for="smtp_auth_ssl"><__trans phrase="Enable SMTP Auth with SSL"></label>
+            </p>
+
+      <!-- SMTPAuth TLS -->
+            <mt:unless name="has_net_smtp_tls">
+            <mtapp:statusmsg
+               id="no_smtp_auth_tls"
+               class="info"
+               can_close="0">
+              <mt:var name="has_net_smtp_tls_msg" escape="html">
+            </mtapp:statusmsg>
+            </mt:unless>
+            <p>
+              <input type="checkbox" name="smtp_auth_tls" id="smtp_auth_tls" class="cb" value="1" <mt:if name="has_net_smtp_tls"><mt:if name="smtp_auth_tls">checked</mt:if><mt:else>disabled="1" </mt:if> />
+              <label for="smtp_auth_tls"><__trans phrase="Enable SMTP Auth with TLS"></label>
+            </p>
+            </div>
+          </mt:if>
         </div>
-
-      <!-- Test Address -->
-        <mtapp:setting
-           id="test_email_address"
-           label="<__trans phrase="Mail address to which test email should be sent">"
-           label_class="top-label">
-          <input type="text" id="test_mail_address" class="text full" name="test_mail_address" value="<mt:if name="test_mail_address"><mt:var name="test_mail_address" escape="html"></mt:if>" />
-        </mtapp:setting>
-
-      <!-- Email Address Main -->
-        <mtapp:setting
-           id="email_address_main"
-           label="<__trans phrase="From mail address">"
-           label_class="top-label">
-          <input type="text" id="email_address_main" class="text full" name="email_address_main" value="<mt:if name="email_address_main"><mt:var name="email_address_main" escape="html"></mt:if>" />
-        </mtapp:setting>
       </div>
 
       <div id="goback" class="actions-bar" <mt:if name="mail_transfer">style="display: none"</mt:if>>
@@ -126,10 +188,10 @@
           <__trans phrase="Continue">
         </button>
         <button
+           id="go_to_testing"
            name="test"
-           type="submit"
+           type="button"
            value="1"
-           onclick="go('test')"
            class="test action primary button">
           <__trans phrase="Send Test Email">
         </button>
@@ -137,6 +199,41 @@
            name="back"
            type="submit"
            onclick="this.form.reset(); go('previous_step');"
+           class="goback action button">
+          <__trans phrase="Back">
+        </button>
+      </div>
+  </div>
+
+  <div id="testing" style="display: none;">
+      <!-- Test Address -->
+      <mtapp:setting
+         id="test_email_address"
+         label="<__trans phrase="Mail address to which test email should be sent">"
+         label_class="top-label">
+        <input type="text" id="test_mail_address" class="text full" name="test_mail_address" value="<mt:if name="test_mail_address"><mt:var name="test_mail_address" escape="html"></mt:if>" />
+      </mtapp:setting>
+
+      <div id="submit" class="actions-bar">
+        <button
+           name="test"
+           type="submit"
+           value="1"
+           onclick="go('test')"
+           class="test action primary button">
+          <__trans phrase="Send">
+        </button>
+        <button
+           name="continue"
+           type="submit"
+           onclick="go('next_step');"
+           class="continue action primary button">
+          <__trans phrase="Skip">
+        </button>
+        <button
+           id="back_to_settings"
+           name="back"
+           type="button"
            class="goback action button">
           <__trans phrase="Back">
         </button>
@@ -158,6 +255,7 @@ jQuery(function() {
             jQuery('#sendmail_path').hide();
             jQuery('#goback').hide();
             jQuery('#smtp_server').show();
+            jQuery('#smtp_port').show();
             jQuery('#submit').show();
             jQuery('#params').show();
             jQuery('#smtp_server').focus();
@@ -165,6 +263,7 @@ jQuery(function() {
             jQuery('#sendmail_path').show();
             jQuery('#goback').hide();
             jQuery('#smtp_server').hide();
+            jQuery('#smtp_port').hide();
             jQuery('#submit').show();
             jQuery('#params').show();
             jQuery('#sendmail_path').focus();
@@ -173,6 +272,24 @@ jQuery(function() {
             jQuery('#submit').hide();
             jQuery('#params').hide();
         }
+    });
+
+    jQuery('#smtp_auth').click(function() {
+        if ( jQuery(this).is(':checked') ) {
+            jQuery('#smtpauth_params').show();
+        } else {
+            jQuery('#smtpauth_params').hide();
+        }
+    });
+
+    jQuery('#back_to_settings').click(function() {
+        jQuery('#settings').show();
+        jQuery('#testing').hide();
+    });
+
+    jQuery('#go_to_testing').click(function() {
+        jQuery('#settings').hide();
+        jQuery('#testing').show();
     });
 });
 /* ]]> */

@@ -9,7 +9,7 @@ package MT::App::Wizard;
 use strict;
 use base qw( MT::App );
 
-use MT::Util qw( trim browser_language );
+use MT::Util qw( trim browser_language encrypt_base64 );
 
 sub id {'wizard'}
 
@@ -127,8 +127,13 @@ sub init_core_registry {
                 handler => \&optional,
                 params  => [
                     qw(mail_transfer sendmail_path smtp_server
-                        test_mail_address email_address_main)
-                ]
+                        test_mail_address email_address_main
+                        smtp_port smtp_auth smtp_auth_username
+                        smtp_auth_password smtp_auth_ssl smtp_auth_tls )
+                ],
+                secure_these => [
+                    qw(smtp_auth_password)
+                ],
             },
             cfg_dir => {
                 order     => 300,
@@ -361,8 +366,12 @@ sub run_step {
     my $keys  = $app->config_keys;
     if ($curr_step) {
         foreach ( @{ $keys->{$curr_step} } ) {
-            $param{$_} = $app->param($_)
-                if defined $app->param($_);
+            if ( defined $app->param($_) ) {
+                $param{$_} = $app->param($_);
+            } else {
+                delete $param{$_}
+                    if exists $param{$_};
+            }
         }
 
         if ( $app->param('save') ) {
@@ -919,6 +928,14 @@ sub optional {
     $param{mail_loop}                        = $transfer;
     $param{config}                           = $app->serialize_config(%param);
 
+    require MT::Mail;
+    $param{has_net_smtp} = MT::Mail->can_use_smtp ? 1 : 0;
+    $param{has_net_smtp_auth} = MT::Mail->can_use_smtpauth ? 1 : 0;
+    $param{has_net_smtp_ssl} = MT::Mail->can_use_smtpauth_ssl ? 1 : 0;
+    $param{has_net_smtp_ssl_msg} = MT::Mail->errstr;
+    $param{has_net_smtp_tls} = MT::Mail->can_use_smtpauth_tls ? 1 : 0;
+    $param{has_net_smtp_tls_msg} = MT::Mail->errstr;
+
     my $ok = 1;
     my $err_msg;
     if ( $app->param('test') ) {
@@ -927,16 +944,32 @@ sub optional {
             my $cfg = $app->config;
             $cfg->MailTransfer( $param{mail_transfer} )
                 if $param{mail_transfer};
-            $cfg->SMTPServer( $param{smtp_server} )
-                if $param{mail_transfer}
-                    && ( $param{mail_transfer} eq 'smtp' )
-                    && $param{smtp_server};
             $cfg->SendMailPath( $param{sendmail_path} )
                 if $param{mail_transfer}
                     && ( $param{mail_transfer} eq 'sendmail' )
                     && $param{sendmail_path};
             $cfg->EmailAddressMain( $param{email_address_main} )
                 if $param{email_address_main};
+
+            if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' ) {
+                $cfg->SMTPServer( $param{smtp_server} )
+                    if $param{smtp_server};
+                $cfg->SMTPAuth( 1 )
+                    if $param{smtp_auth};
+                if ( $cfg->SMTPAuth ) {
+                    $cfg->SMTPUser( $param{smtp_auth_username} )
+                        if $param{smtp_auth_username};
+                    $cfg->SMTPpassword( $param{smtp_auth_password} )
+                        if $param{smtp_auth_password};
+                    $cfg->SMTPpassword( $param{smtp_auth_password} )
+                        if $param{smtp_auth_password};
+                    $cfg->SMTPUseSSL( 1 )
+                        if $param{smtp_auth_ssl};
+                    $cfg->SMTPAuth( 'tls' )
+                        if $param{smtp_auth_tls};
+                }
+            }
+
             my %head = (
                 id => 'wizard_test',
                 To => $param{test_mail_address},
@@ -1101,6 +1134,16 @@ sub seed {
     }
 
     $param{tmpl_loop} = \@tmpl_loop;
+
+    # Encrypt password if need
+    my $steps = $app->registry("wizard_steps");
+    foreach my $s ( keys %$steps ) {
+        next unless exists $steps->{$s}->{secure_these};
+        foreach my $p ( @{$steps->{$s}->{secure_these}} ) {
+            $param{$p} = encrypt_base64( $param{$p} )
+                if exists $param{$p};
+        }
+    }
 
     my $data = $app->build_page( "mt-config.tmpl", \%param );
 
