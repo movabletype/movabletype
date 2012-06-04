@@ -405,6 +405,98 @@ sub do_page_action {
     $the_action->{code}->($app);
 }
 
+sub cfg_system_mail {
+    my $app = shift;
+    my %param;
+    if ( $app->param('blog_id') ) {
+        return $app->return_to_dashboard( redirect => 1 );
+    }
+
+    return $app->permission_denied()
+        unless $app->user->is_superuser();
+
+    $app->add_breadcrumb( $app->translate('Mail Settings') );
+
+    $param{nav_config}   = 1;
+    $param{nav_settings} = 1;
+
+    my $cfg = $app->config;
+    if ( $app->param('to_email_address') ) {
+        return $app->errtrans(
+            "You don't have a system email address configured.  Please set this first, save it, then try the test email again."
+        ) unless ( $cfg->EmailAddressMain );
+        return $app->errtrans("Please enter a valid email address")
+            unless (
+            MT::Util::is_valid_email( $app->param('to_email_address') ) );
+
+        my %head = (
+            To      => $app->param('to_email_address'),
+            From    => $cfg->EmailAddressMain,
+            Subject => $app->translate("Test email from Movable Type")
+        );
+
+        my $body
+            = $app->translate("This is the test email sent by Movable Type.");
+
+        require MT::Mail;
+        MT::Mail->send( \%head, $body )
+            or return $app->error(
+            $app->translate("Mail was not properly sent: [_1]", MT::Mail->errstr) );
+
+        $app->log(
+            {   message => $app->translate(
+                    'Test e-mail was successfully sent to [_1]',
+                    $app->param('to_email_address')
+                ),
+                level    => MT::Log::INFO(),
+                class    => 'system',
+                category => 'email',
+            }
+        );
+        $param{test_mail_sent} = 1;
+    }
+
+    my @config_warnings;
+    for my $config_directive (
+        qw( EmailAddressMain SMTPServer SMTPPort SMTPAuth SMTPUseSSL SMTPUser SMTPPassword)
+        )
+    {
+        push( @config_warnings, $config_directive )
+            if $app->config->is_readonly($config_directive);
+    }
+    my $config_warning = join( ", ", @config_warnings ) if (@config_warnings);
+
+    $param{config_warning} = $app->translate(
+        "These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
+        $config_warning
+    ) if $config_warning;
+
+    require MT::Mail;
+    $param{has_net_smtp}         = MT::Mail->can_use_smtp         ? 1 : 0;
+    $param{has_net_smtp_auth}    = MT::Mail->can_use_smtpauth     ? 1 : 0;
+    $param{has_net_smtp_ssl}     = MT::Mail->can_use_smtpauth_ssl ? 1 : 0;
+    $param{has_net_smtp_ssl_msg} = MT::Mail->errstr;
+    $param{has_net_smtp_tls}     = MT::Mail->can_use_smtpauth_tls ? 1 : 0;
+    $param{has_net_smtp_tls_msg} = MT::Mail->errstr;
+
+    $param{system_email_address} = $cfg->EmailAddressMain;
+    $param{mail_transfer} = lc $cfg->MailTransfer;
+    $param{sendmail_path} = $cfg->SendMailPath;
+    $param{smtp_server} = $cfg->SMTPServer;
+    $param{smtp_port} = $cfg->SMTPPort;
+    $param{smtp_auth} = $cfg->SMTPAuth ? 1 : 0;
+    $param{smtp_auth_username} = $cfg->SMTPUser;
+    $param{smtp_auth_password} = MT::Util::decrypt_base64( $cfg->SMTPPassword );
+    $param{smtp_auth_ssl} = $cfg->SMTPUseSSL;
+    $param{smtp_auth_tls} = lc ( $cfg->SMTPAuth || '' ) eq 'tls' ? 1 : 0;
+
+    $param{saved}                = $app->param('saved');
+    $param{screen_class}         = "settings-screen system-mail-settings";
+
+    $app->load_tmpl( 'cfg_system_mail.tmpl', \%param );
+
+}
+
 sub cfg_system_general {
     my $app = shift;
     my %param;
@@ -444,44 +536,9 @@ sub cfg_system_general {
         }
     }
 
-    if ( $app->param('to_email_address') ) {
-        return $app->errtrans(
-            "You don't have a system email address configured.  Please set this first, save it, then try the test email again."
-        ) unless ( $cfg->EmailAddressMain );
-        return $app->errtrans("Please enter a valid email address")
-            unless (
-            MT::Util::is_valid_email( $app->param('to_email_address') ) );
-
-        my %head = (
-            To      => $app->param('to_email_address'),
-            From    => $cfg->EmailAddressMain,
-            Subject => $app->translate("Test email from Movable Type")
-        );
-
-        my $body
-            = $app->translate("This is the test email sent by Movable Type.");
-
-        require MT::Mail;
-        MT::Mail->send( \%head, $body )
-            or return $app->error(
-            $app->translate("Mail was not properly sent: [_1]", MT::Mail->errstr) );
-
-        $app->log(
-            {   message => $app->translate(
-                    'Test e-mail was successfully sent to [_1]',
-                    $app->param('to_email_address')
-                ),
-                level    => MT::Log::INFO(),
-                class    => 'system',
-                category => 'email',
-            }
-        );
-        $param{test_mail_sent} = 1;
-    }
-
     my @config_warnings;
     for my $config_directive (
-        qw( EmailAddressMain DebugMode PerformanceLogging
+        qw( DebugMode PerformanceLogging
         PerformanceLoggingPath PerformanceLoggingThreshold
         UserLockoutLimit UserLockoutInterval IPLockoutLimit
         IPLockoutInterval LockoutIPWhitelist LockoutNotifyTo )
@@ -496,7 +553,6 @@ sub cfg_system_general {
         "These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
         $config_warning
     ) if $config_warning;
-    $param{system_email_address}            = $cfg->EmailAddressMain;
     $param{system_debug_mode}               = $cfg->DebugMode;
     $param{system_performance_logging}      = $cfg->PerformanceLogging;
     $param{system_performance_logging_path} = $cfg->PerformanceLoggingPath;
