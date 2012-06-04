@@ -1014,10 +1014,10 @@ $.mtValidateRules = {
         return $e.val().length > 0;
     },
     '.digit, .num': function ($e) {
-        return /^\d+$/.test($e.val());
+        return !$e.val() || /^\d+$/.test($e.val());
     },
     '.number': function ($e) {
-        return /\d/.test($e.val()) && /^\d*\.?\d*$/.test($e.val());
+        return !$e.val() || /\d/.test($e.val()) && /^\d*\.?\d*$/.test($e.val());
     }
 };
 
