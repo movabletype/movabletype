@@ -107,7 +107,7 @@
       <!-- SMTPAuth -->
           <mt:if name="has_net_smtp_auth">
             <p>
-              <input type="checkbox" name="smtp_auth" id="smtp_auth" class="cb" value="1" <mt:if name="has_net_smtp"><mt:if name="smtp_auth">checked</mt:if><mt:else>disabled="1" </mt:if> />
+              <input type="checkbox" name="smtp_auth" id="smtp_auth" class="cb" value="1" <mt:if name="smtp_auth">checked</mt:if> />
               <label for="smtp_auth"><__trans phrase="Use SMTP Auth"></label>
             </p>
             <div id="smtpauth_params" <mt:unless name="smtp_auth">style="display: none"</mt:unless>>
