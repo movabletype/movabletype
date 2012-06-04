@@ -251,12 +251,6 @@ sub seed_database {
         = MT::Role->load_by_permission("administer_website");
     MT::Association->link( $website => $website_admin_role => $author );
 
-    if ( $param{use_system_email} ) {
-        my $cfg = MT->config;
-        $cfg->EmailAddressMain( _uri_unescape_utf8( $param{user_email} ), 1 );
-        $cfg->save;
-    }
-
     1;
 }
 

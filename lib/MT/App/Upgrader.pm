@@ -220,7 +220,7 @@ sub upgrade {
 }
 
 my @keys
-    = qw( admin_email preferred_language admin_nickname admin_username initial_user initial_password initial_nickname initial_email initial_hint initial_lang initial_external_id use_system_email );
+    = qw( admin_email preferred_language admin_nickname admin_username initial_user initial_password initial_nickname initial_email initial_hint initial_lang initial_external_id );
 
 sub init_user {
     my $app = shift;
@@ -321,9 +321,6 @@ sub init_user {
             return $app->build_page( 'install.tmpl', \%param );
         }
     }
-
-    $initial_use_system = 1
-        if $param{use_system_email};
 
     $param{initial_user}        = $initial_user;
     $param{initial_password}    = $initial_password;
@@ -434,11 +431,6 @@ sub init_website {
         user_lang        => $param{initial_lang},
         user_external_id => $param{initial_external_id},
     };
-    if ( my $email_system = $param{initial_use_system}
-        || $param{use_system_email} )
-    {
-        $new_user->{'use_system_email'} = $email_system;
-    }
     $new_website = {
         website_name     => uri_escape_utf8( $param{website_name} ),
         website_url      => uri_escape_utf8( $param{website_url} ),

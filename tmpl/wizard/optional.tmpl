@@ -52,9 +52,10 @@
          id="email_address_main"
          label="<__trans phrase="System EMail Address:">"
          label_class="top-label"
+         required="1"
          hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
          show_hint="1">
-        <input type="text" id="email_address_main" class="text full" name="email_address_main" value="<mt:if name="email_address_main"><mt:var name="email_address_main" escape="html"></mt:if>" />
+        <input type="text" id="email_address_main" class="text full required" name="email_address_main" value="<mt:if name="email_address_main"><mt:var name="email_address_main" escape="html"></mt:if>" />
       </mtapp:setting>
 
     <!-- MailTransfer -->
@@ -100,7 +101,7 @@
              label_class="top-label"
              hint="<__trans phrase="Port number  of your SMTP Server.">"
              show_hint="1">
-            <input type="text" id="smtp_server" class="text full" name="smtp_port" value="<mt:if name="smtp_port"><mt:var name="smtp_port" escape="html"></mt:if>" />
+            <input type="text" id="smtp_port" class="text full" name="smtp_port" value="<mt:if name="smtp_port"><mt:var name="smtp_port" escape="html"></mt:if>" />
           </mtapp:setting>
 
       <!-- SMTPAuth -->
@@ -288,8 +289,58 @@ jQuery(function() {
     });
 
     jQuery('#go_to_testing').click(function() {
-        jQuery('#settings').hide();
-        jQuery('#testing').show();
+        if ( jQuery('#optional_form').find('input:visible, select:visible').mtValidate('simple') ) {
+            jQuery('#settings').hide();
+            jQuery('#testing').show();
+        }
+    });
+
+    jQuery('#optional_form').submit( function () {
+        if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') ) return false;
+    });
+
+    jQuery.mtValidateAddRules({
+        "#sendmail_path": function($e) {
+            if ( jQuery('#mail_transfer :selected').val() == 'sendmail' ) {
+                return $e.val().trim() == '' ? false : true;
+            }
+            return true;
+        },
+        "#smtp_server": function($e) {
+            if ( jQuery('#mail_transfer :selected').val() == 'smtp' ) {
+                return $e.val().trim() == '' ? false : true;
+            }
+            return true;
+        },
+        "#smtp_port": function($e) {
+            if ( jQuery('#mail_transfer :selected').val() == 'smtp' ) {
+                if ( $e.val() != '' ) {
+                    return /^\d+$/.test($e.val());
+                }
+            }
+            return true;
+        },
+        "#smtp_auth_username": function($e) {
+            if ( jQuery('#smtp_auth').is(':checked') ) {
+                return $e.val().trim() == '' ? false : true;
+            }
+            return true;
+        },
+        "#smtp_auth_password": function($e) {
+            if ( jQuery('#smtp_auth').is(':checked') ) {
+                return $e.val().trim() == '' ? false : true;
+            }
+            return true;
+        }
+    });
+
+    jQuery.mtValidateAddMessages({
+        "#email_address_main.required": '<__trans phrase="You must set system email address." escape="singlequotes">',
+        "#sendmail_path": '<__trans phrase="You must set sendmail path." escape="singlequotes">',
+        "#smtp_server": '<__trans phrase="You must set SMTP server address." escape="singlequotes">',
+        "#smtp_port": '<__trans phrase="This field must be integer." escape="singlequotes">',
+        "#smtp_auth_username": '<__trans phrase="You must set username for SMTP server." escape="singlequotes">',
+        "#smtp_auth_password": '<__trans phrase="You must set password for SMTP server." escape="singlequotes">'
     });
 });
 /* ]]> */

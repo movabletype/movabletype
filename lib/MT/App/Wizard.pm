@@ -131,7 +131,7 @@ sub init_core_registry {
                         smtp_port smtp_auth smtp_auth_username
                         smtp_auth_password smtp_auth_ssl smtp_auth_tls )
                 ],
-                secure_these => [ qw(smtp_auth_password) ],
+                secure_these => [qw(smtp_auth_password)],
             },
             cfg_dir => {
                 order     => 300,
