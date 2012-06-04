@@ -12,7 +12,7 @@ use MT::Test;
 use Cwd;
 use File::Spec;
 use File::Temp qw( tempfile );
-use Test::More tests => 19;
+use Test::More tests => 28;
 
 use MT;
 use MT::ConfigMgr;
@@ -66,7 +66,6 @@ $cfg->set('AdminCGIPath', '/cgi-bin/mt/');
 isnt($cfg->AdminCGIPath, $cfg->CGIPath, 'after change, AdminCGIPath is not CGIPath');
 is($cfg->AdminCGIPath, '/cgi-bin/mt/', 'AdminCGIPath is now set');
 
-
 mkdir $db_dir;
 
 undef $MT::ConfigMgr::cfg;
@@ -77,5 +76,12 @@ if (!$mt) { print "# MT constructor returned error: ", MT->errstr(); }
 isa_ok($mt, 'MT');
 isa_ok($mt->{cfg}, 'MT::ConfigMgr');
 is($mt->{cfg}->Database, $db_dir . '/mt.db', "DataSource=$db_dir");
+
+like($cfg->SecretToken, qr/^[a-zA-Z0-9]{40}$/, 'Secret Token Generated');
+foreach my $key (qw{ UserSessionCookiePath UserSessionCookieName ProcessMemoryCommand SecretToken }) {
+	ok(length($cfg->get($key)), "Config $key is not empty");
+	$cfg->set($key, 'Avocado');
+	is($cfg->get($key), 'Avocado', "Config $key is set-able");
+}
 
 unlink $cfg_file or die "Can't unlink '$cfg_file': $!";
