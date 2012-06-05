@@ -43,11 +43,11 @@
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
   <mtapp:setting
-     id="system-email-address"
+     id="system_email_address"
      label="<__trans phrase="System Email">"
      hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
      show_hint="1">
-    <input type="text" name="system_email_address" id="system-email-address" class="text med"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> /> <a href="#" id="send-test-email"><__trans phrase="Send Test Email"></a>
+    <input type="text" name="system_email_address" id="system_email_address" class="text med required email"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> /> <a href="#" id="send-test-email"><__trans phrase="Send Test Email"></a>
   </mt:app:setting>
 
   <mt:if name="mail_transfer" eq="sendmail">
@@ -148,10 +148,21 @@
 </form>
 
 <div id="test-email-dialog">
-  <form id="send-test-email" action="<mt:var name="script_url">" method="post">
-    <input type="hidden" name="__mode" value="cfg_system_general" />
+  <form id="test_form" action="<mt:var name="script_url">" method="post">
+    <input type="hidden" name="__mode" value="cfg_system_mail" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />    
+
+    <input type="hidden" name="system_email_address" value="" />
+    <input type="hidden" name="sendmail_path" value="" />
+    <input type="hidden" name="smtp_server" value="" />
+    <input type="hidden" name="smtp_port" value="" />
+    <input type="hidden" name="smtp_auth" value="" />
+    <input type="hidden" name="smtp_auth_username" value="" />
+    <input type="hidden" name="smtp_auth_password" value="" />
+    <input type="hidden" name="smtp_auth_ssl" value="" />
+    <input type="hidden" name="smtp_auth_tls" value="" />
+
     <mtapp:setting
        id="to_email_address"
        label="<__trans phrase="Send Email To">"
@@ -178,7 +189,30 @@
         width: 450
     });
     jQuery('#send-test-email').click(function() {
-        jQuery('#test-email-dialog').dialog('open');
+        var $settings = jQuery('#sys_conf');
+        var $testForm = jQuery('#test_form');
+        if ( $settings.find('input:visible, select:visible').mtValidate('simple') ) {
+            $testForm.find('input:[name="system_email_address"]').val( $settings.find('input:[name="system_email_address"]').val() );
+             $testForm.find('input:[name="sendmail_path"]').val( $settings.find('input:[name="sendmail_path"]').val() );
+            $testForm.find('input:[name="smtp_server"]').val( $settings.find('input:[name="smtp_server"]').val() );
+            $testForm.find('input:[name="smtp_port"]').val( $settings.find('input:[name="smtp_port"]').val() );
+            if ( $settings.find('input:[name="smtp_auth"]:checked').length )
+                $testForm.find('input:[name="smtp_auth"]').val( '1' );
+            else
+                $testForm.find('input:[name="smtp_auth"]').val( '0' );
+            $testForm.find('input:[name="smtp_auth_username"]').val( $settings.find('input:[name="smtp_auth_username"]').val() );
+            $testForm.find('input:[name="smtp_auth_password"]').val( $settings.find('input:[name="smtp_auth_password"]').val() );
+            if ( $settings.find('input:[name="smtp_auth_ssl"]:checked').length )
+                $testForm.find('input:[name="smtp_auth_ssl"]').val( '1' );
+            else
+                $testForm.find('input:[name="smtp_auth_ssl"]').val( '0' );
+            if ( $settings.find('input:[name="smtp_auth_tls"]:checked').length )
+                $testForm.find('input:[name="smtp_auth_tls"]').val( '1' );
+            else
+                $testForm.find('input:[name="smtp_auth_tls"]').val( '0' );
+
+            jQuery('#test-email-dialog').dialog('open');
+        }
         return false;
     });
 
@@ -208,7 +242,7 @@
     });
 
     jQuery.mtValidateAddMessages({
-        "#email_address_main.required": '<__trans phrase="You must set system email address." escape="singlequotes">',
+        "#system_email_address.required": '<__trans phrase="You must set system email address." escape="singlequotes">',
   <mt:if name="mail_transfer" eq="sendmail">
         "#sendmail_path": '<__trans phrase="You must set sendmail path." escape="singlequotes">',
   </mt:if>

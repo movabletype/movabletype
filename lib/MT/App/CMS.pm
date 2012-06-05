@@ -237,6 +237,7 @@ sub core_methods {
         'save_plugin_config'      => "${pkg}Plugin::save_config",
         'reset_plugin_config'     => "${pkg}Plugin::reset_config",
         'save_cfg_system_general' => "${pkg}Tools::save_cfg_system_general",
+        'save_cfg_system_mail'    => "${pkg}Tools::save_cfg_system_mail",
         'save_cfg_system_users'   => "${pkg}User::save_cfg_system_users",
         'update_welcome_message'  => "${pkg}Blog::update_welcome_message",
         'upgrade'                 => {

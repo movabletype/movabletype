@@ -421,7 +421,26 @@ sub cfg_system_mail {
     $param{nav_settings} = 1;
 
     my $cfg = $app->config;
+    my %directive = (
+        EmailAddressMain => 'system_email_address',
+        SendMailPath => 'sendmail_path',
+        SMTPServer => 'smtp_server',
+        SMTPPort => 'smtp_port',
+        SMTPAuth => 'smtp_auth',
+        SMTPUseSSL => 'smtp_auth_ssl',
+        SMTPUser => 'smtp_auth_username',
+        SMTPPassword => 'smtp_auth_password',
+    );
+    my @directive = keys %directive;
     if ( $app->param('to_email_address') ) {
+        # Set entered value as email settings
+        foreach my $d ( @directive ) {
+            $cfg->$d( $app->param( $directive{$d} ) );
+        }
+        if ( $app->param('smtp_auth_tls') ) {
+            $cfg->SMTPAuth( 'tls');
+        }
+
         return $app->errtrans(
             "You don't have a system email address configured.  Please set this first, save it, then try the test email again."
         ) unless ( $cfg->EmailAddressMain );
@@ -439,27 +458,26 @@ sub cfg_system_mail {
             = $app->translate("This is the test email sent by Movable Type.");
 
         require MT::Mail;
-        MT::Mail->send( \%head, $body )
-            or return $app->error(
-            $app->translate("Mail was not properly sent: [_1]", MT::Mail->errstr) );
-
-        $app->log(
-            {   message => $app->translate(
+        if ( MT::Mail->send( \%head, $body ) ) {
+            $app->log(
+                {   message => $app->translate(
                     'Test e-mail was successfully sent to [_1]',
                     $app->param('to_email_address')
                 ),
-                level    => MT::Log::INFO(),
-                class    => 'system',
-                category => 'email',
-            }
-        );
-        $param{test_mail_sent} = 1;
+                    level    => MT::Log::INFO(),
+                    class    => 'system',
+                    category => 'email',
+                }
+            ); 
+            $param{test_mail_sent} = 1;
+        }
+        else {
+            $param{error} = $app->translate("Mail was not properly sent: [_1]", MT::Mail->errstr);
+        }
     }
 
     my @config_warnings;
-    for my $config_directive (
-        qw( EmailAddressMain SMTPServer SMTPPort SMTPAuth SMTPUseSSL SMTPUser SMTPPassword)
-        )
+    for my $config_directive ( @directive )
     {
         push( @config_warnings, $config_directive )
             if $app->config->is_readonly($config_directive);
@@ -486,7 +504,7 @@ sub cfg_system_mail {
     $param{smtp_port} = $cfg->SMTPPort;
     $param{smtp_auth} = $cfg->SMTPAuth ? 1 : 0;
     $param{smtp_auth_username} = $cfg->SMTPUser;
-    $param{smtp_auth_password} = MT::Util::decrypt_base64( $cfg->SMTPPassword );
+    $param{smtp_auth_password} = $cfg->SMTPPassword;
     $param{smtp_auth_ssl} = $cfg->SMTPUseSSL;
     $param{smtp_auth_tls} = lc ( $cfg->SMTPAuth || '' ) eq 'tls' ? 1 : 0;
 
@@ -567,7 +585,6 @@ sub cfg_system_general {
     $param{comment_disable}      = $cfg->AllowComments            ? 0 : 1;
     $param{ping_disable}         = $cfg->AllowPings               ? 0 : 1;
     $param{disabled_notify_ping} = $cfg->DisableNotificationPings ? 1 : 0;
-    $param{system_no_email} = 1 unless $cfg->EmailAddressMain;
     my $send = $cfg->OutboundTrackbackLimit || 'any';
 
     if ( $send =~ m/^(any|off|selected|local)$/ ) {
@@ -623,25 +640,144 @@ sub cfg_system_general {
     $app->load_tmpl( 'cfg_system_general.tmpl', \%param );
 }
 
-sub save_cfg_system_general {
+sub save_cfg_system_mail {
     my $app = shift;
     $app->validate_magic or return;
+
     return $app->permission_denied()
         unless $app->user->is_superuser();
-    $app->validate_magic or return;
+
     my $cfg = $app->config;
-    $app->config( 'TrackRevisions', $app->param('track_revisions') ? 1 : 0,
-        1 );
+
+    my $smtp_auth;
+    $smtp_auth = $app->param('smtp_auth') && $app->param('smtp_auth_tls') ?
+        'tls' : $app->param('smtp_auth') ?
+            1 : 0;
 
     # construct the message to the activity log
-    my @meta_messages = ();
+    my @meta_messages;
     push(
         @meta_messages,
         $app->translate(
             'Email address is [_1]',
             $app->param('system_email_address')
         )
-    ) if ( $app->param('system_email_address') =~ /\w+/ );
+    ) unless ( $app->param('system_email_address') eq $cfg->EmailAddressMain );
+
+    if ( $cfg->MailTransfer eq 'sendmail' ) {
+        push(
+            @meta_messages,
+            $app->translate(
+                'Sendmail path is [_1]',
+                $app->param('sendmail_path')
+            )
+        ) unless ( ( $app->param('sendmail_path') || undef ) eq $cfg->SendmailPath );
+    } elsif ( $cfg->MailTransfer eq 'smtp' ) {
+        push(
+            @meta_messages,
+            $app->translate(
+                'SMTP server is [_1]',
+                $app->param('smtp_server')
+            )
+        ) unless ( ( $app->param('smtp_server') || undef ) eq $cfg->SMTPServer );
+
+        push(
+            @meta_messages,
+            $app->translate(
+                'SMTP Port is [_1]',
+                $app->param('smtp_port')
+            )
+        ) unless ( ( $app->param('smtp_port') || undef ) eq $cfg->SMTPPort );
+
+        push(
+            @meta_messages,
+            $app->translate(
+                'SMTP Auth username is [_1]',
+                $app->param('smtp_auth_username')
+            )
+        ) unless ( ( $app->param('smtp_auth_username') || undef ) eq $cfg->SMTPUser );
+
+        push(
+            @meta_messages,
+            $app->translate(
+                'SMTP Auth password is [_1]',
+                $app->param('smtp_auth_password')
+            )
+        ) unless ( ( $app->param('smtp_auth_password') || undef ) eq $cfg->SMTPPassword );
+
+        push(
+            @meta_messages,
+            $app->translate(
+                'SMTP Auth with SSL is [_1]',
+                ( $app->param('smtp_auth_ssl') ? $app->translate('enable') : $app->translate('disable') )
+            )
+        ) unless ( ( $app->param('smtp_auth_ssl') || 0 ) eq $cfg->SMTPUseSSL );
+
+        push(
+            @meta_messages,
+            $app->translate(
+                'SMTP Auth is [_1]',
+                ( $smtp_auth )
+            )
+        ) unless ( $smtp_auth eq $cfg->SMTPAuth );
+    }
+
+    # actually assign the changes
+    $app->config( 'EmailAddressMain',
+        ( $app->param('system_email_address') || undef ), 1 );
+
+    if ( $cfg->MailTransfer eq 'sendmail' ) {
+        $app->config( 'SendMailPath',
+            ( $app->param('sendmail_path') || undef ), 1 );
+    } elsif ( $cfg->MailTransfer eq 'smtp' ) {
+        $app->config( 'SMTPServer',
+            ( $app->param('smtp_server') || undef ), 1 );
+        $app->config( 'SMTPPort',
+            ( $app->param('smtp_port') || undef ), 1 );
+        $app->config( 'SMTPAuth', $smtp_auth, 1 );
+        $app->config( 'SMTPUser',
+            ( $app->param('smtp_auth_username') || undef ), 1 );
+        $app->config( 'SMTPPassword',
+            ( $app->param('smtp_auth_password') || undef ), 1 );
+        $app->config( 'SMTPUseSSL',
+            ( $app->param('smtp_auth_ssl') || 0 ), 1 );
+    }
+
+    # throw the messages in the activity log
+    if ( scalar(@meta_messages) > 0 ) {
+        my $message = join( ', ', @meta_messages );
+        $app->log(
+            {   message =>
+                    $app->translate('System Mail Settings Changes Took Place'),
+                level    => MT::Log::INFO(),
+                class    => 'system',
+                metadata => $message,
+                category => 'edit',
+            }
+        );
+    }
+
+    $cfg->save_config();
+    $app->redirect(
+        $app->uri(
+            'mode' => 'cfg_system_mail',
+            args   => { saved => 1 }
+        ),
+        UseMeta => $ENV{FAST_CGI},
+    );
+}
+
+sub save_cfg_system_general {
+    my $app = shift;
+    $app->validate_magic or return;
+    return $app->permission_denied()
+        unless $app->user->is_superuser();
+    my $cfg = $app->config;
+    $app->config( 'TrackRevisions', $app->param('track_revisions') ? 1 : 0,
+        1 );
+
+    # construct the message to the activity log
+    my @meta_messages = ();
     push(
         @meta_messages,
         $app->translate(
@@ -673,8 +809,6 @@ sub save_cfg_system_general {
     }
 
     # actually assign the changes
-    $app->config( 'EmailAddressMain',
-        $app->param('system_email_address') || undef, 1 );
     $app->config( 'DebugMode', $app->param('system_debug_mode'), 1 )
         if ( $app->param('system_debug_mode') =~ /\d+/ );
     if (not $cfg->HidePaformanceLoggingSettings) {

@@ -9,7 +9,7 @@ package MT::App::Wizard;
 use strict;
 use base qw( MT::App );
 
-use MT::Util qw( trim browser_language encrypt_base64 );
+use MT::Util qw( trim browser_language );
 
 sub id {'wizard'}
 
@@ -1139,7 +1139,7 @@ sub seed {
     foreach my $s ( keys %$steps ) {
         next unless exists $steps->{$s}->{secure_these};
         foreach my $p ( @{ $steps->{$s}->{secure_these} } ) {
-            $param{$p} = encrypt_base64( $param{$p} )
+            $param{$p} = $param{$p}
                 if exists $param{$p};
         }
     }

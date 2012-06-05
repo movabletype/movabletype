@@ -201,8 +201,6 @@ sub _send_mt_smtp {
         if ( $tls or $auth )
         and ( !$user or !$pass );
 
-    $pass = MT::Util::decrypt_base64($pass);
-
     # Check required modules;
     my $mod_reqd;
     my @modules = qw { Net::SMTP MIME::Base64 };

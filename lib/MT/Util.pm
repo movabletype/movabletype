@@ -29,7 +29,7 @@ our @EXPORT_OK
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
-    realpath canonicalize_path encrypt_base64 decrypt_base64);
+    realpath canonicalize_path );
 
 {
     my $Has_Weaken;
@@ -2710,29 +2710,6 @@ sub canonicalize_path {
         $path =~ s/^\Q$sep\E// unless $is_abs;
     }
     return $path ? File::Spec->catfile( $path, $filename ) : $filename;
-}
-
-sub encrypt_base64 {
-    my ($text) = @_;
-    return $text unless $text;
-
-    require MIME::Base64;
-    my $encrypted = MIME::Base64::encode( $text, '' );
-
-    return "Base64::" . $encrypted;
-}
-
-sub decrypt_base64 {
-    my ($text) = @_;
-
-    if ( $text =~ m!Base64::(.*)! ) {
-        my $encrypted = $1;
-
-        require MIME::Base64;
-        return MIME::Base64::decode($encrypted);
-    }
-
-    return $text;
 }
 
 package MT::Util::XML::SAX::LexicalHandler;
