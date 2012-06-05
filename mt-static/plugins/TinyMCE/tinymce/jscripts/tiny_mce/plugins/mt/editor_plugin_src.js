@@ -123,26 +123,25 @@
                     supporteds[id + '_' + k] = 1;
                 });
 
+                function update(key) {
+                    if (! supporteds[key]) {
+                        $('#' + key).hide().addClass('mce_mt_button_hidden');
+                        hiddenControls.push(key);
+                    }
+                }
+
                 if (s.mode == 'source') {
                     proxies.source.setFormat(s.format);
                     $.each(ed.controlManager.controls, function(k, c) {
                         if (! c.classPrefix) {
                             return;
                         }
-
-                        if (! supporteds[k]) {
-                            $('#' + k).hide().addClass('mce_mt_button_hidden');
-                            hiddenControls.push(k);
-                        }
+                        update(k);
                     });
                 }
                 else {
                     $.each(ed.mtButtons, function(name, button) {
-                        var k = id + '_' + name;
-                        if (! supporteds[k]) {
-                            $('#' + k).hide().addClass('mce_mt_button_hidden');
-                            hiddenControls.push(k);
-                        }
+                        update(id + '_' + name);
                     });
                 }
                 $('table', '#' + id + '_toolbargroup').each(function() {
@@ -164,6 +163,13 @@
             }
             ed.onInit.add(function() {
                 updateButtonVisibility();
+                $.each(ed.mtButtons, function(name, button) {
+                    if (button['buttonClass'] == 'text') {
+                        $('#' + id + '_' + name)
+                            .addClass('mceTextButton')
+                            .removeAttr('title');
+                    }
+                });
             });
 
             ed.addCommand('mtSetStatus', function(status) {
@@ -360,42 +366,48 @@
 			});
 
             ed.addMtButton('mt_source_bold', {
-                title : 'mt.bold',
+                title : 'strong',
+                buttonClass: 'text',
 				onclickFunctions : {
                     source: 'bold'
                 }
             });
 
             ed.addMtButton('mt_source_italic', {
-                title : 'mt.italic',
+                title : 'em',
+                buttonClass: 'text',
 				onclickFunctions : {
                     source: 'italic'
                 }
             });
 
             ed.addMtButton('mt_source_blockquote', {
-                title : 'mt.blockquote',
+                title : 'blockquote',
+                buttonClass: 'text',
 				onclickFunctions : {
                     source: 'blockquote'
                 }
             });
 
             ed.addMtButton('mt_source_unordered_list', {
-                title : 'mt.insert_unordered_list',
+                title : 'ul',
+                buttonClass: 'text',
 				onclickFunctions : {
                     source: 'insertUnorderedList'
                 }
             });
 
             ed.addMtButton('mt_source_ordered_list', {
-                title : 'mt.insert_ordered_list',
+                title : 'ol',
+                buttonClass: 'text',
 				onclickFunctions : {
                     source: 'insertOrderedList'
                 }
             });
 
             ed.addMtButton('mt_source_list_item', {
-                title : 'mt.list_item',
+                title : 'li',
+                buttonClass: 'text',
 				onclickFunctions : {
                     source: 'insertListItem'
                 }
@@ -454,7 +466,8 @@
             }
 
             ed.addMtButton('mt_source_link', {
-                title : 'mt.source_link',
+                title : 'link',
+                buttonClass: 'text',
 				onclickFunctions : {
                     source: function(cmd, ui, val) {
 			            tinymce._setActive(ed);
