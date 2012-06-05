@@ -12,7 +12,7 @@ use MT::Test;
 use Cwd;
 use File::Spec;
 use File::Temp qw( tempfile );
-use Test::More tests => 28;
+use Test::More tests => 32;
 
 use MT;
 use MT::ConfigMgr;
@@ -77,9 +77,13 @@ isa_ok($mt, 'MT');
 isa_ok($mt->{cfg}, 'MT::ConfigMgr');
 is($mt->{cfg}->Database, $db_dir . '/mt.db', "DataSource=$db_dir");
 
-like($cfg->SecretToken, qr/^[a-zA-Z0-9]{40}$/, 'Secret Token Generated');
 foreach my $key (qw{ UserSessionCookiePath UserSessionCookieName ProcessMemoryCommand SecretToken }) {
-	ok(length($cfg->get($key)), "Config $key is not empty");
+	my $value = $cfg->get($key);
+	ok(length($value), "Config $key is not empty");
+	is($cfg->get($key), $value, "Config $key returns the same value twice");
+	if ($key eq 'SecretToken') {
+		like($value, qr/^[a-zA-Z0-9]{40}$/, 'Secret Token Generated');
+	}
 	$cfg->set($key, 'Avocado');
 	is($cfg->get($key), 'Avocado', "Config $key is set-able");
 }
