@@ -17,17 +17,23 @@
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor.js"></script>
 </mt:unless>
 <script type="text/javascript">
+(function() {
+
 MT.EditorManager.updateMap({
     wysiwyg: '<mt:var name="wysiwyg_editor" escape="js" />',
     source: '<mt:var name="source_editor" escape="js" />'
 });
 MT.App.setDefaultEditorStrategy('<mt:var name="editor_strategy" escape="js" />');
-<mt:if name="content_css">
-MT.Editor.updateDefaultCommonOptions({
-    content_css_list: ['<mt:var name="content_css" escape="js" />'],
+
+var opts = {
     body_class_list: ['wysiwyg', '<mt:var name="object_type" escape="js" />']
-});
+};
+<mt:if name="content_css">
+opts['content_css_list'] = ['<mt:var name="content_css" escape="js" />'];
 </mt:if>
+MT.Editor.updateDefaultCommonOptions(opts);
+
+})();
 </script>
 </mt:setvarblock>
 <mt:loop name="editors">
