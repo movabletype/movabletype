@@ -250,13 +250,6 @@ sub edit {
             || POSIX::strftime( "%H:%M:%S", @now );
     }
 
-    if ( my $css = $blog->content_css ) {
-        if ( $css !~ m#\A(https?)?/# ) {
-            $css = MT::Util::caturl( $blog->site_url, $css );
-        }
-        $param->{content_css} = $css;
-    }
-
     ## show the necessary associated assets
     if ( $type eq 'entry' || $type eq 'page' ) {
         require MT::Asset;

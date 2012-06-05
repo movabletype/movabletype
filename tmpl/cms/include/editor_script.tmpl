@@ -24,7 +24,8 @@ MT.EditorManager.updateMap({
 MT.App.setDefaultEditorStrategy('<mt:var name="editor_strategy" escape="js" />');
 <mt:if name="content_css">
 MT.Editor.updateDefaultCommonOptions({
-    content_css_list: ['<mt:var name="content_css" escape="js" />']
+    content_css_list: ['<mt:var name="content_css" escape="js" />'],
+    body_class_list: ['wysiwyg', '<mt:var name="object_type" escape="js" />']
 });
 </mt:if>
 </script>

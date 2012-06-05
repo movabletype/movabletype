@@ -4974,6 +4974,17 @@ sub setup_editor_param {
     my $app = shift;
     my ($param) = @_;
 
+    if ( my $blog = $app->blog ) {
+        if ( my $css = $blog->content_css ) {
+            if ( $css !~ m#\A(https?)?/# ) {
+                $css = MT::Util::caturl( $blog->site_url, $css );
+            }
+            $param->{content_css} = $css;
+        }
+    }
+
+    $param->{object_type} = $app->param('_type') || '';
+
     if ( my $editor_regs = MT::Component->registry('editors') ) {
         $param->{editors} = {};
         foreach my $editors (@$editor_regs) {
