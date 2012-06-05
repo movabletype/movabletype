@@ -38,8 +38,8 @@ ODBCDriver <mt:var name="odbcdriver"></mt:if></mt:if><mt:if name="use_sqlite2">
 UseSQLite2 1</mt:if>
 
 #======== MAIL =======================
-EmailAddressMain <mt:var name="email_address_main"><mt:if name="mail_transfer" eq="smtp"><mt:if name="mail_transfer">
-MailTransfer <mt:var name="mail_transfer">
+EmailAddressMain <mt:var name="email_address_main"><mt:if name="mail_transfer">
+MailTransfer <mt:var name="mail_transfer"><mt:if name="mail_transfer" eq="smtp">
 SMTPServer <mt:var name="smtp_server"><mt:if name="smtp_auth">
 SMTPAuth <mt:var name="smtp_auth">
 SMTPUser <mt:var name="smtp_auth_username">

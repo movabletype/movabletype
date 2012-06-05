@@ -131,7 +131,6 @@ sub init_core_registry {
                         smtp_port smtp_auth smtp_auth_username
                         smtp_auth_password smtp_auth_ssl smtp_auth_tls )
                 ],
-                secure_these => [qw(smtp_auth_password)],
             },
             cfg_dir => {
                 order     => 300,
@@ -1134,15 +1133,11 @@ sub seed {
 
     $param{tmpl_loop} = \@tmpl_loop;
 
-    # Encrypt password if need
-    my $steps = $app->registry("wizard_steps");
-    foreach my $s ( keys %$steps ) {
-        next unless exists $steps->{$s}->{secure_these};
-        foreach my $p ( @{ $steps->{$s}->{secure_these} } ) {
-            $param{$p} = $param{$p}
-                if exists $param{$p};
-        }
-    }
+    # If TLS is enabled, SMTPAuth should be 'tls'
+    $param{smtp_auth} = 'tls'
+        if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' )
+        && $param{smtp_auth}
+        && $param{smtp_auth_tls};
 
     my $data = $app->build_page( "mt-config.tmpl", \%param );
 
