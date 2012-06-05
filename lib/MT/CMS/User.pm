@@ -675,7 +675,7 @@ sub cfg_system_users {
 
     my @config_warnings;
     for my $config_directive (
-        qw( UserPasswordValidation UserPasswordMinLength ) )
+        qw( UserPasswordValidation UserPasswordMinLength ))
     {
         push( @config_warnings, $config_directive )
             if $app->config->is_readonly($config_directive);

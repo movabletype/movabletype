@@ -2314,22 +2314,22 @@ sub core_compose_menus {
     my $app = shift;
     return {
         'entry' => {
-            id         => 'entry',
-            label      => "Entry",
-            order      => 100,
-            mode       => 'view',
+            id    => 'entry',
+            label => "Entry",
+            order => 100,
+            mode  => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
             view       => "blog",
         },
         'page' => {
-            id         => 'page',
-            label      => "Page",
-            order      => 200,
-            mode       => 'view',
+            id    => 'page',
+            label => "Page",
+            order => 200,
+            mode  => 'view',
             args       => { _type => 'page' },
             permission => 'manage_pages',
-            view       => [ "blog", 'website' ],
+            view => [ "blog", 'website' ],
         },
         'asset' => {
             id         => 'asset',
@@ -2337,22 +2337,22 @@ sub core_compose_menus {
             order      => 300,
             mode       => 'start_upload',
             permission => 'upload,edit_assets',
-            view       => [ "blog", 'website' ],
+            view => [ "blog", 'website' ],
         },
         'website' => {
-            id            => 'website',
-            label         => "Website",
-            order         => 200,
-            mode          => 'view',
+            id    => 'website',
+            label => "Website",
+            order => 200,
+            mode  => 'view',
             args          => { _type => 'website' },
             permit_action => 'use_website:create_menu',
             view          => "system",
         },
         'user' => {
-            id         => 'user',
-            label      => "User",
-            order      => 100,
-            mode       => "view",
+            id    => 'user',
+            label => "User",
+            order => 100,
+            mode  => "view",
             args       => { _type => "author" },
             permission => "administer",
             condition  => sub {
@@ -2361,10 +2361,10 @@ sub core_compose_menus {
             view => "system",
         },
         'blog:create' => {
-            id            => 'blog',
-            label         => "Blog",
-            order         => 400,
-            mode          => 'view',
+            id    => 'blog',
+            label => "Blog",
+            order => 400,
+            mode  => 'view',
             args          => { _type => 'blog' },
             permit_action => 'use_blog:create_menu',
             view          => "website",
@@ -3890,7 +3890,9 @@ sub show_error {
     $param = { error => $param } unless ref($param) && ref($param) eq 'HASH';
     my $method_info = MT->request('method_info') || {};
     my $mode = $app->mode;
-    if ( $app->param('xhr') or (($method_info->{app_mode} || '') eq 'JSON' )) {
+    if ( $app->param('xhr')
+        or ( ( $method_info->{app_mode} || '' ) eq 'JSON' ) )
+    {
         return $app->json_error( $param->{error}, $param->{status} );
     }
     elsif ( $mode eq 'rebuild' ) {
@@ -3954,7 +3956,9 @@ sub show_error {
 sub show_login {
     my $app = shift;
     my $method_info = MT->request('method_info') || {};
-    if ( $app->param('xhr') or (($method_info->{app_mode} || '') eq 'JSON' )) {
+    if ( $app->param('xhr')
+        or ( ( $method_info->{app_mode} || '' ) eq 'JSON' ) )
+    {
         $app->{login_again} = 1;
         return $app->show_error( { error => 'Unauthorized', status => 401 } );
     }

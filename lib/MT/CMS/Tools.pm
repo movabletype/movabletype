@@ -45,8 +45,9 @@ sub system_check {
 
     $param{server_modperl} = 1 if $ENV{MOD_PERL};
     $param{server_fastcgi} = 1 if $ENV{FAST_CGI};
+
     # just check this instance is running on PSGI servers.
-    $param{server_psgi}    = $ENV{'psgi.version'} ? 1 : 0;
+    $param{server_psgi} = $ENV{'psgi.version'} ? 1 : 0;
     if ( !$param{server_psgi} ) {
         $param{syscheck_html} = get_syscheck_content($app) || '';
     }
@@ -368,8 +369,7 @@ sub do_list_action {
             return $app->json_error(
                 MT->translate(
                     q{Error occurred while attempting to [_1]: [_2]},
-                    $the_action->label,
-                    $app->errstr
+                    $the_action->label, $app->errstr
                 )
             );
         }
@@ -420,25 +420,27 @@ sub cfg_system_mail {
     $param{nav_config}   = 1;
     $param{nav_settings} = 1;
 
-    my $cfg = $app->config;
+    my $cfg       = $app->config;
     my %directive = (
         EmailAddressMain => 'system_email_address',
-        SendMailPath => 'sendmail_path',
-        SMTPServer => 'smtp_server',
-        SMTPPort => 'smtp_port',
-        SMTPAuth => 'smtp_auth',
-        SMTPUseSSL => 'smtp_auth_ssl',
-        SMTPUser => 'smtp_auth_username',
-        SMTPPassword => 'smtp_auth_password',
+        SendMailPath     => 'sendmail_path',
+        SMTPServer       => 'smtp_server',
+        SMTPPort         => 'smtp_port',
+        SMTPAuth         => 'smtp_auth',
+        SMTPUseSSL       => 'smtp_auth_ssl',
+        SMTPUser         => 'smtp_auth_username',
+        SMTPPassword     => 'smtp_auth_password',
     );
     my @directive = keys %directive;
+
     if ( $app->param('to_email_address') ) {
+
         # Set entered value as email settings
-        foreach my $d ( @directive ) {
+        foreach my $d (@directive) {
             $cfg->$d( $app->param( $directive{$d} ) );
         }
         if ( $app->param('smtp_auth_tls') ) {
-            $cfg->SMTPAuth( 'tls');
+            $cfg->SMTPAuth('tls');
         }
 
         return $app->errtrans(
@@ -461,24 +463,25 @@ sub cfg_system_mail {
         if ( MT::Mail->send( \%head, $body ) ) {
             $app->log(
                 {   message => $app->translate(
-                    'Test e-mail was successfully sent to [_1]',
-                    $app->param('to_email_address')
-                ),
+                        'Test e-mail was successfully sent to [_1]',
+                        $app->param('to_email_address')
+                    ),
                     level    => MT::Log::INFO(),
                     class    => 'system',
                     category => 'email',
                 }
-            ); 
+            );
             $param{test_mail_sent} = 1;
         }
         else {
-            $param{error} = $app->translate("Mail was not properly sent: [_1]", MT::Mail->errstr);
+            $param{error}
+                = $app->translate( "Mail was not properly sent: [_1]",
+                MT::Mail->errstr );
         }
     }
 
     my @config_warnings;
-    for my $config_directive ( @directive )
-    {
+    for my $config_directive (@directive) {
         push( @config_warnings, $config_directive )
             if $app->config->is_readonly($config_directive);
     }
@@ -490,26 +493,26 @@ sub cfg_system_mail {
     ) if $config_warning;
 
     require MT::Mail;
-    $param{has_net_smtp}         = MT::Mail->can_use_smtp         ? 1 : 0;
-    $param{has_net_smtp_auth}    = MT::Mail->can_use_smtpauth     ? 1 : 0;
-    $param{has_net_smtp_ssl}     = MT::Mail->can_use_smtpauth_ssl ? 1 : 0;
+    $param{has_net_smtp}      = MT::Mail->can_use_smtp         ? 1 : 0;
+    $param{has_net_smtp_auth} = MT::Mail->can_use_smtpauth     ? 1 : 0;
+    $param{has_net_smtp_ssl}  = MT::Mail->can_use_smtpauth_ssl ? 1 : 0;
     $param{has_net_smtp_ssl_msg} = MT::Mail->errstr;
     $param{has_net_smtp_tls}     = MT::Mail->can_use_smtpauth_tls ? 1 : 0;
     $param{has_net_smtp_tls_msg} = MT::Mail->errstr;
 
     $param{system_email_address} = $cfg->EmailAddressMain;
-    $param{mail_transfer} = lc $cfg->MailTransfer;
-    $param{sendmail_path} = $cfg->SendMailPath;
-    $param{smtp_server} = $cfg->SMTPServer;
-    $param{smtp_port} = $cfg->SMTPPort;
-    $param{smtp_auth} = $cfg->SMTPAuth ? 1 : 0;
-    $param{smtp_auth_username} = $cfg->SMTPUser;
-    $param{smtp_auth_password} = $cfg->SMTPPassword;
-    $param{smtp_auth_ssl} = $cfg->SMTPUseSSL;
-    $param{smtp_auth_tls} = lc ( $cfg->SMTPAuth || '' ) eq 'tls' ? 1 : 0;
+    $param{mail_transfer}        = lc $cfg->MailTransfer;
+    $param{sendmail_path}        = $cfg->SendMailPath;
+    $param{smtp_server}          = $cfg->SMTPServer;
+    $param{smtp_port}            = $cfg->SMTPPort;
+    $param{smtp_auth}            = $cfg->SMTPAuth ? 1 : 0;
+    $param{smtp_auth_username}   = $cfg->SMTPUser;
+    $param{smtp_auth_password}   = $cfg->SMTPPassword;
+    $param{smtp_auth_ssl}        = $cfg->SMTPUseSSL;
+    $param{smtp_auth_tls} = lc( $cfg->SMTPAuth || '' ) eq 'tls' ? 1 : 0;
 
-    $param{saved}                = $app->param('saved');
-    $param{screen_class}         = "settings-screen system-mail-settings";
+    $param{saved}        = $app->param('saved');
+    $param{screen_class} = "settings-screen system-mail-settings";
 
     $app->load_tmpl( 'cfg_system_mail.tmpl', \%param );
 
@@ -650,9 +653,11 @@ sub save_cfg_system_mail {
     my $cfg = $app->config;
 
     my $smtp_auth;
-    $smtp_auth = $app->param('smtp_auth') && $app->param('smtp_auth_tls') ?
-        'tls' : $app->param('smtp_auth') ?
-            1 : 0;
+    $smtp_auth
+        = $app->param('smtp_auth')
+        && $app->param('smtp_auth_tls') ? 'tls'
+        : $app->param('smtp_auth')      ? 1
+        :                                 0;
 
     # construct the message to the activity log
     my @meta_messages;
@@ -662,7 +667,9 @@ sub save_cfg_system_mail {
             'Email address is [_1]',
             $app->param('system_email_address')
         )
-    ) unless ( $app->param('system_email_address') eq $cfg->EmailAddressMain );
+        )
+        unless (
+        $app->param('system_email_address') eq $cfg->EmailAddressMain );
 
     if ( $cfg->MailTransfer eq 'sendmail' ) {
         push(
@@ -671,23 +678,25 @@ sub save_cfg_system_mail {
                 'Sendmail path is [_1]',
                 $app->param('sendmail_path')
             )
-        ) unless ( ( $app->param('sendmail_path') || undef ) eq $cfg->SendmailPath );
-    } elsif ( $cfg->MailTransfer eq 'smtp' ) {
+            )
+            unless (
+            ( $app->param('sendmail_path') || undef ) eq $cfg->SendmailPath );
+    }
+    elsif ( $cfg->MailTransfer eq 'smtp' ) {
         push(
             @meta_messages,
             $app->translate(
                 'SMTP server is [_1]',
                 $app->param('smtp_server')
             )
-        ) unless ( ( $app->param('smtp_server') || undef ) eq $cfg->SMTPServer );
-
-        push(
-            @meta_messages,
-            $app->translate(
-                'SMTP Port is [_1]',
-                $app->param('smtp_port')
             )
-        ) unless ( ( $app->param('smtp_port') || undef ) eq $cfg->SMTPPort );
+            unless (
+            ( $app->param('smtp_server') || undef ) eq $cfg->SMTPServer );
+
+        push( @meta_messages,
+            $app->translate( 'SMTP Port is [_1]', $app->param('smtp_port') ) )
+            unless (
+            ( $app->param('smtp_port') || undef ) eq $cfg->SMTPPort );
 
         push(
             @meta_messages,
@@ -695,7 +704,9 @@ sub save_cfg_system_mail {
                 'SMTP Auth username is [_1]',
                 $app->param('smtp_auth_username')
             )
-        ) unless ( ( $app->param('smtp_auth_username') || undef ) eq $cfg->SMTPUser );
+            )
+            unless ( ( $app->param('smtp_auth_username') || undef ) eq
+            $cfg->SMTPUser );
 
         push(
             @meta_messages,
@@ -703,23 +714,26 @@ sub save_cfg_system_mail {
                 'SMTP Auth password is [_1]',
                 $app->param('smtp_auth_password')
             )
-        ) unless ( ( $app->param('smtp_auth_password') || undef ) eq $cfg->SMTPPassword );
+            )
+            unless ( ( $app->param('smtp_auth_password') || undef ) eq
+            $cfg->SMTPPassword );
 
         push(
             @meta_messages,
             $app->translate(
                 'SMTP Auth with SSL is [_1]',
-                ( $app->param('smtp_auth_ssl') ? $app->translate('enable') : $app->translate('disable') )
+                (     $app->param('smtp_auth_ssl')
+                    ? $app->translate('enable')
+                    : $app->translate('disable')
+                )
             )
-        ) unless ( ( $app->param('smtp_auth_ssl') || 0 ) eq $cfg->SMTPUseSSL );
+            )
+            unless (
+            ( $app->param('smtp_auth_ssl') || 0 ) eq $cfg->SMTPUseSSL );
 
-        push(
-            @meta_messages,
-            $app->translate(
-                'SMTP Auth is [_1]',
-                ( $smtp_auth )
-            )
-        ) unless ( $smtp_auth eq $cfg->SMTPAuth );
+        push( @meta_messages,
+            $app->translate( 'SMTP Auth is [_1]', ($smtp_auth) ) )
+            unless ( $smtp_auth eq $cfg->SMTPAuth );
     }
 
     # actually assign the changes
@@ -729,26 +743,26 @@ sub save_cfg_system_mail {
     if ( $cfg->MailTransfer eq 'sendmail' ) {
         $app->config( 'SendMailPath',
             ( $app->param('sendmail_path') || undef ), 1 );
-    } elsif ( $cfg->MailTransfer eq 'smtp' ) {
-        $app->config( 'SMTPServer',
-            ( $app->param('smtp_server') || undef ), 1 );
-        $app->config( 'SMTPPort',
-            ( $app->param('smtp_port') || undef ), 1 );
+    }
+    elsif ( $cfg->MailTransfer eq 'smtp' ) {
+        $app->config( 'SMTPServer', ( $app->param('smtp_server') || undef ),
+            1 );
+        $app->config( 'SMTPPort', ( $app->param('smtp_port') || undef ), 1 );
         $app->config( 'SMTPAuth', $smtp_auth, 1 );
         $app->config( 'SMTPUser',
             ( $app->param('smtp_auth_username') || undef ), 1 );
         $app->config( 'SMTPPassword',
             ( $app->param('smtp_auth_password') || undef ), 1 );
-        $app->config( 'SMTPUseSSL',
-            ( $app->param('smtp_auth_ssl') || 0 ), 1 );
+        $app->config( 'SMTPUseSSL', ( $app->param('smtp_auth_ssl') || 0 ),
+            1 );
     }
 
     # throw the messages in the activity log
     if ( scalar(@meta_messages) > 0 ) {
         my $message = join( ', ', @meta_messages );
         $app->log(
-            {   message =>
-                    $app->translate('System Mail Settings Changes Took Place'),
+            {   message => $app->translate(
+                    'System Mail Settings Changes Took Place'),
                 level    => MT::Log::INFO(),
                 class    => 'system',
                 metadata => $message,
@@ -785,12 +799,14 @@ sub save_cfg_system_general {
             $app->param('system_debug_mode')
         )
     ) if ( $app->param('system_debug_mode') =~ /\d+/ );
-    if (not $cfg->HidePaformanceLoggingSettings) {
+    if ( not $cfg->HidePaformanceLoggingSettings ) {
         if ( $app->param('system_performance_logging') ) {
-            push( @meta_messages, $app->translate('Performance logging is on') );
+            push( @meta_messages,
+                $app->translate('Performance logging is on') );
         }
         else {
-            push( @meta_messages, $app->translate('Performance logging is off') );
+            push( @meta_messages,
+                $app->translate('Performance logging is off') );
         }
         push(
             @meta_messages,
@@ -805,13 +821,15 @@ sub save_cfg_system_general {
                 'Performance log threshold is [_1]',
                 $app->param('system_performance_logging_threshold')
             )
-        ) if ( $app->param('system_performance_logging_threshold') =~ /\d+/ );
+            )
+            if (
+            $app->param('system_performance_logging_threshold') =~ /\d+/ );
     }
 
     # actually assign the changes
     $app->config( 'DebugMode', $app->param('system_debug_mode'), 1 )
         if ( $app->param('system_debug_mode') =~ /\d+/ );
-    if (not $cfg->HidePaformanceLoggingSettings) {
+    if ( not $cfg->HidePaformanceLoggingSettings ) {
         if ( $app->param('system_performance_logging') ) {
             $app->config( 'PerformanceLogging', 1, 1 );
         }
@@ -823,20 +841,26 @@ sub save_cfg_system_general {
             if ( $app->param('system_performance_logging_path') =~ /\w+/ );
         $app->config( 'PerformanceLoggingThreshold',
             $app->param('system_performance_logging_threshold'), 1 )
-            if ( $app->param('system_performance_logging_threshold') =~ /\d+/ );
+            if (
+            $app->param('system_performance_logging_threshold') =~ /\d+/ );
     }
 
-    if (not $cfg->HideBaseSitePath) {
-        if (not $app->param('sitepath_limit')) {
+    if ( not $cfg->HideBaseSitePath ) {
+        if ( not $app->param('sitepath_limit') ) {
             $app->config( 'BaseSitePath', undef, 1 );
         }
-        elsif (File::Spec->file_name_is_absolute($app->param('sitepath_limit')) &&
-            -d $app->param('sitepath_limit')) 
+        elsif (
+            File::Spec->file_name_is_absolute(
+                $app->param('sitepath_limit')
+            )
+            && -d $app->param('sitepath_limit')
+            )
         {
             $app->config( 'BaseSitePath', $app->param('sitepath_limit'), 1 );
         }
         else {
-            return $app->errtrans("Invalid SitePath: Should be valid and absolute");
+            return $app->errtrans(
+                "Invalid SitePath: Should be valid and absolute");
         }
     }
 
@@ -1810,7 +1834,7 @@ sub adjust_sitepath {
     my %error_assets;
     my %blogs_meta;
     my $path_limit = $app->config->BaseSitePath;
-    my @p = $q->param;
+    my @p          = $q->param;
     foreach my $p (@p) {
         next unless $p =~ /^site_path_(\d+)/;
         my $id   = $1;
@@ -1833,11 +1857,11 @@ sub adjust_sitepath {
 
         if ($use_absolute) {
             $site_path = scalar $q->param("site_path_absolute_$id") || q();
-            if ($path_limit and (0 != index($site_path, $path_limit))) {
+            if ( $path_limit and ( 0 != index( $site_path, $path_limit ) ) ) {
                 $site_path = $path_limit;
             }
         }
-        elsif ($site_path =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)!) {
+        elsif ( $site_path =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)! ) {
             $site_path = $path_limit;
         }
         $blog->site_path($site_path);
@@ -1884,11 +1908,13 @@ sub adjust_sitepath {
 
         if ($use_absolute_archive) {
             $archive_path = $archive_path_absolute;
-            if ($path_limit and (0 != index($archive_path, $path_limit))) {
+            if ( $path_limit
+                and ( 0 != index( $archive_path, $path_limit ) ) )
+            {
                 $archive_path = $path_limit;
             }
         }
-        elsif ($archive_path =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)!) {
+        elsif ( $archive_path =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)! ) {
             $archive_path = $path_limit;
         }
         $blog->archive_path($archive_path);
@@ -2348,8 +2374,8 @@ sub dialog_adjust_sitepath {
         }
         else {
             my $sitepath = $blog->column('site_path');
-            my $limited = $app->config->BaseSitePath;
-            if ($limited and ( 0 != index($sitepath, $limited) ) ) {
+            my $limited  = $app->config->BaseSitePath;
+            if ( $limited and ( 0 != index( $sitepath, $limited ) ) ) {
                 $sitepath = $limited;
             }
             push @website_loop,
@@ -2382,13 +2408,14 @@ sub dialog_adjust_sitepath {
     $param->{website_loop}   = \@website_loop if @website_loop;
     $param->{all_websites}   = \@all_websites if @all_websites;
     $param->{path_separator} = MT::Util->dir_separator;
-    $param->{sitepth_limited}= $app->config->BaseSitePath;
-    # There is a danger that the asset_id list will ballon and make a request
-    # URL that is longer then allowed. This function have two ways to be called:
-    # 1. As open-dialog command, from the restore window, and with GET 
-    # 2. a part of dialog chain, from dialog_restore_upload, with POST
-    # if this was called using GET, then the asset list will be read from
-    # the calling page
+    $param->{sitepth_limited} = $app->config->BaseSitePath;
+
+  # There is a danger that the asset_id list will ballon and make a request
+  # URL that is longer then allowed. This function have two ways to be called:
+  # 1. As open-dialog command, from the restore window, and with GET
+  # 2. a part of dialog chain, from dialog_restore_upload, with POST
+  # if this was called using GET, then the asset list will be read from
+  # the calling page
     $param->{request_method} = $app->request_method();
     for my $key (
         qw(files assets last redirect is_dirty is_asset objects_json deferred_json)
