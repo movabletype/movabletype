@@ -509,10 +509,10 @@
                 if (ed.mtEditorStatus['mode'] == 'source' &&
                     ed.mtEditorStatus['format'] != 'none.tinymce_temp'
                 ) {
-                    $('#' + id + '_mt_source_mode').hide();
+                    $('#' + id + '_mt_source_mode').css('display', 'none');
                 }
                 else {
-                    $('#' + id + '_mt_source_mode').show();
+                    $('#' + id + '_mt_source_mode').css('display', '');
                 }
 
                 var active =
