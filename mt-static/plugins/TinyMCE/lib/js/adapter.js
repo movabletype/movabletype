@@ -22,6 +22,7 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
 
         theme: "advanced",
         skin: 'mt',
+        inlinepopups_skin: 'mt',
         theme_advanced_toolbar_location: "top",
         theme_advanced_toolbar_align: "left",
         theme_advanced_resizing: true,
