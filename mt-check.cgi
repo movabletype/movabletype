@@ -437,6 +437,14 @@ my @CORE_REQ = (
     [   'CGI::Cookie', 0, 1,
         translate('CGI::Cookie is required for cookie authentication.')
     ],
+
+    [   'LWP::UserAgent',
+        0, 0,
+        translate(
+            'LWPUserAgent is required for making configuration file by Wizard.'
+        )
+    ],
+
 );
 
 my @CORE_DATA = (
@@ -475,17 +483,44 @@ my @CORE_DATA = (
 );
 
 my @CORE_OPT = (
+    [   'Digest::SHA',
+        0, 0,
+        translate(
+            'Digest::SHA is required in order to advanced protection of user passwords.'
+        )
+    ],
+
+    [   'Plack', 0, 0,
+        translate(
+            'This module and its dependencies are required in order to running under psgi.'
+        )
+    ],
+
+    [   'CGI::PSGI',
+        0, 0,
+        translate(
+            'This module and its dependencies are required in order to running under psgi.'
+        )
+    ],
+
+    [   'CGI::Parse::PSGI',
+        0, 0,
+        translate(
+            'This module and its dependencies are required in order to running under psgi.'
+        )
+    ],
+
+    [   'XMLRPC::Transport::HTTP::Plack',
+        0, 0,
+        translate(
+            'This module and its dependencies are required in order to running under psgi.'
+        )
+    ],
+
     [   'HTML::Entities',
         0, 0,
         translate(
             'HTML::Entities is needed to encode some characters, but this feature can be turned off using the NoHTMLEntities option in the configuration file.'
-        )
-    ],
-
-    [   'LWP::UserAgent',
-        0, 0,
-        translate(
-            'LWP::UserAgent is optional; It is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.'
         )
     ],
 
@@ -581,7 +616,7 @@ my @CORE_OPT = (
     [   'MIME::Base64',
         0, 0,
         translate(
-            'MIME::Base64 is required in order to enable comment registration.'
+            'MIME::Base64 is required in order to enable comment registration. Also, required in order to send mail via an SMTP Server.'
         )
     ],
 
@@ -637,26 +672,63 @@ my @CORE_OPT = (
             'Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.'
         )
     ],
-    [   'Mail::Sendmail',
+
+    [   'Net::SMTP',
         0, 0,
         translate(
-            'Mail::Sendmail is required in order to send mail via an SMTP Server.'
+            'Net::SMTP is required in order to send mail via an SMTP Server.'
         )
     ],
+
+    [   'Authen::SASL', 0, 0,
+        translate( 'Authen::SASL is required for using SMTP Auth.' )
+    ],
+
+    [   'Net::SMTP::SSL',
+        0, 0,
+        translate(
+            'Net::SMTP::SSL is required for using SMTP Auth with SSL connection.'
+        )
+    ],
+
+    [   'Net::SMTP::TLS',
+        0, 0,
+        translate(
+            'Net::SMTP::TLS is required for using SMTP Auth with TLS protocol.'
+        )
+    ],
+
+    [   'IO::Socket::SSL',
+        0, 0,
+        translate(
+            'IO::Socket::SSL is required for using SMTP Auth with SSL connection or using  with TLS protocol.'
+        )
+    ],
+
+    [   'Net::SSLeay',
+        0, 0,
+        translate(
+            'Net::SSLeay is required for using SMTP Auth with SSL connection or using  with TLS protocol.'
+        )
+    ],
+
     [   'Safe', 0, 0,
         translate(
             'This module is used in a test attribute for the MTIf conditional tag.'
         )
     ],
+
     [   'Digest::MD5', 0, 0,
         translate('This module is used by the Markdown text filter.')
     ],
+
     [   'Text::Balanced',
         0, 0,
         translate(
             'This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.'
         )
     ],
+
     [   'XML::Parser', 0, 0,
         translate('This module required for action streams.')
     ],
@@ -905,7 +977,7 @@ MSG
             print_encode(
                 trans_templ(
                     qq{<p class="installed"><__trans phrase="Your server has [_1] installed (version [_2])." params="$mod%%}
-                        . $mod->VERSION
+                        . ( $mod->VERSION || translate('unknown') )
                         . qq{"></p>\n\n}
                 )
             );

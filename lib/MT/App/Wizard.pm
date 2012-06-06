@@ -144,15 +144,65 @@ sub init_core_registry {
             },
         },
         optional_packages => {
+            'Digest::SHA' => {
+                link => 'http://search.cpan.org/dist/Digest-SHA/',
+                label =>
+                    'Digest::SHA is required in order to advanced protection of user passwords.',
+            },
+            'Plack' => {
+                link => 'http://search.cpan.org/dist/Plack/',
+                label =>
+                    'This module and its dependencies are required in order to running under psgi.',
+            },
+            'CGI::PSGI' => {
+                link => 'http://search.cpan.org/dist/CGI-PSGI/',
+                label =>
+                    'This module and its dependencies are required in order to running under psgi.',
+            },
+            'CGI::Parse::PSGI' => {
+                link => 'http://search.cpan.org/dist/CGI-Emulate-PSGI/',
+                label =>
+                    'This module and its dependencies are required in order to running under psgi.',
+            },
+            'XMLRPC::Transport::HTTP::Plack' => {
+                link =>
+                    'http://search.cpan.org/dist/SOAP-Transport-HTTP-Plack/',
+                label =>
+                    'This module and its dependencies are required in order to running under psgi.',
+            },
+            'Net::SMTP' => {
+                link => 'http://search.cpan.org/dist/libnet/',
+                label =>
+                    'Net::SMTP is required in order to send mail via an SMTP Server.',
+            },
+            'Authen::SASL' => {
+                link  => 'http://search.cpan.org/dist/Authen-SASL/',
+                label => 'Authen::SASL is required for using SMTP Auth.',
+            },
+            'Net::SMTP::SSL' => {
+                link => 'http://search.cpan.org/dist/Net-SMTP-SSL/',
+                label =>
+                    'Net::SMTP::SSL is required for using SMTP Auth with SSL connection.',
+            },
+            'Net::SMTP::TLS' => {
+                link => 'http://search.cpan.org/dist/Net-SMTP-TLS/',
+                label =>
+                    'Net::SMTP::TLS is required for using SMTP Auth with TLS protocol.',
+            },
+            'IO::Socket::SSL' => {
+                link => 'http://search.cpan.org/dist/IO-Socket-SSL/',
+                label =>
+                    'IO::Socket::SSL is required for using SMTP Auth with SSL connection or using  with TLS protocol.',
+            },
+            'Net::SSLeay' => {
+                link => 'http://search.cpan.org/dist/Net-SSLeay/',
+                label =>
+                    'Net::SSLeay is required for using SMTP Auth with SSL connection or using  with TLS protocol.',
+            },
             'HTML::Entities' => {
                 link => 'http://search.cpan.org/dist/HTML-Entities',
                 label =>
                     'This module is needed to encode special characters, but this feature can be turned off using the NoHTMLEntities option in mt-config.cgi.',
-            },
-            'LWP::UserAgent' => {
-                link => 'http://search.cpan.org/dist/LWP',
-                label =>
-                    'This module is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.',
             },
             'HTML::Parser' => {
                 link => 'http://search.cpan.org/dist/HTML-Parser',
@@ -223,7 +273,7 @@ sub init_core_registry {
             'MIME::Base64' => {
                 link => 'http://search.cpan.org/dist/MIME-Base64',
                 label =>
-                    'This module is needed to enable comment registration.',
+                    'This module is needed to enable comment registration. Also, required in order to send mail via an SMTP Server.',
             },
             'XML::Atom' => {
                 link  => 'http://search.cpan.org/dist/XML-Atom',
@@ -263,11 +313,6 @@ sub init_core_registry {
                 link => 'http://search.cpan.org/dist/Digest-SHA1',
                 label =>
                     'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.',
-            },
-            'Mail::Sendmail' => {
-                link => 'http://search.cpan.org/dist/Mail-Sendmail',
-                label =>
-                    'This module is required for sending mail via SMTP Server.',
             },
             'Safe' => {
                 link => 'http://search.cpan.org/dist/Safe',
@@ -314,7 +359,12 @@ sub init_core_registry {
                 version => 0.8,
                 label =>
                     'File::Spec is required for path manipulation across operating systems.',
-            }
+            },
+            'LWP::UserAgent' => {
+                link => 'http://search.cpan.org/dist/libwww-perl/',
+                label =>
+                    'LWPUserAgent is required for making configuration file by Wizard.',
+            },
         },
         database_options => {
             'mysql' => {
