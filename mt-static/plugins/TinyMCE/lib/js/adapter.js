@@ -16,7 +16,7 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
     config: {
         mode: "exact",
 
-        plugins: "lists,style,table,inlinepopups,media,paste,fullscreen,xhtmlxtras,mt",
+        plugins: "lists,style,table,inlinepopups,media,paste,mt_fullscreen,xhtmlxtras,mt",
 
         language: $('html').attr('lang'),
 
@@ -27,16 +27,21 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         theme_advanced_toolbar_align: "left",
         theme_advanced_resizing: true,
         theme_advanced_resize_horizontal: false,
-
+        theme_advanced_resizing_min_height: 100,
         theme_advanced_statusbar_location: "bottom",
-        theme_advanced_buttons1: 'mt_source_mode',
-        theme_advanced_buttons2: 'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,mt_source_link,bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,indent,outdent,|,link,unlink,mt_insert_image,mt_insert_file',
-        theme_advanced_buttons3: 'undo,redo,|,table,hr,removeformat,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,|,formatselect,|,fullscreen',
-        theme_advanced_buttons4: '',
-        theme_advanced_buttons5: '',
-        theme_advanced_buttons6: '',
-
         theme_advanced_blockformats: 'h1,h2,h3,h4,h5,h6,p,pre',
+
+        // The "theme_advanced_buttons" should not use in Movable Type.
+        // Use "plugin_mt_*_buttons" instead.
+        // theme_advanced_buttons1: '',
+
+        // Buttons using both in source and wysiwyg modes.
+        plugin_mt_common_buttons1: 'mt_source_mode',
+        // Buttons using in source mode.
+        plugin_mt_source_buttons1: 'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,mt_source_link,mt_insert_image,mt_insert_file,mt_fullscreen',
+        // Buttons using in wysiwyg mode.
+        plugin_mt_wysiwyg_buttons1: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,indent,outdent,|,link,unlink,mt_insert_image,mt_insert_file',
+        plugin_mt_wysiwyg_buttons2: 'undo,redo,|,table,hr,removeformat,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,|,formatselect,|,mt_fullscreen',
 
         formats: {
             strikethrough: {inline: 'del', attributes: {'datetime': function() {
@@ -156,34 +161,16 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         }
         this.resetUndo();
         this.tinymce.nodeChanged();
+        this.tryToFullScreenFitToWindow();
     },
 
-    setFormatFullscreen: function(format) {
-        var mode = MT.EditorManager.toMode(format);
-
-        this.tinymce.execCommand('mtSetStatus', {
-            mode: mode,
-            format: format
-        });
-
-        if (mode == 'source') {
-            this.source.setContent(this.tinymce.getContent());
-            this.$editorIframe.hide();
-            this.$editorPathRow.hide();
-            this.$editorTextarea.show();
-            this.editor = this.source;
+    tryToFullScreenFitToWindow: function() {
+        try {
+            this.tinymce.execCommand('mtFullScreenUpdateFitToWindow');
+            this.tinymce.execCommand('mtFullScreenFitToWindow');
         }
-        else {
-            this.tinymce.setContent(this.source.getContent());
-            this.$editorTextarea.hide();
-            this.$editorIframe.show();
-            this.$editorPathRow.show();
-            this.editor = this.tinymce;
+        catch (e) {
         }
-
-        this._fixFullscreenEditorSize();
-        this.resetUndo();
-        this.tinymce.nodeChanged();
     },
 
     setContent: function(content) {
@@ -246,50 +233,8 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         }
     },
 
-    _fixFullscreenEditorSize: function(ed) {
-        var $t = $('#mce_fullscreen_tbl')
-        var t_h = $t.height();
-        var t_w = $t.width();
-
-        var $i = $('.mceIframeContainer', $t);
-        var i_h = $i.height();
-        var i_w = $i.width();
-
-        var $w = $(window);
-        var w_h = $w.height();
-        var w_w = $w.width();
-
-        if (! ed) {
-            ed = this.tinymce;
-        }
-
-        ed.theme.resizeTo(w_w - t_w + i_w, w_h - t_h + i_h);
-    },
-
     _init_instance_callback: function(ed) {
         var adapter = this;
-
-        if (ed.getParam('fullscreen_is_enabled')) {
-            adapter = $.extend(adapter);
-
-            ed.addCommand('mtSetFormat', function(format) {
-                adapter.setFormatFullscreen(format);
-            });
-
-            adapter.$editorIframe   = $('#mce_fullscreen_ifr');
-            adapter.$editorTextarea = $('<textarea />')
-                .attr('id', 'mce_fullscreen_textarea')
-                .css({
-                    background: 'white',
-                    resize: 'none'
-                })
-                .insertAfter(adapter.$editorIframe)
-                .hide();
-            adapter.$editorPathRow = $('#mce_fullscreen_path_row');
-            adapter._fixFullscreenEditorSize(ed);
-
-            $('#mce_fullscreen').data('mt-editor', adapter);
-        }
 
         adapter.tinymce = adapter.editor = ed;
         adapter.source =
@@ -303,9 +248,8 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
 
 
         var resizeTo = ed.theme.resizeTo;
-        ed.theme.resizeTo = function(width, height, store) {
-            if (ed.getParam('fullscreen_is_enabled')) {
-                adapter.$editorTextarea.width(width);
+        ed.theme.resizeTo = function(width, height, store, isFullscreen) {
+            if (isFullscreen) {
                 adapter.$editorTextarea.height(height);
             }
             else {
@@ -320,10 +264,6 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             }
             resizeTo.apply(ed.theme, arguments);
         };
-
-        if (ed.getParam('fullscreen_is_enabled')) {
-            return;
-        }
 
         $('#' + adapter.id + '_tbl').css({
             width: '100%'
@@ -358,7 +298,19 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         });
 
         ed.addCommand('mtSetFormat', function(format) {
-            adapter.setFormat(format);
+            adapter.manager.setFormat(format);
+        });
+
+        ed.addCommand('mtGetEditorSize', function() {
+            return {
+                iframeHeight: adapter.$editorIframe.height(),
+                textareaHeight: adapter.$editorTextarea.height()
+            };
+        });
+
+        ed.addCommand('mtRestoreEditorSize', function(size) {
+            adapter.$editorIframe.height(size['iframeHeight']);
+            adapter.$editorTextarea.height(size['textareaHeight']);
         });
     }
 });

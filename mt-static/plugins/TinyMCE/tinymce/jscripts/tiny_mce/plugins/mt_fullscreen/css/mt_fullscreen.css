@@ -1,0 +1,24 @@
+.fullscreen_editor_screen {
+    overflow: hidden;
+}
+
+.fullscreen_editor {
+    position: fixed !important;
+    z-index: 2000;
+    top: 0px;
+    left: 0px;
+}
+
+/* for wysiwyg type custom field */
+.field-top-label .field-content.fullscreen_editor {
+    margin: 0;
+    padding: 0;
+}
+
+.fullscreen_editor .editor-header .tab {
+    margin-top: 0;
+}
+
+.fullscreen_editor #field-convert_breaks {
+    display: none;
+}

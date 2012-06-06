@@ -6,13 +6,11 @@
  * $Id$
  */
 ;(function($) {
-	function openDialog(mode, param) {
-		$.fn.mtDialog.open(
-			ScriptURI + '?' + '__mode=' + mode + '&amp;' + param
-	    );
-	}
+    tinymce
+        .ScriptLoader
+        .add(tinymce.PluginManager.urls['mt'] + '/langs/en.js');
 
-    tinymce.Editor.prototype.addMtButton = function(name, opts) {
+    tinymce.Editor.prototype.addMTButton = function(name, opts) {
         var ed = this;
 
         var modes = {};
@@ -69,20 +67,74 @@
         return ed.addButton(name, opts);
     };
 
-    tinymce
-        .ScriptLoader
-        .add(tinymce.PluginManager.urls['mt'] + '/langs/en.js');
+    tinymce.create('tinymce.ui.MTTextButton:tinymce.ui.Button', {
+        renderHTML : function() {
+            var DOM = tinymce.DOM;
+            var cp = this.classPrefix, s = this.settings, h, l;
+
+            l = DOM.encode(s.label || '');
+            h = '<a role="button" id="' + this.id + '" href="javascript:;" class="mceMTTextButton ' + cp + ' ' + cp + 'Enabled ' + s['class'] + (l ? ' ' + cp + 'Labeled' : '') +'" onmousedown="return false;" onclick="return false;" aria-labelledby="' + this.id + '_voice">';
+            h += '<span class="mceVoiceLabel mceIconOnly" id="' + this.id + '_voice">' + s.title + '</span>';
+            h += '</a>';
+            return h;
+        }
+    });
 
 	tinymce.create('tinymce.plugins.MovableType', {
-		init : function(ed, url) {
-            tinymce.DOM.loadCSS(url + '/css/mt.css');
+        buttonSettings : '',
+        initButtonSettings : function(ed) {
+            var plugin = this;
+            plugin.buttonIDs = {};
 
-	        var id      = ed.id;
-	        var blogId  = $('#blog-id').val() || 0;
-	        var proxies = {};
+            var buttonRows = {
+                source: {},
+                wysiwyg: {}
+            };
+
+            var index = 1;
+            $.each(['common', 'source', 'wysiwyg'], function(i, k) {
+                var p = 'plugin_mt_' + k + '_buttons';
+                for (var j = 1; ed.settings[p+j]; j++) {
+                    plugin.buttonSettings +=
+                        (plugin.buttonSettings ? ',' : '') + ed.settings[p+j];
+
+                    ed.settings['theme_advanced_buttons'+index] =
+                        ed.theme.settings['theme_advanced_buttons'+index] =
+                        ed.settings[p + j];
+                    if (k == 'common') {
+                        buttonRows['source'][index-1] =
+                            buttonRows['wysiwyg'][index-1] = 1;
+                    }
+                    else {
+                        buttonRows[k][index-1] = 1;
+                    }
+
+                    index++;
+                }
+            });
+
+            return buttonRows;
+        },
+		init : function(ed, url) {
+            var plugin         = this;
+            var id             = ed.id;
+            var idLengbth      = id.length;
+            var blogId         = $('#blog-id').val() || 0;
+            var proxies        = {};
             var hiddenControls = [];
+            var $container     = null;
 
             var supportedButtonsCache = {};
+            var buttonRows            = this.initButtonSettings(ed);
+
+
+            ed.mtProxies = proxies;
+            ed.mtEditorStatus = {
+                mode: 'wysiwyg',
+                format: 'richtext'
+            };
+
+
             function supportedButtons(mode, format) {
                 var k = mode + '-' + format;
                 if (! supportedButtonsCache[k]) {
@@ -97,35 +149,28 @@
                 return supportedButtonsCache[k];
             };
 
-
-            ed.mtProxies = proxies;
-            ed.mtEditorStatus = {
-                mode: 'wysiwyg',
-                format: 'richtext'
-            };
-
-            ed.addCommand('mtGetStatus', function() {
-                return ed.mtEditorStatus;
-            });
-
             function updateButtonVisibility() {
                 var s = ed.mtEditorStatus;
                 $.each(hiddenControls, function(i, k) {
-                    $('#' + k).show().removeClass('mce_mt_button_hidden').css({
-                        display: 'block'
-                    });
+                    $container
+                        .find('.mce_' + k)
+                        .css({
+                            display: ''
+                        })
+                        .removeClass('mce_mt_button_hidden');
                     ed.controlManager.setDisabled(this, false);
                 });
                 hiddenControls = [];
 
-                var supporteds = {};
-                $.each(supportedButtons(s.mode, s.format), function(k, v) {
-                    supporteds[id + '_' + k] = 1;
-                });
+                var supporteds = supportedButtons(s.mode, s.format);
 
                 function update(key) {
                     if (! supporteds[key]) {
-                        $('#' + key).hide().addClass('mce_mt_button_hidden');
+                        $container.find('.mce_' + key)
+                            .css({
+                                display: 'none'
+                            })
+                            .addClass('mce_mt_button_hidden');
                         hiddenControls.push(key);
                     }
                 }
@@ -136,282 +181,29 @@
                         if (! c.classPrefix) {
                             return;
                         }
-                        update(k);
+                        update(k.substr(idLengbth+1));
                     });
                 }
                 else {
                     $.each(ed.mtButtons, function(name, button) {
-                        update(id + '_' + name);
+                        update(name);
                     });
                 }
-                $('table', '#' + id + '_toolbargroup').each(function() {
-                    var $this = $(this);
-
-                    if (
-                        $this.hasClass('mceSplitButton') ||
-                        $this.hasClass('mceListBox')
-                    ) {
-                        return;
+                $('#' + id + '_toolbargroup > span > table').each(function(i) {
+                    if (buttonRows[s.mode][i]) {
+                        $(this).show();
                     }
-
-                    $this.show();
-                    if ($this.find('a.mceButton:not(.mce_mt_button_hidden)').length == 0) {
-                        $this.hide();
+                    else {
+                        $(this).hide();
                     }
                 });
-                ed.theme.resizeBy(0, 0);
             }
-            ed.onInit.add(function() {
-                updateButtonVisibility();
-                $.each(ed.mtButtons, function(name, button) {
-                    if (button['buttonClass'] == 'text') {
-                        $('#' + id + '_' + name)
-                            .addClass('mceTextButton')
-                            .removeAttr('title');
-                    }
-                });
-            });
 
-            ed.addCommand('mtSetStatus', function(status) {
-                $.extend(ed.mtEditorStatus, status);
-                updateButtonVisibility();
-            });
-
-            ed.addCommand('mtGetProxies', function() {
-                return proxies;
-            });
-
-            ed.addCommand('mtSetProxies', function(_proxies) {
-                $.extend(proxies, _proxies);
-            });
-
-			// Register buttons
-			ed.addMtButton('mt_font_size_smaller', {
-				title : 'mt.font_size_smaller',
-				onclickFunctions : {
-                    wysiwyg: 'fontSizeSmaller',
-                    source: 'fontSizeSmaller'
-                }
-			});
-
-			ed.addMtButton('mt_font_size_larger', {
-				title : 'mt.font_size_larger',
-				onclickFunctions : {
-                    wysiwyg: 'fontSizeLarger',
-                    source: 'fontSizeLarger'
-                }
-			});
-
-            ed.addMtButton('mt_bold', {
-                title : 'mt.bold',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('bold');
-				    },
-                    source: 'bold'
-                }
-            });
-
-            ed.addMtButton('mt_italic', {
-                title : 'mt.italic',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('italic');
-				    },
-                    source: 'italic'
-                }
-            });
-
-            ed.addMtButton('mt_underline', {
-                title : 'mt.underline',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('underline');
-				    },
-                    source: 'underline'
-                }
-            });
-
-            ed.addMtButton('mt_strikethrough', {
-                title : 'mt.strikethrough',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('strikethrough');
-				    },
-                    source: 'strikethrough'
-                }
-            });
-
-            ed.addMtButton('mt_insert_link', {
-                title : 'mt.insert_link',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        var anchor =
-                            ed.dom.getParent(ed.selection.getNode(), 'A');
-                        var textSelected = !ed.selection.isCollapsed();
-
-                        proxies['wysiwyg'].execCommand('insertLink', null, {
-                            anchor: anchor,
-                            textSelected: textSelected
-                        });
-				    },
-                    source: 'insertLink'
-                }
-            });
-
-            ed.addMtButton('mt_insert_email', {
-                title : 'mt.insert_email',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        var anchor =
-                            ed.dom.getParent(ed.selection.getNode(), 'A');
-                        var textSelected = !ed.selection.isCollapsed();
-
-                        proxies['wysiwyg'].execCommand('insertEmail', null, {
-                            anchor: anchor,
-                            textSelected: textSelected
-                        });
-				    },
-                    source: 'insertEmail'
-                }
-            });
-
-            ed.addMtButton('mt_indent', {
-                title : 'mt.indent',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('indent');
-				    },
-                    source: 'indent'
-                }
-            });
-
-            ed.addMtButton('mt_outdent', {
-                title : 'mt.outdent',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('outdent');
-				    }
-                }
-            });
-
-            ed.addMtButton('mt_insert_unordered_list', {
-                title : 'mt.insert_unordered_list',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('insertUnorderedList');
-				    },
-                    source: 'insertUnorderedList'
-                }
-            });
-
-            ed.addMtButton('mt_insert_ordered_list', {
-                title : 'mt.insert_ordered_list',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('insertOrderedList');
-				    },
-                    source: 'insertOrderedList'
-                }
-            });
-
-            ed.addMtButton('mt_justify_left', {
-                title : 'mt.justify_left',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('justifyLeft');
-				    },
-                    source: 'justifyLeft'
-                }
-            });
-
-            ed.addMtButton('mt_justify_center', {
-                title : 'mt.justify_center',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('justifyCenter');
-				    },
-                    source: 'justifyCenter'
-                }
-            });
-
-            ed.addMtButton('mt_justify_right', {
-                title : 'mt.justify_right',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('justifyRight');
-				    },
-                    source: 'justifyRight'
-                }
-            });
-
-			ed.addMtButton('mt_insert_image', {
-				title : 'mt.insert_image',
-				onclick : function() {
-			        openDialog(
-				        'dialog_list_asset',
-					    '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image'
-		            );
-				}
-			});
-
-			ed.addMtButton('mt_insert_file', {
-				title : 'mt.insert_file',
-				onclick : function() {
-			        openDialog(
-				        'dialog_list_asset',
-					    '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1'
-		            );
-				}
-			});
-
-            ed.addMtButton('mt_source_bold', {
-                title : 'strong',
-                buttonClass: 'text',
-				onclickFunctions : {
-                    source: 'bold'
-                }
-            });
-
-            ed.addMtButton('mt_source_italic', {
-                title : 'em',
-                buttonClass: 'text',
-				onclickFunctions : {
-                    source: 'italic'
-                }
-            });
-
-            ed.addMtButton('mt_source_blockquote', {
-                title : 'blockquote',
-                buttonClass: 'text',
-				onclickFunctions : {
-                    source: 'blockquote'
-                }
-            });
-
-            ed.addMtButton('mt_source_unordered_list', {
-                title : 'ul',
-                buttonClass: 'text',
-				onclickFunctions : {
-                    source: 'insertUnorderedList'
-                }
-            });
-
-            ed.addMtButton('mt_source_ordered_list', {
-                title : 'ol',
-                buttonClass: 'text',
-				onclickFunctions : {
-                    source: 'insertOrderedList'
-                }
-            });
-
-            ed.addMtButton('mt_source_list_item', {
-                title : 'li',
-                buttonClass: 'text',
-				onclickFunctions : {
-                    source: 'insertListItem'
-                }
-            });
+	        function openDialog(mode, param) {
+		        $.fn.mtDialog.open(
+			        ScriptURI + '?' + '__mode=' + mode + '&amp;' + param
+	            );
+	        }
 
             function setPopupWindowLoadedHook(callback) {
 			    $.each(ed.windowManager.windows, function(k, w) {
@@ -465,9 +257,262 @@
                 }
             }
 
-            ed.addMtButton('mt_source_link', {
+
+            ed.onInit.add(function() {
+                $container = $(ed.getContainer());
+                updateButtonVisibility();
+            });
+
+
+            ed.addCommand('mtGetStatus', function() {
+                return ed.mtEditorStatus;
+            });
+
+            ed.addCommand('mtSetStatus', function(status) {
+                $.extend(ed.mtEditorStatus, status);
+                updateButtonVisibility();
+            });
+
+            ed.addCommand('mtGetProxies', function() {
+                return proxies;
+            });
+
+            ed.addCommand('mtSetProxies', function(_proxies) {
+                $.extend(proxies, _proxies);
+            });
+
+
+			// Register buttons
+			ed.addMTButton('mt_font_size_smaller', {
+				title : 'mt.font_size_smaller',
+				onclickFunctions : {
+                    wysiwyg: 'fontSizeSmaller',
+                    source: 'fontSizeSmaller'
+                }
+			});
+
+			ed.addMTButton('mt_font_size_larger', {
+				title : 'mt.font_size_larger',
+				onclickFunctions : {
+                    wysiwyg: 'fontSizeLarger',
+                    source: 'fontSizeLarger'
+                }
+			});
+
+            ed.addMTButton('mt_bold', {
+                title : 'mt.bold',
+				onclickFunctions : {
+                    wysiwyg: function() {
+                        ed.execCommand('bold');
+				    },
+                    source: 'bold'
+                }
+            });
+
+            ed.addMTButton('mt_italic', {
+                title : 'mt.italic',
+				onclickFunctions : {
+                    wysiwyg: function() {
+                        ed.execCommand('italic');
+				    },
+                    source: 'italic'
+                }
+            });
+
+            ed.addMTButton('mt_underline', {
+                title : 'mt.underline',
+				onclickFunctions : {
+                    wysiwyg: function() {
+                        ed.execCommand('underline');
+				    },
+                    source: 'underline'
+                }
+            });
+
+            ed.addMTButton('mt_strikethrough', {
+                title : 'mt.strikethrough',
+				onclickFunctions : {
+                    wysiwyg: function() {
+                        ed.execCommand('strikethrough');
+				    },
+                    source: 'strikethrough'
+                }
+            });
+
+            ed.addMTButton('mt_insert_link', {
+                title : 'mt.insert_link',
+				onclickFunctions : {
+                    wysiwyg: function() {
+                        var anchor =
+                            ed.dom.getParent(ed.selection.getNode(), 'A');
+                        var textSelected = !ed.selection.isCollapsed();
+
+                        proxies['wysiwyg'].execCommand('insertLink', null, {
+                            anchor: anchor,
+                            textSelected: textSelected
+                        });
+				    },
+                    source: 'insertLink'
+                }
+            });
+
+            ed.addMTButton('mt_insert_email', {
+                title : 'mt.insert_email',
+				onclickFunctions : {
+                    wysiwyg: function() {
+                        var anchor =
+                            ed.dom.getParent(ed.selection.getNode(), 'A');
+                        var textSelected = !ed.selection.isCollapsed();
+
+                        proxies['wysiwyg'].execCommand('insertEmail', null, {
+                            anchor: anchor,
+                            textSelected: textSelected
+                        });
+				    },
+                    source: 'insertEmail'
+                }
+            });
+
+            ed.addMTButton('mt_indent', {
+                title : 'mt.indent',
+				onclickFunctions : {
+                    wysiwyg: function() {
+                        ed.execCommand('indent');
+				    },
+                    source: 'indent'
+                }
+            });
+
+            ed.addMTButton('mt_outdent', {
+                title : 'mt.outdent',
+				onclickFunctions : {
+                    wysiwyg: function() {
+                        ed.execCommand('outdent');
+				    }
+                }
+            });
+
+            ed.addMTButton('mt_insert_unordered_list', {
+                title : 'mt.insert_unordered_list',
+				onclickFunctions : {
+                    wysiwyg: function() {
+                        ed.execCommand('insertUnorderedList');
+				    },
+                    source: 'insertUnorderedList'
+                }
+            });
+
+            ed.addMTButton('mt_insert_ordered_list', {
+                title : 'mt.insert_ordered_list',
+				onclickFunctions : {
+                    wysiwyg: function() {
+                        ed.execCommand('insertOrderedList');
+				    },
+                    source: 'insertOrderedList'
+                }
+            });
+
+            ed.addMTButton('mt_justify_left', {
+                title : 'mt.justify_left',
+				onclickFunctions : {
+                    wysiwyg: function() {
+                        ed.execCommand('justifyLeft');
+				    },
+                    source: 'justifyLeft'
+                }
+            });
+
+            ed.addMTButton('mt_justify_center', {
+                title : 'mt.justify_center',
+				onclickFunctions : {
+                    wysiwyg: function() {
+                        ed.execCommand('justifyCenter');
+				    },
+                    source: 'justifyCenter'
+                }
+            });
+
+            ed.addMTButton('mt_justify_right', {
+                title : 'mt.justify_right',
+				onclickFunctions : {
+                    wysiwyg: function() {
+                        ed.execCommand('justifyRight');
+				    },
+                    source: 'justifyRight'
+                }
+            });
+
+			ed.addMTButton('mt_insert_image', {
+				title : 'mt.insert_image',
+				onclick : function() {
+			        openDialog(
+				        'dialog_list_asset',
+					    '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image'
+		            );
+				}
+			});
+
+			ed.addMTButton('mt_insert_file', {
+				title : 'mt.insert_file',
+				onclick : function() {
+			        openDialog(
+				        'dialog_list_asset',
+					    '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1'
+		            );
+				}
+			});
+
+            ed.addMTButton('mt_source_bold', {
+                title : 'strong',
+                mtButtonClass: 'text',
+				onclickFunctions : {
+                    source: 'bold'
+                }
+            });
+
+            ed.addMTButton('mt_source_italic', {
+                title : 'em',
+                mtButtonClass: 'text',
+				onclickFunctions : {
+                    source: 'italic'
+                }
+            });
+
+            ed.addMTButton('mt_source_blockquote', {
+                title : 'blockquote',
+                mtButtonClass: 'text',
+				onclickFunctions : {
+                    source: 'blockquote'
+                }
+            });
+
+            ed.addMTButton('mt_source_unordered_list', {
+                title : 'ul',
+                mtButtonClass: 'text',
+				onclickFunctions : {
+                    source: 'insertUnorderedList'
+                }
+            });
+
+            ed.addMTButton('mt_source_ordered_list', {
+                title : 'ol',
+                mtButtonClass: 'text',
+				onclickFunctions : {
+                    source: 'insertOrderedList'
+                }
+            });
+
+            ed.addMTButton('mt_source_list_item', {
+                title : 'li',
+                mtButtonClass: 'text',
+				onclickFunctions : {
+                    source: 'insertListItem'
+                }
+            });
+
+            ed.addMTButton('mt_source_link', {
                 title : 'link',
-                buttonClass: 'text',
+                mtButtonClass: 'text',
 				onclickFunctions : {
                     source: function(cmd, ui, val) {
 			            tinymce._setActive(ed);
@@ -477,7 +522,7 @@
                 }
             });
 
-            ed.addMtButton('mt_source_mode', {
+            ed.addMTButton('mt_source_mode', {
 				title : 'mt.source_mode',
 				onclickFunctions : {
                     wysiwyg: function() {
@@ -489,12 +534,6 @@
                 }
             });
 
-            var button_settings = '';
-            for (var i = 1; ed.settings['theme_advanced_buttons' + i]; i++) {
-                button_settings +=
-                    (button_settings ? ',' : '') +
-                    ed.settings['theme_advanced_buttons' + i];
-            }
 
 			var stateControls = {
                 'mt_bold': 'bold',
@@ -506,7 +545,7 @@
                 'mt_justify_right': 'justifyright'
             };
             $.each(stateControls, function(k, v) {
-                if (button_settings.indexOf(k) == -1) {
+                if (plugin.buttonSettings.indexOf(k) == -1) {
                     delete stateControls[k];
                 }
             });
@@ -555,7 +594,7 @@
                 'mt_source_link': 'createLink'
             };
             $.each(sourceButtons, function(k, v) {
-                if (button_settings.indexOf(k) == -1) {
+                if (plugin.buttonSettings.indexOf(k) == -1) {
                     delete stateControls[k];
                 }
             });
@@ -566,13 +605,61 @@
             });
 		},
 
+        createControl : function(name, cm) {
+            var editor = cm.editor;
+            var ctrl = editor.buttons[name];
+
+            if (
+                    (name == 'mt_insert_image')
+                    || (name == 'mt_insert_file')
+            ) {
+                if (! this.buttonIDs[name]) {
+                    this.buttonIDs[name] = [];
+                }
+
+                var id = name + '_' + this.buttonIDs[name].length;
+                this.buttonIDs[name].push(id);
+
+                return cm.createButton(id, $.extend({}, ctrl, {
+                    'class': 'mce_' + name
+                }));
+            }
+
+            if (ctrl && ctrl['mtButtonClass']) {
+                var button, buttonClass, escapedButtonClass;
+                switch (ctrl['mtButtonClass']) {
+                case 'text':
+                      buttonClass = tinymce.ui.MTTextButton;
+                      break;
+                default:
+                      throw new Error('Not implemented:' + ctrl['mtButtonClass']);
+                }
+
+                if (cm._cls.button) {
+                    escapedButtonClass = cm._cls.button;
+                }
+                cm._cls.button = buttonClass;
+
+                button = cm.createButton(name, $.extend({}, ctrl));
+
+                if (escapedButtonClass !== 'undefined') {
+                    cm._cls.button = escapedButtonClass
+                }
+
+                return button;
+            }
+
+
+            return null;
+        },
+
 		getInfo : function() {
 			return {
 				longname : 'MovableType',
 				author : 'Six Apart, Ltd',
 				authorurl : '',
 				infourl : '',
-				version : tinymce.majorVersion + "." + tinymce.minorVersion
+				version : '1.0'
 			};
 		}
 	});

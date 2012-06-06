@@ -105,7 +105,8 @@ $.extend(MT.EditorManager.prototype, {
         var editorClass = this.constructor.editorClass(format);
 
         if (! this.editors[editorClass.id]) {
-            this.editors[editorClass.id] = new editorClass.editor(this.id);
+            this.editors[editorClass.id] =
+                new editorClass.editor(this.id, this);
         }
 
         return this.editors[editorClass.id];
