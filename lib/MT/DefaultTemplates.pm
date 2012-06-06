@@ -311,7 +311,16 @@ sub templates {
                 if ( ref $name eq 'CODE' ) {
                     $name = $name->();
                 }
+                else {
+                    if ($plugin) {
+                        $name = $plugin->translate($name);
+                    }
+                    else {
+                        $name = MT->translate($name);
+                    }
+                }
                 $tmpl->{name}       = $name;
+                $tmpl->{label}      = $name;
                 $tmpl->{type}       = $type;
                 $tmpl->{key}        = $tmpl_id;
                 $tmpl->{identifier} = $tmpl_id;
