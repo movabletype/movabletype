@@ -141,24 +141,28 @@
 .mtSkin .mceListBoxEnabled:hover, 
 .mtSkin .mceListBoxSelected, 
 .mtSkin .mceSplitButtonEnabled:hover, 
-.mtSkin .mceSplitButtonSelected {
+.mtSkin div.mceSplitButtonSelected .mceSplitButton {
     border-color: #c0c6c9;
+    background-image: -webkit-linear-gradient(#f3f3f3, #dcdddd);
 }
 .mtSkin .mceButtonEnabled:hover, 
 .mtSkin .mceListBoxEnabled:hover, 
 .mtSkin .mceSplitButtonEnabled:hover {
-    box-shadow: 0px 1px 2px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 1px 2px 0 rgba(0, 0, 0, 0.3);
 }
+.mtSkin .mceButton:active, 
+.mtSkin .mceListBox:active, 
+.mtSkin .mceSplitButton:active, 
 .mtSkin .mceButtonSelected, 
 .mtSkin .mceButtonSelected:hover, 
 .mtSkin .mceListBoxSelected, 
 .mtSkin .mceListBoxSelected:hover, 
-.mtSkin .mceSplitButtonSelected, 
-.mtSkin .mceSplitButtonSelected:hover, 
+.mtSkin div.mceSplitButtonSelected .mceSplitButton, 
+.mtSkin div.mceSplitButtonSelected .mceSplitButton:hover, 
 .mtSkin .mceButtonActive, 
-.mtSkin .mceButtonActive:hover {
-    background-color: #dcdddd;
-    box-shadow: inset 0px 1px 1px 0 rgba(0, 0, 0, 0.2);
+.mtSkin .mceButtonActive:hover { 
+    box-shadow: inset 0 1px 1px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
 }
 
 /* -- Button */
@@ -196,12 +200,12 @@
     font-weight: bold;
     text-align: left;
 }
-.mtSkin .mceListBox .mceOpen {
+.mtSkin .mceListBox .mceOpen { 
     width: 11px;
     height: 22px;
     background: transparent url(./img/small-grey-arrow-up-down.png) center no-repeat;
 }
-.mtSkin .mceListBoxDisabled .mceText {
+.mtSkin .mceListBoxDisabled .mceText { 
     color: #888888;
 }
 .mtSkin .mceListBoxMenu { 
@@ -211,7 +215,7 @@
 .mtSkin .mceOldBoxModel .mceListBox .mceText { 
     height: 22px;
 }
-.mtSkin select.mceListBox {
+.mtSkin select.mceListBox { 
     border: 1px solid #c0c6c9;
     background: #ffffff;
     font-size: 14px;
@@ -219,12 +223,12 @@
 
 /* -- SplitButton */
 .mtSkin .mceSplitButton a, 
-.mtSkin .mceSplitButton span {
+.mtSkin .mceSplitButton span { 
     display: block;
     height: 22px;
 }
 .mtSkin .mceSplitButton a.mceAction, 
-.mtSkin .mceSplitButton span.mceAction {
+.mtSkin .mceSplitButton span.mceAction { 
     width: 22px;
 }
 .mtSkin .mceSplitButton span.mceAction { 
@@ -232,7 +236,13 @@
 }
 .mtSkin .mceSplitButton a.mceOpen { 
     width: 11px;
+    height: 23px;
+    margin: -1px 0 0 2px;
+    border-left: 1px solid transparent;
     background: transparent url(./img/small-grey-arrow-down.png) center no-repeat;
+}
+.mtSkin .mceSplitButton:hover a.mceOpen {
+    border-color: #c0c6c9;
 }
 .mtSkin .mceSplitButton span.mceOpen { 
     display: none;
@@ -277,9 +287,9 @@
     background-color: #dcdddd;
 }
 .mtSkin .mceColorPreview {
-    width: 17px;
+    width: 18px;
     height: 3px;
-    margin-left: 3px;
+    margin-left: 2px;
     overflow: hidden;
     background: #9a9b9a;
 }
@@ -288,8 +298,8 @@
     top: 3px;
     left: 3px;
     z-index: 10;
-    width: 17px;
-    height: 16px;
+    width: 16px;
+    height: 15px;
     margin: 0;
 }
 .mtSkin .mce_forecolor span.mceAction, 
