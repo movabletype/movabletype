@@ -124,8 +124,11 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             if (this.editor !== this.source) {
                 this.$editorTextarea
                     .insertAfter(this.$editorIframe)
-                    .height(this.$editorIframe.height())
-                    .data('base-height', this.$editorIframe.height());
+                    .height(this.$editorIframe.height());
+                if (! this.tinymce.execCommand('mtFullScreenIsEnabled')) {
+                    this.$editorTextarea
+                        .data('base-height', this.$editorIframe.height());
+                }
 
                 if (! calledInInit) {
                     this.ignoreSetDirty(function() {
@@ -142,8 +145,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             }
         }
         else {
-            this.$editorIframe
-                .height(this.$editorTextarea.height());
+            this.$editorIframe.height(this.$editorTextarea.innerHeight());
             this.$editorTextarea
                 .data('base-height', null)
                 .prependTo(this.$editorTextareaParent);
@@ -204,7 +206,9 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
     },
 
     getHeight: function() {
-        return this.$editorElement.height();
+        return (this.editor === this.source) ?
+            this.$editorTextarea.innerHeight() :
+            this.$editorIframe.height();
     },
 
     setHeight: function(height) {
