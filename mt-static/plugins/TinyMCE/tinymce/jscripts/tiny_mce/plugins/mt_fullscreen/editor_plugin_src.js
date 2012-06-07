@@ -53,12 +53,9 @@
                     var offset_height =
                         $outer.height() - $inner.height() + header_height;
 
-
-                    $tabs.width(window_width / 2 - 30);
-
                     forEachAffectedEditors(function() {
 					    this.theme.resizeTo(
-                            window_width - offset_width,
+                            $window.width() - offset_width,
                             $window.height() - offset_height,
                             false,
                             true
@@ -94,6 +91,8 @@
                         $('#' + this.id + '_resize').hide();
                     });
 
+                    $tabs.css('width', ((100 / $tabs.length) - 5) + '%');
+
                     enabled = true;
                     ed.execCommand('mtFullScreenUpdateFitToWindow');
                     fitToWindow();
@@ -113,7 +112,7 @@
                         $('#' + this.id + '_resize').show();
                     });
 
-                    $tabs.width('');
+                    $tabs.css('width', '');
 
                     enabled = false;
 				    fitToWindow = function(){};
