@@ -147,7 +147,7 @@ for my $lang (@languages) {
         require File::Spec;
         my $mt_ver = MT->VERSION;
         my $abs_path = File::Spec->rel2abs( $distname );
-        verbose_command("makerpm $abs_path movabletype-$mt_ver-$lang");
+        verbose_command("makerpm $abs_path $mt_ver $lang");
     }
     else {
         $options = $silent ? 'cf' : 'cvf';
