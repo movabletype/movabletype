@@ -102,7 +102,7 @@ isa_ok($mt, 'MT', 'Is MT');
     # method validation\
     is($asset_f->class, 'file', 'class');
     is($asset_f->class_label, 'Asset', 'class_label');
-    is($asset_f->as_html, '<a href="http://narnia.na/nana/files/test.tmpl">test.tmpl</a>', 'as_html');
+    is($asset_f->as_html, '<a href="http://narnia.na/nana/files/test.tmpl">Template</a>', 'as_html');
 
     #metadata validation
     my $meta_f = $asset_f->metadata;
