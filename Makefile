@@ -62,7 +62,7 @@ mt-static/css/simple.css: $(simple_css)
 
 .PHONY: code-common code code-en_US code-de code-fr code-nl \
 	code-es code-ja
-code_common = lib/MT.pm php/mt.php mt-check.cgi \
+code_common = lib/MT.pm php/mt.php mt-check.cgi version_file \
         mt-static/js/mt_core_compact.js \
         mt-static/css/main.css \
         mt-static/css/simple.css
@@ -113,6 +113,13 @@ mt-check.cgi: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk
 $(local_js): mt-static/mt_%.js: mt-static/mt.js lib/MT/L10N/%.pm
 	perl build/mt-dists/make-js
 
+version_file:
+	mv VERSIONS VERSIONS.pre
+	sed -e 's!__BUILD_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
+	    -e 's!__BUILD_LANGUAGE__!$(BUILD_LANGUAGE)!g' \
+	VERSIONS.pre > VERSIONS
+	rm VERSIONS.pre
+
 ##### Other useful targets
 
 .PHONY: test cover clean all
@@ -161,4 +168,4 @@ clean:
 	-rm -rf mt-static/css/main.css mt-static/css/simple.css
 	-rm -rf MANIFEST
 	-rm -rf build-language-stamp
-	-git checkout lib/MT.pm php/mt.php mt-check.cgi
+	-git checkout lib/MT.pm php/mt.php mt-check.cgi VERSIONS
