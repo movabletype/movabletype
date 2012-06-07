@@ -159,11 +159,20 @@ sub js {
     return $app->json_error( $app->errstr ) unless $app->validate_magic;
 
     my $key = $app->param('key');
-    my $lib = StyleCatcher::Library->new($key)
-        or return $app->error( plugin()->translate("Invalid request") );
-    my $data = $lib->fetch_themes()
-        or return $app->json_error( $lib->errstr );
-    return $app->json_result($data);
+    if ( $key && $key ne 'null' ) {
+        my $lib = StyleCatcher::Library->new($key)
+            or return $app->error( plugin()->translate("Invalid request") );
+        my $data = $lib->fetch_themes()
+            or return $app->json_error( $lib->errstr );
+        return $app->json_result($data);
+    }
+    else {
+        require StyleCatcher::Library::Default;
+        my $lib = StyleCatcher::Library::Default->new();
+        my $data = $lib->fetch_themes($app->param('url'))
+            or return $app->json_error( $lib->errstr );
+        return $app->json_result($data);
+    }
 }
 
 # does the work after user selects a particular theme to apply to a blog

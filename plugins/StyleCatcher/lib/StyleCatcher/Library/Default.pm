@@ -15,10 +15,11 @@ use MT::Util qw( caturl );
 # pulls a list of themes available from a particular url
 sub fetch_themes {
     my $self = shift;
+    my $url  = shift;
 
     my $static_webpath = MT->app->static_path;
     my $support_url    = MT->app->support_directory_url;
-    my $url = $self->url;
+    $url ||= $self->url;
     $url =~ s/{{static}}/$static_webpath/i;
     $url =~ s/{{support}}/$support_url/i;
     if ( $url =~ m!^/! ) {

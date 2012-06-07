@@ -17,9 +17,8 @@ __PACKAGE__->mk_accessors('key', @KEYS);
 sub new {
     my $pkg = shift;
     my ($id) = @_;
-    my $reg = MT->registry( stylecatcher_libraries => $id )
-        or return;
-    my $class = $reg->{class} || 'Default';
+    my $reg = MT->registry( stylecatcher_libraries => $id );
+    my $class = $reg && $reg->{class} ? $reg->{class} : 'Default';
     my $inst_class = 'StyleCatcher::Library::' . $class;
     do { eval "require $inst_class"; 1; } or die $@;
     my $obj = bless { key => $id }, $inst_class;
@@ -58,9 +57,57 @@ sub listify {
     return $hash;
 }
 
-sub themes { die "Abstract method!" }
-sub theme  { die "Abstract method!" }
-sub apply  { die "Abstract method!" }
+1;
+__END__
+
+=head1 NAME
+
+StyleCatcher::Library
+
+=head1 SYNOPSIS
+
+ # in config.yaml
+
+ stylecatcher_libraries:
+     professional_themes:
+         label: Professional Styles
+         order: 100
+         description_label: A collection of styles compatible with Professional themes.
+         url: '{{static}}addons/Commercial.pack/themes/professional.html'
+         class: Local
+
+ # then
+ my $repo = StyleCatcher::Library->new($repo_id);
+ $repo->fetch_themes();
+
+=head1 DESCRIPTION
+
+Proxy module for StyleCatcher Library(Repository) Classes.
+
+=head1 METHODS
+
+=over 4
+
+=item new
+
+Create an instance of given repository ID. The ID must exists in MT registry under
+`stylecatcher_libraries` key. The base class of instance is specified by `class` key.
+If `class` key is not defined, StyleCatcher::Library::Default is used for the base
+class of instance by default.
+
+=item fetch_themes
+
+Pulls a list of themes available from a particular url. You must override this method
+for child classes.
+
+=item download_theme
+
+Returns an URL of theme.
+
+=back
+
+
+
 
 
 
