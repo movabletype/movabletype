@@ -16,7 +16,7 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
     config: {
         mode: "exact",
 
-        plugins: "lists,style,table,inlinepopups,media,paste,mt_fullscreen,xhtmlxtras,mt",
+        plugins: "lists,style,table,inlinepopups,mt_inlinepopups,media,paste,mt_fullscreen,xhtmlxtras,mt",
 
         language: $('html').attr('lang'),
 
@@ -42,6 +42,16 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         // Buttons using in wysiwyg mode.
         plugin_mt_wysiwyg_buttons1: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,indent,outdent,|,link,unlink,mt_insert_image,mt_insert_file',
         plugin_mt_wysiwyg_buttons2: 'undo,redo,|,table,hr,removeformat,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,|,formatselect,|,mt_fullscreen',
+        plugin_mt_inlinepopups_window_sizes: {
+            'table/table.htm': {
+                width: 400,
+                height: 340
+            },
+            'advanced/link.htm': {
+                width: 300,
+                height: 220
+            }
+        },
 
         formats: {
             strikethrough: {inline: 'del', attributes: {'datetime': function() {
