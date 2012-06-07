@@ -74,7 +74,7 @@
 
             l = DOM.encode(s.label || '');
             h = '<a role="button" id="' + this.id + '" href="javascript:;" class="mceMTTextButton ' + cp + ' ' + cp + 'Enabled ' + s['class'] + (l ? ' ' + cp + 'Labeled' : '') +'" onmousedown="return false;" onclick="return false;" aria-labelledby="' + this.id + '_voice">';
-            h += '<span class="mceVoiceLabel mceIconOnly" id="' + this.id + '_voice">' + s.title + '</span>';
+            h += s.title;
             h += '</a>';
             return h;
         }
