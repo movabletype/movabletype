@@ -61,6 +61,7 @@ sub get_options {
       'rc=s'            => 0,  # Release candidate build number.
       'cleanup!'        => 1,  # Remove the exported directory after deployment.
       'date!'           => 1,  # Toggle date stamping.
+      'datetime!'       => 0,  # Toggle datetime stamping.
       'debug'           => 0,  # Turn on/off the actual system calls.
       'deploy:s'        => '',
       'deploy-uri=s'    => '',
@@ -200,9 +201,18 @@ sub setup {
                 push @stamp, $self->{'revision=s'};
                 push @stamp, $self->{'revision_hash=s'};
             }
-            push @stamp, sprintf(
-                '%04d%02d%02d', (localtime)[5]+1900, (localtime)[4]+1, (localtime)[3]
-            ) if $self->{'date!'};
+
+            my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime();
+            if ( $self->{'date!'} ) {
+                push @stamp, sprintf(
+                    '%04d%02d%02d', ($year+1900, $mon+1, $mday )
+                ) ;
+            }
+            elsif ($self->{'datetime!'}) {
+                push @stamp, sprintf(
+                    '%04d%02d%02d%02d%02d%02d', ($year+1900, $mon+1, $mday, $hour, $min, $sec )
+                ) ;
+            }
             # Add -ldap to distingush them from Melody Nelson builds.
             push @stamp, 'ldap' if $self->{'ldap'};
         }
