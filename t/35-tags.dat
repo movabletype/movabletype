@@ -16,7 +16,7 @@
 { "r" : "1", "t" : "<MTIfNonEmpty tag=\"MTDate\">nonempty</MTIfNonEmpty>", "e" : "nonempty"}, #15
 { "r" : "1", "t" : "", "e" : ""}, #16
 { "r" : "1", "t" : "<MTIfNonZero tag=\"MTBlogEntryCount\">nonzero</MTIfNonZero>", "e" : "nonzero"}, #17
-{ "r" : "1", "t" : "<MTCommenterNameThunk>", "e" : "<script type='text/javascript'>var commenter_name = getCookie('commenter_name')</script>"}, #18
+{ "r" : "0", "t" : "<MTCommenterNameThunk>", "e" : "<script type='text/javascript'>var commenter_name = getCookie('commenter_name')</script>"}, #18
 { "r" : "0", "t" : "<MTCommenterName>", "e" : ""}, #19 TBD
 { "r" : "0", "t" : "<MTCommenterEmail>", "e" : ""}, #20 TBD
 { "r" : "1", "t" : "<MTBlogs><MTBlogID></MTBlogs>", "e" : "1"}, #21
