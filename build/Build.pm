@@ -184,11 +184,11 @@ sub setup {
     }
 
     # Grab our repository revision.
-    $self->{'revision=s'}      = repo_rev();
+    $self->{'revision=s'}      = repo_rev('r');
     $self->{'revision_hash=s'} = repo_rev_hash();
 
     # Set revision number as release number
-    $self->{'rel_num=s'} = $self->{'revision=s'}
+    $self->{'rel_num=s'} = repo_rev()
         if !$self->{'rel_num=s'};
 
     # Figure out what repository to use.
@@ -745,9 +745,11 @@ sub remove_copy {
 }
 
 sub repo_rev {
+    my ( $prefix ) = @_;
+    $prefix ||= '';
     my $revision = qx{ git log --pretty=format:'' | wc -l };
     chomp $revision;
-    $revision =~ s/\s*(.*)/r$1/;
+    $revision =~ s/\s*(.*)/$prefix$1/;
     die("ERROR: $revision") if $revision =~ /is not a working copy/;
     return $revision;
 }
