@@ -16,8 +16,8 @@ use MT::I18N qw( const );
 
 our ( $VERSION, $SCHEMA_VERSION );
 our (
-    $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION,
-    $VERSION_ID,   $PORTAL_URL
+    $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
+    $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL
 );
 our ( $MT_DIR, $APP_DIR, $CFG_DIR, $CFG_FILE, $SCRIPT_SUFFIX );
 our (
@@ -33,14 +33,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '5.14', '5.0030' );
-    (   $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION,
-        $VERSION_ID,   $PORTAL_URL
+    ( $VERSION, $SCHEMA_VERSION ) = ( '5.2', '5.0030' );
+    (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
+        $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
         = (
-        '__PRODUCT_NAME__', 'MT',
-        '5.14',             '__PRODUCT_VERSION_ID__',
-        '__PORTAL_URL__'
+        '__PRODUCT_NAME__',   'MT',
+        '5.2',                '__PRODUCT_VERSION_ID__',
+        '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
   # To allow MT to run straight from svn, if no build process (pre-processing)
@@ -53,6 +53,10 @@ BEGIN {
     }
     if ( $VERSION_ID eq '__PRODUCT_VERSION' . '_ID__' ) {
         $VERSION_ID = $PRODUCT_VERSION;
+    }
+
+    if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
+        $RELEASE_NUMBER = 0;
     }
 
     $DebugMode = 0;
@@ -85,12 +89,21 @@ sub VERSION {
     return UNIVERSAL::VERSION(@_);
 }
 
-sub version_number  {$VERSION}
-sub version_id      {$VERSION_ID}
+sub version_number {$VERSION}
+
+sub version_id {
+    if ($RELEASE_NUMBER) {
+        $VERSION_ID . "." . $RELEASE_NUMBER;
+    }
+    else {
+        $VERSION_ID;
+    }
+}
 sub product_code    {$PRODUCT_CODE}
 sub product_name    {$PRODUCT_NAME}
 sub product_version {$PRODUCT_VERSION}
 sub schema_version  {$SCHEMA_VERSION}
+sub release_number  {$RELEASE_NUMBER}
 
 sub portal_url {
     if ( my $url = const('PORTAL_URL') ) {
@@ -111,9 +124,16 @@ sub id {
 }
 
 sub version_slug {
+    my $ver;
+    if ($RELEASE_NUMBER) {
+        $ver = $VERSION_ID . "." . $RELEASE_NUMBER;
+    }
+    else {
+        $ver = $VERSION_ID;
+    }
     return MT->translate_templatized(<<"SLUG");
 <__trans phrase="Powered by [_1]" params="$PRODUCT_NAME">
-<__trans phrase="Version [_1]" params="$VERSION_ID">
+<__trans phrase="Version [_1]" params="$ver">
 <__trans phrase="http://www.sixapart.com/movabletype/">
 SLUG
 }
@@ -1251,21 +1271,22 @@ sub init_debug_mode {
 }
 
 {
-my $callbacks_added;
-sub init_callbacks {
-    my $mt = shift;
-    return if $callbacks_added;
-    MT->_register_core_callbacks(
-        {   'build_file_filter' =>
-                sub { MT->publisher->queue_build_file_filter(@_) },
-            'cms_upload_file' => \&core_upload_file_to_sync,
-            'api_upload_file' => \&core_upload_file_to_sync,
-            'post_init' =>
-                '$Core::MT::Summary::Triggers::post_init_add_triggers',
-        }
-    );
-    $callbacks_added = 1;
-}
+    my $callbacks_added;
+
+    sub init_callbacks {
+        my $mt = shift;
+        return if $callbacks_added;
+        MT->_register_core_callbacks(
+            {   'build_file_filter' =>
+                    sub { MT->publisher->queue_build_file_filter(@_) },
+                'cms_upload_file' => \&core_upload_file_to_sync,
+                'api_upload_file' => \&core_upload_file_to_sync,
+                'post_init' =>
+                    '$Core::MT::Summary::Triggers::post_init_add_triggers',
+            }
+        );
+        $callbacks_added = 1;
+    }
 }
 
 sub core_upload_file_to_sync {

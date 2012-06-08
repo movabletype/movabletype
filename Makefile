@@ -81,6 +81,8 @@ check:
 	@test $(BUILD_PACKAGE)
 	@(test $(BUILD_VERSION_ID) || echo You must define BUILD_VERSION_ID)
 	@test $(BUILD_VERSION_ID)
+	@(test $(BUILD_RELEASE_NUMBER) || echo You must define BUILD_RELEASE_NUMBER)
+	@test $(BUILD_RELEASE_NUMBER)
 	-@if [ "`cat build-language-stamp`" != ${BUILD_LANGUAGE} ] ;  \
 	then                                                   \
 		echo ${BUILD_LANGUAGE} > build-language-stamp; \
@@ -93,6 +95,7 @@ lib/MT.pm: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk build/mt-dist
 	    -e 's!__BUILD_ID__!$(BUILD_VERSION_ID)!g' \
 	    -e 's!__PORTAL_URL__!$(PORTAL_URL)!g' \
 	    -e 's!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
+	    -e 's!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g' \
 	    lib/MT.pm.pre > lib/MT.pm
 	rm lib/MT.pm.pre
 
@@ -100,12 +103,14 @@ php/mt.php: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk
 	mv php/mt.php php/mt.php.pre
 	sed -e 's!__PRODUCT_NAME__!$(PRODUCT_NAME)!g' \
 	    -e 's!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
+	    -e 's!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g' \
 	    php/mt.php.pre > php/mt.php
 	rm php/mt.php.pre
 
 mt-check.cgi: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk
 	mv mt-check.cgi mt-check.cgi.pre
 	sed -e 's!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
+	    -e 's!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g' \
 	mt-check.cgi.pre > mt-check.cgi
 	rm mt-check.cgi.pre
 	chmod +x mt-check.cgi
@@ -117,6 +122,7 @@ version_file:
 	mv VERSIONS VERSIONS.pre
 	sed -e 's!__BUILD_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
 	    -e 's!__BUILD_LANGUAGE__!$(BUILD_LANGUAGE)!g' \
+	    -e 's!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g' \
 	VERSIONS.pre > VERSIONS
 	rm VERSIONS.pre
 

@@ -497,10 +497,19 @@ sub init_request {
         {
             my $schema  = $app->config('SchemaVersion');
             my $version = $app->config('MTVersion');
+            my $rel_num = $app->config('MTReleaseNumber');
             if (   !$schema
                 || ( $schema < $app->schema_version )
-                || ( ( !$version || ( $version < $app->version_number ) )
-                    && $app->config->NotifyUpgrade )
+                || ($app->config->NotifyUpgrade
+                    && (   !$version
+                        || ( $version < $app->version_number )
+                        || (!defined $rel_num
+                            || ( ( $version == $app->version_number )
+                                && ($rel_num < ( $app->release_number || 0 ) )
+                            )
+                        )
+                    )
+                )
                 )
             {
                 $app->{upgrade_required} = 1;

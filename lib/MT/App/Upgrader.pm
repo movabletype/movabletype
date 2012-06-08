@@ -399,12 +399,11 @@ sub init_website {
         pop @dirs;
         $site_path = File::Spec->catdir(@dirs);
     }
-    if ( $param{'sitepth_limited'} 
-        && ( 0 != index($site_path, $param{'sitepth_limited'}) ) )
+    if ( $param{'sitepth_limited'}
+        && ( 0 != index( $site_path, $param{'sitepth_limited'} ) ) )
     {
         $param{error} = $app->translate(
-            "The 'Publishing Path' provided below is not allowed"
-        );
+            "The 'Publishing Path' provided below is not allowed" );
         return $app->build_page( 'setup_initial_website.tmpl', \%param );
     }
     if ( !-w $site_path ) {
@@ -676,8 +675,9 @@ sub main {
         return $app->upgrade();
     }
 
-    my $schema  = $app->{cfg}->SchemaVersion || 0;
-    my $version = $app->config->MTVersion    || 0;
+    my $schema     = $app->{cfg}->SchemaVersion    || 0;
+    my $version    = $app->config->MTVersion       || 0;
+    my $rel_number = $app->config->MTReleaseNumber || 0;
 
     if ( $schema >= 3.2 ) {
         my $author;
@@ -694,30 +694,44 @@ sub main {
 
     my $cur_schema  = MT->schema_version;
     my $cur_version = MT->version_number;
+    my $cur_rel     = MT->release_number;
+
     if ( $cur_schema > $schema ) {
 
         # yes, MT itself is needing an upgrade...
         $param->{mt_upgrade} = 1;
     }
-    elsif ( $app->config->NotifyUpgrade && ( $cur_version > $version ) ) {
+    elsif (
+        $app->config->NotifyUpgrade
+        && (( $cur_version > $version )
+            || ( !defined $rel_number
+                || ( $cur_version == $version && $cur_rel > $rel_number ) )
+        )
+        )
+    {
         $param->{mt_version_incremented} = 1;
         MT->log(
             {   message => MT->translate(
                     "Movable Type has been upgraded to version [_1].",
-                    $cur_version
+                    (     $cur_rel
+                        ? $cur_version . '.' . $cur_rel
+                        : $cur_version
+                    ),
                 ),
                 class    => 'system',
                 category => 'upgrade',
             }
         );
         $app->config->MTVersion( $cur_version, 1 );
+        $app->config->MTReleaseNumber( $cur_rel, 1 );
         $app->config->save_config;
     }
 
     $param->{help_url}    = $app->help_url();
     $param->{to_schema}   = $cur_schema;
     $param->{from_schema} = $schema;
-    $param->{mt_version}  = $cur_version;
+    $param->{mt_version}
+        = $cur_rel ? $cur_version . '.' . $cur_rel : $cur_version;
 
     my @plugins;
     my $plugin_ver = $app->{cfg}->PluginSchemaVersion;

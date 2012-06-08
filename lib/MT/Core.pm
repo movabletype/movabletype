@@ -1581,6 +1581,7 @@ BEGIN {
             },
             'SchemaVersion'         => undef,
             'MTVersion'             => undef,
+            'MTReleaseNumber'       => undef,
             'RequiredCompatibility' => { default => 0 },
             'NotifyUpgrade'         => { default => 1 },
             'Database'              => undef,
