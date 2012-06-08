@@ -190,6 +190,14 @@
     color: #888888;
 }
 
+.mtSkin .mceMTTextButton {
+    min-width: 22px;
+    padding: 0 3px;
+    line-height: 22px;
+    font-family: monospace;
+    text-align: center;
+}
+
 /* -- ListBox */
 .mtSkin .mceListBox a { 
     display: block;
@@ -493,7 +501,27 @@
 }
 .mtSkin .mceStatusbar div { 
     float: left;
-    padding: 2px;
+}
+.mtSkin #editor-input-content_path_voice, 
+.mtSkin #editor-input-content_path_voice + span, 
+.mtSkin #editor-input-content_path span { 
+    display: none;
+}
+.mtSkin #editor-input-content_path a {
+    display: inline-block;
+    height: 20px;
+    padding: 0 10px 0 5px;
+    line-height: 20px;
+    background: transparent url(img/breadcrumb-separator.png) right center no-repeat;
+    font-size: 11px;
+    color: #7b7c7d;
+}
+.mtSkin #editor-input-content_path a:hover { 
+    color: #2b2b2b;
+    text-decoration: none;
+}
+.mtSkin #editor-input-content_path a:last-child { 
+    background: none;
 }
 .mtSkin .mceStatusbar a.mceResize { 
     float: right;
