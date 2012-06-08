@@ -31,6 +31,9 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         theme_advanced_statusbar_location: "bottom",
         theme_advanced_blockformats: 'h1,h2,h3,h4,h5,h6,p,pre',
 
+        indent_before : 'p,h1,h2,h3,h4,h5,h6,blockquote,div,title,style,pre,script,td,ul,ol,li,dl,dt,dd,area,table,thead,tfoot,tbody,tr,section,article,hgroup,aside,figure,option,optgroup,datalist',
+        indent_after : 'p,h1,h2,h3,h4,h5,h6,blockquote,div,title,style,pre,script,td,ul,ol,li,dl,dt,dd,area,table,thead,tfoot,tbody,tr,section,article,hgroup,aside,figure,option,optgroup,datalist',
+
         // The "theme_advanced_buttons" should not use in Movable Type.
         // Use "plugin_mt_*_buttons" instead.
         // theme_advanced_buttons1: '',
