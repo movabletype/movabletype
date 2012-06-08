@@ -39,6 +39,7 @@ input.invalid {
 }
 input[type=text], 
 textarea { 
+    margin: 0;
     padding: 0.2em 0.25em;
     border: 1px solid #dcdddd;
     border-top-color: #adadad;
@@ -76,7 +77,7 @@ input.button,
     overflow: visible;
     display: inline-block;
     outline: none;
-    margin-right: 5px;
+    margin: 0 5px 0 0;
     padding: 3px 0.5em;
     border: 1px solid #c0c6c9;
     background-color: #f3f3f3;
@@ -256,6 +257,12 @@ td.charmap,
 .tabs a:hover { 
     color: #507ea4;
 }
+.tabs li.current a { 
+    cursor: default;
+}
+.tabs li.current a:hover {
+    color: #2b2b2b;
+}
 
 /* Panels */
 .panel_wrapper div.panel { 
@@ -272,7 +279,7 @@ td.charmap,
     padding: 10px;
     border: 1px solid #c0c6c9;
     border-top: 0px;
-    background: #ffffff;
+    background-color: #ffffff;
 }
 
 /* Columns */
@@ -305,8 +312,6 @@ h3 {
 }
 
 /* Dialog specific */
-#link .panel_wrapper, #link div.current {height:125px;}
-#image .panel_wrapper, #image div.current {height:200px;}
 
 #plugintable thead {font-weight:bold; background:#DDD;}
 #plugintable, #about #plugintable td {border:1px solid #919B9C;}
@@ -314,13 +319,6 @@ h3 {
 #pluginscontainer {height:290px; overflow:auto;}
 
 /* -- Color Picker */
-#colorpicker #preview {
-    display: inline-block;
-    width: 50px;
-    height: 14px;
-    border: 1px solid #c0c6c9;
-    margin-left: 5px;
-}
 #colorpicker #colors {
     float: left;
     border: 1px solid #c0c6c9;
@@ -330,7 +328,7 @@ h3 {
     float: left;
     width: 15px;
     height: 150px;
-    margin-left: 5px;
+    margin-left: 10px;
     border: 1px solid #c0c6c9;
     cursor: crosshair;
 }
@@ -339,18 +337,29 @@ h3 {
 }
 #colorpicker #preview_wrapper {
     float: right;
+    height: 20px;
+    margin-top: 3px;
 }
 #colorpicker #previewblock {
-    padding-left: 10px;
-    height: 20px;
+    float: right;
+    margin-left: 5px;
+}
+#colorpicker #previewblock label {
+    display: none;
+}
+#colorpicker #preview { 
+    display: inline-block;
+    width: 30px;
+    height: 17px;
+    border: 1px solid #c0c6c9;
 }
 #colorpicker .panel_wrapper div.current { 
-    width: 350px;
-    height: 175px;
+    width: 330px;
+    min-height: 180px ! important;
     margin: 0 auto;
 }
 #colorpicker #namedcolors {
-    width: 150px;
+    width: 100%;
 }
 #colorpicker #namedcolors a {
     display: block;
@@ -361,5 +370,5 @@ h3 {
     overflow: hidden;
 }
 #colorpicker #colornamecontainer {
-    margin-top: 5px;
+    margin-top: 10px;
 }

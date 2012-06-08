@@ -43,13 +43,13 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         plugin_mt_wysiwyg_buttons1: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,indent,outdent,|,link,unlink,mt_insert_image,mt_insert_file',
         plugin_mt_wysiwyg_buttons2: 'undo,redo,|,table,hr,removeformat,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,|,formatselect,|,mt_fullscreen',
         plugin_mt_inlinepopups_window_sizes: {
-            'table/table.htm': {
-                width: 400,
-                height: 340
-            },
             'advanced/link.htm': {
-                width: 300,
-                height: 220
+                width: 350,
+                height: 170
+            },
+            'advanced/color_picker.htm': {
+                width: 370,
+                height: 272
             }
         },
 
