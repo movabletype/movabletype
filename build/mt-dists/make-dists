@@ -145,7 +145,7 @@ for my $lang (@languages) {
         # Special build
         require MT;
         require File::Spec;
-        my $mt_ver = MT->VERSION;
+        my $mt_ver = MT->version_id;
         my $abs_path = File::Spec->rel2abs( $distname );
         verbose_command("makerpm $abs_path $mt_ver $lang");
     }
