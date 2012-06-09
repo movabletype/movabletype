@@ -158,7 +158,7 @@ for my $lang (@languages) {
         require File::Spec;
         my $mt_ver   = MT->version_id;
         my $abs_path = File::Spec->rel2abs($distname);
-        my $exp      = sprintf( "movabletype-%s-%s", $mt_ver, $lang );
+        my $exp      = sprintf( "movabletype-%s", $mt_ver );
         $exp = File::Spec->catdir( $export, $exp );
 
         rcopy( $abs_path, $exp );

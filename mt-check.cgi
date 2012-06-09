@@ -81,7 +81,7 @@ my $cgi     = new CGI;
 my $view    = $cgi->param("view");
 my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
-$version ||= '__PRODUCT_VERSION_ID__';
+$version ||= '5.2.2-ja';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
     $version = '5.2';
 }
