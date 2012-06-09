@@ -22,11 +22,16 @@ sub fetch_themes {
     my $path         = $self->url;
     my $static_path  = MT->config->StaticFilePath;
     my $support_path = MT->config->SupportDirectoryPath;
+    $static_path  .= '/' unless $static_path =~ m!/$!;
+    $support_path .= '/' unless $support_path =~ m!/$!;
     $path =~ s/{{static}}/$static_path/i;
     $path =~ s/{{support}}/$support_path/i;
 
     my $static_webpath = MT->app->static_path;
     my $support_url    = MT->app->support_directory_url;
+    $static_webpath .= '/' unless $static_webpath =~ m!/$!;
+    $support_url    .= '/' unless $support_url =~ m!/$!;
+
     my $url = $self->url;
     $url =~ s/{{static}}/$static_webpath/i;
     $url =~ s/{{support}}/$support_url/i;
