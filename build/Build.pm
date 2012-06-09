@@ -206,13 +206,15 @@ sub setup {
             push @stamp, $self->{'stamp=s'};
         }
         else {
-            push @stamp, $config->{PRODUCT_VERSION}
-                . (
+            push @stamp, $config->{PRODUCT_VERSION};
+	    push @stamp, $self->{'rel_num=s'}
+	        if $self->{'rel_num=s'};
+	    push @stamp, (
                   $self->{'alpha=s'} ? "a$self->{'alpha=s'}"
                 : $self->{'beta=s'}  ? "b$self->{'beta=s'}"
                 : $self->{'rc=s'}    ? "rc$self->{'rc=s'}"
                 : ''
-                );
+            );
         }
         push @stamp, $self->{'short-lang=s'}
             if $self->{'lang-stamp!'};

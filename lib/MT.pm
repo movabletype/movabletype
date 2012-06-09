@@ -89,16 +89,8 @@ sub VERSION {
     return UNIVERSAL::VERSION(@_);
 }
 
-sub version_number {$VERSION}
-
-sub version_id {
-    if ($RELEASE_NUMBER) {
-        $VERSION_ID . "." . $RELEASE_NUMBER;
-    }
-    else {
-        $VERSION_ID;
-    }
-}
+sub version_number  {$VERSION}
+sub version_id      {$VERSION_ID}
 sub product_code    {$PRODUCT_CODE}
 sub product_name    {$PRODUCT_NAME}
 sub product_version {$PRODUCT_VERSION}
@@ -124,16 +116,9 @@ sub id {
 }
 
 sub version_slug {
-    my $ver;
-    if ($RELEASE_NUMBER) {
-        $ver = $VERSION_ID . "." . $RELEASE_NUMBER;
-    }
-    else {
-        $ver = $VERSION_ID;
-    }
     return MT->translate_templatized(<<"SLUG");
 <__trans phrase="Powered by [_1]" params="$PRODUCT_NAME">
-<__trans phrase="Version [_1]" params="$ver">
+<__trans phrase="Version [_1]" params="$VERSION_ID">
 <__trans phrase="http://www.sixapart.com/movabletype/">
 SLUG
 }
