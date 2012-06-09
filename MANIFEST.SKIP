@@ -42,19 +42,12 @@ mt-static/themes/unity-tricolor
 themes/broken_blog_theme
 
 # Conditional SKIP rule; format: #?(var=value) RULE
-^COPYING
 #?package=MT ^COPYING
-^COPYRIGHT
 #?package=MT ^COPYRIGHT
-^addons/Enterprise.pack
 #?package=MT ^addons/Enterprise.pack
-^mt-static/addons/Enterprise.pack
 #?package=MT ^mt-static/addons/Enterprise.pack
-^tools/migrate-mssql
 #?package=MT ^tools/migrate-mssql
-^addons/Cloud.pack
 #?package=MT ^addons/Cloud.pack
-^VERSIONS
 #?package=MT ^VERSIONS
 
 #?package=MTOS ^addons
@@ -113,7 +106,6 @@ themes/broken_blog_theme
 #?package=MTCLOUD ^mt-static/addons/Enterprise.pack
 #?package=MTCLOUD ^tools/migrate-mssql
 
-^plugins/zemanta
 #?language=ja ^plugins/zemanta
 
 # MT::App::Viewer
@@ -227,3 +219,4 @@ build-language-stamp
 ^plugins/Motion
 ^plugins/ActionStreams
 ^plugins/CommunityActionStreams
+
