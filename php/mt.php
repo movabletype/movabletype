@@ -13,17 +13,17 @@ require_once('lib/class.exception.php');
 define('VERSION', '5.2');
 define('PRODUCT_VERSION', '5.2');
 
-$PRODUCT_NAME = '__PRODUCT_NAME__';
+$PRODUCT_NAME = 'Movable Type Pro';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
     $PRODUCT_NAME = 'Movable Type';
 define('PRODUCT_NAME', $PRODUCT_NAME);
 
-$RELEASE_NUMBER = '__RELEASE_NUMBER__';
+$RELEASE_NUMBER = '1';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
     $RELEASE_NUMBER = 0;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
-$PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
+$PRODUCT_VERSION_ID = '5.2-1-a2-ja';
 if ( $PRODUCT_VERSION_ID == '__PRODUCT_' . 'VERSION_ID__' )
     $PRODUCT_VERSION_ID = PRODUCT_VERSION;
 $VERSION_STRING;
