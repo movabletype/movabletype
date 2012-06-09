@@ -189,7 +189,7 @@ sub setup {
 
     # Set revision number as release number
     $self->{'rel_num=s'} = repo_rev()
-        if !$self->{'rel_num=s'};
+        unless defined $self->{'rel_num=s'};
 
     # Figure out what repository to use.
     $self->set_repo();
