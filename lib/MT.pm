@@ -38,9 +38,9 @@ BEGIN {
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
         = (
-        'Movable Type Pro',   'MT',
-        '5.2',                '5.2.2-ja',
-        '2', 'http://www.sixapart.com/movabletype/'
+        '__PRODUCT_NAME__',   'MT',
+        '5.2',                '__PRODUCT_VERSION_ID__',
+        '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
   # To allow MT to run straight from svn, if no build process (pre-processing)
@@ -124,7 +124,7 @@ SLUG
 }
 
 sub build_id {
-    my $build_id = '5.2.2-ja';
+    my $build_id = '__BUILD_ID__';
     $build_id = '' if $build_id eq '__BUILD_' . 'ID__';
     return $build_id;
 }
