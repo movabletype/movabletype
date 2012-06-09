@@ -100,18 +100,12 @@ themes/broken_blog_theme
 #?package=MTA ^addons/Cloud.pack
 #?package=MTA ^VERSIONS
 
-^COPYING
 #?package=MTCLOUD ^COPYING
-^COPYRIGHT
 #?package=MTCLOUD ^COPYRIGHT
-^addons/Enterprise.pack
 #?package=MTCLOUD ^addons/Enterprise.pack
-^mt-static/addons/Enterprise.pack
 #?package=MTCLOUD ^mt-static/addons/Enterprise.pack
-^tools/migrate-mssql
 #?package=MTCLOUD ^tools/migrate-mssql
 
-^plugins/zemanta
 #?language=ja ^plugins/zemanta
 
 # MT::App::Viewer
