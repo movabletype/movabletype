@@ -261,6 +261,7 @@
             ed.onInit.add(function() {
                 $container = $(ed.getContainer());
                 updateButtonVisibility();
+                ed.theme.resizeBy(0, 0);
             });
 
 
