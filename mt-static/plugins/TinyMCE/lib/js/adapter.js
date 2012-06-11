@@ -31,8 +31,8 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         theme_advanced_statusbar_location: "bottom",
         theme_advanced_blockformats: 'h1,h2,h3,h4,h5,h6,p,pre',
 
-        indent_before : 'p,h1,h2,h3,h4,h5,h6,blockquote,div,title,style,pre,script,td,ul,ol,li,dl,dt,dd,area,table,thead,tfoot,tbody,tr,section,article,hgroup,aside,figure,option,optgroup,datalist',
-        indent_after : 'p,h1,h2,h3,h4,h5,h6,blockquote,div,title,style,pre,script,td,ul,ol,li,dl,dt,dd,area,table,thead,tfoot,tbody,tr,section,article,hgroup,aside,figure,option,optgroup,datalist',
+        indent_before : 'p,h1,h2,h3,h4,h5,h6,blockquote,div,title,style,pre,script,td,ul,ol,li,dl,dt,dd,area,table,thead,tfoot,tbody,tr,iframe,section,article,hgroup,aside,figure,option,optgroup,datalist',
+        indent_after : 'p,h1,h2,h3,h4,h5,h6,blockquote,div,title,style,pre,script,td,ul,ol,li,dl,dt,dd,area,table,thead,tfoot,tbody,tr,iframe,section,article,hgroup,aside,figure,option,optgroup,datalist',
 
         // The "theme_advanced_buttons" should not use in Movable Type.
         // Use "plugin_mt_*_buttons" instead.
@@ -43,8 +43,8 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         // Buttons using in source mode.
         plugin_mt_source_buttons1: 'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,mt_source_link,mt_insert_image,mt_insert_file,mt_fullscreen',
         // Buttons using in wysiwyg mode.
-        plugin_mt_wysiwyg_buttons1: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,indent,outdent,|,link,unlink,mt_insert_image,mt_insert_file',
-        plugin_mt_wysiwyg_buttons2: 'undo,redo,|,table,hr,removeformat,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,|,formatselect,|,mt_fullscreen',
+        plugin_mt_wysiwyg_buttons1: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink,|,media,mt_insert_image,mt_insert_file',
+        plugin_mt_wysiwyg_buttons2: 'undo,redo,|,forecolor,backcolor,removeformat,|,justifyleft,justifycenter,justifyright,indent,outdent,|,formatselect,|,mt_fullscreen',
         plugin_mt_inlinepopups_window_sizes: {
             'advanced/link.htm': {
                 width: 350,
