@@ -511,8 +511,7 @@
             });
 
             ed.addMTButton('mt_source_link', {
-                title : 'link',
-                mtButtonClass: 'text',
+                title : 'mt.insert_link',
 				onclickFunctions : {
                     source: function(cmd, ui, val) {
 			            tinymce._setActive(ed);
