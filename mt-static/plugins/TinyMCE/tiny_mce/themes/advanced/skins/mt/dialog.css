@@ -1,4 +1,4 @@
-/* Generic */
+/* - Generic */
 html { 
     background: #fffffc;
 }
@@ -11,16 +11,14 @@ body {
     font-size: 13px;
 }
 
-textarea { 
-    resize: none;
-    outline: none;
-}
-
-/* Forms */
+/* - Forms */
 fieldset { 
     margin: 0;
     padding: 10px 0 0;
     border: 0;
+}
+fieldset + fieldset {
+    margin-top: 15px;
 }
 legend { 
     color: #2b2b2b;
@@ -60,6 +58,9 @@ select,
 textarea { 
     outline: 0;
 }
+textarea { 
+    resize: none;
+}
 input.radio, 
 input.checkbox { 
     vertical-align:middle;
@@ -68,7 +69,7 @@ input.checkbox {
     border:0;
 }
 
-/* Buttons */
+/* -- Buttons */
 #insert, 
 #cancel, 
 input.button, 
@@ -117,7 +118,6 @@ input.button,
     background-image: -webkit-linear-gradient(#165e83, #2a83a2);
 }
 #cancel { 
-    /* display: none; */
     border-color: #7b7c7d;
     background-color: #adadad;
     background-image: -webkit-linear-gradient(#adadad, #7b7c7d);
@@ -133,7 +133,7 @@ input.button,
 }
 
 
-/* Browse Icon */
+/* - Browse Icon */
 a.browse, 
 a.pickcolor {
     text-decoration: none;
@@ -175,7 +175,7 @@ a.browse:hover span.disabled {
     background-color: transparent;
 }
 
-/* Charmap */
+/* - Charmap */
 table.charmap { 
     border: 1px solid #2b2b2b;
     text-align: center;
@@ -211,7 +211,7 @@ td.charmap,
     text-align: center;
 }
 
-/* Source */
+/* - Source */
 .wordWrapCode { 
     vertical-align: middle;
     border: 1px none #2b2b2b;
@@ -221,7 +221,7 @@ td.charmap,
     margin-top: 10px;
 }
 
-/* Tabs classes */
+/* - Tabs classes */
 .tabs { 
     width: 100%;
     line-height: normal;
@@ -264,7 +264,7 @@ td.charmap,
     color: #2b2b2b;
 }
 
-/* Panels */
+/* - Panels */
 .panel_wrapper div.panel { 
     display: none;
 }
@@ -282,7 +282,7 @@ td.charmap,
     background-color: #ffffff;
 }
 
-/* Columns */
+/* - Columns */
 .column { 
     float: left;
 }
@@ -293,7 +293,7 @@ td.charmap,
     text-align: left;
 }
 
-/* Titles */
+/* - Titles */
 h1, 
 h2, 
 h3, 
@@ -311,12 +311,23 @@ h3 {
     color: #2b2b2b;
 }
 
-/* Dialog specific */
-
-#plugintable thead {font-weight:bold; background:#DDD;}
-#plugintable, #about #plugintable td {border:1px solid #919B9C;}
-#plugintable {width:96%; margin-top:10px;}
-#pluginscontainer {height:290px; overflow:auto;}
+/* - Dialog specific */
+#plugintable thead { 
+    font-weight: bold;
+    background: #dcdddd;
+}
+#plugintable, 
+#about #plugintable td { 
+    border: 1px solid #c0c6c9;
+}
+#plugintable { 
+    width: 96%;
+    margin-top: 10px;
+}
+#pluginscontainer { 
+    height: 290px;
+    overflow: auto;
+}
 
 /* -- Color Picker */
 #colorpicker #colors {
@@ -371,4 +382,14 @@ h3 {
 }
 #colorpicker #colornamecontainer {
     margin-top: 10px;
+}
+
+/* -- Media */
+#prev {
+    width: auto ! important;
+    border-color: #c0c6c9 ! important;
+}
+#source {
+    width: 100% ! important;
+    height: 20em ! important;
 }
