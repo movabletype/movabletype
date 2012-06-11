@@ -53,6 +53,9 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
             'advanced/color_picker.htm': {
                 width: 370,
                 height: 272
+            },
+            'plugins/media/media.htm': {
+                body_id: 'media'
             }
         },
 

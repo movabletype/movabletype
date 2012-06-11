@@ -32,7 +32,7 @@
 		},
 
         open : function(f, p) {
-			var ed = this.editor, url, sizes;
+			var ed = this.editor, url, sizes, w;
             if (sizes = ed.settings.plugin_mt_inlinepopups_window_sizes) {
                 url = f.url || f.file;
                 $.each(sizes, function(k, v) {
@@ -41,7 +41,14 @@
                     }
                 });
             }
-            tinymce.InlineWindowManager.prototype.open.apply(this, [f, p]);
+
+            w = tinymce.InlineWindowManager.prototype.open.apply(this, [f, p]);
+
+            $('#' + w.iframeElement.id).load(function() {
+                if (f.body_id) {
+                    $(this).contents().find('body').attr('id', f.body_id);
+                }
+            });
         }
     });
 
