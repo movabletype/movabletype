@@ -4976,7 +4976,7 @@ sub setup_editor_param {
 
     if ( my $blog = $app->blog ) {
         if ( my $css = $blog->content_css ) {
-            if ( $css !~ m#\A(https?)?/# ) {
+            if ( $css !~ m#\A(https?:)?/# ) {
                 $css = MT::Util::caturl( $blog->site_url, $css );
             }
             $param->{content_css} = $css;
