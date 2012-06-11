@@ -1,5 +1,5 @@
 body {
-    margin: 10px;
+    margin: 10px ! important;
     line-height: 1.62;
     background-color: #ffffff;
     color: #000000;
@@ -74,14 +74,6 @@ table {
 table td, 
 table th {
     cursor: text;
-}
-
-.mceItemTable, 
-.mceItemTable td, 
-.mceItemTable th, 
-.mceItemTable caption, 
-.mceItemVisualAid {
-    outline: 1px dashed #f3f3f3;
 }
 
 .mceItemMedia {
