@@ -1,24 +1,54 @@
-.fullscreen_editor_screen {
+.fullscreen_editor_screen { 
     overflow: hidden;
 }
 
-.fullscreen_editor {
+.fullscreen_editor { 
     position: fixed !important;
     z-index: 2000;
-    top: 0px;
-    left: 0px;
+    top: 0;
+    left: 0;
+}
+
+.fullscreen_editor .editor-header { 
+    background-color: #c0c6c9;
+}
+.fullscreen_editor .editor-header { 
+    zoom: 1;
+}
+.fullscreen_editor .editor-header:before, 
+.fullscreen_editor .editor-header:after { 
+    display: block;
+    height: 0;
+    visibility: hidden;
+    content: "\0020";
+}
+.fullscreen_editor .editor-header:after { 
+    clear: both;
+}
+
+.fullscreen_editor .editor-header .tab { 
+    display: block;
+    float: left;
+    width: 50% ! important;
+    margin: 0 0 -1px;
+    padding: 0;
+    border-width: 0 0 1px 1px;
+    border-radius: 0;
+    box-sizing: border-box;
+}
+.fullscreen_editor .editor-header .selected-tab { 
+    display: block;
+}
+.fullscreen_editor .editor-header .tab a { 
+    display: block;
+    padding: 0.62em 1.62em;
+}
+.fullscreen_editor #field-convert_breaks { 
+    display: none;
 }
 
 /* for wysiwyg type custom field */
-.field-top-label .field-content.fullscreen_editor {
+.field-top-label .field-content.fullscreen_editor { 
     margin: 0;
     padding: 0;
-}
-
-.fullscreen_editor .editor-header .tab {
-    margin-top: 0;
-}
-
-.fullscreen_editor #field-convert_breaks {
-    display: none;
 }
