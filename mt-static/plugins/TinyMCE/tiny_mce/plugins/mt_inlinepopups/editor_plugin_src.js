@@ -42,6 +42,8 @@
                 });
             }
 
+            ed.focus(true);
+
             w = tinymce.InlineWindowManager.prototype.open.apply(this, [f, p]);
 
             $('#' + w.iframeElement.id).load(function() {
