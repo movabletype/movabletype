@@ -16,7 +16,8 @@ tinyMCE.addI18n(tinymce.settings.language + '.mt', {
     justify_left: trans('Left Align Text'),
     justify_center: trans('Center Text'),
     justify_right: trans('Right Align Text'),
-	insert_image: trans('Insert image'),
-	insert_file: trans('Insert file'),
-	source_mode: trans('HTML Mode')
+    insert_html: trans('Insert HTML'),
+    insert_image: trans('Insert image'),
+    insert_file: trans('Insert file'),
+    source_mode: trans('HTML Mode')
 });

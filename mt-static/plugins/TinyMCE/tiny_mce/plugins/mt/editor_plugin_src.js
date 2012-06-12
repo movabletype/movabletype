@@ -284,6 +284,20 @@
 
 
 			// Register buttons
+            ed.addButton('mt_insert_html', {
+                title : 'mt.insert_html',
+                onclick : function() {
+                    ed.windowManager.open({
+                        file : url + '/insert_html.html',
+                        width : 430,
+                        height : 400,
+                        inline : 1
+                    }, {
+                        plugin_url : url
+                    });
+                }
+            });
+
 			ed.addMTButton('mt_font_size_smaller', {
 				title : 'mt.font_size_smaller',
 				onclickFunctions : {
