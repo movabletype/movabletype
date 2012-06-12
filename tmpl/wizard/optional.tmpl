@@ -8,6 +8,7 @@
   <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
 <mt:if name="success">
   <p class="intro"><span class="ready"><__trans phrase="Your mail configuration is complete."></span> <__trans phrase="Check your email to confirm receipt of a test email from Movable Type and then proceed to the next step."></p>
+  <p id="more"><a href="javascript:void(0)" onclick="hideByID('buttons'); hideByID('more'); showByID('settings');"><__trans phrase="Show current mail settings"></a></p>
   <div id="buttons" class="actions-bar">
     <button
        name="continue"
@@ -24,7 +25,6 @@
       <__trans phrase="Back">
     </button>
   </div>
-  <p id="more"><a href="javascript:void(0)" onclick="hideByID('buttons'); hideByID('more'); showByID('settings');"><__trans phrase="Show current mail settings"></a></p>
 </mt:if>
 
   <div id="settings"<mt:if name="success"> style="display: none;"</mt:if>>
@@ -50,7 +50,7 @@
     <!-- EmailAddressMain -->
       <mtapp:setting
          id="email_address_main"
-         label="<__trans phrase="System EMail Address:">"
+         label="<__trans phrase="System Email Address">"
          label_class="top-label"
          required="1"
          hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
