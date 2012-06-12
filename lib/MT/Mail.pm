@@ -15,9 +15,9 @@ use Sys::Hostname;
 
 my %SMTPModules = (
     Core => [ 'Net::SMTP', 'MIME::Base64' ],
-    Auth => [ 'Authen::SASL' ],
-    SSL  => [ 'Net::SMTP::SSL', 'IO::Socket::SSL', 'Net::SSLeay' ],
-    TLS  => [ 'Net::SMTP::TLS', 'IO::Socket::SSL', 'Net::SSLeay' ],
+    Auth => ['Authen::SASL'],
+    SSL => [ 'Net::SMTP::SSL', 'IO::Socket::SSL', 'Net::SSLeay' ],
+    TLS => [ 'Net::SMTP::TLS', 'IO::Socket::SSL', 'Net::SSLeay' ],
 );
 
 sub send {
@@ -211,18 +211,12 @@ sub _send_mt_smtp {
     # Check required modules;
     my $mod_reqd;
     my @modules = ();
-    push @modules, @{$SMTPModules{Core}};
-    push @modules, @{$SMTPModules{Auth}} if $auth;
-    push @modules, @{$SMTPModules{SSL}} if $ssl;
-    push @modules, @{$SMTPModules{TLS}} if $tls;
+    push @modules, @{ $SMTPModules{Core} };
+    push @modules, @{ $SMTPModules{Auth} } if $auth;
+    push @modules, @{ $SMTPModules{SSL} } if $ssl;
+    push @modules, @{ $SMTPModules{TLS} } if $tls;
 
-    $class->can_use( \@modules )  or return;
-
-    # Setup headers
-    my $hdr;
-    foreach my $k ( keys %$hdrs ) {
-        $hdr .= "$k: " . $hdrs->{$k} . "\r\n";
-    }
+    $class->can_use( \@modules ) or return;
 
     # Make a smtp object
     my $smtp;
@@ -284,6 +278,15 @@ sub _send_mt_smtp {
                 )
             );
         }
+    }
+
+    # Set sender header if smtp user id is valid email
+    $hdrs->{Sender} = $user if MT::Util::is_valid_email($user);
+
+    # Setup headers
+    my $hdr;
+    foreach my $k ( keys %$hdrs ) {
+        $hdr .= "$k: " . $hdrs->{$k} . "\r\n";
     }
 
     # Sending mail
@@ -366,7 +369,7 @@ sub can_use {
 sub can_use_smtp {
     my $class = shift;
     my @mods;
-    push @mods, @{$SMTPModules{Core}};
+    push @mods, @{ $SMTPModules{Core} };
 
     return $class->can_use( \@mods );
 }
@@ -378,7 +381,7 @@ sub can_use_smtpauth {
     return unless $class->can_use_smtp;
 
     my @mods;
-    push @mods, @{$SMTPModules{Auth}};
+    push @mods, @{ $SMTPModules{Auth} };
     return $class->can_use( \@mods );
 }
 
@@ -392,7 +395,7 @@ sub can_use_smtpauth_ssl {
     return unless $class->can_use_smtpauth;
 
     my @mods;
-    push @mods, @{$SMTPModules{SSL}};
+    push @mods, @{ $SMTPModules{SSL} };
     return $class->can_use( \@mods );
 }
 
@@ -406,7 +409,7 @@ sub can_use_smtpauth_tls {
     return unless $class->can_use_smtpauth;
 
     my @mods;
-    push @mods, @{$SMTPModules{TLS}};
+    push @mods, @{ $SMTPModules{TLS} };
 
     return $class->can_use( \@mods );
 }
