@@ -235,7 +235,7 @@ sub _send_mt_smtp {
             Password => $pass,
             Timeout  => 60,
             Hello    => $localhost,
-            Debug    => 1,
+            ( $MT::DebugMode ? ( Debug => 1 ) : () ),
             )
             or return $class->error(
             MT->translate(
@@ -250,7 +250,7 @@ sub _send_mt_smtp {
             Port    => $port,
             Timeout => 60,
             Hello   => $localhost,
-            Debug   => 1,
+            ( $MT::DebugMode ? ( Debug => 1 ) : () ),
             )
             or return $class->error(
             MT->translate(
@@ -265,7 +265,7 @@ sub _send_mt_smtp {
             Port    => $port,
             Timeout => 60,
             Hello   => $localhost,
-            Debug   => 1,
+            ( $MT::DebugMode ? ( Debug => 1 ) : () ),
             )
             or return $class->error(
             MT->translate(
