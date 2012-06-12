@@ -76,9 +76,9 @@
         <div id="sendmail_path" <mt:unless name="use_sendmail">style="display: none"</mt:unless>>
           <mtapp:setting
              id="sendmail_path"
-             label="<__trans phrase="sendmail Path">"
+             label="<__trans phrase="Sendmail Path">"
              label_class="top-label"
-             hint="<__trans phrase="The physical file path for your sendmail binary.">">
+             hint="<__trans phrase="The physical file path for your Sendmail binary.">">
             <input type="text" id="sendmail_path" class="text full" name="sendmail_path" value="<mt:if name="sendmail_path"><mt:var name="sendmail_path" escape="html"></mt:if>" />
           </mtapp:setting>
         </div>
@@ -336,7 +336,7 @@ jQuery(function() {
 
     jQuery.mtValidateAddMessages({
         "#email_address_main.required": '<__trans phrase="You must set system email address." escape="singlequotes">',
-        "#sendmail_path": '<__trans phrase="You must set sendmail path." escape="singlequotes">',
+        "#sendmail_path": '<__trans phrase="You must set Sendmail path." escape="singlequotes">',
         "#smtp_server": '<__trans phrase="You must set SMTP server address." escape="singlequotes">',
         "#smtp_port": '<__trans phrase="This field must be integer." escape="singlequotes">',
         "#smtp_auth_username": '<__trans phrase="You must set username for SMTP server." escape="singlequotes">',
