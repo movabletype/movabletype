@@ -73,8 +73,8 @@
             var cp = this.classPrefix, s = this.settings, h, l;
 
             l = DOM.encode(s.label || '');
-            h = '<a role="button" id="' + this.id + '" href="javascript:;" class="mceMTTextButton ' + cp + ' ' + cp + 'Enabled ' + s['class'] + (l ? ' ' + cp + 'Labeled' : '') +'" onmousedown="return false;" onclick="return false;" aria-labelledby="' + this.id + '_voice">';
-            h += s.title;
+            h = '<a role="button" id="' + this.id + '" href="javascript:;" class="mceMTTextButton ' + cp + ' ' + cp + 'Enabled ' + s['class'] + (l ? ' ' + cp + 'Labeled' : '') +'" onmousedown="return false;" onclick="return false;" aria-labelledby="' + this.id + '_voice" title="' + DOM.encode(s.title) + '">';
+            h += s.text;
             h += '</a>';
             return h;
         }
@@ -478,7 +478,8 @@
 			});
 
             ed.addMTButton('mt_source_bold', {
-                title : 'strong',
+                title : 'mt.source_bold',
+                text : 'strong',
                 mtButtonClass: 'text',
 				onclickFunctions : {
                     source: 'bold'
@@ -486,7 +487,8 @@
             });
 
             ed.addMTButton('mt_source_italic', {
-                title : 'em',
+                title : 'mt.source_italic',
+                text : 'em',
                 mtButtonClass: 'text',
 				onclickFunctions : {
                     source: 'italic'
@@ -494,7 +496,8 @@
             });
 
             ed.addMTButton('mt_source_blockquote', {
-                title : 'blockquote',
+                title : 'mt.source_blockquote',
+                text : 'blockquote',
                 mtButtonClass: 'text',
 				onclickFunctions : {
                     source: 'blockquote'
@@ -502,7 +505,8 @@
             });
 
             ed.addMTButton('mt_source_unordered_list', {
-                title : 'ul',
+                title : 'mt.source_unordered_list',
+                text : 'ul',
                 mtButtonClass: 'text',
 				onclickFunctions : {
                     source: 'insertUnorderedList'
@@ -510,7 +514,8 @@
             });
 
             ed.addMTButton('mt_source_ordered_list', {
-                title : 'ol',
+                title : 'mt.source_ordered_list',
+                text : 'ol',
                 mtButtonClass: 'text',
 				onclickFunctions : {
                     source: 'insertOrderedList'
@@ -518,7 +523,8 @@
             });
 
             ed.addMTButton('mt_source_list_item', {
-                title : 'li',
+                title : 'mt.source_list_item',
+                text : 'li',
                 mtButtonClass: 'text',
 				onclickFunctions : {
                     source: 'insertListItem'
