@@ -34,14 +34,18 @@
     color: #000;
 }
 
-.mtSkin table td { 
-    vertical-align: middle;
-}
-
 /* - Containers */
 .mtSkin table { 
     background-color: #f3f3f3;
+    border-spacing: 0;
 }
+
+.mtSkin table th, 
+.mtSkin table td { 
+    vertical-align: middle;
+    border-collapse: collapse;
+}
+
 .mtSkin iframe {
     display: block;
     background: #ffffff;
@@ -75,13 +79,6 @@
 
 .mtSkin table.mceToolbar { 
     margin: 3px;
-}
-
-.mtSkin .mceToolbar .mceToolbarEnd span, 
-.mtSkin .mceToolbar .mceToolbarStart span,
-.mtSkin .mceToolbar .mceToolbarEndListBox span, 
-.mtSkin .mceToolbar .mceToolbarStartListBox span { 
-    display: none;
 }
 
 .mtSkin span.mceIcon, 
@@ -214,7 +211,7 @@
 }
 .mtSkin .mceListBox .mceOpen { 
     width: 10px;
-    height: 23px;
+    height: 22px;
     background: transparent url(./img/small-grey-arrow-up-down.png) center no-repeat;
 }
 .mtSkin .mceListBoxDisabled .mceText { 
@@ -479,8 +476,8 @@
 .mtSkin span.mce_unlink { background-position: -450px 0; }
 
 .mtSkin span.mce_mt_insert_html { background-position: -500px 0; }
-.mtSkin span.mce_mt_insert_image { background-position: -1050px 0; }
-.mtSkin span.mce_mt_insert_file { background-position: -1100px 0; }
+.mtSkin span.mce_mt_insert_file { background-position: -1050px 0; }
+.mtSkin span.mce_mt_insert_image { background-position: -1100px 0; }
 
 .mtSkin span.mce_undo { background-position: -550px 0; }
 .mtSkin span.mce_redo { background-position: -600px 0; }

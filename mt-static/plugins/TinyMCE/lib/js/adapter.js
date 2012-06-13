@@ -43,7 +43,7 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         // Buttons using in source mode.
         plugin_mt_source_buttons1: 'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,|,mt_source_link,mt_insert_image,mt_insert_file,|,mt_fullscreen',
         // Buttons using in wysiwyg mode.
-        plugin_mt_wysiwyg_buttons1: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink,|,mt_insert_html,mt_insert_image,mt_insert_file',
+        plugin_mt_wysiwyg_buttons1: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink,|,mt_insert_html,mt_insert_file,mt_insert_image',
         plugin_mt_wysiwyg_buttons2: 'undo,redo,|,forecolor,backcolor,removeformat,|,justifyleft,justifycenter,justifyright,indent,outdent,|,formatselect,|,mt_fullscreen',
         plugin_mt_inlinepopups_window_sizes: {
             'advanced/link.htm': {

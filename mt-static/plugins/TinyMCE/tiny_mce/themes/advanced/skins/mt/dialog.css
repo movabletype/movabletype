@@ -384,11 +384,7 @@ h3 {
     margin-top: 10px;
 }
 
-/* -- Media */
-#prev {
-    width: auto ! important;
-    border-color: #c0c6c9 ! important;
-}
+/* -- Insert HTML */
 #source {
     width: 100% ! important;
     height: 20em ! important;
