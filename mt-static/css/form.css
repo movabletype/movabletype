@@ -86,6 +86,7 @@ fieldset {
     width: 100%;
     max-width: 100%;
 }
+.text.number, 
 .text.num, 
 .text.days {
     width: 4em;

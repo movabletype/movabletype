@@ -64,7 +64,7 @@ function validate (f) {
        label="<__trans phrase="Debug Mode">"
        hint="<__trans phrase='Values other than zero provide additional diagnostic information for troubleshooting problems with your Movable Type installation.  More information is available in the <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Debug Mode documentation</a>.'>"
        show_hint="1">
-      <input type="text" name="system_debug_mode" id="system-debug-mode" class="text num" maxlength="3" value="<mt:var name="system_debug_mode" escape="html">" />
+      <input type="text"<mt:if name="config_warnings_debugmode"> disabled="disable"</mt:if> name="system_debug_mode" id="system-debug-mode" class="text num" maxlength="3" value="<mt:var name="system_debug_mode" escape="html">" />
     </mt:app:setting>
 
     <mt:unless name="preflogging_hidden">
@@ -74,17 +74,17 @@ function validate (f) {
        label="<__trans phrase="Performance Logging">"
        hint="<__trans phrase="Turn on performance logging, which will report any system event that takes the number of seconds specified by Logging Threshold.">"
        show_hint="1">
-      <input type="checkbox" name="system_performance_logging" id="system-performance-logging" <mt:if name="system_performance_logging" eq="1">checked="checked"</mt:if> />
+      <input type="checkbox"<mt:if name="config_warnings_performancelogging"> disabled="disable"</mt:if> name="system_performance_logging" id="system-performance-logging" <mt:if name="system_performance_logging" eq="1">checked="checked"</mt:if> />
       <label for="system-performance-logging"><__trans phrase="Turn on performance logging"></label>
     </mt:app:setting>
 
-    <div id="system-performance-logging-option" class="serring-option">
+    <div id="system-performance-logging-option" class="setting-option">
       <mtapp:setting
          id="system-performance-logging-path"
          label="<__trans phrase="Log Path">"
          hint="<__trans phrase="The filesystem directory where performance logs are written.  The web server must have write permission in this directory.">"
          show_hint="1">
-        <input type="text" name="system_performance_logging_path" id="system-performance-logging-path" class="text"<mt:if name="system_performance_logging_path"> value="<mt:var name="system_performance_logging_path" escape="html">"</mt:if> />
+        <input type="text"<mt:if name="config_warnings_performanceloggingpath"> disabled="disable"</mt:if >name="system_performance_logging_path" id="system-performance-logging-path" class="text"<mt:if name="system_performance_logging_path"> value="<mt:var name="system_performance_logging_path" escape="html">"</mt:if> />
       </mt:app:setting>
 
       <mtapp:setting
@@ -92,7 +92,7 @@ function validate (f) {
          label="<__trans phrase="Logging Threshold">"
          hint="<__trans phrase="The time limit for unlogged events in seconds. Any event that takes this amount of time or longer will be reported.">"
          show_hint="1">
-        <input type="text" name="system_performance_logging_threshold" id="system-performance-logging-threshold" class="text num" maxlength="3" value="<mt:var name="system_performance_logging_threshold" escape="html">" />
+        <input type="text"<mt:if name="config_warnings_performanceloggingthreshold"> disabled="disable"</mt:if> name="system_performance_logging_threshold" id="system-performance-logging-threshold" class="text number" maxlength="3" value="<mt:var name="system_performance_logging_threshold" escape="html">" />
       </mt:app:setting>
     </div>
     </mt:unless>
@@ -107,15 +107,15 @@ function validate (f) {
 
 <mt:unless name="sitepath_limit_hidden">
 <h2><__trans phrase="Site Path Limitation"></h2>
-<mtapp:settinggroup id="system-blog-sitepath-limit">
+  <mtapp:settinggroup id="system-blog-sitepath-limit">
     <mtapp:setting
        id="sitepath-limit"
        label="<__trans phrase="Base Site Path">"
        hint="<__trans phrase="Allow sites to be placed only under this directory">"
        show_hint="1">
-      <input type="text" name="sitepath_limit" id="sitepath-limit" class="text med absolute-site_path"<mt:if name="sitepath_limit"> value="<mt:var name="sitepath_limit" escape="html">"</mt:if> />
+      <input type="text"<mt:if name="config_warnings_basesitepath"> disabled="disable"</mt:if > name="sitepath_limit" id="sitepath-limit" class="text med absolute-site_path"<mt:if name="sitepath_limit"> value="<mt:var name="sitepath_limit" escape="html">"</mt:if> />
     </mt:app:setting>
-</mtapp:settinggroup>
+  </mtapp:settinggroup>
 </mt:unless>
 
 
@@ -171,30 +171,32 @@ function validate (f) {
      show_hint="1">
     <input type="hidden" id="lockout-notify-ids" name="lockout_notify_ids" value="<mt:var name="lockout_notify_ids" escape="html">" />
     <span id="lockout-notify-names">
-    <mt:if name="lockout_notify_ids">
-      <strong><mt:var name="lockout_notify_names" escape="html"></strong>
-      <a href="javascript:void(0)" onclick="return clearLockoutNotifyTo()"><__trans phrase="Clear"></a> |
-    <mt:else>
+      <mt:if name="lockout_notify_ids">
+      <strong><mt:var name="lockout_notify_names" escape="html"></strong><mt:unless name="config_warnings_lockoutnotifyto">
+      <a href="javascript:void(0)" onclick="return clearLockoutNotifyTo()"><__trans phrase="Clear"></a> |</mt:unless>
+      <mt:else>
       <__trans phrase="(None selected)">
-    </mt:if>
+      </mt:if>
     </span>
+    <mt:unless name="config_warnings_lockoutnotifyto">
     <a href="<mt:var name="script_url">?__mode=dialog_select_sysadmin&amp;multi=1&amp;idfield=lockout-notify-ids&amp;namefield=lockout-notify-names" class="mt-open-dialog"><__trans phrase="Select"></a>
+    </mt:unless>
   </mtapp:setting>
 
   <mtapp:setting
      id="user-lockout"
      label="<__trans phrase="User lockout policy">"
      show_hint="0">  
-    <__trans phrase="A Movable Type user will be locked out if he or she submits an incorrect password [_1] or more times within [_2] seconds." params="<input type="text" name="user_lockout_limit" id="user-lockout-limit" class="text num" maxlength="3" value="<mt:var name="user_lockout_limit" escape="html">" />%%<input type="text" name="user_lockout_interval" id="user-lockout-interval" class="text num" maxlength="5" value="<mt:var name="user_lockout_interval" escape="html">" />">
+    <__trans phrase="A Movable Type user will be locked out if he or she submits an incorrect password [_1] or more times within [_2] seconds." params="<input type="text"<mt:if name="config_warnings_userlockoutlimit"> disabled="disable"</mt:if> name="user_lockout_limit" id="user-lockout-limit" class="text num" maxlength="3" value="<mt:var name="user_lockout_limit" escape="html">" />%%<input type="text"<mt:if name="config_warnings_userlockoutinterval"> disabled="disable"</mt:if> name="user_lockout_interval" id="user-lockout-interval" class="text num" maxlength="5" value="<mt:var name="user_lockout_interval" escape="html">" />">
   </mt:app:setting>
 
   <mtapp:setting
      id="ip-lockout"
      label="<__trans phrase="IP address lockout policy">"
      show_hint="0">  
-    <p><__trans phrase="An IP address will be locked out if [_1] or more incorrect login attempts are made within [_2] seconds from the same IP address." params="<input type="text" name="ip_lockout_limit" id="ip-lockout-limit" class="text num" maxlength="3" value="<mt:var name="ip_lockout_limit" escape="html">" />%%<input type="text" name="ip_lockout_interval" id="ip-lockout-interval" class="text num" maxlength="5" value="<mt:var name="ip_lockout_interval" escape="html">" />"></p>
+    <p><__trans phrase="An IP address will be locked out if [_1] or more incorrect login attempts are made within [_2] seconds from the same IP address." params="<input type="text"<mt:if name="config_warnings_iplockoutlimit"> disabled="disable"</mt:if> name="ip_lockout_limit" id="ip-lockout-limit" class="text num" maxlength="3" value="<mt:var name="ip_lockout_limit" escape="html">" />%%<input type="text"<mt:if name="config_warnings_iplockoutinterval"> disabled="disable"</mt:if> name="ip_lockout_interval" id="ip-lockout-interval" class="text num" maxlength="5" value="<mt:var name="ip_lockout_interval" escape="html">" />"></p>
     <label for="lockout-ip-address-whitelist"><__trans phrase="However, the following IP addresses are 'whitelisted' and will never be locked out:"><br />
-    <textarea name="lockout_ip_address_whitelist" id="lockout-ip-address-whitelist" class="text low"><mt:var name="lockout_ip_address_whitelist" escape="html"></textarea></label>
+    <textarea<mt:if name="config_warnings_lockoutipwhitelist"> disabled="disable"</mt:if> name="lockout_ip_address_whitelist" id="lockout-ip-address-whitelist" class="text low"><mt:var name="lockout_ip_address_whitelist" escape="html"></textarea></label>
     <div class="hint"><__trans phrase="The list of IP addresses. If a remote IP address is included in this list, the failed login will not recorded. You can specify multiple IP addresses separated by commas or line breaks."></div>
   </mt:app:setting>
 
@@ -234,7 +236,7 @@ function validate (f) {
         '.absolute-site_path': '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
     });
     jQuery('#sys_conf').submit( function () {
-        if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') ) return false;
+        if ( !jQuery(this).find('input:not(:disabled), select:not(:disabled)').filter('input:visible, select:visible').mtValidate('simple') ) return false;
     });
 
 </mt:setvarblock>

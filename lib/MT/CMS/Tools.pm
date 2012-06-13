@@ -405,6 +405,81 @@ sub do_page_action {
     $the_action->{code}->($app);
 }
 
+sub test_system_mail {
+    my $app = shift;
+    my %param;
+    if ( $app->param('blog_id') ) {
+        return $app->return_to_dashboard( redirect => 1 );
+    }
+
+    return $app->permission_denied()
+        unless $app->user->is_superuser();
+
+    return $app->json_error(
+        $app->translate('Please enter a valid email address.') )
+        unless (
+        MT::Util::is_valid_email( $app->param('to_email_address') ) );
+
+    my $cfg       = $app->config;
+    my %directive = (
+        EmailAddressMain => 'system_email_address',
+        SendMailPath     => 'sendmail_path',
+        SMTPServer       => 'smtp_server',
+        SMTPPort         => 'smtp_port',
+        SMTPAuth         => 'smtp_auth',
+        SMTPUseSSL       => 'smtp_auth_ssl',
+        SMTPUser         => 'smtp_auth_username',
+        SMTPPassword     => 'smtp_auth_password',
+    );
+    my @directive = keys %directive;
+
+    # Set entered value as email settings
+    foreach my $d (@directive) {
+        $cfg->$d( $app->param( $directive{$d} ) );
+    }
+    if ( $app->param('smtp_auth_tls') ) {
+        $cfg->SMTPAuth('tls');
+    }
+
+    return $app->json_error(
+        $app->errtrans(
+            "You don't have a system email address configured.  Please set this first, save it, then try the test email again."
+        )
+    ) unless ( $cfg->EmailAddressMain );
+
+    my %head = (
+        To      => $app->param('to_email_address'),
+        From    => $cfg->EmailAddressMain,
+        Subject => $app->translate("Test email from Movable Type")
+    );
+
+    my $body
+        = $app->translate("This is the test email sent by Movable Type.");
+
+    require MT::Mail;
+    if ( MT::Mail->send( \%head, $body ) ) {
+        $app->log(
+            {   message => $app->translate(
+                    'Test e-mail was successfully sent to [_1]',
+                    $app->param('to_email_address')
+                ),
+                level    => MT::Log::INFO(),
+                class    => 'system',
+                category => 'email',
+            }
+        );
+        return $app->json_result( { success => 1 } );
+    }
+    else {
+        return $app->json_error(
+            $app->translate(
+                "Mail was not properly sent: [_1]",
+                MT::Mail->errstr
+            )
+        );
+    }
+}
+
 sub cfg_system_mail {
     my $app = shift;
     my %param;
@@ -420,71 +495,22 @@ sub cfg_system_mail {
     $param{nav_config}   = 1;
     $param{nav_settings} = 1;
 
-    my $cfg       = $app->config;
-    my %directive = (
-        EmailAddressMain => 'system_email_address',
-        SendMailPath     => 'sendmail_path',
-        SMTPServer       => 'smtp_server',
-        SMTPPort         => 'smtp_port',
-        SMTPAuth         => 'smtp_auth',
-        SMTPUseSSL       => 'smtp_auth_ssl',
-        SMTPUser         => 'smtp_auth_username',
-        SMTPPassword     => 'smtp_auth_password',
-    );
-    my @directive = keys %directive;
-
-    if ( $app->param('to_email_address') ) {
-
-        # Set entered value as email settings
-        foreach my $d (@directive) {
-            $cfg->$d( $app->param( $directive{$d} ) );
-        }
-        if ( $app->param('smtp_auth_tls') ) {
-            $cfg->SMTPAuth('tls');
-        }
-
-        return $app->errtrans(
-            "You don't have a system email address configured.  Please set this first, save it, then try the test email again."
-        ) unless ( $cfg->EmailAddressMain );
-        return $app->errtrans("Please enter a valid email address")
-            unless (
-            MT::Util::is_valid_email( $app->param('to_email_address') ) );
-
-        my %head = (
-            To      => $app->param('to_email_address'),
-            From    => $cfg->EmailAddressMain,
-            Subject => $app->translate("Test email from Movable Type")
-        );
-
-        my $body
-            = $app->translate("This is the test email sent by Movable Type.");
-
-        require MT::Mail;
-        if ( MT::Mail->send( \%head, $body ) ) {
-            $app->log(
-                {   message => $app->translate(
-                        'Test e-mail was successfully sent to [_1]',
-                        $app->param('to_email_address')
-                    ),
-                    level    => MT::Log::INFO(),
-                    class    => 'system',
-                    category => 'email',
-                }
-            );
-            $param{test_mail_sent} = 1;
-        }
-        else {
-            $param{error}
-                = $app->translate( "Mail was not properly sent: [_1]",
-                MT::Mail->errstr );
-        }
-    }
-
+    my $cfg = $app->config;
     my @config_warnings;
-    for my $config_directive (@directive) {
-        push( @config_warnings, $config_directive )
-            if $app->config->is_readonly($config_directive);
+    for my $config_directive (
+        qw( EmailAddressMain SendMailPath SMTPServer SMTPPort SMTPAuth SMTPUseSSL SMTPUser SMTPPassword )
+        )
+    {
+        if ( $app->config->is_readonly($config_directive) ) {
+            push @config_warnings, $config_directive;
+            my $flag = "config_warnings_" . ( lc $config_directive );
+            $param{$flag} = 1;
+            $param{"config_warnings_smtpusetls"} = 1
+                if lc $config_directive eq 'smtpauth'
+                    && $cfg->SMTPAuth eq 'tls';
+        }
     }
+
     my $config_warning = join( ", ", @config_warnings ) if (@config_warnings);
 
     $param{config_warning} = $app->translate(
@@ -559,14 +585,17 @@ sub cfg_system_general {
 
     my @config_warnings;
     for my $config_directive (
-        qw( DebugMode PerformanceLogging
+        qw( DebugMode BaseSitePath PerformanceLogging
         PerformanceLoggingPath PerformanceLoggingThreshold
         UserLockoutLimit UserLockoutInterval IPLockoutLimit
         IPLockoutInterval LockoutIPWhitelist LockoutNotifyTo )
         )
     {
-        push( @config_warnings, $config_directive )
-            if $app->config->is_readonly($config_directive);
+        if ( $app->config->is_readonly($config_directive) ) {
+            push( @config_warnings, $config_directive );
+            my $flag = "config_warnings_" . ( lc $config_directive );
+            $param{$flag} = 1;
+        }
     }
     my $config_warning = join( ", ", @config_warnings ) if (@config_warnings);
 

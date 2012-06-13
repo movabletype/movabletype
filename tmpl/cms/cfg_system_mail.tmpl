@@ -11,13 +11,6 @@
       <mt:var name="error" escape="html">
     </mtapp:statusmsg>
   </mt:if>
-  <mt:if name="test_mail_sent">
-    <mtapp:statusmsg
-       id="saved"
-       class="success">
-      <__trans phrase="A test email was sent.">
-    </mtapp:statusmsg>
-  </mt:if>
   <mt:if name="saved">
     <mtapp:statusmsg
        id="saved"
@@ -47,7 +40,7 @@
    label="<__trans phrase="System Email">"
    hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
    show_hint="1">
-  <input type="text" name="system_email_address" id="system_email_address" class="text med required email"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> /> <a href="#" id="send-test-email"><__trans phrase="Send Test Email"></a>
+  <input type="text"<mt:if name="config_warnings_emailaddressmain"> disabled="disabled"</mt:if> name="system_email_address" id="system_email_address" class="text med required email"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> /> <a href="#" id="send-test-email"><__trans phrase="Send Test Email"></a>
 </mt:app:setting>
 
 <mt:if name="mail_transfer" eq="sendmail">
@@ -57,7 +50,7 @@
      label="<__trans phrase="Sendmail Path">"
      hint="<__trans phrase="The physical file path for your Sendmail binary.">"
      show_hint="1">
-    <input type="text" name="sendmail_path" id="sendmail_path" class="text full" value="<mt:var name="sendmail_path" escape="html">" />
+    <input type="text"<mt:if name="config_warnings_sendmailpath"> disabled="disabled"</mt:if> name="sendmail_path" id="sendmail_path" class="text full" value="<mt:var name="sendmail_path" escape="html">" />
   </mt:app:setting>
   <mt:elseif name="mail_transfer" eq="smtp">
 
@@ -66,7 +59,7 @@
        label="<__trans phrase="Outbound Mail Server">"
        hint="<__trans phrase="Address of your SMTP Server.">"
        show_hint="1">
-      <input type="text" id="smtp_server" class="text full" name="smtp_server" value="<mt:var name="smtp_server" escape="html">" />
+      <input type="text"<mt:if name="config_warnings_smtpserver"> disabled="disabled"</mt:if> id="smtp_server" class="text full" name="smtp_server" value="<mt:var name="smtp_server" escape="html">" />
     </mt:app:setting>
 
     <mtapp:setting
@@ -74,15 +67,15 @@
        label="<__trans phrase="Port number">"
        hint="<__trans phrase="Port number  of your SMTP Server.">"
        show_hint="1">
-      <input type="text" id="smtp_port" class="text num" name="smtp_port" value="<mt:var name="smtp_port" escape="html">" />
+      <input type="text"<mt:if name="config_warnings_smtpport"> disabled="disabled"</mt:if> id="smtp_port" class="text num" name="smtp_port" value="<mt:var name="smtp_port" escape="html">" />
     </mt:app:setting>
 
   <mt:if name="has_net_smtp_auth">
     <mtapp:setting
-       id="smtp_auth_username"
+       id="smtp_auth"
        label="<__trans phrase="SMTP Auth">"
        show_hint="0">
-      <input type="checkbox" name="smtp_auth" id="smtp_auth" class="cb" value="1" <mt:if name="smtp_auth">checked</mt:if> />
+      <input type="checkbox"<mt:if name="config_warnings_smtpauth"> disabled="disabled"</mt:if> name="smtp_auth" id="smtp_auth" class="cb" value="1" <mt:if name="smtp_auth">checked</mt:if> />
       <label for="smtp_auth"><__trans phrase="Use SMTP Auth"></label>
     </mtapp:setting>
 
@@ -93,7 +86,7 @@
        label="<__trans phrase="SMTP Auth Username">"
        hint="<__trans phrase="Username for your SMTP Server.">"
        show_hint="1">
-      <input type="text" id="smtp_auth_username" class="text full" name="smtp_auth_username" value="<mt:var name="smtp_auth_username" escape="html">" />
+      <input type="text"<mt:if name="config_warnings_smtpuser"> disabled="disabled"</mt:if> id="smtp_auth_username" class="text full" name="smtp_auth_username" value="<mt:var name="smtp_auth_username" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -101,7 +94,7 @@
        label="<__trans phrase="SMTP Auth Password">"
        hint="<__trans phrase="Password for your SMTP Server.">"
        show_hint="1">
-      <input type="password" id="smtp_auth_password" class="text full" name="smtp_auth_password" value="<mt:var name="smtp_auth_password" escape="html">" />
+      <input type="password"<mt:if name="config_warnings_smtppassword"> disabled="disabled"</mt:if> id="smtp_auth_password" class="text full" name="smtp_auth_password" value="<mt:var name="smtp_auth_password" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -116,7 +109,7 @@
           <mt:var name="has_net_smtp_ssl_msg" escape="html">
         </mtapp:statusmsg>
       </mt:unless>
-      <input type="checkbox" name="smtp_auth_ssl" id="smtp_auth_ssl" class="cb" value="1"<mt:if name="smtp_auth_ssl"> checked</mt:if><mt:unless name="has_net_smtp_ssl"> disabled="disabled"</mt:unless> />
+      <input type="checkbox"<mt:if name="config_warnings_smtpusessl"> disabled="disabled"</mt:if> name="smtp_auth_ssl" id="smtp_auth_ssl" class="cb" value="1"<mt:if name="smtp_auth_ssl"> checked</mt:if><mt:unless name="has_net_smtp_ssl"> disabled="disabled"</mt:unless> />
       <label for="smtp_auth_ssl"><__trans phrase="Enable SMTP Auth with SSL"></label>
     </mtapp:setting>
 
@@ -132,7 +125,7 @@
           <mt:var name="has_net_smtp_tls_msg" escape="html">
         </mtapp:statusmsg>
       </mt:unless>
-      <input type="checkbox" name="smtp_auth_tls" id="smtp_auth_tls" class="cb" value="1"<mt:if name="smtp_auth_tls"> checked</mt:if><mt:unless name="has_net_smtp_tls"> disabled="disabled"</mt:unless> />
+      <input type="checkbox"<mt:if name="config_warnings_smtpusetls"> disabled="disabled"</mt:if> name="smtp_auth_tls" id="smtp_auth_tls" class="cb" value="1"<mt:if name="smtp_auth_tls"> checked</mt:if><mt:unless name="has_net_smtp_tls"> disabled="disabled"</mt:unless> />
       <label for="smtp_auth_tls"><__trans phrase="Enable SMTP Auth with TLS"></label>
     </mtapp:setting>
   </div>
@@ -152,20 +145,19 @@
 </form>
 
 <div id="test-email-dialog">
-  <form id="test_form" action="<mt:var name="script_url">" method="post">
-    <input type="hidden" name="__mode" value="cfg_system_mail" />
-    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-    <input type="hidden" name="system_email_address" value="" />
-    <input type="hidden" name="sendmail_path" value="" />
-    <input type="hidden" name="smtp_server" value="" />
-    <input type="hidden" name="smtp_port" value="" />
-    <input type="hidden" name="smtp_auth" value="" />
-    <input type="hidden" name="smtp_auth_username" value="" />
-    <input type="hidden" name="smtp_auth_password" value="" />
-    <input type="hidden" name="smtp_auth_ssl" value="" />
-    <input type="hidden" name="smtp_auth_tls" value="" />
+  <mtapp:statusmsg
+     id="email_sent"
+     class="success"
+      can_close="0">
+    <__trans phrase="A test email was sent.">
+  </mtapp:statusmsg>
+  <mtapp:statusmsg
+     id="email_sent_error"
+     class="error"
+     can_close="0">
+  </mtapp:statusmsg>
 
+  <form id="test_form">
     <mtapp:setting
        id="to_email_address"
        label="<__trans phrase="Send Email To">"
@@ -175,6 +167,7 @@
       <input type="text" name="to_email_address" id="to-email-address" class="text full" />
     </mt:app:setting>
 
+    <span class="indicator"><img alt="<__trans phrase="Loading..." escape="js">" src="<mt:var name="static_uri">images/indicator.white.gif" /></span>
     <div class="dialog actions-bar">
       <button
          type="submit"
@@ -186,37 +179,59 @@
 </div>
 
 <mt:setvarblock name="jq_js_include" append="1">
+    jQuery('#smtp_auth').click(function() {
+        if ( jQuery(this).is(':checked') ) {
+            jQuery('#smtpauth_params').show();
+        } else {
+            jQuery('#smtpauth_params').hide();
+        }
+    });
+
     jQuery('#test-email-dialog').dialog({
         bgiframe: true,
         title: '<__trans phrase="Send Test Email">',
         autoOpen: false,
-        width: 450
+        width: 450,
     });
-    jQuery('#send-test-email').click(function() {
-        var $settings = jQuery('#sys_conf');
-        var $testForm = jQuery('#test_form');
-        if ( $settings.find('input:visible, select:visible').mtValidate('simple') ) {
-            $testForm.find('input:[name="system_email_address"]').val( $settings.find('input:[name="system_email_address"]').val() );
-             $testForm.find('input:[name="sendmail_path"]').val( $settings.find('input:[name="sendmail_path"]').val() );
-            $testForm.find('input:[name="smtp_server"]').val( $settings.find('input:[name="smtp_server"]').val() );
-            $testForm.find('input:[name="smtp_port"]').val( $settings.find('input:[name="smtp_port"]').val() );
-            if ( $settings.find('input:[name="smtp_auth"]:checked').length )
-                $testForm.find('input:[name="smtp_auth"]').val( '1' );
-            else
-                $testForm.find('input:[name="smtp_auth"]').val( '0' );
-            $testForm.find('input:[name="smtp_auth_username"]').val( $settings.find('input:[name="smtp_auth_username"]').val() );
-            $testForm.find('input:[name="smtp_auth_password"]').val( $settings.find('input:[name="smtp_auth_password"]').val() );
-            if ( $settings.find('input:[name="smtp_auth_ssl"]:checked').length )
-                $testForm.find('input:[name="smtp_auth_ssl"]').val( '1' );
-            else
-                $testForm.find('input:[name="smtp_auth_ssl"]').val( '0' );
-            if ( $settings.find('input:[name="smtp_auth_tls"]:checked').length )
-                $testForm.find('input:[name="smtp_auth_tls"]').val( '1' );
-            else
-                $testForm.find('input:[name="smtp_auth_tls"]').val( '0' );
 
-            jQuery('#test-email-dialog').dialog('open');
-        }
+    jQuery('#send-test-email').click(function() {
+        jQuery('span.indicator').hide();
+        jQuery('#email_sent').hide();
+        jQuery('#email_sent_error').hide();
+        jQuery('#test-email-dialog').dialog('open');
+        return false;
+    });
+
+    jQuery('#test_form').submit(function() {
+        jQuery('#email_sent').hide();
+        jQuery('#email_sent_error').hide();
+
+        var postData = {};
+        jQuery('#sys_conf').find('input:visible').each(function(){
+            var $this = jQuery(this);
+            if ( $this.attr('type') == "checkbox" ) {
+                if ( $this.is(':checked') )
+                    postData[$this.attr('name')] = $this.val();
+            } else {
+                postData[$this.attr('name')] = $this.val();
+            }
+        });
+        postData['__mode'] = "test_system_mail";
+        postData['magic_token'] = "<mt:var name="magic_token">";
+        postData['to_email_address'] = jQuery('#to-email-address').val();
+
+        jQuery('#test_form div.actions-bar').hide();
+        jQuery('span.indicator').show();
+        jQuery.post('<mt:var name="script_url">', postData, function( data ) {
+            if( data.error ) {
+                jQuery('#email_sent_error p').text( data.error );
+                jQuery('#email_sent_error').show();
+            } else if( data.result ) {
+                jQuery('#email_sent').show();
+            }
+            jQuery('span.indicator').hide();
+            jQuery('#test_form div.actions-bar').show();
+        });
         return false;
     });
 
@@ -258,7 +273,9 @@
     });
 
     jQuery('#sys_conf').submit( function () {
-        if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') ) return false;
+        if ( !jQuery(this).find('input:not(:disabled), select:not(:disabled)')
+            .filter('input:visible, select:visible')
+            .mtValidate('simple') ) return false;
     });
 </mt:setvarblock>
 
