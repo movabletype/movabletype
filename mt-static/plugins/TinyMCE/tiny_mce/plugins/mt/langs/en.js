@@ -1,23 +1,8 @@
 tinyMCE.addI18n(tinymce.settings.language + '.mt', {
-    font_size_smaller: trans('Decrease Text Size'),
-    font_size_larger: trans('Increase Text Size'),
-    bold: trans('Bold'),
-    italic: trans('Italic'),
-    underline: trans('Underline'),
-    strikethrough: trans('Strikethrough'),
-    insert_link: trans('Link'),
-    insert_email: trans('Email Link'),
-    blockquote: trans('Blockquote'),
-    indent: trans('Begin Blockquote'),
-    outdent: trans('End Blockquote'),
-    insert_unordered_list: trans('Bulleted List'),
-    insert_ordered_list: trans('Numbered List'),
-    list_item: trans('List Item'),
-    justify_left: trans('Left Align Text'),
-    justify_center: trans('Center Text'),
-    justify_right: trans('Right Align Text'),
+    insert_link: trans('Insert Link'),
     insert_html: trans('Insert HTML'),
-    insert_image: trans('Insert image'),
-    insert_file: trans('Insert file'),
-    source_mode: trans('HTML Mode')
+    insert_image: trans('Insert Image Asset'),
+    insert_file: trans('Insert Asset Link'),
+    fullscreen: trans('Toggle Fullscreen Mode'),
+    source_mode: trans('Toggle HTML Edit Mode')
 });
