@@ -296,7 +296,10 @@ jQuery(function() {
     });
 
     jQuery('#optional_form').submit( function () {
-        if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') ) return false;
+        if ( !( jQuery(this).find('input:[name="__mode"]').val() == 'previous_step' ) ) {
+            if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') )
+                return false;
+        }
     });
 
     jQuery.mtValidateAddRules({
