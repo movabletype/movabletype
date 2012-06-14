@@ -52,8 +52,23 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
             },
             'advanced/color_picker.htm': {
                 width: 370,
-                height: 272
-            }
+                height: 272,
+                onload: function(context) {
+                    var $contents = $(context['iframe']).contents();
+
+                    $contents.find('a[onmouseover^=showColor]')
+                        .each(function() {
+                            var callback = this.onmouseover;
+                            $(this).click(function() {
+                                callback();
+                                return false;
+                            });
+                        })
+                        .attr('onmouseover', '')
+                        .attr('onfocus', '')
+                        .attr('href', 'javascript:;');
+                }
+            },
         },
 
         formats: {

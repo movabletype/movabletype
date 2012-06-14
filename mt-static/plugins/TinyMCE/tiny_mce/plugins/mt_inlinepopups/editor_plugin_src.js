@@ -50,6 +50,11 @@
                 if (f.body_id) {
                     $(this).contents().find('body').attr('id', f.body_id);
                 }
+                if (f.onload) {
+                    f.onload({
+                        'iframe': this
+                    });
+                }
             });
         }
     });
