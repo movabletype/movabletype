@@ -6,7 +6,7 @@
  * $Id$
  */
 ;(function($) {
-    var DOM = tinymce.DOM, Element = tinymce.dom.Element, Event = tinymce.dom.Event, each = tinymce.each, is = tinymce.is;
+    var DOM = tinymce.DOM;
 
     tinymce.create('tinymce.plugins.MTInlinepopupsPlugin', {
         init : function(ed, url) {
@@ -27,12 +27,13 @@
     });
 
     tinymce.create('tinymce.MTInlineWindowManager:tinymce.InlineWindowManager', {
-		InlineWindowManager : function(ed) {
+		MTInlineWindowManager : function(ed) {
 			this.parent(ed);
 		},
 
         open : function(f, p) {
-			var ed = this.editor, url, sizes, w;
+			var ed = this.editor;
+            var url, sizes, w;
             if (sizes = ed.settings.plugin_mt_inlinepopups_window_sizes) {
                 url = f.url || f.file;
                 $.each(sizes, function(k, v) {
