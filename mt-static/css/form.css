@@ -128,9 +128,11 @@ fieldset {
     background-color: #fff;
     outline: 0;
 }
-.text.disabled {
+.text.disabled, 
+.text[disabled] {
     border-color: #dcdddd;
     background-color: #f3f3f3;
+    color: #9ea1a3;
     box-shadow: none;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
@@ -141,6 +143,10 @@ fieldset {
     box-shadow: none;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
+}
+
+textarea {
+    resize: vertical;
 }
 
 select { 
