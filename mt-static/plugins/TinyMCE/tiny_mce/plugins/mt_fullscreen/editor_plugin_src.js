@@ -15,8 +15,8 @@
         .ScriptLoader
         .add(tinymce.PluginManager.urls['mt_fullscreen'] + '/langs/plugin.js');
 
-	tinymce.create('tinymce.plugins.MTFullScreenPlugin', {
-		init : function(ed, url) {
+    tinymce.create('tinymce.plugins.MTFullScreenPlugin', {
+        init : function(ed, url) {
             var plugin = this;
             plugin.buttonIDs = {};
 
@@ -44,7 +44,7 @@
 
                 var header_height = $header.height();
 
-				fitToWindow = function() {
+                fitToWindow = function() {
                     var $outer = $parent.find('table:visible');
                     var $inner = $parent.find('.mceIframeContainer:visible');
 
@@ -53,14 +53,14 @@
                         $outer.height() - $inner.height() + header_height;
 
                     forEachAffectedEditors(function() {
-					    this.theme.resizeTo(
+                        this.theme.resizeTo(
                             $window.width() - offset_width,
                             $window.height() - offset_height,
                             false,
                             true
                         );
                     });
-				};
+                };
             });
 
             ed.addCommand('mtFullScreenFitToWindow', function() {
@@ -75,7 +75,7 @@
                 return enabled ? 'enabled' : '';
             });
 
-			ed.addCommand('mtFullScreen', function() {
+            ed.addCommand('mtFullScreen', function() {
                 if (! enabled) {
                     editorSize = ed.execCommand('mtGetEditorSize');
 
@@ -114,16 +114,16 @@
                     $tabs.css('width', '');
 
                     enabled = false;
-				    fitToWindow = function(){};
+                    fitToWindow = function(){};
                     $window.unbind('resize.mt_fullscreen');
                 }
 
                 forEachAffectedEditors(function() {
                     this.nodeChanged();
                 });
-			});
+            });
 
-			ed.addMTButton('mt_fullscreen', {
+            ed.addMTButton('mt_fullscreen', {
                 title: 'mt.fullscreen',
                 cmd: 'mtFullScreen'
             });
@@ -144,17 +144,17 @@
                     .map(function() { return this.id });
             });
 
-			ed.onNodeChange.add(function(ed, cm) {
+            ed.onNodeChange.add(function(ed, cm) {
                 $.each(plugin.buttonIDs['mt_fullscreen'] || [], function() {
-				    cm.setActive(this, enabled);
+                    cm.setActive(this, enabled);
                 });
-			});
-		},
+            });
+        },
 
-		createControl : function(name, cm) {
+        createControl : function(name, cm) {
             var editor = cm.editor;
 
-			if (name == 'mt_fullscreen') {
+            if (name == 'mt_fullscreen') {
                 var ctrl = editor.buttons[name];
 
                 if (! this.buttonIDs[name]) {
@@ -164,25 +164,25 @@
                 var id = name + '_' + this.buttonIDs[name].length;
                 this.buttonIDs[name].push(id);
 
-			    return cm.createButton(id, $.extend({}, ctrl, {
+                return cm.createButton(id, $.extend({}, ctrl, {
                     'class': 'mce_' + name
                 }));
             }
 
-			return null;
-		},
+            return null;
+        },
 
-		getInfo : function() {
-			return {
-				longname : 'MTFullscreen',
-				author : 'Six Apart, Ltd',
-				authorurl : '',
-				infourl : '',
-				version : '1.0'
-			};
-		}
-	});
+        getInfo : function() {
+            return {
+                longname : 'MTFullscreen',
+                author : 'Six Apart, Ltd',
+                authorurl : '',
+                infourl : '',
+                version : '1.0'
+            };
+        }
+    });
 
-	// Register plugin
-	tinymce.PluginManager.add('mt_fullscreen', tinymce.plugins.MTFullScreenPlugin, ['mt']);
+    // Register plugin
+    tinymce.PluginManager.add('mt_fullscreen', tinymce.plugins.MTFullScreenPlugin, ['mt']);
 })(jQuery);

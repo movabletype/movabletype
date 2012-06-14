@@ -27,12 +27,12 @@
     });
 
     tinymce.create('tinymce.MTInlineWindowManager:tinymce.InlineWindowManager', {
-		MTInlineWindowManager : function(ed) {
-			this.parent(ed);
-		},
+        MTInlineWindowManager : function(ed) {
+            this.parent(ed);
+        },
 
         open : function(f, p) {
-			var ed = this.editor;
+            var ed = this.editor;
             var url, sizes, w;
             if (sizes = ed.settings.plugin_mt_inlinepopups_window_sizes) {
                 url = f.url || f.file;
