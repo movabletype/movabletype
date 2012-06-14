@@ -353,10 +353,6 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
     }
 });
 
-MT.Editor.TinyMCE.setupEnsureInitializedMethods([
-    'setFormat', 'hide', 'insertContent', 'clearDirty', 'resetUndo'
-]);
-
 MT.EditorManager.register('tinymce', MT.Editor.TinyMCE);
 
 })(jQuery);

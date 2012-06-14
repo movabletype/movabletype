@@ -30,6 +30,8 @@ $.extend(MT.EditorManager, {
                 editor: editor
             });
         });
+
+        editor.onRegister(id);
     },
 
     updateMap: function(map) {

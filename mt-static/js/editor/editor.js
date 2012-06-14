@@ -16,7 +16,13 @@ MT.Editor = function(id, manager) {
 
 // Class method
 $.extend(MT.Editor, {
+    ensureInitializedMethods: [
+        'setFormat', 'setContent', 'insertContent', 'hide', 'clearDirty',
+        'setHeight', 'resetUndo', 'domUpdated'
+    ],
+
     defaultCommonOptions: {
+        body_class_list: [],
         content_css_list: []
     },
 
@@ -47,6 +53,10 @@ $.extend(MT.Editor, {
                 this.ensureInitialized(original, arguments);
             };
         });
+    },
+
+    onRegister: function(id) {
+        this.setupEnsureInitializedMethods(this.ensureInitializedMethods);
     }
 });
 
