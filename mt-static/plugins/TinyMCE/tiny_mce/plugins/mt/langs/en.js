@@ -7,10 +7,10 @@ tinyMCE.addI18n(tinymce.settings.language + '.mt', {
     source_mode: trans('Toggle HTML Edit Mode'),
 
     // HTML mode
-    source_bold: trans('Insert A strong Element'),
-    source_italic: trans('Insert An em Element'),
-    source_blockquote: trans('Insert A blockquote Element'),
-    source_unordered_list: trans('Insert An ul Element'),
-    source_ordered_list: trans('Insert An ol Element'),
-    source_list_item: trans('Insert A li Element')
+    source_bold: trans('Strong Emphasis'),
+    source_italic: trans('Emphasis'),
+    source_blockquote: trans('Block Quotetion'),
+    source_unordered_list: trans('Unordered List'),
+    source_ordered_list: trans('Ordered List'),
+    source_list_item: trans('List Item')
 });
