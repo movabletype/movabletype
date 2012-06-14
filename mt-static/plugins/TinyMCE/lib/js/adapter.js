@@ -254,17 +254,15 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
     },
 
     domUpdated: function() {
-        if (this.tinymce) {
-            var format = this.tinymce.execCommand('mtGetStatus')['format'];
-            try {
-                this.tinymce.remove();
-            }
-            catch(e) {
-                $('#' + this.id + '_parent').remove();
-                delete tinyMCE.editors[this.id];
-            }
-            this.initEditor(format);
+        var format = this.tinymce.execCommand('mtGetStatus')['format'];
+        try {
+            this.tinymce.remove();
         }
+        catch(e) {
+            $('#' + this.id + '_parent').remove();
+            delete tinyMCE.editors[this.id];
+        }
+        this.initEditor(format);
     },
 
     _init_instance_callback: function(ed) {
