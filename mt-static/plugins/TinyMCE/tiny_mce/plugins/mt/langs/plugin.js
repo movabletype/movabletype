@@ -9,7 +9,7 @@ tinyMCE.addI18n(tinymce.settings.language + '.mt', {
     // HTML mode
     source_bold: trans('Strong Emphasis'),
     source_italic: trans('Emphasis'),
-    source_blockquote: trans('Block Quotetion'),
+    source_blockquote: trans('Block Quotation'),
     source_unordered_list: trans('Unordered List'),
     source_ordered_list: trans('Ordered List'),
     source_list_item: trans('List Item')
