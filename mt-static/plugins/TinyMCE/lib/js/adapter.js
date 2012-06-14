@@ -197,16 +197,12 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         }
         this.resetUndo();
         this.tinymce.nodeChanged();
-        this.tryToFullScreenFitToWindow();
+        this._fullScreenFitToWindow();
     },
 
-    tryToFullScreenFitToWindow: function() {
-        try {
-            this.tinymce.execCommand('mtFullScreenUpdateFitToWindow');
-            this.tinymce.execCommand('mtFullScreenFitToWindow');
-        }
-        catch (e) {
-        }
+    _fullScreenFitToWindow: function() {
+        this.tinymce.execCommand('mtFullScreenUpdateFitToWindow');
+        this.tinymce.execCommand('mtFullScreenFitToWindow');
     },
 
     setContent: function(content) {
