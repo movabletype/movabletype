@@ -139,9 +139,10 @@
 .mtSkin .mceListBoxEnabled:hover, 
 .mtSkin .mceListBoxSelected, 
 .mtSkin .mceSplitButtonEnabled:hover a, 
-.mtSkin .mceSplitButtonSelected a { 
+.mtSkin .mceSplitButtonSelected a, 
+.mtSkin .mceSplitButtonSelected a:hover { 
     border-color: #adadad;
-    background-color: #fafafa;
+    background-color: #f3f3f3;
     background-image: -ms-linear-gradient(#f3f3f3, #dcdddd);
     background-image: -moz-linear-gradient(#f3f3f3, #dcdddd);
     background-image: -webkit-linear-gradient(#f3f3f3, #dcdddd);
@@ -150,7 +151,9 @@
 }
 .mtSkin .mceButtonActive:hover, 
 .mtSkin .mceListBoxSelected:hover, 
-.mtSkin .mceSplitButtonSelected a.mceAction:hover { 
+.mtSkin .mceSplitButtonEnabled:hover a, 
+.mtSkin .mceSplitButtonSelected a, 
+.mtSkin .mceSplitButtonSelected a:hover { 
     box-shadow: 0px 1px 0 0 rgba(255, 255, 255, 0.9), inset 0 0 1px 1px rgba(255, 255, 255, 0.8);
 }
 
@@ -162,7 +165,7 @@
 .mtSkin .mceListBoxSelected, 
 .mtSkin .mceListBoxSelected:hover, 
 .mtSkin .mceSplitButtonEnabled a:active, 
-.mtSkin .mceSplitButtonSelected a, 
+.mtSkin .mceSplitButtonSelected a.mceOpen, 
 .mtSkin .mceSplitButtonSelected .mceSplitButtonEnabled:hover a.mceOpen, 
 .mtSkin .mceButtonActive, 
 .mtSkin .mceButtonActive:hover { 
