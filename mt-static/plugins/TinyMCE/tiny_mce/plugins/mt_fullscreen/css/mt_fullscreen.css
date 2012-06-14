@@ -29,7 +29,6 @@
 .fullscreen_editor .editor-header .tab { 
     display: block;
     float: left;
-    width: 50% ! important;
     margin: 0 0 -1px;
     padding: 0;
     border-width: 0 0 1px 1px;
