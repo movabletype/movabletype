@@ -13,7 +13,7 @@
 
     tinymce
         .ScriptLoader
-        .add(tinymce.PluginManager.urls['mt_fullscreen'] + '/langs/en.js');
+        .add(tinymce.PluginManager.urls['mt_fullscreen'] + '/langs/plugin.js');
 
 	tinymce.create('tinymce.plugins.MTFullScreenPlugin', {
 		init : function(ed, url) {

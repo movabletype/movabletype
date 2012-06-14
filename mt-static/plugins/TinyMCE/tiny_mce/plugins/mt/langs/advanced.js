@@ -1,0 +1,22 @@
+tinyMCE.addI18n(tinymce.settings.language + '.advanced', {
+    "bold_desc": trans("Bold (Ctrl+B)"),
+    "italic_desc": trans("Italic (Ctrl+I)"),
+    "underline_desc": trans("Underline (Ctrl+U)"),
+    "striketrough_desc": trans("Strikethrough"),
+    "blockquote_desc": trans("Block Quote"),
+    "bullist_desc": trans("Insert/Remove Bulleted List"),
+    "numlist_desc": trans("Insert/Remove Numbered List"),
+    "hr_desc": trans("Insert Horizontal Line"),
+    "link_desc": trans("Insert/Edit Link"),
+    "unlink_desc": trans("Unlink"),
+    "undo_desc": trans("Undo (Ctrl+Z)"),
+    "redo_desc": trans("Redo (Ctrl+Y)"),
+    "forecolor_desc": trans("Select Text Color"),
+    "backcolor_desc": trans("Select Background Color"),
+    "removeformat_desc": trans("Remove Formatting"),
+    "justifyleft_desc": trans("Align Left"),
+    "justifycenter_desc": trans("Align Center"),
+    "justifyright_desc": trans("Align Right"),
+    "indent_desc": trans("Increase Indent"),
+    "outdent_desc": trans("Decrease Indent")
+});

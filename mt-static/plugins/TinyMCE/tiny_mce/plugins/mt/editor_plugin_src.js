@@ -6,9 +6,11 @@
  * $Id$
  */
 ;(function($) {
-    tinymce
-        .ScriptLoader
-        .add(tinymce.PluginManager.urls['mt'] + '/langs/en.js');
+    $.each(['plugin', 'advanced'], function() {
+        tinymce
+            .ScriptLoader
+            .add(tinymce.PluginManager.urls['mt'] + '/langs/' + this + '.js');
+    });
 
     tinymce.Editor.prototype.addMTButton = function(name, opts) {
         var ed = this;
