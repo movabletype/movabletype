@@ -214,11 +214,6 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         }
     },
 
-    hide: function() {
-        this.setFormat('richtext');
-        this.tinymce.hide();
-    },
-
     insertContent: function(value) {
         if (this.editor === this.source) {
             this.source.insertContent(value);
@@ -229,6 +224,11 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                 .moveToBookmark(this.editor.mt_plugin_bookmark);
             this.editor.execCommand('mceInsertContent', false, value);
         }
+    },
+
+    hide: function() {
+        this.setFormat('richtext');
+        this.tinymce.hide();
     },
 
     clearDirty: function() {
