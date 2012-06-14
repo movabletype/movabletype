@@ -82,7 +82,7 @@
         }
     });
 
-	tinymce.create('tinymce.plugins.MovableType', {
+    tinymce.create('tinymce.plugins.MovableType', {
         buttonSettings : '',
         initButtonSettings : function(ed) {
             var plugin = this;
@@ -117,7 +117,7 @@
 
             return buttonRows;
         },
-		init : function(ed, url) {
+        init : function(ed, url) {
             var plugin         = this;
             var id             = ed.id;
             var idLengbth      = id.length;
@@ -128,6 +128,7 @@
 
             var supportedButtonsCache = {};
             var buttonRows            = this.initButtonSettings(ed);
+            var sourceButtons         = {};
 
 
             ed.mtProxies = proxies;
@@ -201,14 +202,14 @@
                 });
             }
 
-	        function openDialog(mode, param) {
-		        $.fn.mtDialog.open(
-			        ScriptURI + '?' + '__mode=' + mode + '&amp;' + param
-	            );
-	        }
+            function openDialog(mode, param) {
+                $.fn.mtDialog.open(
+                    ScriptURI + '?' + '__mode=' + mode + '&amp;' + param
+                );
+            }
 
             function setPopupWindowLoadedHook(callback) {
-			    $.each(ed.windowManager.windows, function(k, w) {
+                $.each(ed.windowManager.windows, function(k, w) {
                     var iframe  = w.iframeElement;
                     $('#' + iframe.id).load(function() {
                         var win = this.contentWindow;
@@ -219,10 +220,10 @@
                         callback(context, function() {
                             win.tinyMCEPopup.close();
 
-				            //Move focus if webkit so that navigation back will read the item.
-				            if (tinymce.isWebKit) {
+                            //Move focus if webkit so that navigation back will read the item.
+                            if (tinymce.isWebKit) {
                                 $('#convert_breaks').focus();
-				            }
+                            }
                             proxies.source.focus();
                         });
                     });
@@ -259,10 +260,30 @@
                 }
             }
 
+            function initSourceButtons(mode, format) {
+                $.each(ed.mtButtons, function(name, button) {
+                    var command;
+                    if (
+                        button['onclickFunctions'] &&
+                        (command = button['onclickFunctions']['source']) &&
+                        (typeof(command) == 'string') &&
+                        (plugin.buttonSettings.indexOf(name) != -1)
+                       ) {
+                        sourceButtons[name] = command;
+                    }
+                });
+            }
+
+            function updateSourceButtonState(ed, cm) {
+                $.each(sourceButtons, function(k, command) {
+                    cm.setActive(k, ed.mtProxies['source'].isStateActive(command));
+                });
+            }
 
             ed.onInit.add(function() {
                 $container = $(ed.getContainer());
                 updateButtonVisibility();
+                initSourceButtons();
                 ed.theme.resizeBy(0, 0);
             });
 
@@ -285,7 +306,7 @@
             });
 
 
-			// Register buttons
+            // Register buttons
             ed.addButton('mt_insert_html', {
                 title : 'mt.insert_html',
                 onclick : function() {
@@ -300,31 +321,31 @@
                 }
             });
 
-			ed.addMTButton('mt_insert_image', {
-				title : 'mt.insert_image',
-				onclick : function() {
-			        openDialog(
-				        'dialog_list_asset',
-					    '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image'
-		            );
-				}
-			});
+            ed.addMTButton('mt_insert_image', {
+                title : 'mt.insert_image',
+                onclick : function() {
+                    openDialog(
+                        'dialog_list_asset',
+                        '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image'
+                    );
+                }
+            });
 
-			ed.addMTButton('mt_insert_file', {
-				title : 'mt.insert_file',
-				onclick : function() {
-			        openDialog(
-				        'dialog_list_asset',
-					    '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1'
-		            );
-				}
-			});
+            ed.addMTButton('mt_insert_file', {
+                title : 'mt.insert_file',
+                onclick : function() {
+                    openDialog(
+                        'dialog_list_asset',
+                        '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1'
+                    );
+                }
+            });
 
             ed.addMTButton('mt_source_bold', {
                 title : 'mt.source_bold',
                 text : 'strong',
                 mtButtonClass: 'text',
-				onclickFunctions : {
+                onclickFunctions : {
                     source: 'bold'
                 }
             });
@@ -333,7 +354,7 @@
                 title : 'mt.source_italic',
                 text : 'em',
                 mtButtonClass: 'text',
-				onclickFunctions : {
+                onclickFunctions : {
                     source: 'italic'
                 }
             });
@@ -342,7 +363,7 @@
                 title : 'mt.source_blockquote',
                 text : 'blockquote',
                 mtButtonClass: 'text',
-				onclickFunctions : {
+                onclickFunctions : {
                     source: 'blockquote'
                 }
             });
@@ -351,7 +372,7 @@
                 title : 'mt.source_unordered_list',
                 text : 'ul',
                 mtButtonClass: 'text',
-				onclickFunctions : {
+                onclickFunctions : {
                     source: 'insertUnorderedList'
                 }
             });
@@ -360,7 +381,7 @@
                 title : 'mt.source_ordered_list',
                 text : 'ol',
                 mtButtonClass: 'text',
-				onclickFunctions : {
+                onclickFunctions : {
                     source: 'insertOrderedList'
                 }
             });
@@ -369,28 +390,28 @@
                 title : 'mt.source_list_item',
                 text : 'li',
                 mtButtonClass: 'text',
-				onclickFunctions : {
+                onclickFunctions : {
                     source: 'insertListItem'
                 }
             });
 
             ed.addMTButton('mt_source_link', {
                 title : 'mt.insert_link',
-				onclickFunctions : {
+                onclickFunctions : {
                     source: function(cmd, ui, val) {
-			            tinymce._setActive(ed);
+                        tinymce._setActive(ed);
                         this.theme['_mceLink'].apply(this.theme);
                         setPopupWindowLoadedHook(mtSourceLinkDialog);
-				    }
+                    }
                 }
             });
 
             ed.addMTButton('mt_source_mode', {
-				title : 'mt.source_mode',
-				onclickFunctions : {
+                title : 'mt.source_mode',
+                onclickFunctions : {
                     wysiwyg: function() {
                         ed.execCommand('mtSetFormat', 'none.tinymce_temp');
-				    },
+                    },
                     source: function() {
                         ed.execCommand('mtSetFormat', 'richtext');
                     }
@@ -399,27 +420,9 @@
 
 
             if (! ed.onMTSourceButtonClick) {
-			    ed.onMTSourceButtonClick = new tinymce.util.Dispatcher(ed);
+                ed.onMTSourceButtonClick = new tinymce.util.Dispatcher(ed);
             }
-            var sourceButtons = {
-                'mt_source_bold': 'bold',
-                'mt_source_italic': 'italic',
-                'mt_source_blockquote': 'blockquote',
-                'mt_source_unordered_list': 'insertUnorderedList',
-                'mt_source_ordered_list': 'insertOrderedList',
-                'mt_source_list_item': 'insertListItem',
-                'mt_source_link': 'createLink'
-            };
-            $.each(sourceButtons, function(k, v) {
-                if (plugin.buttonSettings.indexOf(k) == -1) {
-                    delete stateControls[k];
-                }
-            });
-            ed.onMTSourceButtonClick.add(function(ed, cm) {
-                $.each(sourceButtons, function(k, command) {
-                    cm.setActive(k, ed.mtProxies['source'].isStateActive(command));
-                });
-            });
+            ed.onMTSourceButtonClick.add(updateSourceButtonState);
 
             ed.onNodeChange.add(function(ed, cm, n, co, ob) {
                 var s = ed.mtEditorStatus;
@@ -442,11 +445,9 @@
                     return;
                 }
 
-                $.each(sourceButtons, function(k, command) {
-                    cm.setActive(k, ed.mtProxies['source'].isStateActive(command));
-                });
+                updateSourceButtonState(ed, ed.controlManager);
             });
-		},
+        },
 
         createControl : function(name, cm) {
             var editor = cm.editor;
@@ -497,17 +498,17 @@
             return null;
         },
 
-		getInfo : function() {
-			return {
-				longname : 'MovableType',
-				author : 'Six Apart, Ltd',
-				authorurl : '',
-				infourl : '',
-				version : '1.0'
-			};
-		}
-	});
+        getInfo : function() {
+            return {
+                longname : 'MovableType',
+                author : 'Six Apart, Ltd',
+                authorurl : '',
+                infourl : '',
+                version : '1.0'
+            };
+        }
+    });
 
-	// Register plugin
-	tinymce.PluginManager.add('mt', tinymce.plugins.MovableType);
+    // Register plugin
+    tinymce.PluginManager.add('mt', tinymce.plugins.MovableType);
 })(jQuery);
