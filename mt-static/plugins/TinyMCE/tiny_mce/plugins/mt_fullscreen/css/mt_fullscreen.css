@@ -34,6 +34,7 @@
     padding: 0;
     border-width: 0 0 1px 1px;
     border-radius: 0;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
 .fullscreen_editor .editor-header .selected-tab { 

@@ -23,15 +23,14 @@
     text-align: left;
     outline: 0 ! important;
 }
-
+.mtSkin a, 
 .mtSkin a:hover, 
-.mtSkin a:link, 
 .mtSkin a:visited, 
 .mtSkin a:active { 
     text-decoration: none;
     font-weight: normal;
     cursor: default;
-    color: #000;
+    color: #000000;
 }
 
 /* - Containers */
@@ -46,7 +45,7 @@
     border-collapse: collapse;
 }
 
-.mtSkin iframe {
+.mtSkin iframe { 
     display: block;
     background: #ffffff;
 }
@@ -66,7 +65,7 @@
 .mtSkin table.mceLayout tr.mceLast td { 
     border-width: 0 0 1px;
 }
-.mtSkin .mceIframeContainer {
+.mtSkin .mceIframeContainer { 
     border-width: 1px 0;
 }
 .mtSkin table.mceToolbar, 
@@ -125,45 +124,56 @@
 /* - Tools */
 .mtSkin .mceButton, 
 .mtSkin .mceListBox, 
-.mtSkin .mceSplitButton { 
+.mtSkin .mceSplitButton a { 
     display: block;
-    height: 22px;
     padding: 1px 1px 0;
     border: 1px solid transparent;
     border-radius: 2px;
 }
+
+/* -- Mouse Over */
 .mtSkin .mceButtonEnabled:hover, 
 .mtSkin .mceButtonSelected, 
 .mtSkin .mceButtonActive:hover, 
 .mtSkin .mceButtonActive, 
 .mtSkin .mceListBoxEnabled:hover, 
 .mtSkin .mceListBoxSelected, 
-.mtSkin .mceSplitButtonEnabled:hover, 
-.mtSkin div.mceSplitButtonSelected .mceSplitButton { 
-    border-color: #c0c6c9;
+.mtSkin .mceSplitButtonEnabled:hover a, 
+.mtSkin .mceSplitButtonSelected a { 
+    border-color: #adadad;
     background-color: #fafafa;
-    background-image: -webkit-linear-gradient(#fafafa, #e9eaea);
+    background-image: -ms-linear-gradient(#f3f3f3, #dcdddd);
+    background-image: -moz-linear-gradient(#f3f3f3, #dcdddd);
+    background-image: -webkit-linear-gradient(#f3f3f3, #dcdddd);
+    background-image: linear-gradient(#f3f3f3, #dcdddd);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fafafa', endColorstr='#e9eaea',GradientType=0 );
 }
-.mtSkin .mceButtonEnabled:hover, 
-.mtSkin .mceListBoxEnabled:hover, 
-.mtSkin .mceSplitButtonEnabled:hover { 
-    box-shadow: 0px 1px 2px 0 rgba(0, 0, 0, 0.3);
+.mtSkin .mceButtonActive:hover, 
+.mtSkin .mceListBoxSelected:hover, 
+.mtSkin .mceSplitButtonSelected a.mceAction:hover { 
+    box-shadow: 0px 1px 0 0 rgba(255, 255, 255, 0.9), inset 0 0 1px 1px rgba(255, 255, 255, 0.8);
 }
+
+/* -- Active */
 .mtSkin .mceButtonEnabled:active, 
-.mtSkin .mceListBoxEnabled:active, 
-.mtSkin .mceSplitButtonEnabled:active, 
 .mtSkin .mceButtonSelected, 
 .mtSkin .mceButtonSelected:hover, 
+.mtSkin .mceListBoxEnabled:active, 
 .mtSkin .mceListBoxSelected, 
 .mtSkin .mceListBoxSelected:hover, 
-.mtSkin div.mceSplitButtonSelected .mceSplitButtonEnabled, 
-.mtSkin div.mceSplitButtonSelected .mceSplitButtonEnabled:hover, 
+.mtSkin .mceSplitButtonEnabled a:active, 
+.mtSkin .mceSplitButtonSelected a, 
+.mtSkin .mceSplitButtonSelected .mceSplitButtonEnabled:hover a.mceOpen, 
 .mtSkin .mceButtonActive, 
 .mtSkin .mceButtonActive:hover { 
-    background-color: #f3f3f3;
-    background-image: -webkit-linear-gradient(#f3f3f3, #dcdddd);
-    border-radius: 2px;
-    box-shadow: inset 0 1px 1px 0 rgba(0, 0, 0, 0.2);
+    border-color: #adadad;
+    background-color: #dcdddd;
+    background-image: -ms-linear-gradient(#dcdddd, #f3f3f3);
+    background-image: -moz-linear-gradient(#dcdddd, #f3f3f3);
+    background-image: -webkit-linear-gradient(#dcdddd, #f3f3f3);
+    background-image: linear-gradient(#dcdddd, #f3f3f3);
+    box-shadow: 0px 1px 0 0 rgba(255, 255, 255, 0.9), inset 0 0 1px 0 rgba(0, 0, 0, 0.3);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dcdddd', endColorstr='#f3f3f3',GradientType=0 );
 }
 
 /* -- Button */
@@ -187,7 +197,7 @@
     color: #888888;
 }
 
-.mtSkin .mceMTTextButton {
+.mtSkin .mceMTTextButton { 
     min-width: 22px;
     padding: 0 3px;
     line-height: 22px;
@@ -199,22 +209,30 @@
 .mtSkin .mceListBox a { 
     display: block;
 }
-.mtSkin .mceListBox .mceText { 
-    width: 80px;
+.mtSkin .mceListBox a.mceText { 
+    width: 85px;
     height: 22px;
     padding-left: 4px;
+    border-right: 0;
+    border-radius: 2px 0 0 2px;
     line-height: 22px;
     overflow: hidden;
     font-size: 12px;
     font-weight: bold;
     text-align: left;
 }
-.mtSkin .mceListBox .mceOpen { 
-    width: 10px;
+.mtSkin .mceListBox a.mceOpen, 
+.mtSkin .mceListBox a.mceOpen span { 
+    display: block;
+    width: 15px;
     height: 22px;
+    border-left: 0;
+    border-radius: 0 2px 2px 0;
+}
+.mtSkin .mceListBox a.mceOpen span { 
     background: transparent url(./img/small-grey-arrow-up-down.png) center no-repeat;
 }
-.mtSkin .mceListBoxDisabled .mceText { 
+.mtSkin .mceListBoxDisabled a.mceText { 
     color: #888888;
 }
 .mtSkin .mceListBoxMenu { 
@@ -225,7 +243,7 @@
     height: 22px;
 }
 .mtSkin select.mceListBox { 
-    border: 1px solid #c0c6c9;
+    border: 1px solid #adadad;
     background: #ffffff;
     font-size: 14px;
 }
@@ -236,37 +254,38 @@
     display: block;
     height: 22px;
 }
+.mtSkin .mceSplitButton a { 
+    position: relative;
+}
+
 .mtSkin .mceSplitButton a.mceAction, 
 .mtSkin .mceSplitButton span.mceAction { 
     width: 22px;
+}
+.mtSkin .mceSplitButton a.mceAction { 
+   border-radius: 2px 0 0 2px;
+   border-right: 0;
 }
 .mtSkin .mceSplitButton span.mceAction { 
     background-image: url(./img/icons.png);
 }
 .mtSkin .mceSplitButton a.mceOpen { 
     width: 10px;
-    height: 23px;
-    margin: -1px 0 0 1px;
-    border-left: 1px solid transparent;
-    background: transparent url(./img/small-grey-arrow-down.png) center no-repeat;
-}
-.mtSkin .mceSplitButtonEnabled a.mceOpen:hover, 
-.mtSkin .mceSplitButtonSelected .mceSplitButtonEnabled a.mceOpen { 
-    border-color: #c0c6c9;
+    border-radius: 0 2px 2px 0;
 }
 .mtSkin .mceSplitButton span.mceOpen { 
-    display: none;
+    background: transparent url(./img/small-grey-arrow-down.png) center no-repeat;
 }
 .mtSkin .mceSplitButtonDisabled .mceAction { 
     opacity:0.3;
     -ms-filter:'alpha(opacity=30)';
-    filter:alpha(opacity=30);
+    filter: alpha(opacity=30);
 }
 
 /* --- ColorSplitButton */
 .mtSkin div.mceColorSplitMenu table { 
     background: #ffffff;
-    border: 1px solid #c0c6c9;
+    border: 1px solid #adadad;
     padding: 0.62em;
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
 }
@@ -305,8 +324,8 @@
 }
 .mtSkin .mce_backcolor .mceColorPreview { 
     position: absolute;
-    top: 3px;
-    left: 3px;
+    top: 4px;
+    left: 4px;
     z-index: 10;
     width: 16px;
     height: 15px;
@@ -323,9 +342,6 @@
     position: absolute;
     z-index: 11;
     height: 22px;
-}
-.mtSkin .mceSplitButton a.mce_backcolor { 
-    position: relative;
 }
 
 /* -- Menu */
@@ -344,7 +360,7 @@
 .mtSkin .mceNoIcons a .mceText { 
     padding-left: 10px;
 }
-.mtSkin .mceMenu table {
+.mtSkin .mceMenu table { 
     background: #ffffff;
 }
 .mtSkin .mceMenu a, 
@@ -515,7 +531,7 @@
     display: none;
 }
 .mtSkin #editor-input-content_path a, 
-.mtSkin #editor-input-extended_path a {
+.mtSkin #editor-input-extended_path a { 
     display: inline-block;
     height: 20px;
     padding: 0 10px 0 5px;
@@ -543,3 +559,4 @@
 .mtSkin .mceStatusbar a:hover { 
     text-decoration: underline
 }
+
