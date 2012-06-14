@@ -300,165 +300,6 @@
                 }
             });
 
-			ed.addMTButton('mt_font_size_smaller', {
-				title : 'mt.font_size_smaller',
-				onclickFunctions : {
-                    wysiwyg: 'fontSizeSmaller',
-                    source: 'fontSizeSmaller'
-                }
-			});
-
-			ed.addMTButton('mt_font_size_larger', {
-				title : 'mt.font_size_larger',
-				onclickFunctions : {
-                    wysiwyg: 'fontSizeLarger',
-                    source: 'fontSizeLarger'
-                }
-			});
-
-            ed.addMTButton('mt_bold', {
-                title : 'mt.bold',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('bold');
-				    },
-                    source: 'bold'
-                }
-            });
-
-            ed.addMTButton('mt_italic', {
-                title : 'mt.italic',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('italic');
-				    },
-                    source: 'italic'
-                }
-            });
-
-            ed.addMTButton('mt_underline', {
-                title : 'mt.underline',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('underline');
-				    },
-                    source: 'underline'
-                }
-            });
-
-            ed.addMTButton('mt_strikethrough', {
-                title : 'mt.strikethrough',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('strikethrough');
-				    },
-                    source: 'strikethrough'
-                }
-            });
-
-            ed.addMTButton('mt_insert_link', {
-                title : 'mt.insert_link',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        var anchor =
-                            ed.dom.getParent(ed.selection.getNode(), 'A');
-                        var textSelected = !ed.selection.isCollapsed();
-
-                        proxies['wysiwyg'].execCommand('insertLink', null, {
-                            anchor: anchor,
-                            textSelected: textSelected
-                        });
-				    },
-                    source: 'insertLink'
-                }
-            });
-
-            ed.addMTButton('mt_insert_email', {
-                title : 'mt.insert_email',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        var anchor =
-                            ed.dom.getParent(ed.selection.getNode(), 'A');
-                        var textSelected = !ed.selection.isCollapsed();
-
-                        proxies['wysiwyg'].execCommand('insertEmail', null, {
-                            anchor: anchor,
-                            textSelected: textSelected
-                        });
-				    },
-                    source: 'insertEmail'
-                }
-            });
-
-            ed.addMTButton('mt_indent', {
-                title : 'mt.indent',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('indent');
-				    },
-                    source: 'indent'
-                }
-            });
-
-            ed.addMTButton('mt_outdent', {
-                title : 'mt.outdent',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('outdent');
-				    }
-                }
-            });
-
-            ed.addMTButton('mt_insert_unordered_list', {
-                title : 'mt.insert_unordered_list',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('insertUnorderedList');
-				    },
-                    source: 'insertUnorderedList'
-                }
-            });
-
-            ed.addMTButton('mt_insert_ordered_list', {
-                title : 'mt.insert_ordered_list',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('insertOrderedList');
-				    },
-                    source: 'insertOrderedList'
-                }
-            });
-
-            ed.addMTButton('mt_justify_left', {
-                title : 'mt.justify_left',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('justifyLeft');
-				    },
-                    source: 'justifyLeft'
-                }
-            });
-
-            ed.addMTButton('mt_justify_center', {
-                title : 'mt.justify_center',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('justifyCenter');
-				    },
-                    source: 'justifyCenter'
-                }
-            });
-
-            ed.addMTButton('mt_justify_right', {
-                title : 'mt.justify_right',
-				onclickFunctions : {
-                    wysiwyg: function() {
-                        ed.execCommand('justifyRight');
-				    },
-                    source: 'justifyRight'
-                }
-            });
-
 			ed.addMTButton('mt_insert_image', {
 				title : 'mt.insert_image',
 				onclick : function() {
@@ -557,28 +398,31 @@
             });
 
 
-			var stateControls = {
-                'mt_bold': 'bold',
-                'mt_italic': 'italic',
-                'mt_underline': 'underline',
-                'mt_strikethrough': 'strikethrough',
-                'mt_justify_left': 'justifyleft',
-                'mt_justify_center': 'justifycenter',
-                'mt_justify_right': 'justifyright'
+            if (! ed.onMTSourceButtonClick) {
+			    ed.onMTSourceButtonClick = new tinymce.util.Dispatcher(ed);
+            }
+            var sourceButtons = {
+                'mt_source_bold': 'bold',
+                'mt_source_italic': 'italic',
+                'mt_source_blockquote': 'blockquote',
+                'mt_source_unordered_list': 'insertUnorderedList',
+                'mt_source_ordered_list': 'insertOrderedList',
+                'mt_source_list_item': 'insertListItem',
+                'mt_source_link': 'createLink'
             };
-            $.each(stateControls, function(k, v) {
+            $.each(sourceButtons, function(k, v) {
                 if (plugin.buttonSettings.indexOf(k) == -1) {
                     delete stateControls[k];
                 }
             });
+            ed.onMTSourceButtonClick.add(function(ed, cm) {
+                $.each(sourceButtons, function(k, command) {
+                    cm.setActive(k, ed.mtProxies['source'].isStateActive(command));
+                });
+            });
+
             ed.onNodeChange.add(function(ed, cm, n, co, ob) {
                 var s = ed.mtEditorStatus;
-                if (s['mode'] == 'wysiwyg') {
-                    $.each(stateControls, function(k, v) {
-				        cm.setActive(k, ed.queryCommandState(v));
-                    });
-                    cm.setDisabled('mt_outdent', !ed.queryCommandState('Outdent'));
-                }
 
                 if (ed.mtEditorStatus['mode'] == 'source' &&
                     ed.mtEditorStatus['format'] != 'none.tinymce_temp'
@@ -602,34 +446,11 @@
                     cm.setActive(k, ed.mtProxies['source'].isStateActive(command));
                 });
             });
-
-            if (! ed.onMTSourceButtonClick) {
-			    ed.onMTSourceButtonClick = new tinymce.util.Dispatcher(ed);
-            }
-            var sourceButtons = {
-                'mt_source_bold': 'bold',
-                'mt_source_italic': 'italic',
-                'mt_source_blockquote': 'blockquote',
-                'mt_source_unordered_list': 'insertUnorderedList',
-                'mt_source_ordered_list': 'insertOrderedList',
-                'mt_source_list_item': 'insertListItem',
-                'mt_source_link': 'createLink'
-            };
-            $.each(sourceButtons, function(k, v) {
-                if (plugin.buttonSettings.indexOf(k) == -1) {
-                    delete stateControls[k];
-                }
-            });
-            ed.onMTSourceButtonClick.add(function(ed, cm) {
-                $.each(sourceButtons, function(k, command) {
-                    cm.setActive(k, ed.mtProxies['source'].isStateActive(command));
-                });
-            });
 		},
 
         createControl : function(name, cm) {
             var editor = cm.editor;
-            var ctrl = editor.buttons[name];
+            var ctrl   = editor.buttons[name];
 
             if (
                     (name == 'mt_insert_image')
@@ -649,6 +470,7 @@
 
             if (ctrl && ctrl['mtButtonClass']) {
                 var button, buttonClass, escapedButtonClass;
+
                 switch (ctrl['mtButtonClass']) {
                 case 'text':
                       buttonClass = tinymce.ui.MTTextButton;
