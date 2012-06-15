@@ -159,12 +159,15 @@
 
 /* -- Active */
 .mtSkin .mceButtonEnabled:active, 
+.mtSkin .mceButtonEnabled.psedo-active, 
 .mtSkin .mceButtonSelected, 
 .mtSkin .mceButtonSelected:hover, 
 .mtSkin .mceListBoxEnabled:active, 
+.mtSkin .mceListBoxEnabled.psedo-active, 
 .mtSkin .mceListBoxSelected, 
 .mtSkin .mceListBoxSelected:hover, 
 .mtSkin .mceSplitButtonEnabled a:active, 
+.mtSkin .mceSplitButtonEnabled a.psedo-active, 
 .mtSkin .mceSplitButtonSelected a.mceOpen, 
 .mtSkin .mceSplitButtonSelected .mceSplitButtonEnabled:hover a.mceOpen, 
 .mtSkin .mceButtonActive, 

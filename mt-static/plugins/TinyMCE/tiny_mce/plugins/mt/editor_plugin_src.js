@@ -117,6 +117,37 @@
 
             return buttonRows;
         },
+
+        _setupExplicitButtonActivation : function(ed) {
+            ed.onPostRender.add(function() {
+                var win      = window;
+                var button   = '$TinyMCEMTButtonActive';
+                var $c       = $(ed.getContainer());
+                var selector = '.mceButton, .mceListBoxEnabled, .mceSplitButtonEnabled a';
+                $c.find(selector).mousedown(function() {
+                    win[button] = $(this).addClass('psedo-active');
+                });
+
+                $.each([
+                    win,
+                    $c.find('iframe')[0].contentWindow
+                ], function() {
+                    var w  = this;
+                    var ns = '.tinymce_mt_button_activate';
+                    $.each(['mouseup', 'touchend'], function(index, event) {
+                        $(w)
+                            .unbind(event + ns)
+                            .bind(event + ns, function() {
+                                if (win[button]) {
+                                    win[button].removeClass('psedo-active');
+                                    win[button] = null;
+                                }
+                            });
+                    });
+                });
+            });
+        },
+
         init : function(ed, url) {
             var plugin         = this;
             var id             = ed.id;
@@ -129,6 +160,7 @@
             var supportedButtonsCache = {};
             var buttonRows            = this.initButtonSettings(ed);
             var sourceButtons         = {};
+
 
 
             ed.mtProxies = proxies;
@@ -280,6 +312,7 @@
                 });
             }
 
+
             ed.onInit.add(function() {
                 $container = $(ed.getContainer());
                 updateButtonVisibility();
@@ -287,6 +320,9 @@
                 ed.theme.resizeBy(0, 0);
             });
 
+            if ($.browser.mozilla) {
+                this._setupExplicitButtonActivation(ed);
+            }
 
             ed.addCommand('mtGetStatus', function() {
                 return ed.mtEditorStatus;
