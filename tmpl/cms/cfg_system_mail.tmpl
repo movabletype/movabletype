@@ -1,4 +1,4 @@
-<$mt:setvar name="page_title" value="<__trans phrase="Mail Settings">"$>
+<$mt:setvar name="page_title" value="<__trans phrase="Email Settings">"$>
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <$mt:setvar name="system-mail-settings" value="1"$>
 
@@ -37,21 +37,25 @@
 
 <mtapp:setting
    id="system_email_address"
-   label="<__trans phrase="System Email">"
+   label="<__trans phrase="System Email Address">"
    hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
    show_hint="1">
-  <input type="text"<mt:if name="config_warnings_emailaddressmain"> disabled="disabled"</mt:if> name="system_email_address" id="system_email_address" class="text med required email"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> /> <a href="#" id="send-test-email"><__trans phrase="Send Test Email"></a>
+  <input type="text"<mt:if name="config_warnings_emailaddressmain"> disabled="disabled"</mt:if> name="system_email_address" id="system_email_address" class="text med required email"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> />
 </mt:app:setting>
 
-<mt:if name="mail_transfer" eq="sendmail">
+<h2><__trans phrase="Email Transfer Setting"></h2>
+<mtapp:settinggroup id="system-mail-transfer">
 
-  <mtapp:setting
-     id="sendmail_path"
-     label="<__trans phrase="Sendmail Path">"
-     hint="<__trans phrase="The physical file path for your Sendmail binary.">"
-     show_hint="1">
-    <input type="text"<mt:if name="config_warnings_sendmailpath"> disabled="disabled"</mt:if> name="sendmail_path" id="sendmail_path" class="text full" value="<mt:var name="sendmail_path" escape="html">" />
-  </mt:app:setting>
+  <mt:if name="mail_transfer" eq="sendmail">
+
+    <mtapp:setting
+       id="sendmail_path"
+       label="<__trans phrase="Sendmail Path">"
+       hint="<__trans phrase="The physical file path for your Sendmail binary.">"
+       show_hint="1">
+      <input type="text"<mt:if name="config_warnings_sendmailpath"> disabled="disabled"</mt:if> name="sendmail_path" id="sendmail_path" class="text med" value="<mt:var name="sendmail_path" escape="html">" />
+    </mt:app:setting>
+
   <mt:elseif name="mail_transfer" eq="smtp">
 
     <mtapp:setting
@@ -59,7 +63,7 @@
        label="<__trans phrase="Outbound Mail Server">"
        hint="<__trans phrase="Address of your SMTP Server.">"
        show_hint="1">
-      <input type="text"<mt:if name="config_warnings_smtpserver"> disabled="disabled"</mt:if> id="smtp_server" class="text full" name="smtp_server" value="<mt:var name="smtp_server" escape="html">" />
+      <input type="text"<mt:if name="config_warnings_smtpserver"> disabled="disabled"</mt:if> id="smtp_server" class="text med" name="smtp_server" value="<mt:var name="smtp_server" escape="html">" />
     </mt:app:setting>
 
     <mtapp:setting
@@ -70,67 +74,76 @@
       <input type="text"<mt:if name="config_warnings_smtpport"> disabled="disabled"</mt:if> id="smtp_port" class="text num" name="smtp_port" value="<mt:var name="smtp_port" escape="html">" />
     </mt:app:setting>
 
-  <mt:if name="has_net_smtp_auth">
-    <mtapp:setting
-       id="smtp_auth"
-       label="<__trans phrase="SMTP Auth">"
-       show_hint="0">
-      <input type="checkbox"<mt:if name="config_warnings_smtpauth"> disabled="disabled"</mt:if> name="smtp_auth" id="smtp_auth" class="cb" value="1" <mt:if name="smtp_auth">checked</mt:if> />
-      <label for="smtp_auth"><__trans phrase="Use SMTP Auth"></label>
-    </mtapp:setting>
+    <mt:if name="has_net_smtp_auth">
+
+      <mtapp:setting
+         id="smtp_auth"
+         label="<__trans phrase="SMTP Auth">"
+         show_hint="0">
+        <input type="checkbox"<mt:if name="config_warnings_smtpauth"> disabled="disabled"</mt:if> name="smtp_auth" id="smtp_auth" class="cb" value="1" <mt:if name="smtp_auth">checked</mt:if> />
+        <label for="smtp_auth"><__trans phrase="Use SMTP Auth"></label>
+      </mtapp:setting>
 
   <div id="smtpauth_params" <mt:unless name="smtp_auth">style="display: none"</mt:unless>>
 
-    <mtapp:setting
-       id="smtp_auth_username"
-       label="<__trans phrase="SMTP Auth Username">"
-       hint="<__trans phrase="Username for your SMTP Server.">"
-       show_hint="1">
-      <input type="text"<mt:if name="config_warnings_smtpuser"> disabled="disabled"</mt:if> id="smtp_auth_username" class="text full" name="smtp_auth_username" value="<mt:var name="smtp_auth_username" escape="html">" />
-    </mtapp:setting>
+      <mtapp:setting
+         id="smtp_auth_username"
+         label="<__trans phrase="SMTP Auth Username">"
+         hint="<__trans phrase="Username for your SMTP Server.">"
+         show_hint="1">
+        <input type="text"<mt:if name="config_warnings_smtpuser"> disabled="disabled"</mt:if> id="smtp_auth_username" class="text med" name="smtp_auth_username" value="<mt:var name="smtp_auth_username" escape="html">" />
+      </mtapp:setting>
 
-    <mtapp:setting
-       id="smtp_auth_password"
-       label="<__trans phrase="SMTP Auth Password">"
-       hint="<__trans phrase="Password for your SMTP Server.">"
-       show_hint="1">
-      <input type="password"<mt:if name="config_warnings_smtppassword"> disabled="disabled"</mt:if> id="smtp_auth_password" class="text full" name="smtp_auth_password" value="<mt:var name="smtp_auth_password" escape="html">" />
-    </mtapp:setting>
+      <mtapp:setting
+         id="smtp_auth_password"
+         label="<__trans phrase="SMTP Auth Password">"
+         hint="<__trans phrase="Password for your SMTP Server.">"
+         show_hint="1">
+        <input type="password"<mt:if name="config_warnings_smtppassword"> disabled="disabled"</mt:if> id="smtp_auth_password" class="text med" name="smtp_auth_password" value="<mt:var name="smtp_auth_password" escape="html">" />
+      </mtapp:setting>
 
-    <mtapp:setting
-       id="smtp_auth_ssl"
-       label="<__trans phrase="SSL">"
-       show_hint="0">
-      <mt:unless name="has_net_smtp_ssl">
-        <mtapp:statusmsg
-           id="no_smtp_auth_ssl"
-           class="info"
-           can_close="0">
-          <mt:var name="has_net_smtp_ssl_msg" escape="html">
-        </mtapp:statusmsg>
-      </mt:unless>
-      <input type="checkbox"<mt:if name="config_warnings_smtpusessl"> disabled="disabled"</mt:if> name="smtp_auth_ssl" id="smtp_auth_ssl" class="cb" value="1"<mt:if name="smtp_auth_ssl"> checked</mt:if><mt:unless name="has_net_smtp_ssl"> disabled="disabled"</mt:unless> />
-      <label for="smtp_auth_ssl"><__trans phrase="Enable SMTP Auth with SSL"></label>
-    </mtapp:setting>
+      <mtapp:setting
+         id="smtp_auth_ssl"
+         label="<__trans phrase="SSL">"
+         show_hint="0">
+        <mt:unless name="has_net_smtp_ssl">
+          <mtapp:statusmsg
+             id="no_smtp_auth_ssl"
+             class="info"
+             can_close="0">
+            <mt:var name="has_net_smtp_ssl_msg" escape="html">
+          </mtapp:statusmsg>
+        </mt:unless>
+        <input type="checkbox"<mt:if name="config_warnings_smtpusessl"> disabled="disabled"</mt:if> name="smtp_auth_ssl" id="smtp_auth_ssl" class="cb" value="1"<mt:if name="smtp_auth_ssl"> checked</mt:if><mt:unless name="has_net_smtp_ssl"> disabled="disabled"</mt:unless> />
+        <label for="smtp_auth_ssl"><__trans phrase="Enable SMTP Auth with SSL"></label>
+      </mtapp:setting>
 
-    <mtapp:setting
-       id="smtp_auth_tls"
-       label="<__trans phrase="TLS">"
-       show_hint="0">
-      <mt:unless name="has_net_smtp_tls">
-        <mtapp:statusmsg
-           id="no_smtp_auth_tls"
-           class="info"
-           can_close="0">
-          <mt:var name="has_net_smtp_tls_msg" escape="html">
-        </mtapp:statusmsg>
-      </mt:unless>
-      <input type="checkbox"<mt:if name="config_warnings_smtpusetls"> disabled="disabled"</mt:if> name="smtp_auth_tls" id="smtp_auth_tls" class="cb" value="1"<mt:if name="smtp_auth_tls"> checked</mt:if><mt:unless name="has_net_smtp_tls"> disabled="disabled"</mt:unless> />
-      <label for="smtp_auth_tls"><__trans phrase="Enable SMTP Auth with TLS"></label>
-    </mtapp:setting>
+      <mtapp:setting
+         id="smtp_auth_tls"
+         label="<__trans phrase="TLS">"
+         show_hint="0">
+        <mt:unless name="has_net_smtp_tls">
+          <mtapp:statusmsg
+             id="no_smtp_auth_tls"
+             class="info"
+             can_close="0">
+            <mt:var name="has_net_smtp_tls_msg" escape="html">
+          </mtapp:statusmsg>
+        </mt:unless>
+        <input type="checkbox"<mt:if name="config_warnings_smtpusetls"> disabled="disabled"</mt:if> name="smtp_auth_tls" id="smtp_auth_tls" class="cb" value="1"<mt:if name="smtp_auth_tls"> checked</mt:if><mt:unless name="has_net_smtp_tls"> disabled="disabled"</mt:unless> />
+        <label for="smtp_auth_tls"><__trans phrase="Enable SMTP Auth with TLS"></label>
+      </mtapp:setting>
   </div>
+    </mt:if>
   </mt:if>
-</mt:if>
+
+  <mtapp:setting
+     id="send_test_email"
+     label=""
+     show_hint="0">
+    <a href="#" id="send-test-email" class="button"><__trans phrase="Send Test Email"></a>
+  </mtapp:setting>
+</mtapp:settinggroup>
 
 <mt:setvarblock name="action_buttons">
   <button
@@ -145,12 +158,14 @@
 </form>
 
 <div id="test-email-dialog">
+
   <mtapp:statusmsg
      id="email_sent"
      class="success"
-      can_close="0">
+     can_close="0">
     <__trans phrase="A test email was sent.">
   </mtapp:statusmsg>
+
   <mtapp:statusmsg
      id="email_sent_error"
      class="error"
@@ -161,11 +176,11 @@
     <mtapp:setting
        id="to_email_address"
        label="<__trans phrase="Send Email To">"
-       label_class="top-class"
+       label_class="top-label"
        hint="<__trans phrase="The email address that should receive a test email from Movable Type.">"
        show_hint="1">
       <input type="text" name="to_email_address" id="to-email-address" class="text full" />
-    </mt:app:setting>
+    </mtapp:setting>
 
     <span class="indicator"><img alt="<__trans phrase="Loading..." escape="js">" src="<mt:var name="static_uri">images/indicator.white.gif" /></span>
     <div class="dialog actions-bar">
