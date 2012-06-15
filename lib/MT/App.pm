@@ -2917,6 +2917,8 @@ sub post_run { MT->run_callbacks( ( ref $_[0] ) . '::post_run', $_[0] ); 1 }
 sub reboot {
     my $app = shift;
     $app->{do_reboot} = 1;
+    $app->set_header( 'Connection' => 'close' )
+        if $ENV{FAST_CGI} || MT->config->PIDFilePath
 }
 
 sub do_reboot {
@@ -3778,7 +3780,9 @@ sub return_uri {
 sub call_return {
     my $app = shift;
     $app->add_return_arg(@_) if @_;
-    $app->redirect( $app->return_uri );
+    $app->redirect( $app->return_uri,
+        ( $app->get_header('Connection') eq 'close' ? ( UseMeta => 1 ) : () )
+    );
 }
 
 sub state_params {
