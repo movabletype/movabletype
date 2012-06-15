@@ -1,0 +1,8 @@
+id: TinyMCE
+name: TinyMCE
+version: 1
+
+editors:
+    tinymce:
+        label: TinyMCE
+        template: editor.tmpl

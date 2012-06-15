@@ -373,10 +373,11 @@ sub as_html {
         }
     }
     else {
+        require MT::Util;
         $text = sprintf(
             '<a href="%s">%s</a>',
             MT::Util::encode_html( $asset->url ),
-            MT->translate('View image'),
+            MT::Util::encode_html( $asset->file_name )
         );
     }
 

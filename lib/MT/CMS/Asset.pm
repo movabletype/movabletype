@@ -518,7 +518,9 @@ sub complete_insert {
         && ( $perms->can_do('insert_asset') ) )
     {
         my $html = $asset->insert_options($param);
-        if ( $param->{direct_asset_insert} && !$html ) {
+        if ( $app->param('force_insert')
+            || ( $param->{direct_asset_insert} && !$html ) )
+        {
             $app->param( 'id', $asset->id );
             return insert($app);
         }

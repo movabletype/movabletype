@@ -514,23 +514,7 @@ sub edit {
         $param->{blog_file_extension} = $ext;
     }
 
-    my $rte;
-    if ( $param->{convert_breaks} =~ m/richtext/ ) {
-        ## Rich Text editor
-        $rte = lc( $app->config('RichTextEditor') );
-    }
-    else {
-        $rte = 'archetype';
-    }
-    my $editors = $app->registry("richtext_editors");
-    my $edit_reg = $editors->{$rte} || $editors->{archetype};
-    my $rich_editor_tmpl;
-    if ( $rich_editor_tmpl
-        = $edit_reg->{plugin}->load_tmpl( $edit_reg->{template} ) )
-    {
-        $param->{rich_editor}      = $rte;
-        $param->{rich_editor_tmpl} = $rich_editor_tmpl;
-    }
+    $app->setup_editor_param($param);
 
     $param->{object_type}  = $type;
     $param->{object_label} = $class->class_label;
