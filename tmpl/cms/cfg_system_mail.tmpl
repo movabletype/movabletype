@@ -1,4 +1,4 @@
-<$mt:setvar name="page_title" value="<__trans phrase="Email Settings">"$>
+<$mt:setvar name="page_title" value="<__trans phrase="Mail Settings">"$>
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <$mt:setvar name="system-mail-settings" value="1"$>
 
@@ -43,7 +43,7 @@
   <input type="text"<mt:if name="config_warnings_emailaddressmain"> disabled="disabled"</mt:if> name="system_email_address" id="system_email_address" class="text med required email"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> />
 </mt:app:setting>
 
-<h2><__trans phrase="Email Transfer Setting"></h2>
+<h2><__trans phrase="Mail Transfer Setting"></h2>
 <mtapp:settinggroup id="system-mail-transfer">
 
   <mt:if name="mail_transfer" eq="sendmail">
@@ -141,7 +141,7 @@
      id="send_test_email"
      label=""
      show_hint="0">
-    <a href="#" id="send-test-email" class="button"><__trans phrase="Send Test Email"></a>
+    <a href="#" id="send-test-email" class="button"><__trans phrase="Send Test Mail"></a>
   </mtapp:setting>
 </mtapp:settinggroup>
 
@@ -163,7 +163,7 @@
      id="email_sent"
      class="success"
      can_close="0">
-    <__trans phrase="A test email was sent.">
+    <__trans phrase="A test mail was sent.">
   </mtapp:statusmsg>
 
   <mtapp:statusmsg
@@ -175,7 +175,7 @@
   <form id="test_form">
     <mtapp:setting
        id="to_email_address"
-       label="<__trans phrase="Send Email To">"
+       label="<__trans phrase="Send Mail To">"
        label_class="top-label"
        hint="<__trans phrase="The email address that should receive a test email from Movable Type.">"
        show_hint="1">
@@ -204,7 +204,7 @@
 
     jQuery('#test-email-dialog').dialog({
         bgiframe: true,
-        title: '<__trans phrase="Send Test Email">',
+        title: '<__trans phrase="Send Test Mail">',
         autoOpen: false,
         width: 450,
     });
