@@ -84,7 +84,8 @@
 
     tinymce.create('tinymce.plugins.MovableType', {
         buttonSettings : '',
-        initButtonSettings : function(ed) {
+
+        _initButtonSettings : function(ed) {
             var plugin = this;
             plugin.buttonIDs = {};
 
@@ -158,7 +159,7 @@
             var $container     = null;
 
             var supportedButtonsCache = {};
-            var buttonRows            = this.initButtonSettings(ed);
+            var buttonRows            = this._initButtonSettings(ed);
             var sourceButtons         = {};
 
 
