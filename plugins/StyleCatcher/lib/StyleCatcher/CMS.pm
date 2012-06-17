@@ -7,9 +7,11 @@
 package StyleCatcher::CMS;
 
 use strict;
-use File::Basename qw( basename dirname );
+use File::Basename qw( basename );
 
-use MT::Util qw( remove_html decode_html caturl );
+use MT::Util qw( caturl );
+use StyleCatcher::Util;
+use StyleCatcher::Library;
 
 our $DEFAULT_STYLE_LIBRARY;
 
@@ -17,35 +19,12 @@ sub style_library {
     return MT->registry("stylecatcher_libraries");
 }
 
-sub file_mgr {
-    my $app = MT->instance;
-    require MT::FileMgr;
-    my $filemgr = MT::FileMgr->new('Local')
-        or return $app->error( MT::FileMgr->errstr );
-    $filemgr;
-}
-
 sub listify {
     my ($data) = @_;
     my @list;
     foreach my $k ( keys %$data ) {
-        my %entry = %{ $data->{$k} };
-        $entry{key} = $k;
-        delete $entry{plugin};
-        if ( ref( $entry{label} ) ) {
-            $entry{label} = $entry{label}->();
-        }
-        else {
-            $entry{label} = MT->translate( $entry{label} );
-        }
-        if ( ref( $entry{description_label} ) ) {
-            $entry{description_label} = $entry{description_label}->();
-        }
-        else {
-            $entry{description_label}
-                = MT->translate( $entry{description_label} );
-        }
-        push @list, \%entry;
+        my $lib = StyleCatcher::Library->new($k);
+        push @list, $lib->listify;
     }
     @list = sort { $a->{order} <=> $b->{order} } @list;
     \@list;
@@ -179,121 +158,21 @@ sub js {
         unless $app->can_do('edit_templates');
     return $app->json_error( $app->errstr ) unless $app->validate_magic;
 
-    my $data = fetch_themes( $app->param('url') )
-        or return $app->json_error( $app->errstr );
-    return $app->json_result($data);
-}
-
-sub files_from_response {
-    my ( $res, %param ) = @_;
-
-    my $extensions
-        = $param{css}
-        ? qr{ (?:gif|jpe?g|png|css) }xms
-        : qr{ (?:gif|jpe?g|png)     }xms;
-
-    my $stylesheet = $res->content;
-    $stylesheet =~ s!/\*.*?\*/!!gs;    # strip all comments first
-    my @images = $stylesheet =~ m{
-        \b url\( \s*                          # opening url() reference
-        ['"]?
-        ( [\w\.\-/]+\.$extensions )  # a filename ending in an image extension
-        ['"]?
-        \s* \)                                # close of url() reference
-    }xmsgi;
-
-    return @images;
-}
-
-sub download_theme {
-    my $app = shift;
-    my ($url) = @_;
-
-    my $support_path = $app->support_directory_path;
-    my $themeroot    = File::Spec->catdir( $support_path, 'themes' );
-    my $ua           = $app->new_ua( { max_size => 500_000 } );
-    my $filemgr      = file_mgr()
-        or return;
-
-    my @url                 = split( /\//, $url );
-    my $stylesheet_filename = pop @url;
-    my $theme_url           = join( q{/}, @url ) . '/';
-
-    my ( $basename, $extension ) = split /\./, $stylesheet_filename;
-    if ( $basename eq 'screen' || $basename eq 'style' ) {
-        $basename = $url[-1];
+    my $key = $app->param('key');
+    if ( $key && $key ne 'null' ) {
+        my $lib = StyleCatcher::Library->new($key)
+            or return $app->error( plugin()->translate("Invalid request") );
+        my $data = $lib->fetch_themes()
+            or return $app->json_error( $lib->errstr );
+        return $app->json_result($data);
     }
-
-    # Pick up the stylesheet
-    my $stylesheet_res = $ua->get($url);
-
-    my @images = files_from_response( $stylesheet_res, css => 1 );
-
-    my $theme_path = File::Spec->catdir( $themeroot, $basename );
-    if ( !$filemgr->mkpath($theme_path) ) {
-        my $error = $app->translate(
-            "Could not create [_1] folder - Check that your 'themes' folder is webserver-writable.",
-            $basename
-        );
-        return $app->json_error($error);
+    else {
+        require StyleCatcher::Library::Default;
+        my $lib = StyleCatcher::Library::Default->new();
+        my $data = $lib->fetch_themes($app->param('url'))
+            or return $app->json_error( $lib->errstr );
+        return $app->json_result($data);
     }
-
-    $filemgr->put_data( $stylesheet_res->content,
-        File::Spec->catfile( $theme_path, $basename . '.css' ) );
-
-    # Pick up the images we parsed earlier and write them to the theme folder
-    my %got_files;
-    my @files = ( 'thumbnail.gif', 'thumbnail-large.gif', @images );
-FILE: while ( my $rel_url = shift @files ) {
-
-        # Is this safe to get?
-        require URI;
-        my $full_url = URI->new_abs( $rel_url, $theme_url );
-        next FILE if !$full_url;
-        my $url = $full_url->as_string();
-        next FILE if $url !~ m{ \A \Q$theme_url\E }xms;
-
-        next FILE if $got_files{$url};
-        $got_files{$url} = 1;
-        my $res = $ua->get($url);
-
-      # Skip files that don't download; we were accidentally doing so already.
-        next FILE if !$res->is_success();
-
-        my $canon_rel_url  = URI->new($rel_url)->rel($theme_url);
-        my @image_path     = split /\//, $canon_rel_url->as_string();
-        my $image_filename = pop @image_path;
-
-        my $image_path = File::Spec->catdir( $theme_path, @image_path );
-        if (   !$filemgr->exists($image_path)
-            && !$filemgr->mkpath($image_path) )
-        {
-            my $error = $app->translate(
-                "Could not create [_1] folder - Check that your 'themes' folder is webserver-writable.",
-                $basename
-            );
-            return $app->json_error($error);
-        }
-
-        my $image_full_path
-            = File::Spec->catfile( $image_path, $image_filename );
-        $filemgr->put_data( $res->content, $image_full_path, 'upload' )
-            or return $app->json_error( $filemgr->errstr );
-
-        if ( $image_filename =~ m{ \.css \z }xmsi ) {
-            my @new_files = files_from_response( $res, css => 0 );
-
-            # Schedule these as full URLs so relative references aren't
-            # misabsolved relative to the theme directory.
-            @new_files = map {
-                my $uri = URI->new_abs( $_, $url );
-                $uri ? $uri->as_string() : ();
-            } @new_files;
-            push @files, @new_files;
-        }
-    }
-
-    return $basename;
 }
 
 # does the work after user selects a particular theme to apply to a blog
@@ -311,6 +190,9 @@ sub apply {
     return $app->json_error( $app->translate("Invalid request") )
         unless $blog_id && $url;
 
+    my ($repo_id, $theme_id) = $name =~ /^repo-([^:]+).*:([^:]+)$/;
+    my $library = StyleCatcher::Library->new($repo_id) or die "Invalide repository: " . $repo_id;
+
     my $static_path = $app->static_file_path;
     if ( !-d $static_path ) {
         return $app->json_error(
@@ -320,17 +202,8 @@ sub apply {
         );
     }
 
-    # if this isn't a local url, then we have to grab some files from
-    # yonder...
-    my $static_url = $app->static_path;
-    my $support_url = $app->support_directory_url;
-    $support_url = $app->base .  $support_url
-        if $support_url =~ m!^/!;
-    if ( $url !~ m{ \A \Q$static_url\E (?:support/)? themes/|\Q$support_url\E theme_static/ }xms ) {
-        my $basename = download_theme( $app, $url )
-            or return;
-        $url = caturl( $support_url, 'themes', $basename, "$basename.css" );
-    }
+    $url = $library->download_theme( $url )
+        or return $app->json_error($library->errstr);
 
     my $blog = MT->model('blog')->load($blog_id)
         or return $app->json_error(
@@ -532,87 +405,6 @@ sub load_style_template {
     $tmpl;
 }
 
-# pulls a list of themes available from a particular url
-sub fetch_themes {
-    my $app = MT->app;
-    my ($url) = @_;
-    return undef unless $url;
-
-    my $blog_id = $app->param('blog_id');
-    my $data    = {};
-
-# If we have a url then we're specifying a specific theme (css) or repo (html)
-# Pick up the file (html with <link>s or a css file with metadata)
-    my $user_agent = $app->new_ua;
-    my $request    = HTTP::Request->new( GET => $url );
-    my $response   = $user_agent->request($request);
-
-    # Make a repo if you've got a ton of links or an automagic entry if
-    # you're a css file
-    my $type = $response->headers->{'content-type'};
-    $type = shift @$type if ref $type eq 'ARRAY';
-    if ( $type =~ m!^text/css! ) {
-        $data->{auto}{url} = $url;
-        my $theme = metadata_for_theme(
-            url  => $url,
-            tags => ['collection:auto'],
-        );
-        $data->{themes} = [$theme];
-    }
-    elsif ( $type =~ m!^text/html! ) {
-        my @repo_themes;
-        for my $link (
-            ref( $response->headers->{'link'} ) eq 'ARRAY'
-            ? @{ $response->headers->{'link'} }
-            : $response->headers->{'link'}
-            )
-        {
-            my ( $css, @parsed_link ) = split( /;/, $link );
-            $css =~ s/[<>]//g;
-            my %attr;
-            foreach (@parsed_link) {
-                my ( $name, $val ) = split /=/, $_, 2;
-                $name =~ s/^ //;
-                $val  =~ s/^['"]|['"]$//g;
-                next if $name eq '/';
-                $attr{ lc($name) } = $val;
-            }
-            next unless lc $attr{rel}  eq 'theme';
-            next unless lc $attr{type} eq 'text/x-theme';
-
-            # Fix for relative theme locations
-            if ( $css !~ m!^https?://! ) {
-                my $new_css = $url;
-                $new_css =~ s!/[a-z0-9_-]+\.[a-z]+?$|/$!/!;
-                $new_css .= $css;
-                $css = $new_css;
-            }
-            push @repo_themes, $css;
-        }
-
-        my $themes = [];
-        for my $repo_theme (@repo_themes) {
-            my $theme = metadata_for_theme( url => $repo_theme, );
-            push @$themes, $theme if $theme;
-        }
-        $data->{themes} = $themes;
-        if ( $data->{repo}{display_name} = $response->headers->{'title'} ) {
-            $data->{repo}{name}
-                = MT::Util::dirify( $data->{repo}{display_name} );
-        }
-        else {
-            $data->{repo}{display_name} = $url;
-            $data->{repo}{name}         = MT::Util::dirify($url);
-        }
-        $data->{repo}{url} = $url;
-    }
-    else {
-        return $app->error( $app->translate( 'Invalid URL: [_1]', $url ) );
-    }
-
-    $data;
-}
-
 # sets up the object structure we return through json to populate
 # the mixer.
 sub make_themes {
@@ -694,184 +486,6 @@ sub make_themes {
         themes     => [ values %$themes ]
     };
 
-    $data;
-}
-
-sub theme_for_url {
-    my %param = @_;
-    my ( $url, $path, $tags, $baseurl, $basepath )
-        = @param{qw( url path tags baseurl basepath )};
-    my $app = MT->instance;
-
-    my %theme;
-    if ( $path && -e $path ) {
-        $theme{stylesheet} = file_mgr()->get_data($path);
-        $theme{id}         = basename( dirname($path) );
-    }
-    elsif ($url) {
-        my $user_agent = $app->new_ua;
-        my $response   = $user_agent->get($url);
-        return if !$response->is_success();
-        $theme{stylesheet} = $response->content;
-
-        my $id = $url;
-        $id =~ s{ / (?:screen|style) \.css \z }{}xms;
-        $id =~ s/.*[\\\/]//;
-        $theme{id} = $id;
-    }
-
-    return %theme;
-}
-
-sub metadata_for_stylesheet {
-    my %param = @_;
-    my ($stylesheet) = @param{qw( stylesheet )};
-
-    # Pick up the metadata from the css
-    my @css_lines = split( /\r?\n/, $stylesheet || '' );
-    my $commented = 0;
-    my @comments;
-    for my $line (@css_lines) {
-        my $pos;
-        $pos = index( $line, "/*" );
-        unless ( $pos == -1 ) {
-            $line = substr( $line, $pos + 2 );
-            $commented = 1;
-        }
-        if ($commented) {
-            $pos = index( $line, "*/" );
-            unless ( $pos == -1 ) {
-                $line = substr( $line, 0, $pos );
-                $commented = 0;
-            }
-            push @comments, $line;
-        }
-    }
-
-    my %metadata;
-
-    # Trim me white space, yarr
-    for my $comment (@comments) {
-
-        # Strip any null bytes
-        $comment =~ tr/\x00//d;
-        $comment =~ s/^\s+|\s+$//g;
-
-        my ( $key, $value ) = split( /:/, $comment, 2 ) or next;
-        next unless defined $value;
-        $value =~ s/^\s+//;
-        $metadata{ lc $key } = $value;
-    }
-
-    my %field_map = (
-        title        => [ 'name',         'theme name' ],
-        author       => [ 'designer',     'author' ],
-        author_url   => [ 'designer_url', 'author_url', 'author uri' ],
-        template_set => [ 'template_set', 'template' ],
-        description => ['description'],
-    );
-    while ( my ( $best_name, $possible_names ) = each %field_map ) {
-        ( $metadata{$best_name} )
-            = grep {defined} delete @metadata{@$possible_names}, q{};
-
-        # TODO: do html mashing later
-        $metadata{$best_name} = decode_html(
-            remove_html( Encode::decode_utf8( $metadata{$best_name} ) ) );
-    }
-
-    return %metadata;
-}
-
-sub thumbnails_for_theme {
-    my %param = @_;
-    my ( $url, $path, $metadata ) = @param{qw( url path metadata )};
-    my $app = MT->instance;
-
-    my %thumbnails;
-THUMB: for my $thumb (qw( thumbnail thumbnail_large )) {
-        $thumbnails{$thumb} = $metadata->{$thumb};
-        next THUMB if $thumbnails{$thumb};
-
-        my $thumb_filename = $thumb;
-        $thumb_filename =~ tr/_/-/;
-        $thumb_filename .= '.gif';
-
-        require URI;
-        if ($path) {
-            my ( $volume, $dir, $theme_filename )
-                = File::Spec->splitpath($path);
-            my $thumb_path
-                = File::Spec->catpath( $volume, $dir, $thumb_filename );
-            if ( -e $thumb_path ) {
-                my $url_uri = URI->new_abs( $thumb_filename, $url );
-                $thumbnails{$thumb} = $url_uri->as_string();
-            }
-        }
-        elsif ($url) {
-            my $url_uri = URI->new_abs( $thumb_filename, $url );
-            my $thumb_url = $url_uri->as_string();
-
-            my $user_agent = $app->new_ua;
-            my $response   = $user_agent->head($thumb_url);
-            if ( $response->is_success() ) {
-                $thumbnails{$thumb} = $thumb_url;
-            }
-        }
-
-        # Use plugin's default thumbnail if necessary.
-        $thumbnails{$thumb}
-            ||= $app->static_path
-            . 'plugins/StyleCatcher/'
-            . 'images/'
-            . $thumb_filename;
-    }
-
-    return %thumbnails;
-}
-
-sub metadata_for_theme {
-    my $app   = MT->app;
-    my %param = @_;
-    my ( $url, $path, $tags, $default_metadata )
-        = @param{qw( url path tags metadata )};
-
-    # Update a path, if present, from a theme directory to the real full
-    # stylesheet path.
-    if ( $path && -d $path ) {
-        $path =~ s{ / \z }{}xms;
-    FILESTEM: for my $filestem ( basename($path), "screen", "style" ) {
-            my $full_path = File::Spec->catfile( $path, "$filestem.css" );
-            if ( $full_path && -f $full_path ) {
-                $path = $param{path} = $full_path;
-
-                $url =~ s{ / \z }{}xms;
-                $url = $param{url} = "$url/$filestem.css";
-
-                last FILESTEM;
-            }
-        }
-    }
-
-    my %theme      = theme_for_url(%param);
-    my %metadata   = metadata_for_stylesheet( %param, %theme );
-    my %thumbnails = thumbnails_for_theme( %param, metadata => \%metadata );
-
-    my $data = {
-        name        => $theme{id},
-        description => $metadata{description} || q{},
-        title       => $metadata{title} || $app->translate('(Untitled)'),
-        url         => $url,
-        imageSmall  => $thumbnails{thumbnail},
-        imageBig    => $thumbnails{thumbnail_large},
-        layouts     => $metadata{layouts} || q{},
-        sort        => lc( $metadata{title} || $theme{id} || q{} ),
-        tags => $tags || [],
-        blogs              => [],
-        author             => $metadata{author},
-        author_url         => $metadata{author_url},
-        template_set       => $metadata{template_set},
-        author_affiliation => $metadata{author_affiliation} || q{},
-    };
     $data;
 }
 
