@@ -138,8 +138,9 @@ sub main {
         die "--site_name is required for initial install" unless $site_name;
         die "--site_url is required for initial install" unless $site_url;
         die "--site_path is required for initial install" unless $site_path;
-        die "--site_timezone is required for initial install" unless $site_timezone;
+        die "--site_timezone is required for initial install" unless defined $site_timezone;
         die "--site_theme is required for initial install" unless $site_theme;
+
 
         my $new_user = {
             user_name        => $username,
