@@ -85,7 +85,6 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
             $archiver = ArchiverFactory::get_archiver($at);
         } catch (Exception $e ) {
         }
-        $args['blog_id'] = $ctx->stash('blog_id');
         if (isset($args['id'])) {
             $args['entry_id'] = $args['id'];
         }
