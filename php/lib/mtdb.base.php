@@ -2709,7 +2709,7 @@ abstract class MTDatabase {
         return $otag->Find($where, false, false, $extras);
     }
 
-    public function fetch_comments($args) {
+    public function fetch_comments($args, &$blog) {
         # load comments
         $extras = array();
 
@@ -2722,6 +2722,8 @@ abstract class MTDatabase {
                 $blog = $this->fetch_blog(intval($args['blog_id']));
         } elseif ($args['blog_id']) {
             $blog = $this->fetch_blog(intval($args['blog_id']));
+            $blog_filter = ' and comment_blog_id = ' . $blog->blog_id;
+        } elseif (isset($blog)) {
             $blog_filter = ' and comment_blog_id = ' . $blog->blog_id;
         }
 
