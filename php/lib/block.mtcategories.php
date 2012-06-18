@@ -11,7 +11,6 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
     $localvars = array('_categories', '_categories_counter', 'category', 'inside_mt_categories', 'entries', '_categories_glue', 'blog_id', 'blog', '__out');
     if (!isset($content)) {
         $ctx->localize($localvars);
-        $args['blog_id'] = $ctx->stash('blog_id');
         $categories = $ctx->mt->db()->fetch_categories($args);
         $glue = $args['glue'];
         $ctx->stash('_categories_glue', $glue);
