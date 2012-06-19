@@ -704,6 +704,7 @@ abstract class MTDatabase {
             $blog_filter = 'and entry_blog_id ' . $sql;
             $mt = MT::get_instance();
             $blog = $this->fetch_blog($mt->blog_id());
+            $blog_id = $blog->blog_id;
         } elseif (isset($args['blog_id'])) {
             $blog_id = intval($args['blog_id']);
             $blog_filter = 'and entry_blog_id = ' . $blog_id;
@@ -899,10 +900,12 @@ abstract class MTDatabase {
                 }
                 if (isset($blog_ctx_arg))
                     $ot = $this->fetch_objecttags(array('tag_id' => $tag_list, 'datasource' => 'entry', $blog_ctx_arg));
-                elseif ($args['blog_id'])
-                    $ot = $this->fetch_objecttags(array('tag_id' => $tag_list, 'datasource' => 'entry', 'blog_id' => intval($args['blog_id'])));
+                else
+                    $ot = $this->fetch_objecttags(array('tag_id' => $tag_list, 'datasource' => 'entry', 'blog_id' => $blog_id));
+
                 if ($ot) {
                     foreach ($ot as $o) {
+                        fwrite($STDERR, "adding [" . $o->objecttag_object_id . "][" . $o->objecttag_tag_id . "]\n");
                             $tmap[$o->objecttag_object_id][$o->objecttag_tag_id]++;
                         if (!$not_clause)
                             $entry_list[$o->objecttag_object_id] = 1;
