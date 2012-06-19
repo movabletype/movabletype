@@ -1203,9 +1203,9 @@ abstract class MTDatabase {
         while (!$result->EOF) {
             $e = new Entry;
             foreach($field_names as $key) {
-  	        $key = strtolower($key);
+  	            $key = strtolower($key);
                 $e->$key = $result->fields($key);
-	    }
+            }
             $result->MoveNext();
 
             if (empty($e)) break;
