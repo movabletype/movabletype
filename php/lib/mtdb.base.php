@@ -905,8 +905,7 @@ abstract class MTDatabase {
 
                 if ($ot) {
                     foreach ($ot as $o) {
-                        fwrite($STDERR, "adding [" . $o->objecttag_object_id . "][" . $o->objecttag_tag_id . "]\n");
-                            $tmap[$o->objecttag_object_id][$o->objecttag_tag_id]++;
+                        $tmap[$o->objecttag_object_id][$o->objecttag_tag_id]++;
                         if (!$not_clause)
                             $entry_list[$o->objecttag_object_id] = 1;
                     }
