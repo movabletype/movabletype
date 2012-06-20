@@ -1183,8 +1183,9 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
         }
         $t = trim($t);
         if (!array_key_exists($t, $tags_dict)) {
-            echo "Invalid tag filter: $orig_expr";
-            return;
+            # a tag that does not exists - is always false
+            $result .= ' (0) ';
+            continue;
         }
         $tag = $tags_dict[$t];
         $result .= ' array_key_exists(' . $tag->tag_id . ', $tm) ';
