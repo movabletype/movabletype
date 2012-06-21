@@ -191,11 +191,18 @@ sub save {
                     @$names;
             }
         }
-        if ($values{site_path} and 
-            $app->config->BaseSitePath and 
-            ( 0 != index( $values{site_path}, $app->config->BaseSitePath )))
-        {
-            return $app->errtrans("Website root must be under the set root");
+        if ($values{site_path} and $app->config->BaseSitePath) {
+            my $l_path = $app->config->BaseSitePath;
+            my $s_path = $values{site_path};
+            # making sure that we have a '/' in the end of the paths
+            $l_path = File::Spec->catdir($l_path, "PATH");
+            $l_path =~ s/PATH$//;
+            $s_path = File::Spec->catdir($s_path, "PATH");
+            $s_path =~ s/PATH$//;
+
+            if ( 0 != index( $s_path, $l_path ) ) {
+                return $app->errtrans("Website root must be under the set root");
+            }
         }
         if ($values{site_path} 
             and not File::Spec->file_name_is_absolute($values{site_path}) )
