@@ -285,12 +285,12 @@ jQuery(function() {
 
     jQuery('#smtp_auth_ssl').click(function() {
         if ( jQuery(this).is(':checked') ) {
-          if ( jQuery('#smtp_port').val().length == 0 || jQuery('#smtp_port').val() == '25' ) {
-            jQuery('#smtp_port').val('465');
+          if ( jQuery('#smtp_port').val().length == 0 || jQuery('#smtp_port').val() == 25 ) {
+            jQuery('#smtp_port').val(465).mtUnvalidate();
           }
         } else {
           if ( jQuery('#smtp_port').val().length == 0 || jQuery('#smtp_port').val() == 465 ) {
-            jQuery('#smtp_port').val('25');
+            jQuery('#smtp_port').val(25).mtUnvalidate();
           }
         }
     });
@@ -329,8 +329,11 @@ jQuery(function() {
         },
         "#smtp_port": function($e) {
             if ( jQuery('#mail_transfer :selected').val() == 'smtp' ) {
-                if ( $e.val() != '' ) {
-                    return /^\d+$/.test($e.val());
+                if ( $e.val().trim() == '' ) {
+                    return this.raise('<__trans phrase="You must set SMTP server port number." escape="singlequotes">');
+                }
+                if ( !( /^\d+$/.test($e.val()) ) ) {
+                    return this.raise('<__trans phrase="This field must be integer." escape="singlequotes">');
                 }
             }
             return true;
@@ -353,7 +356,6 @@ jQuery(function() {
         "#email_address_main.required": '<__trans phrase="You must set system email address." escape="singlequotes">',
         "#sendmail_path": '<__trans phrase="You must set Sendmail path." escape="singlequotes">',
         "#smtp_server": '<__trans phrase="You must set SMTP server address." escape="singlequotes">',
-        "#smtp_port": '<__trans phrase="This field must be integer." escape="singlequotes">',
         "#smtp_auth_username": '<__trans phrase="You must set username for SMTP server." escape="singlequotes">',
         "#smtp_auth_password": '<__trans phrase="You must set password for SMTP server." escape="singlequotes">'
     });

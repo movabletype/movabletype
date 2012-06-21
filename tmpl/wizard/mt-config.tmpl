@@ -40,7 +40,8 @@ UseSQLite2 1</mt:if>
 #======== MAIL =======================
 EmailAddressMain <mt:var name="email_address_main"><mt:if name="mail_transfer">
 MailTransfer <mt:var name="mail_transfer"><mt:if name="mail_transfer" eq="smtp">
-SMTPServer <mt:var name="smtp_server"><mt:if name="smtp_auth">
+SMTPServer <mt:var name="smtp_server">
+SMTPPort <mt:var name="smtp_port"><mt:if name="smtp_auth">
 SMTPAuth <mt:var name="smtp_auth">
 SMTPUser <mt:var name="smtp_auth_username">
 SMTPPassword <mt:var name="smtp_auth_password"><mt:if name="smtp_auth_ssl">
