@@ -11,9 +11,10 @@ MT.Editor.Source = function(id) {
     var editor = this;
     MT.Editor.apply(this, arguments);
 
+    this.editor    = editor;
     this.$textarea = $('#' + id);
-    this.textarea = this.$textarea.get(0);
-    this.range = null;
+    this.textarea  = this.$textarea.get(0);
+    this.range     = null;
 
     var focused = false;
     this.$textarea
@@ -41,6 +42,8 @@ MT.Editor.Source = function(id) {
     });
 };
 $.extend(MT.Editor.Source, MT.Editor, {
+    ensureInitializedMethods: [],
+
     formats: function() {
         return ['source'];
     }
