@@ -78,6 +78,7 @@
              id="sendmail_path"
              label="<__trans phrase="Sendmail Path">"
              label_class="top-label"
+             required="1"
              hint="<__trans phrase="The physical file path for your Sendmail binary.">">
             <input type="text" id="sendmail_path" class="text full" name="sendmail_path" value="<mt:if name="sendmail_path"><mt:var name="sendmail_path" escape="html"></mt:if>" />
           </mtapp:setting>
@@ -89,6 +90,7 @@
              id="smtp_server"
              label="<__trans phrase="Outbound Mail Server (SMTP)">"
              label_class="top-label"
+             required="1"
              hint="<__trans phrase="Address of your SMTP Server.">"
              show_hint="1">
             <input type="text" id="smtp_server" class="text full" name="smtp_server" value="<mt:if name="smtp_server"><mt:var name="smtp_server" escape="html"></mt:if>" />
@@ -99,6 +101,7 @@
              id="smtp_port"
              label="<__trans phrase="Port number for Outboud Mail Server">"
              label_class="top-label"
+             required="1"
              hint="<__trans phrase="Port number  of your SMTP Server.">"
              show_hint="1">
             <input type="text" id="smtp_port" class="text full" name="smtp_port" value="<mt:if name="smtp_port"><mt:var name="smtp_port" escape="html"></mt:if>" />
@@ -116,6 +119,7 @@
                  id="smtp_auth_username"
                  label="<__trans phrase="SMTP Auth Username">"
                  label_class="top-label"
+                 required="1"
                  hint="<__trans phrase="Username for your SMTP Server.">"
                  show_hint="1">
                 <input type="text" id="smtp_auth_username" class="text full" name="smtp_auth_username" value="<mt:if name="smtp_auth_username"><mt:var name="smtp_auth_username" escape="html"></mt:if>" />
@@ -126,6 +130,7 @@
                  id="smtp_auth_password"
                  label="<__trans phrase="SMTP Auth Password">"
                  label_class="top-label"
+                 required="1"
                  hint="<__trans phrase="Password for your SMTP Server.">"
                  show_hint="1">
                 <input type="password" id="smtp_auth_password" class="text full" name="smtp_auth_password" value="<mt:if name="smtp_auth_password"><mt:var name="smtp_auth_password" escape="html"></mt:if>" />
