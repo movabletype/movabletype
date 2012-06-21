@@ -874,9 +874,6 @@ sub configure {
     $app->build_page( "configure.tmpl", \%param );
 }
 
-my @Sendmail
-    = qw( /usr/lib/sendmail /usr/sbin/sendmail /usr/ucblib/sendmail );
-
 sub cfg_dir_conditions {
     my $app = shift;
     my ($param) = @_;
@@ -943,6 +940,9 @@ sub cfg_dir {
     $app->build_page( "cfg_dir.tmpl", \%param );
 }
 
+my @Sendmail
+    = qw( /usr/lib/sendmail /usr/sbin/sendmail /usr/ucblib/sendmail );
+
 sub optional {
     my $app   = shift;
     my %param = @_;
@@ -960,6 +960,10 @@ sub optional {
         $sm_loc = $loc, last if -x $loc && !-d $loc;
     }
     $param{sendmail_path} = $sm_loc || '';
+    $param{smtp_server} = $mgr->default('SMTPServer')
+        unless $param{smtp_server};
+    $param{smtp_port} = 25
+        unless $param{smtp_port};
 
     my $transfer;
     push @$transfer, { id => 'smtp', name => $app->translate('SMTP Server') };
