@@ -411,13 +411,13 @@ sub init_website {
         $s_path =~ s/PATH$//;
         if ( 0 != index( $s_path, $param{'sitepth_limited'} ) ) {
             $param{error} = $app->translate(
-                "The 'Publishing Path' provided below is not allowed" );
+                "The 'Website Root' provided below is not allowed" );
             return $app->build_page( 'setup_initial_website.tmpl', \%param );
         }
     }
     if ( !-w $site_path ) {
         $param{error} = $app->translate(
-            "The 'Publishing Path' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click 'Finish Install' again.",
+            "The 'Website Root' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click 'Finish Install' again.",
             $param{website_path}
         );
         return $app->build_page( 'setup_initial_website.tmpl', \%param );
