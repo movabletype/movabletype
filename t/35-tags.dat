@@ -614,5 +614,21 @@
 { "r" : "1", "t" : "<MTPasswordValidationRule>", "e" : "minimum length of 8" }, #613
 { "r" : "1", "t" : "<$MTSetVar name=\"foo614{b}\" value=\"b\"$><$MTIf name=\"foo614{a}\"$>true<MTElse>false</MTIf>", "e" : "false" }, #614
 { "r" : "1", "t" : "<mt:Archives type=\"Page, Individual, Category\">[<$mt:ArchiveType$>]</mt:Archives>", "e" : "[Page][Individual][Category]" }, #615
-{ "r" : "1", "t" : "<$mt:Date ts=\"THREE_DAYS_AGO\" relative=\"1\"$>", "e" : "3 days ago" } #616
+{ "r" : "1", "t" : "<$mt:Date ts=\"THREE_DAYS_AGO\" relative=\"1\"$>", "e" : "3 days ago" }, #616
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTrackbackData></MTEntries>", "e" : "<!--
+<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"
+         xmlns:trackback=\"http://madskills.com/public/xml/rss/module/trackback/\"
+         xmlns:dc=\"http://purl.org/dc/elements/1.1/\">
+<rdf:Description
+    rdf:about=\"http://narnia.na/nana/archives/1978/01/a-rainy-day.html\"
+    trackback:ping=\"http://narnia.na/cgi-bin/mt-tb.cgi/1\"
+    dc:title=\"A Rainy Day\"
+    dc:identifier=\"http://narnia.na/nana/archives/1978/01/a-rainy-day.html\"
+    dc:subject=\"\"
+    dc:description=\"A story of a stroll.\"
+    dc:creator=\"Chucky Dee\"
+    dc:date=\"1978-01-31T07:45:00-03:30\" />
+</rdf:RDF>
+-->
+"} #617
 ]
