@@ -513,6 +513,7 @@ $.fn.mtDialog.open = function(url, options) {
 
 $.fn.mtDialog.close = function(url, fn) {
     close_dialog(url, fn);
+    $(window).trigger('dialogDisposed');
 };
 
 $.event.special.dialogReady = {
