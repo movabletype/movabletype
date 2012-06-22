@@ -157,6 +157,7 @@
             var proxies        = {};
             var hiddenControls = [];
             var $container     = null;
+            var savedBookmark  = null;
 
             var supportedButtonsCache = {};
             var buttonRows            = this._initButtonSettings(ed);
@@ -342,6 +343,23 @@
                 $.extend(proxies, _proxies);
             });
 
+            ed.addCommand('mtRestoreBookmark', function(bookmark) {
+                if (! bookmark) {
+                    bookmark = savedBookmark;
+                }
+                if (bookmark) {
+                    ed.selection.moveToBookmark(savedBookmark);
+                }
+            });
+
+            ed.addCommand('mtSaveBookmark', function() {
+                return savedBookmark = ed.selection.getBookmark();
+            });
+
+
+            $(window).bind('dialogDisposed', function() {
+                savedBookmark = null;
+            });
 
             // Register buttons
             ed.addButton('mt_insert_html', {
@@ -361,6 +379,7 @@
             ed.addMTButton('mt_insert_image', {
                 title : 'mt.insert_image',
                 onclick : function() {
+                    ed.execCommand('mtSaveBookmark');
                     openDialog(
                         'dialog_list_asset',
                         '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image'
@@ -371,6 +390,7 @@
             ed.addMTButton('mt_insert_file', {
                 title : 'mt.insert_file',
                 onclick : function() {
+                    ed.execCommand('mtSaveBookmark');
                     openDialog(
                         'dialog_list_asset',
                         '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1'

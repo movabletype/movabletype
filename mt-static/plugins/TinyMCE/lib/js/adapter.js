@@ -220,8 +220,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         }
         else {
             this.editor.focus();
-            this.editor.selection
-                .moveToBookmark(this.editor.mt_plugin_bookmark);
+            this.editor.execCommand('mtRestoreBookmark');
             this.editor.execCommand('mceInsertContent', false, value);
         }
     },
