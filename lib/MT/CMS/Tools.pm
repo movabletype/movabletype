@@ -2437,7 +2437,11 @@ sub dialog_adjust_sitepath {
     $param->{website_loop}   = \@website_loop if @website_loop;
     $param->{all_websites}   = \@all_websites if @all_websites;
     $param->{path_separator} = MT::Util->dir_separator;
-    $param->{sitepth_limited} = $app->config->BaseSitePath;
+    if (my $limit = $app->config->BaseSitePath) {
+        $limit = File::Spec->catdir($limit, "PATH");
+        $limit =~ s/PATH$//;
+        $param->{sitepth_limited} = $limit;
+    }
 
   # There is a danger that the asset_id list will ballon and make a request
   # URL that is longer then allowed. This function have two ways to be called:

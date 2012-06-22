@@ -371,7 +371,12 @@ sub init_website {
         } values %$themes;
     $param{'theme_loop'}      = \@theme_loop;
     $param{'theme_index'}     = scalar @theme_loop;
-    $param{'sitepth_limited'} = $app->config->BaseSitePath;
+    if (my $b_path = $app->config->BaseSitePath) {
+        # making sure that we have a '/' in the end of the path
+        $b_path = File::Spec->catdir($b_path, "PATH");
+        $b_path =~ s/PATH$//;
+        $param{'sitepth_limited'} = $b_path;
+    }
 
     if ( $app->param('back') ) {
         return $app->init_user;
@@ -400,12 +405,15 @@ sub init_website {
         pop @dirs;
         $site_path = File::Spec->catdir(@dirs);
     }
-    if ( $param{'sitepth_limited'}
-        && ( 0 != index( $site_path, $param{'sitepth_limited'} ) ) )
-    {
-        $param{error} = $app->translate(
-            "The 'Publishing Path' provided below is not allowed" );
-        return $app->build_page( 'setup_initial_website.tmpl', \%param );
+    if ( $param{'sitepth_limited'} ) {
+        # making sure that we have a '/' in the end of the path
+        my $s_path = File::Spec->catdir($site_path, "PATH");
+        $s_path =~ s/PATH$//;
+        if ( 0 != index( $s_path, $param{'sitepth_limited'} ) ) {
+            $param{error} = $app->translate(
+                "The 'Publishing Path' provided below is not allowed" );
+            return $app->build_page( 'setup_initial_website.tmpl', \%param );
+        }
     }
     if ( !-w $site_path ) {
         $param{error} = $app->translate(

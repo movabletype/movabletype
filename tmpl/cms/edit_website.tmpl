@@ -176,7 +176,12 @@ jQuery(function() {
             return false;
         }
         <mt:if name="sitepth_limited">
-        if (0 != str.indexOf('<mt:var name="sitepth_limited" escape="singlequotes">')) {
+        var limit = '<mt:var name="sitepth_limited" escape="singlequotes">';
+        var last = limit.charAt(limit.length-1);
+        if (path_.charAt(path_.length-1) != last) {
+          path_ += last;
+        }
+        if (0 != path_.indexOf(limit)) {
             return false;
         }
         </mt:if>

@@ -345,7 +345,12 @@ function init() {
                 return false;
             var full_path = parent_path + $e.val();
             <mt:if name="sitepth_limited">
-            if (0 != full_path.indexOf('<mt:var name="sitepth_limited" escape="singlequotes">')) {
+            var limit = '<mt:var name="sitepth_limited" escape="singlequotes">';
+            var last = limit.charAt(limit.length-1);
+            if (full_path.charAt(full_path.length-1) != last) {
+              full_path += last;
+            }
+            if (0 != full_path.indexOf(limit)) {
                 return false;
             }
             </mt:if>
@@ -383,7 +388,13 @@ function init() {
                 if ( jQuery('#use_absolute_' + b_id + ':checked').length &&
                      !jQuery('#site_path_absolute_' + b_id + ':hidden').length  ) {
                     <mt:if name="sitepth_limited">
-                    if (0 != $e.val().indexOf('<mt:var name="sitepth_limited" escape="singlequotes">')) {
+                    var limit = '<mt:var name="sitepth_limited" escape="singlequotes">';
+                    var path_ = $e.val();
+                    var last = limit.charAt(limit.length-1);
+                    if (path_.charAt(path_.length-1) != last) {
+                      path_ += last;
+                    }
+                    if (0 != path_.indexOf(limit)) {
                         return false;
                     }
                     </mt:if>

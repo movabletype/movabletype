@@ -2888,8 +2888,10 @@ sub clone {
             }
         }
     }
-    $param->{'sitepth_limited'} = $app->config->BaseSitePath;
-    if ($param->{'sitepth_limited'}) {
+    if (my $limit = $app->config->BaseSitePath) {
+        $limit = File::Spec->catdir($limit, "PATH");
+        $limit =~ s/PATH$//;
+        $param->{'sitepth_limited'} = $limit;
         $param->{'use_absolute'}         = 0;
         $param->{'use_absolute_archive'} = 0;
     }
