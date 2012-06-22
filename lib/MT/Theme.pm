@@ -279,6 +279,13 @@ sub elements {
         keys %$elements;
 }
 
+sub static_file_url {
+    my $theme = shift;
+    File::Spec->catdir( MT->app->support_directory_url,
+        'theme_static', $theme->id )
+        . '/';
+}
+
 sub apply {
     my $theme = shift;
     my ( $blog, %opts ) = @_;

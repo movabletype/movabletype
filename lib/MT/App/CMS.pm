@@ -4976,7 +4976,10 @@ sub setup_editor_param {
 
     if ( my $blog = $app->blog ) {
         if ( my $css = $blog->content_css ) {
-            $css =~ s/{{support}}/$app->support_directory_url/ie;
+            $css =~ s#{{support}}/?#$app->support_directory_url#ie;
+            if ( my $theme = $blog->theme ) {
+                $css =~ s#{{theme_static}}/?#$theme->static_file_url#ie;
+            }
             if ( $css !~ m#\A(https?:)?/# ) {
                 $css = MT::Util::caturl( $blog->site_url, $css );
             }
