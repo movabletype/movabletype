@@ -279,11 +279,15 @@ sub elements {
         keys %$elements;
 }
 
+sub static_file_url_from_id {
+    File::Spec->catdir( MT->app->support_directory_url,
+        'theme_static', $_[0] )
+        . '/';
+}
+
 sub static_file_url {
     my $theme = shift;
-    File::Spec->catdir( MT->app->support_directory_url,
-        'theme_static', $theme->id )
-        . '/';
+    static_file_url_from_id( $theme->id );
 }
 
 sub apply {
