@@ -4238,6 +4238,43 @@ sub set_no_cache {
     }
 }
 
+sub verify_password_strength {
+    my ( $app, $username, $pass ) = @_;
+    my @constrains = $app->config('UserPasswordValidation');
+    my $min_length = $app->config('UserPasswordMinLength');
+
+    if ( ( $min_length =~ m/\D/ ) or ( $min_length < 1 ) ) {
+        $min_length = $app->config->default('UserPasswordMinLength');
+    }
+
+    if ( length $pass < $min_length ) {
+        return $app->translate(
+            "Password should be longer than [_1] characters", $min_length );
+    }
+    if ( $username && index( lc($pass), lc($username) ) >= 0 ) {
+        return $app->translate("Password should not include your Username");
+    }
+    if ( ( grep { $_ eq 'letternumber' } @constrains )
+        and not( $pass =~ /[a-zA-Z]/ and $pass =~ /\d/ ) )
+    {
+        return $app->translate("Password should include letters and numbers");
+    }
+    if ( ( grep { $_ eq 'upperlower' } @constrains )
+        and not( $pass =~ /[a-z]/ and $pass =~ /[A-Z]/ ) )
+    {
+        return $app->translate(
+            "Password should include lowercase and uppercase letters");
+    }
+    if ( ( grep { $_ eq 'symbol' } @constrains )
+        and not $pass =~ m'[!"#$%&\'\(\|\)\*\+,-\.\/\\:;<=>\?@\[\]^_`{}~]' )
+    {
+        return $app->translate(
+            'Password should contain symbols such as #!$%');
+    }
+
+    return;
+}
+
 1;
 __END__
 
