@@ -132,6 +132,9 @@ sub main {
         # Strict parameter check for initial install
         die "--username is required for initial install" unless $username;
         die "--password is required for initial install" unless $password;
+        require MT::App;
+        my $password_error = MT::App::verify_password_strength('MT', $username, $password);
+        die $password_error if $password_error;
         die "--nickname is required for initial install" unless $nickname;
         die "--email is required for initial install" unless $email;
         die "--preferred_language is required for initial install" unless $preferred_language;
