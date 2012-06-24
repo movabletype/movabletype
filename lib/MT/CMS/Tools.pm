@@ -1890,7 +1890,9 @@ sub adjust_sitepath {
                 $site_path = $path_limit;
             }
         }
-        elsif ( $site_path =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)! ) {
+        elsif ($path_limit
+            && $site_path =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)! )
+        {
             $site_path = $path_limit;
         }
         $blog->site_path($site_path);
