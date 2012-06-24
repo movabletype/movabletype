@@ -11,7 +11,7 @@ use MT;
 use base qw( MT::ErrorHandler Class::Accessor::Fast );
 use StyleCatcher::Util;
 
-my @KEYS = qw(description_label label order url class);
+my @KEYS = qw(description_label label order url class no_listify);
 __PACKAGE__->mk_accessors('key', @KEYS);
 
 sub new {
@@ -43,6 +43,7 @@ sub translate {
 
 sub listify {
     my $self = shift;
+    return if $self->no_listify;
     my $hash = {
         key               => $self->key,
         url               => $self->url,

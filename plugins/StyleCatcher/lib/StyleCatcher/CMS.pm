@@ -24,7 +24,8 @@ sub listify {
     my @list;
     foreach my $k ( keys %$data ) {
         my $lib = StyleCatcher::Library->new($k);
-        push @list, $lib->listify;
+        my $listified = $lib->listify;
+        push @list, $listified if defined $listified;
     }
     @list = sort { $a->{order} <=> $b->{order} } @list;
     \@list;
@@ -190,7 +191,7 @@ sub apply {
     return $app->json_error( $app->translate("Invalid request") )
         unless $blog_id && $url;
 
-    my ($repo_id, $theme_id) = $name =~ /^repo-([^:]+).*:([^:]+)$/;
+    my ($repo_id, $theme_id) = $name =~ /^(?:repo-)?([^:]+).*:([^:]+)$/;
     my $library = StyleCatcher::Library->new($repo_id) or die "Invalide repository: " . $repo_id;
 
     my $static_path = $app->static_file_path;
