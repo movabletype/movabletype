@@ -143,7 +143,12 @@ sub main {
         die "--site_path is required for initial install" unless $site_path;
         die "--site_timezone is required for initial install" unless defined $site_timezone;
         die "--site_theme is required for initial install" unless $site_theme;
-
+        require MT::Theme;
+        my $theme = MT::Theme->load($site_theme);
+        die "Theme '$site_theme' isn't installed" unless $theme;
+        if ( $theme->{class} ne 'website' && $theme->{class} ne 'both' ) {
+            die "Cannot apply theme '$site_theme' to website.";
+        }
 
         my $new_user = {
             user_name        => $username,
