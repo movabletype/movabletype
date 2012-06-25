@@ -48,6 +48,7 @@
                     var $outer = $parent.find('table:visible');
                     var $inner = $parent.find('.mceIframeContainer:visible');
 
+                    var window_width  = $window.width();
                     var offset_width  = $outer.width() - $inner.width();
                     var offset_height =
                         $outer.height() - $inner.height() + header_height;
@@ -90,7 +91,6 @@
                         $('#' + this.id + '_resize').hide();
                     });
 
-                    $tabs.css('width', (100 / $tabs.length) + '%');
 
                     enabled = true;
                     ed.execCommand('mtFullScreenUpdateFitToWindow');

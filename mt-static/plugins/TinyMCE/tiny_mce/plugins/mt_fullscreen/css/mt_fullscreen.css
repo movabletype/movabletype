@@ -10,38 +10,8 @@
 }
 
 .fullscreen_editor .editor-header { 
-    background-color: #c0c6c9;
-}
-.fullscreen_editor .editor-header { 
-    zoom: 1;
-}
-.fullscreen_editor .editor-header:before, 
-.fullscreen_editor .editor-header:after { 
-    display: block;
-    height: 0;
-    visibility: hidden;
-    content: "\0020";
-}
-.fullscreen_editor .editor-header:after { 
-    clear: both;
-}
-
-.fullscreen_editor .editor-header .tab { 
-    display: block;
-    float: left;
-    margin: 0 0 -1px;
-    padding: 0;
-    border-width: 0 0 1px 1px;
-    border-radius: 0;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-}
-.fullscreen_editor .editor-header .selected-tab { 
-    display: block;
-}
-.fullscreen_editor .editor-header .tab a { 
-    display: block;
-    padding: 0.62em 1.62em;
+    padding: 0 0.62em;
+    background-color: #ffffff;
 }
 .fullscreen_editor #field-convert_breaks { 
     display: none;
@@ -51,4 +21,19 @@
 .field-top-label .field-content.fullscreen_editor { 
     margin: 0;
     padding: 0;
+}
+
+.fullscreen_editor .editor-header .tab {
+    margin-top: 0.62em;
+}
+
+.fullscreen_editor .mtSkin table.mceLayout, 
+.fullscreen_editor .mtSkin table.mceLayout tr.mceFirst td, 
+.fullscreen_editor .mtSkin table.mceLayout tr.mceLast td, 
+.fullscreen_editor .mtSkin .mceIframeContainer { 
+    border-right: 0;
+    border-left: 0;
+}
+.fullscreen_editor .mtSkin table.mceLayout tr.mceLast td {
+    border-bottom: 0;
 }
