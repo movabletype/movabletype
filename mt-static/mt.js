@@ -1359,10 +1359,6 @@ Pager = new Class(Object, {
                 txt.innerHTML = trans('Last') + ' &raquo;';
                 this.element.appendChild(txt);
             }
-            window.top.scrollTo(
-                window.top.document.getElementById('mt-dialog-iframe').parentNode.offsetLeft,
-                window.top.document.getElementById('mt-dialog-iframe').parentNode.offsetTop
-            );
             window.scrollTo( 0, 0 );
         } else {
             this.element.innerHTML = '';
