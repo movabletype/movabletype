@@ -1871,6 +1871,7 @@ sub browser_language {
 sub launch_background_tasks {
     return !( $ENV{MOD_PERL}
         || $ENV{FAST_CGI}
+        || $ENV{'psgi.input'}
         || !MT->config->LaunchBackgroundTasks );
 }
 
