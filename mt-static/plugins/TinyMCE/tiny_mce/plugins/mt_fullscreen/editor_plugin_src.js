@@ -110,7 +110,6 @@
                         $('#' + this.id + '_resize').show();
                     });
 
-                    $tabs.css('width', '');
 
                     enabled = false;
                     fitToWindow = function(){};
