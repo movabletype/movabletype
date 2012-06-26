@@ -48,7 +48,6 @@
                     var $outer = $parent.find('table:visible');
                     var $inner = $parent.find('.mceIframeContainer:visible');
 
-                    var window_width  = $window.width();
                     var offset_width  = $outer.width() - $inner.width();
                     var offset_height =
                         $outer.height() - $inner.height() + header_height;
