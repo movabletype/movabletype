@@ -331,7 +331,7 @@ function initItem($item) {
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       fixInteractions();
-      var id = jQuery(this).parents('.sortable-item').attr('id');
+      var id = jQuery(this).parents('.sortable-item').attr('id').slice(4);
       removeItems(id);
     });
   setHoverAction($item);
@@ -366,7 +366,6 @@ function hasDupe( parent, id, label, basename ) {
 function makeBasename( parent, id, label ) {
   var limit = <mt:var name="basename_limit" />;
   var basename = dirify( label ).substr( 0, limit );
-  var prefix
   if ( !basename.length ) basename = '<mt:var name="basename_prefix">';
   var $parent = jQuery('#cat-' + parent);
   $parent.attr('class').match(/lv-(\w+)/);
@@ -376,7 +375,7 @@ function makeBasename( parent, id, label ) {
 
   var max = -1;
   var re = new RegExp( '^' + basename + '(<mt:unless name="config.CategoryNameNodash">\\-</mt:unless>([1-9][0-9]*))?$' );
-  jQuery('.' + parent + '.lv-' + level).each( function () {
+  jQuery('.pcat-' + parent + '.lv-' + level).each( function () {
     if ( id && id == jQuery(this).attr('id') ) return true;
     var sibling_basename = jQuery(this).find('.item-basename-text').text();
     if ( sibling_basename.match(re) ) {
@@ -423,12 +422,13 @@ jQuery('input[name=<mt:var name="object_type">_label]').live('keypress', functio
     }
 });
 
+// id should be numeric / x1
 function removeItems(id) {
   var singlar = '<mt:var name="object_label" lower_case="1" escape="js">';
   var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
-  var $items = jQuery('.'+id);
+  var $items = jQuery('.pcat-'+id);
   var count = $items.length + 1;
-  var label = jQuery('#'+id).find('.item-label').text();
+  var label = jQuery('#cat-'+id).find('.item-label').text();
   var message = (count == 1)
     ? trans('Are you sure you want to remove [_1] [_2]?', singlar, label)
     : trans('Are you sure you want to remove [_1] [_2] with [_3] sub [_4]?', singlar, label, count - 1, (count > 2 ? plural : singlar));
@@ -436,7 +436,7 @@ function removeItems(id) {
       return;
   }
   $items.remove();
-  jQuery('#'+id).next('.add-form').remove().end().remove();
+  jQuery('#cat-'+id).next('.add-form').remove().end().remove();
   jQuery('.sort-tab').show();
   setItemList();
   setDirty(true);
@@ -521,7 +521,7 @@ function initMoving() {
           $this.insertAfter($last).show();
           $last = $this;
         });
-        setHoverAction(jQuery('.'+catid));
+        setHoverAction(jQuery('.pcat-'+catid));
         setItemList();
         setDirty(true);
       }
@@ -716,10 +716,7 @@ function renderItems(data) {
   checksum = data.result.checksum;
   setHoverAction(jQuery('.sortable-item'));
 
-  jQuery('#area-action > :disabled').each( function() {
-    jQuery(this).removeClass('disabled');
-    jQuery(this).removeAttr('disabled');
-  });
+  jQuery('#area-action').children().removeClass('disabled').removeAttr('disabled');
 }
 
 function fixZeroStateMessage () {
@@ -787,10 +784,7 @@ jQuery('.add').click(function() {
 jQuery('.save').click( bulkUpdateCategories );
 
 function bulkUpdateCategories() {
-  jQuery('#area-action > :enabled').each( function() {
-    jQuery(this).addClass('disabled');
-    jQuery(this).attr('disabled', 'disabled');
-  }); 
+  jQuery('#area-action').children().addClass('disabled').attr('disabled', 'disabled');
   var items = [];
   jQuery('.sortable-item:visible').each(function() {
     var $item = jQuery(this);
