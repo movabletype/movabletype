@@ -232,7 +232,10 @@ sub list_props {
             filter_editable => 0,
             raw             => sub {
                 my ( $prop, $obj ) = @_;
-                return $obj->website->name;
+                my $parent = $obj->website;
+                return $parent
+                    ? $parent->name
+                    : ( MT->translate('*Website/Blog deleted*') );
             },
             bulk_sort => sub {
                 my $prop    = shift;
