@@ -583,26 +583,29 @@ sub cfg_system_general {
         }
     }
 
-    my @config_warnings;
-    for my $config_directive (
-        qw( DebugMode BaseSitePath PerformanceLogging
+    my @readonly_configs = qw( DebugMode PerformanceLogging
         PerformanceLoggingPath PerformanceLoggingThreshold
         UserLockoutLimit UserLockoutInterval IPLockoutLimit
-        IPLockoutInterval LockoutIPWhitelist LockoutNotifyTo )
-        )
-    {
+        IPLockoutInterval LockoutIPWhitelist LockoutNotifyTo );
+    push @readonly_configs, 'BaseSitePath' unless $cfg->HideBaseSitePath;
+
+    my @config_warnings;
+    for my $config_directive (@readonly_configs) {
         if ( $app->config->is_readonly($config_directive) ) {
             push( @config_warnings, $config_directive );
             my $flag = "config_warnings_" . ( lc $config_directive );
             $param{$flag} = 1;
         }
     }
-    my $config_warning = join( ", ", @config_warnings ) if (@config_warnings);
 
-    $param{config_warning} = $app->translate(
-        "These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
-        $config_warning
-    ) if $config_warning;
+    if (@config_warnings) {
+        my $config_warning = join( ", ", @config_warnings );
+
+        $param{config_warning} = $app->translate(
+            "These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
+            $config_warning
+        );        
+    }
     $param{system_debug_mode}               = $cfg->DebugMode;
     $param{system_performance_logging}      = $cfg->PerformanceLogging;
     $param{system_performance_logging_path} = $cfg->PerformanceLoggingPath;
