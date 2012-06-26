@@ -201,7 +201,7 @@ sub save {
             $s_path =~ s/PATH$//;
 
             if ( 0 != index( $s_path, $l_path ) ) {
-                return $app->errtrans("Website root must be under the set root");
+                return $app->errtrans("Website root must be under [_1]", $l_path);
             }
         }
         if ($values{site_path} 
