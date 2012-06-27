@@ -11,6 +11,7 @@ use strict;
 use utf8;
 
 use FindBin;
+use Encode;
 use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
 use base qw( MT::Tool );
 
@@ -90,6 +91,17 @@ sub options {
     );
 }
 
+sub _error {
+    my $msg = shift;
+    $msg ||= 'An error occured!';
+    if ( Encode::is_utf8($msg) ) {
+        $msg = Encode::encode_utf8($msg);
+    }
+    $msg .= "\n" unless $msg =~ /\n$/;
+    print STDERR $msg;
+    exit 1;
+}
+
 sub main {
     my $class = shift;
     my ($verbose) = $class->SUPER::main(@_);
@@ -130,24 +142,24 @@ sub main {
 
     if ( $install ) {
         # Strict parameter check for initial install
-        die "--username is required for initial install" unless $username;
-        die "--password is required for initial install" unless $password;
+        _error "--username is required for initial install" unless $username;
+        _error "--password is required for initial install" unless $password;
         require MT::App;
         my $password_error = MT::App::verify_password_strength('MT', $username, $password);
-        die $password_error if $password_error;
-        die "--nickname is required for initial install" unless $nickname;
-        die "--email is required for initial install" unless $email;
-        die "--preferred_language is required for initial install" unless $preferred_language;
-        die "--site_name is required for initial install" unless $site_name;
-        die "--site_url is required for initial install" unless $site_url;
-        die "--site_path is required for initial install" unless $site_path;
-        die "--site_timezone is required for initial install" unless defined $site_timezone;
-        die "--site_theme is required for initial install" unless $site_theme;
+        _error $password_error if $password_error;
+        _error "--nickname is required for initial install" unless $nickname;
+        _error "--email is required for initial install" unless $email;
+        _error "--preferred_language is required for initial install" unless $preferred_language;
+        _error "--site_name is required for initial install" unless $site_name;
+        _error "--site_url is required for initial install" unless $site_url;
+        _error "--site_path is required for initial install" unless $site_path;
+        _error "--site_timezone is required for initial install" unless defined $site_timezone;
+        _error "--site_theme is required for initial install" unless $site_theme;
         require MT::Theme;
         my $theme = MT::Theme->load($site_theme);
-        die "Theme '$site_theme' isn't installed" unless $theme;
+        _error "Theme '$site_theme' isn't installed" unless $theme;
         if ( $theme->{class} ne 'website' && $theme->{class} ne 'both' ) {
-            die "Cannot apply theme '$site_theme' to website.";
+            _error "Cannot apply theme '$site_theme' to website.";
         }
 
         my $new_user = {
