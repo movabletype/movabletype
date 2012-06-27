@@ -58,6 +58,16 @@ function validate (f) {
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
+  <mtapp:setting
+     id="system_email_address"
+     required="1"
+     label="<__trans phrase="System Email Address">"
+     hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
+     show_hint="1">
+    <input type="text"<mt:if name="config_warnings_emailaddressmain"> disabled="disabled"</mt:if> name="system_email_address" id="system_email_address" class="text med required email"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> /> <span><a href="#" id="send-test-email" class="button"><__trans phrase="Send Test Mail"></a></span>
+
+  </mt:app:setting>
+
   <mtapp:settinggroup id="system-support-settings">
     <mtapp:setting
        id="system_debug_mode"
@@ -214,7 +224,91 @@ function validate (f) {
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
 
+<div id="test-email-dialog">
+
+  <mtapp:statusmsg
+     id="email_sent"
+     class="success"
+     can_close="0">
+    <__trans phrase="A test mail was sent.">
+  </mtapp:statusmsg>
+
+  <mtapp:statusmsg
+     id="email_sent_error"
+     class="error"
+     can_close="0">
+  </mtapp:statusmsg>
+
+  <form id="test_form">
+    <mtapp:setting
+       id="to_email_address"
+       label="<__trans phrase="Send Mail To">"
+       label_class="top-label"
+       hint="<__trans phrase="The email address that should receive a test email from Movable Type.">"
+       show_hint="1">
+      <input type="text" name="to_email_address" id="to-email-address" class="text full" />
+    </mtapp:setting>
+
+    <span class="indicator"><img alt="<__trans phrase="Loading..." escape="js">" src="<mt:var name="static_uri">images/indicator.white.gif" /></span>
+    <div class="dialog actions-bar">
+      <button
+         type="submit"
+         class="action primary button">
+        <__trans phrase="Send">
+      </button>
+    </div>
+  </form>
+</div>
+
 <mt:setvarblock name="jq_js_include" append="1">
+    jQuery('#test-email-dialog').dialog({
+        bgiframe: true,
+        title: '<__trans phrase="Send Test Mail">',
+        autoOpen: false,
+        width: 450,
+    });
+
+    jQuery('#send-test-email').click(function() {
+        jQuery('span.indicator').hide();
+        jQuery('#email_sent').hide();
+        jQuery('#email_sent_error').hide();
+        jQuery('#test-email-dialog').dialog('open');
+        return false;
+    });
+
+    jQuery('#test_form').submit(function() {
+        jQuery('#email_sent').hide();
+        jQuery('#email_sent_error').hide();
+
+        var postData = {};
+        jQuery('#sys_conf').find('input:visible').each(function(){
+            var $this = jQuery(this);
+            if ( $this.attr('type') == "checkbox" ) {
+                if ( $this.is(':checked') )
+                    postData[$this.attr('name')] = $this.val();
+            } else {
+                postData[$this.attr('name')] = $this.val();
+            }
+        });
+        postData['__mode'] = "test_system_mail";
+        postData['magic_token'] = "<mt:var name="magic_token">";
+        postData['to_email_address'] = jQuery('#to-email-address').val();
+
+        jQuery('#test_form div.actions-bar').hide();
+        jQuery('span.indicator').show();
+        jQuery.post('<mt:var name="script_url">', postData, function( data ) {
+            if( data.error ) {
+                jQuery('#email_sent_error p').text( data.error );
+                jQuery('#email_sent_error').show();
+            } else if( data.result ) {
+                jQuery('#email_sent').show();
+            }
+            jQuery('span.indicator').hide();
+            jQuery('#test_form div.actions-bar').show();
+        });
+        return false;
+    });
+
     function is_valid_absolute_path(path_) {
         if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
             return true;

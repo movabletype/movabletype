@@ -480,70 +480,6 @@ sub test_system_mail {
     }
 }
 
-sub cfg_system_mail {
-    my $app = shift;
-    my %param;
-    if ( $app->param('blog_id') ) {
-        return $app->return_to_dashboard( redirect => 1 );
-    }
-
-    return $app->permission_denied()
-        unless $app->user->is_superuser();
-
-    $app->add_breadcrumb( $app->translate('Mail Settings') );
-
-    $param{nav_config}   = 1;
-    $param{nav_settings} = 1;
-
-    my $cfg = $app->config;
-    my @config_warnings;
-    for my $config_directive (
-        qw( EmailAddressMain SendMailPath SMTPServer SMTPPort SMTPAuth SMTPUseSSL SMTPUser SMTPPassword )
-        )
-    {
-        if ( $app->config->is_readonly($config_directive) ) {
-            push @config_warnings, $config_directive;
-            my $flag = "config_warnings_" . ( lc $config_directive );
-            $param{$flag} = 1;
-            $param{"config_warnings_smtpusetls"} = 1
-                if lc $config_directive eq 'smtpauth'
-                    && $cfg->SMTPAuth eq 'tls';
-        }
-    }
-
-    my $config_warning = join( ", ", @config_warnings ) if (@config_warnings);
-
-    $param{config_warning} = $app->translate(
-        "These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
-        $config_warning
-    ) if $config_warning;
-
-    require MT::Mail;
-    $param{has_net_smtp}      = MT::Mail->can_use_smtp         ? 1 : 0;
-    $param{has_net_smtp_auth} = MT::Mail->can_use_smtpauth     ? 1 : 0;
-    $param{has_net_smtp_ssl}  = MT::Mail->can_use_smtpauth_ssl ? 1 : 0;
-    $param{has_net_smtp_ssl_msg} = MT::Mail->errstr;
-    $param{has_net_smtp_tls}     = MT::Mail->can_use_smtpauth_tls ? 1 : 0;
-    $param{has_net_smtp_tls_msg} = MT::Mail->errstr;
-
-    $param{system_email_address} = $cfg->EmailAddressMain;
-    $param{mail_transfer}        = lc $cfg->MailTransfer;
-    $param{sendmail_path}        = $cfg->SendMailPath;
-    $param{smtp_server}          = $cfg->SMTPServer;
-    $param{smtp_port}            = $cfg->SMTPPort;
-    $param{smtp_auth}            = $cfg->SMTPAuth ? 1 : 0;
-    $param{smtp_auth_username}   = $cfg->SMTPUser;
-    $param{smtp_auth_password}   = $cfg->SMTPPassword;
-    $param{smtp_auth_ssl}        = $cfg->SMTPUseSSL;
-    $param{smtp_auth_tls} = lc( $cfg->SMTPAuth || '' ) eq 'tls' ? 1 : 0;
-
-    $param{saved}        = $app->param('saved');
-    $param{screen_class} = "settings-screen system-mail-settings";
-
-    $app->load_tmpl( 'cfg_system_mail.tmpl', \%param );
-
-}
-
 sub cfg_system_general {
     my $app = shift;
     my %param;
@@ -583,7 +519,7 @@ sub cfg_system_general {
         }
     }
 
-    my @readonly_configs = qw( DebugMode PerformanceLogging
+    my @readonly_configs = qw( EmailAddressMain DebugMode PerformanceLogging
         PerformanceLoggingPath PerformanceLoggingThreshold
         UserLockoutLimit UserLockoutInterval IPLockoutLimit
         IPLockoutInterval LockoutIPWhitelist LockoutNotifyTo );
@@ -604,8 +540,9 @@ sub cfg_system_general {
         $param{config_warning} = $app->translate(
             "These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
             $config_warning
-        );        
+        );
     }
+    $param{system_email_address} = $cfg->EmailAddressMain;
     $param{system_debug_mode}               = $cfg->DebugMode;
     $param{system_performance_logging}      = $cfg->PerformanceLogging;
     $param{system_performance_logging_path} = $cfg->PerformanceLoggingPath;
@@ -827,6 +764,16 @@ sub save_cfg_system_general {
     push(
         @meta_messages,
         $app->translate(
+            'Email address is [_1]',
+            $app->param('system_email_address')
+        )
+        )
+        unless (
+        $app->param('system_email_address') eq $cfg->EmailAddressMain
+    );
+    push(
+        @meta_messages,
+        $app->translate(
             'Debug mode is [_1]',
             $app->param('system_debug_mode')
         )
@@ -859,6 +806,8 @@ sub save_cfg_system_general {
     }
 
     # actually assign the changes
+    $app->config( 'EmailAddressMain',
+        ( $app->param('system_email_address') || undef ), 1 );
     $app->config( 'DebugMode', $app->param('system_debug_mode'), 1 )
         if ( $app->param('system_debug_mode') =~ /\d+/ );
     if ( not $cfg->HidePaformanceLoggingSettings ) {

@@ -232,7 +232,6 @@ sub core_methods {
         'itemset_action'       => "${pkg}Tools::do_list_action",
         'page_action'          => "${pkg}Tools::do_page_action",
         'cfg_system_general'   => "${pkg}Tools::cfg_system_general",
-        'cfg_system_mail'      => "${pkg}Tools::cfg_system_mail",
         'test_system_mail'     => {
             code     => "${pkg}Tools::test_system_mail",
             app_mode => 'JSON',
@@ -241,7 +240,6 @@ sub core_methods {
         'save_plugin_config'      => "${pkg}Plugin::save_config",
         'reset_plugin_config'     => "${pkg}Plugin::reset_config",
         'save_cfg_system_general' => "${pkg}Tools::save_cfg_system_general",
-        'save_cfg_system_mail'    => "${pkg}Tools::save_cfg_system_mail",
         'save_cfg_system_users'   => "${pkg}User::save_cfg_system_users",
         'update_welcome_message'  => "${pkg}Blog::update_welcome_message",
         'upgrade'                 => {
@@ -2125,13 +2123,6 @@ sub core_menus {
             label      => "General",
             order      => 100,
             mode       => "cfg_system_general",
-            view       => "system",
-            permission => "administer",
-        },
-        'settings:system_mail' => {
-            label      => "Mail",
-            order      => 150,
-            mode       => "cfg_system_mail",
             view       => "system",
             permission => "administer",
         },
