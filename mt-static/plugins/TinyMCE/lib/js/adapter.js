@@ -48,7 +48,7 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         plugin_mt_inlinepopups_window_sizes: {
             'advanced/link.htm': {
                 width: 350,
-                height: 175
+                height: 200
             },
             'advanced/color_picker.htm': {
                 width: 370,
