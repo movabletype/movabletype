@@ -20,8 +20,8 @@ sub fetch_themes {
     my $self         = shift;
     my $data         = {};
     my $path         = $self->url;
-    my $static_path  = MT->config->StaticFilePath;
-    my $support_path = MT->config->SupportDirectoryPath;
+    my $static_path  = MT->app->static_file_path;
+    my $support_path = MT->app->support_directory_path;
     $static_path  .= '/' unless $static_path =~ m!/$!;
     $support_path .= '/' unless $support_path =~ m!/$!;
     $path =~ s/{{static}}/$static_path/i;
@@ -42,7 +42,7 @@ sub fetch_themes {
     my $basedir = dirname($path);
     my $fmgr = file_mgr();
     my $content = $fmgr->get_data($path)
-        or die MT->translate("Failed to load StyleCatcher Library: [_1]", $path);
+        or die MT->translate("Failed to load StyleCatcher Library: [_1]", $fmgr->errstr);
     my $hp = HTML::HeadParser->new;
     $hp->parse($content);
     $hp->eof;

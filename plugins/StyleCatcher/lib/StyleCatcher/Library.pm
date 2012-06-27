@@ -18,6 +18,17 @@ sub new {
     my $pkg = shift;
     my ($id) = @_;
     my $reg = MT->registry( stylecatcher_libraries => $id );
+    if ( !defined $reg ) {
+        # Possibly template set specified repository.
+        # Will look for...
+        my $app  = MT->instance or return;
+        my $blog = $app->blog or return;
+        my $set  = $blog->template_set or return;
+        $set     = MT->registry( template_sets => $set )
+            if !ref $set;
+        my $lib = $set->{stylecatcher_libraries} or return;
+        $reg = $lib->{$id} or return;
+    }
     my $class = $reg && $reg->{class} ? $reg->{class} : 'Default';
     my $inst_class = 'StyleCatcher::Library::' . $class;
     do { eval "require $inst_class"; 1; } or die $@;
