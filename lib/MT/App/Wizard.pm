@@ -129,7 +129,7 @@ sub init_core_registry {
                     qw(mail_transfer sendmail_path smtp_server
                         test_mail_address email_address_main
                         smtp_port smtp_auth smtp_auth_username
-                        smtp_auth_password smtp_auth_ssl smtp_auth_tls )
+                        smtp_auth_password smtp_ssl )
                 ],
             },
             cfg_dir => {
@@ -981,12 +981,13 @@ sub optional {
     $param{config}                           = $app->serialize_config(%param);
 
     require MT::Mail;
-    $param{has_net_smtp}      = MT::Mail->can_use_smtp         ? 1 : 0;
-    $param{has_net_smtp_auth} = MT::Mail->can_use_smtpauth     ? 1 : 0;
-    $param{has_net_smtp_ssl}  = MT::Mail->can_use_smtpauth_ssl ? 1 : 0;
+    $param{has_net_smtp}         = MT::Mail->can_use_smtp         ? 1 : 0;
+    $param{has_net_smtp_auth}    = MT::Mail->can_use_smtpauth     ? 1 : 0;
+    $param{has_net_smtp_ssl}     = MT::Mail->can_use_smtpauth_ssl ? 1 : 0;
     $param{has_net_smtp_ssl_msg} = MT::Mail->errstr;
     $param{has_net_smtp_tls}     = MT::Mail->can_use_smtpauth_tls ? 1 : 0;
     $param{has_net_smtp_tls_msg} = MT::Mail->errstr;
+    $param{can_use_ssl}          = $param{has_net_smtp_ssl} || $param{has_net_smtp_tls};
 
     my $ok = 1;
     my $err_msg;
@@ -1006,6 +1007,8 @@ sub optional {
             if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' ) {
                 $cfg->SMTPServer( $param{smtp_server} )
                     if $param{smtp_server};
+                $cfg->SMTPPort( $param{smtp_port} )
+                    if $param{smtp_port};
                 $cfg->SMTPAuth(1)
                     if $param{smtp_auth};
                 if ( $cfg->SMTPAuth ) {
@@ -1013,12 +1016,10 @@ sub optional {
                         if $param{smtp_auth_username};
                     $cfg->SMTPpassword( $param{smtp_auth_password} )
                         if $param{smtp_auth_password};
-                    $cfg->SMTPpassword( $param{smtp_auth_password} )
-                        if $param{smtp_auth_password};
-                    $cfg->SMTPUseSSL(1)
-                        if $param{smtp_auth_ssl};
-                    $cfg->SMTPAuth('tls')
-                        if $param{smtp_auth_tls};
+                    $cfg->SMTPAuth('ssl')
+                        if $param{smtp_ssl} eq 'ssl';
+                    $cfg->SMTPAuth('starttls')
+                        if $param{smtp_ssl} eq 'tls';
                 }
             }
 
@@ -1187,11 +1188,17 @@ sub seed {
 
     $param{tmpl_loop} = \@tmpl_loop;
 
-    # If TLS is enabled, SMTPAuth should be 'tls'
-    $param{smtp_auth} = 'tls'
+    # If TLS is enabled, SMTPAuth should be 'starttls'
+    $param{smtp_auth} = 'starttls'
         if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' )
         && $param{smtp_auth}
-        && $param{smtp_auth_tls};
+        && $param{smtp_ssl} eq 'tls';
+
+    # If SSL is enabled, SMTPAuth should be 'ssl'
+    $param{smtp_auth} = 'ssl'
+        if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' )
+        && $param{smtp_auth}
+        && $param{smtp_ssl} eq 'ssl';
 
     my $data = $app->build_page( "mt-config.tmpl", \%param );
 

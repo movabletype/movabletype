@@ -44,8 +44,7 @@ SMTPServer <mt:var name="smtp_server">
 SMTPPort <mt:var name="smtp_port"><mt:if name="smtp_auth">
 SMTPAuth <mt:var name="smtp_auth">
 SMTPUser <mt:var name="smtp_auth_username">
-SMTPPassword <mt:var name="smtp_auth_password"><mt:if name="smtp_auth_ssl">
-SMTPUseSSL <mt:var name="smtp_auth_ssl"></mt:if></mt:if><mt:else><mt:if name="sendmail_path">
+SMTPPassword <mt:var name="smtp_auth_password"></mt:if><mt:else><mt:if name="sendmail_path">
 SendMailPath <mt:var name="sendmail_path"></mt:if></mt:if></mt:if><mt:if name="temp_dir">
 
 TempDir <mt:var name="temp_dir"></mt:if><mt:if name="default_language">

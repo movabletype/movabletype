@@ -136,33 +136,35 @@
                 <input type="password" id="smtp_auth_password" class="text full" name="smtp_auth_password" value="<mt:if name="smtp_auth_password"><mt:var name="smtp_auth_password" escape="html"></mt:if>" />
               </mtapp:setting>
 
-      <!-- SMTPAuth SSL -->
-            <mt:unless name="has_net_smtp_ssl">
-            <mtapp:statusmsg
-               id="no_smtp_auth_ssl"
-               class="info"
-               can_close="0">
-              <mt:var name="has_net_smtp_ssl_msg" escape="html">
-            </mtapp:statusmsg>
-            </mt:unless>
-            <p>
-              <input type="checkbox" name="smtp_auth_ssl" id="smtp_auth_ssl" class="cb" value="1" <mt:if name="has_net_smtp_ssl"><mt:if name="smtp_auth_ssl">checked</mt:if><mt:else>disabled="1" </mt:if> />
-              <label for="smtp_auth_ssl"><__trans phrase="Enable SMTP Auth with SSL"></label>
-            </p>
-
-      <!-- SMTPAuth TLS -->
-            <mt:unless name="has_net_smtp_tls">
-            <mtapp:statusmsg
-               id="no_smtp_auth_tls"
-               class="info"
-               can_close="0">
-              <mt:var name="has_net_smtp_tls_msg" escape="html">
-            </mtapp:statusmsg>
-            </mt:unless>
-            <p>
-              <input type="checkbox" name="smtp_auth_tls" id="smtp_auth_tls" class="cb" value="1" <mt:if name="has_net_smtp_tls"><mt:if name="smtp_auth_tls">checked</mt:if><mt:else>disabled="1" </mt:if> />
-              <label for="smtp_auth_tls"><__trans phrase="Enable SMTP Auth with TLS"></label>
-            </p>
+      <!-- SSL -->
+              <mtapp:setting
+                 id="smtp_ssl"
+                 label="<__trans phrase="SSL Connection">"
+                 label_class="top-label">
+              <mt:unless name="has_net_smtp_ssl">
+                <mtapp:statusmsg
+                   id="no_smtp_auth_ssl"
+                   class="info"
+                   can_close="0">
+                  <__trans phrase="Cannot use [_1]." params="SSL"> <mt:var name="has_net_smtp_ssl_msg" escape="html">
+                </mtapp:statusmsg>
+              </mt:unless>
+              <mt:unless name="has_net_smtp_tls">
+                <mtapp:statusmsg
+                   id="no_smtp_auth_tls"
+                   class="info"
+                   can_close="0">
+                  <__trans phrase="Cannot use [_1]." params="STARTTLS"> <mt:var name="has_net_smtp_tls_msg" escape="html">
+                </mtapp:statusmsg>
+              </mt:unless>
+              <mt:if name="can_use_ssl">
+                <select id="smtp_ssl" name="smtp_ssl">
+                    <option value="0"<mt:if name="smtp_ssl" eq="0"> selected="selected"</mt:if>><__trans phrase="Not use SSL"></option>
+                    <mt:if name="has_net_smtp_ssl"><option value="ssl"<mt:if name="smtp_ssl" eq="ssl"> selected="selected"</mt:if>><__trans phrase="use SSL"></option></mt:if>
+                    <mt:if name="has_net_smtp_tls"><option value="tls"<mt:if name="smtp_ssl" eq="tls"> selected="selected"</mt:if>><__trans phrase="use STARTTLS"></option></mt:if>
+                </select>
+                </mt:if>
+              </mtapp:setting>
             </div>
           </mt:if>
         </div>

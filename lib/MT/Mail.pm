@@ -185,20 +185,22 @@ sub _send_mt_smtp {
     my $pass      = $mgr->SMTPPassword;
     my $localhost = hostname() || 'localhost';
     my $port
-        = $mgr->SMTPPort   ? $mgr->SMTPPort
-        : $mgr->SMTPUseSSL ? 465
-        :                    25;
-    my ( $auth, $tls );
+        = $mgr->SMTPPort          ? $mgr->SMTPPort
+        : $mgr->SMTPAuth eq 'ssl' ? 465
+        :                           25;
+    my ( $auth, $tls, $ssl );
     if ( $mgr->SMTPAuth ) {
-
-        if ( 'tls' eq $mgr->SMTPAuth ) {
+        if ( 'starttls' eq $mgr->SMTPAuth ) {
             $tls = 1;
+        }
+        elsif ( 'ssl' eq $mgr->SMTPAuth ) {
+            $ssl = 1;
+            $auth = 1;
         }
         else {
             $auth = 1;
         }
     }
-    my $ssl = $mgr->SMTPUseSSL ? 1 : 0;
 
     return $class->error(
         MT->translate(
@@ -296,6 +298,7 @@ sub _send_mt_smtp {
     $smtp->datasend($hdr);
     $smtp->datasend("\n");
     $smtp->datasend($body);
+    $smtp->dataend();
     $smtp->quit;
     1;
 }
