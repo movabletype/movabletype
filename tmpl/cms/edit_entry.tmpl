@@ -759,7 +759,7 @@
           var option = this.options[this.selectedIndex].value;
           if ((cur_text_format != 'richtext') && (option == 'richtext')) {
               // warn user that changing to richtext is not reversible (easily)
-              if (!confirm("<__trans phrase="Are you sure you want to use the Rich Text editor?" escape="js">")) {
+              if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
                   // revert selection
                   for (var i = 0; i < this.options.length; i++) {
                       if (this.options[i].value == cur_text_format)
@@ -811,7 +811,7 @@
           var option = this.options[this.selectedIndex].value;
           if ((cur_text_format != 'richtext') && (option == 'richtext')) {
               // warn user that changing to richtext is not reversible (easily)
-              if (!confirm("<__trans phrase="Are you sure you want to use the Rich Text editor?" escape="js">")) {
+              if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
                   // revert selection
                   for (var i = 0; i < this.options.length; i++) {
                       if (this.options[i].value == cur_text_format)
