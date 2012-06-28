@@ -95,6 +95,14 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
 
                     $(elm).attr('datetime', datetime);
                 }
+            },
+            removeformat: {
+                selector: 'b,strong,em,i,font,u,strike,del',
+                remove: 'all',
+                split: true,
+                expand: false,
+                block_expand: true,
+                deep : true
             }
         },
 
