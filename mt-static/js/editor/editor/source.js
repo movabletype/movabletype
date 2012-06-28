@@ -90,9 +90,11 @@ $.extend(MT.Editor.Source.prototype, MT.Editor.prototype, {
         var selection = this.getSelection();
         if ( selection.createRange ) {
             // ie
-            this.range = null;
-            this.focus();
-            var range = selection.createRange();
+            var range = this.range;
+            if (! range) {
+                this.focus();
+                range = selection.createRange();
+            }
             return range.text;
         } else {
             var length = this.textarea.textLength;
@@ -112,9 +114,7 @@ $.extend(MT.Editor.Source.prototype, MT.Editor.prototype, {
                 range = selection.createRange();
             }
             range.text = txt;
-            if ( select_inserted_content ) {
-                range.select();
-            }
+            range.select();
         } else {
             var scrollTop = el.scrollTop;
             var length = el.textLength;
