@@ -13,7 +13,9 @@ function smarty_block_mtcomments($args, $content, &$ctx, &$repeat) {
         if ($entry)
             $args['entry_id'] = $entry->entry_id;
         $blog = $ctx->stash('blog');
-        $comments = $ctx->mt->db()->fetch_comments($args, $blog);
+        if ($blog)
+            $args['blog_id'] = $blog->blog_id;
+        $comments = $ctx->mt->db()->fetch_comments($args);
         $ctx->stash('comments', $comments);
         $counter = 0;
         $out = false;
