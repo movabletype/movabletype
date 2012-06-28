@@ -153,8 +153,13 @@ abstract class MTDatabase {
         if (isset($args['exclude_blogs']) || isset($args['exclude_websites'])) {
             $excl = $args['exclude_blogs'];
             $excl or $excl = $args['exclude_websites'];
-        }
 
+            if ( !isset( $args['include_blogs'] ) ) {
+                # If only exclude_blogs supplied, set include_blogs as all
+                $incl = 'all';
+                $args['include_blogs'] = 'all';
+            }
+        }
 
         // Compute include_blogs
         if ( !empty($incl) )
