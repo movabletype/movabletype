@@ -285,6 +285,11 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
 
         ed.execCommand('mtSetProxies', adapter.proxies);
 
+        if (ed.getContent() == '') {
+            // Browser compatibility
+            // Set the "formatselect" to default value for empty content.
+            ed.controlManager.get('formatselect').select('');
+        }
 
         var resizeTo = ed.theme.resizeTo;
         ed.theme.resizeTo = function(width, height, store, isFullscreen) {
