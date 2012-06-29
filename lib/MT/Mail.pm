@@ -13,6 +13,8 @@ use base qw( MT::ErrorHandler );
 use Encode;
 use Sys::Hostname;
 
+our $MAX_LINE_OCTET = 998;
+
 my %SMTPModules = (
     Core => [ 'Net::SMTP', 'MIME::Base64' ],
     Auth => ['Authen::SASL'],
@@ -130,6 +132,13 @@ sub send {
     $hdrs{'MIME-Version'} ||= "1.0";
 
     $hdrs{From} = $mgr->EmailAddressMain unless exists $hdrs{From};
+
+    if ( $body =~ /^.{@{[$MAX_LINE_OCTET+1]},}/m
+        && eval { require MIME::Base64 } )
+    {
+        $body = MIME::Base64::encode_base64($body);
+        $hdrs{'Content-Transfer-Encoding'} = 'base64';
+    }
 
     return 1
         unless MT->run_callbacks(
