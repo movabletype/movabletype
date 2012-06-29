@@ -2710,7 +2710,7 @@ sub canonicalize_path {
     if ($path) {
         $path =~ s/^\Q$sep\E// unless $is_abs;
     }
-    return $path ? File::Spec->catfile( $path, $filename ) : $filename;
+    return $path ? File::Spec->catpath( $vol, $path, $filename ) : $filename;
 }
 
 package MT::Util::XML::SAX::LexicalHandler;
