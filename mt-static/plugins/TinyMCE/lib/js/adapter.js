@@ -288,9 +288,12 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         if (ed.getContent() == '') {
             // Browser compatibility
             // Set the "formatselect" to default value for empty content.
-            setTimeout(function() {
-                ed.controlManager.get('formatselect').select('');
-            }, 0);
+            var formatselect;
+            if (formatselect = ed.controlManager.get('formatselect')) {
+                setTimeout(function() {
+                    formatselect.select('');
+                }, 0);
+            }
         }
 
         var resizeTo = ed.theme.resizeTo;
