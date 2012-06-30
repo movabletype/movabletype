@@ -29,7 +29,7 @@ sub start_element {
     return unless $name eq 'author';
     my $pass = $attrs->{"{}password"}->{Value};
     if ($pass =~ m/^\$6\$/) {
-        die MT->translate("Can not restore this file as it requires Digest::SHA. please contact your Movable Type system administrator.");
+        die MT->translate("Can not restore this file as it requires Digest::SHA. Please contact your Movable Type system administrator.");
     }
     1;
 }
