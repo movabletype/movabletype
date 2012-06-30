@@ -57,7 +57,7 @@ sub send {
                 foreach (@$val) {
                     if ( ( $mail_enc ne 'iso-8859-1' ) || (m/[^[:print:]]/) )
                     {
-                        if ( $header =~ m/^(From|To|Reply|B?cc)/i ) {
+                        if ( $header =~ m/^(From|To|Reply-To|B?cc)/i ) {
                             if (m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
                                 $_ = MIME::EncWords::encode_mimeword(
                                     MT::I18N::default->encode_text_encode(
@@ -302,7 +302,17 @@ sub _send_mt_smtp {
 
     # Sending mail
     $smtp->mail( $hdrs->{From} );
-    $smtp->to( $hdrs->{To} );
+
+    foreach my $h ( qw( To Bcc Cc ) ) {
+        if ( defined $hdrs->{$h} ) {
+            my $addr = $hdrs->{$h};
+            $addr = [ $addr ] unless 'ARRAY' eq ref $addr;
+            foreach my $a ( @$addr ) {
+                $smtp->recipient( $a );
+            }
+        }
+    }
+
     $smtp->data();
     $smtp->datasend($hdr);
     $smtp->datasend("\n");
