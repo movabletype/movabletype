@@ -375,7 +375,7 @@ sub init_website {
         # making sure that we have a '/' in the end of the path
         $b_path = File::Spec->catdir($b_path, "PATH");
         $b_path =~ s/PATH$//;
-        $param{'sitepth_limited'} = $b_path;
+        $param{'sitepath_limited'} = $b_path;
     }
 
     if ( $app->param('back') ) {
@@ -384,7 +384,7 @@ sub init_website {
     if ( !$app->param('finish') ) {
 
         # suggest site_path & site_url
-        my $path = $param{'sitepth_limited'} || $app->document_root();
+        my $path = $param{'sitepath_limited'} || $app->document_root();
         $param{website_path} = File::Spec->catdir($path);
 
         my $url = $app->base . '/';
@@ -405,11 +405,11 @@ sub init_website {
         pop @dirs;
         $site_path = File::Spec->catdir(@dirs);
     }
-    if ( $param{'sitepth_limited'} ) {
+    if ( $param{'sitepath_limited'} ) {
         # making sure that we have a '/' in the end of the path
         my $s_path = File::Spec->catdir($site_path, "PATH");
         $s_path =~ s/PATH$//;
-        if ( 0 != index( $s_path, $param{'sitepth_limited'} ) ) {
+        if ( 0 != index( $s_path, $param{'sitepath_limited'} ) ) {
             $param{error} = $app->translate(
                 "The 'Website Root' provided below is not allowed" );
             return $app->build_page( 'setup_initial_website.tmpl', \%param );

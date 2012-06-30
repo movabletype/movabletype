@@ -2394,7 +2394,7 @@ sub dialog_adjust_sitepath {
     if (my $limit = $app->config->BaseSitePath) {
         $limit = File::Spec->catdir($limit, "PATH");
         $limit =~ s/PATH$//;
-        $param->{sitepth_limited} = $limit;
+        $param->{sitepath_limited} = $limit;
     }
 
   # There is a danger that the asset_id list will ballon and make a request

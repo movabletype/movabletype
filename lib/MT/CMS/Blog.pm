@@ -2891,7 +2891,7 @@ sub clone {
     if (my $limit = $app->config->BaseSitePath) {
         $limit = File::Spec->catdir($limit, "PATH");
         $limit =~ s/PATH$//;
-        $param->{'sitepth_limited'} = $limit;
+        $param->{'sitepath_limited'} = $limit;
         $param->{'use_absolute'}         = 0;
         $param->{'use_absolute_archive'} = 0;
     }

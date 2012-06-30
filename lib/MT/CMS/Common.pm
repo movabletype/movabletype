@@ -732,7 +732,7 @@ sub edit {
         $param{'master_revision_switch'} = $app->config->TrackRevisions;
         my $limit = File::Spec->catdir($cfg->BaseSitePath, 'PATH');
         $limit =~ s/PATH$//;
-        $param{'sitepth_limited'} = $limit;
+        $param{'sitepath_limited'} = $limit;
     }
 
     my $res = $app->run_callbacks( 'cms_edit.' . $type, $app, $id, $obj,

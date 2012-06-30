@@ -122,7 +122,7 @@ function init() {
         <mt:if name="old_site_path">
           <input type="hidden" name="old_site_path_<mt:var name="id" escape="html">" id="old_site_path_<mt:var name="id" escape="html">" value="<mt:var name="old_site_path" escape="html">" />
         </mt:if>
-          <input type="text" name="site_path_<mt:var name="id" escape="html">" id="site_path_<mt:var name="id" escape="html">" class="website-path-text text" value="<$mt:var name="old_site_path" escape="html"$>" />
+          <input type="text" name="site_path_<mt:var name="id" escape="html">" id="site_path_<mt:var name="id" escape="html">" class="website-path-text text<mt:if name="sitepath_limited"> limited_path</mt:if>" value="<$mt:var name="old_site_path" escape="html"$>" />
         </mtapp:setting>
       </fieldset>
 
@@ -192,7 +192,7 @@ function init() {
           <div class="relative-site_path content-path">
             <span class="website-path"><span class="parent_site_path_<mt:var name="id">">&nbsp;</span></span><input type="text" name="site_path_<mt:var name="id" escape="html">" id="site_path_<mt:var name="id" escape="html">" class="blog-path-text text path" value="<mt:unless name="site_path_absolute"><$mt:var name="old_site_path" escape="html"$></mt:unless>" />
           </div>
-          <mt:unless name="sitepth_limited">
+          <mt:unless name="sitepath_limited">
           <div class="absolute-site_path content-path">
             <input type="text" name="site_path_absolute_<mt:var name="id" escape="html">" id="site_path_absolute_<mt:var name="id" escape="html">" value="<$mt:var name="old_site_path" escape="html"$>" class="blog-path-text text" />
           </div>
@@ -251,7 +251,7 @@ function init() {
           <div class="relative-site_path content-path">
             <span class="website-path"><span class="parent_site_path_<mt:var name="id">">&nbsp;</span></span><input type="text" name="archive_path_<mt:var name="id" escape="html">" id="archive_path_<mt:var name="id" escape="html">" class="blog-path-text archive-path text path" value="<mt:unless name="archive_path_absolute"><mt:var name="old_archive_path" escape="html"></mt:unless>" />
           </div>
-          <mt:unless name="sitepth_limited">
+          <mt:unless name="sitepath_limited">
           <div class="absolute-site_path content-path">
             <input type="text" name="archive_path_absolute_<mt:var name="id" escape="html">" id="archive_path_absolute_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_path" escape="html">" class="blog-path-text archive-path text" />
           </div>
@@ -324,6 +324,19 @@ function init() {
         }
         return false;
     }
+    <mt:if name="sitepath_limited">
+    function is_path_limit_clear( path_ ) {
+        var limit = '<mt:var name="sitepath_limited" escape="js">';
+        var last = limit.charAt(limit.length-1);
+        if (path_.charAt(path_.length-1) != last) {
+          path_ += last;
+        }
+        if (0 != path_.indexOf(limit)) {
+            return false;
+        }
+        return true;
+    }
+    </mt:if>
 /* ]]> */
 </script>
 <mt:setvarblock name="jq_js_include" append="1">
@@ -344,18 +357,13 @@ function init() {
             if (parent_path == '' && $e.val() == '')
                 return false;
             var full_path = parent_path + $e.val();
-            <mt:if name="sitepth_limited">
-            var limit = '<mt:var name="sitepth_limited" escape="singlequotes">';
-            var last = limit.charAt(limit.length-1);
-            if (full_path.charAt(full_path.length-1) != last) {
-              full_path += last;
-            }
-            if (0 != full_path.indexOf(limit)) {
-                return false;
-            }
-            </mt:if>
             return is_valid_path(full_path);
         },
+<mt:if name="sitepath_limited">
+       ".limited_path": function( $e ) {
+           return is_path_limit_clear( $e.val() );
+       },
+</mt:if>
         // Blog paths
         '.relative-site_path .blog-path-text': function ($e) {
             return !is_valid_absolute_path($e.val());   // IS IT OK?
@@ -387,8 +395,8 @@ function init() {
                 var b_id = RegExp.$1;
                 if ( jQuery('#use_absolute_' + b_id + ':checked').length &&
                      !jQuery('#site_path_absolute_' + b_id + ':hidden').length  ) {
-                    <mt:if name="sitepth_limited">
-                    var limit = '<mt:var name="sitepth_limited" escape="singlequotes">';
+                    <mt:if name="sitepath_limited">
+                    var limit = '<mt:var name="sitepath_limited" escape="js">';
                     var path_ = $e.val();
                     var last = limit.charAt(limit.length-1);
                     if (path_.charAt(path_.length-1) != last) {
@@ -462,6 +470,9 @@ function init() {
         '.archive-url-text': '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
         '.relative-site_path .archive-path': '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
         '.absolute-site_path .archive-path': '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
+<mt:if name="sitepath_limited">
+        ".limited_path": '<__trans phrase="Website root must be under [_1]" params="<mt:var name="sitepath_limited" escape="js">" escape="singlequotes">',
+</mt:if>
         '.parent_website': '<__trans phrase="You must select a parent website." escape="singlequotes">'
     });
 

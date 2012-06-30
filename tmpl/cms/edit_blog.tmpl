@@ -116,7 +116,7 @@ function init() {
         <div class="relative-site_path content-path">
           <span class="website-path"><mt:var name="website_path" encode_html="1"></span><input type="text" name="site_path" id="site_path" class="blog-path-text text path" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" />
         </div>
-        <mt:unless name="sitepth_limited">
+        <mt:unless name="sitepath_limited">
         <div class="absolute-site_path content-path">
           <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="blog-path-text text hide-input required" />
         </div>

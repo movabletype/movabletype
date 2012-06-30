@@ -240,9 +240,9 @@ function setLicense() {
        help_page="blog_settings_publishing"
        help_section="site_root">
       <div class="relative-site_path content-path">
-        <span class="website-path"><mt:var name="website_path" encode_html="1"></span><span class="extra-path"><input type="text" name="site_path" id="site_path" value="<mt:if name="is_blog"><mt:unless name="site_path_absolute"><mt:var name="site_path" escape="html" default="$suggested_site_path"></mt:unless><mt:else><mt:var name="site_path" escape="html" default="$suggested_site_path"></mt:if>" class="<mt:if name="is_blog"> blog-path-text path<mt:else> mt-edit-field website-path-field required</mt:if> hide-input" /></span>
+        <span class="website-path"><mt:var name="website_path" encode_html="1"></span><span class="extra-path"><input type="text" name="site_path" id="site_path" value="<mt:if name="is_blog"><mt:unless name="site_path_absolute"><mt:var name="site_path" escape="html" default="$suggested_site_path"></mt:unless><mt:else><mt:var name="site_path" escape="html" default="$suggested_site_path"></mt:if>" class="<mt:if name="is_blog"> blog-path-text path<mt:else> mt-edit-field website-path-field required<mt:if name="sitepath_limited"> limited_path</mt:if></mt:if> hide-input" /></span>
       </div>
-    <mt:if name="is_blog"><mt:unless name="sitepth_limited">
+    <mt:if name="is_blog"><mt:unless name="sitepath_limited">
       <div class="absolute-site_path content-path">
         <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" size="50" class="text blog-path-text hide-input" />
       </div>
@@ -327,7 +327,7 @@ function setLicense() {
         <div class="relative-site_path content-path">
           <span class="website-path"><mt:var name="website_path" encode_html="1"></span><span class="extra-path"><input type="text" name="archive_path" id="archive_path" value="<mt:unless name="archive_path_absolute"><mt:var name="archive_path" escape="html"></mt:unless>" class="blog-path-text blog-path-text path<mt:unless name="enable_archive_paths"> show-input</mt:unless> required" /></span>
         </div>
-        <mt:unless name="sitepth_limited">
+        <mt:unless name="sitepath_limited">
         <div class="absolute-site_path content-path">
           <input type="text" name="archive_path_absolute" id="archive_path_absolute" value="<mt:if name="archive_path_absolute"><mt:var name="archive_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="blog-path-text<mt:unless name="enable_archive_paths"> show-input</mt:unless>" />
         </div>
@@ -490,6 +490,19 @@ function setLicense() {
         }
         return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ ) ? true : false;
     }
+    <mt:if name="sitepath_limited">
+    function is_path_limit_clear( path_ ) {
+        var limit = '<mt:var name="sitepath_limited" escape="js">';
+        var last = limit.charAt(limit.length-1);
+        if (path_.charAt(path_.length-1) != last) {
+          path_ += last;
+        }
+        if (0 != path_.indexOf(limit)) {
+            return false;
+        }
+        return true;
+    }
+    </mt:if>
     function is_valid_path(path_){
         var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, ""); //"
         str = encodeURI(str);
@@ -501,15 +514,6 @@ function setLicense() {
         }
         <mt:if name="is_blog">
         if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
-            return false;
-        }
-        <mt:elseif name="sitepth_limited">
-        var limit = '<mt:var name="sitepth_limited" escape="singlequotes">';
-        var last = limit.charAt(limit.length-1);
-        if (path_.charAt(path_.length-1) != last) {
-          path_ += last;
-        }
-        if (0 != path_.indexOf(limit)) {
             return false;
         }
         </mt:if>
@@ -552,6 +556,11 @@ function setLicense() {
         "#site_path": function($e) {
             return is_valid_path($e.val());
         },
+<mt:if name="sitepath_limited">
+       "#site_path.limited_path": function( $e ) {
+           return is_path_limit_clear( $e.val() );
+       },
+</mt:if>
         "#archive_path": function ($e) {
             if ( jQuery('#enable_archive_paths:checked').length && !jQuery('#use_absolute_archive:checked').length ) {
                 if ( !$e.val().length ) return false;
@@ -575,6 +584,9 @@ function setLicense() {
         "#site_path": '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
         "#site_path.required": '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
         "#site_path.path": '<__trans phrase="You must set a valid Local file Path." escape="singlequotes">',
+<mt:if name="sitepath_limited">
+        "#site_path.limited_path": '<__trans phrase="Website root must be under [_1]" params="<mt:var name="sitepath_limited" escape="js">" escape="singlequotes">',
+</mt:if>
         "#site_path_absolute.required": '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
         "#site_path_absolute": '<__trans phrase="You must set a valid Local file Path." escape="singlequotes">',
         "#archive_url_path.required": '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
