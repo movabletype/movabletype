@@ -160,8 +160,8 @@
               <mt:if name="can_use_ssl">
                 <select id="smtp_ssl" name="smtp_ssl">
                     <option value="0"<mt:if name="smtp_ssl" eq="0"> selected="selected"</mt:if>><__trans phrase="Not use SSL"></option>
-                    <mt:if name="has_net_smtp_ssl"><option value="ssl"<mt:if name="smtp_ssl" eq="ssl"> selected="selected"</mt:if>><__trans phrase="use SSL"></option></mt:if>
-                    <mt:if name="has_net_smtp_tls"><option value="tls"<mt:if name="smtp_ssl" eq="tls"> selected="selected"</mt:if>><__trans phrase="use STARTTLS"></option></mt:if>
+                    <mt:if name="has_net_smtp_ssl"><option value="ssl"<mt:if name="smtp_ssl" eq="ssl"> selected="selected"</mt:if>><__trans phrase="Use SSL"></option></mt:if>
+                    <mt:if name="has_net_smtp_tls"><option value="tls"<mt:if name="smtp_ssl" eq="tls"> selected="selected"</mt:if>><__trans phrase="Use STARTTLS"></option></mt:if>
                 </select>
                 </mt:if>
               </mtapp:setting>
