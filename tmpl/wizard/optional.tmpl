@@ -290,15 +290,12 @@ jQuery(function() {
         }
     });
 
-    jQuery('#smtp_auth_ssl').click(function() {
-        if ( jQuery(this).is(':checked') ) {
-          if ( jQuery('#smtp_port').val().length == 0 || jQuery('#smtp_port').val() == 25 ) {
+    jQuery('#smtp_ssl').change(function() {
+        var type = jQuery(':selected', this).val();
+        if ( type == "ssl" && ( jQuery('#smtp_port').val().length == 0 || jQuery('#smtp_port').val() == 25 ) ) {
             jQuery('#smtp_port').val(465).mtUnvalidate();
-          }
-        } else {
-          if ( jQuery('#smtp_port').val().length == 0 || jQuery('#smtp_port').val() == 465 ) {
+        } else if( type == '0' && ( jQuery('#smtp_port').val().length == 0 || jQuery('#smtp_port').val() == 465 ) ) {
             jQuery('#smtp_port').val(25).mtUnvalidate();
-          }
         }
     });
 
