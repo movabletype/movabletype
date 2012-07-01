@@ -406,7 +406,7 @@ sub init_website {
         $site_path = File::Spec->catdir(@dirs);
     }
     if ( $param{'sitepath_limited'} ) {
-        # making sure that we have a '/' in the end of the path
+        # making sure that we have a '/' or '\' in the end of the path
         my $s_path = File::Spec->catdir($site_path, "PATH");
         $s_path =~ s/PATH$//;
         if ( 0 != index( $s_path, $param{'sitepath_limited'} ) ) {

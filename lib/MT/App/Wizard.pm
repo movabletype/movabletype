@@ -177,7 +177,7 @@ sub init_core_registry {
             },
             'Authen::SASL' => {
                 link  => 'http://search.cpan.org/dist/Authen-SASL/',
-                label => 'Authen::SASL is required for using SMTP Auth.',
+                label => 'This module and its dependencies are required in order to use CRAM-MD5, DIGEST-MD5 or LOGIN as a SASL mechanism.',
             },
             'Net::SMTP::SSL' => {
                 link => 'http://search.cpan.org/dist/Net-SMTP-SSL/',
@@ -187,17 +187,17 @@ sub init_core_registry {
             'Net::SMTP::TLS' => {
                 link => 'http://search.cpan.org/dist/Net-SMTP-TLS/',
                 label =>
-                    'Net::SMTP::TLS is required for using SMTP Auth with TLS protocol.',
+                    'Net::SMTP::TLS is required for using SMTP Auth with STARTTLS command.',
             },
             'IO::Socket::SSL' => {
                 link => 'http://search.cpan.org/dist/IO-Socket-SSL/',
                 label =>
-                    'IO::Socket::SSL is required for using SMTP Auth with SSL connection or using  with TLS protocol.',
+                    'IO::Socket::SSL is required for using SMTP Auth with SSL connection or using  with STARTTLS command.',
             },
             'Net::SSLeay' => {
                 link => 'http://search.cpan.org/dist/Net-SSLeay/',
                 label =>
-                    'Net::SSLeay is required for using SMTP Auth with SSL connection or using  with TLS protocol.',
+                    'Net::SSLeay is required for using SMTP Auth with SSL connection or using  with STARTTLS command.',
             },
             'HTML::Entities' => {
                 link => 'http://search.cpan.org/dist/HTML-Entities',
@@ -363,7 +363,7 @@ sub init_core_registry {
             'LWP::UserAgent' => {
                 link => 'http://search.cpan.org/dist/libwww-perl/',
                 label =>
-                    'LWPUserAgent is required for making configuration file by Wizard.',
+                    'LWP::UserAgent is required for making configuration file by Wizard.',
             },
         },
         database_options => {

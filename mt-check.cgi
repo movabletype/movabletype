@@ -441,7 +441,7 @@ my @CORE_REQ = (
     [   'LWP::UserAgent',
         0, 0,
         translate(
-            'LWPUserAgent is required for making configuration file by Wizard.'
+            'LWP::UserAgent is required for making configuration file by Wizard.'
         )
     ],
 
@@ -681,7 +681,7 @@ my @CORE_OPT = (
     ],
 
     [   'Authen::SASL', 0, 0,
-        translate( 'Authen::SASL is required for using SMTP Auth.' )
+        translate( 'This module and its dependencies are required in order to use CRAM-MD5, DIGEST-MD5 or LOGIN as a SASL mechanism.' )
     ],
 
     [   'Net::SMTP::SSL',
@@ -694,21 +694,21 @@ my @CORE_OPT = (
     [   'Net::SMTP::TLS',
         0, 0,
         translate(
-            'Net::SMTP::TLS is required for using SMTP Auth with TLS protocol.'
+            'Net::SMTP::TLS is required for using SMTP Auth with STARTTLS command.'
         )
     ],
 
     [   'IO::Socket::SSL',
         0, 0,
         translate(
-            'IO::Socket::SSL is required for using SMTP Auth with SSL connection or using  with TLS protocol.'
+            'IO::Socket::SSL is required for using SMTP Auth with SSL connection or using  with STARTTLS command.'
         )
     ],
 
     [   'Net::SSLeay',
         0, 0,
         translate(
-            'Net::SSLeay is required for using SMTP Auth with SSL connection or using  with TLS protocol.'
+            'Net::SSLeay is required for using SMTP Auth with SSL connection or using  with STARTTLS command.'
         )
     ],
 
