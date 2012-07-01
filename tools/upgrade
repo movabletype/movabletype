@@ -202,14 +202,8 @@ sub main {
         }
         print "Installation complete.\n" unless $quiet;
 
-        my $blog = MT->model('blog')->load(1);
-        $blog->theme_id($site_theme);
-        $blog->save;
-        $blog->apply_theme;
-        $blog->save;
-        print "Apply theme complete.\n" unless $quiet;
-
         if ($rebuild) {
+            my $blog = MT->model('blog')->load(1);
             MT->rebuild( BlogID => $blog->id );
             print "Rebuilding website complete.\n" unless $quiet;
         }
