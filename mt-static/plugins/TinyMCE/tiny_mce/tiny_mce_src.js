@@ -6,9 +6,9 @@
 	var tinymce = {
 		majorVersion : '3',
 
-		minorVersion : '5.4',
+		minorVersion : '5.4.1',
 
-		releaseDate : '2012-06-21',
+		releaseDate : '2012-06-24',
 
 		_init : function() {
 			var t = this, d = document, na = navigator, ua = na.userAgent, i, nl, n, base, p, v;
@@ -1083,6 +1083,10 @@ tinymce.create('static tinymce.util.XHR', {
 
 		modifierPressed: function (e) {
 			return e.shiftKey || e.ctrlKey || e.altKey;
+		},
+
+		metaKeyPressed: function(e) {
+			return tinymce.isMac ? e.metaKey : e.ctrlKey;
 		}
 	};
 })(tinymce);
@@ -1212,7 +1216,7 @@ tinymce.util.Quirks = function(editor) {
 
 	function selectAll() {
 		editor.onKeyDown.add(function(editor, e) {
-			if (e.keyCode == 65 && VK.modifierPressed(e)) {
+			if (e.keyCode == 65 && VK.metaKeyPressed(e)) {
 				e.preventDefault();
 				editor.execCommand('SelectAll');
 			}
@@ -14565,7 +14569,7 @@ tinymce.create('tinymce.ui.Toolbar:tinymce.ui.Container', {
 
 		function nodeChanged(ed, e) {
 			// Normalize selection for example <b>a</b><i>|a</i> becomes <b>a|</b><i>a</i> except for Ctrl+A since it selects everything
-			if (e.keyCode != 65 || !tinymce.VK.modifierPressed(e)) {
+			if (e.keyCode != 65 || !tinymce.VK.metaKeyPressed(e)) {
 				self.selection.normalize();
 			}
 
