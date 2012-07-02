@@ -761,9 +761,16 @@ sub _build_favorite_websites_data {
     my $class        = $app->model('website');
     my @fav_websites = @{ $user->favorite_websites || [] };
     my $fav_count    = scalar @fav_websites;
-    my @websites;
-    @websites = $class->load( { id => \@fav_websites } )
+    my @websites = $class->load( { id => \@fav_websites } )
         if $fav_count;
+
+    @websites = grep sub {
+        my $website = $_;
+        foreach my $id ( $website->id, map { $_->id } @{ $website->blogs } ) {
+            return 1 if $user->has_perm($id);
+        }
+        return 0;
+    }, @websites;
 
     # Append accessible websites if user has 4 or more blogs.
     if ( scalar @websites < 10 ) {
@@ -774,7 +781,8 @@ sub _build_favorite_websites_data {
             { author_id => $user->id, permissions => { not => "'comment'" } }
             )
             if !$auth->is_superuser
-                && !$auth->permissions(0)->can_do('edit_templates');
+                && !$auth->permissions(0)->can_do('edit_templates')
+                && !$auth->permissions(0)->can_do('create_blog');
         $args{limit}  = 10 - $fav_count;
         $terms{class} = 'website';
         $terms{id}    = { not => \@fav_websites } if $fav_count;
