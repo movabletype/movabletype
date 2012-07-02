@@ -72,38 +72,46 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         },
 
         formats: {
-            strikethrough: {
-                inline: 'del',
-                remove : 'all',
-                onformat: function(elm, fmt, vars) {
-                    function z(str) {
-                        return ('0' + str).slice(-2);
+            strikethrough: [
+                {
+                    inline: 'del',
+                    remove : 'all',
+                    onformat: function(elm, fmt, vars) {
+                        function z(str) {
+                            return ('0' + str).slice(-2);
+                        }
+
+                        var now = new Date();
+                        var m = now.toString().match(/(\-|\+)(\d{2}).?(\d{2})/);
+
+                        var datetime = [
+                            now.getFullYear(),
+                            z(now.getMonth()+1),
+                            z(now.getDate())
+                        ].join('-') + 'T' + [
+                            z(now.getHours()),
+                            z(now.getMinutes()),
+                            z(now.getSeconds())
+                        ].join(':') + m[1] + m[2] + ':' + m[3];
+
+                        $(elm).attr('datetime', datetime);
                     }
-
-                    var now = new Date();
-                    var m = now.toString().match(/(\-|\+)(\d{2}).?(\d{2})/);
-
-                    var datetime = [
-                        now.getFullYear(),
-                        z(now.getMonth()+1),
-                        z(now.getDate())
-                    ].join('-') + 'T' + [
-                        z(now.getHours()),
-                        z(now.getMinutes()),
-                        z(now.getSeconds())
-                    ].join(':') + m[1] + m[2] + ':' + m[3];
-
-                    $(elm).attr('datetime', datetime);
-                }
-            },
-            removeformat: {
-                selector: 'b,strong,em,i,font,u,strike,del',
-                remove: 'all',
-                split: true,
-                expand: false,
-                block_expand: true,
-                deep : true
-            }
+                },
+                {inline : 'span', styles : {textDecoration : 'line-through'}, exact : true},
+                {inline : 'strike', remove : 'all'}
+            ],
+            removeformat: [
+                {
+                    selector: 'b,strong,em,i,font,u,strike,del',
+                    remove: 'all',
+                    split: true,
+                    expand: false,
+                    block_expand: true,
+                    deep : true
+                },
+                {selector : 'span', attributes : ['style', 'class'], remove : 'empty', split : true, expand : false, deep : true},
+                {selector : '*', attributes : ['style', 'class'], split : false, expand : false, deep : true}
+            ]
         },
 
         convert_urls: false,
