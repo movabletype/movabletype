@@ -388,12 +388,15 @@ sub listing {
     $param->{listing_screen} = 1;
     my $add_pseudo_new_user = delete $param->{pseudo_new_user}
         if exists $param->{pseudo_new_user};
-    my $hasher   = $opt->{code}     || $opt->{Code};
-    my $terms    = $opt->{terms}    || $opt->{Terms} || {};
-    my $args     = $opt->{args}     || $opt->{Args} || {};
-    my $no_html  = $opt->{no_html}  || $opt->{NoHTML};
-    my $no_limit = $opt->{no_limit} || 0;
-    my $json     = $opt->{json}     || $app->param('json');
+    my $hasher  = $opt->{code}    || $opt->{Code};
+    my $terms   = $opt->{terms}   || $opt->{Terms} || {};
+    my $args    = $opt->{args}    || $opt->{Args} || {};
+    my $no_html = $opt->{no_html} || $opt->{NoHTML};
+    my $json    = $opt->{json}    || $app->param('json');
+    my $no_limit
+        = exists( $opt->{no_limit} )
+        ? $opt->{no_limit}
+        : ( $app->param('search') ? 1 : 0 );
     my $pre_build = $opt->{pre_build} if ref( $opt->{pre_build} ) eq 'CODE';
     $param->{json} = 1 if $json;
 
