@@ -1603,4 +1603,16 @@ function _strip_index($url, $blog) {
     return $url;
 }
 
+function common_loop_vars() {
+    return array(
+        '__counter__',
+        '__odd__',
+        '__even__',
+        '__first__',
+        '__last__',
+        '__key__',
+        '__value__',
+    );
+}
+
 ?>

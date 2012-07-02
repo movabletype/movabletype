@@ -8,6 +8,7 @@
 include_once("Smarty.class.php");
 class MTViewer extends Smarty {
     var $varstack = array();
+    var $stash_var_stack = array();
     var $__stash;
     var $mt;
     var $last_ts = 0;
@@ -180,16 +181,31 @@ class MTViewer extends Smarty {
         return $old_val;
     }
 
-    function localize($vars) {
+    function localize($vars, $stash_vars_vars = array()) {
+        if (! empty($vars) && is_array($vars[0])) {
+            list($vars, $stash_vars_vars) = $vars;
+        }
+
         foreach ($vars as $v) {
             if (!isset($this->varstack[$v])) $this->varstack[$v] = array();
             $this->varstack[$v][] = isset($this->__stash[$v]) ? $this->__stash[$v] : null;
         }
+        foreach ($stash_vars_vars as $v) {
+            if (!isset($this->stash_var_stack[$v])) $this->stash_var_stack[$v] = array();
+            $this->stash_var_stack[$v][] = isset($this->__stash['vars'][$v]) ? $this->__stash['vars'][$v] : null;
+        }
     }
 
-    function restore($vars) {
+    function restore($vars, $stash_vars_vars = array()) {
+        if (! empty($vars) && is_array($vars[0])) {
+            list($vars, $stash_vars_vars) = $vars;
+        }
+
         foreach ($vars as $v) {
             $this->__stash[$v] = (isset($this->varstack[$v]) && count($this->varstack[$v]) > 0) ? array_pop($this->varstack[$v]) : null;
+        }
+        foreach ($stash_vars_vars as $v) {
+            $this->__stash['vars'][$v] = (isset($this->stash_var_stack[$v]) && count($this->stash_var_stack[$v]) > 0) ? array_pop($this->stash_var_stack[$v]) : null;
         }
     }
 
