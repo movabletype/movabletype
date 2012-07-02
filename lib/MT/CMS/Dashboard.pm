@@ -897,6 +897,18 @@ sub _build_favorite_blogs_data {
     my ($param) = @_;
     my $user    = $app->user;
 
+    my $permission_join_on = undef;
+    if (   !$user->is_superuser
+        && !$user->permissions(0)->can_do('edit_templates') )
+    {
+        $permission_join_on = MT::Permission->join_on(
+            'blog_id',
+            {   author_id   => $user->id,
+                permissions => { not => "'comment'" }
+            }
+        );
+    }
+
     # Load user's favorite blogs.
     my $class     = $app->model('blog');
     my @fav_blogs = @{ $user->favorite_blogs || [] };
@@ -908,20 +920,16 @@ sub _build_favorite_blogs_data {
                 ? ( parent_id => $app->blog->id )
                 : ()
             ),
-        }
+        },
+        { ( $permission_join_on ? ( 'join' => $permission_join_on ) : () ), },
     ) if $fav_count;
 
     # Append accessible blogs if favorite blogs is under 10;
     if ( scalar @blogs < 10 ) {
-        my $auth = $app->user or return;
         my %args;
         my %terms;
-        $args{join} = MT::Permission->join_on( 'blog_id',
-            { author_id => $user->id, permissions => { not => "'comment'" } }
-            )
-            if !$auth->is_superuser
-                && !$auth->permissions(0)->can_do('edit_templates');
-        $args{limit}      = 10 - $fav_count;
+        $args{join}       = $permission_join_on if $permission_join_on;
+        $args{limit}      = 10 - @blogs;
         $terms{class}     = 'blog';
         $terms{parent_id} = $app->blog->id
             if $app->blog && !$app->blog->is_blog;
