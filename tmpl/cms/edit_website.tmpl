@@ -172,9 +172,6 @@ jQuery(function() {
         if (str.match(/\.\./)) {
             return false;
         }
-        if (!str.match(/^(\/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)/)) {
-            return false;
-        }
         return true;
     }
     <mt:if name="sitepath_limited">
