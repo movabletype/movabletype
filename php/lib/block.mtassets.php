@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
-    $localvars = array('_assets', 'asset', 'asset_first_in_row', 'asset_last_in_row', 'conditional', 'else_content');
+    $localvars = array(array('_assets', 'asset', 'asset_first_in_row', 'asset_last_in_row', 'conditional', 'else_content'), common_loop_vars());
     $counter = 0;
 
     if (isset($args['sort_by']) && $args['sort_by'] == 'score' && !isset($args['namespace'])) {
