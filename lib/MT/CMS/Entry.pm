@@ -1110,6 +1110,14 @@ sub _build_entry_preview {
     my $preview_basename = $app->preview_object_basename;
     $entry->basename( $q->param('basename') || $preview_basename );
 
+    # translates naughty words when PublishCharset is NOT UTF-8
+    MT::Util::translate_naughty_words($entry);
+
+    $entry->convert_breaks( scalar $q->param('convert_breaks') );
+
+    my @data = ( { data_name => 'author_id', data_value => $user_id } );
+    $app->run_callbacks( 'cms_pre_preview', $app, $entry, \@data );
+
     require MT::TemplateMap;
     require MT::Template;
     my $at = $type eq 'page' ? 'Page' : 'Individual';
@@ -1148,14 +1156,6 @@ sub _build_entry_preview {
     }
     return $app->error( $app->translate('Can\'t load template.') )
         unless $tmpl;
-
-    # translates naughty words when PublishCharset is NOT UTF-8
-    MT::Util::translate_naughty_words($entry);
-
-    $entry->convert_breaks( scalar $q->param('convert_breaks') );
-
-    my @data = ( { data_name => 'author_id', data_value => $user_id } );
-    $app->run_callbacks( 'cms_pre_preview', $app, $entry, \@data );
 
     my $ctx = $tmpl->context;
     $ctx->stash( 'entry',    $entry );
