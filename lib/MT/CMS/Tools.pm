@@ -1090,6 +1090,7 @@ sub backup {
         if ( '0' eq $archive ) {
             ( $fh, my $filepath )
                 = File::Temp::tempfile( 'xml.XXXXXXXX', DIR => $temp_dir );
+            binmode $fh, ":encoding(utf8)";
             ( my $vol, my $dir, $fname ) = File::Spec->splitpath($filepath);
             $printer = sub {
                 my ($data) = @_;
