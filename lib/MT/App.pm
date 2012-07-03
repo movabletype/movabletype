@@ -1464,7 +1464,7 @@ sub get_commenter_session {
 
     my %cookies     = $app->cookies();
     my $cookie_name = $app->commenter_session_cookie_name;
-    if ( !$cookies{$cookie_name} ) {
+    if ( !$cookies{$cookie_name} or !$cookies{$cookie_name}->value() ) {
         return ( undef, undef );
     }
     my $state
@@ -1681,6 +1681,7 @@ sub bake_user_state_cookie {
 sub unbake_user_state_cookie {
     my $app = shift;
     my ($value) = @_;
+    return unless $value;
     return {
         map {
             my ( $k, $v ) = split( ':', $_, 2 );
