@@ -119,6 +119,37 @@
             return buttonRows;
         },
 
+        _setupIframeStatus : function(ed) {
+            ed.onPostRender.add(function() {
+                var $win        = $(window);
+                var $c          = $(ed.getContainer());
+                var $iframe     = $c.find('iframe');
+                var $iframeWin  = $(ed.getWin());
+                var ns          = '.tinymce_mt_iframe_status_' + ed.id;
+
+                $iframeWin
+                    .focus(function() {
+                        $iframe.addClass('state-focus');
+                    })
+                    .blur(function() {
+                        $iframe.removeClass('state-focus');
+                    });
+
+                function bindMousemoveToIframe() {
+                    $iframeWin.bind('mousemove' + ns, function() {
+                        $iframeWin.unbind('mousemove' + ns);
+                        $iframe.addClass('state-hover');
+                        $win.bind('mousemove' + ns, function() {
+                            $win.unbind('mousemove' + ns);
+                            $iframe.removeClass('state-hover');
+                            bindMousemoveToIframe();
+                        });
+                    });
+                }
+                bindMousemoveToIframe();
+            });
+        },
+
         _setupExplicitButtonActivation : function(ed) {
             ed.onPostRender.add(function() {
                 var win      = window;
@@ -320,6 +351,7 @@
             });
 
             this._setupExplicitButtonActivation(ed);
+            this._setupIframeStatus(ed);
 
             ed.addCommand('mtGetStatus', function() {
                 return ed.mtEditorStatus;
