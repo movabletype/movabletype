@@ -129,10 +129,7 @@
                     win[button] = $(this).addClass('psedo-active');
                 });
 
-                $.each([
-                    win,
-                    $c.find('iframe')[0].contentWindow
-                ], function() {
+                $.each([win, ed.getWin()], function() {
                     var w  = this;
                     var ns = '.tinymce_mt_button_activate';
                     $.each(['mouseup', 'touchend'], function(index, event) {
@@ -322,9 +319,7 @@
                 ed.theme.resizeBy(0, 0);
             });
 
-            if ($.browser.mozilla) {
-                this._setupExplicitButtonActivation(ed);
-            }
+            this._setupExplicitButtonActivation(ed);
 
             ed.addCommand('mtGetStatus', function() {
                 return ed.mtEditorStatus;
