@@ -132,39 +132,43 @@ sub run_cgi_without_buffering {
         my $header = '';
         my $header_sent;
         my $writer;
-        while ( my @ready = $s->can_read ) {
-            for my $fh (@ready) {
-                if ( my $len = sysread( $fh, my $buf, 4096 ) > 0 ) {
-                    if ( $fh == $child_out ) {
-                        if ($header_sent) {
-                            $writer->write($buf);
-                        }
-                        else {
-                            $header .= $buf;
-                            if ( $header =~ /\r\n\r\n/ ) {
-                                my $res = CGI::Parse::PSGI::parse_cgi_output(
-                                    \$header );
-                                my %header = @{ $res->[1] };
-                                delete $header{'Content-Length'};
-                                $res->[1] = [%header];
-                                my $body = delete $res->[2];
-                                $writer = $respond->($res);
-                                $body = join '', @$body
-                                    if 'ARRAY' eq ref $body;
-                                $writer->write($body);
-                                $header_sent = 1;
+        while( 1 ) {
+            while ( my @ready = $s->can_read ) {
+                for my $fh (@ready) {
+                    if ( my $len = sysread( $fh, my $buf, 4096 ) > 0 ) {
+                        if ( $fh == $child_out ) {
+                            if ($header_sent) {
+                                $writer->write($buf);
+                            }
+                            else {
+                                $header .= $buf;
+                                if ( $header =~ /\r\n\r\n/ ) {
+                                    my $res = CGI::Parse::PSGI::parse_cgi_output(
+                                        \$header );
+                                    my %header = @{ $res->[1] };
+                                    delete $header{'Content-Length'};
+                                    $res->[1] = [%header];
+                                    my $body = delete $res->[2];
+                                    $writer = $respond->($res);
+                                    $body = join '', @$body
+                                        if 'ARRAY' eq ref $body;
+                                    $writer->write($body);
+                                    $header_sent = 1;
+                                }
                             }
                         }
+                        elsif ( $fh == $child_err ) {
+                            syswrite $env->{'psgi.errors'}, $buf;
+                        }
                     }
-                    elsif ( $fh == $child_err ) {
-                        syswrite $env->{'psgi.errors'}, $buf;
+                    else {
+                        $s->remove($fh);
+                        close $fh;
                     }
-                }
-                else {
-                    $s->remove($fh);
-                    close $fh;
                 }
             }
+
+            last if waitpid($pid, 1) > 0
         }
         $writer->close if $writer;
     };
