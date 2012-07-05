@@ -4984,18 +4984,38 @@ sub setup_editor_param {
         $param->{editors} = {};
         foreach my $editors (@$editor_regs) {
             foreach my $editor_key ( keys(%$editors) ) {
-                my $reg = $editors->{$editor_key};
-                my $tmpls = $param->{editors}{$editor_key} ||= {
+                my $reg    = $editors->{$editor_key};
+                my $plugin = $reg->{plugin};
+                my $tmpls  = $param->{editors}{$editor_key} ||= {
                     templates  => [],
                     extensions => [],
                 };
 
                 foreach my $k ( 'template', 'extension' ) {
-                    if ( my $tmpl = $reg->{plugin}->load_tmpl( $reg->{$k} ) )
+                    my $conf = $reg->{$k};
+                    if ( !ref $conf ) {
+                        $conf = {
+                            template => $conf,
+                            order    => 5,
+                        };
+                    }
+
+                    if ( my $tmpl = $plugin->load_tmpl( $conf->{template} ) )
                     {
-                        push( @{ $tmpls->{ $k . 's' } }, { tmpl => $tmpl } );
+                        push(
+                            @{ $tmpls->{ $k . 's' } },
+                            { %$conf, tmpl => $tmpl }
+                        );
                     }
                 }
+            }
+        }
+
+        foreach my $editor_key ( keys %{ $param->{editors} } ) {
+            foreach my $k ( 'templates', 'extensions' ) {
+                $param->{editors}{$editor_key}{$k}
+                    = [ sort { $a->{order} <=> $b->{order} }
+                        @{ $param->{editors}{$editor_key}{$k} } ];
             }
         }
 
