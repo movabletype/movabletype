@@ -2626,6 +2626,17 @@ sub request_content {
             my $len = $app->get_header('Content-length');
             $r->read( $app->{request_content}, $len );
         }
+        elsif ( $ENV{'psgi.input'} ) {
+            ## Read frrom psgi.input
+            my $fh = $ENV{'psgi.input'};
+            seek $fh, 0, 0;
+            my $buffer = '';
+            while ( my $buf = <$fh> ) {
+               $buffer .= $buf;
+            };
+            $app->{request_content} = $buffer
+                if $buffer;
+        }
         else {
             ## Read from STDIN
             my $len = $ENV{CONTENT_LENGTH} || 0;
