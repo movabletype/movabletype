@@ -148,10 +148,13 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         config['elements'] = adapter.id;
 
         config['content_css'] =
-            adapter.commonOptions['content_css_list'].join(',');
+            (config['content_css'] + ',' + adapter.commonOptions['content_css_list'].join(','))
+            .replace(/^,+/, '');
         config['body_class'] =
-            adapter.commonOptions['body_class_list'].join(' ');
-        config['body_id'] = adapter.id;
+            config['body_class'] + ' ' + adapter.commonOptions['body_class_list'].join(' ')
+        if (! config['body_id']) {
+            config['body_id'] = adapter.id;
+        }
 
         tinyMCE.init(config);
             
