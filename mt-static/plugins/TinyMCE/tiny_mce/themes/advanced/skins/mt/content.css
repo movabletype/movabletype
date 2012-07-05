@@ -1,5 +1,12 @@
+html { 
+    padding: 10px;
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
 body { 
-    margin: 10px ! important;
+    margin: 0;
     line-height: 1.62;
     background-color: #ffffff;
     color: #000000;

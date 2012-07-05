@@ -151,7 +151,7 @@ input[type="radio"] {
 }
 .text:focus { 
     outline: 0;
-    border-color: #2a83a2
+    border-color: #2a83a2;
 }
 .text.disabled, 
 .text[disabled], 

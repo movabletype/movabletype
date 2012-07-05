@@ -12,9 +12,7 @@
     font-size: 90%;
     text-align: center;
     text-transform: uppercase;
-    border-top-right-radius: 3px;
-    border-top-left-radius: 3px;
-    -moz-border-radius: 3px 3px 0 0;
+    border-radius: 2px 2px 0 0;
 }
 .editor-header .tab a { 
     color: #7b7c7d;
@@ -58,6 +56,10 @@
     white-space: pre;
     font-family: monospace;
     -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
     box-sizing: border-box;
+    border-radius: 0;
+}
+#editor-content textarea:hover, 
+#editor-content textarea:focus {
+    box-shadow: none;
 }

@@ -11,7 +11,6 @@
 .mtSkin .mceText { 
     margin: 0;
     padding: 0;
-    border: 0;
     background: transparent;
     white-space: nowrap;
     text-decoration: none;
@@ -45,28 +44,17 @@
     border-collapse: collapse;
 }
 
-.mtSkin iframe { 
-    display: block;
-    background: #ffffff;
-}
-
 /* - Layout */
-.mtSkin table.mceLayout, 
 .mtSkin table.mceLayout tr.mceFirst td, 
-.mtSkin table.mceLayout tr.mceLast td, 
-.mtSkin .mceIframeContainer { 
+.mtSkin table.mceLayout tr.mceLast td { 
     border-color: #c0c6c9;
     border-style: solid;
-    border-width: 0 1px;
 }
 .mtSkin table.mceLayout tr.mceFirst td { 
-    border-width: 1px 0 0;
+    border-width: 1px 1px 0;
 }
 .mtSkin table.mceLayout tr.mceLast td { 
-    border-width: 0 0 1px;
-}
-.mtSkin .mceIframeContainer { 
-    border-width: 1px 0;
+    border-width: 0 1px 1px;
 }
 .mtSkin table.mceToolbar, 
 .mtSkin tr.mceFirst .mceToolbar tr td, 
@@ -74,6 +62,21 @@
     margin: 0;
     padding: 0;
     border: 0;
+}
+
+.mtSkin iframe { 
+    display: block;
+    border: 1px solid #adadad;
+    border-top-color: #a3a3a2;
+    background: #ffffff;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.mtSkin iframe.state-hover { 
+    border-color: #a0a0a0;
+}
+.mtSkin iframe.state-focus { 
+    border-color: #2a83a2;
 }
 
 .mtSkin table.mceToolbar { 
