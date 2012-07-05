@@ -129,7 +129,7 @@ $.extend(MT.Editor.prototype, {
 
 // Delegate
 $.each([
-    'show', 'hide', 'focus', 'setFormat',
+    'show', 'hide', 'focus', 'setFormat', 'save',
     'getContent', 'setContent', 'insertContent',
     'getHeight', 'setHeight', 'resetUndo'
 ], function() {

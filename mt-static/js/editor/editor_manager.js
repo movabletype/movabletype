@@ -82,6 +82,8 @@ $.extend(MT.EditorManager, {
 $.extend(MT.EditorManager.prototype, {
 
     init: function(id, options) {
+        var manager = this;
+
         this.id = id;
         var opt = this.options = $.extend({
             format: 'richtext',
@@ -101,6 +103,10 @@ $.extend(MT.EditorManager.prototype, {
         this.currentEditor.initOrShow(this.options['format']);
 
         $('#' + id).data('mt-editor', this);
+
+        $(window).bind('pre_autosave', function() {
+            manager.currentEditor.save();
+        });
     },
 
     editorInstance: function(format) {

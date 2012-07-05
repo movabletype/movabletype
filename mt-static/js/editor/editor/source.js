@@ -49,6 +49,10 @@ $.extend(MT.Editor.Source, MT.Editor, {
     }
 });
 $.extend(MT.Editor.Source.prototype, MT.Editor.prototype, {
+    save: function() {
+        return '';
+    },
+
     getContent: function() {
         return this.textarea.value;
     },
