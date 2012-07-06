@@ -192,18 +192,8 @@ clean:
 	-rm -rf MANIFEST
 	-rm -rf build-language-stamp
 	-git checkout lib/MT.pm php/mt.php mt-check.cgi mt-config.cgi-original VERSIONS
-	-rm -rf  lib/MT.pm
-	-rm -rf php/mt.php
-	-rm -rf mt-check.cgi
-	-rm -rf mt-config.cgi-original
-	-rm -rf VERSIONS
-	-mv lib/MT.pm.pre lib/MT.pm
-	-mv php/mt.php.pre php/mt.php
-	-mv mt-check.cgi.pre mt-check.cgi
-	-mv mt-config.cgi-original.pre mt-config.cgi-original
-	-mv VERSIONS.pre VERSIONS
-	-rm -rf  lib/MT.pm.pre
+	-rm -rf lib/MT.pm.pre
 	-rm -rf php/mt.php.pre
-	-rm -rf mt-check.cgi.pre
+	-rm -rf mt-check.cgi.pre	
 	-rm -rf mt-config.cgi-original.pre
 	-rm -rf VERSIONS.pre
