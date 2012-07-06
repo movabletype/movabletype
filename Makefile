@@ -139,8 +139,8 @@ version_file:
 	    -e 's!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g' \
 	VERSIONS.pre > VERSIONS
 
-mt-config.cgi-original:
-	mv mt-config.cgi-original mt-config.cgi-original.pre
+mt-config.cgi-original: build-language-stamp
+	cp mt-config.cgi-original mt-config.cgi-original.pre
 
 ##### Other useful targets
 
@@ -196,4 +196,4 @@ clean:
 	-rm -rf php/mt.php.pre
 	-rm -rf mt-check.cgi.pre	
 	-rm -rf mt-config.cgi-original.pre
-	-rm -rf VERSIONS
+	-rm -rf VERSIONS.pre
