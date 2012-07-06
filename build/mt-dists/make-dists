@@ -16,13 +16,14 @@ use File::Copy::Recursive qw( rcopy );
 use File::Basename;
 use Getopt::Long;
 
-my $langlist = '';
-my $stamp    = '';
-my $package  = '';
-my $license  = '';
-my $silent   = 0;
-my $rpm      = 0;
-my $export   = '';
+my $langlist      = '';
+my $stamp         = '';
+my $package       = '';
+my $license       = '';
+my $silent        = 0;
+my $rpm           = 0;
+my $export        = '';
+my $export_prefix = '0';
 
 no warnings;
 
@@ -74,13 +75,14 @@ use warnings;
 $ENV{COPYFILE_DISABLE} = 'true';
 
 GetOptions(
-    'language:s'   => \$langlist,
-    'package:s'    => \$package,
-    'silent'       => \$silent,
-    'license:s'    => \$license,
-    'stamp:s'      => \$stamp,
-    'rpm'          => \$rpm,
-    'export-dir:s' => \$export,
+    'language:s'      => \$langlist,
+    'package:s'       => \$package,
+    'silent'          => \$silent,
+    'license:s'       => \$license,
+    'stamp:s'         => \$stamp,
+    'rpm'             => \$rpm,
+    'export-dir:s'    => \$export,
+    'export-prefix:s' => \$export_prefix,
 ) or die "ERROR: Couldn't get the command-line options";
 
 my %options;
@@ -156,7 +158,7 @@ for my $lang (@languages) {
         require File::Spec;
         my $mt_ver   = MT->version_id;
         my $abs_path = File::Spec->rel2abs($distname);
-        my $exp      = sprintf( "movabletype-%s", $mt_ver );
+        my $exp      = sprintf( "movabletype-%s-%s", $mt_ver, $export_prefix );
         $exp = File::Spec->catdir( $export, $exp );
 
         print "Export $abs_path to $exp\n" unless $silent;
