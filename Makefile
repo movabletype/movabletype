@@ -78,7 +78,7 @@ mt-static/css/simple.css: $(simple_css)
 
 .PHONY: code-common code code-en_US code-de code-fr code-nl \
 	code-es code-ja
-code_common = lib/MT.pm php/mt.php mt-check.cgi version_file \
+code_common = lib/MT.pm php/mt.php mt-check.cgi version_file mt-config.cgi-original \
         mt-static/js/mt_core_compact.js \
         mt-static/js/editor.js \
         mt-static/css/main.css \
@@ -114,7 +114,6 @@ lib/MT.pm: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk build/mt-dist
 	    -e 's!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
 	    -e 's!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g' \
 	    lib/MT.pm.pre > lib/MT.pm
-	rm lib/MT.pm.pre
 
 php/mt.php: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk
 	mv php/mt.php php/mt.php.pre
@@ -122,14 +121,12 @@ php/mt.php: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk
 	    -e 's!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
 	    -e 's!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g' \
 	    php/mt.php.pre > php/mt.php
-	rm php/mt.php.pre
 
 mt-check.cgi: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk
 	mv mt-check.cgi mt-check.cgi.pre
 	sed -e 's!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
 	    -e 's!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g' \
 	mt-check.cgi.pre > mt-check.cgi
-	rm mt-check.cgi.pre
 	chmod +x mt-check.cgi
 
 $(local_js): mt-static/mt_%.js: mt-static/mt.js lib/MT/L10N/%.pm
@@ -141,7 +138,9 @@ version_file:
 	    -e 's!__BUILD_LANGUAGE__!$(BUILD_LANGUAGE)!g' \
 	    -e 's!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g' \
 	VERSIONS.pre > VERSIONS
-	rm VERSIONS.pre
+
+mt-config.cgi-original:
+	mv mt-config.cgi-original mt-config.cgi-original.pre
 
 ##### Other useful targets
 
@@ -193,3 +192,8 @@ clean:
 	-rm -rf MANIFEST
 	-rm -rf build-language-stamp
 	-git checkout lib/MT.pm php/mt.php mt-check.cgi mt-config.cgi-original VERSIONS
+	-rm -rf lib/MT.pm.pre
+	-rm -rf php/mt.php.pre
+	-rm -rf mt-check.cgi.pre	
+	-rm -rf mt-config.cgi-original.pre
+	-rm -rf VERSIONS
