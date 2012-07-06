@@ -279,8 +279,8 @@ sub make {
                 $self->{'pack=s'},
                 $self->{'lang=s'},
                 $self->{'workspace-dir=s'},
-                ( $self->{'verbose!'} ? '--silent' : '' ),
-                ( $self->{'rpm!'}     ? '--rpm'    : '' ),
+                ( $self->{'verbose!'} ? '' : '--silent' ),
+                ( $self->{'rpm!'}     ? ''    : '--rpm' ),
                 (   $self->{'export!'} && $self->{'export-dir=s'}
                     ? '--export-dir=' . $self->{'export-dir=s'}
                     : ''
