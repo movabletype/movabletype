@@ -34,6 +34,9 @@
     border-right: 0;
     border-left: 0;
 }
+.fullscreen_editor .mtSkin table.mceLayout tr.mceFirst td {
+    border-radius: 0;
+}
 .fullscreen_editor .mtSkin table.mceLayout tr.mceLast td {
     border-bottom: 0;
 }

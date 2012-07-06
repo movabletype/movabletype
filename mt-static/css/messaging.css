@@ -1,40 +1,37 @@
 /* Status Message */
-.msg { 
+.msg {
     position: relative;
     margin: 10px 0;
     padding: 0.5em 0.75em;
-    line-height: 1;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
+    border-radius: 2px;
 }
 .msg.full {
     margin: 0;
     border-radius: 0;
-    -moz-border-radius: 0;
 }
-.msg-success { 
+.msg-success {
     background-color: #cee4ae;
 }
-.msg-alert, 
-.msg-warning { 
+.msg-alert,
+.msg-warning {
     background-color: #fef263;
 }
-.msg-error { 
+.msg-error {
     background-color: #f6bfbc;
 }
-.msg-info { 
+.msg-info {
     background-color: #e6eae3;
 }
-.msg-publishing { 
+.msg-publishing {
     margin: 15px 0 0;
     padding: 0.8em 0 0.8em 25px;
     background: transparent url(../images/ani-rebuild.gif) left center no-repeat;
 }
-.msg-text { 
+.msg-text {
     margin: 0;
 }
 
-.close-link { 
+.close-link {
     position: absolute;
     top: 50%;
     right: 8px;
@@ -42,27 +39,24 @@
 }
 
 /* - for Permission Message */
-.msg .detail { 
+.msg .detail {
     margin: 10px 0 0;
 }
 
 /* - for Widget Content */
-p.zero-state { 
+p.zero-state {
     margin-bottom: 0;
 }
 
 /* - Generic Website Message */
-#is-generic-website { 
+#is-generic-website {
     margin: 0;
     padding: 0.75em 0;
     border-bottom: 1px solid #c8c2be;
-    background-color: #F2F2B0;
-    -moz-border-radius: 0;
-    -khtml-border-radius: 0;
-    -webkit-border-radius: 0;
+    background-color: #f2f2b0;
     border-radius: 0;
 }
-#is-generic-website p { 
+#is-generic-website p {
     margin: 0 auto;
     padding: 0 20px;
     font-size: 95%;
@@ -87,26 +81,25 @@ p.zero-state {
     color: #f3f3f3;
     font-size: 95%;
     font-weight: normal;
+    border-radius: 0 0 2px 2px;
     opacity: 0.8;
-    border-bottom-left-radius: 3px;
-    border-bottom-right-radius: 3px;
-    -moz-border-radius: 0 0 3px 3px;
+    -ms-filter: 'alpha(opacity=80)';
+    filter: alpha(opacity=80);
 }
 .msg-balloon {
     margin: 0;
-    border-radius: 3px;
-    -moz-border-radius: 3px;    
+    border-radius: 2px;
 }
 
 /* - Debug Panel Messages */
-.debug-panel { 
+.debug-panel {
     position: absolute;
     width: 100%;
     border-top: 1px solid #c8c2be;
     background-color: #f6bfbc;
     text-align: left;
 }
-.debug-panel h3 { 
+.debug-panel h3 {
     padding: 5px;
     font-size: 12px;
     margin: 0;

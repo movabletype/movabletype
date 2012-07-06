@@ -12,21 +12,17 @@ body.has-dialog {
     height: 200%;
 }
 #mt-dialog-iframe {
-    border-radius: 5px;
-    -moz-border-radius: 5px;
+    border-radius: 3px;
 }
 
 /* - Dialog Block */
-.mt-dialog, 
+.mt-dialog,
 .ui-dialog {
     position: absolute;
     border: 1px solid #c0c6c9;
     background-color: #fffffc;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    box-shadow: 0 3px 10px #2b2b2b;
-    -webkit-box-shadow: 0 3px 10px #2b2b2b;
-    -moz-box-shadow: 0 3px 10px #2b2b2b;
+    border-radius: 3px;
+    box-shadow: 0 3px 12px 0 rgba(0, 0, 0, 0.2);
 }
 .mt-dialog {
     display: none;
@@ -96,7 +92,7 @@ body.has-dialog {
     background-position: -32px 0;
     background-repeat: no-repeat;
 }
-.alert .ui-dialog-titlebar-close, 
+.alert .ui-dialog-titlebar-close,
 .save .ui-dialog-titlebar-close {
     display: none;
 }
@@ -118,8 +114,7 @@ body.has-dialog {
 #include_prefs {
     border: 1px solid #c0c6c9;
     background-color: #f3f3f3;
-    border-radius: 5px;
-    -moz-border-radius: 5px;    
+    border-radius: 3px;
 }
 #save_settings-field {
     background-color: #fff;
@@ -140,8 +135,7 @@ body.has-dialog {
     overflow-x: hidden;
     overflow-y: auto;
     background-color: #f3f3f3;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
+    border-radius: 2px;
 }
 .dialog #comments-form #comment .comment-meta {
     color: #7b7c7d;
