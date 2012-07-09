@@ -888,6 +888,7 @@ B<Example:>
 sub _hdlr_archive_count {
     my ( $ctx, $args, $cond ) = @_;
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
+    $at = 'Category' if $ctx->{inside_mt_categories};
     my $archiver = MT->publisher->archiver($at);
     if ( $ctx->{inside_mt_categories} && !$archiver->date_based ) {
         return $ctx->invoke_handler( 'categorycount', $args, $cond );
