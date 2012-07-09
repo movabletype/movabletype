@@ -892,6 +892,11 @@ sub has_archive_type {
     my %at     = map { lc $_ => 1 } split( /,/, $blog->archive_type );
     return 0 unless exists $at{ lc $type };
 
+    my $k = '_has_archive_type_'.lc $type;
+    if (defined $blog->{$k}) {
+        return $blog->{$k};
+    }
+
     my $result = 0;
     require MT::TemplateMap;
     my @maps = MT::TemplateMap->load(
@@ -899,12 +904,13 @@ sub has_archive_type {
             archive_type => $type
         }
     );
-    return 0 unless @maps;
-    require MT::PublishOption;
-
-    foreach my $map (@maps) {
-        $result++ if $map->build_type != MT::PublishOption::DISABLED();
+    if (@maps) {
+        require MT::PublishOption;
+        foreach my $map (@maps) {
+            $result++ if $map->build_type != MT::PublishOption::DISABLED();
+        }
     }
+    $blog->{$k} = $result;
     return $result;
 }
 
