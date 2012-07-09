@@ -886,26 +886,39 @@ sub effective_remote_auth_token {
     undef;
 }
 
+sub flush_has_archive_type_cache {
+    my $blog   = shift;
+    my ($type) = @_;
+
+    my $cache_key = 'has_archive_type::blog:' . $blog->id;
+    my $cache = MT->request( $cache_key ) or return;
+    delete $cache->{$type}
+        if exists $cache->{$type};
+    1;
+}
+
 sub has_archive_type {
     my $blog   = shift;
     my ($type) = @_;
     my %at     = map { lc $_ => 1 } split( /,/, $blog->archive_type );
     return 0 unless exists $at{ lc $type };
 
-    my $result = 0;
-    require MT::TemplateMap;
-    my @maps = MT::TemplateMap->load(
-        {   blog_id      => $blog->id,
-            archive_type => $type
-        }
-    );
-    return 0 unless @maps;
-    require MT::PublishOption;
+    my $cache_key = 'has_archive_type::blog:' . $blog->id;
 
-    foreach my $map (@maps) {
-        $result++ if $map->build_type != MT::PublishOption::DISABLED();
-    }
-    return $result;
+    my $r  = MT->request;
+    my $cache = $r->cache( $cache_key );
+    if ( !$cache || ( $cache && !$cache->{$type} ) ) {
+        require MT::PublishOption;
+        require MT::TemplateMap;
+        my $count = MT::TemplateMap->count({
+            blog_id => $blog->id,
+            archive_type => $type,
+            build_type => { not => MT::PublishOption::DISABLED() },
+        });
+        $cache->{$type} = $count;
+        $r->cache( $cache_key, $cache );
+    };
+    return $cache->{$type};
 }
 
 sub accepts_registered_comments {
