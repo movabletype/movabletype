@@ -287,6 +287,9 @@ td.charmap,
 .mceActionPanel { 
     margin-top: 10px;
 }
+.mceActionPanel div { 
+    margin-bottom: 10px;
+}
 
 /* - Tabs classes */
 .tabs { 
