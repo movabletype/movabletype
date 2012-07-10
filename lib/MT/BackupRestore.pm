@@ -764,6 +764,19 @@ sub cb_restore_objects {
             # call trigger to save meta
             $new_author->call_trigger( 'post_save', $new_author );
         }
+        elsif ( $key =~ /^MT::(?:Blog|Website)#(\d+)$/ ) {
+            my $blog = $all_objects->{$key};
+            if (my $cat_order = $blog->category_order) {
+                my @cats = split ',', $cat_order;
+                my @new_cats = 
+                    map $_->id, 
+                    grep defined $_, 
+                    map $all_objects->{'MT::Category#'.$_},
+                    @cats;
+                $blog->category_order(join ',', @new_cats);
+                $blog->save;
+            }
+        }
     }
 
     my $i = 0;
