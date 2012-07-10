@@ -1208,7 +1208,9 @@ sub cgi_path {
         # relative path, prepend blog domain
         if ( my $blog = $ctx->stash('blog') ) {
             my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
-            $path = $blog_domain . $path;
+            if ($blog_domain) {
+                $path = $blog_domain . $path;
+            }
         }
     }
     $path .= '/' unless $path =~ m{/$};
