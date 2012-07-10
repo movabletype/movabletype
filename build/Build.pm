@@ -110,6 +110,7 @@ sub get_options {
         'verbose!'   => 1, # Express (the default) or suppress run output.
         'workspace!' => 1, # To export or not to export. That is the question.
         'workspace-dir=s' => '',    # Constructed at run-time.
+        'versions-trailer=s' => '',
         @_,
     );
 
@@ -253,8 +254,9 @@ sub setup {
     }
 
     # Set the BUILD_VERSION_ID, which has not been defined until now.
-    $ENV{BUILD_VERSION_ID}     ||= $self->{'stamp=s'};
-    $ENV{BUILD_RELEASE_NUMBER} ||= $self->{'rel_num=s'};
+    $ENV{BUILD_VERSION_ID}       ||= $self->{'stamp=s'};
+    $ENV{BUILD_RELEASE_NUMBER}   ||= $self->{'rel_num=s'};
+    $ENV{BUILD_VERSIONS_TRAILER} ||= $self->{'versions-trailer=s'};
 
 # Set the full name to use for the distribution (e.g. MT-3.3b1-fr-r12345-20061225).
     $self->{'workspace-dir=s'} = "$self->{'pack=s'}-$self->{'stamp=s'}";
