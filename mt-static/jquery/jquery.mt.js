@@ -1062,6 +1062,8 @@ $.fn.extend({
             var $this = $(this);
             var validator = $this.mtValidator();
             if ( !validator ) return true;
+            if ( typeof $this.attr('data-showing-placeholder') !== 'undefined' )
+                $this.val('');
             var $current_error = $.data( this, 'mtValidateError' );
             var rules = $.data( this, 'mtValidateRules' );
             var res = validator.validateElement($this, rules);
