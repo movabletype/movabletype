@@ -1147,7 +1147,6 @@ $.fn.mtPlaceholder = function() {
         var that = this;
         var $that = $(that);
         var placeholder_text = $that.attr('placeholder');
-        var original_color = $that.css('color');
         if ( 1 > $that.val().length ) {
             $that
                 .val(placeholder_text)
@@ -1159,7 +1158,7 @@ $.fn.mtPlaceholder = function() {
                 if ( $that.attr('data-showing-placeholder') ) {
                     $that
                         .val('')
-                        .css('color', original_color)
+                        .css('color', '#2b2b2b')
                         .removeAttr('data-showing-placeholder');
                 }
             })
