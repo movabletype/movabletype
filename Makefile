@@ -140,6 +140,7 @@ version_file:
 	sed -e 's!__BUILD_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
 	    -e 's!__BUILD_LANGUAGE__!$(BUILD_LANGUAGE)!g' \
 	    -e 's!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g' \
+	    -e 's!__BUILD_VERSIONS_TRAILER__!$(BUILD_VERSIONS_TRAILER)!g' \
 	VERSIONS.pre > VERSIONS
 	rm VERSIONS.pre
 
