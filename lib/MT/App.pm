@@ -4002,9 +4002,15 @@ sub path_info {
 
 sub is_secure {
     my $app = shift;
-    $ENV{MOD_PERL}
-        ? $app->{apache}->subprocess_env('https')
-        : $app->{query}->protocol() eq 'https';
+    if ( $ENV{MOD_PERL} ) {
+        return $app->{apache}->subprocess_env('https');
+    }
+    else {
+        return
+              $app->{query}->protocol()             eq 'https' ? 1
+            : $app->get_header('X-Forwarded-Proto') eq 'https' ? 1
+            :                                                    0;
+    }
 }
 
 sub redirect {
