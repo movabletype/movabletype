@@ -1919,7 +1919,7 @@ PERMCHECK: {
         if ( $perms->can_edit_entry( $entry, $this_author ) ) {
             my $author_id = $q->param( 'author_id_' . $id );
             $entry->author_id( $author_id ? $author_id : 0 );
-            $entry->title( scalar $q->param( 'title_' . $id ) );
+            $entry->title( scalar $q->param( 'title_' . $id ) || scalar $q->param( 'no_title_' . $id ) );
         }
         else {
             return $app->permission_denied();
