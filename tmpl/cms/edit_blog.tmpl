@@ -38,13 +38,7 @@ function dirify_blog_name(fld) {
 }
 function init() {
 <mt:if name="new_object">
-    getByID("name").focus();
-    var tz = getByID("server_offset");
-    if (tz) {
-        // The options ignore DST, so check at a specific time when no one was on DST.
-        var offset = (new Date(2008, 0, 1, 0, 0, 0, 0)).getTimezoneOffset();
-        tz.value = 0 - offset / 60;
-    }
+    jQuery('#name').focus();
 </mt:if>
 }
 
