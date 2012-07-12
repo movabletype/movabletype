@@ -93,7 +93,19 @@ div.warning#version-warning {
          hint="<__trans phrase="The user&rsquo;s email address.">">
         <input type="text" id="admin_email" class="text full required email" name="admin_email" value="<mt:var name="admin_email" escape="html">" />
       </mtapp:setting>
-    
+
+      <mt:unless name="config.emailaddressmain">
+          <mtapp:setting
+             id="use_system_email"
+             lebel="<__trans phrase="System Email">"
+             label_class="no-header"
+             hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
+             show_hint="1">
+            <input type="checkbox" name="use_system_email" <mt:if name="use_system_email">checked="checked"</mt:if> id="use_system_email" />
+            <label for="use_system_email"><__trans phrase="Use this as system email address"></label>
+          </mtapp:setting>
+      </mt:unless>
+
       <mtapp:setting
          id="preferred_language"
          label="<__trans phrase="Language">"
