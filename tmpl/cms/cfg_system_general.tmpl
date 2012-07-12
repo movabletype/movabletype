@@ -327,7 +327,7 @@ function validate (f) {
     });
 
     jQuery.mtValidateAddMessages({
-        '.absolute-site_path': '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
+        '.absolute-site_path': '<__trans phrase="You must set a valid absolute Path." escape="singlequotes">',
     });
     jQuery('#sys_conf').submit( function () {
         if ( !jQuery(this).find('input:not(:disabled), select:not(:disabled)').filter('input:visible, select:visible').mtValidate('simple') ) return false;
