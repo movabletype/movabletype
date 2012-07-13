@@ -265,7 +265,7 @@ function validate (f) {
         bgiframe: true,
         title: '<__trans phrase="Send Test Mail">',
         autoOpen: false,
-        width: 450,
+        width: 450
     });
 
     jQuery('#send-test-email').click(function() {
@@ -323,11 +323,11 @@ function validate (f) {
         '.absolute-site_path': function ($e) {
             if ($e.val().length == 0) return 1;
             return is_valid_absolute_path($e.val());
-        },
+        }
     });
 
     jQuery.mtValidateAddMessages({
-        '.absolute-site_path': '<__trans phrase="You must set a valid absolute Path." escape="singlequotes">',
+        '.absolute-site_path': '<__trans phrase="You must set a valid absolute Path." escape="singlequotes">'
     });
     jQuery('#sys_conf').submit( function () {
         if ( !jQuery(this).find('input:not(:disabled), select:not(:disabled)').filter('input:visible, select:visible').mtValidate('simple') ) return false;

@@ -68,7 +68,7 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
                         .attr('onfocus', '')
                         .attr('href', 'javascript:;');
                 }
-            },
+            }
         },
 
         formats: {
