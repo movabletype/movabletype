@@ -963,9 +963,15 @@ $.mtValidator('default', {
             $error_block.show();
         else
             $error_block.hide();
-        if ( !$target.parent('.validate-error-wrapper').length ) {
-            $target
-                .wrap('<span class="validate-error-wrapper" style="position: relative; white-space: nowrap;"></span>');
+        try {
+            if ( !$target.parent('.validate-error-wrapper').length ) {
+                $target
+                    .wrap('<span class="validate-error-wrapper" style="position: relative; white-space: nowrap;"></span>');
+            }
+        }
+        catch (e) {
+            // Sometimes, we get error by "$.fn.wrap" in webkit.
+            // But in that error, $target is already wrapped probably.
         }
         $target.after($error_block);
         $error_block
