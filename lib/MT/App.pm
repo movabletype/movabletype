@@ -151,8 +151,9 @@ sub filter_conditional_list {
              # Return true if user has system level privilege for this action.
                         return 1
                             if $system_perms
-                            && $system_perms->can_do(
-                            $action->{system_action} );
+                                && $system_perms->can_do(
+                                    $action->{system_action}
+                                );
                     }
 
                     $include_all = $action->{include_all} || 0;
@@ -839,21 +840,23 @@ sub run_callbacks {
 }
 
 {
-my $callbacks_added;
-sub init_callbacks {
-    my $app = shift;
-    $app->SUPER::init_callbacks(@_);
-    return if $callbacks_added;
-    MT->add_callback( 'post_save',             0, $app, \&_cb_mark_blog );
-    MT->add_callback( 'post_remove',           0, $app, \&_cb_mark_blog );
-    MT->add_callback( 'MT::Blog::post_remove', 0, $app, \&_cb_unmark_blog );
-    MT->add_callback( 'MT::Config::post_save', 0, $app,
-        sub { $app->reboot } );
-    MT->add_callback( 'pre_build', 9, $app, sub { $app->touch_blogs() } );
-    MT->add_callback( 'new_user_provisioning', 5, $app,
-        \&_cb_user_provisioning );
-    $callbacks_added = 1;
-}
+    my $callbacks_added;
+
+    sub init_callbacks {
+        my $app = shift;
+        $app->SUPER::init_callbacks(@_);
+        return if $callbacks_added;
+        MT->add_callback( 'post_save',   0, $app, \&_cb_mark_blog );
+        MT->add_callback( 'post_remove', 0, $app, \&_cb_mark_blog );
+        MT->add_callback( 'MT::Blog::post_remove', 0, $app,
+            \&_cb_unmark_blog );
+        MT->add_callback( 'MT::Config::post_save', 0, $app,
+            sub { $app->reboot } );
+        MT->add_callback( 'pre_build', 9, $app, sub { $app->touch_blogs() } );
+        MT->add_callback( 'new_user_provisioning', 5, $app,
+            \&_cb_user_provisioning );
+        $callbacks_added = 1;
+    }
 }
 
 sub init_request {
@@ -2632,8 +2635,8 @@ sub request_content {
             seek $fh, 0, 0;
             my $buffer = '';
             while ( my $buf = <$fh> ) {
-               $buffer .= $buf;
-            };
+                $buffer .= $buf;
+            }
             $app->{request_content} = $buffer
                 if $buffer;
         }
@@ -2933,7 +2936,7 @@ sub reboot {
     my $app = shift;
     $app->{do_reboot} = 1;
     $app->set_header( 'Connection' => 'close' )
-        if $ENV{FAST_CGI} || MT->config->PIDFilePath
+        if $ENV{FAST_CGI} || MT->config->PIDFilePath;
 }
 
 sub do_reboot {
@@ -2965,7 +2968,6 @@ sub do_reboot {
     }
     1;
 }
-
 
 sub run {
     my $app = shift;
@@ -4007,9 +4009,9 @@ sub is_secure {
     }
     else {
         return
-              $app->{query}->protocol()             eq 'https' ? 1
-            : $app->get_header('X-Forwarded-Proto') eq 'https' ? 1
-            :                                                    0;
+              $app->{query}->protocol() eq 'https' ? 1
+            : ( $app->get_header('X-Forwarded-Proto') || '' ) eq 'https' ? 1
+            :                                                              0;
     }
 }
 
