@@ -298,7 +298,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             wysiwyg: new MT.EditorCommand.WYSIWYG(adapter)
         };
 
-        ed.execCommand('mtSetProxies', adapter.proxies);
+        ed.execCommand('mtSetProxies', adapter.proxies, null, {skip_focus: true});
 
         if (ed.getContent() == '') {
             // Browser compatibility
