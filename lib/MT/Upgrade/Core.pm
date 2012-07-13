@@ -391,8 +391,10 @@ sub upgrade_templates {
 
 sub _uri_unescape_utf8 {
     my ($text) = @_;
-    use URI::Escape;
-    $text = uri_unescape($text);
+    unless ( $MT::Upgrade::CLI ) {
+        use URI::Escape;
+        $text = uri_unescape($text);
+    }
     return Encode::decode_utf8($text);
 }
 
