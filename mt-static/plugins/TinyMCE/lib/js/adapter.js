@@ -122,7 +122,11 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         cleanup: true,
         dialog_type: 'modal',
 
-        init_instance_callback: function(ed) {}
+        init_instance_callback: function(ed) {},
+
+        content_css: '',
+        body_class: '',
+        body_id: ''
     }
 });
 
