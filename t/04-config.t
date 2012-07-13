@@ -66,6 +66,15 @@ $cfg->set('AdminCGIPath', '/cgi-bin/mt/');
 isnt($cfg->AdminCGIPath, $cfg->CGIPath, 'after change, AdminCGIPath is not CGIPath');
 is($cfg->AdminCGIPath, '/cgi-bin/mt/', 'AdminCGIPath is now set');
 
+
+# Read / Write settings
+ok($cfg->is_readonly('ObjectDriver'), 'The key specified by file is readonly by default');
+ok(! $cfg->is_readonly('UserSessionCookiePath'), 'The key specified by program or database is not readonly');
+is_deeply($cfg->overwritable_keys('ObjectDriver'), [lc 'ObjectDriver'], 'Update overwritable_keys by list');
+is_deeply($cfg->overwritable_keys(['ObjectDriver']), [lc 'ObjectDriver'], 'Update overwritable_keys by reference');
+ok(! $cfg->is_readonly('ObjectDriver'), 'Now, the "ObjectDriver" is writable');
+
+
 mkdir $db_dir;
 
 undef $MT::ConfigMgr::cfg;
