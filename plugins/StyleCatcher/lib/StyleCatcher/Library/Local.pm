@@ -26,6 +26,8 @@ sub fetch_themes {
     $support_path .= '/' unless $support_path =~ m!/$!;
     $path =~ s/{{static}}/$static_path/i;
     $path =~ s/{{support}}/$support_path/i;
+    $path
+        =~ s/{{theme_static}}/MT::Theme::static_file_path_from_id($self->key)/ie;
 
     my $static_webpath = MT->app->static_path;
     my $support_url    = MT->app->support_directory_url;
@@ -35,6 +37,8 @@ sub fetch_themes {
     my $url = $self->url;
     $url =~ s/{{static}}/$static_webpath/i;
     $url =~ s/{{support}}/$support_url/i;
+    $url
+        =~ s/{{theme_static}}/MT::Theme::static_file_url_from_id($self->key)/ie;
     if ( $url =~ m!^/! ) {
         $url = MT->app->base . $url;
     }

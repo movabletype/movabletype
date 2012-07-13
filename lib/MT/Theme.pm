@@ -279,6 +279,12 @@ sub elements {
         keys %$elements;
 }
 
+sub static_file_path_from_id {
+    File::Spec->catdir( MT->app->support_directory_path,
+        'theme_static', $_[0] )
+        . '/';
+}
+
 sub static_file_url_from_id {
     File::Spec->catdir( MT->app->support_directory_url,
         'theme_static', $_[0] )
