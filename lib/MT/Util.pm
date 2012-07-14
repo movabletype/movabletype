@@ -801,7 +801,7 @@ sub decode_url {
     my $RE_D       = join '|', keys %Map_Decode;
 
     sub encode_xml {
-        my ( $str, $nocdata ) = @_;
+        my ( $str, $nocdata, $no_re_replace ) = @_;
         return '' unless defined $str;
         $nocdata ||= MT->config->NoCDATA;
         if (  !$nocdata
@@ -821,7 +821,8 @@ sub decode_url {
             $str =~ s!($RE)!$Map{$1}!g;
 
             # re-replace &amp;#nnnn => &#nnnn
-            $str =~ s/&amp;((\#([0-9]+)|\#x([0-9a-fA-F]+)).*?);/&$1;/g;
+            $str =~ s/&amp;((\#([0-9]+)|\#x([0-9a-fA-F]+)).*?);/&$1;/g
+                unless $no_re_replace;
         }
         $str =~ tr/\0-\x08\x0B\x0C\x0E-\x1F\x7F/     /;
         $str;

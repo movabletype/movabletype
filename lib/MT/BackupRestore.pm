@@ -1037,7 +1037,7 @@ sub to_xml {
                 next;
             }
             $xml .= " $name='"
-                . MT::Util::encode_xml( $obj->column($name), 1 ) . "'";
+                . MT::Util::encode_xml( $obj->column($name), 1, 1 ) . "'";
         }
     }
     my ( @meta_elements, @meta_blobs );
@@ -1055,13 +1055,13 @@ sub to_xml {
                 }
                 else {
                     $xml .= " $name='"
-                        . MT::Util::encode_xml( $obj->$name, 1 ) . "'";
+                        . MT::Util::encode_xml( $obj->$name, 1, 1 ) . "'";
                 }
             }
         }
     }
     $xml .= '>';
-    $xml .= "<$_>" . MT::Util::encode_xml( $obj->column($_), 1 ) . "</$_>"
+    $xml .= "<$_>" . MT::Util::encode_xml( $obj->column($_), 1, 1 ) . "</$_>"
         foreach @elements;
     require MIME::Base64;
     foreach my $blob_col (@blobs) {
@@ -1086,7 +1086,7 @@ sub to_xml {
             MT::Serialize->serialize( \$hashref ), '' )
             . "</$meta_col>";
     }
-    $xml .= "<$_>" . MT::Util::encode_xml( $obj->$_, 1 ) . "</$_>"
+    $xml .= "<$_>" . MT::Util::encode_xml( $obj->$_, 1, 1 ) . "</$_>"
         foreach @meta_elements;
     foreach my $vblob_col (@meta_blobs) {
         my $vblob = $obj->$vblob_col;
