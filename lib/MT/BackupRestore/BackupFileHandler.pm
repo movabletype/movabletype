@@ -48,6 +48,8 @@ sub start_element {
                     && ( MT::BackupRestore::NS_MOVABLETYPE() eq $ns )
             );
 
+        $self->{backup_what} = $attrs->{'{}backup_what'}->{Value};
+
         #unless ($self->{ignore_schema_conflicts}) {
         my $schema = $attrs->{'{}schema_version'}->{Value};
 
@@ -160,13 +162,17 @@ sub start_element {
                             delete $column_data{userpic_asset_id}
                                 if exists $column_data{userpic_asset_id};
 
-                            my $child_classes
-                                = $obj->properties->{child_classes} || {};
-                            for my $class ( keys %$child_classes ) {
-                                eval "use $class;";
-                                $class->remove(
-                                    { author_id => $obj->id, blog_id => '0' }
-                                );
+                            if ( !$self->{backup_what} ) {
+                                my $child_classes
+                                    = $obj->properties->{child_classes} || {};
+                                for my $class ( keys %$child_classes ) {
+                                    eval "use $class;";
+                                    $class->remove(
+                                        {   author_id => $obj->id,
+                                            blog_id   => '0'
+                                        }
+                                    );
+                                }
                             }
                             my $success
                                 = $obj->restore_parent_ids( \%column_data,
