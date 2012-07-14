@@ -4989,6 +4989,7 @@ sub setup_editor_param {
                 my $tmpls  = $param->{editors}{$editor_key} ||= {
                     templates  => [],
                     extensions => [],
+                    config     => {},
                 };
 
                 foreach my $k ( 'template', 'extension' ) {
@@ -5008,6 +5009,10 @@ sub setup_editor_param {
                         );
                     }
                 }
+
+                $tmpls->{config}
+                    = { %{ $tmpls->{config} }, %{ $reg->{'config'} } }
+                    if $reg->{'config'};
             }
         }
 

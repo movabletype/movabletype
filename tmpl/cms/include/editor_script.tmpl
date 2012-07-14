@@ -39,12 +39,13 @@ MT.Editor.updateDefaultCommonOptions(opts);
 <mt:loop name="editors">
   <mt:var name="__value__" key="templates" setvar="templates" />
   <mt:var name="__value__" key="extensions" setvar="extensions" />
+  <mt:var name="__value__" key="config" setvar="config" />
 
   <mt:loop name="templates">
-    <mt:var name="tmpl" />
+    <mt:var name="tmpl" config="$config" />
   </mt:loop>
   <mt:loop name="extensions">
-    <mt:var name="tmpl" />
+    <mt:var name="tmpl" config="$config" />
   </mt:loop>
 </mt:loop>
 
