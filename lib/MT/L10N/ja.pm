@@ -1533,8 +1533,6 @@ use vars qw( @ISA %Lexicon );
 	'Mail was not properly sent: [_1]' => 'メールが正しく送信されませんでした: [_1]',
 	'These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.' => 'MTの設定ファイルによって設定されている値([_1])が優先されます。このページで設定した値を利用するためには、設定ファイルでの設定を削除してください。',
 	'Email address is [_1]' => 'メールアドレスは[_1]です',
-	'enable' => '有効に',
-	'disable' => '無効に',
 	'Debug mode is [_1]' => 'デバッグモードは[_1]です',
 	'Performance logging is on' => 'パフォーマンスログはオンです',
 	'Performance logging is off' => 'バフォーマンスログはオフです',
@@ -2033,7 +2031,7 @@ use vars qw( @ISA %Lexicon );
 	'Unknown MailTransfer method \'[_1]\'' => 'MailTransferの設定([_1])が不正です。',
 	'Username and password is required for SMTP Authentication.' => 'SMTP認証を利用する場合は、ユーザー名とパスワードは必須入力です。',
 	'Error connecting to SMTP server [_1]:[_2]' => 'SMTPサーバに接続できません。[_1]:[_2]',
-	'Authentication failure: [_1]' => '認証にしっぱしました: [_1]',
+	'Authentication failure: [_1]' => '認証に失敗しました: [_1]',
 	'You do not have a valid path to sendmail on your machine. Perhaps you should try using SMTP?' => 'sendmailへのパスが正しくありません。SMTPの設定を試してください。',
 	'Exec of sendmail failed: [_1]' => 'sendmailを実行できませんでした: [_1]',
 	'Following required module(s) were not found: ([_1])' => '以下のモジュールが不足しています。([_1])',
@@ -2561,6 +2559,22 @@ use vars qw( @ISA %Lexicon );
 	'Error writing uploaded file: [_1]' => 'アップロードされたファイルを書き込めませんでした: [_1]',
 	'Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.' => 'Templateメソッドは実装されていません。',
 
+## mt-static/addons/Cloud.pack/js/cfg_config_directives.js
+	'Configuration directive is required.' => '環境変数名は必須です。',
+	'[_1] is not updatable.' => '[_1]を変更することは出来ません。',
+	'Although [_1] is updatable by CMS is not updatable in this screen.' => '[_1]は管理画面から変更してください。',
+	'[_1] already exists.' => '[_1]はすでに存在します。',
+	'Configuration value is required.' => '設定値は必須です。',
+	'The HASH type config directive should be in the format of "key=value"' => 'ハッシュ型の環境変数の設定値は、"key=value"の形式で入力してください。',
+	'[_1] for [_2] is already exists.' => '[_2]はすでに[_1]の設定値として存在します。',
+	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.jp/documentation/[_1]',
+	'Are you sure you want to remove [_1]?' => '[_1]を削除してもよろしいですか?',
+	'configuration directive' => '環境変数',
+
+## mt-static/addons/Cloud.pack/js/cms.js
+	'Continue' => '次へ',
+	'You have unsaved changes to this page that will be lost.' => '保存されていない変更は失われます。',
+
 ## mt-static/jquery/jquery.mt.js
 	'Invalid value' => '入力された値が正しくありません',
 	'Invalid date format' => '日付の入力フォーマットが正しくありません',
@@ -2590,6 +2604,8 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/mt.js
 	'delete' => '削除',
 	'remove' => '削除',
+	'enable' => '有効に',
+	'disable' => '無効に',
 	'publish' => '公開',
 	'unlock' => 'ロック解除してログイン可能に',
 	'You did not select any [_1] to [_2].' => '[_2]する[_1]が選択されていません。',
@@ -3043,7 +3059,7 @@ use vars qw( @ISA %Lexicon );
 	'_USAGE_ENTRYPREFS' => 'ブログ記事の編集画面で表示する項目のセットを選択してください。',
 	'Page Fields' => 'ページフィールド',
 	'WYSIWYG Editor Setting' => 'WYSIWYGエディタの設定',
-	'Content CSS' => 'エディタ内CSS',
+	'Content CSS' => 'コンテンツCSS',
 	'The URL of CSS file inserting to the WYSIWYG editor' => 'WYSIWYGエディタ内で利用するCSSのURLを指定してください。',
 	'Punctuation Replacement Setting' => 'Word特有の文字を置き換える',
 	'Replace UTF-8 characters frequently used by word processors with their more common web equivalents.' => 'ワープロソフトで使われるUTF-8文字を対応する表示可能な文字に置き換えます。',
@@ -3330,6 +3346,7 @@ use vars qw( @ISA %Lexicon );
 	'Send Mail To' => 'メール送信先',
 	'The email address that should receive a test email from Movable Type.' => 'テストメールを受け取るメールアドレス',
 	'Send' => '送信',
+	'You must set a valid absolute Path.' => '正しい絶対パスを設定してください。',
 
 ## tmpl/cms/cfg_system_users.tmpl
 	'User Settings' => 'ユーザー設定',
@@ -4374,6 +4391,8 @@ use vars qw( @ISA %Lexicon );
 	'The name used by this user to login.' => 'ログイン時に使用するユーザー名です。',
 	'The name used when published.' => '表示名です。',
 	'The user&rsquo;s email address.' => 'ユーザーのメールアドレスです。',
+	'System Email' => 'システムのメールアドレス',
+	'Use this as system email address' => 'システムのメールアドレスとして利用する',
 	'The user&rsquo;s preferred language.' => 'ユーザーの表示用の言語',
 	'Select a password for your account.' => 'パスワードを入力してください。',
 	'Your LDAP username.' => 'LDAPのユーザー名を入力してください。',
@@ -5066,7 +5085,7 @@ use vars qw( @ISA %Lexicon );
 	'Password for your SMTP Server.' => 'SMTP認証に利用するユーザーのパスワードを指定してください。',
 	'SSL Connection' => 'SSL接続',
 	'Cannot use [_1].' => '[_1] は利用できません。',
-	'Not use SSL' => 'SSL接続を行わない。',
+	'Not use SSL' => 'SSL接続を行わない',
 	'Use SSL' => 'SSLで接続する',
 	'Use STARTTLS' => 'STARTTLSコマンドを利用する',
 	'Send Test Email' => 'テストメールを送信',
@@ -5114,6 +5133,92 @@ use vars qw( @ISA %Lexicon );
 	'Begin' => '開始',
 	'A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type.' => '構成ファイル(mt-config.cgi)はすでに存在します。Movable Typeに<a href="[_1]">サインイン</a>してください。',
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'ウィザードで新しく構成ファイルを作るときは、現在の構成ファイルを別の場所に移動してこのページを更新してください。',
+
+## addons/Cloud.pack/config.yaml
+	'Cloud Services' => 'クラウド・サービス',
+	'Basic Authentication' => 'Basic認証',
+	'HTTP Redirect' => 'HTTPリダイレクト',
+	'FTPS Password' => 'FTPSパスワードリセット',
+	'Full Restore' => '環境のリストア',
+	'SSL Certifications' => 'サーバー証明書',
+	'Config Directives' => 'MT環境変数',
+
+## addons/Cloud.pack/lib/Cloud/App/CMS.pm
+	'Owner' => 'ブログ管理者',
+	'Creator' => '制作者',
+	'Unable to reset [_1] FTPS password.' => 'FTPSパスワードのリセットが出来ませんでした。',
+	'Basic Authentication setting' => 'Basic認証の設定',
+	'Cannot access to this uri: [_1]' => '[_1]が存在しません。',
+	'Unable to update Basic Authentication settings.' => 'Basic認証の設定を保存する事が出来ませんでした。',
+	'HTTP Redirect setting' => 'HTTPリダイレクトの設定',
+	'Unable to update HTTP Redirect settings.' => 'HTTPリダイレクトの設定を保存することが出来ませんでした。',
+	'Update SSL Certification' => 'サーバー証明書の更新',
+	'Install SSL Certification' => 'サーバー証明書の導入',
+	'Cannot copy default cert file.' => '既定のサーバー証明書のコピーに失敗しました。',
+	'Cannot copy default secret file.' => '既定のサーバーキーのコピーに失敗しました。',
+	'Unable to write temporary file.' => '一時保存ファイルの書き込みが出来ませんでした。',
+	'Unable to update SSL certification.' => 'サーバー証明書の更新をする事が出来ませんでした。',
+	'Config Directive' => '環境変数',
+	'Restoring Backup Data' => 'バックアップデータの復元',
+	'Invalid backup file name.' => '不正なバックアップファイルです。',
+	'Cannot copy backup file to workspace.' => 'バックアップファイルのコピーに失敗しました。',
+	'Unable to create temporary path: [_1]' => 'テンポラリディレクトリの作成に失敗しました: [_1]',
+	'__SSL_CERT_UPDATE' => '更新',
+	'__SSL_CERT_INSTALL' => '導入',
+
+## addons/Cloud.pack/tmpl/cfg_basic_authentication.tmpl
+	'Manage Basic Authentication' => 'Basic認証の管理',
+	'/path/to/authentication' => '/path/to/authentication',
+	'User ID' => 'ユーザー名',
+	'Remove this setting' => '設定の削除',
+	'URI is required.' => 'URIは必須です。',
+	'Invalid URI.' => '不正なURIです。',
+	'User ID is required.' => 'ユーザー名は必須です。',
+	'User ID must be with alphabet, number or symbols (excludes back slash) only.' => 'ユーザー名は半角英数または記号のみ利用可能です。(バックスラッシュを除く)',
+	'Password is required.' => 'パスワードは必須です。',
+	'Password must be with alphabet, number or symbols (excludes back slash) only.' => 'パスワードは半角英数または記号のみ利用可能です。(バックスラッシュを除く)',
+	'basic authentication setting' => 'Basic認証の設定',
+	'basic authentication settings' => 'Basic認証の設定',
+
+## addons/Cloud.pack/tmpl/cfg_config_directives.tmpl
+	'Manage Configuration Directives' => '環境変数の管理',
+	'Configuration directive' => '環境変数',
+	'View Documentation' => 'ドキュメントの参照',
+	'Configuration value' => '設定値',
+	'Remove Config Directive' => '環境変数の削除',
+
+## addons/Cloud.pack/tmpl/cfg_ftps_password.tmpl
+	'Reset FTPS Password' => 'FTPSパスワードのリセット',
+	'Please select the account for which you want to reset the password.' => 'FTPSパスワードのリセットを行うアカウントを選択してください。',
+	'Owner Password' => 'ブログ管理者のパスワード',
+	'Saved' => '保存しました',
+	'Creater Password' => '制作者のパスワード',
+
+## addons/Cloud.pack/tmpl/cfg_http_redirect.tmpl
+	'Manage HTTP Redirect' => 'HTTPリダイレクトの管理',
+	'/path/of/redirect' => '/path/of/redirect',
+	'__REDIRECT_TO' => 'リダイレクト先',
+	'http://example.com or /path/to/redirect' => 'http://example.com 又は /path/to/redirect',
+	'Invalid URI.' => '不正なURIです。',
+	'Redirect URL is required.' => 'リダイレクト先URLは必須です。',
+	'Redirect url is same as URI' => 'リダイレクト先URLは、がリダイレクト元URIと違うURLを設定してください。',
+	'HTTP redirect setting' => 'HTTPリダイレクトの設定',
+	'HTTP redirect settings' => 'HTTPリダイレクトの設定',
+
+## addons/Cloud.pack/tmpl/cfg_ssl_certification.tmpl
+	'SSL certification have been updated.' => 'サーバー証明書が更新されました。',
+	'SSL certification have been reset to default.' => 'サーバー証明書が既定の証明書にリセットされました。',
+	'The current server certification is as follows.' => '現在のサーバー証明書は以下の通りです。',
+	q{To [_1] the server certificate, please enter the required information in the following fields. To revert back to the initial certificate, please press the 'Remove SSL Certification' button.} => q{サーバー証明書の[_1]を行うには、以下のフィールドに情報を入力してください。現在の証明書を削除して既定の証明書に戻すには、'サーバー証明書の削除'ボタンを押してください。},
+	'Server Certification' => '証明書 (server.crt)',
+	'Secret Key' => '認証キー (server.key)',
+	'Remove SSL Certification' => 'サーバー証明書の削除',
+
+## addons/Cloud.pack/tmpl/full_restore.tmpl
+	'Restoring Full Backup Data' => 'バックアップデータからの復元',
+	q{Restored backup data from '[_1]' at [_2]} => q{[_2]に[_1]のバックアップデータから復元されています。},
+	'When restoring back-up data, the contents will revert to the point when the back-up data was created. Please note that any changes made to the data or contents after this restoration point will be discarded. Also, while in the process of restoration, any present data will be backed up automatically. After restoration is complete, it is possible to return to the status of the data before restoration was executed.' => 'バックアップデータの復元を実行すると、全てのコンテンツがバックアップデータ作成時の状態に戻ります。復元元のバックアップデータが作成されてから保存された内容は、破棄されますのでご注意ください。また、復元を実行する前に現在の状態のバックアップを自動的に行います。バックアップデータの復元後に復元の実行前の状態に戻すことが可能です。',
+	'Are you sure you want restore from selected backup file?' => '選択されたバックアップファイルからの復元を行いますか?',
 
 ## addons/Commercial.pack/config.yaml
 	'Professional designed, well structured and easily adaptable web site. You can customize default pages, footer and top navigation easily.' => 'バナー画像、水平型のナビゲーションなど、ホームページ用途に適したデザインです。あらかじめ用意されたページをカスタマイズして、簡単にウェブサイトを作成できます。',
@@ -5842,7 +5947,6 @@ use vars qw( @ISA %Lexicon );
 ## addons/Enterprise.pack/app-wizard.yaml
 	'This module is required in order to use the LDAP Authentication.' => 'LDAP認証を利用する場合に必要です。',
 	'This module is required in order to use SSL/TLS connection with the LDAP Authentication.' => 'LDAP認証でSSLまたはTLS接続を利用する場合に必要です。',
-	'This module and its dependencies are required in order to use CRAM-MD5, DIGEST-MD5 or LOGIN as a SASL mechanism.' => 'Authen::SASLはCRAM-MD5、DIGEST-MD5又はLOGINをSASLメカニズムとして利用する場合に必要となります。',
 
 ## addons/Enterprise.pack/config.yaml
 	'Permissions of group: [_1]' => 'グループ[_1]の権限',
@@ -6124,6 +6228,10 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
 	'Set up Facebook Commenters plugin' => 'Facebook Commentersプラグイン設定',
+	'Authentication failure: [_1], reason:[_2]' => '認証に失敗しました: [_1], 理由:[_2]',
+	'Failed to created commenter.' => 'コメンターの作成に失敗しました。',
+	'Failed to create a session.' => 'コメンターセッションの作成に失敗しました。',
+	'Could not verify this app with Facebook.' => 'このアプリケーションをFacebookで確認することが出来ませんでした。',
 
 ## plugins/FacebookCommenters/tmpl/blog_config_template.tmpl
 	'Facebook Application Key' => 'Facebookアプリケーションキー',
