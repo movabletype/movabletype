@@ -135,7 +135,7 @@ for my $lang (@languages) {
     verbose_command("$make php/mt.php");
     verbose_command($make);
 
-    update_default_lang($lang);
+    ## update_default_lang($lang);
 
     make_manifest_skip( $skip_rules, $skip );
 
