@@ -630,5 +630,6 @@
     dc:date=\"1978-01-31T07:45:00-03:30\" />
 </rdf:RDF>
 -->
-"} #617
+"}, #617
+{ "r" : "1", "t" : "<MTEntries id=\"6\"><$MTIf tag=\"EntryCategories\"$>true<MTElse>false</MTIf></MTEntries>", "e" : "true" } #618
 ]
