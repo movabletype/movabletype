@@ -5,9 +5,10 @@
 
 .editor-header .tab {
     display: inline-block;
-    margin: 4px 1px -1px 0;
-    padding: 5px 10px 4px;
+    margin: 0 1px -1px 0;
+    padding: 5px 10px;
     border: 1px solid #c0c6c9;
+    line-height: 18px;
     background-color: #fff;
     font-size: 90%;
     text-align: center;
@@ -40,9 +41,8 @@
     right: 0;
 }
 .editor-header select {
-    margin-top: 5px;
+    margin-top: 3px;
     vertical-align: baseline;
-    font-size: 80%;
 }
 
 /* editor-content */

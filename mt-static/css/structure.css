@@ -6,7 +6,7 @@ body {
 body {
     color: #2b2b2b;
     background-color: #fffffc;
-    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 13px;
 }
 
@@ -97,6 +97,7 @@ pre {
 .sticky-label {
     display: inline-block;
     padding: 0.2em 0.5em;
+    line-height: 1.3;
     background-color: #adadad;
     color: #fff;
     font-size: 80%;
@@ -880,7 +881,7 @@ ul.tabs li a {
 }
 .menu-label {
     display: block;
-    line-height: 18px;
+    line-height: 17px;
 }
 .menu-link {
     display: block;
@@ -1007,7 +1008,6 @@ ul.tabs li a {
     position: absolute;
     top: 0;
     right: 0;
-    font-family: Arial, sans-serif;
 }
 .object-nav span {
     color: #9ea1a3;
@@ -2548,8 +2548,9 @@ div.template-group-content.active {
 .display-options .toggle-link {
     float: right;
     position: relative;
-    padding: 0.3em 25px 0.3em 0.5em;
+    padding: 5px 25px 5px 0.5em;
     border: 1px solid #c0c6c9;
+    line-height: 13px;
     background: #f3f3f3;
     border-radius: 2px;
     text-decoration: none;

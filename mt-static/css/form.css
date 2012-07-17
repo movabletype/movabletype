@@ -169,10 +169,6 @@ input[type="radio"] {
     color: #9ea1a3;
 }
 
-.text::-webkit-input-placeholder {
-    line-height: 1.1;
-}
-
 select {
     height: 1.75em;
     border: 1px solid #c0c6c9;

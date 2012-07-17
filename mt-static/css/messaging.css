@@ -109,7 +109,7 @@ p.zero-state {
 }
 .debug-panel-inner {
     padding: 5px;
-    font-family: 'Andale Mono', monospace;
+    font-family: monospace;
     font-size: 10px;
     max-height: 200px;
     overflow: auto;
