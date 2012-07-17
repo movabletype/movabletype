@@ -31,4 +31,11 @@ DBUser DATABASE_USERNAME
 DBPassword DATABASE_PASSWORD
 DBHost localhost
 
+## Change setting to language that you want to using.
 DefaultLanguage en_US
+#DefaultLanguage de
+#DefaultLanguage es
+#DefaultLanguage fr
+#DefaultLanguage ja
+#DefaultLanguage nl
+
