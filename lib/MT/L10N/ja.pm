@@ -1413,6 +1413,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/CMS/Plugin.pm
 	'Plugin Set: [_1]' => 'プラグインのセット: [_1]',
 	'Individual Plugins' => 'プラグイン',
+	'Error saving plugin settings: [_1]' => 'プラグインの設定を保存できません: [_1]',
 
 ## lib/MT/CMS/Search.pm
 	'No [_1] were found that match the given criteria.' => '該当する[_1]は見つかりませんでした。',
