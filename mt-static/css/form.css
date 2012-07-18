@@ -168,6 +168,10 @@ input[type="radio"] {
 .text[disabled] {
     color: #9ea1a3;
 }
+.text.readonly,
+.text[readonly] {
+    cursor: text;
+}
 
 select {
     height: 1.75em;
