@@ -71,9 +71,12 @@ textarea {
     vertical-align: top;
     resize: vertical;
 }
-input[type="checkbox"],
-input[type="radio"] {
+input[type=checkbox],
+input[type=radio] {
     padding: 0;
+}
+input[type=file] {
+    background: #ffffff;
 }
 .text,
 .button {
