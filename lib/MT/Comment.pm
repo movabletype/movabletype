@@ -38,6 +38,9 @@ __PACKAGE__->install_properties(
             email         => 1,
             commenter_id  => 1,
             last_moved_on => 1,    # used for junk expiration
+            # for blog dashboard - visible comments count
+            blog_visible_entry =>
+                { columns => [ 'blog_id', 'visible', 'entry_id' ], },
 
             # For URL lookups to aid spam filtering
             blog_url => { columns => [ 'blog_id', 'visible', 'url' ], },
