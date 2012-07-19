@@ -22,7 +22,7 @@ body.has-dialog {
     border: 1px solid #c0c6c9;
     background-color: #fffffc;
     border-radius: 3px;
-    box-shadow: 0 3px 12px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 0 3px 12px 0 rgba(0, 0, 0, 0.3);
 }
 .mt-dialog {
     display: none;
