@@ -761,7 +761,7 @@ sub _build_favorite_websites_data {
     my $class        = $app->model('website');
     my @fav_websites = @{ $user->favorite_websites || [] };
     my $fav_count    = scalar @fav_websites;
-    my @websites = $class->load( { id => \@fav_websites } )
+    my @websites     = $class->load( { id => \@fav_websites } )
         if $fav_count;
 
     @websites = grep sub {
@@ -855,6 +855,17 @@ sub _build_favorite_websites_data {
         = sort { ( $sorted{ $a->id } || 0 ) <=> ( $sorted{ $b->id } || 0 ) }
         @websites;
 
+    my $blog_perms
+        = MT::Permission->load_permissions_from_action('access_to_blog_list');
+    my $blog_perms_terms = ();
+    if ($blog_perms) {
+        foreach my $perm (@$blog_perms) {
+            $perm =~ m/\.(.*)/;
+            push @$blog_perms_terms, '-or' if $blog_perms_terms;
+            push @$blog_perms_terms, { permissions => { like => "%'$1'%" } };
+        }
+    }
+
     my @param;
     foreach my $website (@websites) {
         my $row;
@@ -876,8 +887,6 @@ sub _build_favorite_websites_data {
         my $perms = $user->permissions( $website->id );
         $row->{can_access_to_template_list} = 1
             if ( $perms && $perms->can_do('access_to_template_list') );
-        $row->{can_access_to_blog_list} = 1
-            if ( $perms && $perms->can_do('access_to_blog_list') );
         $row->{can_access_to_page_list} = 1
             if ( $perms && $perms->can_do('access_to_page_list') );
         $row->{can_access_to_blog_setting_screen} = 1
@@ -890,6 +899,22 @@ sub _build_favorite_websites_data {
             if ( $user->is_superuser ) || $perms->can_do('view_feedback');
         $row->{can_use_tools_search} = 1
             if ( $perms && $perms->can_do('use_tools:search') );
+
+        my $blog_perms_cnt = MT::Permission->count(
+            [   {   blog_id => [
+                        0, $website->id,
+                        map { $_->id } @{ $website->blogs }
+                    ],
+                    author_id => $user->id,
+                },
+                '-and',
+                $blog_perms_terms,
+            ]
+        );
+
+        $row->{can_access_to_blog_list} = 1
+            if $blog_perms_cnt;
+
         my @num_vars = qw(
             website_blog_count website_page_count website_comment_count
         );
