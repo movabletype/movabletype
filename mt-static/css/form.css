@@ -221,6 +221,9 @@ select.error {
     text-decoration: none;
     border-radius: 2px;
 }
+.button:focus {
+    border-color: #2a83a2;
+}
 .button:hover {
     border-color: #adadad;
     color: #2b2b2b;
