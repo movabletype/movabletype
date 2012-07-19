@@ -599,7 +599,9 @@ sub entry_count {
                 },
                 {   'join' => [
                         'MT::Placement', 'entry_id',
-                        { category_id => $cat->id }
+                        { category_id => $cat->id,
+                          blog_id => $cat->blog_id,
+                        }
                     ]
                 }
             );
