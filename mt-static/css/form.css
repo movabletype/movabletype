@@ -1,5 +1,5 @@
 /* - Fields */
-fieldset { 
+fieldset {
     margin-bottom: 3em;
 }
 .field {
@@ -241,7 +241,6 @@ select.error {
 .button.action {
     padding: 0 0.8em;
     border-color: #7b7c7d;
-    line-height: 0.75em;
     background-color: #adadad;
     background-image: -moz-linear-gradient(#adadad, #7b7c7d);
     background-image: -webkit-linear-gradient(#adadad, #7b7c7d);
@@ -250,6 +249,7 @@ select.error {
     text-shadow: 1px 1px 1px #383c3c;
     font-size: 14px;
     font-weight: bold;
+    vertical-align: baseline;
 }
 .button.action:hover {
     border-color: #595857;
