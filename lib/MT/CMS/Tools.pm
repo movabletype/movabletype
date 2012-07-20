@@ -2745,7 +2745,7 @@ sub _log_dirty_restore {
                 level    => MT::Log::WARNING(),
                 class    => 'system',
                 category => 'restore',
-                metadata => join( ', ', @$ids ),
+                metadata => 'ID:' . join( ', ', @$ids ),
             }
         );
     }
