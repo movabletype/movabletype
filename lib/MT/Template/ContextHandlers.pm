@@ -2733,28 +2733,7 @@ sub _hdlr_get_var {
             $value = $value->(@_);
         }
         if ( ref($value) ) {
-            if ( UNIVERSAL::isa( $value, 'MT::Template' ) ) {
-                local $args->{name}     = undef;
-                local $args->{var}      = undef;
-                local $value->{context} = $ctx;
-                $value = $value->output($args);
-            }
-            elsif ( UNIVERSAL::isa( $value, 'MT::Template::Tokens' ) ) {
-                local $ctx->{__stash}{tokens} = $value;
-                local $args->{name}           = undef;
-                local $args->{var}            = undef;
-
-                # Pass through SetVarTemplate arguments as variables
-                # so that they do not affect the global stash
-                my $vars = $ctx->{__stash}{vars} ||= {};
-                my @names = keys %$args;
-                my @var_names;
-                push @var_names, lc $_ for @names;
-                local @{$vars}{@var_names};
-                $vars->{ lc($_) } = $args->{$_} for @names;
-                $value = $ctx->slurp($args) or return;
-            }
-            elsif ( ref($value) eq 'ARRAY' ) {
+            if ( ref($value) eq 'ARRAY' ) {
                 if ( defined $index ) {
                     if ( $index =~ /^-?\d+$/ ) {
                         $value = $value->[$index];
@@ -2827,6 +2806,29 @@ sub _hdlr_get_var {
                         );
                     }
                 }
+            }
+        }
+        if ( ref($value) ) {
+            if ( UNIVERSAL::isa( $value, 'MT::Template' ) ) {
+                local $args->{name}     = undef;
+                local $args->{var}      = undef;
+                local $value->{context} = $ctx;
+                $value = $value->output($args);
+            }
+            elsif ( UNIVERSAL::isa( $value, 'MT::Template::Tokens' ) ) {
+                local $ctx->{__stash}{tokens} = $value;
+                local $args->{name}           = undef;
+                local $args->{var}            = undef;
+
+                # Pass through SetVarTemplate arguments as variables
+                # so that they do not affect the global stash
+                my $vars = $ctx->{__stash}{vars} ||= {};
+                my @names = keys %$args;
+                my @var_names;
+                push @var_names, lc $_ for @names;
+                local @{$vars}{@var_names};
+                $vars->{ lc($_) } = $args->{$_} for @names;
+                $value = $ctx->slurp($args) or return;
             }
         }
         if ( my $op = $args->{op} ) {
