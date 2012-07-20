@@ -153,7 +153,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
 
         config['content_css'] =
             (config['content_css'] + ',' + adapter.commonOptions['content_css_list'].join(','))
-            .replace(/^,+/, '');
+            .replace(/^,+|,+$/g, '');
         config['body_class'] =
             config['body_class'] + ' ' + adapter.commonOptions['body_class_list'].join(' ')
         if (! config['body_id']) {
