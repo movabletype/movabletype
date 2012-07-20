@@ -3259,7 +3259,7 @@ sub _hdlr_app_statusmsg {
     if ( !$blog && $blog_id ) {
         $blog = MT->model('blog')->load($blog_id);
     }
-    if ($app->user
+    if ($blog && $app->user
         and $app->user->can_do(
             'rebuild',
             at_least_one => 1,
