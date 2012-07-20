@@ -5136,7 +5136,7 @@ use vars qw( @ISA %Lexicon );
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'ウィザードで新しく構成ファイルを作るときは、現在の構成ファイルを別の場所に移動してこのページを更新してください。',
 
 ## addons/Cloud.pack/config.yaml
-	'Cloud Services' => 'クラウド・サービス',
+	'Cloud Services' => 'クラウドサービス',
 	'Basic Authentication' => 'Basic認証',
 	'HTTP Redirect' => 'HTTPリダイレクト',
 	'FTPS Password' => 'FTPSパスワードリセット',
