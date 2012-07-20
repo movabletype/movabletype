@@ -2563,7 +2563,7 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/addons/Cloud.pack/js/cfg_config_directives.js
 	'Configuration directive is required.' => '環境変数名は必須です。',
 	'[_1] is not updatable.' => '[_1]を変更することは出来ません。',
-	'Although [_1] is updatable by CMS is not updatable in this screen.' => '[_1]は管理画面から変更してください。',
+	'Although [_1] is updatable by CMS is not updatable in this screen.' => '[_1]は変更出来ません。',
 	'[_1] already exists.' => '[_1]はすでに存在します。',
 	'Configuration value is required.' => '設定値は必須です。',
 	'The HASH type config directive should be in the format of "key=value"' => 'ハッシュ型の環境変数の設定値は、"key=value"の形式で入力してください。',
