@@ -175,6 +175,5 @@ $.extend(MT.Editor.Source.prototype, MT.Editor.prototype, {
         }
     }
 });
-MT.EditorManager.register('source', MT.Editor.Source);
 
 })(jQuery);
