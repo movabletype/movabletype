@@ -4082,36 +4082,27 @@ sub _parse_entry_prefs {
     my ( $prefix, $prefs, $param, $fields ) = @_;
     my @p = split /,/, $prefs;
     for my $p (@p) {
-        if ( $p =~ m/^(.+?):(\d+)$/ ) {
-            my ( $name, $num ) = ( $1, $2 );
-            if ($num) {
-                $param->{ 'disp_prefs_height_' . $name } = $num;
+        my ($name, $ext) = $p =~ m/^(.+?):(.+)$/;
+        $p = $name if (defined $ext);
+
+        if ( $ext and ( $ext =~ m/^(\d+)$/ )  ) {
+            $param->{ 'disp_prefs_height_' . $p } = $ext;
+        }
+        if ( grep { lc($p) eq $_ } qw{advanced default basic} ) {
+            $p = 'Default' if lc($p) eq 'basic';
+            $param->{ $prefix . 'disp_prefs_' . $p } = 1;
+            my @fields = qw( title body category tags feedback publishing assets );
+            if ( lc($p) eq 'advanced' ) {
+                push @fields, qw(excerpt feedback keywords);
             }
-            $param->{ $prefix . 'disp_prefs_show_' . $name } = 1;
-            push @$fields, { name => $name };
+            foreach my $def ( @fields ) {
+                $param->{ $prefix . 'disp_prefs_show_' . $def } = 1;
+                push @$fields, { name => $def };
+            }
         }
         else {
-            $p = 'Default' if lc($p) eq 'basic';
-            if ( ( lc($p) eq 'advanced' ) || ( lc($p) eq 'default' ) ) {
-                $param->{ $prefix . 'disp_prefs_' . $p } = 1;
-                foreach my $def (
-                    qw( title body category tags feedback publishing assets )
-                    )
-                {
-                    $param->{ $prefix . 'disp_prefs_show_' . $def } = 1;
-                    push @$fields, { name => $def };
-                }
-                if ( lc($p) eq 'advanced' ) {
-                    foreach my $def (qw(excerpt feedback keywords)) {
-                        $param->{ $prefix . 'disp_prefs_show_' . $def } = 1;
-                        push @$fields, { name => $def };
-                    }
-                }
-            }
-            else {
-                $param->{ $prefix . 'disp_prefs_show_' . $p } = 1;
-                push @$fields, { name => $p };
-            }
+            $param->{ $prefix . 'disp_prefs_show_' . $p } = 1;
+            push @$fields, { name => $p };
         }
     }
 }

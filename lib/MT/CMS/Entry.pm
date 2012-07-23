@@ -533,7 +533,7 @@ sub edit {
             @ordered = sort { $order{$a} <=> $order{$b} } @ordered;
         }
     }
-
+    
     $param->{field_loop} ||= [
         map {
             {   field_name => $_,
@@ -2164,6 +2164,9 @@ sub save_entry_prefs {
 
     if ( $disp && lc $disp eq 'custom' && lc $sort_only eq 'true' ) {
         my $current = $perms->$prefs_type;
+        $prefs =~ s/\|.*$//;
+        my $pos;
+        ($current, $pos) = split '\\|', $current;
         my %current = map { $_ => 1 } split ',', $current;
         my @new     = split ',', $prefs;
         $prefs = '';
@@ -2172,6 +2175,7 @@ sub save_entry_prefs {
             $prefs .= $p;
             $prefs .= ':s' unless $current{$p};
         }
+        $prefs .= "|$pos" if defined $pos;
     }
 
     $perms->$prefs_type($prefs);
