@@ -20,7 +20,7 @@ setting. Use C<SearchMaxResults> because MaxResults is considered deprecated.
 
 sub _hdlr_search_max_results {
     my ($ctx) = @_;
-    return $ctx->{config}->MaxResults;
+    return $ctx->{config}->SearchMaxResults;
 }
 
 1;
