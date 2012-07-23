@@ -3413,8 +3413,8 @@ use vars qw( @ISA %Lexicon );
 	'Select a Widget...' => 'ウィジェットの選択...',
 	'Add' => '追加',
 	'Your Dashboard has been updated.' => 'ダッシュボードを更新しました。',
-	'The support directory is not writable.' => 'supportディレクトリに書き込めません。',
-	q{Movable Type was unable to write to its 'support' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.} => q{supportディレクトリに書き込みできません。[_1]にディレクトリを作成して、ウェブサーバーから書き込みできるパーミッションを与えてください。},
+	'The support directory is not writable.' => 'サポートディレクトリに書き込めません。',
+	q{Movable Type was unable to write to its 'support' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.} => q{サポートディレクトリに書き込みできません。[_1]にディレクトリを作成して、ウェブサーバーから書き込みできるパーミッションを与えてください。},
 	'ImageDriver is not configured.' => 'イメージドライバーが設定されていません。',
 	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'ImageDriverに設定された画像処理ツールが存在しないかまたは正しく設定されていないため、Movable Typeのユーザー画像機能を利用できません。この機能を利用するには、Image::Magick、NetPBM、GD、Imagerのいずれかをインストールする必要があります。',
 
