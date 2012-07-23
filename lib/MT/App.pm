@@ -3998,6 +3998,10 @@ sub path_info {
     else {
         return undef unless $app->{query};
         $path_info = $app->{query}->path_info;
+
+        my $script_name = $ENV{SCRIPT_NAME};
+        $path_info =~ s!^$script_name!!
+            if $script_name;
     }
     $app->{__path_info} = $path_info;
 }
