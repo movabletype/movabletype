@@ -4985,6 +4985,7 @@ sub setup_editor_param {
 
                 foreach my $k ( 'template', 'extension' ) {
                     my $conf = $reg->{$k};
+                    next unless defined $conf;
                     if ( !ref $conf ) {
                         $conf = {
                             template => $conf,
