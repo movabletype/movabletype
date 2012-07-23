@@ -1588,6 +1588,11 @@ B<Attributes:>
 
 =over 4
 
+=item * default_name (optional; default "Anonymous")
+
+Used in the event that the commenter did not provide a value for their
+name.
+
 =item * label or text (optional)
 
 A custom phrase for the link (default is "Reply").
@@ -1610,11 +1615,15 @@ sub _hdlr_comment_reply_link {
         or return $ctx->_no_comment_error();
 
     my $label = $args->{label} || $args->{text} || MT->translate('Reply');
-    my $comment_author = MT::Util::encode_html(
-        MT::Util::encode_html( MT::Util::encode_js( $comment->author ) ), 1 );
+    my $name = $comment->author;
+    $name = '' unless defined $name;
+    $name ||= $args->{default_name};
+    $name ||= MT->translate("Anonymous");
+    $name = MT::Util::encode_html(
+        MT::Util::encode_html( MT::Util::encode_js( $name ) ), 1 );
     my $onclick
         = sprintf( $args->{onclick} || "mtReplyCommentOnClick(%d, '%s')",
-        $comment->id, $comment_author );
+        $comment->id, $name );
 
     return
         sprintf(
