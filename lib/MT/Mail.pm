@@ -187,6 +187,8 @@ sub _send_mt_debug {
 sub _send_mt_smtp {
     my $class = shift;
     my ( $hdrs, $body, $mgr ) = @_;
+    $hdrs->{To} = $mgr->DebugEmailAddress
+        if ( is_valid_email( $mgr->DebugEmailAddress || '' ) );
 
     # SMTP Configuration
     my $host      = $mgr->SMTPServer;
