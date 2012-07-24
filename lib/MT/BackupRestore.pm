@@ -710,6 +710,20 @@ sub cb_restore_objects {
     my %assets;
     my %old_ids;
     for my $key ( keys %$all_objects ) {
+        my $obj = $all_objects->{$key};
+        if ( $obj->properties->{audit} ) {
+            my $author_class = MT->model('author');
+            if ( $obj->created_by && $all_objects->{"$author_class#" . $obj->created_by} ) {
+                my $new_id = $all_objects->{"$author_class#" . $obj->created_by}->id;
+                $obj->created_by( $new_id );
+            }
+            if ( $obj->modified_by && $all_objects->{"$author_class#" . $obj->modified_by}) {
+                my $new_id = $all_objects->{"$author_class#" . $obj->modified_by}->id;
+                $obj->modified_by( $new_id );
+            }
+            $obj->save;
+        }
+
         if ( $key =~ /^MT::Entry#(\d+)$/ ) {
             my $new_id = $all_objects->{$key}->id;
             $entries{$new_id} = $all_objects->{$key};
