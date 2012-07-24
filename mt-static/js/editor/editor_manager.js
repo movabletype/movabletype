@@ -21,7 +21,7 @@ $.extend(MT.EditorManager, {
         var thisConstructor = this;
 
         this.editors[id] = editor;
-        $.each(editor.formats(), function() {
+        $.each(editor.formatsForCurrentContext(), function() {
             if (! thisConstructor.editorsForFormat[this]) {
                 thisConstructor.editorsForFormat[this] = [];
             }

@@ -35,13 +35,19 @@ $.extend(MT.Editor, {
     },
 
     formats: function() {
-        if (this.isMobileOSWYSIWYGSupported() ||
-            ! navigator.userAgent.match(/Android|i(Phone|Pad|Pod)/)
+        return ['wysiwyg', 'source'];
+    },
+
+    formatsForCurrentContext: function() {
+        if (! this.isMobileOSWYSIWYGSupported() &&
+            navigator.userAgent.match(/Android|i(Phone|Pad|Pod)/)
         ) {
-            return ['wysiwyg', 'source'];
+            return $.grep(this.formats(), function(format) {
+                return format != 'wysiwyg';
+            });
         }
         else {
-            return ['source'];
+            return this.formats();
         }
     },
 
