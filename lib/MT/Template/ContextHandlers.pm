@@ -4396,7 +4396,9 @@ B<Example:> Passing Parameters to a Template Module
         my ( $ctx, $arg, $cond ) = @_;
         if ( !MT->config->AllowFileInclude ) {
             return $ctx->error(
-                'File include is disabled by "AllowFileInclude" config directive.'
+                MT->translate(
+                    'File include is disabled by "AllowFileInclude" config directive.'
+                )
             );
         }
         my $file = $arg->{file} or return;

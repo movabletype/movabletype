@@ -2215,6 +2215,7 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t find entry \'[_1]\'' => '\'[_1]\'というブログ記事が見つかりませんでした。',
 	'Unspecified archive template' => 'アーカイブテンプレートが指定されていません。',
 	'Error in file template: [_1]' => 'ファイルテンプレートでエラーが発生しました: [_1]',
+	'File include is disabled by "AllowFileInclude" config directive.' => 'File モディファイアは、環境変数(AllowFileInclude)により無効にされています。',
 
 ## lib/MT/Template/Tags/Archive.pm
 	'Group iterator failed.' => 'アーカイブのロードでエラーが発生しました。',
