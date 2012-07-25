@@ -317,7 +317,22 @@ sub _loop_through_objects {
     my %authors_seen;
     my %backuped_objs_store;
     my $author_pkg = MT->model('author');
+
+    my $can_read_disk_usage;
+    eval "require Filesys::DfPortable;";
+    if ( !$@ ) {
+        $can_read_disk_usage = 1;
+    }
+
     for my $class_hash (@$obj_to_backup) {
+        if ($can_read_disk_usage) {
+            my $ref = Filesys::DfPortable::dfportable(
+                MT->instance->config('TempDir') );
+            if ( $ref->{per} == 100 ) {
+                die MT->translate( "\nCannot write a file: Disk full" );
+            }
+        }
+
         my ( $class, $term_arg ) = each(%$class_hash);
         eval "require $class;";
         my $children = $class->properties->{child_classes} || {};
@@ -338,10 +353,10 @@ sub _loop_through_objects {
         my $records = 0;
         my $state = MT->translate( 'Backing up [_1] records:', $class );
         $progress->( $state, $class->class_type || $class->datasource );
-        my $limit  = 50;
-        my $offset = 0;
-        my $terms  = $term_arg->{terms} || {};
-        my $args   = $term_arg->{args};
+        my $limit         = 50;
+        my $offset        = 0;
+        my $terms         = $term_arg->{terms} || {};
+        my $args          = $term_arg->{args};
         my $backuped_objs = ( $backuped_objs_store{$class} ||= [] );
 
         unless ( exists $args->{sort} ) {

@@ -1294,9 +1294,17 @@ sub backup {
         backup_what    => join( ',', @blog_ids ),
         schema_version => $app->config('SchemaVersion'),
     };
-    MT::BackupRestore->backup( \@blog_ids, $printer, $splitter, $finisher,
-        $progress, $size * 1024,
-        $enc, $metadata );
+    eval {
+        MT::BackupRestore->backup( \@blog_ids, $printer, $splitter, $finisher,
+            $progress, $size * 1024,
+            $enc, $metadata );
+    };
+    if ( $@ ) {
+        # Abnormal end
+        $param->{error} = $@;
+        close $fh;
+        _backup_finisher( $app, $fname, $param );
+    }
 }
 
 sub backup_download {
@@ -2664,7 +2672,8 @@ sub _backup_finisher {
         $fnames = [$fnames];
     }
     $param->{filename}       = $fnames->[0];
-    $param->{backup_success} = 1;
+    $param->{backup_success} = 1
+        unless $param->{error};
     require MT::Session;
     MT::Session->remove( { kind => 'BU' } );
     foreach my $fname (@$fnames) {
