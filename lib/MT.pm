@@ -1174,13 +1174,8 @@ sub init_core {
     return 1;
 }
 
-sub init_lang_defaults {
-    my $mt        = shift;
-    my $cfg       = $mt->config;
-    my $was_dirty = $cfg->is_dirty;
-    $cfg->DefaultLanguage('en_US') unless $cfg->DefaultLanguage;
-
-    my %lang_settings = (
+sub i18n_default_settings {
+    my %settings = (
         'NewsboxURL'         => 'NEWSBOX_URL',
         'SupportURL'         => 'SUPPORT_URL',
         'NewsURL'            => 'NEWS_URL',
@@ -1193,20 +1188,23 @@ sub init_lang_defaults {
         'PublishCharset'     => 'PUBLISH_CHARSET',
     );
 
-    foreach my $setting ( keys %lang_settings ) {
-        my $const    = $lang_settings{$setting};
-        my $value    = $cfg->$setting;
-        my $i18n_val = const($const);
-        if ( !$value ) {
-            $cfg->$setting( $i18n_val, 1 );
-        }
-        elsif (( $value eq $cfg->default($setting) )
-            && ( $value ne $i18n_val ) )
-        {
-            $cfg->$setting( $i18n_val, 1 );
-        }
+    foreach my $key ( keys %settings ) {
+        $settings{$key} = const( $settings{$key} );
     }
-    $cfg->clear_dirty unless $was_dirty;
+
+    \%settings;
+}
+
+sub init_lang_defaults {
+    my $mt  = shift;
+    my $cfg = $mt->config;
+    $cfg->DefaultLanguage('en_US') unless $cfg->DefaultLanguage;
+
+    my $settings = $mt->i18n_default_settings;
+    foreach my $key ( keys %$settings ) {
+        $cfg->default( $key, $settings->{$key} );
+    }
+
     return 1;
 }
 

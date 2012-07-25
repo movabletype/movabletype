@@ -125,6 +125,7 @@ sub type {
 sub default {
     my $mgr = shift;
     my $var = lc shift;
+    $mgr->{__settings}{$var}{default} = shift if @_;
     my $def = $mgr->{__settings}{$var}{default};
     return wantarray ? () : undef unless defined $def;
     if (ref($def) eq 'CODE') {
