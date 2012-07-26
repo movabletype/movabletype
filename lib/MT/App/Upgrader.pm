@@ -47,6 +47,7 @@ sub init_request {
     $app->SUPER::init_request(@_);
     $app->set_no_cache;
     $app->{default_mode} = 'install';
+    delete $app->{response};
     my $mode = $app->mode || $app->{default_mode};
     $app->{requires_login} = ( $mode eq 'upgrade' ) || ( $mode eq 'main' );
 }

@@ -761,7 +761,8 @@ sub _build_favorite_websites_data {
     my $class        = $app->model('website');
     my @fav_websites = @{ $user->favorite_websites || [] };
     my $fav_count    = scalar @fav_websites;
-    my @websites     = $class->load( { id => \@fav_websites } )
+    my @websites;
+    @websites = $class->load( { id => \@fav_websites } )
         if $fav_count;
 
     @websites = grep sub {
