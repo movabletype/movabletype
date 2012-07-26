@@ -144,10 +144,6 @@ input[type=file] {
     font-size: 200%;
     line-height: 1.2;
 }
-.text.error {
-    border-color: #c53d43;
-    background-color: #f2b1b1;
-}
 .text:hover,
 .text:focus {
     box-shadow: inset 0 1px 1px 0 rgba(0, 0, 0, 0.2);
@@ -159,6 +155,13 @@ input[type=file] {
     outline: 0;
     border-color: #2a83a2;
 }
+
+.text.error,
+.text.error:focus {
+    border-color: #c53d43;
+}
+
+
 .text.disabled,
 .text[disabled],
 .text.readonly,

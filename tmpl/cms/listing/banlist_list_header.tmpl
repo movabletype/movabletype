@@ -28,21 +28,23 @@
 <form id="create-inline-ipban" class="create-inline" style="display: none;">
     <mtapp:setting
        id="ip-address"
-       label="<__trans phrase="IP Address">"
-       label_class="inline">
+       required="1"
+       label="<__trans phrase="IP Address">">
       <input type="text" name="ip-address" id="ip-address" class="text med ipaddress" value="<mt:var name="ip" escape="html">" />
-      <button
-         type="submit"
-         id="submit-ipban"
-         class="add button">
-        <__trans phrase="Add">
-      </button>
-      <button
-         type="button"
-         class="cancel button mt-cancel-action">
-        <__trans phrase="Cancel">
-      </button>
     </mtapp:setting>
+    <div class="actions-bar settings-actions-bar">
+        <button
+           type="submit"
+           id="submit-ipban"
+           class="button action primary">
+          <__trans phrase="Add">
+        </button>
+        <button
+           type="button"
+           class="button action mt-cancel-action">
+          <__trans phrase="Cancel">
+        </button>
+    </div>
 </form>
 </mt:setvarblock>
 
@@ -70,7 +72,7 @@
         // If input has focus, jQuery.wrap() throws exception...
         // Change focus before validate.
         jQuery('#submit-ipban').focus();
-        if ( !jQuery('#ip-address').mtValidate() ) {
+        if ( !jQuery('#ip-address').mtValidate('simple') ) {
             jQuery('#ip-address').focus();
             return false;
         }
