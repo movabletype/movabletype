@@ -4286,7 +4286,7 @@ B<Example:> Passing Parameters to a Template Module
                         my $fmgr  = $blog->file_mgr;
                         my $mtime = $fmgr->file_mod_time($include_file);
                         if ( $mtime
-                            && ( MT::Util::ts2epoch( undef, $latest )
+                            && ( MT::Util::ts2epoch( undef, $latest, 1 )
                                 > $mtime ) )
                         {
                             $ttl = 1;    # bound to force an update
