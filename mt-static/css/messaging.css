@@ -31,6 +31,13 @@
     margin: 0;
 }
 
+.msg ul {
+    padding-left: 1.618em;
+}
+.msg li {
+    list-style-type: disc;
+}
+
 .close-link {
     position: absolute;
     top: 50%;
