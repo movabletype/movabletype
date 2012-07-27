@@ -956,6 +956,9 @@ $.mtValidator('top', {
             $('div#msg-block').text('');
         }
     },
+    updateError: function( $target, $error_block, msg ) {
+        $error_block.find('label').text(msg);
+    }
 });
 $.mtValidator('simple', {
     wrapError: function ( $target, msg ) {
