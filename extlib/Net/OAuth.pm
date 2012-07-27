@@ -1,14 +1,14 @@
 package Net::OAuth;
 use warnings;
 use strict;
-use UNIVERSAL::require;
+use Carp;
 
 sub PROTOCOL_VERSION_1_0() {1}
 sub PROTOCOL_VERSION_1_0A() {1.001}
 
 sub OAUTH_VERSION() {'1.0'}
 
-our $VERSION = '0.19';
+our $VERSION = '0.28';
 our $SKIP_UTF8_DOUBLE_ENCODE_CHECK = 0;
 our $PROTOCOL_VERSION = PROTOCOL_VERSION_1_0;
 
@@ -29,7 +29,7 @@ sub message {
     my $base_class = ref $self || $self;
     my $type = camel(shift);
     my $class = $base_class . '::' . $type;
-    $class->require;
+    smart_require($class, 1);
     return $class;
 }
 
@@ -44,78 +44,77 @@ sub camel {
     my $name = join('', map("\u$_", @words));
 }
 
+our %ALREADY_REQUIRED = (); # class_name => rv of ->require
+
+sub smart_require {
+    my $required_class = shift;
+    my $croak_on_error = shift || 0;
+    unless (exists $ALREADY_REQUIRED{$required_class}) {
+        $ALREADY_REQUIRED{$required_class} = eval "require $required_class";
+        croak $@ if $@ and $croak_on_error;
+    }
+    return $ALREADY_REQUIRED{$required_class};
+}
+
 =head1 NAME
 
-Net::OAuth - OAuth protocol support
+Net::OAuth - OAuth 1.0 for Perl
 
 =head1 SYNOPSIS
 
-    # Consumer sends Request Token Request
+  # Web Server Example (Dancer)
 
-    use Net::OAuth;
-    $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
-    use HTTP::Request::Common;
-    my $ua = LWP::UserAgent->new;
+  # This example is simplified for illustrative purposes, see the complete code in /demo
 
-    my $request = Net::OAuth->request("request token")->new(
-        consumer_key => 'dpf43f3p2l4k3l03',
-        consumer_secret => 'kd94hf93k423kf44',
-        request_url => 'https://photos.example.net/request_token',
-        request_method => 'POST',
-        signature_method => 'HMAC-SHA1',
-        timestamp => '1191242090',
-        nonce => 'hsu94j3884jdopsl',
-        callback => 'http://printer.example.com/request_token_ready',
-        extra_params => {
-            apple => 'banana',
-            kiwi => 'pear',
-        }
-    );
+  # Note that client_id is the Consumer Key and client_secret is the Consumer Secret
 
-    $request->sign;
+  use Dancer;
+  use Net::OAuth::Client;
 
-    my $res = $ua->request(POST $request->to_url); # Post message to the Service Provider
+  sub client {
+  	Net::OAuth::Client->new(
+  		config->{client_id},
+  		config->{client_secret},
+  		site => 'https://www.google.com/',
+  		request_token_path => '/accounts/OAuthGetRequestToken?scope=https%3A%2F%2Fwww.google.com%2Fm8%2Ffeeds%2F',
+  		authorize_path => '/accounts/OAuthAuthorizeToken',
+  		access_token_path => '/accounts/OAuthGetAccessToken',
+  		callback => uri_for("/auth/google/callback"),
+  		session => \&session,
+  	);
+  }
 
-    if ($res->is_success) {
-        my $response = Net::OAuth->response('request token')->from_post_body($res->content);
-        print "Got Request Token ", $response->token, "\n";
-        print "Got Request Token Secret ", $response->token_secret, "\n";
-    }
-    else {
-        die "Something went wrong";
-    }
+  # Send user to authorize with service provider
+  get '/auth/google' => sub {
+  	redirect client->authorize_url;
+  };
 
-    # Etc..
+  # User has returned with token and verifier appended to the URL.
+  get '/auth/google/callback' => sub {
 
-    # Service Provider receives Request Token Request
+  	# Use the auth code to fetch the access token
+  	my $access_token =  client->get_access_token(params->{oauth_token}, params->{oauth_verifier});
 
-    use Net::OAuth;
-    $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
-    use CGI;
-    my $q = new CGI;
+  	# Use the access token to fetch a protected resource
+  	my $response = $access_token->get('/m8/feeds/contacts/default/full');
 
-    my $request = Net::OAuth->request("request token")->from_hash($q->Vars,
-        request_url => 'https://photos.example.net/request_token',
-        request_method => $q->request_method,
-        consumer_secret => 'kd94hf93k423kf44',
-    );
+  	# Do something with said resource...
 
-    if (!$request->verify) {
-        die "Signature verification failed";
-    }
-    else {
-        # Service Provider sends Request Token Response
+  	if ($response->is_success) {
+  	  return "Yay, it worked: " . $response->decoded_content;
+  	}
+  	else {
+  	  return "Error: " . $response->status_line;
+  	}
+  };
 
-        my $response = Net::OAuth->response("request token")->new( 
-            token => 'abcdef',
-            token_secret => '0123456',
-            callback_confirmed => 'true',
-        );
+  dance;
 
-        print $response->to_post_body;
-    }    
+=head1 IMPORTANT
 
-    # Etc..
+Net::OAuth provides a low-level API for reading and writing OAuth messages.
+
+You probably should start with L<Net::OAuth::Client>.
 
 =head1 ABSTRACT
 
@@ -203,9 +202,9 @@ The more verbose way is to use the class directly:
 
 You can also create a message by deserializing it from a Authorization header, URL, query hash, or POST body
 
- $request = Net::OAuth->request('protected resource')->from_authorization_header($header, %api_params);
+ $request = Net::OAuth->request('protected resource')->from_authorization_header($ENV{HTTP_AUTHORIZATION}, %api_params);
  $request = Net::OAuth->request('protected resource')->from_url($url, %api_params);
- $request = Net::OAuth->request('protected resource')->from_hash($q->Vars, %api_params); # CGI
+ $request = Net::OAuth->request('protected resource')->from_hash({$q->Vars}, %api_params); # CGI
  $request = Net::OAuth->request('protected resource')->from_hash($c->request->params, %api_params); # Catalyst
  $response = Net::OAuth->response('request token')->from_post_body($response_content, %api_params);
 
@@ -299,6 +298,8 @@ The following signature methods are supported:
 
 =item * HMAC-SHA1
 
+=item * HMAC-SHA256
+
 =item * RSA-SHA1
 
 =back
@@ -314,6 +315,10 @@ This method is a trivial signature which adds no security.  Not recommended.
 =head3 HMAC-SHA1 SIGNATURES
 
 This method is available if you have Digest::HMAC_SHA1 installed.  This is by far the most commonly used method.
+
+=head3 HMAC-SHA256 SIGNATURES
+
+This method is available if you have Digest::SHA installed.
 
 =head3 RSA-SHA1 SIGNATURES
 
@@ -363,24 +368,7 @@ See L<Net::OAuth::ConsumerRequest>
 
 =head2 I18N
 
-Per the OAuth spec, when making the signature Net::OAuth first encodes parameters to UTF-8. This means that any parameters you pass to Net::OAuth, if they are outside of ASCII character set, should be run through Encode::decode() (or an equivalent PerlIO layer) first to decode them to Perl's internal character sructure.
-
-There is a check in Net::OAuth's parameter encoding function that guesses if the data you are passing in looks like it is already UTF-8 and warns that you should decode it first. This accidental double-encoding of UTF-8 may be a source of headaches - if you find that the signature check is failing when you send non-ASCII data, that is a likely cause. 
-
-You can silence this warning by setting:
-
-    $Net::OAuth::SKIP_UTF8_DOUBLE_ENCODE_CHECK = 1;
-
-Following is an example of decoding some UTF-8 form data before sending it in an OAuth messaage (from the Twitter demo included in the Net::OAuth package):
-
-    my $request = Net::OAuth->request("protected resource")->new(
-        $self->_default_request_params,
-        request_url => 'http://twitter.com/statuses/update.xml',
-        token => $self->session->param('token'),
-        token_secret => $self->session->param('token_secret'),
-        request_method => 'POST',
-        extra_params => {status => decode_utf8($self->query->param('status'))}
-    );
+Per the OAuth spec, when making the signature Net::OAuth first encodes parameters to UTF-8. This means that any parameters you pass to Net::OAuth, if they might be outside of ASCII character set, should be run through Encode::decode() (or an equivalent PerlIO layer) first to decode them to Perl's internal character sructure.
 
 =head2 OAUTH 1.0A
 
@@ -438,6 +426,34 @@ Check out L<Net::OAuth::Simple> - it has a simpler API that may be more to your 
 Check out L<Net::Twitter::OAuth> for a Twitter-specific OAuth API
 
 Check out L<WWW::Netflix::API> for a Netflix-specific OAuth API
+
+=head1 TODO
+
+=over
+
+=item * Support for repeating/multivalued parameters
+
+=item * Add convenience methods for SPs
+
+Something like:
+    
+    # direct from CGI.pm object
+    $request = Net::OAuth->request('Request Token')->from_cgi_query($cgi, %api_params);
+    
+    # direct from Catalyst::Request object
+    $request = Net::OAuth->request('Request Token')->from_catalyst_request($c->req, %api_params); 
+    
+    # from Auth header and GET and POST params in one
+    local $/;
+    my $post_body = <STDIN>;
+    $request = Net::OAuth->request('Request Token')->from_auth_get_and_post(
+        $ENV{HTTP_AUTHORIZATION}, 
+        $ENV{QUERY_STRING},
+        $post_body,
+        %api_params
+    );
+
+=back
 
 =head1 AUTHOR
 
