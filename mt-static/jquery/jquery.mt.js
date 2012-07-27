@@ -933,8 +933,11 @@ $.extend( $.mtValidator.prototype, {
 // Install default validators.
 $.mtValidator('top', {
     wrapError: function ( $target, msg ) {
-        return $('<li />')
-            .text(msg);
+        return $('<li />').append(
+            $('<label/>')
+                .attr('for', $target.attr('id') )
+                .text(msg)
+            );
     },
     showError: function( $target, $error_block ) {
         if ( $('div#msg-block').text() == 0 ) {
