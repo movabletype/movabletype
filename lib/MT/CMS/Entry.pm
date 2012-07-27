@@ -1455,6 +1455,7 @@ sub save {
     }
     else {
         $obj = $class->new;
+        $orig_obj = $obj->clone;
     }
     my $status_old = $id ? $obj->status : 0;
     my $names = $obj->column_names;

@@ -931,6 +931,29 @@ $.extend( $.mtValidator.prototype, {
 });
 
 // Install default validators.
+$.mtValidator('top', {
+    wrapError: function ( $target, msg ) {
+        return $('<li />')
+            .text(msg);
+    },
+    showError: function( $target, $error_block ) {
+        if ( $('div#msg-block').text() == 0 ) {
+            var $block = $('<div/>')
+                .addClass('msg msg-error')
+                .append( $('<p>').text( trans('You have an error in your input.') ) )
+                .append( $('<ul />') );
+
+            $('div#msg-block').append( $block );
+        }
+        $('div#msg-block ul').append($error_block);
+    },
+    removeError: function( $target, $error_block ) {
+        $error_block.remove();
+        if ( $('div#msg-block ul li').length == 0 ) {
+            $('div#msg-block').text('');
+        }
+    },
+});
 $.mtValidator('simple', {
     wrapError: function ( $target, msg ) {
         return $('<div />').append(
