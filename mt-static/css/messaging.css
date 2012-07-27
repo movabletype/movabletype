@@ -37,6 +37,10 @@
 .msg li {
     list-style-type: disc;
 }
+.msg li label:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
 
 .close-link {
     position: absolute;
