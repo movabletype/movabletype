@@ -1166,19 +1166,20 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     foreach ($tags as $tag) {
         $tags_dict[$tag->tag_name] = $tag;
     }
-    $tokens = preg_split('/\b(AND|NOT|OR|\(\))\b/', $expr, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+    $tokens = preg_split('/\b(AND|NOT|OR|\(\))\b/i', $expr, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
     $result = '';
     foreach ($tokens as $t) {
+        $upperToken = strtoupper( $t );
         if ( ($t === ')') || ($t === '(') || preg_match('/^\s+$/', $t) ) {
             $result .= $t; continue;
         }
-        if ($t === 'AND') {
+        if ($upperToken === 'AND') {
             $result .= '&&'; continue;
         }
-        if ($t === 'OR') {
+        if ($upperToken === 'OR') {
             $result .= '||'; continue;
         }
-        if ($t === 'NOT') {
+        if ($upperToken === 'NOT') {
             $result .= '!'; continue;
         }
         $t = trim($t);
