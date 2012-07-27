@@ -236,8 +236,14 @@ sub mount_applications {
     for my $app (@applications) {
         $app = MT->registry( applications => $app ) unless ref $app;
         Carp::croak('No application is specified') unless $app;
-        my $base
-            = $app->{cgi_path} ? $app->{cgi_path}->() : $mt->config->CGIPath;
+        my $base = $app->{cgi_path};
+        if ($base) {
+            $base = MT->handler_to_coderef($base) unless ref $base;
+            $base = $base->();
+        }
+        else {
+            $base = $mt->config->CGIPath;
+        }
         $base =~ s!/$!!;
         $base =~ s!^https?://[^/]*!!;
         my $script = $app->{script};
