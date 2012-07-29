@@ -260,7 +260,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
 
     getHeight: function() {
         return (this.editor === this.source) ?
-            this.$editorTextarea.innerHeight() :
+            this.$editorTextarea.outerHeight() :
             this.$editorIframe.outerHeight();
     },
 
