@@ -37,6 +37,9 @@ $Lexicon_ja = array(
 
 ## php/lib/block.mtauthorhaspage.php
 
+## php/lib/block.mtcalendar.php
+	'You used an [_1] tag without a date context set up.' => '[_1]を日付コンテキストの外部で利用しようとしました。',
+
 ## php/lib/block.mtentries.php
 
 ## php/lib/block.mtif.php

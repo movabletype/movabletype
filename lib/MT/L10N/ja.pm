@@ -312,11 +312,11 @@ use vars qw( @ISA %Lexicon );
 	'Your comment has been received and held for approval by the blog owner.' => 'コメントは現在承認されるまで公開を保留されています。',
 	'Comment Submission Error' => 'コメント投稿エラー',
 	'Your comment submission failed for the following reasons: [_1]' => 'コメントを投稿できませんでした。エラー: [_1]',
-	'Return to <a href="[_1]">your comment</a>.' => '<a href="[_1]">元のコメント</a>に戻る',
+	'Back' => '戻る',
 	'Return to the <a href="[_1]">original entry</a>.' => '<a href="[_1]">元の記事</a>に戻る',
 
 ## default_templates/comment_throttle.mtml
-	'If this was a mistake, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, going to Blog Config - IP Banning, and deleting the IP address [_1] from the list of banned addresses.' => 'これが間違いである場合は、Movable Typeにログインして、ブログの設定画面に進み、禁止IPリストからIPアドレスを削除してください。',
+	'If this was a mistake, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, going to Blog Config - IP Banning, and deleting the IP address [_1] from the list of banned addresses.' => 'これが間違いである場合は、Movable Typeにサインインして、ブログの設定画面に進み、禁止IPリストからIPアドレスを削除してください。',
 	'A visitor to your blog [_1] has automatically been banned by adding more than the allowed number of comments in the last [_2] seconds.' => '[_1]を禁止しました。[_2]秒の間に許可された以上のコメントを送信してきました。',
 	'This has been done to prevent a malicious script from overwhelming your weblog with comments. The banned IP address is' => 'これは悪意のスクリプトがブログをコメントで飽和させるのを阻止するための措置です。以下のIPアドレスを禁止しました。',
 
@@ -344,7 +344,7 @@ use vars qw( @ISA %Lexicon );
 	'Previous' => '前',
 	'Next' => '次',
 	'The data is modified by the paginate script' => 'ページネーションスクリプトによって変更されています。',
-	'Remember personal info?' => 'ログイン情報を記憶',
+	'Remember personal info?' => 'サインイン情報を記憶',
 
 ## default_templates/creative_commons.mtml
 
@@ -591,21 +591,21 @@ use vars qw( @ISA %Lexicon );
 	'Error provisioning blog for new user \'[_1] (ID: [_2])\'.' => '新規ユーザー\'[_1]\'用のブログを作成できませんでした。',
 	'Blog \'[_1] (ID: [_2])\' for user \'[_3] (ID: [_4])\' has been created.' => '\'[_3]\'(ID:[_4])のブログ\'[_1]\'(ID:[_2])を作成しました。',
 	'Error assigning blog administration rights to user \'[_1] (ID: [_2])\' for blog \'[_3] (ID: [_4])\'. No suitable blog administrator role was found.' => '\'[_1]\'(ID:[_2])をブログ\'[_3]\'(ID:[_4])の管理者にできませんでした。ブログの管理権限を持つロールが見つかりませんでした。',
-	'Internal Error: Login user is not initialized.' => '内部エラー: ログインユーザーが初期化されていません。',
-	'The login could not be confirmed because of a database error ([_1])' => 'データベースのエラーでログインを確認できませんでした: [_1]',
+	'Internal Error: Login user is not initialized.' => '内部エラー: ユーザーが初期化されていません。',
+	'The login could not be confirmed because of a database error ([_1])' => 'データベースのエラーが発生したため、サインインできません。: [_1]',
 	'Our apologies, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.' => 'ブログまたはウェブサイトへのアクセスが許されていません。エラーでこのページが表示された場合は、システム管理者に問い合わせてください。',
 	'Can\'t load blog #[_1].' => 'ブログ(ID:[_1])をロードできません。',
-	'Invalid login.' => 'ログインできませんでした。',
-	'Failed login attempt by unknown user \'[_1]\'' => '未登録のユーザー [_1] がログインしようとしました。',
-	'Failed login attempt by disabled user \'[_1]\'' => '無効なユーザー [_1] がログインしようとしました。',
+	'Invalid login.' => 'サインインできませんでした。',
+	'Failed login attempt by unknown user \'[_1]\'' => '未登録のユーザー [_1] がサインインしようとしました。',
+	'Failed login attempt by disabled user \'[_1]\'' => '無効なユーザー [_1] がサインインしようとしました。',
 	'This account has been disabled. Please see your system administrator for access.' => 'このアカウントは無効にされています。システム管理者に問い合わせてください。',
-	'Failed login attempt by pending user \'[_1]\'' => '保留中のユーザー「[_1]」がログインしようとしました。',
+	'Failed login attempt by pending user \'[_1]\'' => '保留中のユーザー「[_1]」がサインインしようとしました。',
 	'This account has been deleted. Please see your system administrator for access.' => 'このアカウントは削除されました。システム管理者に問い合わせてください。',
 	'User cannot be created: [_1].' => 'ユーザーを登録できません: [_1]',
 	'User \'[_1]\' has been created.' => 'ユーザー「[_1]」が作成されました。',
-	'User \'[_1]\' (ID:[_2]) logged in successfully' => 'ユーザー\'[_1]\'(ID[_2])がログインしました。',
-	'Invalid login attempt from user \'[_1]\'' => '\'[_1]\'がログインに失敗しました。',
-	'User \'[_1]\' (ID:[_2]) logged out' => 'ユーザー\'[_1]\'(ID[_2])がログアウトしました。',
+	'User \'[_1]\' (ID:[_2]) logged in successfully' => 'ユーザー\'[_1]\'(ID[_2])がサインインしました。',
+	'Invalid login attempt from user \'[_1]\'' => '\'[_1]\'がサインインに失敗しました。',
+	'User \'[_1]\' (ID:[_2]) logged out' => 'ユーザー\'[_1]\'(ID[_2])がサインアウトしました。',
 	'User requires password.' => 'パスワードは必須です。',
 	'Passwords do not match.' => '入力したパスワードが一致しません。',
 	'URL is invalid.' => 'URLが不正です。',
@@ -622,7 +622,6 @@ use vars qw( @ISA %Lexicon );
 	'New Comment Added to \'[_1]\'' => '\'[_1]\'にコメントがありました',
 	'System Email Address is not configured.' => 'システムで利用するメールアドレスが設定されていません。',
 	'Close' => '閉じる',
-	'Back' => '戻る',
 	'Failed to open pid file [_1]: [_2]' => 'PIDファイルを開くことができません。',
 	'Failed to send reboot signal: [_1]' => 'プロセス再起動シグナルを送信することができませんでした。',
 	'The file you uploaded is too large.' => 'アップロードしたファイルは大きすぎます。',
@@ -660,7 +659,7 @@ use vars qw( @ISA %Lexicon );
 	'_WARNING_DELETE_USER' => 'ユーザーを削除すると、そのユーザーの書いたブログ記事はユーザー不明となり、後で取り消せません。ユーザーを無効化するのが正しい方法です。本当にユーザーを削除してもよろしいですか?',
 	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => '選択されたブログのテンプレートを、各ブログの利用しているテーマの初期状態に戻します。テンプレートを初期化してもよろしいですか?',
 	'Some websites were not deleted. You need to delete blogs under the website first.' => '削除できないウェブサイトがありました。ウェブサイト内のブログを先に削除する必要があります。',
-	'You are not authorized to log in to this blog.' => 'ブログにログインする権限がありません。',
+	'You are not authorized to log in to this blog.' => 'ブログにサインインする権限がありません。',
 	'No such blog [_1]' => '[_1]というブログはありません。',
 	'Invalid parameter' => '不正なパラメータです。',
 	'Edit Template' => 'テンプレートの編集',
@@ -755,13 +754,13 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/App/Comments.pm
 	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => '\'[_1]\' (ID:[_2])にブログ\'[_3]\'(ID:[_2])へのコメント権限を与えられませんでした。コメント権限を与えるためのロールが見つかりません。',
-	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => '[_1]がブログ[_2](ID:[_3])にログインしようとしましたが、このブログではMovable Type認証が有効になっていません。',
-	'Invalid login' => 'ログインできませんでした。',
+	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => '[_1]がブログ[_2](ID:[_3])にサインインしようとしましたが、このブログではMovable Type認証が有効になっていません。',
+	'Invalid login' => 'サインインできませんでした。',
 	'Successfully authenticated but signing up is not allowed.  Please contact system administrator.' => '認証されましたが、登録は許可されていません。システム管理者に連絡してください。',
 	'You need to sign up first.' => '先に登録してください。',
 	'Permission denied.' => '権限がありません。',
-	'Login failed: permission denied for user \'[_1]\'' => 'ログインに失敗しました。[_1]には権限がありません。',
-	'Login failed: password was wrong for user \'[_1]\'' => 'ログインに失敗しました。[_1]のパスワードが誤っています。',
+	'Login failed: permission denied for user \'[_1]\'' => 'サインインに失敗しました。[_1]には権限がありません。',
+	'Login failed: password was wrong for user \'[_1]\'' => 'サインインに失敗しました。[_1]のパスワードが誤っています。',
 	'Signing up is not allowed.' => '登録はできません。',
 	'Movable Type Account Confirmation' => 'Movable Type アカウント登録確認',
 	'Your confirmation have expired. Please register again.' => '有効期限が過ぎています。再度登録してください。',
@@ -1109,6 +1108,8 @@ use vars qw( @ISA %Lexicon );
 	'Externally Authenticated Commenters' => '外部サービスで認証されたコメント投稿者',
 
 ## lib/MT/BackupRestore.pm
+	"\nCannot write a file: Disk full" => "
+ファイルの書き込みが出来ません: ディスクの空き容量がありません",
 	'Backing up [_1] records:' => '[_1]レコードをバックアップしています:',
 	'[_1] records backed up...' => '[_1]レコードをバックアップしました...',
 	'[_1] records backed up.' => '[_1]レコードをバックアップしました。',
@@ -1142,7 +1143,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] is not a subject to be restored by Movable Type.' => '[_1]はMovable Typeで復元する対象には含まれていません。',
 	'[_1] records restored.' => '[_1]件復元されました。',
 	'Restoring [_1] records:' => '[_1]を復元しています:',
-	'User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.' => '現在ログインしているユーザー([_1])が見つかりました。このレコードはスキップします。',
+	'User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.' => '現在サインインしているユーザー([_1])が見つかりました。このレコードはスキップします。',
 	'User with the same name \'[_1]\' found (ID:[_2]).  Restore replaced this user with the data backed up.' => '\'[_1]\': 同名のユーザーが見つかりました(ID: [_2])。バックアップ時のユーザーデータを既存ユーザーのデータで置き換えて、他のデータを復元します。',
 	'Tag \'[_1]\' exists in the system.' => '\'[_1]\'というタグはすでに存在します。',
 	'[_1] records restored...' => '[_1]件復元されました...',
@@ -1411,9 +1412,9 @@ use vars qw( @ISA %Lexicon );
 	'Activity log reset by \'[_1]\'' => '\'[_1]\'がログをリセットしました。',
 
 ## lib/MT/CMS/Plugin.pm
+	'Error saving plugin settings: [_1]' => 'プラグインの設定を保存できません: [_1]',
 	'Plugin Set: [_1]' => 'プラグインのセット: [_1]',
 	'Individual Plugins' => 'プラグイン',
-	'Error saving plugin settings: [_1]' => 'プラグインの設定を保存できません: [_1]',
 
 ## lib/MT/CMS/Search.pm
 	'No [_1] were found that match the given criteria.' => '該当する[_1]は見つかりませんでした。',
@@ -1511,6 +1512,7 @@ use vars qw( @ISA %Lexicon );
 	'Failed to load theme export template for [_1]: [_2]' => '[_1]のテンプレートの読み込みに失敗しました: [_2]',
 	'Failed to save theme export info: [_1]' => 'テーマエクスポート情報の保存に失敗しました: [_1]',
 	'Themes Directory [_1] is not writable.' => 'テーマディレクトリ[_1]に書き込めません。',
+	'All Themes Directories are not writable.' => '書き込み可能なテーマディレクトリがありません。',
 	'Error occurred during exporting [_1]: [_2]' => '[_1]のエクスポート中にエラーが発生しました: [_2]',
 	'Error occurred during finalizing [_1]: [_2]' => '[_1]のファイナライズ中にエラーが発生しました: [_2]',
 	'Error occurred while publishing theme: [_1]' => 'テーマの公開中にエラーが発生しました: [_1]',
@@ -1586,8 +1588,8 @@ use vars qw( @ISA %Lexicon );
 	'Movable Type system was successfully backed up by user \'[_1]\'' => '\'[_1]\'がMovable Typeのシステムをバックアップしました。',
 	'Some [_1] were not restored because their parent objects were not restored.' => '親となるオブジェクトがないため[_1]を復元できませんでした。',
 	'Recipients for lockout notification' => '通知メール受信者',
-	'User lockout limit' => 'ログイン試行回数',
-	'User lockout interval' => 'ログインの間隔',
+	'User lockout limit' => 'サインイン試行回数',
+	'User lockout interval' => 'サインインの間隔',
 	'IP address lockout limit' => '同一IPアドレスからの試行回数',
 	'IP address lockout interval' => '同一IPアドレスからの試行間隔',
 	'Lockout IP address whitelist' => 'ロックアウトの除外IPアドレス',
@@ -1787,7 +1789,7 @@ use vars qw( @ISA %Lexicon );
 	'Junk Folder Expiration' => 'スパムコメント/トラックバックの廃棄',
 	'Remove Temporary Files' => 'テンポラリファイルの削除',
 	'Purge Stale Session Records' => '古いセッションレコードの消去',
-	'Remove expired lockout data' => '古いログインの失敗レコードの消去',
+	'Remove expired lockout data' => '古いサインインの失敗レコードの消去',
 	'Purge Unused FileInfo Records' => '古いファイル情報レコードの消去',
 	'Manage Website' => 'ウェブサイトの管理',
 	'Manage Blog' => 'ブログの管理',
@@ -2084,11 +2086,11 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Revisable.pm
 	'Bad RevisioningDriver config \'[_1]\': [_2]' => 'リビジョンドライバー([_1])の設定が正しくありません: [_2]',
-	'Revision not found: [_1]' => 'リビジョンがありません: [_1]',
+	'Revision not found: [_1]' => '更新履歴がありません: [_1]',
 	'There aren\'t the same types of objects, expecting two [_1]' => '同じ種類のオブジェクトではありません。両者とも[_2]である必要があります。',
 	'Did not get two [_1]' => '二つの[_1]を取得できませんでした。',
 	'Unknown method [_1]' => '不正な比較メソッド([_1])です。',
-	'Revision Number' => 'リビジョン番号',
+	'Revision Number' => '更新履歴番号',
 
 ## lib/MT/Revisable/Local.pm
 
@@ -2206,6 +2208,7 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t find included template [_1] \'[_2]\'' => '「[_2]」という[_1]テンプレートが見つかりませんでした。',
 	'Error in [_1] [_2]: [_3]' => '[_1]「[_2]」でエラーが発生しました: [_3]',
 	'Writing to \'[_1]\' failed: [_2]' => '\'[_1]\'に書き込めませんでした: [_2]',
+	'File include is disabled by "AllowFileInclude" config directive.' => 'File モディファイアは、環境変数(AllowFileInclude)により無効にされています。',
 	'Can\'t find blog for id \'[_1]' => 'ID:[_1]のブログが見つかりませんでした。',
 	'Can\'t find included file \'[_1]\'' => '[_1]というファイルが見つかりませんでした。',
 	'Error opening included file \'[_1]\': [_2]' => '[_1]を開けませんでした: [_2]',
@@ -2215,7 +2218,6 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t find entry \'[_1]\'' => '\'[_1]\'というブログ記事が見つかりませんでした。',
 	'Unspecified archive template' => 'アーカイブテンプレートが指定されていません。',
 	'Error in file template: [_1]' => 'ファイルテンプレートでエラーが発生しました: [_1]',
-	'File include is disabled by "AllowFileInclude" config directive.' => 'File モディファイアは、環境変数(AllowFileInclude)により無効にされています。',
 
 ## lib/MT/Template/Tags/Archive.pm
 	'Group iterator failed.' => 'アーカイブのロードでエラーが発生しました。',
@@ -2448,7 +2450,7 @@ use vars qw( @ISA %Lexicon );
 	'Migrating mtview.php to MT5 style...' => 'mtview.phpをMT5で利用できるように移行しています...',
 	'Migrating DefaultSiteURL/DefaultSiteRoot to website...' => 'DefaultSiteURL/DefaultSiteRootをウェブサイト用に移行しています...',
 	'New user\'s website' => '新規ユーザー向けウェブサイト',
-	'Migrating existing [quant,_1,blog,blogs] into websites and its children...' => '既存のブログをウェブサイトで管理できるように移行しています。',
+	'Migrating existing [quant,_1,blog,blogs] into websites and their children...' => '既存のブログをウェブサイトで管理できるように移行しています。',
 	'Error loading role: [_1].' => 'ロールのロードエラー: [_1]',
 	'New WebSite [_1]' => '新しいウェブサイト: [_1]',
 	'An error occured during generating a website upon upgrade: [_1]' => 'ウェブサイトへの移行中にエラーが発生しました: [_1]',
@@ -2579,6 +2581,7 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-static/jquery/jquery.mt.js
 	'Invalid value' => '入力された値が正しくありません',
+	'You have an error in your input.' => '入力内容に誤りがあります。',
 	'Invalid date format' => '日付の入力フォーマットが正しくありません',
 	'Invalid mail address' => 'メールアドレスのフォーマットが正しくありません',
 	'Invalid URL' => 'URLのフォーマットが正しくありません',
@@ -2609,7 +2612,7 @@ use vars qw( @ISA %Lexicon );
 	'enable' => '有効に',
 	'disable' => '無効に',
 	'publish' => '公開',
-	'unlock' => 'ロック解除してログイン可能に',
+	'unlock' => 'ロック解除してサインイン可能に',
 	'You did not select any [_1] to [_2].' => '[_2]する[_1]が選択されていません。',
 	'Are you sure you want to [_2] this [_1]?' => '[_1]を[_2]してよろしいですか?',
 	'Are you sure you want to [_3] the [_1] selected [_2]?' => '[_1]件の[_2]を[_3]してよろしいですか?',
@@ -3061,8 +3064,8 @@ use vars qw( @ISA %Lexicon );
 	'_USAGE_ENTRYPREFS' => 'ブログ記事の編集画面で表示する項目のセットを選択してください。',
 	'Page Fields' => 'ページフィールド',
 	'WYSIWYG Editor Setting' => 'WYSIWYGエディタの設定',
-	'Content CSS' => 'コンテンツCSS',
-	'The URL of CSS file inserting to the WYSIWYG editor' => 'WYSIWYGエディタ内で利用するCSSのURLを指定してください。',
+	'Content CSS' => 'コンテンツCSSファイル',
+	'The URL of CSS file inserting to the WYSIWYG editor. Example: http://www.example.com/path/to/cssfile.css, /path/to/cssfile.css or {{theme_static}}path/to/cssfile.css' => 'WYSIWYGエディタ内で利用するCSSファイルのURLを指定してください。 例: http://www.example.com/path/to/cssfile.css 又は /path/to/cssfile.css 又は {{theme_static}}path/to/cssfile.css',
 	'Punctuation Replacement Setting' => 'Word特有の文字を置き換える',
 	'Replace UTF-8 characters frequently used by word processors with their more common web equivalents.' => 'ワープロソフトで使われるUTF-8文字を対応する表示可能な文字に置き換えます。',
 	'Punctuation Replacement' => '句読点置き換え',
@@ -3339,9 +3342,9 @@ use vars qw( @ISA %Lexicon );
 	'Clear' => 'クリア',
 	'Select' => '選択',
 	'User lockout policy' => 'ユーザーのロック方針',
-	'A Movable Type user will be locked out if he or she submits an incorrect password [_1] or more times within [_2] seconds.' => 'MTユーザーが、[_2] 秒間に [_1] 回以上ログインに失敗した場合、そのユーザーのログインを禁止します。',
+	'A Movable Type user will be locked out if he or she submits an incorrect password [_1] or more times within [_2] seconds.' => 'MTユーザーが、[_2] 秒間に [_1] 回以上サインインに失敗した場合、そのユーザーのサインインを禁止します。',
 	'IP address lockout policy' => 'IPアドレスのロック方針',
-	'An IP address will be locked out if [_1] or more incorrect login attempts are made within [_2] seconds from the same IP address.' => '同一IPアドレスから、[_2] 秒間に [_1] 回以上ログインに失敗した場合、そのIPアドレスからのアクセスを禁止します。',
+	'An IP address will be locked out if [_1] or more incorrect login attempts are made within [_2] seconds from the same IP address.' => '同一IPアドレスから、[_2] 秒間に [_1] 回以上サインインに失敗した場合、そのIPアドレスからのアクセスを禁止します。',
 	q{However, the following IP addresses are 'whitelisted' and will never be locked out:} => q{次の一覧で設定されたIPアドレスはアクセスが禁止されることはありません。},
 	'The list of IP addresses. If a remote IP address is included in this list, the failed login will not recorded. You can specify multiple IP addresses separated by commas or line breaks.' => '特定のIPアドレスについて判定を行わない場合、上の一覧にカンマ又は改行区切りで追加してください。',
 	'A test mail was sent.' => 'テストメールを送信しました。',
@@ -3517,7 +3520,7 @@ use vars qw( @ISA %Lexicon );
 	'Send notification (s)' => '通知を送信 (s)',
 
 ## tmpl/cms/dialog/list_revision.tmpl
-	'Select the revision to populate the values of the Edit screen.' => '編集画面に読み込むリビジョンを選んでください。',
+	'Select the revision to populate the values of the Edit screen.' => '編集画面に読み込む更新履歴を選んでください。',
 
 ## tmpl/cms/dialog/move_blogs.tmpl
 	'Warning: You need to copy uploaded assets to the new path manually. It is also recommended not to delete files in the old path to avoid broken links.' => '警告: アップロード済みのファイルは、新しいウェブサイトのパスに手動でコピーする必要があります。また、旧パスのファイルも残すことで、リンク切れを防止できます。',
@@ -3637,7 +3640,7 @@ use vars qw( @ISA %Lexicon );
 	'_USER_ENABLED' => '有効',
 	'_USER_PENDING' => '保留',
 	'_USER_DISABLED' => '無効',
-	'The username used to login.' => 'ログイン時に使用するユーザー名です。',
+	'The username used to login.' => 'サインイン時に使用するユーザー名です。',
 	'External user ID' => '外部ユーザーID',
 	'The name displayed when content from this user is published.' => 'コンテンツの公開時に、この名前が表示されます。',
 	'The email address associated with this user.' => 'ユーザーのメールアドレスです。',
@@ -3816,7 +3819,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while trying to recover your saved page.' => 'ウェブページを元に戻す際にエラーが発生しました。',
 	'You have successfully deleted the checked comment(s).' => '選択したコメントを削除しました。',
 	'You have successfully deleted the checked TrackBack(s).' => '選択したトラックバックを削除しました。',
-	'Restored revision (Date:[_1]).  The current status is: [_2]' => 'リビジョン(日付: [_1])に戻しました。ステータス: [_2]',
+	'Restored revision (Date:[_1]).  The current status is: [_2]' => '更新履歴(日付: [_1])に戻しました。ステータス: [_2]',
 	'Some of tags in the revision could not be loaded because they have been removed.' => '履歴データ内に、削除されたために読み込めなかったタグがあります。',
 	'Some [_1] in the revision could not be loaded because they have been removed.' => '履歴データ内に、削除されたために読み込めなかった[_1]があります。',
 	'This post was held for review, due to spam filtering.' => 'この投稿はスパムフィルタリングにより承認待ちになっています。',
@@ -3825,10 +3828,10 @@ use vars qw( @ISA %Lexicon );
 	'Unpublished (Draft)' => '未公開(原稿)',
 	'Unpublished (Review)' => '未公開(承認待ち)',
 	'Unpublished (Spam)' => '未公開(スパム)',
-	'Revision: <strong>[_1]</strong>' => 'リビジョン: <strong>[_1]</strong>',
-	'View revisions of this [_1]' => '[_1]のリビジョン表示',
-	'View revisions' => 'リビジョン表示',
-	'No revision(s) associated with this [_1]' => '[_1]のリビジョンが見つかりません',
+	'Revision: <strong>[_1]</strong>' => '更新履歴: <strong>[_1]</strong>',
+	'View revisions of this [_1]' => '[_1]の更新履歴を表示',
+	'View revisions' => '更新履歴を表示',
+	'No revision(s) associated with this [_1]' => '[_1]の更新履歴が見つかりません',
 	'[_1] - Published by [_2]' => '公開: [_2] - [_1]',
 	'[_1] - Edited by [_2]' => '編集: [_2] - [_1]',
 	'Publish this [_1]' => '[_1]の公開',
@@ -3931,11 +3934,11 @@ use vars qw( @ISA %Lexicon );
 	'A saved version of this [_1] was auto-saved [_3]. <a href="[_2]">Recover auto-saved content</a>' => '[_1]は自動保存されました。<a href="[_2]">自動保存された内容を元に戻す</a>',
 	'You have successfully recovered your saved [_1].' => '[_1]を元に戻しました。',
 	'An error occurred while trying to recover your saved [_1].' => '[_1]を元に戻す際にエラーが発生しました。',
-	'Restored revision (Date:[_1]).' => 'リビジョン(日付: [_1])に戻しました。',
+	'Restored revision (Date:[_1]).' => '更新履歴(日付: [_1])に戻しました。',
 	'<a href="[_1]" class="rebuild-link">Publish</a> this template.' => 'このテンプレートを<a href="[_1]" class="rebuild-link">再構築する</a>',
 	'Your [_1] has been published.' => '[_1]を再構築しました。',
-	'View revisions of this template' => 'テンプレートのリビジョン表示',
-	'No revision(s) associated with this template' => 'テンプレートのリビジョンが見つかりません',
+	'View revisions of this template' => 'テンプレートの更新履歴を表示',
+	'No revision(s) associated with this template' => 'テンプレートの更新履歴が見つかりません',
 	'Useful Links' => 'ショートカット',
 	'List [_1] templates' => '[_1]テンプレート一覧',
 	'Module Option Settings' => 'モジュールオプション設定',
@@ -4262,7 +4265,7 @@ use vars qw( @ISA %Lexicon );
 	'http://www.movabletype.org/feedback.html' => 'http://www.sixapart.jp/movabletype/feedback.html',
 	'Send Us Feedback' => 'フィードバックはこちらへ',
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]',
-	'with' => ':',
+	'with' => 'with',
 	q{_LOCALE_CALENDAR_HEADER_} => q{'日', '月', '火', '水', '木', '金', '土'},
 	'Your Dashboard' => 'ユーザーダッシュボード',
 
@@ -4311,7 +4314,7 @@ use vars qw( @ISA %Lexicon );
 	'IP: [_1]' => 'IP: [_1]',
 
 ## tmpl/cms/include/login_mt.tmpl
-	'Remember me?' => 'ログイン情報を記憶する',
+	'Remember me?' => 'サインイン情報を記憶する',
 
 ## tmpl/cms/include/member_table.tmpl
 	'Are you sure you want to remove the selected user from this [_1]?' => '[_1]からユーザーを削除してよろしいですか?',
@@ -4336,6 +4339,7 @@ use vars qw( @ISA %Lexicon );
 	'No revisions could be found.' => '変更履歴がありません。',
 	'Note' => 'メモ',
 	'Saved By' => '保存したユーザー',
+	'_REVISION_DATE_' => '保存した日',
 
 ## tmpl/cms/include/rpt_log_table.tmpl
 	'Schwartz Message' => 'Schwartzメッセージ',
@@ -4390,7 +4394,7 @@ use vars qw( @ISA %Lexicon );
 	'View MT-Check (x)' => 'システムチェック (x)',
 	'Please create an administrator account for your system. When you are done, Movable Type will initialize your database.' => 'システム管理者のアカウントを作成してください。作成が完了すると、データベースを初期化します。',
 	'To proceed, you must authenticate properly with your LDAP server.' => 'LDAPサーバーで認証を受けないと先に進めません。',
-	'The name used by this user to login.' => 'ログイン時に使用するユーザー名です。',
+	'The name used by this user to login.' => 'サインイン時に使用するユーザー名です。',
 	'The name used when published.' => '表示名です。',
 	'The user&rsquo;s email address.' => 'ユーザーのメールアドレスです。',
 	'System Email' => 'システムのメールアドレス',
@@ -4542,7 +4546,7 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully enabled the selected user(s).' => '選択したユーザーを有効にしました。',
 	'You have successfully unlocked the selected user(s).' => '選択したユーザーのロックを解除しました。',
 	'You have successfully deleted the user(s) from the Movable Type system.' => 'システムからユーザーを削除しました。',
-	'The deleted user(s) still exist in the external directory. As such, they will still be able to login to Movable Type Advanced.' => '削除されたユーザーが外部ディレクトリ上にまだ存在するので、このままではユーザーは再度ログインできてしまいます。',
+	'The deleted user(s) still exist in the external directory. As such, they will still be able to login to Movable Type Advanced.' => '削除されたユーザーが外部ディレクトリ上にまだ存在するので、このままではユーザーは再度サインインできてしまいます。',
 	q{You have successfully synchronized users' information with the external directory.} => q{外部のディレクトリとユーザーの情報を同期しました。},
 	'Some ([_1]) of the selected user(s) could not be re-enabled because they were no longer found in the external directory.' => '選択されたユーザーのうち[_1]人は外部ディレクトリ上に存在しないので有効にできませんでした。',
 	q{An error occured during synchronization.  See the <a href='[_1]'>activity log</a> for detailed information.} => q{同期中にエラーが発生しました。エラーの詳細を<a href='[_1]'>ログ</a>で確認して>ください。},
@@ -4602,9 +4606,9 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/login.tmpl
 	'Sign in' => 'サインイン',
-	'Your Movable Type session has ended.' => 'Movable Typeからログアウトしました。',
-	'Your Movable Type session has ended. If you wish to sign in again, you can do so below.' => 'Movable Typeからログアウトしました。以下から再度ログインできます。',
-	'Your Movable Type session has ended. Please sign in again to continue this action.' => 'Movable Typeからログアウトしました。続けるには再度サインインして下さい。',
+	'Your Movable Type session has ended.' => 'Movable Typeからサインアウトしました。',
+	'Your Movable Type session has ended. If you wish to sign in again, you can do so below.' => 'Movable Typeからサインアウトしました。以下から再度サインインできます。',
+	'Your Movable Type session has ended. Please sign in again to continue this action.' => 'Movable Typeからサインアウトしました。続けるには再度サインインして下さい。',
 	'Sign In (s)' => 'サインイン (s)',
 	'Forgot your password?' => 'パスワードをお忘れですか?',
 
@@ -4745,7 +4749,11 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/system_check.tmpl
 	'Total Users' => '全ユーザー数',
 	'Memcache Status' => 'Memcacheの状態',
+	'configured' => '設定済み',
+	'disabled' => '無効',
 	'Memcache is [_1].' => 'Memcacheは[_1]です。',
+	'available' => '利用可能',
+	'unavailable' => '利用不可',
 	'Memcache Server is [_1].' => 'Memcacheサーバーは[_1]です。',
 	'Server Model' => 'サーバーモデル',
 	q{Movable Type could not find the script named 'mt-check.cgi'. To resolve this issue, ensure that the mt-check.cgi script exists and that the CheckScript configuration parameter (if it is necessary) references it properly.} => q{mt-check.cgiが見つかりませんでした。mt-check.cgiが存在すること、名前を変えた場合は構成ファイルのCheckScriptディレクティブに名前を指定してください。},
@@ -4916,7 +4924,7 @@ use vars qw( @ISA %Lexicon );
 	'Sign in using your AIM or AOL screen name. Your screen name will be displayed publicly.' => 'AIMまたはAOLのスクリーンネームでサインインします。スクリーンネームは公開されます。',
 
 ## tmpl/comment/auth_googleopenid.tmpl
-	'Sign in using your Gmail account' => 'Gmailのアカウントでログインする',
+	'Sign in using your Gmail account' => 'Gmailのアカウントでサインインする',
 	'Sign in to Movable Type with your[_1] Account[_2]' => '[_1] アカウント[_2]',
 
 ## tmpl/comment/auth_hatena.tmpl
@@ -4935,7 +4943,7 @@ use vars qw( @ISA %Lexicon );
 	'Learn more about OpenID.' => 'OpenIDについて詳しくはこちら',
 
 ## tmpl/comment/auth_typepad.tmpl
-	'TypePad is a free, open system providing you a central identity for posting comments on weblogs and logging into other websites. You can register for free.' => 'TypePadはブログにコメントを投稿したり他のウェブサイトにログインするときに使える、フリーでオープンな認証システムを提供します。',
+	'TypePad is a free, open system providing you a central identity for posting comments on weblogs and logging into other websites. You can register for free.' => 'TypePadはブログにコメントを投稿したり他のウェブサイトにサインインするときに使える、フリーでオープンな認証システムを提供します。',
 	'Sign in or register with TypePad.' => 'TypePadでサインイン、またはアカウントを登録する',
 
 ## tmpl/comment/auth_vox.tmpl
@@ -4962,7 +4970,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/comment/profile.tmpl
 	'Your Profile' => 'ユーザー情報',
-	'Your login name.' => 'あなたのログイン名です。',
+	'Your login name.' => 'あなたのユーザー名です。',
 	'The name appears on your comment.' => 'あなたのコメントに表示される名前です。',
 	'Your email address.' => 'あなたのメールアドレスです。',
 	'Select a password for yourself.' => 'パスワード選択してください。',
@@ -5019,8 +5027,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/feeds/login.tmpl
 	'This link is invalid. Please resubscribe to your activity feed.' => 'このリンクは無効です。フィードの購読をやり直してください。',
-
-## tmpl/include/chromeless_header.tmpl
 
 ## tmpl/wizard/blog.tmpl
 	'Setup Your First Blog' => 'First Blogのセットアップ',
@@ -5155,7 +5161,8 @@ use vars qw( @ISA %Lexicon );
 	'HTTP Redirect setting' => 'HTTPリダイレクトの設定',
 	'Unable to update HTTP Redirect settings.' => 'HTTPリダイレクトの設定を保存することが出来ませんでした。',
 	'Update SSL Certification' => 'サーバー証明書の更新',
-	'Install SSL Certification' => 'サーバー証明書の導入',
+	'__SSL_CERT_UPDATE' => '更新',
+	'__SSL_CERT_INSTALL' => '導入',
 	'Cannot copy default cert file.' => '既定のサーバー証明書のコピーに失敗しました。',
 	'Cannot copy default secret file.' => '既定のサーバーキーのコピーに失敗しました。',
 	'Unable to write temporary file.' => '一時保存ファイルの書き込みが出来ませんでした。',
@@ -5165,8 +5172,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid backup file name.' => '不正なバックアップファイルです。',
 	'Cannot copy backup file to workspace.' => 'バックアップファイルのコピーに失敗しました。',
 	'Unable to create temporary path: [_1]' => 'テンポラリディレクトリの作成に失敗しました: [_1]',
-	'__SSL_CERT_UPDATE' => '更新',
-	'__SSL_CERT_INSTALL' => '導入',
 
 ## addons/Cloud.pack/tmpl/cfg_basic_authentication.tmpl
 	'Manage Basic Authentication' => 'Basic認証の管理',
@@ -5201,13 +5206,13 @@ use vars qw( @ISA %Lexicon );
 	'/path/of/redirect' => '/path/of/redirect',
 	'__REDIRECT_TO' => 'リダイレクト先',
 	'http://example.com or /path/to/redirect' => 'http://example.com 又は /path/to/redirect',
-	'Invalid URI.' => '不正なURIです。',
 	'Redirect URL is required.' => 'リダイレクト先URLは必須です。',
 	'Redirect url is same as URI' => 'リダイレクト先URLは、がリダイレクト元URIと違うURLを設定してください。',
 	'HTTP redirect setting' => 'HTTPリダイレクトの設定',
 	'HTTP redirect settings' => 'HTTPリダイレクトの設定',
 
 ## addons/Cloud.pack/tmpl/cfg_ssl_certification.tmpl
+	'Install SSL Certification' => 'サーバー証明書の導入',
 	'SSL certification have been updated.' => 'サーバー証明書が更新されました。',
 	'SSL certification have been reset to default.' => 'サーバー証明書が既定の証明書にリセットされました。',
 	'The current server certification is as follows.' => '現在のサーバー証明書は以下の通りです。',
@@ -5219,7 +5224,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Cloud.pack/tmpl/full_restore.tmpl
 	'Restoring Full Backup Data' => 'バックアップデータからの復元',
 	q{Restored backup data from '[_1]' at [_2]} => q{[_2]に[_1]のバックアップデータから復元されています。},
-	'When restoring back-up data, the contents will revert to the point when the back-up data was created. Please note that any changes made to the data or contents after this restoration point will be discarded. Also, while in the process of restoration, any present data will be backed up automatically. After restoration is complete, it is possible to return to the status of the data before restoration was executed.' => 'バックアップデータの復元を実行すると、全てのコンテンツがバックアップデータ作成時の状態に戻ります。復元元のバックアップデータが作成されてから保存された内容は、破棄されますのでご注意ください。また、復元を実行する前に現在の状態のバックアップを自動的に行います。バックアップデータの復元後に復元の実行前の状態に戻すことが可能です。',
+	'When restoring back-up data, the contents will revert to the point when the back-up data was created. Please note that any changes made to the data, contents, and received comments and trackback after this restoration point will be discarded. Also, while in the process of restoration, any present data will be backed up automatically. After restoration is complete, it is possible to return to the status of the data before restoration was executed.' => 'バックアップデータの復元を実行すると、全てのコンテンツがバックアップデータ作成時の状態に戻ります。復元元のバックアップデータが作成されてから保存された内容や、復元実行中に受信したコメントやトラックバックは破棄されますのでご注意ください。また、復元を実行する前に現在の状態のバックアップを自動的に行います。バックアップデータの復元後に復元の実行前の状態に戻すことが可能です。',
 	'Are you sure you want restore from selected backup file?' => '選択されたバックアップファイルからの復元を行いますか?',
 
 ## addons/Commercial.pack/config.yaml
@@ -5311,7 +5316,7 @@ use vars qw( @ISA %Lexicon );
 	'The template tag \'[_1]\' is already in use in the system level' => '[_1]というタグは既にシステムに存在します。',
 	'The template tag \'[_1]\' is already in use in [_2]' => '[_1]というタグは既に[_2]に存在します。',
 	'The template tag \'[_1]\' is already in use in this blog' => '[_1]というタグは既にこのブログに存在します。',
-	'The \'[_1]\' of the template tag \'[_2]\' that is already in use in [_3] is [_4].' => '\'[_2]\'というタグの\'[_1]\'は[_3]では[_4]です。',
+	'The \'[_1]\' of the template tag \'[_2]\' that is already in use in [_3] is [_4].' => '[_1]が違う\'[_2]\'というタグが[_3]に見つかったため、保存できません。([_1]: [_4])',
 	'_CF_BASENAME' => 'ベースネーム',
 
 ## addons/Commercial.pack/lib/CustomFields/Template/ContextHandlers.pm

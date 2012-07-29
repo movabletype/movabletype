@@ -34,6 +34,7 @@ sub ascii_only { ((ref $_[0]) || $_[0]) eq __PACKAGE__ }
     '_BLOG_CONFIG_MODE_BASIC' => 'Basic Mode',
     '_BLOG_CONFIG_MODE_DETAIL' => 'Detailed Mode',
     '_SEARCH_SIDEBAR' => 'Search',
+    '_REVISION_DATE_' => 'Date',
 
     '_ERROR_CONFIG_FILE' => 'Your Movable Type configuration file is missing or cannot be read properly. Please see the <a href="javascript:void(0)">Installation and Configuration</a> section of the Movable Type manual for more information.',
     '_ERROR_DATABASE_CONNECTION' => 'Your database settings are either invalid or not present in your Movable Type configuration file. Please see the <a href="javascript:void(0)">Installation and Configuration</a> section of the Movable Type manual for more information.',

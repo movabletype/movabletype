@@ -585,7 +585,7 @@ sub _v5_generate_websites_place_blogs {
 
     $self->progress(
         $self->translate_escape(
-            'Migrating existing [quant,_1,blog,blogs] into websites and its children...',
+            'Migrating existing [quant,_1,blog,blogs] into websites and their children...',
             scalar( keys(%site_urls) )
         )
     );
