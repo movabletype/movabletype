@@ -394,6 +394,9 @@ function setLicense() {
     <mt:loop name="entry_archive_types">
       <mt:if name="__first__">
       <select name="preferred_archive_type" id="preferred_archive_type">
+        <mt:if name="no_preferred_archive_type">
+          <option value="" selected="selected"><__trans phrase="Choose archive type"></option>
+        </mt:if>
       </mt:if>
         <option value="<mt:var name="archive_type" escape="html">"<mt:if name="archive_type_is_preferred"> selected="selected"</mt:if>><mt:var name="archive_type_translated" escape="html"></option>
       <mt:if name="__last__">
@@ -573,6 +576,12 @@ function setLicense() {
                 if ( !is_valid_absolute_path($e.val()) ) return false;
             }
             return true;
+        },
+        "#preferred_archive_type": function ($e) {
+            var $selected = jQuery('#preferred_archive_type').find('option:selected');
+            if (( $selected.length == 0 ) || ($selected.attr('value') == "") )
+              return false;
+            return true;
         }
     });
 
@@ -594,7 +603,8 @@ function setLicense() {
         "#archive_path.required": '<__trans phrase="You must set your Local Archive Path." escape="singlequotes">',
         "#archive_path": '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
         "#archive_path_absolute.required": '<__trans phrase="You must set your Local Archive Path." escape="singlequotes">',
-        "#archive_path_absolute": '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
+        "#archive_path_absolute": '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
+        "#preferred_archive_type": '<__trans phrase="Please choose a preferred archive type." escape="singlequotes">'
     });
 
     jQuery('#cfg_form').submit( function () {
