@@ -184,8 +184,14 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                     .insertAfter(this.$editorIframe)
                     .height(this.$editorIframe.height());
                 if (! this.tinymce.execCommand('mtFullScreenIsEnabled')) {
-                    this.$editorTextarea
-                        .data('base-height', this.$editorIframe.height());
+                    var h = this.$editorIframe.height();
+                    this.$editorTextarea.data('base-height', h);
+                    if (tinyMCE.isIE) {
+                        this.$editorTextarea.data('base-height-adjustment', h);
+                    }
+                    else {
+                        this.$editorTextarea.data('base-height-adjustment', 0);
+                    }
                 }
 
                 if (! calledInInit) {
@@ -318,12 +324,13 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                 adapter.$editorTextarea.height(height);
             }
             else {
-                var base = adapter.$editorTextarea.data('base-height');
+                var base       = adapter.$editorTextarea.data('base-height');
+                var adjustment = adapter.$editorTextarea.data('base-height-adjustment');
                 if (base) {
-                    adapter.$editorTextarea.height(base+height);
+                    adapter.$editorTextarea.height(base+height-adjustment);
                     if (store) {
                         adapter.$editorTextarea
-                            .data('base-height', base+height);
+                            .data('base-height', base+height-adjustment);
                     }
                 }
             }
