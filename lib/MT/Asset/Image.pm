@@ -508,7 +508,7 @@ sub on_upload {
         );
 
         if ( !$asset_thumb ) {
-            $asset_thumb = new $img_pkg;
+            $asset_thumb = $img_pkg->new();
             $original    = $asset_thumb->clone;
             $asset_thumb->blog_id($blog_id);
             $asset_thumb->url($pseudo_thumbnail_url);
@@ -525,7 +525,6 @@ sub on_upload {
                 )
             );
             $asset_thumb->parent( $asset->id );
-            $asset_thumb->save;
         }
         else {
             $original = $asset_thumb->clone;
@@ -536,6 +535,12 @@ sub on_upload {
         $thumbnail = $asset_thumb->file_path;
         my $thumbnail_url   = $asset_thumb->url;
         my $thumb_file_size = $fmgr->file_size($thumbnail);
+
+        $app->run_callbacks( 'cms_pre_save.asset', $app, $asset_thumb, $original )
+            || return $app->errtrans( "Saving [_1] failed: [_2]", 'asset',
+            $app->errstr );
+
+        $asset_thumb->save unless $asset_thumb->id;
 
         $app->run_callbacks( 'cms_post_save.asset', $app, $asset_thumb,
             $original );
@@ -653,7 +658,6 @@ sub on_upload {
                 $asset_html->file_ext( $blog->file_extension );
                 $asset_html->created_by( $app->user->id );
                 $asset_html->parent( $asset->id );
-                $asset_html->save;
             }
             else {
                 $original = $asset_html->clone;
@@ -661,6 +665,12 @@ sub on_upload {
 
             # Select back the real URL for callbacks
             $url = $asset_html->url;
+
+            $app->run_callbacks( 'cms_pre_save.asset', $app, $asset_html, $original )
+                || return $app->errtrans( "Saving [_1] failed: [_2]", 'asset',
+                $app->errstr );
+
+            $asset_html->save unless $asset_html->id;
 
             $param->{popup_asset_id} = $asset_html->id;
 

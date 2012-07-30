@@ -1538,7 +1538,7 @@ sub _upload_file {
         if !$is_image
             && exists( $upload_param{require_type} )
             && $upload_param{require_type} eq 'image';
-    my $asset;
+    my ($asset, $original);
     if (!(  $asset = $asset_pkg->load(
                 {   class     => '*',
                     file_path => $asset_file,
@@ -1550,6 +1550,7 @@ sub _upload_file {
         )
     {
         $asset = $asset_pkg->new();
+        $original = $asset->clone;
         $asset->file_path($asset_file);
         $asset->file_name($local_basename);
         $asset->file_ext($ext);
@@ -1567,9 +1568,9 @@ sub _upload_file {
                 )
             );
         }
+        $original = $asset->clone;
         $asset->modified_by( $app->user->id );
     }
-    my $original = $asset->clone;
     $asset->url($asset_url);
 
     if ($is_image) {
@@ -1578,6 +1579,9 @@ sub _upload_file {
     }
 
     $asset->mime_type($mimetype) if $mimetype;
+    $app->run_callbacks( 'cms_pre_save.asset', $app, $asset, $original )
+        || return $app->errtrans( "Saving [_1] failed: [_2]", 'asset',
+        $app->errstr );
 
     $asset->save;
     $app->run_callbacks( 'cms_post_save.asset', $app, $asset, $original );
