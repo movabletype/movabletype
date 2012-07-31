@@ -410,7 +410,7 @@ sub _create_item {
     elsif ( 'page' eq $post_type ) {
         $self->_create_post( 'page', \@hashes );
     }
-    elsif ('attachment') {
+    elsif ('attachment' eq $post_type ) {
         $self->_create_asset( \@hashes );
     }
     1;
