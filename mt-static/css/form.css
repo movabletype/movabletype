@@ -59,8 +59,9 @@ button,
     margin: 0;
     font-size: 100%;
     vertical-align: middle;
-    box-sizing: border-box;
     -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
 }
 input {
     padding: 0 0.25em;
@@ -339,6 +340,7 @@ select.error {
     width: 100%;
     font-size: 90%;
     -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
     box-sizing: border-box;
 }
 

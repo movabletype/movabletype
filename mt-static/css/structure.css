@@ -1457,6 +1457,7 @@ ul.tabs li a {
     min-width: 100%;
     height: 550px;
     -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
     box-sizing: border-box;
     border-radius: 0;
 }
