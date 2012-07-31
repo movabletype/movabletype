@@ -773,6 +773,26 @@ $_encode_xml_Map = array('&' => '&amp;', '"' => '&quot;',
                          '<' => '&lt;', '>' => '&gt;',
                          '\'' => '&apos;');
 
+function __check_xml_char($matches) {
+    $val = $matches[2];
+    $is_hex = $matches[1];
+    if ($is_hex)
+        $val = hexdec($val);
+    $val = 0 + $val;
+    if (   ($val == 9) 
+        || ($val == 0xA) 
+        || ($val == 0xD) 
+        || (($val >= 0x20) and ($val <= 0xD7FF)) 
+        || (($val >= 0xE000) and ($val <= 0xFFFD)) 
+        || (($val >= 0x10000) and ($val <= 0x10FFFF))) 
+    {
+        return "&#" . $is_hex . $matches[2] . ";";
+    }
+    else {
+        return "&amp;#"  . $is_hex . $matches[2] . ";";
+    }
+}
+
 function encode_xml($str, $nocdata = 0) {
     $mt = MT::get_instance();
     global $_encode_xml_Map;
@@ -789,7 +809,7 @@ function encode_xml($str, $nocdata = 0) {
         $str = '<![CDATA[' . $str . ']]>';
     } else {
         $str = strtr($str, $_encode_xml_Map);
-        $str = preg_replace('/&amp;((\#([0-9]+)|\#x([0-9a-fA-F]+)).*?);/', "&$1;", $str);
+        $str = preg_replace_callback('/&amp;#(x?)((?:[0-9]+|[0-9a-fA-F]+).*?);/', __check_xml_char, $str);
     }
     return $str;
 }

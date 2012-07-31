@@ -800,6 +800,24 @@ sub decode_url {
     my $RE         = join '|', keys %Map;
     my $RE_D       = join '|', keys %Map_Decode;
 
+    sub __check_xml_char {
+        my ($val, $is_hex) = @_;
+        $val = hex($val) if $is_hex;
+        if (grep $_ == $val, 9, 0xA, 0xD) {
+            return 1;
+        }
+        if (($val >= 0x20) and ($val <= 0xD7FF)) {  # [#x20-#xD7FF]
+            return 1;
+        }
+        if (($val >= 0xE000) and ($val <= 0xFFFD)) {  # [#xE000-#xFFFD]
+            return 1;
+        }
+        if (($val >= 0x10000) and ($val <= 0x10FFFF)) {  # [#x10000-#x10FFFF]
+            return 1;
+        }
+        return 0;
+    }
+
     sub encode_xml {
         my ( $str, $nocdata, $no_re_replace ) = @_;
         return '' unless defined $str;
@@ -821,7 +839,7 @@ sub decode_url {
             $str =~ s!($RE)!$Map{$1}!g;
 
             # re-replace &amp;#nnnn => &#nnnn
-            $str =~ s/&amp;((\#([0-9]+)|\#x([0-9a-fA-F]+)).*?);/&$1;/g
+            $str =~ s/&amp;#(x?)((?:[0-9]+|[0-9a-fA-F]+).*?);/__check_xml_char($2, $1) ? "&#$1$2;" : "&amp;#$1$2;"/ge
                 unless $no_re_replace;
         }
         $str =~ tr/\0-\x08\x0B\x0C\x0E-\x1F\x7F/     /;
