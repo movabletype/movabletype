@@ -1838,7 +1838,7 @@ BEGIN {
             },
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
-            'MaxTagAutoCompletionItems' => { default => 1000, },
+            'MaxTagAutoCompletionItems' => { default => 1000, },    ## DEPRECATED
             'NewUserAutoProvisioning' =>
                 { handler => \&NewUserAutoProvisioning, },
             'NewUserBlogTheme'        => { default => 'classic_blog' },
