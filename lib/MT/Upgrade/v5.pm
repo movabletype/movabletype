@@ -634,15 +634,15 @@ sub _v5_generate_websites_place_blogs {
     while ( my @site_urls = keys %site_urls ) {
         @site_urls = sort { length($a) <=> length($b) } @site_urls;
         my $shortest = shift @site_urls;
-        my ( $ssl, $domain, $path ) = $shortest =~ m!^http(s?)://([^/]+)(/.*)$!gi;
+        my ( $ssl, $domain ) = $shortest =~ m!^http(s?)://(.+?)(/|$)!gi;
         my $dot = index( $domain, '.' );
 
         # XXX: ignoring domain that starts with ".".
         if ( $dot > 0 ) {
             $domain =~ s!^(?:.*?)([^\.]+?)(\.\w+)$!$1$2!;
         }
-        my ( $subdomain )
-            = $shortest =~ m!^https?://(.*)\.?$domain(?:/|$)!;
+        my ( $subdomain, $path )
+            = $shortest =~ m!^https?://(.*)\.?$domain/(.*)$!;
         my $blogs = delete $site_urls{$shortest};
         foreach my $blog (@$blogs) {
             my $site_url = "http$ssl://$domain/";
@@ -654,20 +654,7 @@ sub _v5_generate_websites_place_blogs {
                     ),
                     MT->config->DefaultWebsiteTheme
                 );
-                my $website_path = $blog->site_path;
-                my $dir_depth = 
-                    grep { defined($_) and length($_) } 
-                    split '/', $path;
-                require File::Spec;
-                my ($volume, $directories, undef) = 
-                    File::Spec->splitpath( $website_path, 1 );
-                my @dirs = File::Spec->splitdir( $directories );
-                pop @dirs for 1..$dir_depth;
-                $website_path = 
-                    File::Spec->catpath( 
-                        $volume, File::Spec->catdir( @dirs ));
-
-                $website->site_path( $website_path );
+                $website->site_path( $blog->site_path );
                 $website->site_url("http$ssl://$domain/");
                 $website->save
                     or return $self->error(
