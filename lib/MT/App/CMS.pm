@@ -2960,6 +2960,7 @@ sub set_default_tmpl_params {
     $param->{"auth_mode_$pref"} = 1;
     $param->{mt_news}           = $app->config('NewsURL');
     $param->{mt_support}        = $app->config('SupportURL');
+    $param->{mt_feedback_url}   = $app->config('FeedbackURL');
     my $lang = lc MT->current_language || 'en_us';
     $param->{language_id} = ( $lang !~ /en[_-]us/ ) ? $lang : '';
     $param->{mode} = $app->mode;

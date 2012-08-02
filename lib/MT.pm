@@ -1186,6 +1186,7 @@ sub i18n_default_settings {
         'LogExportEncoding'  => 'LOG_EXPORT_ENCODING',
         'CategoryNameNodash' => 'CATEGORY_NAME_NODASH',
         'PublishCharset'     => 'PUBLISH_CHARSET',
+        'FeedbackURL'        => 'FEEDBACK_URL',
     );
 
     foreach my $key ( keys %settings ) {

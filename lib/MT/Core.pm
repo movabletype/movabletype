@@ -1779,6 +1779,10 @@ BEGIN {
                 default =>
                     'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
             },
+            'FeedbackURL' => {
+                default =>
+                    'http://www.movabletype.org/feedback.html',
+            },
 
 # 'MTNewsURL' => {
 #     default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
