@@ -2847,20 +2847,19 @@ sub delete {
     if ( $app->config('RebuildAtDelete') ) {
         $app->run_callbacks('pre_build');
 
-        my $rebuild_func =
-            sub {
-                foreach my $b_id ( keys %rebuild_recipe ) {
-                    my $b  = MT::Blog->load($b_id);
-                    my $res = $app->rebuild_archives(
-                        Blog  => $b,
-                        Recipe => $rebuild_recipe{$b_id},
-                    ) or return $app->publish_error();
-                    $app->rebuild_indexes( Blog => $b )
-                        or return $app->publish_error();
-                    $app->run_callbacks( 'rebuild', $b );
-                }
-            };
-        
+        my $rebuild_func = sub {
+            foreach my $b_id ( keys %rebuild_recipe ) {
+                my $b   = MT::Blog->load($b_id);
+                my $res = $app->rebuild_archives(
+                    Blog   => $b,
+                    Recipe => $rebuild_recipe{$b_id},
+                ) or return $app->publish_error();
+                $app->rebuild_indexes( Blog => $b )
+                    or return $app->publish_error();
+                $app->run_callbacks( 'rebuild', $b );
+            }
+        };
+
         if ($can_background) {
             MT::Util::start_background_task($rebuild_func);
         }
@@ -2871,7 +2870,8 @@ sub delete {
         $app->add_return_arg( no_rebuild => 1 );
         my %params = (
             is_full_screen  => 1,
-            redirect_target => $app->app_path
+            redirect_target => $app->base
+                . $app->path
                 . $app->script . '?'
                 . $app->return_args,
         );

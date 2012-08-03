@@ -285,7 +285,7 @@ sub process_log_feed {
             . encode_url( $app->param($key) );
     }
     $str =~ s/^&amp;(.+)$/?$1/;
-    $param->{feed_self} = $app->base . $app->app_path . $app->script . $str;
+    $param->{feed_self} = $app->base . $app->path . $app->script . $str;
     $param->{feed_atom_id} = $app->base . $app->uri;
     $param->{feed_updated_iso} = time2isoz( ts2epoch( undef, $last_ts ) );
     $param->{feed_updated_iso} =~ s/ /T/;
