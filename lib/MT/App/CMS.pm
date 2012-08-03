@@ -3983,6 +3983,14 @@ sub load_default_entry_prefs {
 
     if ( $perm && $perm->entry_prefs ) {
         $prefs = $perm->entry_prefs;
+        if ($prefs !~ m/\b(?:default|basic|custom|advanced)\b/i) {
+            if ($prefs !~ m/\btitle\b/) {
+                $prefs = 'title,'.$prefs;
+            }
+            if ($prefs !~ m/\btext\b/) {
+                $prefs =~ s/\btitle\b/title,text/;
+            }
+        }
     }
     else {
         if ( lc( $default{type} ) eq 'custom' ) {
@@ -4027,6 +4035,14 @@ sub load_default_page_prefs {
 
     if ( $perm && $perm->page_prefs ) {
         $prefs = $perm->page_prefs;
+        if ($prefs !~ m/\b(?:default|basic|custom|advanced)\b/i) {
+            if ($prefs !~ m/\btitle\b/) {
+                $prefs = 'title,'.$prefs;
+            }
+            if ($prefs !~ m/\btext\b/) {
+                $prefs =~ s/\btitle\b/title,text/;
+            }
+        }
     }
     else {
         if ( lc( $default{type} ) eq 'custom' ) {
@@ -4461,33 +4477,22 @@ sub _entry_prefs_from_params {
     my $app      = shift;
     my ($prefix) = @_;
     my $q        = $app->param;
-    my $disp     = $q->param('entry_prefs');
-    my %fields;
-    my $prefs = '';
-    if ( $disp && lc $disp ne 'custom' ) {
-        $fields{$disp} = 1;
+    my $disp     = $q->param('entry_prefs') || '';
+    my @fields;
+    if ( lc $disp eq 'custom' ) {
+        @fields = split /,/, $q->param( $prefix . 'custom_prefs' );
     }
-    elsif ( $disp && lc $disp eq 'custom' ) {
-        my @fields = split /,/, $q->param( $prefix . 'custom_prefs' );
-        foreach (@fields) {
-            $prefs .= ',' if $prefs ne '';
-            $prefs .= $_;
-        }
+    elsif ( $disp ) {
+        push @fields, $disp;
     }
     else {
-        $fields{$_} = 1 foreach $q->param( $prefix . 'custom_prefs' );
+        @fields = $q->param( $prefix . 'custom_prefs' );
     }
 
     if ( my $body_height = $q->param('text_height') ) {
-        $fields{'body'} = $body_height;
+        push @fields, 'body:'.$body_height;
     }
-    foreach ( keys %fields ) {
-        $prefs .= ',' if $prefs ne '';
-        $prefs .= $_;
-        $prefs .= ':' . $fields{$_} if $fields{$_} > 1;
-    }
-    $prefs .= '|' . $q->param('bar_position');
-    $prefs;
+    return join(',', @fields) . '|' . $q->param('bar_position');
 }
 
 # rebuild_set is a hash whose keys are entry IDs
