@@ -72,6 +72,9 @@ textarea {
     vertical-align: top;
     resize: vertical;
 }
+label textarea {
+    margin-top: 0.62em;
+}
 input[type=checkbox],
 input[type=radio] {
     padding: 0;

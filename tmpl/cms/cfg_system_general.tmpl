@@ -165,8 +165,7 @@ function validate (f) {
       <li><input type="radio" name="trackback_send" id="trackback_send_off" value="off"<mt:if name="trackback_send_off"> checked="checked"</mt:if> /> <label for="trackback_send_off"><__trans phrase="Disabled"></label> <span class="hint"><__trans phrase="(No Outbound TrackBacks)"></span></li>
       <li><input type="radio" name="trackback_send" id="trackback_send_local" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> /> <label for="trackback_send_local"><__trans phrase="Only to blogs within this system"></label></li>
       <li>
-        <input type="radio" name="trackback_send" id="trackback-send-selected" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> /> <label for="trackback_send_selected"><__trans phrase="Only to websites on the following domains:"></label><br />
-        <textarea name="trackback_send_domains" class="text low"><mt:var name="trackback_send_domains" escape="html"></textarea>
+        <input type="radio" name="trackback_send" id="trackback-send-selected" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> /> <label for="trackback_send_selected"><__trans phrase="Only to websites on the following domains:"><br /><textarea name="trackback_send_domains" class="text low"><mt:var name="trackback_send_domains" escape="html"></textarea></label>
       </li>
     </ul>
   </mtapp:setting>
