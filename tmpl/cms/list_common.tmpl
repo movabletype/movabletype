@@ -533,7 +533,7 @@ function openFilterRenameField() {
         $handle.find('.cancel').click();
         return false;
     }
-    if ( !jQuery('#filter_' + fid).mtValidate('dialog') )
+    if ( !jQuery('#filter_' + fid).mtValidate('simple') )
         return false;
     $this.parents('.filter').find('.item-ctrl').hide();
     $this.parents('.filter').find('input').hide().after( jQuery('<span class="indicator"><img alt="<__trans phrase="Loading..." escape="js">" src="<mt:var name="static_uri">images/indicator.white.gif" /></span>') );
@@ -1374,7 +1374,7 @@ jQuery('#dialog_save_filter form').submit(function() {
 });
 
 jQuery('#save-filter').click(function() {
-  if ( !jQuery('input[name=filter_name]').mtValidate('dialog') )
+  if ( !jQuery('input[name=filter_name]').mtValidate('simple') )
     return false;
   var name = jQuery('input[name=filter_name]').val();
   itemValues();

@@ -551,7 +551,7 @@ function initMoving() {
           .unbind('click')
           .bind( 'click', function(){
 <mt:if name="object_type" eq="category">
-            if ( jQuery('#new-label').mtValidate('dialog') && jQuery('#new-basename').mtValidate('dialog') ) {
+            if ( jQuery('#new-label').mtValidate('simple') && jQuery('#new-basename').mtValidate('simple') ) {
               var $label = $item.find('.item-label a').length ? $item.find('.item-label a') : $item.find('.item-label');
               $label.text( jQuery('#new-label').val() );
               var $basename = $item.find('.item-basename-text');
@@ -561,7 +561,7 @@ function initMoving() {
 
             }
 <mt:else>
-            if ( jQuery('#new-basename').mtValidate('dialog') ) {
+            if ( jQuery('#new-basename').mtValidate('simple') ) {
               var $basename = $item.find('.item-basename-text');
               $basename.text( jQuery('#new-basename').val() );
               _stop();
@@ -594,9 +594,9 @@ function initMoving() {
           closeOnEscape: false
         });
 <mt:if name="object_type" eq="category">
-        jQuery('#new-label, #new-basename').mtValidate('dialog');
+        jQuery('#new-label, #new-basename').mtValidate('simple');
 <mt:else>
-        jQuery('#new-basename').mtValidate('dialog');
+        jQuery('#new-basename').mtValidate('simple');
 </mt:if>
       }
       else {
