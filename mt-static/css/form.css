@@ -108,7 +108,8 @@ input[type=file] {
 .text.med {
     width: 50%;
 }
-.text.full {
+.text.full, 
+.edit-screen .text {
     width: 100%;
     max-width: 100%;
 }
