@@ -87,8 +87,8 @@ sub import {
 
             # line __LINE__ __FILE__
             require MT;
-            eval "# line " 
-                . __LINE__ . " " 
+            eval "# line "
+                . __LINE__ . " "
                 . __FILE__
                 . "\nrequire $class; 1;"
                 or die $@;
@@ -175,10 +175,10 @@ sub import {
                         }
                     }
                     # force closing of connection here
-                    $CGI::Fast::Ext_Request->Finish();                    
+                    $CGI::Fast::Ext_Request->Finish();
                 }
                 $CGI::Fast::Ext_Request->LastCall();
-                # closing FastCGI's listening socket, so the server won't 
+                # closing FastCGI's listening socket, so the server won't
                 # open new connections to us
                 require POSIX;
                 POSIX::close( 0 );
