@@ -575,12 +575,14 @@ sub _v5_generate_websites_place_blogs {
     my %by_domain;
     my $blog_count = 0;
     while ( my $blog = $iter->() ) {
-        my ($protocol, $leading_dot, $subdomain, $domain, $url_path) = 
-            $blog->site_url =~ m!^(https?://)(\.?)((?:[^/]+\.)?)([^/\.]+\.\w+)((?:/.*)?)$!;
-        if ($leading_dot) {
-            # XXX: domains that starts with a "."
-            $domain = join('', $leading_dot, $subdomain, $domain);
-            $subdomain = '';
+        my ($protocol, $domain, $url_path) = 
+            $blog->site_url =~ m!^(https?://)([^/]+)((?:/.*)?)$!;
+        my $subdomain = '';
+        if ($domain =~ m!^([^\.].*\.)([^\.]+\.\w+)$!) {
+            # XXX: domains that starts with a "." are not considers 
+            # to have subdomain
+            $subdomain = $1;
+            $domain = $2;
         }
         my $rec = { 
             blog => $blog, 
