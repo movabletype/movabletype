@@ -160,19 +160,18 @@
                     win[button] = $(this).addClass('psedo-active');
                 });
 
-                $.each([win, ed.getWin()], function() {
-                    var w  = this;
-                    var ns = '.tinymce_mt_button_activate';
-                    $.each(['mouseup', 'touchend'], function(index, event) {
-                        $(w)
-                            .unbind(event + ns)
-                            .bind(event + ns, function() {
-                                if (win[button]) {
-                                    win[button].removeClass('psedo-active');
-                                    win[button] = null;
-                                }
-                            });
-                    });
+                $.each([win.document, ed.getWin().document], function() {
+                    var w     = this;
+                    var ns    = '.tinymce_mt_button_activate';
+                    var event = 'mouseup' + ns + ' touchend' + ns;
+                    $(w)
+                        .unbind(event)
+                        .bind(event, function() {
+                            if (win[button]) {
+                                win[button].removeClass('psedo-active');
+                                win[button] = null;
+                            }
+                        });
                 });
             });
         },
