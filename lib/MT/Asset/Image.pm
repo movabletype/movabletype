@@ -87,14 +87,13 @@ sub image_width {
     return $w;
 }
 
-our $computed_thumbnail_cache = undef;
-
 sub has_thumbnail {
-    if ( !defined $computed_thumbnail_cache ) {
-        eval { require MT::Image; MT::Image->new or die; };
-        $computed_thumbnail_cache = $@ ? 0 : 1;
-    }
-    $computed_thumbnail_cache;
+    my $asset = shift;
+
+    require MT::Image;
+    my $image = MT::Image->new(
+        ( ref $asset ? ( Filename => $asset->file_path ) : () ) );
+    $image ? 1 : 0;
 }
 
 sub thumbnail_path {
@@ -394,8 +393,7 @@ sub insert_options {
     my $perms = $app->{perms};
     my $blog  = $asset->blog or return;
 
-    eval { require MT::Image; MT::Image->new or die; };
-    $param->{do_thumb} = $@ ? 0 : 1;
+    $param->{do_thumb} = $asset->has_thumbnail ? 1 : 0;
 
     $param->{can_save_image_defaults}
         = $perms->can_do('save_image_defaults') ? 1 : 0;
