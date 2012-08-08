@@ -572,21 +572,36 @@ sub _v5_generate_websites_place_blogs {
         ]
     );
 
-    my %site_urls;
+    my %by_domain;
+    my $blog_count = 0;
     while ( my $blog = $iter->() ) {
-        my $blogs;
-        $blogs = $site_urls{ $blog->site_url }
-            if defined $site_urls{ $blog->site_url };
-        push @$blogs, $blog;
-        $site_urls{ $blog->site_url } = $blogs;
+        my ($protocol, $domain, $url_path) = 
+            $blog->site_url =~ m!^(https?://)([^/]+)((?:/.*)?)$!;
+        my $subdomain = '';
+        if ($domain =~ m!^([^\.].*\.)([^\.]+\.\w+)$!) {
+            # XXX: domains that starts with a "." are not considers 
+            # to have subdomain
+            $subdomain = $1;
+            $domain = $2;
+        }
+        my $rec = { 
+            blog => $blog, 
+            url_protocol => $protocol, 
+            url_subdomain => $subdomain, 
+            url_domain => $domain, 
+            url_path => $url_path,
+        };
+        my $websites = ( $by_domain{$protocol . $domain} ||= [] );
+        push @$websites, $rec;
+        $blog_count++;
     }
 
-    return unless %site_urls;
+    return unless %by_domain;
 
     $self->progress(
         $self->translate_escape(
             'Migrating existing [quant,_1,blog,blogs] into websites and their children...',
-            scalar( keys(%site_urls) )
+            $blog_count
         )
     );
 
@@ -620,72 +635,92 @@ sub _v5_generate_websites_place_blogs {
         }
     );
 
- # 1. find the shortest site_url, pick its domain and make it as a website url
- # 2. find urls under the domain and make it children
- # 3. find urls of that are subdomains of the domain and make it children
- # 4. go to step 1 until everything is either a child or a website
-
     my $website_class = MT->model('website');
     return $self->error(
         $self->translate_escape( "Error loading class: [_1].", 'Website' ) )
         unless $website_class;
 
-    my %websites;
-    while ( my @site_urls = keys %site_urls ) {
-        @site_urls = sort { length($a) <=> length($b) } @site_urls;
-        my $shortest = shift @site_urls;
-        my ( $ssl, $domain ) = $shortest =~ m!^http(s?)://(.+?)(/|$)!gi;
-        my $dot = index( $domain, '.' );
-
-        # XXX: ignoring domain that starts with ".".
-        if ( $dot > 0 ) {
-            $domain =~ s!^(?:.*?)([^\.]+?)(\.\w+)$!$1$2!;
-        }
-        my ( $subdomain, $path )
-            = $shortest =~ m!^https?://(.*)\.?$domain/(.*)$!;
-        my $blogs = delete $site_urls{$shortest};
-        foreach my $blog (@$blogs) {
-            my $site_url = "http$ssl://$domain/";
-            my $website = $website_class->load( { site_url => $site_url } );
-            unless ($website) {
-                $website = $website_class->create_default_website(
-                    MT->translate(
-                        'New WebSite [_1]', "http$ssl://$domain/"
-                    ),
-                    MT->config->DefaultWebsiteTheme
-                );
-                $website->site_path( $blog->site_path );
-                $website->site_url("http$ssl://$domain/");
-                $website->save
-                    or return $self->error(
-                    $self->translate_escape(
-                        "An error occured during generating a website upon upgrade: [_1]",
-                        $website->errstr
-                    )
-                    );
-
-                foreach (@sysadmins) {
-                    $assoc_class->link( $_ => $role => $website )
-                        or die $role->name . $website->name;
-                }
-                $self->progress(
-                    $self->translate_escape(
-                        'Generated a website [_1]',
-                        "http$ssl://$domain/"
-                    )
-                );
+    while (my ($website_site_url, $blogs) = each %by_domain) {
+        my $website = $website_class->load( { site_url => $website_site_url } );
+        unless ($website) {
+            $website = $website_class->create_default_website(
+                MT->translate(
+                    'New WebSite [_1]', $website_site_url
+                ),
+                MT->config->DefaultWebsiteTheme
+            );
+            require File::Spec;
+            # lets try to figure out a common directory to all the blogs
+            my @blogs_dirs = 
+                sort { scalar(@$a) <=> scalar(@$b) }
+                map { [ $_->[0], File::Spec->splitdir( $_->[1] ) ] }
+                map { [ File::Spec->splitpath( $_->{blog}->site_path, 1) ] } 
+                @$blogs;
+            my @built_path;
+            for (my $i = 0; $i < scalar(@{$blogs_dirs[0]}); $i++) {
+                my $part = $blogs_dirs[0]->[$i];
+                last unless scalar(@blogs_dirs) == grep { $part eq $_->[$i] } @blogs_dirs;
+                push @built_path, $part;
             }
-            $path = $path . '/' if $path && $path !~ m!/$!;
-            my $old_site_url = $blog->site_url;
-            $blog->site_url("$subdomain/::/$path");
-            $blog->parent_id( $website->id );
+            unless (grep length($_), @built_path) {
+                # could not find anything in common - 
+                # try figure out a path from one of the blogs
+                my $blog_rec = $blogs->[0];
+                my $dir_depth = 
+                    grep { defined($_) and length($_) } 
+                    split '/', $blog_rec->{url_path};
+                my ($volume, $dirs, undef) = 
+                    File::Spec->splitpath( $blog_rec->{blog}->site_path, 1 );
+                @built_path = ($volume, File::Spec->splitdir( $dirs ) );
+                pop @built_path for 1..$dir_depth;
+                unless (@built_path) {
+                    # if could not, just take this blog path
+                    @built_path = ($volume, File::Spec->splitdir( $dirs ) );
+                }
+            }
+            my $volume = shift @built_path;
+            my $website_site_path = 
+                File::Spec->catpath( $volume, File::Spec->catdir( @built_path )); 
+            $website->site_path( $website_site_path );
+            $website->site_url( $website_site_url );
+            $website->save
+                or return $self->error(
+                $self->translate_escape(
+                    "An error occured during generating a website upon upgrade: [_1]",
+                    $website->errstr
+                )
+                );
 
-  # if archive_url is "under" the website url (i.e. either subdomain or path)
-  # use the new data syntax (/::/).  otherwise leave it as-is.  config screens
-  # and everything should handle both relative and absolute url correctly.
+            foreach (@sysadmins) {
+                $assoc_class->link( $_ => $role => $website )
+                    or die $role->name . $website->name;
+            }
+            $self->progress(
+                $self->translate_escape(
+                    'Generated a website [_1]',
+                    $website_site_url
+                )
+            );
+        }
+        foreach my $blog_rec (@$blogs) {
+            my $url_path = $blog_rec->{url_path};
+            my $subdomain = $blog_rec->{url_subdomain};
+            my $domain = $blog_rec->{url_domain};
+            my $blog = $blog_rec->{blog};
+            $url_path = $url_path . '/' if $url_path !~ m!/$!;
+            $url_path =~ s!^/!!;
+            my $old_site_url = $blog->site_url;
+            $blog->site_url("$subdomain/::/$url_path");
+            $blog->parent_id( $website->id );
+            # if archive_url is "under" the website url (i.e. either subdomain or path)
+            # use the new data syntax (/::/).  otherwise leave it as-is.  config screens
+            # and everything should handle both relative and absolute url correctly.
             if ( my $archive_url = $blog->column('archive_url') ) {
-                if ( $archive_url =~ m!https?://(.+\.)?$domain/?(.*/?)$! ) {
-                    $blog->archive_url("$1/::/$2");
+                my $protocol = $blog_rec->{url_protocol};
+                if ( $archive_url =~ m!$protocol((?:[^/]+\.)?)$domain((?:/.*)?)$! ) {
+                    my ($subd, $path) = ($1, $2);
+                    $path =~ s!^/!!;
+                    $blog->archive_url("$subd/::/$path");
                 }
             }
             $blog->save
@@ -701,41 +736,6 @@ sub _v5_generate_websites_place_blogs {
                     $blog->name, $old_site_url, $domain
                 )
             );
-
-            my @children = grep { $_ =~ m!https?://.+$domain/! } @site_urls;
-            foreach my $child_url (@children) {
-                my ( $subdomain, $path )
-                    = $child_url =~ m!^https?://(.*)\.?$domain/(.*)$!;
-                my $child_blogs = delete $site_urls{$child_url};
-                foreach my $child (@$child_blogs) {
-                    $path = $path . '/' if $path && $path !~ m!/$!;
-                    my $old_site_url = $child->site_url;
-                    $child->site_url("$subdomain/::/$path");
-                    $child->parent_id( $website->id );
-
-                    # same here for archive_urls as is described above.
-                    if ( my $archive_url = $child->column('archive_url') ) {
-                        if ( $archive_url
-                            =~ m!https?://(.+\.)?$domain/?(.*/?)$! )
-                        {
-                            $child->archive_url("$1/::/$2");
-                        }
-                    }
-                    $child->save
-                        or return $self->error(
-                        $self->translate_escape(
-                            "An error occured during migrating a blog's site_url: [_1]",
-                            $website->errstr
-                        )
-                        );
-                    $self->progress(
-                        $self->translate_escape(
-                            'Moved blog [_1] ([_2]) under website [_3]',
-                            $child->name, $old_site_url, $domain
-                        )
-                    );
-                }
-            }
         }
     }
     1;
