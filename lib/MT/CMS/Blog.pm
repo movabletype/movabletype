@@ -1964,7 +1964,7 @@ sub save_filter {
                 "Please choose a preferred archive type."
             )
             )
-            unless $app->param('preferred_archive_type');
+            unless !$app->blog->is_blog || $app->param('preferred_archive_type');
     }
     return 1;
 }
