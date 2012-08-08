@@ -3971,7 +3971,7 @@ L<IncludeBlock> tag. If unassigned, the "contents" variable is used.
             return $ctx->error( $builder->errstr ) unless defined $html;
             return $html;
         };
-        return $ctx->tag( 'include', $args, $cond );
+        return _hdlr_include( $ctx,  $args, $cond );
     }
 
 ###########################################################################
