@@ -1694,8 +1694,12 @@ sub _hdlr_entry_excerpt {
     elsif ( $args->{no_generate} ) {
         return '';
     }
-    my $blog    = $ctx->stash('blog');
-    my $words   = $args->{words} || $blog ? $blog->words_in_excerpt : 40;
+    my $blog = $ctx->stash('blog');
+    my $words
+        = $ctx->var('search_results') ? MT->config->SearchExcerptWords
+        : $args->{words}              ? $args->{words}
+        : $blog                       ? $blog->words_in_excerpt
+        :                               40;
     my $excerpt = _hdlr_entry_body( $ctx, { words => $words, %$args } );
     return '' unless $excerpt;
     return $excerpt . '...';
