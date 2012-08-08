@@ -119,7 +119,7 @@ sub upgrade_functions {
                     my $values = $asset->get_values;
                     my ( $path, $url )
                         = ( $values->{file_path}, $values->{url} );
-                    $path =~ s{%s(/||\\)support\1}{%s\1};
+                    $path =~ s{%s(/||\\)support\1}{%s$1};
                     $url  =~ s{%s/support/}{%s/};
                     $asset->file_path($path);
                     $asset->url($url);
