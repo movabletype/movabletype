@@ -385,6 +385,9 @@
 
 
             $(window).bind('dialogDisposed', function() {
+                if (savedBookmark) {
+                    ed.selection.moveToBookmark(savedBookmark);
+                }
                 savedBookmark = null;
             });
 
