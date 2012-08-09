@@ -326,6 +326,11 @@ sub global_perms {
 
                     # arg == 0 - remove it
                     $cur_perm =~ s/'$perm',?// if defined $cur_perm;
+
+                    # the "has no permission" status is NULL, not empty string.
+                    if ( $cur_perm eq '' ) {
+                        $cur_perm = undef;
+                    }
                 }
                 $_[0]->permissions($cur_perm);
             }
