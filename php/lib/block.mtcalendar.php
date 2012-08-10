@@ -47,7 +47,7 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
                         $ts = $entry->entry_authored_on;
                     } else {
                         return $ctx->error($ctx->mt->translate(
-                            'You used an [_1] tag without a date context set up.', 
+                            'You used an [_1] tag without establishing a date context.', 
                             '<MTCalendar month="this">') );
                     }
                 }

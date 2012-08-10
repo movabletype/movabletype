@@ -10,7 +10,7 @@ function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
     $counter = 0;
 
     if (isset($args['sort_by']) && $args['sort_by'] == 'score' && !isset($args['namespace'])) {
-        return $ctx->error($ctx->mt->translate('sort_by="score" must be used in combination with namespace.'));
+        return $ctx->error($ctx->mt->translate('sort_by="score" must be used together with a namespace.'));
     }
 
     if (!isset($content)) {

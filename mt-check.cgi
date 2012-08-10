@@ -452,7 +452,7 @@ my @CORE_REQ = (
     [   'LWP::UserAgent',
         0, 0,
         translate(
-            'LWP::UserAgent is required for making configuration file by Wizard.'
+            'LWP::UserAgent is required for proper functioning of the Configuration Wizard.'
         )
     ],
 
@@ -503,28 +503,28 @@ my @CORE_OPT = (
 
     [   'Plack', 0, 0,
         translate(
-            'This module and its dependencies are required in order to running under psgi.'
+            'This module and its dependencies are required in order to operate Movable Type under psgi.'
         )
     ],
 
     [   'CGI::PSGI',
         0, 0,
         translate(
-            'This module and its dependencies are required in order to running under psgi.'
+            'This module and its dependencies are required in order to operate Movable Type under psgi.'
         )
     ],
 
     [   'CGI::Parse::PSGI',
         0, 0,
         translate(
-            'This module and its dependencies are required in order to running under psgi.'
+            'This module and its dependencies are required in order to operate Movable Type under psgi.'
         )
     ],
 
     [   'XMLRPC::Transport::HTTP::Plack',
         0, 0,
         translate(
-            'This module and its dependencies are required in order to running under psgi.'
+            'This module and its dependencies are required in order to operate Movable Type under psgi.'
         )
     ],
 
@@ -573,33 +573,33 @@ my @CORE_OPT = (
     [   'Image::Magick',
         0, 0,
         translate(
-            'Image::Magick is optional; It is needed if you would like to be able to create thumbnails of uploaded images.'
+            'Image::Magick is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.'
         )
     ],
 
     [   'GD', 0, 0,
         translate(
-            'This module is needed if you would like to be able to create thumbnails of uploaded images.'
+            'GD is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.'
         )
     ],
 
     [   'Imager', 0, 0,
         translate(
-            'This module is needed if you would like to be able to create thumbnails of uploaded images.'
+            'Imager is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.'
         )
     ],
 
     [   'IPC::Run',
         0, 0,
         translate(
-            'This module is needed if you would like to be able to use NetPBM as the image driver for MT.'
+            'IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.'
         )
     ],
 
     [   'Storable',
         0, 0,
         translate(
-            'Storable is optional; It is required by certain MT plugins available from third parties.'
+            'Storable is optional; It is required by certain Movable Type plugins available from third-party developers.'
         )
     ],
 
@@ -620,14 +620,14 @@ my @CORE_OPT = (
     [   'Cache::File',
         0, 0,
         translate(
-            'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan as OpenID.'
+            'Cache::File is required if you would like to be able to allow commenters to authenticate via OpenID using Yahoo! Japan.'
         )
     ],
 
     [   'MIME::Base64',
         0, 0,
         translate(
-            'MIME::Base64 is required in order to enable comment registration. Also, required in order to send mail via an SMTP Server.'
+            'MIME::Base64 is required in order to enable comment registration and in order to send mail via an SMTP Server.'
         )
     ],
 
@@ -638,42 +638,42 @@ my @CORE_OPT = (
     [   'Cache::Memcached',
         0, 0,
         translate(
-            'Cache::Memcached and memcached server/daemon is required in order to use memcached as caching mechanism used by Movable Type.'
+            'Cache::Memcached and a memcached server are required to use in-memory object caching on the servers where Movable Type is deployed.'
         )
     ],
 
     [   'Archive::Tar',
         0, 0,
         translate(
-            'Archive::Tar is required in order to archive files in backup/restore operation.'
+            'Archive::Tar is required in order to manipulate files during backup and restore operations.'
         )
     ],
 
     [   'IO::Compress::Gzip',
         0, 0,
         translate(
-            'IO::Compress::Gzip is required in order to compress files in backup/restore operation.'
+            'IO::Compress::Gzip is required in order to compress files during backup operations.'
         )
     ],
 
     [   'IO::Uncompress::Gunzip',
         0, 0,
         translate(
-            'IO::Uncompress::Gunzip is required in order to decompress files in backup/restore operation.'
+            'IO::Uncompress::Gunzip is required in order to decompress files during restore operation.'
         )
     ],
 
     [   'Archive::Zip',
         0, 0,
         translate(
-            'Archive::Zip is required in order to archive files in backup/restore operation.'
+            'Archive::Zip is required in order to manipulate files during backup and restore operations.'
         )
     ],
 
     [   'XML::SAX',
         0, 0,
         translate(
-            'XML::SAX and its dependencies are required in order to restore a backup created in a backup/restore operation.'
+            'XML::SAX and its dependencies are required to restore a backup created in a backup/restore operation.'
         )
     ],
 
@@ -698,34 +698,34 @@ my @CORE_OPT = (
     [   'Net::SMTP::SSL',
         0, 0,
         translate(
-            'Net::SMTP::SSL is required for using SMTP Auth with SSL connection.'
+            'Net::SMTP::SSL is required to use SMTP Auth with an SSL connection.'
         )
     ],
 
     [   'Net::SMTP::TLS',
         0, 0,
         translate(
-            'Net::SMTP::TLS is required for using SMTP Auth with STARTTLS command.'
+            'Net::SMTP::TLS is required to use SMTP Auth with the STARTTLS communication protocol.'
         )
     ],
 
     [   'IO::Socket::SSL',
         0, 0,
         translate(
-            'IO::Socket::SSL is required for using SMTP Auth with SSL connection or using  with STARTTLS command.'
+            'IO::Socket::SSL is required to use SMTP Auth with an SSL connection or the STARTTLS communication protocol.'
         )
     ],
 
     [   'Net::SSLeay',
         0, 0,
         translate(
-            'Net::SSLeay is required for using SMTP Auth with SSL connection or using  with STARTTLS command.'
+            'Net::SSLeay is required to use SMTP Auth with an SSL connection or the STARTTLS communication protocol.'
         )
     ],
 
     [   'Safe', 0, 0,
         translate(
-            'This module is used in a test attribute for the MTIf conditional tag.'
+            'This module is used to test attributes in the MTIf conditional tag.'
         )
     ],
 
@@ -736,7 +736,7 @@ my @CORE_OPT = (
     [   'Text::Balanced',
         0, 0,
         translate(
-            'This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.'
+            'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.'
         )
     ],
 
@@ -904,7 +904,7 @@ for my $list ( \@REQ, \@DATA, \@OPT ) {
     if ( !$req && !$data ) {
         if ( !$view ) {
             print_encode( trans_templ(<<MSG) );
-    <p class="msg msg-info"><__trans phrase="The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that the module provides."></p>
+    <p class="msg msg-info"><__trans phrase="The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that they provide."></p>
 
 MSG
         }
@@ -912,7 +912,7 @@ MSG
     if ($data) {
         if ( !$view ) {
             print_encode( trans_templ(<<MSG) );
-        <p class="msg msg-info"><__trans phrase="Some of the following modules are required by databases supported by Movable Type. Your server must have DBI and at least one of these related modules installed for proper operation of Movable Type."></p>
+        <p class="msg msg-info"><__trans phrase="The following modules are required by databases that can be used with Movable Type. Your server must have DBI and at least one of these related modules installed for the application to work properly."></p>
 
 MSG
         }
@@ -971,7 +971,7 @@ MSG
                     if ( $DBD::mysql::VERSION == 3.0000 ) {
                         print_encode(
                             trans_templ(
-                                qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the current release available from CPAN."></p></div>}
+                                qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available."></p></div>}
                             )
                         );
                     }
@@ -979,7 +979,7 @@ MSG
                 if ( !$dbi_is_okay ) {
                     print_encode(
                         trans_templ(
-                            qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="The $mod is installed properly, but requires an updated DBI module. Please see note above regarding the DBI module requirements."></p></div>}
+                            qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="The $mod is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements."></p></div>}
                         )
                     );
                 }
