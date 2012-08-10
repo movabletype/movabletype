@@ -1,70 +1,76 @@
 /* - form.css */
+/* -- Text */
+.text {
+    height: auto;
+    line-height: normal;
+    padding: 0.2em 0.25em;
+}
 /* -- Button */
 .button {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#f3f3f3', 
-        endColorstr='#dcdddd', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#f3f3f3',
+        endColorstr='#dcdddd',
+        GradientType=0
     );
 }
 .button:hover {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#fafafa', 
-        endColorstr='#e9eaea', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#fafafa',
+        endColorstr='#e9eaea',
+        GradientType=0
     );
 }
 .button:active {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#dcdddd', 
-        endColorstr='#f3f3f3', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#dcdddd',
+        endColorstr='#f3f3f3',
+        GradientType=0
     );
 }
 
 /* -- Large Button */
 .button.action {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#adadad', 
-        endColorstr='#7b7c7d', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#adadad',
+        endColorstr='#7b7c7d',
+        GradientType=0
     );
 }
 .button.action:hover {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#bababa', 
-        endColorstr='#88898a', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#bababa',
+        endColorstr='#88898a',
+        GradientType=0
     );
 }
 .button.action:active {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#88898a', 
-        endColorstr='#bababa', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#88898a',
+        endColorstr='#bababa',
+        GradientType=0
     );
 }
 
 /* -- Primary Button */
 .button.primary {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#2a83a2', 
-        endColorstr='#165e83', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#2a83a2',
+        endColorstr='#165e83',
+        GradientType=0
     );
 }
 .button.primary:hover {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#2f93b6', 
-        endColorstr='#1a6e99', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#2f93b6',
+        endColorstr='#1a6e99',
+        GradientType=0
     );
 }
 .button.primary:active {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#165e83', 
-        endColorstr='#2a83a2', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#165e83',
+        endColorstr='#2a83a2',
+        GradientType=0
     );
 }
 
@@ -74,8 +80,8 @@
 }
 
 /* -- Disabale Button */
-.button.disabled, 
-.button.action.disabled, 
+.button.disabled,
+.button.action.disabled,
 .button.primary.disabled {
     filter: none ! important;
 }
@@ -96,97 +102,97 @@
 /* - structure.css */
 /* -- Toggle Button */
 .toggle-button {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#f3f3f3', 
-        endColorstr='#dcdddd', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#f3f3f3',
+        endColorstr='#dcdddd',
+        GradientType=0
     );
 }
 .toggle-button:hover {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#fafafa', 
-        endColorstr='#e9eaea', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#fafafa',
+        endColorstr='#e9eaea',
+        GradientType=0
     );
 }
-.active .toggle-button, 
+.active .toggle-button,
 .toggle-button:active {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#dcdddd', 
-        endColorstr='#f3f3f3', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#dcdddd',
+        endColorstr='#f3f3f3',
+        GradientType=0
     );
 }
 
-.sub-menu { 
+.sub-menu {
     position: relative;
 }
 
 /* -- Progress Bar */
 .ui-progressbar .ui-progressbar-value {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#58bee3', 
-        endColorstr='#32789e', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#58bee3',
+        endColorstr='#32789e',
+        GradientType=0
     );
 }
 
 /* -- Favorite Actions Split Button */
-.fav-actions-nav .action.button, 
+.fav-actions-nav .action.button,
 .fav-actions-nav .toggle-button {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#ffd900', 
-        endColorstr='#f8b500', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#ffd900',
+        endColorstr='#f8b500',
+        GradientType=0
     );
 }
-.fav-actions-nav .action.button:hover, 
+.fav-actions-nav .action.button:hover,
 .fav-actions-nav .toggle-button:hover {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#ffdd1a', 
-        endColorstr='#ffbf13', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#ffdd1a',
+        endColorstr='#ffbf13',
+        GradientType=0
     );
 }
-.fav-actions-nav .action.button:active, 
+.fav-actions-nav .action.button:active,
 .fav-actions-nav.active .toggle-button {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#f8b500', 
-        endColorstr='#ffd900', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#f8b500',
+        endColorstr='#ffd900',
+        GradientType=0
     );
 }
 
 /* -- Menu Navigation */
 .current .top-menu-link {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#f3f3f3', 
-        endColorstr='#dcdddd', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#f3f3f3',
+        endColorstr='#dcdddd',
+        GradientType=0
     );
 }
-.current .top-menu-link:hover { 
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#fafafa', 
-        endColorstr='#e9eaea', 
-        GradientType=0 
+.current .top-menu-link:hover {
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#fafafa',
+        endColorstr='#e9eaea',
+        GradientType=0
     );
 }
 
 /* -- Widget */
-.widget-header { 
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#f3f3f3', 
-        endColorstr='#dcdddd', 
-        GradientType=0 
+.widget-header {
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#f3f3f3',
+        endColorstr='#dcdddd',
+        GradientType=0
     );
 }
 
 #installed-widgets > .widget-header {
-    filter: progid:DXImageTransform.Microsoft.gradient( 
-        startColorstr='#adadad', 
-        endColorstr='#7b7c7d', 
-        GradientType=0 
+    filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#adadad',
+        endColorstr='#7b7c7d',
+        GradientType=0
     );
 }
 
