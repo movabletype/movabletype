@@ -77,7 +77,18 @@ if ($unsafe) {
 local $| = 1;
 
 use CGI;
-my $cgi     = new CGI;
+
+my $cgi = do {
+    my $is_cgi ||= exists $ENV{$_}
+        for qw(HTTP_HOST GATEWAY_INTERFACE SCRIPT_FILENAME SCRIPT_URL);
+    if ( !$is_cgi ) {
+        require CGI::Fast;
+        CGI::Fast->new;
+    }
+    else {
+        CGI->new;
+    }
+};
 my $view    = $cgi->param("view");
 my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
