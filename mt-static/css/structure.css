@@ -1438,7 +1438,7 @@ ul.tabs li a {
     display: inline-block;
     width: 22px;
     height: 22px;
-    margin: 4px 0 0;
+    margin: 0;
     padding: 0;
     border: 0;
     overflow: hidden;
@@ -1451,6 +1451,11 @@ ul.tabs li a {
     border-top: 0;
     background-color: #fff;
 }
+
+#editor-content-iframe {
+    border: 1px solid #adadad;
+}
+
 .editor textarea,
 .editor iframe {
     width: 100%;
