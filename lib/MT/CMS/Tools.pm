@@ -46,11 +46,8 @@ sub system_check {
     $param{server_modperl} = 1 if $ENV{MOD_PERL};
     $param{server_fastcgi} = 1 if $ENV{FAST_CGI};
 
-    # just check this instance is running on PSGI servers.
-    $param{server_psgi} = $ENV{'psgi.version'} ? 1 : 0;
-    if ( !$param{server_psgi} ) {
-        $param{syscheck_html} = get_syscheck_content($app) || '';
-    }
+    $param{server_psgi}   = $ENV{'psgi.version'} ? 1 : 0;
+    $param{syscheck_html} = get_syscheck_content($app) || '';
 
     $app->load_tmpl( 'system_check.tmpl', \%param );
 }

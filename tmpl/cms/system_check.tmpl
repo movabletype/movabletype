@@ -58,11 +58,7 @@ jQuery('.msg-warning').mtToggleField({
           <mt:var name="syscheck_html">
           <mt:var name="syscheck_script">
         <mt:else>
-          <mt:if name="server_psgi">
-            <mt:Ignore>Just skip this section for PSGI env.</mt:Ignore>
-          <mt:else>
-            <p><__trans phrase="Movable Type could not find the script named 'mt-check.cgi'. To resolve this issue, ensure that the mt-check.cgi script exists and that the CheckScript configuration parameter (if it is necessary) references it properly."></p>
-          </mt:if>
+          <p><__trans phrase="Movable Type could not find the script named 'mt-check.cgi'. To resolve this issue, ensure that the mt-check.cgi script exists and that the CheckScript configuration parameter (if it is necessary) references it properly."></p>
         </mt:if>
     </div>
 </mtapp:setting>

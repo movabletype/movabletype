@@ -1968,6 +1968,10 @@ BEGIN {
                 script  => sub { 'mt-wizard.cgi' },
                 type    => 'run_once',
             },
+            'check' => {
+                script => sub { MT->config->CheckScript },
+                type   => 'run_once',
+            },
             'comments' => {
                 handler => 'MT::App::Comments',
                 script  => sub { MT->config->CommentScript },

@@ -791,20 +791,22 @@ if ($server) {
 INFO
 }
 
+if ( $server !~ m/psgi/i ) {
 ## Try to create a new file in the current working directory. This
 ## isn't a perfect test for running under cgiwrap/suexec, but it
 ## is a pretty good test.
-my $TMP = "test$$.tmp";
-local *FH;
-if ( open( FH, ">$TMP" ) ) {
-    close FH;
-    unlink($TMP);
-    print_encode(
-        trans_templ(
-            '    <li><__trans phrase="(Probably) running under cgiwrap or suexec"></li>'
-                . "\n"
-        )
-    );
+    my $TMP = "test$$.tmp";
+    local *FH;
+    if ( open( FH, ">$TMP" ) ) {
+        close FH;
+        unlink($TMP);
+        print_encode(
+            trans_templ(
+                '    <li><__trans phrase="(Probably) running under cgiwrap or suexec"></li>'
+                    . "\n"
+            )
+        );
+    }
 }
 
 print_encode("\n\n</ul>\n");
