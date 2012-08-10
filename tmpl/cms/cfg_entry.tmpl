@@ -209,7 +209,7 @@ jQuery('#cfg_entry').submit(function(eventObject) {
        label="<__trans phrase="Content CSS">"
        hint="<__trans phrase="The URL of CSS file inserting to the WYSIWYG editor. Example: http://www.example.com/path/to/cssfile.css, /path/to/cssfile.css or {{theme_static}}path/to/cssfile.css">"
        show_hint="1">
-       <input type="text" name="content_css" value="<mt:var name="content_css">" />
+       <input type="text" name="content_css" value="<mt:var name="content_css" escape="html">" />
     </mtapp:setting>
   </mtapp:settinggroup>
 
