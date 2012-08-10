@@ -188,6 +188,8 @@ the address you provided is correct and belongs to you.',
     '__COMMENTER_APPROVED' => 'Approved',
     '__ANONYMOUS_COMMENTER' => 'Anonymous',
     '__WEBSITE_BLOG_NAME' => 'Website/Blog Name',
+    '__SSL_CERT_UPDATE' => 'update',
+    '__SSL_CERT_INSTALL' => 'install',
 );
 
 1;
