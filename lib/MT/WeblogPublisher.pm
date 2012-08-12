@@ -589,9 +589,9 @@ sub rebuild_entry {
     return 1 if $blog->is_dynamic;
 
     my $at
-        = $param{PreferredArchiveOnly}
-        ? $blog->archive_type_preferred
-        : $blog->archive_type;
+        = $param{PreferredArchiveOnly} ? $blog->archive_type_preferred
+        : $entry->is_entry             ? $blog->archive_type
+        :                                'Page';
     if ( $at && $at ne 'None' ) {
         my @at = split /,/, $at;
         for my $at (@at) {

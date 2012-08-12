@@ -1454,7 +1454,7 @@ sub save {
         $orig_file = archive_file_for( $orig_obj, $blog, $archive_type );
     }
     else {
-        $obj = $class->new;
+        $obj      = $class->new;
         $orig_obj = $obj->clone;
     }
     my $status_old = $id ? $obj->status : 0;
@@ -1806,13 +1806,24 @@ sub save {
                 sub {
                     $app->run_callbacks('pre_build');
                     $app->rebuild_entry(
-                        Entry             => $obj,
-                        BuildDependencies => 1,
-                        OldEntry          => $orig_obj,
-                        OldPrevious       => ($previous_old)
-                        ? $previous_old->id
-                        : undef,
-                        OldNext => ($next_old) ? $next_old->id : undef
+                        Entry => $obj,
+                        (   $obj->is_entry
+                            ? ( BuildDependencies => 1 )
+                            : ( BuildIndexes => 1 )
+                        ),
+                        ( $obj->is_entry ? ( OldEntry => $orig_obj ) : () ),
+                        (   $obj->is_entry
+                            ? ( OldPrevious => ($previous_old)
+                                ? $previous_old->id
+                                : undef )
+                            : ()
+                        ),
+                        (   $obj->is_entry
+                            ? ( OldNext => ($next_old)
+                                ? $next_old->id
+                                : undef )
+                            : ()
+                        ),
                     ) or return $app->publish_error();
                     $app->run_callbacks( 'rebuild', $blog );
                     $app->run_callbacks('post_build');
