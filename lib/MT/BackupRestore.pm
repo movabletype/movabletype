@@ -202,6 +202,21 @@ sub _populate_obj_to_backup {
             },
             'order' => 510,
             };
+
+        # And Filter.
+        unshift @object_hashes,
+            {
+            $class => {
+                terms => undef,
+                args  => {
+                    'join' => [
+                        MT->model('filter'), 'author_id',
+                        { blog_id => $blog_ids }, { unique => 1 }
+                    ]
+                }
+            },
+            'order' => 500
+            };
     }
     @object_hashes = sort { $a->{order} <=> $b->{order} } @object_hashes;
     my @obj_to_backup;
