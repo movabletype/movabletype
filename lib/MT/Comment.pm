@@ -37,8 +37,8 @@ __PACKAGE__->install_properties(
             author        => 1,
             email         => 1,
             commenter_id  => 1,
-            last_moved_on => 1,    # used for junk expiration
-            # for blog dashboard - visible comments count
+            last_moved_on => 1,  # used for junk expiration
+                                 # for blog dashboard - visible comments count
             blog_visible_entry =>
                 { columns => [ 'blog_id', 'visible', 'entry_id' ], },
 
@@ -51,6 +51,8 @@ __PACKAGE__->install_properties(
             dd_coment_vis_mod => { columns => [ 'visible', 'modified_on' ], },
             visible_date      => { columns => [ 'visible', 'created_on' ], },
             blog_ip_date => { columns => [ 'blog_id', 'ip', 'created_on' ], },
+            blog_junk_stat =>
+                { columns => [ 'blog_id', 'junk_status', 'last_moved_on' ], },
         },
         meta     => 1,
         defaults => {

@@ -43,6 +43,8 @@ __PACKAGE__->install_properties(
                 { columns => [ 'blog_id', 'visible', 'created_on', 'id' ], },
             visible_date => { columns => [ 'visible',     'created_on' ], },
             junk_date    => { columns => [ 'junk_status', 'created_on' ], },
+            blog_junk_stat =>
+                { columns => [ 'blog_id', 'junk_status', 'last_moved_on' ], },
         },
         defaults => {
             junk_status   => NOT_JUNK,
