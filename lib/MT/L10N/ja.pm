@@ -2658,8 +2658,8 @@ use vars qw( @ISA %Lexicon );
 	'Outdent' => '字下げを減らす',
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/insert_html.js
-	'Insert HTML' => 'HTMLコードの挿入',
-	'Source' => 'HTMLコード',
+	'Insert HTML' => 'HTMLの挿入',
+	'Source' => 'HTML',
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/plugin.js
 	'Insert Link' => 'リンクの挿入',
