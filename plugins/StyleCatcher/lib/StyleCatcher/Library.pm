@@ -17,6 +17,7 @@ __PACKAGE__->mk_accessors('key', @KEYS);
 sub new {
     my $pkg = shift;
     my ($id) = @_;
+    return $pkg->new_default() unless $id;
     my $reg = MT->registry( stylecatcher_libraries => $id );
     if ( !defined $reg ) {
         # Possibly template set specified repository.
@@ -26,7 +27,8 @@ sub new {
         my $set  = $blog->template_set or return;
         $set     = MT->registry( template_sets => $set )
             if !ref $set;
-        my $lib = $set->{stylecatcher_libraries} or return;
+        my $lib = $set->{stylecatcher_libraries} 
+            or return $pkg->new_default();
         $reg = $lib->{$id} or return;
     }
     my $class = $reg && $reg->{class} ? $reg->{class} : 'Default';
@@ -34,6 +36,11 @@ sub new {
     do { eval "require $inst_class"; 1; } or die $@;
     my $obj = bless { key => $id }, $inst_class;
     return $obj->init($reg);
+}
+
+sub new_default {
+    require StyleCatcher::Library::Default;
+    return bless {}, 'StyleCatcher::Library::Default';
 }
 
 sub init {

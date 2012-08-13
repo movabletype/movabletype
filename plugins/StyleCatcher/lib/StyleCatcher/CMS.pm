@@ -168,8 +168,7 @@ sub js {
         return $app->json_result($data);
     }
     else {
-        require StyleCatcher::Library::Default;
-        my $lib = StyleCatcher::Library::Default->new();
+        my $lib = StyleCatcher::Library->new();
         my $data = $lib->fetch_themes($app->param('url'))
             or return $app->json_error( $lib->errstr );
         return $app->json_result($data);
