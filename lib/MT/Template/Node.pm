@@ -245,7 +245,7 @@ sub upgrade {
     my $node = shift;
     my $i;
     for my $v (@$node) {
-        _upgrade( \$v );
+        _upgrade( \$v ) if defined($v);
         $i++;
         ## Don't decode parents.
         last if $i >= 5;
@@ -260,12 +260,12 @@ sub _upgrade {
     }
     elsif ( $ref eq 'HASH' ) {
         for my $v ( values %{ $_[0] } ) {
-            _upgrade( \$v );
+            _upgrade( \$v ) if defined($v);
         }
     }
     elsif ( $ref eq 'ARRAY' ) {
         for my $v ( @{ $_[0] } ) {
-            _upgrade( \$v );
+            _upgrade( \$v ) if defined($v);
         }
     }
     elsif ( $ref eq 'SCALAR' ) {
