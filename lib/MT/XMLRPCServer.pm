@@ -19,7 +19,6 @@ sub mt_new {
         or die MT::XMLRPCServer::_fault( MT->errstr );
 
     # we need to be UTF-8 here no matter which PublishCharset
-    $main::server->serializer->encoding('UTF-8');
     $mt->run_callbacks( 'init_app', $mt, { App => 'xmlrpc' } );
     $mt;
 }

@@ -301,6 +301,7 @@ sub _hdlr_tags {
     local $ctx->{__stash}{blog_ids}      = $args->{blog_ids};
     local $ctx->{__stash}{tag_min_count} = $min;
     local $ctx->{__stash}{tag_max_count} = $max;
+    local $ctx->{__stash}{class_type}    = $type;
     my $vars = $ctx->{__stash}{vars} ||= {};
     my $i = 0;
     foreach my $tag (@slice_tags) {
@@ -909,30 +910,18 @@ sub _hdlr_tag_rank {
     my $class     = MT->model($class_type);
     my $ds        = $class->datasource;
     my $ext_terms = $class->terms_for_tags();
-    my $ntags     = $ctx->stash('all_tag_count');
-    unless ($ntags) {
-        require MT::ObjectTag;
-        $ntags = $class->count(
-            { ( $ext_terms ? (%$ext_terms) : () ), %blog_terms, },
-            {   'join' => MT::ObjectTag->join_on(
-                    'object_id', { object_datasource => $ds, %blog_terms },
-                    \%blog_args
-                ),
-                %blog_args,
-            }
-        );
-        $ctx->stash( 'all_tag_count', $ntags );
-    }
-    return 1 unless $ntags;
 
-    my $min = $ctx->stash('tag_min_count');
-    my $max = $ctx->stash('tag_max_count');
-    unless ( defined $min && defined $max ) {
-        ( my $tags, $min, $max, my $all_count )
+    my $ntags = $ctx->stash('all_tag_count');
+    my $min   = $ctx->stash('tag_min_count');
+    my $max   = $ctx->stash('tag_max_count');
+    unless ( defined $min && defined $max && $ntags ) {
+        ( undef, $min, $max, $ntags )
             = _tags_for_blog( $ctx, \%blog_terms, \%blog_args, $class_type );
         $ctx->stash( 'tag_max_count', $max );
         $ctx->stash( 'tag_min_count', $min );
+        $ctx->stash( 'all_tag_count', $ntags );
     }
+    return 1 unless $ntags;
     my $factor;
 
     if ( $max - $min == 0 ) {
@@ -947,23 +936,9 @@ sub _hdlr_tag_rank {
         $factor *= ( $ntags / $max_level );
     }
 
-    my $count = $ctx->stash('tag_entry_count');
-    unless ( defined $count ) {
-        $count = $class->count(
-            { ( $ext_terms ? (%$ext_terms) : () ), %blog_terms, },
-            {   'join' => MT::ObjectTag->join_on(
-                    'object_id',
-                    {   tag_id            => $tag->id,
-                        object_datasource => $ds,
-                        %blog_terms
-                    },
-                    \%blog_args
-                ),
-                %blog_args,
-            }
-        );
-        $ctx->stash( 'tag_entry_count', $count );
-    }
+    my $terms = $class->terms_for_tags() || {};
+    my $count = $class->tagged_count( $tag->id,
+        { %$terms, %blog_terms } );
 
     if ( $count - $min + 1 == 0 ) {
         return 0;

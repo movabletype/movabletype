@@ -42,7 +42,7 @@ foreach my $lang ( $build->languages() ) {
     $build->export();
 
     # Export any plugins that are requested.
-    $build->plugin_export();
+    ## $build->plugin_export();
 
     # Export any addons that are requested.
     ## $build->addons_export();

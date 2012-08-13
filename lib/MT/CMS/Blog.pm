@@ -410,6 +410,9 @@ sub cfg_prefs {
                 };
         }
         @data = sort { MT::App::CMS::archive_type_sorter( $a, $b ) } @data;
+        unless (grep $_->{archive_type_is_preferred}, @data) {
+            $param{no_preferred_archive_type} = 1;
+        }
         $param{entry_archive_types} = \@data;
     }
 
@@ -1956,6 +1959,12 @@ sub save_filter {
             )
             )
             unless 0 < sprintf( '%d', $app->param('max_revisions_template') );
+        return $eh->error(
+            MT->translate(
+                "Please choose a preferred archive type."
+            )
+            )
+            unless !$app->blog->is_blog || $app->param('preferred_archive_type');
     }
     return 1;
 }
@@ -2194,10 +2203,12 @@ sub cfg_prefs_save {
             $blog->archive_url("$subdomain/::/$path");
         }
         $blog->site_path( $app->param('site_path_absolute') )
-            if $app->param('use_absolute')
+            if ! $app->config->BaseSitePath
+                && $app->param('use_absolute')
                 && $app->param('site_path_absolute');
         $blog->archive_path( $app->param('archive_path_absolute') )
-            if $app->param('enable_archive_paths')
+            if ! $app->config->BaseSitePath
+                && $app->param('enable_archive_paths')
                 && $app->param('use_absolute_archive')
                 && $app->param('archive_path_absolute');
     }
@@ -2886,7 +2897,13 @@ sub clone {
             }
         }
     }
-
+    if (my $limit = $app->config->BaseSitePath) {
+        $limit = File::Spec->catdir($limit, "PATH");
+        $limit =~ s/PATH$//;
+        $param->{'sitepath_limited'} = $limit;
+        $param->{'use_absolute'}         = 0;
+        $param->{'use_absolute_archive'} = 0;
+    }
     $param = _has_valid_form( $app, $blog, $param );
 
     if ( $blog_id && $app->param('clone') && $param->{'isValidForm'} ) {
@@ -3015,7 +3032,7 @@ HTML
         );
 
         $new_blog->site_path(
-              $param->{'use_absolute'}
+              $param->{'use_absolute'} && !$app->config->BaseSitePath
             ? $param->{'site_path_absolute'}
             : $param->{'site_path'}
         );
@@ -3033,7 +3050,7 @@ HTML
 
         if ( $param->{enable_archive_paths} ) {
             $new_blog->archive_path(
-                  $param->{'use_absolute_archive'}
+                  $param->{'use_absolute_archive'} && !$app->config->BaseSitePath
                 ? $param->{'archive_path_absolute'}
                 : $param->{'archive_path'}
             );

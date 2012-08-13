@@ -745,12 +745,10 @@ sub thumbnail_url {
 sub as_html {
     my $asset   = shift;
     my ($param) = @_;
-    my $fname   = $asset->file_name;
     require MT::Util;
     my $text = sprintf '<a href="%s">%s</a>',
         MT::Util::encode_html( $asset->url ),
-        MT::Util::encode_html($fname);
-    my $app = MT->instance;
+        MT::Util::encode_html( $asset->label );
     return $param->{enclose} ? $asset->enclose($text) : $text;
 }
 
@@ -852,6 +850,14 @@ sub _make_cache_path {
         = File::Spec->catdir( ( $pseudo ? $format : $root_path ),
         $path, $year_stamp, $month_stamp );
     $asset_cache_path;
+}
+
+sub tagged_count {
+    my $obj = shift;
+    my ( $tag_id, $terms ) = @_;
+    $terms ||= {};
+    $terms->{class} = '*';
+    return $obj->SUPER::tagged_count($tag_id, $terms);
 }
 
 1;

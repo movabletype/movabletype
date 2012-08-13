@@ -151,8 +151,9 @@ sub filter_conditional_list {
              # Return true if user has system level privilege for this action.
                         return 1
                             if $system_perms
-                            && $system_perms->can_do(
-                            $action->{system_action} );
+                                && $system_perms->can_do(
+                                    $action->{system_action}
+                                );
                     }
 
                     $include_all = $action->{include_all} || 0;
@@ -388,12 +389,15 @@ sub listing {
     $param->{listing_screen} = 1;
     my $add_pseudo_new_user = delete $param->{pseudo_new_user}
         if exists $param->{pseudo_new_user};
-    my $hasher   = $opt->{code}     || $opt->{Code};
-    my $terms    = $opt->{terms}    || $opt->{Terms} || {};
-    my $args     = $opt->{args}     || $opt->{Args} || {};
-    my $no_html  = $opt->{no_html}  || $opt->{NoHTML};
-    my $no_limit = $opt->{no_limit} || 0;
-    my $json     = $opt->{json}     || $app->param('json');
+    my $hasher  = $opt->{code}    || $opt->{Code};
+    my $terms   = $opt->{terms}   || $opt->{Terms} || {};
+    my $args    = $opt->{args}    || $opt->{Args} || {};
+    my $no_html = $opt->{no_html} || $opt->{NoHTML};
+    my $json    = $opt->{json}    || $app->param('json');
+    my $no_limit
+        = exists( $opt->{no_limit} )
+        ? $opt->{no_limit}
+        : ( $app->param('search') ? 1 : 0 );
     my $pre_build = $opt->{pre_build} if ref( $opt->{pre_build} ) eq 'CODE';
     $param->{json} = 1 if $json;
 
@@ -835,15 +839,24 @@ sub run_callbacks {
     return $app->SUPER::run_callbacks( $meth, @param );
 }
 
-sub init_callbacks {
-    my $app = shift;
-    $app->SUPER::init_callbacks(@_);
-    MT->add_callback( 'post_save',             0, $app, \&_cb_mark_blog );
-    MT->add_callback( 'post_remove',           0, $app, \&_cb_mark_blog );
-    MT->add_callback( 'MT::Blog::post_remove', 0, $app, \&_cb_unmark_blog );
-    MT->add_callback( 'pre_build', 9, $app, sub { $app->touch_blogs() } );
-    MT->add_callback( 'new_user_provisioning', 5, $app,
-        \&_cb_user_provisioning );
+{
+    my $callbacks_added;
+
+    sub init_callbacks {
+        my $app = shift;
+        $app->SUPER::init_callbacks(@_);
+        return if $callbacks_added;
+        MT->add_callback( 'post_save',   0, $app, \&_cb_mark_blog );
+        MT->add_callback( 'post_remove', 0, $app, \&_cb_mark_blog );
+        MT->add_callback( 'MT::Blog::post_remove', 0, $app,
+            \&_cb_unmark_blog );
+        MT->add_callback( 'MT::Config::post_save', 0, $app,
+            sub { $app->reboot } );
+        MT->add_callback( 'pre_build', 9, $app, sub { $app->touch_blogs() } );
+        MT->add_callback( 'new_user_provisioning', 5, $app,
+            \&_cb_user_provisioning );
+        $callbacks_added = 1;
+    }
 }
 
 sub init_request {
@@ -1454,7 +1467,7 @@ sub get_commenter_session {
 
     my %cookies     = $app->cookies();
     my $cookie_name = $app->commenter_session_cookie_name;
-    if ( !$cookies{$cookie_name} ) {
+    if ( !$cookies{$cookie_name} or !$cookies{$cookie_name}->value() ) {
         return ( undef, undef );
     }
     my $state
@@ -1671,6 +1684,7 @@ sub bake_user_state_cookie {
 sub unbake_user_state_cookie {
     my $app = shift;
     my ($value) = @_;
+    return unless $value;
     return {
         map {
             my ( $k, $v ) = split( ':', $_, 2 );
@@ -2615,6 +2629,17 @@ sub request_content {
             my $len = $app->get_header('Content-length');
             $r->read( $app->{request_content}, $len );
         }
+        elsif ( $ENV{'psgi.input'} ) {
+            ## Read frrom psgi.input
+            my $fh = $ENV{'psgi.input'};
+            seek $fh, 0, 0;
+            my $buffer = '';
+            while ( my $buf = <$fh> ) {
+                $buffer .= $buf;
+            }
+            $app->{request_content} = $buffer
+                if $buffer;
+        }
         else {
             ## Read from STDIN
             my $len = $ENV{CONTENT_LENGTH} || 0;
@@ -2906,6 +2931,43 @@ sub pre_run {
 }
 
 sub post_run { MT->run_callbacks( ( ref $_[0] ) . '::post_run', $_[0] ); 1 }
+
+sub reboot {
+    my $app = shift;
+    $app->{do_reboot} = 1;
+    $app->set_header( 'Connection' => 'close' )
+        if $ENV{FAST_CGI} || MT->config->PIDFilePath;
+}
+
+sub do_reboot {
+    my $app = shift;
+    if ( $ENV{FAST_CGI} ) {
+        require MT::Touch;
+        MT::Touch->touch( 0, 'config' );
+    }
+    if ( my $pidfile = MT->config->PIDFilePath ) {
+        require MT::FileMgr;
+        my $fmgr = MT::FileMgr->new('Local');
+        my $pid;
+        unless ( $pid = $fmgr->get_data($pidfile) ) {
+            $app->log(
+                $app->translate(
+                    "Failed to open pid file [_1]: [_2]", $pidfile,
+                    $fmgr->errstr,
+                )
+            );
+            return 1;
+        }
+        chomp $pid;
+        unless ( kill 'HUP', int($pid) ) {
+            $app->log(
+                $app->translate( "Failed to send reboot signal: [_1]", $!, )
+            );
+            return 1;
+        }
+    }
+    1;
+}
 
 sub run {
     my $app = shift;
@@ -3304,6 +3366,7 @@ sub takedown {
 
     $app->request->finish;
     delete $app->{request};
+    $app->do_reboot if $app->{do_reboot};
 
 }
 
@@ -3734,7 +3797,9 @@ sub return_uri {
 sub call_return {
     my $app = shift;
     $app->add_return_arg(@_) if @_;
-    $app->redirect( $app->return_uri );
+    $app->redirect( $app->return_uri,
+        ( $app->get_header('Connection') eq 'close' ? ( UseMeta => 1 ) : () )
+    );
 }
 
 sub state_params {
@@ -3933,15 +3998,25 @@ sub path_info {
     else {
         return undef unless $app->{query};
         $path_info = $app->{query}->path_info;
+
+        my $script_name = $ENV{SCRIPT_NAME};
+        $path_info =~ s!^$script_name!!
+            if $script_name;
     }
     $app->{__path_info} = $path_info;
 }
 
 sub is_secure {
     my $app = shift;
-    $ENV{MOD_PERL}
-        ? $app->{apache}->subprocess_env('https')
-        : $app->{query}->protocol() eq 'https';
+    if ( $ENV{MOD_PERL} ) {
+        return $app->{apache}->subprocess_env('https');
+    }
+    else {
+        return
+              $app->{query}->protocol() eq 'https' ? 1
+            : ( $app->get_header('X-Forwarded-Proto') || '' ) eq 'https' ? 1
+            :                                                              0;
+    }
 }
 
 sub redirect {
@@ -4190,6 +4265,43 @@ sub set_no_cache {
     }
 }
 
+sub verify_password_strength {
+    my ( $app, $username, $pass ) = @_;
+    my @constrains = $app->config('UserPasswordValidation');
+    my $min_length = $app->config('UserPasswordMinLength');
+
+    if ( ( $min_length =~ m/\D/ ) or ( $min_length < 1 ) ) {
+        $min_length = $app->config->default('UserPasswordMinLength');
+    }
+
+    if ( length $pass < $min_length ) {
+        return $app->translate(
+            "Password should be longer than [_1] characters", $min_length );
+    }
+    if ( $username && index( lc($pass), lc($username) ) >= 0 ) {
+        return $app->translate("Password should not include your Username");
+    }
+    if ( ( grep { $_ eq 'letternumber' } @constrains )
+        and not( $pass =~ /[a-zA-Z]/ and $pass =~ /\d/ ) )
+    {
+        return $app->translate("Password should include letters and numbers");
+    }
+    if ( ( grep { $_ eq 'upperlower' } @constrains )
+        and not( $pass =~ /[a-z]/ and $pass =~ /[A-Z]/ ) )
+    {
+        return $app->translate(
+            "Password should include lowercase and uppercase letters");
+    }
+    if ( ( grep { $_ eq 'symbol' } @constrains )
+        and not $pass =~ m'[!"#$%&\'\(\|\)\*\+,-\.\/\\:;<=>\?@\[\]^_`{}~]' )
+    {
+        return $app->translate(
+            'Password should contain symbols such as #!$%');
+    }
+
+    return;
+}
+
 1;
 __END__
 
@@ -4293,6 +4405,12 @@ Example:
         $app->SUPER::init_request(@_);
         $app->{requires_login} = 1 unless $app->mode eq 'unprotected';
     }
+
+=head2 $app->reboot
+
+Reboot all MT instance. Now, this method sends SIGHUP to the process manager
+which specified by PIDFilePath config directive. If PIDFilePath isn't set, no
+signals would be sent.
 
 =head2 $app->run
 

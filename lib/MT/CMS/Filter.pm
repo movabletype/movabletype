@@ -18,6 +18,9 @@ sub save {
     my $label     = $q->param('label');
     my $ds        = $q->param('datasource');
 
+    $app->validate_magic
+        or return $app->json_error( $app->translate('Invalid request') );
+
     if ( !$label ) {
         return $app->json_error(
             $app->translate('Failed to save filter: label is required.') );
@@ -165,15 +168,13 @@ sub delete_filters {
     @ids = split ',', join ',', @ids;
 
     my $res = MT->model('filter')->remove( { id => \@ids } )
-        or return $app->json_error(
-        MT->translate(
+        or return $app->errtrans(
             'Failed to delete filter(s): [_1]',
             MT->model('filter')->errstr,
-        )
         );
     unless ( $res > 0 ) {
         ## if $res is 0E0 ( zero but true )
-        return $app->json_error( MT->translate( 'No such filter', ) );
+        return $app->errtrans( 'No such filter' );
     }
 
     if ( $app->param('xhr') ) {

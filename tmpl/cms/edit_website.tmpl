@@ -27,12 +27,6 @@
 /* <![CDATA[ */
 jQuery(function() {
     jQuery('#name').focus();
-    var $tz = jQuery('#server_offset');
-    if ($tz) {
-        // The options ignore DST, so check at a specific time when no one was on DST.
-        var offset = (new Date(2008, 0, 1, 0, 0, 0, 0)).getTimezoneOffset();
-        $tz.val(0 - offset / 60);
-    }
 });
 /* ]]> */
 </script>
@@ -87,7 +81,7 @@ jQuery(function() {
      show_hint="1"
      help_page="blog_settings_publishing"
      help_section="website_root">
-    <input type="text" name="site_path" id="site_path" class="text required" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" />
+    <input type="text" name="site_path" id="site_path" class="text required<mt:if name="sitepath_limited"> limited_path</mt:if>" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" />
   </mtapp:setting>
   <mtapp:setting
      id="server_offset"
@@ -174,6 +168,19 @@ jQuery(function() {
         }
         return true;
     }
+    <mt:if name="sitepath_limited">
+    function is_path_limit_clear( path_ ) {
+        var limit = '<mt:var name="sitepath_limited" escape="js">';
+        var last = limit.charAt(limit.length-1);
+        if (path_.charAt(path_.length-1) != last) {
+          path_ += last;
+        }
+        if (0 != path_.indexOf(limit)) {
+            return false;
+        }
+        return true;
+    }
+    </mt:if>
 
     jQuery.mtValidateAddRules({
         '#site_url': function ($e) {
@@ -182,6 +189,11 @@ jQuery(function() {
         '#site_path': function ($e) {
             return is_valid_path($e.val()) ? true : false;
         },
+<mt:if name="sitepath_limited">
+       "#site_path.limited_path": function( $e ) {
+           return is_path_limit_clear( $e.val() );
+       },
+</mt:if>
         '#server_offset': function ($e) {
             return $e.val() !== '';
         }
@@ -192,6 +204,9 @@ jQuery(function() {
         '#site_url': '<__trans phrase="Please enter a valid URL." escape="singlequotes">',
         '#site_path': '<__trans phrase="Please enter a valid site path." escape="singlequotes">',
         '#site_path.required': '<__trans phrase="This field is required." escape="singlequotes">',
+<mt:if name="sitepath_limited">
+        "#site_path.limited_path": '<__trans phrase="Website root must be under [_1]" params="<mt:var name="sitepath_limited">" escape="singlequotes">',
+</mt:if>
         '#server_offset': '<__trans phrase="You did not select a timezone." escape="singlequotes">'
     });
 

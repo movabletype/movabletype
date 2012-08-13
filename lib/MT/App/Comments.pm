@@ -344,8 +344,8 @@ sub do_login {
 }
 
 sub signup {
-    my $app   = shift;
-    my %opt   = @_;
+    my $app = shift;
+    my %opt = @_;
 
     my $param = {};
     $param->{$_} = $app->param($_)
@@ -567,12 +567,13 @@ sub do_register {
     my $sess = MT::Session->load(
         { id => $token, kind => 'CR', email => $email } );
 
-    unless ( $sess ) {
+    unless ($sess) {
         my $msg = $app->translate(
             'Your confirmation have expired. Please register again.');
-        if ( $static ) {
-            $msg .= '&nbsp;'.$app->translate(
-                '<a href="[_1]">Return to the original page.</a>', $static);
+        if ($static) {
+            $msg .= '&nbsp;'
+                . $app->translate(
+                '<a href="[_1]">Return to the original page.</a>', $static );
         }
         return $app->forward( 'signup', message => $msg );
     }
@@ -585,9 +586,10 @@ sub do_register {
         $commenter->remove;
         my $msg = $app->translate(
             'Your confirmation have expired. Please register again.');
-        if ( $static ) {
-            $msg .= '&nbsp;'.$app->translate(
-                '<a href="[_1]">Return to the original page.</a>', $static);
+        if ($static) {
+            $msg .= '&nbsp;'
+                . $app->translate(
+                '<a href="[_1]">Return to the original page.</a>', $static );
         }
         return $app->forward( 'signup', message => $msg );
     }
@@ -606,14 +608,14 @@ sub do_register {
         or return $error->( 'Can\'t load blog #[_1].', $blog_id );
 
     my $registration = $cfg->CommenterRegistration
-        or return $error->( 'Signing up is not allowed.' );
+        or return $error->('Signing up is not allowed.');
 
     return $error->('Signing up is not allowed.')
         unless $registration->{Allow} && $blog->allow_commenter_regist;
 
     $commenter->status( MT::Author::ACTIVE() );
-    $commenter->save 
-        or $app->forward('signup', error => $commenter->errstr);
+    $commenter->save
+        or $app->forward( 'signup', error => $commenter->errstr );
 
     $app->log(
         {   message => $app->translate(
@@ -629,6 +631,7 @@ sub do_register {
     require MT::Role;
     require MT::Association;
     my $role = MT::Role->load_same( undef, undef, 1, 'comment' );
+
     if ( $role && $blog ) {
         MT::Association->link( $commenter => $role => $blog );
     }
@@ -650,8 +653,8 @@ sub do_register {
         ## Send notification email in the background.
         MT::Util::start_background_task(
             sub {
-                $app->_send_registration_notification( $commenter,
-                    $entry_id, $blog_id, $ids );
+                $app->_send_registration_notification( $commenter, $entry_id,
+                    $blog_id, $ids );
             }
         );
     }
@@ -963,11 +966,6 @@ sub post {
         )
     ) if ( $commenter && !$q->param('sid') );
 
-    my $remember = $q->param('bakecookie') || 0;
-    $remember = 0 if $remember eq 'Forget Info';    # another value for '0'
-    if ( $commenter && $remember ) {
-        $app->_extend_commenter_session( Duration => "+1y" );
-    }
     if ( !$blog->allow_unreg_comments ) {
         if ( !$commenter ) {
             return $app->handle_error(
@@ -1133,10 +1131,15 @@ sub post {
         unless ($tmpl) {
             require MT::DefaultTemplates;
             $tmpl
-                = MT::DefaultTemplates->load( { type => 'comment_response' } )
+                = MT::DefaultTemplates->load(
+                { identifier => 'comment_response' } )
                 or return $app->handle_error(
                 $app->translate("Can\'t load template") );
+            $tmpl->blog_id( $entry->blog_id );
+            my $curr_lang = MT->current_language;
+            $app->set_language( $blog->language );
             $tmpl->text( $app->translate_templatized( $tmpl->text ) );
+            $app->set_language($curr_lang);
         }
         my $ctx = $tmpl->context;
         $tmpl->param(
@@ -1232,43 +1235,6 @@ sub eval_comment {
     #mark
 
     $comment;
-}
-
-# only handles Duration => +xxxu where u is one of y, d, s
-sub _extend_commenter_session {
-    my $app         = shift;
-    my %param       = @_;
-    my %cookies     = $app->cookies();
-    my $cookie_name = $app->commenter_cookie;
-    my $session_key = $app->cookie_val($cookie_name) || "";
-    $session_key =~ y/+/ /;
-    my $sessobj = MT::Session->load( { id => $session_key, kind => 'SI' } );
-    return
-        if !$sessobj
-    ;    # no point changing the cookie if the session's already lost.
-    my ( $sign, $number, $units ) = $param{Duration} =~ /([+-]?)(\d+)(\w+)/;
-    $number *= $sign eq '-' ? -1 : +1;
-    $number *=
-          $units eq 'y' ? 60 * 60 * 24 * 365
-        : $units eq 'd' ? 60 * 60 * 24
-        :                 $number;
-    $sessobj->start( $sessobj->start + $number );
-    $sessobj->save();
-    my %sess_cookie = (
-        -name    => $cookie_name,
-        -value   => $session_key,
-        -path    => '/',
-        -expires => "+${number}s"
-    );
-    $app->bake_cookie(%sess_cookie);
-    my %name_kookee = (
-        -name    => "commenter_name",
-        -value   => $cookies{commenter_name}->value,
-        -path    => '/',
-        -expires => "+${number}s"
-    );
-    $app->bake_cookie(%name_kookee);
-    1;
 }
 
 sub _check_commenter_author {
@@ -1626,17 +1592,18 @@ sub userinfo {
     $app->send_http_header("text/javascript");
 
     my $out = { error => 'Failed to get Commenter Information' };
-    TRY: {
+TRY: {
         my ( $commenter, $sess );
         if ( my $sid = $app->param('sid') ) {
-            $sess
-                = MT::Session::get_unexpired_value(
+            $sess = MT::Session::get_unexpired_value(
                 MT->config->UserSessionTimeOut,
-                { id => $sid, kind => 'SI' } )
-                or last TRY;
+                { id => $sid, kind => 'SI' }
+            ) or last TRY;
         }
         elsif ( my $ot = $app->param('ott') ) {
-            my $ott = MT::Session::get_unexpired_value( 5 * 60, { id => $ot, kind => 'OT' } )
+            my $ott
+                = MT::Session::get_unexpired_value( 5 * 60,
+                { id => $ot, kind => 'OT' } )
                 or last TRY;
             $sess
                 = MT::Session::get_unexpired_value(
@@ -1645,7 +1612,7 @@ sub userinfo {
                 or last TRY;
             $ott->remove();
         }
-        if ( $sess ) {
+        if ($sess) {
             $commenter
                 = MT->model('author')->load( $sess->thaw_data->{author_id} )
                 or last TRY;
@@ -1862,9 +1829,15 @@ sub do_preview {
         unless ($tmpl) {
             require MT::DefaultTemplates;
             $tmpl
-                = MT::DefaultTemplates->load( { type => 'comment_response' } )
+                = MT::DefaultTemplates->load(
+                { identifier => 'comment_response' } )
                 or
                 return $app->error( $app->translate("Can\'t load template") );
+            $tmpl->blog_id( $entry->blog_id );
+            my $curr_lang = MT->current_language;
+            $app->set_language( $blog->language );
+            $tmpl->text( $app->translate_templatized( $tmpl->text ) );
+            $app->set_language($curr_lang);
             $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
         if ( $err eq 'pending' ) {
@@ -1900,9 +1873,15 @@ sub do_preview {
         unless ($tmpl) {
             require MT::DefaultTemplates;
             $tmpl
-                = MT::DefaultTemplates->load( { type => 'comment_preview' } )
+                = MT::DefaultTemplates->load(
+                { identifier => 'comment_preview' } )
                 or
                 return $app->error( $app->translate("Can\'t load template") );
+            $tmpl->blog_id( $entry->blog_id );
+            my $curr_lang = MT->current_language;
+            $app->set_language( $blog->language );
+            $tmpl->text( $app->translate_templatized( $tmpl->text ) );
+            $app->set_language($curr_lang);
             $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
         $tmpl->context($ctx);
@@ -2020,9 +1999,8 @@ sub save_commenter_profile {
             return $app->build_page( 'profile.tmpl', \%param );
         }
         require MT::Auth;
-        if (
-            $param{password} &&
-            not MT::Auth->is_valid_password(
+        if ($param{password}
+            && not MT::Auth->is_valid_password(
                 $cmntr, scalar( $q->param('old_pass') )
             )
             )

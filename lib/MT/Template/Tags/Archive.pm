@@ -50,7 +50,7 @@ sub _hdlr_archive_set {
     my $blog = $ctx->stash('blog');
     my $at = $args->{type} || $args->{archive_type} || $blog->archive_type;
     return '' if !$at || $at eq 'None';
-    my @at      = split /,/, $at;
+    my @at      = split /\s*,\s*/, $at;
     my $res     = '';
     my $tokens  = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
@@ -888,6 +888,7 @@ B<Example:>
 sub _hdlr_archive_count {
     my ( $ctx, $args, $cond ) = @_;
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
+    $at = 'Category' if $ctx->{inside_mt_categories};
     my $archiver = MT->publisher->archiver($at);
     if ( $ctx->{inside_mt_categories} && !$archiver->date_based ) {
         return $ctx->invoke_handler( 'categorycount', $args, $cond );

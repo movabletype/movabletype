@@ -27,6 +27,7 @@ sub init {
     $app->{user_class}           = 'MT::BasicAuthor';
     $app->{template_dir}         = 'cms';
     $app->{plugin_template_path} = '';
+    $app->{disable_memcached}    = 1;
     $app;
 }
 
@@ -46,6 +47,7 @@ sub init_request {
     $app->SUPER::init_request(@_);
     $app->set_no_cache;
     $app->{default_mode} = 'install';
+    delete $app->{response};
     my $mode = $app->mode || $app->{default_mode};
     $app->{requires_login} = ( $mode eq 'upgrade' ) || ( $mode eq 'main' );
 }
@@ -371,8 +373,14 @@ sub init_website {
                ( $_->{class} || '' ) eq 'both'
             || ( $_->{class} || '' ) eq 'website'
         } values %$themes;
-    $param{'theme_loop'}  = \@theme_loop;
-    $param{'theme_index'} = scalar @theme_loop;
+    $param{'theme_loop'}      = \@theme_loop;
+    $param{'theme_index'}     = scalar @theme_loop;
+    if (my $b_path = $app->config->BaseSitePath) {
+        # making sure that we have a '/' in the end of the path
+        $b_path = File::Spec->catdir($b_path, "PATH");
+        $b_path =~ s/PATH$//;
+        $param{'sitepath_limited'} = $b_path;
+    }
 
     if ( $app->param('back') ) {
         return $app->init_user;
@@ -380,7 +388,7 @@ sub init_website {
     if ( !$app->param('finish') ) {
 
         # suggest site_path & site_url
-        my $path = $app->document_root();
+        my $path = $param{'sitepath_limited'} || $app->document_root();
         $param{website_path} = File::Spec->catdir($path);
 
         my $url = $app->base . '/';
@@ -401,9 +409,19 @@ sub init_website {
         pop @dirs;
         $site_path = File::Spec->catdir(@dirs);
     }
+    if ( $param{'sitepath_limited'} ) {
+        # making sure that we have a '/' or '\' in the end of the path
+        my $s_path = File::Spec->catdir($site_path, "PATH");
+        $s_path =~ s/PATH$//;
+        if ( 0 != index( $s_path, $param{'sitepath_limited'} ) ) {
+            $param{error} = $app->translate(
+                "The 'Website Root' provided below is not allowed" );
+            return $app->build_page( 'setup_initial_website.tmpl', \%param );
+        }
+    }
     if ( !-w $site_path ) {
         $param{error} = $app->translate(
-            "The 'Publishing Path' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click 'Finish Install' again.",
+            "The 'Website Root' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click 'Finish Install' again.",
             $param{website_path}
         );
         return $app->build_page( 'setup_initial_website.tmpl', \%param );
@@ -479,6 +497,16 @@ sub init_website {
 
 sub finish {
     my $app = shift;
+
+    delete $app->{disable_memcached}
+        if exists $app->{disable_memcached};
+    require MT::Memcached;
+    if ( MT::Memcached->is_available ) {
+        my $inst = MT::Memcached->instance;
+        $inst->flush_all;
+    }
+
+    $app->reboot();
 
     if ( $app->{author} ) {
         require MT::Author;
@@ -656,10 +684,10 @@ sub main {
 
     my $ver = $^V ? join( '.', unpack 'C*', $^V ) : $];
     my $perl_ver_check = '';
-    if ( $] < 5.006001 ) {    # our minimal requirement for support
+    if ( $] < 5.008001 ) {    # our minimal requirement for support
         $param->{version_warning} = 1;
         $param->{perl_version}    = $ver;
-        $param->{perl_minimum}    = '5.6.1';
+        $param->{perl_minimum}    = '5.8.1';
     }
 
     my $driver       = MT::Object->driver;
@@ -674,8 +702,9 @@ sub main {
         return $app->upgrade();
     }
 
-    my $schema  = $app->{cfg}->SchemaVersion || 0;
-    my $version = $app->config->MTVersion    || 0;
+    my $schema     = $app->{cfg}->SchemaVersion    || 0;
+    my $version    = $app->config->MTVersion       || 0;
+    my $rel_number = $app->config->MTReleaseNumber || 0;
 
     if ( $schema >= 3.2 ) {
         my $author;
@@ -692,30 +721,44 @@ sub main {
 
     my $cur_schema  = MT->schema_version;
     my $cur_version = MT->version_number;
+    my $cur_rel     = MT->release_number;
+
     if ( $cur_schema > $schema ) {
 
         # yes, MT itself is needing an upgrade...
         $param->{mt_upgrade} = 1;
     }
-    elsif ( $app->config->NotifyUpgrade && ( $cur_version > $version ) ) {
+    elsif (
+        $app->config->NotifyUpgrade
+        && (( $cur_version > $version )
+            || ( !defined $rel_number
+                || ( $cur_version == $version && $cur_rel > $rel_number ) )
+        )
+        )
+    {
         $param->{mt_version_incremented} = 1;
         MT->log(
             {   message => MT->translate(
                     "Movable Type has been upgraded to version [_1].",
-                    $cur_version
+                    (     $cur_rel
+                        ? $cur_version . '.' . $cur_rel
+                        : $cur_version
+                    ),
                 ),
                 class    => 'system',
                 category => 'upgrade',
             }
         );
         $app->config->MTVersion( $cur_version, 1 );
+        $app->config->MTReleaseNumber( $cur_rel, 1 );
         $app->config->save_config;
     }
 
     $param->{help_url}    = $app->help_url();
     $param->{to_schema}   = $cur_schema;
     $param->{from_schema} = $schema;
-    $param->{mt_version}  = $cur_version;
+    $param->{mt_version}
+        = $cur_rel ? $cur_version . '.' . $cur_rel : $cur_version;
 
     my @plugins;
     my $plugin_ver = $app->{cfg}->PluginSchemaVersion;

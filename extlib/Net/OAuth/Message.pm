@@ -3,10 +3,10 @@ use warnings;
 use strict;
 use base qw/Class::Data::Inheritable Class::Accessor/;
 use URI::Escape;
-use UNIVERSAL::require;
 use Net::OAuth;
 use URI;
 use URI::QueryParam;
+use Carp;
 
 use constant OAUTH_PREFIX => 'oauth_';
 
@@ -65,9 +65,7 @@ sub get_versioned_class {
     my $protocol_version = $params->{protocol_version} || $Net::OAuth::PROTOCOL_VERSION;
     if (defined $protocol_version and $protocol_version == Net::OAuth::PROTOCOL_VERSION_1_0A and $class !~ /\::V1_0A\::/) {
         (my $versioned_class = $class) =~ s/::(\w+)$/::V1_0A::$1/;
-        if ($versioned_class->require) {
-            return $versioned_class;
-        }
+        return $versioned_class if Net::OAuth::smart_require($versioned_class);
     }
     return $class;
 }
@@ -88,13 +86,13 @@ sub check {
     my $self = shift;
     foreach my $k (@{$self->required_message_params}, @{$self->required_api_params}) {
         if (not defined $self->{$k}) {
-            die "Missing required parameter '$k'";
+            croak "Missing required parameter '$k'";
         }
     }
     if ($self->{extra_params} and $self->allow_extra_params) {
         foreach my $k (keys %{$self->{extra_params}}) {
             if ($k =~ $OAUTH_PREFIX_RE) {
-                die "Parameter '$k' not allowed in arbitrary params"
+                croak "Parameter '$k' not allowed in arbitrary params"
             }
         }
     }
@@ -104,17 +102,10 @@ sub encode {
     my $str = shift;
     $str = "" unless defined $str;
     unless($Net::OAuth::SKIP_UTF8_DOUBLE_ENCODE_CHECK) {
-        if ($str =~ /[\x80-\xFF]/) {
-            Encode->require;
-            no strict 'subs';
-            eval {
-                Encode::decode_utf8($str, 1);
-            };
-            unless ($@) {
-                warn "Warning: It looks like you are attempting to encode bytes that are already UTF-8 encoded.  You should probably use decode_utf8() first.  See the Net::OAuth manpage, I18N section";
-            }
+        if ($str =~ /[\x80-\xFF]/ and !utf8::is_utf8($str)) {
+            warn "Net::OAuth warning: your OAuth message appears to contain some multi-byte characters that need to be decoded via Encode.pm or a PerlIO layer first.  This may result in an incorrect signature.";
         }
-    }
+    }    
     return URI::Escape::uri_escape_utf8($str,'^\w.~-');
 }
 
@@ -186,9 +177,9 @@ sub verify {
 sub _signature_method_class {
     my $self = shift;
     (my $signature_method = $self->signature_method) =~ s/\W+/_/g;
-    my $klass = 'Net::OAuth::SignatureMethod::' . $signature_method;
-    $klass->require or die "Unable to load $signature_method plugin";
-    return $klass;
+    my $sm_class = 'Net::OAuth::SignatureMethod::' . $signature_method;
+    croak "Unable to load $signature_method plugin" unless Net::OAuth::smart_require($sm_class);
+    return $sm_class;
 }
 
 sub to_authorization_header {
@@ -209,7 +200,7 @@ sub from_authorization_header {
     my $proto = shift;
     my $header = shift;
     my $class = ref $proto || $proto;
-    die "Header must start with \"OAuth \"" unless $header =~ s/OAuth //;
+    croak "Header must start with \"OAuth \"" unless $header =~ s/OAuth //;
     my @header = split /[\s]*,[\s]*/, $header;
     shift @header if $header[0] =~ /^realm=/i;
     return $class->_from_pairs(\@header, @_)
@@ -219,7 +210,7 @@ sub _from_pairs() {
 	my $class = shift;
 	my $pairs = shift;
 	if (ref $pairs ne 'ARRAY') {
-		die 'Expected an array!';
+		croak 'Expected an array!';
 	}
 	my %params;
 	foreach my $pair (@$pairs) {
@@ -238,7 +229,7 @@ sub from_hash {
     my $class = ref $proto || $proto;
     my $hash = shift;
 	if (ref $hash ne 'HASH') {
-		die 'Expected a hash!';
+		croak 'Expected a hash!';
 	}
     my %api_params = @_;
     # need to do this earlier than Message->new because
@@ -249,7 +240,7 @@ sub from_hash {
     foreach my $k (keys %$hash) {
         if ($k =~ s/$OAUTH_PREFIX_RE//) {
             if (!grep ($_ eq $k, @{$class->all_message_params})) {
-               die "Parameter ". OAUTH_PREFIX ."$k not valid for a message of type $class\n";
+               croak "Parameter ". OAUTH_PREFIX ."$k not valid for a message of type $class";
             }
             else {
                 $msg_params{$k} = $hash->{OAUTH_PREFIX . $k};
@@ -257,7 +248,7 @@ sub from_hash {
         }
         elsif ($class->is_extension_param($k)) {
             if (!grep ($_ eq $k, @{$class->all_message_params})) {
-                die "Parameter $k not valid for a message of type $class\n";
+                croak "Parameter $k not valid for a message of type $class";
             }
             else {
                 $msg_params{$k} = $hash->{$k};

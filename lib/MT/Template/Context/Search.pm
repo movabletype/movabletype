@@ -281,8 +281,9 @@ B<Example:>
 =cut
 
 sub _hdlr_result_count {
-    my $results = $_[0]->stash('count');
-    $results ? $results : 0;
+    my ( $ctx, $args, $cond ) = @_;
+    my $results = $ctx->stash('count') || 0;
+    return $ctx->count_format( $results, $args );
 }
 
 ###########################################################################

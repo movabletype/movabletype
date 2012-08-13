@@ -37,7 +37,10 @@ __PACKAGE__->install_properties(
             author        => 1,
             email         => 1,
             commenter_id  => 1,
-            last_moved_on => 1,    # used for junk expiration
+            last_moved_on => 1,  # used for junk expiration
+                                 # for blog dashboard - visible comments count
+            blog_visible_entry =>
+                { columns => [ 'blog_id', 'visible', 'entry_id' ], },
 
             # For URL lookups to aid spam filtering
             blog_url => { columns => [ 'blog_id', 'visible', 'url' ], },
@@ -48,6 +51,8 @@ __PACKAGE__->install_properties(
             dd_coment_vis_mod => { columns => [ 'visible', 'modified_on' ], },
             visible_date      => { columns => [ 'visible', 'created_on' ], },
             blog_ip_date => { columns => [ 'blog_id', 'ip', 'created_on' ], },
+            blog_junk_stat =>
+                { columns => [ 'blog_id', 'junk_status', 'last_moved_on' ], },
         },
         meta     => 1,
         defaults => {
@@ -307,7 +312,14 @@ sub list_props {
                       <img alt="$auth_label" src="$auth_img" class="auth-type-icon" />
                     </span>
                     <span class="commenter">
-                      <a href="$link" title="$link_title">$name</a>
+                    };
+                if ($app->can_do('view_commenter')) {
+                    $out .= qq{<a href="$link" title="$link_title">$name</a>};
+                }
+                else {
+                    $out .= $name;
+                }
+                $out .= qq{
                     </span>
                     <span class="status $lc_status_class">
                       $status_img

@@ -11,13 +11,6 @@
     <mt:var name="error" escape="html">
   </mtapp:statusmsg>
 </mt:if>
-<mt:if name="test_mail_sent">
-  <mtapp:statusmsg
-     id="saved"
-     class="success">
-    <__trans phrase="A test email was sent.">
-  </mtapp:statusmsg>
-</mt:if>
 <mt:if name="saved">
   <mtapp:statusmsg
      id="saved"
@@ -60,45 +53,48 @@ function validate (f) {
 /* ]]> */
 </script>
 
-<form action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">
+<form id="sys_conf" action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">
   <input type="hidden" name="__mode" value="save_cfg_system_general" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
-  <mtapp:settinggroup id="system-support-settings">
-    <mtapp:setting
-       id="system-email-address"
-       label="<__trans phrase="System Email">"
-       hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, and a few other minor events.">"
-       show_hint="1">
-      <input type="text" name="system_email_address" id="system-email-address" class="text med"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> /> <a href="#" id="send-test-email"><__trans phrase="Send Test Email"></a>
-    </mt:app:setting>
+  <mtapp:setting
+     id="system_email_address"
+     required="1"
+     label="<__trans phrase="System Email Address">"
+     hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
+     show_hint="1">
+    <input type="text"<mt:if name="config_warnings_emailaddressmain"> disabled="disabled"</mt:if> name="system_email_address" id="system_email_address" class="text med required email"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> /> <span><a href="#" id="send-test-email" class="button"><__trans phrase="Send Test Mail"></a></span>
 
+  </mt:app:setting>
+
+  <mtapp:settinggroup id="system-support-settings">
     <mtapp:setting
        id="system_debug_mode"
        label="<__trans phrase="Debug Mode">"
        hint="<__trans phrase='Values other than zero provide additional diagnostic information for troubleshooting problems with your Movable Type installation.  More information is available in the <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Debug Mode documentation</a>.'>"
        show_hint="1">
-      <input type="text" name="system_debug_mode" id="system-debug-mode" class="text num" maxlength="3" value="<mt:var name="system_debug_mode" escape="html">" />
+      <input type="text"<mt:if name="config_warnings_debugmode"> disabled="disable"</mt:if> name="system_debug_mode" id="system-debug-mode" class="text num" maxlength="3" value="<mt:var name="system_debug_mode" escape="html">" />
     </mt:app:setting>
 
+    <mt:unless name="preflogging_hidden">
     <mtapp:setting
        id="system-performance-logging"
        class="has-option"
        label="<__trans phrase="Performance Logging">"
        hint="<__trans phrase="Turn on performance logging, which will report any system event that takes the number of seconds specified by Logging Threshold.">"
        show_hint="1">
-      <input type="checkbox" name="system_performance_logging" id="system-performance-logging" <mt:if name="system_performance_logging" eq="1">checked="checked"</mt:if> />
+      <input type="checkbox"<mt:if name="config_warnings_performancelogging"> disabled="disable"</mt:if> name="system_performance_logging" id="system-performance-logging" <mt:if name="system_performance_logging" eq="1">checked="checked"</mt:if> />
       <label for="system-performance-logging"><__trans phrase="Turn on performance logging"></label>
     </mt:app:setting>
 
-    <div id="system-performance-logging-option" class="serring-option">
+    <div id="system-performance-logging-option" class="setting-option">
       <mtapp:setting
          id="system-performance-logging-path"
          label="<__trans phrase="Log Path">"
          hint="<__trans phrase="The filesystem directory where performance logs are written.  The web server must have write permission in this directory.">"
          show_hint="1">
-        <input type="text" name="system_performance_logging_path" id="system-performance-logging-path" class="text"<mt:if name="system_performance_logging_path"> value="<mt:var name="system_performance_logging_path" escape="html">"</mt:if> />
+        <input type="text"<mt:if name="config_warnings_performanceloggingpath"> disabled="disable"</mt:if >name="system_performance_logging_path" id="system-performance-logging-path" class="text"<mt:if name="system_performance_logging_path"> value="<mt:var name="system_performance_logging_path" escape="html">"</mt:if> />
       </mt:app:setting>
 
       <mtapp:setting
@@ -106,9 +102,10 @@ function validate (f) {
          label="<__trans phrase="Logging Threshold">"
          hint="<__trans phrase="The time limit for unlogged events in seconds. Any event that takes this amount of time or longer will be reported.">"
          show_hint="1">
-        <input type="text" name="system_performance_logging_threshold" id="system-performance-logging-threshold" class="text num" maxlength="3" value="<mt:var name="system_performance_logging_threshold" escape="html">" />
+        <input type="text"<mt:if name="config_warnings_performanceloggingthreshold"> disabled="disable"</mt:if> name="system_performance_logging_threshold" id="system-performance-logging-threshold" class="text number" maxlength="3" value="<mt:var name="system_performance_logging_threshold" escape="html">" />
       </mt:app:setting>
     </div>
+    </mt:unless>
 
     <mtapp:setting
        id="track-revisions"
@@ -117,6 +114,20 @@ function validate (f) {
       <input type="checkbox" name="track_revisions" id="track-revisions" <mt:if name="track_revisions"> checked="checked"</mt:if> /> <label for="track_revisions"><__trans phrase="Track revision history"></label>
     </mtapp:setting>
 </mtapp:settinggroup>
+
+<mt:unless name="sitepath_limit_hidden">
+<h2><__trans phrase="Site Path Limitation"></h2>
+  <mtapp:settinggroup id="system-blog-sitepath-limit">
+    <mtapp:setting
+       id="sitepath-limit"
+       label="<__trans phrase="Base Site Path">"
+       hint="<__trans phrase="Allow sites to be placed only under this directory">"
+       show_hint="1">
+      <input type="text"<mt:if name="config_warnings_basesitepath"> disabled="disable"</mt:if > name="sitepath_limit" id="sitepath-limit" class="text med absolute-site_path"<mt:if name="sitepath_limit"> value="<mt:var name="sitepath_limit" escape="html">"</mt:if> />
+    </mt:app:setting>
+  </mtapp:settinggroup>
+</mt:unless>
+
 
 <h2><__trans phrase="System-wide Feedback Controls"></h2>
 <mtapp:settinggroup id="system-feedback-controls">
@@ -154,8 +165,7 @@ function validate (f) {
       <li><input type="radio" name="trackback_send" id="trackback_send_off" value="off"<mt:if name="trackback_send_off"> checked="checked"</mt:if> /> <label for="trackback_send_off"><__trans phrase="Disabled"></label> <span class="hint"><__trans phrase="(No Outbound TrackBacks)"></span></li>
       <li><input type="radio" name="trackback_send" id="trackback_send_local" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> /> <label for="trackback_send_local"><__trans phrase="Only to blogs within this system"></label></li>
       <li>
-        <input type="radio" name="trackback_send" id="trackback-send-selected" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> /> <label for="trackback_send_selected"><__trans phrase="Only to websites on the following domains:"></label><br />
-        <textarea name="trackback_send_domains" class="text low"><mt:var name="trackback_send_domains" escape="html"></textarea>
+        <input type="radio" name="trackback_send" id="trackback-send-selected" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> /> <label for="trackback_send_selected"><__trans phrase="Only to websites on the following domains:"><br /><textarea name="trackback_send_domains" class="text low"><mt:var name="trackback_send_domains" escape="html"></textarea></label>
       </li>
     </ul>
   </mtapp:setting>
@@ -170,30 +180,32 @@ function validate (f) {
      show_hint="1">
     <input type="hidden" id="lockout-notify-ids" name="lockout_notify_ids" value="<mt:var name="lockout_notify_ids" escape="html">" />
     <span id="lockout-notify-names">
-    <mt:if name="lockout_notify_ids">
-      <strong><mt:var name="lockout_notify_names" escape="html"></strong>
-      <a href="javascript:void(0)" onclick="return clearLockoutNotifyTo()"><__trans phrase="Clear"></a> |
-    <mt:else>
+      <mt:if name="lockout_notify_ids">
+      <strong><mt:var name="lockout_notify_names" escape="html"></strong><mt:unless name="config_warnings_lockoutnotifyto">
+      <a href="javascript:void(0)" onclick="return clearLockoutNotifyTo()"><__trans phrase="Clear"></a> |</mt:unless>
+      <mt:else>
       <__trans phrase="(None selected)">
-    </mt:if>
+      </mt:if>
     </span>
+    <mt:unless name="config_warnings_lockoutnotifyto">
     <a href="<mt:var name="script_url">?__mode=dialog_select_sysadmin&amp;multi=1&amp;idfield=lockout-notify-ids&amp;namefield=lockout-notify-names" class="mt-open-dialog"><__trans phrase="Select"></a>
+    </mt:unless>
   </mtapp:setting>
 
   <mtapp:setting
      id="user-lockout"
      label="<__trans phrase="User lockout policy">"
      show_hint="0">  
-    <__trans phrase="A Movable Type user will be locked out if he or she submits an incorrect password [_1] or more times within [_2] seconds." params="<input type="text" name="user_lockout_limit" id="user-lockout-limit" class="text num" maxlength="3" value="<mt:var name="user_lockout_limit" escape="html">" />%%<input type="text" name="user_lockout_interval" id="user-lockout-interval" class="text num" maxlength="5" value="<mt:var name="user_lockout_interval" escape="html">" />">
+    <__trans phrase="A Movable Type user will be locked out if he or she submits an incorrect password [_1] or more times within [_2] seconds." params="<input type="text"<mt:if name="config_warnings_userlockoutlimit"> disabled="disable"</mt:if> name="user_lockout_limit" id="user-lockout-limit" class="text num" maxlength="3" value="<mt:var name="user_lockout_limit" escape="html">" />%%<input type="text"<mt:if name="config_warnings_userlockoutinterval"> disabled="disable"</mt:if> name="user_lockout_interval" id="user-lockout-interval" class="text num" maxlength="5" value="<mt:var name="user_lockout_interval" escape="html">" />">
   </mt:app:setting>
 
   <mtapp:setting
      id="ip-lockout"
      label="<__trans phrase="IP address lockout policy">"
      show_hint="0">  
-    <p><__trans phrase="An IP address will be locked out if [_1] or more incorrect login attempts are made within [_2] seconds from the same IP address." params="<input type="text" name="ip_lockout_limit" id="ip-lockout-limit" class="text num" maxlength="3" value="<mt:var name="ip_lockout_limit" escape="html">" />%%<input type="text" name="ip_lockout_interval" id="ip-lockout-interval" class="text num" maxlength="5" value="<mt:var name="ip_lockout_interval" escape="html">" />"></p>
+    <p><__trans phrase="An IP address will be locked out if [_1] or more incorrect login attempts are made within [_2] seconds from the same IP address." params="<input type="text"<mt:if name="config_warnings_iplockoutlimit"> disabled="disable"</mt:if> name="ip_lockout_limit" id="ip-lockout-limit" class="text num" maxlength="3" value="<mt:var name="ip_lockout_limit" escape="html">" />%%<input type="text"<mt:if name="config_warnings_iplockoutinterval"> disabled="disable"</mt:if> name="ip_lockout_interval" id="ip-lockout-interval" class="text num" maxlength="5" value="<mt:var name="ip_lockout_interval" escape="html">" />"></p>
     <label for="lockout-ip-address-whitelist"><__trans phrase="However, the following IP addresses are 'whitelisted' and will never be locked out:"><br />
-    <textarea name="lockout_ip_address_whitelist" id="lockout-ip-address-whitelist" class="text low"><mt:var name="lockout_ip_address_whitelist" escape="html"></textarea></label>
+    <textarea<mt:if name="config_warnings_lockoutipwhitelist"> disabled="disable"</mt:if> name="lockout_ip_address_whitelist" id="lockout-ip-address-whitelist" class="text low"><mt:var name="lockout_ip_address_whitelist" escape="html"></textarea></label>
     <div class="hint"><__trans phrase="The list of IP addresses. If a remote IP address is included in this list, the failed login will not recorded. You can specify multiple IP addresses separated by commas or line breaks."></div>
   </mt:app:setting>
 
@@ -212,18 +224,31 @@ function validate (f) {
 </form>
 
 <div id="test-email-dialog">
-  <form id="send-test-email" action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">
-    <input type="hidden" name="__mode" value="cfg_system_general" />
-    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />    
+
+  <mtapp:statusmsg
+     id="email_sent"
+     class="success"
+     can_close="0">
+    <__trans phrase="A test mail was sent.">
+  </mtapp:statusmsg>
+
+  <mtapp:statusmsg
+     id="email_sent_error"
+     class="error"
+     can_close="0">
+  </mtapp:statusmsg>
+
+  <form id="test_form">
     <mtapp:setting
        id="to_email_address"
-       label="<__trans phrase="Send Email To">"
-       label_class="top-class"
+       label="<__trans phrase="Send Mail To">"
+       label_class="top-label"
        hint="<__trans phrase="The email address that should receive a test email from Movable Type.">"
        show_hint="1">
       <input type="text" name="to_email_address" id="to-email-address" class="text full" />
-    </mt:app:setting>
+    </mtapp:setting>
+
+    <span class="indicator"><img alt="<__trans phrase="Loading..." escape="js">" src="<mt:var name="static_uri">images/indicator.white.gif" /></span>
     <div class="dialog actions-bar">
       <button
          type="submit"
@@ -237,17 +262,76 @@ function validate (f) {
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('#test-email-dialog').dialog({
         bgiframe: true,
-        title: '<__trans phrase="Send Test Email">',
+        title: '<__trans phrase="Send Test Mail">',
         autoOpen: false,
         width: 450
     });
+
     jQuery('#send-test-email').click(function() {
+        jQuery('span.indicator').hide();
+        jQuery('#email_sent').hide();
+        jQuery('#email_sent_error').hide();
         jQuery('#test-email-dialog').dialog('open');
         return false;
     });
+
+    jQuery('#test_form').submit(function() {
+        jQuery('#email_sent').hide();
+        jQuery('#email_sent_error').hide();
+
+        var postData = {};
+        jQuery('#sys_conf').find('input:visible').each(function(){
+            var $this = jQuery(this);
+            if ( $this.attr('type') == "checkbox" ) {
+                if ( $this.is(':checked') )
+                    postData[$this.attr('name')] = $this.val();
+            } else {
+                postData[$this.attr('name')] = $this.val();
+            }
+        });
+        postData['__mode'] = "test_system_mail";
+        postData['magic_token'] = "<mt:var name="magic_token">";
+        postData['to_email_address'] = jQuery('#to-email-address').val();
+
+        jQuery('#test_form div.actions-bar').hide();
+        jQuery('span.indicator').show();
+        jQuery.post('<mt:var name="script_url">', postData, function( data ) {
+            if( data.error ) {
+                jQuery('#email_sent_error p').text( data.error );
+                jQuery('#email_sent_error').show();
+            } else if( data.result ) {
+                jQuery('#email_sent').show();
+            }
+            jQuery('span.indicator').hide();
+            jQuery('#test_form div.actions-bar').show();
+        });
+        return false;
+    });
+
+    function is_valid_absolute_path(path_) {
+        if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
+            return true;
+        }
+        return false;
+    }
+
     jQuery('input#system_performance_logging').click(function() {
         jQuery('div#system_performance_logging_prefs').toggleClass('hidden');
     });
+    jQuery.mtValidateAddRules({
+        '.absolute-site_path': function ($e) {
+            if ($e.val().length == 0) return 1;
+            return is_valid_absolute_path($e.val());
+        }
+    });
+
+    jQuery.mtValidateAddMessages({
+        '.absolute-site_path': '<__trans phrase="You must set a valid absolute Path." escape="singlequotes">'
+    });
+    jQuery('#sys_conf').submit( function () {
+        if ( !jQuery(this).find('input:not(:disabled), select:not(:disabled)').filter('input:visible, select:visible').mtValidate('simple') ) return false;
+    });
+
 </mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">

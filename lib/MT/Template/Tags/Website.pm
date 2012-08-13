@@ -64,19 +64,17 @@ sub _hdlr_websites {
     $terms{class} = 'website' unless $terms{class};
     $args{'sort'} = 'name';
     $args{direction} = 'ascend';
-    my $iter  = MT::Website->load_iter( \%terms, \%args );
+    my @sites = MT::Website->load( \%terms, \%args );
     my $res   = '';
     my $count = 0;
-    my $next  = $iter->();
     my $vars  = $ctx->{__stash}{vars} ||= {};
-    while ($next) {
-        my $site = $next;
-        $next = $iter->();
+    MT::Meta::Proxy->bulk_load_meta_objects(\@sites);
+    for my $site (@sites) {
         $count++;
         local $ctx->{__stash}{blog}    = $site;
         local $ctx->{__stash}{blog_id} = $site->id;
         local $vars->{__first__}       = $count == 1;
-        local $vars->{__last__}        = !$next;
+        local $vars->{__last__}        = $count == scalar(@sites);
         local $vars->{__odd__}         = ( $count % 2 ) == 1;
         local $vars->{__even__}        = ( $count % 2 ) == 0;
         local $vars->{__counter__}     = $count;

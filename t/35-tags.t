@@ -69,6 +69,7 @@ my %const = (
     CURRENT_YEAR => POSIX::strftime("%Y", localtime),
     CURRENT_MONTH => POSIX::strftime("%m", localtime),
     STATIC_FILE_PATH => MT->instance->static_file_path . '/',
+    THREE_DAYS_AGO => epoch2ts($blog, time() - int(3.5 * 86400)),
 );
 
 $test_json =~ s/\Q$_\E/$const{$_}/g for keys %const;
@@ -126,6 +127,7 @@ $const = array(
     'CURRENT_YEAR' => strftime("%Y"),
     'CURRENT_MONTH' => strftime("%m"),
     'STATIC_FILE_PATH' => '<STATIC_FILE_PATH>',
+    'THREE_DAYS_AGO' => '<THREE_DAYS_AGO>',
 );
 
 $output_results = 0;

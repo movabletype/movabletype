@@ -119,7 +119,7 @@ sub upgrade_functions {
                     my $values = $asset->get_values;
                     my ( $path, $url )
                         = ( $values->{file_path}, $values->{url} );
-                    $path =~ s{%s/support/}{%s/};
+                    $path =~ s{%s(/||\\)support\1}{%s$1};
                     $url  =~ s{%s/support/}{%s/};
                     $asset->file_path($path);
                     $asset->url($url);
@@ -391,8 +391,10 @@ sub upgrade_templates {
 
 sub _uri_unescape_utf8 {
     my ($text) = @_;
-    use URI::Escape;
-    $text = uri_unescape($text);
+    unless ( $MT::Upgrade::CLI ) {
+        use URI::Escape;
+        $text = uri_unescape($text);
+    }
     return Encode::decode_utf8($text);
 }
 

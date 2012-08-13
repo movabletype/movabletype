@@ -1,7 +1,8 @@
 #!/usr/bin/perl -w
 use strict;
 
-use lib 'lib';
+use FindBin;
+use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
 
 use MT;
 my $mt = MT->new or die MT->errstr;

@@ -9,7 +9,7 @@ package MT::App::Search;
 use strict;
 use base qw( MT::App );
 
-use MT::Util qw( encode_html encode_url );
+use MT::Util qw( encode_html encode_url perl_sha1_digest_hex );
 
 sub id {'new_search'}
 
@@ -195,6 +195,13 @@ sub init_request {
     }
 }
 
+sub takedown {
+    my $app = shift;
+    delete $app->{searchparam};
+    delete $app->{search_string};
+    $app->SUPER::takedown(@_);
+}
+
 sub generate_cache_keys {
     my $app = shift;
 
@@ -208,6 +215,9 @@ sub generate_cache_keys {
                 if ( 'limit' ne lc($p) ) && ( 'offset' ne lc($p) );
         }
     }
+
+    $key       = perl_sha1_digest_hex($key);
+    $count_key = perl_sha1_digest_hex($count_key);
 
     $app->{cache_keys} = {
         result       => $key,

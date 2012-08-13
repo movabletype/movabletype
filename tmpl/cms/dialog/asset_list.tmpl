@@ -93,6 +93,9 @@
     <mt:if name="edit_blog_id">
       <input type="hidden" name="blog_id" value="<mt:var name="edit_blog_id">" />
       <input type="hidden" name="direct_asset_insert" value="1" />
+      <mt:unless name="is_image">
+      <input type="hidden" name="force_insert" value="1" />
+      </mt:unless>
       <mt:unless name="asset_select">
       <input type="hidden" name="entry_insert" value="1" />
       </mt:unless>

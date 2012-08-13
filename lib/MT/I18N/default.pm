@@ -30,6 +30,7 @@ sub DISPLAY_LENGTH_EDIT_ENTRY_TEXT_BREAK_UP ()         {30}
 sub PORTAL_URL() {''}  # default PORTAL_URL is determined in building packages
 sub SUPPORT_URL() {'http://www.sixapart.com/movabletype/support/'}
 sub NEWS_URL()    {'http://www.sixapart.com/movabletype/news/'}
+sub FEEDBACK_URL() {'http://www.movabletype.org/feedback.html'}
 
 sub NEWSBOX_URL() {
     'http://www.sixapart.com/movabletype/news/mt4_news_widget.html';

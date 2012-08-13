@@ -6,8 +6,10 @@
 # $Id$
 
 function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
+    $localvars = array(array('_blogs', '_blogs_counter', 'blog', 'blog_id'), common_loop_vars());
+
     if (!isset($content)) {
-        $ctx->localize(array('_blogs', '_blogs_counter', 'blog', 'blog_id'));
+        $ctx->localize($localvars);
         if (!(
             isset($args['include_blogs']) ||
             isset($args['include_websites']) ||
@@ -37,7 +39,7 @@ function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
         $ctx->__stash['vars']['__last__'] = ($count == count($blogs));
         $repeat = true;
     } else {
-        $ctx->restore(array('_blogs', '_blogs_counter', 'blog', 'blog_id'));
+        $ctx->restore($localvars);
         $repeat = false;
     }
     return $content;

@@ -29,6 +29,9 @@ function smarty_function_mtpasswordvalidation($args, &$ctx) {
         $min_length = 8;
     }
 
+    isset($constrains)
+         or $constrains = array();
+
     $vs = "\n";
     $vs .= <<< JSCRIPT
         function verify_password(username, passwd) {

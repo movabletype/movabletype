@@ -38,7 +38,7 @@
          id="website_path"
          label="<__trans phrase="Website Root">"
          label_class="top-label">
-        <input type="text" id="website_path" class="text full required" name="website_path" value="<mt:if name="website_path"><mt:var name="website_path" escape="html"></mt:if>" />
+        <input type="text" id="website_path" class="text full required<mt:if name="sitepath_limited"> limited_path</mt:if>" name="website_path" value="<mt:if name="website_path"><mt:var name="website_path" escape="html"></mt:if>" />
         <p class="hint"><__trans phrase="The 'Website Root' is the directory in your web server's filesystem where Movable Type will publish the files for your website. The web server must have write access to this directory."></p>
       </mtapp:setting>
 
@@ -181,6 +181,19 @@ jQuery(function() {
         }
         return true;
     }
+    <mt:if name="sitepath_limited">
+    function is_path_limit_clear( path_ ) {
+        var limit = '<mt:var name="sitepath_limited" escape="js">';
+        var last = limit.charAt(limit.length-1);
+        if (path_.charAt(path_.length-1) != last) {
+          path_ += last;
+        }
+        if (0 != path_.indexOf(limit)) {
+            return false;
+        }
+        return true;
+    }
+    </mt:if>
 
     jQuery.mtValidateAddRules({
         '#website_url': function ($e) {
@@ -189,6 +202,11 @@ jQuery(function() {
         '#website_path': function ($e) {
             return is_valid_path($e.val()) ? true : false;
         },
+<mt:if name="sitepath_limited">
+       "#website_path.limited_path": function( $e ) {
+           return is_path_limit_clear( $e.val() );
+       },
+</mt:if>
         '#website_timezone': function ($e) {
             return $e.val() !== '';
         }
@@ -199,7 +217,10 @@ jQuery(function() {
         '#website_url.required': '<__trans phrase="The website URL is required." escape="singlequotes">',
         '#website_url#website_url': '<__trans phrase="Your website URL is not valid." escape="singlequotes">',
         '#website_path.required': '<__trans phrase="The publishing path is required." escape="singlequotes">',
-        '#website_path#website_path': '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">',
+        '#website_path#website_path': '<__trans phrase="You must set a valid local site path." escape="singlequotes">',
+<mt:if name="sitepath_limited">
+        "#website_path.limited_path": '<__trans phrase="Website root must be under [_1]" params="<mt:var name="sitepath_limited">" escape="singlequotes">',
+</mt:if>
         '#website_timezone': '<__trans phrase="The timezone is required." escape="singlequotes">'
     });
 

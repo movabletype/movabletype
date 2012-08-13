@@ -201,12 +201,14 @@
     <div class="relative-site_path content-path">
       <span class="website-path"><mt:var name="parent_path" escape="html"></span><input type="text" name="site_path" id="site_path" class="blog-path-text text path" value="<mt:unless name="use_absolute"><mt:var name="site_path" escape="html"></mt:unless>" />
     </div>
+    <mt:unless name="sitepath_limited">
     <div class="absolute-site_path content-path">
       <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:var name="site_path_absolute" escape="html">" class="blog-path-text text" />
     </div>
     <div class="use-absolute option">
       <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="use_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
     </div>
+    </mt:unless>
     <div class="hint relative-site_path-hint"><__trans phrase="Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
     <div class="hint absolute-site_path-hint"><__trans phrase="Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></div>
   </mtapp:setting>
@@ -273,12 +275,14 @@
       <div class="relative-site_path content-path">
         <span class="website-path"><mt:var name="parent_path" escape="html"></span><input type="text" name="archive_path" id="archive_path" value="<mt:unless name="use_absolute_archive"><mt:var name="archive_path" escape="html"></mt:unless>" class="blog-path-text blog-path-text text path" />
       </div>
+      <mt:unless name="sitepath_limited">
       <div class="absolute-site_path content-path">
         <input type="text" name="archive_path_absolute" id="archive_path_absolute" value="<mt:var name="archive_path_absolute" escape="html">" class="blog-path-text text" />
       </div>
       <div class="use-absolute option">
         <input type="checkbox" name="use_absolute_archive" id="use_absolute_archive" value="1"<mt:if name="use_absolute_archive"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
       </div>
+      </mt:unless>
       <p class="alert-warning-inline icon-left icon-warning" id="archive_path-warning" style="display: none"><__trans phrase="Warning: Changing the archive path can result in breaking all the links in your blog."></p>
       <div class="hint relative-site_path-hint"><__trans phrase="Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
       <div class="hint absolute-site_path-hint"><__trans phrase="Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></div>

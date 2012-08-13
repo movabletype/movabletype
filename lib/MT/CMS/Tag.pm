@@ -60,38 +60,48 @@ sub rename_tag {
         $_->save foreach @tagged_objects;
 
     }
+    elsif (
+        !$tag2
+        and (
+            !$blog_id
+            or not $ot_class->exist(
+                { tag_id => $tag->id, blog_id => { not => $blog_id }, }
+            )
+        )
+        )
+    {
+        $tag->name($name);
+        $tag->save();
+    }
     else {
-        my $new_tag;
-        if ($tag2) {
-            $new_tag = $tag2;
+        my @b_terms = ( $blog_id ? ( blog_id => $blog_id ) : () );
+        my %already_tagged;
+        if ( !$tag2 ) {
+            $tag2 = $tag->clone();
+            $tag2->name($name);
+            $tag2->id(undef);
+            $tag2->save();
         }
         else {
-            my $anti_ot_terms = {
-                ( $blog_id ? ( blog_id => { not => $blog_id } ) : () ),
-                tag_id => $tag->id,
-            };
-            if ( my $ot_test = $ot_class->load($anti_ot_terms) ) {
-                $new_tag = $tag->clone;
-                $new_tag->name($name);
-                $new_tag->id(undef);
+            %already_tagged
+                = map { ( $_->object_id . '|' . $_->object_datasource, 1 ) }
+                $ot_class->load( { @b_terms, tag_id => $tag2->id } );
+        }
 
-                my $ot_terms = {
-                    ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                    tag_id => $tag->id,
-                };
-                my @ots = $ot_class->load($ot_terms);
-                if ( scalar @ots ) {
-                    $new_tag->save();
-                    for my $ot (@ots) {
-                        $ot->tag_id( $new_tag->id );
-                        $ot->save;
-                    }
-                }
+        my $iter = $ot_class->load_iter( { @b_terms, tag_id => $tag->id } );
+        while ( my $ot = $iter->() ) {
+            my $tag_sign = $ot->object_id . '|' . $ot->object_datasource;
+            if ( exists $already_tagged{$tag_sign} ) {
+                $ot->remove();
             }
             else {
-                $tag->name($name);
-                $tag->save();
+                $ot->tag_id( $tag2->id );
+                $ot->save;
             }
+        }
+        if ( not $blog_id or not $ot_class->exist( { tag_id => $tag->id } ) )
+        {
+            $tag->remove();
         }
     }
 
@@ -150,6 +160,7 @@ sub js_tag_check {
     return $app->json_result( { valid => 1, exists => $tag ? 1 : 0 } );
 }
 
+## DEPRECATED
 sub js_tag_list {
     my $app = shift;
 

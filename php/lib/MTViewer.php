@@ -8,6 +8,7 @@
 include_once("Smarty.class.php");
 class MTViewer extends Smarty {
     var $varstack = array();
+    var $stash_var_stack = array();
     var $__stash;
     var $mt;
     var $last_ts = 0;
@@ -29,6 +30,28 @@ class MTViewer extends Smarty {
         'mtauthorhasentry' => 1,
         'mtauthorhaspage' => 1,
         'mtwebsitehasblog' => 1,
+        'mtarchivelistfooter' => 1,
+        'mtarchivelistheader' => 1,
+        'mtassetisfirstinrow' => 1,
+        'mtassetislastinrow' => 1,
+        'mtassetsfooter' => 1,
+        'mtassetsheader' => 1,
+        'mtcalendarweekfooter' => 1,
+        'mtcalendarweekheader' => 1,
+        'mtcommentsfooter' => 1,
+        'mtcommentsheader' => 1,
+        'mtdatefooter' => 1,
+        'mtdateheader' => 1,
+        'mtentriesfooter' => 1,
+        'mtentriesheader' => 1,
+        'mthasnoparentcategory' => 1,
+        'mthasnosubcategories' => 1,
+        'mthasparentcategory' => 1,
+        'mthassubcategories' => 1,
+        'mtpingsfooter' => 1,
+        'mtpingsheader' => 1,
+        'mtsubcatisfirst' => 1,
+        'mtsubcatislast' => 1,
     );
     var $sanitized = array(
         'mtcommentauthor' => 1,
@@ -180,16 +203,31 @@ class MTViewer extends Smarty {
         return $old_val;
     }
 
-    function localize($vars) {
+    function localize($vars, $stash_vars_vars = array()) {
+        if (! empty($vars) && is_array($vars[0])) {
+            list($vars, $stash_vars_vars) = $vars;
+        }
+
         foreach ($vars as $v) {
             if (!isset($this->varstack[$v])) $this->varstack[$v] = array();
             $this->varstack[$v][] = isset($this->__stash[$v]) ? $this->__stash[$v] : null;
         }
+        foreach ($stash_vars_vars as $v) {
+            if (!isset($this->stash_var_stack[$v])) $this->stash_var_stack[$v] = array();
+            $this->stash_var_stack[$v][] = isset($this->__stash['vars'][$v]) ? $this->__stash['vars'][$v] : null;
+        }
     }
 
-    function restore($vars) {
+    function restore($vars, $stash_vars_vars = array()) {
+        if (! empty($vars) && is_array($vars[0])) {
+            list($vars, $stash_vars_vars) = $vars;
+        }
+
         foreach ($vars as $v) {
             $this->__stash[$v] = (isset($this->varstack[$v]) && count($this->varstack[$v]) > 0) ? array_pop($this->varstack[$v]) : null;
+        }
+        foreach ($stash_vars_vars as $v) {
+            $this->__stash['vars'][$v] = (isset($this->stash_var_stack[$v]) && count($this->stash_var_stack[$v]) > 0) ? array_pop($this->stash_var_stack[$v]) : null;
         }
     }
 
@@ -297,6 +335,248 @@ class MTViewer extends Smarty {
         return '';
     }
 
+    var $date_languages = array(
+        'de' => array(
+            'moments from now' => 'in einem Augenblick',
+            '[quant,_1,hour,hours] from now' => 'in [quant,_1,Stunde,Stunden]',
+            '[quant,_1,minute,minutes] from now' => 'in [quant,_1,Minute,Minuten]',
+            '[quant,_1,day,days] from now' => 'in [quant,_1,Tag,Tagen]',
+            'less than 1 minute from now' => 'in weniger als 1 Minute',
+            'less than 1 minute ago' => 'vor weniger als 1 Minute',
+            '[quant,_1,hour,hours], [quant,_2,minute,minutes] from now' => 'in [quant,_1,Stunde,Stunden] [quant,_1,Minute,Minuten]',
+            '[quant,_1,hour,hours], [quant,_2,minute,minutes] ago' => 'vor [quant,_1,Stunde,Stunden] [quant,_1,Minute,Minuten]',
+            '[quant,_1,day,days], [quant,_2,hour,hours] from now' => 'in [quant,_1,Tag,Tagen] [quant,_1,Stunde,Stunden]',
+            '[quant,_1,day,days], [quant,_2,hour,hours] ago' => 'vor [quant,_1,Tag,Tagen] [quant,_1,Stunde,Stunden]',
+            '[quant,_1,second,seconds] from now' => 'in [quant,_1,Sekunde,Sekunden]',
+            '[quant,_1,second,seconds]' => '[quant,_1,Sekunde,Sekunden]',
+            '[quant,_1,minute,minutes], [quant,_2,second,seconds] from now' => 'in [quant,_1,Minute,Minuten] und [quant,_2,Sekunde,Sekunden]',
+            '[quant,_1,minute,minutes], [quant,_2,second,seconds]' => '[quant,_1,Minute,Minuten] und [quant,_2,Sekunde,Sekunden]',
+            '[quant,_1,minute,minutes]' => '[quant,_1,Minute,Minuten]',
+            '[quant,_1,hour,hours], [quant,_2,minute,minutes]' => '[quant,_1,Stunde,Stunden] und [quant,_2,Minute,Minuten]',
+            '[quant,_1,hour,hours]' => '[quant,_1,Stunde,Stunden]',
+            '[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,Tag,Tage] und [quant,_2,Stunde,Stunden]',
+            '[quant,_1,day,days]' => '[quant,_1,Tag,Tage]',
+            'moments ago' => 'vor einem Augenblick',
+            '[quant,_1,hour,hours] ago' => 'vor [quant,_1,Stunde,Stunden]',
+            '[quant,_1,minute,minutes] ago' => 'vor [quant,_1,Minute,Minuten]',
+            '[quant,_1,day,days] ago' => 'vor [quant,_1,Tag,Tagen]',
+        ),
+        'es' => array(
+            'moments from now' => 'dentro de unos momentos',
+            '[quant,_1,hour,hours] from now' => 'dentro de [quant,_1,hora,horas]',
+            '[quant,_1,minute,minutes] from now' => 'dentro de [quant,_1,minuto,minutos]',
+            '[quant,_1,day,days] from now' => 'dentro de [quant,_1,día,días]',
+            'less than 1 minute from now' => 'dentro de menos de un minuto',
+            'less than 1 minute ago' => 'hace menos de un minuto',
+            '[quant,_1,hour,hours], [quant,_2,minute,minutes] from now' => 'dentro de [quant,_1,hora,horas], [quant,_2,minuto,minutos]',
+            '[quant,_1,hour,hours], [quant,_2,minute,minutes] ago' => 'hace [quant,_1,hora,horas], [quant,_2,minuto,minutos]',
+            '[quant,_1,day,days], [quant,_2,hour,hours] from now' => 'dentro de [quant,_1,día,días], [quant,_2,hora,horas]',
+            '[quant,_1,day,days], [quant,_2,hour,hours] ago' => 'hace [quant,_1,día,días], [quant,_2,hora,horas]',
+            '[quant,_1,second,seconds] from now' => 'dentro de [quant,_1,segundo,segundos]',
+            '[quant,_1,second,seconds]' => '[quant,_1,segundo,segundos]',
+            '[quant,_1,minute,minutes], [quant,_2,second,seconds] from now' => 'dentro de [quant,_1,minuto,minutos], [quant,_2,segundo,segundos]',
+            '[quant,_1,minute,minutes], [quant,_2,second,seconds]' => '[quant,_1,minuto,minutos], [quant,_2,segundo,segundos]',
+            '[quant,_1,minute,minutes]' => '[quant,_1,minuto,minutos]',
+            '[quant,_1,hour,hours], [quant,_2,minute,minutes]' => '[quant,_1,hora,horas], [quant,_2,minuto,minutos]',
+            '[quant,_1,hour,hours]' => '[quant,_1,hora,horas]',
+            '[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,día,días], [quant,_2,hora,horas]',
+            '[quant,_1,day,days]' => '[quant,_1,día,días]',
+            'moments ago' => 'hace unos momentos',
+            '[quant,_1,hour,hours] ago' => 'hace [quant,_1,hora,horas]',
+            '[quant,_1,minute,minutes] ago' => 'hace [quant,_1,minute,minutes]',
+            '[quant,_1,day,days] ago' => 'hace [quant,_1,día,días]',
+        ),
+        'fr' => array(
+            'moments from now' => 'maintenant',
+            '[quant,_1,hour,hours] from now' => 'dans [quant,_1,heure,heures]',
+            '[quant,_1,minute,minutes] from now' => 'dans [quant,_1,minute,minutes]',
+            '[quant,_1,day,days] from now' => 'dans [quant,_1,jour,jours]',
+            'less than 1 minute from now' => 'moins d\'une minute à partir de maintenant',
+            'less than 1 minute ago' => 'il y a moins d\'une minute',
+            '[quant,_1,hour,hours], [quant,_2,minute,minutes] from now' => 'dans [quant,_1,heure,heures], [quant,_2,minute,minutes]',
+            '[quant,_1,hour,hours], [quant,_2,minute,minutes] ago' => 'il y a [quant,_1,heure,heures], [quant,_2,minute,minutes]',
+            '[quant,_1,day,days], [quant,_2,hour,hours] from now' => 'dans [quant,_1,jour,jours], [quant,_2,heure,heures]',
+            '[quant,_1,day,days], [quant,_2,hour,hours] ago' => 'il y a [quant,_1,jour,jours], [quant,_2,heure,heures]',
+            '[quant,_1,second,seconds] from now' => 'dans [quant,_1,seconde,secondes]',
+            '[quant,_1,second,seconds]' => '[quant,_1,seconde,secondes]',
+            '[quant,_1,minute,minutes], [quant,_2,second,seconds] from now' => 'dans [quant,_1,minute,minutes], [quant,_2,seconde,secondes]',
+            '[quant,_1,minute,minutes], [quant,_2,second,seconds]' => '[quant,_1,minute,minutes], [quant,_2,seconde,secondes]',
+            '[quant,_1,minute,minutes]' => '[quant,_1,minute,minutes]',
+            '[quant,_1,hour,hours], [quant,_2,minute,minutes]' => '[quant,_1,heure,heures], [quant,_2,minute,minutes]',
+            '[quant,_1,hour,hours]' => '[quant,_1,heure,heures]',
+            '[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,jour,jours], [quant,_2,heure,heures]',
+            '[quant,_1,day,days]' => '[quant,_1,jour,jours]',
+            'moments ago' => 'il y a quelques instants',
+            '[quant,_1,hour,hours] ago' => 'il y a [quant,_1,heure,heures]',
+            '[quant,_1,minute,minutes] ago' => 'il y a [quant,_1,minute,minutes]',
+            '[quant,_1,day,days] ago' => 'il y a [quant,_1,jour,jours]',
+        ),
+        'ja' => array(
+            'moments from now' => '今から',
+            '[quant,_1,hour,hours] from now' => '[quant,_1,時間,時間]後',
+            '[quant,_1,minute,minutes] from now' => '[quant,_1,分,分]後',
+            '[quant,_1,day,days] from now' => '[quant,_1,日,日]後',
+            'less than 1 minute from now' => '1分後以内',
+            'less than 1 minute ago' => '1分以内',
+            '[quant,_1,hour,hours], [quant,_2,minute,minutes] from now' => '[quant,_1,時間,時間], [quant,_2,分,分]後',
+            '[quant,_1,hour,hours], [quant,_2,minute,minutes] ago' => '[quant,_1,時間,時間], [quant,_2,分,分]前',
+            '[quant,_1,day,days], [quant,_2,hour,hours] from now' => '[quant,_1,日,日], [quant,_2,時間,時間]後',
+            '[quant,_1,day,days], [quant,_2,hour,hours] ago' => '[quant,_1,日,日], [quant,_2,時間,時間]前',
+            '[quant,_1,second,seconds] from now' => '[quant,_1,秒,秒]後',
+            '[quant,_1,second,seconds]' => '[quant,_1,秒,秒]',
+            '[quant,_1,minute,minutes], [quant,_2,second,seconds] from now' => '[quant,_1,分,分], [quant,_2,秒,秒]後',
+            '[quant,_1,minute,minutes], [quant,_2,second,seconds]' => '[quant,_1,分,分], [quant,_2,秒,秒]',
+            '[quant,_1,minute,minutes]' => '[quant,_1,分,分]',
+            '[quant,_1,hour,hours], [quant,_2,minute,minutes]' => '[quant,_1,時間,時間], [quant,_2,分,分]',
+            '[quant,_1,hour,hours]' => '[quant,_1,時間,時間]',
+            '[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,日,日], [quant,_2,時間,時間]',
+            'moments ago' => '直前',
+            '[quant,_1,day,days]' => '[quant,_1,日,日]',
+            '[quant,_1,hour,hours] ago' => '[quant,_1,時間,時間]前',
+            '[quant,_1,minute,minutes] ago' => '[quant,_1,分,分]前',
+            '[quant,_1,day,days] ago' => '[quant,_1,日,日]前',
+        ),
+        'nl' => array(
+            'moments from now' => 'ogenblikken in de toekomst',
+            '[quant,_1,hour,hours] from now' => 'over [quant,_1,uur,uur]',
+            '[quant,_1,minute,minutes] from now' => 'over [quant,_1,minuut,minuten]',
+            '[quant,_1,day,days] from now' => 'over [quant,_1,dag,dagen]',
+            'less than 1 minute from now' => 'binnen minder dan 1 minuut',
+            'less than 1 minute ago' => 'minder dan 1 minuut geleden',
+            '[quant,_1,hour,hours], [quant,_2,minute,minutes] from now' => 'over [quant,_1,uur,uur] en [quant,_2,minuut,minuten]',
+            '[quant,_1,hour,hours], [quant,_2,minute,minutes] ago' => '[quant,_1,uur,uur], [quant,_2,minuut,minuten] geleden',
+            '[quant,_1,day,days], [quant,_2,hour,hours] from now' => 'over [quant,_1,dag,dagen] en [quant,_2,uur,uur]',
+            '[quant,_1,day,days], [quant,_2,hour,hours] ago' => '[quant,_1,dag,dagen] en [quant,_2,uur,uur] geleden',
+            '[quant,_1,second,seconds] from now' => 'over [quant,_1,seconde,seconden]',
+            '[quant,_1,second,seconds]' => '[quant,_1,seconde,seconden]',
+            '[quant,_1,minute,minutes], [quant,_2,second,seconds] from now' => 'over [quant,_1,minuut,minuten], [quant,_2,seconde,seconden]',
+            '[quant,_1,minute,minutes], [quant,_2,second,seconds]' => '[quant,_1,minuut,minuten], [quant,_2,seconde,seconden]',
+            '[quant,_1,minute,minutes]' => '[quant,_1,minuut,minuten]',
+            '[quant,_1,hour,hours], [quant,_2,minute,minutes]' => '[quant,_1,uur,uren], [quant,_2,minuut,minuten]',
+            '[quant,_1,hour,hours]' => '[quant,_1,uur,uren]',
+            '[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,dag,dagen], [quant,_2,uur,uren]',
+            '[quant,_1,day,days]' => '[quant,_1,dag,dagen]',
+            'moments ago' => 'ogenblikken geleden',
+            '[quant,_1,hour,hours] ago' => '[quant,_1,uur,uur] geleden',
+            '[quant,_1,minute,minutes] ago' => '[quant,_1,minuut,minuten] geleden',
+            '[quant,_1,day,days] ago' => '[quant,_1,dag,dagen] geleden',
+        ),
+    );
+
+    function rd_trans($blog, $phrase, $params) {
+        $mt = $this->mt;
+        $lang = ($blog && $blog->blog_language ? $blog->blog_language :
+            $mt->config('DefaultLanguage'));
+        $lang = substr(strtolower($lang), 0, 2);
+        if ($lang === 'jp') {
+            $lang = 'ja';
+        }
+        $lang_ar = $this->date_languages[$lang];
+        if ($lang_ar) {
+            if (array_key_exists($phrase, $lang_ar)) {
+                $phrase = $lang_ar[$phrase];
+            }
+        }
+        return $mt->translate($phrase, $params);
+    }
+
+    function relative_date($ts1, $ts2, $style, $blog) {
+        // $ts1 and $ts2 (now) should be timestamps
+        // $style is a number 1..3, or false, which will default to 1
+        $style or $style = 1;
+
+        $future = 0;
+        $delta = $ts2 - $ts1;
+
+        if ( ($delta >= 0) && ($delta <= 60) ) { # last minute
+            return 
+                $style == 1 ? $this->rd_trans($blog, "moments ago") :
+                ( $style == 2 ? $this->rd_trans($blog, "less than 1 minute ago") :
+                $this->rd_trans($blog,  "[quant,_1,second,seconds]", $delta ) );
+        }
+        if ( ($delta < 0) && ($delta >= -60) ) { # next minute
+            return 
+                $style == 1 ? $this->rd_trans($blog, "moments from now") :
+                ( $style == 2 ? $this->rd_trans($blog, "less than 1 minute from now") :
+                $this->rd_trans($blog,  "[quant,_1,second,seconds] from now", -$delta ) );
+        }
+        if ( ($delta > 60) && ($delta <= 3600) ) { # last hour
+            $min = (int) ( $delta / 60 );
+            $sec = $delta % 60;
+            return 
+                $style == 1 ?   $this->rd_trans($blog, "[quant,_1,minute,minutes] ago", $min) :
+                ( $style == 2 ? $this->rd_trans($blog, "[quant,_1,minute,minutes] ago", $min) :
+                ( $sec === 0 ?  $this->rd_trans($blog, "[quant,_1,minute,minutes]", $min ) :
+                $this->rd_trans($blog,  "[quant,_1,minute,minutes], [quant,_2,second,seconds]", array($min, $sec) ) ) );
+        }
+        if ( ($delta < -60) && ($delta >= -3600) ) { # next hour
+            $delta = -$delta;
+            $min = (int) ( $delta / 60 );
+            $sec = $delta % 60;
+            return 
+                $style == 1 ?   $this->rd_trans($blog, "[quant,_1,minute,minutes] from now", $min) :
+                ( $style == 2 ? $this->rd_trans($blog, "[quant,_1,minute,minutes] from now", $min) :
+                ( $sec === 0 ?  $this->rd_trans($blog, "[quant,_1,minute,minutes] from now", $min ) :
+                $this->rd_trans($blog,  "[quant,_1,minute,minutes], [quant,_2,second,seconds] from now", array($min, $sec) ) ) );
+        }
+        if ( ($delta > 3600) && ($delta <= 86400) ) { # last day
+            $hours = (int) ( $delta / 3600 );
+            $min = (int) ( ( $delta % 3600 ) / 60 );
+            return 
+                $style == 1 ? $this->rd_trans($blog, "[quant,_1,hour,hours] ago", $hours) :
+                ( $style == 2 ? ( 
+                    $min === 0 ? $this->rd_trans($blog, "[quant,_1,hour,hours] ago", $hours) : 
+                    $this->rd_trans($blog, "[quant,_1,hour,hours], [quant,_2,minute,minutes] ago", array($hours, $min) ) ) :
+                ( $min === 0 ? $this->rd_trans($blog, "[quant,_1,hour,hours]", $hours) :
+                $this->rd_trans($blog, "[quant,_1,hour,hours], [quant,_2,minute,minutes]", array($hours, $min) ) ) );
+        }
+        if ( ($delta < -3600) && ($delta >= -86400) ) { # next day
+            $delta = -$delta;
+            $hours = (int) ( $delta / 3600 );
+            $min = (int) ( ( $delta % 3600 ) / 60 );
+            return 
+                $style == 1 ? $this->rd_trans($blog, "[quant,_1,hour,hours] from now", $hours) :
+                ( $style == 2 ? ( 
+                    $min === 0 ? $this->rd_trans($blog, "[quant,_1,hour,hours] from now", $hours) : 
+                    $this->rd_trans($blog, "[quant,_1,hour,hours], [quant,_2,minute,minutes] from now", array($hours, $min) ) ) :
+                ( $min === 0 ? $this->rd_trans($blog, "[quant,_1,hour,hours] from now", $hours) :
+                $this->rd_trans($blog, "[quant,_1,hour,hours], [quant,_2,minute,minutes] from now", array($hours, $min) ) ) );
+        }
+        if ( ($delta > 86400) && ($delta <= 604800) ) { # last week
+            $days = (int) ( $delta / 86400 );
+            $hours = (int) ( ( $delta % 86400 ) / 3600 );
+            return 
+                $style == 1 ? $this->rd_trans($blog, "[quant,_1,day,days] ago", $days) :
+                ( $style == 2 ? ( 
+                    $hours === 0 ? $this->rd_trans($blog, "[quant,_1,day,days] ago", $days) : 
+                    $this->rd_trans($blog, "[quant,_1,day,days], [quant,_2,hour,hours] ago", array($days, $hours) ) ) :
+                ( $hours === 0 ? $this->rd_trans($blog, "[quant,_1,day,days]", $days) :
+                $this->rd_trans($blog, "[quant,_1,day,days], [quant,_2,hour,hours]", array($days, $hours) ) ) );
+        }
+        if ( ($delta < -86400) && ($delta >= -604800) ) { # next week
+            $delta = -$delta;
+            $days = (int) ( $delta / 86400 );
+            $hours = (int) ( ( $delta % 86400 ) / 3600 );
+            return 
+                $style == 1 ? $this->rd_trans($blog, "[quant,_1,day,days] from now", $days) :
+                ( $style == 2 ? ( 
+                    $hours === 0 ? $this->rd_trans($blog, "[quant,_1,day,days] from now", $days) : 
+                    $this->rd_trans($blog, "[quant,_1,day,days], [quant,_2,hour,hours] from now", array($days, $hours) ) ) :
+                ( $hours === 0 ? $this->rd_trans($blog, "[quant,_1,day,days] from now", $days) :
+                $this->rd_trans($blog, "[quant,_1,day,days], [quant,_2,hour,hours] from now", array($days, $hours) ) ) );
+        }
+        if ( $style > 1 ) return '';
+        $ts1_d = getdate($ts1);
+        $ts2_d = getdate($ts2);
+        if ( $ts1_d['year'] === $ts2_d['year'] ) {
+            $fmt = "%b %e";
+        }
+        else {
+            $fmt = "%b %e %Y";
+        }
+        return array('format' => $fmt);
+    }
+
     function _hdlr_date($args, &$ctx) {
         $ts = null;
         if (isset($args['ts'])) {
@@ -376,6 +656,19 @@ document.write(mtRelativeDate(new Date($y,$mo,$d,$h,$m,$s), '$fds'));
 EOT;
                 return $js;
             }
+            else {
+                preg_match('/(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)/', $ts, $matches);
+                list($all, $y, $mo, $d, $h, $m, $s) = $matches;
+                $unix_ts = offset_time(gmmktime($h, $m, $s, $mo, $d, $y), $blog, '-');
+                $now_ts = time();
+                $relative = $this->relative_date($unix_ts, $now_ts, $args['relative'], $blog);
+                if (is_array($relate)) {
+                    return format_ts($relate['format'], $ts, $blog, isset($args['language']) ? $args['language'] : null);
+                }
+                elseif ($relative) {
+                    return $relative;
+                }
+            }
         }
         return $fds;
     }
@@ -428,16 +721,29 @@ EOT;
             }
             if ($hdlr) {
                 if ($block_tag) {
+                    // block tag is true if it runs atleast one iteration
+                    // So we call it twice - one for init, and one iteration
+                    // If the tag still not finished, we clean whatever 
+                    // it localized from the stash
                     $this->_tag_stack[] = array("mt$tag", $args);
+                    $old_varstack =& $this->varstack;
+                    $new_varstack = array();
+                    $this->varstack =& $new_varstack;
                     $repeat = true;
                     $hdlr($args, NULL, $this, $repeat);
                     if ($repeat) {
                         $content = 'true';
-                        $content = $hdlr($args, $content, $this, $repeat = false);
+                        $repeat = false;
+                        $content = $hdlr($args, $content, $this, $repeat);
                         $result = isset($content) && ($content === 'true');
-                    } else {
+                    }
+                    else {
                         $result = false;
                     }
+                    if ($repeat && count($new_varstack)) {
+                        $this->restore(array_keys($new_varstack));
+                    }
+                    $this->varstack =& $old_varstack;
                     array_pop($this->_tag_stack);
                     return $result;
                 }

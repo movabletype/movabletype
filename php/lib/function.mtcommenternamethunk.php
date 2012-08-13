@@ -7,7 +7,7 @@
 
 function smarty_function_mtcommenternamethunk($args, &$ctx) {
     return $ctx->error(
-        $ctx->mt->translate("This '[_1]' tag has been deprecated. Please use '[_2]' instead.",
+        $ctx->mt->translate("The '[_1]' tag has been deprecated. Please use the '[_2]' tag instead.",
             array( 'MTCommenterNameThunk', 'MTUserSessionState' )
     ));
 }

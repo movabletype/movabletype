@@ -1,7 +1,7 @@
 label: Pico
 id: pico
 author_name: Six Apart, Ltd.
-author_link: http://www.sixapart.com/
+author_link: http://www.movabletype.org/
 version: 1.0
 class: blog
 protected: 1
@@ -27,6 +27,7 @@ elements:
                     label: Pico Styles
                     description_label: A collection of styles compatible with Pico themes.
                     order: 1
+                    class: Local
             templates:
                 index:
                     archive_index:

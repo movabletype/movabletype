@@ -514,23 +514,7 @@ sub edit {
         $param->{blog_file_extension} = $ext;
     }
 
-    my $rte;
-    if ( $param->{convert_breaks} =~ m/richtext/ ) {
-        ## Rich Text editor
-        $rte = lc( $app->config('RichTextEditor') );
-    }
-    else {
-        $rte = 'archetype';
-    }
-    my $editors = $app->registry("richtext_editors");
-    my $edit_reg = $editors->{$rte} || $editors->{archetype};
-    my $rich_editor_tmpl;
-    if ( $rich_editor_tmpl
-        = $edit_reg->{plugin}->load_tmpl( $edit_reg->{template} ) )
-    {
-        $param->{rich_editor}      = $rte;
-        $param->{rich_editor_tmpl} = $rich_editor_tmpl;
-    }
+    $app->setup_editor_param($param);
 
     $param->{object_type}  = $type;
     $param->{object_label} = $class->class_label;
@@ -549,7 +533,7 @@ sub edit {
             @ordered = sort { $order{$a} <=> $order{$b} } @ordered;
         }
     }
-
+    
     $param->{field_loop} ||= [
         map {
             {   field_name => $_,
@@ -1108,9 +1092,9 @@ sub _build_entry_preview {
     if (@tag_names) {
         my @tags;
         foreach my $tag_name (@tag_names) {
-            next if $tag_name =~ m/^@/;
             my $tag = MT::Tag->new;
             $tag->name($tag_name);
+            $tag->is_private($tag_name =~ m/^@/ ? 1 : 0);
             push @tags, $tag;
         }
         $entry->{__tags}        = \@tag_names;
@@ -1125,6 +1109,14 @@ sub _build_entry_preview {
 
     my $preview_basename = $app->preview_object_basename;
     $entry->basename( $q->param('basename') || $preview_basename );
+
+    # translates naughty words when PublishCharset is NOT UTF-8
+    MT::Util::translate_naughty_words($entry);
+
+    $entry->convert_breaks( scalar $q->param('convert_breaks') );
+
+    my @data = ( { data_name => 'author_id', data_value => $user_id } );
+    $app->run_callbacks( 'cms_pre_preview', $app, $entry, \@data );
 
     require MT::TemplateMap;
     require MT::Template;
@@ -1164,14 +1156,6 @@ sub _build_entry_preview {
     }
     return $app->error( $app->translate('Can\'t load template.') )
         unless $tmpl;
-
-    # translates naughty words when PublishCharset is NOT UTF-8
-    MT::Util::translate_naughty_words($entry);
-
-    $entry->convert_breaks( scalar $q->param('convert_breaks') );
-
-    my @data = ( { data_name => 'author_id', data_value => $user_id } );
-    $app->run_callbacks( 'cms_pre_preview', $app, $entry, \@data );
 
     my $ctx = $tmpl->context;
     $ctx->stash( 'entry',    $entry );
@@ -1470,7 +1454,8 @@ sub save {
         $orig_file = archive_file_for( $orig_obj, $blog, $archive_type );
     }
     else {
-        $obj = $class->new;
+        $obj      = $class->new;
+        $orig_obj = $obj->clone;
     }
     my $status_old = $id ? $obj->status : 0;
     my $names = $obj->column_names;
@@ -1821,13 +1806,24 @@ sub save {
                 sub {
                     $app->run_callbacks('pre_build');
                     $app->rebuild_entry(
-                        Entry             => $obj,
-                        BuildDependencies => 1,
-                        OldEntry          => $orig_obj,
-                        OldPrevious       => ($previous_old)
-                        ? $previous_old->id
-                        : undef,
-                        OldNext => ($next_old) ? $next_old->id : undef
+                        Entry => $obj,
+                        (   $obj->is_entry
+                            ? ( BuildDependencies => 1 )
+                            : ( BuildIndexes => 1 )
+                        ),
+                        ( $obj->is_entry ? ( OldEntry => $orig_obj ) : () ),
+                        (   $obj->is_entry
+                            ? ( OldPrevious => ($previous_old)
+                                ? $previous_old->id
+                                : undef )
+                            : ()
+                        ),
+                        (   $obj->is_entry
+                            ? ( OldNext => ($next_old)
+                                ? $next_old->id
+                                : undef )
+                            : ()
+                        ),
                     ) or return $app->publish_error();
                     $app->run_callbacks( 'rebuild', $blog );
                     $app->run_callbacks('post_build');
@@ -1935,7 +1931,7 @@ PERMCHECK: {
         if ( $perms->can_edit_entry( $entry, $this_author ) ) {
             my $author_id = $q->param( 'author_id_' . $id );
             $entry->author_id( $author_id ? $author_id : 0 );
-            $entry->title( scalar $q->param( 'title_' . $id ) );
+            $entry->title( scalar $q->param( 'title_' . $id ) || scalar $q->param( 'no_title_' . $id ) );
         }
         else {
             return $app->permission_denied();
@@ -2180,6 +2176,9 @@ sub save_entry_prefs {
 
     if ( $disp && lc $disp eq 'custom' && lc $sort_only eq 'true' ) {
         my $current = $perms->$prefs_type;
+        $prefs =~ s/\|.*$//;
+        my $pos;
+        ($current, $pos) = split '\\|', $current;
         my %current = map { $_ => 1 } split ',', $current;
         my @new     = split ',', $prefs;
         $prefs = '';
@@ -2188,6 +2187,7 @@ sub save_entry_prefs {
             $prefs .= $p;
             $prefs .= ':s' unless $current{$p};
         }
+        $prefs .= "|$pos" if defined $pos;
     }
 
     $perms->$prefs_type($prefs);
@@ -2858,20 +2858,19 @@ sub delete {
     if ( $app->config('RebuildAtDelete') ) {
         $app->run_callbacks('pre_build');
 
-        my $rebuild_func =
-            sub {
-                foreach my $b_id ( keys %rebuild_recipe ) {
-                    my $b  = MT::Blog->load($b_id);
-                    my $res = $app->rebuild_archives(
-                        Blog  => $b,
-                        Recipe => $rebuild_recipe{$b_id},
-                    ) or return $app->publish_error();
-                    $app->rebuild_indexes( Blog => $b )
-                        or return $app->publish_error();
-                    $app->run_callbacks( 'rebuild', $b );
-                }
-            };
-        
+        my $rebuild_func = sub {
+            foreach my $b_id ( keys %rebuild_recipe ) {
+                my $b   = MT::Blog->load($b_id);
+                my $res = $app->rebuild_archives(
+                    Blog   => $b,
+                    Recipe => $rebuild_recipe{$b_id},
+                ) or return $app->publish_error();
+                $app->rebuild_indexes( Blog => $b )
+                    or return $app->publish_error();
+                $app->run_callbacks( 'rebuild', $b );
+            }
+        };
+
         if ($can_background) {
             MT::Util::start_background_task($rebuild_func);
         }
@@ -2882,7 +2881,8 @@ sub delete {
         $app->add_return_arg( no_rebuild => 1 );
         my %params = (
             is_full_screen  => 1,
-            redirect_target => $app->app_path
+            redirect_target => $app->base
+                . $app->path
                 . $app->script . '?'
                 . $app->return_args,
         );

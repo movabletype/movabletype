@@ -159,9 +159,7 @@ sub install_properties {
 
     $props->{get_driver} ||= sub {
         require MT::ObjectDriverFactory;
-        my $coderef = MT::ObjectDriverFactory->driver_for_class($class);
-        $class->get_driver($coderef);
-        return $coderef->(@_);
+        return MT::ObjectDriverFactory->instance;
     };
 
     $class->SUPER::install_properties($props);
@@ -1735,6 +1733,29 @@ sub cache_class {
     my $ds    = $class->datasource;
     my $model = MT->model($ds);
     return $model ? $model : $class;
+}
+
+sub deflate {
+    my $self = shift;
+    my $data = $self->SUPER::deflate(@_);
+
+    if ( $self->has_meta ) {
+        $data->{meta} = $self->{__meta}->deflate_meta;
+    }
+
+    $data;
+}
+
+sub inflate {
+    my $class      = shift;
+    my ($deflated) = @_;
+    my $obj        = $class->SUPER::inflate(@_);
+
+    if ( $class->has_meta && $deflated->{meta} ) {
+        $obj->{__meta}->inflate_meta( $deflated->{meta} );
+    }
+
+    $obj;
 }
 
 package MT::Object::Meta;

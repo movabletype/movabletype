@@ -221,7 +221,25 @@ sub load {
             @$tmpls = grep { $_->{$key} eq $terms->{$key} } @$tmpls;
         }
     }
-    return wantarray ? @$tmpls : ( @$tmpls ? $tmpls->[0] : undef );
+
+    # Make a new template object.
+    my $convert = sub {
+        my $tmpl = shift;
+        return unless $tmpl;
+
+        my $tmpl_class = MT->model('template');
+        my $tmpl_cols  = $tmpl_class->column_defs();
+        my $tmpl_obj   = $tmpl_class->new;
+        foreach my $col ( keys %$tmpl_cols ) {
+            $tmpl_obj->$col( $tmpl->{$col} )
+                if exists $tmpl->{$col};
+        }
+        return $tmpl_obj;
+    };
+
+    return wantarray
+        ? ( map { $convert->($_) } @$tmpls )
+        : ( @$tmpls ? ( $convert->( $tmpls->[0] ) ) : undef );
 }
 
 sub templates {
@@ -293,7 +311,16 @@ sub templates {
                 if ( ref $name eq 'CODE' ) {
                     $name = $name->();
                 }
+                else {
+                    if ($plugin) {
+                        $name = $plugin->translate($name);
+                    }
+                    else {
+                        $name = MT->translate($name);
+                    }
+                }
                 $tmpl->{name}       = $name;
+                $tmpl->{label}      = $name;
                 $tmpl->{type}       = $type;
                 $tmpl->{key}        = $tmpl_id;
                 $tmpl->{identifier} = $tmpl_id;

@@ -415,7 +415,6 @@ sub create_stats_directory {
     my $user    = $app->user;
     my $user_id = $user->id;
 
-    my $static_path      = $app->static_path;
     my $static_file_path = $app->static_file_path;
 
     if ( -f File::Spec->catfile( $static_file_path, "mt.js" ) ) {
@@ -429,8 +428,8 @@ sub create_stats_directory {
     my $sub_dir = sprintf( "%03d", $blog_id % 1000 );
     my $top_dir = $blog_id > $sub_dir ? $blog_id - $sub_dir : 0;
     $param->{support_path}
-        = File::Spec->catdir( $static_file_path, 'support', 'dashboard',
-        'stats', $top_dir, $sub_dir, $low_dir );
+        = File::Spec->catdir( $app->support_directory_path(),
+        'dashboard', 'stats', $top_dir, $sub_dir, $low_dir );
 
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
@@ -439,15 +438,14 @@ sub create_stats_directory {
         unless ( $fmgr->exists( $param->{support_path} ) ) {
 
             # the path didn't exist - change the warning a little
-            $param->{support_path}
-                = File::Spec->catdir( $app->static_file_path, 'support' );
+            $param->{support_path} = $app->support_directory_path();
             return;
         }
     }
 
     return
-          $static_path
-        . 'support/dashboard/stats/'
+          $app->support_directory_url()
+        . 'dashboard/stats/'
         . $top_dir . '/'
         . $sub_dir . '/'
         . $low_dir;
@@ -767,6 +765,14 @@ sub _build_favorite_websites_data {
     @websites = $class->load( { id => \@fav_websites } )
         if $fav_count;
 
+    @websites = grep sub {
+        my $website = $_;
+        foreach my $id ( $website->id, map { $_->id } @{ $website->blogs } ) {
+            return 1 if $user->has_perm($id);
+        }
+        return 0;
+    }, @websites;
+
     # Append accessible websites if user has 4 or more blogs.
     if ( scalar @websites < 10 ) {
         my $auth = $app->user or return;
@@ -776,7 +782,8 @@ sub _build_favorite_websites_data {
             { author_id => $user->id, permissions => { not => "'comment'" } }
             )
             if !$auth->is_superuser
-                && !$auth->permissions(0)->can_do('edit_templates');
+                && !$auth->permissions(0)->can_do('edit_templates')
+                && !$auth->permissions(0)->can_do('create_blog');
         $args{limit}  = 10 - $fav_count;
         $terms{class} = 'website';
         $terms{id}    = { not => \@fav_websites } if $fav_count;
@@ -849,6 +856,17 @@ sub _build_favorite_websites_data {
         = sort { ( $sorted{ $a->id } || 0 ) <=> ( $sorted{ $b->id } || 0 ) }
         @websites;
 
+    my $blog_perms
+        = MT::Permission->load_permissions_from_action('access_to_blog_list');
+    my $blog_perms_terms = ();
+    if ($blog_perms) {
+        foreach my $perm (@$blog_perms) {
+            $perm =~ m/\.(.*)/;
+            push @$blog_perms_terms, '-or' if $blog_perms_terms;
+            push @$blog_perms_terms, { permissions => { like => "%'$1'%" } };
+        }
+    }
+
     my @param;
     foreach my $website (@websites) {
         my $row;
@@ -870,8 +888,6 @@ sub _build_favorite_websites_data {
         my $perms = $user->permissions( $website->id );
         $row->{can_access_to_template_list} = 1
             if ( $perms && $perms->can_do('access_to_template_list') );
-        $row->{can_access_to_blog_list} = 1
-            if ( $perms && $perms->can_do('access_to_blog_list') );
         $row->{can_access_to_page_list} = 1
             if ( $perms && $perms->can_do('access_to_page_list') );
         $row->{can_access_to_blog_setting_screen} = 1
@@ -884,6 +900,22 @@ sub _build_favorite_websites_data {
             if ( $user->is_superuser ) || $perms->can_do('view_feedback');
         $row->{can_use_tools_search} = 1
             if ( $perms && $perms->can_do('use_tools:search') );
+
+        my $blog_perms_cnt = MT::Permission->count(
+            [   {   blog_id => [
+                        0, $website->id,
+                        map { $_->id } @{ $website->blogs }
+                    ],
+                    author_id => $user->id,
+                },
+                '-and',
+                $blog_perms_terms,
+            ]
+        );
+
+        $row->{can_access_to_blog_list} = 1
+            if $blog_perms_cnt;
+
         my @num_vars = qw(
             website_blog_count website_page_count website_comment_count
         );
@@ -899,6 +931,18 @@ sub _build_favorite_blogs_data {
     my ($param) = @_;
     my $user    = $app->user;
 
+    my $permission_join_on = undef;
+    if (   !$user->is_superuser
+        && !$user->permissions(0)->can_do('edit_templates') )
+    {
+        $permission_join_on = MT::Permission->join_on(
+            'blog_id',
+            {   author_id   => $user->id,
+                permissions => { not => "'comment'" }
+            }
+        );
+    }
+
     # Load user's favorite blogs.
     my $class     = $app->model('blog');
     my @fav_blogs = @{ $user->favorite_blogs || [] };
@@ -910,20 +954,16 @@ sub _build_favorite_blogs_data {
                 ? ( parent_id => $app->blog->id )
                 : ()
             ),
-        }
+        },
+        { ( $permission_join_on ? ( 'join' => $permission_join_on ) : () ), },
     ) if $fav_count;
 
     # Append accessible blogs if favorite blogs is under 10;
     if ( scalar @blogs < 10 ) {
-        my $auth = $app->user or return;
         my %args;
         my %terms;
-        $args{join} = MT::Permission->join_on( 'blog_id',
-            { author_id => $user->id, permissions => { not => "'comment'" } }
-            )
-            if !$auth->is_superuser
-                && !$auth->permissions(0)->can_do('edit_templates');
-        $args{limit}      = 10 - $fav_count;
+        $args{join}       = $permission_join_on if $permission_join_on;
+        $args{limit}      = 10 - @blogs;
         $terms{class}     = 'blog';
         $terms{parent_id} = $app->blog->id
             if $app->blog && !$app->blog->is_blog;
@@ -965,12 +1005,15 @@ sub _build_favorite_blogs_data {
     my $commnet_iter = MT::Comment->count_group_by(
         { blog_id => \@blog_ids, },
         {   group => ['blog_id'],
-            join  => $app->model('entry')->join_on(
-                undef,
-                {   id => \'=comment_entry_id',
-                    $param->{my_posts} ? ( author_id => $user->id ) : (),
-                },
-            ),
+            $param->{my_posts}
+            ? ( join => $app->model('entry')->join_on(
+                    undef,
+                    {   id        => \'=comment_entry_id',
+                        author_id => $user->id,
+                    },
+                )
+                )
+            : (),
         }
     );
     while ( my ( $count, $blog_id ) = $commnet_iter->() ) {
