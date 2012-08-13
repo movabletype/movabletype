@@ -687,7 +687,8 @@ sub _v5_generate_websites_place_blogs {
             my $volume            = shift @built_path;
             my $website_site_path = File::Spec->catpath( $volume,
                 File::Spec->catdir(@built_path) );
-            $website_site_url .= '/' if !~ m!/$/!;
+            $website_site_url = $website_site_url . '/'
+                if $website_site_url !~ m!/$!;
             $website->site_path($website_site_path);
             $website->site_url($website_site_url);
             $website->save
