@@ -361,6 +361,8 @@ sub read_config_db {
     my $mgr       = $class->instance;
     my $cfg_class = MT->model('config') or return;
 
+    $mgr->{__dbvar} = {};
+
     my ($config) = eval { $cfg_class->search };
     if ($config) {
         my $was_dirty = $mgr->is_dirty;
