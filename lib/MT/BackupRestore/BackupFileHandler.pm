@@ -347,8 +347,11 @@ sub end_element {
                     $text = MIME::Base64::decode_base64($text);
                     if ( substr( $text, 0, 4 ) eq 'SERG' ) {
                         $text = MT::Serialize->unserialize($text);
+                        $obj->$column_name($$text);
                     }
-                    $obj->$column_name($$text);
+                    else {
+                        $obj->column( $column_name, $text );
+                    }
                 }
                 else {
                     $obj->column( $column_name, _decode($text) );
