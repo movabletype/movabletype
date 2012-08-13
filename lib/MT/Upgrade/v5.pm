@@ -152,8 +152,8 @@ sub upgrade_functions {
                     my ($blog) = @_;
                     my @cats = MT->model('category')->load(
                         { blog_id => $blog->id, },
-                        {   sort       => 'label',
-                            direction  => 'ascend',
+                        {   sort      => 'label',
+                            direction => 'ascend',
                             fetchonly => { id => 1 },
                         }
                     );
@@ -161,8 +161,8 @@ sub upgrade_functions {
                     $blog->category_order($order);
                     my @folders = MT->model('folder')->load(
                         { blog_id => $blog->id, },
-                        {   sort       => 'label',
-                            direction  => 'ascend',
+                        {   sort      => 'label',
+                            direction => 'ascend',
                             fetchonly => { id => 1 },
                         }
                     );
@@ -182,8 +182,8 @@ sub upgrade_functions {
                     my ($site) = @_;
                     my @folders = MT->model('folder')->load(
                         { blog_id => $site->id, },
-                        {   sort       => 'label',
-                            direction  => 'ascend',
+                        {   sort      => 'label',
+                            direction => 'ascend',
                             fetchonly => { id => 1 },
                         }
                     );
@@ -575,23 +575,24 @@ sub _v5_generate_websites_place_blogs {
     my %by_domain;
     my $blog_count = 0;
     while ( my $blog = $iter->() ) {
-        my ($protocol, $domain, $url_path) = 
-            $blog->site_url =~ m!^(https?://)([^/]+)((?:/.*)?)$!;
+        my ( $protocol, $domain, $url_path )
+            = $blog->site_url =~ m!^(https?://)([^/]+)((?:/.*)?)$!;
         my $subdomain = '';
-        if ($domain =~ m!^([^\.].*\.)([^\.]+\.\w+)$!) {
-            # XXX: domains that starts with a "." are not considers 
+        if ( $domain =~ m!^([^\.].*\.)([^\.]+\.\w+)$! ) {
+
+            # XXX: domains that starts with a "." are not considers
             # to have subdomain
             $subdomain = $1;
-            $domain = $2;
+            $domain    = $2;
         }
-        my $rec = { 
-            blog => $blog, 
-            url_protocol => $protocol, 
-            url_subdomain => $subdomain, 
-            url_domain => $domain, 
-            url_path => $url_path,
+        my $rec = {
+            blog          => $blog,
+            url_protocol  => $protocol,
+            url_subdomain => $subdomain,
+            url_domain    => $domain,
+            url_path      => $url_path,
         };
-        my $websites = ( $by_domain{$protocol . $domain} ||= [] );
+        my $websites = ( $by_domain{ $protocol . $domain } ||= [] );
         push @$websites, $rec;
         $blog_count++;
     }
@@ -640,49 +641,55 @@ sub _v5_generate_websites_place_blogs {
         $self->translate_escape( "Error loading class: [_1].", 'Website' ) )
         unless $website_class;
 
-    while (my ($website_site_url, $blogs) = each %by_domain) {
-        my $website = $website_class->load( { site_url => $website_site_url } );
+    while ( my ( $website_site_url, $blogs ) = each %by_domain ) {
+        my $website
+            = $website_class->load( { site_url => $website_site_url } );
         unless ($website) {
-            $website = $website_class->create_default_website(
-                MT->translate(
-                    'New WebSite [_1]', $website_site_url
-                ),
-                MT->config->DefaultWebsiteTheme
-            );
+            $website
+                = $website_class->create_default_website(
+                MT->translate( 'New WebSite [_1]', $website_site_url ),
+                MT->config->DefaultWebsiteTheme );
             require File::Spec;
+
             # lets try to figure out a common directory to all the blogs
-            my @blogs_dirs = 
-                sort { scalar(@$a) <=> scalar(@$b) }
+            my @blogs_dirs
+                = sort { scalar(@$a) <=> scalar(@$b) }
                 map { [ $_->[0], File::Spec->splitdir( $_->[1] ) ] }
-                map { [ File::Spec->splitpath( $_->{blog}->site_path, 1) ] } 
+                map { [ File::Spec->splitpath( $_->{blog}->site_path, 1 ) ] }
                 @$blogs;
             my @built_path;
-            for (my $i = 0; $i < scalar(@{$blogs_dirs[0]}); $i++) {
+            for ( my $i = 0; $i < scalar( @{ $blogs_dirs[0] } ); $i++ ) {
                 my $part = $blogs_dirs[0]->[$i];
-                last unless scalar(@blogs_dirs) == grep { $part eq $_->[$i] } @blogs_dirs;
+                last
+                    unless scalar(@blogs_dirs) == grep { $part eq $_->[$i] }
+                        @blogs_dirs;
                 push @built_path, $part;
             }
-            unless (grep length($_), @built_path) {
-                # could not find anything in common - 
+            unless ( grep length($_), @built_path ) {
+
+                # could not find anything in common -
                 # try figure out a path from one of the blogs
                 my $blog_rec = $blogs->[0];
-                my $dir_depth = 
-                    grep { defined($_) and length($_) } 
+                my $dir_depth
+                    = grep { defined($_) and length($_) }
                     split '/', $blog_rec->{url_path};
-                my ($volume, $dirs, undef) = 
-                    File::Spec->splitpath( $blog_rec->{blog}->site_path, 1 );
-                @built_path = ($volume, File::Spec->splitdir( $dirs ) );
-                pop @built_path for 1..$dir_depth;
+                my ( $volume, $dirs, undef )
+                    = File::Spec->splitpath( $blog_rec->{blog}->site_path,
+                    1 );
+                @built_path = ( $volume, File::Spec->splitdir($dirs) );
+                pop @built_path for 1 .. $dir_depth;
                 unless (@built_path) {
+
                     # if could not, just take this blog path
-                    @built_path = ($volume, File::Spec->splitdir( $dirs ) );
+                    @built_path = ( $volume, File::Spec->splitdir($dirs) );
                 }
             }
-            my $volume = shift @built_path;
-            my $website_site_path = 
-                File::Spec->catpath( $volume, File::Spec->catdir( @built_path )); 
-            $website->site_path( $website_site_path );
-            $website->site_url( $website_site_url );
+            my $volume            = shift @built_path;
+            my $website_site_path = File::Spec->catpath( $volume,
+                File::Spec->catdir(@built_path) );
+            $website_site_url .= '/' if !~ m!/$/!;
+            $website->site_path($website_site_path);
+            $website->site_url($website_site_url);
             $website->save
                 or return $self->error(
                 $self->translate_escape(
@@ -703,22 +710,25 @@ sub _v5_generate_websites_place_blogs {
             );
         }
         foreach my $blog_rec (@$blogs) {
-            my $url_path = $blog_rec->{url_path};
+            my $url_path  = $blog_rec->{url_path};
             my $subdomain = $blog_rec->{url_subdomain};
-            my $domain = $blog_rec->{url_domain};
-            my $blog = $blog_rec->{blog};
+            my $domain    = $blog_rec->{url_domain};
+            my $blog      = $blog_rec->{blog};
             $url_path = $url_path . '/' if $url_path !~ m!/$!;
             $url_path =~ s!^/!!;
             my $old_site_url = $blog->site_url;
             $blog->site_url("$subdomain/::/$url_path");
             $blog->parent_id( $website->id );
-            # if archive_url is "under" the website url (i.e. either subdomain or path)
-            # use the new data syntax (/::/).  otherwise leave it as-is.  config screens
-            # and everything should handle both relative and absolute url correctly.
+
+  # if archive_url is "under" the website url (i.e. either subdomain or path)
+  # use the new data syntax (/::/).  otherwise leave it as-is.  config screens
+  # and everything should handle both relative and absolute url correctly.
             if ( my $archive_url = $blog->column('archive_url') ) {
                 my $protocol = $blog_rec->{url_protocol};
-                if ( $archive_url =~ m!$protocol((?:[^/]+\.)?)$domain((?:/.*)?)$! ) {
-                    my ($subd, $path) = ($1, $2);
+                if ( $archive_url
+                    =~ m!$protocol((?:[^/]+\.)?)$domain((?:/.*)?)$! )
+                {
+                    my ( $subd, $path ) = ( $1, $2 );
                     $path =~ s!^/!!;
                     $blog->archive_url("$subd/::/$path");
                 }
