@@ -418,26 +418,6 @@ sub test_system_mail {
         MT::Util::is_valid_email( $app->param('to_email_address') ) );
 
     my $cfg       = $app->config;
-    my %directive = (
-        EmailAddressMain => 'system_email_address',
-        SendMailPath     => 'sendmail_path',
-        SMTPServer       => 'smtp_server',
-        SMTPPort         => 'smtp_port',
-        SMTPAuth         => 'smtp_auth',
-        SMTPUseSSL       => 'smtp_auth_ssl',
-        SMTPUser         => 'smtp_auth_username',
-        SMTPPassword     => 'smtp_auth_password',
-    );
-    my @directive = keys %directive;
-
-    # Set entered value as email settings
-    foreach my $d (@directive) {
-        $cfg->$d( $app->param( $directive{$d} ) );
-    }
-    if ( $app->param('smtp_auth_tls') ) {
-        $cfg->SMTPAuth('tls');
-    }
-
     return $app->json_error(
         $app->errtrans(
             "You don't have a system email address configured.  Please set this first, save it, then try the test email again."

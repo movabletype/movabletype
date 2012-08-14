@@ -1657,7 +1657,6 @@ BEGIN {
             'MailTransfer'         => { default => 'sendmail' },
             'SMTPServer'           => { default => 'localhost', },
             'SMTPAuth'             => { default => 0, },
-            'SMTPUseSSL'           => { default => 0, },
             'SMTPUser'             => undef,
             'SMTPPassword'         => undef,
             'SMTPPort'             => undef,
