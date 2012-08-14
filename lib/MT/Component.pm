@@ -356,7 +356,8 @@ sub template_paths {
             }
         }
     }
-    if ( my $alt_path = $mt->config('AltTemplatePath') ) {
+    my @alt_paths = $mt->config('AltTemplatePath');
+    foreach my $alt_path (@alt_paths ) {
         if ( -d $alt_path ) {    # AltTemplatePath is absolute
             push @paths, File::Spec->catdir( $alt_path, $mt->{template_dir} )
                 if $mt->{template_dir};

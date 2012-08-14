@@ -1606,6 +1606,7 @@ BEGIN {
             'AltTemplatePath' => {
                 default => 'alt-tmpl',
                 path    => 1,
+                type    => 'ARRAY',
             },
             'CSSPath'    => { default => 'css', },
             'ImportPath' => {
