@@ -2464,11 +2464,18 @@ sub build_page {
                 # if the component did not declare a label,
                 # it isn't wanting to be visible on the app footer.
                 next if $label eq $c->{plugin_sig};
+
+                my $pack_link
+                    = $c->pack_link ? $c->pack_link
+                    : $c->author_link       ? $c->author_link
+                    :                         '';
+
                 push @packs_installed,
                     {
                     label   => $label,
                     version => $c->version,
                     id      => $c->id,
+                    link    => $pack_link,
                     };
             }
         }

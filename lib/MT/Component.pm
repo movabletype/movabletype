@@ -309,6 +309,9 @@ sub label {
 
 sub description {&_getset_translate}
 
+sub pack_link {&_getset_translate}
+sub author_link {&_getset_translate}
+
 sub needs_upgrade {
     my $c  = shift;
     my $sv = $c->schema_version;

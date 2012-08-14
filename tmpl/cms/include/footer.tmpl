@@ -38,7 +38,7 @@
     <p id="version">
       <strong><__trans phrase="<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]" params="<mt:var name="portal_url">%%<mt:var name="mt_version_id">"></strong>
     <mt:if name="packs_installed">
-      <__trans phrase="with">: <mt:loop name="packs_installed" glue=", "><a href="<__trans phrase="http://www.sixapart.com/movabletype/">pack/<mt:var name="id">/"><mt:var name="label" escape="html"> <mt:var name="version" escape="html"></a></mt:loop>
+      <__trans phrase="with">: <mt:loop name="packs_installed" glue=", "><mt:if name="link"><a href="<mt:var name="link" escape="html">"></mt:if><mt:var name="label" escape="html"> <mt:var name="version" escape="html"><mt:if name="link"></a></mt:if></mt:loop>
     </mt:if>
     </p>
   <!-- /Footer --></div>
