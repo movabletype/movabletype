@@ -160,6 +160,7 @@ for my $lang (@languages) {
         my $abs_path = File::Spec->rel2abs($distname);
         my $exp      = sprintf( "movabletype-%s-%s", $mt_ver, $export_prefix );
         $exp = File::Spec->catdir( $export, $exp );
+        $ENV{MT_RPM_EXPORT} = $exp;
 
         print "Export $abs_path to $exp\n" unless $silent;
         rcopy( $abs_path, $exp );
