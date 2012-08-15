@@ -508,7 +508,7 @@ sub _hdlr_entries {
                 \%map;
             };
             if ( !$entries ) {
-                if ( @cat_ids and ( $category_arg !~ m/\bNOT\b/i ) ) {
+                if ( $category_arg !~ m/\bNOT\b/i ) {
                     $args{join} = MT::Placement->join_on(
                         'entry_id',
                         {   category_id => \@cat_ids,
