@@ -78,17 +78,22 @@ local $| = 1;
 
 use CGI;
 
-my $cgi = do {
-    my $is_cgi ||= exists $ENV{$_}
-        for qw( HTTP_HOST GATEWAY_INTERFACE SCRIPT_FILENAME SCRIPT_URL );
-    if ( $is_cgi || $ENV{PLACK_ENV}) {
-        CGI->new;
-    }
-    else {
-        require CGI::Fast;
-        CGI::Fast->new;
-    }
-};
+my $cgi;
+my $is_cgi;
+$is_cgi ||= exists $ENV{$_}
+    for qw( HTTP_HOST GATEWAY_INTERFACE SCRIPT_FILENAME SCRIPT_URL );
+if ( $is_cgi || $ENV{PLACK_ENV}) {
+    $cgi = CGI->new;
+}
+else {
+    require FCGI;
+    $CGI::Fast::Ext_Request
+        = FCGI::Request( \*STDIN, \*STDOUT, \*STDERR, \%ENV, 0,
+          FCGI::FAIL_ACCEPT_ON_INTR() );
+    require CGI::Fast;
+    $cgi = CGI::Fast->new;
+}
+
 my $view    = $cgi->param("view");
 my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
@@ -1017,3 +1022,13 @@ HTML
 }
 
 print_encode("</body>\n\n</html>\n");
+
+if ( ref $cgi eq 'CGI::Fast' ) {
+    $CGI::Fast::Ext_Request->LastCall();
+    # closing FastCGI's listening socket, so the server won't
+    # open new connections to us
+    require POSIX;
+    POSIX::close( 0 );
+    $CGI::Fast::Ext_Request->Finish();
+    exit( 1 );
+}
