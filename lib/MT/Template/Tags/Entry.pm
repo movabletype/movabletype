@@ -509,6 +509,7 @@ sub _hdlr_entries {
             };
             if ( !$entries ) {
                 if ( $category_arg !~ m/\bNOT\b/i ) {
+                    return '' unless @cat_ids;
                     $args{join} = MT::Placement->join_on(
                         'entry_id',
                         {   category_id => \@cat_ids,
