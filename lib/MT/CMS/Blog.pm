@@ -724,6 +724,7 @@ sub rebuild_pages {
         $app->rebuild_entry(
             Entry             => $entry,
             BuildDependencies => 1,
+            OldCategories     => $q->param('old_categories'),
             OldPrevious       => $q->param('old_previous'),
             OldNext           => $q->param('old_next')
         ) or return $app->publish_error();
@@ -1139,7 +1140,7 @@ sub start_rebuild_pages {
             MT::Util::encode_html( $entry->title ) );
         $param{is_entry} = 1;
         $param{entry_id} = $entry_id;
-        for my $col (qw( is_new old_status old_next old_previous )) {
+        for my $col (qw( is_new old_status old_next old_previous old_categories )) {
             $param{$col} = $q->param($col);
         }
     }

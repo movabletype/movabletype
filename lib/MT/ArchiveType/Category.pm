@@ -155,6 +155,17 @@ sub archive_entries_count {
     );
 }
 
+sub does_publish_file {
+    my $obj    = shift;
+    my %params = %{ shift() };
+    if ( !$params{Category} && $params{Entry} ) {
+        $params{Category} = $params{Entry}->category;
+    }
+    return 0 unless $params{Category};
+
+    MT::ArchiveType::archive_entries_count($obj, \%params );
+}
+
 sub display_name {
     my $archiver = shift;
     my $ctx      = shift;
