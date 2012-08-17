@@ -87,7 +87,7 @@ abstract class MTDatabase {
         return $this->serializer->serialize($data);
     }
 
-    protected function parse_blog_ids( $blog_ids ) {
+    public function parse_blog_ids( $blog_ids, $include_with_website = false ) {
         $ret = array();
 
         if ( empty($blog_ids) || $blog_ids == 'all')
@@ -125,6 +125,10 @@ abstract class MTDatabase {
                 foreach($blogs as $b) {
                     array_push($ret, $b->id);
                 }
+                if ( $include_with_website ) {
+                    $website = ( $blog->is_blog() ? $blog->website() : $blog);
+                    array_push($ret, $website->id);
+                }
             }
         } else {
             if ( is_numeric($blog_ids) )
@@ -135,7 +139,12 @@ abstract class MTDatabase {
         return $ret;
     }
 
-    protected function include_exclude_blogs(&$args) {
+    public function include_exclude_blogs(&$args) {
+        if ( empty( $args['include_with_website'] ) )
+            $include_with_website = false;
+        else
+            $include_with_website = true;
+
         $incl = null;
         $excl = null;
         if (isset($args['blog_ids']) || isset($args['include_blogs']) || isset($args['include_websites'])) {
@@ -163,7 +172,7 @@ abstract class MTDatabase {
 
         // Compute include_blogs
         if ( !empty($incl) )
-            $incl = $this->parse_blog_ids( $incl );
+            $incl = $this->parse_blog_ids( $incl, $include_with_website );
         if ( isset( $args['allows'] ) ) {
             if ( empty( $incl ) ) {
                 $incl = $args['allows'];
