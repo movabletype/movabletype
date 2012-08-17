@@ -28,6 +28,7 @@ sub init {
     $app->{template_dir}         = 'cms';
     $app->{plugin_template_path} = '';
     $app->{disable_memcached}    = 1;
+    $app->{is_admin}             = 1;
     $app;
 }
 
