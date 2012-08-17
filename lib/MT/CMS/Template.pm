@@ -197,7 +197,7 @@ sub edit {
         }
 
         # Populate list of included templates
-        foreach my $tag qw( Include IncludeBlock ) {
+        foreach my $tag (qw( Include IncludeBlock )) {
             my $includes = $obj->getElementsByTagName($tag);
             if ($includes) {
                 my @includes;
