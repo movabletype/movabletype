@@ -722,7 +722,14 @@ sub edit {
         require MT::Theme;
         my $themes = MT::Theme->load_all_themes;
         $param{theme_loop} = [
-            map { { key => $_->{id}, label => $_->label, } }
+            map {
+                my ( $errors, $warnings ) = $_->validate_versions;
+                {   key      => $_->{id},
+                    label    => $_->label,
+                    errors   => @$errors ? $errors : undef,
+                    warnings => @$warnings ? $warnings : undef,
+                }
+                }
                 grep {
                        !defined $_->{class}
                     || $_->{class} eq 'both'
