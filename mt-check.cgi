@@ -794,7 +794,7 @@ if ($version) {
 INFO
 }
 print_encode( trans_templ(<<INFO) );
-<ul>
+<ul id="path-info">
 	<li><strong><__trans phrase="Current working directory:"></strong> <code>$cwd</code></li>
 	<li><strong><__trans phrase="MT home directory:"></strong> <code>$ENV{MT_HOME}</code></li>
 	<li><strong><__trans phrase="Operating system:"></strong> $^O</li>
