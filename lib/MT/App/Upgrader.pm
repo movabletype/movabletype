@@ -32,6 +32,8 @@ sub init {
     $app;
 }
 
+sub uri    { $_[0]->mt_path . MT->config->UpgradeScript }
+
 sub core_methods {
     return {
         'main'         => \&main,
