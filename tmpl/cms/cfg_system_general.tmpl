@@ -26,6 +26,12 @@
     <mt:var name="config_warning">
   </mtapp:statusmsg>
 </mt:if>
+  <mtapp:statusmsg
+     id="email_sent"
+     class="success"
+     can_close="0">
+    <__trans phrase="A test mail was sent.">
+  </mtapp:statusmsg>
 </mt:setvarblock>
 
 <mt:setvarblock name="html_head" append="1">
@@ -227,13 +233,6 @@ function validate (f) {
 <div id="test-email-dialog">
 
   <mtapp:statusmsg
-     id="email_sent"
-     class="success"
-     can_close="0">
-    <__trans phrase="A test mail was sent.">
-  </mtapp:statusmsg>
-
-  <mtapp:statusmsg
      id="email_sent_error"
      class="error"
      can_close="0">
@@ -261,6 +260,10 @@ function validate (f) {
 </div>
 
 <mt:setvarblock name="jq_js_include" append="1">
+    jQuery(document).ready( function() {
+        jQuery('#email_sent').hide();
+    });
+
     jQuery('#test-email-dialog').dialog({
         bgiframe: true,
         title: '<__trans phrase="Send Test Mail">',
@@ -302,6 +305,7 @@ function validate (f) {
                 jQuery('#email_sent_error').show();
             } else if( data.result ) {
                 jQuery('#email_sent').show();
+                jQuery('#test-email-dialog').dialog('close');
             }
             jQuery('span.indicator').hide();
             jQuery('#test_form div.actions-bar').show();
