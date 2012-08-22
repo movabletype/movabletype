@@ -2206,6 +2206,21 @@ ul#asset-list .asset-type-video {
 }
 
 /* -- System General Settings */
+#system_email_address-field .field-content > div {
+    position: relative;
+    display: inline-block;
+    width: 500px;
+}
+#system_email_address-field #system_email_address {
+    width: 73%;
+}
+#system_email_address-field #send-test-email {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+}
+
 input#system_debug_mode,
 input#system_performance_logging_threshold {
     width: 4em;

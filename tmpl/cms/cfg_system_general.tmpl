@@ -61,11 +61,12 @@ function validate (f) {
   <mtapp:setting
      id="system_email_address"
      required="1"
-     label="<__trans phrase="System Email Address">"
-     hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
-     show_hint="1">
-    <input type="text"<mt:if name="config_warnings_emailaddressmain"> disabled="disabled"</mt:if> name="system_email_address" id="system_email_address" class="text med required email"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> /> <span><a href="#" id="send-test-email" class="button"><__trans phrase="Send Test Mail"></a></span>
-
+     label="<__trans phrase="System Email Address">">
+    <div>
+      <input type="text"<mt:if name="config_warnings_emailaddressmain"> disabled="disabled"</mt:if> name="system_email_address" id="system_email_address" class="text med required email"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> />
+      <a href="#" id="send-test-email" class="button"><__trans phrase="Send Test Mail"></a>
+    </div>
+    <p class="hint"><__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events."></p>
   </mt:app:setting>
 
   <mtapp:settinggroup id="system-support-settings">
