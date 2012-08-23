@@ -1128,6 +1128,8 @@ sub backup {
         $printer = sub {
             require bytes;
             my ($data) = @_;
+            $data = Encode::encode_utf8( $data )
+                if Encode::is_utf8( $data );
             print $fh $data;
             return bytes::length($data);
         };
