@@ -1457,6 +1457,7 @@ sub save {
         $obj      = $class->new;
         $orig_obj = $obj->clone;
     }
+
     my $status_old = $id ? $obj->status : 0;
     my $names = $obj->column_names;
 
@@ -1483,10 +1484,12 @@ sub save {
     delete $values{week_number}
         if ( $app->param('week_number') || '' ) eq '';
     delete $values{basename}
-        unless $perms->can_do('edit_entry_basename');
+        unless $perms->can_do("edit_${type}_basename");
     require MT::Entry;
     $values{status} = MT::Entry::FUTURE() if $app->param('scheduled');
     $obj->set_values( \%values );
+    use Data::Dumper;
+    print STDERR Dumper( \%values );
     $obj->allow_pings(0)
         if !defined $app->param('allow_pings')
             || $app->param('allow_pings') eq '';
@@ -1571,7 +1574,7 @@ sub save {
     }
 
     my ( $previous_old, $next_old );
-    if ( $perms->can_do('edit_entry_authored_on') && ($ao_d) ) {
+    if ( $perms->can_do("edit_${type}_authored_on") && ($ao_d) ) {
         my %param = ();
         my $ao    = $ao_d . ' ' . $ao_t;
         unless ( $ao

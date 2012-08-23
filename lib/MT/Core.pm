@@ -2689,6 +2689,8 @@ sub load_core_permissions {
                 'open_select_author_dialog'       => 1,
                 'send_update_pings_page'          => 1,
                 'insert_asset'                    => 1,
+                'edit_page_basename'              => 1,
+                'edit_page_authored_on'           => 1,
             }
         },
         'blog.manage_users' => {
