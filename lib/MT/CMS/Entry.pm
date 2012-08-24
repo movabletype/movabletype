@@ -1488,8 +1488,6 @@ sub save {
     require MT::Entry;
     $values{status} = MT::Entry::FUTURE() if $app->param('scheduled');
     $obj->set_values( \%values );
-    use Data::Dumper;
-    print STDERR Dumper( \%values );
     $obj->allow_pings(0)
         if !defined $app->param('allow_pings')
             || $app->param('allow_pings') eq '';
