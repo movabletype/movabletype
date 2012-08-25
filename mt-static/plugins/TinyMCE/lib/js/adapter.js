@@ -114,6 +114,7 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
             ]
         },
 
+        entity_encoding: 'raw',
         convert_urls: false,
         media_strict: false,
         verify_html: false,
