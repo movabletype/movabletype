@@ -473,7 +473,7 @@
       if (url_.indexOf(' ') != -1) {
           return false;
       }
-      return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
+      return url_.match(/^https?:\/\/[a-z0-9-\.]+\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/);
   }
   function is_valid_path(path_){
       var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, ""); //"
@@ -488,34 +488,6 @@
           return false;
       }
 
-      return true;
-  }
-  function is_valid_absolute_path(path_) {
-      if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
-          return true;
-      }
-      return false;
-  }
-
-  function is_valid_url(url_){
-      if (url_.indexOf(' ') != -1) {
-          return false;
-      }
-      return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ ) ? true : false;
-  }
-
-  function is_valid_path(path_){
-      var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, ""); //"
-      str = encodeURI(str);
-      if (str.indexOf('%') != -1) {
-          return false;
-      }
-      if (str.match(/\.\./)) {
-          return false;
-      }
-      if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
-          return false;
-      }
       return true;
   }
   function is_valid_absolute_path(path_) {
@@ -758,31 +730,5 @@
     jQuery('input#enable_archive_paths').click(function() {
         jQuery('div#enable_archive_paths_prefs').toggleClass('hidden');
     });
-
-    <mt:unless name="verify">
-    function is_valid_url(url_){
-        if (url_.indexOf(' ') != -1) {
-            return false;
-        }
-        return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
-    }
-    function is_valid_path(path_){
-        var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
-        str = encodeURI(str);
-        if (str.indexOf('%') != -1) {
-            return false;
-        }
-        if (str.match(/\.\./)) {
-            return false;
-        }
-        return true;
-    }
-    function is_valid_absolute_path(path_) {
-        if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
-            return true;
-        }
-        return false;
-    }
-</mt:unless>
 </mt:setvarblock>
 <mt:include name="dialog/footer.tmpl">

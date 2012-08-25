@@ -491,7 +491,7 @@ function setLicense() {
         if (url_.indexOf(' ') != -1) {
             return false;
         }
-        return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ ) ? true : false;
+        return url_.match(/^https?:\/\/[a-z0-9-\.]+\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/);
     }
     <mt:if name="sitepath_limited">
     function is_path_limit_clear( path_ ) {

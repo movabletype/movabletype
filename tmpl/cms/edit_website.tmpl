@@ -155,7 +155,7 @@ jQuery(function() {
         if (url_.indexOf(' ') != -1) {
             return false;
         }
-        return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
+        return url_.match(/^https?:\/\/[a-z0-9-\.]+\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/);
     }
     function is_valid_path(path_){
         var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
