@@ -25,7 +25,7 @@ sub BEGIN {
                 '<MT_TRANS phrase="SpamLookup module for moderating and junking feedback using keyword filters.">',
             doc_link        => 'http://www.spamlookup.com/wiki/KeywordFilter',
             author_name     => 'Six Apart, Ltd.',
-            author_link     => 'http://www.sixapart.com/',
+            author_link     => 'http://www.movabletype.org/',
             config_template => 'word_config.tmpl',
             l10n_class      => 'spamlookup::L10N',
             settings        => new MT::PluginSettings(

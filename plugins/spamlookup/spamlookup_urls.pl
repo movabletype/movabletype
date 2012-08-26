@@ -25,7 +25,7 @@ sub BEGIN {
                 '<__trans phrase="SpamLookup module for junking and moderating feedback based on link filters.">',
             doc_link        => 'http://www.spamlookup.com/wiki/LinkFilter',
             author_name     => 'Six Apart, Ltd.',
-            author_link     => 'http://www.sixapart.com/',
+            author_link     => 'http://www.movabletype.org/',
             config_template => 'url_config.tmpl',
             l10n_class      => 'spamlookup::L10N',
             settings        => new MT::PluginSettings(
