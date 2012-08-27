@@ -16,8 +16,8 @@ use MT::I18N qw( const );
 
 our ( $VERSION, $SCHEMA_VERSION );
 our (
-    $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION,
-    $VERSION_ID,   $PORTAL_URL
+    $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
+    $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL
 );
 our ( $MT_DIR, $APP_DIR, $CFG_DIR, $CFG_FILE, $SCRIPT_SUFFIX );
 our (
@@ -33,14 +33,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '5.14', '5.0030' );
-    (   $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION,
-        $VERSION_ID,   $PORTAL_URL
+    ( $VERSION, $SCHEMA_VERSION ) = ( '5.2', '5.0034' );
+    (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
+        $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
         = (
-        '__PRODUCT_NAME__', 'MT',
-        '5.14',             '__PRODUCT_VERSION_ID__',
-        '__PORTAL_URL__'
+        '__PRODUCT_NAME__',   'MT',
+        '5.2',                '__PRODUCT_VERSION_ID__',
+        '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
   # To allow MT to run straight from svn, if no build process (pre-processing)
@@ -53,6 +53,10 @@ BEGIN {
     }
     if ( $VERSION_ID eq '__PRODUCT_VERSION' . '_ID__' ) {
         $VERSION_ID = $PRODUCT_VERSION;
+    }
+
+    if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
+        $RELEASE_NUMBER = 0;
     }
 
     $DebugMode = 0;
@@ -91,6 +95,7 @@ sub product_code    {$PRODUCT_CODE}
 sub product_name    {$PRODUCT_NAME}
 sub product_version {$PRODUCT_VERSION}
 sub schema_version  {$SCHEMA_VERSION}
+sub release_number  {$RELEASE_NUMBER}
 
 sub portal_url {
     if ( my $url = const('PORTAL_URL') ) {
@@ -1169,13 +1174,8 @@ sub init_core {
     return 1;
 }
 
-sub init_lang_defaults {
-    my $mt        = shift;
-    my $cfg       = $mt->config;
-    my $was_dirty = $cfg->is_dirty;
-    $cfg->DefaultLanguage('en_US') unless $cfg->DefaultLanguage;
-
-    my %lang_settings = (
+sub i18n_default_settings {
+    my %settings = (
         'NewsboxURL'         => 'NEWSBOX_URL',
         'SupportURL'         => 'SUPPORT_URL',
         'NewsURL'            => 'NEWS_URL',
@@ -1186,22 +1186,26 @@ sub init_lang_defaults {
         'LogExportEncoding'  => 'LOG_EXPORT_ENCODING',
         'CategoryNameNodash' => 'CATEGORY_NAME_NODASH',
         'PublishCharset'     => 'PUBLISH_CHARSET',
+        'FeedbackURL'        => 'FEEDBACK_URL',
     );
 
-    foreach my $setting ( keys %lang_settings ) {
-        my $const    = $lang_settings{$setting};
-        my $value    = $cfg->$setting;
-        my $i18n_val = const($const);
-        if ( !$value ) {
-            $cfg->$setting( $i18n_val, 1 );
-        }
-        elsif (( $value eq $cfg->default($setting) )
-            && ( $value ne $i18n_val ) )
-        {
-            $cfg->$setting( $i18n_val, 1 );
-        }
+    foreach my $key ( keys %settings ) {
+        $settings{$key} = const( $settings{$key} );
     }
-    $cfg->clear_dirty unless $was_dirty;
+
+    \%settings;
+}
+
+sub init_lang_defaults {
+    my $mt  = shift;
+    my $cfg = $mt->config;
+    $cfg->DefaultLanguage('en_US') unless $cfg->DefaultLanguage;
+
+    my $settings = $mt->i18n_default_settings;
+    foreach my $key ( keys %$settings ) {
+        $cfg->default( $key, $settings->{$key} );
+    }
+
     return 1;
 }
 
@@ -1251,21 +1255,22 @@ sub init_debug_mode {
 }
 
 {
-my $callbacks_added;
-sub init_callbacks {
-    my $mt = shift;
-    return if $callbacks_added;
-    MT->_register_core_callbacks(
-        {   'build_file_filter' =>
-                sub { MT->publisher->queue_build_file_filter(@_) },
-            'cms_upload_file' => \&core_upload_file_to_sync,
-            'api_upload_file' => \&core_upload_file_to_sync,
-            'post_init' =>
-                '$Core::MT::Summary::Triggers::post_init_add_triggers',
-        }
-    );
-    $callbacks_added = 1;
-}
+    my $callbacks_added;
+
+    sub init_callbacks {
+        my $mt = shift;
+        return if $callbacks_added;
+        MT->_register_core_callbacks(
+            {   'build_file_filter' =>
+                    sub { MT->publisher->queue_build_file_filter(@_) },
+                'cms_upload_file' => \&core_upload_file_to_sync,
+                'api_upload_file' => \&core_upload_file_to_sync,
+                'post_init' =>
+                    '$Core::MT::Summary::Triggers::post_init_add_triggers',
+            }
+        );
+        $callbacks_added = 1;
+    }
 }
 
 sub core_upload_file_to_sync {
@@ -2169,11 +2174,14 @@ sub template_paths {
             }
         }
     }
-    if ( my $alt_path = $mt->config->AltTemplatePath ) {
-        if ( -d $alt_path ) {    # AltTemplatePath is absolute
-            push @paths, File::Spec->catdir( $alt_path, $mt->{template_dir} )
-                if $mt->{template_dir};
-            push @paths, $alt_path;
+    my @alt_paths = $mt->config('AltTemplatePath');
+    foreach my $alt_path (@alt_paths ) {
+        if ( my $alt_path = $mt->config->AltTemplatePath ) {
+            if ( -d $alt_path ) {    # AltTemplatePath is absolute
+                push @paths, File::Spec->catdir( $alt_path, $mt->{template_dir} )
+                    if $mt->{template_dir};
+                push @paths, $alt_path;
+            }
         }
     }
 
@@ -2459,11 +2467,18 @@ sub build_page {
                 # if the component did not declare a label,
                 # it isn't wanting to be visible on the app footer.
                 next if $label eq $c->{plugin_sig};
+
+                my $pack_link
+                    = $c->pack_link ? $c->pack_link
+                    : $c->author_link       ? $c->author_link
+                    :                         '';
+
                 push @packs_installed,
                     {
                     label   => $label,
                     version => $c->version,
                     id      => $c->id,
+                    link    => $pack_link,
                     };
             }
         }

@@ -18,6 +18,9 @@ sub save {
     my $label     = $q->param('label');
     my $ds        = $q->param('datasource');
 
+    $app->validate_magic
+        or return $app->json_error( $app->translate('Invalid request') );
+
     if ( !$label ) {
         return $app->json_error(
             $app->translate('Failed to save filter: label is required.') );

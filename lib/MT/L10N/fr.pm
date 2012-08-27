@@ -3510,10 +3510,10 @@ use vars qw( @ISA %Lexicon );
 	q{Please upload the file [_1]} => q{Merci d'envoyer le fichier [_1]},
 
 ## tmpl/cms/dialog/select_association_type.tmpl
-	'Grant website permission to user' => 'Autoriser un utilisateur sur un site web',
-	'Grant blog permission to user' => 'Autoriser un utilisateur sur un blog',
-	'Grant website permission to group' => 'Autoriser un groupe sur un site web',
-	'Grant blog permission to group' => 'Autoriser un groupe sur un blog',
+	'Grant website permission to a user' => 'Autoriser un utilisateur sur un site web',
+	'Grant blog permission to a user' => 'Autoriser un utilisateur sur un blog',
+	'Grant website permission to a group' => 'Autoriser un groupe sur un site web',
+	'Grant blog permission to a group' => 'Autoriser un groupe sur un blog',
 
 ## tmpl/cms/dialog/select_theme.tmpl
 	'Select Personal blog theme' => 'Sélectionner un thème de blog personnel',

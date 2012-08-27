@@ -1,48 +1,46 @@
 package Attribute::Params::Validate;
 
 use strict;
-use warnings; # ok to use cause Attribute::Handlers needs 5.6.0+ as well
+use warnings;
 
 use attributes;
 
-use Attribute::Handlers;
+use Attribute::Handlers 0.79;
 
 # this will all be re-exported
 use Params::Validate qw(:all);
 
 require Exporter;
 
-use vars qw($VERSION);
+our $VERSION = 1.07;
 
 our @ISA = qw(Exporter);
 
-my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARREF HANDLE UNDEF OBJECT ) ],
-	   );
+my %tags = (
+    types => [
+        qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARREF HANDLE UNDEF OBJECT )
+    ],
+);
 
-our %EXPORT_TAGS = ( 'all' => [ qw( validation_options ), map { @{ $tags{$_} } } keys %tags ],
-		     %tags,
-		   );
+our %EXPORT_TAGS = (
+    'all' => [ qw( validation_options ), map { @{ $tags{$_} } } keys %tags ],
+    %tags,
+);
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'validation_options' );
 
-$VERSION = sprintf '%2d.%02d', q$Revision: 1.7 $ =~ /(\d+)\.(\d+)/;
 
-
-sub UNIVERSAL::Validate : ATTR(CODE, INIT)
-{
-    _wrap_sub('named', @_);
+sub UNIVERSAL::Validate : ATTR(CODE, INIT) {
+    _wrap_sub( 'named', @_ );
 }
 
-sub UNIVERSAL::ValidatePos : ATTR(CODE, INIT)
-{
-    _wrap_sub('positional', @_);
+sub UNIVERSAL::ValidatePos : ATTR(CODE, INIT) {
+    _wrap_sub( 'positional', @_ );
 }
 
-sub _wrap_sub
-{
-    my ($type, $package, $symbol, $referent, $attr, $params) = @_;
+sub _wrap_sub {
+    my ( $type, $package, $symbol, $referent, $attr, $params ) = @_;
 
-    my @p = @$params;
-    $params = {@p};
+    my @p = ref $params ? @{$params} : $params;
 
     my $subname = $package . '::' . *{$symbol}{NAME};
 
@@ -50,51 +48,45 @@ sub _wrap_sub
     my $is_method = $attributes{method};
 
     {
-	no warnings 'redefine';
-	no strict 'refs';
+        no warnings 'redefine';
+        no strict 'refs';
 
-	# An unholy mixture of closure and eval.  This is done so that
-	# the code to automatically create the relevant scalars from
-	# the hash of params can create the scalars in the proper
-	# place lexically.
+        # An unholy mixture of closure and eval.  This is done so that
+        # the code to automatically create the relevant scalars from
+        # the hash of params can create the scalars in the proper
+        # place lexically.
 
-	my $code = <<"EOF";
+        my $code = <<"EOF";
 sub
 {
     package $package;
 EOF
 
-	$code .= "    my \$object = shift;\n" if $is_method;
+        $code .= "    my \$object = shift;\n" if $is_method;
 
-	if ($type eq 'named')
-	{
-	    $code .= "    Params::Validate::validate(\@_, \$params);\n";
-	}
-	else
-	{
-	    $code .= "    Params::Validate::validate_pos(\@_, \@p);\n";
-	}
+        if ( $type eq 'named' ) {
+            $params = {@p};
+            $code .= "    Params::Validate::validate(\@_, \$params);\n";
+        }
+        else {
+            $code .= "    Params::Validate::validate_pos(\@_, \@p);\n";
+        }
 
-	$code .= "    unshift \@_, \$object if \$object;\n" if $is_method;
+        $code .= "    unshift \@_, \$object if \$object;\n" if $is_method;
 
-	$code .= <<"EOF";
+        $code .= <<"EOF";
     \$referent->(\@_);
 }
 EOF
 
-	my $sub = eval $code;
-	die $@ if $@;
+        my $sub = eval $code;
+        die $@ if $@;
 
-	*{$subname} = $sub;
+        *{$subname} = $sub;
     }
 }
 
 1;
-
-
-=head1 NAME
-
-Attribute::Params::Validate - Validate method/function parameters using attributes
 
 =head1 SYNOPSIS
 
@@ -139,7 +131,7 @@ specify what validation is performed.
 
 =head2 EXPORT
 
-This module exports everthing that Params::Validate does except for
+This module exports everything that Params::Validate does except for
 the C<validate> and C<validate_pos> subroutines.
 
 =head2 ATTRIBUTES
@@ -148,12 +140,12 @@ the C<validate> and C<validate_pos> subroutines.
 
 =item * Validate
 
-This attribute corresponse to the C<validate> subroutine in
+This attribute corresponds to the C<validate> subroutine in
 Params::Validate.
 
 =item * ValidatePos
 
-This attribute corresponse to the C<validate_pos> subroutine in
+This attribute corresponds to the C<validate_pos> subroutine in
 Params::Validate.
 
 =back
@@ -177,10 +169,6 @@ attribute on a single line, or Perl will complain.
 =head1 SEE ALSO
 
 Params::Validate
-
-=head1 AUTHOR
-
-Dave Rolsky, <autarch@urth.org>
 
 =cut
 

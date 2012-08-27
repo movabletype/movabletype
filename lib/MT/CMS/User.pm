@@ -642,6 +642,7 @@ sub cfg_system_users {
         }
     }
     $param{system_email_address} = $cfg->EmailAddressMain;
+    $param{system_no_email}      = 1 unless $cfg->EmailAddressMain;
     $param{saved}                = $app->param('saved');
     $param{error}                = $app->param('error');
     $param{screen_class}         = "settings-screen system-general-settings";
@@ -674,7 +675,7 @@ sub cfg_system_users {
 
     my @config_warnings;
     for my $config_directive (
-        qw( UserPasswordValidation UserPasswordMinLength ) )
+        qw( UserPasswordValidation UserPasswordMinLength ))
     {
         push( @config_warnings, $config_directive )
             if $app->config->is_readonly($config_directive);

@@ -201,7 +201,7 @@
     <div class="relative-site_path content-path">
       <span class="website-path"><mt:var name="parent_path" escape="html"></span><input type="text" name="site_path" id="site_path" class="blog-path-text text path" value="<mt:unless name="use_absolute"><mt:var name="site_path" escape="html"></mt:unless>" />
     </div>
-    <mt:unless name="sitepth_limited">
+    <mt:unless name="sitepath_limited">
     <div class="absolute-site_path content-path">
       <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:var name="site_path_absolute" escape="html">" class="blog-path-text text" />
     </div>
@@ -275,7 +275,7 @@
       <div class="relative-site_path content-path">
         <span class="website-path"><mt:var name="parent_path" escape="html"></span><input type="text" name="archive_path" id="archive_path" value="<mt:unless name="use_absolute_archive"><mt:var name="archive_path" escape="html"></mt:unless>" class="blog-path-text blog-path-text text path" />
       </div>
-      <mt:unless name="sitepth_limited">
+      <mt:unless name="sitepath_limited">
       <div class="absolute-site_path content-path">
         <input type="text" name="archive_path_absolute" id="archive_path_absolute" value="<mt:var name="archive_path_absolute" escape="html">" class="blog-path-text text" />
       </div>
@@ -473,7 +473,7 @@
       if (url_.indexOf(' ') != -1) {
           return false;
       }
-      return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
+      return url_.match(/^https?:\/\/[a-z0-9-\.]+\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/);
   }
   function is_valid_path(path_){
       var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, ""); //"
@@ -488,34 +488,6 @@
           return false;
       }
 
-      return true;
-  }
-  function is_valid_absolute_path(path_) {
-      if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
-          return true;
-      }
-      return false;
-  }
-
-  function is_valid_url(url_){
-      if (url_.indexOf(' ') != -1) {
-          return false;
-      }
-      return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ ) ? true : false;
-  }
-
-  function is_valid_path(path_){
-      var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, ""); //"
-      str = encodeURI(str);
-      if (str.indexOf('%') != -1) {
-          return false;
-      }
-      if (str.match(/\.\./)) {
-          return false;
-      }
-      if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
-          return false;
-      }
       return true;
   }
   function is_valid_absolute_path(path_) {
@@ -758,31 +730,5 @@
     jQuery('input#enable_archive_paths').click(function() {
         jQuery('div#enable_archive_paths_prefs').toggleClass('hidden');
     });
-
-    <mt:unless name="verify">
-    function is_valid_url(url_){
-        if (url_.indexOf(' ') != -1) {
-            return false;
-        }
-        return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
-    }
-    function is_valid_path(path_){
-        var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
-        str = encodeURI(str);
-        if (str.indexOf('%') != -1) {
-            return false;
-        }
-        if (str.match(/\.\./)) {
-            return false;
-        }
-        return true;
-    }
-    function is_valid_absolute_path(path_) {
-        if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
-            return true;
-        }
-        return false;
-    }
-</mt:unless>
 </mt:setvarblock>
 <mt:include name="dialog/footer.tmpl">

@@ -276,9 +276,8 @@ sub _load_score_data {
     my ($term) = @_;
     my $cache  = MT::Memcached->instance;
     my $memkey = $obj->_cache_key($term);
-    my $scores;
-    $scores = $cache->get($memkey);
-    unless ( $scores = $cache->get($memkey) ) {
+    my $scores = $cache->get($memkey);
+    unless ($scores) {
         $scores = [ grep {defined} MT::ObjectScore->load($term) ];
         $cache->set( $memkey, $scores, SCORE_CACHE_TIME );
     }

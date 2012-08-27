@@ -17,8 +17,13 @@ sub instance {
 }
 
 sub new {
-    my $mgr
-        = bless { __var => {}, __dbvar => {}, __paths => [], __dirty => 0 },
+    my $mgr = bless {
+        __var               => {},
+        __dbvar             => {},
+        __paths             => [],
+        __dirty             => 0,
+        __overwritable_keys => {},
+        },
         $_[0];
     $mgr->init;
     $mgr;
@@ -86,22 +91,18 @@ sub get_internal {
                 'Alias for [_1] is looping in the configuration.', $alias );
         }
         local $depth = $depth + 1;
-        $mgr->get($alias);
+        return $mgr->get($alias);
     }
-    elsif ( defined( $val = $mgr->{__var}{$var} ) ) {
-        $val = $val->() if ref($val) eq 'CODE';
-        wantarray && ( $mgr->{__settings}{$var}{type} || '' ) eq 'ARRAY'
-            ? @$val
-            : ( ( ref $val ) eq 'ARRAY' && @$val ? $val->[0] : $val );
-    }
-    elsif ( defined( $val = $mgr->{__dbvar}{$var} ) ) {
-        wantarray && ( $mgr->{__settings}{$var}{type} || '' ) eq 'ARRAY'
-            ? @$val
-            : ( ( ref $val ) eq 'ARRAY' && @$val ? $val->[0] : $val );
-    }
-    else {
-        $mgr->default($var);
-    }
+
+    ( $mgr->is_overwritable($var) && defined( $val = $mgr->{__dbvar}{$var} ) )
+        or defined( $val = $mgr->{__var}{$var} )
+        or defined( $val = $mgr->{__dbvar}{$var} )
+        or return $mgr->default($var);
+
+    $val = $val->() if ref($val) eq 'CODE';
+    wantarray && ( $mgr->{__settings}{$var}{type} || '' ) eq 'ARRAY'
+        ? @$val
+        : ( ( ref $val ) eq 'ARRAY' && @$val ? $val->[0] : $val );
 }
 
 sub get {
@@ -124,6 +125,7 @@ sub type {
 sub default {
     my $mgr = shift;
     my $var = lc shift;
+    $mgr->{__settings}{$var}{default} = shift if @_;
     my $def = $mgr->{__settings}{$var}{default};
     return wantarray ? () : undef unless defined $def;
     if (ref($def) eq 'CODE') {
@@ -204,7 +206,26 @@ sub set {
 sub is_readonly {
     my $class = shift;
     my ($var) = @_;
-    return defined $class->instance->{__var}{ lc $var } ? 1 : 0;
+    return ( !$class->is_overwritable($var)
+            && defined $class->instance->{__var}{ lc $var } ) ? 1 : 0;
+}
+
+sub overwritable_keys {
+    my $mgr = shift;
+    $mgr = $mgr->instance unless ref($mgr);
+
+    if (@_) {
+        my @keys = ref $_[0] ? @{ $_[0] } : @_;
+        $mgr->{__overwritable_keys} = { map { lc $_ => 1 } @keys };
+    }
+
+    [ keys %{ $mgr->{__overwritable_keys} } ];
+}
+
+sub is_overwritable {
+    my $class = shift;
+    my $var   = lc shift;
+    return $class->instance->{__overwritable_keys}{$var};
 }
 
 sub read_config {
@@ -339,6 +360,8 @@ sub read_config_db {
     my $class     = shift;
     my $mgr       = $class->instance;
     my $cfg_class = MT->model('config') or return;
+
+    $mgr->{__dbvar} = {};
 
     my ($config) = eval { $cfg_class->search };
     if ($config) {

@@ -3,19 +3,19 @@
 body {
     color: #2b2b2b;
     background-color: #f3f3f3;
-    font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 13px;
 }
-.chromeless-wide { 
-    background-color: #fff;
+.chromeless-wide {
+    background-color: #ffffff;
 }
 
-a { 
+a {
     color: #507ea4;
     outline: 0;
 }
-a:hover, 
-a:active { 
+a:hover,
+a:active {
     color: #839b5c;
     text-decoration: none;
 }
@@ -92,7 +92,7 @@ h3 {
 }
 
 /* -- sign-in */
-.sign-in #container { 
+.sign-in #container {
     width: 320px;
 }
 
@@ -115,13 +115,14 @@ h3 {
 }
 
 #brand {
-    width: 250px;
-    height: 38px;
+    width: 248px;
+    height: 37px;
     margin: 0 0 20px;
     font-size: 26px;
     background: #fff url(../images/chromeless/mt_logo.png) center no-repeat;
 }
-#brand span { 
+#brand img, 
+#brand span {
     display: none;
 }
 #nav {
@@ -143,22 +144,22 @@ h3 {
 }
 
 /* - Sign in Screen */
-#sign-in #page-title { 
+#sign-in #page-title {
     display: none;
 }
-#sign-in .text { 
+#sign-in .text {
     font-size: 22px;
 }
-#sign-in .has-auth-icon input { 
+#sign-in .has-auth-icon input {
     padding-left: 22px;
     background-repeat: no-repeat;
     background-position: 3px center;
 }
-#forget-password { 
+#forget-password {
     float: right;
     margin: 0 0 3px;
 }
-#sign-up { 
+#sign-up {
     clear: both;
     margin: 20px 0 0;
     text-align: right;
@@ -169,8 +170,8 @@ h3 {
 }
 
 /* -- Reset Password, Change Password */
-#reset-password #container, 
-#change-password #container { 
+#reset-password #container,
+#change-password #container {
     width: 320px;
 }
 
@@ -184,9 +185,8 @@ h3 {
     background-color: #fbfbfb;
     height: 200px;
     border-radius: 3px;
-    -moz-border-radius: 3px;
 }
-.upgrade #progressbar { 
+.upgrade #progressbar {
     margin: 25px 0 0;
 }
 /* - Profile */
@@ -203,10 +203,10 @@ ul#profile-data li {
     margin-bottom: 10px;
 }
 .mt-profile-edit form {
-    margin-bottom: .75em;
+    margin-bottom: 0.75em;
 }
 .custom-field-radio-list {
-    margin-bottom: .25em;
+    margin-bottom: 0.25em;
 }
 .custom-field-radio-list li {
     list-style: none;
@@ -223,10 +223,10 @@ ul#profile-data li {
 }
 
 /* -- System Check */
-#packages-list dt { 
+#packages-list dt {
     margin-bottom: 5px;
 }
-#packages-list dd { 
+#packages-list dd {
     margin-bottom: 15px;
     color: #7B7C7D;
 }
@@ -240,7 +240,7 @@ ul#profile-data li {
 .module-name a:hover {
     text-decoration: underline;
 }
-.module-description { 
+.module-description {
     margin-bottom: 5px;
 }
 
@@ -265,7 +265,6 @@ ul#profile-data li {
     border: 1px solid #c0c6c9;
     background: #fff;
     border-radius: 3px;
-    -moz-border-radius: 3px;
 }
 .progressbar.indeterminate {
     background: #c0c6c9 url(../images/progress-bar-indeterminate.gif) repeat;
@@ -273,10 +272,9 @@ ul#profile-data li {
 .ui-progressbar .ui-progressbar-value {
     height:100%;
     background-color: #dcdddd;
-    background: -webkit-gradient(linear, left top, left bottom, from(#58bee3), to(#32789e));
-    background: -moz-linear-gradient(top, #58bee3 0%, #32789e 100%);
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
-    -moz-border-radius: 3px 0 0 3px;
+    background-image: -webkit-linear-gradient(#58bee3, #32789e);
+    background-image: -moz-linear-gradient(#58bee3, #32789e);
+    background-image: linear-gradient(#58bee3, #32789e);
+    border-radius: 3px 0 0 3px;
 }
 

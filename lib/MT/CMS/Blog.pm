@@ -410,6 +410,9 @@ sub cfg_prefs {
                 };
         }
         @data = sort { MT::App::CMS::archive_type_sorter( $a, $b ) } @data;
+        unless (grep $_->{archive_type_is_preferred}, @data) {
+            $param{no_preferred_archive_type} = 1;
+        }
         $param{entry_archive_types} = \@data;
     }
 
@@ -1956,6 +1959,12 @@ sub save_filter {
             )
             )
             unless 0 < sprintf( '%d', $app->param('max_revisions_template') );
+        return $eh->error(
+            MT->translate(
+                "Please choose a preferred archive type."
+            )
+            )
+            unless !$app->blog->is_blog || $app->param('preferred_archive_type');
     }
     return 1;
 }
@@ -2888,8 +2897,10 @@ sub clone {
             }
         }
     }
-    $param->{'sitepth_limited'} = $app->config->BaseSitePath;
-    if ($param->{'sitepth_limited'}) {
+    if (my $limit = $app->config->BaseSitePath) {
+        $limit = File::Spec->catdir($limit, "PATH");
+        $limit =~ s/PATH$//;
+        $param->{'sitepath_limited'} = $limit;
         $param->{'use_absolute'}         = 0;
         $param->{'use_absolute_archive'} = 0;
     }

@@ -115,6 +115,8 @@ my %xml_tests = (
     'foob&aacute;r' => #77 #78 #79
         [ '<![CDATA[foob&aacute;r]]>',
           'foob&amp;aacute;r', ],
+    '&#0; &#2; &#67; &#x2; &#x67; &#x19; &#25' =>
+        '&amp;#0; &amp;#2; &#67; &amp;#x2; &#x67; &amp;#x19; &amp;#25',
 );
  
 for my $test (keys %xml_tests) {

@@ -207,31 +207,35 @@ sub core_methods {
             requires_login => 0,
         },
 
-        'start_move_blogs'        => "${pkg}Website::move_blogs",
-        'reset_log'               => "${pkg}Log::reset",
-        'export_log'              => "${pkg}Log::export",
-        'export_notification'     => "${pkg}AddressBook::export",
-        'start_import'            => "${pkg}Import::start_import",
-        'start_export'            => "${pkg}Export::start_export",
-        'export'                  => "${pkg}Export::export",
-        'import'                  => "${pkg}Import::do_import",
-        'export_theme'            => "${pkg}Theme::export",
-        'theme_element_detail'    => "${pkg}Theme::element_dialog",
-        'save_theme_detail'       => "${pkg}Theme::save_detail",
-        'do_export_theme'         => "${pkg}Theme::do_export",
-        'pinged_urls'             => "${pkg}Entry::pinged_urls",
-        'save_entry_prefs'        => "${pkg}Entry::save_entry_prefs",
-        'save_template_prefs'     => "${pkg}Template::save_template_prefs",
-        'save_favorite_blogs'     => "${pkg}Blog::save_favorite_blogs",
-        'folder_add'              => "${pkg}Category::category_add",
-        'category_add'            => "${pkg}Category::category_add",
-        'category_do_add'         => "${pkg}Category::category_do_add",
-        'cc_return'               => "${pkg}Blog::cc_return",
-        'reset_blog_templates'    => "${pkg}Template::reset_blog_templates",
-        'handshake'               => "${pkg}Blog::handshake",
-        'itemset_action'          => "${pkg}Tools::do_list_action",
-        'page_action'             => "${pkg}Tools::do_page_action",
-        'cfg_system_general'      => "${pkg}Tools::cfg_system_general",
+        'start_move_blogs'     => "${pkg}Website::move_blogs",
+        'reset_log'            => "${pkg}Log::reset",
+        'export_log'           => "${pkg}Log::export",
+        'export_notification'  => "${pkg}AddressBook::export",
+        'start_import'         => "${pkg}Import::start_import",
+        'start_export'         => "${pkg}Export::start_export",
+        'export'               => "${pkg}Export::export",
+        'import'               => "${pkg}Import::do_import",
+        'export_theme'         => "${pkg}Theme::export",
+        'theme_element_detail' => "${pkg}Theme::element_dialog",
+        'save_theme_detail'    => "${pkg}Theme::save_detail",
+        'do_export_theme'      => "${pkg}Theme::do_export",
+        'pinged_urls'          => "${pkg}Entry::pinged_urls",
+        'save_entry_prefs'     => "${pkg}Entry::save_entry_prefs",
+        'save_template_prefs'  => "${pkg}Template::save_template_prefs",
+        'save_favorite_blogs'  => "${pkg}Blog::save_favorite_blogs",
+        'folder_add'           => "${pkg}Category::category_add",
+        'category_add'         => "${pkg}Category::category_add",
+        'category_do_add'      => "${pkg}Category::category_do_add",
+        'cc_return'            => "${pkg}Blog::cc_return",
+        'reset_blog_templates' => "${pkg}Template::reset_blog_templates",
+        'handshake'            => "${pkg}Blog::handshake",
+        'itemset_action'       => "${pkg}Tools::do_list_action",
+        'page_action'          => "${pkg}Tools::do_page_action",
+        'cfg_system_general'   => "${pkg}Tools::cfg_system_general",
+        'test_system_mail'     => {
+            code     => "${pkg}Tools::test_system_mail",
+            app_mode => 'JSON',
+        },
         'cfg_system_users'        => "${pkg}User::cfg_system_users",
         'save_plugin_config'      => "${pkg}Plugin::save_config",
         'reset_plugin_config'     => "${pkg}Plugin::reset_config",
@@ -495,10 +499,19 @@ sub init_request {
         {
             my $schema  = $app->config('SchemaVersion');
             my $version = $app->config('MTVersion');
+            my $rel_num = $app->config('MTReleaseNumber');
             if (   !$schema
                 || ( $schema < $app->schema_version )
-                || ( ( !$version || ( $version < $app->version_number ) )
-                    && $app->config->NotifyUpgrade )
+                || ($app->config->NotifyUpgrade
+                    && (   !$version
+                        || ( $version < $app->version_number )
+                        || (!defined $rel_num
+                            || ( ( $version == $app->version_number )
+                                && ($rel_num < ( $app->release_number || 0 ) )
+                            )
+                        )
+                    )
+                )
                 )
             {
                 $app->{upgrade_required} = 1;
@@ -1372,9 +1385,6 @@ sub core_list_actions {
                 permit_action => 'clone_blog',
                 max           => 1,
                 dialog        => 1,
-                condition     => sub {
-                    return $app->blog ? 1 : 0;
-                },
             },
             'delete' => {
                 label         => 'Delete',
@@ -2305,22 +2315,22 @@ sub core_compose_menus {
     my $app = shift;
     return {
         'entry' => {
-            id         => 'entry',
-            label      => "Entry",
-            order      => 100,
-            mode       => 'view',
+            id    => 'entry',
+            label => "Entry",
+            order => 100,
+            mode  => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
             view       => "blog",
         },
         'page' => {
-            id         => 'page',
-            label      => "Page",
-            order      => 200,
-            mode       => 'view',
+            id    => 'page',
+            label => "Page",
+            order => 200,
+            mode  => 'view',
             args       => { _type => 'page' },
             permission => 'manage_pages',
-            view       => [ "blog", 'website' ],
+            view => [ "blog", 'website' ],
         },
         'asset' => {
             id         => 'asset',
@@ -2328,22 +2338,22 @@ sub core_compose_menus {
             order      => 300,
             mode       => 'start_upload',
             permission => 'upload,edit_assets',
-            view       => [ "blog", 'website' ],
+            view => [ "blog", 'website' ],
         },
         'website' => {
-            id            => 'website',
-            label         => "Website",
-            order         => 200,
-            mode          => 'view',
+            id    => 'website',
+            label => "Website",
+            order => 200,
+            mode  => 'view',
             args          => { _type => 'website' },
             permit_action => 'use_website:create_menu',
             view          => "system",
         },
         'user' => {
-            id         => 'user',
-            label      => "User",
-            order      => 100,
-            mode       => "view",
+            id    => 'user',
+            label => "User",
+            order => 100,
+            mode  => "view",
             args       => { _type => "author" },
             permission => "administer",
             condition  => sub {
@@ -2352,10 +2362,10 @@ sub core_compose_menus {
             view => "system",
         },
         'blog:create' => {
-            id            => 'blog',
-            label         => "Blog",
-            order         => 400,
-            mode          => 'view',
+            id    => 'blog',
+            label => "Blog",
+            order => 400,
+            mode  => 'view',
             args          => { _type => 'blog' },
             permit_action => 'use_blog:create_menu',
             view          => "website",
@@ -2947,6 +2957,7 @@ sub set_default_tmpl_params {
     $param->{"auth_mode_$pref"} = 1;
     $param->{mt_news}           = $app->config('NewsURL');
     $param->{mt_support}        = $app->config('SupportURL');
+    $param->{mt_feedback_url}   = $app->config('FeedbackURL');
     my $lang = lc MT->current_language || 'en_us';
     $param->{language_id} = ( $lang !~ /en[_-]us/ ) ? $lang : '';
     $param->{mode} = $app->mode;
@@ -3881,7 +3892,9 @@ sub show_error {
     $param = { error => $param } unless ref($param) && ref($param) eq 'HASH';
     my $method_info = MT->request('method_info') || {};
     my $mode = $app->mode;
-    if ( $app->param('xhr') or (($method_info->{app_mode} || '') eq 'JSON' )) {
+    if ( $app->param('xhr')
+        or ( ( $method_info->{app_mode} || '' ) eq 'JSON' ) )
+    {
         return $app->json_error( $param->{error}, $param->{status} );
     }
     elsif ( $mode eq 'rebuild' ) {
@@ -3945,7 +3958,9 @@ sub show_error {
 sub show_login {
     my $app = shift;
     my $method_info = MT->request('method_info') || {};
-    if ( $app->param('xhr') or (($method_info->{app_mode} || '') eq 'JSON' )) {
+    if ( $app->param('xhr')
+        or ( ( $method_info->{app_mode} || '' ) eq 'JSON' ) )
+    {
         $app->{login_again} = 1;
         return $app->show_error( { error => 'Unauthorized', status => 401 } );
     }
@@ -3965,6 +3980,14 @@ sub load_default_entry_prefs {
 
     if ( $perm && $perm->entry_prefs ) {
         $prefs = $perm->entry_prefs;
+        if ($prefs !~ m/\b(?:default|basic|custom|advanced)\b/i) {
+            if ($prefs !~ m/\btitle\b/) {
+                $prefs = 'title,'.$prefs;
+            }
+            if ($prefs !~ m/\btext\b/) {
+                $prefs =~ s/\btitle\b/title,text/;
+            }
+        }
     }
     else {
         if ( lc( $default{type} ) eq 'custom' ) {
@@ -4009,6 +4032,14 @@ sub load_default_page_prefs {
 
     if ( $perm && $perm->page_prefs ) {
         $prefs = $perm->page_prefs;
+        if ($prefs !~ m/\b(?:default|basic|custom|advanced)\b/i) {
+            if ($prefs !~ m/\btitle\b/) {
+                $prefs = 'title,'.$prefs;
+            }
+            if ($prefs !~ m/\btext\b/) {
+                $prefs =~ s/\btitle\b/title,text/;
+            }
+        }
     }
     else {
         if ( lc( $default{type} ) eq 'custom' ) {
@@ -4065,36 +4096,27 @@ sub _parse_entry_prefs {
     my ( $prefix, $prefs, $param, $fields ) = @_;
     my @p = split /,/, $prefs;
     for my $p (@p) {
-        if ( $p =~ m/^(.+?):(\d+)$/ ) {
-            my ( $name, $num ) = ( $1, $2 );
-            if ($num) {
-                $param->{ 'disp_prefs_height_' . $name } = $num;
+        my ($name, $ext) = $p =~ m/^(.+?):(.+)$/;
+        $p = $name if (defined $ext);
+
+        if ( $ext and ( $ext =~ m/^(\d+)$/ )  ) {
+            $param->{ 'disp_prefs_height_' . $p } = $ext;
+        }
+        if ( grep { lc($p) eq $_ } qw{advanced default basic} ) {
+            $p = 'Default' if lc($p) eq 'basic';
+            $param->{ $prefix . 'disp_prefs_' . $p } = 1;
+            my @fields = qw( title body category tags feedback publishing assets );
+            if ( lc($p) eq 'advanced' ) {
+                push @fields, qw(excerpt feedback keywords);
             }
-            $param->{ $prefix . 'disp_prefs_show_' . $name } = 1;
-            push @$fields, { name => $name };
+            foreach my $def ( @fields ) {
+                $param->{ $prefix . 'disp_prefs_show_' . $def } = 1;
+                push @$fields, { name => $def };
+            }
         }
         else {
-            $p = 'Default' if lc($p) eq 'basic';
-            if ( ( lc($p) eq 'advanced' ) || ( lc($p) eq 'default' ) ) {
-                $param->{ $prefix . 'disp_prefs_' . $p } = 1;
-                foreach my $def (
-                    qw( title body category tags feedback publishing assets )
-                    )
-                {
-                    $param->{ $prefix . 'disp_prefs_show_' . $def } = 1;
-                    push @$fields, { name => $def };
-                }
-                if ( lc($p) eq 'advanced' ) {
-                    foreach my $def (qw(excerpt feedback keywords)) {
-                        $param->{ $prefix . 'disp_prefs_show_' . $def } = 1;
-                        push @$fields, { name => $def };
-                    }
-                }
-            }
-            else {
-                $param->{ $prefix . 'disp_prefs_show_' . $p } = 1;
-                push @$fields, { name => $p };
-            }
+            $param->{ $prefix . 'disp_prefs_show_' . $p } = 1;
+            push @$fields, { name => $p };
         }
     }
 }
@@ -4452,33 +4474,22 @@ sub _entry_prefs_from_params {
     my $app      = shift;
     my ($prefix) = @_;
     my $q        = $app->param;
-    my $disp     = $q->param('entry_prefs');
-    my %fields;
-    my $prefs = '';
-    if ( $disp && lc $disp ne 'custom' ) {
-        $fields{$disp} = 1;
+    my $disp     = $q->param('entry_prefs') || '';
+    my @fields;
+    if ( lc $disp eq 'custom' ) {
+        @fields = split /,/, $q->param( $prefix . 'custom_prefs' );
     }
-    elsif ( $disp && lc $disp eq 'custom' ) {
-        my @fields = split /,/, $q->param( $prefix . 'custom_prefs' );
-        foreach (@fields) {
-            $prefs .= ',' if $prefs ne '';
-            $prefs .= $_;
-        }
+    elsif ( $disp ) {
+        push @fields, $disp;
     }
     else {
-        $fields{$_} = 1 foreach $q->param( $prefix . 'custom_prefs' );
+        @fields = $q->param( $prefix . 'custom_prefs' );
     }
 
     if ( my $body_height = $q->param('text_height') ) {
-        $fields{'body'} = $body_height;
+        push @fields, 'body:'.$body_height;
     }
-    foreach ( keys %fields ) {
-        $prefs .= ',' if $prefs ne '';
-        $prefs .= $_;
-        $prefs .= ':' . $fields{$_} if $fields{$_} > 1;
-    }
-    $prefs .= '|' . $q->param('bar_position');
-    $prefs;
+    return join(',', @fields) . '|' . $q->param('bar_position');
 }
 
 # rebuild_set is a hash whose keys are entry IDs
@@ -4942,6 +4953,99 @@ sub setup_filtered_ids {
     MT->run_callbacks( 'cms_filtered_list_param.' . $ds, $app, \%data,
         $objs );
     $app->param( 'id', map( $_->[0], @{ $data{objects} } ) );
+}
+
+sub setup_editor_param {
+    my $app = shift;
+    my ($param) = @_;
+
+    if ( my $blog = $app->blog ) {
+        if ( my $css = $blog->content_css ) {
+            $css =~ s#{{support}}/?#$app->support_directory_url#ie;
+            if ( my $theme = $blog->theme ) {
+                $css =~ s#{{theme_static}}/?#$theme->static_file_url#ie;
+            }
+            if ( $css !~ m#\A(https?:)?/# ) {
+                $css = MT::Util::caturl( $blog->site_url, $css );
+            }
+            $param->{content_css} = $css;
+        }
+    }
+
+    $param->{object_type} = $app->param('_type') || '';
+
+    if ( my $editor_regs = MT::Component->registry('editors') ) {
+        $param->{editors} = {};
+        foreach my $editors (@$editor_regs) {
+            foreach my $editor_key ( keys(%$editors) ) {
+                my $reg    = $editors->{$editor_key};
+                my $plugin = $reg->{plugin};
+                my $tmpls  = $param->{editors}{$editor_key} ||= {
+                    templates  => [],
+                    extensions => [],
+                    config     => {},
+                };
+
+                foreach my $k ( 'template', 'extension' ) {
+                    my $conf = $reg->{$k};
+                    next unless defined $conf;
+                    if ( !ref $conf ) {
+                        $conf = {
+                            template => $conf,
+                            order    => 5,
+                        };
+                    }
+
+                    if ( my $tmpl = $plugin->load_tmpl( $conf->{template} ) )
+                    {
+                        push(
+                            @{ $tmpls->{ $k . 's' } },
+                            { %$conf, tmpl => $tmpl }
+                        );
+                    }
+                }
+
+                $tmpls->{config}
+                    = { %{ $tmpls->{config} }, %{ $reg->{'config'} } }
+                    if $reg->{'config'};
+            }
+        }
+
+        foreach my $editor_key ( keys %{ $param->{editors} } ) {
+            foreach my $k ( 'templates', 'extensions' ) {
+                $param->{editors}{$editor_key}{$k}
+                    = [ sort { $a->{order} <=> $b->{order} }
+                        @{ $param->{editors}{$editor_key}{$k} } ];
+            }
+        }
+
+        my $editor = lc( $app->config('Editor') );
+        $param->{wysiwyg_editor}
+            = lc( $app->config('WYSIWYGEditor') || $editor );
+        $param->{source_editor}
+            = lc( $app->config('SourceEditor') || $editor );
+        $param->{editor_strategy} = lc( $app->config('EditorStrategy') );
+    }
+    else {
+        my $rte;
+        if ( $param->{convert_breaks} =~ m/richtext/ ) {
+            ## Rich Text editor
+            $rte = lc( $app->config('RichTextEditor') );
+        }
+        else {
+            $rte = 'archetype';
+        }
+        my $editors = $app->registry("richtext_editors");
+        my $edit_reg = $editors->{$rte} || $editors->{archetype};
+
+        my $rich_editor_tmpl;
+        if ( $rich_editor_tmpl
+            = $edit_reg->{plugin}->load_tmpl( $edit_reg->{template} ) )
+        {
+            $param->{rich_editor}      = $rte;
+            $param->{rich_editor_tmpl} = $rich_editor_tmpl;
+        }
+    }
 }
 
 1;

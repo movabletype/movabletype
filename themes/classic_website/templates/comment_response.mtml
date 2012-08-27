@@ -40,7 +40,7 @@
                             <$mt:Var name="message"$>
                             <p>
                             <mt:If name="comment_error">
-                                <__trans phrase="Return to <a href="[_1]">your comment</a>." params="javascript:history.back()">
+                                <a href="javascript:history.back()"><__trans phrase="Back"></a>
                             <mt:Else>
                                 <__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<$mt:EntryLink$>">
                             </mt:If>

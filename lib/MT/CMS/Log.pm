@@ -446,7 +446,7 @@ PERMCHECK: {
             push @col,
                 format_ts(
                 "%Y-%m-%d %H:%M:%S",
-                epoch2ts( $blog, ts2epoch( undef, $ts ) ),
+                epoch2ts( $blog, ts2epoch( undef, $ts, 1 ) ),
                 $blog,
                 $app->user ? $app->user->preferred_language : undef
                 );

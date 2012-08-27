@@ -215,6 +215,17 @@ TC.Mixer.Display.prototype.makeEntryElement = function( entry )
 	
 	// image
 	var img = this.document.createElement( "img" );
+	if ( this.mixer.imageFallbackSmall && this.mixer.imageFallbackBig ) {
+		var that = this;
+		img.onerror = function () {
+			var isBig = that.imageProperty.match(/Big/) ? true : false;
+			var fallback = that.document.createElement( "img" );
+			fallback.src = isBig ? that.mixer.imageFallbackBig : that.mixer.imageFallbackSmall;
+			fallback.alt = entry.title || entry.name;
+			element.insertBefore(fallback,img);
+			element.removeChild(img);
+		};
+	}
 	img.src = entry[ this.imageProperty ];
 	img.alt = entry.title || entry.name;
 	element.appendChild( img );

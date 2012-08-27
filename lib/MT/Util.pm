@@ -28,7 +28,8 @@ our @EXPORT_OK
     epoch2ts ts2epoch escape_unicode unescape_unicode
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
-    extract_url_path break_up_text dir_separator deep_do deep_copy realpath canonicalize_path);
+    extract_url_path break_up_text dir_separator deep_do deep_copy
+    realpath canonicalize_path );
 
 {
     my $Has_Weaken;
@@ -608,7 +609,7 @@ sub offset_time_list { gmtime offset_time(@_) }
 sub offset_time {
     my ( $ts, $blog, $dir ) = @_;
     my $offset;
-    if ( $blog ) {
+    if ($blog) {
         if ( !ref($blog) ) {
             require MT::Blog;
             $blog = MT::Blog->load($blog);
@@ -799,8 +800,26 @@ sub decode_url {
     my $RE         = join '|', keys %Map;
     my $RE_D       = join '|', keys %Map_Decode;
 
+    sub __check_xml_char {
+        my ($val, $is_hex) = @_;
+        $val = hex($val) if $is_hex;
+        if (grep $_ == $val, 9, 0xA, 0xD) {
+            return 1;
+        }
+        if (($val >= 0x20) and ($val <= 0xD7FF)) {  # [#x20-#xD7FF]
+            return 1;
+        }
+        if (($val >= 0xE000) and ($val <= 0xFFFD)) {  # [#xE000-#xFFFD]
+            return 1;
+        }
+        if (($val >= 0x10000) and ($val <= 0x10FFFF)) {  # [#x10000-#x10FFFF]
+            return 1;
+        }
+        return 0;
+    }
+
     sub encode_xml {
-        my ( $str, $nocdata ) = @_;
+        my ( $str, $nocdata, $no_re_replace ) = @_;
         return '' unless defined $str;
         $nocdata ||= MT->config->NoCDATA;
         if (  !$nocdata
@@ -820,7 +839,8 @@ sub decode_url {
             $str =~ s!($RE)!$Map{$1}!g;
 
             # re-replace &amp;#nnnn => &#nnnn
-            $str =~ s/&amp;((\#([0-9]+)|\#x([0-9a-fA-F]+)).*?);/&$1;/g;
+            $str =~ s/&amp;#(x?)((?:[0-9]+|[0-9a-fA-F]+).*?);/__check_xml_char($2, $1) ? "&#$1$2;" : "&amp;#$1$2;"/ge
+                unless $no_re_replace;
         }
         $str =~ tr/\0-\x08\x0B\x0C\x0E-\x1F\x7F/     /;
         $str;
@@ -1870,6 +1890,7 @@ sub browser_language {
 sub launch_background_tasks {
     return !( $ENV{MOD_PERL}
         || $ENV{FAST_CGI}
+        || $ENV{'psgi.input'}
         || !MT->config->LaunchBackgroundTasks );
 }
 
@@ -2699,16 +2720,16 @@ sub canonicalize_path {
                 pop @parts;
             }
         }
-        elsif ( $path and $path ne File::Spec->curdir ) {
+        elsif ( defined $path and $path ne File::Spec->curdir ) {
             push @parts, $path;
         }
     }
     my $sep = dir_separator();
     $path = (@parts) ? join( $sep, @parts ) : undef;
-    if ( $path ) {
+    if ($path) {
         $path =~ s/^\Q$sep\E// unless $is_abs;
     }
-    return $path ? File::Spec->catfile( $path, $filename ) : $filename;
+    return $path ? File::Spec->catpath( $vol, $path, $filename ) : $filename;
 }
 
 package MT::Util::XML::SAX::LexicalHandler;

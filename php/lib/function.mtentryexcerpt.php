@@ -18,12 +18,15 @@ function smarty_function_mtentryexcerpt($args, &$ctx) {
     } elseif ($args['no_generate']) {
         return '';
     }
-    $blog = $ctx->stash('blog');
-    $words = $blog->blog_words_in_excerpt;
-    if (!isset($words) or empty($words)) {
-        $words = 40;
+    if (!isset($args['words'])) {
+        $blog = $ctx->stash('blog');
+        $words = $blog->blog_words_in_excerpt;
+        if (!isset($words) or empty($words)) {
+            $words = 40;
+        }
+        $args['words'] = $words;
     }
-    $args['words'] = $words;
+    
     $excerpt = $ctx->tag('MTEntryBody', $args);
     if (!$excerpt) {
         return '';

@@ -533,6 +533,8 @@ my @apis = (
                 'markdown_with_smartypants' => 1,
                 'textile_2' => 1,
             );
+            # __sanitize__ may come from the community pack
+            @$result = grep { $_->{key} ne '__sanitize__' } @$result;
             foreach my $res ( @$result ) {
                 is(1, delete( $tf{$res->{key}} ), $res->{key});
             }

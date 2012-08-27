@@ -127,27 +127,6 @@ $Lexicon_nl = array(
 ## php/mt.php
 	'Page not found - [_1]' => 'Pagina niet gevonden - [_1]',
 
-## php/lib/MTViewer.php
-	'moments from now' => 'ogenblikken in de toekomst',
-	'[quant,_1,hour,hours] from now' => 'over [quant,_1,uur,uur]',
-	'[quant,_1,minute,minutes] from now' => 'over [quant,_1,minuut,minuten]',
-	'[quant,_1,day,days] from now' => 'over [quant,_1,dag,dagen]',
-	'less than 1 minute from now' => 'binnen minder dan 1 minuut',
-	'less than 1 minute ago' => 'minder dan 1 minuut geleden',
-	'[quant,_1,hour,hours], [quant,_2,minute,minutes] from now' => 'over [quant,_1,uur,uur] en [quant,_2,minuut,minuten]',
-	'[quant,_1,hour,hours], [quant,_2,minute,minutes] ago' => '[quant,_1,uur,uur], [quant,_2,minuut,minuten] geleden',
-	'[quant,_1,day,days], [quant,_2,hour,hours] from now' => 'over [quant,_1,dag,dagen] en [quant,_2,uur,uur]',
-	'[quant,_1,day,days], [quant,_2,hour,hours] ago' => '[quant,_1,dag,dagen] en [quant,_2,uur,uur] geleden',
-	'[quant,_1,second,seconds] from now' => 'over [quant,_1,seconde,seconden]',
-	'[quant,_1,second,seconds]' => '[quant,_1,seconde,seconden]',
-	'[quant,_1,minute,minutes], [quant,_2,second,seconds] from now' => 'over [quant,_1,minuut,minuten], [quant,_2,seconde,seconden]',
-	'[quant,_1,minute,minutes], [quant,_2,second,seconds]' => '[quant,_1,minuut,minuten], [quant,_2,seconde,seconden]',
-	'[quant,_1,minute,minutes]' => '[quant,_1,minuut,minuten]',
-	'[quant,_1,hour,hours], [quant,_2,minute,minutes]' => '[quant,_1,uur,uren], [quant,_2,minuut,minuten]',
-	'[quant,_1,hour,hours]' => '[quant,_1,uur,uren]',
-	'[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,dag,dagen], [quant,_2,uur,uren]',
-	'[quant,_1,day,days]' => '[quant,_1,dag,dagen]',
-
 );
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_nl;

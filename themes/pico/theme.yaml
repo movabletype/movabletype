@@ -27,6 +27,7 @@ elements:
                     label: Pico Styles
                     description_label: A collection of styles compatible with Pico themes.
                     order: 1
+                    class: Local
             templates:
                 index:
                     archive_index:

@@ -127,27 +127,6 @@ $Lexicon_es = array(
 ## php/mt.php
 	'Page not found - [_1]' => 'Página no encontrada - [_1]',
 
-## php/lib/MTViewer.php
-	'moments from now' => 'dentro de unos momentos',
-	'[quant,_1,hour,hours] from now' => 'dentro de [quant,_1,hora,horas]',
-	'[quant,_1,minute,minutes] from now' => 'dentro de [quant,_1,minuto,minutos]',
-	'[quant,_1,day,days] from now' => 'dentro de [quant,_1,día,días]',
-	'less than 1 minute from now' => 'dentro de menos de un minuto',
-	'less than 1 minute ago' => 'hace menos de un minuto',
-	'[quant,_1,hour,hours], [quant,_2,minute,minutes] from now' => 'dentro de [quant,_1,hora,horas], [quant,_2,minuto,minutos]',
-	'[quant,_1,hour,hours], [quant,_2,minute,minutes] ago' => 'hace [quant,_1,hora,horas], [quant,_2,minuto,minutos]',
-	'[quant,_1,day,days], [quant,_2,hour,hours] from now' => 'dentro de [quant,_1,día,días], [quant,_2,hora,horas]',
-	'[quant,_1,day,days], [quant,_2,hour,hours] ago' => 'hace [quant,_1,día,días], [quant,_2,hora,horas]',
-	'[quant,_1,second,seconds] from now' => 'dentro de [quant,_1,segundo,segundos]',
-	'[quant,_1,second,seconds]' => '[quant,_1,segundo,segundos]',
-	'[quant,_1,minute,minutes], [quant,_2,second,seconds] from now' => 'dentro de [quant,_1,minuto,minutos], [quant,_2,segundo,segundos]',
-	'[quant,_1,minute,minutes], [quant,_2,second,seconds]' => '[quant,_1,minuto,minutos], [quant,_2,segundo,segundos]',
-	'[quant,_1,minute,minutes]' => '[quant,_1,minuto,minutos]',
-	'[quant,_1,hour,hours], [quant,_2,minute,minutes]' => '[quant,_1,hora,horas], [quant,_2,minuto,minutos]',
-	'[quant,_1,hour,hours]' => '[quant,_1,hora,horas]',
-	'[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,día,días], [quant,_2,hora,horas]',
-	'[quant,_1,day,days]' => '[quant,_1,día,días]',
-
 );
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_es;

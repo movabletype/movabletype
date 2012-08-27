@@ -160,6 +160,7 @@ sub js_tag_check {
     return $app->json_result( { valid => 1, exists => $tag ? 1 : 0 } );
 }
 
+## DEPRECATED
 sub js_tag_list {
     my $app = shift;
 

@@ -47,7 +47,7 @@ sub ping_update {
             or return $class->error(
             MT->translate( 'Can\'t load blog #[_1].', $blog ) );
     }
-    my $ua = MT->new_ua( { timeout => MT->config->PingTimeout } );
+    my $ua = MT->new_ua();
     my $req = HTTP::Request->new( 'POST', $url );
     $req->header( 'Content-Type' => 'text/xml' );
     my $blog_name = encode_xml( Encode::encode_utf8( $blog->name ) );

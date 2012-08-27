@@ -346,6 +346,7 @@ sub NS_DC      { 'http://purl.org/dc/elements/1.1/'; }
 sub NS_TYPEPAD { 'http://sixapart.com/atom/typepad#'; }
 
 sub script { $_[0]->{cfg}->AtomScript . '/1.0' }
+sub uri    { $_[0]->mt_path . $_[0]->script }
 
 sub atom_content_type   {'application/atom+xml'}
 sub atom_x_content_type {'application/atom+xml'}
@@ -872,7 +873,7 @@ sub get_posts {
             {   rel  => 'replies',
                 type => $app->atom_x_content_type,
                 href => $app->base
-                    . $app->app_path
+                    . $app->path
                     . $app->config->AtomScript
                     . '/comments/blog_id='
                     . $blog->id
@@ -923,7 +924,7 @@ sub get_post {
         {   rel  => 'replies',
             type => $app->atom_x_content_type,
             href => $app->base
-                . $app->app_path
+                . $app->path
                 . $app->config->AtomScript
                 . '/comments/blog_id='
                 . $blog->id

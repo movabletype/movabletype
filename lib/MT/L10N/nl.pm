@@ -3504,10 +3504,10 @@ use vars qw( @ISA %Lexicon );
 	'Please upload the file [_1]' => 'Gelieve bestand [_1] te uploaden',
 
 ## tmpl/cms/dialog/select_association_type.tmpl
-	'Grant website permission to user' => 'Ken websitepermissie to aan gebruiker',
-	'Grant blog permission to user' => 'Ken blogpermissie toe aan gebruiker',
-	'Grant website permission to group' => 'Ken websitepermissie toe aan een groep',
-	'Grant blog permission to group' => 'Ken blogpermissie toe aan een groep',
+	'Grant website permission to a user' => 'Ken websitepermissie to aan gebruiker',
+	'Grant blog permission to a user' => 'Ken blogpermissie toe aan gebruiker',
+	'Grant website permission to a group' => 'Ken websitepermissie toe aan een groep',
+	'Grant blog permission to a group' => 'Ken blogpermissie toe aan een groep',
 
 ## tmpl/cms/dialog/select_theme.tmpl
 	'Select Personal blog theme' => 'Selecteer thema voor persoonlijke blog',

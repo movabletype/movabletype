@@ -1208,7 +1208,9 @@ sub cgi_path {
         # relative path, prepend blog domain
         if ( my $blog = $ctx->stash('blog') ) {
             my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
-            $path = $blog_domain . $path;
+            if ($blog_domain) {
+                $path = $blog_domain . $path;
+            }
         }
     }
     $path .= '/' unless $path =~ m{/$};
@@ -1543,7 +1545,7 @@ sub _hdlr_if {
         }
     }
 
-    my $numeric = qr/^[-]?\d+(\.\d+)?$/;
+    my $numeric = qr/^[-]?[0-9]+(\.[0-9]+)?$/;
     no warnings;
     if ( exists $args->{eq} ) {
         return 0 unless defined($value);
@@ -2731,28 +2733,7 @@ sub _hdlr_get_var {
             $value = $value->(@_);
         }
         if ( ref($value) ) {
-            if ( UNIVERSAL::isa( $value, 'MT::Template' ) ) {
-                local $args->{name}     = undef;
-                local $args->{var}      = undef;
-                local $value->{context} = $ctx;
-                $value = $value->output($args);
-            }
-            elsif ( UNIVERSAL::isa( $value, 'MT::Template::Tokens' ) ) {
-                local $ctx->{__stash}{tokens} = $value;
-                local $args->{name}           = undef;
-                local $args->{var}            = undef;
-
-                # Pass through SetVarTemplate arguments as variables
-                # so that they do not affect the global stash
-                my $vars = $ctx->{__stash}{vars} ||= {};
-                my @names = keys %$args;
-                my @var_names;
-                push @var_names, lc $_ for @names;
-                local @{$vars}{@var_names};
-                $vars->{ lc($_) } = $args->{$_} for @names;
-                $value = $ctx->slurp($args) or return;
-            }
-            elsif ( ref($value) eq 'ARRAY' ) {
+            if ( ref($value) eq 'ARRAY' ) {
                 if ( defined $index ) {
                     if ( $index =~ /^-?\d+$/ ) {
                         $value = $value->[$index];
@@ -2825,6 +2806,29 @@ sub _hdlr_get_var {
                         );
                     }
                 }
+            }
+        }
+        if ( ref($value) ) {
+            if ( UNIVERSAL::isa( $value, 'MT::Template' ) ) {
+                local $args->{name}     = undef;
+                local $args->{var}      = undef;
+                local $value->{context} = $ctx;
+                $value = $value->output($args);
+            }
+            elsif ( UNIVERSAL::isa( $value, 'MT::Template::Tokens' ) ) {
+                local $ctx->{__stash}{tokens} = $value;
+                local $args->{name}           = undef;
+                local $args->{var}            = undef;
+
+                # Pass through SetVarTemplate arguments as variables
+                # so that they do not affect the global stash
+                my $vars = $ctx->{__stash}{vars} ||= {};
+                my @names = keys %$args;
+                my @var_names;
+                push @var_names, lc $_ for @names;
+                local @{$vars}{@var_names};
+                $vars->{ lc($_) } = $args->{$_} for @names;
+                $value = $ctx->slurp($args) or return;
             }
         }
         if ( my $op = $args->{op} ) {
@@ -3257,7 +3261,14 @@ sub _hdlr_app_statusmsg {
     if ( !$blog && $blog_id ) {
         $blog = MT->model('blog')->load($blog_id);
     }
-    if ( $app->user and $app->user->can_do('rebuild') ) {
+    if ($blog && $app->user
+        and $app->user->can_do(
+            'rebuild',
+            at_least_one => 1,
+            blog_id      => $blog->id,
+        )
+        )
+    {
         $rebuild = '' if $blog && $blog->custom_dynamic_templates eq 'all';
         $rebuild
             = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild">%%</a>">}
@@ -3960,7 +3971,7 @@ L<IncludeBlock> tag. If unassigned, the "contents" variable is used.
             return $ctx->error( $builder->errstr ) unless defined $html;
             return $html;
         };
-        return $ctx->tag( 'include', $args, $cond );
+        return _hdlr_include( $ctx,  $args, $cond );
     }
 
 ###########################################################################
@@ -4275,7 +4286,7 @@ B<Example:> Passing Parameters to a Template Module
                         my $fmgr  = $blog->file_mgr;
                         my $mtime = $fmgr->file_mod_time($include_file);
                         if ( $mtime
-                            && ( MT::Util::ts2epoch( undef, $latest )
+                            && ( MT::Util::ts2epoch( undef, $latest, 1 )
                                 > $mtime ) )
                         {
                             $ttl = 1;    # bound to force an update
@@ -4385,7 +4396,9 @@ B<Example:> Passing Parameters to a Template Module
         my ( $ctx, $arg, $cond ) = @_;
         if ( !MT->config->AllowFileInclude ) {
             return $ctx->error(
-                'File include is disabled by "AllowFileInclude" config directive.'
+                MT->translate(
+                    'File include is disabled by "AllowFileInclude" config directive.'
+                )
             );
         }
         my $file = $arg->{file} or return;

@@ -18,9 +18,19 @@ if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
     $PRODUCT_NAME = 'Movable Type';
 define('PRODUCT_NAME', $PRODUCT_NAME);
 
+$RELEASE_NUMBER = '__RELEASE_NUMBER__';
+if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
+    $RELEASE_NUMBER = 0;
+define('RELEASE_NUMBER', $RELEASE_NUMBER);
+
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
 if ( $PRODUCT_VERSION_ID == '__PRODUCT_' . 'VERSION_ID__' )
     $PRODUCT_VERSION_ID = PRODUCT_VERSION;
+$VERSION_STRING;
+if ( $RELEASE_NUMBER > 0 )
+    $VERSION_STRING = $PRODUCT_VERSION_ID . "." . $RELEASE_NUMBER;
+else
+    $VERSION_STRING = $PRODUCT_VERSION_ID;
 define('VERSION_ID', $PRODUCT_VERSION_ID);
 
 global $Lexicon;
@@ -246,7 +256,7 @@ class MT {
         $this->cfg_file = $file;
 
         $cfg = array();
-        $type_array = array('pluginpath', 'alttemplate', 'outboundtrackbackdomains', 'memcachedservers');
+        $type_array = array('pluginpath', 'alttemplate', 'outboundtrackbackdomains', 'memcachedservers', 'userpasswordvalidation');
         $type_hash  = array('commenterregistration');
         if ($fp = file($file)) {
             foreach ($fp as $line) {
@@ -323,6 +333,17 @@ class MT {
             $cfg['phpdir'] . DIRECTORY_SEPARATOR . "extlib" . DIRECTORY_SEPARATOR . "FirePHPCore" . $path_sep .
             ini_get('include_path')
         );
+
+        // assign i18n defaults:
+        $lang = strtolower($cfg['defaultlanguage']);
+        if (! @include_once("i18n_$lang.php")) {
+            include_once("i18n_en_us.php");
+        }
+        foreach ($GLOBALS['i18n_default_settings'] as $k => $v) {
+            if (! isset($cfg[$k])) {
+                $cfg[$k] = $v;
+            }
+        }
     }
 
     function configure_from_db() {
@@ -349,8 +370,6 @@ class MT {
             $cfg['cgipath'] .= '/'; 
         isset($cfg['staticwebpath']) or
             $cfg['staticwebpath'] = $cfg['cgipath'] . 'mt-static/';
-        isset($cfg['publishcharset']) or
-            $cfg['publishcharset'] = 'utf-8';
         isset($cfg['trackbackscript']) or
             $cfg['trackbackscript'] = 'mt-tb.cgi';
         isset($cfg['adminscript']) or
@@ -391,8 +410,6 @@ class MT {
             $cfg['userpicthumbnailsize'] = '100';
         isset($cfg['pluginpath']) or
             $cfg['pluginpath'] = array($this->config('MTDir') . DIRECTORY_SEPARATOR . 'plugins');
-        isset($cfg['timeoffset']) or
-            $cfg['timeoffset'] = '0';
         isset($cfg['includesdir']) or
             $cfg['includesdir'] = 'includes_c';
         isset($cfg['searchmaxresults']) or

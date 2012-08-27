@@ -529,9 +529,9 @@ sub compile_category_filter {
         }
         my $new_expr = '';
         my %cats_used;
-        my @split_expr = split /(\bOR\b|\bAND\b|\bNOT\b|\(|\))/, $cat_expr;
+        my @split_expr = split /(\bOR\b|\bAND\b|\bNOT\b|\(|\))/i, $cat_expr;
         foreach my $token (@split_expr) {
-            if (grep {$token eq $_} qw{OR AND NOT ( )}) {
+            if (grep {lc $token eq $_} qw{OR AND NOT ( )}) {
                 $new_expr .= $token;
                 next;
             }

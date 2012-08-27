@@ -197,7 +197,7 @@ sub edit {
         }
 
         # Populate list of included templates
-        foreach my $tag qw( Include IncludeBlock ) {
+        foreach my $tag (qw( Include IncludeBlock )) {
             my $includes = $obj->getElementsByTagName($tag);
             if ($includes) {
                 my @includes;
@@ -1602,6 +1602,10 @@ sub delete_map {
     my $map = MT::TemplateMap->load( { id => $id, blog_id => $blog_id } )
         or return $app->errtrans('Can\'t load templatemap');
     $map->remove;
+
+    my $blog = MT->model('blog')->load( $blog_id );
+    $blog->flush_has_archive_type_cache();
+
     my $html = _generate_map_table( $app, $blog_id, $template_id );
     $app->{no_print_body} = 1;
     $app->send_http_header("text/plain");
@@ -1640,6 +1644,10 @@ sub add_map {
     $map->save
         or return $app->error(
         $app->translate( "Saving map failed: [_1]", $map->errstr ) );
+
+    my $blog = MT->model('blog')->load( $blog_id );
+    $blog->flush_has_archive_type_cache();
+
     my $html = _generate_map_table( $app, $blog_id, $template_id );
     $app->{no_print_body} = 1;
     $app->send_http_header("text/plain");

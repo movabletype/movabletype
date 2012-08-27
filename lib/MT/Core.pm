@@ -1581,6 +1581,7 @@ BEGIN {
             },
             'SchemaVersion'         => undef,
             'MTVersion'             => undef,
+            'MTReleaseNumber'       => undef,
             'RequiredCompatibility' => { default => 0 },
             'NotifyUpgrade'         => { default => 1 },
             'Database'              => undef,
@@ -1605,6 +1606,7 @@ BEGIN {
             'AltTemplatePath' => {
                 default => 'alt-tmpl',
                 path    => 1,
+                type    => 'ARRAY',
             },
             'CSSPath'    => { default => 'css', },
             'ImportPath' => {
@@ -1656,7 +1658,6 @@ BEGIN {
             'MailTransfer'         => { default => 'sendmail' },
             'SMTPServer'           => { default => 'localhost', },
             'SMTPAuth'             => { default => 0, },
-            'SMTPUseSSL'           => { default => 0, },
             'SMTPUser'             => undef,
             'SMTPPassword'         => undef,
             'SMTPPort'             => undef,
@@ -1674,6 +1675,10 @@ BEGIN {
             'NoTempFiles'           => { default => 0, },
             'TempDir'               => { default => '/tmp', },
             'RichTextEditor'        => { default => 'archetype', },
+            'WYSIWYGEditor'         => undef,
+            'SourceEditor'          => undef,
+            'Editor'                => { default => 'tinymce', },
+            'EditorStrategy'        => { default => 'Multi', },
             'EntriesPerRebuild'     => { default => 40, },
             'UseNFSSafeLocking'     => { default => 0, },
             'NoLocking'             => { default => 0, },
@@ -1774,6 +1779,10 @@ BEGIN {
                 default =>
                     'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
             },
+            'FeedbackURL' => {
+                default =>
+                    'http://www.movabletype.org/feedback.html',
+            },
 
 # 'MTNewsURL' => {
 #     default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
@@ -1833,7 +1842,7 @@ BEGIN {
             },
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
-            'MaxTagAutoCompletionItems' => { default => 1000, },
+            'MaxTagAutoCompletionItems' => { default => 1000, },    ## DEPRECATED
             'NewUserAutoProvisioning' =>
                 { handler => \&NewUserAutoProvisioning, },
             'NewUserBlogTheme'        => { default => 'classic_blog' },
@@ -1958,6 +1967,10 @@ BEGIN {
                 handler => 'MT::App::Wizard',
                 script  => sub { 'mt-wizard.cgi' },
                 type    => 'run_once',
+            },
+            'check' => {
+                script => sub { MT->config->CheckScript },
+                type   => 'run_once',
             },
             'comments' => {
                 handler => 'MT::App::Comments',
@@ -2676,6 +2689,8 @@ sub load_core_permissions {
                 'open_select_author_dialog'       => 1,
                 'send_update_pings_page'          => 1,
                 'insert_asset'                    => 1,
+                'edit_page_basename'              => 1,
+                'edit_page_authored_on'           => 1,
             }
         },
         'blog.manage_users' => {

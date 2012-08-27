@@ -84,7 +84,10 @@ sub save_config {
             $blog_id ? 'blog:' . $blog_id : 'system' );
         if ( $plugin->errstr ) {
             return $app->error(
-                "Error saving plugin settings: " . $plugin->errstr );
+                $app->translate(
+                    "Error saving plugin settings: [_1]", $plugin->errstr
+                )
+            );
         }
     }
 

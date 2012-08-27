@@ -12,25 +12,31 @@ use ExtUtils::Manifest qw( maniread manicopy mkmanifest );
 use File::Copy;
 use File::Find;
 use File::Spec::Functions;
+use File::Copy::Recursive qw( rcopy );
 use File::Basename;
 use Getopt::Long;
 
-my $langlist = '';
-my $stamp = '';
-my $package = '';
-my $license = '';
-my $silent = 0;
+my $langlist      = '';
+my $stamp         = '';
+my $package       = '';
+my $license       = '';
+my $silent        = 0;
+my $rpm           = 0;
+my $export        = '';
+my $export_prefix = '0';
 
 no warnings;
+
 # WHY, oh why?
 *ExtUtils::Manifest::cp = sub {
-    my ($srcFile, $dstFile) = @_;
-    my ($perm,$access,$mod) = (stat $srcFile)[2,8,9];
-    copy($srcFile,$dstFile);
+    my ( $srcFile, $dstFile ) = @_;
+    my ( $perm, $access, $mod ) = ( stat $srcFile )[ 2, 8, 9 ];
+    copy( $srcFile, $dstFile );
     utime $access, $mod, $dstFile;
+
     # chmod a+rX-w,go-w
-    chmod(  0644 | ( $perm & 0111 ? 0111 : 0 ),  $dstFile )
-      unless ($^O eq 'MacOS');
+    chmod( 0644 | ( $perm & 0111 ? 0111 : 0 ), $dstFile )
+        unless ( $^O eq 'MacOS' );
 };
 
 *ExtUtils::Manifest::manifind = sub {
@@ -42,9 +48,9 @@ no warnings;
         warn "Debug: diskfile $name\n" if $ExtUtils::Manifest::Debug;
         return if -d $_;
 
-        if( $ExtUtils::Manifest::Is_VMS_lc ) {
+        if ($ExtUtils::Manifest::Is_VMS_lc) {
             $name =~ s#(.*)\.$#\L$1#;
-               $name = uc($name) if $name =~ /^MANIFEST(\.SKIP)?$/i;
+            $name = uc($name) if $name =~ /^MANIFEST(\.SKIP)?$/i;
         }
         $found->{$name} = "";
     };
@@ -55,8 +61,10 @@ no warnings;
     # paths.
 
     ### Follow symbolic links
-    find({wanted => $wanted, follow => 1},
-         $ExtUtils::Manifest::Is_MacOS ? ":" : ".");
+    find(
+        { wanted => $wanted, follow => 1 },
+        $ExtUtils::Manifest::Is_MacOS ? ":" : "."
+    );
 
     return $found;
 };
@@ -67,21 +75,24 @@ use warnings;
 $ENV{COPYFILE_DISABLE} = 'true';
 
 GetOptions(
-    'language:s' => \$langlist,
-    'package:s' => \$package,
-    'silent' => \$silent,
-    'license:s' => \$license,
-    'stamp:s' => \$stamp,
+    'language:s'      => \$langlist,
+    'package:s'       => \$package,
+    'silent'          => \$silent,
+    'license:s'       => \$license,
+    'stamp:s'         => \$stamp,
+    'rpm'             => \$rpm,
+    'export-dir:s'    => \$export,
+    'export-prefix:s' => \$export_prefix,
 ) or die "ERROR: Couldn't get the command-line options";
 
 my %options;
 
 my $make = 'make';
 $make .= ' -s' if $silent;
-$ExtUtils::Manifest::Quiet = $silent;
-$ExtUtils::Manifest::Verbose = ! $silent;
+$ExtUtils::Manifest::Quiet   = $silent;
+$ExtUtils::Manifest::Verbose = !$silent;
 
-my $skip = 'MANIFEST.SKIP';
+my $skip     = 'MANIFEST.SKIP';
 my $skip_bak = "$skip.bak";
 
 my $orig = eval {
@@ -92,58 +103,78 @@ my $orig = eval {
 } or die "ERROR: Failed to get version from package $package";
 
 my $skip_rules = `cat $skip`;
-if ($skip_rules =~ m/^#\?/m) { # conditional rule
-    move($skip, $skip_bak);
+if ( $skip_rules =~ m/^#\?/m ) {    # conditional rule
+    move( $skip, $skip_bak );
 }
 
-my @languages = split(/,/, $langlist);
+my @languages = split( /,/, $langlist );
 @languages = qw( en_US nl fr de es ja ) unless @languages;
 for my $lang (@languages) {
     $options{language} = $lang;
-    $options{package} = $package;
-    $options{license} = $license;
+    $options{package}  = $package;
+    $options{license}  = $license;
 
-    print join(" ", @languages), "\n";
+    print join( " ", @languages ), "\n";
     my $short_lang = $lang;
+
     # If there are not any _'s in the language double it: xx_XX.
-    my $long_lang = ($lang =~ /_/ ? $lang : $lang . '_' . uc($lang));
+    my $long_lang = ( $lang =~ /_/ ? $lang : $lang . '_' . uc($lang) );
+
     # ..unless we are Japanese.
-    $long_lang = 'ja' if ($lang eq 'ja');
+    $long_lang = 'ja' if ( $lang eq 'ja' );
 
     # Override the distribution name if we are given a stamp.
-    my $distname = defined $stamp && $stamp ne ''
+    my $distname
+        = defined $stamp && $stamp ne ''
         ? $stamp
         : $orig . '-' . $long_lang;
 
     print "---------------- Building $lang ----------------\n";
-    verbose_command("$make clean");  # to clean MT.pm
+    verbose_command("$make clean");    # to clean MT.pm
     verbose_command("$make lib/MT.pm");
     verbose_command("$make php/mt.php");
     verbose_command($make);
 
-    update_default_lang( $lang );
+    ## update_default_lang($lang);
 
-    make_manifest_skip($skip_rules, $skip);
+    make_manifest_skip( $skip_rules, $skip );
 
     mkmanifest();
 
     # Copy files for non-GPL license since we will be modifying the content
-    manicopy(maniread(), $distname, ( $license eq 'GPL' ? 'best' : 'cp' ));
+    manicopy( maniread(), $distname, ( $license eq 'GPL' ? 'best' : 'cp' ) );
 
-    if (($license || '') ne 'GPL') {
-        assign_license( $distname );
+    if ( ( $license || '' ) ne 'GPL' ) {
+        assign_license($distname);
     }
 
     verbose_command("find $distname -name .exists | xargs rm");
-    verbose_command("chmod +x $distname/*.cgi"); 
-    verbose_command("chmod +x $distname/tools/*"); 
+    verbose_command("chmod +x $distname/*.cgi");
+    verbose_command("chmod +x $distname/tools/*");
 
-    my $options = $silent ? 'cf' : 'cvf';
-    verbose_command("tar $options $distname.tar --wildcards --exclude '*.zip' $distname");
-    $options = $silent ? '-q' : '';
-    verbose_command("gzip $options --best $distname.tar");
-    $options = $silent ? '-rq' : '-r';
-    verbose_command("zip $options $distname.zip $distname -x $distname/extras/\*.gz");
+    my $options;
+    if ( $export && -d $export ) {
+        require MT;
+        require File::Spec;
+        my $mt_ver   = MT->version_id;
+        my $abs_path = File::Spec->rel2abs($distname);
+        my $exp      = sprintf( "movabletype-%s-%s", $mt_ver, $export_prefix );
+        $exp = File::Spec->catdir( $export, $exp );
+
+        print "Export $abs_path to $exp\n" unless $silent;
+        rcopy( $abs_path, $exp );
+    }
+    else {
+        $options = $silent ? 'cf' : 'cvf';
+        verbose_command(
+            "tar $options $distname.tar --wildcards --exclude '*.zip' $distname"
+        );
+        $options = $silent ? '-q' : '';
+        verbose_command("gzip $options --best $distname.tar");
+        $options = $silent ? '-rq' : '-r';
+        verbose_command(
+            "zip $options $distname.zip $distname -x $distname/extras/\*.gz");
+    }
 
     chdir($distname);
     verbose_command("zip $options ../$distname-nd.zip ./* -x extras/\*.gz");
@@ -154,13 +185,12 @@ for my $lang (@languages) {
 }
 
 END {
-    move($skip_bak, $skip) if -e $skip_bak;
+    move( $skip_bak, $skip ) if -e $skip_bak;
 }
 
 sub assign_license {
     my ($dir) = @_;
-    find( { wanted => \&process_file_for_license, no_chdir => 1 },
-        $dir );
+    find( { wanted => \&process_file_for_license, no_chdir => 1 }, $dir );
 }
 
 sub process_file_for_license {
@@ -173,7 +203,9 @@ sub process_file_for_license {
     return unless -f $file;
 
     # must have a source file extension or be a utility script (extensionless)
-    return unless $file =~ m! / ( [A-Za-z0-9_.-]+ \. ( pl | php | pm | cgi | js | t ) | [a-z0-9_-] + ) $ !x;
+    return
+        unless $file
+            =~ m! / ( [A-Za-z0-9_.-]+ \. ( pl | php | pm | cgi | js | t ) | [a-z0-9_-] + ) $ !x;
 
     my $content;
     open FIN, "<$file";
@@ -199,7 +231,9 @@ EOT
     chomp($license);
 
     if ($content =~ s{$open (\d+(-\d+)?).*?$close}
-        { '# Movable Type (r) (C) ' . $1 . ' Six Apart, Ltd. All Rights Reserved.' . $license }se) {
+        { '# Movable Type (r) (C) ' . $1 . ' Six Apart, Ltd. All Rights Reserved.' . $license }se
+        )
+    {
 
         ## print "applying license changes to $file...\n"; return;
 
@@ -210,18 +244,19 @@ EOT
 }
 
 sub make_manifest_skip {
-    my ($rules, $file) = @_;
+    my ( $rules, $file ) = @_;
     my @rules = split /\n/, $rules;
 
     my @result;
     foreach my $rule (@rules) {
-        if ($rule =~ m/^#\?([^=]+)=([^ ]+) +(.+)$/) {
+        if ( $rule =~ m/^#\?([^=]+)=([^ ]+) +(.+)$/ ) {
+
             # a conditional rule
-            my $var = $1;
-            my $val = $2;
+            my $var  = $1;
+            my $val  = $2;
             my $skip = $3;
 
-            if (($options{$var} || '') eq $val) {
+            if ( ( $options{$var} || '' ) eq $val ) {
                 push @result, $skip;
             }
         }
@@ -240,16 +275,19 @@ sub verbose_command {
     my $command = shift;
     print 'Execute:', "  $command" unless $silent;
     system $command;
-    if( $? == -1 ) {
+    if ( $? == -1 ) {
         die "ERROR: Failed to execute: $!";
     }
-    elsif( $? & 127 ) {
-        die sprintf( "ERROR: Child died with signal %d, with%s coredump\n",
-            ( $? & 127 ), ( $? & 128 ? '' : 'out' )
+    elsif ( $? & 127 ) {
+        die sprintf(
+            "ERROR: Child died with signal %d, with%s coredump\n",
+            ( $? & 127 ),
+            ( $? & 128 ? '' : 'out' )
         );
     }
     else {
-#        printf "Child exited with value %d\n", $? >> 8;
+
+        #        printf "Child exited with value %d\n", $? >> 8;
     }
     return $command;
 }

@@ -526,6 +526,7 @@ sub clear_cache {
     $tag_cache->remove if $tag_cache;
 }
 
+### DEPRECATED
 sub cache {
     my $pkg     = shift;
     my (%param) = @_;

@@ -670,11 +670,25 @@
   <script type="text/javascript" src="<$mt:var name="static_uri"$>js/edit.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 </mt:setvarblock>
 
+<mt:unless name="editors">
 <mt:if name="rich_editor"><mt:var name="rich_editor_tmpl"><mt:else><mt:include name="include/archetype_editor.tmpl"></mt:if>
+<mt:else>
+<mt:include name="include/editor_script.tmpl" id="editor_script_include">
+<mt:setvarblock name="editor_content">
+<textarea id="editor-input-content" class="text" name="text" style="display: none"><$mt:var name="text" escape="html"$></textarea>
+<textarea id="editor-input-extended" class="text" name="text_more" style="display: none"><$mt:var name="text_more" escape="html"$></textarea>
+</mt:setvarblock>
+</mt:unless>
 
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
     /* <![CDATA[ */
+    if (typeof(Editor) == 'undefined') {
+        Editor = {};
+    }
+    if (! Editor.strings) {
+        Editor.strings = {};
+    }
     Editor.strings.unsavedChanges = '<mt:if name="object_type"entry><__trans phrase="You have unsaved changes to this entry that will be lost." escape="js"><mt:else><__trans phrase="You have unsaved changes to this page that will be lost." escape="js"></mt:if>';
     Editor.strings.enterEmailAddress = '<__trans phrase="Enter email address:" escape="js">';
     Editor.strings.enterLinkAddress = '<__trans phrase="Enter the link address:" escape="js">';
@@ -689,6 +703,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="html_head" append="1">
+  <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/editor/common.css?v=<$mt:var name="mt_version_id" escape="url"$>" />
   <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/focus.js"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/tagcomplete.js"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/client.js"></script>
@@ -723,10 +738,9 @@
           var params = { uri: '<mt:var name="script_url">', method: 'POST', arguments: param };
           TC.Client.call(params);
       }
-      
-      function convertedText(c, result) {
+
+      function convertedText(response) {
           var form = document.forms['entry_form'];
-          var response = eval('('+result+')');
           if (response.error) {
               alert("Error: " + response.error);
               return;
@@ -735,16 +749,17 @@
           form.text.value = response.result.text;
           form.text_more.value = response.result.text_more;
           orig_text_format = cur_text_format = 'richtext';
-          TC.removeClassName(TC.elementOrId("editor-content"), "editor-plaintext");
+          jQuery('#editor-content').removeClass('editor-plaintext');
           app.setEditorIframeHTML();
       }
-      
+
+      <mt:unless name="editors">
       function changedTextFormat() {
           var form = this.form;
           var option = this.options[this.selectedIndex].value;
           if ((cur_text_format != 'richtext') && (option == 'richtext')) {
               // warn user that changing to richtext is not reversible (easily)
-              if (!confirm("<__trans phrase="Are you sure you want to use the Rich Text editor?" escape="js">")) {
+              if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
                   // revert selection
                   for (var i = 0; i < this.options.length; i++) {
                       if (this.options[i].value == cur_text_format)
@@ -759,14 +774,14 @@
           if (url = docs[key]) {
               if (url.indexOf('http://') == -1)
                   url = HelpBaseURI + url;
-              TC.removeClassName(getByID('formatting-help-link'), 'disabled');
+              jQuery('#formatting-help-link').removeClass('disabled');
           } else {
-              TC.addClassName(getByID('formatting-help-link'), 'disabled');
+              jQuery('#formatting-help-link').addClass('disabled');
           }
       
           if (cur_text_format == 'richtext') {
               // changing to plaintext editor
-              TC.addClassName(TC.elementOrId("editor-content"), "editor-plaintext");
+              jQuery('#editor-content').addClass('editor-plaintext');
               orig_text_format = cur_text_format = option;
               app.editor.setMode('textarea');
               app.editor.focus();
@@ -784,12 +799,61 @@
                   uri: '<mt:var name="script_url">', method: 'POST',
                       arguments: param, load: convertedText
               };
-              TC.Client.call(params);
+              jQuery.post('<mt:var name="script_url">', param, convertedText);
           } else {
               orig_text_format = cur_text_format = option;
               app.editor.focus();
           }
       }
+      <mt:else>
+      function changedTextFormat() {
+          var form = this.form;
+          var option = this.options[this.selectedIndex].value;
+          if ((cur_text_format != 'richtext') && (option == 'richtext')) {
+              // warn user that changing to richtext is not reversible (easily)
+              if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
+                  // revert selection
+                  for (var i = 0; i < this.options.length; i++) {
+                      if (this.options[i].value == cur_text_format)
+                          this.selectedIndex = i;
+                  }
+                  app.editor.focus();
+                  return;
+              }
+          }
+          var s = document.forms['entry_form'].convert_breaks;
+          var key = s.options[s.selectedIndex].value;
+          if (url = docs[key]) {
+              if (url.indexOf('http://') == -1)
+                  url = HelpBaseURI + url;
+              jQuery('#formatting-help-link').removeClass('disabled');
+          } else {
+              jQuery('#formatting-help-link').addClass('disabled');
+          }
+      
+          if (option == 'richtext') {
+              app.saveHTML(false);
+              // changing to richtext editor
+              // convert existing format to richtext
+              var param = {
+                  '__mode': 'convert_to_html',
+                  'text': form.text.value,
+                  'text_more': form.text_more.value,
+                  'format': orig_text_format
+              };
+              var params = {
+                  uri: '<mt:var name="script_url">', method: 'POST',
+                      arguments: param, load: convertedText
+              };
+              jQuery.post('<mt:var name="script_url">', param, convertedText);
+          } else {
+              // changing to plaintext editor
+              orig_text_format = cur_text_format = option;
+              app.editor.setMode(option);
+              app.editor.focus();
+          }
+      }
+      </mt:unless>
       
       function setDefaultFieldGroup() {
           var i, j, selected_fields, disable_fields, field_object;
@@ -883,7 +947,7 @@
               }
           }
       };
-      
+
       var docs = new Array();
       <mt:loop name="text_filters">
       docs['<$mt:var name="filter_key" escape="js"$>'] = '<$mt:var name="filter_docs" escape="js"$>';
@@ -1122,10 +1186,10 @@
       <div id="editor">
         <div id="editor-header" class="editor-header" mt:delegate="tab-container">
           <div class="tab selected-tab" mt:command="set-editor-content" mt:tab="content">
-            <label><a href="javascript:void(0);"><__trans phrase="Body"></a></label>
+            <label><a href="javascript:void(0);" tabindex="-1"><__trans phrase="Body"></a></label>
           </div>
           <div class="tab" mt:command="set-editor-extended" mt:tab="extended">
-            <label><a href="javascript:void(0);"><__trans phrase="Extended"></a></label>
+            <label><a href="javascript:void(0);" tabindex="-1"><__trans phrase="Extended"></a></label>
           </div>
           <div id="field-convert_breaks">
             <__trans phrase="Format:">
@@ -1265,6 +1329,7 @@
         handle: '.field-header',
         containment: 'document',
         update: function () {
+            jQuery('div.field.sort-enabled', this).trigger('sort-updated');
             sendEntryPrefs({ sort_only: true });
         }
     });
