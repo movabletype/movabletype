@@ -997,7 +997,7 @@ sub init_query {
                 unless ( ref($d) && ( 'Fh' eq ref($d) ) ) {
                     eval { $d = Encode::decode( $charset, $d, 1 ); };
                     return $app->errtrans(
-                        "Invalid request: corrupt character data for character set [_1]",
+                        "Problem with this request: corrupt character data for character set [_1]",
                         $charset
                     ) if $@;
                 }
@@ -1958,7 +1958,7 @@ sub _is_commenter {
         }
         return $app->error(
             $app->translate(
-                'Our apologies, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.'
+                'Sorry, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.'
             )
         ) unless $has_system_permission;
         return -1;
@@ -2043,7 +2043,7 @@ sub login {
         );
         return $app->error(
             $app->translate(
-                'This account has been disabled. Please see your system administrator for access.'
+                'This account has been disabled. Please see your Movable Type system administrator for access.'
             )
         );
     }
@@ -2085,7 +2085,7 @@ sub login {
         # Login invalid; auth layer says user record has been removed
         return $app->error(
             $app->translate(
-                'This account has been deleted. Please see your system administrator for access.'
+                'This account has been deleted. Please see your Movable Type system administrator for access.'
             )
         );
     }
@@ -2418,7 +2418,7 @@ sub create_user_pending {
     unless ( $user->save ) {
         return $app->error(
             $app->translate(
-                "Something wrong happened when trying to process signup: [_1]",
+                "An error occurred while trying to process signup: [_1]",
                 $user->errstr
             )
         );

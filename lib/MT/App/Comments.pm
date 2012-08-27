@@ -277,7 +277,7 @@ sub do_login {
                 {
                     return $app->login_form(
                         error => $app->translate(
-                            'Successfully authenticated but signing up is not allowed.  Please contact system administrator.'
+                            'Successfully authenticated, but signing up is not allowed.  Please contact your Movable Type system administrator.'
                         )
                     ) unless $commenter;
                 }
@@ -569,7 +569,7 @@ sub do_register {
 
     unless ($sess) {
         my $msg = $app->translate(
-            'Your confirmation have expired. Please register again.');
+            'Your confirmation has expired. Please register again.');
         if ($static) {
             $msg .= '&nbsp;'
                 . $app->translate(
@@ -1531,7 +1531,7 @@ sub redirect_to_target {
         if ( !$app->is_valid_redirect_target ) {
             return $app->error(
                 $app->translate(
-                    q{You are trying to redirect to external resources. If you can trust the site, please click the link: [_1]},
+                    q{You are trying to redirect to external resources. If you trust the site, please click the link: [_1]},
                     encode_html($static)
                 )
             );
@@ -1983,7 +1983,7 @@ sub save_commenter_profile {
         my $nickname = $param{nickname};
         unless ( $nickname && $param{email} ) {
             $param{error} = $app->translate(
-                'All required fields must have valid values.');
+                'All required fields must be populated.');
             return $app->build_page( 'profile.tmpl', \%param );
         }
         if ( $nickname =~ m/([<>])/ ) {
