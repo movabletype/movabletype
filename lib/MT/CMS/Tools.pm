@@ -1692,8 +1692,9 @@ sub adjust_sitepath {
                 $site_path = $path_limit;
             }
         }
-        elsif ($path_limit
-            && $site_path =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)! )
+        elsif ( $path_limit
+            and !$blog->is_blog
+            and ( 0 != index( $site_path, $path_limit ) ) )
         {
             $site_path = $path_limit;
         }
@@ -1746,9 +1747,6 @@ sub adjust_sitepath {
             {
                 $archive_path = $path_limit;
             }
-        }
-        elsif ( $archive_path =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)! ) {
-            $archive_path = $path_limit;
         }
         $blog->archive_path($archive_path);
 
