@@ -202,7 +202,7 @@ abstract class MTDatabase {
             if ( empty( $incl ) ) {
                 $mt = MT::get_instance();
                 trigger_error( $mt->translate(
-                        "The attribute exclude_blogs denies all include_blogs."
+                        "When the exclude_blogs and include_blogs attributes are used together, the same blog IDs should not be listed as parameters to both of them."
                 ) );
             } else {
                 $incl = array_values( $incl );

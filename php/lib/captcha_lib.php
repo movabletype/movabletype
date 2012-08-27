@@ -30,7 +30,7 @@ class MTUtilCaptcha implements CaptchaProvider {
         $cgipath = $mt->config('CGIPath');
         $commentscript = $mt->config('CommentScript');
         $caption = $mt->translate('Captcha');
-        $description = $mt->translate('Type the characters you see in the picture above.');
+        $description = $mt->translate('Type the characters shown in the picture above.');
         $form = "
 <div class=\"label\"><label for=\"captcha_code\">$caption:</label></div>
 <div class=\"field\">

@@ -61,7 +61,7 @@ function smarty_function_mtvar($args, &$ctx) {
         $name = $vars[$name];
         if (!isset($name))
             return $ctx->error($ctx->mt->translate(
-                "You used a [_1] tag without a valid name attribute.", "<MT$tag>" ));
+                "You used an [_1] tag without a valid name attribute.", "<MT$tag>" ));
     }
 
     if (isset($vars[$name]))
