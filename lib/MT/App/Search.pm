@@ -101,7 +101,7 @@ sub init_request {
         ? $q->param('blog_id')
         : $app->first_blog_id();
     my $blog = $app->model('blog')->load($blog_id)
-        or return $app->errtrans( 'Can\'t load blog #[_1].',
+        or return $app->errtrans( 'Cannot load blog #[_1].',
         MT::Util::encode_html($blog_id) );
     my $page = $q->param('page') ? $q->param('page') : 1;
     my $limit
@@ -242,7 +242,7 @@ sub init_cache_driver {
         require MT::Log;
         $app->log(
             {   message => $app->translate(
-                    "Search: failed storing results in cache.  [_1] is not available: [_2]",
+                    "Failed to cache search results.  [_1] is not available: [_2]",
                     $cache_driver,
                     $e
                 ),
@@ -793,7 +793,7 @@ sub load_search_tmpl {
             }
         }
         return $app->errtrans(
-            "No alternate template is specified for the Template '[_1]'",
+            "No alternate template is specified for template '[_1]'",
             encode_html( $q->param('Template') ) )
             unless $filename;
 
@@ -810,9 +810,9 @@ sub load_search_tmpl {
             $tmpl = $app->model('template')->lookup($tmpl_id);
             return $app->errtrans('No such template')
                 unless ($tmpl);
-            return $app->errtrans('template_id cannot be a global template')
+            return $app->errtrans('template_id cannot refer to a global template')
                 if ( $tmpl->blog_id == 0 );
-            return $app->errtrans('Output file cannot be asp or php')
+            return $app->errtrans('Output file cannot be of the type asp or php')
                 if (
                    $tmpl->outfile
                 && !$app->config->SearchAlwaysAllowTemplateID
@@ -830,13 +830,13 @@ sub load_search_tmpl {
 
                 if ( $at ne 'Index' ) {
                     return $app->errtrans(
-                        'Template must have identifier entry_listing for non-Index archive types'
+                        'Template must be an entry_listing for non-Index archive types'
                         )
                         unless ( $app->config->SearchAlwaysAllowTemplateID
                         || $tmpl->identifier =~ /entry_listing$/ );
                     my $blog = $app->model('blog')->load( $tmpl->blog_id );
                     return $app->errtrans(
-                        'Blog file extension cannot be asp or php for these archives'
+                        'Filename extension cannot be asp or php for these archives'
                         )
                         if (
                         !$app->config->SearchAlwaysAllowTemplateID
@@ -846,7 +846,7 @@ sub load_search_tmpl {
                 }
                 else {
                     return $app->errtrans(
-                        'Template must have identifier main_index for Index archive type'
+                        'Template must be a main_index for Index archive type'
                         )
                         unless ( $app->config->SearchAlwaysAllowTemplateID
                         || $tmpl->identifier eq 'main_index' );

@@ -178,8 +178,8 @@ sub throttle_response {
     my $tmpl = $app->param('Template') || '';
     my $msg
         = $app->translate(
-              "You are currently performing a search. Please wait "
-            . "until your search is completed." );
+              "A search is in progress. Please wait "
+            . "until it is completed and try again." );
     if ( $tmpl eq 'feed' ) {
         $app->response_code(503);
         $app->set_header( 'Retry-After' => $app->config('ThrottleSeconds') );
@@ -266,13 +266,13 @@ sub execute {
     if ( $app->{searchparam}{Type} eq 'newcomments' ) {
         $app->_new_comments
             or return $app->error(
-            $app->translate( "Search failed: [_1]", $app->errstr ) );
+            $app->translate( "Search failed. [_1]", $app->errstr ) );
         @results = $app->{results} ? @{ $app->{results} } : ();
     }
     elsif ( $app->{searchparam}{Type} eq 'tag' ) {
         $app->_tag_search
             or return $app->error(
-            $app->translate( "Search failed: [_1]", $app->errstr ) );
+            $app->translate( "Search failed. [_1]", $app->errstr ) );
         my $col = $app->{searchparam}{SearchSortBy};
         my $order = $app->{searchparam}{ResultDisplay} || 'ascend';
         for my $blog ( sort keys %{ $app->{results} } ) {
@@ -294,7 +294,7 @@ sub execute {
     else {
         $app->_straight_search
             or return $app->error(
-            $app->translate( "Search failed: [_1]", $app->errstr ) );
+            $app->translate( "Search failed. [_1]", $app->errstr ) );
         ## Results are stored per-blog, so we sort the list of blogs by name,
         ## then add in the results to the final list.
         my $col = $app->{searchparam}{SearchSortBy};
@@ -386,7 +386,7 @@ sub execute {
         my $tmpl_file = $app->{templates}{ $app->{searchparam}{Template} }
             or return $app->error(
             $app->translate(
-                "No alternate template is specified for the Template '[_1]'",
+                "No alternate template is specified for the template '[_1]'",
                 $app->{searchparam}{Template}
             )
             );
@@ -397,7 +397,7 @@ sub execute {
         open FH, $tmpl
             or return $app->error(
             $app->translate(
-                "Opening local file '[_1]' failed: [_2]",
+                "Opening local file '[_1]' failed, [_2]",
                 $tmpl, "$!"
             )
             );
@@ -424,7 +424,7 @@ sub execute {
     my $build = MT::Builder->new;
     my $tokens = $build->compile( $ctx, $str )
         or return $app->error(
-        $app->translate( "Publishing results failed: [_1]", $build->errstr )
+        $app->translate( "Publishing results failed. [_1]", $build->errstr )
         );
     defined(
         my $res = $build->build(
@@ -443,7 +443,7 @@ sub execute {
         )
         )
         or return $app->error(
-        $app->translate( "Publishing results failed: [_1]", $ctx->errstr ) );
+        $app->translate( "Publishing results failed. [_1]", $ctx->errstr ) );
     $res = $app->_set_form_elements($res);
 
     if ( defined( $ctx->stash('content_type') ) ) {

@@ -147,57 +147,57 @@ sub init_core_registry {
             'Digest::SHA' => {
                 link => 'http://search.cpan.org/dist/Digest-SHA/',
                 label =>
-                    'Digest::SHA is required in order to advanced protection of user passwords.',
+                    'Digest::SHA is required in order to provide enhanced protection of user passwords.',
             },
             'Plack' => {
                 link => 'http://search.cpan.org/dist/Plack/',
                 label =>
-                    'This module and its dependencies are required in order to running under psgi.',
+                    'This module and its dependencies are required to run Movable Type under psgi.',
             },
             'CGI::PSGI' => {
                 link => 'http://search.cpan.org/dist/CGI-PSGI/',
                 label =>
-                    'This module and its dependencies are required in order to running under psgi.',
+                    'This module and its dependencies are required to run Movable Type under psgi.',
             },
             'CGI::Parse::PSGI' => {
                 link => 'http://search.cpan.org/dist/CGI-Emulate-PSGI/',
                 label =>
-                    'This module and its dependencies are required in order to running under psgi.',
+                    'This module and its dependencies are required to run Movable Type under psgi.',
             },
             'XMLRPC::Transport::HTTP::Plack' => {
                 link =>
                     'http://search.cpan.org/dist/SOAP-Transport-HTTP-Plack/',
                 label =>
-                    'This module and its dependencies are required in order to running under psgi.',
+                    'This module and its dependencies are required to run Movable Type under psgi.',
             },
             'Net::SMTP' => {
                 link => 'http://search.cpan.org/dist/libnet/',
                 label =>
-                    'Net::SMTP is required in order to send mail via an SMTP Server.',
+                    'Net::SMTP is required in order to send mail using an SMTP server.',
             },
             'Authen::SASL' => {
                 link  => 'http://search.cpan.org/dist/Authen-SASL/',
-                label => 'This module and its dependencies are required in order to use CRAM-MD5, DIGEST-MD5 or LOGIN as a SASL mechanism.',
+                label => 'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.',
             },
             'Net::SMTP::SSL' => {
                 link => 'http://search.cpan.org/dist/Net-SMTP-SSL/',
                 label =>
-                    'Net::SMTP::SSL is required for using SMTP Auth with SSL connection.',
+                    'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.',
             },
             'Net::SMTP::TLS' => {
                 link => 'http://search.cpan.org/dist/Net-SMTP-TLS/',
                 label =>
-                    'Net::SMTP::TLS is required for using SMTP Auth with STARTTLS command.',
+                    'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.',
             },
             'IO::Socket::SSL' => {
                 link => 'http://search.cpan.org/dist/IO-Socket-SSL/',
                 label =>
-                    'IO::Socket::SSL is required for using SMTP Auth with SSL connection or using  with STARTTLS command.',
+                    'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.',
             },
             'Net::SSLeay' => {
                 link => 'http://search.cpan.org/dist/Net-SSLeay/',
                 label =>
-                    'Net::SSLeay is required for using SMTP Auth with SSL connection or using  with STARTTLS command.',
+                    'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.',
             },
             'HTML::Entities' => {
                 link => 'http://search.cpan.org/dist/HTML-Entities',
@@ -346,7 +346,7 @@ sub init_core_registry {
             },
             'DBI' => {
                 link    => 'http://search.cpan.org/dist/DBI',
-                label   => 'DBI is required to store data in database.',
+                label   => 'DBI is required to work with most supported databases.',
                 version => 1.21,
             },
             'CGI' => {
@@ -358,12 +358,12 @@ sub init_core_registry {
                 link    => 'http://search.cpan.org/dist/File-Spec',
                 version => 0.8,
                 label =>
-                    'File::Spec is required for path manipulation across operating systems.',
+                    'File::Spec is required to work with file system path information on all supported operating systems.',
             },
             'LWP::UserAgent' => {
                 link => 'http://search.cpan.org/dist/libwww-perl/',
                 label =>
-                    'LWP::UserAgent is required for making configuration file by Wizard.',
+                    'LWP::UserAgent is required for creating Movable Type configuration files using the installation wizard.',
             },
         },
         database_options => {
@@ -815,7 +815,7 @@ sub configure {
             if ( my $err = $@ ) {
                 $err_msg
                     = $app->translate(
-                    'An error occurred while attempting to connect to the database.  Check the settings and try again.'
+                    'An error occurred while trying to connect to the database.  Check the settings and try again.'
                     );
                 my $enc;
                 if (   exists( $param{publish_charset} )
@@ -854,7 +854,7 @@ sub configure {
                     $param{one_database} = @dbs == 0;
                     $err_msg
                         = $app->translate(
-                        'Please select database from the list of database and try again.'
+                        'Please select a database from the list of available databases and try again.'
                         );
                 }
                 else {
