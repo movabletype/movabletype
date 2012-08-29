@@ -293,7 +293,7 @@ sub as_html {
             $thumb = MT::Asset->load( $param->{thumb_asset_id} )
                 || return $asset->error(
                 MT->translate(
-                    "Can't load image #[_1]",
+                    "Cannot load image #[_1]",
                     $param->{thumb_asset_id}
                 )
                 );
@@ -535,7 +535,7 @@ sub on_upload {
         my $thumb_file_size = $fmgr->file_size($thumbnail);
 
         $app->run_callbacks( 'cms_pre_save.asset', $app, $asset_thumb, $original )
-            || return $app->errtrans( "Saving [_1] failed: [_2]", 'asset',
+            || return $app->errtrans( "Saving [_1] failed. [_2]", 'asset',
             $app->errstr );
 
         $asset_thumb->save unless $asset_thumb->id;
@@ -627,7 +627,7 @@ sub on_upload {
             $fmgr->put_data( $popup, $abs_file_path, 'upload' )
                 or return $app->error(
                 $app->translate(
-                    "Error writing to '[_1]': [_2]", $abs_file_path,
+                    "Error writing to '[_1]'. [_2]", $abs_file_path,
                     $fmgr->errstr
                 )
                 );
@@ -647,7 +647,7 @@ sub on_upload {
                 $asset_html->url($pseudo_url);
                 $asset_html->label(
                     $app->translate(
-                        "Popup Page for [_1]",
+                        "Popup page for [_1]",
                         $asset->label || $asset->file_name
                     )
                 );
@@ -665,7 +665,7 @@ sub on_upload {
             $url = $asset_html->url;
 
             $app->run_callbacks( 'cms_pre_save.asset', $app, $asset_html, $original )
-                || return $app->errtrans( "Saving [_1] failed: [_2]", 'asset',
+                || return $app->errtrans( "Saving [_1] failed. [_2]", 'asset',
                 $app->errstr );
 
             $asset_html->save unless $asset_html->id;

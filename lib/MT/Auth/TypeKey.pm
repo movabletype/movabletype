@@ -57,7 +57,7 @@ sub handle_sign_in {
         $q->param( 'email', '' ); # blank out email address since it's invalid
         $app->error(
             $app->translate(
-                "This weblog requires commenters to pass an email address. If you'd like to do so you may log in again, and give the authentication service permission to pass your email address."
+                "This weblog requires commenters to pass an email address. If you would like to do so you may log in again, and give the authentication service permission to pass your email address."
             )
         );
         return 0;
@@ -79,7 +79,7 @@ sub handle_sign_in {
     $session = $app->make_commenter_session($cmntr);
     unless ($session) {
         $app->error( $app->errstr()
-                || $app->translate("Couldn't save the session") );
+                || $app->translate("Could not save the session") );
         return 0;
     }
     if ( $q->param('sig') && !$cmntr ) {
@@ -154,7 +154,7 @@ sub _validate_signature {
         my $ua = $app->new_ua;
         unless ($ua) {
             my $err = $app->translate(
-                "Couldn't get public key from url provided");
+                "Could not get public key from the URL provided.");
             $app->log(
                 {   message  => $err,
                     level    => MT::Log::ERROR(),
@@ -223,7 +223,7 @@ sub _validate_signature {
 
     $app->log(
         {   message => $app->translate(
-                "TypePad signature verif'n returned [_1] in [_2] seconds verifying [_3] with [_4]",
+                "TypePad signature verification returned [_1] in [_2] seconds verifying [_3] with [_4]",
                 ( $valid ? "VALID" : "INVALID" ),
                 $timer,
                 $msg,
@@ -237,7 +237,7 @@ sub _validate_signature {
 
     $app->log(
         {   message => $app->translate(
-                "The TypePad signature is out of date ([_1] seconds old). Ensure that your server's clock is correct",
+                "The TypePad signature is out of date ([_1] seconds old). Ensure that your server's clock is correct.",
                 ( $params{ts} - time )
             ),
             class    => 'system',
