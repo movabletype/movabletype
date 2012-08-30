@@ -344,7 +344,7 @@ sub _loop_through_objects {
             my $ref = Filesys::DfPortable::dfportable(
                 MT->instance->config('TempDir') );
             if ( $ref->{per} == 100 ) {
-                die MT->translate( "\nCannot write a file: Disk full" );
+                die MT->translate( "\nCannot write file. Disk full." );
             }
         }
 
@@ -654,7 +654,7 @@ sub restore_asset {
     my $path = $asset->file_path;
     unless ( defined($path) ) {
         $callback->(
-            MT->translate( 'Path was not found for the file ([_1]).', $id ) );
+            MT->translate( 'Path was not found for the file, [_1].', $id ) );
         return 0;
     }
     my ( $vol, $dir, $fn ) = File::Spec->splitpath($path);

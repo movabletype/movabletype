@@ -42,7 +42,7 @@ sub start_element {
 
     if ( $self->{start} ) {
         die MT->translate(
-            'Uploaded file was not a valid Movable Type backup manifest file.'
+            'The uploaded file was not a valid Movable Type backup manifest file.'
             )
             if !(      ( 'movabletype' eq $name )
                     && ( MT::BackupRestore::NS_MOVABLETYPE() eq $ns )
@@ -57,7 +57,7 @@ sub start_element {
         if ( $schema != $self->{schema_version} ) {
             $self->{critical} = 1;
             my $message = MT->translate(
-                'Uploaded file was backed up from Movable Type but the different schema version ([_1]) from the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.',
+                'The uploaded backup manifest file was created with Movable Type, but the schema version ([_1]) differs from the one used by this system ([_2]).  You should not restore this backup to this version of Movable Type.',
                 $schema, $self->{schema_version}
             );
             MT->log(
@@ -125,12 +125,12 @@ sub start_element {
                         {
                             MT->log(
                                 {   message => MT->translate(
-                                        "User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.",
+                                        "A user with the same name as the current user ([_1]) was found in the backup.  Skipping this user record.",
                                         $obj->name
                                     ),
                                     level => MT::Log::INFO(),
                                     metadata =>
-                                        'Permissions and Associations have been restored.',
+                                        'Permissions and associations have been restored.',
                                     class    => 'system',
                                     category => 'restore',
                                 }
@@ -145,13 +145,13 @@ sub start_element {
                         else {
                             MT->log(
                                 {   message => MT->translate(
-                                        "User with the same name '[_1]' found (ID:[_2]).  Restore replaced this user with the data backed up.",
+                                        "A user with the same name '[_1]' was found in the backup (ID:[_2]).  Restore replaced this user with the data from the backup.",
                                         $obj->name,
                                         $obj->id
                                     ),
                                     level => MT::Log::INFO(),
                                     metadata =>
-                                        'Permissions and Associations have been restored as well.',
+                                        'Permissions and associations have been restored as well.',
                                     class    => 'system',
                                     category => 'restore',
                                 }
