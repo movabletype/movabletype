@@ -389,7 +389,7 @@ sub cfg_prefs {
 
     my $blog = $app->model('blog')->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
     if ( $blog->is_blog() ) {
         my @data;
@@ -599,7 +599,7 @@ sub rebuild_phase {
         require MT::Template;
         foreach (@ids) {
             my $template = MT::Template->load($_)
-                or return $app->errtrans( 'Can\'t load template #[_1].', $_ );
+                or return $app->errtrans( 'Cannot load template #[_1].', $_ );
 
             my $perms = $app->user->permissions( $template->blog_id );
             return $app->permission_denied()
@@ -636,7 +636,7 @@ sub rebuild_pages {
 
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my $order = $q->param('type');
     my @order = split /,/, $order;
     my $next  = $q->param('next');
