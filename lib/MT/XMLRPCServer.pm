@@ -531,7 +531,7 @@ sub _edit_entry {
         or die _fault( MT->translate( "Invalid blog ID '[_1]'", $blog_id ) );
     my ( $author, $perms ) = $class->_login( $user, $pass, $entry->blog_id );
     die _fault( MT->translate("Invalid login") ) unless $author;
-    die _fault( MT->translate("Not privileged to edit entry") )
+    die _fault( MT->translate("Not allowed to edit entry") )
         if !$author->is_superuser
             && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
     my $orig_entry = $entry->clone;
@@ -938,7 +938,7 @@ sub _get_entry {
     }
     my ( $author, $perms ) = $class->_login( $user, $pass, $entry->blog_id );
     die _fault( MT->translate("Invalid login") ) unless $author;
-    die _fault( MT->translate("Not privileged to get entry") )
+    die _fault( MT->translate("Not allowed to get entry") )
         if !$author->is_superuser
             && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
     my $co = sprintf "%04d%02d%02dT%02d:%02d:%02d",
@@ -1174,7 +1174,7 @@ sub setPostCategories {
         die _fault( MT->translate( "Invalid entry ID '[_1]'", $entry_id ) );
     my ( $author, $perms ) = $class->_login( $user, $pass, $entry->blog_id );
     die _fault( MT->translate("Invalid login") ) unless $author;
-    die _fault( MT->translate("Not privileged to set entry categories") )
+    die _fault( MT->translate("Not allowed to set entry categories") )
         if !$author->is_superuser
             && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
     my @place = MT::Placement->load( { entry_id => $entry_id } );
@@ -1241,7 +1241,7 @@ sub publishPost {
         die _fault( MT->translate( "Invalid entry ID '[_1]'", $entry_id ) );
     my ( $author, $perms ) = $class->_login( $user, $pass, $entry->blog_id );
     die _fault( MT->translate("Invalid login") ) unless $author;
-    die _fault( MT->translate("Not privileged to edit entry") )
+    die _fault( MT->translate("Not allowed to edit entry") )
         if !$author->is_superuser
             && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
     $mt->rebuild_entry( Entry => $entry, BuildDependencies => 1 )
@@ -1359,7 +1359,7 @@ sub newMediaObject {
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my ( $author, $perms ) = $class->_login( $user, $pass, $blog_id );
     die _fault( MT->translate("Invalid login") ) unless $author;
-    die _fault( MT->translate("Not privileged to upload files") )
+    die _fault( MT->translate("Not allowed to upload files") )
         if !$author->is_superuser
             && (   !$perms
                 || !$perms->can_do('upload_asset_via_xmlrpc_server') );

@@ -1105,7 +1105,7 @@ sub build_date {
         if ($blog_id) {
             $blog = MT->model('blog')->load($blog_id);
             return $ctx->error(
-                MT->translate( 'Can\'t load blog #[_1].', $blog_id ) )
+                MT->translate( 'Cannot load blog #[_1].', $blog_id ) )
                 unless $blog;
         }
     }
@@ -4201,7 +4201,7 @@ B<Example:> Passing Parameters to a Template Module
                 )
                 or return $ctx->error(
                 MT->translate(
-                    "Can't find included template [_1] '[_2]'",
+                    "Cannot find included template [_1] '[_2]'",
                     MT->translate($name), $tmpl_name
                 )
                 );
@@ -4397,7 +4397,7 @@ B<Example:> Passing Parameters to a Template Module
         if ( !MT->config->AllowFileInclude ) {
             return $ctx->error(
                 MT->translate(
-                    'File include is disabled by "AllowFileInclude" config directive.'
+                    'File inclusion is disabled by "AllowFileInclude" config directive.'
                 )
             );
         }
@@ -4427,7 +4427,7 @@ B<Example:> Passing Parameters to a Template Module
             if ( $blog && $blog->id != $blog_id ) {
                 $blog = MT::Blog->load($blog_id)
                     or return $ctx->error(
-                    MT->translate( "Can't find blog for id '[_1]", $blog_id )
+                    MT->translate( "Cannot find blog for id '[_1]", $blog_id )
                     );
             }
             my @paths = ($file);
@@ -4440,7 +4440,7 @@ B<Example:> Passing Parameters to a Template Module
                 $path = $p, last if -e $p && -r _;
             }
             return $ctx->error(
-                MT->translate( "Can't find included file '[_1]'", $file ) )
+                MT->translate( "Cannot find included file '[_1]'", $file ) )
                 unless $path;
             local *FH;
             open FH, $path
@@ -4611,7 +4611,7 @@ sub _hdlr_section {
             if ( $args->{by_user} ) {
                 my $author = $app->user
                     or
-                    return $ctx->error( MT->translate("Can't load user.") );
+                    return $ctx->error( MT->translate("Cannot load user.") );
                 $cache_id .= ':user_id=' . $author->id;
             }
 
@@ -4744,7 +4744,7 @@ sub _hdlr_link {
             }
             )
             or return $ctx->error(
-            MT->translate( "Can't find template '[_1]'", $tmpl_name ) );
+            MT->translate( "Cannot find template '[_1]'", $tmpl_name ) );
         my $site_url = $blog->site_url;
         $site_url .= '/' unless $site_url =~ m!/$!;
         my $link = $site_url . $tmpl->outfile;
@@ -4755,7 +4755,7 @@ sub _hdlr_link {
     elsif ( my $entry_id = $arg->{entry_id} ) {
         my $entry = MT::Entry->load($entry_id)
             or return $ctx->error(
-            MT->translate( "Can't find entry '[_1]'", $entry_id ) );
+            MT->translate( "Cannot find entry '[_1]'", $entry_id ) );
         my $link = $entry->permalink;
         $link = MT::Util::strip_index( $link, $curr_blog )
             unless $arg->{with_index};
@@ -5687,7 +5687,7 @@ B<Example:>
 sub _hdlr_template_created_on {
     my ( $ctx, $args, $cond ) = @_;
     my $template = $ctx->stash('template')
-        or return $ctx->error( MT->translate("Can't load template") );
+        or return $ctx->error( MT->translate("Cannot load template") );
     $args->{ts} = $template->created_on;
     $ctx->build_date($args);
 }
