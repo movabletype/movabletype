@@ -156,7 +156,7 @@ sub import_contents {
                                     $cb->( MT->translate("failed") . "\n" );
                                     return __PACKAGE__->error(
                                         MT->translate(
-                                            "Saving user failed: [_1]",
+                                            "Saving user failed. [_1]",
                                             $author->errstr
                                         )
                                     );
@@ -198,7 +198,7 @@ sub import_contents {
                                             MT->translate("failed") . "\n" );
                                         return __PACKAGE__->error(
                                             MT->translate(
-                                                "Saving category failed: [_1]",
+                                                "Saving category failed. [_1]",
                                                 $cat->errstr
                                             )
                                         );
@@ -284,7 +284,7 @@ sub import_contents {
                         if ( !$entry ) {
                             $cb->(
                                 MT->translate(
-                                    "Can't find existing entry with timestamp '[_1]'... skipping comments, and moving on to next entry.",
+                                    "Cannot find existing entry with timestamp '[_1]'... skipping comments, and moving on to next entry.",
                                     $ts
                                     )
                                     . "\n"
@@ -468,7 +468,7 @@ sub import_contents {
                             $cb->( MT->translate("failed") . "\n" );
                             return __PACKAGE__->error(
                                 MT->translate(
-                                    "Saving entry failed: [_1]",
+                                    "Saving entry failed. [_1]",
                                     $entry->errstr
                                 )
                             );
@@ -507,7 +507,7 @@ sub import_contents {
                         $place->save
                             or return __PACKAGE__->error(
                             MT->translate(
-                                "Saving placement failed: [_1]",
+                                "Saving placement failed. [_1]",
                                 $place->errstr
                             )
                             );
@@ -547,7 +547,7 @@ sub import_contents {
                             $cb->( MT->translate("failed") . "\n" );
                             return __PACKAGE__->error(
                                 MT->translate(
-                                    "Saving comment failed: [_1]",
+                                    "Saving comment failed. [_1]",
                                     $comment->errstr
                                 )
                             );
@@ -591,7 +591,7 @@ sub import_contents {
                                 $cb->( MT->translate("failed") . "\n" );
                                 return __PACKAGE__->error(
                                     MT->translate(
-                                        "Saving ping failed: [_1]",
+                                        "Saving ping failed. [_1]",
                                         $ping->errstr
                                     )
                                 );

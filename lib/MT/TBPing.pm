@@ -464,7 +464,7 @@ sub blog {
         $blog = $blog_class->load($blog_id)
             or return $ping->error(
             MT->translate(
-                "Load of blog '[_1]' failed: [_2]", $blog_id,
+                "Loading blog '[_1]' failed. [_2]", $blog_id,
                 $blog_class->errstr
             )
             );

@@ -215,7 +215,7 @@ sub _send_mt_smtp {
 
     return $class->error(
         MT->translate(
-            "Username and password is required for SMTP Authentication."
+            "Username and password is required for SMTP authentication."
         )
         )
         if ( $tls or $auth )

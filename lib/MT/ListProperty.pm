@@ -61,7 +61,7 @@ sub _init_core {
         $prop = $common_props->{$id};
 
         # Property is undefined
-        die MT->translate( q{Can't initialize list property [_1].[_2].},
+        die MT->translate( q{Cannot initialize list property [_1].[_2].},
             $cls, $id )
             if !$prop;
     }
@@ -193,7 +193,7 @@ sub base {
         require MT::Meta;
         if ( !$class->has_column($id) ) {
             die MT->translate(
-                'Failed to init auto list property [_1].[_2]: Cannot find definition of column [_3].',
+                'Failed to initialize auto list property [_1].[_2]: Cannot find definition of column [_3].',
                 $prop_class, $id, $id, );
         }
         my $def;
@@ -208,7 +208,7 @@ sub base {
         my $column_type = $def->{type};
         my $auto_type   = $AUTO{$column_type}
             or die MT->translate(
-            'Failed to init auto list property [_1].[_2]: unsupported column type.',
+            'Failed to initialize auto list property [_1].[_2]: unsupported column type.',
             $prop_class, $id
             );
         $orig_obj->{col} = $id;
