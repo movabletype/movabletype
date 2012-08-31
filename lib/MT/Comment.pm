@@ -192,7 +192,7 @@ sub list_props {
                     $lc_status_class = lc $status_class;
                     my $link_title
                         = MT->translate(
-                        'Search other comments from this anonymous commenter'
+                        'Search for other comments from anonymous commenters'
                         );
                     return qq{
                         <span class="commenter">
@@ -233,7 +233,7 @@ sub list_props {
                     $status_class    = 'Deleted';
                     $lc_status_class = lc $status_class;
                     my $link_title = MT->translate(
-                        'Search other comments from this deleted commenter');
+                        'Search for other comments from this deleted commenter');
                     my $optional_status = MT->translate('(Deleted)');
                     return qq{
                         <span class="commenter">
@@ -922,7 +922,7 @@ sub entry {
         $entry = MT::Entry->load($entry_id)
             or return $comment->error(
             MT->translate(
-                "Load of entry '[_1]' failed: [_2]", $entry_id,
+                "Loading entry '[_1]' failed. [_2]", $entry_id,
                 MT::Entry->errstr
             )
             );
@@ -940,7 +940,7 @@ sub blog {
         $blog = MT::Blog->load($blog_id)
             or return $comment->error(
             MT->translate(
-                "Load of blog '[_1]' failed: [_2]", $blog_id,
+                "Loading blog '[_1]' failed. [_2]", $blog_id,
                 MT::Blog->errstr
             )
             );

@@ -20,10 +20,10 @@ sub init {
     $dav->get_user_agent->agent( 'MovableType/' . MT->version_id );
     $dav->credentials( -url => $_[0], -user => $_[1], -pass => $_[2] )
         or return $fmgr->error(
-        MT->translate( "DAV connection failed: [_1]", $dav->message ) );
+        MT->translate( "DAV connection failed. [_1]", $dav->message ) );
     $dav->open( -url => $_[0] )
         or return $fmgr->error(
-        MT->translate( "DAV open failed: [_1]", $dav->message ) );
+        MT->translate( "DAV open failed. [_1]", $dav->message ) );
     $fmgr;
 }
 
@@ -44,7 +44,7 @@ sub init {
         undef $Error;
         $fmgr->{dav}->get( -url => $from, -to => \$data, -callback => \&cb )
             or return $fmgr->error(
-            MT->translate( "DAV get failed: [_1]", $Error ) );
+            MT->translate( "DAV get failed. [_1]", $Error ) );
         $data;
     }
 
@@ -64,7 +64,7 @@ sub init {
         }
         $fmgr->{dav}->put( -local => $from, -url => $to, -callback => \&cb )
             or return $fmgr->error(
-            MT->translate( "DAV put failed: [_1]", $Error ) );
+            MT->translate( "DAV put failed. [_1]", $Error ) );
         -s $from;
     }
 
@@ -74,7 +74,7 @@ sub init {
         undef $Error;
         $fmgr->{dav}->put( -local => \$data, -url => $to, -callback => \&cb )
             or return $fmgr->error(
-            MT->translate( "DAV put failed: [_1]", $Error ) );
+            MT->translate( "DAV put failed. [_1]", $Error ) );
         length($data);
     }
 
@@ -83,7 +83,7 @@ sub init {
         my ($path) = @_;
         $fmgr->{dav}->delete( -url => $path, -callback => \&cb )
             or return $fmgr->error(
-            MT->translate( "Deleting '[_1]' failed: [_2]", $path, $Error ) );
+            MT->translate( "Deleting '[_1]' failed. [_2]", $path, $Error ) );
         1;
     }
 }
@@ -117,7 +117,7 @@ sub mkpath {
             $dav->mkcol($this)
                 or return $fmgr->error(
                 MT->translate(
-                    "Creating path '[_1]' failed: [_2]", $this,
+                    "Creating path '[_1]' failed. [_2]", $this,
                     $dav->message
                 )
                 );
@@ -132,7 +132,7 @@ sub rename {
     $fmgr->{dav}->move( -url => $from, -dest => $to )
         or return $fmgr->error(
         MT->translate(
-            "Renaming '[_1]' to '[_2]' failed: [_3]", $from,
+            "Renaming '[_1]' to '[_2]' failed. [_3]", $from,
             $to,                                      $fmgr->{dav}->message
         )
         );

@@ -102,7 +102,7 @@ BEGIN {
             'dynamic_error' => {
                 label => 'Dynamic Error',
                 description_label =>
-                    'Displays errors for dynamically published templates.',
+                    'Displays errors for dynamically-published templates.',
             },
             'popup_image' => {
                 label => 'Popup Image',

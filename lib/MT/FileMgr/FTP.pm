@@ -16,7 +16,7 @@ sub init {
     my $fmgr = shift;
     $fmgr->SUPER::init(@_);
     my $ftp = $fmgr->{ftp} = Net::FTP->new( $_[0] )
-        or return $fmgr->error("FTP connection failed: $@");
+        or return $fmgr->error("FTP connection failed. $@");
     $ftp->login( @_[ 1, 2 ] );
     $fmgr;
 }
@@ -38,7 +38,7 @@ sub get_data {
         ## and this causes a warning with perl -wT.
         local $^W = 0;
         $fmgr->{ftp}->get( $from, \*FH )
-            or return $fmgr->error("FTP get failed: $@");
+            or return $fmgr->error("FTP get failed. $@");
     }
     tied(*FH)->buffer;
 }
@@ -53,7 +53,7 @@ sub put {
         $fmgr->{ftp}->ascii;
     }
     $fmgr->{ftp}->put( $from, $to )
-        or return $fmgr->error("FTP put failed: $@");
+        or return $fmgr->error("FTP put failed. $@");
     $fmgr->{ftp}->size($to);
 }
 
@@ -69,7 +69,7 @@ sub put_data {
     local *FH;
     tie *FH, 'MT::FileMgr::FTP::StringTie', $data;
     $fmgr->{ftp}->put( \*FH, $to )
-        or return $fmgr->error("FTP put failed: $@");
+        or return $fmgr->error("FTP put failed. $@");
     length($data);
 }
 
@@ -93,7 +93,7 @@ sub mkpath {
     my ($path) = @_;
     $fmgr->{ftp}->mkdir( $path, 1 )
         or return $fmgr->error(
-        MT->translate( "Creating path '[_1]' failed: [_2]", $path, $@ ) );
+        MT->translate( "Creating path '[_1]' failed. [_2]", $path, $@ ) );
     1;
 }
 
@@ -103,7 +103,7 @@ sub rename {
     $fmgr->{ftp}->rename( $from, $to )
         or return $fmgr->error(
         MT->translate(
-            "Renaming '[_1]' to '[_2]' failed: [_3]",
+            "Renaming '[_1]' to '[_2]' failed. [_3]",
             $from, $to, $@
         )
         );
@@ -115,7 +115,7 @@ sub delete {
     my ($path) = @_;
     $fmgr->{ftp}->delete($path)
         or return $fmgr->error(
-        MT->translate( "Deleting '[_1]' failed: [_2]", $path, $@ ) );
+        MT->translate( "Deleting '[_1]' failed. [_2]", $path, $@ ) );
     1;
 }
 

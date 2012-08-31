@@ -15,7 +15,7 @@ sub load_driver {
     eval { require Image::Magick };
     if ( my $err = $@ ) {
         return $image->error(
-            MT->translate( "Can't load Image::Magick: [_1]", $err ) );
+            MT->translate( "Cannot load Image::Magick: [_1]", $err ) );
     }
     1;
 }
@@ -36,7 +36,7 @@ sub init {
         my $x;
         eval { $x = $magick->Read($file); };
         return $image->error(
-            MT->translate( "Reading file '[_1]' failed: [_2]", $file, $x ) )
+            MT->translate( "Reading file '[_1]' failed. [_2]", $file, $x ) )
             if $x;
         ( $image->{width}, $image->{height} )
             = $magick->Get( 'width', 'height' );
@@ -45,7 +45,7 @@ sub init {
         my $x;
         eval { my $x = $magick->BlobToImage( $param{Data} ); };
         return $image->error(
-            MT->translate( "Reading image failed: [_1]", $x ) )
+            MT->translate( "Reading image failed. [_1]", $x ) )
             if $x;
         ( $image->{width}, $image->{height} )
             = $magick->Get( 'width', 'height' );
@@ -65,7 +65,7 @@ sub scale {
             : $magick->Scale( width => $w, height => $h );
         return $image->error(
             MT->translate(
-                "Scaling to [_1]x[_2] failed: [_3]", $w, $h, $err
+                "Scaling to [_1]x[_2] failed. [_3]", $w, $h, $err
             )
         ) if $err;
         $magick->Profile("*") if $magick->can('Profile');
@@ -73,7 +73,7 @@ sub scale {
         $blob = $magick->ImageToBlob;
     };
     return $image->error(
-        MT->translate( "Scaling to [_1]x[_2] failed: [_3]", $w, $h, $@ ) )
+        MT->translate( "Scaling to [_1]x[_2] failed. [_3]", $w, $h, $@ ) )
         if $@;
     wantarray ? ( $blob, $w, $h ) : $blob;
 }
@@ -94,7 +94,7 @@ sub crop {
         );
         return $image->error(
             MT->translate(
-                "Cropping a [_1]x[_1] square at [_2],[_3] failed: [_4]",
+                "Cropping a [_1]x[_1] square at [_2],[_3] failed. [_4]",
                 $size, $x, $y, $err
             )
         ) if $err;
@@ -108,7 +108,7 @@ sub crop {
     };
     return $image->error(
         MT->translate(
-            "Cropping a [_1]x[_1] square at [_2],[_3] failed: [_4]",
+            "Cropping a [_1]x[_1] square at [_2],[_3] failed. [_4]",
             $size, $x, $y, $@
         )
     ) if $@;
@@ -127,14 +127,14 @@ sub convert {
         my $err = $magick->Set( magick => uc $type );
         return $image->error(
             MT->translate(
-                "Converting image to [_1] failed: [_2]",
+                "Converting image to [_1] failed. [_2]",
                 $type, $err
             )
         ) if $err;
         $blob = $magick->ImageToBlob;
     };
     return $image->error(
-        MT->translate( "Converting image to [_1] failed: [_2]", $type, $@ ) )
+        MT->translate( "Converting image to [_1] failed. [_2]", $type, $@ ) )
         if $@;
 
     return $blob;

@@ -41,7 +41,7 @@ sub get_data {
         open $fh, _local($from)
             or return $fmgr->error(
             MT->translate(
-                "Opening local file '[_1]' failed: [_2]", $from,
+                "Opening local file '[_1]' failed. [_2]", $from,
                 _syserr("$!")
             )
             );
@@ -72,7 +72,7 @@ sub put {
         open $fh, $from
             or return $fmgr->error(
             MT->translate(
-                "Opening local file '[_1]' failed: [_2]", $from,
+                "Opening local file '[_1]' failed. [_2]", $from,
                 _syserr("$!")
             )
             );
@@ -108,7 +108,7 @@ sub _write_file {
     sysopen FH, $to, O_RDWR | O_CREAT | O_TRUNC, oct $perms
         or return $fmgr->error(
         MT->translate(
-            "Opening local file '[_1]' failed: [_2]",
+            "Opening local file '[_1]' failed. [_2]",
             $to, _syserr("$!")
         )
         );

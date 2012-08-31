@@ -16,7 +16,7 @@ sub load_driver {
     eval { require Imager };
     if ( my $err = $@ ) {
         return $image->error(
-            MT->translate( "Can't load Imager: [_1]", $err ) );
+            MT->translate( "Cannot load Imager: [_1]", $err ) );
     }
     1;
 }
@@ -39,7 +39,7 @@ sub init {
         $imager->read( file => $file, type => $image->{type} )
             or return $image->error(
             MT->translate(
-                "Reading file '[_1]' failed: [_2]", $file,
+                "Reading file '[_1]' failed. [_2]", $file,
                 $imager->errstr
             )
             );
@@ -47,7 +47,7 @@ sub init {
     elsif ( my $blob = $param{Data} ) {
         $imager->read( data => $blob, type => $image->{type} )
             or return $image->error(
-            MT->translate( "Reading image failed: [_1]", $imager->errstr ) );
+            MT->translate( "Reading image failed. [_1]", $imager->errstr ) );
     }
 
     $image->{imager} = $imager;
