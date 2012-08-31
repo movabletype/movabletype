@@ -1344,7 +1344,7 @@ sub _upload_file {
                     return $app->errtrans(
                         "Error creating a temporary file; The webserver should be able "
                             . "to write to this folder.  Please check the TempDir "
-                            . "setting in your configuration file, it is currently '[_1]'. "
+                            . "setting in your configuration file, it is currently '[_1]'. ",
                         (     $tmp_dir
                             ? $tmp_dir
                             : '[' . $app->translate('unassigned') . ']'
