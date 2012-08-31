@@ -126,7 +126,7 @@ sub recover_password {
     if ( !$email ) {
         return $app->start_recover(
             {   error => $app->translate(
-                    'Email Address is required for password reset.'),
+                    'Email address is required for password reset.'),
             }
         );
     }
@@ -195,7 +195,7 @@ sub recover_password {
             require MT::Mail;
             MT::Mail->send( \%head, $body )
                 or die $app->translate(
-                "Error sending mail ([_1]); please fix the problem, then "
+                "Error sending mail ([_1]); Please fix the problem, then "
                     . "try again to recover your password.",
                 MT::Mail->errstr
                 );
@@ -420,7 +420,7 @@ sub test_system_mail {
     my $cfg       = $app->config;
     return $app->json_error(
         $app->errtrans(
-            "You don't have a system email address configured.  Please set this first, save it, then try the test email again."
+            "You do not have a system email address configured.  Please set this first, save it, then try the test email again."
         )
     ) unless ( $cfg->EmailAddressMain );
 
@@ -450,7 +450,7 @@ sub test_system_mail {
     else {
         return $app->json_error(
             $app->translate(
-                "Mail was not properly sent: [_1]",
+                "E-mail was not properly sent. [_1]",
                 MT::Mail->errstr
             )
         );
@@ -515,7 +515,7 @@ sub cfg_system_general {
         my $config_warning = join( ", ", @config_warnings );
 
         $param{config_warning} = $app->translate(
-            "These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
+            "These setting(s) are overridden by a value in the MT configuration file, [_1]. Remove the value from the configuration file in order to control the value on this page.",
             $config_warning
         );
     }
@@ -680,7 +680,7 @@ sub save_cfg_system_general {
         }
         else {
             return $app->errtrans(
-                "Invalid SitePath: Should be valid and absolute");
+                "Invalid SitePath.  The SitePath should be valid and absolute, not relative");
         }
     }
 
@@ -839,14 +839,14 @@ sub recover_profile_password {
     if ( !MT::Auth->can_recover_password ) {
         $app->log(
             {   message => $app->translate(
-                    "Invalid password recovery attempt; can't recover password in this configuration"
+                    "Invalid password recovery attempt; Cannot recover the password in this configuration"
                 ),
                 level    => MT::Log::SECURITY(),
                 class    => 'system',
                 category => 'recover_profile_password',
             }
         );
-        return $app->error("Can't recover password in this configuration");
+        return $app->error("Cannot recover the password in this configuration");
     }
 
     my $author_id = $q->param('author_id');
@@ -1671,7 +1671,7 @@ sub adjust_sitepath {
         my $id   = $1;
         my $blog = $app->model('blog')->load($id)
             or return $app->error(
-            $app->translate( 'Can\'t load blog #[_1].', $id ) );
+            $app->translate( 'Cannot load blog #[_1].', $id ) );
         my $old_site_path      = scalar $q->param("old_site_path_$id");
         my $old_site_url       = scalar $q->param("old_site_url_$id");
         my $site_path          = scalar $q->param("site_path_$id") || q();
@@ -2319,7 +2319,7 @@ sub reset_password {
     if ( !MT::Auth->can_recover_password ) {
         $app->log(
             {   message => $app->translate(
-                    "Invalid password recovery attempt; can't recover password in this configuration"
+                    "Invalid password recovery attempt; cannot recover password in this configuration"
                 ),
                 level    => MT::Log::SECURITY(),
                 class    => 'system',
@@ -2327,7 +2327,7 @@ sub reset_password {
             }
         );
         return ( 0,
-            $app->translate("Can't recover password in this configuration") );
+            $app->translate("Cannot recover password in this configuration") );
     }
 
     $app->log(
@@ -2345,7 +2345,7 @@ sub reset_password {
     return (
         0,
         $app->translate(
-            "User has not set pasword hint; cannot recover password")
+            "User has not set pasword hint; Cannot recover password")
     ) if ( $hint && !$author->hint );
 
     $app->log(
@@ -2419,7 +2419,7 @@ sub reset_password {
     MT::Mail->send( \%head, $body )
         or return $app->error(
         $app->translate(
-            "Error sending mail ([_1]); please fix the problem, then "
+            "Error sending e-mail ([_1]); Please fix the problem, then "
                 . "try again to recover your password.",
             MT::Mail->errstr
         )

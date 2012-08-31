@@ -23,7 +23,7 @@ sub save {
 
     if ( !$label ) {
         return $app->json_error(
-            $app->translate('Failed to save filter: label is required.') );
+            $app->translate('Failed to save filter. Label is required.') );
     }
     my $items;
     if ( my $items_json = $q->param('items') ) {
@@ -69,7 +69,7 @@ sub save {
     {
         return $app->json_error(
             $app->translate(
-                'Failed to save filter: label "[_1]" is duplicated.', $label
+                'Failed to save filter.  Label "[_1]" is duplicated.', $label
             )
         );
     }
@@ -94,7 +94,7 @@ sub save {
     $filter->modified_by( $app->user->id );
     $filter->save
         or return $app->json_error(
-        $app->translate( 'Failed to save filter: [_1]', $filter->errstr ) );
+        $app->translate( 'Failed to save filter. [_1]', $filter->errstr ) );
 
     my $list = $q->param('list');
     if ( defined $list && !$list ) {
@@ -136,7 +136,7 @@ sub delete {
     $filter->remove
         or return $app->json_error(
         $app->translate(
-            'Failed to delete filter(s): [_1]', $filter->errstr
+            'Failed to delete filter(s). [_1]', $filter->errstr
         )
         );
 
@@ -169,7 +169,7 @@ sub delete_filters {
 
     my $res = MT->model('filter')->remove( { id => \@ids } )
         or return $app->errtrans(
-            'Failed to delete filter(s): [_1]',
+            'Failed to delete filter(s). [_1]',
             MT->model('filter')->errstr,
         );
     unless ( $res > 0 ) {

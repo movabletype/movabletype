@@ -279,7 +279,7 @@ sub edit {
                             $other->compile;
                             if ( $other->{errors} && @{ $other->{errors} } ) {
                                 $param->{error} = $app->translate(
-                                    "One or more errors were found in included template module ([_1]).",
+                                    "One or more errors were found in the included template module ([_1]).",
                                     $other->name
                                 );
                                 $param->{error} .= "<ul>\n";
@@ -559,7 +559,7 @@ sub edit {
             $template_type = 'custom' if 'module' eq $template_type;
             $param->{type} = $template_type;
         }
-        return $app->errtrans("Create template requires type")
+        return $app->errtrans("You must specify a template type when creating a template")
             unless $template_type;
         $param->{nav_templates} = 1;
         my $tab;
@@ -1392,7 +1392,7 @@ sub reset_blog_templates {
     $app->validate_magic() or return;
     my $blog = MT::Blog->load( $perms->blog_id )
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $perms->blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $perms->blog_id ) );
     require MT::Template;
     my @tmpl = MT::Template->load( { blog_id => $blog->id } );
 
@@ -1418,7 +1418,7 @@ sub reset_blog_templates {
         $tmpl->save
             or return $app->error(
             $app->translate(
-                "Populating blog with default templates failed: [_1]",
+                "Populating blog with default templates failed. [_1]",
                 $tmpl->errstr
             )
             );
@@ -1457,7 +1457,7 @@ sub reset_blog_templates {
             $map->save
                 or return $app->error(
                 $app->translate(
-                    "Setting up mappings failed: [_1]",
+                    "Setting up mappings failed. [_1]",
                     $map->errstr
                 )
                 );
@@ -1596,11 +1596,11 @@ sub delete_map {
     $app->model('template')
         ->load( { id => $template_id, blog_id => $blog_id } )
         or
-        return $app->errtrans( 'Can\'t load template #[_1].', $template_id );
+        return $app->errtrans( 'Cannot load template #[_1].', $template_id );
 
     require MT::TemplateMap;
     my $map = MT::TemplateMap->load( { id => $id, blog_id => $blog_id } )
-        or return $app->errtrans('Can\'t load templatemap');
+        or return $app->errtrans('Cannot load templatemap');
     $map->remove;
 
     my $blog = MT->model('blog')->load( $blog_id );
@@ -1643,7 +1643,7 @@ sub add_map {
     $map->archive_type($at);
     $map->save
         or return $app->error(
-        $app->translate( "Saving map failed: [_1]", $map->errstr ) );
+        $app->translate( "Saving map failed. [_1]", $map->errstr ) );
 
     my $blog = MT->model('blog')->load( $blog_id );
     $blog->flush_has_archive_type_cache();
@@ -1754,7 +1754,7 @@ sub pre_save {
     $obj->cache_expire_event( join ',', @events ) if $#events >= 0;
     if ( $cache_expire_type == 1 ) {
         return $eh->error(
-            $app->translate("You should not be able to enter 0 as the time.")
+            $app->translate("You should not be able to enter zero (0) as the time.")
         ) if $interval == 0;
     }
     elsif ( $cache_expire_type == 2 ) {
@@ -2513,7 +2513,7 @@ sub refresh_individual_templates {
                 $app, $tmpl, $orig_obj )
                 || return $app->error(
                 $app->translate(
-                    "Saving [_1] failed: [_2]", $tmpl->class_label,
+                    "Saving [_1] failed. [_2]", $tmpl->class_label,
                     $app->errstr
                 )
                 );
@@ -2756,7 +2756,7 @@ sub save_widget {
         $app->run_callbacks( 'cms_save_permission_filter.template',
             $app, $id )
             || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+            $app->translate( "Permission denied. [_1]", $app->errstr() ) );
     }
 
     my $filter_result
@@ -2764,7 +2764,7 @@ sub save_widget {
 
     if ( !$filter_result ) {
         return edit_widget( $app,
-            { error => $app->translate( "Save failed: [_1]", $app->errstr ) }
+            { error => $app->translate( "Save failed. [_1]", $app->errstr ) }
         );
     }
 
@@ -2790,13 +2790,13 @@ sub save_widget {
         )
     {
         return edit_widget( $app,
-            { error => $app->translate( "Save failed: [_1]", $app->errstr ) }
+            { error => $app->translate( "Save failed. [_1]", $app->errstr ) }
         );
     }
 
     $obj->save
         or return $app->error(
-        $app->translate( "Saving object failed: [_1]", $obj->errstr ) );
+        $app->translate( "Saving object failed. [_1]", $obj->errstr ) );
 
     $app->run_callbacks( 'cms_post_save.template', $app, $obj, $original )
         or return $app->error( $app->errstr() );
@@ -2886,7 +2886,7 @@ sub edit_widget {
         $wtmpl = $obj_promise->force()
             or return $app->error(
             $app->translate(
-                "Load failed: [_1]",
+                "Load failed. [_1]",
                 $tmpl_class->errstr || $app->translate("(no reason given)")
             )
             );
@@ -3048,7 +3048,7 @@ sub delete_widget {
 
         $obj->remove
             or return $app->errtrans(
-            'Removing [_1] failed: [_2]',
+            'Removing [_1] failed. [_2]',
             $app->translate('template'),
             $obj->errstr
             );
@@ -3150,7 +3150,7 @@ sub save_template_prefs {
     $perms->template_prefs($prefs);
     $perms->save
         or return $app->error(
-        $app->translate( "Saving permissions failed: [_1]", $perms->errstr )
+        $app->translate( "Saving permissions failed. [_1]", $perms->errstr )
         );
     $app->send_http_header("text/json");
     return "true";

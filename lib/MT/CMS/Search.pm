@@ -1052,7 +1052,7 @@ sub do_search_replace {
             $re = eval {qr/$search/};
             if ( my $err = $@ ) {
                 return $app->error(
-                    $app->translate( "Error in search expression: [_1]", $@ )
+                    $app->translate( "Error in search expression. [_1]", $@ )
                 );
             }
         }
@@ -1103,7 +1103,7 @@ sub do_search_replace {
         $replace_count++;
         $obj->save
             or return $app->error(
-            $app->translate( "Saving object failed: [_2]", $obj->errstr ) );
+            $app->translate( "Saving object failed. [_2]", $obj->errstr ) );
     }
     if (@data) {
 

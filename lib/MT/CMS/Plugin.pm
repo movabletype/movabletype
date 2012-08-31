@@ -85,7 +85,7 @@ sub save_config {
         if ( $plugin->errstr ) {
             return $app->error(
                 $app->translate(
-                    "Error saving plugin settings: [_1]", $plugin->errstr
+                    "Error saving plugin settings. [_1]", $plugin->errstr
                 )
             );
         }

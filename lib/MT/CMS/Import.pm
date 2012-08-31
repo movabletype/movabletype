@@ -85,7 +85,7 @@ sub start_import {
         $param{blog_id} = $blog_id;
         my $blog = $app->model('blog')->load($blog_id)
             or return $app->error(
-            $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
         $param{text_filters}
             = $app->load_text_filters( $blog->convert_paras );
     }
@@ -105,7 +105,7 @@ sub do_import {
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate(
-            "Load of blog '[_1]' failed: [_2]", $blog_id,
+            "Loading blog '[_1]' failed. [_2]", $blog_id,
             MT::Blog->errstr
         )
         );
