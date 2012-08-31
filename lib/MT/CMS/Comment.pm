@@ -627,7 +627,7 @@ sub do_reply {
     my $blog = $parent->blog
         || $app->model('blog')->load( $q->param('blog_id') );
     return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $q->param('blog_id') ) )
+        $app->translate( 'Cannot load blog #[_1].', $q->param('blog_id') ) )
         unless $blog;
 
     unless ( $app->can_do('reply_comment_from_cms') ) {
@@ -658,7 +658,7 @@ sub do_reply {
     $comment->parent_id( $param->{reply_to} );
     $comment->approve;
     return $app->handle_error(
-        $app->translate( "An error occurred: [_1]", $comment->errstr() ) )
+        $app->translate( "An error occurred. [_1]", $comment->errstr() ) )
         unless $comment->save;
 
     MT::Util::start_background_task(
@@ -667,7 +667,7 @@ sub do_reply {
                 Entry             => $parent->entry_id,
                 BuildDependencies => 1
                 )
-                or return $app->publish_error( "Publish failed: [_1]",
+                or return $app->publish_error( "Publish failed. [_1]",
                 $app->errstr );
             $app->_send_comment_notification( $comment, q(), $entry,
                 $app->model('blog')->load( $param->{blog_id} ), $app->user );
@@ -745,13 +745,13 @@ sub dialog_post_comment {
     my $user      = $app->user;
     my $parent_id = $app->param('reply_to');
 
-    return $app->errtrans('Parent comment id was not specified.')
+    return $app->errtrans('The parent comment id was not specified.')
         unless $parent_id;
 
     my $comment_class = $app->model('comment');
     my $parent        = $comment_class->load($parent_id)
-        or return $app->errtrans('Parent comment was not found.');
-    return $app->errtrans("You can't reply to unapproved comment.")
+        or return $app->errtrans('The parent comment was not found.');
+    return $app->errtrans("You cannot reply to unapproved comment.")
         unless $parent->is_published;
 
     my $perms = $app->{perms};
@@ -769,7 +769,7 @@ sub dialog_post_comment {
     my $blog = $parent->blog
         || $app->model('blog')->load( $app->param('blog_id') );
     return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $app->param('blog_id') ) )
+        $app->translate( 'Cannot load blog #[_1].', $app->param('blog_id') ) )
         unless $blog;
 
     require MT::Sanitize;
@@ -1099,12 +1099,12 @@ sub set_item_visible {
                             )
                         {
                             return $app->errtrans(
-                                "You don't have permission to approve this trackback."
+                                "You do not have permission to approve this trackback."
                             ) if $obj_parent->author_id != $author->id;
                         }
                         else {
                             return $app->errtrans(
-                                "You don't have permission to approve this trackback."
+                                "You do not have permission to approve this trackback."
                             );
                         }
                     }
@@ -1116,26 +1116,26 @@ sub set_item_visible {
                 # TODO: Factor out permissions checking
                 my $entry = MT::Entry->load( $obj->entry_id )
                     || return $app->error(
-                    $app->translate("Comment on missing entry!") );
+                    $app->translate("The entry corresponding to this comment is missing.") );
 
                 if ( !$perms || $perms->blog_id != $obj->blog_id ) {
                     $perms = $author->permissions( $obj->blog_id );
                 }
                 unless ($perms) {
                     return $app->errtrans(
-                        "You don't have permission to approve this comment."
+                        "You do not have permission to approve this comment."
                     );
                 }
                 if ( !$app->can_do( 'approve_all_comment', $perms ) ) {
                     if ( $app->can_do( 'approve_own_entry_comment', $perms ) )
                     {
                         return $app->errtrans(
-                            "You don't have permission to approve this comment."
+                            "You do not have permission to approve this comment."
                         ) if $entry->author_id != $author->id;
                     }
                     else {
                         return $app->errtrans(
-                            "You don't have permission to approve this comment."
+                            "You do not have permission to approve this comment."
                         );
                     }
                 }

@@ -201,7 +201,7 @@ sub save {
             $s_path =~ s/PATH$//;
 
             if ( 0 != index( $s_path, $l_path ) ) {
-                return $app->errtrans("Website root must be under [_1]", $l_path);
+                return $app->errtrans("The website root directory must be within [_1]", $l_path);
             }
         }
         if ($values{site_path} 
@@ -330,7 +330,7 @@ sub save {
             my $meth = $q->param('cfg_screen');
             if ( $meth && $app->handlers_for_mode($meth) ) {
                 $app->error(
-                    $app->translate( "Save failed: [_1]", $app->errstr ) );
+                    $app->translate( "Save failed. [_1]", $app->errstr ) );
                 return $app->$meth;
             }
         }
@@ -338,7 +338,7 @@ sub save {
         return edit(
             $app,
             {   %$param,
-                error => $app->translate( "Save failed: [_1]", $app->errstr )
+                error => $app->translate( "Save failed. [_1]", $app->errstr )
             }
         );
     }
@@ -349,7 +349,7 @@ sub save {
 
     $obj->save
         or return $app->error(
-        $app->translate( "Saving object failed: [_1]", $obj->errstr ) );
+        $app->translate( "Saving object failed. [_1]", $obj->errstr ) );
 
     # Now post-process it.
     $app->run_callbacks( 'cms_post_save.' . $type, $app, $obj, $original )
@@ -642,7 +642,7 @@ sub edit {
         $obj = $obj_promise->force()
             or return $app->error(
             $app->translate(
-                "Load failed: [_1]",
+                "Load failed. [_1]",
                 $class->errstr || $app->translate("(no reason given)")
             )
             );
@@ -938,7 +938,7 @@ sub list {
                                 {
                                 cls => 'alert',
                                 msg => MT->translate(
-                                    q{Invalid filter: [_1]},
+                                    q{Invalid filter. [_1]},
                                     MT::Util::encode_html($errstr)
                                 )
                                 };
@@ -954,7 +954,7 @@ sub list {
                                 {
                                 cls => 'alert',
                                 msg => MT->translate(
-                                    q{Invalid filter: [_1]},
+                                    q{Invalid filter. [_1]},
                                     MT::Util::encode_html($errstr),
                                 )
                                 };
@@ -974,7 +974,7 @@ sub list {
                     {
                     cls => 'alert invalid-filter',
                     msg => MT->translate(
-                        q{Invalid filter: [_1]},
+                        q{Invalid filter. [_1]},
                         MT::Util::encode_html($col),
                     )
                     };
@@ -1396,7 +1396,7 @@ sub filtered_list {
                 $prop->validate_item($item)
                     or return $app->json_error(
                     MT->translate(
-                        'Invalid filter terms: [_1]',
+                        'Invalid filter terms. [_1]',
                         $prop->errstr
                     )
                     );
@@ -1464,7 +1464,7 @@ sub filtered_list {
     if ( !defined $count_result ) {
         return $app->error(
             MT->translate(
-                "An error occured while counting objects: [_1]",
+                "An error occured while counting objects. [_1]",
                 $filter->errstr
             )
         );
@@ -1483,7 +1483,7 @@ sub filtered_list {
         if ( !defined $objs ) {
             return $app->error(
                 MT->translate(
-                    "An error occured while loading objects: [_1]",
+                    "An error occured while loading objects. [_1]",
                     $filter->errstr
                 )
             );
@@ -1746,7 +1746,7 @@ sub delete {
                 require MT::Placement;
                 my $blog = MT::Blog->load($blog_id)
                     or return $app->error(
-                    $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+                    $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
                 my $at = $blog->archive_type;
                 if ( $at && $at ne 'None' ) {
                     my @at = split /,/, $at;
@@ -1820,7 +1820,7 @@ sub delete {
 
         $obj->remove
             or return $app->errtrans(
-            'Removing [_1] failed: [_2]',
+            'Removing [_1] failed. [_2]',
             $app->translate($type),
             $obj->errstr
             );
@@ -1865,7 +1865,7 @@ sub delete {
     }
     if ($required_items) {
         $return_arg{error}
-            = $app->translate("System templates can not be deleted.");
+            = $app->translate("System templates cannot be deleted.");
     }
 
     if ( $app->param('xhr') ) {
@@ -2046,7 +2046,7 @@ sub save_snapshot {
     $app->run_callbacks( 'cms_save_permission_filter.' . "$type:revision",
         $app, $id )
         || return $app->error(
-        $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+        $app->translate( "Permission denied. [_1]", $app->errstr() ) );
 
     my $filter_result
         = $app->run_callbacks( 'cms_save_filter.' . "$type:revision", $app );
@@ -2094,7 +2094,7 @@ sub save_snapshot {
             $app,
             {   %$param,
                 error => $app->translate(
-                    "Saving snapshot failed: [_1]",
+                    "Saving snapshot failed. [_1]",
                     $app->errstr
                 )
             }
