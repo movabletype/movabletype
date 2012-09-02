@@ -1752,7 +1752,8 @@ sub _invalidate_commenter_session {
     my %user_session_kookee = (
         -name    => $app->commenter_session_cookie_name,
         -value   => '',
-        -expires => "+${timeout}s"
+        -expires => "+${timeout}s",
+        -path    => $blog_path,
     );
     $app->bake_cookie(%user_session_kookee);
 }
