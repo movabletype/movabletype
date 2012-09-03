@@ -321,7 +321,7 @@ sub _hdlr_authors {
         if ( my $scoring_to = $args->{scoring_to} ) {
             return $ctx->error(
                 MT->translate(
-                    "You have an error in your '[_2]' attribute. [_1]",
+                    "You have an error in your '[_2]' attribute: [_1]",
                     $scoring_to, 'scoring_to'
                 )
             ) unless exists $ctx->{__stash}{$scoring_to};

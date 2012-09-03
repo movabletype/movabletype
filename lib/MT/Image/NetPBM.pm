@@ -47,7 +47,7 @@ sub init {
     IPC::Run::run( \@in, '<', ( $image->{file} ? \undef : \$image->{data} ),
         '|', \@out, \$out, \$err )
         or return $image->error(
-        MT->translate( "Reading image failed. [_1]", $err ) );
+        MT->translate( "Reading image failed: [_1]", $err ) );
     ( $image->{width}, $image->{height} ) = $out =~ /(\d+)\s+by\s+(\d+)/;
     $image;
 }
@@ -85,7 +85,7 @@ sub scale {
     IPC::Run::run( \@in, '<', ( $image->{data} ? \$image->{data} : \undef ),
         '|', \@scale, '|', @quant, \@out, \$out, \$err )
         or return $image->error(
-        MT->translate( "Scaling to [_1]x[_2] failed. [_3]", $w, $h, $err ) );
+        MT->translate( "Scaling to [_1]x[_2] failed: [_3]", $w, $h, $err ) );
     ( $image->{width}, $image->{height}, $image->{data} ) = ( $w, $h, $out );
     wantarray ? ( $out, $w, $h ) : $out;
 }
@@ -117,7 +117,7 @@ sub crop {
     IPC::Run::run( \@in, '<', ( $image->{data} ? \$image->{data} : \undef ),
         '|', \@crop, '|', @quant, \@out, \$out, \$err )
         or return $image->error(
-        MT->translate( "Cropping to [_1]x[_1] failed. [_2]", $size, $err ) );
+        MT->translate( "Cropping to [_1]x[_1] failed: [_2]", $size, $err ) );
     ( $image->{width}, $image->{height}, $image->{data} )
         = ( $size, $size, $out );
     wantarray ? ( $out, $size, $size ) : $out;
@@ -150,7 +150,7 @@ sub convert {
         '|', @quant, \@out, \$out, \$err )
         or return $image->error(
         MT->translate(
-            "Converting image to [_1] failed. [_2]",
+            "Converting image to [_1] failed: [_2]",
             $outtype, $err
         )
         );

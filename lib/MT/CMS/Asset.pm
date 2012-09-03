@@ -1226,7 +1226,7 @@ sub _upload_file {
                     or return start_upload(
                     $app, %param,
                     error => $app->translate(
-                        "Can't make path '[_1]': [_2]", $path,
+                        "Cannot make path '[_1]': [_2]", $path,
                         $fmgr->errstr
                     )
                     );

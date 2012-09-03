@@ -660,7 +660,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/App/Comments.pm
 	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => 'Fehler bei der Zuweisung von Kommentierungsrechten an Benutzer &#8222;[_1] (ID: [_2])&#8220; für Weblog \'[_3] (ID: [_4])\'. Keine geeignete Kommentierungsrolle gefunden.',
-	'Can\'t load blog #[_1].' => 'Kann Blog #[_1] nicht laden.',
+	'Cannot load blog #[_1].' => 'Kann Blog #[_1] nicht laden.',
 	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => 'Ungültiger Anmeldeversuch von Kommentarautor [_1] an Weblog [_2](ID: [_3]) - native Movable Type-Authentifizierung bei diesem Weblog nicht zulässig.',
 	'Invalid login.' => 'Login ungültig.',
 	'Invalid login' => 'Login ungültig',
@@ -698,11 +698,11 @@ use vars qw( @ISA %Lexicon );
 	'Comment save failed with [_1]' => 'Der Kommentar konnte nicht gespeichert werden: [_1]',
 	'Comment on "[_1]" by [_2].' => 'Kommentar zu "[_1]" von [_2].',
 	'Publish failed: [_1]' => 'Veröffentlichung fehlgeschlagen: [_1]',
-	'Can\'t load template' => 'Kann Vorlage nicht laden',
+	'Cannot load template' => 'Kann Vorlage nicht laden',
 	'Failed comment attempt by pending registrant \'[_1]\'' => 'Fehlgeschlagener Kommentierungsversuch durch wartenden Kommentarautoren &#8222;[_1]&#8220;',
 	'Registered User' => 'Registrierter Benutzer',
 	'The sign-in attempt was not successful; please try again.' => 'Anmeldeversuch nicht erfolgreich. Bitte versuchen Sie es erneut.',
-	'Can\'t load entry #[_1].' => 'Kann Eintrag #[_1] nicht laden.',
+	'Cannot load entry #[_1].' => 'Kann Eintrag #[_1] nicht laden.',
 	'You are trying to redirect to external resources. If you can trust the site, please click the link: [_1]' => 'Weiterleitung zu einer externen Seite. Wenn Sie dieser Seite vertrauen, klicken Sie auf den Link: [_1]', # Translate - New # OK
 	'No entry was specified; perhaps there is a template problem?' => 'Es wurde kein Eintrag angegeben. Vielleicht gibt es ein Problem mit der Vorlage?',
 	'Somehow, the entry you tried to comment on does not exist' => 'Der Eintrag, den Sie kommentieren möchten, existiert nicht.',
@@ -806,7 +806,7 @@ use vars qw( @ISA %Lexicon );
 	'This TrackBack item is protected by a passphrase.' => 'Dieser TrackBack-Eintrag ist passwortgeschützt.',
 	'TrackBack on "[_1]" from "[_2]".' => 'TrackBack zu "[_1]" von "[_2]".',
 	'TrackBack on category \'[_1]\' (ID:[_2]).' => 'TrackBack für Kategorie &#8222;[_1]&#8220; (ID:[_2])',
-	'Can\'t create RSS feed \'[_1]\': ' => 'RSS-Feed &#8222;[_1]&#8220; kann nicht angelegt werden: ',
+	'Cannot create RSS feed \'[_1]\': ' => 'RSS-Feed &#8222;[_1]&#8220; kann nicht angelegt werden: ',
 	'New TrackBack Ping to \'[_1]\'' => 'Neuer TrackBack-Ping für \'[_1]\'',
 	'New TrackBack Ping to Category \'[_1]\'' => 'Neuer TrackBack-Ping für Kategorie \'[_1]\'',
 
@@ -824,7 +824,7 @@ use vars qw( @ISA %Lexicon );
 	'File not found' => 'Datei nicht gefunden', # Translate - New # OK
 	'Template publishing failed: [_1]' => 'Vorlage konnte nicht veröffentlicht werden: [_1]',
 	'Unknown archive type: [_1]' => 'Archivtyp unbekannt: [_1]', # Translate - New # OK
-	'Can\'t load template [_1]' => 'Kann Vorlage [_1] nicht laden',
+	'Cannot load template [_1]' => 'Kann Vorlage [_1] nicht laden',
 	'Archive publishing failed: [_1]' => 'Archiv konnte nicht veröffentlicht werden: [_1]',
 	'Invalid entry ID [_1]' => 'Ungültige Eintrags-ID [_1]', # Translate - New # OK
 	'Entry [_1] is not published' => 'Eintrag [_1] nicht veröffentlicht',
@@ -956,7 +956,7 @@ use vars qw( @ISA %Lexicon );
 	'Error converting image: [_1]' => 'Fehler bei der Umwandlung des Bildes: [_1]',
 	'Error creating thumbnail file: [_1]' => 'Fehler beim Erzeugen des Vorschaubildes: [_1]',
 	'%f-thumb-%wx%h-%i%x' => '%f-thumb-%wx%h-%i%x',
-	'Can\'t load image #[_1]' => 'Kann Bild #[_1] nicht laden',
+	'Cannot load image #[_1]' => 'Kann Bild #[_1] nicht laden',
 	'View image' => 'Bild ansehen',
 	'Permission denied setting image defaults for blog #[_1]' => 'Fehlende B: Bild-Voreinstellungen für Weblog #[_1] nicht geändert',
 	'Thumbnail image for [_1]' => 'Vorschaubild für [_1]',
@@ -1083,9 +1083,9 @@ use vars qw( @ISA %Lexicon );
 	'[_1] records backed up...' => '[_1] Einträge gesichert...',
 	'[_1] records backed up.' => '[_1] Einträge gesichert',
 	'There were no [_1] records to be backed up.' => 'Keine [_1]-Einträge zu sichern.',
-	'Can\'t open directory \'[_1]\': [_2]' => 'Kann Verzeichnis &#8222;[_1]&#8220; nicht öffnen: [_2]',
+	'Cannot open directory \'[_1]\': [_2]' => 'Kann Verzeichnis &#8222;[_1]&#8220; nicht öffnen: [_2]',
 	'No manifest file could be found in your import directory [_1].' => 'Keine Manifest-Datei im Importverzeichnis [_1] gefunden.',
-	'Can\'t open [_1].' => 'Kann [_1] nicht öffnen.',
+	'Cannot open [_1].' => 'Kann [_1] nicht öffnen.',
 	'Manifest file [_1] was not a valid Movable Type backup manifest file.' => 'Manifest-Datei [_1] ist keine gültige Movable Type Backup-Manifest-Datei.',
 	'Manifest file: [_1]' => 'Manifest-Datei: [_1]',
 	'Path was not found for the file ([_1]).' => 'Pfad zu Datei ([_1]) nicht gefunden.',
@@ -1172,7 +1172,7 @@ use vars qw( @ISA %Lexicon );
 	'Files' => 'Dateien',
 	'Extension changed from [_1] to [_2]' => 'Erweiterung von [_1] in [_2] geändert',
 	'Upload File' => 'Datei hochladen',
-	'Can\'t load file #[_1].' => 'Kann Datei #[_1] nicht laden.',
+	'Cannot load file #[_1].' => 'Kann Datei #[_1] nicht laden.',
 	'No permissions' => 'Keine Berechtigung',
 	'File \'[_1]\' uploaded by \'[_2]\'' => 'Datei &#8222;[_1]&#8220; hochgeladen von &#8222;[_2]&#8220;',
 	'File \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Datei &#8222;[_1]&#8220; (ID:[_2]) gelöscht von &#8222;[_3]&#8220;',
@@ -1186,7 +1186,7 @@ use vars qw( @ISA %Lexicon );
 	'Please select a video to upload.' => 'Bitte wählen die Video-Datei aus, die Sie hochladen möchten.',
 	'Movable Type was unable to write on the "Upload Destination". Please make sure that the folder is writable from the web server.' => 'Movable Type konnte den Zielpfad nicht beschreiben. Bitte stellen Sie sicher, daß der Webserver Schreibrechte für dieses Verzeichnis besitzt.',
 	'Invalid extra path \'[_1]\'' => 'Ungültiger Zusatzpfad &#8222;[_1]&#8220;',
-	'Can\'t make path \'[_1]\': [_2]' => 'Kann Pfad &#8222;[_1]&#8220; nicht anlegen: [_2]',
+	'Cannot make path \'[_1]\': [_2]' => 'Kann Pfad &#8222;[_1]&#8220; nicht anlegen: [_2]',
 	'Invalid temp file name \'[_1]\'' => 'Ungültiger temporärer Dateiname &#8222;[_1]&#8220;',
 	'Error opening \'[_1]\': [_2]' => 'Fehler beim Öffnen von &#8222;[_1]&#8220;: [_2]',
 	'Error deleting \'[_1]\': [_2]' => 'Fehler beim Löschen von &#8222;[_1]&#8220;: [_2]',
@@ -1197,7 +1197,7 @@ use vars qw( @ISA %Lexicon );
 	'Could not create upload path \'[_1]\': [_2]' => 'Konnte Pfad &#8222;[_1]&#8220; nicht anlegen: [_2]',
 	'Error writing upload to \'[_1]\': [_2]' => 'Die hochgeladene Datei konnte nicht in &#8222;[_1]&#8220; gespeichert werden: [_2]',
 	'Uploaded file is not an image.' => 'Die hochgeladene Datei ist keine Bilddatei.',
-	'Can\'t overwrite with the file of different type. Original: [_1] Uploaded: [_2]' => 'Eine vorhandene Datei kann nur mit einer Datei gleichen Typs überschrieben werden. Originaldatei: [_1] Hochgeladene Datei: [_2]',
+	'Cannot overwrite with the file of different type. Original: [_1] Uploaded: [_2]' => 'Eine vorhandene Datei kann nur mit einer Datei gleichen Typs überschrieben werden. Originaldatei: [_1] Hochgeladene Datei: [_2]',
 	'<' => '<',
 	'/' => '/',
 
@@ -1212,7 +1212,7 @@ use vars qw( @ISA %Lexicon );
 	'General Settings' => 'Allgemeine Einstellungen',
 	'Plugin Settings' => 'Plugin-Einstellungen',
 	'New Blog' => 'Neues Blog',
-	'Can\'t load template #[_1].' => 'Kann Vorlage #[_1] nicht laden.',
+	'Cannot load template #[_1].' => 'Kann Vorlage #[_1] nicht laden.',
 	'index template \'[_1]\'' => 'Indexvorlage &#8222;[_1]&#8220;',
 	'[_1] \'[_2]\'' => '[_1] &#8222;[_2]&#8220;',
 	'Publish Site' => 'Site veröffentlichen',
@@ -1267,12 +1267,12 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' untrusted commenter \'[_2]\'.' => 'Benutzer &#8222;[_1]&#8220; hat Kommentarautor &#8222;[_2]&#8220; das Vertrauen entzogen',
 	'Parent comment id was not specified.' => 'ID des Elternkommentars nicht angegeben.',
 	'Parent comment was not found.' => 'Elternkommentar nicht gefunden.',
-	'You can\'t reply to unapproved comment.' => 'Sie können nicht auf nicht freigeschaltete Kommentare antworten.',
+	'You cannot reply to unapproved comment.' => 'Sie können nicht auf nicht freigeschaltete Kommentare antworten.',
 	'Comment (ID:[_1]) by \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => 'Kommentar (ID:[_1]) von &#8222;[_2]&#8220; von &#8222;[_3]&#8220; aus Eintrag &#8222;[_4]&#8220; gelöscht',
 	'You don\'t have permission to approve this trackback.' => 'Sie haben keine Berechtigung zur Freischaltung dieses TrackBacks.',
 	'Comment on missing entry!' => 'Kommentar gehört zu fehlendem Eintrag',
 	'You don\'t have permission to approve this comment.' => 'Sie haben keine Berechtigung zur Freischaltung dieses Kommentars.',
-	'You can\'t reply to unpublished comment.' => 'Sie können nicht auf nicht veröffentlichte Kommentare antworten.',
+	'You cannot reply to unpublished comment.' => 'Sie können nicht auf nicht veröffentlichte Kommentare antworten.',
 	'Orphaned comment' => 'Verwaister Kommentar',
 
 ## lib/MT/CMS/Common.pm
@@ -1309,7 +1309,7 @@ use vars qw( @ISA %Lexicon );
 	'pages' => 'Seiten',
 	'Tag' => 'Tag',
 	'Entry Status' => 'Eintragsstatus',
-	'Can\'t load template.' => 'Kann Vorlage nicht laden.',
+	'Cannot load template.' => 'Kann Vorlage nicht laden.',
 	'Publish error: [_1]' => 'Fehler bei der Veröffentlichung: [_1]',
 	'Unable to create preview file in this location: [_1]' => 'Kann Vorschaudatei in [_1] nicht erzeugen.',
 	'New [_1]' => 'Neuer [_1]',
@@ -1429,7 +1429,7 @@ use vars qw( @ISA %Lexicon );
 	'System Templates' => 'System-Vorlagen',
 	'Email Templates' => 'E-Mail-Vorlagen',
 	'Template Backups' => 'Vorlagen-Sicherungen',
-	'Can\'t locate host template to preview module/widget.' => 'Kann Host-Vorlage zur Vorschau auf Modul/Widget nicht finden.',
+	'Cannot locate host template to preview module/widget.' => 'Kann Host-Vorlage zur Vorschau auf Modul/Widget nicht finden.',
 	'Cannot preview without a template map!' => 'Vorschau ohne Vorlagen-Verknüpfung nicht möglich.',
 	'Lorem ipsum' => 'Lorem ipsum',
 	'LOREM_IPSUM_TEXT' => 'LOREM_IPSUM_TEXT',
@@ -1437,7 +1437,7 @@ use vars qw( @ISA %Lexicon );
 	'sample, entry, preview' => 'Beispiel, Eintrag, Vorschau',
 	'Populating blog with default templates failed: [_1]' => 'Standardvorlagen konnten nicht geladen werden: [_1]',
 	'Setting up mappings failed: [_1]' => 'Die Verknüpfungen konnte nicht angelegt werden: [_1]',
-	'Can\'t load templatemap' => 'Kann Vorlagenverknüpfungen nicht laden',
+	'Cannot load templatemap' => 'Kann Vorlagenverknüpfungen nicht laden',
 	'Saving map failed: [_1]' => 'Die Verknüpfungen konnte nicht gespeichert werden: [_1]',
 	'You should not be able to enter 0 as the time.' => '0 sollte nicht als Zeit eingegeben werden können.',
 	'You must select at least one event checkbox.' => 'Markieren Sie bitte mindestens ein Ereignis-Auswahlfeld.',
@@ -1502,7 +1502,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] is [_2]' => '[_1] ist [_2]',
 	'none' => 'Kein(e)',
 	'System Settings Changes Took Place' => 'Es wurden Änderungen an den Systemeinstellungen vorgenommen.',
-	'Invalid password recovery attempt; can\'t recover password in this configuration' => 'Ungültiger Versuch zur  Passwortanforderung. Passwörter können in dieser Konfiguration nicht angefordert werden.',
+	'Invalid password recovery attempt; cannot recover password in this configuration' => 'Ungültiger Versuch zur  Passwortanforderung. Passwörter können in dieser Konfiguration nicht angefordert werden.',
 	'Invalid author_id' => 'Ungültige Autoren-ID',
 	'Backup & Restore' => 'Sichern & Wiederherstellen',
 	'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.' => 'Das temporäre Verzeichnis muss zur Sicherung beschreibbar sein. Bitte überprüfen Sie Ihre TempDir-Einstellung.',
@@ -1529,7 +1529,7 @@ use vars qw( @ISA %Lexicon );
 	'Restoring a file failed: ' => 'Eine Datei wurde nicht wiederhergestellt: ',
 	'Some of the files were not restored correctly.' => 'Einige Daten wurden nicht korrekt wiederhergestellt.',
 	'Successfully restored objects to Movable Type system by user \'[_1]\'' => 'Objekte erfolgreich wiederhergestellt durch Benutzer &#8222;[_1]&#8220;',
-	'Can\'t recover password in this configuration' => 'Passwörter können in dieser Konfiguration nicht angefordert werden',
+	'Cannot recover password in this configuration' => 'Passwörter können in dieser Konfiguration nicht angefordert werden',
 	'Invalid user name \'[_1]\' in password recovery attempt' => 'Ungültiger Benutzername &#8222;[_1]&#8220; zur Passwortanforderung verwendet',
 	'User name or password hint is incorrect.' => 'Benutzername oder Antwort auf Erinnerungsfrage falsch.',
 	'User has not set pasword hint; cannot recover password' => 'Benutzer hat Erinnerungsfrage nicht gesetzt; Passwort kann deshalb nicht angefordert werden',
@@ -1563,7 +1563,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/User.pm
 	'Create User' => 'Benutzerkonto anlegen',
-	'Can\'t load role #[_1].' => 'Kann Rolle #[_1] nicht laden.',
+	'Cannot load role #[_1].' => 'Kann Rolle #[_1] nicht laden.',
 	'Role name cannot be blank.' => 'Rollenname erforderlich.',
 	'Another role already exists by that name.' => 'Es ist bereits eine Rolle mit diesem Namen vorhanden.',
 	'You cannot define a role without permissions.' => 'Es können keine Rollen ohne Berechtigungen definiert werden.',
@@ -1606,7 +1606,7 @@ use vars qw( @ISA %Lexicon );
 	'Website \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Website &#8222;[_1]&#8220; (ID: [_2]) gelöscht von &#8222;[_3]&#8220;',
 	'Selected Website' => 'Gewählte Website',
 	'Type a website name to filter the choices below.' => 'Geben Sie einen Namen ein, um die Auswahl einzuschränken.',
-	'Can\'t load website #[_1].' => 'Kann Website #[_1] nicht laden.',
+	'Cannot load website #[_1].' => 'Kann Website #[_1] nicht laden.',
 	'Blog \'[_1]\' (ID:[_2]) moved from \'[_3]\' to \'[_4]\' by \'[_5]\'' => 'Blog &#8222;[_1]&#8220; (ID: [_2]) von &#8222;[_5]&#8220; von &#8222;[_3]&#8220; nach &#8222;[_4]&#8220; verschoben',
 
 ## lib/MT/Comment.pm
@@ -1870,22 +1870,22 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Folder.pm
 
 ## lib/MT/Image/GD.pm
-	'Can\'t load GD: [_1]' => 'GD kann nicht geladen werden: [_1]',
+	'Cannot load GD: [_1]' => 'GD kann nicht geladen werden: [_1]',
 	'Unsupported image file type: [_1]' => 'Nicht unterstütztes Bildformat: [_1]',
 	'Reading file \'[_1]\' failed: [_2]' => 'Datei &#8222;[_1]&#8220; kann nicht gelesen werden: [_2]',
 	'Reading image failed: [_1]' => 'Bild kann nicht geladen werden: [_1]',
 
 ## lib/MT/Image/ImageMagick.pm
-	'Can\'t load Image::Magick: [_1]' => 'Image::Magick kann nicht geladen werden: [_1]',
+	'Cannot load Image::Magick: [_1]' => 'Image::Magick kann nicht geladen werden: [_1]',
 	'Scaling to [_1]x[_2] failed: [_3]' => 'Bei der Skalierung auf [_1]x[_2] ist ein Fehler aufgetreten: [_3]',
 	'Cropping a [_1]x[_1] square at [_2],[_3] failed: [_4]' => 'Beim Erstellen des quadratischen Ausschnitts von [_1]x[_2] Pixeln Größe ab [_2],[_3] ist ein Fehler aufgetreten: [_4]',
 	'Converting image to [_1] failed: [_2]' => 'Bei der Konvertierung des Fotos in [_1] ist ein Fehler aufgetreten: [_2]',
 
 ## lib/MT/Image/Imager.pm
-	'Can\'t load Imager: [_1]' => 'Imager kann nicht geladen werden: [_1]',
+	'Cannot load Imager: [_1]' => 'Imager kann nicht geladen werden: [_1]',
 
 ## lib/MT/Image/NetPBM.pm
-	'Can\'t load IPC::Run: [_1]' => 'IPC::Run kann nicht geladen werden: [_1]',
+	'Cannot load IPC::Run: [_1]' => 'IPC::Run kann nicht geladen werden: [_1]',
 	'Cropping to [_1]x[_1] failed: [_2]' => 'Beim Beschneiden auf [_1]x[_1] Pixel ist ein Fehler aufgetreten: [_2]',
 	'You do not have a valid path to the NetPBM tools on your machine.' => 'Kein gültiger Pfad zu den NetPBM-Tools gefunden.',
 
@@ -1903,7 +1903,7 @@ use vars qw( @ISA %Lexicon );
 	'Saving category failed: [_1]' => 'Die Kategorie konnte nicht gespeichert werden: [_1]',
 	'Invalid status value \'[_1]\'' => 'Ungültiger Status-Wert &#8222;[_1]&#8220;',
 	'Invalid allow pings value \'[_1]\'' => 'Ungültiger Ping-Status &#8222;[_1]&#8220;',
-	'Can\'t find existing entry with timestamp \'[_1]\'... skipping comments, and moving on to next entry.' => 'Kann vorhandenen Eintrag mit Zeitstempel &#8222;[_1]&#8220;  nicht finden; überspringe Kommentare und fahre mit nächstem Eintrag fort...',
+	'Cannot find existing entry with timestamp \'[_1]\'... skipping comments, and moving on to next entry.' => 'Kann vorhandenen Eintrag mit Zeitstempel &#8222;[_1]&#8220;  nicht finden; überspringe Kommentare und fahre mit nächstem Eintrag fort...',
 	'Importing into existing entry [_1] (\'[_2]\')' => 'Importiere in vorhandenen Eintrag [_1] (\&#8222;[_2]&#8220;)',
 	'Saving entry (\'[_1]\')...' => 'Speichere Eintrag &#8222;[_1]&#8220;...',
 	'ok (ID [_1])' => 'OK (ID [_1])',
@@ -1916,8 +1916,8 @@ use vars qw( @ISA %Lexicon );
 	'Invalid date format \'[_1]\'; must be \'MM/DD/YYYY HH:MM:SS AM|PM\' (AM|PM is optional)' => 'Ungültiges Datumsformat &#8222;[_1]&#8220;;  muss &#8222;MM/TT/JJJJ HH:MM:SS AM|PM&#8220; sein (AM|PM optional)',
 
 ## lib/MT/Import.pm
-	'Can\'t rewind' => 'Kann nicht zurückspulen',
-	'Can\'t open \'[_1]\': [_2]' => 'Kann &#8222;[_1]&#8220; nicht öffnen: [_2]',
+	'Cannot rewind' => 'Kann nicht zurückspulen',
+	'Cannot open \'[_1]\': [_2]' => 'Kann &#8222;[_1]&#8220; nicht öffnen: [_2]',
 	'No readable files could be found in your import directory [_1].' => 'Keine lesbaren Dateien im Import-Verzeichnis [_1] gefunden.',
 	'Importing entries from file \'[_1]\'' => 'Importiere Einträge aus Datei &#8222;[_1]&#8220;',
 	'Couldn\'t resolve import format [_1]' => 'Kann Importformat [_1] nicht auflösen',
@@ -1936,12 +1936,12 @@ use vars qw( @ISA %Lexicon );
 	'Composite score: [_1]' => 'Gesamtbewertung: [_1]',
 
 ## lib/MT/ListProperty.pm
-	'Can\'t initialize list property [_1].[_2].' => 'Konnte Listeneigenschaft [_1] nicht initialisieren.[_2].', # Translate - New # OK
+	'Cannot initialize list property [_1].[_2].' => 'Konnte Listeneigenschaft [_1] nicht initialisieren.[_2].', # Translate - New # OK
 	'Failed to init auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'Initialisierung der Listeneigenschaft [_1] fehlgeschlagen.[_2]: Keine Definition für Spalte [_3] gefunden.',
 	'Failed to init auto list property [_1].[_2]: unsupported column type.' => 'Initialisierung der Listeneigenschaft [_1] fehlgeschlagen.[_2]:Spaltenart nicht unterstützt.',
 
 ## lib/MT/Lockout.pm
-	'Can\'t find author for id \'[_1]\'' => 'Kein Autor mit ID \'[_1]\' vorhanden',
+	'Cannot find author for id \'[_1]\'' => 'Kein Autor mit ID \'[_1]\' vorhanden',
 	'User was locked out. IP address: [_1], Username: [_2]' => 'Benutzerkonto gesperrt. IP-Adresse: [_1], Benutzername: [_2]',
 	'User Was Locked Out' => 'Benutzerkonto gesperrt',
 	'Error sending mail: [_1]' => 'Fehler beim Versenden von Mail: [_1]',
@@ -2151,16 +2151,16 @@ use vars qw( @ISA %Lexicon );
 	'records' => 'Einträge',
 	'No template to include was specified' => 'Keine einzubindende Vorlage angegeben',
 	'Recursion attempt on [_1]: [_2]' => 'Rekursionsversuch bei [_1]: [_2]',
-	'Can\'t find included template [_1] \'[_2]\'' => 'Kann verwendete Vorlage [_1] &#8222;[_1]&#8220; nicht finden',
+	'Cannot find included template [_1] \'[_2]\'' => 'Kann verwendete Vorlage [_1] &#8222;[_1]&#8220; nicht finden',
 	'Error in [_1] [_2]: [_3]' => 'Fehler in [_1] [_2]: [_3]',
 	'Writing to \'[_1]\' failed: [_2]' => '&#8222;[_1]&#8220; konnte nicht beschrieben werden: [_2]',
-	'Can\'t find blog for id \'[_1]' => 'Kann Blog zu ID &#8222;[_1]&#8220; nicht finden',
-	'Can\'t find included file \'[_1]\'' => 'Kann verwendete Datei &#8222;[_1]&#8220; nicht finden',
+	'Cannot find blog for id \'[_1]' => 'Kann Blog zu ID &#8222;[_1]&#8220; nicht finden',
+	'Cannot find included file \'[_1]\'' => 'Kann verwendete Datei &#8222;[_1]&#8220; nicht finden',
 	'Error opening included file \'[_1]\': [_2]' => 'Fehler beim Öffnen der verwendeten Datei &#8222;[_1]&#8220;: [_2]',
 	'Recursion attempt on file: [_1]' => 'Rekursionsversuch bei Datei [_1]',
-	'Can\'t load user.' => 'Kann Benutzerkonto nicht laden.',
-	'Can\'t find template \'[_1]\'' => 'Kann Vorlage &#8222;[_1]&#8220; nicht finden',
-	'Can\'t find entry \'[_1]\'' => 'Kann Eintrag &#8222;[_1]&#8220; nicht finden',
+	'Cannot load user.' => 'Kann Benutzerkonto nicht laden.',
+	'Cannot find template \'[_1]\'' => 'Kann Vorlage &#8222;[_1]&#8220; nicht finden',
+	'Cannot find entry \'[_1]\'' => 'Kann Eintrag &#8222;[_1]&#8220; nicht finden',
 	'Unspecified archive template' => 'Nicht spezifizierte Archivvorlage',
 	'Error in file template: [_1]' => 'Fehler in Dateivorlage: [_1]',
 
@@ -2228,7 +2228,7 @@ use vars qw( @ISA %Lexicon );
 	'MT[_1] must be used in a [_2] context' => 'MT[_1] muss in einem [_2]-Kontext stehen',
 	'Cannot find package [_1]: [_2]' => 'Kann Paket [_1] nicht finden: [_2]',
 	'Error sorting [_2]: [_1]' => 'Fehler beim Sortieren von [_2]: [_1]',
-	'Can\'t use sort_by and sort_method together in [_1]' => '"sorty_by" und "sort_method" können nicht gemeinsam in [_1] verwendet werden.',
+	'Cannot use sort_by and sort_method together in [_1]' => '"sorty_by" und "sort_method" können nicht gemeinsam in [_1] verwendet werden.',
 	'[_1] cannot be used without publishing Category archive.' => '[_1] kann nur zusammen mit Kategoriearchiven verwendet werden.',
 	'[_1] used outside of [_2]' => '[_1] außerhalb [_2] verwendet',
 
@@ -2458,8 +2458,8 @@ use vars qw( @ISA %Lexicon );
 	'Could not read from filehandle.' => 'Dateihandle nicht lesbar.',
 	'File [_1] is not a tgz file.' => '[_1] ist keine .tgz-Datei',
 	'File [_1] exists; could not overwrite.' => '[_1] existiert bereits und konnte nicht überschrieben werden',
-	'Can\'t extract from the object' => 'Kann aus Objekt nicht extrahieren',
-	'Can\'t write to the object' => 'Kann Objekt nicht beschreiben',
+	'Cannot extract from the object' => 'Kann aus Objekt nicht extrahieren',
+	'Cannot write to the object' => 'Kann Objekt nicht beschreiben',
 	'Both data and file name must be specified.' => 'Sowohl der Daten- als auch der Dateiname müssen angegeben werden.',
 
 ## lib/MT/Util/Archive/Zip.pm
@@ -4950,7 +4950,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/wizard/complete.tmpl
 	'Configuration File' => 'Konfigurationsdatei',
-	q{The [_1] configuration file can't be located.} => q{Die [_1]-Konfigurationsdatei kann nicht gefunden werden.},
+	q{The [_1] configuration file cannot be located.} => q{Die [_1]-Konfigurationsdatei kann nicht gefunden werden.},
 	q{Please use the configuration text below to create a file named 'mt-config.cgi' in the root directory of [_1] (the same directory in which mt.cgi is found).} => q{Kopieren Sie folgenden Text in eine Datei namens &#8222;mt-config.cgi&#8220; und legen diese im Movable Type-Hauptverzeichnis ab (das Verzeichnis, in dem sich auch die Datei mt.cgi befindet)},
 	'The wizard was unable to save the [_1] configuration file.' => 'Die [_1]-Konfigurationsdatei konnte nicht gespeichert werden.',
 	q{Confirm that your [_1] home directory (the directory that contains mt.cgi) is writable by your web server and then click 'Retry'.} => q{Stellen Sie sicher, daß Ihr Webserver Schreibrechte für Ihr [_1]-Wurzelverzeichnis hat (also für den Ordner, der die Datei mt.cgi enthält)  und klicken Sie dann auf  &#8222;Erneut versuchen&#8220;.},
@@ -5896,7 +5896,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'No records were found in the file.  Make sure the file uses CRLF as the line-ending characters.' => 'Keine Einträge in Datei gefunden. Bitte stellen Sie sicher, daß für die Zeilenenden CRLF verwendet wird.',
 	'Registered [quant,_1,user,users], updated [quant,_2,user,users], deleted [quant,_3,user,users].' => '[quant,_1,Benutzer] registiert, [quant,_2,Benutzerkonto,Benutzerkonten] aktualisiert, [quant,_3,Benutzerkonto,Benutzerkonten] gelöscht.',
 	'Bulk author export cannot be used under external user management.' => 'Stapelexport von Benutzerkonten bei externer Benutzerverwaltung nicht möglich.',
-	'A user can\'t change his/her own username in this environment.' => 'Benutzer können ihre eigenen Benutzernamen in diesem Kontext nicht ändern.',
+	'A user cannot change his/her own username in this environment.' => 'Benutzer können ihre eigenen Benutzernamen in diesem Kontext nicht ändern.',
 	'An error occurred when enabling this user.' => 'Bei der Aktivierung dieses Benutzerkontos ist ein Fehler aufgetreten',
 
 ## addons/Enterprise.pack/lib/MT/Enterprise/Upgrade.pm
@@ -5958,7 +5958,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	q{Click 'Continue' below to configure your LDAP attribute mappings.} => q{Klicken Sie auf 'Weiter', um die LDAP-Attribute zuzuweisen.},
 	'Your LDAP configuration is complete.' => 'Ihre LDAP-Konfigurierung ist abgeschlossen.',
 	q{To finish with the configuration wizard, press 'Continue' below.} => q{Mit einem Klick auf 'Weiter' schließen Sie die Konfigurierung ab.},
-	q{Can't locate Net::LDAP. Net::LDAP module is required to use LDAP authentication.} => q{Kann Net::LDAP nicht finden. Net::LDAP ist zur Authentifizierung über LDAP erforderlich.},
+	q{Cannot locate Net::LDAP. Net::LDAP module is required to use LDAP authentication.} => q{Kann Net::LDAP nicht finden. Net::LDAP ist zur Authentifizierung über LDAP erforderlich.},
 	'Use LDAP' => 'LDAP verwenden',
 	'Authentication URL' => 'Authentifizierungs-URL',
 	'The URL to access for LDAP authentication.' => 'Adresse (URL) zur LDAP-Authentifizierung',

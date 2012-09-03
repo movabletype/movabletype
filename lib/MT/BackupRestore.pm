@@ -555,7 +555,7 @@ sub restore_directory {
     my @files;
     opendir my $dh, $dir
         or push( @$errors,
-        MT->translate( "Can't open directory '[_1]': [_2]", $dir, "$!" ) ),
+        MT->translate( "Cannot open directory '[_1]': [_2]", $dir, "$!" ) ),
         return undef;
     for my $f ( readdir $dh ) {
         next if $f !~ /^.+\.manifest$/i;
@@ -575,7 +575,7 @@ sub restore_directory {
 
     my $fh = gensym;
     open $fh, "<$manifest"
-        or push( @$errors, MT->translate( "Can't open [_1].", $manifest ) ),
+        or push( @$errors, MT->translate( "Cannot open [_1].", $manifest ) ),
         return 0;
     my $backups = __PACKAGE__->process_manifest($fh);
     close $fh;
@@ -600,7 +600,7 @@ sub restore_directory {
         my $fh = gensym;
         my $filepath = File::Spec->catfile( $dir, $file );
         open $fh, "<$filepath"
-            or push @$errors, MT->translate("Can't open [_1]."), next;
+            or push @$errors, MT->translate("Cannot open [_1]."), next;
 
         my ( $tmp_blog_ids, $tmp_asset_ids ) = eval {
             __PACKAGE__->restore_process_single_file( $fh, \%objects,

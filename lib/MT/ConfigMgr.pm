@@ -331,7 +331,7 @@ sub read_config_file {
     $mgr->{__var} = {};
     local $_;
     local $/ = "\n";
-    die "Can't read config without config file name" if !$cfg_file;
+    die "Cannot read config without config file name" if !$cfg_file;
     open my $FH, "<", $cfg_file
         or return $class->error(
         MT->translate( "Error opening file '[_1]': [_2]", $cfg_file, "$!" ) );

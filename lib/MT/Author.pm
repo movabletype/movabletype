@@ -817,7 +817,7 @@ sub set_commenter_perm {
     $perm->save()
         or return $this->error(
         MT->translate(
-            "The approval could not be committed.  [_1]",
+            "The approval could not be committed: [_1]",
             $perm->errstr
         )
         );

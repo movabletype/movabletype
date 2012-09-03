@@ -204,10 +204,10 @@ sub check_openid {
         }
         elsif ( $err_code eq 'url_fetch_error' ) {
             $err_msg =~ s{ \A Error \s fetching \s URL: \s }{}xms;
-            $err_msg = $app->translate( 'Unable to connect to [_1]. [_2]',
+            $err_msg = $app->translate( 'Unable to connect to [_1]: [_2]',
                 $identity, $err_msg );
         }
-        return $app->errtrans( "Could not verify the OpenID provided. [_1]",
+        return $app->errtrans( "Could not verify the OpenID provided: [_1]",
             $err_msg );
     }
     return $claimed_identity;

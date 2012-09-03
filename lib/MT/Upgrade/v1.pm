@@ -126,7 +126,7 @@ sub core_create_template_maps {
                 $map->save
                     or return $self->error(
                     $self->translate_escape(
-                        "Error saving record. [_1].",
+                        "Error saving record: [_1].",
                         $map->errstr
                     )
                     );

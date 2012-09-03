@@ -206,7 +206,7 @@ sub load_file {
     }
 
     die MT->translate(
-        "Template load error. [_1]",
+        "Template load error: [_1]",
         MT->translate(
             "Tried to load the template file from outside of the include path '[_1]'",
             $file

@@ -1184,7 +1184,7 @@ sub _prepare_reply {
 
     if ( !$parent || !$parent->is_published ) {
         $app->error(
-            $app->translate("You can't reply to unpublished comment.") );
+            $app->translate("You cannot reply to unpublished comment.") );
         return ( undef, $parent, $entry );
     }
 

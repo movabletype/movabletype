@@ -34,7 +34,7 @@ sub export {
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate(
-            "Loading blog '[_1]' failed. [_2]", $blog_id,
+            "Loading blog '[_1]' failed: [_2]", $blog_id,
             MT::Blog->errstr
         )
         );

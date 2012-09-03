@@ -66,7 +66,7 @@ sub dashboard {
     my $scope = $app->view;
 
     return $app->error(
-        $app->translate('Error. This blog does not have a parent website.') )
+        $app->translate('Error: This blog does not have a parent website.') )
         if $blog && $blog->is_blog && !$blog->website;
 
     my $user    = $app->user;

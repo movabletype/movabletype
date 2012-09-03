@@ -40,7 +40,7 @@ sub work {
         $obj = $model->load($object_id);
         if ( !$obj ) {
             MT::TheSchwartz->debug(
-                qq{Bad MT::Worker::Summarize key (can't load object $object_id): }
+                qq{Bad MT::Worker::Summarize key (cannot load object $object_id): }
                     . $job->uniqkey );
             $good = 0;
         }

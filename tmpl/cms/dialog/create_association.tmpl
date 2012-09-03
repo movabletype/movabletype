@@ -46,7 +46,7 @@ function dialog_closed(ok) {
             var panel = dialog.panels[i];
             var fld = frm.elements[panel.name];
             if (!fld) {
-                alert("can't find field for " + panel.name);
+                alert("cannot find field for " + panel.name);
                 continue;
             }
             fld.value = panel.selectionList.items().join(",");

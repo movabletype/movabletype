@@ -1172,7 +1172,7 @@ sub _build_entry_preview {
     my $html = $tmpl->output;
 
     unless ( defined($html) ) {
-        my $preview_error = $app->translate( "Publish error. [_1]",
+        my $preview_error = $app->translate( "Publish error: [_1]",
             MT::Util::encode_html( $tmpl->errstr ) );
         $param{preview_error} = $preview_error;
         my $tmpl_plain = $app->load_tmpl('preview_entry_content.tmpl');
@@ -1244,7 +1244,7 @@ sub _build_entry_preview {
             $fullscreen = 1;
             $param{preview_error}
                 = $app->translate(
-                "Unable to create preview files in this location. [_1]",
+                "Unable to create preview files in this location: [_1]",
                 $path );
             my $tmpl_plain = $app->load_tmpl('preview_entry_content.tmpl');
             $tmpl->text( $tmpl_plain->text );
@@ -1621,7 +1621,7 @@ sub save {
     $app->run_callbacks( 'cms_pre_save.' . $type, $app, $obj, $orig_obj )
         || return $app->error(
         $app->translate(
-            "Saving [_1] failed. [_2]",
+            "Saving [_1] failed: [_2]",
             $class->class_label, $app->errstr
         )
         );
@@ -1633,7 +1633,7 @@ sub save {
     $obj->save
         or return $app->error(
         $app->translate(
-            "Saving [_1] failed. [_2]",
+            "Saving [_1] failed: [_2]",
             $class->class_label, $obj->errstr
         )
         );
@@ -1766,7 +1766,7 @@ sub save {
         $place->save
             or return $app->error(
             $app->translate(
-                "Saving placement failed. [_1]", $place->errstr
+                "Saving placement failed: [_1]", $place->errstr
             )
             );
         $placements_updated = 1;
@@ -1996,14 +1996,14 @@ PERMCHECK: {
             $app, $entry, $orig_obj )
             || return $app->error(
             $app->translate(
-                "Saving [_1] failed. [_2]", $entry->class_label,
+                "Saving [_1] failed: [_2]", $entry->class_label,
                 $app->errstr
             )
             );
         $entry->save
             or return $app->error(
             $app->translate(
-                "Saving entry '[_1]' failed. [_2]", $entry->title,
+                "Saving entry '[_1]' failed: [_2]", $entry->title,
                 $entry->errstr
             )
             );
@@ -2034,7 +2034,7 @@ PERMCHECK: {
             $place->remove
                 or return $app->error(
                 $app->translate(
-                    "Removing placement failed. [_1]",
+                    "Removing placement failed: [_1]",
                     $place->errstr
                 )
                 );
@@ -2050,7 +2050,7 @@ PERMCHECK: {
             $place->save
                 or return $app->error(
                 $app->translate(
-                    "Saving placement failed. [_1]",
+                    "Saving placement failed: [_1]",
                     $place->errstr
                 )
                 );
@@ -2840,7 +2840,7 @@ sub delete {
         # Remove object from database
         $obj->remove()
             or return $app->errtrans(
-            'Removing [_1] failed. [_2]',
+            'Removing [_1] failed: [_2]',
             $app->translate('entry'),
             $obj->errstr
             );

@@ -204,7 +204,7 @@ sub bulk_update {
     if ( $app->param('checksum') ne Digest::MD5::md5_hex($text) ) {
         return $app->json_error(
             $app->translate(
-                'Failed to update [_1].  Some of [_2] were changed after you opened this page.',
+                'Failed to update [_1]: Some of [_2] were changed after you opened this page.',
                 $class->class_label_plural,
                 $class->class_label_plural,
             )
@@ -407,7 +407,7 @@ sub category_do_add {
         $app->run_callbacks( 'cms_save_permission_filter.' . $type,
             $app, undef )
             || return $app->error(
-            $app->translate( "Permission denied. [_1]", $app->errstr() ) );
+            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
     }
 
     my $filter_result

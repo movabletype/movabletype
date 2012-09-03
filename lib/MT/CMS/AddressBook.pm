@@ -33,7 +33,7 @@ sub send_notify {
     $app->validate_magic() or return;
     my $q        = $app->param;
     my $entry_id = $q->param('entry_id')
-        or return $app->error( $app->translate("No entry ID provided") );
+        or return $app->error( $app->translate("No entry ID was provided") );
     require MT::Entry;
     require MT::Blog;
     my $entry = MT::Entry->load($entry_id)
@@ -132,11 +132,11 @@ sub send_notify {
     unless (exists $params{from_address}) {
         MT::Mail->send( \%head, $body )
             or return $app->errtrans(
-                "Error sending mail ([_1]). Try another MailTransfer setting?",
+                "Error sending mail ([_1]): Try another MailTransfer setting?",
                 MT::Mail->errstr );
     }
     delete $head{To};
-    
+
     my @email_to_send;
     my @addresses_to_send = grep $_, keys %$addrs;
     if ( $app->config('EmailNotificationBcc') ) {

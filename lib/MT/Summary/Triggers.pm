@@ -96,7 +96,7 @@ sub post_trigger {
     for my $trigger (@$triggers) {
         next unless $trigger->{expires}->{id_column};
         my $parent_class = MT->model( $trigger->{class_type} );
-        die "Can't find a class for '", $trigger->{class_type}, "'"
+        die "Cannot find a class for '", $trigger->{class_type}, "'"
             if !defined $parent_class;
         my $code   = $trigger->{expires}->{code};
         my $id_col = $trigger->{expires}->{id_column};

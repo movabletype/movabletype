@@ -27,7 +27,7 @@ sub init {
     };
     if ($@) {
         return $fmgr->error(
-            MT->translate( "SFTP connection failed. [_1]", $@ ) );
+            MT->translate( "SFTP connection failed: [_1]", $@ ) );
     }
     $fmgr;
 }
@@ -41,7 +41,7 @@ sub get_data {
         $data = $sftp->get($from);
     };
     if ($@) {
-        return $fmgr->error( MT->translate( "SFTP get failed. [_1]", $@ ) );
+        return $fmgr->error( MT->translate( "SFTP get failed: [_1]", $@ ) );
     }
     $data;
 }
@@ -74,7 +74,7 @@ sub put {
         $size = $attr->size;
     };
     if ($@) {
-        return $fmgr->error( MT->translate( "SFTP put failed. [_1]", $@ ) );
+        return $fmgr->error( MT->translate( "SFTP put failed: [_1]", $@ ) );
     }
     $size;
 }
@@ -92,7 +92,7 @@ sub put_data {
     close $fh;
     eval { $fmgr->{sftp}->put( $temp, $to ); };
     if ($@) {
-        return $fmgr->error( MT->translate( "SFTP put failed. [_1]", $@ ) );
+        return $fmgr->error( MT->translate( "SFTP put failed: [_1]", $@ ) );
     }
     unlink($temp);
     length($data);
@@ -137,7 +137,7 @@ sub mkpath {
     };
     if ($@) {
         return $fmgr->error(
-            MT->translate( "Creating path '[_1]' failed. [_2]", $path, $@ ) );
+            MT->translate( "Creating path '[_1]' failed: [_2]", $path, $@ ) );
     }
     1;
 }
@@ -149,7 +149,7 @@ sub rename {
     if ($@) {
         return $fmgr->error(
             MT->translate(
-                "Renaming '[_1]' to '[_2]' failed. [_3]",
+                "Renaming '[_1]' to '[_2]' failed: [_3]",
                 $from, $to, $@
             )
         );
@@ -162,7 +162,7 @@ sub delete {
     my ($path) = @_;
     $fmgr->{sftp}->do_remove($path)
         or return $fmgr->error(
-        MT->translate( "Deleting '[_1]' failed. [_2]", $path, $@ ) );
+        MT->translate( "Deleting '[_1]' failed: [_2]", $path, $@ ) );
     1;
 }
 
