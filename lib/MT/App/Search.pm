@@ -923,7 +923,8 @@ sub renderjs {
 #FIXME: template name may not be 'feed' for search feed
 sub renderfeed {
     my $app  = shift;
-    my $tmpl = $app->render(@_);
+    my $tmpl = $app->render(@_)
+        or return;
     my $out  = $app->build_page($tmpl);
     my $ctx  = $tmpl->context;
     if ( my $content_type = $ctx->stash('content_type') ) {
