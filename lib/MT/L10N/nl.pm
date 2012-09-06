@@ -36,7 +36,7 @@ use vars qw( @ISA %Lexicon );
 	'Category Weekly' => 'per categorie per week',
 
 ## php/lib/block.mtassets.php
-	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" moet gebruikt worden in combinatie met een namespace.',
+	'sort_by="score" must be used together with a namespace.' => 'sort_by="score" moet gebruikt worden in combinatie met een namespace', # Translate - New
 
 ## php/lib/block.mtauthorhasentry.php
 	'No author available' => 'Geen auteur beschikbaar',
@@ -44,17 +44,19 @@ use vars qw( @ISA %Lexicon );
 ## php/lib/block.mtauthorhaspage.php
 
 ## php/lib/block.mtcalendar.php
-	'You used an [_1] tag without a date context set up.' => 'U gebruikte een [_1] tag zonder dat er een datumcontext ingesteld was.',
+	'You used an [_1] tag without establishing a date context.' => 'U gebruikte een [_1] tag zonder een datum in context te brengen', # Translate - New
 
 ## php/lib/block.mtentries.php
+	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" moet gebruikt worden in combinatie met een namespace.',
 
 ## php/lib/block.mtif.php
-	'You used a [_1] tag without a valid name attribute.' => 'U gebruikte een [_1] tag zonder geldig name attribuut',
+	'You used an [_1] tag without a valid name attribute.' => 'U gebruikte een [_1] tag zonder geldig "name" attribuut', # Translate - New
 	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3] is illegaal.',
 
 ## php/lib/block.mtsethashvar.php
 
 ## php/lib/block.mtsetvarblock.php
+	'You used a [_1] tag without a valid name attribute.' => 'U gebruikte een [_1] tag zonder geldig name attribuut',
 	'\'[_1]\' is not a hash.' => '\'[_1]\' is geen hash.',
 	'Invalid index.' => 'Ongeldige index.',
 	'\'[_1]\' is not an array.' => '\'[_1]\' is geen array.',
@@ -62,7 +64,7 @@ use vars qw( @ISA %Lexicon );
 
 ## php/lib/captcha_lib.php
 	'Captcha' => 'Captcha',
-	'Type the characters you see in the picture above.' => 'Tik te tekens in die u ziet in de afbeelding hierboven.',
+	'Type the characters shown in the picture above.' => 'Typ de tekens die u ziet in de afbeelding hierboven.', # Translate - New
 
 ## php/lib/function.mtassettype.php
 	'image' => 'afbeelding',
@@ -82,7 +84,7 @@ use vars qw( @ISA %Lexicon );
 ## php/lib/function.mtcommentauthor.php
 
 ## php/lib/function.mtcommenternamethunk.php
-	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'Deze \'[_1]\' tag word niet meer gebruikt.  Gelieve \'[_2]\' te gebruiken.', # Translate - New
+	'The \'[_1]\' tag has been deprecated. Please use the \'[_2]\' tag in its place.' => 'De \'[_1]\' tag is verouderd.  Gelieve de \'[_2]\' tag te gebruiken ter vervanging.', # Translate - New
 
 ## php/lib/function.mtcommentreplytolink.php
 	'Reply' => 'Antwoorden',
@@ -101,7 +103,7 @@ use vars qw( @ISA %Lexicon );
 	'Password should include letters and numbers' => 'Wachtwoorden moeten zowel letters als cijfers bevatten',
 	'Password should include lowercase and uppercase letters' => 'Wachtwoord moet zowel grote als kleine letters bevatten',
 	'Password should contain symbols such as #!$%' => 'Wachtwoord moet ook symbolen bevatten zoals #!$%',
-	'You used an [_1] tag without a valid [_2] attribute.' => 'U gebruikte een [_1] tag zonder geldig [_2] attribuut.', # Translate - New
+	'You used an [_1] tag without a valid [_2] attribute.' => 'U gebruikte een [_1] tag zonder geldig [_2] attribuut.',
 
 ## php/lib/function.mtpasswordvalidationrule.php
 	'minimum length of [_1]' => 'minimale lengte van [_1]',
@@ -113,7 +115,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] [_2]' => '[_1] [_2]',
 
 ## php/lib/function.mtremotesigninlink.php
-	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can not be used.' => 'TypePad authenticatie is niet ingeschakeld op deze blog.  MTRemoteSignInLink kan niet gebruikt worden.',
+	'TypePad authentication is not enabled for this blog.  MTRemoteSignInLink cannot be used.' => 'TypePad authenticatie is niet ingeschakeld voor deze blog.  MTRemoteSignInLink kan niet gebruikt worden.', # Translate - New
 
 ## php/lib/function.mtsetvar.php
 
@@ -125,10 +127,10 @@ use vars qw( @ISA %Lexicon );
 	'\'[_1]\' is not a valid function for an array.' => '\'[_1]\' is geen geldige functie voor een array.',
 
 ## php/lib/function.mtwidgetmanager.php
-	'Error compiling widgetset [_1]' => 'Fout bij het compileren van widgetset [_1]',
+	'Error compiling widget set [_1]' => 'Fout bij het compileren van de widget set [_1]', # Translate - New
 
 ## php/lib/mtdb.base.php
-	'The attribute exclude_blogs denies all include_blogs.' => 'Het attribuut exclude_blogs overtreft alle include_blogs',
+	'When the exclude_blogs and include_blogs attributes are used together, the same blog IDs should not be listed as parameters to both of them.' => 'Wanneer de exclude_blogs en include_blogs attributen samen worden gebruikt dan kunnen dezelfde blog ID\'s niet als parameters gebruikt worden in beide attributen.', # Translate - New
 
 ## php/lib/MTUtil.php
 	'userpic-[_1]-%wx%h%x' => 'gebruikersafbeelding-[_1]-%wx%h%x',
@@ -152,13 +154,13 @@ use vars qw( @ISA %Lexicon );
 	'Web server:' => 'Webserver:',
 	'(Probably) running under cgiwrap or suexec' => '(Waarschijnlijk) uitgevoerd onder cgiwrap of suexec',
 	'[_1] [_2] Modules' => '[_1] [_2] modules',
-	'The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that the module provides.' => 'De volgende modules zijn <strong>optioneeel</strong>.  Als ze niet op uw server geïnstalleerd zijn, dan moet u ze enkel installeren als u de functionaliteit nodig heeft die de module verschaft.',
-	'Some of the following modules are required by databases supported by Movable Type. Your server must have DBI and at least one of these related modules installed for proper operation of Movable Type.' => 'Sommige van de onderstaande modules worden vereist door de verschillende opties die Movable Type heeft voor de opslag van gegevens.  Om het systeem te kunnen draaien moet DBI op uw server geïnstalleerd zijn en minstens één van de andere modules.',
+	'The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that they provide.' => 'Volgende modules zijn <strong>optioneel</strong>.  Als deze modules niet op uw server geïnstalleerd zijn dan moet u ze enkel installeren als u de functionaliteit nodig heeft die ze toevoegen.', # Translate - New
+	'The following modules are required by databases that can be used with Movable Type. Your server must have DBI and at least one of these related modules installed for the application to work properly.' => 'Volgende modules zijn vereist door de databases waar Movable Type mee gebruikt kan worden.  Op uw server moet DBI en minstens één van de gerelateerde modules geïnstalleerd zijn om de applicatie te doen werken.', # Translate - New
 	'Either your server does not have [_1] installed, the version that is installed is too old, or [_1] requires another module that is not installed.' => 'Ofwel is [_1] niet geïnstalleerd op uw server, ofwel is de geïnstalleerde versie te oud, of [_1] vereist een andere module die niet geïnstalleerd is.',
 	'Your server does not have [_1] installed, or [_1] requires another module that is not installed.' => '[_1] is niet geïnstalleerd op uw server of [_1] vereist een andere module die niet is geïnstalleerd.',
 	'Please consult the installation instructions for help in installing [_1].' => 'Gelieve de installatiehandleiding te raadplegen voor hulp met de installatie van [_1]',
-	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the current release available from CPAN.' => 'De DBD::mysql versie die is geïnstalleerd is niet compatibel met Movable Type.  Gelieve de recentse versie te installeren, beschikbaar op CPAN.',
-	'The $mod is installed properly, but requires an updated DBI module. Please see note above regarding the DBI module requirements.' => 'De $mod is geïnstalleerd maar vereist een bijgewerkte DBI module.  Zie de noot hierboven over de vereisten van de DBI module.',
+	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available.' => 'Van de versie van DBD::mysql die op uw server geïnstalleerd is, is geweten dat ze niet compatibel is met Movable Type.  Gelieve de meest recent beschikbare versie te installeren.', # Translate - New
+	'The $mod is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => 'De $mod is correct geïnstalleerd maar vereist een bijgewerkte DBI module.  Zie ook de opmerking hierboven over vereisten voor de DBI module.', # Translate - New
 	'Your server has [_1] installed (version [_2]).' => '[_1] is op uw server geïnstalleerd (versie [_2]).',
 	'Movable Type System Check Successful' => 'Movable Type Systeemcontrole met succes afgerond',
 	q{You're ready to go!} => q{Klaar om van start te gaan!},
@@ -167,38 +169,46 @@ use vars qw( @ISA %Lexicon );
 	'Image::Size is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Image::Size is vereist om bestanden te kunnen uploaden (om het formaat van verschillende soorten afbeeldingsbestanden te kunnen bepalen).',
 	'File::Spec is required for path manipulation across operating systems.' => 'File::Spec is vereist om paden te kunnen manipuleren op verschillende operating systemen.',
 	'CGI::Cookie is required for cookie authentication.' => 'CGI::Cookie is vereist om authenticatie via cookies te kunnen gebruiken.',
+	'LWP::UserAgent is required for proper functioning of the Configuration Wizard.' => 'LWP::UserAgent is vereist voor het goet werken van de configuratiewizard.', # Translate - New
 	'DBI is required to store data in database.' => 'DBI is vereist om gegevens te kunnen opslaan in een database',
 	'DBI and DBD::mysql are required if you want to use the MySQL database backend.' => 'DBI en DBD::mysql zijn vereist om gebruikt te kunnen maken van een MySQL database backend.',
 	'DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.' => 'DBI en DBD::Pg zijn vereist om gebruikt te kunnen maken van een PostgreSQL database backend.',
 	'DBI and DBD::SQLite are required if you want to use the SQLite database backend.' => 'DBI en DBD::SQLite zijn vereist om gebruikt te kunnen maken van een SQLite database backend.',
 	'DBI and DBD::SQLite2 are required if you want to use the SQLite 2.x database backend.' => 'DBI en DBD::SQLite2 zijn vereist om gebruikt te kunnen maken van een SQLite2 database backend.',
+	'Digest::SHA is required in order to advanced protection of user passwords.' => 'Digest::SHA is vereist voor geavanceerde bescherming van gebruikerswachtwoorden.', # Translate - New
+	'This module and its dependencies are required in order to operate Movable Type under psgi.' => 'Deze module en de modules die ervan afhangen zijn vereist om Movable Type te kunnen gebruiken onder psgi.', # Translate - New
 	'HTML::Entities is needed to encode some characters, but this feature can be turned off using the NoHTMLEntities option in the configuration file.' => 'HTML::Entities is vereist om sommige karakters te kunnen encoderen, maar deze optie kan uitgeschakeld worden met de NoHTMLEntities optie in het configuratiebestand.',
-	'LWP::UserAgent is optional; It is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.' => 'LWP::UserAgent is optioneel; Het is vereist als u het TrackBack systeem wenst te gebruiken, de weblogs.com ping of de MT Recent Bijgewerkt ping.',
 	'HTML::Parser is optional; It is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.' => 'HTML::Parser is optioneel: Het is nodig als u het TrackBack systeem wenst te gebruiken of pings wenst te sturen naar weblogs.com of MT recent bijgewerkte sites.',
 	'SOAP::Lite is optional; It is needed if you want to use the MT XML-RPC server implementation.' => 'SOAP::Lite is optioneel; Het is vereist als u de MT XML-RPC server implementatie wenst te gebruiken.',
 	'File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.' => 'File::Temp is optioneel; Het is vereist als u bestaande bestanden wenst te kunnen overschrijven bij uploads.',
 	'Scalar::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'Scalar::Util is optioneel; Het is vereist als u de publicatiewachtrij-functie wenst te gebruiken.',
 	'List::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'List::Util is optioneel; Het is vereist als u de publicatiewachtrij-functie wenst te gebruiken.',
-	'Image::Magick is optional; It is needed if you would like to be able to create thumbnails of uploaded images.' => 'Image::Magick is optioneel; Het is vereist als u thumbnails wenst te kunnen maken van geuploade afbeeldingen.',
-	'This module is needed if you would like to be able to create thumbnails of uploaded images.' => 'Deze module is vereist als u graag thumbnailveries van opgeladen bestanden wenst te kunnen aanmaken.',
-	'This module is needed if you would like to be able to use NetPBM as the image driver for MT.' => 'Deze module is vereist als u NetPBM wenst te gebruiken als driver voor afbeeldingen met MT.',
-	'Storable is optional; It is required by certain MT plugins available from third parties.' => 'Storable is optioneel; Het wordt vereist door bepaalde MT plugins beschikbaar bij derden.',
+	'Image::Magick is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.' => 'Image::Magick is optioneel; Het is één van de modules voor afbeeldingsbewerking die u kunt gebruiken om thumbnails te maken van geuploade afbeeldingen.', # Translate - New
+	'GD is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.' => 'GD is optioneel; Het is één van de modules voor afbeeldingsbewerking die u kunt gebruiken om thumbnails te maken van geuploade afbeeldingen.', # Translate - New
+	'Imager is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.' => 'Imager is optioneel; Het is één van de modules voor afbeeldingsbewerking die u kunt gebruiken om thumbnails te maken van geuploade afbeeldingen.', # Translate - New
+	'IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.' => 'IPC::Run is optioneel; Het is veriest als u NetPBM wenst te gebruiken als de afbeeldingsbewerker voor Movable Type', # Translate - New
+	'Storable is optional; It is required by certain Movable Type plugins available from third-party developers.' => 'Storable is optioneel; Het is vereist door bepaalde Movable Type plugins ontwikkeld door derden.', # Translate - New
 	'Crypt::DSA is optional; If it is installed, comment registration sign-ins will be accelerated.' => 'Crypt::DSA is optioneel; Als het is geïnstalleerd dan verloopt registratie van reageerders iets sneller.',
 	'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support.' => 'Deze module en de modules waarvan ze afhangt zijn nodig om reageerders te kunnen authenticeren via OpenID providers zoals AOL en Yahoo! die SSL ondersteuning vereisen.',
-	'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan as OpenID.' => 'Cache::File is vereist als u reageerders wenst toe te staan zich aan te melden met de OpenID van Yahoo! Japan.',
-	'MIME::Base64 is required in order to enable comment registration.' => 'MIME::Base64 is vereist om registratie van reageerders mogelijk te maken.',
+	'Cache::File is required if you would like to be able to allow commenters to authenticate via OpenID using Yahoo! Japan.' => 'Cache::File is vereist als u wenst dat reageerders zich kunnen aanmelden met OpenID via Yahoo! Japan.', # Translate - New
+	'MIME::Base64 is required in order to enable comment registration and in order to send mail via an SMTP Server.' => 'MIME::Base64 is vereist om het registreren van reageerders in te schakelen en om mail te kunnen versturen via een SMTP server.', # Translate - New
 	'XML::Atom is required in order to use the Atom API.' => 'XML::Atom is vereist om de Atom API te kunnen gebruiken.',
-	'Cache::Memcached and memcached server/daemon is required in order to use memcached as caching mechanism used by Movable Type.' => 'Cache::Memcached en een memcached server/daemon zijn vereist om memcached te kunnen gebruiken als cachemechanisme voor Movable Type.',
-	'Archive::Tar is required in order to archive files in backup/restore operation.' => 'Archive::Tar is vereist om bestanden te kunnen archiveren in een backup/restore operatie.',
-	'IO::Compress::Gzip is required in order to compress files in backup/restore operation.' => 'IO::Compress::Gzip is vereist om bestanden te kunnen comprimeren in een backup/restore operatie.',
-	'IO::Uncompress::Gunzip is required in order to decompress files in backup/restore operation.' => 'IO::Uncompress::Gunzip is vereist om bestanden te kunnen decomprimeren in een backup/restore operatie.',
-	'Archive::Zip is required in order to archive files in backup/restore operation.' => 'Archive::Zip is vereist om bestanden te kunnen archiveren in een backup/restore operatie.',
-	'XML::SAX and its dependencies are required in order to restore a backup created in a backup/restore operation.' => 'XML::SAX en/of de vereisten hiervoor zijn vereist om een restore te kunnen uitvoeren.',
+	'Cache::Memcached and a memcached server are required to use in-memory object caching on the servers where Movable Type is deployed.' => 'Cache::Memcached en een memcached server zijn vereist om het cachen in het geheugen van objecten mogelijk te maken voor de servers waarop Movable Type draait.', # Translate - New
+	'Archive::Tar is required in order to manipulate files during backup and restore operations.' => 'Archive::Tar is vereist om bestanden te kunnen manipuleren tijdens backup en restore operaties.', # Translate - New
+	'IO::Compress::Gzip is required in order to compress files during backup operations.' => 'IO::Compress::Gzip is vereist om bestanden te kunnen comprimeren tijdens backupoperaties', # Translate - New
+	'IO::Uncompress::Gunzip is required in order to decompress files during restore operation.' => 'IO::Uncompress:Gunzip is vereist om bestanden te kunnen decomprimeren tijdens restore-operaties.', # Translate - New
+	'Archive::Zip is required in order to manipulate files during backup and restore operations.' => 'Archive::Zip is vereist om bestanden te kunnen manipuleren tijdens backup en restore operaties.', # Translate - New
+	'XML::SAX and its dependencies are required to restore a backup created in a backup/restore operation.' => 'XML::SAX en de modules die er van afhangen zijn vereist om een backup te kunnen terugzetten die werd gemaakt tijdens een backup/restore operatie.', # Translate - New
 	'Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.' => 'Digest::SHA1 en de daarvoor benodigde bestanden zijn vereist om reageerders te kunnen toestaan zich aan te melden via OpenID providers, waaronder LiveJournal.',
-	'Mail::Sendmail is required in order to send mail via an SMTP Server.' => 'Mail::Sendmail is vereist om mail te kunnen versturen via een SMTP server.',
-	'This module is used in a test attribute for the MTIf conditional tag.' => 'Deze module wordt gebruikt in een testattribuut voor de MTIf conditionele tag.',
+	'Net::SMTP is required in order to send mail via an SMTP Server.' => 'Net::SMTP is vereist om mail te kunnen versturen via een SMTP server.', # Translate - New
+	'This module and its dependencies are required in order to use CRAM-MD5, DIGEST-MD5 or LOGIN as a SASL mechanism.' => 'Deze module en de modules waarvan ze afhankelijk is zijn vereist om  CRAM-MD5, DIGEST-MD5 of LOGIN als SASL mechanisme te kunnen gebruiken.',
+	'Net::SMTP::SSL is required to use SMTP Auth with an SSL connection.' => 'Net::SMTP::SSL is vereist om SMTP Auth te kunnen gebruiken met een SSL verbinding.', # Translate - New
+	'Net::SMTP::TLS is required to use SMTP Auth with the STARTTLS communication protocol.' => 'Net:SMTP::TLS is vereist om SMTP Auth te kunnen gebruiken met het STARTTLS communicatieprotocol.', # Translate - New
+	'IO::Socket::SSL is required to use SMTP Auth with an SSL connection or the STARTTLS communication protocol.' => 'IO::Socket::SSL is vereist om SMTP Auth te kunnen gebruiken met een SSL verbinding of het STARTTLS communicatieprotocol.', # Translate - New
+	'Net::SSLeay is required to use SMTP Auth with an SSL connection or the STARTTLS communication protocol.' => 'Net::SSLeay is vereist om SMTP Auth te kunnen gebruiken met een SSL verbinding of het STARTTLS communicatieprotocol.', # Translate - New
+	'This module is used to test attributes in the MTIf conditional tag.' => 'Deze module wordt gebruikt om attributen te testen in de MTIf conditionele tag.', # Translate - New
 	'This module is used by the Markdown text filter.' => 'Deze module is vereist voor de Markdown tekstfilter.',
-	'This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Deze module wordt vereist door mt-search.cgi als u Movable Type draait op een Perl versie ouder dan 5.8',
+	'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Deze module is vereist door mt-search.cgi als u Movable Type draait op een versie van Perl ouder dan 5.8.', # Translate - New
 	'This module required for action streams.' => 'Deze module is vereist voor action streams.',
 	'The [_1] database driver is required to use [_2].' => 'De [_1] databasedriver is vereist om [_2] te kunnen gebruiken.',
 	'Checking for' => 'Controleren op',
@@ -207,12 +217,13 @@ use vars qw( @ISA %Lexicon );
 	'Required' => 'Vereist',
 	'Optional' => 'Optioneel',
 	'Details' => 'Details',
+	'unknown' => 'onbekend', # Translate - New
 
 ## default_templates/about_this_page.mtml
 	'About this Entry' => 'Over dit bericht',
 	'About this Archive' => 'Over dit archief',
 	'About Archives' => 'Over archieven',
-	'This page contains links to all the archived content.' => 'Deze pagina bevat links naar alle gearchiveerde inhoud.',
+	'This page contains links to all of the archived content.' => 'Deze pagina bevat links naar alle gearchiveerde inhoud.', # Translate - New
 	'This page contains a single entry by [_1] published on <em>[_2]</em>.' => 'Deze pagina bevat één bericht door [_1] gepubliceerd op <em>[_2]</em>.',
 	'<a href="[_1]">[_2]</a> was the previous entry in this blog.' => '<a href="[_1]">[_2]</a> was het vorige bericht op deze weblog.',
 	'<a href="[_1]">[_2]</a> is the next entry in this blog.' => '<a href="[_1]">[_2]</a> is het volgende bericht op deze weblog.',
@@ -241,7 +252,7 @@ use vars qw( @ISA %Lexicon );
 	'Banner Footer' => 'Banner voettekst',
 
 ## default_templates/archive_widgets_group.mtml
-	'This is a custom set of widgets that are conditioned to serve different content based upon what type of archive it is included. More info: [_1]' => 'Dit is een set widgets die andere inhoud tonen gebaseerd op het archieftype waarin ze voorkomen.  Meer info: [_1]',
+	'This is a custom set of widgets that serve different content depending on the type of archive in which it is included. More info: [_1]' => 'Dit is een lijst met widgets die andere inhoud weergeven afhankelijk van het soort archief waarin ze worden geincludeerd.  Meer info: [_1]', # Translate - New
 	'Current Category Monthly Archives' => 'Archieven van de huidige categorie per maand',
 	'Category Archives' => 'Archieven per categorie',
 
@@ -251,7 +262,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/banner_footer.mtml
 	'_POWERED_BY' => 'Aangedreven  door<br /><a href="http://www.movabletype.org/"><$MTProductName$></a>',
-	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'Deze weblog valt onder een <a href="[_1]">Creative Commons Licentie</a>.',
+	'This blog is licensed under an <a href="[_1]">Creative Commons License</a>.' => 'Deze blog valt onder een <a href="[_1]">Creative Commons licentie</a>', # Translate - New
 
 ## default_templates/calendar.mtml
 	'Monthly calendar with links to daily posts' => 'Maandkalender met links naar de berichten van alle dagen',
@@ -283,15 +294,14 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/commenter_confirm.mtml
 	'Thank you registering for an account to comment on [_1].' => 'Bedankt om een account aan te maken om te kunnen reageren op [_1].',
-	'For your own security and to prevent fraud, we ask that you please confirm your account and email address before continuing. Once confirmed you will immediately be allowed to comment on [_1].' => 'Voor uw eigen veiligheid en om fraude te vermijden vragen we dat u deze account eerst bevestigt samen met uw e-mail adres.  Eens bevestigd kunt u meteen reageren op [_1].',
-	'To confirm your account, please click on or cut and paste the following URL into a web browser:' => 'Om uw account te bevestigen moet u op deze link klikken of de URL in uw webbrowser plakken:',
+	'For your security and to prevent fraud, we ask you to confirm your account and email address before continuing. Once your account is confirmed, you will immediately be allowed to comment on [_1].' => 'Voor uw eigen veiligheid en om fraude tegen te gaan, vragen we u om uw account en email adres te bevestigen vooraleer verder te gaan.  Zodra uw account bevestigd is, kunt u meteen reageren op [_1].', # Translate - New
+	'To confirm your account, please click on the following URL, or cut and paste this URL into a web browser:' => 'Om uw account te bevestigen moet u op volgende URL klikken of hem in uw webbrowser knippen en plakken.', # Translate - New
 	q{If you did not make this request, or you don't want to register for an account to comment on [_1], then no further action is required.} => q{Als u deze account niet heeft aangevraagd, of als u niet de bedoeling had te registreren om te kunnen reageren op [_1] dan hoeft u verder niets te doen.},
-	'Thank you very much for your understanding.' => 'Wij danken u voor uw begrip.',
 	'Sincerely,' => 'Hoogachtend,',
 	'Mail Footer' => 'Footer voor e-mail',
 
 ## default_templates/commenter_notify.mtml
-	q{This email is to notify you that a new user has successfully registered on the blog '[_1]'. Listed below you will find some useful information about this new user.} => q{Deze e-mail dient om u te melden dat een nieuwe gebruiker zich met succes registreerde op blog '[_1]'.  Hieronder leest u nuttige informatie over deze gebruiker.},
+	q{This email is to notify you that a new user has successfully registered on the blog '[_1]'. Here is some information about this new user.} => q{Deze email dient om u te melden dat een nieuwe gebruiker zich met succes heeft aangemeld op de blog '[_1]'.  Hier is wat meer informatie over deze nieuwe gebruiker.}, # Translate - New
 	'New User Information:' => 'Info nieuwe gebruiker:',
 	'Username: [_1]' => 'Gebruikersnaam: [_1]',
 	'Full Name: [_1]' => 'Volledige naam: [_1]',
@@ -321,7 +331,7 @@ use vars qw( @ISA %Lexicon );
 	'Your comment has been received and held for approval by the blog owner.' => 'Uw reactie is ontvangen en zal worden opgeslagen tot de eigenaar van deze weblog goedkeuring geeft voor publicatie.',
 	'Comment Submission Error' => 'Fout bij indienen reactie',
 	'Your comment submission failed for the following reasons: [_1]' => 'Het indienen van uw reactie mislukte wegens deze redenen: [_1]',
-	'Return to <a href="[_1]">your comment</a>.' => 'Terugkeren naar <a href="[_1]">uw reactie</a>.', # Translate - New
+	'Back' => 'Terug',
 	'Return to the <a href="[_1]">original entry</a>.' => 'Ga terug naar het <a href="[_1]">oorspronkelijke bericht</a>.',
 
 ## default_templates/comments.mtml
@@ -334,9 +344,9 @@ use vars qw( @ISA %Lexicon );
 	'Remember personal info?' => 'Persoonijke gegevens onthouden?',
 
 ## default_templates/comment_throttle.mtml
-	'If this was a mistake, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, going to Blog Config - IP Banning, and deleting the IP address [_1] from the list of banned addresses.' => 'Indien dit een vergissing was, kunt hu het IP adres deblokkeren en de bezoeker toestaan om het opnieuw toe te voegen door u aan te melden op uw Movable Type installatie, dan naar Blog Config te gaan en het IP adres [_1] te verwijderen uit de lijst van verbannen adressen.',
+	'If this was an error, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, choosing Blog Config - IP Banning, and deleting the IP address [_1] from the list of banned addresses.' => 'Als dit een vergissing was dan kunt u het IP adres deblokkeren en de bezoeker toelaten om het opnieuw toe te voegen door u aan te melden bij uw Movable Type installatie.  Ga vervolgens naar Blog Config - IP Blokkering en verwijder het IP adres [_1] uit de lijst van geblokkeerde adressen.', # Translate - New
 	'A visitor to your blog [_1] has automatically been banned by adding more than the allowed number of comments in the last [_2] seconds.' => 'Een bezoeker van uw weblog [_1] is automatisch uitgesloten omdat dez meer dan het toegestane aantal reacties heeft gepubliceerd in de laatste [_2] seconden.',
-	'This has been done to prevent a malicious script from overwhelming your weblog with comments. The banned IP address is' => 'Dit wordt gedaan om te voorkomen dat kwaadwillige scripts uw weblog met reacties overstelpen. Het uitgesloten IP-adres is',
+	'This was done to prevent a malicious script from overwhelming your weblog with comments. The banned IP address is' => 'Dit werd gedaan om te voorkomen dat een kwaadaardig script uw weblog zou overspoelen met reacties. Het geblokkeerde IP adres is', # Translate - New
 
 ## default_templates/creative_commons.mtml
 
@@ -386,6 +396,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1]Sign in[_2] to comment.' => '[_1]Meld u aan[_2] om te reageren.',
 	'[_1]Sign in[_2] to comment, or comment anonymously.' => '[_1]Meld u aan[_2] om te reageren, of reageer anoniem.',
 	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => 'Als antwoord op <a href="[_1]" onclick="[_2]">reactie van [_3]</a>',
+	'The sign-in attempt was not successful.  Please try again.' => 'De aanmeldpoging mislukte.  Probeer opnieuw a.u.b.', # Translate - New
 
 ## default_templates/lockout-ip.mtml
 	'This email is to notify you that an IP address has been locked out.' => 'Dit is een bericht om u te melden dat een IP adres geblokkeerd werd.',
@@ -395,12 +406,12 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/lockout-user.mtml
 	'This email is to notify you that a Movable Type user account has been locked out.' => 'Dit is een bericht om u te melden dat een Movable Type gebruikersaccount geblokkeerd werd.',
 	'Display Name: [_1]' => 'Getoonde naam: [_1]',
-	'If you want to unlock this user click the link below.' => 'Als u deze gebruiker wenst de deblokkeren, klik dan op onderstaande link.',
+	'If you want to permit this user to participate again, click the link below.' => 'Als u deze gebruiker weer wil laten participeren, klik dan onderstaande link.', # Translate - New
 
 ## default_templates/main_index.mtml
 
 ## default_templates/main_index_widgets_group.mtml
-	'This is a custom set of widgets that are conditioned to only appear on the homepage (or "main_index"). More info: [_1]' => 'Dit is een gepersonaliseerde set widgets die enkel op de hoofpagina (of "hoofdindex") verschijnen.  Meer info: [_1]',
+	'This is a custom set of widgets that only appear on the homepage (or "main_index"). More info: [_1]' => 'Dit is een speciale set widgets die enkel op de hoofdpagina (of "Hoofdindex") verschijnen.  Meer info: [_1]', # Translate - New
 	'Recent Comments' => 'Recente reacties',
 	'Recent Entries' => 'Recente berichten',
 	'Recent Assets' => 'Recente mediabestanden',
@@ -415,9 +426,9 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/monthly_entry_listing.mtml
 
 ## default_templates/new-comment.mtml
-	q{An unapproved comment has been posted on your blog '[_1]', for entry #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{Een niet-gekeurde reactie werd ontvangen op uw blog  '[_1]', op bericht #[_2] ([_3]). U moet deze reactie goedkeuren voor ze op uw site verschijnt.},
-	q{An unapproved comment has been posted on your blog '[_1]', for page #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{Een niet-gekeurde reactie werd ontvangen op uw blog  '[_1]', op pagina #[_2] ([_3]). U moet deze reactie goedkeuren voor ze op uw site verschijnt.},
-	q{An unapproved comment has been posted on your website '[_1]', for page #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{Een niet-gekeurde reactie werd ontvangen op uw website  '[_1]', op pagina #[_2] ([_3]). U moet deze reactie goedkeuren voor ze op uw site verschijnt.},
+	q{An unapproved comment has been posted on your blog '[_1]', for entry #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{Een niet gekeurde reactie werd ontvangen op uw blog  '[_1]', op bericht #[_2] ([_3]). U moet deze reactie goedkeuren voor ze op uw site verschijnt.},
+	q{An unapproved comment has been posted on your blog '[_1]', on page #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{Een niet gekeurde reactie werd ontvangen op uw blog '[_1]', op pagina #[_2] ([_3]).  U moet deze reactie goedkeuren voor ze op uw blog verschijnt.}, # Translate - New
+	q{An unapproved comment has been posted on your website '[_1]', on page #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{}, # Translate - New
 	q{A new comment has been posted on your blog '[_1]', on entry #[_2] ([_3]).} => q{Een nieuwe reactie werd ontvangen op uw blog '[_1]', op bericht #[_2] ([_3]).},
 	q{A new comment has been posted on your blog '[_1]', on page #[_2] ([_3]).} => q{Een nieuwe reactie werd ontvangen op uw blog '[_1]', op pagina #[_2] ([_3]).},
 	q{A new comment has been posted on your website '[_1]', on page #[_2] ([_3]).} => q{Een nieuwe reactie werd ontvangen op uw website '[_1]', op pagina #[_2] ([_3]).},
@@ -428,13 +439,13 @@ use vars qw( @ISA %Lexicon );
 	'Approve comment:' => 'Reactie goedkeuren',
 	'View comment:' => 'Reactie bekijken:',
 	'Edit comment:' => 'Reactie bewerken:',
-	'Report comment as spam:' => 'Reactie als spam rapporteren:',
+	'Report the comment as spam:' => 'Reactie als spam melden:', # Translate - New
 
 ## default_templates/new-ping.mtml
-	q{An unapproved TrackBack has been posted on your blog '[_1]', for entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Een niet-gekeurde TrackBack werd ontvangen op uw blog  '[_1]', op bericht #[_2] ([_3]). U moet deze TrackBack goedkeuren voor hij op uw site verschijnt.},
-	q{An unapproved TrackBack has been posted on your blog '[_1]', for page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Een niet-gekeurde TrackBack werd ontvangen op uw blog  '[_1]', op pagina #[_2] ([_3]). U moet deze TrackBack goedkeuren voor hij op uw site verschijnt.},
-	q{An unapproved TrackBack has been posted on your blog '[_1]', for category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Een niet-gekeurde TrackBack werd ontvangen op uw blog  '[_1]', op categorie #[_2] ([_3]). U moet deze TrackBack goedkeuren voor hij op uw site verschijnt.},
-	q{An unapproved TrackBack has been posted on your website '[_1]', for page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Een niet-gekeurde TrackBack werd ontvangen op uw webstie  '[_1]', op pagina #[_2] ([_3]). U moet deze TrackBack goedkeuren voor hij op uw site verschijnt.},
+	q{An unapproved TrackBack has been posted on your blog '[_1]', on entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Een niet gekeurde TrackBack werd ontvangen op uw blog '[_1]', op bericht #[_2] ([_3]). U moet deze TrackBack goedkeuren voor deze op uw site verschijnt.}, # Translate - New
+	q{An unapproved TrackBack has been posted on your blog '[_1]', on page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Een niet gekeurde TrackBack werd ontvangen op uw blog '[_1]', op pagina #[_2] ([_3]). U moet deze TrackBack goedkeuren voor deze op uw site verschijnt.}, # Translate - New
+	q{An unapproved TrackBack has been posted on your blog '[_1]', on category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Een niet gekeurde TrackBack werd ontvangen op uw blog '[_1]', op categorie #[_2] ([_3]). U moet deze TrackBack goedkeuren voor deze op uw site verschijnt.}, # Translate - New
+	q{An unapproved TrackBack has been posted on your website '[_1]', on page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Een niet gekeurde TrackBack werd ontvangen op uw website '[_1]', op pagina #[_2] ([_3]). U moet deze TrackBack goedkeuren voor deze op uw site verschijnt.}, # Translate - New
 	q{A new TrackBack has been posted on your blog '[_1]', on entry #[_2] ([_3]).} => q{Een nieuwe TrackBack werd ontvangen op uw blog '[_1]', op bericht #[_2] ([_3]).},
 	q{A new TrackBack has been posted on your blog '[_1]', on page #[_2] ([_3]).} => q{Een nieuwe TrackBack werd ontvangen op uw blog '[_1]', op pagina #[_2] ([_3]).},
 	q{A new TrackBack has been posted on your blog '[_1]', on category #[_2] ([_3]).} => q{Een nieuwe TrackBack werd ontvangen op uw blog '[_1]', op categorie #[_2] ([_3]).},
@@ -478,7 +489,7 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/recent_entries.mtml
 
 ## default_templates/recover-password.mtml
-	'A request has been made to change your password in Movable Type. To complete this process click on the link below to select a new password.' => 'Er is een verzoek ingediend om uw wachtwoord aan te passen in Movable Type.  Gelieve dit te bevestigen door op onderstaande link te klikken om een nieuw wachtwoord te kiezen.',
+	'A request was made to change your Movable Type password. To complete this process click on the link below to select a new password.' => 'Er werd een aanvraag ingediend om uw Movable Type wachtwoord te veranderen.  Om dit proces af te ronden moet u op onderstaande link klikken en vervolgens een nieuw wachtwoord kiezen.', # Translate - New
 	'If you did not request this change, you can safely ignore this email.' => 'Als u deze wijziging niet heeft aangevraagd, kunt u deze e-mail gerust negeren.',
 
 ## default_templates/search.mtml
@@ -492,7 +503,7 @@ use vars qw( @ISA %Lexicon );
 	'Results tagged &ldquo;[_1]&rdquo;' => 'Resultaten getagd als &ldquo;[_1]&rdquo;',
 	'No results found for &ldquo;[_1]&rdquo;.' => 'Geen resultaten gevonden met &ldquo;[_1]&rdquo;',
 	'Instructions' => 'Gebruiksaanwijzing',
-	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'Standaard zoekt deze zoekmachine naar alle woorden in eender welke volgorde.  Om een exacte uitdrukking te zoeken, gelieve aanhalingstekens rond uw zoekopdracht te zetten.',
+	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotation marks:' => 'Deze zoekmachine zoekt standaard naar alle woorden in eender welke volgorde.  Om te zoeken naar een exacte uitdrukking, gelieve er aanhalingstekens rond te zetten:', # Translate - New
 	'movable type' => 'movable type',
 	'The search engine also supports AND, OR, and NOT keywords to specify boolean expressions:' => 'De zoekfunctie ondersteunt eveneens de sleutelwoorden AND, OR en NOT om booleaanse expressies mee op te stellen:',
 	'personal OR publishing' => 'persoonlijk OR publicatie',
@@ -532,7 +543,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">Meer lezen</a>',
 
 ## default_templates/verify-subscribe.mtml
-	'Thanks for subscribing to notifications about updates to [_1]. Follow the link below to confirm your subscription:' => 'Bedankt om u in te schrijven voor notificaties over updates van [_1].  Volg onderstaande link om uw inschrijving te bevestigen:',
+	'Thank you for subscribing to notifications about updates to [_1]. Follow the link below to confirm your subscription:' => 'Bedankt om in te schrijven voor notificaties over updates op [_1].  Gelieve onderstaande link te volgen om uw inschrijving te bevestigen:', # Translate - New
 	'If the link is not clickable, just copy and paste it into your browser.' => 'Indien de link niet klikbaar is, kopiëer en plak hem dan gewoon in uw browser.',
 
 ## lib/MT/App/ActivityFeeds.pm
@@ -568,7 +579,6 @@ use vars qw( @ISA %Lexicon );
 	'No such blog [_1]' => 'Geen blog [_1]',
 	'Invalid parameter' => 'Ongeldige parameter',
 	'Edit Template' => 'Sjabloon bewerken',
-	'Back' => 'Terug',
 	'Unknown object type [_1]' => 'Onbekend objecttype [_1]',
 	'None' => 'Geen',
 	'Error during publishing: [_1]' => 'Fout tijdens publiceren: [_1]',
@@ -665,7 +675,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => 'Ongeldige aanmeldpoging van een reageerder [_1] op blog [_2](ID: [_3]) waar geenMovable Type native authenticatie is toegelaten.',
 	'Invalid login.' => 'Ongeldige gebruikersnaam.',
 	'Invalid login' => 'Ongeldige gebruikersnaam',
-	'Successfully authenticated but signing up is not allowed.  Please contact system administrator.' => 'Authenticatie is geslaagd, maar nieuwe registraties zijn niet toegestaan.  Neem contact op met de systeembeheerder.',
+	'Successfully authenticated, but signing up is not allowed.  Please contact your Movable Type system administrator.' => 'U bent met succes aangemeld, maar registratie is niet toegestaan op dit moment.  Gelieve contact op te nemen met uw Movable Type systeembeheerder.', # Translate - New
 	'You need to sign up first.' => 'U moet zich eerst registreren',
 	'The login could not be confirmed because of a database error ([_1])' => 'Het aanmelden kon niet worden bevestigd wegens een databaseprobleem ([_1])',
 	'Permission denied.' => 'Toestemming geweigerd.',
@@ -676,8 +686,9 @@ use vars qw( @ISA %Lexicon );
 	'Signing up is not allowed.' => 'Registreren is niet toegestaan.',
 	'Movable Type Account Confirmation' => 'Movable Type accountbevestiging',
 	'System Email Address is not configured.' => 'Systeem e-mail adres is niet ingesteld.',
-	'Your confirmation have expired. Please register again.' => 'Uw bevestiging is verlopen.  Gelieve opnieuw te registeren.',
+	'Your confirmation has expired. Please register again.' => 'Uw bevestigingsperiode is afgelopen.  Gelieve opnieuw te registreren.', # Translate - New
 	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">Terugkeren naar de oorspronkelijke pagina.</a>',
+	'Your confirmation have expired. Please register again.' => 'Uw bevestiging is verlopen.  Gelieve opnieuw te registeren.',
 	'Commenter \'[_1]\' (ID:[_2]) has been successfully registered.' => 'Reageerder \'[_1]\' (ID:[_2]) heeft zich met succes geregistreerd.',
 	'Thanks for the confirmation.  Please sign in to comment.' => 'Bedankt voor de bevestiging.  Gelieve u aan te melden om te reageren.',
 	'[_1] registered to the blog \'[_2]\'' => '[_1] registreerde zich op blog \'[_2]\'',
@@ -704,12 +715,12 @@ use vars qw( @ISA %Lexicon );
 	'Registered User' => 'Geregistreerde gebruiker',
 	'The sign-in attempt was not successful; please try again.' => 'Aanmeldingspoging mislukt; gelieve opnieuw te proberen.',
 	'Can\'t load entry #[_1].' => 'Kan bericht #[_1] niet laden.',
-	'You are trying to redirect to external resources. If you can trust the site, please click the link: [_1]' => 'U probeert door te verwijzen naar externe bronnen.  Als u deze site kunt vertrouwen, gelieve dan op de link te klikken: [_1]', # Translate - New
+	'You are trying to redirect to external resources. If you trust the site, please click the link: [_1]' => 'U probeert om te leiden naar externe bronnen.  Als u de site vertrouwt, klik dan op de link: [_1]', # Translate - New
 	'No entry was specified; perhaps there is a template problem?' => 'Geen bericht opgegeven; misschien is er een sjabloonprobleem?',
 	'Somehow, the entry you tried to comment on does not exist' => 'Het bericht waar u een reactie op probeerde achter te laten, bestaat niet',
 	'Invalid entry ID provided' => 'Ongeldig berichtID opgegeven',
 	'For improved security, please change your password' => 'Gelieve uw wachtwoord te veranderen voor verhoogde veiligheid',
-	'All required fields must have valid values.' => 'Alle vereiste velden moeten geldige waarden bevatten.',
+	'All required fields must be populated.' => 'Alle vereiste velden moeten worden ingevuld.', # Translate - New
 	'[_1] contains an invalid character: [_2]' => '[_1] bevat een ongeldig karakter: [_2]',
 	'Display Name' => 'Getoonde naam',
 	'Passwords do not match.' => 'Wachtwoorden komen niet overeen.',
@@ -730,7 +741,7 @@ use vars qw( @ISA %Lexicon );
 	'The address [_1] has been unsubscribed.' => 'Het adres [_1] werd uitgeschreven.',
 
 ## lib/MT/App.pm
-	'Invalid request: corrupt character data for character set [_1]' => 'Ongeldig verzoek: corrupte karakterdata voor karakterset [_1]',
+	'Problem with this request: corrupt character data for character set [_1]' => '¨Probleem met dit verzoek: corrupte karakterdata voor karakterset [_1]', # Translate - New
 	'Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.' => 'Fout bij het laden van website #[_1]',
 	'First Weblog' => 'Eerste weblog',
 	'Error loading blog #[_1] for user provisioning. Check your NewUserTemplateBlogId setting.' => 'Fout bij het laden van blog #[_1] tijdens gebruikersprovisie.  Controleer uw NewUserTemplateBlogId instelling.',
@@ -739,12 +750,14 @@ use vars qw( @ISA %Lexicon );
 	'Blog \'[_1] (ID: [_2])\' for user \'[_3] (ID: [_4])\' has been created.' => 'Blog \'[_1] (ID: [_2])\' voor gebruiker \'[_3] (ID: [_4])\' werd aangemaakt.',
 	'Error assigning blog administration rights to user \'[_1] (ID: [_2])\' for blog \'[_3] (ID: [_4])\'. No suitable blog administrator role was found.' => 'Fout bij het toekennen van blog administratierechten aan gebruiker \'[_1] (ID: [_2])\' op blog \'[_3] (ID: [_4])\'.  Er werd geen geschikte blog administrator rol gevonden.',
 	'Internal Error: Login user is not initialized.' => 'Interne fout: login gebruiker is niet geïnitialiseerd.',
-	'Our apologies, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.' => 'Onze verontschuldigingen, maar u heeft geen permissies om toegang te krijgen tot blogs of websites op deze installatie.  Als u dit bericht ten onrechte te zien krijgt, gelieve contact op te nemen met uw Movable Type systeembeheerder.',
-	'This account has been disabled. Please see your system administrator for access.' => 'Deze account werd uitgeschakeld.  Contacteer uw systeembeheerder om weer toegang te krijgen.',
+	'Sorry, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.' => 'Het spijt ons, maar u heeft geen toestemming om toegang te krijgen op blogs of websites van deze installatie.  Als u meent dat dit een fout is, gelieve contact op te nemen met uw Movable Type systeembeheerder.', # Translate - New
+	'This account has been disabled. Please see your Movable Type system administrator for access.' => 'Deze account werd gedeactiveerd.  Contacteer uw Movable Type systeembeheerder om toegang te krijgen.', # Translate - New
+	'This account has been disabled. Please see your system administrator for access.' => 'Deze account werd gedeactiveerd.  Contacteer uw systeembeheerder om weer toegang te krijgen.',
 	'Failed login attempt by pending user \'[_1]\'' => 'Mislukte poging tot aanmelden van een gebruiker \'[_1]\' die nog gekeurd moet worden',
-	'This account has been deleted. Please see your system administrator for access.' => 'Deze account werd verwijderd.  Contacteer uw systeembeheerder om weer toegang te krijgen.',
+	'This account has been deleted. Please see your Movable Type system administrator for access.' => 'Deze account werd verwijderd.  Contacteer uw Movable Type systeembeheerder om toegang te krijgen.', # Translate - New
 	'User cannot be created: [_1].' => 'Gebruiker kan niet worden aangemaakt: [_1].',
 	'User \'[_1]\' has been created.' => 'Gebruiker \'[_1]\' is aangemaakt',
+	'Our apologies, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.' => 'Onze verontschuldigingen, maar u heeft geen permissies om toegang te krijgen tot blogs of websites op deze installatie.  Als u dit bericht ten onrechte te zien krijgt, gelieve contact op te nemen met uw Movable Type systeembeheerder.',
 	'User \'[_1]\' (ID:[_2]) logged in successfully' => 'Gebruiker \'[_1]\' (ID:[_2]) met succes aangemeld',
 	'Invalid login attempt from user \'[_1]\'' => 'Ongeldige poging tot aanmelden van gebruiker \'[_1]\'',
 	'User \'[_1]\' (ID:[_2]) logged out' => 'Gebruiker \'[_1]\' (ID:[_2]) werd afgemeld',
@@ -754,9 +767,11 @@ use vars qw( @ISA %Lexicon );
 	'User requires username.' => 'Gebruiker heeft gebruikersnaam nodig.',
 	'Username' => 'Gebruikersnaam',
 	'A user with the same name already exists.' => 'Er bestaat al een gebruiker met die naam.',
-	'Something wrong happened when trying to process signup: [_1]' => 'Er ging iets mis bij het verwerken van de registratie: [_1]',
+	'An error occurred while trying to process signup: [_1]' => 'Er deed zich een fout voor bij het verwerken van de registratie: [_1]', # Translate - New
 	'New Comment Added to \'[_1]\'' => 'Nieuwe reactie achtergelaten op \'[_1]\'',
 	'Close' => 'Sluiten',
+	'Failed to open pid file [_1]: [_2]' => 'Openen pid bestand mislukt [_1]: [_2]', # Translate - New
+	'Failed to send reboot signal: [_1]' => 'Sturen van reboot signaal mislukt: [_1]', # Translate - New
 	'The file you uploaded is too large.' => 'Het bestand dat u heeft geupload is te groot.',
 	'Unknown action [_1]' => 'Onbekende actie [_1]',
 	'Warnings and Log Messages' => 'Waarschuwingen en logberichten',
@@ -764,31 +779,34 @@ use vars qw( @ISA %Lexicon );
 	'You did not have permission for this action.' => 'U had geen permissie voor deze actie',
 
 ## lib/MT/App/Search/Legacy.pm
-	'You are currently performing a search. Please wait until your search is completed.' => 'U bent momenteel al een zoekactie aan het uitvoeren.  Gelieve te wachten tot uw zoekopdracht voltooid is.',
+	'A search is in progress. Please wait until it is completed and try again.' => 'Een zoekopdracht is nog bezig.  Gelieve te wachten tot deze afgelopen is en probeer opnieuw.', # Translate - New
 	'Search failed. Invalid pattern given: [_1]' => 'Zoeken mislukt. Ongeldig patroon opgegeven: [_1]',
-	'Search failed: [_1]' => 'Zoeken mislukt: [_1]',
-	'No alternate template is specified for the Template \'[_1]\'' => 'Er is geen alternatief sjabloon opgegeven voor sjabloon \'[_1]\'',
-	'Opening local file \'[_1]\' failed: [_2]' => 'Lokaal bestand \'[_1]\' openen mislukt: [_2]',
-	'Publishing results failed: [_1]' => 'Publicatie van resultaten mislukt: [_1]',
+	'Search failed. [_1]' => 'Zoekopdracht mislukt. [_1]', # Translate - New
+	'No alternate template is specified for the template \'[_1]\'' => 'Geen alternatief sjabloon is opgegeven voor sjabloon \'[_1]\'', # Translate - New
+	'Opening local file \'[_1]\' failed, [_2]' => 'Openen van lokaal bestand \'[_1]\' mislukt, [_2]', # Translate - New
+	'Publishing results failed. [_1]' => 'Publiceren van resultaten mislukt. [_1]', # Translate - New
 	'Search: query for \'[_1]\'' => 'Zoeken: zoekopdracht voor \'[_1]\'',
 	'Search: new comment search' => 'Zoeken: opnieuw zoeken in de reacties',
 
 ## lib/MT/App/Search.pm
+	'Cannot load blog #[_1].' => 'Kan blog #[_1] niet laden', # Translate - New
 	'Invalid type: [_1]' => 'Ongeldig type: [_1]',
-	'Search: failed storing results in cache.  [_1] is not available: [_2]' => 'Zoeken: opslaan resultaten in cache mislukt.  [_1] is niet beschikbar [_2]',
+	'Failed to cache search results.  [_1] is not available: [_2]' => 'Cachen van zoekresultaten mislukt.  [_1] is niet beschikbaar: [_2]', # Translate - New
 	'Invalid format: [_1]' => 'Ongeldig formaat: [_1]',
 	'Unsupported type: [_1]' => 'Niet ondersteund type: [_1]',
 	'Invalid query: [_1]' => 'Ongeldige zoekopdracht: [_1]',
 	'Invalid archive type' => 'Ongelidg archieftype',
 	'Invalid value: [_1]' => 'Ongeldige waarde: [_1]',
 	'No column was specified to search for [_1].' => 'Geen kolom opgegeven om op te zoeken [_1].',
+	'No alternate template is specified for template \'[_1]\'' => 'Geen alternatief sjabloon opgegeven voor sjabloon \'[_1]\'', # Translate - New
+	'Opening local file \'[_1]\' failed: [_2]' => 'Lokaal bestand \'[_1]\' openen mislukt: [_2]',
 	'No such template' => 'Geen sjabloon gevonden',
-	'template_id cannot be a global template' => 'template_id mag geen globaal sjabloon zijn',
-	'Output file cannot be asp or php' => 'Uitvoerbestand kan niet asp of php zijn',
+	'template_id cannot refer to a global template' => 'template_id mag niet verwijzen naar een globaal sjabloon', # Translate - New
+	'Output file cannot be of the type asp or php' => 'Uitvoerbestand mag niet van het type asp of php zijn', # Translate - New
 	'You must pass a valid archive_type with the template_id' => 'U moet een geldig archieftype doorgeven via het template_id',
-	'Template must have identifier entry_listing for non-Index archive types' => 'Sjabloon moet de identifier entry_listing hebben voor non-index archieftypes',
-	'Blog file extension cannot be asp or php for these archives' => 'Bestandsextensie van de blog mag niet asp of php zijn voor deze archieven',
-	'Template must have identifier main_index for Index archive type' => 'Sjabloon moet de identifier main_index hebben voor het indexarchieftype',
+	'Template must be an entry_listing for non-Index archive types' => 'Sjabloon moet een entry_listing zijn voor niet-Index archieftypes', # Translate - New
+	'Filename extension cannot be asp or php for these archives' => 'Bestandsnaamextensie mag niet asp of php zijn voor deze archieven', # Translate - New
+	'Template must be a main_index for Index archive type' => 'Sjabloon moet een main_index zijn voor het Index archieftype', # Translate - New
 	'The search you conducted has timed out.  Please simplify your query and try again.' => 'De zoekopdracht die u uitvoerde is over de tijdslimiet gegaan.  Gelieve uw zoekopdracht te vereenvoudigen en opnieuw te proberen.',
 
 ## lib/MT/App/Search/TagSearch.pm
@@ -798,55 +816,69 @@ use vars qw( @ISA %Lexicon );
 	'Invalid entry ID \'[_1]\'' => 'Ongeldig bericht-ID \'[_1]\'',
 	'You must define a Ping template in order to display pings.' => 'U moet een pingsjabloon definiëren om pings te kunnen tonen.',
 	'Trackback pings must use HTTP POST' => 'Trackback pings moeten HTTP POST gebruiken',
-	'Need a TrackBack ID (tb_id).' => 'TrackBack ID vereist (tb_id).',
+	'TrackBack ID (tb_id) is required.' => 'TrackBack ID (tb_id) is vereist.', # Translate - New
 	'Invalid TrackBack ID \'[_1]\'' => 'Ongeldig TrackBack-ID \'[_1]\'',
 	'You are not allowed to send TrackBack pings.' => 'U heeft geen toestemming om TrackBack pings te versturen.',
-	'You are pinging trackbacks too quickly. Please try again later.' => 'U bent te snel TrackBacks aan het pingen. Probeer het later opnieuw.',
-	'Need a Source URL (url).' => 'Bron-URL vereist (url).',
+	'You are sending TrackBack pings too quickly. Please try again later.' => 'U stuurt te veel TrackBack pings achter elkaar.  Gelieve later opnieuw te proberen.', # Translate - New
+	'You need to provide a Source URL (url).' => 'U moet een Source URL (url) opgeven.', # Translate - New
 	'This TrackBack item is disabled.' => 'Dit TrackBack item is uitgeschakeld.',
 	'This TrackBack item is protected by a passphrase.' => 'Dit TrackBack item is beschermd door een wachtwoord.',
 	'TrackBack on "[_1]" from "[_2]".' => 'TrackBack op "[_1]" van "[_2]".',
 	'TrackBack on category \'[_1]\' (ID:[_2]).' => 'TrackBack op categorie \'[_1]\' (ID:[_2]).',
-	'Can\'t create RSS feed \'[_1]\': ' => 'Kan RSS feed \'[_1]\' niet aanmaken: ',
-	'New TrackBack Ping to \'[_1]\'' => 'Nieuwe TrackBack ping naar \'[_1]\'',
-	'New TrackBack Ping to Category \'[_1]\'' => 'Nieuwe TrackBack ping naar categorie \'[_1]\'',
+	'Publishing failed. [_1]' => 'Publicatie mislukt. [_1]', # Translate - New
+	'Cannot create RSS feed \'[_1]\': ' => 'Kan geen RSS feed maken \'[_1]\'', # Translate - New
+	'New TrackBack ping to \'[_1]\'' => 'Nieuwe TrackBack ping naar \'[_1]\'', # Translate - New
+	'New TrackBack ping to category \'[_1]\'' => 'Nieuwe TrackBack ping naar categorie \'[_1]\'', # Translate - New
 
 ## lib/MT/App/Upgrader.pm
-	'Could not authenticate using the credentials provided: [_1].' => 'Kon niet aanmelden met de opgegeven aanmeldgegevens: [_1].',
+	'Could not authenticate using the credentials provided. [_1].' => 'Kon niet aanmelden met de opgegeven naam en wachtwoord. [_1].', # Translate - New
 	'Both passwords must match.' => 'Beide wachtwoorden moeten overeen komen.',
 	'You must supply a password.' => 'U moet een wachtwoord opgeven.',
-	'The \'Publishing Path\' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click \'Finish Install\' again.' => 'Het pubicatiepad dat hieronder is opgegeven is niet beschrijfbaar door de webserver.  Verander de eigenaar of de permissies van deze map en klik dan opnieuw op \'Installatie vervolledigen\'.',
+	'The \'Website Root\' provided below is not allowed' => 'De \'Website Root\' die werd opgegeven hieronder is niet toegestaan', # Translate - New
+	'The \'Website Root\' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click \'Finish Install\' again.' => 'De \'Website Root\' die werd opgegeven hieronder is niet beschrijfbaar door de webserver.  Verander de eigenaar of de permissies op deze map en klik dan opnieuw op de knop om de installatie af te werken.', # Translate - New
 	'Invalid session.' => 'Ongeldige sessie.',
-	'No permissions. Please contact your administrator for upgrading Movable Type.' => 'Geen permissies.  Gelieve uw administrator te contacteren om Movable Type te upgraden.',
+	'No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type.' => 'Geen permissies.  Gelieve uw Movable Type administrator te contacteren voor hulp met het upgraden van Movable Type.', # Translate - New
 	'Movable Type has been upgraded to version [_1].' => 'Movable Type is bijgewerkt tot versie [_1]',
 
 ## lib/MT/App/Viewer.pm
 	'Loading blog with ID [_1] failed' => 'Laden van blog met ID [_1] mislukt',
-	'File not found' => 'Bestand niet gevonden', # Translate - New
-	'Template publishing failed: [_1]' => 'Publicatie van sjabloon mislukt: [_1]',
-	'Unknown archive type: [_1]' => 'Onbekend archieftype: [_1]', # Translate - New
-	'Can\'t load template [_1]' => 'Kan sjabloon [_1] niet laden',
+	'File not found' => 'Bestand niet gevonden',
+	'Template publishing failed. [_1]' => 'Publicatie van sjabloon mislukt. [_1]', # Translate - New
+	'Unknown archive type. [_1]' => 'Onbekend archieftype. [_1]', # Translate - New
+	'Cannot load template [_1]' => 'Kan sjabloon [_1] niet laden', # Translate - New
 	'Archive publishing failed: [_1]' => 'Publicatie van archief mislukt: [_1]',
-	'Invalid entry ID [_1]' => 'Ongeldig bericht ID [_1]', # Translate - New
-	'Entry [_1] is not published' => 'Bericht [_1] is ongepubliceerd',
+	'Invalid entry ID [_1].' => 'Ongeldig bericht ID [_1].', # Translate - New
+	'Entry [_1] was not published.' => 'Bericht [_1] werd niet gepubliceerd.', # Translate - New
+	'Archive publishing failed. [_1]' => 'Publiceren archief mislukt. [_1]', # Translate - New
 	'Invalid category ID \'[_1]\'' => 'Ongeldig categorie-ID \'[_1]\'',
-	'Invalid author ID \'[_1]\'' => 'Ongeldig auteurs ID \'[_1]\'', # Translate - New
+	'Can\'t load template [_1]' => 'Kan sjabloon [_1] niet laden',
+	'Invalid author ID \'[_1]\'' => 'Ongeldig auteurs ID \'[_1]\'',
 
 ## lib/MT/App/Wizard.pm
 	'The [_1] driver is required to use [_2].' => 'De [_1] driver is vereist om [_2] te kunnen gebruiken.',
-	'An error occurred while attempting to connect to the database.  Check the settings and try again.' => 'Er deed zich een fout voor bij het verbinen met de database.  Controleer de instellingen en probeer opnieuw.',
-	'Please select database from the list of database and try again.' => '	Gelieve een database te selecteren uit de lijst en probeer opnieuw.',
+	'An error occurred while trying to connect to the database.  Check the settings and try again.' => 'Er deed zich een probleem voor bij het verbinden met de database.  Controleer de instellingen en probeer opnieuw.', # Translate - New
+	'Please select a database from the list of available databases and try again.' => 'Gelieve een database te selecteren uit de lijst met beschikbare databases en probeer opnieuw.', # Translate - New
 	'SMTP Server' => 'SMTP server',
 	'Sendmail' => 'Sendmail',
 	'Test email from Movable Type Configuration Wizard' => 'Test e-mail van de Movable Type Configuratiewizard',
 	'This is the test email sent by your new installation of Movable Type.' => 'Dit is de test e-mail verstuurd door uw nieuwe installatie van Movable Type.',
+	'Digest::SHA is required in order to provide enhanced protection of user passwords.' => 'Digest::SHA is vereist voor geavanceerde bescherming van gebruikerswachtwoorden.', # Translate - New
+	'This module and its dependencies are required to run Movable Type under psgi.' => 'Deze module en de modules waar deze van afhangt zijn vereist om Movable Type te kunnen gebruiken onder psgi.', # Translate - New
+	'Net::SMTP is required in order to send mail using an SMTP server.' => 'Net::SMTP is vereist om mail te kunnen versturen via een SMTP server.', # Translate - New
+	'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.' => 'Deze modules en de modules waar deze van afhangt zijn vereist om CRM-MD5, DIGEST-MD5 of LOGIN SASL te ondersteunen.', # Translate - New
+	'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.' => 'Net::SMTP::SSL is vereist om SMTP Auth te kunnen gebruiken over een SSL verbinding.', # Translate - New
+	'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.' => 'Net::SMTP::TLS is vereist om SMTP Auth te kunnen gebruiken met het STARTTLS commando.', # Translate - New
+	'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'IO::Socket::SSL is vereist om SMTP Auth te kunnen gebruiken over een SSL verbinding of om het te kunnen gebruiken met een STARTTLS commando.', # Translate - New
+	'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'Net::SSLeay is vereist om SMTP Auth te kunnen gebruiken over een SSL verbinding of om het te kunnen gebruiken met een STARTTLS commando.', # Translate - New
 	'This module is needed to encode special characters, but this feature can be turned off using the NoHTMLEntities option in mt-config.cgi.' => 'Deze module is vereist als u speciale karacters wenst te encoderen, maar deze optie kan worden uitgeschakeld door de NoHTMLEntities optie te gebruiken in mt-config.cgi',
-	'This module is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.' => 'Deze module is vereist als u het TrackBack systeem, de weblogs.com ping of de MT Recentlly Updated ping wenst te gebruiken.',
 	'This module is needed if you want to use the MT XML-RPC server implementation.' => 'Deze module is vereist als u de MT XML-RPC server implementatie wenst te gebruiken.',
 	'This module is needed if you would like to be able to overwrite existing files when you upload.' => 'Deze module is vereist als u bestaande bestanden wenst te kunnen overschrijven bij het opladen.',
+	'This module is needed if you would like to be able to create thumbnails of uploaded images.' => 'Deze module is vereist als u graag thumbnailveries van opgeladen bestanden wenst te kunnen aanmaken.',
+	'This module is needed if you would like to be able to use NetPBM as the image driver for MT.' => 'Deze module is vereist als u NetPBM wenst te gebruiken als driver voor afbeeldingen met MT.',
 	'This module is required by certain MT plugins available from third parties.' => 'Deze module is vereist door bepaalde MT plugins beschikbaar bij derden.',
 	'This module accelerates comment registration sign-ins.' => 'Deze module versnelt aanmeldingen om te kunnen reageren.',
-	'This module is needed to enable comment registration.' => 'Deze module is vereist om registraties bij reacties mogelijk te maken.',
+	'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan as OpenID.' => 'Cache::File is vereist als u reageerders wenst toe te staan zich aan te melden met de OpenID van Yahoo! Japan.',
+	'This module is needed to enable comment registration. Also, required in order to send mail via an SMTP Server.' => 'Deze module is vereist als u registratie wenst in te schakelen voor reacties en ook om mail te kunnen versturen via een SMTP server.', # Translate - New
 	'This module enables the use of the Atom API.' => 'Deze module maakt het mogelijk de Atom API te gebruiken.',
 	'This module is required in order to use memcached as caching mechanism used by Movable Type.' => 'Deze module is vereist om memcached als cachemechanisme voor Movable Type te kunnen gebruiken.',
 	'This module is required in order to archive files in backup/restore operation.' => 'Deze module is vereist om bestanden te archiveren bij backup/restore operaties.',
@@ -854,9 +886,13 @@ use vars qw( @ISA %Lexicon );
 	'This module is required in order to decompress files in backup/restore operation.' => 'Deze module is vereist om bestanden te decomprimeren bij backup/restore operaties.',
 	'This module and its dependencies are required in order to restore from a backup.' => 'Deze module en de modules waar ze van afhangt zijn vereisten om te kunen restoren uit een backup.',
 	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.' => 'Deze module en de modules waar ze van afhangt zijn nodig om reageerders zichzelf te laten authenticeren via OpenID providers waaronder LiveJournal.',
-	'This module is required for sending mail via SMTP Server.' => 'Deze module is vereist om mail te versturen via een SMTP server.',
+	'This module is used in a test attribute for the MTIf conditional tag.' => 'Deze module wordt gebruikt in een testattribuut voor de MTIf conditionele tag.',
+	'This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Deze module wordt vereist door mt-search.cgi als u Movable Type draait op een Perl versie ouder dan 5.8',
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Deze module is vereist om bestande te kunnen opladen (om het formaat van afbeeldingen in vele verschillende formaten te kunnen bepalen).',
 	'This module is required for cookie authentication.' => 'Deze module is vereist voor cookie-authenticatie.',
+	'DBI is required to work with most supported databases.' => 'DBI is vereist om te kunnen werken met de meeste ondersteunde databases.', # Translate - New
+	'File::Spec is required to work with file system path information on all supported operating systems.' => 'File::Spec is vereist om te kunnen werken met padinformatie in bestandssystemen op alle ondersteunde operating systemen.', # Translate - New
+	'LWP::UserAgent is required for creating Movable Type configuration files using the installation wizard.' => 'LWP::UserAgent is vereist om Movable Type configuratiebestanden te kunnen maken tijdens het gebruik van de installatiewizard.', # Translate - New
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
 	'AUTHOR-DAILY_ADV' => 'per auteur per dag',
@@ -957,18 +993,21 @@ use vars qw( @ISA %Lexicon );
 	'Error converting image: [_1]' => 'Fout bij conversie afbeelding: [_1]',
 	'Error creating thumbnail file: [_1]' => 'Fout bij het aanmaken van een thumbnail-bestand: [_1]',
 	'%f-thumb-%wx%h-%i%x' => '%f-thumb-%wx%h-%i%x',
+	'Cannot load image #[_1]' => 'Kan afbeelding #[_1] niet laden', # Translate - New
 	'Can\'t load image #[_1]' => 'Kan afbeelding niet laden #[_1]',
 	'View image' => 'Afbeelding bekijken',
 	'Permission denied setting image defaults for blog #[_1]' => 'Permissie geweigerd om de standaardinstellingen voor afbeeldingen te wijzigen voor blog #[_1]',
 	'Thumbnail image for [_1]' => 'Miniatuurweergave voor [_1]',
+	'Saving [_1] failed. [_2]' => 'Opslaan van [_1] mislukt. [_2]', # Translate - New
 	'Invalid basename \'[_1]\'' => 'Ongeldige basisnaam \'[_1]\'',
-	'Error writing to \'[_1]\': [_2]' => 'Fout bij schrijven naar \'[_1]\': [_2]',
-	'Popup Page for [_1]' => 'Popup pagina voor [_1]',
+	'Error writing to \'[_1]\'. [_2]' => 'Fout bij het schrijven naar \'[_1]\'. [_2]', # Translate - New
+	'Popup page for [_1]' => 'Popup pagina voor [_1]', # Translate - Case
 
 ## lib/MT/Asset.pm
 	'Deleted' => 'Verwijderd',
 	'Enabled' => 'Ingeschakeld',
 	'Disabled' => 'Uitgeschakeld',
+	'Could not remove asset file [_1] from the filesystem. [_2]' => 'Kon mediabestand [_1] niet verwijderen uit het bestandssysteem. [_2]', # Translate - New
 	'Could not remove asset file [_1] from filesystem: [_2]' => 'Kon mediabestand [_1] niet verwijderen uit het bestandssysteem: [_2]',
 	'Description' => 'Beschrijving',
 	'Location' => 'Locatie',
@@ -1007,20 +1046,21 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' (user #[_2]) added [lc,_4] #[_3]' => 'Gebruiker \'[_1]\' (gebruiker #[_2]) voegde [lc,_4] #[_3] toe',
 	'User \'[_1]\' (user #[_2]) edited [lc,_4] #[_3]' => 'Gebruiker \'[_1]\' (gebruiker #[_2]) bewerkte [lc,_4] #[_3]',
 	'Entry \'[_1]\' ([lc,_5] #[_2]) deleted by \'[_3]\' (user #[_4]) from atom api' => 'Bericht \'[_1]\' ([lc,_5] #[_2]) verwijderd door \'[_3]\' (gebruiker #[_4]) via de ATOM API',
+	'The file ([_1]) you uploaded is not allowed.' => 'Het bestand ([_1]) dat u heeft geupload is niet toegestaan.', # Translate - New
 	'The file([_1]) you uploaded is not allowed.' => 'Het bestand dat u heeft geupload ([_1]) is niet toegelaten.',
-	'Saving [_1] failed: [_2]' => 'Opslaan van [_1] mislukt: [_2]',
-	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'Perl module Image::Size is nodig om de breedte en hoogte van opgeladen afbeeldingen te bepalen.',
+	'Perl module Image::Size is required to determine the width and height of uploaded images.' => 'Perl module Image::Size is vereist om de hoogte en breedte te kunnen bepalen van geuploade bestanden.', # Translate - New
 
 ## lib/MT/Auth/MT.pm
-	'Missing Required Modules' => 'Ontbrekende vereiste modules',
+	'Failed to verify the current password.' => 'Bevestigen huidig wachtwoord mislukt.', # Translate - New
+	'Missing required module' => 'Ontbrekende vereiste module', # Translate - New
 
 ## lib/MT/Auth/OpenID.pm
-	'Couldn\'t save the session' => 'Kon de sessie niet opslaan',
+	'Could not save the session' => 'Kon de sessie niet opslaan', # Translate - New
 	'Could not load Net::OpenID::Consumer.' => 'Kon Net::OpenID::Consumer niet laden.',
-	'The address entered does not appear to be an OpenID' => 'Het ingevulde adres lijkt geen OpenID te zijn',
-	'The text entered does not appear to be a web address' => 'De ingevulde tekst lijkt geen webadres te zijn',
-	'Unable to connect to [_1]: [_2]' => 'Verbinden met [_1] mislukt: [_2]',
-	'Could not verify the OpenID provided: [_1]' => 'Kon de OpenID provider niet verifiëren: [_1]',
+	'The address entered does not appear to be an OpenID endpoint.' => 'Het adres dat werd ingevuld lijkt geen OpenID endpoint te zijn.', # Translate - New
+	'The text entered does not appear to be a valid web address.' => 'De ingevulde tekst lijkt geen geldig webadres te zijn.', # Translate - New
+	'Unable to connect to [_1]. [_2]' => 'Kon niet verbinden met [_1]. [_2]', # Translate - New
+	'Could not verify the OpenID provided. [_1]' => 'Kon de opgegeven OpenID niet verifiëren. [_1]', # Translate - New
 
 ## lib/MT/Author.pm
 	'Users' => 'Gebruikers',
@@ -1031,7 +1071,7 @@ use vars qw( @ISA %Lexicon );
 	'__COMMENTER_APPROVED' => 'Goedgekeurd',
 	'Banned' => 'Uitgesloten',
 	'MT Users' => 'MT gebruikers',
-	'The approval could not be committed: [_1]' => 'De goedkeuring kon niet worden weggeschreven: [_1]',
+	'The approval could not be committed.  [_1]' => 'De goedkeuring kon niet worden opgeslagen. [_1]', # Translate - New
 	'Userpic' => 'Foto gebruiker',
 	'User Info' => 'Gebruikersinformatie',
 	'__ENTRY_COUNT' => 'Berichten',
@@ -1058,28 +1098,33 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Auth/TypeKey.pm
 	'Sign in requires a secure signature.' => 'Aanmelden vereist een beveiligde handtekening.',
 	'The sign-in validation failed.' => 'Validatie van het aanmelden mislukt.',
-	'This weblog requires commenters to pass an email address. If you\'d like to do so you may log in again, and give the authentication service permission to pass your email address.' => 'Deze weblog vereist dat reageerders een e-mail adres opgeven.  Als u dat wenst kunt u zich opnieuw aanmelden en de authenticatiedienst toestemming verlenen om uw e-mail adres door te geven.',
+	'This weblog requires commenters to pass an email address. If you would like to do so you may log in again, and give the authentication service permission to pass your email address.' => 'Deze blog vereist dat reageerders een email adres achterlaten.  Als u dit wenst te doen, kunt u opnieuw aanmelden en de authenticatieservice toestemming geven om uw email adres te delen.', # Translate - New
+	'Could not get public key from the URL provided.' => 'Kon de publieke sleutel niet uit de ingevulde URL afleiden.', # Translate - New
 	'Couldn\'t get public key from url provided' => 'Kon geen publieke sleutel vinden via de opgegeven url',
 	'No public key could be found to validate registration.' => 'Er kon geen publieke sleutel gevonden worden om de registratie te valideren.',
-	'TypePad signature verif\'n returned [_1] in [_2] seconds verifying [_3] with [_4]' => 'TypePad signatuur verificatie retourneerde [_1] in [_2] seconden bij het verifiëren van [_3] met [_4]',
-	'The TypePad signature is out of date ([_1] seconds old). Ensure that your server\'s clock is correct' => 'De TypePad signatuur is vervallen ([_1] seconden oud).  Kijk na of de klok van uw server juist staat.',
+	'TypePad signature verification returned [_1] in [_2] seconds verifying [_3] with [_4]' => 'TypePad signatuurverificatie retourneerde [_1] in [_2] seconden bij het verifiëren van [_3] met [_4].', # Translate - New
+	'The TypePad signature is out of date ([_1] seconds old). Ensure that your server\'s clock is correct.' => 'De TypePad signatuur is verlopen ([_1] seconden oud).  Controleer of de klok op uw server juist staat.', # Translate - New
 
 ## lib/MT/BackupRestore/BackupFileHandler.pm
-	'Uploaded file was not a valid Movable Type backup manifest file.' => 'Het opgeladen bestand was geen geldig Movable Type backup manifest bestand.',
-	'Uploaded file was backed up from Movable Type but the different schema version ([_1]) from the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.' => 'Het geuploade bestand is een backup van Movable Type maar het databaseschema ([_1]) verschilt van dat in dit systeem ([_2]).  Het is niet veilig om dit bestand terug te zetten op deze versie van Movable Type.',
+	'The uploaded file was not a valid Movable Type backup manifest file.' => 'Het bestand dat werd geupload is geen geldig Movable Type manifest bestand.', # Translate - New
+	'The uploaded backup manifest file was created with Movable Type, but the schema version ([_1]) differs from the one used by this system ([_2]).  You should not restore this backup to this version of Movable Type.' => 'Het manifestbestand dat werd geupload werd aangemaakt met Movable Type, maar de schemaversie ([_1]) is anders dan die op dit systeem wordt gebruikt ([_2]).', # Translate - New
 	'[_1] is not a subject to be restored by Movable Type.' => '[_1] is geen item dat door Movable Type teruggezet moet worden.',
 	'[_1] records restored.' => '[_1] records teruggezet.',
 	'Restoring [_1] records:' => '[_1] records aan het terugzetten:',
-	'User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.' => 'Gebruiker met dezelfde naam gevonden als die van de momenteel ingelogde ([_1]).  Record overgeslagen.',
-	'User with the same name \'[_1]\' found (ID:[_2]).  Restore replaced this user with the data backed up.' => 'Een gebruiker met dezelfde naam \'[_1]\' werd gevonden (ID:[_2]).  Restore verving deze gebruiker door de data uit de backup.',
+	'A user with the same name as the current user ([_1]) was found in the backup.  Skipping this user record.' => 'Een gebruiker met dezelfde naam als de huidige gebruiker ([_1]) werd gevonden in de backup.  Dit record wordt overgeslagen.', # Translate - New
+	'A user with the same name \'[_1]\' was found in the backup (ID:[_2]).  Restore replaced this user with the data from the backup.' => 'Een gebruiker met dezelfde naam \'[_1]\' werd gevonden in de backup (ID:[_2]).  Restore verving de gegevens van deze gebruiker met die uit de backup.', # Translate - New
 	'Tag \'[_1]\' exists in the system.' => 'Tag \'[_1]\' bestaat in het systeem.',
 	'[_1] records restored...' => '[_1] records teruggezet...',
 	'The role \'[_1]\' has been renamed to \'[_2]\' because a role with the same name already exists.' => 'De rol \'[_1]\' werd hernoemd naar \'[_2]\' omdat een rol met die naam al bestond.',
 	'The system level settings for plugin \'[_1]\' already exist.  Skipping this record.' => 'De instellingen op systeemniveau voor plugin \'[_1]\' bestaan al.  Record wordt overgeslagen.',
 
+## lib/MT/BackupRestore/BackupFileScanner.pm
+	'Can not restore this file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.' => 'Kan dit bestand niet terugzetten omdat hiervoor de Digest::SHA Perl module vereist is.  Neem contact op met uw Movable Type systeembeheerder.', # Translate - New
+
 ## lib/MT/BackupRestore/ManifestFileHandler.pm
 
 ## lib/MT/BackupRestore.pm
+	"\nCannot write file. Disk full." => "\nKan bestand niet schrijven.  Schijf vol.", # Translate - New
 	'Backing up [_1] records:' => 'Er worden [_1] records gebackupt:',
 	'[_1] records backed up...' => '[_1] records gebackupt...',
 	'[_1] records backed up.' => '[_1] records gebackupt.',
@@ -1089,7 +1134,7 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t open [_1].' => 'Kan [_1] niet openen.',
 	'Manifest file [_1] was not a valid Movable Type backup manifest file.' => 'Manifest-bestand [_1] was geen geldig Movable Type backup manifest-bestand.',
 	'Manifest file: [_1]' => 'Manifestbestand: [_1]',
-	'Path was not found for the file ([_1]).' => 'Geen pad gevonden voor het bestadn ([_1]).',
+	'Path was not found for the file, [_1].' => 'Pad niet gevonden voor bestand, [_1]', # Translate - New
 	'[_1] is not writable.' => '[_1] is niet beschrijfbaar.',
 	'Error making path \'[_1]\': [_2]' => 'Fout bij aanmaken pad \'[_1]\': [_2]',
 	'Copying [_1] to [_2]...' => 'Bezig [_1] te copiëren naar [_2]...',
@@ -1111,6 +1156,7 @@ use vars qw( @ISA %Lexicon );
 	'authors' => 'auteurs',
 
 ## lib/MT/Blog.pm
+	'*Website/Blog deleted*' => '*Website/Blog verwijderd*',
 	'First Blog' => 'Eerste weblog',
 	'No default templates were found.' => 'Er werden geen standaardsjablonen gevonden.',
 	'Clone of [_1]' => 'Kloon van [_1]',
@@ -1157,14 +1203,16 @@ use vars qw( @ISA %Lexicon );
 	'Parent' => 'Ouder',
 
 ## lib/MT/CMS/AddressBook.pm
-	'No entry ID provided' => 'Geen bericht-ID opgegeven',
+	'No entry ID was provided' => 'Geen bericht ID opgegeven', # Translate - New
 	'No such entry \'[_1]\'' => 'Geen bericht \'[_1]\'',
-	'No valid recipients found for the entry notification.' => 'Geen geldige ontvangers gevonden om op de hoogte te brengen van dit bericht.',
+	'No entry ID provided' => 'Geen bericht-ID opgegeven',
+	'No valid recipients were found for the entry notification.' => 'Geen geldige ontvangers gevonden voor notificatie bericht.', # Translate - New
 	'[_1] Update: [_2]' => '[_1] update: [_2]',
+	'Error sending mail ([_1]). Try another MailTransfer setting?' => 'Fout bij verzenden bericht ([_1]) Probeer een andere MailTransfer instelling.', # Translate - New
 	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Fout bij verzenden mail ([_1]); een andere MailTransfer instelling proberen?',
 	'Please select a blog.' => 'Gelieve een blog te selecteren.',
-	'The value you entered was not a valid email address' => 'Wat u invulde was geen geldig e-mail adres',
-	'The value you entered was not a valid URL' => 'Wat u invulde was geen geldige URL',
+	'The text you entered is not a valid email address.' => 'De tekst die u invul is geen geldig email adres.', # Translate - New
+	'The text you entered is not a valid URL.' => 'De tekst die u invulde is geen geldige URL.', # Translate - New
 	'The e-mail address you entered is already on the Notification List for this blog.' => 'Het e-mail adres dat u opgaf staat al op de notificatielijst van deze weblog.',
 	'Subscriber \'[_1]\' (ID:[_2]) deleted from address book by \'[_3]\'' => 'Abonnee \'[_1]\' (ID:[_2]) verwijderd uit adresboek door \'[_3]\'',
 
@@ -1173,11 +1221,12 @@ use vars qw( @ISA %Lexicon );
 	'Files' => 'Bestanden',
 	'Extension changed from [_1] to [_2]' => 'Extensie veranderd van [_1] in [_2]',
 	'Upload File' => 'Opladen',
-	'Can\'t load file #[_1].' => 'Kan bestand niet laden #[_1].',
+	'Cannot load file #[_1].' => 'Kan bestand niet laden #[_1].', # Translate - New
 	'No permissions' => 'Geen permissies',
 	'File \'[_1]\' uploaded by \'[_2]\'' => 'Bestand \'[_1]\' opgeladen door \'[_2]\'',
 	'File \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Bestand \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
 	'Untitled' => 'Zonder titel',
+	'Saving [_1] failed: [_2]' => 'Opslaan van [_1] mislukt: [_2]',
 	'Archive Root' => 'Archiefroot',
 	'Site Root' => 'Siteroot',
 	'Please select a file to upload.' => 'Gelieve een bestand te selecteren om te uploaden.',
@@ -1185,20 +1234,20 @@ use vars qw( @ISA %Lexicon );
 	'Please select an audio file to upload.' => 'Gelieve een audiobestand te selecteren om te uploaden.',
 	'Please select an image to upload.' => 'Gelieve een afbeelding te selecteren om te uploaden.',
 	'Please select a video to upload.' => 'Gelieve een videobestand te selecteren om te uploaden.',
-	'Movable Type was unable to write on the "Upload Destination". Please make sure that the folder is writable from the web server.' => 'Movable Type kno niet schrijven naar de "Upload bestemming".  Gelieve te controleren dat deze map beschrijfbaar is voor de webserver.',
+	'Movable Type was unable to write to the "Upload Destination". Please make sure that the webserver can write to this folder.' => 'Movable Type kon niet schrijven naar de "Upload bestemming".  Controleer of de webserver schrijfrechten heeft op deze map.', # Translate - New
 	'Invalid extra path \'[_1]\'' => 'Ongeldig extra pad \'[_1]\'',
 	'Can\'t make path \'[_1]\': [_2]' => 'Kan pad \'[_1]\' niet aanmaken: [_2]',
 	'Invalid temp file name \'[_1]\'' => 'Ongeldige naam voor temp bestand \'[_1]\'',
 	'Error opening \'[_1]\': [_2]' => 'Fout bij openen van \'[_1]\': [_2]',
 	'Error deleting \'[_1]\': [_2]' => 'Fout bij wissen van \'[_1]\': [_2]',
-	'File with name \'[_1]\' already exists. (Install File::Temp if you\'d like to be able to overwrite existing uploaded files.)' => 'Bestand met de naam \'[_1]\' bestaat al. (Installeer File::Temp als u bestaande bestanden wenst te kunnen overschrijven.)',
-	'Error creating temporary file; please check your TempDir setting in your coniguration file (currently \'[_1]\') this location should be writable.' => 'Fout bij het aanmaken van een tijdelijk bestand; controleer de TempDir instelling in uw configuratiebestand (momenteel \'[_1]\'), deze locatie zou beschrijfbaar moeten zijn door de webserver.',
+	'File with name \'[_1]\' already exists. (Install the File::Temp Perl module if you\'d like to be able to overwrite existing uploaded files.)' => 'Bestand met de naam \'[_1]\' bestaat al.  (Installeer de File::Temp perl module als u bestaande geuploade bestanden wenst te kunnen overschrijven.)', # Translate - New
 	'unassigned' => 'niet toegewezen',
-	'File with name \'[_1]\' already exists; Tried to write to tempfile, but open failed: [_2]' => 'Bestand met de naam \'[_1]\' bestaat al; Poging tot schrijven naar tijdelijk bestand ondernomen, openen mislukt: [_2]',
+	'File with name \'[_1]\' already exists; Tried to write to a tempfile, but the webserver couldn\'t open it: [_2]' => 'Bestand met de naam \'[_1]\' bestaat al; Probeerde een tijdelijk bestand te schrijven maar de webserver kon het niet openen: [_2]', # Translate - New
 	'Could not create upload path \'[_1]\': [_2]' => 'Kon geen upload pad \'[_1]\' aanmaken: [_2]',
+	'The file([_1]) that you uploaded is not allowed.' => 'Het bestand ([_1]) dat u uploade is niet toegestaan.', # Translate - New
 	'Error writing upload to \'[_1]\': [_2]' => 'Fout bij schrijven van upload naar \'[_1]\': [_2]',
 	'Uploaded file is not an image.' => 'Geupload bestand is geen afbeelding.',
-	'Can\'t overwrite with the file of different type. Original: [_1] Uploaded: [_2]' => 'Kan niet overschrijven met bestand van een ander type.  Origineel: [_1] Geupload: [_2]',
+	'Cannot overwrite an existing file with a file of a different type. Original: [_1] Uploaded: [_2]' => 'Kan geen bestaand bestand overschrijven met een bestand van een ander type.  Origineel: [_1] Geupload: [_2]', # Translate - New
 	'<' => '<',
 	'/' => '/',
 
@@ -1213,6 +1262,7 @@ use vars qw( @ISA %Lexicon );
 	'General Settings' => 'Algemene instellingen',
 	'Plugin Settings' => 'Instellingen plugins',
 	'New Blog' => 'Nieuwe blog',
+	'Cannot load template #[_1].' => '', # Translate - New
 	'Can\'t load template #[_1].' => 'Kan sjabloon #[_1] niet laden.',
 	'index template \'[_1]\'' => 'indexsjabloon \'[_1]\'',
 	'[_1] \'[_2]\'' => '[_1] \'[_2]\'',
@@ -1231,6 +1281,7 @@ use vars qw( @ISA %Lexicon );
 	'Archive URL must be an absolute URL.' => 'Archief URL moet een absolute URL zijn.',
 	'You did not specify an Archive Root.' => 'U gaf geen archiefroot op.',
 	'The number of revisions to store must be a positive integer.' => 'Het aantal revisies dat moet worden bewaard moet een positieve integer zijn.',
+	'Please choose a preferred archive type.' => 'Gelieve een voorkeursarchieftype te kiezen.', # Translate - New
 	'Blog \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Blog \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
 	'Saving blog failed: [_1]' => 'Blog opslaan mislukt: [_1]',
 	'Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory.' => 'Fout: Movable Type kan niet schrijven in de sjablooncache map. Gelieve de permissies na te kijken van de map met de naam <code>[_1]</code> onder de map van uw weblog.',
@@ -1280,13 +1331,14 @@ use vars qw( @ISA %Lexicon );
 	'The Template Name and Output File fields are required.' => 'De velden sjabloonnaam en uitvoerbestand zijn verplicht.',
 	'Invalid type [_1]' => 'Ongeldig type [_1]',
 	'Invalid ID [_1]' => 'Ongeldig ID [_1]',
+	'Website root must be under [_1]' => 'Websiteroot moet vallen onder [_1]', # Translate - New
 	'Save failed: [_1]' => 'Opslaan mislukt: [_1]',
 	'Saving object failed: [_1]' => 'Object opslaan mislukt: [_1]',
 	'\'[_1]\' edited the template \'[_2]\' in the blog \'[_3]\'' => '\'[_1]\' bewerkte het sjabloon \'[_2]\' op blog \'[_3]\'',
 	'\'[_1]\' edited the global template \'[_2]\'' => '\'[_1]\' bewerkte het globale sjabloon \'[_2]\'',
 	'Load failed: [_1]' => 'Laden mislukt: [_1]',
 	'(no reason given)' => '(geen reden vermeld)',
-	'Invalid filter: [_1]' => 'Ongeldige filter: [_1]', # Translate - New
+	'Invalid filter: [_1]' => 'Ongeldige filter: [_1]',
 	'New Filter' => 'Nieuwe Filter',
 	'__SELECT_FILTER_VERB' => 'is gelijk aan',
 	'All [_1]' => 'Alle [_1]',
@@ -1373,6 +1425,7 @@ use vars qw( @ISA %Lexicon );
 	'Activity log reset by \'[_1]\'' => 'Activiteitenlog leeggemaakt door \'[_1]\'',
 
 ## lib/MT/CMS/Plugin.pm
+	'Error saving plugin settings: [_1]' => 'Fout bij opslaan plugin-instellingen: [_1]', # Translate - New
 	'Plugin Set: [_1]' => 'Pluginset: [_1]',
 	'Individual Plugins' => 'Individuele plugins',
 
@@ -1471,6 +1524,7 @@ use vars qw( @ISA %Lexicon );
 	'Failed to load theme export template for [_1]: [_2]' => 'Laden exportsjabloon voor [_1] mislukt: [_2]',
 	'Failed to save theme export info: [_1]' => 'Opslaan exportinfo van het thema mislukt: [_1]',
 	'Themes Directory [_1] is not writable.' => 'Themadirectory [_1] is niet beschrijfbaar.',
+	'All Themes Directories are not writable.' => 'Alle themadirectories zijn niet beschrijfbaar.', # Translate - New
 	'Error occurred during exporting [_1]: [_2]' => 'Fout bij het exporteren van [_1]: [_2]',
 	'Error occurred during finalizing [_1]: [_2]' => 'Fout tijdens het finaliseren van [_1]: [_2]',
 	'Error occurred while publishing theme: [_1]' => 'Fout bij het publiceren van thema: [_1]',
@@ -1486,13 +1540,12 @@ use vars qw( @ISA %Lexicon );
 	'Please confirm your new password' => 'Gelieve uw nieuwe wachtwoord te bevestigen',
 	'Passwords do not match' => 'Wachtwoorden komen niet overeen',
 	'That action ([_1]) is apparently not implemented!' => 'Die handeling ([_1]) is blijkbaar niet geïmplementeerd!',
-	'Error occurred while attempting to [_1]: [_2]' => 'Er deed zich een fout voor bij het [_1]: [_2]', # Translate - New
+	'Error occurred while attempting to [_1]: [_2]' => 'Er deed zich een fout voor bij het [_1]: [_2]',
 	'You don\'t have a system email address configured.  Please set this first, save it, then try the test email again.' => 'Er is geen systeem e-mail adres ingesteld.  Gelieve dit eerst in te stellen en probeer daarna opnieuw een test e-mail te versturen.',
-	'Please enter a valid email address' => 'Gelieve een geldig e-mail adres in te vullen',
 	'Test email from Movable Type' => 'Test e-mail van Movable Type',
 	'This is the test email sent by Movable Type.' => 'Dit is de test e-mail verstuurd door Movable Type.',
-	'Mail was not properly sent' => 'Mail kon niet worden verzonden',
 	'Test e-mail was successfully sent to [_1]' => 'De test e-mail werd met succes verzonden naar [_1]',
+	'Mail was not properly sent: [_1]' => 'Mail was niet correct verzonden: [_1]', # Translate - New
 	'These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.' => 'Deze instellingen worden overroepen door een instelling het het MT configuratiebestand: [_1].  Verwijder de waarde uit het configuratiebestand om deze hier te kunnen beheren.',
 	'Email address is [_1]' => 'E-mail adres is [_1]',
 	'Debug mode is [_1]' => 'Debug modus is [_1]',
@@ -1500,6 +1553,7 @@ use vars qw( @ISA %Lexicon );
 	'Performance logging is off' => 'Performantielogging staat uit',
 	'Performance log path is [_1]' => 'Performantielogpad is [_1]',
 	'Performance log threshold is [_1]' => 'Performantielogdrempel is [_1]',
+	'Invalid SitePath: Should be valid and absolute' => 'Ongeldig SitePad: Moet geldig en absoluut zijn', # Translate - New
 	'[_1] is [_2]' => '[_1] is [_2]',
 	'none' => 'geen',
 	'System Settings Changes Took Place' => 'Wijzigingen werden aangebracht aan de systeeminstellingen',
@@ -1541,6 +1595,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] is not a directory.' => '[_1] is geen map.',
 	'Error occured during restore process.' => 'Er deed zich een fout voor tijdens het restore-proces.',
 	'Some of files could not be restored.' => 'Een aantal bestanden konden niet worden teruggezet.',
+	'Uploaded file was not a valid Movable Type backup manifest file.' => 'Het opgeladen bestand was geen geldig Movable Type backup manifest bestand.',
 	'Manifest file \'[_1]\' is too large. Please use import direcotry for restore.' => 'Manifestbestand \'[_1]\' is te groot.  Gelieve de map \'import\' te gebruiken om de gegevens terug te zetten.',
 	'Blog(s) (ID:[_1]) was/were successfully backed up by user \'[_2]\'' => 'Blog(s) (ID:[_1]) werden met succes gebackupt door gebruiker \'[_2]\'',
 	'Movable Type system was successfully backed up by user \'[_1]\'' => 'Movable Type systeem werd met succes gebackupt door gebruiker \'[_1]\'',
@@ -1571,7 +1626,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid type' => 'Ongeldig type',
 	'Invalid ID given for personal blog theme.' => 'Ongeldig ID opgegeven voor persoonlijk blogthema.',
 	'Invalid ID given for personal blog clone location ID.' => 'Ongeldig ID opgegeven als locatie ID van kloon van persoonlijke blog',
-	'Minimum password length must be integer and greater than zero.' => 'Minimale wachtwoordlengte moet een geheel getal groter dan nul zijn.', # Translate - New
+	'Minimum password length must be integer and greater than zero.' => 'Minimale wachtwoordlengte moet een geheel getal groter dan nul zijn.',
 	'If personal blog is set, the personal blog location are required.' => 'Als een persoonlijke blog is ingesteld, dan is de locatie van de persoonlijke blog vereist.',
 	'Select a entry author' => 'Selecteer een berichtauteur',
 	'Select a page author' => 'Selecteer een pagina-auteur',
@@ -1592,7 +1647,7 @@ use vars qw( @ISA %Lexicon );
 	'Roles Selected' => 'Geselecteerde rollen',
 	'Grant Permissions' => 'Permissies toekennen',
 	'You cannot delete your own association.' => 'U kunt uw eigen associatie niet verwijderen.',
-	'[_1]\'s Assciations' => 'Associaties van [_1]', # Translate - New
+	'[_1]\'s Assciations' => 'Associaties van [_1]',
 	'You cannot delete your own user record.' => 'U kunt uw eigen gebruikersgegevens niet verwijderen.',
 	'You have no permission to delete the user [_1].' => 'U heeft geen rechten om gebruiker [_1] te verwijderen.',
 	'User requires username' => 'Gebruiker vereist gebruikersnaam',
@@ -1659,8 +1714,8 @@ use vars qw( @ISA %Lexicon );
 	'The physical file path for your SQLite database. ' => 'Het fysieke bestandspad voor uw SQLite database',
 	'[_1] in [_2]: [_3]' => '[_1] in [_2]: [_3]',
 	'option is required' => 'optie is vereist',
-	'Days must be a number.' => 'Dagen moet een getal zijn.', # Translate - New
-	'Invalid date.' => 'Ongeldige datum.', # Translate - New
+	'Days must be a number.' => 'Dagen moet een getal zijn.',
+	'Invalid date.' => 'Ongeldige datum.',
 	'[_1] [_2] between [_3] and [_4]' => '[_1] [_2] tussen [_3] en [_4]',
 	'[_1] [_2] since [_3]' => '[_1] [_2] sinds [_3]',
 	'[_1] [_2] or before [_3]' => '[_1] [_2] of voor [_3]',
@@ -1673,7 +1728,6 @@ use vars qw( @ISA %Lexicon );
 	'No Label' => 'Geen label',
 	'*User deleted*' => '*Gebruiker verwijderd*',
 	'(system)' => '(systeem)',
-	'*Website/Blog deleted*' => '*Website/Blog verwijderd*',
 	'My [_1]' => 'Mijn  [_1]',
 	'[_1] of this Website' => '[_1] van deze website',
 	'IP Banlist is disabled by system configuration.' => 'IP banlijst is uitgeschakeld in de systeemconfiguratie',
@@ -1742,7 +1796,7 @@ use vars qw( @ISA %Lexicon );
 	'Remove Temporary Files' => 'Tijdelijke bestanden verwijderen',
 	'Purge Stale Session Records' => 'Verlopen sessiegegevens verwijderen',
 	'Remove expired lockout data' => 'Verlopen blokkeringsgegevens verwijderen',
-	'Purge Unused FileInfo Records' => 'Ongebruikte FileInfo records verwijderen', # Translate - New
+	'Purge Unused FileInfo Records' => 'Ongebruikte FileInfo records verwijderen',
 	'Manage Website' => 'Website beheren',
 	'Manage Blog' => 'Blog beheren',
 	'Manage Website with Blogs' => 'Website met blogs beheren',
@@ -1892,6 +1946,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Image.pm
 	'Invalid Image Driver [_1]' => 'Ongeldige driver voor afbeeldingen  [_1]',
+	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'Perl module Image::Size is nodig om de breedte en hoogte van opgeladen afbeeldingen te bepalen.',
 	'Saving [_1] failed: Invalid image file format.' => 'Opslaan van [_1] mislukt: Ongeldig afbeeldingsbestandsformaat',
 	'File size exceeds maximum allowed: [_1] > [_2]' => 'Bestandsgroote is groter dan maximum toegestaan: [_1] > [_2]',
 
@@ -1937,7 +1992,7 @@ use vars qw( @ISA %Lexicon );
 	'Composite score: [_1]' => 'Samengestelde score: [_1]',
 
 ## lib/MT/ListProperty.pm
-	'Can\'t initialize list property [_1].[_2].' => 'Kan lijsteigenschap [_1] niet initialiseren. [_2].', # Translate - New
+	'Can\'t initialize list property [_1].[_2].' => 'Kan lijsteigenschap [_1] niet initialiseren. [_2].',
 	'Failed to init auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'Initialiseren auto lijst eigenschap [_1].[_2] mislukt: kan definitie van kolom [_3] niet vinden.',
 	'Failed to init auto list property [_1].[_2]: unsupported column type.' => 'Initialiseren auto lijst eigenschap [_1].[_2] mislukt: niet ondersteund kolomtype.',
 
@@ -1984,9 +2039,12 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Mail.pm
 	'Unknown MailTransfer method \'[_1]\'' => 'Onbekende MailTransfer methode \'[_1]\'',
-	'Sending mail via SMTP requires that your server have Mail::Sendmail installed: [_1]' => 'Het versturen van e-mail via SMTP vereist dat op uw server Mail::Sendmail is geïnstalleerd: [_1]',
+	'Username and password is required for SMTP Authentication.' => 'Gebruikersnaam en wachtwoord zijn vereist voor SMTP Authenticatie.', # Translate - New
+	'Error connecting to SMTP server [_1]:[_2]' => 'Fout bij verbinden met SMTP server [_1]:[_2]', # Translate - New
+	'Authentication failure: [_1]' => 'Fout bij authenticatie: [_1]', # Translate - New
 	'You do not have a valid path to sendmail on your machine. Perhaps you should try using SMTP?' => 'U heeft geen geldig pad naar sendmail op uw machine.  Misschien moet u proberen om SMTP te gebruiken?',
 	'Exec of sendmail failed: [_1]' => 'Exec van sendmail mislukt: [_1]',
+	'Following required module(s) were not found: ([_1])' => 'Volgende vereiste module(s) niet gevonden: ([_1])', # Translate - New
 
 ## lib/MT/Notification.pm
 	'Contacts' => 'Contacten',
@@ -2036,12 +2094,12 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT.pm
 	'Powered by [_1]' => 'Aangedreven door [_1]',
 	'Version [_1]' => 'Versie [_1]',
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype',
+	'http://www.movabletype.com/' => 'http://www.movabletype.com', # Translate - New
 	'Hello, world' => 'Hello, world',
 	'Hello, [_1]' => 'Hallo, [_1]',
 	'Message: [_1]' => 'Bericht: [_1]',
-	'If present, 3rd argument to add_callback must be an object of type MT::Component or MT::Plugin' => 'Indien aanwezig, moet het derde argument van add_callback een object zijn van het type MT::Component of MT::Plugin',
-	'4th argument to add_callback must be a CODE reference.' => '4th argument van add_callback moet een CODE referentie zijn.',
+	'If it is present, the third argument to add_callback must be an object of type MT::Component or MT::Plugin' => 'Als het aanwezig is, dan moet het derde argument bij add_callback een object van het type MT::Component of MT::Plugin zijn', # Translate - New
+	'Fourth argument to add_callback must be a CODE reference.' => 'Vierde argument van add_callback moet een CODE referentie zijn.', # Translate - New
 	'Two plugins are in conflict' => 'Twee plugins zijn in conflict',
 	'Invalid priority level [_1] at add_callback' => 'Ongeldig prioriteitsniveau [_1] in add_callback',
 	'Internal callback' => 'Interne callback',
@@ -2053,7 +2111,7 @@ use vars qw( @ISA %Lexicon );
 	'Missing configuration file. Maybe you forgot to move mt-config.cgi-original to mt-config.cgi?' => 'Ontbrekend configuratiebestand.  Misschien vergat u mt-config.cgi-original te hernoemen naar mt-config.cgi?',
 	'Plugin error: [_1] [_2]' => 'Plugin fout: [_1] [_2]',
 	'Loading template \'[_1]\' failed.' => 'Laden van sjabloon \'[_1]\' mislukt.',
-	'Error during building email: [_1]' => 'Fout bij het aanmaken van e-mail: [_1]',
+	'Error while creating email: [_1]' => 'Fout bij het aanmaken van email: [_1]', # Translate - New
 	'http://www.movabletype.org/documentation/' => 'http://www.movabletype.org/documentation/',
 	'OpenID' => 'OpenID',
 	'LiveJournal' => 'LiveJournal',
@@ -2146,6 +2204,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1]Publish[_2] your site to see these changes take effect.' => '[_1]Publiceer[_2] uw site om deze wijzigingen zichtbaar te maken.',
 	'Actions' => 'Acties',
 	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'http://www.movabletype.org/documentation/appendices/tags/%t.html',
+	'You used an [_1] tag without a date context set up.' => 'U gebruikte een [_1] tag zonder dat er een datumcontext ingesteld was.',
 	'Division by zero.' => 'Deling door nul.',
 	'[_1] is not a hash.' => '[_1] is geen hash.',
 	'No [_1] could be found.' => '[_1] werden niet gevonden',
@@ -2155,6 +2214,7 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t find included template [_1] \'[_2]\'' => 'Kan geincludeerd sjabloon niet vinden: [_1] \'[_2]\'',
 	'Error in [_1] [_2]: [_3]' => 'Fout in [_1] [_2]: [_3]',
 	'Writing to \'[_1]\' failed: [_2]' => 'Schrijven naar \'[_1]\' mislukt: [_2]',
+	'File include is disabled by "AllowFileInclude" config directive.' => 'Includeren van bestanden is uitgeschakeld via de "AllowFileInclude" configuratie-instelling.', # Translate - New
 	'Can\'t find blog for id \'[_1]' => 'Kan geen blog vinden met id \'[_1]',
 	'Can\'t find included file \'[_1]\'' => 'Kan geïncludeerd bestand \'[_1]\' niet vinden',
 	'Error opening included file \'[_1]\': [_2]' => 'Fout bij het openen van geïncludeerd bestand \'[_1]\': [_2]',
@@ -2184,8 +2244,8 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Template.pm
 	'Template' => 'Sjabloon',
 	'File not found: [_1]' => 'Bestand niet gevonden: [_1]',
-	'Template load error: [_1]' => 'Fout bij laden sjabloon: [_1]', # Translate - New
-	'Tried to load the template file from outside of the include path \'[_1]\'' => 'Poging het sjabloonbestand te laden van buiten het include pad  \'[_1]\'', # Translate - New
+	'Template load error: [_1]' => 'Fout bij laden sjabloon: [_1]',
+	'Tried to load the template file from outside of the include path \'[_1]\'' => 'Poging het sjabloonbestand te laden van buiten het include pad  \'[_1]\'',
 	'Error reading file \'[_1]\': [_2]' => 'Fout bij het lezen van bestand \'[_1]\': [_2]',
 	'Publish error in template \'[_1]\': [_2]' => 'Publicatiefout in sjabloon \'[_1]\': [_2]',
 	'Template name must be unique within this [_1].' => 'Sjabloonnaam moet uniek zijn binnen deze [_1].',
@@ -2222,6 +2282,7 @@ use vars qw( @ISA %Lexicon );
 	'You used an [_1] without a author context set up.' => 'U gebruikte een [_1] zonder een auteurscontext op te zetten.',
 
 ## lib/MT/Template/Tags/Calendar.pm
+	'Invalid weeks_start_with format: must be Sun|Mon|Tue|Wed|Thu|Fri|Sat' => 'Ongeldig weeks_start_with formaat: moet Sun|Mon|Tue|Wed|Thu|Fri|Sat zijn', # Translate - New
 	'Invalid month format: must be YYYYMM' => 'Ongeldig maandformaat: moet JJJJMM zijn',
 	'No such category \'[_1]\'' => 'Geen categorie \'[_1]\'',
 
@@ -2234,10 +2295,12 @@ use vars qw( @ISA %Lexicon );
 	'[_1] used outside of [_2]' => '[_1] gebruikt buiten [_2]',
 
 ## lib/MT/Template/Tags/Commenter.pm
+	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'Deze \'[_1]\' tag word niet meer gebruikt.  Gelieve \'[_2]\' te gebruiken.',
 
 ## lib/MT/Template/Tags/Comment.pm
 	'The MTCommentFields tag is no longer available; please include the [_1] template module instead.' => 'De MTCommentFields tag is niet meer beschikbaar; gelieve de [_1] sjabloonmodule te includeren ter vervanging.',
 	'Comment Form' => 'Reactieformulier',
+	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can not be used.' => 'TypePad authenticatie is niet ingeschakeld op deze blog.  MTRemoteSignInLink kan niet gebruikt worden.',
 	'To enable comment registration, you need to add a TypePad token in your weblog config or user profile.' => 'Om registratie van reageerders mogelijk te maken, moet u een TypePad token in uw weblogconfiguratie of gebruikersprofiel invoeren.',
 
 ## lib/MT/Template/Tags/Entry.pm
@@ -2294,7 +2357,7 @@ use vars qw( @ISA %Lexicon );
 	'default settings' => 'standaardinstellingen',
 
 ## lib/MT/Theme/TemplateSet.pm
-	'A template set containing [_1] templates, [_2] widgets, and [_3] widget sets.' => 'Een sjabloonset die [_1] sjablonen bevat, [_2] widgets en [_3] widgetsets.',
+	'A template set containing [quant,_1,template,templates], [quant,_2,widget,widgets], and [quant,_3,widget set,widget sets].' => 'Een set sjabonen met [quant,_1,sjabloon,sjablonen], [quant,_2,widget,widgets], and [quant,_3,widget set,widget sets]', # Translate - New
 	'Widget Sets' => 'Widgetsets',
 	'Failed to make templates directory: [_1]' => 'Aanmaken map voor sjablonen mislukt: [_1]',
 	'Failed to publish template file: [_1]' => 'Publicatie sjabloonbestand mislukt: [_1]',
@@ -2432,7 +2495,7 @@ use vars qw( @ISA %Lexicon );
 	'Migrating mtview.php to MT5 style...' => 'Bezig mtview.php te migreren naar de MT5 versie...',
 	'Migrating DefaultSiteURL/DefaultSiteRoot to website...' => 'Bezig DefaultSiteURL/DefaultSiteRoot te migreren naar de website...',
 	'New user\'s website' => 'Website nieuwe gebruiker',
-	'Migrating existing [quant,_1,blog,blogs] into websites and its children...' => 'Bezig [quant,_1,blog,blogs] te migreren naar websites...',
+	'Migrating existing [quant,_1,blog,blogs] into websites and their children...' => 'Bezig bestaande [quant,_1,blog,blogs] te migreren naar websites (met kinderen)...', # Translate - New
 	'Error loading role: [_1].' => 'Fout bij laden rollen: [_1].',
 	'New WebSite [_1]' => 'Nieuwe website [_1]',
 	'An error occured during generating a website upon upgrade: [_1]' => 'Er deed zich een fout bij tijdens het aanmaken van een website bij de upgrade: [_1]',
@@ -2470,6 +2533,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Util/Captcha.pm
 	'Movable Type default CAPTCHA provider requires Image::Magick.' => 'Standaard CAPTCHA provider van Movable Type vereist Image::Magick.',
 	'You need to configure CaptchaSourceImageBase.' => 'U moet CaptchaSourceImageBase nog configureren.',
+	'Type the characters you see in the picture above.' => 'Tik te tekens in die u ziet in de afbeelding hierboven.',
 	'Image creation failed.' => 'Afbeelding aanmaken mislukt.',
 	'Image error: [_1]' => 'Afbeelding fout: [_1]',
 
@@ -2546,8 +2610,25 @@ use vars qw( @ISA %Lexicon );
 	'Error writing uploaded file: [_1]' => 'Fout bij het schrijven van opgeladen bestand: [_1]',
 	'Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.' => 'Sjabloonmethodes zijn niet geïmplementeerd wegens het verschil tussen de Blogger API en de Movable Type API.',
 
+## mt-static/addons/Cloud.pack/js/cfg_config_directives.js
+	'Configuration directive is required.' => 'Configuratie-instelling is vereist.', # Translate - New
+	'[_1] is not updatable.' => '[_1] kan niet bijgewerkt worden.', # Translate - New
+	'Although [_1] is updatable by CMS is not updatable in this screen.' => 'Hoewel [_1] via het CMS bijgewerkt kan worden, kan dit niet vanuit dit scherm.', # Translate - New
+	'[_1] already exists.' => '[_1] bestaat al.', # Translate - New
+	'Configuration value is required.' => 'Configuratie-instelling is vereist.', # Translate - New
+	'The HASH type config directive should be in the format of "key=value"' => 'Configuratie-instellingen van het type HASH moeten in het formaat "sleutel=waarde" staan.', # Translate - New
+	'[_1] for [_2] is already exists.' => '[_1] voor [_2] bestaat al.', # Translate - New
+	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]',
+	'Are you sure you want to remove [_1]?' => 'Bent u zeker dat u [_1] wenst te verwijderen?', # Translate - New
+	'configuration directive' => 'configuratie-instelling', # Translate - New
+
+## mt-static/addons/Cloud.pack/js/cms.js
+	'Continue' => 'Doorgaan',
+	'You have unsaved changes to this page that will be lost.' => 'U heeft niet opgeslagen wijzigingen aan deze pagina die verloren zullen gaan.',
+
 ## mt-static/jquery/jquery.mt.js
 	'Invalid value' => 'Ongeldige waarde',
+	'You have an error in your input.' => 'Er staat een fout in uw invoer.', # Translate - New
 	'Invalid date format' => 'Ongeldig datumformaat',
 	'Invalid mail address' => 'Ongeldig e-mail adres',
 	'Invalid URL' => 'Ongeldige URL',
@@ -2578,7 +2659,7 @@ use vars qw( @ISA %Lexicon );
 	'enable' => 'activeren',
 	'disable' => 'desactiveren',
 	'publish' => 'publiceren',
-	'unlock' => 'deblokkeren', # Translate - Case
+	'unlock' => 'deblokkeren',
 	'You did not select any [_1] to [_2].' => 'U selecteerde geen [_1] om te [_2].',
 	'Are you sure you want to [_2] this [_1]?' => 'Opgelet: [_1] echt [_2]?',
 	'Are you sure you want to [_3] the [_1] selected [_2]?' => 'Bent u zeker dat u deze [_1] geselecteerde [_2] wenst te [_3]?',
@@ -2601,15 +2682,74 @@ use vars qw( @ISA %Lexicon );
 	'[_1] &ndash; [_2]' => '[_1] &ndash; [_2]',
 	'Last' => 'Laatste',
 
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js
+	'Fullscreen' => 'Volledig scherm', # Translate - New
+
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/advanced.js
+	'Bold (Ctrl+B)' => 'Vet (Ctrl+B)', # Translate - New
+	'Italic (Ctrl+I)' => 'Schuin (Ctrl+I)', # Translate - New
+	'Underline (Ctrl+U)' => 'Onderlijnen (Ctrl+U)', # Translate - New
+	'Strikethrough' => 'Doorstrepen',
+	'Block Quotation' => 'Citaat', # Translate - New
+	'Unordered List' => 'Ongeordende lijst', # Translate - New
+	'Ordered List' => 'Genummerde lijst', # Translate - New
+	'Horizontal Line' => 'Horizontale lijn', # Translate - New
+	'Insert/Edit Link' => 'Link invoegen/bewerken', # Translate - New
+	'Unlink' => 'Link verwijderen', # Translate - New
+	'Undo (Ctrl+Z)' => 'Ongedaan maken (Ctrl+Z)', # Translate - New
+	'Redo (Ctrl+Y)' => 'Herhalen (Ctrl+Y)', # Translate - New
+	'Select Text Color' => 'Tekstkleur kiezen', # Translate - New
+	'Select Background Color' => 'Achtergrondkleur kiezen', # Translate - New
+	'Remove Formatting' => 'Formattering verwijderen', # Translate - New
+	'Align Left' => 'Links uitlijnen', # Translate - New
+	'Align Center' => 'Centreren', # Translate - New
+	'Align Right' => 'Rechts uitlijnen', # Translate - New
+	'Indent' => 'Inspringen', # Translate - New
+	'Outdent' => 'Uitspringen', # Translate - New
+
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/insert_html.js
+	'Insert HTML' => 'HTML invoegen', # Translate - New
+	'Source' => 'Bron', # Translate - New
+
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/plugin.js
+	'Insert Link' => 'Link invoegen', # Translate - New
+	'Insert Image Asset' => 'Afbeeldingsbestand invoegen', # Translate - New
+	'Insert Asset Link' => 'Bestandslink invoegen', # Translate - New
+	'Toggle Fullscreen Mode' => 'Volledig scherm in/uitschakelen', # Translate - New
+	'Toggle HTML Edit Mode' => 'HTML modus in/uitschakelen', # Translate - New
+	'Strong Emphasis' => 'Sterke nadruk', # Translate - New
+	'Emphasis' => 'Nadruk', # Translate - New
+	'List Item' => 'Lijstelement', # Translate - New
+
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/paste/editor_plugin.js
+	'paste.plaintext_mode_sticky' => 'paste.plaintext_mode_sticky', # Translate - New
+	'paste.plaintext_mode' => 'paste.plaintext_mode', # Translate - New
+
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/paste/editor_plugin_src.js
+
+## mt-static/plugins/TinyMCE/tiny_mce/themes/advanced/editor_template.js
+	'advanced.path' => 'advanced.path', # Translate - New
+
+## mt-static/plugins/TinyMCE/tiny_mce/themes/advanced/editor_template_src.js
+
+## mt-static/plugins/TinyMCE/tiny_mce/themes/advanced/js/charmap.js
+	'advanced_dlg.charmap_usage' => 'advanced_dlg.charmap_usage', # Translate - New
+
+## mt-static/plugins/TinyMCE/tiny_mce/utils/editable_selects.js
+	'value' => 'waarde', # Translate - Case
+
 ## themes/classic_blog/templates/about_this_page.mtml
+	'This page contains links to all the archived content.' => 'Deze pagina bevat links naar alle gearchiveerde inhoud.',
 
 ## themes/classic_blog/templates/archive_index.mtml
 
 ## themes/classic_blog/templates/archive_widgets_group.mtml
+	'This is a custom set of widgets that are conditioned to serve different content based upon what type of archive it is included. More info: [_1]' => 'Dit is een set widgets die andere inhoud tonen gebaseerd op het archieftype waarin ze voorkomen.  Meer info: [_1]',
 
 ## themes/classic_blog/templates/author_archive_list.mtml
 
 ## themes/classic_blog/templates/banner_footer.mtml
+	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'Deze weblog valt onder een <a href="[_1]">Creative Commons Licentie</a>.',
 
 ## themes/classic_blog/templates/calendar.mtml
 
@@ -2648,6 +2788,7 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_blog/templates/main_index.mtml
 
 ## themes/classic_blog/templates/main_index_widgets_group.mtml
+	'This is a custom set of widgets that are conditioned to only appear on the homepage (or "main_index"). More info: [_1]' => 'Dit is een gepersonaliseerde set widgets die enkel op de hoofpagina (of "hoofdindex") verschijnen.  Meer info: [_1]',
 
 ## themes/classic_blog/templates/monthly_archive_dropdown.mtml
 
@@ -2672,6 +2813,7 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_blog/templates/search.mtml
 
 ## themes/classic_blog/templates/search_results.mtml
+	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'Standaard zoekt deze zoekmachine naar alle woorden in eender welke volgorde.  Om een exacte uitdrukking te zoeken, gelieve aanhalingstekens rond uw zoekopdracht te zetten.',
 
 ## themes/classic_blog/templates/sidebar.mtml
 
@@ -2973,6 +3115,9 @@ use vars qw( @ISA %Lexicon );
 	'Entry Fields' => 'Berichtvelden',
 	'_USAGE_ENTRYPREFS' => 'Selecteer de velden die getoond moeten worden in het scherm om berichten te bewerken.',
 	'Page Fields' => 'Paginavelden',
+	'WYSIWYG Editor Setting' => 'Instellingen WYSIWYG Editor', # Translate - New
+	'Content CSS' => 'Inhoud CSS', # Translate - New
+	'Content CSS will be applied when WYSIWYG editor does support. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css' => 'Inhoud CSS zal toegepast worden als de editor het ondersteunt.  U kunt een CSS bestand opgeven via de URL of met de {{theme_static}} plaatsvervanger. Voorbeeld: {{theme_static}}path/to/cssfile.css', # Translate - New
 	'Punctuation Replacement Setting' => 'Instelling plaatsing leestekens',
 	'Replace UTF-8 characters frequently used by word processors with their more common web equivalents.' => 'Vervang UTF-8 karakters die vaak worden gebruikt door tekstverwerkers door hun meer gestandaardiseerde web-equivalenten.',
 	'Punctuation Replacement' => 'Vervanging leestekens',
@@ -3162,6 +3307,7 @@ use vars qw( @ISA %Lexicon );
 	q{Enter the archive file extension. This can take the form of 'html', 'shtml', 'php', etc. Note: Do not enter the leading period ('.').} => q{Voer de bestandsextensie voor het archief in. Dit kan zijn in de vorm van 'html', 'shtml', 'php', enz. Opmerking: voer het eerste punt niet in ('.').},
 	'Preferred Archive' => 'Voorkeursarchief',
 	q{Used to generate URLs (permalinks) for this blog's archived entries. Choose one of the archive type used in this blog's archive templates.} => q{Gebruikt om URL's (permalinks) te genereren voor de gearchiveerde berichten van deze blog.  Kies één van de archieftypes gebruikt in de archiefsjablonen van deze blog. },
+	'Choose archive type' => 'Kies archieftype', # Translate - New
 	'No archives are active' => 'Geen archieven actief',
 	'Module Settings' => 'Instellingen module',
 	'Server Side Includes' => 'Server Side Includes',
@@ -3209,12 +3355,12 @@ use vars qw( @ISA %Lexicon );
 	'Setup TypePad token' => 'TypePad token instellen',
 
 ## tmpl/cms/cfg_system_general.tmpl
-	'A test email was sent.' => 'Een test e-mail werd verstuurd.',
 	'Your settings have been saved.' => 'Uw instellingen zijn opgeslagen.',
+	'A test mail was sent.' => 'Een testmail werd verstuurd', # Translate - New
 	'(None selected)' => '(Geen geselecteerd)',
-	'System Email' => 'Systeem e-mail',
-	q{This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, and a few other minor events.} => q{Dit e-mail adres wordt gebruikt in de 'From:' header van elke e-mail verstuurd door Movable Type.  E-mail kan gestuurd worden om een wachtwoord terug te vinden, een reageerder te registreren, notificatie te sturen van nieuwe reacties en trackbacks en bij een aantal andere minder belangrijke gebeurtenissen.},
-	'Send Test Email' => 'Verstuur testbericht',
+	'System Email Address' => 'Systeememailadres', # Translate - New
+	'Send Test Mail' => 'Testmail versturen', # Translate - New
+	q{This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.} => q{Dit email adres word gebruikt in de 'From:' header van elke email die door Movable Type wordt verzonden.  Email kan verstuurd worden om een wachtwoord terug te krijgen, een reageerder te registreren, notificaties te verzenden van reacties of TrackBacks, blokkeringen van gebruikers of IP adressen en in nog een paar andere gevallen.}, # Translate - New
 	'Debug Mode' => 'Debug modus',
 	'Values other than zero provide additional diagnostic information for troubleshooting problems with your Movable Type installation.  More information is available in the <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Debug Mode documentation</a>.' => 'Waardes buiten nul zorgen ervoor dat er bijkomende diagnostische informatie wordt weergegeven om problemen te helpen oplossen met uw Movable Type installatie.  Meer informatie is beschikbaar in de <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentatie van de debugmodus</a>.',
 	'Performance Logging' => 'Performantielogging',
@@ -3226,6 +3372,9 @@ use vars qw( @ISA %Lexicon );
 	'The time limit for unlogged events in seconds. Any event that takes this amount of time or longer will be reported.' => 'Tijdslimiet voor niet gelogde gebeurtenissen, in seconden. Elke gebeurtenis die langer duurt dan deze hoeveelheid tijd zal worden gerapporteerd.',
 	q{Enable this setting to have Movable Type track revisions made by users to entries, pages and templates.} => q{Schakel deze instelling in om Movable Type de wijzigingen te laten bijhouden die gebruikers aanbrengen aan berichten, pagina's en sjablonen.},
 	'Track revision history' => 'Revisiegeschiedenis bijhouden',
+	'Site Path Limitation' => 'Sitepad beperking', # Translate - New
+	'Base Site Path' => 'Basissitepad', # Translate - New
+	'Allow sites to be placed only under this directory' => 'Accepteer enkel sites die in deze map geplaatst worden', # Translate - New
 	'System-wide Feedback Controls' => 'Systeeminstellingen voor feedback',
 	'Prohibit Comments' => 'Reacties verbieden',
 	'This will override all individual blog settings.' => 'Deze instelling zal van toepassing zijn over alle instellingen op individuele blogs heen.',
@@ -3252,9 +3401,10 @@ use vars qw( @ISA %Lexicon );
 	'An IP address will be locked out if [_1] or more incorrect login attempts are made within [_2] seconds from the same IP address.' => 'Een IP adres zal geblokkeerd worden als meer dan [_1] foutieve aanmeldpogingen worden ondernomen binnen de [_2] seconden vanop hetzelfde IP adres.',
 	q{However, the following IP addresses are 'whitelisted' and will never be locked out:} => q{Volgende IP adressen staan echter op de 'witte lijst' en zullen nooit geblokkeerd worden:},
 	'The list of IP addresses. If a remote IP address is included in this list, the failed login will not recorded. You can specify multiple IP addresses separated by commas or line breaks.' => 'De lijst met IP adressen.  Als een extern IP adres in deze lijst staat, dan zullen mislukte aanmeldpogingen niet worden geregistreerd.  Meerdere IP adressen kunnen worden opgegeven, van elkaar gescheiden met een komma of een nieuwe regel.',
-	'Send Email To' => 'E-mail versturen naar',
+	'Send Mail To' => 'Mail verzenden naar', # Translate - New
 	'The email address that should receive a test email from Movable Type.' => 'Het e-mail adres dat een test e-mail moet ontvangen van Movable Type.',
 	'Send' => 'Versturen',
+	'You must set a valid absolute Path.' => 'U moet een absoluut pad instellen.', # Translate - New
 
 ## tmpl/cms/cfg_system_users.tmpl
 	'User Settings' => 'Instellingen gebruiker',
@@ -3272,7 +3422,7 @@ use vars qw( @ISA %Lexicon );
 	'Should contain letters and numbers.' => 'Moet letters en cijfers bevatten',
 	'Should contain special characters.' => 'Moet speciale karakters bevatten',
 	'Minimun Length' => 'Minimale lengte',
-	'This field must be a positive integer.' => 'Dit veld moet een positief geheel getal zijn.', # Translate - New
+	'This field must be a positive integer.' => 'Dit veld moet een positief geheel getal zijn.',
 	'New User Defaults' => 'Standaardinstellingen nieuwe gebruikers',
 	'Personal Blog' => 'Persoonlijke blog',
 	'Have the system automatically create a new personal blog when a user is created. The user will be granted the blog administrator role on this blog.' => 'Laat het systeem automatisch een nieuwe persoonlijke blog aanmaken telkens een gebruiker wordt aangemaakt.  De gebruiker zal de rol blog adminstrator krijgen op deze blog.',
@@ -3338,11 +3488,10 @@ use vars qw( @ISA %Lexicon );
 	'Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => 'Vul de nieuwe URL in van de archiefsectie van uw blog.  Voorbeeld: http://www.example.com/blog/archives/',
 	q{Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Vul de nieuwe URL in van de archiefsectie van uw blog. Sluit niet af met '/' of '\'. Voorbeeld: /home/mt/public_html of C:\www\public_html},
 	q{Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{Vul de nieuwe URL in van de archiefsectie van uw blog. Een absoluut pad (beginnend met '/' op Linux of 'C:' op Windows) verdient de voorkeur.  Sluit niet af met '/' of '\'. Voorbeeld: /home/mt/public_html of C:\www\public_html},
-	'Continue' => 'Doorgaan',
 	'Continue (s)' => 'Doorgaan (s)',
 	'Back (b)' => 'Terug (b)',
 	'You must set a valid Site URL.' => 'U moet een geldige URL instellen voor uw site.',
-	'You must set a valid Local Site Path.' => 'U moet een geldig lokaal site-pad instellen.',
+	'You must set a valid local site path.' => 'U moet een geldig lokaal site-pad instellen.', # Translate - Case
 	'You must select a parent website.' => 'U moet een moederwebsite selecteren',
 
 ## tmpl/cms/dialog/asset_insert.tmpl
@@ -3504,10 +3653,10 @@ use vars qw( @ISA %Lexicon );
 	'Please upload the file [_1]' => 'Gelieve bestand [_1] te uploaden',
 
 ## tmpl/cms/dialog/select_association_type.tmpl
-	'Grant website permission to a user' => 'Ken websitepermissie to aan gebruiker',
-	'Grant blog permission to a user' => 'Ken blogpermissie toe aan gebruiker',
-	'Grant website permission to a group' => 'Ken websitepermissie toe aan een groep',
-	'Grant blog permission to a group' => 'Ken blogpermissie toe aan een groep',
+	'Grant website permission to user' => 'Websitepermissie toekennen aan gebruiker', # Translate - New
+	'Grant blog permission to user' => 'Blogpermissie toekennen aan gebruiker', # Translate - New
+	'Grant website permission to group' => 'Websitepermissie toekennen aan groep', # Translate - New
+	'Grant blog permission to group' => 'Blogpermissie toekennen aan groep', # Translate - New
 
 ## tmpl/cms/dialog/select_theme.tmpl
 	'Select Personal blog theme' => 'Selecteer thema voor persoonlijke blog',
@@ -3591,8 +3740,8 @@ use vars qw( @ISA %Lexicon );
 	'Select the theme you wish to use for this blog.' => 'Selecteer het thema dat u wenst te gebruiken op deze blog.',
 	'Name your blog. The blog name can be changed at any time.' => 'Geef uw blog een naam.  De blognaam kan op elk moment aangepast worden.',
 	'Enter the URL of your Blog. Exclude the filename (i.e. index.html). Example: http://www.example.com/blog/' => 'Vul de URL in van uw blog.  Laat de bestandsnaam (bv. index.html) vallen.  Voorbeeld: http://www.voorbeeld.com/blog/',
-	q{The path where your index files will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Het pad waar uw indexbestanden zich zullen bevinden.  Sluit niet af met '/' of '\'.  Voorbeeld: /home/mt/public_html/blog of C:\www\public_html\blog},
 	q{The path where your index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{Het pad waar uw indexbestanden zich zullen bevinden. Een absoluut pad (beginnend met \'/\' onder Linux of \'C:\' onder Windows) verdient de voorkeur. Sluit niet af met '/' of '\'.  Voorbeeld: /home/mt/public_html/blog of C:\www\public_html\blog},
+	q{The path where your index files will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Het pad waar uw indexbestanden zich zullen bevinden.  Sluit niet af met '/' of '\'.  Voorbeeld: /home/mt/public_html/blog of C:\www\public_html\blog},
 	'Select your timezone from the pulldown menu.' => 'Selecteer uw tijdzone in de keuzelijst.',
 	'If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.' => 'Als u een andere taal kiest dan de standaard taal die op systeemniveau staat ingesteld, dan moet u mogelijk de namen van bepaalde modules aanpassen in bepaalde sjablonen om andere globale modules te kunnen includeren.',
 	'Create Blog (s)' => 'Blog aanmaken (s)',
@@ -3770,10 +3919,9 @@ use vars qw( @ISA %Lexicon );
 	'Remove this asset.' => 'Dit mediabestand verwijderen.',
 	'No assets' => 'Geen mediabestanden',
 	'You have unsaved changes to this entry that will be lost.' => 'U heeft niet opgeslagen wijzigingen aan dit bericht die verloren zullen gaan.',
-	'You have unsaved changes to this page that will be lost.' => 'U heeft niet opgeslagen wijzigingen aan deze pagina die verloren zullen gaan.',
 	'Enter the link address:' => 'Vul het adres van de link in:',
 	'Enter the text to link to:' => 'Vul de tekst van de link in:',
-	'Are you sure you want to use the Rich Text editor?' => 'Bent u zeker dat u de Rich Text Editor wenst te gebruiken?',
+	'Converting to rich text may result in changes to your current document.' => 'Converteren naar Rich Text kan wijzigingen aan uw document tot gevolg hebben.', # Translate - New
 	'Make primary' => 'Maak dit een hoofdcategorie',
 	'Fields' => 'Velden',
 	'Reset display options to blog defaults' => 'Opties schermindeling terugzetten naar blogstandaard',
@@ -3871,8 +4019,8 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want to remove this template map?' => 'Bent u zeker dat u deze sjabloonmapping wenst te verwijderen?',
 	'Module Body' => 'Moduletekst',
 	'Template Body' => 'Sjabloontekst',
-	'Syntax highlighting On' => 'Syntaxismarkering aan', # Translate - New
-	'Syntax highlighting Off' => 'Syntaxismarkering uit', # Translate - New
+	'Syntax highlighting On' => 'Syntaxismarkering aan',
+	'Syntax highlighting Off' => 'Syntaxismarkering uit',
 	'Template Options' => 'Sjabloonopties',
 	'Output file: <strong>[_1]</strong>' => 'Uitvoerbestand: <strong>[_1]</strong>',
 	'Enabled Mappings: [_1]' => 'Ingeschakelde mappings: [_1]',
@@ -3999,7 +4147,6 @@ use vars qw( @ISA %Lexicon );
 	'Bold' => 'Vet',
 	'Italic' => 'Cursief',
 	'Underline' => 'Onderstrepen',
-	'Strikethrough' => 'Doorstrepen',
 	'Text Color' => 'Tekstkleur',
 	'Email Link' => 'E-mail link',
 	'Begin Blockquote' => 'Begin citaat',
@@ -4169,11 +4316,9 @@ use vars qw( @ISA %Lexicon );
 	'http://plugins.movabletype.org/' => 'http://plugins.movabletype.org',
 	'http://wiki.movabletype.org/' => 'http://wiki.movabletype.org/',
 	'Wiki' => 'Wiki',
-	'http://www.movabletype.com/support/' => 'http://www.movabletype.com/support/',
 	'Support' => 'Ondersteuning',
 	'http://forums.movabletype.org/' => 'http://forums.movabletype.org/',
 	'Forums' => 'Forums',
-	'http://www.movabletype.org/feedback.html' => 'http://www.movabletype.org/feedback.html',
 	'Send Us Feedback' => 'Stuur ons feedback',
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> versie [_2]',
 	'with' => 'met',
@@ -4248,6 +4393,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/revision_table.tmpl
 	'No revisions could be found.' => 'Geen revisies gevonden.',
+	'_REVISION_DATE_' => 'Datum', # Translate - New
 	'Note' => 'Noot',
 	'Saved By' => 'Opgeslagen door',
 
@@ -4307,7 +4453,7 @@ use vars qw( @ISA %Lexicon );
 	'The name used by this user to login.' => 'De naam gebruikt door deze gebruiker om zich aan te melden.',
 	'The name used when published.' => 'De naam gebruikt bij het publiceren',
 	'The user&rsquo;s email address.' => 'E-mail adres van de gebruiker.',
-	'The email address used in the From: header of each email sent from the system.' => 'Het e-mail adres wordt gebruikt in de From: header van elk bericht dat door het systeem wordt verzonden.',
+	'System Email' => 'Systeem e-mail',
 	'Use this as system email address' => 'Dit ook als systeem e-mail adres gebruiken',
 	'The user&rsquo;s preferred language.' => 'Voorkeurstaal van de gebruiker.',
 	'Select a password for your account.' => 'Kies een wachtwoord voor uw account.',
@@ -4659,7 +4805,11 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/system_check.tmpl
 	'Total Users' => 'Totaal aantal gebruikers',
 	'Memcache Status' => 'Memcache Status',
+	'configured' => 'geconfigureerd', # Translate - New
+	'disabled' => 'uitgeschakeld', # Translate - Case
 	'Memcache is [_1].' => 'Memcache is [_1].',
+	'available' => 'beschikbaar', # Translate - New
+	'unavailable' => 'niet beschikbaar', # Translate - New
 	'Memcache Server is [_1].' => 'Memcache server is [_1].',
 	'Server Model' => 'Servertype',
 	q{Movable Type could not find the script named 'mt-check.cgi'. To resolve this issue, ensure that the mt-check.cgi script exists and that the CheckScript configuration parameter (if it is necessary) references it properly.} => q{Movable Type kon het script met de naam 'mt-check.cgi' niet vinden.  Om dit probleem op te lossen moet u controleren of het script mt-check.cgi bestaat en of de CheckScript configuratieparameter (indien nodig) er correct naar verwijst.},
@@ -4934,8 +5084,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/feeds/login.tmpl
 	'This link is invalid. Please resubscribe to your activity feed.' => 'Deze link is niet geldig. Gelieve opnieuw in te schrijven op uw activiteitenfeed.',
 
-## tmpl/include/chromeless_header.tmpl
-
 ## tmpl/wizard/blog.tmpl
 	'Setup Your First Blog' => 'Maak uw eerste blog aan',
 	q{In order to properly publish your blog, you must provide Movable Type with your blog's URL and the path on the filesystem where its files should be published.} => q{Om uw blog goed te kunnen publiceren, moet u aan Movable Type de URL van uw weblog en het pad op het bestandssysteem opgeven waar de bestanden gepubliceerd moeten worden.},
@@ -4971,7 +5119,6 @@ use vars qw( @ISA %Lexicon );
 	'Please enter the parameters necessary for connecting to your database.' => 'Gelieve de parameters in te vullen die nodig zijn om met uw database te verbinden.',
 	'Database Type' => 'Databasetype',
 	'Select One...' => 'Selecteer er één...',
-	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]',
 	'Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary.' => 'Staat uw gewenste database er niet bij?  Kijk bij de <a href="[_1]" target="_blank">Movable Type systeemcontrole</a> of er bijkomende modules nodig zijn.',
 	'Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>.' => '<a href="javascript:void(0)" onclick="[_1]">Klik hier om dit scherm te vernieuwen</a> zodra de installatie voltooid is.',
 	'Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>' => 'Meer weten over: <a href="[_1]" target="_blank">Database instellen</a>',
@@ -4988,13 +5135,33 @@ use vars qw( @ISA %Lexicon );
 	'Show current mail settings' => 'Toon alle huidige mailinstellingen',
 	'Periodically Movable Type will send email for password recovery, to inform authors of new comments, and other events. If not using Sendmail (default on unix servers), an SMTP Server must be specified.' => 'Movable Type zal af en toe e-mail versturen om gebruikers op de hoogte te brengen van nieuwe reacties en andere gebeurtenissen.  Om deze e-mails goed te kunnen versturen, moet u Movable Type vertellen hoe ze verstuurd moeten worden.',
 	'An error occurred while attempting to send mail: ' => 'Er deed zich een fout voor toen er werd geprobeerd e-mail te verzenden: ',
-	'Send email via:' => 'Stuur e-mail via',
-	'sendmail Path' => 'sendmail pad',
-	'The physical file path for your sendmail binary.' => 'Het fysieke bestandspad van uw sendmail binary',
+	'Send mail via:' => 'Stuur mail via:', # Translate - New
+	'Sendmail Path' => 'Sendmail pad', # Translate - Case
+	'The physical file path for your Sendmail binary.' => 'Het fysieke bestandspad van uw Sendmail binary', # Translate - Case
 	'Outbound Mail Server (SMTP)' => 'Uitgaande mailserver (SMTP)',
 	'Address of your SMTP Server.' => 'Adres van uw SMTP server.',
+	'Port number for Outboud Mail Server' => 'Poortnummer voor uitgaande mail server', # Translate - New
+	'Port number of your SMTP Server.' => 'Poortnummer van uw SMTP server.', # Translate - New
+	'Use SMTP Auth' => 'Gebruik SMTP Auth', # Translate - New
+	'SMTP Auth Username' => 'SMTP Auth gebruikersnaam', # Translate - New
+	'Username for your SMTP Server.' => 'Gebruikersnaam voor uw SMTP server.', # Translate - New
+	'SMTP Auth Password' => 'SMTP Auth wachtwoord', # Translate - New
+	'Password for your SMTP Server.' => 'Wachtwoord voor uw SMTP server.', # Translate - New
+	'SSL Connection' => 'SSL verbinding', # Translate - New
+	'Cannot use [_1].' => 'Kan [_1] niet gebruiken.', # Translate - New
+	'Not use SSL' => 'SSL niet gebruiken', # Translate - New
+	'Use SSL' => 'SSL gebruiken', # Translate - New
+	'Use STARTTLS' => 'STARTTLS gebruiken', # Translate - New
+	'Send Test Email' => 'Verstuur testbericht',
 	'Mail address to which test email should be sent' => 'E-mail adres om testbericht naartoe te sturen',
-	'From mail address' => 'E-mail adres afzender',
+	'Skip' => 'Overslaan', # Translate - New
+	'You must set SMTP server port number.' => 'U moet het poortnummer van de SMTP server instellen.', # Translate - New
+	'This field must be integer.' => 'Dit veld moet een getal bevatten.', # Translate - New
+	'You must set system email address.' => 'U moet het systeem-emailadres nog instellen.', # Translate - New
+	'You must set Sendmail path.' => 'U moet het Sendmail pad nog instellen.', # Translate - New
+	'You must set SMTP server address.' => 'U moet het SMTP server adres nog instellen.', # Translate - New
+	'You must set username for SMTP server.' => 'U moet een gebruikersnaam instellen voor de SMTP server.', # Translate - New
+	'You must set password for SMTP server.' => 'U moet een wachtwoord instellen voor de SMTP server.', # Translate - New
 
 ## tmpl/wizard/packages.tmpl
 	'Requirements Check' => 'Controle systeemvereisten',
@@ -5007,6 +5174,7 @@ use vars qw( @ISA %Lexicon );
 	q{Some optional Perl modules could not be found. You may continue without installing these optional Perl modules. They may be installed at any time if they are needed. Click 'Retry' to test for the modules again.} => q{Een aantal optionele Perl modules konden niet worden gevonden.  U kunt verder gaan zonder deze optionele modules te installeren.  Ze kunnen op gelijk welk moment geïnstalleerd worden indien ze nodig zijn.  Klik op 'Opnieuw' om opnieuw te testen of de modules aanwezig zijn.},
 	'Missing Database Modules' => 'Ontbrekende databasemodules',
 	'Missing Optional Modules' => 'Ontbrekende optionele modules',
+	'Missing Required Modules' => 'Ontbrekende vereiste modules',
 	'Minimal version requirement: [_1]' => 'Minimale versievereisten: [_1]',
 	'http://www.movabletype.org/documentation/installation/perl-modules.html' => 'http://www.movabletype.org/documentation/installation/perl-modules.html',
 	'Learn more about installing Perl modules.' => 'Meer weten over het installeren van Perl modules',
@@ -5032,6 +5200,7 @@ use vars qw( @ISA %Lexicon );
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'Om een nieuw configuratiebestand aan te maken met de Wizard moet u het huidige configuratiebestand verwijderen en deze pagina vernieuwen.',
 
 ## addons/Commercial.pack/config.yaml
+	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype',
 	q{Professional designed, well structured and easily adaptable web site. You can customize default pages, footer and top navigation easily.} => q{Professioneel ontworpen, goed gestructureerd en makkelijk aan te passen website.  U kunt de standaardpagina's, voettekst en navigatie makkelijk personaliseren.},
 	'_PWT_ABOUT_BODY' => '
 <p><strong>Vervang deze voorbeeldtekst door uw eigen inhoud.</strong></p>
@@ -5065,6 +5234,7 @@ use vars qw( @ISA %Lexicon );
 	'Template tag' => 'Sjabloontag',
 	'Updating Universal Template Set to Professional Website set...' => 'Universele sjabloonset bij aan het werken tot Professionele Website sjabloonset...',
 	'Migrating CustomFields type...' => 'Bezig CustomFields type te migreren...',
+	'Converting CustomField type...' => 'Bezig CustomFields types te converteren...', # Translate - New
 	'Professional Styles' => 'Professionele stijlen',
 	'A collection of styles compatible with Professional themes.' => 'Een verzameling stijlen compatibel met Professionele thema\'s',
 	'Professional Website' => 'Professionele Website',
@@ -5351,6 +5521,7 @@ use vars qw( @ISA %Lexicon );
 	', or press the enter key to %toggle% it' => ', of druk op de enter-toets om het te %schakelen%',
 
 ## addons/Community.pack/config.yaml
+	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype',
 	'Increase reader engagement - deploy features to your website that make it easier for your readers to engage with your content and your company.' => 'Verhoog de betrokkenheid van uw lezers - voeg opties toe aan uw website die het makkelijker maken voor uw lezers om betrokken te zijn bij uw inhoud en bedrijf.',
 	'Create forums where users can post topics and responses to topics.' => 'Maak forums aan waar gebruikers onderwerpen kunnen aanmaken en antwoorden kunnen publiceren.',
 	'Users followed by [_1]' => 'Gebruikers gevolgd door [_1]',
@@ -5410,7 +5581,8 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/lib/MT/App/Community.pm
 	'No login form template defined' => 'Geen sjabloon gedefiniëerd voor het aanmeldformulier',
 	'Before you can sign in, you must authenticate your email address. <a href="[_1]">Click here</a> to resend the verification email.' => 'Voor u kunt aanmelden, moet u eerst uw e-mail adres bevestigen. <a href="[_1]">Klik hier</a> om de verificatiemail opnieuw te versturen.',
-	'You are trying to redirect to external resources: [_1]' => 'U probeert te verwijzen naar externe bronnen: [_1]', # Translate - New
+	'You are trying to redirect to external resources: [_1]' => 'U probeert te verwijzen naar externe bronnen: [_1]',
+	'Successfully authenticated but signing up is not allowed.  Please contact system administrator.' => 'Authenticatie is geslaagd, maar nieuwe registraties zijn niet toegestaan.  Neem contact op met de systeembeheerder.',
 	'(No email address)' => '(Geen e-mail adres)',
 	'User \'[_1]\' (ID:[_2]) has been successfully registered.' => 'Gebruiker \'[_1]\' (ID:[_2]) werd met succes geregistreerd.',
 	'Thanks for the confirmation.  Please sign in.' => 'Bedankt voor de bevestiging.  Gelieve u aan te melden.',
@@ -5421,11 +5593,13 @@ use vars qw( @ISA %Lexicon );
 	'New entry \'[_1]\' added to the blog \'[_2]\'' => 'Nieuw bericht \'[_1]\' toegevoegd aan de blog \'[_2]\'',
 	'Id or Username is required' => 'ID of gebruikersnaam is verplicht',
 	'Unknown user' => 'Onbekende gebruiker',
+	'All required fields must have valid values.' => 'Alle vereiste velden moeten geldige waarden bevatten.',
 	'Recent Entries from [_1]' => 'Recente berichten van [_1]',
 	'Responses to Comments from [_1]' => 'Antwoorden op reacties van [_1]',
 	'Actions from [_1]' => 'Acties van [_1]',
 
 ## addons/Community.pack/lib/MT/Community/CMS.pm
+	'Movable Type was unable to write on the "Upload Destination". Please make sure that the folder is writable from the web server.' => 'Movable Type kno niet schrijven naar de "Upload bestemming".  Gelieve te controleren dat deze map beschrijfbaar is voor de webserver.',
 
 ## addons/Community.pack/lib/MT/Community/Tags.pm
 	'You used an \'[_1]\' tag outside of the block of MTIfEntryRecommended; perhaps you mistakenly placed it outside of an \'MTIfEntryRecommended\' container?' => 'U gebruikte een \'[_1]\' tag buiten een MTIfEntryRecommended blok; misschien heeft u die daar per ongeluk geplaatst?',
@@ -5642,7 +5816,9 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/global/email_verification_email.mtml
 	'Thank you registering for an account to [_1].' => 'Bedankt om een account te registreren op [_1]',
 	'For your own security and to prevent fraud, we ask that you please confirm your account and email address before continuing. Once confirmed you will immediately be allowed to sign in to [_1].' => 'Voor uw eigen veiligheid en om fraude te voorkomen, vragen we om uw account en e-mail adres te bevestigen vooraleer verder te gaan.  Zodra u bevestigd heeft, kunt u onmiddellijk aanmelden bij [_1].',
+	'To confirm your account, please click on or cut and paste the following URL into a web browser:' => 'Om uw account te bevestigen moet u op deze link klikken of de URL in uw webbrowser plakken:',
 	q{If you did not make this request, or you don't want to register for an account to [_1], then no further action is required.} => q{Als u hier niet zelf om gevraagd heeft, of u wenst geen account te registreren op [_1], dan is er niets dat u verder hoeft te doen.},
+	'Thank you very much for your understanding.' => 'Wij danken u voor uw begrip.',
 
 ## addons/Community.pack/templates/global/footer.mtml
 
@@ -5714,6 +5890,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/global/register_form.mtml
 
 ## addons/Community.pack/templates/global/register_notification_email.mtml
+	q{This email is to notify you that a new user has successfully registered on the blog '[_1]'. Listed below you will find some useful information about this new user.} => q{Deze e-mail dient om u te melden dat een nieuwe gebruiker zich met succes registreerde op blog '[_1]'.  Hieronder leest u nuttige informatie over deze gebruiker.},
 
 ## addons/Community.pack/templates/global/search.mtml
 
@@ -5749,7 +5926,7 @@ use vars qw( @ISA %Lexicon );
 	'Groups ([_1])' => 'Groepen ([_1])',
 	'Are you sure you want to delete the selected group(s)?' => 'Bent u zeker dat u de geselecteerde groep(en) wenst te verwijderen?',
 	'Are you sure you want to remove the selected member(s) from the group?' => 'Bent u zeker dat u de geselecteerde leden of het geselcteerde lid wenst te verwijderen uit de groep?',
-	'[_1]\'s Group' => 'Groep van [_1]', # Translate - New
+	'[_1]\'s Group' => 'Groep van [_1]',
 	'Groups' => 'Groepen',
 	'Manage Member' => 'Lid beheren',
 	'Bulk Author Export' => 'Auteurs exporteren in bulk',
@@ -5761,9 +5938,9 @@ use vars qw( @ISA %Lexicon );
 ## addons/Enterprise.pack/app-wizard.yaml
 	'This module is required in order to use the LDAP Authentication.' => 'Deze module is vereist als u LDAP authenticatie wenst te gebruiken.',
 	'This module is required in order to use SSL/TLS connection with the LDAP Authentication.' => 'Deze module is vereist om SSL/TLS connecties te kunnen gebruiken met LDAP authenticatie.',
-	'This module and its dependencies are required in order to use CRAM-MD5, DIGEST-MD5 or LOGIN as a SASL mechanism.' => 'Deze module en de modules waarvan ze afhankelijk is zijn vereist om  CRAM-MD5, DIGEST-MD5 of LOGIN als SASL mechanisme te kunnen gebruiken.',
 
 ## addons/Enterprise.pack/config.yaml
+	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype',
 	'Permissions of group: [_1]' => 'Permissies van groep: [_1]',
 	'Group' => 'Groep',
 	'Groups associated with author: [_1]' => 'Groepen geassocieerd met auteur: [_1]',
@@ -6043,6 +6220,10 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
 	'Set up Facebook Commenters plugin' => 'Facebook Reageerders plugin instellen',
+	'Authentication failure: [_1], reason:[_2]' => 'Authenticatie mislukt: [_1], reden: [2_]', # Translate - New
+	'Failed to created commenter.' => 'Aanmaken reageerder mislukt.', # Translate - New
+	'Failed to create a session.' => 'Aanmaken sessie mislukt.', # Translate - New
+	'Could not verify this app with Facebook.' => 'Kon deze app niet verifiëren met Facebook.', # Translate - New
 
 ## plugins/FacebookCommenters/tmpl/blog_config_template.tmpl
 	'Facebook Application Key' => 'Facebook applicatiesleutel',
@@ -6512,9 +6693,16 @@ use vars qw( @ISA %Lexicon );
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'Uw mt-static map kon niet worden gevonden.  Gelieve \'StaticFilePath\' te configureren om verder te gaan.',
 	'Permission Denied.' => 'Toestemming geweigerd.',
-	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Kon map [_1] niet aanmaken - Controleer of uw \'themes\' map beschrijfbaar is voor de webserver.',
 	'Successfully applied new theme selection.' => 'Nieuwe thema-selectie met succes toegepast.',
+
+## plugins/StyleCatcher/lib/StyleCatcher/Library/Default.pm
 	'Invalid URL: [_1]' => 'Ongeldige URL: [_1]',
+	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Kon map [_1] niet aanmaken - Controleer of uw \'themes\' map beschrijfbaar is voor de webserver.',
+
+## plugins/StyleCatcher/lib/StyleCatcher/Library/Local.pm
+	'Failed to load StyleCatcher Library: [_1]' => 'Laden van de StyleCatcher bibliotheem mislukt: [_1]', # Translate - New
+
+## plugins/StyleCatcher/lib/StyleCatcher/Util.pm
 	'(Untitled)' => '(geen titel)',
 
 ## plugins/StyleCatcher/tmpl/view.tmpl
@@ -6550,6 +6738,10 @@ use vars qw( @ISA %Lexicon );
 ## plugins/Textile/textile2.pl
 	'A humane web text generator.' => 'Een mensvriendelijke tekstgenerator',
 	'Textile 2' => 'Textile 2',
+
+## plugins/TinyMCE/config.yaml
+	'Default WYSIWYG editor.' => 'Standaard WYSIWYG editor.', # Translate - New
+	'TinyMCE' => 'TinyMCE', # Translate - New
 
 ## plugins/TypePadAntiSpam/config.yaml
 	'TypePad AntiSpam is a free service from Six Apart that helps protect your blog from comment and TrackBack spam. The TypePad AntiSpam plugin will send every comment or TrackBack submitted to your blog to the service for evaluation, and Movable Type will filter items if TypePad AntiSpam determines it is spam. If you discover that TypePad AntiSpam incorrectly classifies an item, simply change its classification by marking it as "Spam" or "Not Spam" from the Manage Comments screen, and TypePad AntiSpam will learn from your actions. Over time the service will improve based on reports from its users, so take care when marking items as "Spam" or "Not Spam."' => 'TypePad AntiSpam is een gratis service van Six Apart die helpt uw blog te beschermen tegen spam in uw reacties en TrackBacks.  De TypePad AntiSpam plugin verstuurt elke reactie of TrackBack die ontvangen wordt op uw blog door naar de service waar ze dan beoordeeld worden.  Movable Type zal items filteren als TypePad AntiSpam bepaalt dat ze spam zijn.  Als u merkt dat TypePad AntiSpam items niet correct classificeert dan kunt u de classificatie eenvoudigweg aanpassen door ze als "Spam" of "Geen Spam" te markeren vanop het scherm voor reactiebeheer.  TypePad AntiSpam zal dan leren uit uw acties.  Na verloop van tijd wordt de service dus altijd maar beter, gebaseerd op rapporten van gebruikers, dus let op voor u iets als "Spam" of "Geen Spam" markeert!',
@@ -6614,9 +6806,8 @@ use vars qw( @ISA %Lexicon );
 	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'Vereist het gebruik van een cronjob om attachments van een WordPress blog te downloaden op de achtergrond.',
 	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Attachments (afbeeldingen en bestanden) downloaden van de geïmporteerde WordPress blog.',
 
-
 );
 
-## New words: 147
+## New words: 2399
 
 1;
