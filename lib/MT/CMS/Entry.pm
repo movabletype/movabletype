@@ -2562,7 +2562,7 @@ sub quickpost_js {
     my $blog_id = $app->blog->id;
     my $blog    = $app->model('blog')->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my %args = ( '_type' => $type, blog_id => $blog_id, qp => 1 );
     my $uri = $app->base . $app->uri( 'mode' => 'view', args => \%args );
     my $script
@@ -2813,7 +2813,7 @@ sub delete {
     if ( my $blog_id = $q->param('blog_id') ) {
         $blog = MT::Blog->load($blog_id)
             or return $app->error(
-            $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     }
 
     my $can_background

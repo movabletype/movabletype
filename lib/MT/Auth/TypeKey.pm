@@ -168,7 +168,7 @@ sub _validate_signature {
         my $resp = $ua->request($req);
         unless ( $resp->is_success() ) {
             my $err = $app->translate(
-                "Couldn't get public key from url provided");
+                "Could not get public key from the URL provided.");
             $app->log(
                 {   message  => $err,
                     level    => MT::Log::ERROR(),
@@ -224,7 +224,7 @@ sub _validate_signature {
     $app->log(
         {   message => $app->translate(
                 "TypePad signature verification returned [_1] in [_2] seconds verifying [_3] with [_4]",
-                ( $valid ? "VALID" : "INVALID" ),
+                ( $valid ? $app->translate("VALID") : $app->translate("INVALID") ),
                 $timer,
                 $msg,
                 $sig_str

@@ -1030,7 +1030,7 @@ sub _upload_to_asset {
         return $app->error(
             500,
             MT->translate(
-                'The file ([_1]) you uploaded is not allowed.', $fname
+                'The file ([_1]) that you uploaded is not allowed.', $fname
             )
         ) if $ret[2];
     }
@@ -1044,7 +1044,7 @@ sub _upload_to_asset {
         return $app->error(
             500,
             MT->translate(
-                'The file([_1]) you uploaded is not allowed.', $fname
+                'The file ([_1]) that you uploaded is not allowed.', $fname
             )
         ) unless $ret[2];
     }

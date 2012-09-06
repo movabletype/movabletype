@@ -1634,7 +1634,7 @@ sub add_map {
     $app->model('template')
         ->load( { id => $template_id, blog_id => $blog_id } )
         or
-        return $app->errtrans( 'Can\'t load template #[_1].', $template_id );
+        return $app->errtrans( 'Cannot load template #[_1].', $template_id );
 
     my $map = MT::TemplateMap->new;
     $map->is_preferred( $exist ? 0 : 1 );
