@@ -793,7 +793,7 @@ sub load_search_tmpl {
             }
         }
         return $app->errtrans(
-            "No alternate template is specified for template '[_1]'",
+            "No alternate template is specified for the template '[_1]'",
             encode_html( $q->param('Template') ) )
             unless $filename;
 

@@ -1976,7 +1976,7 @@ sub commenter_loggedin {
     my ( $commenter, $commenter_blog_id ) = @_;
     my $blog = $app->model('blog')->load($commenter_blog_id)
         or return $app->error(
-        $app->translate( "Can\'t load blog #[_1].", $commenter_blog_id ) );
+        $app->translate( "Cannot load blog #[_1].", $commenter_blog_id ) );
     my $path = $app->config('CGIPath');
     $path .= '/' unless $path =~ m!/$!;
     my $url = $path . $app->config('CommentScript');
@@ -2060,7 +2060,7 @@ sub login {
         }
         $message
             ||= $app->translate(
-            'This account has been disabled. Please see your system administrator for access.'
+            'This account has been disabled. Please see your Movable Type system administrator for access.'
             );
         $app->user(undef);
         $app->log(
@@ -2296,7 +2296,7 @@ sub create_user_pending {
     if ( exists $param->{blog_id} ) {
         $blog = $app->model('blog')->load( $param->{blog_id} )
             or return $app->error(
-            $app->translate( "Can\'t load blog #[_1].", $param->{blog_id} ) );
+            $app->translate( "Cannot load blog #[_1].", $param->{blog_id} ) );
     }
 
     my ( $password, $url );
@@ -4045,7 +4045,7 @@ sub is_valid_redirect_target {
         my $entry = MT::Entry->load( $app->param('entry_id') || 0 )
             or return $app->error(
             $app->translate(
-                'Can\'t load entry #[_1].',
+                'Cannot load entry #[_1].',
                 $app->param('entry_id')
             )
             );

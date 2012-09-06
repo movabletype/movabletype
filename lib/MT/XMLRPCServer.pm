@@ -1245,7 +1245,7 @@ sub publishPost {
         if !$author->is_superuser
             && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
     $mt->rebuild_entry( Entry => $entry, BuildDependencies => 1 )
-        or die _fault( MT->translate( "Publish failed: [_1]", $mt->errstr ) );
+        or die _fault( MT->translate( "Publishing failed: [_1]", $mt->errstr ) );
     SOAP::Data->type( boolean => 1 );
 }
 
@@ -1383,7 +1383,7 @@ sub newMediaObject {
         my @ret = File::Basename::fileparse( $fname, @deny_exts );
         die _fault(
             MT->translate(
-                'The file([_1]) you uploaded is not allowed.', $fname
+                'The file ([_1]) that you uploaded is not allowed.', $fname
             )
         ) if $ret[2];
     }
@@ -1396,7 +1396,7 @@ sub newMediaObject {
         my @ret = File::Basename::fileparse( $fname, @allowed );
         die _fault(
             MT->translate(
-                'The file([_1]) you uploaded is not allowed.', $fname
+                'The file ([_1]) that you uploaded is not allowed.', $fname
             )
         ) unless $ret[2];
     }

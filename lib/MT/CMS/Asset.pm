@@ -1019,7 +1019,7 @@ sub _set_start_upload_params {
         require MT::Blog;
         my $blog = MT::Blog->load($blog_id)
             or return $app->error(
-            $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
         $param->{enable_archive_paths} = $blog->column('archive_path');
         $param->{local_site_path}      = $blog->site_path;
@@ -1180,7 +1180,7 @@ sub _upload_file {
         require MT::Blog;
         $blog = MT::Blog->load($blog_id)
             or return $app->error(
-            $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
         $fmgr = $blog->file_mgr;
 
         ## Set up the full path to the local file; this path could start
@@ -1439,7 +1439,7 @@ sub _upload_file {
         if ( $ret[2] ) {
             return $app->error(
                 $app->translate(
-                    'The file([_1]) that you uploaded is not allowed.', $basename
+                    'The file ([_1]) that you uploaded is not allowed.', $basename
                 )
             );
         }
@@ -1455,7 +1455,7 @@ sub _upload_file {
         unless ( $ret[2] ) {
             return $app->error(
                 $app->translate(
-                    'The file([_1]) that you uploaded is not allowed.', $basename
+                    'The file ([_1]) that you uploaded is not allowed.', $basename
                 )
             );
         }

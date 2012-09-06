@@ -658,7 +658,7 @@ sub do_reply {
     $comment->parent_id( $param->{reply_to} );
     $comment->approve;
     return $app->handle_error(
-        $app->translate( "An error occurred. [_1]", $comment->errstr() ) )
+        $app->translate( "An error occurred: [_1]", $comment->errstr() ) )
         unless $comment->save;
 
     MT::Util::start_background_task(
@@ -667,7 +667,7 @@ sub do_reply {
                 Entry             => $parent->entry_id,
                 BuildDependencies => 1
                 )
-                or return $app->publish_error( "Publish failed. [_1]",
+                or return $app->publish_error( "Publishing failed. [_1]",
                 $app->errstr );
             $app->_send_comment_notification( $comment, q(), $entry,
                 $app->model('blog')->load( $param->{blog_id} ), $app->user );
@@ -701,7 +701,7 @@ sub reply_preview {
     my $blog = $parent->blog
         || $app->model('blog')->load( $q->param('blog_id') );
     return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $q->param('blog_id') ) )
+        $app->translate( 'Cannot load blog #[_1].', $q->param('blog_id') ) )
         unless $blog;
 
     require MT::Sanitize;
@@ -920,7 +920,7 @@ sub post_save {
                 {
                     $app->publish_error();    # logs error as well.
                     return $eh->error(
-                        MT->translate( "Publish failed: [_1]", $app->errstr )
+                        MT->translate( "Publishing failed: [_1]", $app->errstr )
                     );
                 }
                 1;

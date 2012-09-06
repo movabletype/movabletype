@@ -195,7 +195,7 @@ sub recover_password {
             require MT::Mail;
             MT::Mail->send( \%head, $body )
                 or die $app->translate(
-                "Error sending mail ([_1]); Please fix the problem, then "
+                "Error sending e-mail ([_1]); Please fix the problem, then "
                     . "try again to recover your password.",
                 MT::Mail->errstr
                 );
@@ -515,7 +515,7 @@ sub cfg_system_general {
         my $config_warning = join( ", ", @config_warnings );
 
         $param{config_warning} = $app->translate(
-            "These setting(s) are overridden by a value in the MT configuration file, [_1]. Remove the value from the configuration file in order to control the value on this page.",
+            "These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
             $config_warning
         );
     }

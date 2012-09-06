@@ -155,7 +155,7 @@ sub send_notify {
         MT::Mail->send( $info, $body )
             or return $app->error(
             $app->translate(
-                "Error sending mail ([_1]); try another MailTransfer setting?",
+                "Error sending mail ([_1]): Try another MailTransfer setting?",
                 MT::Mail->errstr
             )
             );
