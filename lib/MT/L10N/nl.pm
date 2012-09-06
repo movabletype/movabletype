@@ -671,7 +671,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/App/Comments.pm
 	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => 'Fout bij het toekennen van reactierechten aan gebruiker \'[_1] (ID: [_2])\' op weblog \'[_3] (ID: [_4])\'.  Er werd geen geschikte reageerder-rol gevonden.',
-	'Can\'t load blog #[_1].' => 'Kan blog niet laden #[_1].',
+	'Cannot load blog #[_1].' => 'Kan blog niet laden #[_1].',
 	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => 'Ongeldige aanmeldpoging van een reageerder [_1] op blog [_2](ID: [_3]) waar geenMovable Type native authenticatie is toegelaten.',
 	'Invalid login.' => 'Ongeldige gebruikersnaam.',
 	'Invalid login' => 'Ongeldige gebruikersnaam',
@@ -710,12 +710,12 @@ use vars qw( @ISA %Lexicon );
 	'Comment save failed with [_1]' => 'Opslaan van reactie mislukt met [_1]',
 	'Comment on "[_1]" by [_2].' => 'Reactie op "[_1]" door [_2].',
 	'Publish failed: [_1]' => 'Publicatie mislukt: [_1]',
-	'Can\'t load template' => 'Kan sjabloon niet laden',
+	'Cannot load template' => 'Kan sjabloon niet laden',
 	'Failed comment attempt by pending registrant \'[_1]\'' => 'Mislukte poging om een reactie achter te laten van op registratie wachtende gebruiker \'[_1]\'',
 	'Registered User' => 'Geregistreerde gebruiker',
 	'The sign-in attempt was not successful; please try again.' => 'Aanmeldingspoging mislukt; gelieve opnieuw te proberen.',
-	'Can\'t load entry #[_1].' => 'Kan bericht #[_1] niet laden.',
-	'You are trying to redirect to external resources. If you trust the site, please click the link: [_1]' => 'U probeert om te leiden naar externe bronnen.  Als u de site vertrouwt, klik dan op de link: [_1]', # Translate - New
+	'Cannot load entry #[_1].' => 'Kan bericht #[_1] niet laden.',
+	'You are trying to redirect to external resources. If you can trust the site, please click the link: [_1]' => 'U probeert door te verwijzen naar externe bronnen.  Als u deze site kunt vertrouwen, gelieve dan op de link te klikken: [_1]', # Translate - New
 	'No entry was specified; perhaps there is a template problem?' => 'Geen bericht opgegeven; misschien is er een sjabloonprobleem?',
 	'Somehow, the entry you tried to comment on does not exist' => 'Het bericht waar u een reactie op probeerde achter te laten, bestaat niet',
 	'Invalid entry ID provided' => 'Ongeldig berichtID opgegeven',
@@ -825,10 +825,9 @@ use vars qw( @ISA %Lexicon );
 	'This TrackBack item is protected by a passphrase.' => 'Dit TrackBack item is beschermd door een wachtwoord.',
 	'TrackBack on "[_1]" from "[_2]".' => 'TrackBack op "[_1]" van "[_2]".',
 	'TrackBack on category \'[_1]\' (ID:[_2]).' => 'TrackBack op categorie \'[_1]\' (ID:[_2]).',
-	'Publishing failed. [_1]' => 'Publicatie mislukt. [_1]', # Translate - New
-	'Cannot create RSS feed \'[_1]\': ' => 'Kan geen RSS feed maken \'[_1]\'', # Translate - New
-	'New TrackBack ping to \'[_1]\'' => 'Nieuwe TrackBack ping naar \'[_1]\'', # Translate - New
-	'New TrackBack ping to category \'[_1]\'' => 'Nieuwe TrackBack ping naar categorie \'[_1]\'', # Translate - New
+	'Cannot create RSS feed \'[_1]\': ' => 'Kan RSS feed \'[_1]\' niet aanmaken: ',
+	'New TrackBack Ping to \'[_1]\'' => 'Nieuwe TrackBack ping naar \'[_1]\'',
+	'New TrackBack Ping to Category \'[_1]\'' => 'Nieuwe TrackBack ping naar categorie \'[_1]\'',
 
 ## lib/MT/App/Upgrader.pm
 	'Could not authenticate using the credentials provided. [_1].' => 'Kon niet aanmelden met de opgegeven naam en wachtwoord. [_1].', # Translate - New
@@ -842,10 +841,10 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/App/Viewer.pm
 	'Loading blog with ID [_1] failed' => 'Laden van blog met ID [_1] mislukt',
-	'File not found' => 'Bestand niet gevonden',
-	'Template publishing failed. [_1]' => 'Publicatie van sjabloon mislukt. [_1]', # Translate - New
-	'Unknown archive type. [_1]' => 'Onbekend archieftype. [_1]', # Translate - New
-	'Cannot load template [_1]' => 'Kan sjabloon [_1] niet laden', # Translate - New
+	'File not found' => 'Bestand niet gevonden', # Translate - New
+	'Template publishing failed: [_1]' => 'Publicatie van sjabloon mislukt: [_1]',
+	'Unknown archive type: [_1]' => 'Onbekend archieftype: [_1]', # Translate - New
+	'Cannot load template [_1]' => 'Kan sjabloon [_1] niet laden',
 	'Archive publishing failed: [_1]' => 'Publicatie van archief mislukt: [_1]',
 	'Invalid entry ID [_1].' => 'Ongeldig bericht ID [_1].', # Translate - New
 	'Entry [_1] was not published.' => 'Bericht [_1] werd niet gepubliceerd.', # Translate - New
@@ -993,8 +992,7 @@ use vars qw( @ISA %Lexicon );
 	'Error converting image: [_1]' => 'Fout bij conversie afbeelding: [_1]',
 	'Error creating thumbnail file: [_1]' => 'Fout bij het aanmaken van een thumbnail-bestand: [_1]',
 	'%f-thumb-%wx%h-%i%x' => '%f-thumb-%wx%h-%i%x',
-	'Cannot load image #[_1]' => 'Kan afbeelding #[_1] niet laden', # Translate - New
-	'Can\'t load image #[_1]' => 'Kan afbeelding niet laden #[_1]',
+	'Cannot load image #[_1]' => 'Kan afbeelding niet laden #[_1]',
 	'View image' => 'Afbeelding bekijken',
 	'Permission denied setting image defaults for blog #[_1]' => 'Permissie geweigerd om de standaardinstellingen voor afbeeldingen te wijzigen voor blog #[_1]',
 	'Thumbnail image for [_1]' => 'Miniatuurweergave voor [_1]',
@@ -1129,9 +1127,9 @@ use vars qw( @ISA %Lexicon );
 	'[_1] records backed up...' => '[_1] records gebackupt...',
 	'[_1] records backed up.' => '[_1] records gebackupt.',
 	'There were no [_1] records to be backed up.' => 'Er waren geen [_1] records om te backuppen.',
-	'Can\'t open directory \'[_1]\': [_2]' => 'Kan map \'[_1]\' niet openen: [_2]',
+	'Cannot open directory \'[_1]\': [_2]' => 'Kan map \'[_1]\' niet openen: [_2]',
 	'No manifest file could be found in your import directory [_1].' => 'Er werd geen manifest-bestand gevonden in de importdirectory [_1].',
-	'Can\'t open [_1].' => 'Kan [_1] niet openen.',
+	'Cannot open [_1].' => 'Kan [_1] niet openen.',
 	'Manifest file [_1] was not a valid Movable Type backup manifest file.' => 'Manifest-bestand [_1] was geen geldig Movable Type backup manifest-bestand.',
 	'Manifest file: [_1]' => 'Manifestbestand: [_1]',
 	'Path was not found for the file, [_1].' => 'Pad niet gevonden voor bestand, [_1]', # Translate - New
@@ -1221,7 +1219,7 @@ use vars qw( @ISA %Lexicon );
 	'Files' => 'Bestanden',
 	'Extension changed from [_1] to [_2]' => 'Extensie veranderd van [_1] in [_2]',
 	'Upload File' => 'Opladen',
-	'Cannot load file #[_1].' => 'Kan bestand niet laden #[_1].', # Translate - New
+	'Cannot load file #[_1].' => 'Kan bestand niet laden #[_1].',
 	'No permissions' => 'Geen permissies',
 	'File \'[_1]\' uploaded by \'[_2]\'' => 'Bestand \'[_1]\' opgeladen door \'[_2]\'',
 	'File \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Bestand \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
@@ -1236,7 +1234,7 @@ use vars qw( @ISA %Lexicon );
 	'Please select a video to upload.' => 'Gelieve een videobestand te selecteren om te uploaden.',
 	'Movable Type was unable to write to the "Upload Destination". Please make sure that the webserver can write to this folder.' => 'Movable Type kon niet schrijven naar de "Upload bestemming".  Controleer of de webserver schrijfrechten heeft op deze map.', # Translate - New
 	'Invalid extra path \'[_1]\'' => 'Ongeldig extra pad \'[_1]\'',
-	'Can\'t make path \'[_1]\': [_2]' => 'Kan pad \'[_1]\' niet aanmaken: [_2]',
+	'Cannot make path \'[_1]\': [_2]' => 'Kan pad \'[_1]\' niet aanmaken: [_2]',
 	'Invalid temp file name \'[_1]\'' => 'Ongeldige naam voor temp bestand \'[_1]\'',
 	'Error opening \'[_1]\': [_2]' => 'Fout bij openen van \'[_1]\': [_2]',
 	'Error deleting \'[_1]\': [_2]' => 'Fout bij wissen van \'[_1]\': [_2]',
@@ -1247,7 +1245,7 @@ use vars qw( @ISA %Lexicon );
 	'The file([_1]) that you uploaded is not allowed.' => 'Het bestand ([_1]) dat u uploade is niet toegestaan.', # Translate - New
 	'Error writing upload to \'[_1]\': [_2]' => 'Fout bij schrijven van upload naar \'[_1]\': [_2]',
 	'Uploaded file is not an image.' => 'Geupload bestand is geen afbeelding.',
-	'Cannot overwrite an existing file with a file of a different type. Original: [_1] Uploaded: [_2]' => 'Kan geen bestaand bestand overschrijven met een bestand van een ander type.  Origineel: [_1] Geupload: [_2]', # Translate - New
+	'Cannot overwrite with the file of different type. Original: [_1] Uploaded: [_2]' => 'Kan niet overschrijven met bestand van een ander type.  Origineel: [_1] Geupload: [_2]',
 	'<' => '<',
 	'/' => '/',
 
@@ -1262,8 +1260,7 @@ use vars qw( @ISA %Lexicon );
 	'General Settings' => 'Algemene instellingen',
 	'Plugin Settings' => 'Instellingen plugins',
 	'New Blog' => 'Nieuwe blog',
-	'Cannot load template #[_1].' => '', # Translate - New
-	'Can\'t load template #[_1].' => 'Kan sjabloon #[_1] niet laden.',
+	'Cannot load template #[_1].' => 'Kan sjabloon #[_1] niet laden.',
 	'index template \'[_1]\'' => 'indexsjabloon \'[_1]\'',
 	'[_1] \'[_2]\'' => '[_1] \'[_2]\'',
 	'Publish Site' => 'Site publiceren',
@@ -1319,12 +1316,12 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' untrusted commenter \'[_2]\'.' => 'Gebruiker \'[_1]\' gaf reageerder \'[_2]\' de status NIET VERTROUWD.',
 	'Parent comment id was not specified.' => 'ID van ouder-reactie werd niet opgegeven.',
 	'Parent comment was not found.' => 'Ouder-reactie werd niet gevonden.',
-	'You can\'t reply to unapproved comment.' => 'U kunt niet antwoorden op een niet-gekeurde reactie.',
+	'You cannot reply to unapproved comment.' => 'U kunt niet antwoorden op een niet-gekeurde reactie.',
 	'Comment (ID:[_1]) by \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => 'Reactie (ID:[_1]) door \'[_2]\' verwijderd door \'[_3]\' van bericht \'[_4]\'',
 	'You don\'t have permission to approve this trackback.' => 'U heeft geen permissie om deze trackback goed te keuren.',
 	'Comment on missing entry!' => 'Reactie op ontbrekend bericht!',
 	'You don\'t have permission to approve this comment.' => 'U heeft geen toestemming om deze reactie goed te keuren.',
-	'You can\'t reply to unpublished comment.' => 'U kunt niet reageren op een niet gepubliceerde reactie.',
+	'You cannot reply to unpublished comment.' => 'U kunt niet reageren op een niet gepubliceerde reactie.',
 	'Orphaned comment' => 'Verweesde reactie',
 
 ## lib/MT/CMS/Common.pm
@@ -1362,7 +1359,7 @@ use vars qw( @ISA %Lexicon );
 	'pages' => 'pagina\'s',
 	'Tag' => 'Tag',
 	'Entry Status' => 'Status bericht',
-	'Can\'t load template.' => 'Kan sjabloon niet laden.',
+	'Cannot load template.' => 'Kan sjabloon niet laden.',
 	'Publish error: [_1]' => 'Publicatiefout: [_1]',
 	'Unable to create preview file in this location: [_1]' => 'Kon geen voorbeeldbestand maken op deze locatie: [_1]',
 	'New [_1]' => 'Nieuwe [_1]',
@@ -1483,7 +1480,7 @@ use vars qw( @ISA %Lexicon );
 	'System Templates' => 'Systeemsjablonen',
 	'Email Templates' => 'E-mail sjablonen',
 	'Template Backups' => 'Sjabloonbackups',
-	'Can\'t locate host template to preview module/widget.' => 'Kan geen gastsjabloon vinden om voorbeeld van module/widget in te bekijken.',
+	'Cannot locate host template to preview module/widget.' => 'Kan geen gastsjabloon vinden om voorbeeld van module/widget in te bekijken.',
 	'Cannot preview without a template map!' => 'Kan geen voorbeeld bekijken zonder sjabloonkoppeling',
 	'Lorem ipsum' => 'Lorem ipsum',
 	'LOREM_IPSUM_TEXT' => 'LOREM_IPSUM_TEXT',
@@ -1491,7 +1488,7 @@ use vars qw( @ISA %Lexicon );
 	'sample, entry, preview' => 'staaltje, bericht, voorbeeld',
 	'Populating blog with default templates failed: [_1]' => 'Inrichten van blog met standaard sjablonen mislukt: [_1]',
 	'Setting up mappings failed: [_1]' => 'Doorverwijzingen opzetten mislukt: [_1]',
-	'Can\'t load templatemap' => 'Kan sjabloonmap niet laden',
+	'Cannot load templatemap' => 'Kan sjabloonmap niet laden',
 	'Saving map failed: [_1]' => 'Map opslaan mislukt: [_1]',
 	'You should not be able to enter 0 as the time.' => 'Het ingeven van 0 als tijdstip zou noet mogelijk moeten zijn.',
 	'You must select at least one event checkbox.' => 'U moet minstens één gebeurtenis-vakje aankruisen.',
@@ -1557,7 +1554,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] is [_2]' => '[_1] is [_2]',
 	'none' => 'geen',
 	'System Settings Changes Took Place' => 'Wijzigingen werden aangebracht aan de systeeminstellingen',
-	'Invalid password recovery attempt; can\'t recover password in this configuration' => 'Ongeldige poging het wachtwoord terug te vinden; kan geen wachtwoorden terugvinden in deze configuratie',
+	'Invalid password recovery attempt; cannot recover password in this configuration' => 'Ongeldige poging het wachtwoord terug te vinden; kan geen wachtwoorden terugvinden in deze configuratie',
 	'Invalid author_id' => 'Ongeldig author_id',
 	'Backup & Restore' => 'Backup & Restore',
 	'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.' => 'De tijdelijke map moet beschrijfbaar zijn om backups te kunnen doen.  Gelieve de TempDir configuratiedirectief na te kijken.',
@@ -1584,7 +1581,7 @@ use vars qw( @ISA %Lexicon );
 	'Restoring a file failed: ' => 'Terugzetten van een bestand mislukt: ',
 	'Some of the files were not restored correctly.' => 'Een aantal bestanden werden niet correct teruggezet.',
 	'Successfully restored objects to Movable Type system by user \'[_1]\'' => 'Objecten werden met succes teruggezet in het Movable Type systeem door gebruiker \'[_1]\'',
-	'Can\'t recover password in this configuration' => 'Kan geen wachtwoorden terugvinden in deze configuratie',
+	'Cannot recover password in this configuration' => 'Kan geen wachtwoorden terugvinden in deze configuratie',
 	'Invalid user name \'[_1]\' in password recovery attempt' => 'Ongeldige gebruikersnaam \'[_1]\' bij poging tot terugvinden wachtwoord',
 	'User name or password hint is incorrect.' => 'Gebruikersnaam of wachtwoordhint niet correct.',
 	'User has not set pasword hint; cannot recover password' => 'Gebruiker heeft geen wachtwoordhint ingesteld; kan wachtwoord niet recupereren',
@@ -1619,7 +1616,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/User.pm
 	'Create User' => 'Gebruiker aanmaken',
-	'Can\'t load role #[_1].' => 'Kan rol #[_1] niet laden.',
+	'Cannot load role #[_1].' => 'Kan rol #[_1] niet laden.',
 	'Role name cannot be blank.' => 'Naam van de rol mag niet leeg zijn.',
 	'Another role already exists by that name.' => 'Er bestaat al een rol met die naam.',
 	'You cannot define a role without permissions.' => 'U kunt geen rol definiëren zonder permissies.',
@@ -1662,7 +1659,7 @@ use vars qw( @ISA %Lexicon );
 	'Website \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Website \'[_1]\' (ID: [_2]) verwijderd door \'[_3]\'',
 	'Selected Website' => 'Geselecteerde website',
 	'Type a website name to filter the choices below.' => 'Tik de naam van een website in om de keuzes hieronder te filteren.',
-	'Can\'t load website #[_1].' => 'Kan website #[_1] niet laden',
+	'Cannot load website #[_1].' => 'Kan website #[_1] niet laden',
 	'Blog \'[_1]\' (ID:[_2]) moved from \'[_3]\' to \'[_4]\' by \'[_5]\'' => 'Blog \'[_1]\' (ID:[_2]) verplaatst van \'[_3]\' naar \'[_4]\' door \'[_5]\'',
 
 ## lib/MT/Comment.pm
@@ -1925,22 +1922,22 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Folder.pm
 
 ## lib/MT/Image/GD.pm
-	'Can\'t load GD: [_1]' => 'Kan GD niet laden: [_1]',
+	'Cannot load GD: [_1]' => 'Kan GD niet laden: [_1]',
 	'Unsupported image file type: [_1]' => 'Niet ondersteund afbeeldingsformaat: [_1]',
 	'Reading file \'[_1]\' failed: [_2]' => 'Bestand \'[_1]\' lezen mislukt: [_2]',
 	'Reading image failed: [_1]' => 'Afbeelding lezen mislukt: [_1]',
 
 ## lib/MT/Image/ImageMagick.pm
-	'Can\'t load Image::Magick: [_1]' => 'Kan Image::Magick niet laden: [_1]',
+	'Cannot load Image::Magick: [_1]' => 'Kan Image::Magick niet laden: [_1]',
 	'Scaling to [_1]x[_2] failed: [_3]' => 'Dimensies aanpassen naar [_1]x[_2] mislukt: [_3]',
 	'Cropping a [_1]x[_1] square at [_2],[_3] failed: [_4]' => 'Bijsnijden van een vierkant van [_1]x[_1] op [_2],[_3] mislukt: [_4]',
 	'Converting image to [_1] failed: [_2]' => 'Converteren van afbeelding naar [_1] mislukt: [_2]',
 
 ## lib/MT/Image/Imager.pm
-	'Can\'t load Imager: [_1]' => 'Kan Imager niet laden: [_1]',
+	'Cannot load Imager: [_1]' => 'Kan Imager niet laden: [_1]',
 
 ## lib/MT/Image/NetPBM.pm
-	'Can\'t load IPC::Run: [_1]' => 'Kan IPC::Run niet laden: [_1]',
+	'Cannot load IPC::Run: [_1]' => 'Kan IPC::Run niet laden: [_1]',
 	'Cropping to [_1]x[_1] failed: [_2]' => 'Bijsnijden naar [_1]x[_1] mislukt: [_2]',
 	'You do not have a valid path to the NetPBM tools on your machine.' => 'U hebt geen geldig pad naar de NetPBM tools op uw machine.',
 
@@ -1959,7 +1956,7 @@ use vars qw( @ISA %Lexicon );
 	'Saving category failed: [_1]' => 'Categorie opslaan mislukt: [_1]',
 	'Invalid status value \'[_1]\'' => 'Ongeldige statuswaarde \'[_1]\'',
 	'Invalid allow pings value \'[_1]\'' => 'Ongeldige instelling voor het toelaten van pings \'[_1]\'',
-	'Can\'t find existing entry with timestamp \'[_1]\'... skipping comments, and moving on to next entry.' => 'Kan geen bestaand bericht vinden met tijdstip \'[_1]\'... reacties worden overgeslagen, verder naar volgende bericht.',
+	'Cannot find existing entry with timestamp \'[_1]\'... skipping comments, and moving on to next entry.' => 'Kan geen bestaand bericht vinden met tijdstip \'[_1]\'... reacties worden overgeslagen, verder naar volgende bericht.',
 	'Importing into existing entry [_1] (\'[_2]\')' => 'Aan het importeren in bestaand bericht [_1] (\'[_2]\')',
 	'Saving entry (\'[_1]\')...' => 'Bericht aan het opslaan (\'[_1]\')...',
 	'ok (ID [_1])' => 'ok (ID [_1])',
@@ -1972,8 +1969,8 @@ use vars qw( @ISA %Lexicon );
 	'Invalid date format \'[_1]\'; must be \'MM/DD/YYYY HH:MM:SS AM|PM\' (AM|PM is optional)' => 'Ongeldig datumformaat \'[_1]\'; dit moet \'MM/DD/JJJJ HH:MM:SS AM|PM\' zijn (AM|PM is optioneel)',
 
 ## lib/MT/Import.pm
-	'Can\'t rewind' => 'Kan niet terugspoelen',
-	'Can\'t open \'[_1]\': [_2]' => 'Kan \'[_1]\' niet openen: [_2]',
+	'Cannot rewind' => 'Kan niet terugspoelen',
+	'Cannot open \'[_1]\': [_2]' => 'Kan \'[_1]\' niet openen: [_2]',
 	'No readable files could be found in your import directory [_1].' => 'Er werden geen leesbare bestanden gevonden in uw importmap [_1].',
 	'Importing entries from file \'[_1]\'' => 'Berichten worden ingevoerd uit bestand  \'[_1]\'',
 	'Couldn\'t resolve import format [_1]' => 'Kon importformaat niet onderscheiden [_1]',
@@ -1992,12 +1989,12 @@ use vars qw( @ISA %Lexicon );
 	'Composite score: [_1]' => 'Samengestelde score: [_1]',
 
 ## lib/MT/ListProperty.pm
-	'Can\'t initialize list property [_1].[_2].' => 'Kan lijsteigenschap [_1] niet initialiseren. [_2].',
+	'Cannot initialize list property [_1].[_2].' => 'Kan lijsteigenschap [_1] niet initialiseren. [_2].', # Translate - New
 	'Failed to init auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'Initialiseren auto lijst eigenschap [_1].[_2] mislukt: kan definitie van kolom [_3] niet vinden.',
 	'Failed to init auto list property [_1].[_2]: unsupported column type.' => 'Initialiseren auto lijst eigenschap [_1].[_2] mislukt: niet ondersteund kolomtype.',
 
 ## lib/MT/Lockout.pm
-	'Can\'t find author for id \'[_1]\'' => 'Kan geen auteur vinden voor id \'[_1]\'',
+	'Cannot find author for id \'[_1]\'' => 'Kan geen auteur vinden voor id \'[_1]\'',
 	'User was locked out. IP address: [_1], Username: [_2]' => 'Gebruiker werd geblokkeerd.  IP adres: [_1], Gebruikersnaam: [_2]',
 	'User Was Locked Out' => 'Gebruiker werd geblokkeerd',
 	'Error sending mail: [_1]' => 'Fout bij versturen mail: [_1]',
@@ -2211,17 +2208,16 @@ use vars qw( @ISA %Lexicon );
 	'records' => 'records',
 	'No template to include was specified' => 'Geen sjabloon opgegeven om te includeren',
 	'Recursion attempt on [_1]: [_2]' => 'Recursiepoging op [_1]: [_2]',
-	'Can\'t find included template [_1] \'[_2]\'' => 'Kan geincludeerd sjabloon niet vinden: [_1] \'[_2]\'',
+	'Cannot find included template [_1] \'[_2]\'' => 'Kan geincludeerd sjabloon niet vinden: [_1] \'[_2]\'',
 	'Error in [_1] [_2]: [_3]' => 'Fout in [_1] [_2]: [_3]',
 	'Writing to \'[_1]\' failed: [_2]' => 'Schrijven naar \'[_1]\' mislukt: [_2]',
-	'File include is disabled by "AllowFileInclude" config directive.' => 'Includeren van bestanden is uitgeschakeld via de "AllowFileInclude" configuratie-instelling.', # Translate - New
-	'Can\'t find blog for id \'[_1]' => 'Kan geen blog vinden met id \'[_1]',
-	'Can\'t find included file \'[_1]\'' => 'Kan geïncludeerd bestand \'[_1]\' niet vinden',
+	'Cannot find blog for id \'[_1]' => 'Kan geen blog vinden met id \'[_1]',
+	'Cannot find included file \'[_1]\'' => 'Kan geïncludeerd bestand \'[_1]\' niet vinden',
 	'Error opening included file \'[_1]\': [_2]' => 'Fout bij het openen van geïncludeerd bestand \'[_1]\': [_2]',
 	'Recursion attempt on file: [_1]' => 'Recursiepoging op bestand: [_1]',
-	'Can\'t load user.' => 'Kan gebruiker niet laden.',
-	'Can\'t find template \'[_1]\'' => 'Kan sjabloon \'[_1]\' niet vinden',
-	'Can\'t find entry \'[_1]\'' => 'Kan bericht \'[_1]\' niet vinden',
+	'Cannot load user.' => 'Kan gebruiker niet laden.',
+	'Cannot find template \'[_1]\'' => 'Kan sjabloon \'[_1]\' niet vinden',
+	'Cannot find entry \'[_1]\'' => 'Kan bericht \'[_1]\' niet vinden',
 	'Unspecified archive template' => 'Niet gespecifiëerd archiefsjabloon',
 	'Error in file template: [_1]' => 'Fout in bestandssjabloon: [_1]',
 
@@ -2290,7 +2286,7 @@ use vars qw( @ISA %Lexicon );
 	'MT[_1] must be used in a [_2] context' => 'MT[_1] moet gebruikt worden in een [_2] context',
 	'Cannot find package [_1]: [_2]' => 'Kan package [_1] niet vinden: [_2]',
 	'Error sorting [_2]: [_1]' => 'Fout bij sorteren [_2]: [_1]',
-	'Can\'t use sort_by and sort_method together in [_1]' => 'Kan sort_by en sort_method niet samen gebruiken in [_1]',
+	'Cannot use sort_by and sort_method together in [_1]' => 'Kan sort_by en sort_method niet samen gebruiken in [_1]',
 	'[_1] cannot be used without publishing Category archive.' => '[_1] kan niet gebruikt worden zonder dat er archieven per categorie worden gepubliceerd.',
 	'[_1] used outside of [_2]' => '[_1] gebruikt buiten [_2]',
 
@@ -2522,8 +2518,8 @@ use vars qw( @ISA %Lexicon );
 	'Could not read from filehandle.' => 'Kon filehandle niet lezen.',
 	'File [_1] is not a tgz file.' => 'Bestand [_1] is geen tgz bestand.',
 	'File [_1] exists; could not overwrite.' => 'Bestand [_1] bestaat; kon niet worden overschreven.',
-	'Can\'t extract from the object' => 'Kan extractie uit object niet uitvoeren',
-	'Can\'t write to the object' => 'Kan niet schrijven naar het object',
+	'Cannot extract from the object' => 'Kan extractie uit object niet uitvoeren',
+	'Cannot write to the object' => 'Kan niet schrijven naar het object',
 	'Both data and file name must be specified.' => 'Zowel data gen bestandsnaam moeten worden opgegeven.',
 
 ## lib/MT/Util/Archive/Zip.pm
@@ -5102,7 +5098,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/wizard/complete.tmpl
 	'Configuration File' => 'Configuratiebestand',
-	q{The [_1] configuration file can't be located.} => q{Het configuratiebestand [_1] kan niet worden gevonden},
+	q{The [_1] configuration file cannot be located.} => q{Het configuratiebestand [_1] kan niet worden gevonden},
 	q{Please use the configuration text below to create a file named 'mt-config.cgi' in the root directory of [_1] (the same directory in which mt.cgi is found).} => q{Gelieve de configuratietekst hieronder te gebruiken om een bestand mee aan te maken genaamd 'mt-config.cgi' in de hoofdmap van [_1] (dezelfde map waar u ook mt.cgi in aantreft).},
 	'The wizard was unable to save the [_1] configuration file.' => 'De wizard kon het [_1] configuratiebestand niet opslaan.',
 	q{Confirm that your [_1] home directory (the directory that contains mt.cgi) is writable by your web server and then click 'Retry'.} => q{Kijk na of uw [_1] hoofdmap (de map die mt.cgi bevat) beschrijfbaar is door uw webserver en klik dan op 'Opnieuw'.},
@@ -6054,7 +6050,7 @@ use vars qw( @ISA %Lexicon );
 	'No records were found in the file.  Make sure the file uses CRLF as the line-ending characters.' => 'Er werden geen records gevonden in het bestand.  Kijk na of het bestand CRLF gebruiker als einde-regel karakters.',
 	'Registered [quant,_1,user,users], updated [quant,_2,user,users], deleted [quant,_3,user,users].' => '[quant,_1,Gebruiker,Gebruikers] geregistreerd, [quant,_2,gebruiker,gebruikers] bijgewerkt, [quant,_3,gebruiker,gebruikers] verwijderd.',
 	'Bulk author export cannot be used under external user management.' => 'Bulk export van auteurs kan niet gebruikt worden onder extern gebruikersbeheer.',
-	'A user can\'t change his/her own username in this environment.' => 'Een gebruiker kan zijn/haar gebruikersnaam niet aanpassen in deze omgeving',
+	'A user cannot change his/her own username in this environment.' => 'Een gebruiker kan zijn/haar gebruikersnaam niet aanpassen in deze omgeving',
 	'An error occurred when enabling this user.' => 'Er deed zich een fout voor bij het activeren van deze gebruiker.',
 
 ## addons/Enterprise.pack/lib/MT/Enterprise/Upgrade.pm
@@ -6116,7 +6112,7 @@ use vars qw( @ISA %Lexicon );
 	q{Click 'Continue' below to configure your LDAP attribute mappings.} => q{Klik hieronder op 'Doorgaan' om uw LDAP attribute mappings in te stellen.},
 	'Your LDAP configuration is complete.' => 'Uw LDAP configuratie is voltooid.',
 	q{To finish with the configuration wizard, press 'Continue' below.} => q{Om naar het einde van de configuratiewizard te gaan, klik hieronder op 'Doorgaan'.},
-	q{Can't locate Net::LDAP. Net::LDAP module is required to use LDAP authentication.} => q{Kan Net:LDAP niet vinden. Net::LDAP is vereist om LDAP authenticatie te kunnen gebruiken.},
+	q{Cannot locate Net::LDAP. Net::LDAP module is required to use LDAP authentication.} => q{Kan Net:LDAP niet vinden. Net::LDAP is vereist om LDAP authenticatie te kunnen gebruiken.},
 	'Use LDAP' => 'LDAP gebruiken',
 	'Authentication URL' => 'Authenticatie URL',
 	'The URL to access for LDAP authentication.' => 'De URL te gebruiken om toegang te krijgen tot LDAP authenticatie',

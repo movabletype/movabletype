@@ -1961,7 +1961,7 @@ sub _hdlr_typekey_token {
     my $blog_id = $ctx->stash('blog_id');
     my $blog    = MT::Blog->load($blog_id)
         or return $ctx->error(
-        MT->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        MT->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my $tp_token = $blog->effective_remote_auth_token();
     return $tp_token;
 }
@@ -1980,7 +1980,7 @@ sub _hdlr_comment_fields {
     my ( $ctx, $args, $cond ) = @_;
     return $ctx->error(
         MT->translate(
-            "The MTCommentFields tag is no longer available; please include the [_1] template module instead.",
+            "The MTCommentFields tag is no longer available.  Please include the [_1] template module instead.",
             MT->translate("Comment Form")
         )
     );

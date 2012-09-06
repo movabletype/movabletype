@@ -2364,7 +2364,7 @@ sub _hdlr_entry_blog_name {
         or return $ctx->_no_entry_error();
     my $b = MT::Blog->load( $e->blog_id )
         or return $ctx->error(
-        MT->translate( 'Can\'t load blog #[_1].', $e->blog_id ) );
+        MT->translate( 'Cannot load blog #[_1].', $e->blog_id ) );
     return $b->name;
 }
 

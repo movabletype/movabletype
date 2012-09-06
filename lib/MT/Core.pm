@@ -63,7 +63,7 @@ BEGIN {
                 label   => 'Database Server',
                 default => 'localhost',
                 hint    => sub {
-                    MT->translate("This is usually 'localhost'.");
+                    MT->translate("This is often 'localhost'.");
                 },
                 show_hint => 1,
                 order     => 10,
@@ -2992,20 +2992,20 @@ sub PerformanceLoggingPath {
                 eval { File::Path::mkpath( [$dir], 0, 0777 ); $path = $dir; };
                 if ($@) {
                     $msg = MT->translate(
-                        'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive: [_2]',
+                        'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive. [_2]',
                         $dir, $@
                     );
                 }
             }
             elsif ( -e $dir and !-d $dir ) {
                 $msg = MT->translate(
-                    'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file: [_1]',
+                    'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file. [_1]',
                     $dir
                 );
             }
             elsif ( -e $dir and !-w $dir ) {
                 $msg = MT->translate(
-                    'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable: [_1]',
+                    'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable. [_1]',
                     $dir
                 );
             }

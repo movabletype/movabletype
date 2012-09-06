@@ -113,7 +113,7 @@ sub upgrade_functions {
                 my $iter = MT::Asset->load_iter( { class => '*' } );
                 $upgrade->progress(
                     MT::Upgrade->translate_escape(
-                        "Upgrading Asset path informations...")
+                        "Upgrading asset path information...")
                 );
                 while ( my $asset = $iter->() ) {
                     my $values = $asset->get_values;

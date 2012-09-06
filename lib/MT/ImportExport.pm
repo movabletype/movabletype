@@ -284,7 +284,7 @@ sub import_contents {
                         if ( !$entry ) {
                             $cb->(
                                 MT->translate(
-                                    "Can't find existing entry with timestamp '[_1]'... skipping comments, and moving on to next entry.",
+                                    "Cannot find existing entry with timestamp '[_1]'... skipping comments, and moving on to next entry.",
                                     $ts
                                     )
                                     . "\n"

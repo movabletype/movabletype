@@ -16,7 +16,7 @@ sub load_driver {
     eval { require Imager };
     if ( my $err = $@ ) {
         return $image->error(
-            MT->translate( "Can't load Imager: [_1]", $err ) );
+            MT->translate( "Cannot load Imager: [_1]", $err ) );
     }
     1;
 }

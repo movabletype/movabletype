@@ -162,7 +162,7 @@ sub _notify_to {
             else {
                 $app->log(
                     {   message => $app->translate(
-                            "Can't find author for id '[_1]'", $id
+                            "Cannot find author for id '[_1]'", $id
                         ),
                         level    => MT::Log::ERROR(),
                         class    => 'system',
@@ -284,7 +284,7 @@ sub _insert_failedlogin {
             my %head = (
                 id      => 'lockout_ip',
                 To      => $email,
-                Subject => $app->translate('IP address Was Locked Out')
+                Subject => $app->translate('IP Address Was Locked Out')
             );
 
             my $recovery_time = $class->locked_out_ip_recovery_time( $app,

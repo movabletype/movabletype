@@ -158,7 +158,7 @@ sub _view_index {
     }
     my $out = $tmpl->build($ctx)
         or return $app->error(
-        $app->translate( "Template publishing failed. [_1]", $tmpl->errstr )
+        $app->translate( "Template publishing failed: [_1]", $tmpl->errstr )
         );
     ( my $ext = $tmpl->outfile ) =~ s/.*\.//;
     my $mime = $MimeTypes{$ext} || 'text/html';
@@ -173,7 +173,7 @@ sub _view_date_archive {
     my ( $fi, $tmpl ) = @_;
 
     my $archiver = MT->publisher->archiver( $fi->archive_type )
-        or return $app->errtrans( 'Unknown archive type. [_1]',
+        or return $app->errtrans( 'Unknown archive type: [_1]',
         $fi->archive_type );
     my ( $start, $end ) = $archiver->date_range( $fi->startdate );
     my $at = $archiver->name;
@@ -241,7 +241,7 @@ sub _view_entry {
     }
 
     my $out = $tmpl->build( $ctx, \%cond )
-        or return $app->errtrans( "Archive publishing failed. [_1]",
+        or return $app->errtrans( "Archive publishing failed: [_1]",
         $tmpl->errstr );
 
     $out;
@@ -272,7 +272,7 @@ sub _view_category {
 
     unless ($tmpl) {
         $tmpl = MT::Template->load( $fi->template_id )
-            or return $app->errtrans( "Can't load template [_1]",
+            or return $app->errtrans( "Cannot load template [_1]",
             $fi->template_id );
     }
 
@@ -305,7 +305,7 @@ sub _view_author {
 
     unless ($tmpl) {
         $tmpl = MT::Template->load( $fi->template_id )
-            or return $app->errtrans( "Can't load template [_1]",
+            or return $app->errtrans( "Cannot load template [_1]",
             $fi->template_id );
     }
 

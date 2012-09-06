@@ -229,7 +229,7 @@ sub _hdlr_captcha_fields {
     my ( $ctx, $args, $cond ) = @_;
     my $blog_id = $ctx->stash('blog_id');
     my $blog    = MT->model('blog')->load($blog_id);
-    return $ctx->error( MT->translate( 'Can\'t load blog #[_1].', $blog_id ) )
+    return $ctx->error( MT->translate( 'Cannot load blog #[_1].', $blog_id ) )
         unless $blog;
     if ( my $provider
         = MT->effective_captcha_provider( $blog->captcha_provider ) )

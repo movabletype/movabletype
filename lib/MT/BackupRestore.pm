@@ -329,7 +329,7 @@ sub _loop_through_objects {
 
     my $counter = 1;
     my $bytes   = 0;
-    my %authors_seen;
+    my %object_seen;
     my %backuped_objs_store;
     my $author_pkg = MT->model('author');
 
@@ -397,10 +397,41 @@ sub _loop_through_objects {
                     last;
                 }
                 $count++;
-                if (   ( $class eq $author_pkg )
-                    && ( exists $authors_seen{ $object->id } ) )
-                {
+                if ( exists $object_seen{  $class->datasource.'/'.$object->id } ) {
                     next;
+                }
+                if ($class->datasource eq 'author') {
+                    # Authors may be duplicated because of how terms and args are created.
+                    $object_seen{  'author/'.$object->id } = 1;
+                }
+                elsif ($class->datasource eq 'asset') {
+                    $object_seen{ 'asset/'.$object->id } = 1;
+                    $files->{ $object->id } = [
+                        $object->url, $object->file_path,
+                        $object->file_name
+                    ];
+                    if ( $object->parent and not $object_seen{ 'asset/'.$object->parent } ) {
+                        my $parent = MT->model('asset')->load( $object->parent );
+                        next unless $parent;
+                        $object_seen{ 'asset/'.$parent->id } = 1;
+                        $bytes += $printer->(
+                            $parent->to_xml( undef, \@metacolumns ) . "\n" );
+                        $files->{ $parent->id } = [
+                            $parent->url, $parent->file_path,
+                            $parent->file_name
+                        ];
+                        $records++;
+                    }
+                }
+                elsif ($class->datasource eq 'category') {
+                    $object_seen{ 'category/'.$object->id } = 1;
+                    foreach my $parent (reverse $object->parent_categories) {
+                        next if exists $object_seen{ 'category/'.$parent->id };
+                        $object_seen{ 'category/'.$parent->id } = 1;
+                        $bytes += $printer->(
+                            $parent->to_xml( undef, \@metacolumns ) . "\n" );
+                        $records++;
+                    }
                 }
                 $bytes += $printer->(
                     $object->to_xml( undef, \@metacolumns ) . "\n" );
@@ -410,17 +441,6 @@ sub _loop_through_objects {
                     $splitter->( ++$counter, $header );
                     $bytes = 0;
                 }
-                if ( $class eq $author_pkg ) {
-
-        # Authors may be duplicated because of how terms and args are created.
-                    $authors_seen{ $object->id } = 1;
-                }
-                elsif ( $class->datasource eq 'asset' ) {
-                    $files->{ $object->id } = [
-                        $object->url, $object->file_path,
-                        $object->file_name
-                    ];
-                }
             }
             last unless $next;
             $progress->(
@@ -429,16 +449,7 @@ sub _loop_through_objects {
                 $class->datasource
             ) if $records && ( $records % 100 == 0 );
         }
-        if ( $class eq $author_pkg && %authors_seen ) {
-            my $num_authors = scalar( keys %authors_seen );
-            $progress->(
-                $state . " "
-                    . MT->translate( "[_1] records backed up.",
-                    $num_authors ),
-                $class->class_type || $class->datasource
-            );
-        }
-        elsif ($records) {
+        if ($records) {
             $progress->(
                 $state . " "
                     . MT->translate( "[_1] records backed up.", $records ),
@@ -555,7 +566,7 @@ sub restore_directory {
     my @files;
     opendir my $dh, $dir
         or push( @$errors,
-        MT->translate( "Can't open directory '[_1]': [_2]", $dir, "$!" ) ),
+        MT->translate( "Cannot open directory '[_1]': [_2]", $dir, "$!" ) ),
         return undef;
     for my $f ( readdir $dh ) {
         next if $f !~ /^.+\.manifest$/i;
@@ -575,7 +586,7 @@ sub restore_directory {
 
     my $fh = gensym;
     open $fh, "<$manifest"
-        or push( @$errors, MT->translate( "Can't open [_1].", $manifest ) ),
+        or push( @$errors, MT->translate( "Cannot open [_1].", $manifest ) ),
         return 0;
     my $backups = __PACKAGE__->process_manifest($fh);
     close $fh;
@@ -600,7 +611,7 @@ sub restore_directory {
         my $fh = gensym;
         my $filepath = File::Spec->catfile( $dir, $file );
         open $fh, "<$filepath"
-            or push @$errors, MT->translate("Can't open [_1]."), next;
+            or push @$errors, MT->translate("Cannot open [_1]."), next;
 
         my ( $tmp_blog_ids, $tmp_asset_ids ) = eval {
             __PACKAGE__->restore_process_single_file( $fh, \%objects,
@@ -1324,26 +1335,6 @@ sub backup_terms_args {
     }
 }
 
-my $assets_seen = {};
-
-sub to_xml {
-    my $obj = shift;
-    my $xml = q();
-
-    return $xml if exists $assets_seen->{ $obj->id };
-
-    if ( $obj->parent ) {
-        my $parent = MT->model('asset')->load( $obj->parent )
-            or return $xml;
-        $xml .= $parent->to_xml(@_);
-        $xml .= "\n";
-    }
-
-    $xml .= $obj->SUPER::to_xml(@_);
-    $assets_seen->{ $obj->id } = 1;
-    $xml;
-}
-
 sub parents {
     my $obj = shift;
     {   blog_id => [ MT->model('blog'), MT->model('website') ],
@@ -1432,24 +1423,6 @@ sub restore_parent_ids {
 }
 
 package MT::Category;
-
-my $category_seen = {};
-
-sub to_xml {
-    my $obj = shift;
-    my $xml = q();
-
-    return $xml if exists $category_seen->{ $obj->id };
-
-    if ( '0' ne $obj->parent ) {
-        $xml .= $obj->parent_category->to_xml(@_);
-        $xml .= "\n";
-    }
-
-    $xml .= $obj->SUPER::to_xml(@_);
-    $category_seen->{ $obj->id } = 1;
-    $xml;
-}
 
 sub parents {
     my $obj = shift;

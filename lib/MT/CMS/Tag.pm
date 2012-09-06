@@ -18,7 +18,7 @@ sub rename_tag {
     my $id   = $app->param('__id');
     my $name = $app->param('tag_name')
         or return $app->error(
-        $app->translate("New name of the tag must be specified.") );
+        $app->translate("A new name for the tag must be specified.") );
     my $obj_type  = $app->param('__type');
     my $tag_class = $app->model('tag');
     my $ot_class  = $app->model('objecttag');
@@ -117,7 +117,7 @@ sub rename_tag {
             {   messages => [
                     {   cls => 'success',
                         msg => MT->translate(
-                            'Tag name was successfully renamed',
+                            'The tag was successfully renamed',
                         )
                     }
                 ],
@@ -287,7 +287,7 @@ sub add_tags_to_entries {
         messages => [
             {   cls => 'success',
                 msg => MT->translate(
-                    'Added [_1] tags for [_2] entries successfully!',
+                    'Successfully added [_1] tags for [_2] entries.',
                     scalar @tags, $entry_count,
                 )
             }

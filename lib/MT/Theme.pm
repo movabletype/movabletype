@@ -101,7 +101,7 @@ sub _theme_packages {
     foreach my $base_dir (@dir_list) {
         require DirHandle;
         my $d = DirHandle->new($base_dir);
-        die "Can't open theme directory" unless $d;
+        die "Cannot open theme directory" unless $d;
         while ( defined( my $id = $d->read ) ) {
             next if $id =~ /^\./;
             die "Bad theme filename $id"

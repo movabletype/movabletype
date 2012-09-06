@@ -192,7 +192,7 @@ sub archive_file {
     my $page = shift;
     my $blog = $page->blog()
         || return $page->error(
-        MT->translate( "Load of blog failed: [_1]", MT::Blog->errstr ) );
+        MT->translate( "Loading blog failed: [_1]", MT::Blog->errstr ) );
     return archive_file_for( $page, $blog, 'Page' );
 }
 
@@ -200,7 +200,7 @@ sub archive_url {
     my $page = shift;
     my $blog = $page->blog()
         || return $page->error(
-        MT->translate( "Load of blog failed: [_1]", MT::Blog->errstr ) );
+        MT->translate( "Loading blog failed: [_1]", MT::Blog->errstr ) );
     my $url = $blog->site_url || "";
     $url .= '/' unless $url =~ m!/$!;
     return $url . $page->archive_file(@_);

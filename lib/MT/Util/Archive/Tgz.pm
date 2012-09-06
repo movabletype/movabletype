@@ -113,7 +113,7 @@ sub files {
 sub extract {
     my $obj = shift;
     my ($path) = @_;
-    return $obj->error( MT->translate('Can\'t extract from the object') )
+    return $obj->error( MT->translate('Cannot extract from the object') )
         if 'w' eq $obj->{_mode};
 
     $path ||= MT->config->TempDir;
@@ -144,7 +144,7 @@ sub add_file {
 sub add_string {
     my $obj = shift;
     my ( $string, $file_name ) = @_;
-    return $obj->error( MT->translate('Can\'t write to the object') )
+    return $obj->error( MT->translate('Cannot write to the object') )
         if 'r' eq $obj->{_mode};
     return $obj->error(
         MT->translate('Both data and file name must be specified.') )

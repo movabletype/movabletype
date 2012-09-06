@@ -201,7 +201,7 @@ sub save {
             $s_path =~ s/PATH$//;
 
             if ( 0 != index( $s_path, $l_path ) ) {
-                return $app->errtrans("Website root must be under [_1]", $l_path);
+                return $app->errtrans("The website root directory must be within [_1]", $l_path);
             }
         }
         if ($values{site_path} 
@@ -1746,7 +1746,7 @@ sub delete {
                 require MT::Placement;
                 my $blog = MT::Blog->load($blog_id)
                     or return $app->error(
-                    $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+                    $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
                 my $at = $blog->archive_type;
                 if ( $at && $at ne 'None' ) {
                     my @at = split /,/, $at;
@@ -1865,7 +1865,7 @@ sub delete {
     }
     if ($required_items) {
         $return_arg{error}
-            = $app->translate("System templates can not be deleted.");
+            = $app->translate("System templates cannot be deleted.");
     }
 
     if ( $app->param('xhr') ) {

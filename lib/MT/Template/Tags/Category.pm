@@ -563,7 +563,7 @@ sub _hdlr_sub_categories {
 
     return $ctx->error(
         MT->translate(
-            'Can\'t use sort_by and sort_method together in [_1]',
+            'Cannot use sort_by and sort_method together in [_1]',
             $ctx->stash('tag'),
         )
     ) if ( $sort_method && $sort_by );

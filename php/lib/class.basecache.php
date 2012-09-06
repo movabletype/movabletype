@@ -33,7 +33,7 @@ abstract class CacheProviderFactory {
 
         if (!array_key_exists($type, self::$_provider)) {
             require_once('class.exception.php');
-            throw new MTException("Can't load cache provider. (" . $type . ")");
+            throw new MTException("Cannot load cache provider. (" . $type . ")");
         }
 
         $name = CacheProviderFactory::$_provider[$type];

@@ -294,7 +294,7 @@ sub init_user {
         }
         else {
             $param{error} = $app->translate(
-                "Could not authenticate using the credentials provided. [_1].",
+                "Could not authenticate using the credentials provided: [_1].",
                 $err
             );
             return $app->build_page( 'install.tmpl', \%param );

@@ -266,13 +266,13 @@ sub execute {
     if ( $app->{searchparam}{Type} eq 'newcomments' ) {
         $app->_new_comments
             or return $app->error(
-            $app->translate( "Search failed. [_1]", $app->errstr ) );
+            $app->translate( "Search failed: [_1]", $app->errstr ) );
         @results = $app->{results} ? @{ $app->{results} } : ();
     }
     elsif ( $app->{searchparam}{Type} eq 'tag' ) {
         $app->_tag_search
             or return $app->error(
-            $app->translate( "Search failed. [_1]", $app->errstr ) );
+            $app->translate( "Search failed: [_1]", $app->errstr ) );
         my $col = $app->{searchparam}{SearchSortBy};
         my $order = $app->{searchparam}{ResultDisplay} || 'ascend';
         for my $blog ( sort keys %{ $app->{results} } ) {
@@ -294,7 +294,7 @@ sub execute {
     else {
         $app->_straight_search
             or return $app->error(
-            $app->translate( "Search failed. [_1]", $app->errstr ) );
+            $app->translate( "Search failed: [_1]", $app->errstr ) );
         ## Results are stored per-blog, so we sort the list of blogs by name,
         ## then add in the results to the final list.
         my $col = $app->{searchparam}{SearchSortBy};
@@ -397,7 +397,7 @@ sub execute {
         open FH, $tmpl
             or return $app->error(
             $app->translate(
-                "Opening local file '[_1]' failed, [_2]",
+                "Opening local file '[_1]' failed: [_2]",
                 $tmpl, "$!"
             )
             );
@@ -424,7 +424,7 @@ sub execute {
     my $build = MT::Builder->new;
     my $tokens = $build->compile( $ctx, $str )
         or return $app->error(
-        $app->translate( "Publishing results failed. [_1]", $build->errstr )
+        $app->translate( "Publishing results failed: [_1]", $build->errstr )
         );
     defined(
         my $res = $build->build(
@@ -443,7 +443,7 @@ sub execute {
         )
         )
         or return $app->error(
-        $app->translate( "Publishing results failed. [_1]", $ctx->errstr ) );
+        $app->translate( "Publishing results failed: [_1]", $ctx->errstr ) );
     $res = $app->_set_form_elements($res);
 
     if ( defined( $ctx->stash('content_type') ) ) {

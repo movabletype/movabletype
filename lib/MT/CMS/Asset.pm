@@ -1226,7 +1226,7 @@ sub _upload_file {
                     or return start_upload(
                     $app, %param,
                     error => $app->translate(
-                        "Can't make path '[_1]': [_2]", $path,
+                        "Cannot make path '[_1]': [_2]", $path,
                         $fmgr->errstr
                     )
                     );
@@ -1328,8 +1328,8 @@ sub _upload_file {
                     return $app->error(
                         $app->translate(
                             "File with name '[_1]' already exists. (Install "
-                                . "the File::Temp Perl module if you'd like to be able to overwrite "
-                                . "existing uploaded files.)",
+                                . "the File::Temp Perl module if you would like "
+                                . "to be able to overwrite existing uploaded files.)",
                             $basename
                         )
                     );
@@ -1344,7 +1344,7 @@ sub _upload_file {
                     return $app->errtrans(
                         "Error creating a temporary file; The webserver should be able "
                             . "to write to this folder.  Please check the TempDir "
-                            . "setting in your configuration file, it\'s currently '[_1]'. "
+                            . "setting in your configuration file, it is currently '[_1]'. ",
                         (     $tmp_dir
                             ? $tmp_dir
                             : '[' . $app->translate('unassigned') . ']'
@@ -1355,7 +1355,7 @@ sub _upload_file {
                     or return $app->error(
                     $app->translate(
                         "File with name '[_1]' already exists; Tried to write "
-                            . "to a tempfile, but the webserver couldn't open it: [_2]",
+                            . "to a tempfile, but the webserver could not open it: [_2]",
                         $basename,
                         "$!"
                     )

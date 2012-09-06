@@ -21,11 +21,11 @@ class CacheMemcached extends BaseCache {
                     $this->connect($servers);
                 } else {
                     require_once('class.exception.php');
-                    throw new MTException("Can't load memcached extension.");
+                    throw new MTException("Cannot load memcached extension.");
                 }
             } else {
                 require_once('class.exception.php');
-                throw new MTException("Can't load memcached extension.");
+                throw new MTException("Cannot load memcached extension.");
             }
         }
     }
@@ -44,14 +44,14 @@ class CacheMemcached extends BaseCache {
         list ($host, $port) = explode(":", $server);
         if ($host == '') {
             require_once('class.exception.php');
-            throw new MTConfigException("Can't connect to memcached server. (" . $server . ")");
+            throw new MTConfigException("Cannot connect to memcached server. (" . $server . ")");
         }
         if ($port == '')
             $port = 11211; # Assigns default port.
         else {
             if (!is_numeric($port)) {
                 require_once('class.exception.php');
-                throw new MTConfigException("Can't connect to memcached server. (" . $server . ")");
+                throw new MTConfigException("Cannot connect to memcached server. (" . $server . ")");
             } else
                 $port = intval($port);
         }
@@ -60,7 +60,7 @@ class CacheMemcached extends BaseCache {
         $ret = self::$_server->connect($host, $port);
         if (!$ret) {
             require_once('class.exception.php');
-            throw new MTConfigException("Can't connect to memcached server. (" . $server . ")");
+            throw new MTConfigException("Cannot connect to memcached server. (" . $server . ")");
         }
     }
 
