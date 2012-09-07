@@ -1627,6 +1627,7 @@ BEGIN {
             'SearchTemplatePath' => {
                 default => 'search_templates',
                 path    => 1,
+                type    => 'ARRAY',
             },
             'ThemesDirectory' => {
                 default => 'themes',
