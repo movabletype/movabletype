@@ -18,6 +18,11 @@ function smarty_block_mtfor($args, $content, &$ctx, &$repeat) {
                : 0);
         $end = array_key_exists('end', $args) ? $args['end']
             : (array_key_exists('to', $args) ? $args['to'] : null);
+        $incr = array_key_exists('increment', $args) ?
+            $args['increment']
+            : (array_key_exists('step', $args) ?
+                $args['step']
+                : null);
         $var = $args['var'];
 
         if ($end === null) {
@@ -25,22 +30,30 @@ function smarty_block_mtfor($args, $content, &$ctx, &$repeat) {
             $repeat = false;
         }
 
+        if (!preg_match("/^-?\d+$/", $incr)) {
+            $incr = $start <= $end ? 1 : -1;
+        }
+
+        if ($incr == null) {
+            $incr = $start <= $end ? 1 : -1;
+        }
+
         $index = $start;
         $counter = 1;
         $ctx->stash('__for_end', $end);
         $ctx->stash('__for_var', $var);
         $ctx->stash('__out', false);
-        $ctx->stash('__for_increment', isset($args['increment']) ? $args['increment'] : 1);
+        $ctx->stash('__for_increment', $incr);
     } else {
-        $inc = $ctx->stash('__for_increment');
-        $index = $ctx->__stash['vars']['__index__'] + $inc;
+        $incr = $ctx->stash('__for_increment');
+        $index = $ctx->__stash['vars']['__index__'] + $incr;
         $counter = $ctx->__stash['vars']['__counter__'] + 1;
         $end = $ctx->stash('__for_end');
         $var = $ctx->stash('__for_var');
         $out = $ctx->stash('__out');
     }
 
-    if ($index <= $end) {
+    if ( $incr > 0 ? $index <= $end : $index >= $end ) {
         $ctx->__stash['vars']['__index__'] = $index;
         $ctx->__stash['vars']['__counter__'] = $counter;
         $ctx->__stash['vars']['__odd__'] = ($counter % 2) == 1;

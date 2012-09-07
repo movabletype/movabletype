@@ -2122,11 +2122,10 @@ sub _hdlr_for {
     $start = 0 unless $start =~ /^-?\d+$/;
     my $end = ( exists $args->{to} ? $args->{to} : $args->{end} ) || 0;
     return q() unless $end =~ /^-?\d+$/;
-    my $incr = $args->{increment} || $args->{step} || 1;
+    my $incr = $args->{increment} || $args->{step} || 0;
 
-    # FIXME: support negative "step" values
-    $incr = 1 unless $incr =~ /^\d+$/;
-    $incr = 1 unless $incr;
+    $incr = ( $start <= $end ? 1 : -1 ) unless $incr =~ /^-?\d+$/;
+    $incr = ( $start <= $end ? 1 : -1 ) unless $incr;
 
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
@@ -2135,7 +2134,7 @@ sub _hdlr_for {
     my $vars    = $ctx->{__stash}{vars} ||= {};
     my $glue    = $args->{glue};
     my $var     = $args->{var};
-    for ( my $i = $start; $i <= $end; $i += $incr ) {
+    for ( my $i = $start; ( $incr > 0 ? $i <= $end : $i >= $end ); $i += $incr ) {
         local $vars->{__first__}   = $i == $start;
         local $vars->{__last__}    = $i == $end;
         local $vars->{__odd__}     = ( $cnt % 2 ) == 1;
