@@ -4265,11 +4265,14 @@ B<Example:> Passing Parameters to a Template Module
             ) ? 1 : 0;
         my $cache_key = 
             $arg->{cache_key} || $arg->{key} || $tmpl->get_cache_key();
-        my $ttl
+        # Delete a cached data if $ttl_for_get seconds have passed since saving.
+        my $ttl_for_get
             = exists $arg->{ttl}          ? $arg->{ttl}
             : ( $cache_expire_type == 1 ) ? $tmpl->cache_expire_interval
             : ( $cache_expire_type == 2 ) ? 0
             :                               60 * 60;    # default 60 min.
+        # Allow the cache driver to expire data after $ttl_for_set passed.
+        my $ttl_for_set = $ttl_for_get;
 
         if ( $cache_expire_type == 2 ) {
             my @types = split /,/, ( $tmpl->cache_expire_event || '' );
@@ -4289,12 +4292,14 @@ B<Example:> Passing Parameters to a Template Module
                             && ( MT::Util::ts2epoch( undef, $latest, 1 )
                                 > $mtime ) )
                         {
-                            $ttl = 1;    # bound to force an update
+                            $ttl_for_get = 1;    # bound to force an update
                         }
                     }
                     else {
-                        $ttl = time - MT::Util::ts2epoch( undef, $latest, 1 );
-                        $ttl = 1 if $ttl == 0;    # edited just now.
+                        $ttl_for_get
+                            = time - MT::Util::ts2epoch( undef, $latest, 1 );
+                        $ttl_for_get = 1
+                            if $ttl_for_get == 0;    # edited just now.
                     }
                 }
             }
@@ -4306,11 +4311,12 @@ B<Example:> Passing Parameters to a Template Module
             my $tmpl_ts
                 = MT::Util::ts2epoch( $tmpl->blog_id ? $tmpl->blog : undef,
                 $tmpl_mod );
-            if ( ( $ttl == 0 ) || ( time - $tmpl_ts < $ttl ) ) {
-                $ttl = time - $tmpl_ts;
+            if ( ( $ttl_for_get == 0 ) || ( time - $tmpl_ts < $ttl_for_get ) )
+            {
+                $ttl_for_get = time - $tmpl_ts;
             }
             require MT::Cache::Negotiate;
-            $cache_driver = MT::Cache::Negotiate->new( ttl => $ttl );
+            $cache_driver = MT::Cache::Negotiate->new( ttl => $ttl_for_get );
             my $cache_value = $cache_driver->get($cache_key);
             $cache_value = Encode::decode( $enc, $cache_value );
             if ($cache_value) {
@@ -4354,7 +4360,7 @@ B<Example:> Passing Parameters to a Template Module
 
         if ($cache_enabled) {
             $cache_driver->set( $cache_key, Encode::encode( $enc, $ret ),
-                $ttl );
+                $ttl_for_set );
         }
 
         if ($use_ssi) {
