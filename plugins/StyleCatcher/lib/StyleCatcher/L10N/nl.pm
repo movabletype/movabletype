@@ -21,10 +21,17 @@ use vars qw( %Lexicon );
 
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'Uw mt-static map kon niet worden gevonden.  Gelieve \'StaticFilePath\' te configureren om verder te gaan.',
-	'Permission Denied.' => 'Toestemming geweigerd.', # Translate - Case
-	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Kon map [_1] niet aanmaken - Controleer of uw \'themes\' map beschrijfbaar is voor de webserver.',
+	'Permission Denied.' => 'Toestemming geweigerd.',
 	'Successfully applied new theme selection.' => 'Nieuwe thema-selectie met succes toegepast.',
+
+## plugins/StyleCatcher/lib/StyleCatcher/Library/Default.pm
 	'Invalid URL: [_1]' => 'Ongeldige URL: [_1]',
+	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Kon map [_1] niet aanmaken - Controleer of uw \'themes\' map beschrijfbaar is voor de webserver.',
+
+## plugins/StyleCatcher/lib/StyleCatcher/Library/Local.pm
+	'Failed to load StyleCatcher Library: [_1]' => 'Laden van de StyleCatcher bibliotheem mislukt: [_1]',
+
+## plugins/StyleCatcher/lib/StyleCatcher/Util.pm
 	'(Untitled)' => '(geen titel)',
 
 ## plugins/StyleCatcher/tmpl/view.tmpl
@@ -43,21 +50,19 @@ use vars qw( %Lexicon );
 	'Error applying theme: ' => 'Fout bij toepassen thema:',
 	'The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout.' => 'Het geselecteerde thema is toegepast, maar omdat u een andere lay-out heeft gekozen, moet u eerst uw weblog opnieuw publiceren om de nieuwe lay-out zichtbaar te maken.',
 	'The selected theme has been applied!' => 'Het geselecteerde thema is toegepast',
-	'Error loading themes! -- [_1]' => 'Fout bij het laden van thema\'s! -- [_1]',
+	q{Error loading themes! -- [_1]} => q{Fout bij het laden van thema's! -- [_1]},
 	'Stylesheet or Repository URL' => 'Stylesheet of bibliotheek URL',
 	'Stylesheet or Repository URL:' => 'Stylesheet of bibliotheek URL:',
 	'Download Styles' => 'Stijlen downloaden',
 	'Current theme for your weblog' => 'Huidig thema van uw weblog',
 	'Current Style' => 'Huidige stijl',
-	'Locally saved themes' => 'Lokaal opgeslagen thema\'s',
+	q{Locally saved themes} => q{Lokaal opgeslagen thema's},
 	'Saved Styles' => 'Opgeslagen stijlen',
 	'Default Styles' => 'Standaard stijlen',
-	'Single themes from the web' => 'Losse thema\'s van het web',
+	q{Single themes from the web} => q{Losse thema's van het web},
 	'More Styles' => 'Meer stijlen',
 	'Selected Design' => 'Geselecteerde designs',
 	'Layout' => 'Lay-out',
-
-
 );
 
 1;

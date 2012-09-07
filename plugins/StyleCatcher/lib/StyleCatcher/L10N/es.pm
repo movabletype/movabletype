@@ -21,10 +21,17 @@ use vars qw( %Lexicon );
 
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'No se encontró el directorio mt-static. Por favor, configure el \'StaticFilePath\' para continuar.',
-	'Permission Denied.' => 'Permiso denegado.', # Translate - Case
-	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'No se pudo crear el directorio [_1] - Compruebe que el servidor web puede escribir en la carpeta \'themes\'.',
+	'Permission Denied.' => 'Permiso denegado.',
 	'Successfully applied new theme selection.' => 'Se aplicó con éxito la nueva selección de estilo.',
+
+## plugins/StyleCatcher/lib/StyleCatcher/Library/Default.pm
 	'Invalid URL: [_1]' => 'URL no válida: [_1]',
+	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'No se pudo crear el directorio [_1] - Compruebe que el servidor web puede escribir en la carpeta \'themes\'.',
+
+## plugins/StyleCatcher/lib/StyleCatcher/Library/Local.pm
+	'Failed to load StyleCatcher Library: [_1]' => 'Fallí al cargar la librería de StyleCatcher: [_1]',
+
+## plugins/StyleCatcher/lib/StyleCatcher/Util.pm
 	'(Untitled)' => '(sin título)',
 
 ## plugins/StyleCatcher/tmpl/view.tmpl
