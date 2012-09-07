@@ -147,7 +147,7 @@ sub check_upload {
     if ( MT::Asset::Image->can_handle($ext) ) {
         return $class->error(
             MT->translate(
-                "Saving [_1] failed. Invalid image file format.",
+                "Saving [_1] failed: Invalid image file format.",
                 $filename . $ext
             )
         ) unless is_valid_image( $params{Fh} );
@@ -184,7 +184,7 @@ sub check_upload {
         if ( $max_size < $file_size ) {
             return $class->error(
                 MT->translate(
-                    "File size exceeds maximum allowed. [_1] > [_2]",
+                    "File size exceeds maximum allowed: [_1] > [_2]",
                     $file_size, $max_size
                 )
             );

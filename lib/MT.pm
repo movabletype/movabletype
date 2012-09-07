@@ -1663,7 +1663,7 @@ sub ping {
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
         $blog = MT::Blog->load($blog_id)
-            or return $mt->trans_error( "Load of blog '[_1]' failed: [_2]",
+            or return $mt->trans_error( "Loading of blog '[_1]' failed: [_2]",
             $blog_id, MT::Blog->errstr );
     }
 

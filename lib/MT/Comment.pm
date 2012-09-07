@@ -922,7 +922,7 @@ sub entry {
         $entry = MT::Entry->load($entry_id)
             or return $comment->error(
             MT->translate(
-                "Loading entry '[_1]' failed. [_2]", $entry_id,
+                "Loading entry '[_1]' failed: [_2]", $entry_id,
                 MT::Entry->errstr
             )
             );
@@ -940,7 +940,7 @@ sub blog {
         $blog = MT::Blog->load($blog_id)
             or return $comment->error(
             MT->translate(
-                "Loading blog '[_1]' failed. [_2]", $blog_id,
+                "Loading blog '[_1]' failed: [_2]", $blog_id,
                 MT::Blog->errstr
             )
             );

@@ -350,7 +350,7 @@ sub element_dialog {
     if ($@) {
         MT->log(
             {   message => MT->translate(
-                    'Failed to load theme export template for [_1]. [_2]',
+                    'Failed to load theme export template for [_1]: [_2]',
                     $exporter_id, $@
                 ),
                 level    => MT::Log::WARNING(),
@@ -410,7 +410,7 @@ sub save_detail {
     $blog->save
         or return $app->error(
         MT->translate(
-            'Failed to save theme export info. [_1]',
+            'Failed to save theme export info: [_1]',
             $blog->errstr
         )
         );
@@ -545,7 +545,7 @@ sub do_export {
         eval { $data = $code->( $app, $blog, $setting ); };
         return $app->error(
             $app->translate(
-                'Error occurred during exporting [_1]. [_2]', $exporter_id,
+                'Error occurred during exporting [_1]: [_2]', $exporter_id,
                 $@
             )
         ) if $@;
@@ -584,7 +584,7 @@ sub do_export {
         if ($@) {
             return $app->error(
                 $app->translate(
-                    'Error occurred during finalizing [_1]. [_2]', $hdlr,
+                    'Error occurred during finalizing [_1]: [_2]', $hdlr,
                     "$@",
                 )
             );
@@ -592,7 +592,7 @@ sub do_export {
         if ( !defined $finalize ) {
             return $app->error(
                 $app->translate(
-                    'Error occurred during finalizing [_1]. [_2]', $hdlr,
+                    'Error occurred during finalizing [_1]: [_2]', $hdlr,
                     $app->errstr,
                 )
             );
@@ -603,7 +603,7 @@ sub do_export {
     $fmgr->put_data( MT::Util::YAML::Dump($theme_hash), $yaml_path )
         or return $app->error(
         $app->translate(
-            'Error occurred while publishing theme. [_1]',
+            'Error occurred while publishing theme: [_1]',
             $fmgr->errstr,
         )
         );
@@ -625,7 +625,7 @@ sub do_export {
         require MT::Util::Archive;
         my $arcfile = File::Temp::tempnam( $tmproot, $theme_id );
         my $arc = MT::Util::Archive->new( $arctype, $arcfile )
-            or die "Can't load archiver : " . MT::Util::Archive->errstr;
+            or die "Cannot load archiver : " . MT::Util::Archive->errstr;
         $arc->add_tree($tmproot);
         $arc->close;
         my $newfilename = $theme_id;

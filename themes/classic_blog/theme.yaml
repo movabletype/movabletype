@@ -101,7 +101,7 @@ elements:
                         description_label: 'Displays error, pending or confirmation message for comments.'
                         label: Comment Response
                     dynamic_error:
-                        description_label: Displays errors for dynamically published templates.
+                        description_label: Displays errors for dynamically-published templates.
                         label: Dynamic Error
                     popup_image:
                         description_label: Displays image when user clicks a popup-linked image.

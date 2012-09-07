@@ -2060,7 +2060,7 @@ sub login {
         }
         $message
             ||= $app->translate(
-            'This account has been disabled. Please see your system administrator for access.'
+            'This account has been disabled. Please see your Movable Type system administrator for access.'
             );
         $app->user(undef);
         $app->log(
@@ -2826,7 +2826,7 @@ sub show_error {
     if ( !$tmpl ) {
         $error = '<pre>' . $error . '</pre>' unless $error =~ m/<pre>/;
         return
-              "Can't load error template; got error '"
+              "Cannot load error template; got error '"
             . encode_html( $app->errstr )
             . "'. Giving up. Original error was: $error";
     }
@@ -2855,7 +2855,7 @@ sub show_error {
     if ( !defined $out ) {
         $param->{enable_pre} = 1 unless $error =~ m/<pre>/;
         return
-              "Can't build error template; got error '"
+              "Cannot build error template; got error '"
             . encode_html( $tmpl->errstr )
             . "'. Giving up. Original error was: $error";
     }

@@ -387,7 +387,7 @@ sub do_signup {
 
     my $blog = $app->model('blog')->load( $param->{blog_id} || 0 )
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $param->{blog_id} ) );
+        $app->translate( 'Cannot load blog #[_1].', $param->{blog_id} ) );
 
     my $cfg = $app->config;
     if ( my $registration = $cfg->CommenterRegistration ) {
@@ -407,7 +407,7 @@ sub do_signup {
     unless ($user) {
         my $blog = $app->model('blog')->load( $param->{blog_id} )
             or return $app->error(
-            $app->translate( 'Can\'t load blog #[_1].', $param->{blog_id} ) );
+            $app->translate( 'Cannot load blog #[_1].', $param->{blog_id} ) );
         if ( my $provider
             = MT->effective_captcha_provider( $blog->captcha_provider ) )
         {
@@ -458,7 +458,7 @@ sub _send_signup_confirmation {
 
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my $entry;
     $entry = MT::Entry->load($entry_id)
         if $entry_id;
@@ -605,7 +605,7 @@ sub do_register {
         unless $blog_id == $q_blog_id;
 
     my $blog = $app->model('blog')->load($blog_id)
-        or return $error->( 'Can\'t load blog #[_1].', $blog_id );
+        or return $error->( 'Cannot load blog #[_1].', $blog_id );
 
     my $registration = $cfg->CommenterRegistration
         or return $error->('Signing up is not allowed.');
@@ -671,7 +671,7 @@ sub _send_registration_notification {
 
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my $subject = $app->translate( "[_1] registered to the blog '[_2]'",
         $user->name, $blog->name );
 
@@ -714,7 +714,7 @@ sub generate_captcha {
     }
     my $blog = $app->model('blog')->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     if ( my $provider
         = MT->effective_captcha_provider( $blog->captcha_provider ) )
     {
@@ -839,7 +839,7 @@ sub _builtin_throttle {
 
         my $blog = MT::Blog->load( $entry->blog_id )
             or return $app->error(
-            $app->translate( 'Can\'t load blog #[_1].', $entry->blog_id ) );
+            $app->translate( 'Cannot load blog #[_1].', $entry->blog_id ) );
         if ( $author && $author->email ) {
             my %head = (
                 id      => 'comment_throttle',
@@ -894,7 +894,7 @@ sub post {
 
     my $blog = $app->model('blog')->load( $entry->blog_id )
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $entry->blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $entry->blog_id ) );
 
     my $armor = $q->param('armor');
     if ( defined $armor ) {
@@ -1096,7 +1096,7 @@ sub post {
         # redirected to the indiv. page it will be up-to-date.
         $app->rebuild_entry( Entry => $entry->id, PreferredArchiveOnly => 1 )
             or return $app->handle_error(
-            $app->translate( "Publish failed: [_1]", $app->errstr ) );
+            $app->translate( "Publishing failed: [_1]", $app->errstr ) );
     }
 
     if ( $comment->is_junk ) {
@@ -1117,7 +1117,7 @@ sub post {
                 BuildDependencies => 1
                 )
                 or return $app->handle_error(
-                $app->translate( "Publish failed: [_1]", $app->errstr ) );
+                $app->translate( "Publishing failed: [_1]", $app->errstr ) );
 
             $app->_send_comment_notification( $comment, $comment_link, $entry,
                 $blog, $commenter );
@@ -1134,7 +1134,7 @@ sub post {
                 = MT::DefaultTemplates->load(
                 { identifier => 'comment_response' } )
                 or return $app->handle_error(
-                $app->translate("Can\'t load template") );
+                $app->translate("Cannot load template") );
             $tmpl->blog_id( $entry->blog_id );
             my $curr_lang = MT->current_language;
             $app->set_language( $blog->language );
@@ -1277,7 +1277,7 @@ sub _check_commenter_author {
         if ( my $registration = $app->config->CommenterRegistration ) {
             my $blog = MT::Blog->load($blog_id)
                 or return $app->error(
-                $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+                $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
             if ($registration->{Allow}
                 && (   $app->config->ExternalUserManagement
                     || $blog->allow_commenter_regist )
@@ -1479,7 +1479,7 @@ sub handle_sign_in {
 
     return $app->handle_error(
         $app->errstr() || $app->translate(
-            "The sign-in attempt was not successful; please try again."),
+            "The sign-in attempt was not successful; Please try again."),
         403
     ) unless $result;
     if ($sess) {
@@ -1515,7 +1515,7 @@ sub redirect_to_target {
         my $entry = MT::Entry->load( $q->param('entry_id') || 0 )
             or return $app->error(
             $app->translate(
-                'Can\'t load entry #[_1].',
+                'Cannot load entry #[_1].',
                 $q->param('entry_id')
             )
             );
@@ -1525,7 +1525,7 @@ sub redirect_to_target {
         my $blog = $app->model('blog')->load( scalar $q->param('blog_id') )
             or return $app->error(
             $app->translate(
-                'Can\'t load blog #[_1].', $q->param('blog_id')
+                'Cannot load blog #[_1].', $q->param('blog_id')
             )
             );
         if ( !$app->is_valid_redirect_target ) {
@@ -1832,7 +1832,7 @@ sub do_preview {
                 = MT::DefaultTemplates->load(
                 { identifier => 'comment_response' } )
                 or
-                return $app->error( $app->translate("Can\'t load template") );
+                return $app->error( $app->translate("Cannot load template") );
             $tmpl->blog_id( $entry->blog_id );
             my $curr_lang = MT->current_language;
             $app->set_language( $blog->language );
@@ -1876,7 +1876,7 @@ sub do_preview {
                 = MT::DefaultTemplates->load(
                 { identifier => 'comment_preview' } )
                 or
-                return $app->error( $app->translate("Can\'t load template") );
+                return $app->error( $app->translate("Cannot load template") );
             $tmpl->blog_id( $entry->blog_id );
             my $curr_lang = MT->current_language;
             $app->set_language( $blog->language );
@@ -2006,7 +2006,7 @@ sub save_commenter_profile {
             )
         {
             $param{error}
-                = $app->translate('Failed to verify current password.');
+                = $app->translate('Failed to verify the current password.');
             return $app->build_page( 'profile.tmpl', \%param );
         }
     }

@@ -138,7 +138,7 @@ sub _get_stream_iterator {
                 );
                 open $fh, "<$file"
                     or return $class->error(
-                    MT->translate( "Can't open '[_1]': [_2]", $file, $! ) );
+                    MT->translate( "Cannot open '[_1]': [_2]", $file, $! ) );
                 $stream = $fh;
             };
         }

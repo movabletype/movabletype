@@ -761,7 +761,7 @@ EOT
 <MTSetVar name="heading" value="<__trans phrase="Thank you for commenting.">">
 
 <MTSetVarBlock name="message">
-<p><__trans phrase="Your comment has been received and held for approval by the blog owner."></p>
+<p><__trans phrase="Your comment has been received and held for review by a blog administrator."></p>
 </MTSetVarBlock>
 EOT
 

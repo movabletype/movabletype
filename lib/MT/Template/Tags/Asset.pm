@@ -252,7 +252,7 @@ sub _hdlr_assets {
         else {
             return $ctx->error(
                 MT->translate(
-                    "You have an error in your '[_2]' attribute. [_1]",
+                    "You have an error in your '[_2]' attribute: [_1]",
                     $args->{tags} || $args->{tag}, 'tag'
                 )
             );

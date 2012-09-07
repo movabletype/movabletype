@@ -128,7 +128,7 @@ sub extract {
 sub add_file {
     my $obj = shift;
     my ( $path, $file_path ) = @_;
-    return $obj->error( MT->translate('Canno# Tt write to the object') )
+    return $obj->error( MT->translate('Cannot write to the object') )
         if 'r' eq $obj->{_mode};
     my $encoded_path = $file_path;
     $encoded_path = MT::FileMgr::Local::_syserr($encoded_path)
@@ -156,7 +156,7 @@ sub add_string {
 sub add_tree {
     my $obj = shift;
     my ($dir_path) = @_;
-    return $obj->error( MT->translate('Can\'t write to the object') )
+    return $obj->error( MT->translate('Cannot write to the object') )
         if 'r' eq $obj->{_mode};
     my $arc = $obj->{_arc};
     require File::Find;

@@ -734,7 +734,7 @@ sub rebuild_pages {
             unless $perms->can_do('rebuild');
         if ($template_id) {
             my $tmpl = MT->model('template')->load($template_id)
-                or return $app->errtrans( 'Can\'t load template #[_1].',
+                or return $app->errtrans( 'Cannot load template #[_1].',
                 $template_id );
             return $app->permission_denied()
                 unless $app->user->permissions( $tmpl->blog_id )
@@ -742,7 +742,7 @@ sub rebuild_pages {
         }
         elsif ($map_id) {
             my $map = MT->model('templatemap')->load($map_id)
-                or return $app->errtrans( 'Can\'t load template #[_1].',
+                or return $app->errtrans( 'Cannot load template #[_1].',
                 $map_id );
             return $app->permission_denied()
                 unless $app->user->permissions( $map->blog_id )
@@ -804,7 +804,7 @@ sub rebuild_pages {
                 unless $perms->can_do('rebuild');
             if ($template_id) {
                 my $tmpl = MT->model('template')->load($template_id)
-                    or return $app->errtrans( 'Can\'t load template #[_1].',
+                    or return $app->errtrans( 'Cannot load template #[_1].',
                     $template_id );
                 return $app->permission_denied()
                     unless $app->user->permissions( $tmpl->blog_id )
@@ -812,7 +812,7 @@ sub rebuild_pages {
             }
             elsif ($map_id) {
                 my $map = MT->model('templatemap')->load($map_id)
-                    or return $app->errtrans( 'Can\'t load template #[_1].',
+                    or return $app->errtrans( 'Cannot load template #[_1].',
                     $map_id );
                 return $app->permission_denied()
                     unless $app->user->permissions( $map->blog_id )
@@ -955,14 +955,14 @@ sub rebuild_pages {
             my $entry = MT::Entry->load( scalar $q->param('entry_id') )
                 or return $app->error(
                 $app->translate(
-                    'Can\'t load entry #[_1].',
+                    'Cannot load entry #[_1].',
                     $q->param('entry_id')
                 )
                 );
             require MT::Blog;
             my $blog = MT::Blog->load( $entry->blog_id )
                 or return $app->error(
-                $app->translate( 'Can\'t load blog #[_1].', $entry->blog_id )
+                $app->translate( 'Cannot load blog #[_1].', $entry->blog_id )
                 );
             require MT::CMS::Entry;
             MT::CMS::Entry::ping_continuation(
@@ -1123,7 +1123,7 @@ sub start_rebuild_pages {
         require MT::Template;
         my $tmpl = MT::Template->load($tmpl_id)
             or return $app->error(
-            $app->translate( 'Can\'t load template #[_1].', $tmpl_id ) );
+            $app->translate( 'Cannot load template #[_1].', $tmpl_id ) );
         $param{build_type_name} = $app->translate( "index template '[_1]'",
             MT::Util::encode_html( $tmpl->name ) );
         $param{is_one_index} = 1;
@@ -1133,7 +1133,7 @@ sub start_rebuild_pages {
         require MT::Entry;
         my $entry = MT::Entry->load($entry_id)
             or return $app->error(
-            $app->translate( 'Can\'t load entry #[_1].', $entry_id ) );
+            $app->translate( 'Cannot load entry #[_1].', $entry_id ) );
         $param{build_type_name}
             = $app->translate( "[_1] '[_2]'", $entry->class_label,
             MT::Util::encode_html( $entry->title ) );
@@ -1190,7 +1190,7 @@ sub rebuild_confirm {
     require MT::Blog;
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
     return $app->permission_denied()
         unless $app->can_do('rebuild');
@@ -1205,7 +1205,7 @@ sub rebuild_confirm {
         my $tmpl
             = MT::Template->load( { id => $tmpl_id, blog_id => $blog_id } )
             or return $app->error(
-            $app->translate( 'Can\'t load template #[_1].', $tmpl_id ) );
+            $app->translate( 'Cannot load template #[_1].', $tmpl_id ) );
         $param{index_tmpl_id}   = $tmpl->id;
         $param{index_tmpl_name} = $tmpl->name;
     }

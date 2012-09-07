@@ -34,12 +34,12 @@ sub init {
     if ( my $file = $param{Filename} ) {
         $image->{gd} = GD::Image->new($file)
             or return $image->error(
-            MT->translate( "Reading file '[_1]' failed. [_2]", $file, $@ ) );
+            MT->translate( "Reading file '[_1]' failed: [_2]", $file, $@ ) );
     }
     elsif ( my $blob = $param{Data} ) {
         $image->{gd} = GD::Image->new($blob)
             or return $image->error(
-            MT->translate( "Reading image failed. [_1]", $@ ) );
+            MT->translate( "Reading image failed: [_1]", $@ ) );
     }
     ( $image->{width}, $image->{height} ) = $image->{gd}->getBounds();
     $image;
