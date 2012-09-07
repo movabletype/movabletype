@@ -232,7 +232,7 @@ sub do_login {
     my $blog_id = $q->param('blog_id');
     my $blog    = MT::Blog->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my $auths = $blog->commenter_authenticators;
     if ( $auths !~ /MovableType/ ) {
         $app->log(
@@ -352,7 +352,7 @@ sub signup {
         foreach qw(blog_id entry_id static username return_url );
     my $blog = $app->model('blog')->load( $param->{blog_id} || 0 )
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $param->{blog_id} ) );
+        $app->translate( 'Cannot load blog #[_1].', $param->{blog_id} ) );
     my $cfg = $app->config;
     if ( my $registration = $cfg->CommenterRegistration ) {
         return $app->handle_error(

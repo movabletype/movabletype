@@ -126,7 +126,7 @@ sub recover_password {
     if ( !$email ) {
         return $app->start_recover(
             {   error => $app->translate(
-                    'Email address is required for password reset.'),
+                    'An email address is required for password reset.'),
             }
         );
     }
@@ -195,7 +195,7 @@ sub recover_password {
             require MT::Mail;
             MT::Mail->send( \%head, $body )
                 or die $app->translate(
-                "Error sending mail ([_1]); Please fix the problem, then "
+                "Error sending email ([_1]); Please fix the problem, then "
                     . "try again to recover your password.",
                 MT::Mail->errstr
                 );
@@ -437,7 +437,7 @@ sub test_system_mail {
     if ( MT::Mail->send( \%head, $body ) ) {
         $app->log(
             {   message => $app->translate(
-                    'Test e-mail was successfully sent to [_1]',
+                    'Test email was successfully sent to [_1]',
                     $app->param('to_email_address')
                 ),
                 level    => MT::Log::INFO(),
@@ -450,7 +450,7 @@ sub test_system_mail {
     else {
         return $app->json_error(
             $app->translate(
-                "E-mail was not properly sent. [_1]",
+                "Email was not properly sent. [_1]",
                 MT::Mail->errstr
             )
         );
@@ -2419,7 +2419,7 @@ sub reset_password {
     MT::Mail->send( \%head, $body )
         or return $app->error(
         $app->translate(
-            "Error sending e-mail ([_1]); Please fix the problem, then "
+            "Error sending email ([_1]); Please fix the problem, then "
                 . "try again to recover your password.",
             MT::Mail->errstr
         )

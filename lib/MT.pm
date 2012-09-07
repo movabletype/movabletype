@@ -577,7 +577,7 @@ sub add_callback {
     if ( ( ref $code ) ne 'CODE' ) {
         if ( ref $code ) {
             return $class->trans_error(
-                'Fourth argument to add_callback must be a CODE reference.');
+                'The fourth argument to add_callback must be a CODE reference.');
         }
         else {
 

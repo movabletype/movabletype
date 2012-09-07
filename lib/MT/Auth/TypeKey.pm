@@ -168,7 +168,7 @@ sub _validate_signature {
         my $resp = $ua->request($req);
         unless ( $resp->is_success() ) {
             my $err = $app->translate(
-                "Couldn't get public key from url provided");
+                "Could not get public key from url provided");
             $app->log(
                 {   message  => $err,
                     level    => MT::Log::ERROR(),

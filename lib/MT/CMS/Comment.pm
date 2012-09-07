@@ -658,7 +658,7 @@ sub do_reply {
     $comment->parent_id( $param->{reply_to} );
     $comment->approve;
     return $app->handle_error(
-        $app->translate( "An error occurred. [_1]", $comment->errstr() ) )
+        $app->translate( "An error occurred: [_1]", $comment->errstr() ) )
         unless $comment->save;
 
     MT::Util::start_background_task(

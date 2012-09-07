@@ -590,7 +590,7 @@ sub _mk_thumbnail {
         ($data) = $img->scale( Height => $n_h, Width => $n_w )
             or return $theme->error(
             MT->translate(
-                "There was an error scaling image [_1].",
+                "There was an error scaling this image: [_1].",
                 $img->errstr
             )
             );
@@ -598,7 +598,7 @@ sub _mk_thumbnail {
             ($data) = $img->convert( Type => $type )
                 or return $theme->error(
                 MT->translate(
-                    "There was an error converting image [_1].",
+                    "There was an error converting this image: [_1].",
                     $img->errstr
                 )
                 );
@@ -610,7 +610,7 @@ sub _mk_thumbnail {
     $fmgr->put_data( $data, $thumbnail_file_path, 'upload' )
         or return $theme->error(
         MT->translate(
-            "There was an error creating thumbnail file [_1].",
+            "There was an error creating a thumbnail file: [_1].",
             $fmgr->errstr
         )
         );

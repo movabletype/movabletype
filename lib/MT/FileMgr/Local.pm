@@ -41,7 +41,7 @@ sub get_data {
         open $fh, _local($from)
             or return $fmgr->error(
             MT->translate(
-                "Opening local file '[_1]' failed. [_2]", $from,
+                "Opening local file '[_1]' failed: [_2]", $from,
                 _syserr("$!")
             )
             );

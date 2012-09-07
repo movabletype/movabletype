@@ -208,7 +208,7 @@ sub base {
         my $column_type = $def->{type};
         my $auto_type   = $AUTO{$column_type}
             or die MT->translate(
-            'Failed to initialize auto list property [_1].[_2]: unsupported column type.',
+            'Failed to initialize auto list property [_1].[_2]: Unsupported column type.',
             $prop_class, $id
             );
         $orig_obj->{col} = $id;

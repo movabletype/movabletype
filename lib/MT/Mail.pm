@@ -380,7 +380,7 @@ sub can_use {
     if (@err) {
         $class->error(
             MT->translate(
-                "Following required module(s) were not found: ([_1])",
+                "The following required module(s) were not found: ([_1])",
                 ( join ', ', @err )
             )
         );

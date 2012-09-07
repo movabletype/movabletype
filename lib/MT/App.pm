@@ -1976,7 +1976,7 @@ sub commenter_loggedin {
     my ( $commenter, $commenter_blog_id ) = @_;
     my $blog = $app->model('blog')->load($commenter_blog_id)
         or return $app->error(
-        $app->translate( "Can\'t load blog #[_1].", $commenter_blog_id ) );
+        $app->translate( "Cannot load blog #[_1].", $commenter_blog_id ) );
     my $path = $app->config('CGIPath');
     $path .= '/' unless $path =~ m!/$!;
     my $url = $path . $app->config('CommentScript');
@@ -2296,7 +2296,7 @@ sub create_user_pending {
     if ( exists $param->{blog_id} ) {
         $blog = $app->model('blog')->load( $param->{blog_id} )
             or return $app->error(
-            $app->translate( "Can\'t load blog #[_1].", $param->{blog_id} ) );
+            $app->translate( "Cannot load blog #[_1].", $param->{blog_id} ) );
     }
 
     my ( $password, $url );
@@ -2419,7 +2419,7 @@ sub create_user_pending {
     unless ( $user->save ) {
         return $app->error(
             $app->translate(
-                "An error occurred while trying to process signup: [_1]",
+                "An error occurred while trying to process a signup: [_1]",
                 $user->errstr
             )
         );
@@ -2962,7 +2962,7 @@ sub do_reboot {
         chomp $pid;
         unless ( kill 'HUP', int($pid) ) {
             $app->log(
-                $app->translate( "Failed to send reboot signal: [_1]", $!, )
+                $app->translate( "Failed to send a reboot signal: [_1]", $!, )
             );
             return 1;
         }
@@ -4045,7 +4045,7 @@ sub is_valid_redirect_target {
         my $entry = MT::Entry->load( $app->param('entry_id') || 0 )
             or return $app->error(
             $app->translate(
-                'Can\'t load entry #[_1].',
+                'Cannot load entry #[_1].',
                 $app->param('entry_id')
             )
             );

@@ -702,7 +702,7 @@ sub rebuild_pages {
         require MT::Template;
         $tmpl_saved = MT::Template->load($tmpl_id)
             or
-            return $app->errtrans( 'Can\'t load template #[_1].', $tmpl_id );
+            return $app->errtrans( 'Cannot load template #[_1].', $tmpl_id );
         return $app->permission_denied()
             unless $app->user->permissions( $tmpl_saved->blog_id )
                 ->can_do('rebuild');

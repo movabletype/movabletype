@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+FCoul# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -166,7 +166,7 @@ sub import_contents {
     else {
         return $self->error(
             MT->translate(
-                "Could not resolve import format [_1]",
+                "Could not resolve import format: [_1]",
                 $param{Key}
             )
         );
