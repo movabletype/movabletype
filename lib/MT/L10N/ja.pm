@@ -2802,7 +2802,7 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_blog/templates/trackbacks.mtml
 
 ## themes/classic_blog/theme.yaml
-	'A traditional blogging design that comes with plenty of styles and a selection of 2 column / 3 column layout. Best for use in standard blog publishing applications.' => 'たくさんの2カラムや3カラムレイアウトをもつ一般的なブログ用デザインです。全ブログユーザーに最適です。',
+	'A traditional blogging design that comes with plenty of styles and a selection of 2 column / 3 column layouts. Best for use in standard blog publishing applications.' => 'たくさんの2カラムや3カラムレイアウトをもつ一般的なブログ用デザインです。全ブログユーザーに最適です。',
 
 ## themes/classic_website/templates/about_this_page.mtml
 

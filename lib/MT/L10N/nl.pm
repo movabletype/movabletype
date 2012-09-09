@@ -2840,7 +2840,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## themes/classic_blog/templates/trackbacks.mtml
 
 ## themes/classic_blog/theme.yaml
-	'A traditional blogging design that comes with plenty of styles and a selection of 2 column / 3 column layout. Best for use in standard blog publishing applications.' => 'Traditioneel, klassiek blogdesign, met een ruime selectie aan stijlen en keuze tussen 2 en 3 koloms layout.  Geschikt voor standaard blogpublicatietoepassingen.', # Translate - New
+	'A traditional blogging design that comes with plenty of styles and a selection of 2 column / 3 column layouts. Best for use in standard blog publishing applications.' => 'Traditioneel, klassiek blogdesign, met een ruime selectie aan stijlen en keuze tussen 2 en 3 koloms layout.  Geschikt voor standaard blogpublicatietoepassingen.', # Translate - New
 	'Displays errors for dynamically published templates.' => 'Toont fouten bij dynamisch gepubliceerde sjablonen.',
 
 ## themes/classic_website/templates/about_this_page.mtml
