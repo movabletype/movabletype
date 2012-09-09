@@ -1183,7 +1183,7 @@ sub _cb_user_provisioning {
     $new_blog->save
         or MT->log(
         {   message => MT->translate(
-                "Error provisioning blog for new user '[_1] (ID: [_2])'.",
+                "Error provisioning blog for new user '[_1]' (ID: [_2]).",
                 $user->id, $user->name
             ),
             level    => MT::Log::ERROR(),
@@ -1194,7 +1194,7 @@ sub _cb_user_provisioning {
         return;
     MT->log(
         {   message => MT->translate(
-                "Blog '[_1] (ID: [_2])' for user '[_3] (ID: [_4])' has been created.",
+                "Blog '[_1]' (ID: [_2]) for user '[_3]' (ID: [_4]) has been created.",
                 $new_blog->name, $new_blog->id, $user->name, $user->id
             ),
             level    => MT::Log::INFO(),
@@ -1228,7 +1228,7 @@ sub _cb_user_provisioning {
     else {
         MT->log(
             {   message => MT->translate(
-                    "Error assigning blog administration rights to user '[_1] (ID: [_2])' for blog '[_3] (ID: [_4])'. No suitable blog administrator role was found.",
+                    "Error assigning blog administration rights to user '[_1]' (ID: [_2]) for blog '[_3]' (ID: [_4]). No suitable blog administrator role was found.",
                     $user->name,     $user->id,
                     $new_blog->name, $new_blog->id,
                 ),
