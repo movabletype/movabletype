@@ -2626,7 +2626,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] already exists.' => '[_1] ist bereits vorhanden.',
 	'A configuration value is required.' => 'Konfigurationsparameter erforderlich.', # Translate - New # OK
 	'The HASH type configuration directive should be in the format of "key=value"' => 'Geben Sie HASH-Konfigurationsanweisungen im Format "Schlüssel=Wert" an.', # Translate - New# OK
-	'[_1] for [_2] already exists.' => '[_1] ist [_2] bereits vorhanden.',
+	'[_1] for [_2] already exists.' => '[_1] für [_2] bereits vorhanden.',
 	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]',
 	'Are you sure you want to remove [_1]?' => '[_1] wirklich entfernen?',
 	'configuration directive' => 'Konfigurationsanweisung',
