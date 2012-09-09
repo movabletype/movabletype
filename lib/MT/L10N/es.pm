@@ -2842,7 +2842,7 @@ No se pudo escribir el fichero. Disco lleno.",
 ## themes/classic_blog/templates/trackbacks.mtml
 
 ## themes/classic_blog/theme.yaml
-	'A traditional blogging design that comes with plenty of styles and the selection of 2 column / 3 column layout. Best for use standard blog publishing applications.' => 'Un diseño de blogs tradicional con múltiples estilos y posibilidad de seleccionar una disposición a 2 o 3 columnas. Recomendado para instalaciones de blogs estándares.', # Translate - New
+	'A traditional blogging design that comes with plenty of styles and a selection of 2 column / 3 column layout. Best for use in standard blog publishing applications.' => 'Un diseño de blogs tradicional con múltiples estilos y posibilidad de seleccionar una disposición a 2 o 3 columnas. Recomendado para instalaciones de blogs estándares.', # Translate - New
 	'Displays errors for dynamically published templates.' => 'Muestra errores de las plantillas publicadas dinámicamente.',
 
 ## themes/classic_website/templates/about_this_page.mtml
