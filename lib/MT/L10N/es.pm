@@ -784,7 +784,7 @@ que la dirección provista es correcta y le pertenece.',
 	'A search is in progress. Please wait until it is completed and try again.' => 'Hay una búsqueda en ejecución. Por favor, espere hasta que haya finalizado e inténtelo de nuevo.',
 	'Search failed. Invalid pattern given: [_1]' => 'Falló la búsqueda. Patrón no válido: [_1]',
 	'Search failed: [_1]' => 'Falló la búsqueda: [_1]', # Translate - New
-	'No alternate template is specified for the template \'[_1]\'' => 'No se ha especificado una plantilla alternativa para la plantilla \'[_1]\'',
+	'No alternate template is specified for template \'[_1]\'' => 'No se ha especificado una plantilla alternativa para la plantilla \'[_1]\'',
 	'Opening local file \'[_1]\' failed: [_2]' => 'Fallo abriendo el fichero local \'[_1]\': [_2]',
 	'Publishing results failed: [_1]' => 'Fallo la publicación de resultados: [_1]', # Translate - New
 	'Search: query for \'[_1]\'' => 'Búsqueda: encontrar \'[_1]\'',
@@ -2597,7 +2597,7 @@ No se pudo escribir el fichero. Disco lleno.",
 ## lib/MT/Worker/Sync.pm
 	"Error during rsync of files in [_1]:\n" => "Error en la sincronización de ficheros rsync in [_1]:
 ",
-	'Synchrnizing Files Done' => 'Sincronización de ficheros realizada',
+	'Done Synchornizing Files' => 'Sincronización de ficheros realizada',
 	'Done syncing files to [_1] ([_2])' => 'Ficheros sincronizados en [_1] ([_2])',
 
 ## lib/MT/XMLRPC.pm
@@ -2626,11 +2626,11 @@ No se pudo escribir el fichero. Disco lleno.",
 ## mt-static/addons/Cloud.pack/js/cfg_config_directives.js
 	'A configuration directive is required.' => 'Debe indicar una directiva de configuración.', # Translate - New
 	'[_1] cannot be updated.' => 'No se pudo actualizar [_1].', # Translate - New
-	'Although [_1] can be updataed by CMS, but is not updatable from this screen.' => 'Aunque el gestor de contenidos puede actualizar [_1], no se puede hacer desde esta pantalla.', # Translate - New
+	'Although [_1] can be updated by Movable Type, it cannot be updated on this screen.' => 'Aunque el gestor de contenidos puede actualizar [_1], no se puede hacer desde esta pantalla.', # Translate - New
 	'[_1] already exists.' => '[_1] ya existe.',
 	'A configuration value is required.' => 'Debe configurar el valor.', # Translate - New
 	'The HASH type configuration directive should be in the format of "key=value"' => 'Las directivas de configuración de tipo HASH deben tener el formato "clave=valor"', # Translate - New
-	'[_1] for [_2] is already exists.' => '[_1] para [_2] ya existe.',
+	'[_1] for [_2] already exists.' => '[_1] para [_2] ya existe.',
 	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]',
 	'Are you sure you want to remove [_1]?' => '¿Está seguro de que desea eliminar [_1]?',
 	'configuration directive' => 'directiva de configuración',
@@ -5153,7 +5153,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'The physical file path for your Sendmail binary.' => 'Ruta física del fichero binario de sendmail.',
 	'Outbound Mail Server (SMTP)' => 'Servidor de correo saliente (SMTP)',
 	'Address of your SMTP Server.' => 'Dirección del servidor SMTP.',
-	'Port number for Outboud Mail Server' => 'Número de puerto para el servidor de correo saliente',
+	'Port number for Outbound Mail Server' => 'Número de puerto para el servidor de correo saliente',
 	'Port number of your SMTP Server.' => 'Número de puerto para el servidor SMTP.',
 	'Use SMTP Auth' => 'Usar autentificación SMTP',
 	'SMTP Auth Username' => 'Usuario para autentificación SMTP',
@@ -5162,19 +5162,19 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Password for your SMTP Server.' => 'Contraseña para el servidor SMTP.',
 	'SSL Connection' => 'Conexión SSL',
 	'Cannot use [_1].' => 'No se puede usar [_1].',
-	'Not use SSL' => 'No usar SSL',
+	'Do not use SSL' => 'No usar SSL',
 	'Use SSL' => 'Usar SSL',
 	'Use STARTTLS' => 'Usar STARTTLS',
 	'Send Test Email' => 'Enviar mensaje de comprobación',
 	'Mail address to which test email should be sent' => 'La dirección de correo a la que debe enviarse el correo de prueba',
 	'Skip' => 'Ignorar',
-	'You must set SMTP server port number.' => 'Debe indicar el puerto del servidor SMTP.',
-	'This field must be integer.' => 'Este campo debe ser un número entero.',
-	'You must set system email address.' => 'Debe indicar la dirección de correo del sistema.',
-	'You must set Sendmail path.' => 'Debe indicar la ruta a sendmail.',
-	'You must set SMTP server address.' => 'Debe indicar la dirección del servidor SMTP.',
-	'You must set username for SMTP server.' => 'Debe indicar el usuario del servidor SMTP.',
-	'You must set password for SMTP server.' => 'Debe indicar la contraseña del servidor SMTP.',
+	'You must set the SMTP server port number.' => 'Debe indicar el puerto del servidor SMTP.',
+	'This field must be an integer.' => 'Este campo debe ser un número entero.',
+	'You must set the system email address.' => 'Debe indicar la dirección de correo del sistema.',
+	'You must set the Sendmail path.' => 'Debe indicar la ruta a sendmail.',
+	'You must set the SMTP server address.' => 'Debe indicar la dirección del servidor SMTP.',
+	'You must set a username for the SMTP server.' => 'Debe indicar el usuario del servidor SMTP.',
+	'You must set a password for the SMTP server.' => 'Debe indicar la contraseña del servidor SMTP.',
 
 ## tmpl/wizard/packages.tmpl
 	'Requirements Check' => 'Comprobación de requerimientos',
@@ -6253,7 +6253,7 @@ No se pudo escribir el fichero. Disco lleno.",
 ## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
 	'Set up Facebook Commenters plugin' => 'Configurar la extesión de comentaristas de Facebook',
 	'Authentication failure: [_1], reason:[_2]' => 'Fallo de autentificación: [_1], razón: [_2]',
-	'Failed to created commenter.' => 'Falló al crear comentarista.',
+	'Failed to create commenter.' => 'Falló al crear comentarista.',
 	'Failed to create a session.' => 'Falló al crear una sesión.',
 	'Could not verify this app with Facebook.' => 'No se pudo verificar esta aplicación con Facebook.',
 

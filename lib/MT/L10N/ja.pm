@@ -821,7 +821,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid value: [_1]' => '不正な値です: [_1]',
 	'No column was specified to search for [_1].' => '[_1]で検索するカラムが指定されていません。',
 	'Search: query for \'[_1]\'' => '検索: [_1]',
-	'No alternate template is specified for the template \'[_1]\'' => '\'[_1]\'に対応するテンプレートがありません。',
+	'No alternate template is specified for template \'[_1]\'' => '\'[_1]\'に対応するテンプレートがありません。',
 	'Opening local file \'[_1]\' failed: [_2]' => '\'[_1]\'を開けませんでした: [_2]',
 	'No such template' => 'テンプレートがありません',
 	'template_id cannot refer to a global template' => 'template_idにグローバルテンプレートを指定することは出来ません',
@@ -2561,7 +2561,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Worker/Sync.pm
 	"Error during rsync of files in [_1]:\n" => "ファイル\'[_1]\'のrsync中にエラーが発生しました: ",
-	'Synchrnizing Files Done' => 'ファイルを同期しました。',
+	'Done Synchornizing Files' => 'ファイルを同期しました。',
 	'Done syncing files to [_1] ([_2])' => '[_1]へファイルを同期しました。([_2])',
 
 ## lib/MT/XMLRPC.pm
@@ -2590,11 +2590,11 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/addons/Cloud.pack/js/cfg_config_directives.js
 	'A configuration directive is required.' => '環境変数名は必須です。',
 	'[_1] cannot be updated.' => '[_1]を変更することは出来ません。',
-	'Although [_1] can be updataed by CMS, but is not updatable from this screen.' => '[_1]は変更出来ません。',
+	'Although [_1] can be updated by Movable Type, it cannot be updated on this screen.' => '[_1]は変更出来ません。',
 	'[_1] already exists.' => '[_1]はすでに存在します。',
 	'A configuration value is required.' => '設定値は必須です。',
 	'The HASH type configuration directive should be in the format of "key=value"' => 'ハッシュ型の環境変数の設定値は、"key=value"の形式で入力してください。',
-	'[_1] for [_2] is already exists.' => '[_2]はすでに[_1]の設定値として存在します。',
+	'[_1] for [_2] already exists.' => '[_2]はすでに[_1]の設定値として存在します。',
 	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.jp/documentation/[_1]',
 	'Are you sure you want to remove [_1]?' => '[_1]を削除してもよろしいですか?',
 	'configuration directive' => '環境変数',
@@ -5112,7 +5112,7 @@ use vars qw( @ISA %Lexicon );
 	'The physical file path for your Sendmail binary.' => 'sendmailへの物理パスを指定します。',
 	'Outbound Mail Server (SMTP)' => '送信メールサーバー(SMTP)',
 	'Address of your SMTP Server.' => 'SMTPサーバーのアドレスを指定します。',
-	'Port number for Outboud Mail Server' => 'SMTPサーバのポート番号',
+	'Port number for Outbound Mail Server' => 'SMTPサーバのポート番号',
 	'Port number of your SMTP Server.' => 'SMTPサーバのポート番号を指定します',
 	'Use SMTP Auth' => 'SMTP認証を利用する',
 	'SMTP Auth Username' => 'ユーザー名',
@@ -5121,19 +5121,19 @@ use vars qw( @ISA %Lexicon );
 	'Password for your SMTP Server.' => 'SMTP認証に利用するユーザーのパスワードを指定してください。',
 	'SSL Connection' => 'SSL接続',
 	'Cannot use [_1].' => '[_1] は利用できません。',
-	'Not use SSL' => 'SSL接続を行わない',
+	'Do not use SSL' => 'SSL接続を行わない',
 	'Use SSL' => 'SSLで接続する',
 	'Use STARTTLS' => 'STARTTLSコマンドを利用する',
 	'Send Test Email' => 'テストメールを送信',
 	'Mail address to which test email should be sent' => 'テストメールが送られるメールアドレス',
 	'Skip' => 'スキップ',
-	'You must set SMTP server port number.' => 'SMTPサーバのポート番号を指定してください。',
-	'This field must be integer.' => '数字を入力してください。',
-	'You must set system email address.' => 'システムメールアドレスは必須入力です。',
-	'You must set Sendmail path.' => 'Sendmailのパスは必須入力です。',
-	'You must set SMTP server address.' => 'SMTPサーバのアドレスを入力してください。',
-	'You must set username for SMTP server.' => 'SMTP認証で利用するユーザー名を入力してください。',
-	'You must set password for SMTP server.' => 'SMTP認証で利用するユーザーのパスワードを入力してください。',
+	'You must set the SMTP server port number.' => 'SMTPサーバのポート番号を指定してください。',
+	'This field must an be integer.' => '数字を入力してください。',
+	'You must set the system email address.' => 'システムメールアドレスは必須入力です。',
+	'You must set the Sendmail path.' => 'Sendmailのパスは必須入力です。',
+	'You must set the SMTP server address.' => 'SMTPサーバのアドレスを入力してください。',
+	'You must set a username for the SMTP server.' => 'SMTP認証で利用するユーザー名を入力してください。',
+	'You must set a password for the SMTP server.' => 'SMTP認証で利用するユーザーのパスワードを入力してください。',
 
 ## tmpl/wizard/packages.tmpl
 	'Requirements Check' => 'システムチェック',
@@ -6284,7 +6284,7 @@ use vars qw( @ISA %Lexicon );
 ## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
 	'Set up Facebook Commenters plugin' => 'Facebook Commentersプラグイン設定',
 	'Authentication failure: [_1], reason:[_2]' => '認証に失敗しました: [_1], 理由:[_2]',
-	'Failed to created commenter.' => 'コメンターの作成に失敗しました。',
+	'Failed to create commenter.' => 'コメンターの作成に失敗しました。',
 	'Failed to create a session.' => 'コメンターセッションの作成に失敗しました。',
 	'Could not verify this app with Facebook.' => 'このアプリケーションをFacebookで確認することが出来ませんでした。',
 

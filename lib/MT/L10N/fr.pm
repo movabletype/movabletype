@@ -783,7 +783,7 @@ use vars qw( @ISA %Lexicon );
 	'A search is in progress. Please wait until it is completed and try again.' => 'Une recherche est en cours. Veuillez en attendre la fin avant de recommencer.',
 	'Search failed. Invalid pattern given: [_1]' => 'Échec de la recherche. Requête invalide : [_1]',
 	'Search failed: [_1]' => 'Échec de la recherche : [_1]',
-	'No alternate template is specified for the template \'[_1]\'' => 'Aucun gabarit alternatif n\'est spécifié pour le gabarit \'[_1]\'',
+	'No alternate template is specified for template \'[_1]\'' => 'Aucun gabarit alternatif n\'est spécifié pour le gabarit \'[_1]\'',
 	'Opening local file \'[_1]\' failed: [_2]' => 'L\'ouverture du fichier local \'[_1]\' a échoué : [_2]',
 	'Publishing results failed: [_1]' => 'Échec de la publication des résultats : [_1]',
 	'Search: query for \'[_1]\'' => 'Recherche : requête pour \'[_1]\'',
@@ -2597,7 +2597,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## lib/MT/Worker/Sync.pm
 	"Error during rsync of files in [_1]:\n" => "Erreur lors de la synchronisation rsync des fichiers dans [_1] :\n",
-	'Synchrnizing Files Done' => 'Synchronisation des fichiers effectuée',
+	'Done Synchornizing Files' => 'Synchronisation des fichiers effectuée',
 	'Done syncing files to [_1] ([_2])' => 'Synchronisation des fichiers de [_1] ([_2]) terminée',
 
 ## lib/MT/XMLRPC.pm
@@ -2626,11 +2626,11 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 ## mt-static/addons/Cloud.pack/js/cfg_config_directives.js
 	'A configuration directive is required.' => 'Une directive de configuration est requise.', # Translate - New
 	'[_1] cannot be updated.' => '[_1] ne peut pas être mis à jour.', # Translate - New
-	'Although [_1] can be updataed by CMS, but is not updatable from this screen.' => '[_1] peut être mis à jour via le système de gestion de contenu, mais pas depuis cet écran.', # Translate - New
+	'Although [_1] can be updated by Movable Type, it cannot be updated on this screen.' => '[_1] peut être mis à jour via le système de gestion de contenu, mais pas depuis cet écran.', # Translate - New
 	'[_1] already exists.' => '[_1] existe déjà.',
 	'A configuration value is required.' => 'Une valeur de configuration est requise.', # Translate - New
 	'The HASH type configuration directive should be in the format of "key=value"' => 'La directive de configuration de type HASH doit être au format "clé=valeur"', # Translate - New
-	'[_1] for [_2] is already exists.' => '[_1] pour [_2] existe déjà.',
+	'[_1] for [_2] already exists.' => '[_1] pour [_2] existe déjà.',
 	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]',
 	'Are you sure you want to remove [_1]?' => 'Voulez-vous vraiment supprimer [_1] ?',
 	'configuration directive' => 'directive de configuration',
@@ -5171,7 +5171,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'The physical file path for your Sendmail binary.' => 'Le chemin du fichier physique de votre exécutable sendmail.',
 	'Outbound Mail Server (SMTP)' => 'Serveur e-mail sortant (SMTP)',
 	'Address of your SMTP Server.' => 'Adresse de votre serveur SMTP.',
-	'Port number for Outboud Mail Server' => 'Port du serveur e-mail sortant',
+	'Port number for Outbound Mail Server' => 'Port du serveur e-mail sortant',
 	'Port number of your SMTP Server.' => 'Port du serveur SMTP',
 	q{Use SMTP Auth} => q{Utiliser l'authentification SMTP},
 	q{SMTP Auth Username} => q{Nom d'utilisateur pour l'authentification SMTP},
@@ -5180,19 +5180,19 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Password for your SMTP Server.' => 'Mot de passe pour le serveur SMTP',
 	'SSL Connection' => 'Connexion SSL',
 	q{Cannot use [_1].} => q{Impossible d'utiliser [_1].},
-	'Not use SSL' => 'Ne pas utiliser SSL',
+	'Do not use SSL' => 'Ne pas utiliser SSL',
 	'Use SSL' => 'Utiliser SSL',
 	'Use STARTTLS' => 'Utiliser STARTTLS',
 	'Send Test Email' => 'Envoyer un e-mail de test',
 	q{Mail address to which test email should be sent} => q{L'adresse e-mail à laquelle l'e-mail de test doit être envoyé},
 	'Skip' => 'Ignorer',
-	'You must set SMTP server port number.' => 'Vous devez spécifier le port du serveur SMTP',
-	'This field must be integer.' => 'Ce champ doit être un entier',
-	q{You must set system email address.} => q{Vous devez définir l'adresse e-mail du système.},
-	'You must set Sendmail path.' => 'Vous devez sépcifier le chemin Sendmail',
-	q{You must set SMTP server address.} => q{Vous devez spécifier l'adresse du serveur SMTP},
-	q{You must set username for SMTP server.} => q{Vous devez fournir un nom d'utilisateur pour le serveur SMTP},
-	'You must set password for SMTP server.' => 'Vous devez fournir un mot de passe pour le serveur SMTP',
+	'You must set the SMTP server port number.' => 'Vous devez spécifier le port du serveur SMTP',
+	'This field must be an integer.' => 'Ce champ doit être un entier',
+	q{You must set the system email address.} => q{Vous devez définir l'adresse e-mail du système.},
+	'You must set the Sendmail path.' => 'Vous devez sépcifier le chemin Sendmail',
+	q{You must set the SMTP server address.} => q{Vous devez spécifier l'adresse du serveur SMTP},
+	q{You must set a username for the SMTP server.} => q{Vous devez fournir un nom d'utilisateur pour le serveur SMTP},
+	'You must set a password for the SMTP server.' => 'Vous devez fournir un mot de passe pour le serveur SMTP',
 
 ## tmpl/wizard/packages.tmpl
 	'Requirements Check' => 'Vérification des éléments nécessaires',
@@ -6275,7 +6275,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 ## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
 	'Set up Facebook Commenters plugin' => 'Configurer le plugin Facebook Commenters',
 	'Authentication failure: [_1], reason:[_2]' => 'Échec de l\'authentification : [_1], raison : [_2]',
-	'Failed to created commenter.' => 'Impossible de créer le commentateur.',
+	'Failed to create commenter.' => 'Impossible de créer le commentateur.',
 	'Failed to create a session.' => 'Impossible de créer une session.',
 	'Could not verify this app with Facebook.' => 'Impossible de vérifier cette application aurpès de Facebook.',
 

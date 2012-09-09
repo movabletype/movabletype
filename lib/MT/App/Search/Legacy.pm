@@ -386,7 +386,7 @@ sub execute {
         my $tmpl_file = $app->{templates}{ $app->{searchparam}{Template} }
             or return $app->error(
             $app->translate(
-                "No alternate template is specified for the template '[_1]'",
+                "No alternate template is specified for template '[_1]'",
                 $app->{searchparam}{Template}
             )
             );

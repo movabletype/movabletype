@@ -782,7 +782,7 @@ use vars qw( @ISA %Lexicon );
 	'A search is in progress. Please wait until it is completed and try again.' => 'Es läuft bereits eine Suche. Bitte versuchen Sie es danach erneut.',
 	'Search failed. Invalid pattern given: [_1]' => 'Suche fehlgeschlagen - ungültiges Suchmuster angegeben: [_1]',
 	'Search failed: [_1]' => 'Suche fehlgeschlagen: [_1]', # Translate - New # OK
-	'No alternate template is specified for the template \'[_1]\'' => 'Keine Alternative zu Vorlage &#8222;[_1]&#8220; angegeben.',
+	'No alternate template is specified for template \'[_1]\'' => 'Keine Alternative zu Vorlage &#8222;[_1]&#8220; angegeben.',
 	'Opening local file \'[_1]\' failed: [_2]' => 'Konnte lokale Datei &#8222;[_1]&#8220; nicht öffnen: [_2]',
 	'Publishing results failed: [_1]' => 'Ausgabe der Suchergebnisse fehlgeschlagen: [_1]', # Translate - New # OK
 	'Search: query for \'[_1]\'' => 'Suche: Suche nach &#8222;[_1]&#8220;',
@@ -2593,7 +2593,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Worker/Sync.pm
 	"Error during rsync of files in [_1]:\n" => "Fehler beim rsyncen der Dateien in [_1]:
 ",
-	'Synchrnizing Files Done' => 'Synchronisierung der Dateien abgeschlossen',
+	'Done Synchornizing Files' => 'Synchronisierung der Dateien abgeschlossen',
 	'Done syncing files to [_1] ([_2])' => 'Die Dateien wurden mit [_1] ([_2]) synchronisiert',
 
 ## lib/MT/XMLRPC.pm
@@ -2622,11 +2622,11 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/addons/Cloud.pack/js/cfg_config_directives.js
 	'A configuration directive is required.' => 'Konfigurationsparameter erforderlich', # Translate - New # OK
 	'[_1] cannot be updated.' => '[_1] kann nicht aktualisiert werden.', # Translate - New # OK
-	'Although [_1] can be updataed by CMS, but is not updatable from this screen.' => 'Obwohl [_1] durch das CMS aktualisiert kan werden, ist aber nicht aktualisierbar von diesem Bildschirm aus.', # Translate - New
+	'Although [_1] can be updated by Movable Type, it cannot be updated on this screen.' => 'Obwohl [_1] durch das Movable Type aktualisiert kan werden, ist aber nicht aktualisierbar von diesem Bildschirm aus.', # Translate - New
 	'[_1] already exists.' => '[_1] ist bereits vorhanden.',
 	'A configuration value is required.' => 'Konfigurationsparameter erforderlich.', # Translate - New # OK
 	'The HASH type configuration directive should be in the format of "key=value"' => 'Geben Sie HASH-Konfigurationsanweisungen im Format "Schlüssel=Wert" an.', # Translate - New# OK
-	'[_1] for [_2] is already exists.' => '[_1] ist für [_2] bereits vorhanden.',
+	'[_1] for [_2] already exists.' => '[_1] ist [_2] bereits vorhanden.',
 	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]',
 	'Are you sure you want to remove [_1]?' => '[_1] wirklich entfernen?',
 	'configuration directive' => 'Konfigurationsanweisung',
@@ -5152,7 +5152,7 @@ use vars qw( @ISA %Lexicon );
 	'The physical file path for your Sendmail binary.' => 'Pfad zu Sendmail',
 	'Outbound Mail Server (SMTP)' => 'SMTP-Server',
 	'Address of your SMTP Server.' => 'Adresse Ihres SMTP-Servers',
-	'Port number for Outboud Mail Server' => 'Port-Nummer des Servers für ausgehende Mail',
+	'Port number for Outbound Mail Server' => 'Port-Nummer des Servers für ausgehende Mail',
 	'Port number of your SMTP Server.' => 'Port-Nummer Ihres SMTP-Servers',
 	'Use SMTP Auth' => 'SMTP Auth verwenden',
 	'SMTP Auth Username' => 'SMTP-Auth-Benutzername',
@@ -5161,19 +5161,19 @@ use vars qw( @ISA %Lexicon );
 	'Password for your SMTP Server.' => 'Passwort Ihres SMTP-Servers',
 	'SSL Connection' => 'SSL-Verbindung',
 	'Cannot use [_1].' => 'Kann [_1] nicht verwenden.',
-	'Not use SSL' => 'SSL nicht verwenden',
+	'Do not use SSL' => 'SSL nicht verwenden',
 	'Use SSL' => 'SSL verwenden',
 	'Use STARTTLS' => 'STARTTLS verwenden',
 	'Send Test Email' => 'Testmail verschicken',
 	'Mail address to which test email should be sent' => 'Zieladresse der Testmail',
 	'Skip' => 'Überspringen',
-	'You must set SMTP server port number.' => 'Bitte geben Sie die Port-Nummer Ihres SMTP-Servers an.',
-	'This field must be integer.' => 'Bitte geben Sie eine ganze Zahl ein.',
-	'You must set system email address.' => 'Bitte geben Sie die System-E-Mail-Adresse an.',
-	'You must set Sendmail path.' => 'Bitte geben Sie Ihren Pfad zu Sendmail an.',
-	'You must set SMTP server address.' => 'Bitte geben Sie die Adresse Ihres SMTP-Servers an.',
-	'You must set username for SMTP server.' => 'Bitte geben Sie den Benutzernamen Ihres SMTP-Servers an.',
-	'You must set password for SMTP server.' => 'Bitte geben Sie das Passwort Ihres SMTP-Servers an.',
+	'You must set the SMTP server port number.' => 'Bitte geben Sie die Port-Nummer Ihres SMTP-Servers an.',
+	'This field must be an integer.' => 'Bitte geben Sie eine ganze Zahl ein.',
+	'You must set the system email address.' => 'Bitte geben Sie die System-E-Mail-Adresse an.',
+	'You must set the Sendmail path.' => 'Bitte geben Sie Ihren Pfad zu Sendmail an.',
+	'You must set the SMTP server address.' => 'Bitte geben Sie die Adresse Ihres SMTP-Servers an.',
+	'You must set a username for the SMTP server.' => 'Bitte geben Sie den Benutzernamen Ihres SMTP-Servers an.',
+	'You must set a password for the SMTP server.' => 'Bitte geben Sie das Passwort Ihres SMTP-Servers an.',
 
 ## tmpl/wizard/packages.tmpl
 	'Requirements Check' => 'Überprüfung der Systemvoraussetzungen',
@@ -6262,7 +6262,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 ## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
 	'Set up Facebook Commenters plugin' => 'Facebook Kommentarautoren-Plugin einrichten',
 	'Authentication failure: [_1], reason:[_2]' => 'Authentifizierung fehlgeschlagen: [_1]. Grund: [_2]',
-	'Failed to created commenter.' => 'Konnte Kommentarautoren nicht anlegen.',
+	'Failed to create commenter.' => 'Konnte Kommentarautoren nicht anlegen.',
 	'Failed to create a session.' => 'Konnte Session nicht anlegen.',
 	'Could not verify this app with Facebook.' => 'Konnte diese App nicht bei Facebook verifizieren.',
 

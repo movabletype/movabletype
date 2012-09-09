@@ -783,7 +783,7 @@ use vars qw( @ISA %Lexicon );
 	'A search is in progress. Please wait until it is completed and try again.' => 'Een zoekopdracht is nog bezig.  Gelieve te wachten tot deze afgelopen is en probeer opnieuw.',
 	'Search failed. Invalid pattern given: [_1]' => 'Zoeken mislukt. Ongeldig patroon opgegeven: [_1]',
 	'Search failed: [_1]' => 'Zoeken mislukt: [_1]', # Translate - New
-	'No alternate template is specified for the template \'[_1]\'' => 'Geen alternatief sjabloon is opgegeven voor sjabloon \'[_1]\'',
+	'No alternate template is specified for template \'[_1]\'' => 'Geen alternatief sjabloon is opgegeven voor sjabloon \'[_1]\'',
 	'Opening local file \'[_1]\' failed: [_2]' => 'Lokaal bestand \'[_1]\' openen mislukt: [_2]',
 	'Publishing results failed: [_1]' => 'Publiceren van resultaten mislukt: [_1]', # Translate - New
 	'Search: query for \'[_1]\'' => 'Zoeken: zoekopdracht voor \'[_1]\'',
@@ -2595,7 +2595,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## lib/MT/Worker/Sync.pm
 	"Error during rsync of files in [_1]:\n" => "Fout bij het rsyncen van bestanden in [_1]:
 ",
-	'Synchrnizing Files Done' => 'Bestanden synchroniseren afgelopen',
+	'Done Synchornizing Files' => 'Bestanden synchroniseren afgelopen',
 	'Done syncing files to [_1] ([_2])' => 'Klaar met synchroniseren van bestanden naar [_1] ([_2])',
 
 ## lib/MT/XMLRPC.pm
@@ -2624,11 +2624,11 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## mt-static/addons/Cloud.pack/js/cfg_config_directives.js
 	'A configuration directive is required.' => 'Een configuratiedirectief is vereist.', # Translate - New
 	'[_1] cannot be updated.' => '[_1] kan niet worden bijgewerkt', # Translate - New
-	'Although [_1] can be updataed by CMS, but is not updatable from this screen.' => 'Hoewel [_1] bijgewerkt kan worden door het CMS, kan dit niet vanaf dit scherm.', # Translate - New
+	'Although [_1] can be updated by Movable Type, it cannot be updated on this screen.' => 'Hoewel [_1] bijgewerkt kan worden door het Movable Type, kan dit niet vanaf dit scherm.', # Translate - New
 	'[_1] already exists.' => '[_1] bestaat al.',
 	'A configuration value is required.' => 'Een configuratiewaarde is vereist.', # Translate - New
 	'The HASH type configuration directive should be in the format of "key=value"' => 'Configuratie-instellingen van het type HASH moeten in het formaat "sleutel=waarde" staan.', # Translate - New
-	'[_1] for [_2] is already exists.' => '[_1] voor [_2] bestaat al.',
+	'[_1] for [_2] already exists.' => '[_1] voor [_2] bestaat al.',
 	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]',
 	'Are you sure you want to remove [_1]?' => 'Bent u zeker dat u [_1] wenst te verwijderen?',
 	'configuration directive' => 'configuratie-instelling',
@@ -5154,7 +5154,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'The physical file path for your Sendmail binary.' => 'Het fysieke bestandspad van uw Sendmail binary',
 	'Outbound Mail Server (SMTP)' => 'Uitgaande mailserver (SMTP)',
 	'Address of your SMTP Server.' => 'Adres van uw SMTP server.',
-	'Port number for Outboud Mail Server' => 'Poortnummer voor uitgaande mail server',
+	'Port number for Outbound Mail Server' => 'Poortnummer voor uitgaande mail server',
 	'Port number of your SMTP Server.' => 'Poortnummer van uw SMTP server.',
 	'Use SMTP Auth' => 'Gebruik SMTP Auth',
 	'SMTP Auth Username' => 'SMTP Auth gebruikersnaam',
@@ -5163,19 +5163,19 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Password for your SMTP Server.' => 'Wachtwoord voor uw SMTP server.',
 	'SSL Connection' => 'SSL verbinding',
 	'Cannot use [_1].' => 'Kan [_1] niet gebruiken.',
-	'Not use SSL' => 'SSL niet gebruiken',
+	'Do not use SSL' => 'SSL niet gebruiken',
 	'Use SSL' => 'SSL gebruiken',
 	'Use STARTTLS' => 'STARTTLS gebruiken',
 	'Send Test Email' => 'Verstuur testbericht',
 	'Mail address to which test email should be sent' => 'E-mail adres om testbericht naartoe te sturen',
 	'Skip' => 'Overslaan',
-	'You must set SMTP server port number.' => 'U moet het poortnummer van de SMTP server instellen.',
-	'This field must be integer.' => 'Dit veld moet een getal bevatten.',
-	'You must set system email address.' => 'U moet het systeem-emailadres nog instellen.',
-	'You must set Sendmail path.' => 'U moet het Sendmail pad nog instellen.',
-	'You must set SMTP server address.' => 'U moet het SMTP server adres nog instellen.',
-	'You must set username for SMTP server.' => 'U moet een gebruikersnaam instellen voor de SMTP server.',
-	'You must set password for SMTP server.' => 'U moet een wachtwoord instellen voor de SMTP server.',
+	'You must set the SMTP server port number.' => 'U moet het poortnummer van de SMTP server instellen.',
+	'This field must be an integer.' => 'Dit veld moet een getal bevatten.',
+	'You must set the system email address.' => 'U moet het systeem-emailadres nog instellen.',
+	'You must set the Sendmail path.' => 'U moet het Sendmail pad nog instellen.',
+	'You must set the SMTP server address.' => 'U moet het SMTP server adres nog instellen.',
+	'You must set a username for the SMTP server.' => 'U moet een gebruikersnaam instellen voor de SMTP server.',
+	'You must set a password for the SMTP server.' => 'U moet een wachtwoord instellen voor de SMTP server.',
 
 ## tmpl/wizard/packages.tmpl
 	'Requirements Check' => 'Controle systeemvereisten',
@@ -6241,7 +6241,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
 	'Set up Facebook Commenters plugin' => 'Facebook Reageerders plugin instellen',
 	'Authentication failure: [_1], reason:[_2]' => 'Authenticatie mislukt: [_1], reden: [2_]',
-	'Failed to created commenter.' => 'Aanmaken reageerder mislukt.',
+	'Failed to create commenter.' => 'Aanmaken reageerder mislukt.',
 	'Failed to create a session.' => 'Aanmaken sessie mislukt.',
 	'Could not verify this app with Facebook.' => 'Kon deze app niet verifiëren met Facebook.',
 
