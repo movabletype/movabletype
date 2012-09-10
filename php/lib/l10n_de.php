@@ -7,6 +7,9 @@
 
 global $Lexicon_de;
 $Lexicon_de = array(
+## php/lib/MTUtil.php
+	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
+
 ## php/lib/archive_lib.php
 	'Individual' => 'Individuell',
 	'Page' => 'Seite',
@@ -37,7 +40,6 @@ $Lexicon_de = array(
 	'You used an [_1] tag without establishing a date context.' => 'Befehl [_1] ohne Datums-Kontext verwendet.',
 
 ## php/lib/block.mtentries.php
-	'sort_by="score" must be used in combination with namespace.' => 'Sort_by="score" erfordert einen Namespace.',
 
 ## php/lib/block.mtif.php
 	'You used an [_1] tag without a valid name attribute.' => 'Befehl [_1] ohne gültiges Namens-Attribut verwendet.',
@@ -68,10 +70,10 @@ $Lexicon_de = array(
 
 ## php/lib/function.mtauthordisplayname.php
 
-## php/lib/function.mtcommentauthorlink.php
+## php/lib/function.mtcommentauthor.php
 	'Anonymous' => 'Anonym',
 
-## php/lib/function.mtcommentauthor.php
+## php/lib/function.mtcommentauthorlink.php
 
 ## php/lib/function.mtcommenternamethunk.php
 	'The \'[_1]\' tag has been deprecated. Please use the \'[_2]\' tag in its place.' => 'Der Befehl &#8222;[_1]&#8220; ist veraltet. Bitte verwenden Sie stattdessen \'[_2]\'',
@@ -121,9 +123,6 @@ $Lexicon_de = array(
 
 ## php/lib/mtdb.base.php
 	'When the exclude_blogs and include_blogs attributes are used together, the same blog IDs should not be listed as parameters to both of them.' => 'Wenn die Attribute exclude_blogs und include_blogs gemeinsam verwendet werden, geben Sie die gleichen Blog-IDs nicht gleichzeitig für beide an. ',
-
-## php/lib/MTUtil.php
-	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
 
 ## php/mt.php
 	'Page not found - [_1]' => 'Seite nicht gefunden - [_1]',

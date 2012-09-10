@@ -2004,7 +2004,7 @@ sub _hdlr_remote_sign_in_link {
     $blog = MT::Blog->load($blog)
         if defined $blog && !( ref $blog );
     return $ctx->error(
-        MT->translate( 'Can\'t load blog #[_1].', $ctx->stash('blog_id') ) )
+        MT->translate( 'Cannot load blog #[_1].', $ctx->stash('blog_id') ) )
         unless $blog;
     my $auths = $blog->commenter_authenticators;
     return $ctx->error(

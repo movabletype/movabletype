@@ -2389,7 +2389,7 @@ sub _hdlr_entry_blog_description {
         or return $ctx->_no_entry_error();
     my $b = MT::Blog->load( $e->blog_id )
         or return $ctx->error(
-        MT->translate( 'Can\'t load blog #[_1].', $e->blog_id ) );
+        MT->translate( 'Cannot load blog #[_1].', $e->blog_id ) );
     my $d = $b->description;
     return defined $d ? $d : '';
 }
@@ -2414,7 +2414,7 @@ sub _hdlr_entry_blog_url {
         or return $ctx->_no_entry_error();
     my $b = MT::Blog->load( $e->blog_id )
         or return $ctx->error(
-        MT->translate( 'Can\'t load blog #[_1].', $e->blog_id ) );
+        MT->translate( 'Cannot load blog #[_1].', $e->blog_id ) );
     return $b->site_url;
 }
 

@@ -63,7 +63,8 @@ use vars qw( %Lexicon );
 	q{More Styles} => q{Plus d'habillages},
 	'Selected Design' => 'Habillage sélectionné',
 	'Layout' => 'Mise en page',
-	);
+
+);
 
 1;
 

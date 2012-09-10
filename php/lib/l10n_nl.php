@@ -8,6 +8,9 @@
 global $Lexicon_nl;
 $Lexicon_nl = array(
 
+## php/lib/MTUtil.php
+	'userpic-[_1]-%wx%h%x' => 'gebruikersafbeelding-[_1]-%wx%h%x',
+
 ## php/lib/archive_lib.php
 	'Individual' => 'per bericht',
 	'Page' => 'Pagina',
@@ -38,7 +41,6 @@ $Lexicon_nl = array(
 	'You used an [_1] tag without establishing a date context.' => 'U gebruikte een [_1] tag zonder een datum in context te brengen',
 
 ## php/lib/block.mtentries.php
-	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" moet gebruikt worden in combinatie met een namespace.',
 
 ## php/lib/block.mtif.php
 	'You used an [_1] tag without a valid name attribute.' => 'U gebruikte een [_1] tag zonder geldig "name" attribuut',
@@ -69,10 +71,10 @@ $Lexicon_nl = array(
 
 ## php/lib/function.mtauthordisplayname.php
 
-## php/lib/function.mtcommentauthorlink.php
+## php/lib/function.mtcommentauthor.php
 	'Anonymous' => 'Anonieme',
 
-## php/lib/function.mtcommentauthor.php
+## php/lib/function.mtcommentauthorlink.php
 
 ## php/lib/function.mtcommenternamethunk.php
 	'The \'[_1]\' tag has been deprecated. Please use the \'[_2]\' tag in its place.' => 'De \'[_1]\' tag is verouderd.  Gelieve de \'[_2]\' tag te gebruiken ter vervanging.',
@@ -122,9 +124,6 @@ $Lexicon_nl = array(
 
 ## php/lib/mtdb.base.php
 	'When the exclude_blogs and include_blogs attributes are used together, the same blog IDs should not be listed as parameters to both of them.' => 'Wanneer de exclude_blogs en include_blogs attributen samen worden gebruikt dan kunnen dezelfde blog ID\'s niet als parameters gebruikt worden in beide attributen.',
-
-## php/lib/MTUtil.php
-	'userpic-[_1]-%wx%h%x' => 'gebruikersafbeelding-[_1]-%wx%h%x',
 
 ## php/mt.php
 	'Page not found - [_1]' => 'Pagina niet gevonden - [_1]',

@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package TinyMCE::L10N::ja;
+package TinyMCE::L10N::fr;
 
 use strict;
 use utf8;
@@ -14,9 +14,6 @@ use vars qw( %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
-## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js
-	'Fullscreen' => 'Plein écran',
-
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/advanced.js
 	'Bold (Ctrl+B)' => 'Gras (Ctrl+B)',
 	'Italic (Ctrl+I)' => 'Italique (Ctrl+I)',
@@ -53,9 +50,12 @@ use vars qw( %Lexicon );
 	'Emphasis' => 'Emphase',
 	'List Item' => 'Item de liste',
 
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js
+	'Fullscreen' => 'Plein écran',
+
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/paste/editor_plugin.js
-	'paste.plaintext_mode_sticky' => 'paste.plaintext_mode_sticky', # Translate - New
-	'paste.plaintext_mode' => 'paste.plaintext_mode', # Translate - New
+	'paste.plaintext_mode_sticky' => 'paste.plaintext_mode_sticky',
+	'paste.plaintext_mode' => 'paste.plaintext_mode',
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/paste/editor_plugin_src.js
 
@@ -69,6 +69,7 @@ use vars qw( %Lexicon );
 
 ## mt-static/plugins/TinyMCE/tiny_mce/utils/editable_selects.js
 	'value' => 'valeur',
+
 ## plugins/TinyMCE/config.yaml
 	'Default WYSIWYG editor.' => 'Éditeur riche par défaut',
 	'TinyMCE' => 'TinyMCE',

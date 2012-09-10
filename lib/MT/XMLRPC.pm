@@ -45,7 +45,7 @@ sub ping_update {
         require MT::Blog;
         $blog = MT::Blog->load($blog)
             or return $class->error(
-            MT->translate( 'Can\'t load blog #[_1].', $blog ) );
+            MT->translate( 'Cannot load blog #[_1].', $blog ) );
     }
     my $ua = MT->new_ua();
     my $req = HTTP::Request->new( 'POST', $url );
