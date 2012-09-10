@@ -14,9 +14,6 @@ use vars qw( %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
-## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js
-	'Fullscreen' => 'Pantalla completa',
-
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/advanced.js
 	'Bold (Ctrl+B)' => 'Negrita (Ctrl+B)',
 	'Italic (Ctrl+I)' => 'Itálica (Ctrl+I)',
@@ -53,6 +50,9 @@ use vars qw( %Lexicon );
 	'Emphasis' => 'Énfasis',
 	'List Item' => 'Elemento lista',
 
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js
+	'Fullscreen' => 'Pantalla completa',
+
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/paste/editor_plugin.js
 	'paste.plaintext_mode_sticky' => 'paste.plaintext_mode_sticky',
 	'paste.plaintext_mode' => 'paste.plaintext_mode',
@@ -73,6 +73,7 @@ use vars qw( %Lexicon );
 ## plugins/TinyMCE/config.yaml
 	'Default WYSIWYG editor.' => 'Editor con formato predefinido',
 	'TinyMCE' => 'TinyMCE',
+
 );
 
 1;

@@ -836,6 +836,7 @@ use vars qw( @ISA %Lexicon );
 	'A search is in progress. Please wait until it is completed and try again.' => '連続した検索を抑制しています。しばらく待ってから再度検索してください。',
 	'Search failed. Invalid pattern given: [_1]' => '検索に失敗しました。パターンが不正です: [_1]',
 	'Search failed: [_1]' => '検索に失敗しました: [_1]',
+	'File not found: [_1]' => 'ファイルが見つかりません: [_1]',
 	'Publishing results failed: [_1]' => '検索結果の作成に失敗しました。',
 	'Search: new comment search' => '新しいコメントを検索',
 
@@ -2175,7 +2176,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Template.pm
 	'Template' => 'テンプレート',
-	'File not found: [_1]' => 'ファイルが見つかりません: [_1]',
 	'Template load error: [_1]' => 'テンプレートファイルの読み込みが出来ませんでした: [_1]',
 	'Tried to load the template file from outside of the include path \'[_1]\'' => '許可されない場所からテンプレートファイルを読み込もうとしました。\'[_1]\'',
 	'Error reading file \'[_1]\': [_2]' => 'ファイル: [_1]を読み込めませんでした: [_2]',
@@ -2610,8 +2610,8 @@ use vars qw( @ISA %Lexicon );
 	'Invalid email address' => 'メールアドレスのフォーマットが正しくありません',
 	'Invalid URL' => 'URLのフォーマットが正しくありません',
 	'This field is required' => 'このフィールドは必須です。',
-	'This field must be integer' => 'このフィールドには整数の値を入力して下さい',
-	'This field must be number' => 'このフィールドには数値を入力して下さい',
+	'This field must be an integer' => 'このフィールドには整数の値を入力して下さい',
+	'This field must be a number' => 'このフィールドには数値を入力して下さい',
 
 ## mt-static/jquery/jquery.mt.min.js
 
@@ -5128,7 +5128,7 @@ use vars qw( @ISA %Lexicon );
 	'Mail address to which test email should be sent' => 'テストメールが送られるメールアドレス',
 	'Skip' => 'スキップ',
 	'You must set the SMTP server port number.' => 'SMTPサーバのポート番号を指定してください。',
-	'This field must an be integer.' => '数字を入力してください。',
+	'This field must be an integer.' => 'このフィールドには整数の値を入力して下さい',
 	'You must set the system email address.' => 'システムメールアドレスは必須入力です。',
 	'You must set the Sendmail path.' => 'Sendmailのパスは必須入力です。',
 	'You must set the SMTP server address.' => 'SMTPサーバのアドレスを入力してください。',
@@ -6284,7 +6284,7 @@ use vars qw( @ISA %Lexicon );
 ## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
 	'Set up Facebook Commenters plugin' => 'Facebook Commentersプラグイン設定',
 	'Authentication failure: [_1], reason:[_2]' => '認証に失敗しました: [_1], 理由:[_2]',
-	'Failed to create commenter.' => 'コメンターの作成に失敗しました。',
+	'Failed to created commenter.' => 'コメンターの作成に失敗しました。',
 	'Failed to create a session.' => 'コメンターセッションの作成に失敗しました。',
 	'Could not verify this app with Facebook.' => 'このアプリケーションをFacebookで確認することが出来ませんでした。',
 

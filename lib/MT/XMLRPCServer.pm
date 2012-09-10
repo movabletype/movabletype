@@ -1270,7 +1270,7 @@ sub publishScheduledFuturePosts {
     my $author = $class->_login( $user, $pass );
     die _fault( MT->translate("Invalid login") ) unless $author;
     my $blog = MT::Blog->load($blog_id)
-        or die _fault( MT->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        or die _fault( MT->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
     my $now = time;
 
@@ -1367,7 +1367,7 @@ sub newMediaObject {
     require MT::Blog;
     require File::Spec;
     my $blog = MT::Blog->load($blog_id)
-        or die _fault( MT->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        or die _fault( MT->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
     my $fname = $file->{name}
         or die _fault( MT->translate("No filename provided") );

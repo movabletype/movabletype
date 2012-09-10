@@ -16,41 +16,12 @@ use vars qw( %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
+## plugins/MultiBlog/lib/MultiBlog.pm
+	'Restoring MultiBlog rebuild trigger for blog #[_1]...' => 'Restauration du compteur de republication MultiBlog pour le blog #[_1]...',
+
 ## plugins/MultiBlog/lib/MultiBlog/Tags.pm
 	'MTMultiBlog tags cannot be nested.' => 'Les balises MTMultiBlog ne peuvent pas être imbriquées.',
 	'Unknown "mode" attribute value: [_1]. Valid values are "loop" and "context".' => 'Valeur de l\'attribut "mode" inconnue : [_1]. Les valeurs valides sont "loop" et "context".',
-
-## plugins/MultiBlog/lib/MultiBlog.pm
-	'The include_blogs, exclude_blogs, blog_ids and blog_id attributes cannot be used together.' => 'Les attributs include_blogs, exclude_blogs, blog_ids et blog_id ne peuvent pas être utilisés ensemble.',
-	'The value of the blog_id attribute must be a single blog ID.' => 'La valeur de l\'attribut blog_id doit être un ID de blog unique.',
-	'The value for the include_blogs/exclude_blogs attributes must be one or more blog IDs, separated by commas.' => 'La valeur des attributs include_blogs/exclude_blogs doit être un ou plusieurs IDs de blogs, séparés par des virgules.',
-	'Restoring MultiBlog rebuild trigger for blog #[_1]...' => 'Restauration du compteur de republication MultiBlog pour le blog #[_1]...',
-
-## plugins/MultiBlog/tmpl/dialog_create_trigger.tmpl
-	'Create MultiBlog Trigger' => 'Créer un événement MultiBlog',
-
-## plugins/MultiBlog/tmpl/blog_config.tmpl
-	'When' => 'Quand',
-	'Weblog' => 'Blog',
-	'Trigger' => 'Événement',
-	'Action' => 'Action',
-	'Content Privacy' => 'Protection du contenu',
-	'Specify whether other blogs in the installation may publish content from this blog. This setting takes precedence over the default system aggregation policy found in the system-level MultiBlog configuration.' => 'Indiquez si les autres blogs de cette installation peuvent publier du contenu de ce blog. Ce réglage prend le dessus sur la règle d\'agrégation du système par défaut qui se trouve dans la configuration de MultiBlog pour tout le système.',
-	'Use system default' => 'Utiliser la règle par défaut du système',
-	'Allow' => 'Autoriser',
-	'Disallow' => 'Interdire',
-	'MTMultiBlog tag default arguments' => 'Arguments par défaut de la balise MTMultiBlog',
-	'Enables use of the MTMultiBlog tag without include_blogs/exclude_blogs attributes. Comma-separated BlogIDs or \'all\' (include_blogs only) are acceptable values.' => 'Autorise l\'utilisation de la balise MTMultiBlog sans les attributs include_blogs/exclude_blogs. Les valeurs correctes sont une liste de BlogIDs séparés par des virgules, ou \'all\' (seulement pour include_blogs).',
-	'Include blogs' => 'Inclure les blogs',
-	'Exclude blogs' => 'Exclure les blogs',
-	'Rebuild Triggers' => 'Événements de republication',
-	'Create Rebuild Trigger' => 'Créer un événement de republication ',
-	'You have not defined any rebuild triggers.' => 'Vous n\'avez défini aucun événement de republication.',
-
-## plugins/MultiBlog/tmpl/system_config.tmpl
-	'Default system aggregation policy' => 'Règle d\'agrégation du système par défaut',
-	'Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.' => 'L\'agrégation inter-blogs sera activée par défaut. Les blogs individuels peuvent être configurés via les paramètres MultiBlog du blog en question, pour restreindre l\'accès à leur contenu par les autres blogs.',
-	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'L\'agrégation inter-blogs sera désactivée par défaut. Les blogs individuels peuvent être configurés via les paramètres MultiBlog du blog en question, pour autoriser l\'accès à leur contenu par les autres blogs.',
 
 ## plugins/MultiBlog/multiblog.pl
 	q{MultiBlog allows you to publish content from other blogs and define publishing rules and access controls between them.} => q{Multiblog vous permet de publier du contenu d'autres blogs et de définir des règles de publication et de droit d'accès entre eux.},
@@ -68,6 +39,32 @@ use vars qw( %Lexicon );
 	'publishes a TrackBack' => 'un Trackback est publié',
 	'rebuild indexes.' => 'reconstruire les index.',
 	'rebuild indexes and send pings.' => 'reconstruire les index et envoyer les pings.',
+
+## plugins/MultiBlog/tmpl/blog_config.tmpl
+	'When' => 'Quand',
+	'Trigger' => 'Événement',
+	'Action' => 'Action',
+	'Weblog' => 'Blog',
+	'Content Privacy' => 'Protection du contenu',
+	q{Specify whether other blogs in the installation may publish content from this blog. This setting takes precedence over the default system aggregation policy found in the system-level MultiBlog configuration.} => q{Indiquez si les autres blogs de cette installation peuvent publier du contenu de ce blog. Ce réglage prend le dessus sur la règle d'agrégation du système par défaut qui se trouve dans la configuration de MultiBlog pour tout le système.},
+	'Use system default' => 'Utiliser la règle par défaut du système',
+	'Allow' => 'Autoriser',
+	'Disallow' => 'Interdire',
+	'MTMultiBlog tag default arguments' => 'Arguments par défaut de la balise MTMultiBlog',
+	q{Enables use of the MTMultiBlog tag without include_blogs/exclude_blogs attributes. Comma-separated BlogIDs or 'all' (include_blogs only) are acceptable values.} => q{Autorise l'utilisation de la balise MTMultiBlog sans les attributs include_blogs/exclude_blogs. Les valeurs correctes sont une liste de BlogIDs séparés par des virgules, ou 'all' (seulement pour include_blogs).},
+	'Include blogs' => 'Inclure les blogs',
+	'Exclude blogs' => 'Exclure les blogs',
+	'Rebuild Triggers' => 'Événements de republication',
+	'Create Rebuild Trigger' => 'Créer un événement de republication ',
+	q{You have not defined any rebuild triggers.} => q{Vous n'avez défini aucun événement de republication.},
+
+## plugins/MultiBlog/tmpl/dialog_create_trigger.tmpl
+	'Create MultiBlog Trigger' => 'Créer un événement MultiBlog',
+
+## plugins/MultiBlog/tmpl/system_config.tmpl
+	q{Default system aggregation policy} => q{Règle d'agrégation du système par défaut},
+	q{Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.} => q{L'agrégation inter-blogs sera activée par défaut. Les blogs individuels peuvent être configurés via les paramètres MultiBlog du blog en question, pour restreindre l'accès à leur contenu par les autres blogs.},
+	q{Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.} => q{L'agrégation inter-blogs sera désactivée par défaut. Les blogs individuels peuvent être configurés via les paramètres MultiBlog du blog en question, pour autoriser l'accès à leur contenu par les autres blogs.},
 
 );
 
