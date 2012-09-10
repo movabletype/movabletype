@@ -4358,7 +4358,7 @@ No se pudo escribir el fichero. Disco lleno.",
 
 ## tmpl/cms/include/revision_table.tmpl
 	'No revisions could be found.' => 'No se encontraron revisiones.',
-	'_REVISION_DATE_' => '_REVISION_DATE_',
+	'_REVISION_DATE_' => 'Fecha',
 	'Note' => 'Nota',
 	'Saved By' => 'Guardado por',
 
