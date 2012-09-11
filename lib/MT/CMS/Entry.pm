@@ -216,7 +216,7 @@ sub edit {
         if ($blog_id) {
             my $blog = $blog_class->load($blog_id)
                 or return $app->error(
-                $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+                $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
             $blog_timezone = $blog->server_offset();
 
             # new entry defaults used for new entries AND new pages.
@@ -1154,7 +1154,7 @@ sub _build_entry_preview {
         $tmpl       = $app->load_tmpl('preview_entry_content.tmpl');
         $fullscreen = 1;
     }
-    return $app->error( $app->translate('Can\'t load template.') )
+    return $app->error( $app->translate('Cannot load template.') )
         unless $tmpl;
 
     my $ctx = $tmpl->context;
@@ -1244,7 +1244,7 @@ sub _build_entry_preview {
             $fullscreen = 1;
             $param{preview_error}
                 = $app->translate(
-                "Unable to create preview file in this location: [_1]",
+                "Unable to create preview files in this location: [_1]",
                 $path );
             my $tmpl_plain = $app->load_tmpl('preview_entry_content.tmpl');
             $tmpl->text( $tmpl_plain->text );
@@ -1425,7 +1425,7 @@ sub save {
     my $blog_id = $app->param('blog_id');
     my $blog    = MT::Blog->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
     my $archive_type;
 
@@ -1534,7 +1534,7 @@ sub save {
             my $folder_path = defined $folder ? $folder->publish_path() : '';
             return $app->error(
                 $app->translate(
-                    "Same Basename has already been used. You should use an unique basename."
+                    "This basename has already been used. You should use an unique basename."
                 )
             ) if ( $dup_folder_path eq $folder_path );
         }
@@ -1580,14 +1580,14 @@ sub save {
             )
         {
             $param{error} = $app->translate(
-                "Invalid date '[_1]'; published on dates must be in the format YYYY-MM-DD HH:MM:SS.",
+                "Invalid date '[_1]'; 'Published on' dates must be in the format YYYY-MM-DD HH:MM:SS.",
                 $ao
             );
         }
         unless ( $param{error} ) {
             my $s = $6 || 0;
             $param{error} = $app->translate(
-                "Invalid date '[_1]'; published on dates should be real dates.",
+                "Invalid date '[_1]'; 'Published on' dates should be real dates.",
                 $ao
                 )
                 if (
@@ -2146,7 +2146,7 @@ sub pinged_urls {
     require MT::Entry;
     my $entry = MT::Entry->load($entry_id)
         or return $app->error(
-        $app->translate( 'Can\'t load entry #[_1].', $entry_id ) );
+        $app->translate( 'Cannot load entry #[_1].', $entry_id ) );
     return $app->errtrans("Invalid request.")
         unless $entry->blog_id == $app->blog->id;
     my $author = $app->user;
@@ -2562,7 +2562,7 @@ sub quickpost_js {
     my $blog_id = $app->blog->id;
     my $blog    = $app->model('blog')->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my %args = ( '_type' => $type, blog_id => $blog_id, qp => 1 );
     my $uri = $app->base . $app->uri( 'mode' => 'view', args => \%args );
     my $script
@@ -2570,7 +2570,7 @@ sub quickpost_js {
 
     # Translate the phrase here to avoid ActivePerl DLL bug.
     $app->translate(
-        '<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar, then click it when you are visiting a site that you want to blog about.',
+        '<a href="[_1]">QuickPost to [_2]</a> - Drag this bookmarklet to your browser\'s toolbar, then click it when you are visiting a site that you want to blog about.',
         encode_html($script),
         encode_html( $blog->name )
     );
@@ -2699,7 +2699,7 @@ sub update_entry_status {
     foreach my $id (@ids) {
         my $entry = MT::Entry->load($id)
             or return $app->errtrans(
-            "One of the entries ([_1]) did not actually exist", $id );
+            "One of the entries ([_1]) did not exist", $id );
 
         return $app->permission_denied()
             unless $app_author->is_superuser
@@ -2813,7 +2813,7 @@ sub delete {
     if ( my $blog_id = $q->param('blog_id') ) {
         $blog = MT::Blog->load($blog_id)
             or return $app->error(
-            $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     }
 
     my $can_background

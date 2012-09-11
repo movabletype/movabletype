@@ -446,7 +446,7 @@ my @CORE_REQ = (
     [   'File::Spec',
         0.8, 1,
         translate(
-            'File::Spec is required for path manipulation across operating systems.'
+            'File::Spec is required to work with file system path information on all supported operating systems.'
         )
     ],
 
@@ -457,7 +457,7 @@ my @CORE_REQ = (
     [   'LWP::UserAgent',
         0, 0,
         translate(
-            'LWP::UserAgent is required for proper functioning of the Configuration Wizard.'
+            'LWP::UserAgent is required for creating Movable Type configuration files using the installation wizard.'
         )
     ],
 
@@ -465,7 +465,7 @@ my @CORE_REQ = (
 
 my @CORE_DATA = (
     [   'DBI', 1.21, 0,
-        translate('DBI is required to store data in database.')
+        translate('DBI is required to work with most supported databases.')
     ],
 
     [   'DBD::mysql',
@@ -502,7 +502,7 @@ my @CORE_OPT = (
     [   'Digest::SHA',
         0, 0,
         translate(
-            'Digest::SHA is required in order to advanced protection of user passwords.'
+            'Digest::SHA is required in order to provide enhanced protection of user passwords.'
         )
     ],
 
@@ -515,21 +515,21 @@ my @CORE_OPT = (
     [   'CGI::PSGI',
         0, 0,
         translate(
-            'This module and its dependencies are required in order to operate Movable Type under psgi.'
+            'This module and its dependencies are required to run Movable Type under psgi.'
         )
     ],
 
     [   'CGI::Parse::PSGI',
         0, 0,
         translate(
-            'This module and its dependencies are required in order to operate Movable Type under psgi.'
+            'This module and its dependencies are required to run Movable Type under psgi.'
         )
     ],
 
     [   'XMLRPC::Transport::HTTP::Plack',
         0, 0,
         translate(
-            'This module and its dependencies are required in order to operate Movable Type under psgi.'
+            'This module and its dependencies are required to run Movable Type under psgi.'
         )
     ],
 
@@ -578,19 +578,19 @@ my @CORE_OPT = (
     [   'Image::Magick',
         0, 0,
         translate(
-            'Image::Magick is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.'
+            '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.', 'Image::Magick'
         )
     ],
 
     [   'GD', 0, 0,
         translate(
-            'GD is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.'
+            '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.', 'GD'
         )
     ],
 
     [   'Imager', 0, 0,
         translate(
-            'Imager is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.'
+            '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.', 'Imager'
         )
     ],
 
@@ -697,40 +697,40 @@ my @CORE_OPT = (
     ],
 
     [   'Authen::SASL', 0, 0,
-        translate( 'This module and its dependencies are required in order to use CRAM-MD5, DIGEST-MD5 or LOGIN as a SASL mechanism.' )
+        translate( 'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.' )
     ],
 
     [   'Net::SMTP::SSL',
         0, 0,
         translate(
-            'Net::SMTP::SSL is required to use SMTP Auth with an SSL connection.'
+            'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.'
         )
     ],
 
     [   'Net::SMTP::TLS',
         0, 0,
         translate(
-            'Net::SMTP::TLS is required to use SMTP Auth with the STARTTLS communication protocol.'
+            'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.'
         )
     ],
 
     [   'IO::Socket::SSL',
         0, 0,
         translate(
-            'IO::Socket::SSL is required to use SMTP Auth with an SSL connection or the STARTTLS communication protocol.'
+            'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.'
         )
     ],
 
     [   'Net::SSLeay',
         0, 0,
         translate(
-            'Net::SSLeay is required to use SMTP Auth with an SSL connection or the STARTTLS communication protocol.'
+            'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.'
         )
     ],
 
     [   'Safe', 0, 0,
         translate(
-            'This module is used to test attributes in the MTIf conditional tag.'
+            'This module is used in a test attribute for the MTIf conditional tag.'
         )
     ],
 

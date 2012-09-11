@@ -119,7 +119,7 @@ sub version_slug {
     return MT->translate_templatized(<<"SLUG");
 <__trans phrase="Powered by [_1]" params="$PRODUCT_NAME">
 <__trans phrase="Version [_1]" params="$VERSION_ID">
-<__trans phrase="http://www.sixapart.com/movabletype/">
+<__trans phrase="http://www.movabletype.com/">
 SLUG
 }
 
@@ -570,14 +570,14 @@ sub add_callback {
         }
         elsif ( !UNIVERSAL::isa( $plugin, "MT::Component" ) ) {
             return $class->trans_error(
-                "If present, 3rd argument to add_callback must be an object of type MT::Component or MT::Plugin"
+                "If it is present, the third argument to add_callback must be an object of type MT::Component or MT::Plugin"
             );
         }
     }
     if ( ( ref $code ) ne 'CODE' ) {
         if ( ref $code ) {
             return $class->trans_error(
-                '4th argument to add_callback must be a CODE reference.');
+                'Fourth argument to add_callback must be a CODE reference.');
         }
         else {
 
@@ -827,7 +827,7 @@ sub init_config {
         my $cfg_file = $mt->find_config($param);
 
         return $mt->error(
-            "Missing configuration file. Maybe you forgot to move mt-config.cgi-original to mt-config.cgi?"
+            "Missing configuration file. Did you forgot to move mt-config.cgi-original to mt-config.cgi?"
         ) unless $cfg_file;
         $cfg_file = File::Spec->rel2abs($cfg_file);
         $mt->{cfg_file} = $cfg_file;
@@ -1663,7 +1663,7 @@ sub ping {
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
         $blog = MT::Blog->load($blog_id)
-            or return $mt->trans_error( "Load of blog '[_1]' failed: [_2]",
+            or return $mt->trans_error( "Loading of blog '[_1]' failed: [_2]",
             $blog_id, MT::Blog->errstr );
     }
 
@@ -2176,12 +2176,10 @@ sub template_paths {
     }
     my @alt_paths = $mt->config('AltTemplatePath');
     foreach my $alt_path (@alt_paths ) {
-        if ( my $alt_path = $mt->config->AltTemplatePath ) {
-            if ( -d $alt_path ) {    # AltTemplatePath is absolute
-                push @paths, File::Spec->catdir( $alt_path, $mt->{template_dir} )
-                    if $mt->{template_dir};
-                push @paths, $alt_path;
-            }
+        if ( -d $alt_path ) {    # AltTemplatePath is absolute
+            push @paths, File::Spec->catdir( $alt_path, $mt->{template_dir} )
+                if $mt->{template_dir};
+            push @paths, $alt_path;
         }
     }
 
@@ -2656,7 +2654,7 @@ sub build_email {
     require MT::Log;
     $mt->log(
         {   message => $mt->translate(
-                "Error during building email: [_1]",
+                "Error while creating email: [_1]",
                 $mt->errstr
             ),
             class    => 'system',

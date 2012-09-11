@@ -520,7 +520,7 @@ sub remove {
             my $app = MT->instance;
             $app->log(
                 {   message => $app->translate(
-                        "Could not remove asset file [_1] from filesystem: [_2]",
+                        "Could not remove asset file [_1] from the filesystem: [_2]",
                         $file,
                         $fmgr->errstr
                     ),
@@ -585,7 +585,7 @@ sub remove_cached_files {
                         my $app = MT->instance;
                         $app->log(
                             {   message => $app->translate(
-                                    "Could not remove asset file [_1] from filesystem: [_2]",
+                                    "Could not remove asset file [_1] from the filesystem: [_2]",
                                     $file,
                                     $fmgr->errstr
                                 ),

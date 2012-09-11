@@ -13,8 +13,8 @@ use vars qw( %Lexicon );
 %Lexicon = (
 ## plugins/WXRImporter/config.yaml
 	'Import WordPress exported RSS into MT.' => 'Aus WordPress exportiertes RSS in Movable Type importieren',
-	'"WordPress eXtended RSS (WXR)"' => '"WordPress eXtended RSS (WXR)"', # Translate - New # OK
-	'"Download WP attachments via HTTP."' => 'WordPress-Anhänge via HTTP herunterladen.', # Translate - New # OK
+	'"WordPress eXtended RSS (WXR)"' => '"WordPress eXtended RSS (WXR)"',
+	'"Download WP attachments via HTTP."' => 'WordPress-Anhänge via HTTP herunterladen.',
 
 ## plugins/WXRImporter/lib/WXRImporter/Import.pm
 
@@ -27,14 +27,18 @@ use vars qw( %Lexicon );
 	' and asset will be tagged (\'[_1]\')...' => ' und tagge Asset (\'[_1]\')...',
 	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'Doppelter Eintrag gefunden. Überspringe...',
 	'Saving page (\'[_1]\')...' => 'Speichere Seite (\'[_1]\')...',
+	'Entry has no MT::Trackback object!' => 'Eintrag hat kein MT::Trackback-Objekt!',
+	'Assigning permissions for new user...' => 'Weise neuem Benutzer Berechtigungen zu...',
+	'Saving permission failed: [_1]' => 'Die Berechtigungen konnten nicht gespeichert werden: [_1]',
 
 ## plugins/WXRImporter/tmpl/options.tmpl
-	'Before you import WordPress posts to Movable Type, we recommend that you <a href=\'[_1]\'>configure your blog\'s publishing paths</a> first.' => 'Bevor Sie WordPress-Einträge in Movable Type importieren, sollten Sie zuerst die <a href=\'[_1]\'>Veröffentlichungspfade Ihres Weblogs einstellen</a>.',
+	q{Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your blog's publishing paths</a> first.} => q{Bevor Sie WordPress-Einträge in Movable Type importieren, sollten Sie zuerst die <a href='[_1]'>Veröffentlichungspfade Ihres Weblogs einstellen</a>.},
 	'Upload path for this WordPress blog' => 'Uploadpfad für dieses WordPress-Blog',
 	'Replace with' => 'Ersetzen durch',
 	'Download attachments' => 'Anhänge herunterladen',
 	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'Lädt Anhänge von Wordpress-Blogs im Hintergrund herunter. Cronjob erforderlich.',
 	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Anhänge (Bilder und Dateien) des importierten Wordpress-Blogs herunterladen.',
+
 );
 
 1;

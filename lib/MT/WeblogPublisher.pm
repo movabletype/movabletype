@@ -118,7 +118,7 @@ sub rebuild {
         $blog = MT::Blog->load($blog_id)
             or return $mt->error(
             MT->translate(
-                "Load of blog '[_1]' failed: [_2]", $blog_id,
+                "Loading of blog '[_1]' failed: [_2]", $blog_id,
                 MT::Blog->errstr
             )
             );

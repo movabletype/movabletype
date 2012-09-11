@@ -38,7 +38,7 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
         }
         else {
             _clear_vars($ctx, $ext_args);
-            return $ctx->error($ctx->mt->translate('Error compiling widgetset [_1]', $widgetmanager));
+            return $ctx->error($ctx->mt->translate('Error compiling widget set [_1]', $widgetmanager));
         }
     }
     return '';

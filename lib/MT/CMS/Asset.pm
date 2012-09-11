@@ -460,7 +460,7 @@ sub complete_insert {
     if ( !$asset && $app->param('id') ) {
         require MT::Asset;
         $asset = MT::Asset->load( $app->param('id') )
-            || return $app->errtrans( "Can't load file #[_1].",
+            || return $app->errtrans( "Cannot load file #[_1].",
             $app->param('id') );
     }
     return $app->errtrans('Invalid request.') unless $asset;
@@ -470,7 +470,7 @@ sub complete_insert {
 
     require MT::Blog;
     my $blog = $asset->blog
-        or return $app->errtrans( "Can't load blog #[_1].",
+        or return $app->errtrans( "Cannot load blog #[_1].",
         $app->param('blog_id') );
     my $perms = $app->permissions
         or return $app->errtrans('No permissions');
@@ -917,7 +917,7 @@ sub asset_insert_text {
         or return $app->errtrans("Invalid request.");
     require MT::Asset;
     my $asset = MT::Asset->load($id)
-        or return $app->errtrans( "Can't load file #[_1].", $id );
+        or return $app->errtrans( "Cannot load file #[_1].", $id );
     $param->{enclose} = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
     return $asset->as_html($param);
 }
@@ -1019,7 +1019,7 @@ sub _set_start_upload_params {
         require MT::Blog;
         my $blog = MT::Blog->load($blog_id)
             or return $app->error(
-            $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
         $param->{enable_archive_paths} = $blog->column('archive_path');
         $param->{local_site_path}      = $blog->site_path;
@@ -1180,7 +1180,7 @@ sub _upload_file {
         require MT::Blog;
         $blog = MT::Blog->load($blog_id)
             or return $app->error(
-            $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
         $fmgr = $blog->file_mgr;
 
         ## Set up the full path to the local file; this path could start
@@ -1195,7 +1195,7 @@ sub _upload_file {
         }
         return $app->error(
             $app->translate(
-                'Movable Type was unable to write on the "Upload Destination". Please make sure that the folder is writable from the web server.'
+                'Movable Type was unable to write to the "Upload Destination". Please make sure that the webserver can write to this folder.'
             )
         ) unless -d $root_path;
         $relative_path = $q->param('extra_path');
@@ -1226,7 +1226,7 @@ sub _upload_file {
                     or return start_upload(
                     $app, %param,
                     error => $app->translate(
-                        "Can't make path '[_1]': [_2]", $path,
+                        "Cannot make path '[_1]': [_2]", $path,
                         $fmgr->errstr
                     )
                     );
@@ -1328,8 +1328,8 @@ sub _upload_file {
                     return $app->error(
                         $app->translate(
                             "File with name '[_1]' already exists. (Install "
-                                . "File::Temp if you'd like to be able to overwrite "
-                                . "existing uploaded files.)",
+                                . "the File::Temp Perl module if you would like "
+                                . "to be able to overwrite existing uploaded files.)",
                             $basename
                         )
                     );
@@ -1342,9 +1342,9 @@ sub _upload_file {
                 };
                 if ($@) {    #!$tmp_fh
                     return $app->errtrans(
-                        "Error creating temporary file; please check your TempDir "
-                            . "setting in your coniguration file (currently '[_1]') "
-                            . "this location should be writable.",
+                        "Error creating a temporary file; The webserver should be able "
+                            . "to write to this folder.  Please check the TempDir "
+                            . "setting in your configuration file, it is currently '[_1]'. ",
                         (     $tmp_dir
                             ? $tmp_dir
                             : '[' . $app->translate('unassigned') . ']'
@@ -1355,7 +1355,7 @@ sub _upload_file {
                     or return $app->error(
                     $app->translate(
                         "File with name '[_1]' already exists; Tried to write "
-                            . "to tempfile, but open failed: [_2]",
+                            . "to a tempfile, but the webserver could not open it: [_2]",
                         $basename,
                         "$!"
                     )
@@ -1439,7 +1439,7 @@ sub _upload_file {
         if ( $ret[2] ) {
             return $app->error(
                 $app->translate(
-                    'The file([_1]) you uploaded is not allowed.', $basename
+                    'The file ([_1]) that you uploaded is not allowed.', $basename
                 )
             );
         }
@@ -1455,7 +1455,7 @@ sub _upload_file {
         unless ( $ret[2] ) {
             return $app->error(
                 $app->translate(
-                    'The file([_1]) you uploaded is not allowed.', $basename
+                    'The file ([_1]) that you uploaded is not allowed.', $basename
                 )
             );
         }
@@ -1562,7 +1562,7 @@ sub _upload_file {
         if ( $asset->class ne $asset_pkg->class_type ) {
             return $app->error(
                 $app->translate(
-                    "Can't overwrite with the file of different type. Original: [_1] Uploaded: [_2]",
+                    "Cannot overwrite an existing file with a file of a different type. Original: [_1] Uploaded: [_2]",
                     $asset->class_label,
                     $asset_pkg->class_label
                 )

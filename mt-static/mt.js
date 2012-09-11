@@ -2818,7 +2818,7 @@ MT.App.CategorySelector = new Class( Component, {
                     break;
                 }
             if ( !defined( idx ) )
-                return log.error( "can't find parent id "+parent.id+" in category list");
+                return log.error( "cannot find parent id "+parent.id+" in category list");
             /* get the parents path for our own, and add the parent */
             /* use fromPseudo to copy this array, not take a ref to it */
             cat.path = Array.fromPseudo( parent.path || [] );

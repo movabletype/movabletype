@@ -74,7 +74,7 @@ sub dsn_from_config {
         sysopen JUNK, $db_file, O_RDWR | O_CREAT, 0666
             or return undef;
 
-#or return $driver->error(MT->translate("Can't open '[_1]': [_2]", $db_file, $!));
+#or return $driver->error(MT->translate("Cannot open '[_1]': [_2]", $db_file, $!));
         close JUNK;
         umask($old);
     }

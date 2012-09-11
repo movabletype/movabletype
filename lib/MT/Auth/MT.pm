@@ -23,9 +23,9 @@ sub sanity_check {
         && ( $id && $app->user->id == $id ) )
     {
         my $author = MT::Author->load($id)
-            or return $app->translate('Failed to verify current password.');
+            or return $app->translate('Failed to verify the current password.');
         if ( !$auth->is_valid_password( $author, $q->param('old_pass') ) ) {
-            return $app->translate('Failed to verify current password.');
+            return $app->translate('Failed to verify the current password.');
         }
     }
     return '';
@@ -51,7 +51,7 @@ sub is_valid_password {
             return $value eq Digest::SHA::sha512_base64( $salt . $pass );
         }
         else {
-            die MT->translate('Missing Required Modules') . ' Digest::SHA';
+            die MT->translate('Missing required module') . ' Digest::SHA';
         }
     }
     elsif ( $real_pass =~ m/^{SHA}(.*)\$(.*)/ ) {

@@ -14,7 +14,7 @@ sub load_driver {
     my $image = shift;
     eval { require GD };
     if ( my $err = $@ ) {
-        return $image->error( MT->translate( "Can't load GD: [_1]", $err ) );
+        return $image->error( MT->translate( "Cannot load GD: [_1]", $err ) );
     }
     1;
 }

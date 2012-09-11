@@ -293,7 +293,7 @@ sub as_html {
             $thumb = MT::Asset->load( $param->{thumb_asset_id} )
                 || return $asset->error(
                 MT->translate(
-                    "Can't load image #[_1]",
+                    "Cannot load image #[_1]",
                     $param->{thumb_asset_id}
                 )
                 );
@@ -329,7 +329,7 @@ sub as_html {
             my $popup = MT::Asset->load( $param->{popup_asset_id} )
                 || return $asset->error(
                 MT->translate(
-                    "Can't load image #[_1]",
+                    "Cannot load image #[_1]",
                     $param->{popup_asset_id}
                 )
                 );
@@ -647,7 +647,7 @@ sub on_upload {
                 $asset_html->url($pseudo_url);
                 $asset_html->label(
                     $app->translate(
-                        "Popup Page for [_1]",
+                        "Popup page for [_1]",
                         $asset->label || $asset->file_name
                     )
                 );

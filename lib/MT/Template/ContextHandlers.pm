@@ -1105,7 +1105,7 @@ sub build_date {
         if ($blog_id) {
             $blog = MT->model('blog')->load($blog_id);
             return $ctx->error(
-                MT->translate( 'Can\'t load blog #[_1].', $blog_id ) )
+                MT->translate( 'Cannot load blog #[_1].', $blog_id ) )
                 unless $blog;
         }
     }
@@ -4201,7 +4201,7 @@ B<Example:> Passing Parameters to a Template Module
                 )
                 or return $ctx->error(
                 MT->translate(
-                    "Can't find included template [_1] '[_2]'",
+                    "Cannot find included template [_1] '[_2]'",
                     MT->translate($name), $tmpl_name
                 )
                 );
@@ -4265,11 +4265,14 @@ B<Example:> Passing Parameters to a Template Module
             ) ? 1 : 0;
         my $cache_key = 
             $arg->{cache_key} || $arg->{key} || $tmpl->get_cache_key();
-        my $ttl
+        # Delete a cached data if $ttl_for_get seconds have passed since saving.
+        my $ttl_for_get
             = exists $arg->{ttl}          ? $arg->{ttl}
             : ( $cache_expire_type == 1 ) ? $tmpl->cache_expire_interval
             : ( $cache_expire_type == 2 ) ? 0
             :                               60 * 60;    # default 60 min.
+        # Allow the cache driver to expire data after $ttl_for_set passed.
+        my $ttl_for_set = $ttl_for_get;
 
         if ( $cache_expire_type == 2 ) {
             my @types = split /,/, ( $tmpl->cache_expire_event || '' );
@@ -4289,12 +4292,14 @@ B<Example:> Passing Parameters to a Template Module
                             && ( MT::Util::ts2epoch( undef, $latest, 1 )
                                 > $mtime ) )
                         {
-                            $ttl = 1;    # bound to force an update
+                            $ttl_for_get = 1;    # bound to force an update
                         }
                     }
                     else {
-                        $ttl = time - MT::Util::ts2epoch( undef, $latest, 1 );
-                        $ttl = 1 if $ttl == 0;    # edited just now.
+                        $ttl_for_get
+                            = time - MT::Util::ts2epoch( undef, $latest, 1 );
+                        $ttl_for_get = 1
+                            if $ttl_for_get == 0;    # edited just now.
                     }
                 }
             }
@@ -4306,11 +4311,12 @@ B<Example:> Passing Parameters to a Template Module
             my $tmpl_ts
                 = MT::Util::ts2epoch( $tmpl->blog_id ? $tmpl->blog : undef,
                 $tmpl_mod );
-            if ( ( $ttl == 0 ) || ( time - $tmpl_ts < $ttl ) ) {
-                $ttl = time - $tmpl_ts;
+            if ( ( $ttl_for_get == 0 ) || ( time - $tmpl_ts < $ttl_for_get ) )
+            {
+                $ttl_for_get = time - $tmpl_ts;
             }
             require MT::Cache::Negotiate;
-            $cache_driver = MT::Cache::Negotiate->new( ttl => $ttl );
+            $cache_driver = MT::Cache::Negotiate->new( ttl => $ttl_for_get );
             my $cache_value = $cache_driver->get($cache_key);
             $cache_value = Encode::decode( $enc, $cache_value );
             if ($cache_value) {
@@ -4354,7 +4360,7 @@ B<Example:> Passing Parameters to a Template Module
 
         if ($cache_enabled) {
             $cache_driver->set( $cache_key, Encode::encode( $enc, $ret ),
-                $ttl );
+                $ttl_for_set );
         }
 
         if ($use_ssi) {
@@ -4397,7 +4403,7 @@ B<Example:> Passing Parameters to a Template Module
         if ( !MT->config->AllowFileInclude ) {
             return $ctx->error(
                 MT->translate(
-                    'File include is disabled by "AllowFileInclude" config directive.'
+                    'File inclusion is disabled by "AllowFileInclude" config directive.'
                 )
             );
         }
@@ -4427,7 +4433,7 @@ B<Example:> Passing Parameters to a Template Module
             if ( $blog && $blog->id != $blog_id ) {
                 $blog = MT::Blog->load($blog_id)
                     or return $ctx->error(
-                    MT->translate( "Can't find blog for id '[_1]", $blog_id )
+                    MT->translate( "Cannot find blog for id '[_1]", $blog_id )
                     );
             }
             my @paths = ($file);
@@ -4440,7 +4446,7 @@ B<Example:> Passing Parameters to a Template Module
                 $path = $p, last if -e $p && -r _;
             }
             return $ctx->error(
-                MT->translate( "Can't find included file '[_1]'", $file ) )
+                MT->translate( "Cannot find included file '[_1]'", $file ) )
                 unless $path;
             local *FH;
             open FH, $path
@@ -4611,7 +4617,7 @@ sub _hdlr_section {
             if ( $args->{by_user} ) {
                 my $author = $app->user
                     or
-                    return $ctx->error( MT->translate("Can't load user.") );
+                    return $ctx->error( MT->translate("Cannot load user.") );
                 $cache_id .= ':user_id=' . $author->id;
             }
 
@@ -4744,7 +4750,7 @@ sub _hdlr_link {
             }
             )
             or return $ctx->error(
-            MT->translate( "Can't find template '[_1]'", $tmpl_name ) );
+            MT->translate( "Cannot find template '[_1]'", $tmpl_name ) );
         my $site_url = $blog->site_url;
         $site_url .= '/' unless $site_url =~ m!/$!;
         my $link = $site_url . $tmpl->outfile;
@@ -4755,7 +4761,7 @@ sub _hdlr_link {
     elsif ( my $entry_id = $arg->{entry_id} ) {
         my $entry = MT::Entry->load($entry_id)
             or return $ctx->error(
-            MT->translate( "Can't find entry '[_1]'", $entry_id ) );
+            MT->translate( "Cannot find entry '[_1]'", $entry_id ) );
         my $link = $entry->permalink;
         $link = MT::Util::strip_index( $link, $curr_blog )
             unless $arg->{with_index};
@@ -5687,7 +5693,7 @@ B<Example:>
 sub _hdlr_template_created_on {
     my ( $ctx, $args, $cond ) = @_;
     my $template = $ctx->stash('template')
-        or return $ctx->error( MT->translate("Can't load template") );
+        or return $ctx->error( MT->translate("Cannot load template") );
     $args->{ts} = $template->created_on;
     $ctx->build_date($args);
 }

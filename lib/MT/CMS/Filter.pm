@@ -23,7 +23,7 @@ sub save {
 
     if ( !$label ) {
         return $app->json_error(
-            $app->translate('Failed to save filter: label is required.') );
+            $app->translate('Failed to save filter: Label is required.') );
     }
     my $items;
     if ( my $items_json = $q->param('items') ) {
@@ -69,7 +69,7 @@ sub save {
     {
         return $app->json_error(
             $app->translate(
-                'Failed to save filter: label "[_1]" is duplicated.', $label
+                'Failed to save filter:  Label "[_1]" is duplicated.', $label
             )
         );
     }

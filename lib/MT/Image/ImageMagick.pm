@@ -15,7 +15,7 @@ sub load_driver {
     eval { require Image::Magick };
     if ( my $err = $@ ) {
         return $image->error(
-            MT->translate( "Can't load Image::Magick: [_1]", $err ) );
+            MT->translate( "Cannot load Image::Magick: [_1]", $err ) );
     }
     1;
 }

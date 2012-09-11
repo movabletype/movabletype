@@ -997,7 +997,7 @@ sub init_query {
                 unless ( ref($d) && ( 'Fh' eq ref($d) ) ) {
                     eval { $d = Encode::decode( $charset, $d, 1 ); };
                     return $app->errtrans(
-                        "Invalid request: corrupt character data for character set [_1]",
+                        "Problem with this request: corrupt character data for character set [_1]",
                         $charset
                     ) if $@;
                 }
@@ -1183,7 +1183,7 @@ sub _cb_user_provisioning {
     $new_blog->save
         or MT->log(
         {   message => MT->translate(
-                "Error provisioning blog for new user '[_1] (ID: [_2])'.",
+                "Error provisioning blog for new user '[_1]' (ID: [_2]).",
                 $user->id, $user->name
             ),
             level    => MT::Log::ERROR(),
@@ -1194,7 +1194,7 @@ sub _cb_user_provisioning {
         return;
     MT->log(
         {   message => MT->translate(
-                "Blog '[_1] (ID: [_2])' for user '[_3] (ID: [_4])' has been created.",
+                "Blog '[_1]' (ID: [_2]) for user '[_3]' (ID: [_4]) has been created.",
                 $new_blog->name, $new_blog->id, $user->name, $user->id
             ),
             level    => MT::Log::INFO(),
@@ -1228,7 +1228,7 @@ sub _cb_user_provisioning {
     else {
         MT->log(
             {   message => MT->translate(
-                    "Error assigning blog administration rights to user '[_1] (ID: [_2])' for blog '[_3] (ID: [_4])'. No suitable blog administrator role was found.",
+                    "Error assigning blog administration rights to user '[_1]' (ID: [_2]) for blog '[_3]' (ID: [_4]). No suitable blog administrator role was found.",
                     $user->name,     $user->id,
                     $new_blog->name, $new_blog->id,
                 ),
@@ -1752,7 +1752,8 @@ sub _invalidate_commenter_session {
     my %user_session_kookee = (
         -name    => $app->commenter_session_cookie_name,
         -value   => '',
-        -expires => "+${timeout}s"
+        -expires => "+${timeout}s",
+        -path    => $blog_path,
     );
     $app->bake_cookie(%user_session_kookee);
 }
@@ -1958,7 +1959,7 @@ sub _is_commenter {
         }
         return $app->error(
             $app->translate(
-                'Our apologies, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.'
+                'Sorry, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.'
             )
         ) unless $has_system_permission;
         return -1;
@@ -1975,7 +1976,7 @@ sub commenter_loggedin {
     my ( $commenter, $commenter_blog_id ) = @_;
     my $blog = $app->model('blog')->load($commenter_blog_id)
         or return $app->error(
-        $app->translate( "Can\'t load blog #[_1].", $commenter_blog_id ) );
+        $app->translate( "Cannot load blog #[_1].", $commenter_blog_id ) );
     my $path = $app->config('CGIPath');
     $path .= '/' unless $path =~ m!/$!;
     my $url = $path . $app->config('CommentScript');
@@ -2043,7 +2044,7 @@ sub login {
         );
         return $app->error(
             $app->translate(
-                'This account has been disabled. Please see your system administrator for access.'
+                'This account has been disabled. Please see your Movable Type system administrator for access.'
             )
         );
     }
@@ -2059,7 +2060,7 @@ sub login {
         }
         $message
             ||= $app->translate(
-            'This account has been disabled. Please see your system administrator for access.'
+            'This account has been disabled. Please see your Movable Type system administrator for access.'
             );
         $app->user(undef);
         $app->log(
@@ -2085,7 +2086,7 @@ sub login {
         # Login invalid; auth layer says user record has been removed
         return $app->error(
             $app->translate(
-                'This account has been deleted. Please see your system administrator for access.'
+                'This account has been deleted. Please see your Movable Type system administrator for access.'
             )
         );
     }
@@ -2295,7 +2296,7 @@ sub create_user_pending {
     if ( exists $param->{blog_id} ) {
         $blog = $app->model('blog')->load( $param->{blog_id} )
             or return $app->error(
-            $app->translate( "Can\'t load blog #[_1].", $param->{blog_id} ) );
+            $app->translate( "Cannot load blog #[_1].", $param->{blog_id} ) );
     }
 
     my ( $password, $url );
@@ -2418,7 +2419,7 @@ sub create_user_pending {
     unless ( $user->save ) {
         return $app->error(
             $app->translate(
-                "Something wrong happened when trying to process signup: [_1]",
+                "An error occurred while trying to process signup: [_1]",
                 $user->errstr
             )
         );
@@ -2825,7 +2826,7 @@ sub show_error {
     if ( !$tmpl ) {
         $error = '<pre>' . $error . '</pre>' unless $error =~ m/<pre>/;
         return
-              "Can't load error template; got error '"
+              "Cannot load error template; got error '"
             . encode_html( $app->errstr )
             . "'. Giving up. Original error was: $error";
     }
@@ -2854,7 +2855,7 @@ sub show_error {
     if ( !defined $out ) {
         $param->{enable_pre} = 1 unless $error =~ m/<pre>/;
         return
-              "Can't build error template; got error '"
+              "Cannot build error template; got error '"
             . encode_html( $tmpl->errstr )
             . "'. Giving up. Original error was: $error";
     }
@@ -4044,7 +4045,7 @@ sub is_valid_redirect_target {
         my $entry = MT::Entry->load( $app->param('entry_id') || 0 )
             or return $app->error(
             $app->translate(
-                'Can\'t load entry #[_1].',
+                'Cannot load entry #[_1].',
                 $app->param('entry_id')
             )
             );

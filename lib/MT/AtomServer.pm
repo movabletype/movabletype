@@ -1030,7 +1030,7 @@ sub _upload_to_asset {
         return $app->error(
             500,
             MT->translate(
-                'The file([_1]) you uploaded is not allowed.', $fname
+                'The file ([_1]) that you uploaded is not allowed.', $fname
             )
         ) if $ret[2];
     }
@@ -1044,7 +1044,7 @@ sub _upload_to_asset {
         return $app->error(
             500,
             MT->translate(
-                'The file([_1]) you uploaded is not allowed.', $fname
+                'The file ([_1]) that you uploaded is not allowed.', $fname
             )
         ) unless $ret[2];
     }
@@ -1067,7 +1067,7 @@ sub _upload_to_asset {
             MT->translate(
                 "Saving [_1] failed: [_2]",
                 $base,
-                "Invalid image file format."
+                MT->translate( "Invalid image file format." )
             )
         ) unless MT::Image::is_valid_image($fh);
         close($fh);
@@ -1089,7 +1089,7 @@ sub _upload_to_asset {
     return $app->error(
         500,
         MT->translate(
-            "Perl module Image::Size is required to determine width and height of uploaded images."
+            "Perl module Image::Size is required to determine the width and height of uploaded images."
         )
     ) if $@;
     my ( $w, $h, $id ) = Image::Size::imgsize($local);

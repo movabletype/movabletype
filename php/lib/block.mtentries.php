@@ -8,7 +8,7 @@
 function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
     $localvars = array(array('entry', '_entries_counter','entries','current_timestamp','modification_timestamp','_entries_lastn', 'current_timestamp_end', 'DateHeader', 'DateFooter', '_entries_glue', 'blog', 'blog_id', 'conditional', 'else_content', '__out'), common_loop_vars());
     if (isset($args['sort_by']) && $args['sort_by'] == 'score' && !isset($args['namespace'])) {
-        return $ctx->error($ctx->mt->translate('sort_by="score" must be used in combination with namespace.'));
+        return $ctx->error($ctx->mt->translate('sort_by="score" must be used together with a namespace.'));
     }
     if (!isset($content)) {
         $ctx->localize($localvars);

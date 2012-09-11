@@ -460,12 +460,12 @@ sub do_export {
         if (not defined $theme_dir) {
             if (scalar(@dir_list) == 1) {
                 return $app->errtrans(
-                    'Themes Directory [_1] is not writable.', $dir_list[0],
+                    'Themes directory [_1] is not writable.', $dir_list[0],
                 );
             }
             else {
                 return $app->errtrans(
-                    'All Themes Directories are not writable.'
+                    'All themes directories are not writable.'
                 );
             }
         }
@@ -625,7 +625,7 @@ sub do_export {
         require MT::Util::Archive;
         my $arcfile = File::Temp::tempnam( $tmproot, $theme_id );
         my $arc = MT::Util::Archive->new( $arctype, $arcfile )
-            or die "Can't load archiver : " . MT::Util::Archive->errstr;
+            or die "Cannot load archiver : " . MT::Util::Archive->errstr;
         $arc->add_tree($tmproot);
         $arc->close;
         my $newfilename = $theme_id;

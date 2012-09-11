@@ -1103,7 +1103,7 @@ sub do_search_replace {
         $replace_count++;
         $obj->save
             or return $app->error(
-            $app->translate( "Saving object failed: [_2]", $obj->errstr ) );
+            $app->translate( "Saving object failed: [_1]", $obj->errstr ) );
     }
     if (@data) {
 

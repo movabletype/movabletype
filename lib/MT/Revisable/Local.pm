@@ -82,7 +82,7 @@ sub init_revisioning {
         package $subclass;
         our \$VERSION = 1.0;
         use base qw($base_class);
-        
+
         1;
     ";
 

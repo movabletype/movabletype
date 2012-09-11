@@ -717,7 +717,7 @@ sub main {
         };
         if ( $author && !$author->is_superuser ) {
             return $app->errtrans(
-                "No permissions. Please contact your administrator for upgrading Movable Type."
+                "No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type."
             );
         }
     }

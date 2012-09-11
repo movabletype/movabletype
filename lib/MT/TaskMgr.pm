@@ -57,7 +57,7 @@ sub run_tasks {
                 category => 'tasks',
                 level    => MT::Log::ERROR(),
                 message  => MT->translate(
-                    "Unable to secure lock for executing system tasks. Make sure your TempDir location ([_1]) is writable.",
+                    "Unable to secure a lock for executing system tasks. Make sure your TempDir location ([_1]) is writable.",
                     MT->config->TempDir
                 )
             }

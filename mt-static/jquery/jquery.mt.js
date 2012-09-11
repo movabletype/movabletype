@@ -1067,11 +1067,11 @@ $.mtValidateAddMessages = function ( rules ) {
 
 $.mtValidateMessages = {
     '.date':        trans('Invalid date format'),
-    '.email':       trans('Invalid mail address'),
+    '.email':       trans('Invalid email address'),
     '.url':         trans('Invalid URL'),
     '.required':    trans('This field is required'),
-    '.digit, .num': trans('This field must be integer'),
-    '.number':      trans('This field must be number')
+    '.digit, .num': trans('This field must be an integer'),
+    '.number':      trans('This field must be a number')
 };
 
 $.fn.extend({
