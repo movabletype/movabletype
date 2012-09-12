@@ -43,7 +43,8 @@ sub init_registry {
                 'upgrade_widgetmanagers_nv' => {
 
                     # this is to workaround absence of PluginSchemaVersion
-                    code => \&upgrade_widgetmanagers,
+                    code     => \&upgrade_widgetmanagers,
+                    priority => 3.12
                 },
                 'upgrade_widgetmanagers' => {
                     version_limit => 1.1,
