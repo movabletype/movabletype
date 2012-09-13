@@ -11,23 +11,29 @@ use base qw( MT::ErrorHandler );
 use MT::Template::Node;
 use MT::Template::Handler;
 
-sub NODE () {'MT::Template::Node'}
+my $compiler_version = 1.0;
+my $compiler;
+{
+    local $@;
+    eval { require MT::Builder::XS; };
+    if ((not $@) and ($MT::Builder::XS::compiler_version >= $compiler_version)) {
+        $compiler = \&MT::Builder::XS::compiler;
+    }
+    else {
+        $compiler = \&compilerPP;
+    }
+}
 
 sub new { bless {}, $_[0] }
 
 sub compile {
     my $build = shift;
-    my ( $ctx, $text, $opt ) = @_;
+    my ( $ctx, $text ) = @_;
     my $tmpl;
-
-    $opt ||= { uncompiled => 1 };
-    my $depth = $opt->{depth} ||= 0;
 
     my $ids;
     my $classes;
-    my $errors;
-    $build->{__state}{errors} = [] unless $depth;
-    $errors = $build->{__state}{errors};
+    my $error = $build->{__state}{errors} = [];
 
     # handle $builder->compile($template) signature
     if ( UNIVERSAL::isa( $ctx, 'MT::Template' ) ) {
@@ -46,276 +52,44 @@ sub compile {
     }
 
     return [] unless defined $text;
-    if ( $depth <= 0 && $text && Encode::is_utf8($text) ) {
+    my $turn_utf8_back = 0;
+    if (Encode::is_utf8($text) ) {
         Encode::_utf8_off($text);
+        $turn_utf8_back = 1;
     }
 
-    my $mods;
-
-    # Translate any HTML::Template markup into native MT syntax.
-    if (   $depth <= 0
-        && $text
-        =~ m/<(?:MT_TRANS\b|MT_ACTION\b|(?:tmpl_(?:if|loop|unless|else|var|include)))/i
-        )
+    if ($text =~ m/<(?:MT_TRANS\b|MT_ACTION\b|(?:tmpl_(?:if|loop|unless|else|var|include)))/i)
     {
-        translate_html_tmpl($text);
+        MT::Builder::translate_html_tmpl($text);
     }
 
-    my $state = $build->{__state};
-    local $state->{tokens}  = [];
-    local $state->{classes} = $classes;
-    local $state->{tmpl}    = $tmpl;
-    local $state->{ids}     = $ids;
-    local $state->{text}    = \$text;
+    my $handlers = $ctx->{__handlers};
+    my $modifiers = $ctx->{__filters};
 
-    my $pos = 0;
-    my $len = length $text;
+    my $tokens = $compiler->($handlers, $modifiers, $ids, $classes, $error, $text, $tmpl);
 
-    # MT tag syntax: <MTFoo>, <$MTFoo$>, <$MTFoo>
-    #                <MT:Foo>, <$MT:Foo>, <$MT:Foo$>
-    #                <MTFoo:Bar>, <$MTFoo:Bar>, <$MTFoo:Bar$>
-    # For 'function' tags, the '$' characters are optional
-    # For namespace, the ':' is optional for the default 'MT' namespace.
-    # Other namespaces (like 'Foo') would require the colon.
-    # Tag and attributes are case-insensitive. So you can write:
-    #   <mtfoo>...</MTFOO>
-    while ( $text
-        =~ m!(<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)([-]?)[\$/]?>)!gis
-        )
-    {
-        my ( $whole_tag, $prefix, $tag, $space_eater ) = ( $1, $2, $3, $4 );
-        ( $tag, my ($args) ) = split /\s+/, $tag, 2;
-        my $sec_start = pos $text;
-        my $tag_start = $sec_start - length $whole_tag;
-        _text_block( $state, $pos, $tag_start ) if $pos < $tag_start;
-        $state->{space_eater} = $space_eater;
-        $args ||= '';
+    Encode::_utf8_on($text) if $turn_utf8_back;
 
-        # Structure of a node:
-        #   tag name, attribute hashref, contained tokens, template text,
-        #       attributes arrayref, parent array reference
-        my $rec = NODE->new(
-            tag            => $tag,
-            attributes     => \my %args,
-            attribute_list => \my @args
-        );
-        while (
-            $args =~ /
-            (?:
-                (?:
-                    ((?:\w|:)+)                     #1
-                    \s*=\s*
-                    (?:(?:
-                        (["'])                      #2
-                        ((?:<[^>]+?>|.)*?)          #3
-                        \2
-                        (                           #4
-                            (?:
-                                [,:]
-                                (["'])              #5
-                                (?:(?:<[^>]+?>|.)*?)
-                                \5
-                            )+
-                        )?
-                    ) |
-                    (\S+))                          #6
-                )
-            ) |
-            (\w+)                                   #7
-            /gsx
-            )
-        {
-            if ( defined $7 ) {
-
-                # An unnamed attribute gets stored in the 'name' argument.
-                $args{'name'} = $7;
-            }
-            else {
-                my $attr  = lc $1;
-                my $value = defined $6 ? $6 : $3;
-                my $extra = $4;
-                if ( defined $extra ) {
-                    my @extra;
-                    push @extra, $2
-                        while $extra =~ m/[,:](["'])((?:<[^>]+?>|.)*?)\1/gs;
-                    $value = [ $value, @extra ];
-                }
-
-                # We need a reference to the filters to check
-                # attributes and whether they need to be in the array of
-                # attributes for post-processing.
-                $mods ||= $ctx->{__filters};
-                push @args, [ $attr, $value ] if exists $mods->{$attr};
-                $args{$attr} = $value;
-                if ( $attr eq 'id' ) {
-
-                    # store a reference to this token based on the 'id' for it
-                    $ids->{$3} = $rec;
-                }
-                elsif ( $attr eq 'class' ) {
-
-                    # store a reference to this token based on the 'id' for it
-                    $classes->{ lc $3 } ||= [];
-                    push @{ $classes->{ lc $3 } }, $rec;
-                }
-            }
+    if ( @$error ) {
+        my ($error_pos, $msg, @params) = @$error; 
+        my $pre_error = substr( $text, 0, $error_pos );
+        my $line =()= $pre_error =~ m/\r?\n/g;
+        my $error_tr = MT->translate($msg, @params);
+        if ($tmpl) {
+            $tmpl->errors( [ { message => $error_tr, line => $line, } ] );
         }
-        my $hdlr = $ctx->handler_for($tag);
-        my ( $h, $is_container );
-        if ($hdlr) {
-            ( $h, $is_container ) = $hdlr->values;
+        else {
+            $error_tr =~ s/#/$line/;
+            return $build->error( $error_tr );
         }
-        if ( !$h ) {
-
-            # determine line #
-            my $pre_error = substr( $text, 0, $tag_start );
-            my @m = $pre_error =~ m/\r?\n/g;
-            my $line = scalar @m;
-            if ($depth) {
-                $opt->{error_line} = $line;
-                push @$errors,
-                    {
-                    message => MT->translate(
-                        "<[_1]> at line [_2] is unrecognized.",
-                        $prefix . $tag, "#"
-                    ),
-                    line => $line + 1
-                    };
-            }
-            else {
-                push @$errors,
-                    {
-                    message => MT->translate(
-                        "<[_1]> at line [_2] is unrecognized.",
-                        $prefix . $tag,
-                        $line + 1
-                    ),
-                    line => $line
-                    };
-            }
-        }
-        if ($is_container) {
-            if ( $whole_tag !~ m|/>$| ) {
-                my ( $sec_end, $tag_end )
-                    = _consume_up_to( \$text, $sec_start, $tag );
-                if ($sec_end) {
-                    my $sec = $tag =~ m/ignore/i
-                        ? ''    # ignore MTIgnore blocks
-                        : substr $text, $sec_start, $sec_end - $sec_start;
-                    if ( $sec !~ m/<\$?MT/i ) {
-                        $rec->childNodes(
-                            [   (   $sec ne ''
-                                    ? NODE->new(
-                                        tag       => 'TEXT',
-                                        nodeValue => $sec
-                                        )
-                                    : ()
-                                )
-                            ]
-                        );
-                    }
-                    else {
-                        local $opt->{depth}  = $opt->{depth} + 1;
-                        local $opt->{parent} = $rec;
-                        $rec->childNodes(
-                            $build->compile( $ctx, $sec, $opt ) );
-                        if (@$errors) {
-                            my $pre_error = substr( $text, 0, $sec_start );
-                            my @m = $pre_error =~ m/\r?\n/g;
-                            my $line = scalar @m;
-                            foreach (@$errors) {
-                                $line += $_->{line};
-                                $_->{line} = $line;
-                                $_->{message} =~ s/#/$line/ unless $depth;
-                            }
-                        }
-
-             # unless (defined $rec->[2]) {
-             #     my $pre_error = substr($text, 0, $sec_start);
-             #     my @m = $pre_error =~ m/\r?\n/g;
-             #     my $line = scalar @m;
-             #     if ($depth) {
-             #         $opt->{error_line} = $line + ($opt->{error_line} || 0);
-             #         return;
-             #     }
-             #     else {
-             #         $line += ($opt->{error_line} || 0) + 1;
-             #         my $err = $build->errstr;
-             #         $err =~ s/#/$line/;
-             #         return $build->error($err);
-             #     }
-             # }
-                    }
-                    $rec->nodeValue($sec) if $opt->{uncompiled};
-                }
-                else {
-                    my $pre_error = substr( $text, 0, $tag_start );
-                    my @m = $pre_error =~ m/\r?\n/g;
-                    my $line = scalar @m;
-                    if ($depth) {
-
-# $opt->{error_line} = $line;
-# return $build->error(MT->translate("<[_1]> with no </[_1]> on line #", $prefix . $tag));
-                        push @$errors,
-                            {
-                            message => MT->translate(
-                                "<[_1]> with no </[_1]> on line [_2].",
-                                $prefix . $tag, "#"
-                            ),
-                            line => $line
-                            };
-                    }
-                    else {
-                        push @$errors,
-                            {
-                            message => MT->translate(
-                                "<[_1]> with no </[_1]> on line [_2].",
-                                $prefix . $tag,
-                                $line + 1
-                            ),
-                            line => $line + 1
-                            };
-
-# return $build->error(MT->translate("<[_1]> with no </[_1]> on line [_2]", $prefix . $tag, $line + 1));
-                    }
-                    last;    # return undef;
-                }
-                $pos = $tag_end + 1;
-                ( pos $text ) = $tag_end;
-            }
-            else {
-                $rec->nodeValue('');
-            }
-        }
-        $rec->parentNode( $opt->{parent} || $tmpl );
-        $rec->template($tmpl);
-        push @{ $state->{tokens} }, $rec;
-        $pos = pos $text;
     }
-    _text_block( $state, $pos, $len ) if $pos < $len;
-    if ( defined $tmpl ) {
-
+    elsif ( defined $tmpl ) {
         # assign token and id references to template
-        $tmpl->tokens( $state->{tokens} );
-        $tmpl->token_ids( $state->{ids} );
-        $tmpl->token_classes( $state->{classes} );
-        $tmpl->errors( $state->{errors} )
-            if $state->{errors} && ( @{ $state->{errors} } );
+        $tmpl->tokens( $tokens );
+        $tmpl->token_ids( $ids );
+        $tmpl->token_classes( $classes );
     }
-    else {
-        if ( $errors && @$errors ) {
-            return $build->error( $errors->[0]->{message} );
-        }
-    }
-
-    if ( $depth <= 0 ) {
-        for my $t ( @{ $state->{tokens} } ) {
-            $t->upgrade;
-        }
-        Encode::_utf8_on($text)
-            if !Encode::is_utf8($text);
-    }
-    return $state->{tokens};
+    return $tokens;
 }
 
 sub translate_html_tmpl {
@@ -324,44 +98,199 @@ sub translate_html_tmpl {
     $_[0] =~ s!<MT_ACTION\b!<__action!ig;
 }
 
-sub _consume_up_to {
-    my ( $text, $start, $stoptag ) = @_;
-    my $pos;
-    ( pos $$text ) = $start;
-    while ( $$text =~ m!(<([\$/]?)MT:?([^\s\$>]+)(?:[^>]*?)[\$/]?>)!gi ) {
-        my ( $whole_tag, $prefix, $tag ) = ( $1, $2, $3 );
-        next if lc $tag ne lc $stoptag;
-        my $end = pos $$text;
-        if ( $prefix && ( $prefix eq '/' ) ) {
-            return ( $end - length($whole_tag), $end );
-        }
-        elsif ( $whole_tag !~ m|/>| ) {
-            my ( $sec_end, $end_tag ) = _consume_up_to( $text, $end, $tag );
-            last if !$sec_end;
-            ( pos $$text ) = $end_tag;
-        }
-    }
+sub compilerPP {
+    my ($handlers, $modifiers, $ids, $classes, $error, $text, $tmpl) = @_;
 
-    # special case for unclosed 'else' tag:
-    if ( lc($stoptag) eq 'else' || lc($stoptag) eq 'elseif' ) {
-        return ( $start + length($$text), $start + length($$text) );
-    }
-    return ( 0, 0 );
-}
+    my $tokens = [];
+    my @blocks;
+    my $last_tag_ended = 0;
+    my $space_eater = 0;
 
-sub _text_block {
-    my $text = substr ${ $_[0]->{text} }, $_[1], $_[2] - $_[1];
-    if ( ( defined $text ) && ( $text ne '' ) ) {
-        return if $_[0]->{space_eater} && ( $text =~ m/^\s+$/s );
-        $text =~ s/^\s+//s if $_[0]->{space_eater};
-        my $rec = NODE->new(
-            tag        => 'TEXT',
-            nodeValue  => $text,
-            parentNode => $_[0]->{tokens},
-            template   => $_[0]->{tmpl}
+    while ($text =~ 
+          m!(<
+                (/?)\$?     # close tag
+                [mM][tT]:?(\w[\w:]*)  # tag name
+                ((?:\s+
+                    [\w:]+\s*    # attr name
+                    (?:=\s*
+                        (?:
+                            [^'"\$>\s]+   # bare attr value
+                            |
+                            (?:
+                                (?:
+                                    '(?:[^'<]*|<[^>]*>)*'
+                                    |
+                                    "(?:[^"<]*|<[^>]*>)*"
+                                )
+                                (?:,
+                                    (?:'(?:[^'<]*|<[^>]*>)*'|"(?:[^"<]*|<[^>]*>)*")
+                                )*
+                            )
+                        )
+                    )?
+                )*)
+            \s*(-?)[\$/]?>)
+        !gx) {
+        my $whole_tag = $1;
+        my $is_close = $2;
+        my $tag_name = $3;
+        my $args_atring = $4;
+        my $next_space_eater = $5;
+        my $lc_tag_name = lc($tag_name);
+        my $tag_start = pos($text) - length($whole_tag);
+        my $tag_end = pos($text);
+        if ($tag_start > $last_tag_ended) {
+            my $t_part = substr($text, $last_tag_ended, $tag_start-$last_tag_ended);
+            $t_part =~ s/^\s+//s if $space_eater;
+            if (length $t_part) {
+                Encode::_utf8_on($t_part);
+                my $t_rec = MT::Template::Node->new(
+                    tag            => 'TEXT',
+                    # the original version was buggy
+                    parentNode     => undef, #(@blocks ? $blocks[-1] : $tmpl)
+                    template       => $tmpl,
+                    nodeValue      => $t_part,
+                );
+                push @{ @blocks ? ( $blocks[-1][0][2] ||= [] ) : $tokens }, $t_rec;
+            }
+        }
+        $last_tag_ended = $tag_end;
+        $space_eater = $next_space_eater ? 1 : 0;
+        if ($is_close) {
+            my $head;
+            while (@blocks) {
+                $head = pop @blocks;
+                my $hrec = $head->[0];
+                my $hstart = $head->[1];
+                my $lc_head_name = lc($hrec->[0]);
+                if ($lc_head_name eq $lc_tag_name) {
+                    $hrec->[3] = substr($text, $hstart, $tag_start-$hstart);
+                    Encode::_utf8_on($hrec->[3]);
+                    last;
+                }
+                if (($lc_head_name eq 'else') or ($lc_head_name eq 'elseif')) {
+                    $hrec->[3] = substr($text, $hstart, $tag_start-$hstart);
+                    Encode::_utf8_on($hrec->[3]);
+                    $head = undef;
+                    next;
+                }
+                push @$error, $tag_start, "Found mismatched closing tag [_1] at line #", $lc_tag_name;
+                return;
+            }
+            if (not $head) {
+                push @$error, $tag_start, "Found mismatched closing tag [_1] at line #", $lc_tag_name;
+                return;
+            }
+            next;
+        }
+        if (not exists $handlers->{$lc_tag_name}) {
+            push @$error, $tag_start, "Undefined tag [_1] at line #", $lc_tag_name;
+            return;
+        }
+        my $rec = MT::Template::Node->new(
+            tag            => $tag_name,
+            attributes     => \my %args,
+            attribute_list => \my @args,
+            parentNode     => (@blocks ? $blocks[-1][0] : $tmpl),
+            template       => $tmpl,
         );
-        push @{ $_[0]->{tokens} }, $rec;
+        while ($args_atring =~ m!
+                    ([\w:]+)\s*    # attr name
+                    (?:=\s*
+                        (?:
+                            ([^'"$>\s]+)   # bare attr value
+                            |
+                            (?:
+                                (?:
+                                    '((?:[^'<]*|<[^>]*>)*)'
+                                    |
+                                    "((?:[^"<]*|<[^>]*>)*)"
+                                )
+                                (,?)
+                            )
+                        )
+                    )?!gx) { # "
+            my $arg_name = $1;
+
+            my ($arg_value) = grep defined($_), $2, $3, $4;
+            if (not defined $arg_value) {
+                Encode::_utf8_on($arg_name);
+                $args{'name'} = $arg_name;
+                next;
+            }
+            $arg_name = lc $arg_name;
+            Encode::_utf8_on($arg_value);
+            my $extra_args = $5;
+            if ($extra_args) {
+                $arg_value = [ $arg_value ];
+                pos($args_atring) -= 1;
+                my $args_pos = pos($args_atring);
+                while ( $args_atring =~ m!\G,(?:'((?:[^'<]*|<[^>]*>)*)'|"((?:[^"<]*|<[^>]*>)*)")!g) {
+                    my ($value) = grep defined($_), $1, $2;
+                    Encode::_utf8_on($value);
+                    push @$arg_value, $value;
+                    $args_pos = pos($args_atring);
+                }
+                pos($args_atring) = $args_pos;
+            }
+            $args{$arg_name} = $arg_value;
+            if ($arg_name eq "id") {
+                $ids->{$arg_value} = $rec;
+            }
+            elsif ($arg_name eq "class") {
+                push @{ $classes->{lc $arg_value} ||= [] }, $rec;
+            }
+            if (exists $modifiers->{$arg_name}) {
+                push @args, [ $arg_name, $arg_value ];
+            }
+        }
+        if (@blocks) {
+            push @{ $blocks[-1][0][2] ||= [] }, $rec;
+        }
+        else {
+            push @$tokens, $rec;
+        }
+        if ($lc_tag_name eq 'ignore') {
+            my $depth = 1;
+            while ($text =~ m!<(/?)mt:?ignore>!gi) {
+                my $is_end = $1;
+                $depth += ($is_end ? -1 : 1);
+                last if $depth < 1;
+            }
+            if ($depth) {
+                push @$error, $tag_start, "Tag [_1] left unclosed at line #", $lc_tag_name;
+                return;
+            }
+            $last_tag_ended = pos($text);
+            $rec->[2]=[]; $rec->[3]=''; # keeping compability with original version
+            next;
+        }
+        if ($handlers->{$lc_tag_name}->[1]) {
+            # is block tag
+            push @blocks, [$rec, $tag_end];
+        }
     }
+
+    if (@blocks) {
+        push @$error, $blocks[-1][1], "Tag [_1] left unclosed at line #", lc($blocks[-1][0][0]);
+        return;
+    }
+
+    if ($last_tag_ended < length($text)) {
+        my $t_part = substr($text, $last_tag_ended, length($text)-$last_tag_ended);
+        $t_part =~ s/^\s+//s if $space_eater;
+        if (length $t_part) {
+            Encode::_utf8_on($t_part);
+            push @$tokens, MT::Template::Node->new(
+                tag            => 'TEXT',
+                parentNode     => undef,
+                template       => $tmpl,
+                nodeValue      => $t_part,
+            );
+        }
+    }
+
+    return $tokens;
 }
 
 sub syntree2str {
