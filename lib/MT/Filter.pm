@@ -174,7 +174,7 @@ sub list_props {
                 my $lists = MT->registry('listing_screens');
                 my @lists;
                 for my $key ( keys %$lists ) {
-                    my $list = $lists->{$key};
+                    my $list = MT->registry( 'listing_screens', $key );
                     my $cond = $list->{condition};
                     if ($cond) {
                         $cond = MT->handler_to_coderef($cond)
