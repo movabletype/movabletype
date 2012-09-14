@@ -89,11 +89,10 @@
     </mt:if>
   <mt:else>
     <mt:if name="author">
-      <mt:if name="auth_icon_url">
-        <img src="<mt:var name="auth_icon_url">" height="9" width="9" alt="" border="0" /></mt:if><a href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;search_cols=author&amp;is_limited=1&amp;do_search=1&amp;search=<mt:var name="author" escape="url">&amp;blog_id=<mt:var name="blog_id">" title="<__trans phrase="Search for comments by this commenter">"><mt:var name="author_display" escape="html"></a>
-      <mt:else>
-        [<__trans phrase="Anonymous">]
-      </mt:if>
+      <a href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;search_cols=author&amp;is_limited=1&amp;do_search=1&amp;search=<mt:var name="author" escape="url">&amp;blog_id=<mt:var name="blog_id">" title="<__trans phrase="Search for comments by this commenter">"><mt:var name="author_display" escape="html"></a>
+    <mt:else>
+      [<__trans phrase="Anonymous">]
+    </mt:if>
   </mt:if>
       </td>
   <mt:unless name="is_blog">
