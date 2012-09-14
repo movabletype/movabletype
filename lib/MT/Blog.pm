@@ -1648,6 +1648,11 @@ sub use_revision {
     return $blog->SUPER::use_revision;
 }
 
+sub raw_template_set {
+    my $blog = shift;
+    $blog->theme_id || $blog->SUPER::template_set  || '';
+}
+
 sub template_set {
     my $blog = shift;
     if (@_) {
