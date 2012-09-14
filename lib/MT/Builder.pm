@@ -74,14 +74,17 @@ sub compile {
         my ($error_pos, $msg, @params) = @$error; 
         my $pre_error = substr( $text, 0, $error_pos );
         my $line =()= $pre_error =~ m/\r?\n/g;
+        $line++;
         my $error_tr = MT->translate($msg, @params);
         if ($tmpl) {
             $tmpl->errors( [ { message => $error_tr, line => $line, } ] );
+            $error_tr = MT->translate(
+                "Publish error in template '[_1]': [_2]",
+                $tmpl->name || $tmpl->{__file},
+                $error_tr);
         }
-        else {
-            $error_tr =~ s/#/$line/;
-            return $build->error( $error_tr );
-        }
+        $error_tr =~ s/#/$line/;
+        return $build->error( $error_tr );
     }
     elsif ( defined $tmpl ) {
         # assign token and id references to template
