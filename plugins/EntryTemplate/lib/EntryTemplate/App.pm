@@ -86,21 +86,18 @@ sub cms_edit_entry_template {
 sub cms_pre_load_filtered_list {
     my ( $cb, $app, $filter, $load_options, $cols ) = @_;
 
+    my $blog_id = $app->blog ? $app->blog->id : undef;
+
+    $load_options->{terms}{blog_id} = $blog_id if $blog_id;
+
     my $user = $app->user;
     return if $user->is_superuser;
-
-    my $blog_id = $app->param('blog_id') || 0;
-    my $blog = $blog_id ? $app->blog : undef;
-    my $blog_ids
-        = !$blog         ? undef
-        : $blog->is_blog ? [$blog_id]
-        :                  [ map { $_->id } @{ $blog->blogs } ];
 
     require MT::Permission;
     my $iter = MT::Permission->load_iter(
         {   author_id => $user->id,
-            (   $blog_ids
-                ? ( blog_id => $blog_ids )
+            (   $blog_id
+                ? ( blog_id => $blog_id )
                 : ( blog_id => { 'not' => 0 } )
             ),
         }
