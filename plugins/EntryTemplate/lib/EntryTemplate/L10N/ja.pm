@@ -7,22 +7,22 @@ use base 'EntryTemplate::L10N::en_us';
 use vars qw( %Lexicon );
 
 %Lexicon = (
-    'EntryTemplate'     => 'エントリーテンプレート',
-    'EntryTemplates'    => 'エントリーテンプレート',
-    'Entry Template'    => 'エントリーテンプレート',
+    'EntryTemplate'     => '記事テンプレート',
+    'EntryTemplates'    => '記事テンプレート',
+    'Entry Template'    => '記事テンプレート',
     'Text'              => '内容',
-    'My Entry Template' => '自分のエントリーテンプレート',
+    'My Entry Template' => '自分の記事テンプレート',
 
-    'Edit EntryTemplate'   => 'エントリーテンプレートの編集',
-    'Create EntryTemplate' => 'エントリーテンプレートの作成',
+    'Edit EntryTemplate'   => '記事テンプレートの編集',
+    'Create EntryTemplate' => '記事テンプレートの作成',
     'Create New EntryTemplate' =>
-        '新しいエントリーテンプレートの作成',
+        '新しい記事テンプレートの作成',
 
     'Save changes to this entry template (s)' =>
-        'エントリーテンプレートへの変更を保存 (s)',
+        '記事テンプレートへの変更を保存 (s)',
 
     'Are you sure you want to delete the selected EntryTemplates?' =>
-        'エントリーテンプレートを削除してもよろしいですか？',
+        '記事テンプレートを削除してもよろしいですか？',
 );
 
 1;
