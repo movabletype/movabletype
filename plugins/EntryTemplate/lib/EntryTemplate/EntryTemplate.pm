@@ -59,14 +59,6 @@ sub list_props {
             order   => 300,
             display => 'default',
         },
-        blog_name => {
-            base => '__common.blog_name',
-            label =>
-                sub { MT->app->blog ? 'Blog Name' : 'Website/Blog Name' },
-            display   => 'default',
-            site_name => sub { MT->app->blog ? 0 : 1 },
-            order     => 500,
-        },
         modified_on => {
             base  => '__virtual.modified_on',
             order => 600,
