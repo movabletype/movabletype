@@ -1,11 +1,12 @@
 <mt:if name="id">
-<mt:setvar name="page_title" value="<__trans phrase="Edit EntryTemplate">">
+    <mt:setvar name="page_title" value="<__trans phrase="Edit EntryTemplate">">
 <mt:else>
-<mt:setvar name="page_title" value="<__trans phrase="Create EntryTemplate">">
+    <mt:setvar name="page_title" value="<__trans phrase="Create EntryTemplate">">
 </mt:if>
+
 <$mt:setvar name="position_actions_bottom" value="1"$>
 
-<MTSetVarBlock name="system_msg">
+<mt:SetVarBlock name="system_msg">
 <mt:if name="error">
   <mtapp:statusmsg
      id="generic-error"
@@ -18,23 +19,11 @@
   <mtapp:statusmsg
      id="saved"
      class="success"
-     rebuild="all"
-     can_close="0">
+     can_close="1">
     <__trans phrase="Your changes have been saved.">
   </mtapp:statusmsg>
 </mt:if>
-</MTSetVarBlock>
-
-<mt:setvarblock name="related_content">
-    <mtapp:widget
-        id="useful-links"
-        label="<__trans phrase="Useful links">">
-        <ul>
-            <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=entry_template&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Manage Edit Template"></a></li>
-        </ul>
-    </mtapp:widget>
-    <$mtapp:PageActions$>
-</mt:setvarblock>
+</mt:SetVarBlock>
 
 <mt:include name="include/editor_script.tmpl" id="editor_script_include">
 <mt:include name="include/header.tmpl">
@@ -50,21 +39,24 @@
   <mtapp:settinggroup id="entry_template-meta">
 
     <mtapp:setting
+       id="text"
+       label_class="no-header"
+       label="<__trans phrase="Text">">
+      <textarea name="text" id="text" class="text high"><mt:var name="text" escape="html"></textarea>
+    </mtapp:setting>
+
+    <mtapp:setting
        id="label"
+       label_class="top-label"
        label="<__trans phrase="Label">">
-      <input type="text" name="label" id="label" class="text full required" maxlength="100" value="<mt:var name="label" escape="html">" />
+      <input type="text" name="label" id="label" class="text full" maxlength="100" value="<mt:var name="label" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
        id="description"
+       label_class="top-label"
        label="<__trans phrase="Description">">
-      <textarea name="description" id="description" rows="" cols="" class="text full low"><mt:var name="description" escape="html"></textarea>
-    </mtapp:setting>
-
-    <mtapp:setting
-       id="text"
-       label="<__trans phrase="Text">">
-      <textarea name="text" id="text" rows="" cols="" class="text full high"><mt:var name="text" escape="html"></textarea>
+      <textarea name="description" id="description" class="text low full"><mt:var name="description" escape="html"></textarea>
     </mtapp:setting>
 
   </mtapp:settinggroup>
