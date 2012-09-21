@@ -208,8 +208,9 @@ sub setup {
         }
         else {
             my $v = $config->{PRODUCT_VERSION};
-            $v .= ".$self->{'rel_num=s'}"
-                if $self->{'rel_num=s'};
+            if ( exists $self->{'rel_num=s'} ) {
+                $v .= ".$self->{'rel_num=s'}"
+                    if $self->{'rel_num=s'} || ( $self->{'export!'} && $self->{'export-dir=s'} );
             if ( $self->{'alpha=s'} || $self->{'beta=s'} || $self->{'rc=s'} ) {
                 $v .= (
                     $self->{'alpha=s'} ? "a$self->{'alpha=s'}"
