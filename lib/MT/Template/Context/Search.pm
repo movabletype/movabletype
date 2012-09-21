@@ -331,6 +331,8 @@ sub _hdlr_results {
         local $ctx->{__stash}{$stash_key} = $this_object;
         local $ctx->{__stash}{blog} = $this_object->blog
             if $this_object->can('blog');
+        local $ctx->{__stash}{blog_id} = $this_object->blog->id
+            if $this_object->can('blog') && $this_object->blog;
         my $ts;
         if ( $this_object->isa('MT::Entry') ) {
             $ts = $this_object->authored_on;

@@ -1634,26 +1634,37 @@ sub bake_commenter_cookie {
     $app->bake_cookie(%name_kookee);
 
     my $blog = $app->blog;
+    my $blog_id = $blog ? $blog->id : '0';
     my ( $state, $commenter )
         = $app->_commenter_state( $blog, $sess_obj, $user );
-    my $blog_id = $blog ? $blog->id : '0';
-    my $blog_path = MT->config->UserSessionCookiePath;
-    if ( $blog_path =~ m/<\$?mt/i ) {    # hey, a MT tag! lets evaluate
+
+    my $build = sub {
+        my $tag = shift;
         require MT::Builder;
         require MT::Template::Context;
         my $builder = MT::Builder->new;
         my $ctx     = MT::Template::Context->new;
         $ctx->stash( blog    => $blog );
         $ctx->stash( blog_id => $blog_id );
-        my $tokens = $builder->compile( $ctx, $blog_path );
+        my $tokens = $builder->compile( $ctx, $tag );
         die $ctx->error( $builder->errstr ) unless defined $tokens;
-        $blog_path = $builder->build( $ctx, $tokens );
-        die $ctx->error( $builder->errstr ) unless defined $blog_path;
-    }
+        $tag = $builder->build( $ctx, $tokens );
+        die $ctx->error( $builder->errstr ) unless defined $tag;
+    };
+
+    my $cookie_path = MT->config->UserSessionCookiePath;
+    $cookie_path = $build->($cookie_path)
+        if $cookie_path =~ m/<\$?mt/i;    # hey, a MT tag! lets evaluate
+
+    my $cookie_domain = MT->config->UserSessionCookieDomain;
+    $cookie_domain = $build->($cookie_domain)
+        if $cookie_domain =~ m/<\$?mt/i;    # hey, a MT tag! lets evaluate
 
     my %user_session_kookee = (
-        -name  => $app->commenter_session_cookie_name,
-        -value => $app->bake_user_state_cookie($state),
+        -name   => $app->commenter_session_cookie_name,
+        -value  => $app->bake_user_state_cookie($state),
+        -path   => $cookie_path,
+        -domain => $cookie_domain,
     );
     $app->bake_cookie(%user_session_kookee);
 }
@@ -1733,27 +1744,36 @@ sub _invalidate_commenter_session {
     );
     $app->bake_cookie(%id_kookee);
 
-    my $blog      = $app->blog;
-    my $blog_id   = $blog ? $blog->id : '0';
-    my $blog_path = MT->config->UserSessionCookiePath;
-    if ( $blog_path =~ m/<\$?mt/i ) {    # hey, a MT tag! lets evaluate
+    my $blog    = $app->blog;
+    my $blog_id = $blog ? $blog->id : '0';
+    my $build   = sub {
+        my $tag = shift;
         require MT::Builder;
         require MT::Template::Context;
         my $builder = MT::Builder->new;
         my $ctx     = MT::Template::Context->new;
         $ctx->stash( blog    => $blog );
         $ctx->stash( blog_id => $blog_id );
-        my $tokens = $builder->compile( $ctx, $blog_path );
+        my $tokens = $builder->compile( $ctx, $tag );
         die $ctx->error( $builder->errstr ) unless defined $tokens;
-        $blog_path = $builder->build( $ctx, $tokens );
-        die $ctx->error( $builder->errstr ) unless defined $blog_path;
-    }
+        $tag = $builder->build( $ctx, $tokens );
+        die $ctx->error( $builder->errstr ) unless defined $tag;
+    };
+
+    my $cookie_path = MT->config->UserSessionCookiePath;
+    $cookie_path = $build->($cookie_path)
+        if $cookie_path =~ m/<\$?mt/i;    # hey, a MT tag! lets evaluate
+
+    my $cookie_domain = MT->config->UserSessionCookieDomain;
+    $cookie_domain = $build->($cookie_domain)
+        if $cookie_domain =~ m/<\$?mt/i;    # hey, a MT tag! lets evaluate
 
     my %user_session_kookee = (
         -name    => $app->commenter_session_cookie_name,
         -value   => '',
         -expires => "+${timeout}s",
-        -path    => $blog_path,
+        -path    => $cookie_path,
+        -domain  => $cookie_domain,
     );
     $app->bake_cookie(%user_session_kookee);
 }

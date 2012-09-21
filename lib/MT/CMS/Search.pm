@@ -1328,7 +1328,6 @@ sub _default_results_table_template {
                 can_close="0">
                 <__trans phrase="No [_1] were found that match the given criteria." params="$plural">
             </mtapp:statusmsg>
-        </mt:if>
 TMPL
     }
 }

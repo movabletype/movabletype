@@ -689,7 +689,7 @@
     if (! Editor.strings) {
         Editor.strings = {};
     }
-    Editor.strings.unsavedChanges = '<mt:if name="object_type"entry><__trans phrase="You have unsaved changes to this entry that will be lost." escape="js"><mt:else><__trans phrase="You have unsaved changes to this page that will be lost." escape="js"></mt:if>';
+    Editor.strings.unsavedChanges = '<mt:if name="object_type" eq="entry"><__trans phrase="You have unsaved changes to this entry that will be lost." escape="js"><mt:else><__trans phrase="You have unsaved changes to this page that will be lost." escape="js"></mt:if>';
     Editor.strings.enterEmailAddress = '<__trans phrase="Enter email address:" escape="js">';
     Editor.strings.enterLinkAddress = '<__trans phrase="Enter the link address:" escape="js">';
     Editor.strings.enterTextToLinkTo = '<__trans phrase="Enter the text to link to:" escape="js">';
