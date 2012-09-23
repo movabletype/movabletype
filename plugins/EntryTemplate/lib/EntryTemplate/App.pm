@@ -129,6 +129,13 @@ sub cms_pre_load_filtered_list {
     $load_options->{editable_terms} = $new_terms;
 }
 
+sub list_template_param {
+    my ( $cb, $app, $param, $tmpl ) = @_;
+    for ('saved_deleted') {
+        $param->{$_} = 1 if $app->param($_);
+    }
+}
+
 sub filtered_list_param {
     my ( $cb, $app, $param, $objs ) = @_;
     my $user        = $app->user;
@@ -190,6 +197,10 @@ sub listing_screens {
         default_sort_key   => 'created_on',
         default_sort_order => 'descend',
         permission         => 'access_to_entry_list',
+        template           => File::Spec->catfile(
+            plugin()->{full_path}, 'tmpl',
+            'cms',                 'list_entry_template.tmpl'
+        ),
     };
 }
 

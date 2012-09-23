@@ -77,6 +77,7 @@ applications:
 callbacks:
     MT::App::CMS::template_param.edit_entry: $EntryTemplate::EntryTemplate::App::param_edit_entry
     MT::App::CMS::cms_edit.entry_template: $EntryTemplate::EntryTemplate::App::cms_edit_entry_template
+    MT::App::CMS::list_template_param.entry_template: $EntryTemplate::EntryTemplate::App::list_template_param
     api_save_filter.entry_template: $EntryTemplate::EntryTemplate::EntryTemplate::save_filter
     cms_save_filter.entry_template: $EntryTemplate::EntryTemplate::EntryTemplate::save_filter
 

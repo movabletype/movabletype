@@ -23,6 +23,12 @@ use vars qw( %Lexicon );
 
     'Are you sure you want to delete the selected EntryTemplates?' =>
         '記事テンプレートを削除してもよろしいですか？',
+
+    'The entry template has been deleted from the database.' =>
+        '記事テンプレートを削除しました',
+
+    'This entry template has been saved.' =>
+        '記事テンプレートを保存しました。',
 );
 
 1;
