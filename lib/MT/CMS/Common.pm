@@ -527,6 +527,8 @@ sub save {
 
     $app->add_return_arg( 'id' => $obj->id ) if !$original->id;
     $app->add_return_arg( 'saved' => 1 );
+    $app->add_return_arg(
+        ( $original->id ? 'saved_changes' : 'saved_added' ) => 1 );
     $app->call_return;
 }
 
