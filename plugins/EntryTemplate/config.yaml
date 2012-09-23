@@ -1,0 +1,100 @@
+id: EntryTemplate
+name: EntryTemplate
+version: 1.01
+
+l10n_class: EntryTemplate::L10N
+
+schema_version: 1.01
+object_types:
+    entry_template: EntryTemplate::EntryTemplate
+
+editors:
+    tinymce:
+        extension: extension.tmpl
+
+applications:
+    cms:
+        menus:
+            entry_template:
+                label: Entry Template
+                order: 310
+
+            entry_template:manage:
+                label: Manage
+                order: 100
+                mode: list
+                args:
+                    _type: entry_template
+                condition: |
+                    sub {
+                        my $app = MT->instance;
+                        return 1 if $app->user->is_superuser;
+
+                        my $blog = $app->blog;
+                        my $blog_ids
+                            = !$blog         ? undef
+                            : $blog->is_blog ? [ $blog->id ]
+                            : $blog->has_blog ? [ map { $_->id } @{ $blog->blogs } ]
+                            :                   undef;
+
+                        require MT::Permission;
+                        my $iter = MT::Permission->load_iter(
+                            {   author_id => $app->user->id,
+                                (   $blog_ids
+                                    ? ( blog_id => $blog_ids )
+                                    : ( blog_id => { not => 0 } )
+                                ),
+                            }
+                        );
+
+                        my $cond;
+                        while ( my $p = $iter->() ) {
+                            $cond = 1, last
+                                if $p->can_do('create_post')
+                                    and $p->blog->is_blog;
+                        }
+                        return $cond ? 1 : 0;
+                    }
+                view:
+                    - system
+                    - blog
+                    - website
+
+            entry_template:create:
+                label: New
+                order: 200
+                mode: view
+                args:
+                    _type: entry_template
+                permission: create_post
+                view:
+                    - website
+                    - blog
+        methods:
+            view_entry_template_text:
+                code: $EntryTemplate::EntryTemplate::App::view_text
+
+callbacks:
+    MT::App::CMS::template_param.edit_entry: $EntryTemplate::EntryTemplate::App::param_edit_entry
+    MT::App::CMS::cms_edit.entry_template: $EntryTemplate::EntryTemplate::App::cms_edit_entry_template
+    api_save_filter.entry_template: $EntryTemplate::EntryTemplate::EntryTemplate::save_filter
+    cms_save_filter.entry_template: $EntryTemplate::EntryTemplate::EntryTemplate::save_filter
+
+    cms_save_permission_filter.entry_template: $EntryTemplate::EntryTemplate::App::save_permission_filter
+    cms_view_permission_filter.entry_template: $EntryTemplate::EntryTemplate::App::view_permission_filter
+    cms_delete_permission_filter.entry_template: $EntryTemplate::EntryTemplate::App::delete_permission_filter
+    cms_pre_load_filtered_list.entry_template: $EntryTemplate::EntryTemplate::App::cms_pre_load_filtered_list
+    cms_filtered_list_param.entry_template: $EntryTemplate::EntryTemplate::App::filtered_list_param
+
+
+listing_screens:
+    entry_template: $EntryTemplate::EntryTemplate::App::listing_screens
+
+list_properties:
+    entry_template: $EntryTemplate::EntryTemplate::EntryTemplate::list_props
+
+system_filters:
+    entry_template: $EntryTemplate::EntryTemplate::App::system_filters
+
+list_actions:
+    entry_template: $EntryTemplate::EntryTemplate::App::list_actions

@@ -82,7 +82,9 @@
                     $parent
                         .addClass('fullscreen_editor')
                         .css({
-                            width: '100%'
+                            width: '100%',
+                            margin: '0',
+                            padding: '0'
                         });
                     $('body').addClass('fullscreen_editor_screen');
 
@@ -102,7 +104,9 @@
                     $parent
                         .removeClass('fullscreen_editor')
                         .css({
-                            width: ''
+                            width: '',
+                            margin: '',
+                            padding: ''
                         });
                     $('body').removeClass('fullscreen_editor_screen');
 
@@ -130,11 +134,11 @@
                 $window     = $(window);
                 $container  = $(ed.getContainer());
                 $parent     = $container.closest('#text-field');
-                if ($parent.length == 0) {
-                    $parent = $container.closest('.field-content');
-                }
                 $header     = $parent.find('.editor-header');
                 $tabs       = $header.find('.tab');
+                if ($header.length == 0 || $tabs.length == 0) {
+                    $parent = $container.closest('.field-content');
+                }
                 fitToWindow = function(){};
 
                 affectedEditors = $parent

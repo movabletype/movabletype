@@ -52,6 +52,9 @@
 }
 .mtSkin table.mceLayout tr.mceFirst td { 
     border-width: 1px 1px 0;
+    border-radius: 3px 3px 0 0;
+}
+#editor + #editor-content .mtSkin table.mceLayout tr.mceFirst td {
     border-radius: 0 3px 0 0;
 }
 .mtSkin table.mceLayout tr.mceLast td { 
@@ -537,11 +540,15 @@
 .mtSkin #editor-input-content_path span, 
 .mtSkin #editor-input-extended_path_voice, 
 .mtSkin #editor-input-extended_path_voice + span, 
-.mtSkin #editor-input-extended_path span { 
+.mtSkin #editor-input-extended_path span, 
+.mtSkin #text_path_voice, 
+.mtSkin #text_path_voice + span, 
+.mtSkin #text_path span { 
     display: none;
 }
 .mtSkin #editor-input-content_path a, 
-.mtSkin #editor-input-extended_path a { 
+.mtSkin #editor-input-extended_path a, 
+.mtSkin #text_path a { 
     display: inline-block;
     height: 20px;
     padding: 0 10px 0 5px;
@@ -551,12 +558,14 @@
     color: #7b7c7d;
 }
 .mtSkin #editor-input-content_path a:hover, 
-.mtSkin #editor-input-extended_path a:hover { 
+.mtSkin #editor-input-extended_path a:hover, 
+.mtSkin #text_path a:hover { 
     color: #2b2b2b;
     text-decoration: none;
 }
 .mtSkin #editor-input-content_path a:last-child, 
-.mtSkin #editor-input-extended_path a:last-child { 
+.mtSkin #editor-input-extended_path a:last-child, 
+.mtSkin #text_path a:last-child { 
     background: none;
 }
 .mtSkin .mceStatusbar a.mceResize { 
