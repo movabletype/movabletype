@@ -106,7 +106,7 @@
 }
 
 .mtSkin .mceIcon { 
-    background: transparent url(./img/icons.png) no-repeat top left;
+    background: transparent url(img/icons.png) no-repeat top left;
 }
 .mtSkin td.mceCenter { 
     text-align: center;
@@ -243,7 +243,7 @@
     border-radius: 0 2px 2px 0;
 }
 .mtSkin .mceListBox a.mceOpen span { 
-    background: transparent url(./img/small-grey-arrow-up-down.png) center no-repeat;
+    background: transparent url(img/small-grey-arrow-up-down.png) center no-repeat;
 }
 .mtSkin .mceListBoxDisabled a.mceText { 
     color: #888888;
@@ -280,14 +280,14 @@
    border-right: 0;
 }
 .mtSkin .mceSplitButton span.mceAction { 
-    background-image: url(./img/icons.png);
+    background-image: url(img/icons.png);
 }
 .mtSkin .mceSplitButton a.mceOpen { 
     width: 10px;
     border-radius: 0 2px 2px 0;
 }
 .mtSkin .mceSplitButton span.mceOpen { 
-    background: transparent url(./img/small-grey-arrow-down.png) center no-repeat;
+    background: transparent url(img/small-grey-arrow-down.png) center no-repeat;
 }
 .mtSkin .mceSplitButtonDisabled .mceAction { 
     opacity:0.3;
@@ -425,16 +425,16 @@
     color: #888888;
 }
 .mtSkin .mceMenuItemSelected .mceIcon { 
-    background: url(../default/img/menu_check.gif);
+    background: url(img/menu_check.gif);
 }
 .mtSkin .mceNoIcons .mceMenuItemSelected a { 
-    background: url(../default/img/menu_arrow.gif) no-repeat -6px center;
+    background: url(img/menu_arrow.gif) no-repeat -6px center;
 }
 .mtSkin .mceMenu span.mceMenuLine { 
     display: none;
 }
 .mtSkin .mceMenuItemSub a { 
-    background: url(../default/img/menu_arrow.gif) no-repeat top right;
+    background: url(img/menu_arrow.gif) no-repeat top right;
 }
 
 /* -- Progress,Resize */
@@ -454,7 +454,7 @@
     left: 0;
     top: 0;
     z-index: 1001;
-    background: url(../default/img/progress.gif) no-repeat;
+    background: url(img/progress.gif) no-repeat;
     width: 32px;
     height: 32px;
     margin: -16px 0 0 -16px;
@@ -572,7 +572,7 @@
     float: right;
     width: 20px;
     height: 20px;
-    background: url(../../img/icons.gif) -800px 0;
+    background: url(img/icons.gif) -800px 0;
     cursor: se-resize;
 }
 .mtSkin .mceStatusbar a:hover { 

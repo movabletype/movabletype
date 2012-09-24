@@ -91,14 +91,14 @@ table th {
 .mceItemIframe, 
 .mceItemShockWave, 
 .mceItemFlash { 
-    background-image: url(./img/icon-frame.png);
+    background-image: url(img/icon-frame.png);
 }
 .mceItemVideo, 
 .mceItemAudio, 
 .mceItemQuickTime, 
 .mceItemWindowsMedia, 
 .mceItemRealMedia { 
-    background-image:url(./img/icon-video.png)
+    background-image:url(img/icon-video.png)
 }
 
 .mceHideBrInPre pre br { 
