@@ -24,9 +24,16 @@ sub can_edit_entry_template {
     die unless $author->isa('MT::Author');
     return 1 if $author->is_superuser();
     return 0 unless $perms;
-    unless ( ref $entry_template ) {
+    return 1 if $perms->can_do('manage_pages');
+
+    # For new object
+    if ( !$entry_template ) {
+        return $perms->can_do('create_post');
+    }
+
+    if ( !ref $entry_template ) {
         $entry_template = EntryTemplate::EntryTemplate->load($entry_template)
-            or die;
+            or return 0;
     }
     die unless $entry_template->isa('EntryTemplate::EntryTemplate');
     my $own_entry_template = $entry_template->created_by == $author->id;
@@ -40,40 +47,29 @@ sub can_view_entry_template {
     my ( $perms, $entry_template, $author ) = @_;
     die unless $author->isa('MT::Author');
     return 1 if $author->is_superuser();
-    return $perms->can_create_post;
+    return 0 unless $perms;
+
+    $perms->can_do('manage_pages') || $perms->can_do('create_post');
 }
 
 sub save_permission_filter {
     my ( $cb, $app, $entry_template ) = @_;
     my $perms = $app->permissions;
-    if ($entry_template) {
-        return 0
-            unless can_edit_entry_template( $perms, $entry_template,
-            $app->user );
-    }
-    else {
-        return 0 unless $perms->can_do('create_new_entry');
-    }
+
+    can_edit_entry_template( $perms, $entry_template, $app->user );
 }
 
 sub view_permission_filter {
     my ( $cb, $app, $entry_template ) = @_;
     my $perms = $app->permissions;
-    if ($entry_template) {
-        return 0
-            unless can_edit_entry_template( $perms, $entry_template,
-            $app->user );
-    }
-    else {
-        return 0 unless $perms->can_do('create_new_entry');
-    }
+
+    can_edit_entry_template( $perms, $entry_template, $app->user );
 }
 
 sub delete_permission_filter {
     my ( $cb, $app, $entry_template ) = @_;
     my $perms = $app->permissions;
-    return 0
-        unless can_edit_entry_template( $perms, $entry_template, $app->user );
+    can_edit_entry_template( $perms, $entry_template, $app->user );
 }
 
 sub set_params_for_entry_template {
@@ -94,8 +90,8 @@ sub cms_pre_load_filtered_list {
     my ( $cb, $app, $filter, $load_options, $cols ) = @_;
 
     my $blog_id = $app->blog ? $app->blog->id : undef;
-
-    $load_options->{terms}{blog_id} = $blog_id if $blog_id;
+    my $terms = $load_options->{terms} ||= {};
+    $terms->{blog_id} = $blog_id if $blog_id;
 
     my $user = $app->user;
     return if $user->is_superuser;
@@ -110,30 +106,27 @@ sub cms_pre_load_filtered_list {
         }
     );
 
-    my $filters;
+    my @filters = ( { blog_id => undef, } );
     while ( my $perm = $iter->() ) {
-        next if $perm->can_do('edit_all_published_entry');
+        if ( !$blog_id && can_view_entry_template( $perm, undef, $user ) ) {
+            $terms->{blog_id} ||= [];
+            push @{ $terms->{blog_id} }, $perm->blog_id;
+        }
 
-        push @$filters,
-            (
-            '-or',
-            {   blog_id    => $perm->blog_id,
-                created_by => $user->id,
-            }
-            );
+        if ( !can_edit_entry_template( $perm, undef, $user ) ) {
+            push @filters,
+                (
+                '-or',
+                {   blog_id    => $perm->blog_id,
+                    created_by => $user->id,
+                }
+                );
+        }
     }
 
-    my $terms = $load_options->{terms} ? { %{ $load_options->{terms} } } : {};
-    delete $terms->{blog_id}
-        if exists $terms->{blog_id};
-    delete $terms->{author_id}
-        if exists $terms->{author_id};
-
-    my $new_terms;
-    push @$new_terms, ($terms)
-        if ( keys %$terms );
-    push @$new_terms, ( '-and', $filters );
-    $load_options->{editable_terms} = $new_terms;
+    my @new_terms = ($terms);
+    push @new_terms, ( '-and', \@filters );
+    $load_options->{editable_terms} = \@new_terms;
 }
 
 sub list_template_param {
@@ -151,10 +144,6 @@ sub filtered_list_param {
     my $local_scope = $app->param('blog_id');
     my %perms;
 
-    my @columns = split /,/, $param->{columns};
-    my ($label_col) = grep { $columns[$_] eq 'label' } 0 .. $#columns;
-    $label_col++;
-
     for my $obj (@$objs) {
         my $row     = $param->{objects}->[ $i++ ];
         my $blog_id = $obj->blog_id;
@@ -168,7 +157,6 @@ sub filtered_list_param {
         }
         if ( !can_edit_entry_template( $perms{$blog_id}, $obj, $user ) ) {
             $row->[0] = 0;
-            $row->[$label_col] =~ s{<a[^>]+>(.*?)</a>}{$1};
         }
     }
 }

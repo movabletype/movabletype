@@ -27,33 +27,28 @@ applications:
                     _type: entry_template
                 condition: |
                     sub {
+                        require EntryTemplate::App;
                         my $app = MT->instance;
-                        return 1 if $app->user->is_superuser;
 
-                        my $blog = $app->blog;
-                        my $blog_ids
-                            = !$blog         ? undef
-                            : $blog->is_blog ? [ $blog->id ]
-                            : $blog->has_blog ? [ map { $_->id } @{ $blog->blogs } ]
-                            :                   undef;
+                        if ($app->blog) {
+                            return EntryTemplate::App::can_edit_entry_template( $app->permissions, undef, $app->user );
+                            return EntryTemplate::App::can_view_entry_template( $app->permissions, undef, $app->user );
+                        }
 
                         require MT::Permission;
                         my $iter = MT::Permission->load_iter(
                             {   author_id => $app->user->id,
-                                (   $blog_ids
-                                    ? ( blog_id => $blog_ids )
-                                    : ( blog_id => { not => 0 } )
-                                ),
+                                    blog_id => { not => 0 }
                             }
                         );
 
                         my $cond;
                         while ( my $p = $iter->() ) {
-                            $cond = 1, last
-                                if $p->can_do('create_post')
-                                    and $p->blog->is_blog;
+                            return 1
+                                if $p->can_do('manage_pages') || $p->can_do('create_post');
                         }
-                        return $cond ? 1 : 0;
+
+                        return 0;
                     }
                 view:
                     - system
@@ -66,7 +61,12 @@ applications:
                 mode: view
                 args:
                     _type: entry_template
-                permission: create_post
+                condition: |
+                    sub {
+                        require EntryTemplate::App;
+                        my $app = MT->instance;
+                        EntryTemplate::App::can_edit_entry_template( $app->permissions, undef, $app->user );
+                    }
                 view:
                     - website
                     - blog
