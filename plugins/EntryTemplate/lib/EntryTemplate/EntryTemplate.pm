@@ -74,7 +74,7 @@ sub save_filter {
     my ( $cb, $app ) = @_;
 
     my %values = ();
-    $values{$_} = $app->param($_) for ( 'id', 'label' );
+    $values{$_} = $app->param($_) for ( 'id', @{ required_fields() } );
     if ( my $user = $app->user ) {
         $values{created_by} = $user->id;
     }
@@ -84,13 +84,17 @@ sub save_filter {
 sub validate {
     my ( $cb, $values ) = @_;
 
-    my $label = trim( $values->{label} );
-
-    if ( !$label ) {
-        return $cb->error( translate('Label is required.') );
+    foreach my $f ( @{ required_fields() } ) {
+        if ( !trim( $values->{$f} ) ) {
+            return $cb->error( translate( ucfirst($f) . ' is required.' ) );
+        }
     }
 
     return 1;
+}
+
+sub required_fields {
+    [qw(label text description)];
 }
 
 1;

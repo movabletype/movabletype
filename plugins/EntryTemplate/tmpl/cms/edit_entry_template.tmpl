@@ -48,21 +48,21 @@
        id="text"
        label_class="no-header"
        label="<__trans phrase="Text">">
-      <textarea name="text" id="text" class="text high"><mt:var name="text" escape="html"></textarea>
+      <textarea name="text" id="text" class="text high required"><mt:var name="text" escape="html"></textarea>
     </mtapp:setting>
 
     <mtapp:setting
        id="label"
        label_class="top-label"
        label="<__trans phrase="Label">">
-      <input type="text" name="label" id="label" class="text full" maxlength="100" value="<mt:var name="label" escape="html">" />
+      <input type="text" name="label" id="label" class="text full required" maxlength="100" value="<mt:var name="label" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
        id="description"
        label_class="top-label"
        label="<__trans phrase="Description">">
-      <textarea name="description" id="description" class="text low full"><mt:var name="description" escape="html"></textarea>
+      <textarea name="description" id="description" class="text low full required"><mt:var name="description" escape="html"></textarea>
     </mtapp:setting>
 
   </mtapp:settinggroup>
@@ -81,12 +81,33 @@
 </form>
 
 <mt:setvarblock name="jq_js_include" append="1">
-new MT.EditorManager('text');
-jQuery('#edit_entry_template').submit(function () {
-    if ( !jQuery(this).find('.required').mtValidate('simple')) {
+(function($) {
+
+var $text_wrapper = $('#text').wrap('<div />').parent();
+var $text_parent  = $('#text').parent();
+
+var editor_manager = new MT.EditorManager('text');
+
+$('#edit_entry_template').submit(function () {
+    editor_manager.currentEditor.save();
+    if ( !$(this).find(':input').mtValidate('simple')) {
+        if ($('#text').hasClass('error')) {
+            $text_parent
+                .find('label.validate-error.msg-error')
+                .parent()
+                .insertAfter($text_wrapper);
+
+            $text_wrapper.css({border: "1px solid #C53D43"});
+        }
+        else {
+            $text_wrapper.css({border: "none"});
+        }
+
         return false;
     }
 });
+
+})(jQuery);
 </mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">

@@ -76,11 +76,18 @@ sub delete_permission_filter {
         unless can_edit_entry_template( $perms, $entry_template, $app->user );
 }
 
+sub set_params_for_entry_template {
+    my ( $cb, $app, $param ) = @_;
+    $param->{search_type}  = 'entry';
+    $param->{search_label} = $app->translate('Entry');
+}
+
 sub cms_edit_entry_template {
     my ( $cb, $app, $id, $obj, $param ) = @_;
     $app->setup_editor_param($param);
     $param->{output} = File::Spec->catfile( plugin()->{full_path},
         'tmpl', 'cms', 'edit_entry_template.tmpl' );
+    set_params_for_entry_template( $cb, $app, $param );
 }
 
 sub cms_pre_load_filtered_list {
@@ -134,6 +141,7 @@ sub list_template_param {
     for ('saved_deleted') {
         $param->{$_} = 1 if $app->param($_);
     }
+    set_params_for_entry_template( $cb, $app, $param );
 }
 
 sub filtered_list_param {
