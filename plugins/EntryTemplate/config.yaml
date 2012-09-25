@@ -29,21 +29,21 @@ applications:
                         return 0 unless EntryTemplate::App::is_enabled($app);
 
                         if ($app->blog) {
-                            return EntryTemplate::App::can_edit_entry_template( $app->permissions, undef, $app->user );
-                            return EntryTemplate::App::can_view_entry_template( $app->permissions, undef, $app->user );
+                            return
+                                $app->permissions
+                                ->can_do('access_to_entry_template_list');
                         }
 
-                        require MT::Permission;
-                        my $iter = MT::Permission->load_iter(
+                        # System context
+                        my $iter = $app->model('permission')->load_iter(
                             {   author_id => $app->user->id,
                                     blog_id => { not => 0 }
                             }
                         );
 
-                        my $cond;
                         while ( my $p = $iter->() ) {
                             return 1
-                                if $p->can_do('manage_pages') || $p->can_do('create_post');
+                                if $p->can_do('access_to_entry_template_list');
                         }
 
                         return 0;
@@ -64,13 +64,28 @@ applications:
                         require EntryTemplate::App;
                         my $app = MT->instance;
 
-                        return 0 unless EntryTemplate::App::is_enabled($app);
-
-                        EntryTemplate::App::can_edit_entry_template( $app->permissions, undef, $app->user );
+                        EntryTemplate::App::is_enabled($app) &&
+                            $app->permissions->can_do('create_entry_template');
                     }
                 view:
                     - website
                     - blog
+
+permissions:
+    blog.create_post:
+        permitted_action:
+            access_to_entry_template_list: 1
+            create_entry_template: 1
+    blog.manage_pages:
+        permitted_action:
+            access_to_entry_template_list: 1
+            create_entry_template: 1
+            edit_all_entry_templates: 1
+    blog.edit_all_posts:
+        permitted_action:
+            access_to_entry_template_list: 1
+            create_entry_template: 1
+            edit_all_entry_templates: 1
 
 callbacks:
     MT::App::CMS::template_param.edit_entry: $EntryTemplate::EntryTemplate::App::param_edit_entry

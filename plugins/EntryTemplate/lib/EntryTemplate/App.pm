@@ -39,48 +39,36 @@ sub param_edit_entry {
 
 sub can_edit_entry_template {
     my ( $perms, $entry_template, $author ) = @_;
-    die unless $author->isa('MT::Author');
-    return 1 if $author->is_superuser();
-    return 0 unless $perms;
-    return 1 if $perms->can_do('manage_pages');
 
-    # For new object
-    if ( !$entry_template ) {
-        return $perms->can_do('create_post');
-    }
+    return 0
+        if ( !$perms )
+        || ( !$entry_template )
+        || ( !$author->isa('MT::Author') );
+    return 1
+        if $author->is_superuser()
+            || $perms->can_do('edit_all_entry_templates');
 
+    # This $author can only edit own entry template.
     if ( !ref $entry_template ) {
-        $entry_template = EntryTemplate::EntryTemplate->load($entry_template)
+        $entry_template = MT->model('entry_template')->load($entry_template)
             or return 0;
     }
-    die unless $entry_template->isa('EntryTemplate::EntryTemplate');
-    my $own_entry_template = $entry_template->created_by == $author->id;
-
-    return $own_entry_template
-        ? $perms->can_do('create_post')
-        : $perms->can_do('edit_all_published_entry');
+    return $entry_template->created_by == $author->id;
 }
 
 sub can_view_entry_template {
-    my ( $perms, $entry_template, $author ) = @_;
-    die unless $author->isa('MT::Author');
-    return 1 if $author->is_superuser();
-    return 0 unless $perms;
-
-    $perms->can_do('manage_pages') || $perms->can_do('create_post');
+    can_edit_entry_template;
 }
 
 sub save_permission_filter {
     my ( $cb, $app, $entry_template ) = @_;
     my $perms = $app->permissions;
-
     can_edit_entry_template( $perms, $entry_template, $app->user );
 }
 
 sub view_permission_filter {
     my ( $cb, $app, $entry_template ) = @_;
     my $perms = $app->permissions;
-
     can_edit_entry_template( $perms, $entry_template, $app->user );
 }
 
@@ -125,26 +113,20 @@ sub cms_pre_load_filtered_list {
     );
 
     my @filters = ( { blog_id => undef, } );
-    while ( my $perm = $iter->() ) {
-        if ( !$blog_id && can_view_entry_template( $perm, undef, $user ) ) {
-            $terms->{blog_id} ||= [];
-            push @{ $terms->{blog_id} }, $perm->blog_id;
-        }
-
-        if ( !can_edit_entry_template( $perm, undef, $user ) ) {
-            push @filters,
-                (
-                '-or',
-                {   blog_id    => $perm->blog_id,
-                    created_by => $user->id,
-                }
-                );
+    while ( my $p = $iter->() ) {
+        if ( $p->can_do('access_to_entry_template_list') ) {
+            push @filters, '-or',
+                {
+                blog_id => $p->blog_id,
+                (   $p->can_do('edit_all_entry_templates')
+                    ? ()
+                    : ( created_by => $user->id )
+                ),
+                };
         }
     }
 
-    my @new_terms = ($terms);
-    push @new_terms, ( '-and', \@filters );
-    $load_options->{editable_terms} = \@new_terms;
+    $load_options->{terms} = [ %$terms ? ( $terms, '-and' ) : (), \@filters ];
 }
 
 sub list_template_param {
@@ -185,8 +167,11 @@ sub listing_screens {
         primary            => 'label',
         default_sort_key   => 'created_on',
         default_sort_order => 'descend',
-        permission         => 'access_to_entry_list',
-        template           => File::Spec->catfile(
+        permission         => {
+            permit_action => 'access_to_entry_template_list',
+            inherit       => 0,
+        },
+        template => File::Spec->catfile(
             plugin()->{full_path}, 'tmpl',
             'cms',                 'list_entry_template.tmpl'
         ),
