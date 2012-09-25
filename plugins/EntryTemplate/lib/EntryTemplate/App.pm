@@ -42,11 +42,16 @@ sub can_edit_entry_template {
 
     return 0
         if ( !$perms )
-        || ( !$entry_template )
         || ( !$author->isa('MT::Author') );
-    return 1
-        if $author->is_superuser()
-            || $perms->can_do('edit_all_entry_templates');
+    return 1 if $author->is_superuser();
+
+    # For new object
+    if ( !$entry_template ) {
+        return $perms->can_do('create_entry_template');
+    }
+
+    return 1 if $perms->can_do('edit_all_entry_templates');
+    return 0 if $perms->can_do('edit_own_entry_templates');
 
     # This $author can only edit own entry template.
     if ( !ref $entry_template ) {
