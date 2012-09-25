@@ -57,7 +57,7 @@ sub can_edit_entry_template {
 }
 
 sub can_view_entry_template {
-    can_edit_entry_template;
+    can_edit_entry_template(@_);
 }
 
 sub save_permission_filter {
