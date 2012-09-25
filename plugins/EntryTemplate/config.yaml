@@ -8,10 +8,6 @@ schema_version: 1.01
 object_types:
     entry_template: EntryTemplate::EntryTemplate
 
-editors:
-    tinymce:
-        extension: extension.tmpl
-
 applications:
     cms:
         menus:
@@ -29,6 +25,8 @@ applications:
                     sub {
                         require EntryTemplate::App;
                         my $app = MT->instance;
+
+                        return 0 unless EntryTemplate::App::is_enabled($app);
 
                         if ($app->blog) {
                             return EntryTemplate::App::can_edit_entry_template( $app->permissions, undef, $app->user );
@@ -65,14 +63,14 @@ applications:
                     sub {
                         require EntryTemplate::App;
                         my $app = MT->instance;
+
+                        return 0 unless EntryTemplate::App::is_enabled($app);
+
                         EntryTemplate::App::can_edit_entry_template( $app->permissions, undef, $app->user );
                     }
                 view:
                     - website
                     - blog
-        methods:
-            view_entry_template_text:
-                code: $EntryTemplate::EntryTemplate::App::view_text
 
 callbacks:
     MT::App::CMS::template_param.edit_entry: $EntryTemplate::EntryTemplate::App::param_edit_entry

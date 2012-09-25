@@ -14,8 +14,8 @@ $.extend(config, {
     <mt:loop name="entry_templates" glue=",">
         {
             title: "<mt:var name="label" encode_js="1" />",
-            src: "<mt:var name="script_url">?__mode=view_entry_template_text&blog_id=<mt:var name="blog_id">&id=<mt:var name="id" />",
-            description: "<mt:var name="description" encode_js="1" />"
+            src: "<mt:var name="script_url">?__mode=tiny_mce_view_entry_template_text&blog_id=<mt:var name="blog_id">&id=<mt:var name="id" />",
+            description: "<mt:var name="description" encode_html="1" nl2br="1" encode_js="1" />"
         }
     </mt:loop>
     ]
@@ -23,9 +23,9 @@ $.extend(config, {
 
 })(jQuery);
 </script>
-<script type="text/javascript" src="<mt:var name="static_uri">plugins/EntryTemplate/extension.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">plugins/EntryTemplateForTinyMCE/extension.js"></script>
 </mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
-<link rel="stylesheet" href="<mt:var name="static_uri">plugins/EntryTemplate/skin/ui.css" type="text/css" />
+<link rel="stylesheet" href="<mt:var name="static_uri">plugins/EntryTemplateForTinyMCE/skin/ui.css" type="text/css" />
 </mt:setvarblock>
 </mt:if>
