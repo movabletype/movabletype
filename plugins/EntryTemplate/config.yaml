@@ -4,7 +4,7 @@ version: 1.01
 
 l10n_class: EntryTemplate::L10N
 
-schema_version: 1.01
+schema_version: 1.04
 object_types:
     entry_template: EntryTemplate::EntryTemplate
 

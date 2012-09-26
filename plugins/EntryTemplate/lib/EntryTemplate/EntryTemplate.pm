@@ -19,9 +19,18 @@ __PACKAGE__->install_properties(
                 size => 255,
             },
             text        => { type => 'text', },
-            description => { type => 'text', },
+            description => {
+                type => 'string',
+                size => 255,
+            },
         },
-        indexes => { blog_id => 1, },
+        indexes => {
+            blog_id     => 1,
+            label       => 1,
+            created_on  => 1,
+            modified_on => 1,
+            blog_c_by   => { columns => [ 'blog_id', 'created_by' ], },
+        },
 
         child_of => 'MT::Blog',
         audit    => 1,
