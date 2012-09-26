@@ -54,10 +54,6 @@ sub class_label_plural {
 
 sub list_props {
     return {
-        id => {
-            base  => '__virtual.id',
-            order => 100,
-        },
         label => {
             label      => 'Name',
             base       => '__virtual.label',
