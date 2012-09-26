@@ -441,6 +441,9 @@ sub format_ts {
         if ( $lang eq 'ja' ) {
             $f{a} = substr $L->[0][ $f{w} ] || '', 0, 1;
         }
+        elsif ( $lang eq 'ru' ) {
+            $f{a} = $Languages{'ru_short'}->[0][ $f{w} || '' ];
+        }
         else {
             $f{a} = substr_wref $L->[0][ $f{w} ] || '', 0, 3;
         }
@@ -1900,6 +1903,9 @@ sub mark_odd_rows {
         "%d.%m.%Y %H:%M",
         "%d.%m.%Y",
         "%H:%M",
+      ],
+    'ru_short' => [
+        [ ('Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб') ],
       ],
 );
 
