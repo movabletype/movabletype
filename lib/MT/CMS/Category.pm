@@ -335,6 +335,15 @@ sub bulk_update {
         $deletes++;
     }
 
+    $app->touch_blogs;
+
+    my @ordered_ids = map { $_->id } @objects;
+    my $order = join ',', @ordered_ids;
+    $blog->$meta($order);
+    $blog->save;
+
+    $app->run_callbacks( 'cms_post_bulk_save.' . $model, $app, \@objects );
+
     my $rebuild_url = $app->uri(
         mode => 'rebuild_confirm',
         args => { blog_id => $blog_id, }
@@ -350,13 +359,6 @@ sub bulk_update {
             $creates, $updates, $deletes, $rebuild_open
         ),
         };
-
-    my @ordered_ids = map { $_->id } @objects;
-    my $order = join ',', @ordered_ids;
-    $blog->$meta($order);
-    $blog->save;
-
-    $app->run_callbacks( 'cms_post_bulk_save.' . $model, $app, \@objects );
 
     $app->forward( 'filtered_list', messages => \@messages );
 }
