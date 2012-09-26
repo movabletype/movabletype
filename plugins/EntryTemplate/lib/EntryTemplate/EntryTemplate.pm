@@ -58,7 +58,7 @@ sub list_props {
             label      => 'Name',
             base       => '__virtual.label',
             display    => 'force',
-            order      => 200,
+            order      => 100,
             sub_fields => [
                 {   class   => 'description',
                     label   => 'Description',
@@ -129,12 +129,12 @@ sub list_props {
         },
         author_name => {
             base    => '__virtual.author_name',
-            order   => 300,
+            order   => 200,
             display => 'default',
         },
         blog_name => {
             base      => '__virtual.blog_name',
-            order     => 400,
+            order     => 300,
             display   => 'default',
             site_name => 0,
             view      => ['system'],
@@ -206,11 +206,11 @@ sub list_props {
         created_on => {
             base    => '__virtual.created_on',
             display => 'default',
-            order   => 500,
+            order   => 400,
         },
         modified_on => {
             base  => '__virtual.modified_on',
-            order => 600,
+            order => 500,
         },
     };
 }
