@@ -14,7 +14,8 @@ $Data::Dumper::Maxdepth = 4;
 $Data::Dumper::Sortkeys = 1;
 $Data::Dumper::Indent   = 1;
 
-use lib 'extlib', 'lib', '../extlib', '../lib';
+use FindBin;
+use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
 use base qw( MT::Tool );
 use Time::HiRes qw( tv_interval gettimeofday );
 

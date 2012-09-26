@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtloop($args, $content, &$ctx, &$repeat) {
-    $localvars = array('__loop_keys', '__loop_values', '__out');
+    $localvars = array(array('__loop_keys', '__loop_values', '__out'), common_loop_vars());
 
     if (!isset($content)) {
         $ctx->localize($localvars);

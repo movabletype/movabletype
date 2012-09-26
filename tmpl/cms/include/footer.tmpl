@@ -27,9 +27,9 @@
       <li><a href="<__trans phrase="http://plugins.movabletype.org/">"><__trans phrase="Plugins"></a></li>
       <li><a href="<__trans phrase="http://www.movabletype.org/documentation/">"><__trans phrase="Documentation"></a></li>
       <li><a href="<__trans phrase="http://wiki.movabletype.org/">"><__trans phrase="Wiki"></a></li>
-      <li><a href="<__trans phrase="http://www.movabletype.com/support/">"><__trans phrase="Support"></a></li>
+      <li><a href="<mt:var name="mt_support">"><__trans phrase="Support"></a></li>
       <li><a href="<__trans phrase="http://forums.movabletype.org/">"><__trans phrase="Forums"></a></li>
-      <li><a href="<__trans phrase="http://www.movabletype.org/feedback.html">"><__trans phrase="Send Us Feedback"></a></li>
+      <li><a href="<mt:var name="mt_feedback_url">"><__trans phrase="Send Us Feedback"></a></li>
     </ul>
   </mt:if>
 
@@ -38,7 +38,7 @@
     <p id="version">
       <strong><__trans phrase="<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]" params="<mt:var name="portal_url">%%<mt:var name="mt_version_id">"></strong>
     <mt:if name="packs_installed">
-      <__trans phrase="with">: <mt:loop name="packs_installed" glue=", "><a href="<__trans phrase="http://www.sixapart.com/movabletype/">pack/<mt:var name="id">/"><mt:var name="label" escape="html"> <mt:var name="version" escape="html"></a></mt:loop>
+      <__trans phrase="with">: <mt:loop name="packs_installed" glue=", "><mt:if name="link"><a href="<mt:var name="link" escape="html">"></mt:if><mt:var name="label" escape="html"> <mt:var name="version" escape="html"><mt:if name="link"></a></mt:if></mt:loop>
     </mt:if>
     </p>
   <!-- /Footer --></div>

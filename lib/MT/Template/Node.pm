@@ -77,6 +77,7 @@ sub childNodes {
 
 sub attributes {
     my $node = shift;
+    return {} if $node->[0] eq 'TEXT';
     return $node->[EL_NODE_ATTR] = shift if @_;
     return $node->[EL_NODE_ATTR] ||= {};
 }

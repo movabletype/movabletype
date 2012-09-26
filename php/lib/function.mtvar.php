@@ -61,22 +61,11 @@ function smarty_function_mtvar($args, &$ctx) {
         $name = $vars[$name];
         if (!isset($name))
             return $ctx->error($ctx->mt->translate(
-                "You used a [_1] tag without a valid name attribute.", "<MT$tag>" ));
+                "You used an [_1] tag without a valid name attribute.", "<MT$tag>" ));
     }
 
     if (isset($vars[$name]))
         $value = $vars[$name];
-    if ( !is_array($value)
-      && preg_match('/^smarty_fun_[a-f0-9]+$/', $value) ) {
-        if (function_exists($value)) {
-            ob_start();
-            $value($ctx, array());
-            $value = ob_get_contents();
-            ob_end_clean();
-        } else {
-            $value = '';
-        }
-    }
 
     $return_val = $value;
     if (isset($name)) {
@@ -166,6 +155,16 @@ function smarty_function_mtvar($args, &$ctx) {
                 if (!isset($return_val)) {
                     return $ctx->error($ctx->mt->translate("[_1] [_2] [_3] is illegal.", array($value, $op, $rvalue)));
             }}
+        }
+        if ( !is_array($return_val) && preg_match('/^smarty_fun_[a-f0-9]+$/', $return_val) ) {
+            if (function_exists($return_val)) {
+                ob_start();
+                $return_val($ctx, array());
+                $return_val = ob_get_contents();
+                ob_end_clean();
+            } else {
+                $return_val = '';
+            }
         }
     }
 

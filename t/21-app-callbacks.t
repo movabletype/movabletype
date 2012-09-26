@@ -61,7 +61,7 @@ no warnings qw(once redefine);
 *MT::App::CMS::validate_magic = sub { 1; };
 use warnings qw(once redefine);
 
-my $handler = $cms->handler_to_coderef( $cms->handlers_for_mode('save_entry') );
+my $handler = $cms->handler_to_coderef( $cms->handlers_for_mode('save_entry')->[0]->{code} );
 my $ret = $handler->($cms);
 ok(!defined $ret && $cms->{redirect}, 'entry save was successful');
 diag('Error: ' . $cms->errstr) if !defined $ret && !$cms->{redirect};

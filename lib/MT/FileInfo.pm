@@ -135,6 +135,7 @@ sub parent_names {
 
 sub cleanup {
     my $class = shift;
+    require MT::Template;
     my $iter  = $class->load_iter(
         undef,
         {   'join' => MT::Template->join_on(

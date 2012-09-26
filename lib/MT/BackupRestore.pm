@@ -202,6 +202,21 @@ sub _populate_obj_to_backup {
             },
             'order' => 510,
             };
+
+        # And Filter.
+        unshift @object_hashes,
+            {
+            $class => {
+                terms => undef,
+                args  => {
+                    'join' => [
+                        MT->model('filter'), 'author_id',
+                        { blog_id => $blog_ids }, { unique => 1 }
+                    ]
+                }
+            },
+            'order' => 500
+            };
     }
     @object_hashes = sort { $a->{order} <=> $b->{order} } @object_hashes;
     my @obj_to_backup;
@@ -294,11 +309,14 @@ sub backup {
     $printer->($header);
 
     my $files = {};
-    _loop_through_objects( $printer, $splitter, $finisher, $progress, $size,
+    my $backuped_objs = _loop_through_objects( $printer, $splitter, $finisher, $progress, $size,
         $obj_to_backup, $files, $header );
 
     my $else_xml = MT->run_callbacks( 'Backup', $blog_ids, $progress );
     $printer->($else_xml) if $else_xml ne '1';
+    my @else_xml;
+    MT->run_callbacks( 'backup.plugin_objects', $blog_ids, $progress, \@else_xml, $backuped_objs );
+    $printer->($_) foreach @else_xml;
 
     $printer->('</movabletype>');
     $finisher->($files);
@@ -311,9 +329,25 @@ sub _loop_through_objects {
 
     my $counter = 1;
     my $bytes   = 0;
-    my %authors_seen;
+    my %object_seen;
+    my %backuped_objs_store;
     my $author_pkg = MT->model('author');
+
+    my $can_read_disk_usage;
+    eval "require Filesys::DfPortable;";
+    if ( !$@ ) {
+        $can_read_disk_usage = 1;
+    }
+
     for my $class_hash (@$obj_to_backup) {
+        if ($can_read_disk_usage) {
+            my $ref = Filesys::DfPortable::dfportable(
+                MT->instance->config('TempDir') );
+            if ( $ref->{per} == 100 ) {
+                die MT->translate( "\nCannot write file. Disk full." );
+            }
+        }
+
         my ( $class, $term_arg ) = each(%$class_hash);
         eval "require $class;";
         my $children = $class->properties->{child_classes} || {};
@@ -334,10 +368,11 @@ sub _loop_through_objects {
         my $records = 0;
         my $state = MT->translate( 'Backing up [_1] records:', $class );
         $progress->( $state, $class->class_type || $class->datasource );
-        my $limit  = 50;
-        my $offset = 0;
-        my $terms  = $term_arg->{terms} || {};
-        my $args   = $term_arg->{args};
+        my $limit         = 50;
+        my $offset        = 0;
+        my $terms         = $term_arg->{terms} || {};
+        my $args          = $term_arg->{args};
+        my $backuped_objs = ( $backuped_objs_store{$class} ||= [] );
 
         unless ( exists $args->{sort} ) {
             $args->{sort}      = 'id';
@@ -362,28 +397,49 @@ sub _loop_through_objects {
                     last;
                 }
                 $count++;
-                if (   ( $class eq $author_pkg )
-                    && ( exists $authors_seen{ $object->id } ) )
-                {
+                if ( exists $object_seen{  $class->datasource.'/'.$object->id } ) {
                     next;
                 }
-                $bytes += $printer->(
-                    $object->to_xml( undef, \@metacolumns ) . "\n" );
-                $records++;
-                if ( $size && ( $bytes >= $size ) ) {
-                    $splitter->( ++$counter, $header );
-                    $bytes = 0;
+                if ($class->datasource eq 'author') {
+                    # Authors may be duplicated because of how terms and args are created.
+                    $object_seen{  'author/'.$object->id } = 1;
                 }
-                if ( $class eq $author_pkg ) {
-
-        # Authors may be duplicated because of how terms and args are created.
-                    $authors_seen{ $object->id } = 1;
-                }
-                elsif ( $class->datasource eq 'asset' ) {
+                elsif ($class->datasource eq 'asset') {
+                    $object_seen{ 'asset/'.$object->id } = 1;
                     $files->{ $object->id } = [
                         $object->url, $object->file_path,
                         $object->file_name
                     ];
+                    if ( $object->parent and not $object_seen{ 'asset/'.$object->parent } ) {
+                        my $parent = MT->model('asset')->load( $object->parent );
+                        next unless $parent;
+                        $object_seen{ 'asset/'.$parent->id } = 1;
+                        $bytes += $printer->(
+                            $parent->to_xml( undef, \@metacolumns ) . "\n" );
+                        $files->{ $parent->id } = [
+                            $parent->url, $parent->file_path,
+                            $parent->file_name
+                        ];
+                        $records++;
+                    }
+                }
+                elsif ($class->datasource eq 'category') {
+                    $object_seen{ 'category/'.$object->id } = 1;
+                    foreach my $parent (reverse $object->parent_categories) {
+                        next if exists $object_seen{ 'category/'.$parent->id };
+                        $object_seen{ 'category/'.$parent->id } = 1;
+                        $bytes += $printer->(
+                            $parent->to_xml( undef, \@metacolumns ) . "\n" );
+                        $records++;
+                    }
+                }
+                $bytes += $printer->(
+                    $object->to_xml( undef, \@metacolumns ) . "\n" );
+                $records++;
+                push @$backuped_objs, $object->id;
+                if ( $size && ( $bytes >= $size ) ) {
+                    $splitter->( ++$counter, $header );
+                    $bytes = 0;
                 }
             }
             last unless $next;
@@ -393,16 +449,7 @@ sub _loop_through_objects {
                 $class->datasource
             ) if $records && ( $records % 100 == 0 );
         }
-        if ( $class eq $author_pkg && %authors_seen ) {
-            my $num_authors = scalar( keys %authors_seen );
-            $progress->(
-                $state . " "
-                    . MT->translate( "[_1] records backed up.",
-                    $num_authors ),
-                $class->class_type || $class->datasource
-            );
-        }
-        elsif ($records) {
+        if ($records) {
             $progress->(
                 $state . " "
                     . MT->translate( "[_1] records backed up.", $records ),
@@ -419,6 +466,7 @@ sub _loop_through_objects {
             );
         }
     }
+    return \%backuped_objs_store;
 }
 
 sub restore_file {
@@ -448,10 +496,26 @@ sub restore_process_single_file {
         $callback )
         = @_;
 
+    require XML::SAX;
+    require MT::Util;
+    my $parser = MT::Util::sax_parser();
+
+    require MT::BackupRestore::BackupFileScanner;
+    if (my $pass_scan = MT::BackupRestore::BackupFileScanner->new()) {
+        my $pos = tell($fh);
+        $parser->{Handler} = $pass_scan;
+        eval { $parser->parse_file($fh); };
+        if ( my $e = $@ ) {
+            push @$errors, $e;
+            $callback->($e);
+            die $e;
+        }
+        seek($fh, $pos, 0);
+    }
+
     my %restored_blogs = map { $objects->{$_}->id => 1; }
         grep { 'blog' eq $objects->{$_}->datasource } keys %$objects;
 
-    require XML::SAX;
     require MT::BackupRestore::BackupFileHandler;
     my $handler = MT::BackupRestore::BackupFileHandler->new(
         callback           => $callback,
@@ -462,8 +526,7 @@ sub restore_process_single_file {
         overwrite_template => $overwrite,
     );
 
-    require MT::Util;
-    my $parser = MT::Util::sax_parser();
+    $parser = MT::Util::sax_parser();
     $callback->( ref($parser) . "\n" ) if MT->config->DebugMode;
     $handler->{is_pp} = ref($parser) eq 'XML::SAX::PurePerl' ? 1 : 0;
     $parser->{Handler} = $handler;
@@ -503,7 +566,7 @@ sub restore_directory {
     my @files;
     opendir my $dh, $dir
         or push( @$errors,
-        MT->translate( "Can't open directory '[_1]': [_2]", $dir, "$!" ) ),
+        MT->translate( "Cannot open directory '[_1]': [_2]", $dir, "$!" ) ),
         return undef;
     for my $f ( readdir $dh ) {
         next if $f !~ /^.+\.manifest$/i;
@@ -523,7 +586,7 @@ sub restore_directory {
 
     my $fh = gensym;
     open $fh, "<$manifest"
-        or push( @$errors, MT->translate( "Can't open [_1].", $manifest ) ),
+        or push( @$errors, MT->translate( "Cannot open [_1].", $manifest ) ),
         return 0;
     my $backups = __PACKAGE__->process_manifest($fh);
     close $fh;
@@ -548,7 +611,7 @@ sub restore_directory {
         my $fh = gensym;
         my $filepath = File::Spec->catfile( $dir, $file );
         open $fh, "<$filepath"
-            or push @$errors, MT->translate("Can't open [_1]."), next;
+            or push @$errors, MT->translate("Cannot open [_1]."), next;
 
         my ( $tmp_blog_ids, $tmp_asset_ids ) = eval {
             __PACKAGE__->restore_process_single_file( $fh, \%objects,
@@ -602,7 +665,7 @@ sub restore_asset {
     my $path = $asset->file_path;
     unless ( defined($path) ) {
         $callback->(
-            MT->translate( 'Path was not found for the file ([_1]).', $id ) );
+            MT->translate( 'Path was not found for the file, [_1].', $id ) );
         return 0;
     }
     my ( $vol, $dir, $fn ) = File::Spec->splitpath($path);
@@ -688,6 +751,20 @@ sub cb_restore_objects {
     my %assets;
     my %old_ids;
     for my $key ( keys %$all_objects ) {
+        my $obj = $all_objects->{$key};
+        if ( $obj->properties->{audit} ) {
+            my $author_class = MT->model('author');
+            if ( $obj->created_by && $all_objects->{"$author_class#" . $obj->created_by} ) {
+                my $new_id = $all_objects->{"$author_class#" . $obj->created_by}->id;
+                $obj->created_by( $new_id );
+            }
+            if ( $obj->modified_by && $all_objects->{"$author_class#" . $obj->modified_by}) {
+                my $new_id = $all_objects->{"$author_class#" . $obj->modified_by}->id;
+                $obj->modified_by( $new_id );
+            }
+            $obj->save;
+        }
+
         if ( $key =~ /^MT::Entry#(\d+)$/ ) {
             my $new_id = $all_objects->{$key}->id;
             $entries{$new_id} = $all_objects->{$key};
@@ -741,6 +818,19 @@ sub cb_restore_objects {
 
             # call trigger to save meta
             $new_author->call_trigger( 'post_save', $new_author );
+        }
+        elsif ( $key =~ /^MT::(?:Blog|Website)#(\d+)$/ ) {
+            my $blog = $all_objects->{$key};
+            if (my $cat_order = $blog->category_order) {
+                my @cats = split ',', $cat_order;
+                my @new_cats = 
+                    map $_->id, 
+                    grep defined $_, 
+                    map $all_objects->{'MT::Category#'.$_},
+                    @cats;
+                $blog->category_order(join ',', @new_cats);
+                $blog->save;
+            }
         }
     }
 
@@ -1002,7 +1092,7 @@ sub to_xml {
                 next;
             }
             $xml .= " $name='"
-                . MT::Util::encode_xml( $obj->column($name), 1 ) . "'";
+                . MT::Util::encode_xml( $obj->column($name), 1, 1 ) . "'";
         }
     }
     my ( @meta_elements, @meta_blobs );
@@ -1020,13 +1110,13 @@ sub to_xml {
                 }
                 else {
                     $xml .= " $name='"
-                        . MT::Util::encode_xml( $obj->$name, 1 ) . "'";
+                        . MT::Util::encode_xml( $obj->$name, 1, 1 ) . "'";
                 }
             }
         }
     }
     $xml .= '>';
-    $xml .= "<$_>" . MT::Util::encode_xml( $obj->column($_), 1 ) . "</$_>"
+    $xml .= "<$_>" . MT::Util::encode_xml( $obj->column($_), 1, 1 ) . "</$_>"
         foreach @elements;
     require MIME::Base64;
     foreach my $blob_col (@blobs) {
@@ -1051,7 +1141,7 @@ sub to_xml {
             MT::Serialize->serialize( \$hashref ), '' )
             . "</$meta_col>";
     }
-    $xml .= "<$_>" . MT::Util::encode_xml( $obj->$_, 1 ) . "</$_>"
+    $xml .= "<$_>" . MT::Util::encode_xml( $obj->$_, 1, 1 ) . "</$_>"
         foreach @meta_elements;
     foreach my $vblob_col (@meta_blobs) {
         my $vblob = $obj->$vblob_col;
@@ -1245,26 +1335,6 @@ sub backup_terms_args {
     }
 }
 
-my $assets_seen = {};
-
-sub to_xml {
-    my $obj = shift;
-    my $xml = q();
-
-    return $xml if exists $assets_seen->{ $obj->id };
-
-    if ( $obj->parent ) {
-        my $parent = MT->model('asset')->load( $obj->parent )
-            or return $xml;
-        $xml .= $parent->to_xml(@_);
-        $xml .= "\n";
-    }
-
-    $xml .= $obj->SUPER::to_xml(@_);
-    $assets_seen->{ $obj->id } = 1;
-    $xml;
-}
-
 sub parents {
     my $obj = shift;
     {   blog_id => [ MT->model('blog'), MT->model('website') ],
@@ -1353,24 +1423,6 @@ sub restore_parent_ids {
 }
 
 package MT::Category;
-
-my $category_seen = {};
-
-sub to_xml {
-    my $obj = shift;
-    my $xml = q();
-
-    return $xml if exists $category_seen->{ $obj->id };
-
-    if ( '0' ne $obj->parent ) {
-        $xml .= $obj->parent_category->to_xml(@_);
-        $xml .= "\n";
-    }
-
-    $xml .= $obj->SUPER::to_xml(@_);
-    $category_seen->{ $obj->id } = 1;
-    $xml;
-}
 
 sub parents {
     my $obj = shift;
@@ -1696,6 +1748,8 @@ Callbacks called by the package are as follows:
 =over 4
 
 =item Backup
+
+Deprecated. please use the 'backup.plugin_objects' callback
     
 Calling convention is:
 
@@ -1712,6 +1766,21 @@ If a plugin has an MT::Object derived type, the plugin will register
 a callback to Backup callback, and Backup process will call the callbacks
 to give plugins a chance to add their own data to the backup file.
 Otherwise, plugin's object classes is likely be ignored in backup operation.
+
+=item backup.plugin_objects
+
+Calling convention is:
+
+    callback($cb, $blog_ids, $progress, $else_xml, $backuped_objs)
+
+$blog_ids has an ARRAY reference to blog_ids which indicates what weblog 
+a user chose to backup.  It may be an empty array if a user chose 
+Everything.  $progress is a CODEREF used to report progress to the user.
+$backuped_objs is a hash-ref, whose keys are classes, and values are arrays
+containing IDs of objects of this class that were already backuped
+
+The result of this callback should be an XML part to be included in the 
+backup XML. Please push your results into @$else_xml (which is an array-ref)
 
 =item Restore.<element_name>:<xmlnamespace>
 

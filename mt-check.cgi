@@ -77,13 +77,29 @@ if ($unsafe) {
 local $| = 1;
 
 use CGI;
-my $cgi     = new CGI;
+
+my $cgi;
+my $is_cgi;
+$is_cgi ||= exists $ENV{$_}
+    for qw( HTTP_HOST GATEWAY_INTERFACE SCRIPT_FILENAME SCRIPT_URL );
+if ( $is_cgi || $ENV{PLACK_ENV}) {
+    $cgi = CGI->new;
+}
+else {
+    require FCGI;
+    $CGI::Fast::Ext_Request
+        = FCGI::Request( \*STDIN, \*STDOUT, \*STDERR, \%ENV, 0,
+          FCGI::FAIL_ACCEPT_ON_INTR() );
+    require CGI::Fast;
+    $cgi = CGI::Fast->new;
+}
+
 my $view    = $cgi->param("view");
 my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '5.14';
+    $version = '5.2';
 }
 
 my ( $mt, $LH );
@@ -430,18 +446,26 @@ my @CORE_REQ = (
     [   'File::Spec',
         0.8, 1,
         translate(
-            'File::Spec is required for path manipulation across operating systems.'
+            'File::Spec is required to work with file system path information on all supported operating systems.'
         )
     ],
 
     [   'CGI::Cookie', 0, 1,
         translate('CGI::Cookie is required for cookie authentication.')
     ],
+
+    [   'LWP::UserAgent',
+        0, 0,
+        translate(
+            'LWP::UserAgent is required for creating Movable Type configuration files using the installation wizard.'
+        )
+    ],
+
 );
 
 my @CORE_DATA = (
     [   'DBI', 1.21, 0,
-        translate('DBI is required to store data in database.')
+        translate('DBI is required to work with most supported databases.')
     ],
 
     [   'DBD::mysql',
@@ -475,17 +499,44 @@ my @CORE_DATA = (
 );
 
 my @CORE_OPT = (
+    [   'Digest::SHA',
+        0, 0,
+        translate(
+            'Digest::SHA is required in order to provide enhanced protection of user passwords.'
+        )
+    ],
+
+    [   'Plack', 0, 0,
+        translate(
+            'This module and its dependencies are required in order to operate Movable Type under psgi.'
+        )
+    ],
+
+    [   'CGI::PSGI',
+        0, 0,
+        translate(
+            'This module and its dependencies are required to run Movable Type under psgi.'
+        )
+    ],
+
+    [   'CGI::Parse::PSGI',
+        0, 0,
+        translate(
+            'This module and its dependencies are required to run Movable Type under psgi.'
+        )
+    ],
+
+    [   'XMLRPC::Transport::HTTP::Plack',
+        0, 0,
+        translate(
+            'This module and its dependencies are required to run Movable Type under psgi.'
+        )
+    ],
+
     [   'HTML::Entities',
         0, 0,
         translate(
             'HTML::Entities is needed to encode some characters, but this feature can be turned off using the NoHTMLEntities option in the configuration file.'
-        )
-    ],
-
-    [   'LWP::UserAgent',
-        0, 0,
-        translate(
-            'LWP::UserAgent is optional; It is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.'
         )
     ],
 
@@ -527,33 +578,33 @@ my @CORE_OPT = (
     [   'Image::Magick',
         0, 0,
         translate(
-            'Image::Magick is optional; It is needed if you would like to be able to create thumbnails of uploaded images.'
+            '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.', 'Image::Magick'
         )
     ],
 
     [   'GD', 0, 0,
         translate(
-            'This module is needed if you would like to be able to create thumbnails of uploaded images.'
+            '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.', 'GD'
         )
     ],
 
     [   'Imager', 0, 0,
         translate(
-            'This module is needed if you would like to be able to create thumbnails of uploaded images.'
+            '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.', 'Imager'
         )
     ],
 
     [   'IPC::Run',
         0, 0,
         translate(
-            'This module is needed if you would like to be able to use NetPBM as the image driver for MT.'
+            'IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.'
         )
     ],
 
     [   'Storable',
         0, 0,
         translate(
-            'Storable is optional; It is required by certain MT plugins available from third parties.'
+            'Storable is optional; It is required by certain Movable Type plugins available from third-party developers.'
         )
     ],
 
@@ -574,14 +625,14 @@ my @CORE_OPT = (
     [   'Cache::File',
         0, 0,
         translate(
-            'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan as OpenID.'
+            'Cache::File is required if you would like to be able to allow commenters to authenticate via OpenID using Yahoo! Japan.'
         )
     ],
 
     [   'MIME::Base64',
         0, 0,
         translate(
-            'MIME::Base64 is required in order to enable comment registration.'
+            'MIME::Base64 is required in order to enable comment registration and in order to send mail via an SMTP Server.'
         )
     ],
 
@@ -592,42 +643,42 @@ my @CORE_OPT = (
     [   'Cache::Memcached',
         0, 0,
         translate(
-            'Cache::Memcached and memcached server/daemon is required in order to use memcached as caching mechanism used by Movable Type.'
+            'Cache::Memcached and a memcached server are required to use in-memory object caching on the servers where Movable Type is deployed.'
         )
     ],
 
     [   'Archive::Tar',
         0, 0,
         translate(
-            'Archive::Tar is required in order to archive files in backup/restore operation.'
+            'Archive::Tar is required in order to manipulate files during backup and restore operations.'
         )
     ],
 
     [   'IO::Compress::Gzip',
         0, 0,
         translate(
-            'IO::Compress::Gzip is required in order to compress files in backup/restore operation.'
+            'IO::Compress::Gzip is required in order to compress files during backup operations.'
         )
     ],
 
     [   'IO::Uncompress::Gunzip',
         0, 0,
         translate(
-            'IO::Uncompress::Gunzip is required in order to decompress files in backup/restore operation.'
+            'IO::Uncompress::Gunzip is required in order to decompress files during restore operation.'
         )
     ],
 
     [   'Archive::Zip',
         0, 0,
         translate(
-            'Archive::Zip is required in order to archive files in backup/restore operation.'
+            'Archive::Zip is required in order to manipulate files during backup and restore operations.'
         )
     ],
 
     [   'XML::SAX',
         0, 0,
         translate(
-            'XML::SAX and its dependencies are required in order to restore a backup created in a backup/restore operation.'
+            'XML::SAX and its dependencies are required to restore a backup created in a backup/restore operation.'
         )
     ],
 
@@ -637,26 +688,63 @@ my @CORE_OPT = (
             'Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.'
         )
     ],
-    [   'Mail::Sendmail',
+
+    [   'Net::SMTP',
         0, 0,
         translate(
-            'Mail::Sendmail is required in order to send mail via an SMTP Server.'
+            'Net::SMTP is required in order to send mail via an SMTP Server.'
         )
     ],
+
+    [   'Authen::SASL', 0, 0,
+        translate( 'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.' )
+    ],
+
+    [   'Net::SMTP::SSL',
+        0, 0,
+        translate(
+            'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.'
+        )
+    ],
+
+    [   'Net::SMTP::TLS',
+        0, 0,
+        translate(
+            'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.'
+        )
+    ],
+
+    [   'IO::Socket::SSL',
+        0, 0,
+        translate(
+            'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.'
+        )
+    ],
+
+    [   'Net::SSLeay',
+        0, 0,
+        translate(
+            'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.'
+        )
+    ],
+
     [   'Safe', 0, 0,
         translate(
             'This module is used in a test attribute for the MTIf conditional tag.'
         )
     ],
+
     [   'Digest::MD5', 0, 0,
         translate('This module is used by the Markdown text filter.')
     ],
+
     [   'Text::Balanced',
         0, 0,
         translate(
-            'This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.'
+            'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.'
         )
     ],
+
     [   'XML::Parser', 0, 0,
         translate('This module required for action streams.')
     ],
@@ -706,7 +794,7 @@ if ($version) {
 INFO
 }
 print_encode( trans_templ(<<INFO) );
-<ul>
+<ul id="path-info">
 	<li><strong><__trans phrase="Current working directory:"></strong> <code>$cwd</code></li>
 	<li><strong><__trans phrase="MT home directory:"></strong> <code>$ENV{MT_HOME}</code></li>
 	<li><strong><__trans phrase="Operating system:"></strong> $^O</li>
@@ -719,20 +807,22 @@ if ($server) {
 INFO
 }
 
+if ( $server !~ m/psgi/i ) {
 ## Try to create a new file in the current working directory. This
 ## isn't a perfect test for running under cgiwrap/suexec, but it
 ## is a pretty good test.
-my $TMP = "test$$.tmp";
-local *FH;
-if ( open( FH, ">$TMP" ) ) {
-    close FH;
-    unlink($TMP);
-    print_encode(
-        trans_templ(
-            '    <li><__trans phrase="(Probably) running under cgiwrap or suexec"></li>'
-                . "\n"
-        )
-    );
+    my $TMP = "test$$.tmp";
+    local *FH;
+    if ( open( FH, ">$TMP" ) ) {
+        close FH;
+        unlink($TMP);
+        print_encode(
+            trans_templ(
+                '    <li><__trans phrase="(Probably) running under cgiwrap or suexec"></li>'
+                    . "\n"
+            )
+        );
+    }
 }
 
 print_encode("\n\n</ul>\n");
@@ -819,7 +909,7 @@ for my $list ( \@REQ, \@DATA, \@OPT ) {
     if ( !$req && !$data ) {
         if ( !$view ) {
             print_encode( trans_templ(<<MSG) );
-    <p class="msg msg-info"><__trans phrase="The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that the module provides."></p>
+    <p class="msg msg-info"><__trans phrase="The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that they provide."></p>
 
 MSG
         }
@@ -827,7 +917,7 @@ MSG
     if ($data) {
         if ( !$view ) {
             print_encode( trans_templ(<<MSG) );
-        <p class="msg msg-info"><__trans phrase="Some of the following modules are required by databases supported by Movable Type. Your server must have DBI and at least one of these related modules installed for proper operation of Movable Type."></p>
+        <p class="msg msg-info"><__trans phrase="The following modules are required by databases that can be used with Movable Type. Your server must have DBI and at least one of these related modules installed for the application to work properly."></p>
 
 MSG
         }
@@ -886,7 +976,7 @@ MSG
                     if ( $DBD::mysql::VERSION == 3.0000 ) {
                         print_encode(
                             trans_templ(
-                                qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the current release available from CPAN."></p></div>}
+                                qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available."></p></div>}
                             )
                         );
                     }
@@ -894,7 +984,7 @@ MSG
                 if ( !$dbi_is_okay ) {
                     print_encode(
                         trans_templ(
-                            qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="The $mod is installed properly, but requires an updated DBI module. Please see note above regarding the DBI module requirements."></p></div>}
+                            qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="The $mod is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements."></p></div>}
                         )
                     );
                 }
@@ -905,7 +995,7 @@ MSG
             print_encode(
                 trans_templ(
                     qq{<p class="installed"><__trans phrase="Your server has [_1] installed (version [_2])." params="$mod%%}
-                        . $mod->VERSION
+                        . ( $mod->VERSION || translate('unknown') )
                         . qq{"></p>\n\n}
                 )
             );
@@ -932,3 +1022,13 @@ HTML
 }
 
 print_encode("</body>\n\n</html>\n");
+
+if ( ref $cgi eq 'CGI::Fast' ) {
+    $CGI::Fast::Ext_Request->LastCall();
+    # closing FastCGI's listening socket, so the server won't
+    # open new connections to us
+    require POSIX;
+    POSIX::close( 0 );
+    $CGI::Fast::Ext_Request->Finish();
+    exit( 1 );
+}

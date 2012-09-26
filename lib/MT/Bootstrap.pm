@@ -87,8 +87,8 @@ sub import {
 
             # line __LINE__ __FILE__
             require MT;
-            eval "# line " 
-                . __LINE__ . " " 
+            eval "# line "
+                . __LINE__ . " "
                 . __FILE__
                 . "\nrequire $class; 1;"
                 or die $@;
@@ -104,9 +104,10 @@ sub import {
                     FCGI::FAIL_ACCEPT_ON_INTR() );
                 my ( $max_requests, $max_time, $cfg );
 
-                # catch SIGUSR1 and SIGTERM and allow request to finish before
+                # catch SIGHUP, SIGUSR1 and SIGTERM and allow request to finish before
                 # exiting.
                 # TODO: handle SIGPIPE more gracefully.
+                $SIG{HUP}  = \&fcgi_sig_handler;
                 $SIG{USR1} = \&fcgi_sig_handler;
                 $SIG{TERM} = \&fcgi_sig_handler;
                 $SIG{PIPE} = 'IGNORE';
@@ -134,9 +135,6 @@ sub import {
                     $app->config->read_config_db();
                     $app->init_request( CGIObject => $cgi );
                     $app->run;
-
-                    # force closing of connection here
-                    $CGI::Fast::Ext_Request->Finish();
 
                     $fcgi_handling_request = 0;
 
@@ -176,7 +174,15 @@ sub import {
                             }
                         }
                     }
+                    # force closing of connection here
+                    $CGI::Fast::Ext_Request->Finish();
                 }
+                $CGI::Fast::Ext_Request->LastCall();
+                # closing FastCGI's listening socket, so the server won't
+                # open new connections to us
+                require POSIX;
+                POSIX::close( 0 );
+                $CGI::Fast::Ext_Request->Finish();
             }
             else {
                 $app = $class->new(%param) or die $class->errstr;

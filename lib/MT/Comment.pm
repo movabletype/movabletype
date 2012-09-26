@@ -37,7 +37,10 @@ __PACKAGE__->install_properties(
             author        => 1,
             email         => 1,
             commenter_id  => 1,
-            last_moved_on => 1,    # used for junk expiration
+            last_moved_on => 1,  # used for junk expiration
+                                 # for blog dashboard - visible comments count
+            blog_visible_entry =>
+                { columns => [ 'blog_id', 'visible', 'entry_id' ], },
 
             # For URL lookups to aid spam filtering
             blog_url => { columns => [ 'blog_id', 'visible', 'url' ], },
@@ -48,6 +51,8 @@ __PACKAGE__->install_properties(
             dd_coment_vis_mod => { columns => [ 'visible', 'modified_on' ], },
             visible_date      => { columns => [ 'visible', 'created_on' ], },
             blog_ip_date => { columns => [ 'blog_id', 'ip', 'created_on' ], },
+            blog_junk_stat =>
+                { columns => [ 'blog_id', 'junk_status', 'last_moved_on' ], },
         },
         meta     => 1,
         defaults => {
@@ -187,7 +192,7 @@ sub list_props {
                     $lc_status_class = lc $status_class;
                     my $link_title
                         = MT->translate(
-                        'Search other comments from this anonymous commenter'
+                        'Search for other comments from anonymous commenters'
                         );
                     return qq{
                         <span class="commenter">
@@ -228,7 +233,7 @@ sub list_props {
                     $status_class    = 'Deleted';
                     $lc_status_class = lc $status_class;
                     my $link_title = MT->translate(
-                        'Search other comments from this deleted commenter');
+                        'Search for other comments from this deleted commenter');
                     my $optional_status = MT->translate('(Deleted)');
                     return qq{
                         <span class="commenter">
@@ -307,7 +312,14 @@ sub list_props {
                       <img alt="$auth_label" src="$auth_img" class="auth-type-icon" />
                     </span>
                     <span class="commenter">
-                      <a href="$link" title="$link_title">$name</a>
+                    };
+                if ($app->can_do('view_commenter')) {
+                    $out .= qq{<a href="$link" title="$link_title">$name</a>};
+                }
+                else {
+                    $out .= $name;
+                }
+                $out .= qq{
                     </span>
                     <span class="status $lc_status_class">
                       $status_img
@@ -910,7 +922,7 @@ sub entry {
         $entry = MT::Entry->load($entry_id)
             or return $comment->error(
             MT->translate(
-                "Load of entry '[_1]' failed: [_2]", $entry_id,
+                "Loading entry '[_1]' failed: [_2]", $entry_id,
                 MT::Entry->errstr
             )
             );
@@ -928,7 +940,7 @@ sub blog {
         $blog = MT::Blog->load($blog_id)
             or return $comment->error(
             MT->translate(
-                "Load of blog '[_1]' failed: [_2]", $blog_id,
+                "Loading blog '[_1]' failed: [_2]", $blog_id,
                 MT::Blog->errstr
             )
             );

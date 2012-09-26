@@ -25,7 +25,7 @@ sub _find_module {
             $config = 'MT::Util::YAML::' . $config;
         }
         eval "require $config";
-        die "Can't load YAML module: $@" if $@;
+        die "Cannot load YAML module: $@" if $@;
         $Module = $config;
     }
     else {

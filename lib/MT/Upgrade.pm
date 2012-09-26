@@ -975,6 +975,10 @@ sub core_finish {
     if ( !defined( $cfg->MTVersion ) || ( $cur_version > $cfg->MTVersion ) ) {
         $cfg->MTVersion( $cur_version, 1 );
     }
+    my $cur_rel = MT->release_number;
+    if ( !defined( $cfg->MTReleaseNumber ) || ( $cur_rel > $cfg->MTReleaseNumber ) ) {
+        $cfg->MTReleaseNumber( $cur_rel, 1 );
+    }
     $cfg->save_config unless $DryRun;
 
     # do one last thing....

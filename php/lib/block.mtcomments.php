@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtcomments($args, $content, &$ctx, &$repeat) {
-    $localvars = array('comments', 'comment_order_num','comment','current_timestamp', 'commenter', 'blog', 'blog_id', 'conditional', 'else_content', '_comments_glue', '_comments_out');
+    $localvars = array(array('comments', 'comment_order_num','comment','current_timestamp', 'commenter', 'blog', 'blog_id', 'conditional', 'else_content', '_comments_glue', '_comments_out'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
         $entry = $ctx->stash('entry');

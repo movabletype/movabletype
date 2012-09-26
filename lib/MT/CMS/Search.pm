@@ -1103,7 +1103,7 @@ sub do_search_replace {
         $replace_count++;
         $obj->save
             or return $app->error(
-            $app->translate( "Saving object failed: [_2]", $obj->errstr ) );
+            $app->translate( "Saving object failed: [_1]", $obj->errstr ) );
     }
     if (@data) {
 
@@ -1261,6 +1261,7 @@ sub do_search_replace {
     my %cols = map { $_ => 1 } @cols;
     my @search_cols;
     for my $field ( keys %$search_cols ) {
+        next if $field eq 'plugin';
         my %search_field;
         $search_field{field} = $field;
         $search_field{selected} = 1 if exists( $cols{$field} );
@@ -1327,7 +1328,6 @@ sub _default_results_table_template {
                 can_close="0">
                 <__trans phrase="No [_1] were found that match the given criteria." params="$plural">
             </mtapp:statusmsg>
-        </mt:if>
 TMPL
     }
 }

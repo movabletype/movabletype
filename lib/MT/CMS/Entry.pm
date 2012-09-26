@@ -216,7 +216,7 @@ sub edit {
         if ($blog_id) {
             my $blog = $blog_class->load($blog_id)
                 or return $app->error(
-                $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+                $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
             $blog_timezone = $blog->server_offset();
 
             # new entry defaults used for new entries AND new pages.
@@ -514,23 +514,7 @@ sub edit {
         $param->{blog_file_extension} = $ext;
     }
 
-    my $rte;
-    if ( $param->{convert_breaks} =~ m/richtext/ ) {
-        ## Rich Text editor
-        $rte = lc( $app->config('RichTextEditor') );
-    }
-    else {
-        $rte = 'archetype';
-    }
-    my $editors = $app->registry("richtext_editors");
-    my $edit_reg = $editors->{$rte} || $editors->{archetype};
-    my $rich_editor_tmpl;
-    if ( $rich_editor_tmpl
-        = $edit_reg->{plugin}->load_tmpl( $edit_reg->{template} ) )
-    {
-        $param->{rich_editor}      = $rte;
-        $param->{rich_editor_tmpl} = $rich_editor_tmpl;
-    }
+    $app->setup_editor_param($param);
 
     $param->{object_type}  = $type;
     $param->{object_label} = $class->class_label;
@@ -549,7 +533,7 @@ sub edit {
             @ordered = sort { $order{$a} <=> $order{$b} } @ordered;
         }
     }
-
+    
     $param->{field_loop} ||= [
         map {
             {   field_name => $_,
@@ -1108,9 +1092,9 @@ sub _build_entry_preview {
     if (@tag_names) {
         my @tags;
         foreach my $tag_name (@tag_names) {
-            next if $tag_name =~ m/^@/;
             my $tag = MT::Tag->new;
             $tag->name($tag_name);
+            $tag->is_private($tag_name =~ m/^@/ ? 1 : 0);
             push @tags, $tag;
         }
         $entry->{__tags}        = \@tag_names;
@@ -1125,6 +1109,14 @@ sub _build_entry_preview {
 
     my $preview_basename = $app->preview_object_basename;
     $entry->basename( $q->param('basename') || $preview_basename );
+
+    # translates naughty words when PublishCharset is NOT UTF-8
+    MT::Util::translate_naughty_words($entry);
+
+    $entry->convert_breaks( scalar $q->param('convert_breaks') );
+
+    my @data = ( { data_name => 'author_id', data_value => $user_id } );
+    $app->run_callbacks( 'cms_pre_preview', $app, $entry, \@data );
 
     require MT::TemplateMap;
     require MT::Template;
@@ -1162,16 +1154,8 @@ sub _build_entry_preview {
         $tmpl       = $app->load_tmpl('preview_entry_content.tmpl');
         $fullscreen = 1;
     }
-    return $app->error( $app->translate('Can\'t load template.') )
+    return $app->error( $app->translate('Cannot load template.') )
         unless $tmpl;
-
-    # translates naughty words when PublishCharset is NOT UTF-8
-    MT::Util::translate_naughty_words($entry);
-
-    $entry->convert_breaks( scalar $q->param('convert_breaks') );
-
-    my @data = ( { data_name => 'author_id', data_value => $user_id } );
-    $app->run_callbacks( 'cms_pre_preview', $app, $entry, \@data );
 
     my $ctx = $tmpl->context;
     $ctx->stash( 'entry',    $entry );
@@ -1260,7 +1244,7 @@ sub _build_entry_preview {
             $fullscreen = 1;
             $param{preview_error}
                 = $app->translate(
-                "Unable to create preview file in this location: [_1]",
+                "Unable to create preview files in this location: [_1]",
                 $path );
             my $tmpl_plain = $app->load_tmpl('preview_entry_content.tmpl');
             $tmpl->text( $tmpl_plain->text );
@@ -1441,7 +1425,7 @@ sub save {
     my $blog_id = $app->param('blog_id');
     my $blog    = MT::Blog->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
     my $archive_type;
 
@@ -1470,8 +1454,10 @@ sub save {
         $orig_file = archive_file_for( $orig_obj, $blog, $archive_type );
     }
     else {
-        $obj = $class->new;
+        $obj      = $class->new;
+        $orig_obj = $obj->clone;
     }
+
     my $status_old = $id ? $obj->status : 0;
     my $names = $obj->column_names;
 
@@ -1498,7 +1484,7 @@ sub save {
     delete $values{week_number}
         if ( $app->param('week_number') || '' ) eq '';
     delete $values{basename}
-        unless $perms->can_do('edit_entry_basename');
+        unless $perms->can_do("edit_${type}_basename");
     require MT::Entry;
     $values{status} = MT::Entry::FUTURE() if $app->param('scheduled');
     $obj->set_values( \%values );
@@ -1548,7 +1534,7 @@ sub save {
             my $folder_path = defined $folder ? $folder->publish_path() : '';
             return $app->error(
                 $app->translate(
-                    "Same Basename has already been used. You should use an unique basename."
+                    "This basename has already been used. You should use an unique basename."
                 )
             ) if ( $dup_folder_path eq $folder_path );
         }
@@ -1586,7 +1572,7 @@ sub save {
     }
 
     my ( $previous_old, $next_old );
-    if ( $perms->can_do('edit_entry_authored_on') && ($ao_d) ) {
+    if ( $perms->can_do("edit_${type}_authored_on") && ($ao_d) ) {
         my %param = ();
         my $ao    = $ao_d . ' ' . $ao_t;
         unless ( $ao
@@ -1594,14 +1580,14 @@ sub save {
             )
         {
             $param{error} = $app->translate(
-                "Invalid date '[_1]'; published on dates must be in the format YYYY-MM-DD HH:MM:SS.",
+                "Invalid date '[_1]'; 'Published on' dates must be in the format YYYY-MM-DD HH:MM:SS.",
                 $ao
             );
         }
         unless ( $param{error} ) {
             my $s = $6 || 0;
             $param{error} = $app->translate(
-                "Invalid date '[_1]'; published on dates should be real dates.",
+                "Invalid date '[_1]'; 'Published on' dates should be real dates.",
                 $ao
                 )
                 if (
@@ -1821,13 +1807,24 @@ sub save {
                 sub {
                     $app->run_callbacks('pre_build');
                     $app->rebuild_entry(
-                        Entry             => $obj,
-                        BuildDependencies => 1,
-                        OldEntry          => $orig_obj,
-                        OldPrevious       => ($previous_old)
-                        ? $previous_old->id
-                        : undef,
-                        OldNext => ($next_old) ? $next_old->id : undef
+                        Entry => $obj,
+                        (   $obj->is_entry
+                            ? ( BuildDependencies => 1 )
+                            : ( BuildIndexes => 1 )
+                        ),
+                        ( $obj->is_entry ? ( OldEntry => $orig_obj ) : () ),
+                        (   $obj->is_entry
+                            ? ( OldPrevious => ($previous_old)
+                                ? $previous_old->id
+                                : undef )
+                            : ()
+                        ),
+                        (   $obj->is_entry
+                            ? ( OldNext => ($next_old)
+                                ? $next_old->id
+                                : undef )
+                            : ()
+                        ),
                     ) or return $app->publish_error();
                     $app->run_callbacks( 'rebuild', $blog );
                     $app->run_callbacks('post_build');
@@ -1935,7 +1932,7 @@ PERMCHECK: {
         if ( $perms->can_edit_entry( $entry, $this_author ) ) {
             my $author_id = $q->param( 'author_id_' . $id );
             $entry->author_id( $author_id ? $author_id : 0 );
-            $entry->title( scalar $q->param( 'title_' . $id ) );
+            $entry->title( scalar $q->param( 'title_' . $id ) || scalar $q->param( 'no_title_' . $id ) );
         }
         else {
             return $app->permission_denied();
@@ -2149,7 +2146,7 @@ sub pinged_urls {
     require MT::Entry;
     my $entry = MT::Entry->load($entry_id)
         or return $app->error(
-        $app->translate( 'Can\'t load entry #[_1].', $entry_id ) );
+        $app->translate( 'Cannot load entry #[_1].', $entry_id ) );
     return $app->errtrans("Invalid request.")
         unless $entry->blog_id == $app->blog->id;
     my $author = $app->user;
@@ -2180,6 +2177,9 @@ sub save_entry_prefs {
 
     if ( $disp && lc $disp eq 'custom' && lc $sort_only eq 'true' ) {
         my $current = $perms->$prefs_type;
+        $prefs =~ s/\|.*$//;
+        my $pos;
+        ($current, $pos) = split '\\|', $current;
         my %current = map { $_ => 1 } split ',', $current;
         my @new     = split ',', $prefs;
         $prefs = '';
@@ -2188,6 +2188,7 @@ sub save_entry_prefs {
             $prefs .= $p;
             $prefs .= ':s' unless $current{$p};
         }
+        $prefs .= "|$pos" if defined $pos;
     }
 
     $perms->$prefs_type($prefs);
@@ -2561,7 +2562,7 @@ sub quickpost_js {
     my $blog_id = $app->blog->id;
     my $blog    = $app->model('blog')->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my %args = ( '_type' => $type, blog_id => $blog_id, qp => 1 );
     my $uri = $app->base . $app->uri( 'mode' => 'view', args => \%args );
     my $script
@@ -2569,7 +2570,7 @@ sub quickpost_js {
 
     # Translate the phrase here to avoid ActivePerl DLL bug.
     $app->translate(
-        '<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar, then click it when you are visiting a site that you want to blog about.',
+        '<a href="[_1]">QuickPost to [_2]</a> - Drag this bookmarklet to your browser\'s toolbar, then click it when you are visiting a site that you want to blog about.',
         encode_html($script),
         encode_html( $blog->name )
     );
@@ -2698,7 +2699,7 @@ sub update_entry_status {
     foreach my $id (@ids) {
         my $entry = MT::Entry->load($id)
             or return $app->errtrans(
-            "One of the entries ([_1]) did not actually exist", $id );
+            "One of the entries ([_1]) did not exist", $id );
 
         return $app->permission_denied()
             unless $app_author->is_superuser
@@ -2812,7 +2813,7 @@ sub delete {
     if ( my $blog_id = $q->param('blog_id') ) {
         $blog = MT::Blog->load($blog_id)
             or return $app->error(
-            $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     }
 
     my $can_background
@@ -2858,20 +2859,19 @@ sub delete {
     if ( $app->config('RebuildAtDelete') ) {
         $app->run_callbacks('pre_build');
 
-        my $rebuild_func =
-            sub {
-                foreach my $b_id ( keys %rebuild_recipe ) {
-                    my $b  = MT::Blog->load($b_id);
-                    my $res = $app->rebuild_archives(
-                        Blog  => $b,
-                        Recipe => $rebuild_recipe{$b_id},
-                    ) or return $app->publish_error();
-                    $app->rebuild_indexes( Blog => $b )
-                        or return $app->publish_error();
-                    $app->run_callbacks( 'rebuild', $b );
-                }
-            };
-        
+        my $rebuild_func = sub {
+            foreach my $b_id ( keys %rebuild_recipe ) {
+                my $b   = MT::Blog->load($b_id);
+                my $res = $app->rebuild_archives(
+                    Blog   => $b,
+                    Recipe => $rebuild_recipe{$b_id},
+                ) or return $app->publish_error();
+                $app->rebuild_indexes( Blog => $b )
+                    or return $app->publish_error();
+                $app->run_callbacks( 'rebuild', $b );
+            }
+        };
+
         if ($can_background) {
             MT::Util::start_background_task($rebuild_func);
         }
@@ -2882,7 +2882,8 @@ sub delete {
         $app->add_return_arg( no_rebuild => 1 );
         my %params = (
             is_full_screen  => 1,
-            redirect_target => $app->app_path
+            redirect_target => $app->base
+                . $app->path
                 . $app->script . '?'
                 . $app->return_args,
         );

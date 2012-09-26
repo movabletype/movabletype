@@ -1,11 +1,11 @@
 label: Classic Blog
 id: classic_blog
 author_name: Six Apart, Ltd.
-author_link: http://www.sixapart.com/
+author_link: http://www.movabletype.org/
 version: 1.0
 class: blog
 protected: 1
-description: <__trans phrase="Typical and authentic blogging design comes with plenty of styles and the selection of 2 column / 3 column layout. Best for all the bloggers.">
+description: <__trans phrase="A traditional blogging design that comes with plenty of styles and a selection of 2 column / 3 column layouts. Best for use in standard blog publishing applications.">
 #l10n_lexicon:
 #    ja: l10n_ja.yaml
 thumbnail_file: thumb.png
@@ -101,7 +101,7 @@ elements:
                         description_label: 'Displays error, pending or confirmation message for comments.'
                         label: Comment Response
                     dynamic_error:
-                        description_label: Displays errors for dynamically published templates.
+                        description_label: Displays errors for dynamically-published templates.
                         label: Dynamic Error
                     popup_image:
                         description_label: Displays image when user clicks a popup-linked image.

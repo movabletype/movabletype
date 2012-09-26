@@ -156,7 +156,7 @@ sub init_request {
     }
 
     $app->{templates}{default}              = $cfg->DefaultTemplate;
-    $app->{searchparam}{SearchTemplatePath} = $cfg->SearchTemplatePath;
+    $app->{searchparam}{SearchTemplatePath} = [ $cfg->SearchTemplatePath ];
 
     ## Set search_string (for display only)
     if (   ( $app->{searchparam}{Type} eq 'straight' )
@@ -178,8 +178,8 @@ sub throttle_response {
     my $tmpl = $app->param('Template') || '';
     my $msg
         = $app->translate(
-              "You are currently performing a search. Please wait "
-            . "until your search is completed." );
+              "A search is in progress. Please wait "
+            . "until it is completed and try again." );
     if ( $tmpl eq 'feed' ) {
         $app->response_code(503);
         $app->set_header( 'Retry-After' => $app->config('ThrottleSeconds') );
@@ -386,15 +386,20 @@ sub execute {
         my $tmpl_file = $app->{templates}{ $app->{searchparam}{Template} }
             or return $app->error(
             $app->translate(
-                "No alternate template is specified for the Template '[_1]'",
+                "No alternate template is specified for template '[_1]'",
                 $app->{searchparam}{Template}
             )
             );
-        my $tmpl
-            = File::Spec->catfile( $app->{searchparam}{SearchTemplatePath},
-            $tmpl_file );
-        local *FH;
-        open FH, $tmpl
+        my $tmpl;
+        foreach my $path (@{$app->{searchparam}{SearchTemplatePath}}) {
+            if ( -r File::Spec->catfile( $path, $tmpl_file ) ) {
+                $tmpl = File::Spec->catfile( $path, $tmpl_file );
+                last;
+            }
+        }
+        return $app->errtrans("File not found: [_1]", $tmpl_file)
+            unless $tmpl;
+        open my $fh, "<", $tmpl
             or return $app->error(
             $app->translate(
                 "Opening local file '[_1]' failed: [_2]",
@@ -402,8 +407,8 @@ sub execute {
             )
             );
 
-        { local $/; $str = <FH> };
-        close FH;
+        { local $/; $str = <$fh> };
+        close $fh;
     }
     $str = $app->translate_templatized($str);
 

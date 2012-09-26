@@ -16,6 +16,27 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
         $ctx->localize($local_vars);
         $blog_id = $ctx->stash('blog_id');
         $today = strftime("%Y%m", time());
+
+        $start_with_offset = 0;
+        if (isset($args['weeks_start_with'])) {
+            $start_with = substr(strtolower($args['weeks_start_with']), 0, 3);
+            $start_with_offsets = array(
+                'sun' => 0,
+                'mon' => 6,
+                'tue' => 5,
+                'wed' => 4,
+                'thu' => 3,
+                'fri' => 2,
+                'sat' => 1,
+            );
+            if (isset($start_with_offsets[$start_with])) {
+                $start_with_offset = $start_with_offsets[$start_with];
+            }
+            else {
+                // error: Invalid weeks_start_with format: must be Sun|Mon|Tue|Wed|Thu|Fri|Sat
+            }
+        }
+
         $prefix = $args['month'];
         if ($prefix) {
             if ($prefix == 'this') {
@@ -26,7 +47,7 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
                         $ts = $entry->entry_authored_on;
                     } else {
                         return $ctx->error($ctx->mt->translate(
-                            'You used an [_1] tag without a date context set up.', 
+                            'You used an [_1] tag without establishing a date context.', 
                             '<MTCalendar month="this">') );
                     }
                 }
@@ -56,8 +77,8 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
         $m = substr($prefix, 4, 2);
         $day = 1;
         $days_in_month = days_in($m, $y);
-        $pad_start = wday_from_ts($y, $m, 1);
-        $pad_end = 6 - wday_from_ts($y, $m, $days_in_month);
+        $pad_start = (wday_from_ts($y, $m, 1) + $start_with_offset) % 7;
+        $pad_end = 6 - ((wday_from_ts($y, $m, $days_in_month) + $start_with_offset) % 7);
         $this_day = $prefix . sprintf("%02d", $day - $pad_start);
         $args = array('current_timestamp' => $start, 'current_timestamp_end' => $end, 'blog_id' => $blog_id, 'lastn' => -1, 'sort_order' => 'ascend', 'category' => $cat_name);
         $iter =& $ctx->mt->db()->fetch_entries($args);

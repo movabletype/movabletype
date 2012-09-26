@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="<$MTStaticWebPath$>themes/minimalist-red/screen.css" type="text/css" />
 </mt:IfBlog>
 <MTIgnore>
- ##########  <MT_TRANS phrase="SEARCH FEED AUTODISCOVERY LINK PUBLISHED ONLY WHEN A SEARCH HAS BEEN EXECUTED">
+ ##########  <MT_TRANS phrase="SEARCH FEED AUTODISCOVERY LINK IS PUBLISHED ONLY WHEN A SEARCH HAS BEEN EXECUTED">
 </MTIgnore>
 <MTNoSearch><MTElse>
     <link type="application/atom+xml" rel="alternate" title="<MT_TRANS phrase="Blog Search Results">" href="<$MTCGIPath$><$MTSearchScript$>?<MTIfStraightSearch>search<MTElse>tag</MTElse></MTIfStraightSearch>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" />
@@ -107,11 +107,11 @@
                       
                       <MTNoSearch>
                           <h3 class="search-results-header"><MT_TRANS phrase="Instructions"></h3>
-                          <p><MT_TRANS phrase="By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes">:</p>
+                          <p><MT_TRANS phrase="By default, this search engine looks for all of the specified words in any order. To search for an exact phrase, enclose the phrase in quotes:"></p>
                           <blockquote>
                               <p><code>"<MT_TRANS phrase="movable type">"</code></p>
                           </blockquote>
-                          <p><MT_TRANS phrase="The search engine also supports AND, OR, and NOT keywords to specify boolean expressions">:</p>
+                          <p><MT_TRANS phrase="The search engine also supports AND, OR, and NOT keywords to specify boolean expressions:"></p>
                           <blockquote>
                               <p><code><MT_TRANS phrase="personal OR publishing"></code></p>
                               <p><code><MT_TRANS phrase="publishing NOT personal"></code></p>

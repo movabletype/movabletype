@@ -518,8 +518,8 @@ sub _process_masks {
                 push @perms, 'edit_config', 'set_publish_paths',
                     'manage_feedback';
             }
-            elsif ( 128 eq $key || 16 eq $key ) {    #designer
-                push @perms, 'manage_themes', 'edit_templates', 'rebuild'
+            elsif ( 16 eq $key ) {    #designer
+                push @perms, 'manage_themes', 'edit_templates',
                     unless grep '/^manage_themes/', @perms;
             }
             elsif ( 4096 eq $key ) {                 #adminsiter_blog
@@ -761,7 +761,7 @@ EOT
 <MTSetVar name="heading" value="<__trans phrase="Thank you for commenting.">">
 
 <MTSetVarBlock name="message">
-<p><__trans phrase="Your comment has been received and held for approval by the blog owner."></p>
+<p><__trans phrase="Your comment has been received and held for review by a blog administrator."></p>
 </MTSetVarBlock>
 EOT
 

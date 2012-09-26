@@ -410,7 +410,7 @@ sub _create_item {
     elsif ( 'page' eq $post_type ) {
         $self->_create_post( 'page', \@hashes );
     }
-    elsif ('attachment') {
+    elsif ('attachment' eq $post_type ) {
         $self->_create_asset( \@hashes );
     }
     1;
@@ -519,6 +519,10 @@ sub _create_asset {
 
     my $wp_path = $self->{'wp_path'};
     my $mt_path = $self->{'mt_path'};
+    if (not exists $asset_values->{'file_path'}) {
+        $asset_values->{'file_path'} = $asset_values->{'url'};
+        $asset_values->{'file_path'} =~ s!^https?://[^/]*/!!;
+    }
     my $path    = $asset_values->{'file_path'};
     if ( $wp_path && $mt_path ) {
         $path =~ s/^.*$wp_path(.+)$/$mt_path$1/i;

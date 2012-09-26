@@ -268,6 +268,7 @@ use_ok('MT::AtomServer');
 use_ok('MT::BackupRestore');
 use_ok('MT::BackupRestore::BackupFileHandler');
 use_ok('MT::BackupRestore::ManifestFileHandler');
+use_ok('MT::BackupRestore::BackupFileScanner');
 
 # Cache support
 use_ok('MT::Cache::Negotiate');
@@ -341,6 +342,7 @@ use_ok('MT::Theme::TemplateSet');
 # Lockout
 use_ok('MT::FailedLogin');
 use_ok('MT::Lockout');
+use_ok('MT::PSGI');
 
 test_all_modules_are_checked();
 

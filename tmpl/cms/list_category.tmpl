@@ -4,9 +4,8 @@
 <div id="msg-block"></div>
 </mt:setvarblock>
 
-<mt:loop name="list_components">
-  <mt:setvarblock name="object_listing">listing/<mt:var name="object_type">_list_header.tmpl</mt:setvarblock>
-  <mt:include name="$object_listing" component="$__value__">
+<mt:loop name="list_headers">
+  <mt:include name="$filename" component="$component">
 </mt:loop>
 
 <mt:setvarblock name="list_actions">
@@ -134,8 +133,18 @@ function loginAgain(fn) {
                 password: dialog.find('#password').val()
               },
               success: function(data) {
+                var token = data.result['magic_token'];
+                if (token) {
+                  jQuery('input[name="magic_token"]').val(token);
+                  jQuery('a[href*="magic_token="]').each(function() {
+                    var replace = jQuery(this)
+                      .attr('href')
+                      .replace(/magic_token=[\d\w]+/, 'magic_token=' + token);
+                    jQuery(this).attr('href', replace);
+                  });
+                }
                 jQuery.fn.mtDialog.close();
-                fn();
+                fn(data);
                 return false;
               },
               error: function(data) {
@@ -202,6 +211,7 @@ jQuery('div#area-action input[name=category_label]').focus( function() {
   fixInteractions();
 });
 
+// id and parent should be numbers
 function createItem(id, parent, label, basename, number) {
   var line = '<span class="sort-tab"></span>';
   line += '<span class="item-label">'+label+'</span>';
@@ -209,17 +219,18 @@ function createItem(id, parent, label, basename, number) {
     line += '<span class="item-basename"><span class="item-basename-text">'+basename+'</span></span>';
   line += ' <span class="item-ctrl"></span>';
   line += ' <span class="count">'+number+'</span>';
-  var $item = jQuery('<div id="'+id+'" class="'+parent+'" />').append(line);
+  var $item = jQuery('<div id="cat-'+id+'" class="pcat-'+parent+'" />').append(line);
   return $item;
 }
 
 function initItem($item) {
   var id = $item.attr('id');
-  $item.attr('class').match(/^(\w+)/);
+  var catid = id.slice(4);
+  $item.attr('class').match(/\bpcat-(\w+)\b/);
   var parent = RegExp.$1;
   var nest = countNested(parent, []);
   $item.css('margin-left', nest.length*indent)
-    .addClass(nest.join(' '))
+    .addClass(jQuery.map(nest, function (a){ return 'pcat-'+a; }).join(' '))
     .addClass('lv-'+nest.length)
     .addClass('sortable-item');
   $item.find('.item-ctrl, .edit-form').remove();
@@ -243,7 +254,7 @@ function initItem($item) {
 <mt:if name="object_type" eq="category">
       jQuery.mtValidateRules['.label'] = function ($e) {
         if ( !$e.val().length ) return this.raise('<__trans phrase="Label is required." escape="js">');
-        return hasDupe(parent, id, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level." escape="js">') : true;
+        return hasDupe(parent, catid, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level." escape="js">') : true;
       };
 <mt:else>
       jQuery.mtValidateRules['.label'] = function ($e) {
@@ -254,7 +265,7 @@ function initItem($item) {
       jQuery.mtValidateRules['.basename'] = function ($e) {
         if ( !$e.val().length ) return this.raise('<__trans phrase="Basename is required." escape="js">');
         if ( $e.val().match(/[^\w\-]/) ) return this.raise('<__trans phrase="Invalid Basename." escape="js">');
-        return hasDupe(parent, id, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level." escape="js">') : true;
+        return hasDupe(parent, catid, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level." escape="js">') : true;
       };
 
       jQuery('<button type="submit" class="rename button"><__trans phrase="Rename" escape="js"></button>')
@@ -292,7 +303,7 @@ function initItem($item) {
     .bind('click', function() {
       fixInteractions({ sortable: false });
       var $element = jQuery(this).parent('.item-ctrl').parent('div');
-      var parent = $element.attr('id');
+      var parent = $element.attr('id').slice(4);
       var $form = jQuery('<div class="mod add-form"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">" escape="js">" />\n</div>');
       $form.css('margin-left', (nest.length+1)*indent).insertAfter($element).find('input[name=<mt:var name="object_label" lower_case="1">_label]').focus();
       jQuery('<button type="button" class="add button"><__trans phrase="Add" escape="js"></button>')
@@ -320,21 +331,22 @@ function initItem($item) {
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       fixInteractions();
-      var id = jQuery(this).parents('.sortable-item').attr('id');
+      var id = jQuery(this).parents('.sortable-item').attr('id').slice(4);
       removeItems(id);
     });
   setHoverAction($item);
 }
 
+// parent and id should be numbers
 function hasDupe( parent, id, label, basename ) {
-  var $parent = jQuery('#' + parent);
+  var $parent = jQuery('#cat-' + parent);
   $parent.attr('class').match(/lv-(\w+)/);
   var parent_level = parseInt(RegExp.$1);
   if ( isNaN(parent_level) ) parent_level = -1;
   var level = parent_level + 1;
   var dupe = false;
-  jQuery('.' + parent + '.lv-' + level).each( function () {
-      if ( id && id == jQuery(this).attr('id') ) return true;
+  jQuery('.pcat-' + parent + '.lv-' + level).each( function () {
+      if ( id && ( ('cat-'+id) == jQuery(this).attr('id') ) ) return true;
 <mt:if name="object_type" eq="category">
       var sibling_label = jQuery(this).find('.item-label').text();
       if ( ( label && sibling_label == label ) ) {
@@ -354,9 +366,8 @@ function hasDupe( parent, id, label, basename ) {
 function makeBasename( parent, id, label ) {
   var limit = <mt:var name="basename_limit" />;
   var basename = dirify( label ).substr( 0, limit );
-  var prefix
   if ( !basename.length ) basename = '<mt:var name="basename_prefix">';
-  var $parent = jQuery('#' + parent);
+  var $parent = jQuery('#cat-' + parent);
   $parent.attr('class').match(/lv-(\w+)/);
   var parent_level = parseInt(RegExp.$1);
   if ( isNaN(parent_level) ) parent_level = -1;
@@ -364,7 +375,7 @@ function makeBasename( parent, id, label ) {
 
   var max = -1;
   var re = new RegExp( '^' + basename + '(<mt:unless name="config.CategoryNameNodash">\\-</mt:unless>([1-9][0-9]*))?$' );
-  jQuery('.' + parent + '.lv-' + level).each( function () {
+  jQuery('.pcat-' + parent + '.lv-' + level).each( function () {
     if ( id && id == jQuery(this).attr('id') ) return true;
     var sibling_basename = jQuery(this).find('.item-basename-text').text();
     if ( sibling_basename.match(re) ) {
@@ -377,6 +388,7 @@ function makeBasename( parent, id, label ) {
   return max > 0 ? basename <mt:unless name="config.CategoryNameNodash">+ '-' </mt:unless>+ max : basename;
 }
 
+// parent should be a number
 function addItem(parent, label) {
   jQuery('#msg-block .additem-error').remove();
   if ( hasDupe( parent, 0, label) ) {
@@ -391,7 +403,7 @@ function addItem(parent, label) {
   var basename = makeBasename(parent, id, label);
   var $item = createItem(id, parent, label, basename, '');
   initItem($item);
-  $item.insertAfter(jQuery('#'+parent));
+  $item.insertAfter(jQuery('#cat-'+parent));
 
   var nest = countNested(parent, []);
   var nestLevel = nest.length;
@@ -410,12 +422,13 @@ jQuery('input[name=<mt:var name="object_type">_label]').live('keypress', functio
     }
 });
 
+// id should be numeric / x1
 function removeItems(id) {
   var singlar = '<mt:var name="object_label" lower_case="1" escape="js">';
   var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
-  var $items = jQuery('.'+id);
+  var $items = jQuery('.pcat-'+id);
   var count = $items.length + 1;
-  var label = jQuery('#'+id).find('.item-label').text();
+  var label = jQuery('#cat-'+id).find('.item-label').text();
   var message = (count == 1)
     ? trans('Are you sure you want to remove [_1] [_2]?', singlar, label)
     : trans('Are you sure you want to remove [_1] [_2] with [_3] sub [_4]?', singlar, label, count - 1, (count > 2 ? plural : singlar));
@@ -423,7 +436,7 @@ function removeItems(id) {
       return;
   }
   $items.remove();
-  jQuery('#'+id).next('.add-form').remove().end().remove();
+  jQuery('#cat-'+id).next('.add-form').remove().end().remove();
   jQuery('.sort-tab').show();
   setItemList();
   setDirty(true);
@@ -435,18 +448,20 @@ function setItemList() {
   jQuery('.sortable-item:visible').each(function() {
     var $item = jQuery(this);
     var id = $item.attr('id');
+    var catid = id.slice(4);
     var label = $item.find('.item-label').html();
-    var nest = countNested(id, []);
+    var nest = countNested(catid, []);
     var nestLevel = nest.length - 1;
-    jQuery('#itemlist').append('<option id="opt-'+id+'" value="'+id+'">'+nestedLabel(nestLevel, label)+'</option>');
+    jQuery('#itemlist').append('<option id="opt-'+catid+'" value="'+catid+'">'+nestedLabel(nestLevel, label)+'</option>');
   });
 }
 
+// id should be a number, nest a list
 function countNested(id, nest) {
   if (id == 0) {
     return nest;
   }
-  jQuery('#'+id).attr('class').match(/^(\w+)/);
+  jQuery('#cat-'+id).attr('class').match(/\bpcat-(\w+)\b/);
   var parent = RegExp.$1;
   nest.push(parent);
   return countNested(parent, nest);
@@ -471,8 +486,8 @@ function initMoving() {
     start: function(event, ui) {
       var $item = jQuery(ui.item);
       original_class = $item.attr('class');
-      var id = $item.attr('id');
-      var count = jQuery('.'+id).hide().length;
+      var id = $item.attr('id').slice(4);
+      var count = jQuery('.pcat-'+id).hide().length;
       if (count) {
         var label = (count == 1)
           ? '<mt:var name="object_label" lower_case="1" escape="js">'
@@ -484,50 +499,51 @@ function initMoving() {
     stop: function(event, ui) {
       var $item = jQuery(ui.item);
       var id = $item.attr('id');
+      var catid = id.slice(4);
       if (!place) place = 0;
-      if (id == place) {
-        jQuery('.'+id).show();
+      if (catid == place) {
+        jQuery('.pcat-'+catid).show();
         return;
       }
       function _stop() {
         $item.find('.with').remove();
         $item.find('.item-basename, .plus, .delete').show();
-        $item.attr('class', place);
+        $item.attr('class', ('pcat-'+place));
         initItem($item);
         var $last = $item;
-        jQuery('.'+id).each(function() {
+        jQuery('.pcat-'+catid).each(function() {
           var $this = jQuery(this).clone();
           jQuery(this).remove();
-          $this.attr('class').match(/^(\w+).*/);
+          $this.attr('class').match(/\bpcat-(\w+)\b/);
           var parent = RegExp.$1;
-          $this.attr('class', parent);
+          $this.attr('class', ('pcat-'+parent));
           initItem($this);
           $this.insertAfter($last).show();
           $last = $this;
         });
-        setHoverAction(jQuery('.'+id));
+        setHoverAction(jQuery('.pcat-'+catid));
         setItemList();
         setDirty(true);
       }
 
       if (
 <mt:if name="object_type" eq="category">
-        hasDupe( place, id, $item.find('.item-label').text() )
-        || hasDupe( place, id, null, $item.find('.item-basename-text').text() )
+        hasDupe( place, catid, $item.find('.item-label').text() )
+        || hasDupe( place, catid, null, $item.find('.item-basename-text').text() )
 <mt:else>
-        hasDupe(place, id, null, $item.find('.item-basename-text').text() )
+        hasDupe(place, catid, null, $item.find('.item-basename-text').text() )
 </mt:if>
       ) {
 
-        $item.attr('class', place);
+        $item.attr('class', ('pcat-'+place));
         initItem($item);
 <mt:if name="object_type" eq="category">
         jQuery.mtValidateRules['#new-label'] = function ($e) {
-          return hasDupe(place, id, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level." escape="js">') : true;
+          return hasDupe(place, catid, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level." escape="js">') : true;
         };
 </mt:if>
         jQuery.mtValidateRules['#new-basename'] = function ($e) {
-          return hasDupe(place, id, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level." escape="js">') : true;
+          return hasDupe(place, catid, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level." escape="js">') : true;
         };
         jQuery('#new-label').val($item.find('.item-label').text())
         jQuery('#new-basename').val($item.find('.item-basename-text').text())
@@ -535,7 +551,7 @@ function initMoving() {
           .unbind('click')
           .bind( 'click', function(){
 <mt:if name="object_type" eq="category">
-            if ( jQuery('#new-label').mtValidate('dialog') && jQuery('#new-basename').mtValidate('dialog') ) {
+            if ( jQuery('#new-label').mtValidate('simple') && jQuery('#new-basename').mtValidate('simple') ) {
               var $label = $item.find('.item-label a').length ? $item.find('.item-label a') : $item.find('.item-label');
               $label.text( jQuery('#new-label').val() );
               var $basename = $item.find('.item-basename-text');
@@ -545,7 +561,7 @@ function initMoving() {
 
             }
 <mt:else>
-            if ( jQuery('#new-basename').mtValidate('dialog') ) {
+            if ( jQuery('#new-basename').mtValidate('simple') ) {
               var $basename = $item.find('.item-basename-text');
               $basename.text( jQuery('#new-basename').val() );
               _stop();
@@ -559,11 +575,11 @@ function initMoving() {
           .bind('click', function () {
             jQuery('.sortable').sortable('cancel');
             $item.attr('class', original_class);
-            jQuery('.'+id).show();
+            jQuery('.pcat-'+catid).show();
             $item.find('.with').remove();
             $item.find('.plus, .delete').show();
             initItem($item);
-            setHoverAction(jQuery('.'+id));
+            setHoverAction(jQuery('.pcat-'+catid));
             setItemList();
             jQuery('#dialog-change-basename').dialog('close');
           });
@@ -578,9 +594,9 @@ function initMoving() {
           closeOnEscape: false
         });
 <mt:if name="object_type" eq="category">
-        jQuery('#new-label, #new-basename').mtValidate('dialog');
+        jQuery('#new-label, #new-basename').mtValidate('simple');
 <mt:else>
-        jQuery('#new-basename').mtValidate('dialog');
+        jQuery('#new-basename').mtValidate('simple');
 </mt:if>
       }
       else {
@@ -589,7 +605,7 @@ function initMoving() {
     },
     sort: function(event, ui) {
       var $item = jQuery(ui.item);
-      $item.attr('class').match(/^(\w+)/);
+      $item.attr('class').match(/\bpcat-(\w+)\b/);
       var parent = RegExp.$1;
       $item.attr('class').match(/lv-(\w+)/);
       var level = parseInt(RegExp.$1);
@@ -600,8 +616,8 @@ function initMoving() {
       var prev_parent = 0;
       var prev_level = 0;
       if ($prev.length) {
-        var prev_id = $prev.attr('id');
-        $prev.attr('class').match(/^(\w+)/);
+        var prev_id = $prev.attr('id').slice(4);
+        $prev.attr('class').match(/\bpcat-(\w+)\b/);
         prev_parent = RegExp.$1;
         $prev.attr('class').match(/lv-(\w+)/);
         prev_level = parseInt(RegExp.$1);
@@ -614,7 +630,7 @@ function initMoving() {
       var next_parent = 0;
       var next_level = 0;
       if ($next.length) {
-        $next.attr('class').match(/^(\w+)/);
+        $next.attr('class').match(/\bpcat-(\w+)\b/);
         next_parent = RegExp.$1;
         $next.attr('class').match(/lv-(\w+)/);
         next_level = parseInt(RegExp.$1);
@@ -669,18 +685,18 @@ function initMoving() {
 
 function setHoverAction($elements) {
   $elements.hover(function() {
-    var parent = jQuery(this).addClass('highlight on').attr('id');
-    jQuery('.'+parent).addClass('highlight');
+    var parent = jQuery(this).addClass('highlight on').attr('id').slice(4);
+    jQuery('.pcat-'+parent).addClass('highlight');
   }, function() {
-    var parent = jQuery(this).removeClass('highlight on').attr('id');
-    jQuery('.'+parent).removeClass('highlight');
+    var parent = jQuery(this).removeClass('highlight on').attr('id').slice(4);
+    jQuery('.pcat-'+parent).removeClass('highlight');
   });
 }
 
 function renderItems(data) {
   jQuery('#root').empty();
   jQuery('#itemlist option').not(':first').remove();
-  jQuery('<div id="0" class="0 sortable-item" />').hide().appendTo('#root');
+  jQuery('<div id="cat-0" class="pcat-0 sortable-item" />').hide().appendTo('#root');
   var objs = data.result.objects;
   var count = objs.length;
   for (var i = 0; i < count; i++) {
@@ -700,10 +716,7 @@ function renderItems(data) {
   checksum = data.result.checksum;
   setHoverAction(jQuery('.sortable-item'));
 
-  jQuery('#area-action > :disabled').each( function() {
-    jQuery(this).removeClass('disabled');
-    jQuery(this).removeAttr('disabled');
-  });
+  jQuery('#area-action').children().removeClass('disabled').removeAttr('disabled');
 }
 
 function fixZeroStateMessage () {
@@ -771,15 +784,12 @@ jQuery('.add').click(function() {
 jQuery('.save').click( bulkUpdateCategories );
 
 function bulkUpdateCategories() {
-  jQuery('#area-action > :enabled').each( function() {
-    jQuery(this).addClass('disabled');
-    jQuery(this).attr('disabled', 'disabled');
-  }); 
+  jQuery('#area-action').children().addClass('disabled').attr('disabled', 'disabled');
   var items = [];
   jQuery('.sortable-item:visible').each(function() {
     var $item = jQuery(this);
-    var myid = $item.attr('id');
-    $item.attr('class').match(/^(\w+).*/);
+    var myid = $item.attr('id').slice(4);
+    $item.attr('class').match(/\bpcat-(\w+)\b/);
     var parentid = RegExp.$1;
     items.push({id: myid, parent: parentid, label: $item.find('.item-label').text(), basename: $item.find('.item-basename-text').text() });
   });
@@ -794,7 +804,7 @@ function bulkUpdateCategories() {
       blog_id: <mt:var name="blog_id">,
       checksum: checksum,
       objects: jQuery.toJSON(items),
-      magic_token: '<mt:var name="magic_token">'
+      magic_token: jQuery('input[name="magic_token"]').val()
     },
     success: function(data) {
       if ( !handleMessages(data) ) return;
@@ -824,10 +834,7 @@ jQuery(window).bind('beforeunload', function() {
 });
 
 jQuery(window).bind('listReady', function() {
-  jQuery('#area-action > :disabled').each( function() {
-    jQuery(this).removeClass('disabled');
-    jQuery(this).removeAttr('disabled');
-  });
+  jQuery('#area-action').children().removeClass('disabled').removeAttr('disabled');
 });
 renderNestedList();
 </mt:setvarblock>

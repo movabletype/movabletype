@@ -15,7 +15,7 @@ sub load_driver {
     eval { require IPC::Run };
     if ( my $err = $@ ) {
         return $image->error(
-            MT->translate( "Can't load IPC::Run: [_1]", $err ) );
+            MT->translate( "Cannot load IPC::Run: [_1]", $err ) );
     }
     my $pbm = $image->_find_pbm or return;
     1;
@@ -38,7 +38,7 @@ sub init {
     my $type = $image->{type} = _translate_filetype( lc $param{Type} );
     if ( !$type ) {
         return $image->error(
-            MT->translate( "Unsupported image file type: [_1]", $type ) );
+            MT->translate( "Unsupported image file type: [_1]", $param{Type} ) );
     }
     my ( $out, $err );
     my $pbm = $image->_find_pbm or return;

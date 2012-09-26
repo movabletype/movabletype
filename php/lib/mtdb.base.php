@@ -87,7 +87,7 @@ abstract class MTDatabase {
         return $this->serializer->serialize($data);
     }
 
-    protected function parse_blog_ids( $blog_ids ) {
+    public function parse_blog_ids( $blog_ids, $include_with_website = false ) {
         $ret = array();
 
         if ( empty($blog_ids) || $blog_ids == 'all')
@@ -125,6 +125,10 @@ abstract class MTDatabase {
                 foreach($blogs as $b) {
                     array_push($ret, $b->id);
                 }
+                if ( $include_with_website ) {
+                    $website = ( $blog->is_blog() ? $blog->website() : $blog);
+                    array_push($ret, $website->id);
+                }
             }
         } else {
             if ( is_numeric($blog_ids) )
@@ -135,7 +139,12 @@ abstract class MTDatabase {
         return $ret;
     }
 
-    protected function include_exclude_blogs(&$args) {
+    public function include_exclude_blogs(&$args) {
+        if ( empty( $args['include_with_website'] ) )
+            $include_with_website = false;
+        else
+            $include_with_website = true;
+
         $incl = null;
         $excl = null;
         if (isset($args['blog_ids']) || isset($args['include_blogs']) || isset($args['include_websites'])) {
@@ -153,12 +162,17 @@ abstract class MTDatabase {
         if (isset($args['exclude_blogs']) || isset($args['exclude_websites'])) {
             $excl = $args['exclude_blogs'];
             $excl or $excl = $args['exclude_websites'];
-        }
 
+            if ( !isset( $args['include_blogs'] ) ) {
+                # If only exclude_blogs supplied, set include_blogs as all
+                $incl = 'all';
+                $args['include_blogs'] = 'all';
+            }
+        }
 
         // Compute include_blogs
         if ( !empty($incl) )
-            $incl = $this->parse_blog_ids( $incl );
+            $incl = $this->parse_blog_ids( $incl, $include_with_website );
         if ( isset( $args['allows'] ) ) {
             if ( empty( $incl ) ) {
                 $incl = $args['allows'];
@@ -188,7 +202,7 @@ abstract class MTDatabase {
             if ( empty( $incl ) ) {
                 $mt = MT::get_instance();
                 trigger_error( $mt->translate(
-                        "The attribute exclude_blogs denies all include_blogs."
+                        "When the exclude_blogs and include_blogs attributes are used together, the same blog IDs should not be listed as parameters to both of them."
                 ) );
             } else {
                 $incl = array_values( $incl );
@@ -702,15 +716,13 @@ abstract class MTDatabase {
 
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and entry_blog_id ' . $sql;
+            $mt = MT::get_instance();
+            $blog = $this->fetch_blog($mt->blog_id());
+            $blog_id = $blog->blog_id;
         } elseif (isset($args['blog_id'])) {
             $blog_id = intval($args['blog_id']);
             $blog_filter = 'and entry_blog_id = ' . $blog_id;
             $blog = $this->fetch_blog($blog_id);
-        }
-
-        if ( empty($blog) ) {
-            $mt = MT::get_instance();
-            $blog = $this->fetch_blog($mt->blog_id());
         }
 
         if (empty($blog))
@@ -902,11 +914,12 @@ abstract class MTDatabase {
                 }
                 if (isset($blog_ctx_arg))
                     $ot = $this->fetch_objecttags(array('tag_id' => $tag_list, 'datasource' => 'entry', $blog_ctx_arg));
-                elseif ($args['blog_id'])
-                    $ot = $this->fetch_objecttags(array('tag_id' => $tag_list, 'datasource' => 'entry', 'blog_id' => intval($args['blog_id'])));
+                else
+                    $ot = $this->fetch_objecttags(array('tag_id' => $tag_list, 'datasource' => 'entry', 'blog_id' => $blog_id));
+
                 if ($ot) {
                     foreach ($ot as $o) {
-                            $tmap[$o->objecttag_object_id][$o->objecttag_tag_id]++;
+                        $tmap[$o->objecttag_object_id][$o->objecttag_tag_id]++;
                         if (!$not_clause)
                             $entry_list[$o->objecttag_object_id] = 1;
                     }
@@ -1206,9 +1219,9 @@ abstract class MTDatabase {
         while (!$result->EOF) {
             $e = new Entry;
             foreach($field_names as $key) {
-  	        $key = strtolower($key);
+  	            $key = strtolower($key);
                 $e->$key = $result->fields($key);
-	    }
+            }
             $result->MoveNext();
 
             if (empty($e)) break;
@@ -1219,7 +1232,6 @@ abstract class MTDatabase {
                     }
                 }
             }
-            Entry::load_meta($e);
             $_total_count++;
             if ( !is_null($total_count) ) {
                 if ( ($orig_limit > 0)
@@ -1240,6 +1252,8 @@ abstract class MTDatabase {
                 if (($limit > 0) && (count($entries) >= $limit)) break;
             }
         }
+        Entry::bulk_load_meta($entries);
+
         if ( !is_null($total_count) )
             $total_count = $_total_count;
 
@@ -1563,7 +1577,11 @@ abstract class MTDatabase {
             $tag = new Tag;
             $tag->tag_id = $rs->Fields('tag_id');
             $tag->tag_name = $rs->Fields('tag_name');
-            $tag->tag_count = $rs->Fields('tag_count');
+            if (isset($asset_filter)) {
+                $tag->tag_count = '';
+            } else {
+                $tag->tag_count = $rs->Fields('tag_count');
+            }
             $tags[] = $tag;
             $rs->MoveNext();
         }
@@ -1951,8 +1969,15 @@ abstract class MTDatabase {
                     $role_list[] = $role->role_id;
                 }
                 $as = $this->fetch_associations(array('blog_id' => $blog_id, 'role_id' => $role_list));
-                if ($as) {
-                    foreach ($as as $a) {
+                foreach ($as as $a) {
+                    if (($a->association_type == 2) || ($a->association_type == 5)) {
+                        $as2 = $this->fetch_associations(
+                            array('group_id' => array($a->association_group_id), 'type' => 3, 'blog_id' => 0));
+                        foreach ($as2 as $a2) {
+                            $rmap[$a2->association_author_id][$a->association_role_id]++;
+                        }
+                    }
+                    else {
                         $rmap[$a->association_author_id][$a->association_role_id]++;
                     }
                 }
@@ -2186,24 +2211,32 @@ abstract class MTDatabase {
     }
 
     public function fetch_associations($args) {
-        $id_list = null;
-        if (isset($args['role_id']))
+        $where_list = array();
+        if (isset($args['role_id'])) {
             $id_list = implode(",", $args['role_id']);
-        if (empty($id_list))
+            $where_list[] = "association_role_id in ($id_list)";
+        }
+        if (isset($args['group_id'])) {
+            $id_list = implode(",", $args['group_id']);
+            $where_list[] = "association_group_id in ($id_list)";            
+        }
+        if (isset($args['type'])) {
+            $where_list[] = "association_type=".intval($args['type']);
+        }
+        if (empty($where_list))
             return;
 
         // Blog Filter
         if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and association_blog_id  ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            $blog_filter = 'and association_blog_id = ' . intval($args['blog_id']);
+            $where_list[] = 'association_blog_id  ' . $sql;
         }
 
         require_once('class.mt_association.php');
         $assoc = new Association;
-        $where = "association_role_id in ($id_list)
-                  $blog_filter";
+        $where = implode(' and ', $where_list);
         $result = $assoc->Find($where);
+        if (!$result)
+            return array();
         return $result;
     }
 
@@ -2567,17 +2600,19 @@ abstract class MTDatabase {
     public function tags_entry_count($tag_id, $class = 'entry') {
         $tag_id = intval($tag_id);
 
-        $where = "objecttag_tag_id = $tag_id
-                  and entry_status = 2
-                  and entry_class = '$class'";
+        $where = "objecttag_tag_id = $tag_id";
+
+        if ($class == 'entry') {
+            $where .= "and entry_status = 2 and entry_class = '$class'";
+        }
 
         $join['mt_objecttag'] = 
             array(
-                "condition" => "entry_id = objecttag_object_id and objecttag_object_datasource='entry'"
+                "condition" => "${class}_id = objecttag_object_id and objecttag_object_datasource='$class'"
                 );
 
-        require_once('class.mt_entry.php');
-        $entry = new entry;
+        require_once("class.mt_$class.php");
+        $entry = new $class();
         $count = $entry->count(array('where' => $where, 'join' => $join));
         return $count;
     }

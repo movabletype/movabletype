@@ -529,9 +529,9 @@ sub compile_category_filter {
         }
         my $new_expr = '';
         my %cats_used;
-        my @split_expr = split /(\bOR\b|\bAND\b|\bNOT\b|\(|\))/, $cat_expr;
+        my @split_expr = split /(\bOR\b|\bAND\b|\bNOT\b|\(|\))/i, $cat_expr;
         foreach my $token (@split_expr) {
-            if (grep {$token eq $_} qw{OR AND NOT ( )}) {
+            if (grep {lc $token eq $_} qw{OR AND NOT ( )}) {
                 $new_expr .= $token;
                 next;
             }
@@ -782,8 +782,8 @@ sub _no_author_error {
     return $ctx->error(
         MT->translate(
             "You used an '[_1]' tag outside of the context of a author; "
-                . "perhaps you mistakenly placed it outside of an 'MTAuthors' "
-                . "container?",
+                . "Perhaps you mistakenly placed it outside of an 'MTAuthors' "
+                . "container tag?",
             $tag_name
         )
     );
@@ -796,7 +796,7 @@ sub _no_entry_error {
     return $_[0]->error(
         MT->translate(
             "You used an '[_1]' tag outside of the context of an entry; "
-                . "perhaps you mistakenly placed it outside of an 'MTEntries' container?",
+                . "Perhaps you mistakenly placed it outside of an 'MTEntries' container tag?",
             $tag_name
         )
     );
@@ -809,7 +809,7 @@ sub _no_website_error {
     return $_[0]->error(
         MT->translate(
             "You used an '[_1]' tag outside of the context of the website; "
-                . "perhaps you mistakenly placed it outside of an 'MTWebsites' container?",
+                . "Perhaps you mistakenly placed it outside of an 'MTWebsites' container tag?",
             $tag_name
         )
     );
@@ -822,7 +822,7 @@ sub _no_blog_error {
     return $_[0]->error(
         MT->translate(
             "You used an '[_1]' tag outside of the context of the blog; "
-                . "perhaps you mistakenly placed it outside of an 'MTBlogs' container?",
+                . "Perhaps you mistakenly placed it outside of an 'MTBlogs' container tag?",
             $tag_name
         )
     );
@@ -835,8 +835,8 @@ sub _no_comment_error {
     return $ctx->error(
         MT->translate(
             "You used an '[_1]' tag outside of the context of a comment; "
-                . "perhaps you mistakenly placed it outside of an 'MTComments' "
-                . "container?",
+                . "Perhaps you mistakenly placed it outside of an 'MTComments' "
+                . "container tag?",
             $tag_name
         )
     );
@@ -849,8 +849,8 @@ sub _no_ping_error {
     return $ctx->error(
         MT->translate(
             "You used an '[_1]' tag outside of the context of "
-                . "a ping; perhaps you mistakenly placed it outside "
-                . "of an 'MTPings' container?",
+                . "a ping; Perhaps you mistakenly placed it outside "
+                . "of an 'MTPings' container tag?",
             $tag_name
         )
     );
@@ -863,7 +863,7 @@ sub _no_asset_error {
     return $ctx->error(
         MT->translate(
             "You used an '[_1]' tag outside of the context of an asset; "
-                . "perhaps you mistakenly placed it outside of an 'MTAssets' container?",
+                . "Perhaps you mistakenly placed it outside of an 'MTAssets' container tag?",
             $tag_name
         )
     );
@@ -877,7 +877,7 @@ sub _no_page_error {
     return $ctx->error(
         MT->translate(
             "You used an '[_1]' tag outside of the context of a page; "
-                . "perhaps you mistakenly placed it outside of a 'MTPages' container?",
+                . "Perhaps you mistakenly placed it outside of a 'MTPages' container tag?",
             $tag_name
         )
     );

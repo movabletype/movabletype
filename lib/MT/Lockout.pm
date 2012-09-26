@@ -57,7 +57,8 @@ sub is_locked_out_user {
 
     return 0 if ( !$app->config->UserLockoutLimit ) || ( !$username );
 
-    my $user = $app->model('author')->load( { name => $username } )
+    my $user = $app->user
+        || $app->model('author')->load( { name => $username } )
         or return 0;
 
     $user->locked_out;
@@ -87,10 +88,12 @@ sub recover_token {
 
     my $sha256_hex;
     if ( eval { require Digest::SHA } ) {
+
         # Can use SHA256
         $sha256_hex = \&Digest::SHA::sha256_hex;
     }
     else {
+
         # Maybe cannot use SHA256
         $sha256_hex = \&MT::Util::perl_sha1_digest_hex;
     }
@@ -159,7 +162,7 @@ sub _notify_to {
             else {
                 $app->log(
                     {   message => $app->translate(
-                            "Can't find author for id '[_1]'", $id
+                            "Cannot find author for id '[_1]'", $id
                         ),
                         level    => MT::Log::ERROR(),
                         class    => 'system',
@@ -281,7 +284,7 @@ sub _insert_failedlogin {
             my %head = (
                 id      => 'lockout_ip',
                 To      => $email,
-                Subject => $app->translate('IP address Was Locked Out')
+                Subject => $app->translate('IP Address Was Locked Out')
             );
 
             my $recovery_time = $class->locked_out_ip_recovery_time( $app,
@@ -344,7 +347,11 @@ sub process_login_result {
     }
     elsif ( grep { $_ == $result } @for_clear ) {
         $app->model('failedlogin')->remove( { remote_ip => $remote_ip } );
-        if ( my $user = $app->model('author')->load( { name => $username } ) )
+        if (my $user = (
+                       $app->user
+                    || $app->model('author')->load( { name => $username } )
+            )
+            )
         {
             $class->clear_failedlogin($user);
         }

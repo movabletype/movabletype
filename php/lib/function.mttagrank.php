@@ -13,11 +13,11 @@ function smarty_function_mttagrank($args, &$ctx) {
     $tag = $ctx->stash('Tag');
     if (!$tag) return '';
 
+    $class = $ctx->stash('class_type');
     $ntags = $ctx->stash('all_tag_count');
     $min = $ctx->stash('tag_min_count');
     $max = $ctx->stash('tag_max_count');
     if (!$ntags or !$min or !$max) {
-        $class = $ctx->stash('class_type');
         if (isset($class)) {
             if ('entry' == $class or 'page' == $class) {
                 # for Entry/Page
@@ -61,9 +61,8 @@ function smarty_function_mttagrank($args, &$ctx) {
 
     $count = $tag->tag_count;
     if($count == ''){
-        $count = $ctx->mt->db()->tags_entry_count($tag->tag_id, $ctx->stash('class_type'));
+        $count = $ctx->mt->db()->tags_entry_count($tag->tag_id, $class);
     }
-
     $level = intval(log($count - $min + 1) * $factor);
 
     return $max_level - $level;

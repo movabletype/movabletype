@@ -118,7 +118,7 @@ sub rebuild {
         $blog = MT::Blog->load($blog_id)
             or return $mt->error(
             MT->translate(
-                "Load of blog '[_1]' failed: [_2]", $blog_id,
+                "Loading of blog '[_1]' failed: [_2]", $blog_id,
                 MT::Blog->errstr
             )
             );
@@ -589,9 +589,9 @@ sub rebuild_entry {
     return 1 if $blog->is_dynamic;
 
     my $at
-        = $param{PreferredArchiveOnly}
-        ? $blog->archive_type_preferred
-        : $blog->archive_type;
+        = $param{PreferredArchiveOnly} ? $blog->archive_type_preferred
+        : $entry->is_entry             ? $blog->archive_type
+        :                                'Page';
     if ( $at && $at ne 'None' ) {
         my @at = split /,/, $at;
         for my $at (@at) {

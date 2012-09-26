@@ -389,7 +389,7 @@ sub cfg_prefs {
 
     my $blog = $app->model('blog')->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
     if ( $blog->is_blog() ) {
         my @data;
@@ -410,6 +410,9 @@ sub cfg_prefs {
                 };
         }
         @data = sort { MT::App::CMS::archive_type_sorter( $a, $b ) } @data;
+        unless (grep $_->{archive_type_is_preferred}, @data) {
+            $param{no_preferred_archive_type} = 1;
+        }
         $param{entry_archive_types} = \@data;
     }
 
@@ -596,7 +599,7 @@ sub rebuild_phase {
         require MT::Template;
         foreach (@ids) {
             my $template = MT::Template->load($_)
-                or return $app->errtrans( 'Can\'t load template #[_1].', $_ );
+                or return $app->errtrans( 'Cannot load template #[_1].', $_ );
 
             my $perms = $app->user->permissions( $template->blog_id );
             return $app->permission_denied()
@@ -633,7 +636,7 @@ sub rebuild_pages {
 
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my $order = $q->param('type');
     my @order = split /,/, $order;
     my $next  = $q->param('next');
@@ -699,7 +702,7 @@ sub rebuild_pages {
         require MT::Template;
         $tmpl_saved = MT::Template->load($tmpl_id)
             or
-            return $app->errtrans( 'Can\'t load template #[_1].', $tmpl_id );
+            return $app->errtrans( 'Cannot load template #[_1].', $tmpl_id );
         return $app->permission_denied()
             unless $app->user->permissions( $tmpl_saved->blog_id )
                 ->can_do('rebuild');
@@ -731,7 +734,7 @@ sub rebuild_pages {
             unless $perms->can_do('rebuild');
         if ($template_id) {
             my $tmpl = MT->model('template')->load($template_id)
-                or return $app->errtrans( 'Can\'t load template #[_1].',
+                or return $app->errtrans( 'Cannot load template #[_1].',
                 $template_id );
             return $app->permission_denied()
                 unless $app->user->permissions( $tmpl->blog_id )
@@ -739,7 +742,7 @@ sub rebuild_pages {
         }
         elsif ($map_id) {
             my $map = MT->model('templatemap')->load($map_id)
-                or return $app->errtrans( 'Can\'t load template #[_1].',
+                or return $app->errtrans( 'Cannot load template #[_1].',
                 $map_id );
             return $app->permission_denied()
                 unless $app->user->permissions( $map->blog_id )
@@ -801,7 +804,7 @@ sub rebuild_pages {
                 unless $perms->can_do('rebuild');
             if ($template_id) {
                 my $tmpl = MT->model('template')->load($template_id)
-                    or return $app->errtrans( 'Can\'t load template #[_1].',
+                    or return $app->errtrans( 'Cannot load template #[_1].',
                     $template_id );
                 return $app->permission_denied()
                     unless $app->user->permissions( $tmpl->blog_id )
@@ -809,7 +812,7 @@ sub rebuild_pages {
             }
             elsif ($map_id) {
                 my $map = MT->model('templatemap')->load($map_id)
-                    or return $app->errtrans( 'Can\'t load template #[_1].',
+                    or return $app->errtrans( 'Cannot load template #[_1].',
                     $map_id );
                 return $app->permission_denied()
                     unless $app->user->permissions( $map->blog_id )
@@ -952,14 +955,14 @@ sub rebuild_pages {
             my $entry = MT::Entry->load( scalar $q->param('entry_id') )
                 or return $app->error(
                 $app->translate(
-                    'Can\'t load entry #[_1].',
+                    'Cannot load entry #[_1].',
                     $q->param('entry_id')
                 )
                 );
             require MT::Blog;
             my $blog = MT::Blog->load( $entry->blog_id )
                 or return $app->error(
-                $app->translate( 'Can\'t load blog #[_1].', $entry->blog_id )
+                $app->translate( 'Cannot load blog #[_1].', $entry->blog_id )
                 );
             require MT::CMS::Entry;
             MT::CMS::Entry::ping_continuation(
@@ -1120,7 +1123,7 @@ sub start_rebuild_pages {
         require MT::Template;
         my $tmpl = MT::Template->load($tmpl_id)
             or return $app->error(
-            $app->translate( 'Can\'t load template #[_1].', $tmpl_id ) );
+            $app->translate( 'Cannot load template #[_1].', $tmpl_id ) );
         $param{build_type_name} = $app->translate( "index template '[_1]'",
             MT::Util::encode_html( $tmpl->name ) );
         $param{is_one_index} = 1;
@@ -1130,7 +1133,7 @@ sub start_rebuild_pages {
         require MT::Entry;
         my $entry = MT::Entry->load($entry_id)
             or return $app->error(
-            $app->translate( 'Can\'t load entry #[_1].', $entry_id ) );
+            $app->translate( 'Cannot load entry #[_1].', $entry_id ) );
         $param{build_type_name}
             = $app->translate( "[_1] '[_2]'", $entry->class_label,
             MT::Util::encode_html( $entry->title ) );
@@ -1187,7 +1190,7 @@ sub rebuild_confirm {
     require MT::Blog;
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
     return $app->permission_denied()
         unless $app->can_do('rebuild');
@@ -1202,7 +1205,7 @@ sub rebuild_confirm {
         my $tmpl
             = MT::Template->load( { id => $tmpl_id, blog_id => $blog_id } )
             or return $app->error(
-            $app->translate( 'Can\'t load template #[_1].', $tmpl_id ) );
+            $app->translate( 'Cannot load template #[_1].', $tmpl_id ) );
         $param{index_tmpl_id}   = $tmpl->id;
         $param{index_tmpl_name} = $tmpl->name;
     }
@@ -1956,6 +1959,12 @@ sub save_filter {
             )
             )
             unless 0 < sprintf( '%d', $app->param('max_revisions_template') );
+        return $eh->error(
+            MT->translate(
+                "Please choose a preferred archive type."
+            )
+            )
+            unless !$app->blog->is_blog || $app->param('preferred_archive_type');
     }
     return 1;
 }
@@ -2194,10 +2203,12 @@ sub cfg_prefs_save {
             $blog->archive_url("$subdomain/::/$path");
         }
         $blog->site_path( $app->param('site_path_absolute') )
-            if $app->param('use_absolute')
+            if ! $app->config->BaseSitePath
+                && $app->param('use_absolute')
                 && $app->param('site_path_absolute');
         $blog->archive_path( $app->param('archive_path_absolute') )
-            if $app->param('enable_archive_paths')
+            if ! $app->config->BaseSitePath
+                && $app->param('enable_archive_paths')
                 && $app->param('use_absolute_archive')
                 && $app->param('archive_path_absolute');
     }
@@ -2886,7 +2897,13 @@ sub clone {
             }
         }
     }
-
+    if (my $limit = $app->config->BaseSitePath) {
+        $limit = File::Spec->catdir($limit, "PATH");
+        $limit =~ s/PATH$//;
+        $param->{'sitepath_limited'} = $limit;
+        $param->{'use_absolute'}         = 0;
+        $param->{'use_absolute_archive'} = 0;
+    }
     $param = _has_valid_form( $app, $blog, $param );
 
     if ( $blog_id && $app->param('clone') && $param->{'isValidForm'} ) {
@@ -3015,7 +3032,7 @@ HTML
         );
 
         $new_blog->site_path(
-              $param->{'use_absolute'}
+              $param->{'use_absolute'} && !$app->config->BaseSitePath
             ? $param->{'site_path_absolute'}
             : $param->{'site_path'}
         );
@@ -3033,7 +3050,7 @@ HTML
 
         if ( $param->{enable_archive_paths} ) {
             $new_blog->archive_path(
-                  $param->{'use_absolute_archive'}
+                  $param->{'use_absolute_archive'} && !$app->config->BaseSitePath
                 ? $param->{'archive_path_absolute'}
                 : $param->{'archive_path'}
             );

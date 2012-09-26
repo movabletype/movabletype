@@ -9,7 +9,8 @@
 package MT::Tool::Upgrade;
 use strict;
 
-use lib  qw( extlib lib );
+use FindBin;
+use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
 use base qw( MT::Tool );
 
 use Carp qw(confess);

@@ -118,7 +118,7 @@ sub init_app {
     require MT;
     MT->add_callback(
         "${app}::init_request",
-        undef, 1,
+        1, undef,
         sub {
             $_[1]->{__test_output}    = '';
             $_[1]->{upgrade_required} = 0;

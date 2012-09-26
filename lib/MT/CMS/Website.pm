@@ -259,7 +259,9 @@ sub edit {
 
     if ( !$param->{id} ) {
         if ( !$param->{site_path} ) {
-            my $cwd = $app->document_root;
+            my $cwd = $cfg->BaseSitePath 
+                ? $cfg->BaseSitePath 
+                : $app->document_root;
             $cwd = File::Spec->catdir( $cwd, 'WEBSITE-NAME' )
                 ;    # for including the end of directory separator
             $cwd =~ s!WEBSITE-NAME\z!!;    # canonpath() remove it
@@ -500,7 +502,7 @@ sub move_blogs {
     my $ids           = $app->param('ids');
     my $website       = $website_class->load($ids)
         or return $app->error(
-        $app->translate( 'Can\'t load website #[_1].', $ids ) );
+        $app->translate( 'Cannot load website #[_1].', $ids ) );
 
     my $blog_class = $app->model('blog');
     my $blog_ids   = $app->param('blog_ids');
@@ -508,7 +510,7 @@ sub move_blogs {
     foreach my $id (@id) {
         my $blog = $blog_class->load($id)
             or return $app->error(
-            $app->translate( 'Can\'t load blog #[_1].', $id ) );
+            $app->translate( 'Cannot load blog #[_1].', $id ) );
         my $old_website = $blog->website;
 
         $website->add_blog($blog);

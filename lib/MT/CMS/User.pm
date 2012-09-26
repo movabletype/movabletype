@@ -204,7 +204,7 @@ sub edit_role {
     if ($id) {
         $role = MT::Role->load($id)
             or return $app->error(
-            $app->translate( 'Can\'t load role #[_1].', $id ) );
+            $app->translate( 'Cannot load role #[_1].', $id ) );
 
         # $param{is_enabled} = $role->is_active;
         $param{is_enabled}  = 1;
@@ -642,6 +642,7 @@ sub cfg_system_users {
         }
     }
     $param{system_email_address} = $cfg->EmailAddressMain;
+    $param{system_no_email}      = 1 unless $cfg->EmailAddressMain;
     $param{saved}                = $app->param('saved');
     $param{error}                = $app->param('error');
     $param{screen_class}         = "settings-screen system-general-settings";
@@ -674,7 +675,7 @@ sub cfg_system_users {
 
     my @config_warnings;
     for my $config_directive (
-        qw( UserPasswordValidation UserPasswordMinLength ) )
+        qw( UserPasswordValidation UserPasswordMinLength ))
     {
         push( @config_warnings, $config_directive )
             if $app->config->is_readonly($config_directive);
@@ -682,7 +683,7 @@ sub cfg_system_users {
     my $config_warning = join( ", ", @config_warnings ) if (@config_warnings);
 
     $param{config_warning} = $app->translate(
-        "These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
+        "These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
         $config_warning
     ) if $config_warning;
 
@@ -758,7 +759,7 @@ sub save_cfg_system_users {
         my $pass_min_len = $app->param('minimum_length');
         if ( ( $pass_min_len =~ m/\D/ ) or ( $pass_min_len < 1 ) ) {
             return $app->errtrans(
-                'Minimum password length must be integer and greater than zero.'
+                'Minimum password length must be an integer and greater than zero.'
             );
         }
         $app->config( 'UserPasswordMinLength', int $pass_min_len, 1 );
@@ -1445,7 +1446,7 @@ sub template_param_list {
     $param->{use_actions}      = 0;
     $param->{has_list_actions} = 0;
     my $author_name = $app->user->name;
-    $param->{page_title} = MT->translate( q{[_1]'s Assciations},
+    $param->{page_title} = MT->translate( q{[_1]'s Associations},
         MT::Util::encode_html($author_name) );
 }
 

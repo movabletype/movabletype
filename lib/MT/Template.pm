@@ -998,6 +998,25 @@ sub appendChild {
     $tmpl->{reflow_flag} = 1;
 }
 
+# compute a cache-key based on the template fields
+sub get_cache_key {
+    my $self = shift;
+    require Digest::MD5;
+    require Encode;
+    my $cache_key = Digest::MD5::md5_hex(
+        Encode::encode_utf8(
+              'blog::' 
+            . $self->blog_id
+            . '::template_'
+            . $self->type 
+            . '::'
+            . $self->name
+        )
+    );
+    return $cache_key;
+}
+
+
 # Alias to perl_function_names for those that may prefer that.
 # *get_elements_by_tag_name = \&getElementsByTagName;
 # *get_elements_by_name = \&getElementsByName;

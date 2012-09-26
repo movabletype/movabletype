@@ -4,7 +4,7 @@ use strict;
 use lib qw( t/lib extlib lib ../lib ../extlib );
 
 use Data::Dumper;
-use Test::More tests => 26;
+use Test::More tests => 29;
 
 use MT;
 use MT::Object;
@@ -63,6 +63,12 @@ ok($image->id, 'image object with metadata received id when saved');
 my $image_2 = MT::Awesome->load($image->id);
 ok($image_2, 'subclass object could be loaded');
 is($image_2->mime_type, 'image/jpeg', 'metadata value as retrieved with auto-installed method is correct on loaded image object');
+
+my $image_3 = MT::Awesome->inflate($image->deflate);
+my $image_3_hash = $image_3->{__meta}->get_hash;
+ok($image_3, 'subclass object could be inflated');
+is($image_3->mime_type, 'image/jpeg', 'metadata value as retrieved with auto-installed method is correct on inflated image object');
+is($image_3_hash->{mime_type}, 'image/jpeg', 'metadata value as retrieved with the "get_hash" method is correct on inflated image object');
 
 ok(MT::Asset::Image->has_meta('image_width'), 'MT::Asset::Image has an image_width meta column.');
 ok(MT::Entry->has_meta, 'MT::Entry has a meta support.');

@@ -248,26 +248,19 @@ sub _hdlr_categories {
     ## <MTArchiveList archive_type="Category">, it needs to support
     ## the <$MTArchiveLink$> and <$MTArchiveTitle$> tags
     local $ctx->{inside_mt_categories} = 1;
-    my $i   = 0;
-    my $cat = $iter->();
-    if ( !$args->{show_empty} ) {
-        while ( defined $cat && !$entry_count_of->($cat) ) {
-            $cat = $iter->();
-        }
-    }
     my $n = $args->{lastn};
+    my $i   = 0;
+    my @categories = ();
+    while ( my $cat = $iter->() ) {
+        next if ( ( !$args->{show_empty} ) && ( !$entry_count_of->($cat) ) );
+        last if (defined($n) && scalar(@categories) >= $n);
+        push @categories, $cat;
+    }
     my $vars = $ctx->{__stash}{vars} ||= {};
-    while ( defined($cat) ) {
+    MT::Meta::Proxy->bulk_load_meta_objects(\@categories);
+    foreach my $cat (@categories) {
         $i++;
-        my $next_cat = $iter->();
-        if ( !$args->{show_empty} ) {
-            while ( defined $next_cat && !$entry_count_of->($next_cat) ) {
-                $next_cat = $iter->();
-            }
-        }
-        my $last;
-        $last = 1 if $n && ( $i >= $n );
-        $last = 1 unless defined $next_cat;
+        my $last = $i == scalar(@categories);
 
         local $ctx->{__stash}{category} = $cat;
         local $ctx->{__stash}{entries};
@@ -295,8 +288,6 @@ sub _hdlr_categories {
         ) or return $ctx->error( $builder->errstr );
         $res .= $glue if defined $glue && length($res) && length($out);
         $res .= $out;
-        last if $last;
-        $cat = $next_cat;
     }
     $res;
 }
@@ -572,7 +563,7 @@ sub _hdlr_sub_categories {
 
     return $ctx->error(
         MT->translate(
-            'Can\'t use sort_by and sort_method together in [_1]',
+            'Cannot use sort_by and sort_method together in [_1]',
             $ctx->stash('tag'),
         )
     ) if ( $sort_method && $sort_by );
@@ -650,6 +641,8 @@ sub _hdlr_sub_categories {
     local $ctx->{__stash}{'subCatsSortOrder'}  = $sort_order;
     local $ctx->{__stash}{'subCatsSortMethod'} = $sort_method;
     local $ctx->{__stash}{'subCatsSortBy'}     = $sort_by;
+
+    MT::Meta::Proxy->bulk_load_meta_objects($cats);
 
     # Loop through the immediate children (or the current cat,
     # depending on the arguments
@@ -806,6 +799,8 @@ sub _hdlr_parent_categories {
     # including the current one unless instructed otherwise
     my @cats = $cat->parent_categories;
     @cats = ( $cat, @cats ) unless ($exclude_current);
+
+    MT::Meta::Proxy->bulk_load_meta_objects(\@cats);
 
     # Start from the top and work our way down
     while ( my $c = pop @cats ) {

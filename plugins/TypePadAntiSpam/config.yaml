@@ -3,8 +3,8 @@ id: TypePadAntispam
 key: TypePadAntiSpam
 description: |
     <__trans phrase='TypePad AntiSpam is a free service from Six Apart that helps protect your blog from comment and TrackBack spam. The TypePad AntiSpam plugin will send every comment or TrackBack submitted to your blog to the service for evaluation, and Movable Type will filter items if TypePad AntiSpam determines it is spam. If you discover that TypePad AntiSpam incorrectly classifies an item, simply change its classification by marking it as "Spam" or "Not Spam" from the Manage Comments screen, and TypePad AntiSpam will learn from your actions. Over time the service will improve based on reports from its users, so take care when marking items as "Spam" or "Not Spam."' />
-author_name: Six Apart Ltd.
-author_link: http://www.sixapart.com/
+author_name: Six Apart, Ltd.
+author_link: http://www.movabletype.org/
 version: 1.01
 
 system_config_template: system.tmpl

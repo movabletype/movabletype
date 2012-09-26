@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtpagerblock($args, $content, &$ctx, &$repeat) {
-    $localvars = array('__out', '__pager_limit', '__pager_count', '__pager_pages', '__first__', '__last__', '__odd__', '__even__', '__value__', '__counter__');
+    $localvars = array(array('__out', '__pager_limit', '__pager_count', '__pager_pages'), common_loop_vars());
 
     if (!isset($content)) {
         $ctx->localize($localvars);

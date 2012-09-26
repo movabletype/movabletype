@@ -26,6 +26,8 @@ sub do_import {
 sub import_contents {
     my $class = shift;
     my %param = @_;
+    ## Init error buffer.
+    __PACKAGE__->error();
     my $iter  = $param{Iter};
     my $blog  = $param{Blog}
         or return __PACKAGE__->error( MT->translate("No Blog") );
@@ -282,7 +284,7 @@ sub import_contents {
                         if ( !$entry ) {
                             $cb->(
                                 MT->translate(
-                                    "Can't find existing entry with timestamp '[_1]'... skipping comments, and moving on to next entry.",
+                                    "Cannot find existing entry with timestamp '[_1]'... skipping comments, and moving on to next entry.",
                                     $ts
                                     )
                                     . "\n"

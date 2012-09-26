@@ -171,10 +171,10 @@ function blurDateFields(s) {
           </div>
         </mt:if>
         </div>
-        <div id="date-range" class="mod advanced-options"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>
+        <div id="date-range" class="mod advanced-options"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>>
           <input type="hidden" name="dates-disabled" id="dates-disabled" value="<mt:if name="from">0<mt:else>1</mt:if>" />
-          <label for="datefrom"><__trans phrase="_DATE_FROM">:</label> <input type="text" name="from" id="from" class="text-date text date" value="<mt:if name="from"><mt:var name="from"></mt:if>">
-          <label for="dateto"><__trans phrase="_DATE_TO">:</label> <input type="text" name="to" id="to" class="text-date text date" value="<mt:if name="to"><mt:var name="to"></mt:if>">
+          <label for="datefrom"><__trans phrase="_DATE_FROM">:</label> <input type="text" name="from" id="from" class="text-date text date" value="<mt:if name="from"><mt:var name="from" escape="html"></mt:if>">
+          <label for="dateto"><__trans phrase="_DATE_TO">:</label> <input type="text" name="to" id="to" class="text-date text date" value="<mt:if name="to"><mt:var name="to" escape="html"></mt:if>">
         </div>
         <div class="actions-bar">
           <button

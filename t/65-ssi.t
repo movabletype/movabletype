@@ -29,6 +29,8 @@ $include->type('custom');
 $include->text('template was included at <mt:date format="%X %x"> <mt:getvar name="woot">');
 $include->save;
 
+my $include_id = $include->id;
+
 my $tmpl = MT->model('template')->new;
 $tmpl->blog_id($blog->id);
 $tmpl->text(q(hi <mt:include module="Included Template"> bye));
@@ -86,7 +88,7 @@ ok(defined $out, 'test template built');
 my $site_url = $blog->site_url;
 $site_url =~ s{ \A \w+ :// [^/]+ }{}xms;
 $site_url =~ s{ / \z }{}xms;
-like($out, qr(\Ahi <!--#include virtual="${site_url}/includes_c/woot/included_template.html" --> bye\z)ms,
+like($out, qr(\Ahi <!--#include virtual="${site_url}/includes_c/woot/included_template_$include_id.html" --> bye\z)ms,
     'test template included template by ssi');
 
 
@@ -102,7 +104,7 @@ ok(defined $out, 'test template built');
 $site_url = $blog->site_url;
 $site_url =~ s{ \A \w+ :// [^/]+ }{}xms;
 $site_url =~ s{ / \z }{}xms;
-like($out, qr(\Ahi <!--#include virtual="${site_url}/includes_c/w/included_template.html" --> bye\z)ms,
+like($out, qr(\Ahi <!--#include virtual="${site_url}/includes_c/w/included_template_$include_id.html" --> bye\z)ms,
     'test template included template by ssi');
 
 $tmpl = MT->model('template')->new;
@@ -117,7 +119,7 @@ ok(defined $out, 'test template built');
 $site_url = $blog->site_url;
 $site_url =~ s{ \A \w+ :// [^/]+ }{}xms;
 $site_url =~ s{ / \z }{}xms;
-like($out, qr(\Ahi <!--#include virtual="${site_url}/includes_c/w/included_template.html" --> bye\z)ms,
+like($out, qr(\Ahi <!--#include virtual="${site_url}/includes_c/w/included_template_$include_id.html" --> bye\z)ms,
     'test template included template by ssi using \'key\' with relative path');
 
 
@@ -133,7 +135,7 @@ ok(defined $out, 'test template built');
 $site_url = $blog->site_url;
 $site_url =~ s{ \A \w+ :// [^/]+ }{}xms;
 $site_url =~ s{ / \z }{}xms;
-like($out, qr(\Ahi <!--#include virtual="${site_url}/includes_c/included_template.html" --> bye\z)ms,
+like($out, qr(\Ahi <!--#include virtual="${site_url}/includes_c/included_template_$include_id.html" --> bye\z)ms,
     'test template included template by ssi without \'key\'');
 
 
@@ -149,6 +151,6 @@ ok(defined $out, 'test template built');
 $site_url = $blog->site_url;
 $site_url =~ s{ \A \w+ :// [^/]+ }{}xms;
 $site_url =~ s{ / \z }{}xms;
-like($out, qr(\Ahi <!--#include virtual="${site_url}/w/included_template.html" --> bye\z)ms,
+like($out, qr(\Ahi <!--#include virtual="${site_url}/w/included_template_$include_id.html" --> bye\z)ms,
     'test template included template by ssi with \'key\' absolute path');
 

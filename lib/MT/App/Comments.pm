@@ -232,7 +232,7 @@ sub do_login {
     my $blog_id = $q->param('blog_id');
     my $blog    = MT::Blog->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my $auths = $blog->commenter_authenticators;
     if ( $auths !~ /MovableType/ ) {
         $app->log(
@@ -277,7 +277,7 @@ sub do_login {
                 {
                     return $app->login_form(
                         error => $app->translate(
-                            'Successfully authenticated but signing up is not allowed.  Please contact system administrator.'
+                            'Successfully authenticated, but signing up is not allowed.  Please contact your Movable Type system administrator.'
                         )
                     ) unless $commenter;
                 }
@@ -344,15 +344,15 @@ sub do_login {
 }
 
 sub signup {
-    my $app   = shift;
-    my %opt   = @_;
+    my $app = shift;
+    my %opt = @_;
 
     my $param = {};
     $param->{$_} = $app->param($_)
         foreach qw(blog_id entry_id static username return_url );
     my $blog = $app->model('blog')->load( $param->{blog_id} || 0 )
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $param->{blog_id} ) );
+        $app->translate( 'Cannot load blog #[_1].', $param->{blog_id} ) );
     my $cfg = $app->config;
     if ( my $registration = $cfg->CommenterRegistration ) {
         return $app->handle_error(
@@ -387,7 +387,7 @@ sub do_signup {
 
     my $blog = $app->model('blog')->load( $param->{blog_id} || 0 )
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $param->{blog_id} ) );
+        $app->translate( 'Cannot load blog #[_1].', $param->{blog_id} ) );
 
     my $cfg = $app->config;
     if ( my $registration = $cfg->CommenterRegistration ) {
@@ -407,7 +407,7 @@ sub do_signup {
     unless ($user) {
         my $blog = $app->model('blog')->load( $param->{blog_id} )
             or return $app->error(
-            $app->translate( 'Can\'t load blog #[_1].', $param->{blog_id} ) );
+            $app->translate( 'Cannot load blog #[_1].', $param->{blog_id} ) );
         if ( my $provider
             = MT->effective_captcha_provider( $blog->captcha_provider ) )
         {
@@ -458,7 +458,7 @@ sub _send_signup_confirmation {
 
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my $entry;
     $entry = MT::Entry->load($entry_id)
         if $entry_id;
@@ -567,12 +567,13 @@ sub do_register {
     my $sess = MT::Session->load(
         { id => $token, kind => 'CR', email => $email } );
 
-    unless ( $sess ) {
+    unless ($sess) {
         my $msg = $app->translate(
-            'Your confirmation have expired. Please register again.');
-        if ( $static ) {
-            $msg .= '&nbsp;'.$app->translate(
-                '<a href="[_1]">Return to the original page.</a>', $static);
+            'Your confirmation has expired. Please register again.');
+        if ($static) {
+            $msg .= '&nbsp;'
+                . $app->translate(
+                '<a href="[_1]">Return to the original page.</a>', $static );
         }
         return $app->forward( 'signup', message => $msg );
     }
@@ -585,9 +586,10 @@ sub do_register {
         $commenter->remove;
         my $msg = $app->translate(
             'Your confirmation have expired. Please register again.');
-        if ( $static ) {
-            $msg .= '&nbsp;'.$app->translate(
-                '<a href="[_1]">Return to the original page.</a>', $static);
+        if ($static) {
+            $msg .= '&nbsp;'
+                . $app->translate(
+                '<a href="[_1]">Return to the original page.</a>', $static );
         }
         return $app->forward( 'signup', message => $msg );
     }
@@ -603,17 +605,17 @@ sub do_register {
         unless $blog_id == $q_blog_id;
 
     my $blog = $app->model('blog')->load($blog_id)
-        or return $error->( 'Can\'t load blog #[_1].', $blog_id );
+        or return $error->( 'Cannot load blog #[_1].', $blog_id );
 
     my $registration = $cfg->CommenterRegistration
-        or return $error->( 'Signing up is not allowed.' );
+        or return $error->('Signing up is not allowed.');
 
     return $error->('Signing up is not allowed.')
         unless $registration->{Allow} && $blog->allow_commenter_regist;
 
     $commenter->status( MT::Author::ACTIVE() );
-    $commenter->save 
-        or $app->forward('signup', error => $commenter->errstr);
+    $commenter->save
+        or $app->forward( 'signup', error => $commenter->errstr );
 
     $app->log(
         {   message => $app->translate(
@@ -629,6 +631,7 @@ sub do_register {
     require MT::Role;
     require MT::Association;
     my $role = MT::Role->load_same( undef, undef, 1, 'comment' );
+
     if ( $role && $blog ) {
         MT::Association->link( $commenter => $role => $blog );
     }
@@ -650,8 +653,8 @@ sub do_register {
         ## Send notification email in the background.
         MT::Util::start_background_task(
             sub {
-                $app->_send_registration_notification( $commenter,
-                    $entry_id, $blog_id, $ids );
+                $app->_send_registration_notification( $commenter, $entry_id,
+                    $blog_id, $ids );
             }
         );
     }
@@ -668,7 +671,7 @@ sub _send_registration_notification {
 
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my $subject = $app->translate( "[_1] registered to the blog '[_2]'",
         $user->name, $blog->name );
 
@@ -711,7 +714,7 @@ sub generate_captcha {
     }
     my $blog = $app->model('blog')->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     if ( my $provider
         = MT->effective_captcha_provider( $blog->captcha_provider ) )
     {
@@ -836,7 +839,7 @@ sub _builtin_throttle {
 
         my $blog = MT::Blog->load( $entry->blog_id )
             or return $app->error(
-            $app->translate( 'Can\'t load blog #[_1].', $entry->blog_id ) );
+            $app->translate( 'Cannot load blog #[_1].', $entry->blog_id ) );
         if ( $author && $author->email ) {
             my %head = (
                 id      => 'comment_throttle',
@@ -891,7 +894,7 @@ sub post {
 
     my $blog = $app->model('blog')->load( $entry->blog_id )
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $entry->blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $entry->blog_id ) );
 
     my $armor = $q->param('armor');
     if ( defined $armor ) {
@@ -963,11 +966,6 @@ sub post {
         )
     ) if ( $commenter && !$q->param('sid') );
 
-    my $remember = $q->param('bakecookie') || 0;
-    $remember = 0 if $remember eq 'Forget Info';    # another value for '0'
-    if ( $commenter && $remember ) {
-        $app->_extend_commenter_session( Duration => "+1y" );
-    }
     if ( !$blog->allow_unreg_comments ) {
         if ( !$commenter ) {
             return $app->handle_error(
@@ -1098,7 +1096,7 @@ sub post {
         # redirected to the indiv. page it will be up-to-date.
         $app->rebuild_entry( Entry => $entry->id, PreferredArchiveOnly => 1 )
             or return $app->handle_error(
-            $app->translate( "Publish failed: [_1]", $app->errstr ) );
+            $app->translate( "Publishing failed: [_1]", $app->errstr ) );
     }
 
     if ( $comment->is_junk ) {
@@ -1119,7 +1117,7 @@ sub post {
                 BuildDependencies => 1
                 )
                 or return $app->handle_error(
-                $app->translate( "Publish failed: [_1]", $app->errstr ) );
+                $app->translate( "Publishing failed: [_1]", $app->errstr ) );
 
             $app->_send_comment_notification( $comment, $comment_link, $entry,
                 $blog, $commenter );
@@ -1133,10 +1131,15 @@ sub post {
         unless ($tmpl) {
             require MT::DefaultTemplates;
             $tmpl
-                = MT::DefaultTemplates->load( { type => 'comment_response' } )
+                = MT::DefaultTemplates->load(
+                { identifier => 'comment_response' } )
                 or return $app->handle_error(
-                $app->translate("Can\'t load template") );
+                $app->translate("Cannot load template") );
+            $tmpl->blog_id( $entry->blog_id );
+            my $curr_lang = MT->current_language;
+            $app->set_language( $blog->language );
             $tmpl->text( $app->translate_templatized( $tmpl->text ) );
+            $app->set_language($curr_lang);
         }
         my $ctx = $tmpl->context;
         $tmpl->param(
@@ -1234,43 +1237,6 @@ sub eval_comment {
     $comment;
 }
 
-# only handles Duration => +xxxu where u is one of y, d, s
-sub _extend_commenter_session {
-    my $app         = shift;
-    my %param       = @_;
-    my %cookies     = $app->cookies();
-    my $cookie_name = $app->commenter_cookie;
-    my $session_key = $app->cookie_val($cookie_name) || "";
-    $session_key =~ y/+/ /;
-    my $sessobj = MT::Session->load( { id => $session_key, kind => 'SI' } );
-    return
-        if !$sessobj
-    ;    # no point changing the cookie if the session's already lost.
-    my ( $sign, $number, $units ) = $param{Duration} =~ /([+-]?)(\d+)(\w+)/;
-    $number *= $sign eq '-' ? -1 : +1;
-    $number *=
-          $units eq 'y' ? 60 * 60 * 24 * 365
-        : $units eq 'd' ? 60 * 60 * 24
-        :                 $number;
-    $sessobj->start( $sessobj->start + $number );
-    $sessobj->save();
-    my %sess_cookie = (
-        -name    => $cookie_name,
-        -value   => $session_key,
-        -path    => '/',
-        -expires => "+${number}s"
-    );
-    $app->bake_cookie(%sess_cookie);
-    my %name_kookee = (
-        -name    => "commenter_name",
-        -value   => $cookies{commenter_name}->value,
-        -path    => '/',
-        -expires => "+${number}s"
-    );
-    $app->bake_cookie(%name_kookee);
-    1;
-}
-
 sub _check_commenter_author {
     my $app = shift;
     my ( $commenter, $blog_id ) = @_;
@@ -1311,7 +1277,7 @@ sub _check_commenter_author {
         if ( my $registration = $app->config->CommenterRegistration ) {
             my $blog = MT::Blog->load($blog_id)
                 or return $app->error(
-                $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+                $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
             if ($registration->{Allow}
                 && (   $app->config->ExternalUserManagement
                     || $blog->allow_commenter_regist )
@@ -1513,7 +1479,7 @@ sub handle_sign_in {
 
     return $app->handle_error(
         $app->errstr() || $app->translate(
-            "The sign-in attempt was not successful; please try again."),
+            "The sign-in attempt was not successful; Please try again."),
         403
     ) unless $result;
     if ($sess) {
@@ -1549,7 +1515,7 @@ sub redirect_to_target {
         my $entry = MT::Entry->load( $q->param('entry_id') || 0 )
             or return $app->error(
             $app->translate(
-                'Can\'t load entry #[_1].',
+                'Cannot load entry #[_1].',
                 $q->param('entry_id')
             )
             );
@@ -1559,13 +1525,13 @@ sub redirect_to_target {
         my $blog = $app->model('blog')->load( scalar $q->param('blog_id') )
             or return $app->error(
             $app->translate(
-                'Can\'t load blog #[_1].', $q->param('blog_id')
+                'Cannot load blog #[_1].', $q->param('blog_id')
             )
             );
         if ( !$app->is_valid_redirect_target ) {
             return $app->error(
                 $app->translate(
-                    q{You are trying to redirect to external resources. If you can trust the site, please click the link: [_1]},
+                    q{You are trying to redirect to external resources. If you trust the site, please click the link: [_1]},
                     encode_html($static)
                 )
             );
@@ -1626,17 +1592,18 @@ sub userinfo {
     $app->send_http_header("text/javascript");
 
     my $out = { error => 'Failed to get Commenter Information' };
-    TRY: {
+TRY: {
         my ( $commenter, $sess );
         if ( my $sid = $app->param('sid') ) {
-            $sess
-                = MT::Session::get_unexpired_value(
+            $sess = MT::Session::get_unexpired_value(
                 MT->config->UserSessionTimeOut,
-                { id => $sid, kind => 'SI' } )
-                or last TRY;
+                { id => $sid, kind => 'SI' }
+            ) or last TRY;
         }
         elsif ( my $ot = $app->param('ott') ) {
-            my $ott = MT::Session::get_unexpired_value( 5 * 60, { id => $ot, kind => 'OT' } )
+            my $ott
+                = MT::Session::get_unexpired_value( 5 * 60,
+                { id => $ot, kind => 'OT' } )
                 or last TRY;
             $sess
                 = MT::Session::get_unexpired_value(
@@ -1645,7 +1612,7 @@ sub userinfo {
                 or last TRY;
             $ott->remove();
         }
-        if ( $sess ) {
+        if ($sess) {
             $commenter
                 = MT->model('author')->load( $sess->thaw_data->{author_id} )
                 or last TRY;
@@ -1862,9 +1829,15 @@ sub do_preview {
         unless ($tmpl) {
             require MT::DefaultTemplates;
             $tmpl
-                = MT::DefaultTemplates->load( { type => 'comment_response' } )
+                = MT::DefaultTemplates->load(
+                { identifier => 'comment_response' } )
                 or
-                return $app->error( $app->translate("Can\'t load template") );
+                return $app->error( $app->translate("Cannot load template") );
+            $tmpl->blog_id( $entry->blog_id );
+            my $curr_lang = MT->current_language;
+            $app->set_language( $blog->language );
+            $tmpl->text( $app->translate_templatized( $tmpl->text ) );
+            $app->set_language($curr_lang);
             $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
         if ( $err eq 'pending' ) {
@@ -1900,9 +1873,15 @@ sub do_preview {
         unless ($tmpl) {
             require MT::DefaultTemplates;
             $tmpl
-                = MT::DefaultTemplates->load( { type => 'comment_preview' } )
+                = MT::DefaultTemplates->load(
+                { identifier => 'comment_preview' } )
                 or
-                return $app->error( $app->translate("Can\'t load template") );
+                return $app->error( $app->translate("Cannot load template") );
+            $tmpl->blog_id( $entry->blog_id );
+            my $curr_lang = MT->current_language;
+            $app->set_language( $blog->language );
+            $tmpl->text( $app->translate_templatized( $tmpl->text ) );
+            $app->set_language($curr_lang);
             $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
         $tmpl->context($ctx);
@@ -2004,7 +1983,7 @@ sub save_commenter_profile {
         my $nickname = $param{nickname};
         unless ( $nickname && $param{email} ) {
             $param{error} = $app->translate(
-                'All required fields must have valid values.');
+                'All required fields must be populated.');
             return $app->build_page( 'profile.tmpl', \%param );
         }
         if ( $nickname =~ m/([<>])/ ) {
@@ -2020,15 +1999,14 @@ sub save_commenter_profile {
             return $app->build_page( 'profile.tmpl', \%param );
         }
         require MT::Auth;
-        if (
-            $param{password} &&
-            not MT::Auth->is_valid_password(
+        if ($param{password}
+            && not MT::Auth->is_valid_password(
                 $cmntr, scalar( $q->param('old_pass') )
             )
             )
         {
             $param{error}
-                = $app->translate('Failed to verify current password.');
+                = $app->translate('Failed to verify the current password.');
             return $app->build_page( 'profile.tmpl', \%param );
         }
     }

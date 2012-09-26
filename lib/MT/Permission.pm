@@ -98,11 +98,17 @@ sub global_perms {
     );
 }
 
-sub perms_from_registry {
-    my $regs  = MT::Component->registry('permissions');
-    my %keys  = map { $_ => 1 } map { keys %$_ } @$regs;
-    my %perms = map { $_ => MT->registry( 'permissions' => $_ ) } keys %keys;
-    \%perms;
+{
+    my %perms;
+    sub perms_from_registry {
+        return \%perms if %perms;
+
+        my $regs  = MT::Component->registry('permissions');
+        my %keys  = map { $_ => 1 } map { keys %$_ } @$regs;
+        %perms = map { $_ => MT->registry( 'permissions' => $_ ) } keys %keys;
+
+        \%perms;
+    }
 }
 
 # Legend:
@@ -320,6 +326,11 @@ sub perms_from_registry {
 
                     # arg == 0 - remove it
                     $cur_perm =~ s/'$perm',?// if defined $cur_perm;
+
+                    # the "has no permission" status is NULL, not empty string.
+                    if ( $cur_perm eq '' ) {
+                        $cur_perm = undef;
+                    }
                 }
                 $_[0]->permissions($cur_perm);
             }

@@ -16,7 +16,7 @@ function smarty_block_mtarchives($args, $content, &$ctx, &$repeat) {
             $repeat = false;
             return '';
         }
-        $at = explode(',', $at);
+        $at = preg_split("/\s*,\s*/", $at);
 
         $ctx->localize($localvars);
         $ctx->stash('archive_types', $at);

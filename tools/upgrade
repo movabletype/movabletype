@@ -9,39 +9,95 @@
 package MT::Tool::Upgrade;
 use strict;
 use utf8;
-
-use lib  qw( extlib lib );
-use base qw( MT::Tool );
-
 use Carp qw(confess);
+use FindBin;
+use lib ( "$FindBin::Bin/../lib", "$FindBin::Bin/../extlib" );
+use base qw( MT::Tool );
+use Encode;
 use MT::Upgrade;
 
-sub usage { '[--dryrun] [--sql] [--name <name>]' }
+sub usage {"\$ $0 [--dryrun] [--sql] [--name <name>]"}
 
 sub help {
-    return q{
-        Installs or upgrades a database to the current MT schema.
+    return <<'HELP'
+  Installs or upgrades a database to the current MT schema.
+  --quiet          Stop progress reports.
+  --dryrun         Determine the upgrade steps required without
+                   executing any changes.
+  --sql            Report the SQL that would be performed instead
+                   of executing it.
+  --name <name>    The author as whom to perform the upgrade steps.
+                   Required when performing an upgrade (not at
+                   initial install).
 
-        --dryrun         Determine the upgrade steps required without
-                         executing any changes.
-        --sql            Report the SQL that would be performed instead
-                         of executing it.
-        --name <name>    The author as whom to perform the upgrade steps.
-                         Required when performing an upgrade (not at
-                         initial install).
-    };
+  At initial install, these parameters are all required. All values
+  must be URI escaped.
+
+  --username <name>
+
+  --password <pass>
+
+  --nickname <name>
+
+  --email <name>
+
+  --use_system_email [0 or 1]
+
+  --preferred_language [ja|de|en-us|es|fr|nl]
+
+  --site_name <name>
+
+  --site_url <url>
+
+  --site_path <path>
+
+  --site_theme <theme>
+
+  --site_timezone <timezone in numeric>
+
+  --rebuild [0|1]
+HELP
 }
 
-my ($dryrun, $name, $sqlonly);
+my ( $quiet, $dryrun, $name, $sqlonly );
+my ($username,   $password,         $nickname,
+    $email,      $use_system_email, $preferred_language,
+    $site_name,  $site_url,         $site_path,
+    $site_theme, $site_timezone,    $rebuild,
+);
 
 sub options {
     return (
+        'quiet'   => \$quiet,
         'dryrun!' => \$dryrun,
         'sql!'    => \$sqlonly,
         'name=s'  => \$name,
+
+        "username=s"           => \$username,
+        "password=s"           => \$password,
+        "nickname=s"           => \$nickname,
+        "email=s"              => \$email,
+        "use_system_email=n"   => \$use_system_email,
+        "preferred_language=s" => \$preferred_language,
+        "site_name=s"          => \$site_name,
+        "site_url=s"           => \$site_url,
+        "site_path=s"          => \$site_path,
+        "site_theme=s"         => \$site_theme,
+        "site_timezone=n"      => \$site_timezone,
+        "rebuild=n"            => \$rebuild,
     );
 }
 
+sub _error {
+    my $msg = shift;
+    $msg ||= 'An error occured!';
+    if ( Encode::is_utf8($msg) ) {
+        $msg = Encode::encode_utf8($msg);
+    }
+    $msg .= "\n" unless $msg =~ /\n$/;
+    print STDERR $msg;
+    exit 1;
+}
 
 sub main {
     my $class = shift;
@@ -49,83 +105,157 @@ sub main {
 
     if ($sqlonly) {
         $dryrun = 1;
-        MT->add_callback('MT::Upgrade::SQL', 1, undef, \&sql_cb);
+        MT->add_callback( 'MT::Upgrade::SQL', 1, undef, \&sql_cb );
     }
     else {
-        print "upgrade -- A command line tool for upgrading the schema for Movable Type.\n";
-        print "(Non-destructive mode)\n" if $dryrun;
+        print
+            "upgrade -- A command line tool for upgrading the schema for Movable Type.\n"
+            unless $quiet;
+        print "(Non-destructive mode)\n" if $dryrun && !$quiet;
     }
 
     my $install;
     my $driver = MT::Object->driver;
-    if (!$driver || !$driver->table_exists('MT::Author')) {
+    if ( !$driver || !$driver->table_exists('MT::Author') ) {
         $install = 1;
     }
 
-    unless ($install || $name) {
-        print "Please set username to set superuser at upgrading.  cf: upgrade --name Melody\n";
+    unless ( $install || $name ) {
+        print
+            "Please set username to set superuser at upgrading.  cf: upgrade --name Melody\n"
+            unless $quiet;
         exit;
     }
 
     my $author_id;
-    if (!$install && $name) {
+    if ( !$install && $name ) {
         require MT::BasicAuthor;
-        my $a = MT::BasicAuthor->load({name => $name})
+        my $a = MT::BasicAuthor->load( { name => $name } )
             or die "Not found user $name:" . MT::BasicAuthor->errstr;
         $author_id = $a->id;
     }
 
-    if ( $install ) {
+    if ($install) {
         $MT::Upgrade::Installing = 1;
     }
 
     local $SIG{__WARN__} = sub { __PACKAGE__->trace( $_[0] ) };
 
-    my $updated = MT::Upgrade->do_upgrade(
-        App       => __PACKAGE__, 
-        DryRun    => $dryrun,
-        Install   => $install,
-        SuperUser => $author_id,
-        CLI       => 1,
-        User      => { user_nickname => 'Melody Nelson' },
-    );
-
     if ($install) {
-        my $blog = MT->model('blog')->load(1);
-        $blog->theme_id('classic_website');
-        $blog->save;
-        $blog->apply_theme;
-        print "Installation complete.\n";
-    } else {
-        print "Upgrade complete!\n" if !$dryrun && $updated;
-        print "Your schema is up to date already.\n" if defined $updated && !$updated;
+
+        # Strict parameter check for initial install
+        _error "--username is required for initial install" unless $username;
+        _error "--password is required for initial install" unless $password;
+        require MT::App;
+        my $password_error
+            = MT::App::verify_password_strength( 'MT', $username, $password );
+        _error $password_error if $password_error;
+        _error "--nickname is required for initial install" unless $nickname;
+        _error "--email is required for initial install"    unless $email;
+        _error "--preferred_language is required for initial install"
+            unless $preferred_language;
+        _error "--site_name is required for initial install"
+            unless $site_name;
+        _error "--site_url is required for initial install" unless $site_url;
+        _error "--site_path is required for initial install"
+            unless $site_path;
+        _error "--site_timezone is required for initial install"
+            unless defined $site_timezone;
+        _error "--site_theme is required for initial install"
+            unless $site_theme;
+        require MT::Theme;
+        my $theme = MT::Theme->load($site_theme);
+        _error "Theme '$site_theme' isn't installed" unless $theme;
+
+        if ( $theme->{class} ne 'website' && $theme->{class} ne 'both' ) {
+            _error "Cannot apply theme '$site_theme' to website.";
+        }
+
+        my $new_user = {
+            user_name     => $username,
+            user_nickname => $nickname,
+            user_password => $password,
+            user_email    => $email,
+            user_lang     => $preferred_language,
+        };
+        my $new_website = {
+            website_name     => $site_name,
+            website_url      => $site_url,
+            website_path     => $site_path,
+            website_timezone => $site_timezone,
+            website_theme    => $site_theme,
+        };
+
+        my $updated = MT::Upgrade->do_upgrade(
+            App       => __PACKAGE__,
+            DryRun    => $dryrun,
+            Install   => 1,
+            SuperUser => $author_id,
+            CLI       => 1,
+            User      => $new_user,
+            Website   => $new_website,
+        );
+        exit( $updated ? 0 : 1 ) if $dryrun;
+        if ($use_system_email) {
+            MT->config->set_internal( EmailAddressMain => $email, 1 );
+            MT->config->save_config;
+        }
+        print "Installation complete.\n" unless $quiet;
+
+        if ($rebuild) {
+            my $blog = MT->model('blog')->load(1);
+            MT->rebuild( BlogID => $blog->id );
+            print "Rebuilding website complete.\n" unless $quiet;
+        }
+
+        exit( $updated ? 0 : 1 );
     }
+    else {
+        my $updated = MT::Upgrade->do_upgrade(
+            App       => __PACKAGE__,
+            DryRun    => $dryrun,
+            Install   => 0,
+            SuperUser => $author_id,
+            CLI       => 1,
+        );
+
+        print "Upgrade complete!\n" if !$dryrun && $updated && !$quiet;
+        print "Your schema is up to date already.\n"
+            if defined $updated && !$updated && !$quiet;
+        exit 0;
+    }
+
 }
 
 sub progress {
     my $pkg = shift;
     my $msg = shift;
-    print "\t* " . Encode::encode( MT->config->PublishCharset || 'UTF-8', $msg ) . "\n" unless $sqlonly;
+    print "\t* "
+        . Encode::encode( MT->config->PublishCharset || 'UTF-8', $msg ) . "\n"
+        unless $quiet;
 }
 
 sub error {
     my $pkg = shift;
     my $err = shift;
-    confess Encode::encode( MT->config->PublishCharset || 'UTF-8', $err );
+    confess Encode::encode( MT->config->PublishCharset || 'UTF-8', $err )
+        unless $quiet;
 }
 
 sub sql_cb {
     my $cb = shift;
-    my ($upgrade, $stmt) = @_;
-    print "$stmt\n";
+    my ( $upgrade, $stmt ) = @_;
+    print "$stmt\n" unless $quiet;
 }
 
 sub trace {
     my $pkg = shift;
-    print "[warn] >> \t" . Encode::encode( MT->config->PublishCharset || 'UTF-8', $_[0] ) . "\n"; 
+    print "[warn] >> \t"
+        . Encode::encode( MT->config->PublishCharset || 'UTF-8', $_[0] )
+        . "\n"
+        unless $quiet;
 }
 
 __PACKAGE__->main() unless caller;
 
 1;
-

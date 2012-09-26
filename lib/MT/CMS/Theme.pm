@@ -425,6 +425,7 @@ sub do_export {
         or return $app->permission_denied();
 
     my $q    = $app->param;
+    my $cfg  = $app->config;
     my $blog = $app->blog;
     my $theme_id 
         = dirify( $q->param('theme_id') )
@@ -440,44 +441,65 @@ sub do_export {
     my $output = $q->param('output') || 'themedir';
 
     ## Abort if theme directory is not okey for output.
-    my $hdlrs       = MT->registry('theme_element_handlers');
-    my $theme_dir   = MT->config('ThemesDirectory');
-    my $output_path = File::Spec->catdir( $theme_dir, $theme_id );
-    if ( $output eq 'themedir' && !$fmgr->can_write($theme_dir) ) {
-        return $app->error(
-            $app->translate(
-                'Themes Directory [_1] is not writable.', $theme_dir,
-            )
-        );
-    }
+    my ($theme_dir, $output_path);
+    if ($output eq 'themedir') {
 
-    if ( $output eq 'themedir' && $fmgr->exists($output_path) ) {
-        if ( $q->param('overwrite_yes') ) {
-            use File::Path 'rmtree';
-            rmtree($output_path);
+        my @dir_list      = $cfg->ThemesDirectory;
+        my ($default_dir) = $cfg->default('ThemesDirectory');
+        if (grep $_ eq $default_dir, @dir_list) {
+            @dir_list = ($default_dir, grep($_ ne $default_dir, @dir_list));
         }
-        elsif ( $q->param('overwrite_no') ) {
-            return $app->redirect(
-                $app->uri(
-                    mode => 'export_theme',
-                    args => { blog_id => $blog->id, },
-                )
-            );
-        }
-        else {
-            my %params;
-            foreach ( $q->param ) {
-                $params{$_} = $app->param($_);
+
+        foreach my $dir (@dir_list) {
+            my $path = File::Spec->catdir( $dir, $theme_id );
+            if ($fmgr->can_write($dir)) {
+                $theme_dir = $dir;
+                last;
             }
+        }
+        if (not defined $theme_dir) {
+            if (scalar(@dir_list) == 1) {
+                return $app->errtrans(
+                    'Themes directory [_1] is not writable.', $dir_list[0],
+                );
+            }
+            else {
+                return $app->errtrans(
+                    'All themes directories are not writable.'
+                );
+            }
+        }
+        $output_path = File::Spec->catdir( $theme_dir, $theme_id );
 
-            my @include = $q->param('include');
-            $params{include}      = \@include;
-            $params{theme_folder} = $output_path;
-            return $app->load_tmpl( 'theme_export_replace.tmpl', \%params );
+        if ( $fmgr->exists($output_path) ) {
+            if ( $q->param('overwrite_yes') ) {
+                use File::Path 'rmtree';
+                rmtree($output_path);
+            }
+            elsif ( $q->param('overwrite_no') ) {
+                return $app->redirect(
+                    $app->uri(
+                        mode => 'export_theme',
+                        args => { blog_id => $blog->id, },
+                    )
+                );
+            }
+            else {
+                my %params;
+                foreach ( $q->param ) {
+                    $params{$_} = $app->param($_);
+                }
+
+                my @include = $q->param('include');
+                $params{include}      = \@include;
+                $params{theme_folder} = $output_path;
+                return $app->load_tmpl( 'theme_export_replace.tmpl', \%params );
+            }
         }
     }
 
     ## Pick up settings.
+    my $hdlrs    = MT->registry('theme_element_handlers');
     my %includes = map { $_ => 1 } ( $q->param('include') );
     my %exporter;
     my $settings = $blog->theme_export_settings || {};
@@ -603,7 +625,7 @@ sub do_export {
         require MT::Util::Archive;
         my $arcfile = File::Temp::tempnam( $tmproot, $theme_id );
         my $arc = MT::Util::Archive->new( $arctype, $arcfile )
-            or die "Can't load archiver : " . MT::Util::Archive->errstr;
+            or die "Cannot load archiver : " . MT::Util::Archive->errstr;
         $arc->add_tree($tmproot);
         $arc->close;
         my $newfilename = $theme_id;

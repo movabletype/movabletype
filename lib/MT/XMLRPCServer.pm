@@ -19,7 +19,6 @@ sub mt_new {
         or die MT::XMLRPCServer::_fault( MT->errstr );
 
     # we need to be UTF-8 here no matter which PublishCharset
-    $main::server->serializer->encoding('UTF-8');
     $mt->run_callbacks( 'init_app', $mt, { App => 'xmlrpc' } );
     $mt;
 }
@@ -532,7 +531,7 @@ sub _edit_entry {
         or die _fault( MT->translate( "Invalid blog ID '[_1]'", $blog_id ) );
     my ( $author, $perms ) = $class->_login( $user, $pass, $entry->blog_id );
     die _fault( MT->translate("Invalid login") ) unless $author;
-    die _fault( MT->translate("Not privileged to edit entry") )
+    die _fault( MT->translate("Not allowed to edit entry") )
         if !$author->is_superuser
             && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
     my $orig_entry = $entry->clone;
@@ -939,7 +938,7 @@ sub _get_entry {
     }
     my ( $author, $perms ) = $class->_login( $user, $pass, $entry->blog_id );
     die _fault( MT->translate("Invalid login") ) unless $author;
-    die _fault( MT->translate("Not privileged to get entry") )
+    die _fault( MT->translate("Not allowed to get entry") )
         if !$author->is_superuser
             && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
     my $co = sprintf "%04d%02d%02dT%02d:%02d:%02d",
@@ -1175,7 +1174,7 @@ sub setPostCategories {
         die _fault( MT->translate( "Invalid entry ID '[_1]'", $entry_id ) );
     my ( $author, $perms ) = $class->_login( $user, $pass, $entry->blog_id );
     die _fault( MT->translate("Invalid login") ) unless $author;
-    die _fault( MT->translate("Not privileged to set entry categories") )
+    die _fault( MT->translate("Not allowed to set entry categories") )
         if !$author->is_superuser
             && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
     my @place = MT::Placement->load( { entry_id => $entry_id } );
@@ -1242,11 +1241,11 @@ sub publishPost {
         die _fault( MT->translate( "Invalid entry ID '[_1]'", $entry_id ) );
     my ( $author, $perms ) = $class->_login( $user, $pass, $entry->blog_id );
     die _fault( MT->translate("Invalid login") ) unless $author;
-    die _fault( MT->translate("Not privileged to edit entry") )
+    die _fault( MT->translate("Not allowed to edit entry") )
         if !$author->is_superuser
             && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
     $mt->rebuild_entry( Entry => $entry, BuildDependencies => 1 )
-        or die _fault( MT->translate( "Publish failed: [_1]", $mt->errstr ) );
+        or die _fault( MT->translate( "Publishing failed: [_1]", $mt->errstr ) );
     SOAP::Data->type( boolean => 1 );
 }
 
@@ -1271,7 +1270,7 @@ sub publishScheduledFuturePosts {
     my $author = $class->_login( $user, $pass );
     die _fault( MT->translate("Invalid login") ) unless $author;
     my $blog = MT::Blog->load($blog_id)
-        or die _fault( MT->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        or die _fault( MT->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
     my $now = time;
 
@@ -1360,7 +1359,7 @@ sub newMediaObject {
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my ( $author, $perms ) = $class->_login( $user, $pass, $blog_id );
     die _fault( MT->translate("Invalid login") ) unless $author;
-    die _fault( MT->translate("Not privileged to upload files") )
+    die _fault( MT->translate("Not allowed to upload files") )
         if !$author->is_superuser
             && (   !$perms
                 || !$perms->can_do('upload_asset_via_xmlrpc_server') );
@@ -1368,7 +1367,7 @@ sub newMediaObject {
     require MT::Blog;
     require File::Spec;
     my $blog = MT::Blog->load($blog_id)
-        or die _fault( MT->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        or die _fault( MT->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
     my $fname = $file->{name}
         or die _fault( MT->translate("No filename provided") );
@@ -1384,7 +1383,7 @@ sub newMediaObject {
         my @ret = File::Basename::fileparse( $fname, @deny_exts );
         die _fault(
             MT->translate(
-                'The file([_1]) you uploaded is not allowed.', $fname
+                'The file ([_1]) that you uploaded is not allowed.', $fname
             )
         ) if $ret[2];
     }
@@ -1397,7 +1396,7 @@ sub newMediaObject {
         my @ret = File::Basename::fileparse( $fname, @allowed );
         die _fault(
             MT->translate(
-                'The file([_1]) you uploaded is not allowed.', $fname
+                'The file ([_1]) that you uploaded is not allowed.', $fname
             )
         ) unless $ret[2];
     }

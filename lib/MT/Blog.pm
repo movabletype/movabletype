@@ -72,6 +72,7 @@ __PACKAGE__->install_properties(
             'use_revision'              => 'boolean',
             'archive_url'               => 'string(255)',
             'archive_path'              => 'string(255)',
+            'content_css'               => 'string(255)',
             ## Have to keep these around for use in mt-upgrade.cgi.
             'old_style_archive_links' => 'boolean',
             'archive_tmpl_daily'      => 'string(255)',
@@ -231,7 +232,10 @@ sub list_props {
             filter_editable => 0,
             raw             => sub {
                 my ( $prop, $obj ) = @_;
-                return $obj->website->name;
+                my $parent = $obj->website;
+                return $parent
+                    ? $parent->name
+                    : ( MT->translate('*Website/Blog deleted*') );
             },
             bulk_sort => sub {
                 my $prop    = shift;
@@ -882,26 +886,39 @@ sub effective_remote_auth_token {
     undef;
 }
 
+sub flush_has_archive_type_cache {
+    my $blog   = shift;
+    my ($type) = @_;
+
+    my $cache_key = 'has_archive_type::blog:' . $blog->id;
+    my $cache = MT->request( $cache_key ) or return;
+    delete $cache->{$type}
+        if exists $cache->{$type};
+    1;
+}
+
 sub has_archive_type {
     my $blog   = shift;
     my ($type) = @_;
     my %at     = map { lc $_ => 1 } split( /,/, $blog->archive_type );
     return 0 unless exists $at{ lc $type };
 
-    my $result = 0;
-    require MT::TemplateMap;
-    my @maps = MT::TemplateMap->load(
-        {   blog_id      => $blog->id,
-            archive_type => $type
-        }
-    );
-    return 0 unless @maps;
-    require MT::PublishOption;
+    my $cache_key = 'has_archive_type::blog:' . $blog->id;
 
-    foreach my $map (@maps) {
-        $result++ if $map->build_type != MT::PublishOption::DISABLED();
-    }
-    return $result;
+    my $r  = MT->request;
+    my $cache = $r->cache( $cache_key );
+    if ( !$cache || ( $cache && !$cache->{$type} ) ) {
+        require MT::PublishOption;
+        require MT::TemplateMap;
+        my $count = MT::TemplateMap->count({
+            blog_id => $blog->id,
+            archive_type => $type,
+            build_type => { not => MT::PublishOption::DISABLED() },
+        });
+        $cache->{$type} = $count;
+        $r->cache( $cache_key, $cache );
+    };
+    return $cache->{$type};
 }
 
 sub accepts_registered_comments {
@@ -1629,6 +1646,11 @@ sub use_revision {
         if 0 < scalar(@_);
     return 0 unless MT->config->TrackRevisions;
     return $blog->SUPER::use_revision;
+}
+
+sub raw_template_set {
+    my $blog = shift;
+    $blog->theme_id || $blog->SUPER::template_set  || '';
 }
 
 sub template_set {

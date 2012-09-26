@@ -96,16 +96,18 @@ sub load_all_themes {
 
 sub _theme_packages {
     my $pkg      = shift;
-    my $base_dir = MT->config('ThemesDirectory');
-    require DirHandle;
-    my $d = DirHandle->new($base_dir);
-    die "Can't open theme directory" unless $d;
+    my @dir_list = MT->config('ThemesDirectory');
     my @ids;
-    while ( defined( my $id = $d->read ) ) {
-        next if $id =~ /^\./;
-        die "Bad theme filename $id"
-            if $id !~ /^([-\\\/\@\:\w\.\s~]+)$/;
-        push @ids, $id;
+    foreach my $base_dir (@dir_list) {
+        require DirHandle;
+        my $d = DirHandle->new($base_dir);
+        die "Cannot open theme directory" unless $d;
+        while ( defined( my $id = $d->read ) ) {
+            next if $id =~ /^\./;
+            die "Bad theme filename $id"
+                if $id !~ /^([-\\\/\@\:\w\.\s~]+)$/;
+            push @ids, $id;
+        }
     }
     return @ids;
 }
@@ -150,11 +152,15 @@ sub _load_from_registry {
 sub _load_from_themes_directory {
     my $pkg        = shift;
     my ($theme_id) = @_;
-    my $base_dir   = MT->config('ThemesDirectory');
+    my @dir_list   = MT->config('ThemesDirectory');
 
     require File::Spec;
-    my $dir = File::Spec->catdir( $base_dir, $theme_id );
-    my $path = File::Spec->catfile( $dir, 'theme.yaml' );
+    my ($dir, $path);
+    foreach my $base_dir (@dir_list) {
+        $dir = File::Spec->catdir( $base_dir, $theme_id );
+        $path = File::Spec->catfile( $dir, 'theme.yaml' );
+        last if -f $path;
+    }
 
     return unless -f $path;
     require MT::Util::YAML;
@@ -273,6 +279,23 @@ sub elements {
         keys %$elements;
 }
 
+sub static_file_path_from_id {
+    File::Spec->catdir( MT->app->support_directory_path,
+        'theme_static', $_[0] )
+        . '/';
+}
+
+sub static_file_url_from_id {
+    File::Spec->catdir( MT->app->support_directory_url,
+        'theme_static', $_[0] )
+        . '/';
+}
+
+sub static_file_url {
+    my $theme = shift;
+    static_file_url_from_id( $theme->id );
+}
+
 sub apply {
     my $theme = shift;
     my ( $blog, %opts ) = @_;
@@ -349,18 +372,12 @@ sub apply {
 
 sub install_static_files {
     my $pkg = shift;
-    my ( $src, $dst, %opts ) = @_;
-    my $default_allowed_extentions = [
-        qw(
-            html    css    js
-            png     jpeg   jpg   gif
-            )
-    ];
-    my $allowed
-        = 'ARRAY' eq ref $opts{allow}
-        ? $opts{allow}
-        : $default_allowed_extentions;
-    my %allowed = map { ( lc $_ ) => 1 } @$allowed;
+    my ( $src, $dst ) = @_;
+    my %allowed = 
+        map { ( lc $_ ) => 1 }
+        grep { defined $_ and $_ ne ''}
+        split /[\s,]+/, 
+        MT->config->ThemeStaticFileExtensions;
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
     require File::Find;

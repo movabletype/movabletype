@@ -21,8 +21,9 @@ my $plugin = MT::Plugin::MultiBlog->new(
             '<MT_TRANS phrase="MultiBlog allows you to publish content from other blogs and define publishing rules and access controls between them.">',
         version                => $VERSION,
         author_name            => 'Six Apart, Ltd.',
-        author_link            => 'http://www.sixapart.com/',
+        author_link            => 'http://www.movabletype.org/',
         system_config_template => 'system_config.tmpl',
+        doc_link               => 'http://www.movabletype.org/documentation/appendices/tags/multiblog.html',
         blog_config_template   => 'blog_config.tmpl',
         settings               => new MT::PluginSettings(
             [   [   'default_access_allowed',

@@ -434,7 +434,7 @@ sub list_props {
                 my ( $cats, $placs ) = $prop->bulk_cats(@_);
                 return map {
                     MT::Util::encode_html(
-                        $cats->{ $placs->{ $_->id } || 0 } )
+                        $cats->{ $placs->{ $_->id } || 0 }, 1 )
                         || $prop->zero_state_label
                 } @$objs;
             },
@@ -752,7 +752,7 @@ sub system_filters {
             order => 1000,
         },
         commented_in_last_7_days => {
-            label => 'Entries Commented on in the Last 7 Days',
+            label => 'Entries with Comments Within the Last 7 Days',
             items => [
                 {   type => 'commented_on',
                     args => { option => 'days', days => 7 }
@@ -1462,7 +1462,7 @@ sub blog {
             MT::Blog->load($blog_id)
                 or $entry->error(
                 MT->translate(
-                    "Load of blog '[_1]' failed: [_2]",
+                    "Loading blog '[_1]' failed: [_2]",
                     $blog_id,
                     MT::Blog->errstr
                         || MT->translate("record does not exist.")
