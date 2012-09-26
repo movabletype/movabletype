@@ -63,7 +63,13 @@ sub can_edit_entry_template {
 }
 
 sub can_view_entry_template {
-    can_edit_entry_template(@_);
+    my ( $perms, $entry_template, $author ) = @_;
+
+    return 0
+        if ( !$perms )
+        || ( !$author->isa('MT::Author') );
+
+    $author->is_superuser() || $perms->can_do('view_all_entry_templates');
 }
 
 sub save_permission_filter {
@@ -118,10 +124,11 @@ sub cms_pre_load_filtered_list {
         }
     );
 
-    my @filters = ( { blog_id => undef, } );
+    my @editable_filters = my @filters = ( { blog_id => undef, } );
     while ( my $p = $iter->() ) {
         if ( $p->can_do('access_to_entry_template_list') ) {
-            push @filters, '-or',
+            push @filters, '-or', { blog_id => $p->blog_id, };
+            push @editable_filters, '-or',
                 {
                 blog_id => $p->blog_id,
                 (   $p->can_do('edit_all_entry_templates')
@@ -133,6 +140,8 @@ sub cms_pre_load_filtered_list {
     }
 
     $load_options->{terms} = [ %$terms ? ( $terms, '-and' ) : (), \@filters ];
+    $load_options->{editable_terms}
+        = [ %$terms ? ( $terms, '-and' ) : (), \@editable_filters ];
 }
 
 sub list_template_param {

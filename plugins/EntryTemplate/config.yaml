@@ -76,16 +76,19 @@ permissions:
         permitted_action:
             access_to_entry_template_list: 1
             create_entry_template: 1
+            view_all_entry_templates: 1
             edit_own_entry_templates: 1
     blog.manage_pages:
         permitted_action:
             access_to_entry_template_list: 1
             create_entry_template: 1
+            view_all_entry_templates: 1
             edit_all_entry_templates: 1
     blog.edit_all_posts:
         permitted_action:
             access_to_entry_template_list: 1
             create_entry_template: 1
+            view_all_entry_templates: 1
             edit_all_entry_templates: 1
 
 callbacks:
