@@ -212,6 +212,11 @@ sub list_props {
             base  => '__virtual.modified_on',
             order => 500,
         },
+        description => {
+            auto    => 1,
+            display => 'none',
+            label   => 'Description',
+        },
     };
 }
 
