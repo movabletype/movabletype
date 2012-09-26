@@ -52,7 +52,7 @@ sub can_edit_entry_template {
     }
 
     return 1 if $perms->can_do('edit_all_entry_templates');
-    return 0 if ! $perms->can_do('edit_own_entry_templates');
+    return 0 if !$perms->can_do('edit_own_entry_templates');
 
     # This $author can only edit own entry template.
     if ( !ref $entry_template ) {

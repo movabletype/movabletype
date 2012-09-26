@@ -78,14 +78,14 @@ sub list_props {
                         }
                     }
                 );
-                my $user = MT->instance->user;
+                my $user  = MT->instance->user;
                 my %perms = map { $_->id => $user->permissions($_) } @blogs;
-                my @out = ();
+                my @out   = ();
 
                 require EntryTemplate::App;
 
                 for my $obj (@$objs) {
-                    my $label       = encode_html($obj->label);
+                    my $label       = encode_html( $obj->label );
                     my $description = $obj->description;
                     if ($description) {
                         my $len = 40;
@@ -97,7 +97,12 @@ sub list_props {
                         $description = '<p class="description">'
                             . encode_html($description) . '</p>';
                     }
-                    if (EntryTemplate::App::can_edit_entry_template($perms{$obj->blog_id}, $obj, $user)) {
+                    if (EntryTemplate::App::can_edit_entry_template(
+                            $perms{ $obj->blog_id },
+                            $obj, $user
+                        )
+                        )
+                    {
                         my $edit_url = MT->app->uri(
                             mode => 'view',
                             args => {
@@ -128,11 +133,11 @@ sub list_props {
             display => 'default',
         },
         blog_name => {
-            base  => '__virtual.blog_name',
-            order => 400,
-            display => 'default',
+            base      => '__virtual.blog_name',
+            order     => 400,
+            display   => 'default',
             site_name => 0,
-            view  => ['system'],
+            view      => ['system'],
             bulk_html => sub {
                 my $prop     = shift;
                 my ($objs)   = @_;
@@ -148,10 +153,8 @@ sub list_props {
                 );
                 my %blog_map = map { $_->id        => $_ } @blogs;
                 my %site_ids = map { $_->parent_id => 1 }
-                    grep {
-                    $_->parent_id
-                        && !$blog_map{ $_->parent_id }
-                    } @blogs;
+                    grep { $_->parent_id && !$blog_map{ $_->parent_id } }
+                    @blogs;
                 my @sites
                     = MT->model('website')
                     ->load( { id => [ keys %site_ids ], },
@@ -166,8 +169,7 @@ sub list_props {
                         }
                     );
                 } @blogs;
-                my %blog_site_map
-                    = map { $_->id => $_ } ( @blogs, @sites );
+                my %blog_site_map = map { $_->id => $_ } ( @blogs, @sites );
                 my @out;
 
                 for my $obj (@$objs) {
@@ -177,17 +179,13 @@ sub list_props {
                     }
                     my $blog = $blog_site_map{ $obj->blog_id };
                     unless ($blog) {
-                        push @out,
-                            MT->translate('*Website/Blog deleted*');
+                        push @out, MT->translate('*Website/Blog deleted*');
                         next;
                     }
 
                     my $name = undef;
-                    if ((   my $site
-                            = $blog_site_map{ $blog->parent_id }
-                        )
-                        && $prop->site_name
-                        )
+                    if ( ( my $site = $blog_site_map{ $blog->parent_id } )
+                        && $prop->site_name )
                     {
                         $name = join( '/', $site->name, $blog->name );
                     }
@@ -198,7 +196,8 @@ sub list_props {
                     push @out,
                           '<a href="'
                         . $urls{ $blog->id } . '">'
-                        . encode_html($name) . ' (' . $blog->id . ')</a>';
+                        . encode_html($name) . ' ('
+                        . $blog->id . ')</a>';
                 }
 
                 return @out;
