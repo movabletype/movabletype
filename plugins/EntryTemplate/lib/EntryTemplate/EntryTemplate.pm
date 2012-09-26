@@ -240,7 +240,7 @@ sub validate {
 }
 
 sub required_fields {
-    [qw(label text description)];
+    [qw(label)];
 }
 
 1;
