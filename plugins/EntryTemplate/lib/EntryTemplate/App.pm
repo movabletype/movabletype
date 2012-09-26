@@ -30,8 +30,9 @@ sub param_edit_entry {
     my $perms = $app->permissions;
     my $user  = $app->user;
 
-    my @entry_templates = $app->model('entry_template')
-        ->load( { blog_id => $app->blog->id } );
+    my @entry_templates
+        = $app->model('entry_template')->load( { blog_id => $app->blog->id },
+        { sort => 'id', direction => 'descend' } );
     $param->{entry_templates}
         = [ grep { can_view_entry_template( $perms, $_, $user ) }
             @entry_templates ];
