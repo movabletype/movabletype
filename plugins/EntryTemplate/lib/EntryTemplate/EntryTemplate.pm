@@ -88,11 +88,14 @@ sub list_props {
                     my $label       = encode_html($obj->label);
                     my $description = $obj->description;
                     if ($description) {
-                        $description = encode_html($description);
-                        $description =~ s{\r?\n}{<br />}g;
-                    }
-                    else {
-                        $description = '-';
+                        my $len = 40;
+                        if ( length $description > $len ) {
+                            $description = substr( $description, 0, $len );
+                            $description .= '...';
+                        }
+
+                        $description = '<p class="description">'
+                            . encode_html($description) . '</p>';
                     }
                     if (EntryTemplate::App::can_edit_entry_template($perms{$obj->blog_id}, $obj, $user)) {
                         my $edit_url = MT->app->uri(
@@ -105,13 +108,13 @@ sub list_props {
                         );
                         push @out, qq{
                             <a href="$edit_url">$label</a>
-                            <p class="description">$description</p>
+                            $description
                         };
                     }
                     else {
                         push @out, qq{
                             $label
-                            <p class="description">$description</p>
+                            $description
                         };
                     }
                 }
