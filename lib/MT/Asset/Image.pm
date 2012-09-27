@@ -376,7 +376,7 @@ sub as_html {
         $text = sprintf(
             '<a href="%s">%s</a>',
             MT::Util::encode_html( $asset->url ),
-            MT::Util::encode_html( $asset->file_name )
+            MT::Util::encode_html( $asset->display_name )
         );
     }
 
