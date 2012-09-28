@@ -159,6 +159,10 @@ sub archive_entries_count {
     return $count;
 }
 
+sub does_publish_file {
+    return 1;
+}
+
 # For user-defined date-based archive types
 sub date_range {
     shift->_getset_coderef( 'date_range', @_ );

@@ -160,6 +160,7 @@ use_ok('MT::Request');
 use_ok('MT::Sanitize');
 use_ok('MT::Serialize');
 use_ok('MT::Memcached');
+use_ok('MT::Memcached::ExpirableProxy');
 use_ok('MT::PublishOption');
 use_ok('MT::Scorable');
 use_ok('MT::Template::Node');

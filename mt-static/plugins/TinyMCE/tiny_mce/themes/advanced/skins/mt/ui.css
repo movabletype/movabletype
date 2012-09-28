@@ -52,6 +52,9 @@
 }
 .mtSkin table.mceLayout tr.mceFirst td { 
     border-width: 1px 1px 0;
+    border-radius: 3px 3px 0 0;
+}
+#editor + #editor-content .mtSkin table.mceLayout tr.mceFirst td {
     border-radius: 0 3px 0 0;
 }
 .mtSkin table.mceLayout tr.mceLast td { 
@@ -103,7 +106,7 @@
 }
 
 .mtSkin .mceIcon { 
-    background: transparent url(./img/icons.png) no-repeat top left;
+    background: transparent url(img/icons.png) no-repeat top left;
 }
 .mtSkin td.mceCenter { 
     text-align: center;
@@ -240,7 +243,7 @@
     border-radius: 0 2px 2px 0;
 }
 .mtSkin .mceListBox a.mceOpen span { 
-    background: transparent url(./img/small-grey-arrow-up-down.png) center no-repeat;
+    background: transparent url(img/small-grey-arrow-up-down.png) center no-repeat;
 }
 .mtSkin .mceListBoxDisabled a.mceText { 
     color: #888888;
@@ -277,14 +280,14 @@
    border-right: 0;
 }
 .mtSkin .mceSplitButton span.mceAction { 
-    background-image: url(./img/icons.png);
+    background-image: url(img/icons.png);
 }
 .mtSkin .mceSplitButton a.mceOpen { 
     width: 10px;
     border-radius: 0 2px 2px 0;
 }
 .mtSkin .mceSplitButton span.mceOpen { 
-    background: transparent url(./img/small-grey-arrow-down.png) center no-repeat;
+    background: transparent url(img/small-grey-arrow-down.png) center no-repeat;
 }
 .mtSkin .mceSplitButtonDisabled .mceAction { 
     opacity:0.3;
@@ -422,16 +425,16 @@
     color: #888888;
 }
 .mtSkin .mceMenuItemSelected .mceIcon { 
-    background: url(../default/img/menu_check.gif);
+    background: url(img/menu_check.gif);
 }
 .mtSkin .mceNoIcons .mceMenuItemSelected a { 
-    background: url(../default/img/menu_arrow.gif) no-repeat -6px center;
+    background: url(img/menu_arrow.gif) no-repeat -6px center;
 }
 .mtSkin .mceMenu span.mceMenuLine { 
     display: none;
 }
 .mtSkin .mceMenuItemSub a { 
-    background: url(../default/img/menu_arrow.gif) no-repeat top right;
+    background: url(img/menu_arrow.gif) no-repeat top right;
 }
 
 /* -- Progress,Resize */
@@ -451,7 +454,7 @@
     left: 0;
     top: 0;
     z-index: 1001;
-    background: url(../default/img/progress.gif) no-repeat;
+    background: url(img/progress.gif) no-repeat;
     width: 32px;
     height: 32px;
     margin: -16px 0 0 -16px;
@@ -537,11 +540,15 @@
 .mtSkin #editor-input-content_path span, 
 .mtSkin #editor-input-extended_path_voice, 
 .mtSkin #editor-input-extended_path_voice + span, 
-.mtSkin #editor-input-extended_path span { 
+.mtSkin #editor-input-extended_path span, 
+.mtSkin #text_path_voice, 
+.mtSkin #text_path_voice + span, 
+.mtSkin #text_path span { 
     display: none;
 }
 .mtSkin #editor-input-content_path a, 
-.mtSkin #editor-input-extended_path a { 
+.mtSkin #editor-input-extended_path a, 
+.mtSkin #text_path a { 
     display: inline-block;
     height: 20px;
     padding: 0 10px 0 5px;
@@ -551,19 +558,21 @@
     color: #7b7c7d;
 }
 .mtSkin #editor-input-content_path a:hover, 
-.mtSkin #editor-input-extended_path a:hover { 
+.mtSkin #editor-input-extended_path a:hover, 
+.mtSkin #text_path a:hover { 
     color: #2b2b2b;
     text-decoration: none;
 }
 .mtSkin #editor-input-content_path a:last-child, 
-.mtSkin #editor-input-extended_path a:last-child { 
+.mtSkin #editor-input-extended_path a:last-child, 
+.mtSkin #text_path a:last-child { 
     background: none;
 }
 .mtSkin .mceStatusbar a.mceResize { 
     float: right;
     width: 20px;
     height: 20px;
-    background: url(../../img/icons.gif) -800px 0;
+    background: url(img/icons.gif) -800px 0;
     cursor: se-resize;
 }
 .mtSkin .mceStatusbar a:hover { 

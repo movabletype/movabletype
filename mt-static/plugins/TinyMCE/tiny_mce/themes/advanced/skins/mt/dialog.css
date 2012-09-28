@@ -209,7 +209,7 @@ a.browse span,
 a.pickcolor span {
     display: block;
     margin-left: 2px;
-    background-image: url(../../img/icons.gif);
+    background-image: url(img/icons.gif);
 }
 a.browse span { 
     width: 20px;
