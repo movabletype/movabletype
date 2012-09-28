@@ -2604,16 +2604,91 @@ sub prepare_dynamic_publishing {
             && ( -f $htaccess_path )
             && ( -f $mtview_path );
 
+    require URI;
+    my $mtview_server_url = new URI($site_url);
+    $mtview_server_url = $mtview_server_url->path();
+    $mtview_server_url
+        .= ( $mtview_server_url =~ m|/$| ? "" : "/" ) . "mtview.php";
+
     # IIS itself does not handle .htaccess,
     # but IISPassword (3rd party) does and dies with this.
-    if ( $ENV{SERVER_SOFTWARE} !~ /Microsoft-IIS/ ) {
-        eval {
-            require URI;
-            my $mtview_server_url = new URI($site_url);
-            $mtview_server_url = $mtview_server_url->path();
-            $mtview_server_url
-                .= ( $mtview_server_url =~ m|/$| ? "" : "/" ) . "mtview.php";
+    if ( $ENV{SERVER_SOFTWARE} =~ /Microsoft-IIS/ ) {
+        # On the IIS environment, will make/modify the web.config with URL Rewrite
+        my $rule;
+        $rule->{'stopProcessing'} = 'true';
+        $rule->{'action'}         = {
+            'url'               => $mtview_server_url . '{R:2}',
+            'appendQueryString' => 'true',
+            'type'              => 'Rewrite',
+        };
+        $rule->{'match'} = {
+            'ignoreCase' => 'false',
+            'url'        => '^(.*)(\\?.*)?$',
+        };
+        $rule->{'name'} = 'Rewrite rule for Dynamic Publishing';
+        $rule->{'conditions'} = {
+            'add' => [
+                {
+                    'input' => '{REQUEST_FILENAME}',
+                    'ignoreCase' => 'false',
+                    'negate' => 'true',
+                    'matchType' => 'IsDirectory'
+                },
+                {
+                    'input' => '{REQUEST_FILENAME}',
+                    'ignoreCase' => 'false',
+                    'negate' => 'true',
+                    'matchType' => 'IsFile'
+                }
+            ],
+            'logicalGrouping' => 'MatchAll',
+        };
 
+        require XML::Simple;
+        my $web_config_path = File::Spec->catfile( $site_path, "web.config" );
+        my $web_config;
+        my $parser = XML::Simple->new;
+        if ( -f $web_config_path ) {
+            $web_config = $parser->XMLin( $web_config_path, keyattr => [] );
+
+            my $ins = 1;
+            my $rules;
+            if ( exists $web_config->{'system.webServer'}->{'rewrite'} ) {
+                $rules = $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}->{'rule'};
+                $rules = [ $rules ] unless ref $rules eq 'ARRAY';
+                foreach my $rule ( @$rules ) {
+                    my $rule_url = $rule->{action}->{url};
+                    if ( $rule_url =~ /^$mtview_server_url/i ) {
+                        $ins = 0;last;
+                    }
+                }
+            }
+            if ( $ins ) {
+                push @$rules, $rule;
+            }
+            $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}->{'rule'} = $rules;
+        }
+        else {
+            $web_config->{'system.webServer'} = {
+                'rewrite' => {
+                    'rules' =>{
+                        'rule' => $rule,
+                    },
+                },
+            };
+        }
+
+        my $out = $parser->XMLout( $web_config, RootName => undef, keyattr => [] );
+        $out = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . "<configuration>\n" . $out . "</configuration>\n";
+
+        my $fh;
+        open( $fh, ">$web_config_path" )
+            || die "Couldn't open $web_config_path for appending";
+        print $fh $out;
+        close $fh;
+    }
+    else {
+        eval {
             my $contents = "";
             if ( open( HT, $htaccess_path ) ) {
                 local $/ = undef;
