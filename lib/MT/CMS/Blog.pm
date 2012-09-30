@@ -2367,6 +2367,50 @@ sub update_publishing_profile {
             }
             $tmpl->save();
         }
+        if ( $dcty eq 'none' ) {
+            if ( $ENV{SERVER_SOFTWARE} =~ /Microsoft-IIS/ && MT->config->EnableAutoRewriteOnIIS ) {
+                # Remove IIS redirect settings
+                my $remove_setting = sub {
+                    my ( $web_config_path ) = @_;
+                    require XML::Simple;
+                    my $web_config;
+                    my $parser = XML::Simple->new;
+                    if ( -f $web_config_path ) {
+                        $web_config = $parser->XMLin( $web_config_path, keyattr => [] );
+
+                        my $rules;
+                        my $new_rules;
+                        if ( exists $web_config->{'system.webServer'}->{'rewrite'} ) {
+                            $rules = $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}->{'rule'};
+                            $rules = [ $rules ] unless ref $rules eq 'ARRAY';
+                            foreach my $rule ( @$rules ) {
+                                if ( $rule->{name} ne 'Rewrite rule for Dynamic Publishing' ) {
+                                    push @$new_rules, $rule;
+                                }
+                            }
+                        }
+                        if ( $new_rules ) {
+                            $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}->{'rule'} = $new_rules;
+                        }
+                        else {
+                            $web_config->{'system.webServer'}->{'rewrite'} = undef;
+                        }
+
+                        my $out = $parser->XMLout( $web_config, RootName => undef, keyattr => [] );
+                        $out = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . "<configuration>\n" . $out . "</configuration>\n";
+
+                        my $fh;
+                        open( $fh, ">$web_config_path" )
+                            || die "Couldn't open $web_config_path for appending";
+                        print $fh $out;
+                        close $fh;
+                    }
+                };
+
+                $remove_setting->( File::Spec->catfile( $blog->site_path, "web.config" ) );
+                $remove_setting->( File::Spec->catfile( $blog->archive_path, "web.config" ) );
+            }
+        }
     }
     elsif ( $dcty eq 'archives' ) {
         my @templates = MT::Template->load(
@@ -2612,7 +2656,7 @@ sub prepare_dynamic_publishing {
 
     # IIS itself does not handle .htaccess,
     # but IISPassword (3rd party) does and dies with this.
-    if ( $ENV{SERVER_SOFTWARE} =~ /Microsoft-IIS/ ) {
+    if ( $ENV{SERVER_SOFTWARE} =~ /Microsoft-IIS/ && MT->config->EnableAutoRewriteOnIIS ) {
         # On the IIS environment, will make/modify the web.config with URL Rewrite
         my $rule;
         $rule->{'stopProcessing'} = 'true';
