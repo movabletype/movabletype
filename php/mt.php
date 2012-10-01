@@ -355,9 +355,7 @@ class MT {
             foreach ($data as $key => $value) {
                 $cfg[$key] = $value;
             }
-            if ($cfg['dbdriver'] == 'mysql' or $cfg['dbdriver'] == 'postgres') {
-                $mtdb->set_names($this);
-            }           
+            $mtdb->set_names($this);
         }
     }
 
