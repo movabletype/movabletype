@@ -2650,13 +2650,9 @@ sub init_core_callbacks {
                     push @{ $args->{joins} },
                         MT->model('permission')->join_on(
                         undef,
-                        [   {   blog_id   => $opts->{blog_id},
-                                author_id => { not => 0 },
-                                id        => \' is not null',
-                            },
-                            'and',
-                            { author_id => \'= author_id', },
-                        ],
+                        {   blog_id   => $opts->{blog_id},
+                            author_id => { not => 0 },
+                        },
                         {   unique    => 1,
                             condition => { author_id => \'= author_id', },
                             type      => 'inner'
@@ -2665,9 +2661,12 @@ sub init_core_callbacks {
                     push @{ $args->{joins} },
                         MT->model('association')->join_on(
                         undef,
-                        [   { blog_id => $opts->{blog_id}, },
-                            '-or',
-                            { blog_id => \' is null', },
+                        [
+                            [
+                                { blog_id => $opts->{blog_id}, },
+                                '-or',
+                                { blog_id => \' is null', },
+                            ],
                         ],
                         {   type      => 'left',
                             condition => { author_id => \'= author_id', },
