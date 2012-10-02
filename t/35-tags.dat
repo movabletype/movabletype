@@ -632,5 +632,8 @@
 -->
 "}, #617
 { "r" : "1", "t" : "<MTEntries id=\"6\"><$MTIf tag=\"EntryCategories\"$>true<MTElse>false</MTIf></MTEntries>", "e" : "true" }, #618
-{ "r" : "1", "t" : "<MTSetVarBlock name=\"s\">&#0; &#2; &#67; &#x2; &#x67; &#x19; &#25</MTSetVarBlock><$MTGetVar name=\"s\" encode_xml=\"1\"$>", "e" : "&amp;#0; &amp;#2; &#67; &amp;#x2; &#x67; &amp;#x19; &amp;#25" } #619
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"s\">&#0; &#2; &#67; &#x2; &#x67; &#x19; &#25</MTSetVarBlock><$MTGetVar name=\"s\" encode_xml=\"1\"$>", "e" : "&amp;#0; &amp;#2; &#67; &amp;#x2; &#x67; &amp;#x19; &amp;#25" }, #619
+{ "r" : "1", "t" : "<MTSetVar name=\"x\" value=\"x-var\" ->     <MTGetVar name=\"x\" />", "e" : "x-var"}, #620
+{ "r" : "1", "t" : "<MTSetVar name=\"a1\" VALUE=\"var-a1\"><MTSetVar a2 value=\"var-a2\"><MTSetVar name=a3 value=xxa3 ><MTVar name=\"a1\">,<MTVar name=\"a2\">,<MTVar name=\"a3\">", "e" : "var-a1,var-a2,xxa3"}, #621
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle Upper_Case=\"1\"></MTEntries>", "e" : "A RAINY DAY"} #621
 ]
