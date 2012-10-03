@@ -1207,10 +1207,13 @@ sub _default_throttle {
     return $$result if defined $$result;
 
     ## Get login information if user is logged in (via cookie).
-    ( $app->{user} ) = $app->login;
-    ## If session ID saved on cookie has been expired, this fails with error.
-    ## Should clear error.
-    $app->error(undef);
+    {
+        ## If session ID saved on cookie has been expired, this fails with error.
+        ## Should ignore login error in this context.
+        my $save_errstr = $app->errstr;
+        ( $app->{user} ) = $app->login;
+        $app->error($save_errstr);
+    }
 
     ## Don't throttle MT registered users
     if ( $app->{user} && $app->{user}->type == MT::Author::AUTHOR() ) {
