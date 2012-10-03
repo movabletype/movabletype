@@ -653,7 +653,14 @@ sub first_blog_id {
     my $q   = $app->param;
 
     my $blog_id;
-    if ( $q->param('IncludeBlogs') ) {
+    if (   !$q->param('IncludeBlogs')
+        && exists( $app->{searchparam}{IncludeBlogs} )
+        && @{ $app->{searchparam}{IncludeBlogs} } )
+    {
+        my @blog_ids = $app->{searchparam}{IncludeBlogs};
+        $blog_id = $blog_ids[0] if @blog_ids;
+    }
+    else {
 
         # if IncludeBlogs is empty or all, get the first blog id available
         if (   $q->param('IncludeBlogs') eq ''
@@ -668,12 +675,6 @@ sub first_blog_id {
             my @ids = split ',', $q->param('IncludeBlogs');
             $blog_id = $ids[0];
         }
-    }
-    elsif ( exists( $app->{searchparam}{IncludeBlogs} )
-        && @{ $app->{searchparam}{IncludeBlogs} } )
-    {
-        my @blog_ids = $app->{searchparam}{IncludeBlogs};
-        $blog_id = $blog_ids[0] if @blog_ids;
     }
     $blog_id;
 }
