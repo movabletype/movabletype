@@ -138,7 +138,6 @@ sub view {
     my $path = $app->static_path;
     $path .= '/' unless $path =~ m!/$!;
     $path .= plugin()->envelope . "/";
-    $path = $app->base . $path if $path =~ m!^/!;
     $param{plugin_static_uri} = $path;
 
     $app->build_page( 'view.tmpl', \%param );
