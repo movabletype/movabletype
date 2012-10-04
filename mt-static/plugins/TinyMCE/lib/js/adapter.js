@@ -73,6 +73,9 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
                 onload: function(context) {
                     var window = context['iframe'].contentWindow;
                     var dialog = window.TemplateDialog;
+                    if (! dialog) {
+                        return;
+                    }
                     var resize = dialog.resize;
                     dialog.resize = function() {
                         resize();
@@ -83,6 +86,7 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
                                 (parseInt(e.style.height, 10) - 30) + 'px';
                         }
                     };
+                    dialog.resize();
                 }
             }
         },
