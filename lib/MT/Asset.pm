@@ -742,13 +742,17 @@ sub thumbnail_url {
     return $asset->stock_icon_url(@_);
 }
 
+sub display_name {
+    $_[0]->label || $_[0]->file_name;
+}
+
 sub as_html {
     my $asset   = shift;
     my ($param) = @_;
     require MT::Util;
     my $text = sprintf '<a href="%s">%s</a>',
         MT::Util::encode_html( $asset->url ),
-        MT::Util::encode_html( $asset->label );
+        MT::Util::encode_html( $asset->display_name );
     return $param->{enclose} ? $asset->enclose($text) : $text;
 }
 
@@ -984,6 +988,10 @@ if fails stock_icon_url. %params is passed directly to them.
 
 If %param contains a 'Pseudo' key, will return the URL with %r, %s or %a
 in the beginning, as explained in $asset->url
+
+=head2 $asset->display_name
+
+returns a name to display. Usually, returns label or a file name.
 
 =head2 $asset->as_html( [ $params ] )
 

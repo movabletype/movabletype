@@ -286,7 +286,7 @@ sub make {
                 ( $self->{'verbose!'} ? '' : '--silent' ),
                 ( $self->{'rpm!'}     ? ''    : '--rpm' ),
                 (   $self->{'export!'} && $self->{'export-dir=s'}
-                    ? '--export-dir=' . $self->{'export-dir=s'}
+                    ? '--export-dir=' . $self->{'export-dir=s'} . ' --export-prefix=' . $self->{'versions-trailer=s'}
                     : ''
                 ),
                 $self->{'license=s'} || '',

@@ -4316,7 +4316,10 @@ B<Example:> Passing Parameters to a Template Module
                 $ttl_for_get = time - $tmpl_ts;
             }
             require MT::Cache::Negotiate;
-            $cache_driver = MT::Cache::Negotiate->new( ttl => $ttl_for_get );
+            $cache_driver = MT::Cache::Negotiate->new(
+                ttl       => $ttl_for_get,
+                expirable => 1
+            );
             my $cache_value = $cache_driver->get($cache_key);
             $cache_value = Encode::decode( $enc, $cache_value );
             if ($cache_value) {

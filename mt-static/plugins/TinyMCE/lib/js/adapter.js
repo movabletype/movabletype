@@ -41,7 +41,7 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         // Buttons using both in source and wysiwyg modes.
         plugin_mt_common_buttons1: 'mt_source_mode',
         // Buttons using in source mode.
-        plugin_mt_source_buttons1: 'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,|,mt_source_link,mt_insert_file,mt_insert_image,|,mt_fullscreen',
+        plugin_mt_source_buttons1: 'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,|,mt_source_link,mt_insert_file,mt_insert_image,|,mt_source_template,|,mt_fullscreen',
         // Buttons using in wysiwyg mode.
         plugin_mt_wysiwyg_buttons1: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink,|,mt_insert_html,mt_insert_file,mt_insert_image',
         plugin_mt_wysiwyg_buttons2: 'undo,redo,|,forecolor,backcolor,removeformat,|,justifyleft,justifycenter,justifyright,indent,outdent,|,formatselect,|,mt_fullscreen',
@@ -67,6 +67,26 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
                         .attr('onmouseover', '')
                         .attr('onfocus', '')
                         .attr('href', 'javascript:;');
+                }
+            },
+            'template/template.htm': {
+                onload: function(context) {
+                    var window = context['iframe'].contentWindow;
+                    var dialog = window.TemplateDialog;
+                    if (! dialog) {
+                        return;
+                    }
+                    var resize = dialog.resize;
+                    dialog.resize = function() {
+                        resize();
+
+                        var e = window.document.getElementById('templatesrc');
+                        if (e) {
+                            e.style.height =
+                                (parseInt(e.style.height, 10) - 30) + 'px';
+                        }
+                    };
+                    dialog.resize();
                 }
             }
         },

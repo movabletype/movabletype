@@ -321,6 +321,29 @@
                 }
             }
 
+            function mtSourceTemplateDialog(c, close) {
+                function insertContent(ed, cmd, ui, val, a) {
+                    if (cmd == 'mceInsertContent') {
+                        proxies
+                            .source
+                            .editor
+                            .insertContent(val);
+                        a.terminate = true;
+                    }
+                };
+
+                function onSubmit() {
+                    ed.onBeforeExecCommand.add(insertContent);
+                    c['window'].TemplateDialog.insert();
+                    ed.onBeforeExecCommand.remove(insertContent);
+                };
+
+                c['$contents']
+                    .find('form')
+                    .attr('onsubmit', '')
+                    .submit(onSubmit);
+            }
+
             function initSourceButtons(mode, format) {
                 $.each(ed.mtButtons, function(name, button) {
                     var command;
@@ -488,6 +511,17 @@
                         tinymce._setActive(ed);
                         this.theme['_mceLink'].apply(this.theme);
                         setPopupWindowLoadedHook(mtSourceLinkDialog);
+                    }
+                }
+            });
+
+            ed.addMTButton('mt_source_template', {
+                title : 'template.desc',
+                onclickFunctions : {
+                    source: function(cmd, ui, val) {
+                        tinymce._setActive(ed);
+                        ed.execCommand('mceTemplate');
+                        setPopupWindowLoadedHook(mtSourceTemplateDialog);
                     }
                 }
             });
