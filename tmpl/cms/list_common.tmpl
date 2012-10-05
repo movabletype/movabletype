@@ -420,10 +420,10 @@ function renderFilterList() {
   for (var i = 0, length = filters.length; i < length; i++) {
     var filter = filters[i];
     if ( parseInt(filter.can_save) ) {
-      var line = '<span class="filter-label unit size2of3"><a href="#'+i+'" class="apply-link '
+      var line = '<span class="filter-label unit size3of5"><a href="#'+i+'" class="apply-link '
         + ( filter.can_save ? 'user-filter' : 'system-filter' )
         + '">'+filter.label+'</a></span>'
-        + '<span class="item-ctrl unit size1of3"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Rename" escape="js"></a><a href="#'+i+'" class="delete-link action-icon icon16 icon-delete"><__trans phrase="Delete" escape="js"></a></span>';
+        + '<span class="item-ctrl unit size2of5"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Rename" escape="js"></a><a href="#'+i+'" class="delete-link action-icon icon16 icon-delete"><__trans phrase="Delete" escape="js"></a></span>';
       jQuery('<li class="filter line" />').append(line).prependTo('#user-filters');
     }
     else {
