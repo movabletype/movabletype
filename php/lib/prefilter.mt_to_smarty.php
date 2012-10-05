@@ -87,7 +87,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                         $quote = '"';
                     } else {
                         $attr = $arglist[$a][1];
-                        $attr = preg_replace('/:/', '___', $attr);
+                        $attr = strtolower(preg_replace('/:/', '___', $attr));
                         $attrs[$attr] = $arglist[$a][3];
                         $quote = $arglist[$a][2];
                     }
