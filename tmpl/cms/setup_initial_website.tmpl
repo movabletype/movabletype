@@ -184,11 +184,8 @@ jQuery(function() {
     <mt:if name="sitepath_limited">
     function is_path_limit_clear( path_ ) {
         var limit = '<mt:var name="sitepath_limited" escape="js">';
-        var last = limit.charAt(limit.length-1);
-        if (path_.charAt(path_.length-1) != last) {
-          path_ += last;
-        }
-        if (0 != path_.indexOf(limit)) {
+        re = new RegExp("^"+limit, "i");
+        if ( !path_.match( re ) ) {
             return false;
         }
         return true;

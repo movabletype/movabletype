@@ -370,7 +370,7 @@ tfoot .col.head{
     margin-left: 5px;
 }
 #dialog_filter .tool-link {
-    margin: 0 0 0 0.5em;
+    margin: 0 0 0 5px;
     vertical-align: top;
 }
 #dialog_filter .rename-link {
