@@ -338,10 +338,12 @@
                     ed.onBeforeExecCommand.remove(insertContent);
                 };
 
-                c['$contents']
-                    .find('form')
-                    .attr('onsubmit', '')
-                    .submit(onSubmit);
+                setTimeout(function() {
+                    c['$contents']
+                        .find('form')
+                        .attr('onsubmit', '')
+                        .submit(onSubmit);
+                }, 0);
             }
 
             function initSourceButtons(mode, format) {
