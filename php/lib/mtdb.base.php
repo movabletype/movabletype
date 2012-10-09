@@ -51,7 +51,7 @@ abstract class MTDatabase {
 
     // Utility method
     public function escape($str) {
-        return $this->conn->Quote(stripslashes($str));
+        return substr($this->conn->Quote(stripslashes($str)), 1, -1);
     }
 
     public function has_distinct_support () {
