@@ -39,10 +39,6 @@ class MTDatabasemysql extends MTDatabase {
         return true;
     }
 
-    function escape($str) {
-        return mysql_escape_string(stripslashes($str));				
-    }
-
     function limit_by_day_sql($column, $days) {
         return 'date_add(' . $column .', interval ' . 
             $days . ' day) >= current_timestamp';

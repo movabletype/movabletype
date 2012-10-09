@@ -22,10 +22,6 @@ class MTDatabasesqlite extends MTDatabase {
         return true;
     }
 
-    function escape($str) {
-        return str_replace("'","''",str_replace("''","'",stripslashes($str)));
-    }
-
     function limit_by_day_sql($column, $days) {
         return 'datetime(' . $column . ', \'+' .
             $days . ' days\') >= date(\'now\', \'localtime\')';

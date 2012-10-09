@@ -47,10 +47,13 @@ abstract class MTDatabase {
 
     // Abstract method
     abstract protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '');
-    abstract public function escape($str);
     abstract public function set_names($mt);
 
     // Utility method
+    public function escape($str) {
+        return $this->conn->Quote(stripslashes($str));
+    }
+
     public function has_distinct_support () {
         return $this->has_distinct;
     }
