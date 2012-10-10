@@ -1,0 +1,16 @@
+<mt:IfArchiveTypeEnabled archive_type="Monthly">
+    <mt:ArchiveList archive_type="Monthly">
+        <mt:ArchiveListHeader>
+<nav class="widget-archive-monthly widget">
+  <h3 class="widget-header"><__trans phrase="[_1] Archives" params="<$mt:ArchiveTypeLabel$>"></h3>
+  <div class="widget-content">
+    <ol class="widget-list">
+        </mt:ArchiveListHeader>
+      <li class="widget-list-item"><a href="<$mt:ArchiveLink encode_html="1"$>"><__trans phrase="[_1] ([_2])" params="<$mt:ArchiveTitle$>%%<$mt:ArchiveCount$>"></a></li>
+        <mt:ArchiveListFooter>
+    </ol>
+  </div>
+</nav>
+        </mt:ArchiveListFooter>
+    </mt:ArchiveList>
+</mt:IfArchiveTypeEnabled>

@@ -1,0 +1,132 @@
+.span {
+  float: left;
+  margin: 0 1%; }
+
+.span1 {
+  width: 6.333%; }
+
+.span2 {
+  width: 14.667%; }
+
+.span3 {
+  width: 23.0%; }
+
+.span4 {
+  width: 31.333%; }
+
+.span5 {
+  width: 39.667%; }
+
+.span6 {
+  width: 48.0%; }
+
+.span7 {
+  width: 56.333%; }
+
+.span8 {
+  width: 64.667%; }
+
+.span9 {
+  width: 73.0%; }
+
+.span10 {
+  width: 81.333%; }
+
+.span11 {
+  width: 89.667%; }
+
+.span12 {
+  width: 98.0%; }
+
+.pagination ul {
+  display: block; }
+
+.breadcrumb {
+  margin-right: 1%;
+  margin-left: 1%; }
+  .breadcrumb li {
+    display: inline-block; }
+
+[role="banner"] {
+  width: 960px;
+  margin: 0 auto; }
+  [role="banner"] h1 {
+    margin: 0 1%; }
+  [role="banner"] [role="navigation"] ul {
+    display: block; }
+  [role="banner"] [role="navigation"] select {
+    display: none; }
+
+[role="navigation"] {
+  margin-left: 1%;
+  margin-right: 1%; }
+
+.content {
+  width: 960px;
+  margin: 0 auto; }
+  .content [role="main"],
+  .content .related {
+    float: left;
+    margin-left: 1%;
+    margin-right: 1%; }
+  .content [role="main"] {
+    width: 64.667%; }
+  .content .related {
+    width: 31.333%;
+    margin-top: 0; }
+
+#mainimage {
+  width: 960px;
+  padding: 0; }
+
+#posts div,
+#posts time {
+  float: left;
+  margin-left: 1%;
+  margin-right: 1%; }
+#posts div {
+  width: 73.0%; }
+#posts time {
+  width: 23.0%; }
+
+.entry-summary figure {
+  display: inline-block;
+  float: right; }
+  .entry-summary figure img {
+    margin: 0.809em 0 0 0.809em; }
+
+.widget {
+  margin-left: 1.618em; }
+
+[role="contentinfo"] {
+  width: 960px;
+  margin: 4.854em auto 0; }
+  [role="contentinfo"] [role="navigation"],
+  [role="contentinfo"] .license {
+    float: left;
+    margin-left: 1%;
+    margin-right: 1%; }
+  [role="contentinfo"] [role="navigation"] {
+    width: 73.0%; }
+    [role="contentinfo"] [role="navigation"] li {
+      display: inline-block; }
+  [role="contentinfo"] .license {
+    width: 23.0%;
+    text-align: right; }
+
+#search div {
+  display: block; }
+#search input[type="text"] {
+  width: 100%;
+  height: auto;
+  padding: 0.5em 2.427em 0.5em 0.5em; }
+
+#comments-open-data input[type="text"] {
+  width: 75%; }
+
+#comments-open-footer {
+  text-align: left; }
+  #comments-open-footer input[type="submit"],
+  #comments-open-footer input[type="button"] {
+    width: auto;
+    margin-right: 0.809em; }

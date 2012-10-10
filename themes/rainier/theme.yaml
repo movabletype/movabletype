@@ -1,0 +1,171 @@
+label: 'Rainier'
+id: 'rainier'
+version: 1.0
+author_link: 'http://www.sixapart.com/'
+author_name: 'Six Apart, Ltd'
+class: 'blog'
+description: '<__trans phrase="_THEME_DESCRIPTION">'
+protected: 1
+l10n_lexicon:
+  en_us: 'l10n_en_us.yaml'
+  ja: 'l10n_ja.yaml'
+thumbnail_file: 'thumb.png'
+thumbnail_file_medium: 'thumb-medium.png'
+thumbnail_file_small: 'thumb-small.png'
+elements:
+  default_prefs:
+    component: 'core'
+    importer: 'default_prefs'
+    data:
+      allow_pings: 0
+      allow_pings_default: 0
+      content_css: '{{theme_static}}css/editor.css'
+  default_pages:
+    component: 'core'
+    importer: 'default_pages'
+    name: 'Default Pages'
+    data:
+      about_page:
+        basename: 'index'
+        title: '<__trans phrase="_ABOUT_PAGE_TITLE">'
+        text: '<__trans phrase="_ABOUT_PAGE_BODY">'
+        tags: '@ABOUT_PAGE'
+        folder: 'about'
+        status: 1
+      sample_page:
+        basename: 'sample'
+        title: '<__trans phrase="_SAMPLE_PAGE_TITLE">'
+        text: '<__trans phrase="_SAMPLE_PAGE_BODY">'
+        status: 1
+  template_set:
+    component: 'core'
+    importer: 'template_set'
+    data:
+      base_path: 'templates'
+      require: 1
+      base_css: 'css/base.css'
+      templates:
+        index:
+          main_index:
+            label: 'Main Index'
+            outfile: 'index.html'
+            rebuild_me: 1
+          feed_recent:
+            label: 'Feed - Recent Entries'
+            outfile: 'atom.xml'
+            rebuild_me: 1
+          styles:
+            label: 'Stylesheet'
+            outfile: 'styles.css'
+            rebuild_me: 1
+          styles_ie:
+            label: 'Stylesheet for IE (8 or lower)'
+            outfile: 'styles_ie.css'
+            rebuild_me: 1
+          javascript:
+            label: 'JavaScript'
+            outfile: 'mt.js'
+            rebuild_me: 1
+          javascript_theme:
+            label: JavaScript - Theme
+            outfile: mt-theme-scale2.js
+            rebuild_me: 1
+        individual:
+          entry:
+            label: 'Entry'
+            mappings:
+              individual:
+                archive_type: 'Individual'
+                preferred: 1
+        page:
+          page:
+            label: 'Page'
+            mappings:
+              page:
+                archive_type: 'Page'
+                preferred: 1
+        archive:
+          category_entry_listing:
+            label: 'Category Entry Listing'
+            mappings:
+              category:
+                archive_type: 'Category'
+                preferred: 1
+          monthly_entry_listing:
+            label: 'Monthly Entry Listing'
+            mappings:
+              yearly:
+                archive_type: 'Monthly'
+                preferred: 1
+        module:
+          banner_footer:
+            label: 'Banner Footer'
+          banner_header:
+            label: 'Banner Header'
+          entry_summary:
+            label: 'Entry Summary'
+          html_head:
+            label: 'HTML Head'
+          navigation:
+            label: 'Navigation'
+          pagination:
+            label: 'Pagination'
+          zenback:
+            label: 'Zenback'
+          comment_form:
+            label: 'Comment Form'
+          comment_detail:
+            label: 'Comment Detail'
+          comments:
+            label: 'Comments'
+          trackbacks:
+            label: 'Trackbacks'
+        system:
+          dynamic_error:
+            description_label: 'Displays errors for dynamically published templates.'
+            label: 'Dynamic Error'
+          popup_image:
+            description_label: 'Displays image when user clicks a popup-linked image.'
+            label: 'Popup Image'
+          search_results:
+            description_label: 'Displays results of a search.'
+            label: 'Search Results'
+          comment_preview:
+            description_label: 'Displays preview of comment.'
+            label: 'Comment Preview'
+          comment_response:
+            description_label: 'Displays error, pending or confirmation message for comments.'
+            label: 'Comment Response'
+        widget:
+          category_archive_list:
+            label: 'Category Archives'
+          monthly_archive_dropdown:
+            label: 'Monthly Archives Dropdown'
+          monthly_archive_list:
+            label: 'Monthly Archives'
+          pages_list:
+            label: 'Page Listing'
+          recent_comments:
+            label: 'Recent Comments'
+          recent_entries:
+            label: 'Recent Entries'
+          search:
+            label: 'Search'
+          syndication:
+            label: 'Syndication'
+          tag_cloud:
+            label: 'Tag Cloud'
+        widgetset:
+          related_contents:
+            label: 'Related Contents'
+            order: 1000
+            widgets:
+              - Search
+              - Category Archives
+              - Monthly Archives Dropdown
+              - Recent Comments
+              - Tag Cloud
+              - Sample Widget 03
+              - Syndication
+
+

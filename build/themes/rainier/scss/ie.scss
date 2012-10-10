@@ -1,0 +1,193 @@
+@import 'function';
+@import 'variable';
+
+
+// Grid
+.span {
+    float: left;
+    margin: 0 $gap;
+}
+.span1 { width: 6.333%; }
+.span2 { width: 14.667%; }
+.span3 { width: 23.0%; }
+.span4 { width: 31.333%; }
+.span5 { width: 39.667%; }
+.span6 { width: 48.0%; }
+.span7 { width: 56.333%; }
+.span8 { width: 64.667%; }
+.span9 { width: 73.0%; }
+.span10 { width: 81.333%; }
+.span11 { width: 89.667%; }
+.span12 { width: 98.0%; }
+
+
+// Pagination
+.pagination {
+  ul {
+    display: block;
+  }
+}
+
+
+// Breadcrumb
+.breadcrumb {
+  margin-right: $gap;
+  margin-left: $gap;
+
+  li {
+    display: inline-block;
+  }
+}
+
+
+// Header
+[role="banner"] {
+  width: 960px;
+  margin: 0 auto;
+
+  h1 {
+    margin: 0 $gap;
+  }
+
+  [role="navigation"] {
+    ul {
+      display: block;
+    }
+
+    select {
+      display: none;
+    }
+  }
+}
+
+// Navigation
+[role="navigation"] {
+  margin-left: $gap;
+  margin-right: $gap;
+}
+
+// Content
+.content {
+  width: 960px;
+  margin: 0 auto;
+
+  [role="main"],
+  .related {
+    float: left;
+    margin-left: $gap;
+    margin-right: $gap;
+  }
+
+  [role="main"] {
+    width: 64.667%;
+  }
+
+  .related {
+    width: 31.333%;
+    margin-top: 0;
+  }
+}
+
+
+// Entries List
+#mainimage {
+  width: 960px;
+  padding: 0;
+}
+
+
+// Entries List
+#posts {
+  div,
+  time {
+    float: left;
+    margin-left: $gap;
+    margin-right: $gap;
+  }
+
+  div {
+    width: 73.0%;
+  }
+
+  time {
+    width: 23.0%;
+  }
+}
+
+
+// Entry Summary
+.entry-summary {
+  figure {
+    display: inline-block;
+    float: right;
+
+    img {
+      margin: $harf-indent 0 0 $harf-indent;
+    }
+  }
+}
+
+
+// Widget
+.widget {
+  margin-left: $indent;
+}
+
+
+// Footer
+[role="contentinfo"] {
+  width: 960px;
+  margin: ($indent * 3) auto 0;
+
+  [role="navigation"],
+  .license  {
+    float: left;
+    margin-left: $gap;
+    margin-right: $gap;
+  }
+
+  [role="navigation"] {
+    width: 73.0%;
+
+    li {
+      display: inline-block;
+    }
+  }
+
+  .license {
+    width: 23.0%;
+    text-align: right;
+  }
+}
+
+
+// Search
+#search {
+  div {
+    display: block;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    height: auto;
+    padding: 0.5em ($indent * 1.5) 0.5em 0.5em;
+  }
+}
+
+
+// Feedback
+#comments-open-data {
+  input[type="text"] {
+    width: 75%;
+  }
+}
+
+#comments-open-footer {
+  text-align: left;
+
+  input[type="submit"],
+  input[type="button"] {
+    width: auto;
+    margin-right: $harf-indent;
+  }
+}

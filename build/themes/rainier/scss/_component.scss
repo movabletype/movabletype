@@ -1,0 +1,65 @@
+@import "clearfix";
+
+@mixin border-radius($params) {
+  @each $vendor in null {
+    #{$vendor}border-radius: $params;
+  }
+}
+
+@mixin box-shadow($params, $inset_params:null) {
+  @each $vendor in null {
+    #{$vendor}box-shadow: $params, $inset_params;
+  }
+}
+
+@mixin box-sizing($model) {
+  @each $vendor in -moz-, null {
+    #{$vendor}box-sizing: $model;
+  }
+}
+
+@mixin opacity($degree) {
+  $degree_num: ($degree * 100);
+  opacity: $degree;
+  -ms-filter: 'alpha(opacity = #{$degree_num})';
+  filter: alpha(opacity = $degree_num);
+}
+
+@mixin linear-gradient($start, $last) {
+  background-color: $start;
+  @each $vendor in -ms-, -moz-, -webkit-, null {
+    background-image: #{$vendor}linear-gradient($start, $last);
+  }
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#{$start}', endColorstr='#{$last}',GradientType=0 );
+}
+
+@mixin tag-cloud($base: 1em) {
+  font-size: $base;
+  line-height: 1.2 * $base;
+
+  &.rank-1 {
+    font-size: (3 * $base);
+  }
+  &.rank-2 {
+    font-size: (2 * $base);
+  }
+  &.rank-3 {
+    font-size: ((3 * $base) / 2);
+  }
+  &.rank-4 {
+    font-size: ((4 * $base) / 3);
+  }
+  &.rank-5 {
+    font-size: ((3 * $base) / 4);
+  }
+  &.rank-6 {
+    font-size: ((2 * $base) / 3);
+  }
+  &.rank-7 {
+    font-size: $base;
+  }
+}
+
+%clearfix {
+  @include clearfix;
+}

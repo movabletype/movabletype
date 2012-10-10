@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="<$mt:BlogLanguage$>">
+  <head>
+    <meta charset="<$mt:PublishCharset$>">
+    <title><$mt:BlogName encode_html="1"$> - <__trans phrase="Search Results"></title>
+    <$mt:Include module="<__trans phrase="HTML Head">"$>
+  </head>
+  <body>
+    <div id="container">
+      <div id="container-inner">
+        <header id="header" role="banner">
+          <div id="header-inner">
+            <$mt:Include module="<__trans phrase="Banner Header">"$>
+            <$mt:Include module="<__trans phrase="Navigation">"$>
+          </div>
+        </header>
+        <div id="content">
+          <div id="content-inner">
+            <div id="search-results-main" class="main" role="main">
+<mt:SetVarTemplate id="search_results" name="search_results">
+  <mt:SearchResults>
+    <mt:SearchResultsHeader>
+              <section>
+                <h1 class="title">
+      <mt:IfStraightSearch>
+                  <__trans phrase="Results matching &ldquo;[_1]&rdquo;" params="<$mt:SearchString$>">
+      </mt:IfStraightSearch>
+      <mt:IfTagSearch>
+                  <__trans phrase="Results tagged &ldquo;[_1]&rdquo;" params="<$mt:SearchString$>">
+      </mt:IfTagSearch>
+                </h1>
+    </mt:SearchResultsHeader>
+
+                <$mt:Include module="<__trans phrase="Entry Summary">" hide_counts="1"$>
+
+    <mt:SearchResultsFooter>
+              </section>
+              <nav class="pagination">
+                <ul>
+      <mt:IfMoreResults>
+                  <li><a rel="prev" href="<$mt:NextLink encode_html="1"$>" onclick="return swapContent();"><__trans phrase="Older entries"></a></li>
+      </mt:IfMoreResults>
+      <mt:IfPreviousResults>
+                  <li><a rel="next" href="<$mt:PreviousLink encode_html="1"$>" onclick="return swapContent(-1);"><__trans phrase="Newer entries"></a></li>
+      </mt:IfPreviousResults>
+                </ul>
+              </nav>
+    </mt:SearchResultsFooter>
+  </mt:SearchResults>
+</mt:SetVarTemplate>
+
+<$mt:Var name="search_results"$>
+
+<mt:NoSearchResults>
+              <section>
+                <h1 class="search-results-header">
+  <mt:IfStraightSearch>
+                  <__trans phrase="Results matching &ldquo;[_1]&rdquo;" params="<$mt:SearchString$>">
+  </mt:IfStraightSearch>
+  <mt:IfTagSearch>
+                  <__trans phrase="Results tagged &ldquo;[_1]&rdquo;" params="<$mt:SearchString$>">
+  </mt:IfTagSearch>
+                </h1>
+                <p><__trans phrase="No results found for &ldquo;[_1]&rdquo;." params="<$mt:SearchString$>"></p>
+              </section>
+</mt:NoSearchResults>
+
+<mt:NoSearch>
+              <section>
+                <h1 class="search-results-header"><__trans phrase="Instructions"></h1>
+                <p><__trans phrase="By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:"></p>
+                <pre><code>"<__trans phrase="movable type">"</code></pre>
+                <p><__trans phrase="The search engine also supports AND, OR, and NOT keywords to specify boolean expressions:"></p>
+                <pre><code><__trans phrase="personal OR publishing"></code></pre>
+                <pre><code><__trans phrase="publishing NOT personal"></code></pre>
+              </section>
+</mt:NoSearch>
+            </div>
+            <aside class="widgets related" role="complementary">
+              <$mt:WidgetSet name="<__trans phrase="Related Contents">"$>
+            </aside>
+          </div>
+        </div>
+        <footer id="footer" role="contentinfo">
+          <div id="footer-inner">
+            <$mt:Include module="<__trans phrase="Banner Footer">"$>
+          </div>
+        </footer>
+      </div>
+    </div>
+    <script>
+      var user = <$mt:UserSessionState$>;
+<mt:IfMoreResults>
+      var div = document.getElementById('search-results');
+      var results = {
+        '<$mt:CurrentPage encode_js="1"$>': {
+          'content': div.innerHTML,
+          'next_url': '<$mt:NextLink encode_js="1"$>'
+        }
+      };
+      var timer = window.setTimeout("getResults(" + <$mt:CurrentPage encode_js="1"$> + ")", 1*1000);
+
+      function getResults(page) {
+        page = parseInt(page);
+        if (timer) window.clearTimeout(timer);
+        var xh = mtGetXmlHttp();
+        if (!xh) return false;
+        var res = results[page];
+        if (!res) return;
+        var url = res['next_url'];
+        if (!url) return;
+
+        xh.open('GET', url + '&format=js', true);
+        xh.onreadystatechange = function() {
+          if ( xh.readyState == 4 ) {
+            if ( xh.status && ( xh.status != 200 ) ) {
+                // error - ignore
+            } else {
+              try {
+                var page_results = eval("(" + xh.responseText + ")");
+                if ( page_results['error'] == null )
+                  results[page + 1] = page_results['result'];
+              } catch (e) {
+              }
+            }
+          }
+        };
+        xh.send(null);
+      }
+
+      function swapContent(direction) {
+        if ( direction == undefined ) direction = 1;
+        var page_span = document.getElementById('current-page');
+        if (!page_span) return true;
+        var next_page = direction + parseInt(page_span.innerHTML);
+        var res = results[next_page];
+        if (!res) return true;
+        var content = res['content'];
+        if (!content) return true;
+        var div = document.getElementById('search-results');
+        if (!div) return true;
+        div.innerHTML = content;
+        timer = window.setTimeout("getResults(" + next_page + ")", 1*1000);
+        window.scroll(0, 0);
+        return false;
+      }
+<mt:Else>
+    <mt:IfPreviousResults>
+      function swapContent(direction) {
+        return true;
+      }
+    </mt:IfPreviousResults>
+</mt:IfMoreResults>
+    </script>
+    <script src="<$mt:StaticWebPath encode_html="1"$>jquery/jquery.min.js"></script>
+    <script src="<$mt:Link template="javascript_theme" encode_html="1">"></script>
+  </body>
+</html>

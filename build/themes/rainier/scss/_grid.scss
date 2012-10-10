@@ -1,0 +1,24 @@
+$columns: 12;
+$column: (100% / $columns);
+$gutter: 4%;
+$gap: ($gutter / 2);
+
+$colspan: ();
+
+@for $i from 1 through $columns {
+  $column_width: ($column * $i - $gutter);
+  $colspan: append($colspan, $column_width);
+}
+
+$colspan01: nth($colspan, 1);
+$colspan02: nth($colspan, 2);
+$colspan03: nth($colspan, 3);
+$colspan04: nth($colspan, 4);
+$colspan05: nth($colspan, 5);
+$colspan06: nth($colspan, 6);
+$colspan07: nth($colspan, 7);
+$colspan08: nth($colspan, 8);
+$colspan09: nth($colspan, 9);
+$colspan10: nth($colspan, 10);
+$colspan11: nth($colspan, 11);
+$colspan12: nth($colspan, 12);

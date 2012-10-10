@@ -1,0 +1,28 @@
+Home: 'ホーム'
+About: 'アバウト'
+Posted on: '投稿日:'
+in: 'カテゴリ:'
+Previous entry: '前の記事'
+Next entry: '次の記事'
+Newer entries: '新しい記事'
+Older entries: '過去の記事'
+Read more: '記事一覧へ'
+Continue Reading: 'ブログ記事を読む'
+Please paste the Zenback script code here: 'ここに Zenback の Script コードは貼り付けてください。'
+
+Index Page: 'インデックスページ'
+Stylesheet for IE (8 or lower): 'スタイルシート (IE8 以下用)'
+Yearly Entry Listing: '年別ブログ記事リスト'
+Pagination: 'ページネーション'
+Related Contents: '関連コンテンツ'
+
+_THEME_DESCRIPTION: 'Rainier はレスポンシブ Web デザインを採用したブログテーマです。Media Query (CSS) を利用したマルチデバイス対応に加え、Movable Type の機能を使ってロゴやナビゲーションの内容を簡単にカスタマイズできます。'
+
+_ABOUT_PAGE_TITLE: 'アバウトページ'
+_ABOUT_PAGE_BODY: |
+                 <p>このページはアバウトページ (自己紹介や会社概要など、プロフィール用のページ) として利用するウエブページの例です。</p>
+                 <p>作成したウェブページに <code>@ABOUT_PAGE</code> というタグを設定すると、ページのヘッダ、フッタにあるナビゲーションにリンクが追加されます。</p>
+_SAMPLE_PAGE_TITLE: ウェブページの例
+_SAMPLE_PAGE_BODY: |
+                 <p>このページはウェブページの例です。</p>
+                 <p>作成したウェブページに <code>@ADD_TO_SITE_NAV</code> というタグを設定すると、ページのヘッダ、フッタにあるナビゲーションにリンクが追加されます。</p>
