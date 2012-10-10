@@ -58,7 +58,7 @@ abstract class MTDatabase {
         return $this->has_distinct;
     }
 
-    public function db() {
+    public function &db() {
         return $this->conn;
     }
 
@@ -839,9 +839,9 @@ abstract class MTDatabase {
             } else {
                 $not_clause = preg_match('/\bNOT\b/i', $category_arg);
                 if ($blog_ctx_arg)
-                    $cats =& $this->fetch_categories(array_merge($blog_ctx_arg, array('show_empty' => 1, 'class' => $cat_class)));
+                    $cats = $this->fetch_categories(array_merge($blog_ctx_arg, array('show_empty' => 1, 'class' => $cat_class)));
                 else
-                    $cats =& $this->fetch_categories(array('blog_id' => $blog_id, 'show_empty' => 1, 'class' => $cat_class));
+                    $cats = $this->fetch_categories(array('blog_id' => $blog_id, 'show_empty' => 1, 'class' => $cat_class));
             }
 
            if (!empty($cats)) {
@@ -1616,7 +1616,7 @@ abstract class MTDatabase {
         }
     }
 
-    public function &fetch_categories($args) {
+    public function fetch_categories($args) {
         # load categories
         if ($blog_filter = $this->include_exclude_blogs($args)) {
              $blog_filter = 'and category_blog_id '. $blog_filter;
@@ -2919,9 +2919,9 @@ abstract class MTDatabase {
         if ($sql != '') {
             $blog_filter = 'and comment_blog_id ' . $sql;
             if (isset($args['blog_id']))
-                $blog =& $this->fetch_blog($args['blog_id']);
+                $blog = $this->fetch_blog($args['blog_id']);
         } elseif ($args['blog_id']) {
-            $blog =& $this->fetch_blog($args['blog_id']);
+            $blog = $this->fetch_blog($args['blog_id']);
             $blog_filter = ' and comment_blog_id = ' . $blog->blog_id;
         }
 
@@ -2951,9 +2951,9 @@ abstract class MTDatabase {
         if ($sql != '') {
             $blog_filter = 'and comment_blog_id ' . $sql;
             if (isset($args['blog_id']))
-                $blog =& $this->fetch_blog($args['blog_id']);
+                $blog = $this->fetch_blog($args['blog_id']);
         } elseif ($args['blog_id']) {
-            $blog =& $this->fetch_blog($args['blog_id']);
+            $blog = $this->fetch_blog($args['blog_id']);
             $blog_filter = ' and comment_blog_id = ' . $blog->blog_id;
         }
 
