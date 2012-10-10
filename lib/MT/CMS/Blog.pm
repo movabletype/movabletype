@@ -2625,7 +2625,7 @@ sub prepare_dynamic_publishing {
 
 ## %%%%%%% Movable Type generated this part; don't remove this line! %%%%%%%
 # Disable fancy indexes, so mtview.php gets a chance...
-Options -Indexes +SymLinksIfOwnerMatch
+Options -Indexes
   <IfModule mod_rewrite.c>
   # The mod_rewrite solution is the preferred way to invoke
   # dynamic pages, because of its flexibility.
