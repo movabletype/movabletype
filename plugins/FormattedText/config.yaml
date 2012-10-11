@@ -1,0 +1,104 @@
+id: FormattedText
+name: FormattedText
+version: 1.00
+author_link: http://www.movabletype.org/
+author_name: Six Apart, Ltd.
+description: <MT_TRANS phrase="Manage formatted text.">
+l10n_class: FormattedText::L10N
+
+schema_version: 1.00
+object_types:
+    formatted_text: FormattedText::FormattedText
+
+applications:
+    cms:
+        menus:
+            entry:manage_formatted_text:
+                label: Formatted Text
+                order: 400
+                mode: list
+                args:
+                    _type: formatted_text
+                condition: |
+                    sub {
+                        require FormattedText::App;
+                        my $app = MT->instance;
+
+                        return 0 unless FormattedText::App::is_enabled($app);
+
+                        # Blog context
+                        if ($app->blog) {
+                            return
+                                $app->permissions
+                                ->can_do('access_to_formatted_text_list');
+                        }
+
+                        # System context
+                        my $iter = $app->model('permission')->load_iter(
+                            {   author_id => $app->user->id,
+                                    blog_id => { not => 0 }
+                            }
+                        );
+
+                        while ( my $p = $iter->() ) {
+                            return 1
+                                if $p->can_do('access_to_formatted_text_list');
+                        }
+
+                        return 0;
+                    }
+                view:
+                    - system
+                    - blog
+            entry:view_formatted_text:
+                order: 10000
+                mode: view
+                args:
+                    _type: formatted_text
+                view:
+                    - system
+                    - blog
+                display: 0
+
+permissions:
+    blog.create_post:
+        permitted_action:
+            access_to_formatted_text_list: 1
+            create_formatted_text: 1
+            view_all_formatted_texts: 1
+            edit_own_formatted_texts: 1
+    blog.edit_all_posts:
+        permitted_action:
+            access_to_formatted_text_list: 1
+            create_formatted_text: 1
+            view_all_formatted_texts: 1
+            edit_all_formatted_texts: 1
+
+callbacks:
+    MT::App::CMS::template_param.edit_entry: $FormattedText::FormattedText::App::param_edit_entry
+    MT::App::CMS::cms_edit.formatted_text: $FormattedText::FormattedText::App::cms_edit_formatted_text
+    MT::App::CMS::list_template_param.formatted_text: $FormattedText::FormattedText::App::list_template_param
+    api_save_filter.formatted_text: $FormattedText::FormattedText::FormattedText::save_filter
+    cms_save_filter.formatted_text: $FormattedText::FormattedText::FormattedText::save_filter
+
+    cms_save_permission_filter.formatted_text: $FormattedText::FormattedText::App::save_permission_filter
+    cms_view_permission_filter.formatted_text: $FormattedText::FormattedText::App::view_permission_filter
+    cms_delete_permission_filter.formatted_text: $FormattedText::FormattedText::App::delete_permission_filter
+    cms_pre_load_filtered_list.formatted_text: $FormattedText::FormattedText::App::cms_pre_load_filtered_list
+    cms_filtered_list_param.formatted_text: $FormattedText::FormattedText::App::filtered_list_param
+
+
+listing_screens:
+    formatted_text: $FormattedText::FormattedText::App::listing_screens
+
+list_properties:
+    formatted_text: $FormattedText::FormattedText::FormattedText::list_props
+
+system_filters:
+    formatted_text: $FormattedText::FormattedText::App::system_filters
+
+list_actions:
+    formatted_text: $FormattedText::FormattedText::App::list_actions
+
+content_actions:
+    formatted_text: $FormattedText::FormattedText::App::content_actions
