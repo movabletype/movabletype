@@ -15,7 +15,7 @@ applications:
         menus:
             entry:manage_formatted_text:
                 label: Formatted Text
-                order: 400
+                order: 250
                 mode: list
                 args:
                     _type: formatted_text
