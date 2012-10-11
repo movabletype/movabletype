@@ -1359,6 +1359,21 @@ abstract class MTDatabase {
                         $limit--;
                     }
                     $entries = $entries_sorted;
+                } elseif ($sort_field == 'entry_authored_on') {
+                    $sort_fn = "
+                        \$ret = strcmp(\$a->entry_authored_on, \$b->entry_authored_on); 
+                        if (\$ret==0) { 
+                            \$ret = \$a->entry_id - \$b->entry_id; 
+                        } 
+                        return \$ret;";
+                    $sorter = create_function(
+                        $order == 'asc' ? '$a,$b' : '$b,$a',
+                        $sort_fn);
+                    usort($entries, $sorter);
+
+                    if (isset($post_sort_offset)) {
+                        $entries = array_slice($entries, $post_sort_offset, $post_sort_limit);
+                    }
                 } else {
                     if (($sort_field == 'entry_status') || ($sort_field == 'entry_author_id') || ($sort_field == 'entry_id')
                           || ($sort_field == 'entry_comment_count') || ($sort_field == 'entry_ping_count')) {
