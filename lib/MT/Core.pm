@@ -2293,18 +2293,27 @@ sub remove_temporary_files {
     return '';
 }
 
+sub purge_user_session_records {
+    my $iter = MT::Session->load_iter(
+        {   kind  => 'US',
+            start => [ undef, time - MT->config->UserSessionTimeout ],
+        },
+        { range => { start => 1 } }
+    );
+
+    my @ids = ();
+    while ( my $s = $iter->() ) {
+        push @ids, $s->id unless $s->get('remember');
+    }
+
+    MT::Session->remove( { id => \@ids } );
+}
+
 sub purge_session_records {
     require MT::Session;
 
     # remove expired user sessions
-    my $expired = MT->config->UserSessionTimeout;
-    MT::Session->remove(
-        {   kind  => 'US',
-            start => [ undef, time - $expired ],
-            data  => { not_like => '%remember-%' }
-        },
-        { range => { start => 1 } }
-    );
+    purge_user_session_records();
 
     # remove stale search cache
     MT::Session->remove( { kind => 'CS', start => [ undef, time - 60 * 60 ] },
