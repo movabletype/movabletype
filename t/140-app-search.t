@@ -44,6 +44,14 @@ my @suite = (
         },
         expected => qr/id="entry-@{[ $entry->id ]}"/,
     },
+    {   label  => 'Only "IncludeBlogs=all" is specified',
+        params => {
+            IncludeBlogs => 'all',
+            search => $entry->title,
+            limit  => 20,
+        },
+        expected => qr/id="entry-@{[ $entry->id ]}"/,
+    },
 );
 
 for my $data (@suite) {
