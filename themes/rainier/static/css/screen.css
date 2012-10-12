@@ -19,8 +19,10 @@ h6 a {
   font-size: 1.618em; }
   .entry .entry-title + footer,
   .page .entry-title + footer {
-    margin-top: -1em;
-    color: #7b7c7d; }
+    margin-top: -1em; }
+.entry footer,
+.page footer {
+  color: #7b7c7d; }
 
 #container #header-inner,
 #container #content-inner,
@@ -202,4 +204,4 @@ footer {
 
 #search-results-main .title {
   border-bottom: 1px solid #c0c6c9;
-  margin-bottom: 1.618em; }
+  margin: 0 0 1.618em; }

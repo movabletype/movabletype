@@ -22,8 +22,11 @@ h6 {
 
     + footer {
       margin-top: -1em;
-      color: $dark-gray;
     }
+  }
+
+  footer {
+    color: $dark-gray;
   }
 }
 
@@ -308,6 +311,6 @@ footer {
 #search-results-main {
   .title {
     border-bottom: 1px solid $gray;
-    margin-bottom: $indent;
+    margin: 0 0 $indent;
   }
 }
