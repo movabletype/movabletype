@@ -10,7 +10,7 @@ BEGIN {
 use lib 't/lib', 'lib', 'extlib';
 use MT::Test qw( :app :db :data );
 use MT::Test::Permission;
-use Data::Dumper;
+use JSON;
 use Test::More;
 
 my $blog  = MT->model('blog')->load(1);
@@ -50,8 +50,7 @@ for my $data (@suite) {
     # We should run the fresh instance.
     local %MT::mt_inst;
 
-    local $Data::Dumper::Indent = 0;
-    my $params_str = Dumper( $data->{params} );
+    my $params_str = JSON::to_json( $data->{params} );
 
     my $app = _run_app(
         'MT::App::Search',
