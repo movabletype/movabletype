@@ -113,6 +113,8 @@ sub init_app {
 
     $app->instance( $cfg ? ( Config => $cfg ) : () );
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
+    $app->config( 'SearchTemplatePath',
+        abs_path( $app->config->SearchTemplatePath ) );
 
     # kill __test_output for a new request
     require MT;
@@ -1472,6 +1474,8 @@ sub _run_app {
     my $app = $class->new( CGIObject => $cgi );
     MT->set_instance($app);
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
+    $app->config( 'SearchTemplatePath',
+        abs_path( $app->config->SeachTemplatePath ) );
 
     # nix upgrade required
     # seems to be hanging around when it doesn't need to be
