@@ -2752,8 +2752,12 @@ sub _commenter_auth_params {
 }
 
 sub _openid_commenter_condition {
+    my ( $blog, $reason ) = @_;
     eval { require Digest::SHA1; };
-    return $@ ? 0 : 1;
+    return 1 unless $@;
+    $$reason = MT->translate(
+        'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.');
+    return 0;
 }
 
 sub core_commenter_authenticators {
@@ -2794,9 +2798,18 @@ sub core_commenter_authenticators {
             class      => 'MT::Auth::GoogleOpenId',
             login_form => 'comment/auth_googleopenid.tmpl',
             condition  => sub {
-                eval { require Digest::SHA1; require Crypt::SSLeay; };
-                return 0 if $@;
-                return 1;
+                my ( $blog, $reason ) = @_;
+                my @missing;
+                eval { require Digest::SHA1; };
+                push @missing, 'Digest::SHA1' if $@;
+                eval { require Crypt::SSLeay; };
+                push @missing, 'Crypt::SSLeay' if $@;
+                return 1 unless @missing;
+                $$reason = MT->translate(
+                    'missing required Perl modules: [_1]',
+                    join(',', @missing)
+                    );
+                return 0;
             },
             login_form_params => \&_commenter_auth_params,
             logo              => 'images/comment/google.png',
