@@ -140,7 +140,10 @@ input[type=file] {
     min-height: 5em;
 }
 .text.high {
-    min-height: 12em;
+    min-height: 15em;
+}
+.text.highest {
+    min-height: 35em;
 }
 .text.query {
     font-size: 150%;
