@@ -720,8 +720,10 @@ abstract class MTDatabase {
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and entry_blog_id ' . $sql;
             $mt = MT::get_instance();
-            $blog = $this->fetch_blog($mt->blog_id());
-            $blog_id = $blog->blog_id;
+            $ctx = $mt->context();
+            $blog = $ctx->stash('blog');
+            if ( !empty( $blog ) )
+                $blog_id = $blog->blog_id;
         } elseif (isset($args['blog_id'])) {
             $blog_id = intval($args['blog_id']);
             $blog_filter = 'and entry_blog_id = ' . $blog_id;

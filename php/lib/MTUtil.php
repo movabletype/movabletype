@@ -1099,7 +1099,7 @@ function create_cat_expr_function($expr, &$cats, $param) {
     $expr = preg_replace('/\bAND\b/i', '&&', $expr);
     $expr = preg_replace('/\bOR\b/i', '||', $expr);
     $expr = preg_replace('/\bNOT\b/i', '!', $expr);
-    $expr = preg_replace_callback('/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/', 'create_expr_exception', $expr);
+    $expr = preg_replace_callback('/( |#\d+|&&|\|\||!|\(|\))|([^()]+)/', 'create_expr_exception', $expr);
 
     # strip out all the 'ok' stuff. if anything is left, we have
     # some invalid data in our expression:
