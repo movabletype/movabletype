@@ -208,7 +208,7 @@ class MT {
      * Retreives a handle to the database and assigns it to
      * the member variable 'db'.
      */
-    function db() {
+    function &db() {
         if (!isset($this->db)) {
             require_once("mtdb.".$this->config('DBDriver').".php");
             $mtdbclass = 'MTDatabase'.$this->config('DBDriver');
@@ -623,9 +623,9 @@ class MT {
     
             if (isset($entry_id) && ($entry_id) && ($at == 'Individual' || $at == 'Page')) {
                 if ($at == 'Individual') {
-                    $entry =& $mtdb->fetch_entry($entry_id);
+                    $entry = $mtdb->fetch_entry($entry_id);
                 } elseif($at == 'Page') {
-                    $entry =& $mtdb->fetch_page($entry_id);
+                    $entry = $mtdb->fetch_page($entry_id);
                 }
                 $ctx->stash('entry', $entry);
                 $ctx->stash('current_timestamp', $entry->entry_authored_on);
@@ -739,7 +739,7 @@ class MT {
         if (!$blog) {
             $db =& $this->db();
             $ctx->mt->db =& $db;
-            $blog =& $db->fetch_blog($this->blog_id);
+            $blog = $db->fetch_blog($this->blog_id);
             $ctx->stash('blog', $blog);
             $ctx->stash('blog_id', $this->blog_id);
             $ctx->stash('local_blog_id', $this->blog_id);
@@ -755,7 +755,7 @@ class MT {
         if (!$blog) {
             $db =& $this->db();
             $ctx->mt->db =& $db;
-            $blog =& $db->fetch_blog($this->blog_id);
+            $blog = $db->fetch_blog($this->blog_id);
             $ctx->stash('blog', $blog);
             $ctx->stash('blog_id', $this->blog_id);
             $ctx->stash('local_blog_id', $this->blog_id);

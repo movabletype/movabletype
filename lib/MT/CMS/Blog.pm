@@ -2774,7 +2774,7 @@ sub prepare_dynamic_publishing {
 
 ## %%%%%%% Movable Type generated this part; don't remove this line! %%%%%%%
 # Disable fancy indexes, so mtview.php gets a chance...
-Options -Indexes +SymLinksIfOwnerMatch
+Options -Indexes
   <IfModule mod_rewrite.c>
   # The mod_rewrite solution is the preferred way to invoke
   # dynamic pages, because of its flexibility.
@@ -3047,10 +3047,11 @@ sub clone {
             }
         }
     }
-    if ( my $limit = $app->config->BaseSitePath ) {
-        $limit = File::Spec->catdir( $limit, "PATH" );
+    if (my $limit = $app->config->BaseSitePath) {
+        $param->{'sitepath_limited'} = $limit;
+        $limit = File::Spec->catdir($limit, "PATH");
         $limit =~ s/PATH$//;
-        $param->{'sitepath_limited'}     = $limit;
+        $param->{'sitepath_limited_trail'} = $limit;
         $param->{'use_absolute'}         = 0;
         $param->{'use_absolute_archive'} = 0;
     }

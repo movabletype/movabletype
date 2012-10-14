@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="<$mt:PublishCharset$>">
+    <meta name="generator" content="<$mt:ProductName version="1"$>">
+    <title><__trans phrase="Previewing your Comment"> - <$mt:BlogName encode_html="1"$></title>
+    <$mt:Include module="<__trans phrase="HTML Head">"$>
+    <script type="text/javascript">
+      var user = <$mt:UserSessionState$>;
+      var is_preview = true;
+    </script>
+    <script src="<$mt:Link template="javascript"$>"></script>
+  </head>
+  <body>
+    <div id="container">
+      <div id="container-inner">
+        <header id="header" role="banner">
+          <div id="header-inner">
+            <$mt:Include module="<__trans phrase="Banner Header">"$>
+            <$mt:Include module="<__trans phrase="Navigation">"$>
+          </div>
+        </header>
+        <div id="content">
+          <div id="content-inner">
+            <ul class="breadcrumb breadcrumb-list">
+              <li class="breadcrumb-list-item"><a href="<$mt:BlogURL encode_html="1"$>"><__trans phrase="Home"></a></li>
+              <li class="breadcrumb-list-item"><$mt:EntryTitle$></li>
+            </ul>
+            <div id="comment-preview-main" class="main" role="main">
+              <section>
+                <h2 class="title"><__trans phrase="Previewing your Comment"></h2>
+                <article id="comment-<$mt:CommentID$>" class="comment<mt:IfCommentParent> comment-reply</mt:IfCommentParent><mt:IfCommenterIsEntryAuthor> entry-author-comment</mt:IfCommenterIsEntryAuthor>">
+                  <header>
+                    <h3><mt:IfCommentParent><__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<$mt:CommentAuthorLink$>%%<mt:CommentParent><$mt:CommentLink$></mt:CommentParent>%%<mt:CommentParent><$mt:CommentAuthor$></mt:CommentParent>"><mt:Else><$mt:CommentAuthorLink$></mt:IfCommentParent></h3>
+                    <a href="<$mt:CommentLink$>"><time datetime="<$mt:CommentDate format_name="iso8601"$>"><$mt:CommentDate$></time></a>
+                  </header>
+                  <$mt:CommentBody$>
+                </article>
+                <$mt:Include module="<__trans phrase="Comment Form">"$>
+              </section>
+            </div>
+            <aside class="widgets related" role="complementary">
+              <$mt:WidgetSet name="<__trans phrase="Related Contents">"$>
+            </aside>
+          </div>
+        </div>
+        <footer id="footer" role="contentinfo">
+          <div id="footer-inner">
+            <$mt:Include module="<__trans phrase="Banner Footer">"$>
+          </div>
+        </footer>
+      </div>
+    </div>
+    <script src="<$mt:StaticWebPath encode_html="1"$>jquery/jquery.min.js"></script>
+    <script src="<$mt:Link template="javascript_theme" encode_html="1">"></script>
+  </body>
+</html>

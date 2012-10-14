@@ -193,13 +193,15 @@ class MTViewer extends Smarty {
         }
     }
 
-    function stash($name,$value=null) {
+    function &stash($name,$value=null) {
         if(isset($this->__stash[$name]))
-            $old_val = $this->__stash[$name];
+            $old_val =& $this->__stash[$name];
         else
             $old_val = null;
-        if(func_num_args() > 1)
-            $this->__stash[$name] = $value;
+        if(func_num_args() > 1) {
+            $copy = $value;
+            $this->__stash[$name] =& $copy;
+        }
         return $old_val;
     }
 

@@ -1,0 +1,41 @@
+body {
+    outline: 1px solid #eee;
+
+    > * {
+        outline: 1px solid #ccc;
+        background-color: #eee;
+
+        > * {
+            outline: 1px solid #85d9e9;
+            background-color: #e7f8fb;
+
+            > * {
+                outline: 1px solid #8cea86;
+                background-color: #e8fbe7;
+
+                > * {
+                    outline: 1px solid #ffd292;
+                    background-color: #fff7d8;
+
+                    > * {
+                        outline: 1px solid #e656b1;
+                        background-color: #f9d3eb;
+
+                        > * {
+                            outline: 1px solid #c9171e;
+                            background-color: #d3381c;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+a,
+input,
+textarea,
+select {
+    outline: 0;
+    background: none;
+}

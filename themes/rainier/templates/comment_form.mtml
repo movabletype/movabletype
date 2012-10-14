@@ -1,0 +1,57 @@
+<form method="post" action="<$mt:CGIPath$><$mt:CommentScript$>" name="comments_form" id="comments-form" onsubmit="return mtCommentOnSubmit(this)">
+  <fieldset>
+    <legend><__trans phrase="Post a Comment"></legend>
+    <input type="hidden" name="static" value="1">
+    <input type="hidden" name="armor" value="1">
+    <input type="hidden" name="entry_id" value="<$mt:EntryID$>">
+    <input type="hidden" name="__lang" value="<$mt:BlogLanguage$>">
+    <input type="hidden" name="parent_id" value="<$mt:CommentParentID escape="html"$>" id="comment-parent-id">
+    <input type="hidden" name="preview" value="<mt:if name="comment_preview">1</mt:if>">
+    <input type="hidden" name="sid" value="">
+
+    <p id="comment-form-reply" style="display:none">
+      <input type="checkbox" id="comment-reply" name="comment_reply" value="" onclick="mtSetCommentParentID()" /> <label for="comment-reply" id="comment-reply-label"><__trans phrase="Reply to comment"></label>
+    </p>
+
+    <div id="comments-open-text">
+      <label for="comment-text"><__trans phrase="Comments"><mt:IfAllowCommentHTML> <__trans phrase="(You may use HTML tags for style)"></mt:IfAllowCommentHTML></label>
+      <textarea name="text" id="comment-text" class="text"  onfocus="mtCommentFormOnFocus()"><mt:If name="comment_preview"><$mt:CommentBody autolink="0" sanitize="0" convert_breaks="0" encode_html="1"$></mt:If></textarea>
+    </div>
+
+    <div id="comments-open-data">
+      <ul>
+        <li>
+          <label for="comment-author"><__trans phrase="Name"></label> <input type="text" id="comment-author" class="text" name="author" value="<mt:If name="comment_preview"><$mt:CommentAuthor encode_html="1"$></mt:If>" onfocus="mtCommentFormOnFocus()" />
+        </li>
+        <li>
+          <label for="comment-email"><__trans phrase="Email Address"></label> <input type="text" id="comment-email" class="text" name="email" value="<mt:If name="comment_preview"><$mt:CommentEmail encode_html="1"$></mt:If>" onfocus="mtCommentFormOnFocus()" />
+        </li>
+        <li>
+          <label for="comment-url"><__trans phrase="URL"></label> <input type="text" id="comment-url" class="text" name="url" value="<mt:If name="comment_preview"><$mt:CommentURL encode_html="1"$></mt:If>" onfocus="mtCommentFormOnFocus()" />
+        </li>
+      </ul>
+<mt:Unless name="comment_preview">
+      <p>
+        <input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="mtRememberMeOnClick(this)" value="1" accesskey="r" /> <label for="comment-bake-cookie"><__trans phrase="Remember personal info?"></label>
+      </p>
+</mt:Unless>
+    </div>
+
+    <div id="comments-open-footer" class="actions-bar">
+      <div id="comments-open-captcha"></div>
+<mt:If name="comment_preview">
+      <input type="submit" accesskey="s" name="post" id="comment-submit" class="primary button" value="<__trans phrase="Submit">">
+      <input type="submit" accesskey="v" name="preview_button" id="comment-preview" class="button" value="<__trans phrase="Preview">" onclick="this.form.preview.value='1';">
+      <input type="button" name="cancel" id="comment-cancel" class="button" value="<__trans phrase="Cancel">" onclick="window.location='<$mt:EntryPermalink abs2rel="1"$>#comments-form'">
+<mt:Else>
+      <input type="submit" accesskey="s" name="post" id="comment-submit" class="primary button" value="<__trans phrase="Submit">">
+      <input type="submit" accesskey="v" name="preview_button" id="comment-preview" class="button" value="<__trans phrase="Preview">" onclick="this.form.preview.value='1';">
+</mt:If>
+    </div>
+  </fieldset>
+</form>
+
+<script type="text/javascript">
+    mtAttachEvent("load", mtEntryOnLoad);
+    mtAttachEvent("unload", mtEntryOnUnload);
+</script>

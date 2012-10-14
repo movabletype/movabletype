@@ -1,0 +1,56 @@
+<mt:If name="comment_confirmation">
+  <$mt:Var name="page_title" value="<__trans phrase="Confirmation...">"$>
+  <$mt:Var name="message" value="<p class="message success"><__trans phrase="Your comment has been submitted!"></p>"$>
+<mt:Else name="comment_pending">
+  <$mt:Var name="page_title" value="<__trans phrase="Thank you for commenting.">"$>
+  <$mt:Var name="message" value="<p class="message success"><__trans phrase="Your comment has been received and held for approval by the blog owner."></p>"$>
+<mt:Else name="comment_error">
+  <$mt:Var name="page_title" value="<__trans phrase="Comment Submission Error">"$>
+  <mt:SetVarBlock name="message"><p class="message error"><__trans phrase="Your comment submission failed for the following reasons: [_1]" params="<$mt:ErrorMessage$>"></p></mt:SetVarBlock>
+</mt:If>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="<$mt:PublishCharset$>">
+    <meta name="description" content="<$mt:EntryExcerpt remove_html="1"$>">
+    <title><$mt:BlogName encode_html="1"$>: <__trans phrase="Previewing your Comment"></title>
+    <$mt:Include module="<__trans phrase="HTML Head">"$>
+  </head>
+  <body>
+    <div id="container">
+      <div id="container-inner">
+        <header id="header" role="banner">
+          <div id="header-inner">
+            <$mt:Include module="<__trans phrase="Banner Header">"$>
+            <$mt:Include module="<__trans phrase="Navigation">"$>
+          </div>
+        </header>
+        <div id="content">
+          <div id="content-inner">
+            <ul class="breadcrumb breadcrumb-list">
+              <li class="breadcrumb-list-item"><a href="<$mt:BlogURL encode_html="1"$>"><__trans phrase="Home"></a></li>
+              <li class="breadcrumb-list-item"><$mt:EntryTitle$></li>
+            </ul>
+            <div id="comment-response-main" class="main" role="main">
+              <section>
+                <h2 class="title"><$mt:Var name="page_title"$></h2>
+                <$mt:Var name="message"$>
+                <p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<mt:If name="comment_error">javascript:history.back()<mt:Else><$mt:EntryLink$></mt:If>"></p>
+              </section>
+            </div>
+            <aside class="widgets related" role="complementary">
+              <$mt:WidgetSet name="<__trans phrase="Related Contents">"$>
+            </aside>
+          </div>
+        </div>
+        <footer id="footer" role="contentinfo">
+          <div id="footer-inner">
+            <$mt:Include module="<__trans phrase="Banner Footer">"$>
+          </div>
+        </footer>
+      </div>
+    </div>
+    <script src="<$mt:StaticWebPath encode_html="1"$>jquery/jquery.min.js"></script>
+    <script src="<$mt:Link template="javascript_theme" encode_html="1">"></script>
+  </body>
+</html>

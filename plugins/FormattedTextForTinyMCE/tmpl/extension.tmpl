@@ -1,0 +1,37 @@
+<mt:if name="formatted_texts">
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+(function($) {
+
+$.extend(MT.Editor.TinyMCE.config, {
+    template_templates: [
+    <mt:loop name="formatted_texts" glue=",">
+        {
+            title: "<mt:var name="label" encode_js="1" />",
+            src: "<mt:var name="script_url">?__mode=tiny_mce_view_formatted_text_text&blog_id=<mt:var name="blog_id">&id=<mt:var name="id" />",
+            description: "<mt:var name="description" encode_html="1" nl2br="1" encode_js="1" />"
+        }
+    </mt:loop>
+    ]
+});
+
+<__trans_section component="FormattedText">
+Lexicon['Formatted Text'] = '<__trans phrase="Formatted Text" encode_js="1" />';
+Lexicon['Name'] = '<__trans phrase="Name" encode_js="1" />';
+Lexicon['Description'] = '<__trans phrase="Description" encode_js="1" />';
+Lexicon['Preview'] = '<__trans phrase="Preview" encode_js="1" />';
+</__trans_section>
+<__trans_section component="FormattedTextForTinyMCE">
+Lexicon['Insert Formatted Text'] = '<__trans phrase="Insert Formatted Text" encode_js="1" />';
+Lexicon['Select a Formatted Text'] = '<__trans phrase="Select a Formatted Text" encode_js="1" />';
+</__trans_section>
+
+
+})(jQuery);
+</script>
+<script type="text/javascript" src="<mt:var name="static_uri">plugins/FormattedTextForTinyMCE/extension.js"></script>
+</mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">plugins/FormattedTextForTinyMCE/skin/ui.css" type="text/css" />
+</mt:setvarblock>
+</mt:if>

@@ -47,15 +47,18 @@ abstract class MTDatabase {
 
     // Abstract method
     abstract protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '');
-    abstract public function escape($str);
     abstract public function set_names($mt);
 
     // Utility method
+    public function escape($str) {
+        return substr($this->conn->Quote(stripslashes($str)), 1, -1);
+    }
+
     public function has_distinct_support () {
         return $this->has_distinct;
     }
 
-    public function db() {
+    public function &db() {
         return $this->conn;
     }
 
@@ -717,8 +720,10 @@ abstract class MTDatabase {
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and entry_blog_id ' . $sql;
             $mt = MT::get_instance();
-            $blog = $this->fetch_blog($mt->blog_id());
-            $blog_id = $blog->blog_id;
+            $ctx = $mt->context();
+            $blog = $ctx->stash('blog');
+            if ( !empty( $blog ) )
+                $blog_id = $blog->blog_id;
         } elseif (isset($args['blog_id'])) {
             $blog_id = intval($args['blog_id']);
             $blog_filter = 'and entry_blog_id = ' . $blog_id;
@@ -836,9 +841,9 @@ abstract class MTDatabase {
             } else {
                 $not_clause = preg_match('/\bNOT\b/i', $category_arg);
                 if ($blog_ctx_arg)
-                    $cats =& $this->fetch_categories(array_merge($blog_ctx_arg, array('show_empty' => 1, 'class' => $cat_class)));
+                    $cats = $this->fetch_categories(array_merge($blog_ctx_arg, array('show_empty' => 1, 'class' => $cat_class)));
                 else
-                    $cats =& $this->fetch_categories(array('blog_id' => $blog_id, 'show_empty' => 1, 'class' => $cat_class));
+                    $cats = $this->fetch_categories(array('blog_id' => $blog_id, 'show_empty' => 1, 'class' => $cat_class));
             }
 
            if (!empty($cats)) {
@@ -1356,6 +1361,21 @@ abstract class MTDatabase {
                         $limit--;
                     }
                     $entries = $entries_sorted;
+                } elseif ($sort_field == 'entry_authored_on') {
+                    $sort_fn = "
+                        \$ret = strcmp(\$a->entry_authored_on, \$b->entry_authored_on); 
+                        if (\$ret==0) { 
+                            \$ret = \$a->entry_id - \$b->entry_id; 
+                        } 
+                        return \$ret;";
+                    $sorter = create_function(
+                        $order == 'asc' ? '$a,$b' : '$b,$a',
+                        $sort_fn);
+                    usort($entries, $sorter);
+
+                    if (isset($post_sort_offset)) {
+                        $entries = array_slice($entries, $post_sort_offset, $post_sort_limit);
+                    }
                 } else {
                     if (($sort_field == 'entry_status') || ($sort_field == 'entry_author_id') || ($sort_field == 'entry_id')
                           || ($sort_field == 'entry_comment_count') || ($sort_field == 'entry_ping_count')) {
@@ -1613,7 +1633,7 @@ abstract class MTDatabase {
         }
     }
 
-    public function &fetch_categories($args) {
+    public function fetch_categories($args) {
         # load categories
         if ($blog_filter = $this->include_exclude_blogs($args)) {
              $blog_filter = 'and category_blog_id '. $blog_filter;
@@ -2916,9 +2936,9 @@ abstract class MTDatabase {
         if ($sql != '') {
             $blog_filter = 'and comment_blog_id ' . $sql;
             if (isset($args['blog_id']))
-                $blog =& $this->fetch_blog($args['blog_id']);
+                $blog = $this->fetch_blog($args['blog_id']);
         } elseif ($args['blog_id']) {
-            $blog =& $this->fetch_blog($args['blog_id']);
+            $blog = $this->fetch_blog($args['blog_id']);
             $blog_filter = ' and comment_blog_id = ' . $blog->blog_id;
         }
 
@@ -2948,9 +2968,9 @@ abstract class MTDatabase {
         if ($sql != '') {
             $blog_filter = 'and comment_blog_id ' . $sql;
             if (isset($args['blog_id']))
-                $blog =& $this->fetch_blog($args['blog_id']);
+                $blog = $this->fetch_blog($args['blog_id']);
         } elseif ($args['blog_id']) {
-            $blog =& $this->fetch_blog($args['blog_id']);
+            $blog = $this->fetch_blog($args['blog_id']);
             $blog_filter = ' and comment_blog_id = ' . $blog->blog_id;
         }
 

@@ -87,7 +87,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                         $quote = '"';
                     } else {
                         $attr = $arglist[$a][1];
-                        $attr = preg_replace('/:/', '___', $attr);
+                        $attr = strtolower(preg_replace('/:/', '___', $attr));
                         $attrs[$attr] = $arglist[$a][3];
                         $quote = $arglist[$a][2];
                     }
@@ -308,16 +308,17 @@ function _parse_modifier($str) {
         for ($a = 0; $a < count($matches); $a++) {
             $val = $matches[$a][1];
             if (strlen($val)) {
-                if (preg_match('/^([\'"])\$([A-Za-z_](\w|\.)*)\1$/', $val, $matches)) {
-                    if (preg_match('/^(config|request)\.(.+)$/i', $matches[2], $m)) {
+                if (preg_match('/^([\'"])\$([A-Za-z_](\w|\.)*)\1$/', $val, $second_matches)) {
+                    $quote = $second_matches[1];
+                    if (preg_match('/^(config|request)\.(.+)$/i', $second_matches[2], $m)) {
                         if (strtolower($m[1]) == 'config' && !preg_match('/(password|secret)/i', $m[2]) ) {
-                            $val = $mt->config(strtolower($m[2]));
+                            $val = $quote . $mt->config(strtolower($m[2])) . $quote;
                         }
                         elseif (strtolower($m[1]) == 'request') {
                             $val = '$smarty.request.' . $m[2];
                         }
                     } else {
-                        $val = '$vars.' . $matches[2];
+                        $val = '$vars.' . $second_matches[2];
                     }
                 }
                 $result .= ':' . $val;

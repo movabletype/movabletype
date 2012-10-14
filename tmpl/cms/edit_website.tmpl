@@ -170,8 +170,11 @@ jQuery(function() {
     }
     <mt:if name="sitepath_limited">
     function is_path_limit_clear( path_ ) {
-        var limit = '<mt:var name="sitepath_limited" escape="js">';
-        re = new RegExp("^"+limit, "i");
+        re = new RegExp("^<mt:var name="sitepath_limited" escape="js" escape="js">$", "i");
+        if ( path_.match( re ) ) {
+            return true;
+        }
+        re = new RegExp("^<mt:var name="sitepath_limited_trail" escape="js" escape="js">", "i");
         if ( !path_.match( re ) ) {
             return false;
         }

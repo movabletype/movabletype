@@ -847,14 +847,25 @@ sub _hdlr_entries {
         if ( !@filters ) {
             if ( ( my $last = $args->{lastn} ) && ( !exists $args->{limit} ) )
             {
-                $args{direction} = 'descend';
-                $args{sort}      = 'authored_on';
+                $args{sort} = [ 
+                    { column => 'authored_on', desc => 'DESC' }, 
+                    { column => 'id', desc => 'DESC' }, 
+                ];
                 $args{limit}     = $last;
                 $no_resort = 0 if $args->{sort_by};
             }
             else {
-                $args{direction} = $args->{sort_order} || 'descend'
-                    if exists( $args{sort} );
+                if ($args{sort} eq 'authored_on') {
+                    my $dir = $args->{sort_order} || 'descend';
+                    $dir = ('descend' eq $dir) ? "DESC" : "ASC";
+                    $args{sort} = [ 
+                        { column => 'authored_on', desc => $dir }, 
+                        { column => 'id', desc => $dir }, 
+                    ];
+                }
+                else {
+                    $args{direction} = $args->{sort_order} || 'descend';
+                }
                 $no_resort = 1 unless $args->{sort_by};
                 if (   ( my $last = $args->{lastn} )
                     && ( exists $args->{limit} ) )
@@ -1130,35 +1141,29 @@ sub _hdlr_entries {
                 = $args->{sort_order}
                 || ( $blog ? $blog->sort_order_posts : 'descend' )
                 || '';
+            $so = $so eq 'ascend' ? 1 : -1;
+            my $type;
             if ( my $def = $class->column_def($col) ) {
-                if ( $def->{type} =~ m/^integer|float$/ ) {
-                    @entries
-                        = $so eq 'ascend'
-                        ? sort { $a->$col() <=> $b->$col() } @entries
-                        : sort { $b->$col() <=> $a->$col() } @entries;
-                }
-                else {
-                    @entries
-                        = $so eq 'ascend'
-                        ? sort { $a->$col() cmp $b->$col() } @entries
-                        : sort { $b->$col() cmp $a->$col() } @entries;
-                }
+                $type = $def->{type};
             }
             elsif ( $class->is_meta_column($col) ) {
-                my $type = MT::Meta->metadata_by_name( $class, $col );
-                no warnings;
-                if ( $type->{type} =~ m/integer|float/ ) {
-                    @entries
-                        = $so eq 'ascend'
-                        ? sort { $a->$col() <=> $b->$col() } @entries
-                        : sort { $b->$col() <=> $a->$col() } @entries;
-                }
-                else {
-                    @entries
-                        = $so eq 'ascend'
-                        ? sort { $a->$col() cmp $b->$col() } @entries
-                        : sort { $b->$col() cmp $a->$col() } @entries;
-                }
+                $type = MT::Meta->metadata_by_name( $class, $col );
+            }
+            my $func;
+            no warnings;
+            if ($type and $type =~ m/^integer|float$/) {
+                $func = sub { $so * ( $a->$col() <=> $b->$col() ) };
+            }
+            elsif ($col eq 'authored_on') {
+                $func = sub { 
+                    $so * ( ( $a->$col() cmp $b->$col() ) || 
+                            ( $a->id() cmp $b->id() ) ) };
+            }
+            else {
+                $func = sub { $so * ( $a->$col() cmp $b->$col() ) };
+            }
+            if ($func) {
+                @entries = sort $func @entries;
             }
         }
     }

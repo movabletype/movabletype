@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="<$mt:BlogLanguage$>">
+  <head>
+    <meta charset="<$mt:PublishCharset$>">
+    <title><__trans phrase="[_1] Archives" params="<$mt:ArchiveTitle$>"> - <$mt:BlogName encode_html="1"$></title>
+    <link rel="alternate" type="application/atom+xml" title="Recent Entries" href="<$mt:Link template="feed_recent"$>">
+    <$mt:Include module="<__trans phrase="HTML Head">"$>
+    <mt:ArchivePrevious><link rel="prev" href="<$mt:ArchiveLink$>" title="<$mt:ArchiveTitle encode_html="1"$>"></mt:ArchivePrevious>
+    <mt:ArchiveNext><link rel="next" href="<$mt:ArchiveLink$>" title="<$mt:ArchiveTitle encode_html="1"$>"></mt:ArchiveNext>
+  </head>
+  <body>
+    <div id="container">
+      <div id="container-inner">
+        <header id="header" role="banner">
+          <div id="header-inner">
+            <$mt:Include module="<__trans phrase="Banner Header">"$>
+            <$mt:Include module="<__trans phrase="Navigation">"$>
+          </div>
+        </header>
+        <div id="content">
+          <div id="content-inner">
+            <ul class="breadcrumb breadcrumb-list">
+              <li class="breadcrumb-list-item"><a href="<$mt:BlogURL encode_html="1"$>"><__trans phrase="Home"></a></li>
+              <li class="breadcrumb-list-item"><__trans phrase="[_1] Archives" params="<$mt:ArchiveTitle$>"></li>
+            </ul>
+            <div id="datebased-main" class="main" role="main">
+<mt:Entries>
+  <mt:EntriesHeader>
+              <section id="posts">
+                <h2><__trans phrase="[_1] Archives" params="<$mt:ArchiveTitle$>"></h2>
+                <ol class="posts-list">
+  </mt:EntriesHeader>
+                  <li class="posts-list-item">
+                    <time datetime="<$mt:EntryDate format_name="iso8601"$>"><$mt:EntryDate format="%x"$></time>
+                    <a href="<$mt:EntryPermalink encode_html="1"$>"><$mt:EntryTitle$></a>
+                  </li>
+  <mt:EntriesFooter>
+                </ol>
+              </section>
+  </mt:EntriesFooter>
+</mt:Entries>
+              <nav class="page-navigation entry-navigation pagination content-nav">
+                <ul class="page-navigation-list">
+<mt:ArchivePrevious>
+                  <li class="page-navigation-list-item page-navigation-prev"><a rel="prev" href="<$mt:ArchiveLink encode_html="1"$>"><$mt:ArchiveTitle$></a></li>
+</mt:ArchivePrevious>
+<mt:ArchiveNext>
+                  <li class="page-navigation-list-item page-navigation-next"><a rel="next" href="<$mt:ArchiveLink encode_html="1"$>"><$mt:ArchiveTitle$></a></li>
+</mt:ArchiveNext>
+                </ul>
+              </nav>
+            </div>
+            <aside class="widgets related" role="complementary">
+              <$mt:WidgetSet name="<__trans phrase="Related Contents">"$>
+            </aside>
+          </div>
+        </div>
+        <footer id="footer" role="contentinfo">
+          <div id="footer-inner">
+            <$mt:Include module="<__trans phrase="Banner Footer">"$>
+          </div>
+        </footer>
+      </div>
+    </div>
+    <script src="<$mt:StaticWebPath encode_html="1"$>jquery/jquery.min.js"></script>
+    <script src="<$mt:Link template="javascript_theme" encode_html="1">"></script>
+  </body>
+</html>
