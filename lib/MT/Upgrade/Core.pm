@@ -209,10 +209,21 @@ sub seed_database {
         );
 
     require MT::Website;
-    my $website = MT::Website->create_default_website(
-        exists $param{website_name}
+    $param{website_name} = exists $param{website_name}
         ? _uri_unescape_utf8( $param{website_name} )
-        : MT->translate('First Website'), $param{website_theme}
+        : MT->translate('First Website');
+    $param{website_path} = exists $param{website_path}
+        ? _uri_unescape_utf8( $param{website_path} )
+        : '';
+    $param{website_url} = exists $param{website_url}
+        ? _uri_unescape_utf8( $param{website_url} )
+        : '';
+    my $website = MT::Website->create_default_website(
+        $param{website_name}, 
+        site_theme    => $param{website_theme},
+        site_url      => $param{website_url},
+        site_path     => $param{website_path},
+        site_timezone => $param{website_timezone},
         )
         or return $self->error(
         $self->translate_escape(
@@ -220,21 +231,6 @@ sub seed_database {
             MT::Website->errstr
         )
         );
-    $website->site_path(
-        exists $param{website_path}
-        ? _uri_unescape_utf8( $param{website_path} )
-        : ''
-    );
-    $website->site_url(
-        exists $param{website_url}
-        ? _uri_unescape_utf8( $param{website_url} )
-        : ''
-    );
-    $website->server_offset(
-        exists $param{website_timezone}
-        ? ( $param{website_timezone} || 0 )
-        : 0
-    );
     $website->save
         or return $self->error(
         $self->translate_escape(
