@@ -1264,11 +1264,13 @@ sub rebuild_file {
         )
     {
         $finfo->remove();
-        $mt->_delete_archive_file(
-            Blog        => $blog,
-            File        => $finfo->file_path,
-            ArchiveType => $at
-        );
+        if ( MT->config->DeleteFilesAtRebuild ) {
+            $mt->_delete_archive_file(
+                Blog        => $blog,
+                File        => $finfo->file_path,
+                ArchiveType => $at
+            );
+        }
 
         return 1;
     }
