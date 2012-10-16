@@ -105,7 +105,7 @@ $.extend(MT.EditorManager.prototype, {
         $('#' + id).data('mt-editor', this);
 
         $(window).bind('pre_autosave', function() {
-            manager.currentEditor.save();
+            manager.save();
         });
     },
 
@@ -169,7 +169,7 @@ $.extend(MT.EditorManager.prototype, {
 
 // Delegate
 $.each([
-    'focus',
+    'focus', 'save',
     'getContent', 'setContent', 'insertContent',
     'getHeight', 'setHeight', 'resetUndo', 'domUpdated'
 ], function() {

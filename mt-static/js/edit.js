@@ -256,7 +256,9 @@ MT.App = new Class( MT.App, {
 
 
     autoSave: function() {
-        this.saveHTML( false );
+        if (typeof MT.EditorManager == 'undefined') {
+            this.saveHTML( false );
+        }
         return arguments.callee.applySuper( this, arguments );
     },
 
