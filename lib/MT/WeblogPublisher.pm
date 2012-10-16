@@ -595,7 +595,7 @@ sub rebuild_entry {
 
         if (@old_ids) {
             push( @$categories_for_rebuild,
-                MT::Category->load( { id => @old_ids } ) );
+                MT::Category->load( { id => \@old_ids } ) );
         }
     }
 
