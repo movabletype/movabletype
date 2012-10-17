@@ -233,11 +233,12 @@ sub list_actions {
 sub content_actions {
     return {
         create_new => {
-            mode  => 'view',
-            args  => { _type => 'formatted_text', },
-            class => 'icon-create',
-            label => 'Create New',
-            order => 100,
+            mode      => 'view',
+            args      => { _type => 'formatted_text', },
+            class     => 'icon-create',
+            label     => 'Create New',
+            order     => 100,
+            condition => sub { MT->instance->blog },
         },
     };
 }
