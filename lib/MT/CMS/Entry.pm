@@ -1458,9 +1458,10 @@ sub save {
         $orig_obj = $obj->clone;
     }
 
-    my $categories_old = $orig_obj->categories;
-    my $status_old     = $id ? $obj->status : 0;
-    my $names          = $obj->column_names;
+    my $primary_category_old = $orig_obj->category;
+    my $categories_old       = $orig_obj->categories;
+    my $status_old           = $id ? $obj->status : 0;
+    my $names                = $obj->column_names;
 
     ## Get rid of category_id param, because we don't want to just set it
     ## in the Entry record; save it for later when we will set the Placement.
@@ -1795,7 +1796,8 @@ sub save {
             {
                 $app->publisher->remove_entry_archive_file(
                     Entry       => $orig_obj,
-                    ArchiveType => $archive_type
+                    ArchiveType => $archive_type,
+                    Category    => $primary_category_old,
                 );
             }
         }
