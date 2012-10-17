@@ -43,10 +43,9 @@ sub param_edit_entry {
 sub can_edit_formatted_text {
     my ( $perms, $formatted_text, $author ) = @_;
 
-    return 0
-        if ( !$perms )
-        || ( !$author->isa('MT::Author') );
+    return 0 unless $author->isa('MT::Author');
     return 1 if $author->is_superuser();
+    return 0 unless $perms;
 
     # For new object
     if ( !$formatted_text ) {
@@ -67,29 +66,36 @@ sub can_edit_formatted_text {
 sub can_view_formatted_text {
     my ( $perms, $formatted_text, $author ) = @_;
 
-    return 0
-        if ( !$perms )
-        || ( !$author->isa('MT::Author') );
+    return 0 unless $author->isa('MT::Author');
+    return 1 if $author->is_superuser();
+    return 0 unless $perms;
 
-    $author->is_superuser() || $perms->can_do('view_all_formatted_texts');
+    $perms->can_do('view_all_formatted_texts');
 }
 
 sub save_permission_filter {
-    my ( $cb, $app, $formatted_text ) = @_;
-    my $perms = $app->permissions;
-    can_edit_formatted_text( $perms, $formatted_text, $app->user );
+    my ( $cb, $app, $id ) = @_;
+    my $user = $app->user;
+    my $obj = $id ? $app->model('formatted_text')->load($id) : undef;
+    my $perms
+        = $obj ? $user->permissions( $obj->blog_id ) : $app->permissions;
+    can_edit_formatted_text( $perms, $obj, $user );
 }
 
 sub view_permission_filter {
-    my ( $cb, $app, $formatted_text ) = @_;
-    my $perms = $app->permissions;
-    can_edit_formatted_text( $perms, $formatted_text, $app->user );
+    my ( $cb, $app, $id ) = @_;
+    my $user = $app->user;
+    my $obj = $id ? $app->model('formatted_text')->load($id) : undef;
+    my $perms
+        = $obj ? $user->permissions( $obj->blog_id ) : $app->permissions;
+    can_edit_formatted_text( $perms, $obj, $user );
 }
 
 sub delete_permission_filter {
-    my ( $cb, $app, $formatted_text ) = @_;
-    my $perms = $app->permissions;
-    can_edit_formatted_text( $perms, $formatted_text, $app->user );
+    my ( $cb, $app, $obj ) = @_;
+    my $user  = $app->user;
+    my $perms = $user->permissions( $obj->blog_id );
+    can_edit_formatted_text( $perms, $obj, $user );
 }
 
 sub set_params_for_formatted_text {
