@@ -624,6 +624,9 @@ sub edit {
         }
     );
 
+    $app->run_callbacks( 'cms_object_scope_filter.' . $type, $app, $id )
+        || return $app->return_to_dashboard( redirect => 1 );
+
     if ( !$author->is_superuser ) {
         $app->run_callbacks( 'cms_view_permission_filter.' . $type,
             $app, $id, $obj_promise )

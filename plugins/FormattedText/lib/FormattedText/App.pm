@@ -73,6 +73,11 @@ sub can_view_formatted_text {
     $perms->can_do('view_all_formatted_texts');
 }
 
+sub cms_object_scope_filter {
+    my ( $cb, $app, $id ) = @_;
+    $app->blog;
+}
+
 sub save_permission_filter {
     my ( $cb, $app, $id ) = @_;
     my $user = $app->user;
