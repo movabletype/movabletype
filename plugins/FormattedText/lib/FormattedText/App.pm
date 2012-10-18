@@ -191,7 +191,7 @@ sub filtered_list_param {
 
 sub listing_screens {
     return {
-        object_label       => 'FormattedText',
+        object_label       => 'Formatted Text',
         primary            => 'label',
         default_sort_key   => 'created_on',
         default_sort_order => 'descend',
@@ -225,7 +225,7 @@ sub list_actions {
             order                   => 100,
             continue_prompt_handler => sub {
                 translate(
-                    'Are you sure you want to delete the selected FormattedTexts?'
+                    'Are you sure you want to delete the selected Formatted Texts?'
                 );
             },
             mode       => 'delete',

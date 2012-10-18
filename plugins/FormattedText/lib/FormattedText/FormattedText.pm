@@ -45,11 +45,11 @@ sub class_type {
 }
 
 sub class_label {
-    translate('FormattedText');
+    translate('Formatted Text');
 }
 
 sub class_label_plural {
-    translate('FormattedTexts');
+    translate('Formatted Texts');
 }
 
 sub list_props {
