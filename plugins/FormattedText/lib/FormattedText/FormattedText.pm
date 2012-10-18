@@ -251,4 +251,9 @@ sub required_fields {
     [qw(label)];
 }
 
+sub parents {
+    my $obj = shift;
+    { blog_id => MT->model('blog'), };
+}
+
 1;
