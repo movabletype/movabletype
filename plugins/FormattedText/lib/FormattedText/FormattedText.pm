@@ -137,6 +137,7 @@ sub list_props {
             display => 'default',
         },
         blog_name => {
+            label     => 'Blog Name',
             base      => '__virtual.blog_name',
             order     => 400,
             display   => 'default',
@@ -200,8 +201,7 @@ sub list_props {
                     push @out,
                           '<a href="'
                         . $urls{ $blog->id } . '">'
-                        . encode_html($name) . ' ('
-                        . $blog->id . ')</a>';
+                        . encode_html($name) . '</a>';
                 }
 
                 return @out;
