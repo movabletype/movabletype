@@ -54,11 +54,15 @@ sub class_label_plural {
 
 sub list_props {
     return {
+        id => {
+            base  => '__virtual.id',
+            order => 100,
+        },
         label => {
             label      => 'Name',
             base       => '__virtual.label',
             display    => 'force',
-            order      => 100,
+            order      => 200,
             sub_fields => [
                 {   class   => 'description',
                     label   => 'Description',
@@ -129,12 +133,12 @@ sub list_props {
         },
         author_name => {
             base    => '__virtual.author_name',
-            order   => 200,
+            order   => 300,
             display => 'default',
         },
         blog_name => {
             base      => '__virtual.blog_name',
-            order     => 300,
+            order     => 400,
             display   => 'default',
             site_name => 0,
             view      => ['system'],
@@ -206,11 +210,11 @@ sub list_props {
         created_on => {
             base    => '__virtual.created_on',
             display => 'default',
-            order   => 400,
+            order   => 500,
         },
         modified_on => {
             base  => '__virtual.modified_on',
-            order => 500,
+            order => 600,
         },
         description => {
             auto    => 1,
