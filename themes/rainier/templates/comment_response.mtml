@@ -3,7 +3,7 @@
   <$mt:Var name="message" value="<p class="message success"><__trans phrase="Your comment has been submitted!"></p>"$>
 <mt:Else name="comment_pending">
   <$mt:Var name="page_title" value="<__trans phrase="Thank you for commenting.">"$>
-  <$mt:Var name="message" value="<p class="message success"><__trans phrase="Your comment has been received and held for approval by the blog owner."></p>"$>
+  <$mt:Var name="message" value="<p class="message success"><__trans phrase="Your comment has been received and held for review by a blog administrator."></p>"$>
 <mt:Else name="comment_error">
   <$mt:Var name="page_title" value="<__trans phrase="Comment Submission Error">"$>
   <mt:SetVarBlock name="message"><p class="message error"><__trans phrase="Your comment submission failed for the following reasons: [_1]" params="<$mt:ErrorMessage$>"></p></mt:SetVarBlock>
