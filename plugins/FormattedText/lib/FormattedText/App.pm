@@ -75,7 +75,7 @@ sub can_view_formatted_text {
 
 sub cms_object_scope_filter {
     my ( $cb, $app, $id ) = @_;
-    $app->blog;
+    $app->blog && $app->blog->is_blog;
 }
 
 sub save_permission_filter {
