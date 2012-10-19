@@ -199,6 +199,8 @@ sub listing_screens {
             permit_action => 'access_to_formatted_text_list',
             inherit       => 0,
         },
+        condition =>
+            sub { !MT->instance->blog || MT->instance->blog->is_blog },
         template => File::Spec->catfile(
             plugin()->{full_path}, 'tmpl',
             'cms',                 'list_formatted_text.tmpl'
