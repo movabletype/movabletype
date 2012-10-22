@@ -696,7 +696,6 @@ class MT {
             } else {
                 $entry = $this->db->fetch_entry($data->fileinfo_entry_id);
             }
-            require_once('function.mtentrystatus.php');
             if (!isset($entry) || $entry->entry_status != 2)
                 return;
         }

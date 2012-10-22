@@ -358,6 +358,7 @@ abstract class MTDatabase {
             }
             if ($found) break;
         }
+
         if (!$found) return null;
         $blog = $record->blog();
         $this->_blog_id_cache[$blog->id] =& $blog;
@@ -704,13 +705,18 @@ abstract class MTDatabase {
     }
 
     function fetch_entry($eid) {
-        $args['class'] = 'entry';
-        $args['entry_id'] = $eid;
-        $entries = $this->fetch_entries($args);
-        if (empty($entries))
+        if ( isset( $this->_entry_id_cache[$eid] ) && !empty( $this->_entry_id_cache[$eid] ) ) {
+            return $this->_entry_id_cache[$eid];
+        }
+        require_once("class.mt_entry.php");
+        $entry = New Entry;
+        $entry->Load( $eid );
+        if ( !empty( $entry ) ) {
+            $this->_entry_id_cache[$eid] = $entry;
+            return $entry;
+        } else {
             return null;
-        else
-            return $entries[0];
+        }
     }
 
     public function fetch_entries($args, &$total_count = NULL) {
@@ -1844,13 +1850,19 @@ abstract class MTDatabase {
         return $categories;
     }
 
-    public function fetch_page($entry_id) {
-        if (isset($this->_entry_id_cache['entry_id'])) {
-            return $this->_entry_id_cache[$entry_id];
+    public function fetch_page($eid) {
+        if ( isset( $this->_entry_id_cache[$eid] ) && !empty( $this->_entry_id_cache[$eid] ) ) {
+            return $this->_entry_id_cache[$eid];
         }
-        list($entry) = $this->fetch_pages(array('entry_id' => $entry_id));
-        $this->_entry_id_cache[$entry_id] = $entry;
-        return $entry;
+        require_once("class.mt_page.php");
+        $page = New Page;
+        $page->Load( $eid );
+        if ( !empty( $page ) ) {
+            $this->_entry_id_cache[$eid] = $page;
+            return $page;
+        } else {
+            return null;
+        }
     }
 
     public function fetch_author($author_id) {
