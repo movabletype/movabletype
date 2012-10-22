@@ -12,7 +12,7 @@
   }
 }
 
-@mixin box-sizing($model) {
+@mixin box-sizing($model:border-box) {
   @each $vendor in -moz-, null {
     #{$vendor}box-sizing: $model;
   }
@@ -57,6 +57,10 @@
   &.rank-7 {
     font-size: ($base * 0.7);
   }
+}
+
+%border-box {
+  @include box-sizing(border-box);
 }
 
 %clearfix {
