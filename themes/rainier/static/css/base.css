@@ -1,95 +1,1025 @@
+#comments-open-captcha #captcha_code {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+#content, [role="contentinfo"], [role="banner"] [role="navigation"], #posts li, .comment header {
+  zoom: 1; }
+  #content:before, [role="contentinfo"]:before, [role="banner"] [role="navigation"]:before, #posts li:before, .comment header:before, #content:after, [role="contentinfo"]:after, [role="banner"] [role="navigation"]:after, #posts li:after, .comment header:after {
+    display: block;
+    height: 0;
+    visibility: hidden;
+    content: "\0020"; }
+  #content:after, [role="contentinfo"]:after, [role="banner"] [role="navigation"]:after, #posts li:after, .comment header:after {
+    clear: both; }
+
+.span {
+  width: 100%;
+  margin: 0; }
+
+@media (min-width: 700px) {
+  .span {
+    float: left; }
+
+  .span1 {
+    width: 4.33333%; }
+
+  .span2 {
+    width: 12.66667%; }
+
+  .span3 {
+    width: 21%; }
+
+  .span4 {
+    width: 29.33333%; }
+
+  .span5 {
+    width: 37.66667%; }
+
+  .span6 {
+    width: 46%; }
+
+  .span7 {
+    width: 54.33333%; }
+
+  .span8 {
+    width: 62.66667%; }
+
+  .span9 {
+    width: 71%; }
+
+  .span10 {
+    width: 79.33333%; }
+
+  .span11 {
+    width: 87.66667%; }
+
+  .span12 {
+    width: 96%; } }
+#container #header-inner,
+#container #content-inner,
+#container #footer-inner {
+  width: auto; }
+  @media (min-width: 930px) {
+    #container #header-inner,
+    #container #content-inner,
+    #container #footer-inner {
+      width: 940px; } }
+
+#header-inner,
+#container-inner {
+  width: 100%; }
+  @media (min-width: 930px) {
+    #header-inner,
+    #container-inner {
+      width: 940px;
+      margin-right: auto;
+      margin-left: auto; } }
+
+[role="banner"] {
+  margin: 0; }
+  @media (min-width: 930px) {
+    [role="banner"] {
+      margin: 0 auto; }
+      [role="banner"] h1 {
+        margin: 0; } }
+  [role="banner"] [role="navigation"] {
+    padding: 0 1em; }
+    [role="banner"] [role="navigation"] ul {
+      display: none; }
+    @media (min-width: 930px) {
+      [role="banner"] [role="navigation"] ul {
+        display: block; }
+      [role="banner"] [role="navigation"] select {
+        display: none; } }
+
+[role="navigation"] ul {
+  padding-left: 0; }
+  [role="navigation"] ul li {
+    padding-right: 1.618em; }
+
+#content {
+  margin: 1.618em 1em 0; }
+  #content .related {
+    margin-top: 4.854em; }
+  @media (min-width: 930px) {
+    #content {
+      margin-right: auto;
+      margin-left: auto; }
+      #content [role="main"],
+      #content .related {
+        float: left; }
+      #content [role="main"] {
+        width: 62.66667%;
+        padding-left: 2%; }
+      #content .related {
+        width: 31.33333%;
+        padding-left: 2%;
+        margin-top: 0; } }
+
+[role="contentinfo"] {
+  margin: 0; }
+  @media (min-width: 930px) {
+    [role="contentinfo"] {
+      margin: 0 auto; } }
+
+/* normalize.css 2012-03-11T12:53 UTC - http://github.com/necolas/normalize.css */
+/* =============================================================================
+   HTML5 display definitions
+   ========================================================================== */
 /*
-Syntax error: Invalid CSS after "    @extend ": expected selector_sequence, was "$border-box;"
-        on line 135 of scss/_feedback.scss
-        from line 10 of scss/base.scss
+ * Corrects block display not defined in IE6/7/8/9 & FF3
+ */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+nav,
+section,
+summary {
+  display: block; }
 
-130:   }
-131: 
-132:   #captcha_code {
-133:     width: 150px;
-134:     margin: $harf-indent 0;
-135:     @extend $border-box;
-136:   }
-137: 
-138:   #comments-open-captcha p {
-139:     margin: 0;
-140:     font-size: 90%;
+/*
+ * Corrects inline-block display not defined in IE6/7/8/9 & FF3
+ */
+audio,
+canvas,
+video {
+  display: inline-block;
+  *display: inline;
+  *zoom: 1; }
 
-Backtrace:
-scss/_feedback.scss:135
-scss/base.scss:10
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:1130:in `expected'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:1066:in `expected'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:1048:in `expr!'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:292:in `extend_directive'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:163:in `send'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:163:in `special_directive'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:135:in `directive'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:537:in `block_child'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:529:in `block_contents'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:518:in `block'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:512:in `ruleset'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:574:in `declaration_or_ruleset'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:1104:in `call'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:1104:in `rethrow'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:575:in `declaration_or_ruleset'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:537:in `block_child'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:529:in `block_contents'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:518:in `block'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:512:in `ruleset'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:536:in `block_child'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:529:in `block_contents'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:70:in `stylesheet'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/scss/parser.rb:27:in `parse'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/engine.rb:342:in `_to_tree'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/engine.rb:274:in `to_tree'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/visitors/perform.rb:222:in `visit_import'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `send'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/visitors/perform.rb:98:in `visit'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `visit_children'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `map'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/visitors/base.rb:53:in `visit_children'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/visitors/perform.rb:107:in `visit_children'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/visitors/perform.rb:119:in `with_environment'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/visitors/perform.rb:106:in `visit_children'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/visitors/perform.rb:126:in `visit_root'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `send'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/visitors/perform.rb:98:in `visit'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/visitors/perform.rb:7:in `send'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/visitors/perform.rb:7:in `visit'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/tree/root_node.rb:20:in `render'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/engine.rb:315:in `_render'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/engine.rb:262:in `render'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/plugin/compiler.rb:340:in `update_stylesheet'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/plugin/compiler.rb:202:in `update_stylesheets'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/plugin/compiler.rb:200:in `each'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/plugin/compiler.rb:200:in `update_stylesheets'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/plugin/compiler.rb:298:in `watch'
-/Library/Ruby/Gems/1.8/gems/listen-0.4.7/lib/listen/multi_listener.rb:86:in `call'
-/Library/Ruby/Gems/1.8/gems/listen-0.4.7/lib/listen/multi_listener.rb:86:in `on_change'
-/Library/Ruby/Gems/1.8/gems/listen-0.4.7/lib/listen/multi_listener.rb:95:in `initialize_adapter'
-/Library/Ruby/Gems/1.8/gems/listen-0.4.7/lib/listen/adapter.rb:162:in `call'
-/Library/Ruby/Gems/1.8/gems/listen-0.4.7/lib/listen/adapter.rb:162:in `poll_changed_dirs'
-/Library/Ruby/Gems/1.8/gems/listen-0.4.7/lib/listen/adapters/darwin.rb:28:in `start'
-/Library/Ruby/Gems/1.8/gems/listen-0.4.7/lib/listen/adapters/darwin.rb:28:in `initialize'
-/Library/Ruby/Gems/1.8/gems/listen-0.4.7/lib/listen/adapters/darwin.rb:28:in `new'
-/Library/Ruby/Gems/1.8/gems/listen-0.4.7/lib/listen/adapters/darwin.rb:28:in `start'
-/Library/Ruby/Gems/1.8/gems/listen-0.4.7/lib/listen/multi_listener.rb:44:in `start'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/plugin/compiler.rb:306:in `watch'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/plugin.rb:107:in `send'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/plugin.rb:107:in `method_missing'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/exec.rb:431:in `watch_or_update'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/exec.rb:302:in `process_result'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/exec.rb:41:in `parse'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/../lib/sass/../sass/exec.rb:21:in `parse!'
-/Library/Ruby/Gems/1.8/gems/sass-3.3.0.alpha.3/bin/scss:8
-/usr/bin/scss:19:in `load'
-/usr/bin/scss:19
+/*
+ * Prevents modern browsers from displaying 'audio' without controls
+ * Remove excess height in iOS5 devices
+ */
+audio:not([controls]) {
+  display: none;
+  height: 0; }
+
+/*
+ * Addresses styling for 'hidden' attribute not present in IE7/8/9, FF3, S4
+ * Known issue: no IE6 support
+ */
+[hidden] {
+  display: none; }
+
+/* =============================================================================
+   Base
+   ========================================================================== */
+/*
+ * 1. Corrects text resizing oddly in IE6/7 when body font-size is set using em units
+ *    http://clagnut.com/blog/348/#c790
+ * 2. Prevents iOS text size adjust after orientation change, without disabling user zoom
+ *    www.456bereastreet.com/archive/201012/controlling_text_size_in_safari_for_ios_without_disabling_user_zoom/
+ */
+html {
+  font-size: 100%;
+  /* 1 */
+  -webkit-text-size-adjust: 100%;
+  /* 2 */
+  -ms-text-size-adjust: 100%;
+  /* 2 */ }
+
+/*
+ * Addresses font-family inconsistency between 'textarea' and other form elements.
+ */
+html,
+button,
+input,
+select,
+textarea {
+  font-family: sans-serif; }
+
+/*
+ * Addresses margins handled incorrectly in IE6/7
+ */
+body {
+  margin: 10px;
+  font-family: serif;
+  font-size: 16px;
+  background-color: #ccc; }
+
+/* =============================================================================
+   Links
+   ========================================================================== */
+/*
+ * Addresses outline displayed oddly in Chrome
+ */
+a:focus {
+  outline: thin dotted; }
+
+/*
+ * Improves readability when focused and also mouse hovered in all browsers
+ * people.opera.com/patrickl/experiments/keyboard/test
+ */
+a:hover,
+a:active {
+  outline: 0; }
+
+/* =============================================================================
+   Typography
+   ========================================================================== */
+/*
+ * Addresses font sizes and margins set differently in IE6/7
+ * Addresses font sizes within 'section' and 'article' in FF4+, Chrome, S5
+ */
+h1 {
+  font-size: 2em;
+  margin: 0.67em 0; }
+
+h2 {
+  font-size: 1.5em;
+  margin: 0.83em 0; }
+
+h3 {
+  font-size: 1.17em;
+  margin: 1em 0; }
+
+h4 {
+  font-size: 1em;
+  margin: 1.33em 0; }
+
+h5 {
+  font-size: 0.83em;
+  margin: 1.67em 0; }
+
+h6 {
+  font-size: 0.75em;
+  margin: 2.33em 0; }
+
+/*
+ * Addresses styling not present in IE7/8/9, S5, Chrome
+ */
+abbr[title] {
+  border-bottom: 1px dotted; }
+
+/*
+ * Addresses style set to 'bolder' in FF3+, S4/5, Chrome
 */
-body:before {
+b,
+strong {
+  font-weight: bold; }
+
+blockquote {
+  margin: 1em 40px; }
+
+/*
+ * Addresses styling not present in S5, Chrome
+ */
+dfn {
+  font-style: italic; }
+
+/*
+ * Addresses styling not present in IE6/7/8/9
+ */
+mark {
+  background: #ff0;
+  color: #000; }
+
+/*
+ * Addresses margins set differently in IE6/7
+ */
+p,
+pre {
+  margin: 1em 0; }
+
+/*
+ * Corrects font family set oddly in IE6, S4/5, Chrome
+ * en.wikipedia.org/wiki/User:Davidgothberg/Test59
+ */
+pre,
+code,
+kbd,
+samp {
+  font-family: monospace, serif;
+  _font-family: 'courier new', monospace;
+  font-size: 1em; }
+
+/*
+ * Improves readability of pre-formatted text in all browsers
+ */
+pre {
   white-space: pre;
-  font-family: monospace;
-  content: "Syntax error: Invalid CSS after \"    @extend \": expected selector_sequence, was \"$border-box;\"\A         on line 135 of scss/_feedback.scss\A         from line 10 of scss/base.scss\A \A 130:   }\A 131: \A 132:   #captcha_code {\A 133:     width: 150px;\A 134:     margin: $harf-indent 0;\A 135:     @extend $border-box;\A 136:   }\A 137: \A 138:   #comments-open-captcha p {\A 139:     margin: 0;\A 140:     font-size: 90%;"; }
+  white-space: pre-wrap;
+  word-wrap: break-word; }
+
+/*
+ * 1. Addresses CSS quotes not supported in IE6/7
+ * 2. Addresses quote property not supported in S4
+ */
+/* 1 */
+q {
+  quotes: none; }
+
+/* 2 */
+q:before,
+q:after {
+  content: '';
+  content: none; }
+
+small {
+  font-size: 75%; }
+
+/*
+ * Prevents sub and sup affecting line-height in all browsers
+ * gist.github.com/413930
+ */
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline; }
+
+sup {
+  top: -0.5em; }
+
+sub {
+  bottom: -0.25em; }
+
+/* =============================================================================
+   Lists
+   ========================================================================== */
+/*
+ * Addresses margins set differently in IE6/7
+ */
+dl,
+menu,
+ol,
+ul {
+  margin: 1em 0; }
+
+dd {
+  margin: 0 0 0 40px; }
+
+/*
+ * Addresses paddings set differently in IE6/7
+ */
+menu,
+ol,
+ul {
+  padding: 0 0 0 40px; }
+
+/*
+ * Corrects list images handled incorrectly in IE7
+ */
+nav ul,
+nav ol {
+  list-style: none;
+  list-style-image: none; }
+
+/* =============================================================================
+   Embedded content
+   ========================================================================== */
+/*
+ * 1. Removes border when inside 'a' element in IE6/7/8/9, FF3
+ * 2. Improves image quality when scaled in IE7
+ *    code.flickr.com/blog/2008/11/12/on-ui-quality-the-little-things-client-side-image-resizing/
+ */
+img {
+  border: 0;
+  /* 1 */
+  -ms-interpolation-mode: bicubic;
+  /* 2 */ }
+
+/*
+ * Corrects overflow displayed oddly in IE9
+ */
+svg:not(:root) {
+  overflow: hidden; }
+
+/* =============================================================================
+   Figures
+   ========================================================================== */
+/*
+ * Addresses margin not present in IE6/7/8/9, S5, O11
+ */
+figure {
+  margin: 0; }
+
+/* =============================================================================
+   Forms
+   ========================================================================== */
+/*
+ * Corrects margin displayed oddly in IE6/7
+ */
+form {
+  margin: 0; }
+
+/*
+ * Define consistent border, margin, and padding
+ */
+fieldset {
+  border: 1px solid #c0c0c0;
+  margin: 0 2px;
+  padding: 0.35em 0.625em 0.75em; }
+
+/*
+ * 1. Corrects color not being inherited in IE6/7/8/9
+ * 2. Corrects text not wrapping in FF3
+ * 3. Corrects alignment displayed oddly in IE6/7
+ */
+legend {
+  border: 0;
+  /* 1 */
+  padding: 0;
+  white-space: normal;
+  /* 2 */
+  *margin-left: -7px;
+  /* 3 */ }
+
+/*
+ * 1. Corrects font size not being inherited in all browsers
+ * 2. Addresses margins set differently in IE6/7, FF3+, S5, Chrome
+ * 3. Improves appearance and consistency in all browsers
+ */
+button,
+input,
+select,
+textarea {
+  font-size: 100%;
+  /* 1 */
+  margin: 0;
+  /* 2 */
+  vertical-align: baseline;
+  /* 3 */
+  *vertical-align: middle;
+  /* 3 */ }
+
+/*
+ * Addresses FF3/4 setting line-height on 'input' using !important in the UA stylesheet
+ */
+button,
+input {
+  line-height: normal;
+  /* 1 */ }
+
+/*
+ * 1. Improves usability and consistency of cursor style between image-type 'input' and others
+ * 2. Corrects inability to style clickable 'input' types in iOS
+ * 3. Removes inner spacing in IE7 without affecting normal text inputs
+ *    Known issue: inner spacing remains in IE6
+ */
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  cursor: pointer;
+  /* 1 */
+  -webkit-appearance: button;
+  /* 2 */
+  *overflow: visible;
+  /* 3 */ }
+
+/*
+ * Re-set default cursor for disabled elements
+ */
+button[disabled],
+input[disabled] {
+  cursor: default; }
+
+/*
+ * 1. Addresses box sizing set to content-box in IE8/9
+ * 2. Removes excess padding in IE8/9
+ * 3. Removes excess padding in IE7
+      Known issue: excess padding remains in IE6
+ */
+input[type="checkbox"],
+input[type="radio"] {
+  box-sizing: border-box;
+  /* 1 */
+  padding: 0;
+  /* 2 */
+  *height: 13px;
+  /* 3 */
+  *width: 13px;
+  /* 3 */ }
+
+/*
+ * 1. Addresses appearance set to searchfield in S5, Chrome
+ * 2. Addresses box-sizing set to border-box in S5, Chrome (include -moz to future-proof)
+ */
+input[type="search"] {
+  -webkit-appearance: textfield;
+  /* 1 */
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  /* 2 */
+  box-sizing: content-box; }
+
+/*
+ * Removes inner padding and search cancel button in S5, Chrome on OS X
+ */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none; }
+
+/*
+ * Removes inner padding and border in FF3+
+ * www.sitepen.com/blog/2008/05/14/the-devils-in-the-details-fixing-dojos-toolbar-buttons/
+ */
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+  border: 0;
+  padding: 0; }
+
+/*
+ * 1. Removes default vertical scrollbar in IE6/7/8/9
+ * 2. Improves readability and alignment in all browsers
+ */
+textarea {
+  overflow: auto;
+  /* 1 */
+  vertical-align: top;
+  /* 2 */ }
+
+/* =============================================================================
+   Tables
+   ========================================================================== */
+/*
+ * Remove most spacing between table cells
+ */
+table {
+  border-collapse: collapse;
+  border-spacing: 0; }
+
+#comments-open-captcha #captcha_code {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+#content, [role="contentinfo"], [role="banner"] [role="navigation"], #posts li, .comment header {
+  zoom: 1; }
+  #content:before, [role="contentinfo"]:before, [role="banner"] [role="navigation"]:before, #posts li:before, .comment header:before, #content:after, [role="contentinfo"]:after, [role="banner"] [role="navigation"]:after, #posts li:after, .comment header:after {
+    display: block;
+    height: 0;
+    visibility: hidden;
+    content: "\0020"; }
+  #content:after, [role="contentinfo"]:after, [role="banner"] [role="navigation"]:after, #posts li:after, .comment header:after {
+    clear: both; }
+
+body {
+  margin: 0;
+  line-height: 1.618;
+  background-color: white;
+  color: #2b2b2b;
+  font-size: 14px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+
+a {
+  color: #274a78; }
+  a:hover {
+    color: #3a6eb2;
+    text-decoration: none; }
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 1.618em 0;
+  text-rendering: optimizeLegibility; }
+
+p {
+  margin: 1.618em 0; }
+
+ul,
+ol {
+  margin: 1.618em 0; }
+  ul ul,
+  ul ol,
+  ol ul,
+  ol ol {
+    margin: 0; }
+
+dl {
+  margin: 1.618em 0; }
+  dl dl {
+    margin: 0; }
+
+pre {
+  overflow: auto;
+  margin: 1.618em 0;
+  padding: 1.618em;
+  background-color: #dcdddd;
+  color: #2b2b2b;
+  font-family: monospace; }
+
+blockquote {
+  margin: 0 0 0 1.618em;
+  padding: 0 1.618em;
+  border-left: 3px solid #c0c6c9; }
+
+table {
+  width: 100%;
+  margin: 1.618em 0;
+  border-spacing: 0;
+  border: 1px solid #c0c6c9;
+  border-width: 1px 0 0 1px; }
+  table th,
+  table td {
+    padding: 0.5em;
+    border: solid #c0c6c9;
+    border-width: 0 1px 1px 0;
+    text-align: left;
+    vertical-align: top;
+    word-wrap: break-word; }
+  table th {
+    background-color: #dcdddd;
+    color: #2b2b2b; }
+
+hr {
+  margin: 3.236em 0; }
+
+input,
+select,
+textarea,
+button,
+.button {
+  display: inline-block;
+  margin: 0;
+  font-size: 100%;
+  vertical-align: middle;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+input {
+  padding: 0 0.25em; }
+  input[type=checkbox], input[type=radio] {
+    padding: 0; }
+
+textarea {
+  padding: 0.2em 0.25em;
+  overflow: auto;
+  vertical-align: top;
+  resize: vertical; }
+
+.pagination {
+  margin-top: 1.618em;
+  text-align: center; }
+  @media (min-width: 700px) {
+    .pagination {
+      margin-top: 3.236em; } }
+  .pagination ul {
+    display: block;
+    padding: 0; }
+  .pagination li {
+    display: inline-block; }
+    .pagination li a {
+      padding: 0 10px;
+      text-decoration: none; }
+      .pagination li a[rel="prev"]:before {
+        content: '\00AB';
+        margin-right: 0.3em; }
+      .pagination li a[rel="next"]:after {
+        content: '\00BB';
+        margin-left: 0.3em; }
+
+[role="navigation"] {
+  margin-top: 1.618em; }
+  [role="navigation"] ul {
+    margin: 10px 0 0; }
+    [role="navigation"] ul li {
+      display: inline-block; }
+
+[role="banner"]#header {
+  background-size: contain; }
+[role="banner"] #header-inner {
+  position: relative;
+  padding: 35px 0 0; }
+[role="banner"] #header-content {
+  width: auto;
+  min-height: 150px;
+  margin: 1.618em 1em; }
+  @media (min-width: 930px) {
+    [role="banner"] #header-content {
+      margin: 1.618em 2%; } }
+[role="banner"] h1 {
+  margin-top: 0;
+  margin-bottom: 0; }
+  [role="banner"] h1 img {
+    max-width: 200px;
+    height: auto; }
+[role="banner"] .description {
+  margin-top: 0; }
+[role="banner"] [role="navigation"] {
+  position: absolute;
+  top: 0;
+  height: 35px;
+  line-height: 35px;
+  margin: 0; }
+  @media (min-width: 930px) {
+    [role="banner"] [role="navigation"] {
+      width: 100%;
+      padding: 0; }
+      [role="banner"] [role="navigation"] ul {
+        margin: 0 2%; }
+        [role="banner"] [role="navigation"] ul li {
+          display: inline-block;
+          padding: 0; }
+      [role="banner"] [role="navigation"] a {
+        display: block;
+        padding: 0 1em 0 0;
+        text-decoration: none; } }
+
+.breadcrumb {
+  margin: 0 0 3.236em;
+  padding: 0; }
+  @media (min-width: 930px) {
+    .breadcrumb {
+      padding-right: 2%;
+      padding-left: 2%; } }
+  .breadcrumb li {
+    list-style-type: none; }
+    .breadcrumb li:after {
+      content: '\2192';
+      margin: 0 0.5em; }
+    .breadcrumb li:last-child:after {
+      display: none; }
+    @media (min-width: 700px) {
+      .breadcrumb li {
+        display: inline-block; } }
+
+.entry,
+.page,
+section {
+  margin-bottom: 4.854em; }
+  .entry h2,
+  .page h2,
+  section h2 {
+    margin: 0 0 0.3em; }
+    .entry h2 + footer ul,
+    .page h2 + footer ul,
+    section h2 + footer ul {
+      margin-top: 0.809em;
+      padding: 0; }
+      .entry h2 + footer ul li,
+      .page h2 + footer ul li,
+      section h2 + footer ul li {
+        display: inline; }
+  .entry img,
+  .page img,
+  section img {
+    max-width: 100%;
+    height: auto; }
+
+.widget ul,
+.widget ol {
+  margin: 0.809em 0;
+  padding: 0; }
+  .widget ul ul,
+  .widget ul ol,
+  .widget ol ul,
+  .widget ol ol {
+    margin: 0; }
+.widget li {
+  list-style-type: none;
+  margin-bottom: 5px; }
+.widget img {
+  max-width: 100%;
+  height: auto; }
+@media (min-width: 930px) {
+  .widget {
+    margin-left: 8.33333%; } }
+
+#posts h2 {
+  margin: 0;
+  border-bottom: 1px solid #c0c6c9; }
+#posts ol {
+  margin-top: 0;
+  padding-left: 0; }
+#posts li {
+  list-style-type: none;
+  padding: 0.809em 0;
+  border-top: 0;
+  border-bottom: 1px solid #dcdddd; }
+  #posts li time,
+  #posts li a {
+    display: block;
+    padding: 0 2%; }
+  #posts li a {
+    text-decoration: none; }
+  @media (min-width: 700px) {
+    #posts li time,
+    #posts li a {
+      float: left; }
+    #posts li time {
+      width: 21%; }
+    #posts li a {
+      width: 71%; } }
+#posts nav {
+  margin-top: -0.809em;
+  text-align: right; }
+  #posts nav a:after {
+    content: '\00a0\00BB'; }
+
+[role="contentinfo"] {
+  margin-top: 3.236em;
+  padding-top: 1px; }
+  [role="contentinfo"] [role="navigation"],
+  [role="contentinfo"] .license,
+  [role="contentinfo"] .poweredby {
+    margin: 0.809em 1em; }
+  [role="contentinfo"] [role="navigation"] ul {
+    margin-top: 0; }
+  [role="contentinfo"] [role="navigation"] li {
+    display: list-item;
+    list-style-type: none; }
+  [role="contentinfo"] .poweredby {
+    clear: both;
+    text-align: right; }
+  @media (min-width: 930px) {
+    [role="contentinfo"] [role="navigation"],
+    [role="contentinfo"] .license,
+    [role="contentinfo"] .poweredby {
+      margin: 0 0 0.809em;
+      padding-right: 2%;
+      padding-left: 2%; }
+    [role="contentinfo"] [role="navigation"],
+    [role="contentinfo"] .license {
+      float: left; }
+    [role="contentinfo"] [role="navigation"] {
+      width: 62.66667%; }
+      [role="contentinfo"] [role="navigation"] li {
+        display: inline-block; }
+    [role="contentinfo"] .license {
+      width: 29.33333%;
+      text-align: right; } }
+
+#search {
+  margin-bottom: 1.618em;
+  text-align: center; }
+  #search div {
+    display: inline-block;
+    position: relative; }
+    @media (min-width: 930px) {
+      #search div {
+        display: block; } }
+  #search input[type="text"] {
+    width: 16.18em;
+    height: 2.427em;
+    padding: 0 2.427em 0 0.5em;
+    border: 1px solid #c0c6c9;
+    line-height: 1.3;
+    box-shadow: inset 0 1px 1px 0 rgba(0, 0, 0, 0.2); }
+    @media (min-width: 930px) {
+      #search input[type="text"] {
+        width: 100%; } }
+  #search button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: table-cell;
+    width: 2.427em;
+    height: 2.427em;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    opacity: 0.8; }
+    #search button:hover {
+      opacity: 1; }
+    #search button img {
+      vertical-align: middle; }
+
+.widget.widget-tag-cloud ul {
+  padding: 0; }
+  .widget.widget-tag-cloud ul li {
+    display: inline;
+    margin: 0 5px 0 0;
+    padding: 0;
+    font-size: 1em;
+    line-height: 1.2em; }
+    .widget.widget-tag-cloud ul li.rank-1 {
+      font-size: 1.8em; }
+    .widget.widget-tag-cloud ul li.rank-2 {
+      font-size: 1.5em; }
+    .widget.widget-tag-cloud ul li.rank-3 {
+      font-size: 1.3em; }
+    .widget.widget-tag-cloud ul li.rank-4 {
+      font-size: 1em; }
+    .widget.widget-tag-cloud ul li.rank-5 {
+      font-size: 0.9em; }
+    .widget.widget-tag-cloud ul li.rank-6 {
+      font-size: 0.85em; }
+    .widget.widget-tag-cloud ul li.rank-7 {
+      font-size: 0.7em; }
+
+#comments-open-captcha #captcha_code {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+#content, [role="contentinfo"], [role="banner"] [role="navigation"], #posts li, .comment header {
+  zoom: 1; }
+  #content:before, [role="contentinfo"]:before, [role="banner"] [role="navigation"]:before, #posts li:before, .comment header:before, #content:after, [role="contentinfo"]:after, [role="banner"] [role="navigation"]:after, #posts li:after, .comment header:after {
+    display: block;
+    height: 0;
+    visibility: hidden;
+    content: "\0020"; }
+  #content:after, [role="contentinfo"]:after, [role="banner"] [role="navigation"]:after, #posts li:after, .comment header:after {
+    clear: both; }
+
+.feedback {
+  margin-top: 1.618em; }
+  @media (min-width: 700px) {
+    .feedback {
+      margin-top: 3.236em; } }
+  .feedback h2 {
+    margin: 1em 0 1.618em; }
+
+.comment {
+  margin-bottom: 0.809em;
+  border-bottom: 1px solid; }
+  .comment header h3 {
+    display: inline;
+    margin: 0;
+    font-size: 110%; }
+  .comment time {
+    margin-left: 0.809em;
+    font-size: 90%; }
+  .comment p {
+    margin: 0.809em 0; }
+  .comment .reply {
+    text-align: right; }
+
+.message {
+  padding: 0.809em;
+  background-color: #dcdddd;
+  color: #2b2b2b; }
+
+#comment-greeting {
+  margin-top: 3.236em; }
+  #comment-greeting + #comments-form {
+    margin-top: 1.618em; }
+
+#comments-form {
+  margin-top: 3.236em; }
+  #comments-form fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0; }
+    #comments-form fieldset legend {
+      display: none; }
+
+#comments-open-text textarea {
+  width: 100%;
+  height: 12.944em; }
+
+#comments-open-data ul {
+  margin: 1.618em 0;
+  padding: 0; }
+#comments-open-data li {
+  list-style-type: none;
+  margin-bottom: 0.809em; }
+  #comments-open-data li label {
+    display: block;
+    text-align: left; }
+  #comments-open-data li input[type="text"] {
+    width: 100%; }
+    @media (min-width: 700px) {
+      #comments-open-data li input[type="text"] {
+        width: 75%; } }
+
+#comments-open-footer {
+  margin-top: 1.618em;
+  text-align: center; }
+  @media (min-width: 930px) {
+    #comments-open-footer {
+      text-align: left; } }
+  #comments-open-footer input[type="submit"],
+  #comments-open-footer input[type="button"] {
+    width: 100%;
+    margin-bottom: 0.809em; }
+    @media (min-width: 700px) {
+      #comments-open-footer input[type="submit"],
+      #comments-open-footer input[type="button"] {
+        width: auto;
+        margin-right: 0.809em; } }
+
+#comments-open-captcha {
+  margin: 1.618em 0; }
+  #comments-open-captcha .label {
+    display: none; }
+  #comments-open-captcha #captcha_code {
+    width: 150px;
+    margin: 0.809em 0; }
+  #comments-open-captcha #comments-open-captcha p {
+    margin: 0;
+    font-size: 90%; }
+
+#trackback-url {
+  margin-bottom: 3.236em; }
+
+.trackback {
+  margin-bottom: 1.618em;
+  padding-bottom: 1.618em;
+  border-bottom: 1px dotted #c0c6c9; }
+  .trackback time {
+    color: #c0c6c9;
+    font-size: 90%; }
+  .trackback p {
+    margin: 0.809em 0 0; }

@@ -132,7 +132,7 @@
   #captcha_code {
     width: 150px;
     margin: $harf-indent 0;
-    @extend $border-box;
+    @extend %border-box;
   }
 
   #comments-open-captcha p {
