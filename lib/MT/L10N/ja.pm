@@ -2837,7 +2837,7 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_website/templates/entry_summary.mtml
 
 ## themes/classic_website/templates/javascript.mtml
-	'The sign-in attempt was not successful; please try again.' => 'サインインできませんでした。',
+	'The sign-in attempt was not successful; Please try again.' => 'サインインできませんでした。',
 
 ## themes/classic_website/templates/main_index.mtml
 
