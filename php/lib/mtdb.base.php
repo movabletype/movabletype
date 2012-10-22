@@ -124,9 +124,10 @@ abstract class MTDatabase {
                 require_once('class.mt_blog.php');
                 $blog_class = new Blog();
                 $blogs = $blog_class->Find("blog_parent_id = " . ( $blog->is_blog() ? $blog->parent_id : $blog->id) );
-                $ids = array();
-                foreach($blogs as $b) {
-                    array_push($ret, $b->id);
+                if ( !empty( $blogs ) ) {
+                    foreach($blogs as $b) {
+                        array_push($ret, $b->id);
+                    }
                 }
                 if ( $include_with_website ) {
                     $website = ( $blog->is_blog() ? $blog->website() : $blog);
