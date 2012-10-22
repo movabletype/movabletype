@@ -90,25 +90,19 @@ h6 a {
   [role="banner"] [role="navigation"] {
     position: static;
     height: 45px;
-    line-height: 45px;
-    margin: 0; }
+    line-height: 45px; }
     @media (min-width: 930px) {
       [role="banner"] [role="navigation"] {
-        width: auto;
-        padding: 0; } }
+        width: auto; } }
     [role="banner"] [role="navigation"] ul {
       margin: 0; }
       [role="banner"] [role="navigation"] ul li {
-        display: table-cell;
-        padding: 0;
         border-right: 1px solid #c0c6c9; }
     [role="banner"] [role="navigation"] a {
-      display: block;
       height: 45px;
       padding: 0 0.809em;
       line-height: 45px;
-      color: #2b2b2b;
-      text-decoration: none; }
+      color: #2b2b2b; }
       [role="banner"] [role="navigation"] a:hover {
         color: #3a6eb2; }
 

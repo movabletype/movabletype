@@ -720,7 +720,7 @@ textarea {
       [role="banner"] [role="navigation"] ul {
         margin: 0 2%; }
         [role="banner"] [role="navigation"] ul li {
-          display: inline-block;
+          float: left;
           padding: 0; }
       [role="banner"] [role="navigation"] a {
         display: block;
