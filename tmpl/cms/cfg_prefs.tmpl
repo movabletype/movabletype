@@ -487,16 +487,6 @@ function setLicense() {
         jQuery('div#enable_archive_paths_prefs').toggleClass('hidden');
     });
 
-    jQuery('.blog-subdomain-text').bind('keyup focusin focusout', function($e) {
-        var $orig = jQuery(this).parents('.url-field:first').find('.blog-url-text');
-        var ns = jQuery.data( $orig.get(0), 'mtValidator' );
-        if ( ns ) {
-            $orig.mtValid({ focus: false });
-        }
-        $e.stopPropagation();
-        return false;
-    });
-
     function is_valid_url(url_){
         if (url_.indexOf(' ') != -1) {
             return false;
@@ -543,19 +533,12 @@ function setLicense() {
 <mt:if name="is_blog">
         "#site_url_path": function($e) {
             var base = '<mt:var name="website_scheme">://<mt:var name="website_domain" encode_html="1">';
-            var chk = jQuery($e).parents('.url-field:first').find(':checkbox:checked');
-            var subdomain = jQuery($e).parents('.url-field:first').find('.blog-subdomain-text');
+            var chk = jQuery($e).parents().find('.url-field:first').find(':checkbox:checked');
+            var subdomain = jQuery($e).parents().find('.url-field:first').find('.blog-subdomain-text');
             if ( chk.length && subdomain.val().length) {
                 base = '<mt:var name="website_scheme">://'+subdomain.val()+'.<mt:var name="website_domain" encode_html="1">';
             }
-            var ret = is_valid_url(base + $e.val());
-            if (ret) {
-                subdomain.addClass('valid').removeClass('error');
-            }
-            else {
-                subdomain.removeClass('valid').addClass('error');
-            }
-            return ret;
+            return is_valid_url(base + $e.val());
         },
         "#site_path_absolute": function($e) {
             return is_valid_absolute_path($e.val());
@@ -563,19 +546,12 @@ function setLicense() {
 </mt:if>
         "#archive_url_path": function($e) {
             var base = '<mt:var name="website_scheme">://<mt:var name="website_domain" encode_html="1">';
-            var chk = jQuery($e).parents('.url-field:first').find(':checkbox:checked');
-            var subdomain = jQuery($e).parents('.url-field:first').find('.blog-subdomain-text');
+            var chk = jQuery($e).parents().find('.url-field:first').find(':checkbox:checked');
+            var subdomain = jQuery($e).parents().find('.url-field:first').find('.blog-subdomain-text');
             if ( chk.length && subdomain.val().length) {
                 base = '<mt:var name="website_scheme">://'+subdomain.val()+'.<mt:var name="website_domain" encode_html="1">';
             }
-            var ret = is_valid_url(base + $e.val());
-            if (ret) {
-                subdomain.addClass('valid').removeClass('error');
-            }
-            else {
-                subdomain.removeClass('valid').addClass('error');
-            }
-            return ret;
+            return is_valid_url(base + $e.val());
         },
         "#site_url": function($e) {
             return is_valid_url('<mt:var name="website_url" escape="js">' + $e.val());
