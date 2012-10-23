@@ -20,9 +20,14 @@
   .span10 { width: $colspan10 }
   .span11 { width: $colspan11 }
   .span12 { width: $colspan12 }
+//   .span13 { width: $colspan13 }
+//   .span14 { width: $colspan14 }
+//   .span15 { width: $colspan15 }
+//   .span16 { width: $colspan16 }
 }
 
 #container {
+  #container-inner,
   #header-inner,
   #content-inner,
   #footer-inner {
@@ -30,18 +35,9 @@
 
     @media (min-width: 930px) {
       width: 940px;
+      margin-right: auto;
+      margin-left: auto;
     }
-  }
-}
-
-#header-inner,
-#container-inner {
-  width: 100%;
-
-  @media (min-width: 930px) {
-    width: 940px;
-    margin-right: auto;
-    margin-left: auto;
   }
 }
 
@@ -62,6 +58,7 @@
 
     ul {
       display: none;
+      @extend %clearfix;
     }
 
     @media (min-width: 930px) {
@@ -104,14 +101,15 @@
     [role="main"],
     .related {
       float: left;
+      min-height: 1px;
     }
     [role="main"] {
-      width: $colspan08;
-      padding-left: $gap;
+      width: 640px;
+      padding-left: 15px;
     }
     .related {
-      width: ($colspan04 + $gap);
-      padding-left: $gap;
+      width: 235px;
+      padding-left: 50px;
       margin-top: 0;
     }
   }

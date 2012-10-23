@@ -26,11 +26,9 @@
 }
 
 @mixin linear-gradient($start, $last) {
-  background-color: $start;
   @each $vendor in -ms-, -moz-, -webkit-, null {
     background-image: #{$vendor}linear-gradient($start, $last);
   }
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#{$start}', endColorstr='#{$last}',GradientType=0 );
 }
 
 @mixin tag-cloud($base: 1em) {

@@ -1,22 +1,4 @@
-<mt:SetVarBlock name="pagination_navigation">
-  <mt:If name="search_results">
-    <mt:IfMoreResults>
-<li class="page-navigation-list-item page-navigation-prev"><a rel="prev" href="<$mt:NextLink encode_html="1"$>"><__trans phrase="Older entries"></a></li>
-    </mt:IfMoreResults>
-    <mt:IfPreviousResults>
-<li class="page-navigation-list-item page-navigation-next"><a rel="next" href="<$mt:PreviousLink encode_html="1"$>"><__trans phrase="Newer entries"></a></li>
-    </mt:IfPreviousResults>
-  <mt:Else>
-    <mt:If name="archive_template">
-      <$mt:ArchiveCount setvar="total_entries"$>
-    <mt:Else>
-      <$mt:BlogEntryCount setvar="total_entries"$>
-    </mt:If>
-    <mt:If name="total_entries" gt="$entries_per_page">
-<li class="page-navigation-list-item page-navigation-prev"><a rel="prev" href="<$mt:Var name="search_link" encode_html="1" $>2"><__trans phrase="Older entries"></a></li>
-    </mt:If>
-  </mt:If>
-</mt:SetVarBlock>
+<mt:SetVarBlock name="pagination_navigation"><mt:If name="search_results"><mt:IfMoreResults><li class="page-navigation-list-item page-navigation-prev"><a rel="prev" href="<$mt:NextLink encode_html="1"$>"><__trans phrase="Older entries"></a></li></mt:IfMoreResults><mt:IfPreviousResults><li class="page-navigation-list-item page-navigation-next"><a rel="next" href="<$mt:PreviousLink encode_html="1"$>"><__trans phrase="Newer entries"></a></li></mt:IfPreviousResults><mt:Else><mt:If name="archive_template"><$mt:ArchiveCount setvar="total_entries"$><mt:Else><$mt:BlogEntryCount setvar="total_entries"$></mt:If><mt:If name="total_entries" gt="$entries_per_page"><li class="page-navigation-list-item page-navigation-prev"><a rel="prev" href="<$mt:Var name="search_link" encode_html="1" $>2"><__trans phrase="Older entries"></a></li></mt:If></mt:If></mt:SetVarBlock>
 
 <mt:If name="pagination_navigation">
 <$mt:Var name="pagination_navigation" strip_linefeeds="1" trim="1" setvar="pagination_navigation"$>

@@ -118,9 +118,7 @@ button,
     margin: 0;
     font-size: 100%;
     vertical-align: middle;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
+    @extend %border-box;
 }
 input {
   padding: 0 0.25em;
@@ -137,13 +135,12 @@ textarea {
     resize: vertical;
 }
 
-
 .pagination {
-  margin-top: $indent;
+  margin: ($indent * 2) 0;
   text-align: center;
 
   @media (min-width: 700px) {
-    margin-top: ($indent * 2);
+    margin: $indent 0;
   }
 
   ul {
@@ -252,12 +249,13 @@ textarea {
 
 // Breadcrumbs
 .breadcrumb {
-  margin: 0 0 ($indent * 2);
+  margin: 0 0 $indent;
   padding: 0;
+  font-size: 90%;
 
   @media (min-width: 930px) {
-    padding-right: $gap;
-    padding-left: $gap;
+    padding-right: 15px;
+    padding-left: 15px;
   }
 
   li {
@@ -329,16 +327,18 @@ section {
   }
 
   @media (min-width: 930px) {
-    margin-left: ($colspan01 + $gutter);
+    margin-right: 15px;
   }
 }
 
 
 // Entries List
 #posts {
+  margin-bottom: $indent;
 
   h2 {
     margin: 0;
+    padding-bottom: 0.2em;
     border-bottom: 1px solid $gray;
   }
 
@@ -394,7 +394,7 @@ section {
 // Footer
 [role="contentinfo"] {
   margin-top: ($indent * 2);
-  padding-top: 1px;
+  padding: 10px 0;
 
   [role="navigation"],
   .license,
@@ -423,7 +423,7 @@ section {
     [role="navigation"],
     .license,
     .poweredby {
-      margin: 0 0 $harf-indent;
+      margin: $harf-indent 0;
       padding-right: $gap;
       padding-left: $gap;
     }
