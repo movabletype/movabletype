@@ -26,7 +26,7 @@ function _has_sub_categories(&$ctx, $class = 'category') {
     if (isset($children)) {
         $has_sub_cats = count($cat->children()) > 0;
     } else {
-        $cats = $ctx->mt->db()->fetch_categories(array('blog_id' => $ctx->stash('blog_id'), 'category_id' => $cat->category_id, 'children' => 1, 'show_empty' => 1, 'class' => $class));
+        $cats =& $ctx->mt->db()->fetch_categories(array('blog_id' => $ctx->stash('blog_id'), 'category_id' => $cat->category_id, 'children' => 1, 'show_empty' => 1, 'class' => $class));
         if (isset($cats)) {
             $cat->children($cats);
             $has_sub_cats = count($cats) > 0;

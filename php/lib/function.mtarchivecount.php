@@ -36,7 +36,7 @@ function smarty_function_mtarchivecount($args, &$ctx) {
                 $archiver->setup_args($ctx, $eargs);
             }
             $eargs['lastn'] = -1;
-            $entries = $ctx->mt->db()->fetch_entries($eargs);
+            $entries =& $ctx->mt->db()->fetch_entries($eargs);
             $count = count($entries);
         }
     }
