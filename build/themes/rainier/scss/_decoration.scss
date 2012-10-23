@@ -121,30 +121,24 @@ h6 {
     position: static;
     height: 45px;
     line-height: 45px;
-    margin: 0;
 
     @media (min-width: 930px) {
       width: auto;
-      padding: 0;
     }
 
     ul {
       margin: 0;
 
       li {
-        display: table-cell;
-        padding: 0;
         border-right: 1px solid $gray;
       }
     }
 
     a {
-      display: block;
       height: 45px;
       padding: 0 $harf-indent;
       line-height: 45px;
       color: $fg;
-      text-decoration: none;
 
       &:hover {
         color: $link-hover;

@@ -36,7 +36,7 @@ class MTUtilCaptcha implements CaptchaProvider {
 <div class=\"field\">
 <input type=\"hidden\" name=\"token\" value=\"$token\" />
 <img src=\"$cgipath$commentscript/captcha/$blog_id/$token\" width=\"150\" height=\"35\" /><br />
-<input name=\"captcha_code\" id=\"captcha-code\" value=\"\" autocomplete=\"off\" />
+<input type=\"text\" name=\"captcha_code\" id=\"captcha-code\" class=\"text\" value=\"\" autocomplete=\"off\" />
 <p>$description</p>
 </div>";
         return $form;

@@ -14,7 +14,13 @@ function smarty_function_mtarchivetitle($args, &$ctx) {
         $at = $args['archive_type'];
     }
     if ($at == 'Category') {
-        return $ctx->tag('CategoryLabel', $args);
+         $title = $ctx->tag('CategoryLabel', $args);
+         if ( !empty( $title )) {
+             $title = encode_html( strip_tags( $title ));
+         } else {
+             $title = '';
+         }
+         return $title;
     } else {
         $ar = ArchiverFactory::get_archiver($at);
         return $ar->get_title($args, $ctx);

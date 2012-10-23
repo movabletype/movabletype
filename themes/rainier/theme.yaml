@@ -4,11 +4,8 @@ version: 1.0
 author_link: 'http://www.sixapart.com/'
 author_name: 'Six Apart, Ltd'
 class: 'blog'
-description: '<__trans phrase="_THEME_DESCRIPTION">'
+description: <__trans phrase='"Rainier" is a customizable Responsive Web Design theme, designed for blogs. In addition to multi-device viewing support, provided via Media Query (CSS), Movable Type functions make customizing navigational contents as well as image elements, such as logos, headers, very simple.'>
 protected: 1
-l10n_lexicon:
-  en_us: 'l10n_en_us.yaml'
-  ja: 'l10n_ja.yaml'
 thumbnail_file: 'thumb.png'
 thumbnail_file_medium: 'thumb-medium.png'
 thumbnail_file_small: 'thumb-small.png'
@@ -27,14 +24,14 @@ elements:
     data:
       about_page:
         basename: 'index'
-        title: '<__trans phrase="_ABOUT_PAGE_TITLE">'
+        title: '<__trans phrase="About Page">'
         text: '<__trans phrase="_ABOUT_PAGE_BODY">'
         tags: '@ABOUT_PAGE'
         folder: 'about'
         status: 1
       sample_page:
         basename: 'sample'
-        title: '<__trans phrase="_SAMPLE_PAGE_TITLE">'
+        title: '<__trans phrase="Example page">'
         text: '<__trans phrase="_SAMPLE_PAGE_BODY">'
         status: 1
   template_set:
@@ -122,7 +119,7 @@ elements:
             label: 'Trackbacks'
         system:
           dynamic_error:
-            description_label: 'Displays errors for dynamically published templates.'
+            description_label: 'Displays errors for dynamically-published templates.'
             label: 'Dynamic Error'
           popup_image:
             description_label: 'Displays image when user clicks a popup-linked image.'

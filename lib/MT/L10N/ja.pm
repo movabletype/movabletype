@@ -261,7 +261,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/banner_footer.mtml
 	'_POWERED_BY' => 'Powered by <a href="http://www.sixapart.jp/movabletype/"><$MTProductName$></a>',
-	'This blog is licensed under an <a href="[_1]">Creative Commons License</a>.' => 'このブログは<a href="[_1]">クリエイティブ・コモンズ</a>でライセンスされています。',
+	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'このブログは<a href="[_1]">クリエイティブ・コモンズ</a>でライセンスされています。',
 
 ## default_templates/calendar.mtml
 	'Monthly calendar with links to daily posts' => 'リンク付きのカレンダー',
@@ -395,7 +395,6 @@ use vars qw( @ISA %Lexicon );
 	'[_1]Sign in[_2] to comment.' => 'コメントするにはまず[_1]サインイン[_2]してください。',
 	'[_1]Sign in[_2] to comment, or comment anonymously.' => 'コメントする前に[_1]サインイン[_2]することもできます。',
 	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => '<a href="[_1]" onclick="[_2]">[_3]からのコメント</a>に返信',
-	'The sign-in attempt was not successful; Please try again.' => 'サインインできませんでした。',
 
 ## default_templates/lockout-ip.mtml
 	'This email is to notify you that an IP address has been locked out.' => 'これは以下のIPアドレスからのアクセスがロックされたことを通知するメールです。',
@@ -568,6 +567,8 @@ use vars qw( @ISA %Lexicon );
 	'Loading of blog \'[_1]\' failed: [_2]' => 'ブログ(ID:[_1])をロードできませんでした: [_2]',
 	'Loading template \'[_1]\' failed.' => 'テンプレート「[_1]」のロードに失敗しました。',
 	'Error while creating email: [_1]' => 'メールの再構築中にエラーが発生しました: [_1]',
+	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'OpenIDを利用するのに必要なPerlモジュール(Digest::SHA1)がありません。',
+	'missing required Perl modules: [_1]' => '必要なPerlモジュールが見つかりません: [_1]',
 	'http://www.movabletype.org/documentation/' => 'http://www.movabletype.jp/documentation/',
 	'An error occurred: [_1]' => 'エラーが発生しました: [_1]',
 	'OpenID' => 'OpenID',
@@ -1981,7 +1982,7 @@ use vars qw( @ISA %Lexicon );
 	'Saving user failed: [_1]' => 'ユーザーを作成できませんでした: [_1]',
 	'Creating new category (\'[_1]\')...' => 'カテゴリ([_1])を作成しています...',
 	'Saving category failed: [_1]' => 'カテゴリを保存できませんでした: [_1]',
-	'Invalid status value \'[_1]\'' => '状態[_1]は正しくありません。',
+	'Invalid status value \'[_1]\'' => '状態[_1]は正しくありません',
 	'Invalid allow pings value \'[_1]\'' => 'トラックバックの受信設定が不正です。',
 	'Cannot find existing entry with timestamp \'[_1]\'... skipping comments, and moving on to next entry.' => 'タイムスタンプ\'[_1]\'に合致するブログ記事が見つかりません。コメントの処理を中止して次のブログ記事へ進みます。',
 	'Importing into existing entry [_1] (\'[_2]\')' => '既存のブログ記事[_1]([_2])にインポートしています。',
@@ -2556,6 +2557,8 @@ use vars qw( @ISA %Lexicon );
 	'__BLOG_COUNT' => 'ブログ数',
 
 ## lib/MT/Worker/Publish.pm
+	'Background Publishing Done' => 'バックグラウンドパブリッシングが完了しました',
+	'Published: [_1]' => '公開されたファイル: [_1]',
 	'Error rebuilding file [_1]:[_2]' => '[_1]の再構築中にエラーが発生しました: [_2]',
 	'-- set complete ([quant,_1,file,files] in [_2] seconds)' => '-- 完了 ([_1]ファイル - [_2]秒)',
 
@@ -2659,6 +2662,13 @@ use vars qw( @ISA %Lexicon );
 	'[_1] &ndash; [_2]' => '[_1] &ndash; [_2]',
 	'Last' => '最後',
 
+## mt-static/plugins/FormattedTextForTinyMCE/extension.js
+	'Insert Formatted Text' => '定型文の挿入',
+
+## mt-static/plugins/FormattedTextForTinyMCE/langs/template.js
+	'Formatted Text' => '定型文',
+	'Select a Formatted Text' => '定型文を選択...',
+
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/advanced.js
 	'Bold (Ctrl+B)' => '太字  (Ctrl+B)',
 	'Italic (Ctrl+I)' => '斜体 (Ctrl+I)',
@@ -2716,7 +2726,6 @@ use vars qw( @ISA %Lexicon );
 	'value' => 'value',
 
 ## themes/classic_blog/templates/about_this_page.mtml
-	'This page contains links to all the archived content.' => 'このページには過去に書かれたすべてのコンテンツが含まれています。',
 
 ## themes/classic_blog/templates/archive_index.mtml
 
@@ -2725,7 +2734,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_blog/templates/author_archive_list.mtml
 
 ## themes/classic_blog/templates/banner_footer.mtml
-	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'このブログは<a href="[_1]">クリエイティブ・コモンズ</a>でライセンスされています。',
 
 ## themes/classic_blog/templates/calendar.mtml
 
@@ -2829,7 +2837,7 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_website/templates/entry_summary.mtml
 
 ## themes/classic_website/templates/javascript.mtml
-	'The sign-in attempt was not successful; please try again.' => 'サインインできませんでした。',
+	'The sign-in attempt was not successful; Please try again.' => 'サインインできませんでした。',
 
 ## themes/classic_website/templates/main_index.mtml
 
@@ -2963,6 +2971,94 @@ use vars qw( @ISA %Lexicon );
 	'Pico Styles' => 'Picoスタイル',
 	'A collection of styles compatible with Pico themes.' => 'Picoテーマと互換のあるスタイルです。',
 
+## themes/rainier/templates/banner_footer.mtml
+	'This blog is licensed under a <a rel="license" href="[_1]">Creative Commons License</a>.' => 'このブログは<a rel="license" href="[_1]">クリエイティブ・コモンズ</a>でライセンスされています。',
+
+## themes/rainier/templates/category_archive_list.mtml
+
+## themes/rainier/templates/category_entry_listing.mtml
+	'Pagination' => 'ページネーション',
+	'Related Contents' => '関連コンテンツ',
+
+## themes/rainier/templates/comment_detail.mtml
+
+## themes/rainier/templates/comment_form.mtml
+	'Post a Comment' => 'コメントの投稿',
+	'Reply to comment' => 'コメントの返信',
+
+## themes/rainier/templates/comment_preview.mtml
+
+## themes/rainier/templates/comment_response.mtml
+
+## themes/rainier/templates/comments.mtml
+
+## themes/rainier/templates/dynamic_error.mtml
+
+## themes/rainier/templates/entry.mtml
+	'Posted on [_1]' => '投稿日:[_1]',
+	'by [_1]' => 'by [_1]',
+	'in [_1]' => 'カテゴリ: [_1]',
+	'Previous entry' => '前の記事',
+	'Next entry' => '次の記事',
+	'Zenback' => 'Zenback',
+
+## themes/rainier/templates/entry_summary.mtml
+	'Continue reading' => 'ブログ記事を読む',
+
+## themes/rainier/templates/javascript.mtml
+
+## themes/rainier/templates/javascript_theme.mtml
+	'Menu' => 'メニュー',
+
+## themes/rainier/templates/main_index.mtml
+
+## themes/rainier/templates/monthly_archive_dropdown.mtml
+
+## themes/rainier/templates/monthly_archive_list.mtml
+
+## themes/rainier/templates/monthly_entry_listing.mtml
+
+## themes/rainier/templates/navigation.mtml
+	'About' => 'アバウト',
+
+## themes/rainier/templates/page.mtml
+	'Last update' => '更新日',
+
+## themes/rainier/templates/pages_list.mtml
+
+## themes/rainier/templates/pagination.mtml
+	'Older entries' => '過去の記事',
+	'Newer entries' => '新しい記事',
+
+## themes/rainier/templates/recent_comments.mtml
+	'[_1] on <a href="[_2]" title="full comment on: [_3]">[_3]</a>' => '[_1] から <a href="[_2]" title="[_3] のコメントを見る">[_3]</a>',
+
+## themes/rainier/templates/recent_entries.mtml
+
+## themes/rainier/templates/search.mtml
+
+## themes/rainier/templates/search_results.mtml
+
+## themes/rainier/templates/syndication.mtml
+
+## themes/rainier/templates/tag_cloud.mtml
+
+## themes/rainier/templates/trackbacks.mtml
+	'<a href="[_1]">[_2]</a> - [_3]</a>' => '<a href="[_1]">[_2]</a> - [_3]</a>',
+
+## themes/rainier/templates/zenback.mtml
+	'Please paste the Zenback script code here.' => 'ここに Zenback の Script コードは貼り付けてください。',
+
+## themes/rainier/theme.yaml
+	'"Rainier" is a customizable Responsive Web Design theme, designed for blogs. In addition to multi-device viewing support, provided via Media Query (CSS), Movable Type functions make customizing navigational contents as well as image elements, such as logos, headers, very simple.' => 'Rainier はレスポンシブ Web デザインを採用したブログテーマです。Media Query (CSS) を利用したマルチデバイス対応に加え、Movable Type の機能を使ってロゴやナビゲーションの内容を簡単にカスタマイズできます。',
+	'About Page' => 'アバウトページ',
+	'_ABOUT_PAGE_BODY' => '<p>このページはアバウトページ (自己紹介や会社概要など、プロフィール用のページ) として利用するウエブページの例です。</p><p>作成したウェブページに <code>@ABOUT_PAGE</code> というタグを設定すると、ページのヘッダ、フッタにあるナビゲーションにリンクが追加されます。</p>',
+	'Example page' => 'ウェブページの例',
+	'_SAMPLE_PAGE_BODY' => '<p>このページはウェブページの例です。</p><p>作成したウェブページに <code>@ADD_TO_SITE_NAV</code> というタグを設定すると、ページのヘッダ、フッタにあるナビゲーションにリンクが追加されます。</p>',
+	'Rainier' => 'Rainier',
+	'Stylesheet for IE (8 or lower)' => 'スタイルシート (IE8 以下用)',
+	'JavaScript - Theme' => 'JavaScript - テーマ',
+
 ## search_templates/comments.tmpl
 	'Search for new comments from:' => 'コメントを検索:',
 	'the beginning' => '最初から',
@@ -2997,7 +3093,6 @@ use vars qw( @ISA %Lexicon );
 	q{Entries matching '[_1]'} => q{'[_1]'で検索されたブログ記事},
 	q{Entries tagged with '[_1]'} => q{'[_1]'タグのブログ記事},
 	q{No pages were found containing '[_1]'.} => q{'[_1]'が含まれるページはありません。},
-	'The search engine also supports AND, OR, and NOT keywords to specify boolean expressions:' => 'AND、OR、NOTを入れることで論理検索を行うこともできます。',
 	'END OF ALPHA SEARCH RESULTS DIV' => '検索結果のDIV(ALPHA)ここまで',
 	'BEGINNING OF BETA SIDEBAR FOR DISPLAY OF SEARCH INFORMATION' => 'ここから検索情報を表示するBETA SIDEBAR',
 	'SET VARIABLES FOR SEARCH vs TAG information' => '検索またはタグ情報を変数に代入',
@@ -3322,7 +3417,6 @@ use vars qw( @ISA %Lexicon );
 	'(No role selected)' => '(ロールが選択されていません)',
 	'Select roles' => 'ロール選択',
 	'Authentication Methods' => '認証方式',
-	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'OpenIDを利用するのに必要なPerlモジュール(Digest::SHA1)がありません。',
 	'Please select authentication methods to accept comments.' => 'コメント投稿者の認証方式を選択してください。',
 	'Require E-mail Address for Comments via TypePad' => 'TypePad経由のコメントにメールアドレスを要求する',
 	'Visitors must allow their TypePad account to share their e-mail address when commenting.' => 'ビジターはコメント時にメールアドレスを共有するのにTypePadアカウントが許可されています。',
@@ -3525,7 +3619,6 @@ use vars qw( @ISA %Lexicon );
 	'Confirm' => '確認',
 
 ## tmpl/cms/dialog/comment_reply.tmpl
-	'Reply to comment' => 'コメントの返信',
 	'On [_1], [_2] commented on [_3]' => '[_2]から[_3]へのコメント([_1])',
 	'Your reply:' => '返信',
 	'Submit reply (s)' => '返信を投稿 (s)',
@@ -6286,7 +6379,9 @@ use vars qw( @ISA %Lexicon );
 	'Authentication failure: [_1], reason:[_2]' => '認証に失敗しました: [_1], 理由:[_2]',
 	'Failed to created commenter.' => 'コメンターの作成に失敗しました。',
 	'Failed to create a session.' => 'コメンターセッションの作成に失敗しました。',
-	'Could not verify this app with Facebook.' => 'このアプリケーションをFacebookで確認することが出来ませんでした。',
+	'Facebook Commenters needs either Crypt::SSLeay or IO::Socket::SSL installed to communicate with Facebook.' => 'Facebook Commenters を利用するには、Crypt::SSLeay または IO::Socket::SSLのいずれかがインストールされている必要があります。',
+	'Please enter your Facebook App key and secret.' => 'FacebookアプリケーションキーとFacebookアプリケーションシークレットを入力してください。',
+	'Could not verify this app with Facebook: [_1]' => 'Facebookでこのアプリケーションを確認できません: [_1]',
 
 ## plugins/FacebookCommenters/tmpl/blog_config_template.tmpl
 	'Facebook Application Key' => 'Facebookアプリケーションキー',
@@ -6295,6 +6390,34 @@ use vars qw( @ISA %Lexicon );
 	'Create Facebook App' => 'Facebookアプリ作成',
 	'Facebook Application Secret' => 'Facebookアプリケーションシークレット',
 	'The secret for the Facebook application associated with your blog.' => 'ブログ関連付用Facebookアプリケーションシークレット',
+
+## plugins/FormattedText/config.yaml
+	'Manage formatted text.' => '定型文を管理します。',
+
+## plugins/FormattedText/lib/FormattedText/App.pm
+	'Are you sure you want to delete the selected FormattedTexts?' => '定型文を削除してもよろしいですか？',
+	'FormattedText' => '定型文',
+	'My Formatted Text' => '自分の定型文',
+
+## plugins/FormattedText/lib/FormattedText/FormattedText.pm
+	'FormattedTexts' => '定型文',
+
+## plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl
+	'Edit FormattedText' => '定型文の編集',
+	'Create FormattedText' => '定型文の作成',
+	'This formatted text has been saved.' => '定型文を保存しました。',
+	'Save changes to this formatted text (s)' => '定型文への変更を保存 (s)',
+
+## plugins/FormattedText/tmpl/cms/list_formatted_text.tmpl
+	'The formatted text has been deleted from the database.' => '定型文を削除しました',
+
+## plugins/FormattedTextForTinyMCE/config.yaml
+	'Add the "Insert Formatted Text" button to the TinyMCE.' => 'TinyMCE に「定型文の挿入」ボタンを追加します。',
+
+## plugins/FormattedTextForTinyMCE/lib/FormattedTextForTinyMCE/App.pm
+	'Cannot load formatted text.' => '記事テンプレートをロードできませんでした。',
+
+## plugins/FormattedTextForTinyMCE/tmpl/extension.tmpl
 
 ## plugins/Markdown/Markdown.pl
 	'A plain-text-to-HTML formatting plugin.' => 'テキストをHTMLに整形するプラグインです。',
@@ -6605,5 +6728,7 @@ use vars qw( @ISA %Lexicon );
 	'Keywords to Junk' => 'スパムにするキーワード',
 
 );
+
+## New words: 75
 
 1;

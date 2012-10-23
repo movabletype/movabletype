@@ -43,10 +43,9 @@ sub param_edit_entry {
 sub can_edit_formatted_text {
     my ( $perms, $formatted_text, $author ) = @_;
 
-    return 0
-        if ( !$perms )
-        || ( !$author->isa('MT::Author') );
+    return 0 unless $author->isa('MT::Author');
     return 1 if $author->is_superuser();
+    return 0 unless $perms;
 
     # For new object
     if ( !$formatted_text ) {
@@ -67,29 +66,41 @@ sub can_edit_formatted_text {
 sub can_view_formatted_text {
     my ( $perms, $formatted_text, $author ) = @_;
 
-    return 0
-        if ( !$perms )
-        || ( !$author->isa('MT::Author') );
+    return 0 unless $author->isa('MT::Author');
+    return 1 if $author->is_superuser();
+    return 0 unless $perms;
 
-    $author->is_superuser() || $perms->can_do('view_all_formatted_texts');
+    $perms->can_do('view_all_formatted_texts');
+}
+
+sub cms_object_scope_filter {
+    my ( $cb, $app, $id ) = @_;
+    $app->blog && $app->blog->is_blog;
 }
 
 sub save_permission_filter {
-    my ( $cb, $app, $formatted_text ) = @_;
-    my $perms = $app->permissions;
-    can_edit_formatted_text( $perms, $formatted_text, $app->user );
+    my ( $cb, $app, $id ) = @_;
+    my $user = $app->user;
+    my $obj = $id ? $app->model('formatted_text')->load($id) : undef;
+    my $perms
+        = $obj ? $user->permissions( $obj->blog_id ) : $app->permissions;
+    can_edit_formatted_text( $perms, $obj, $user );
 }
 
 sub view_permission_filter {
-    my ( $cb, $app, $formatted_text ) = @_;
-    my $perms = $app->permissions;
-    can_edit_formatted_text( $perms, $formatted_text, $app->user );
+    my ( $cb, $app, $id ) = @_;
+    my $user = $app->user;
+    my $obj = $id ? $app->model('formatted_text')->load($id) : undef;
+    my $perms
+        = $obj ? $user->permissions( $obj->blog_id ) : $app->permissions;
+    can_edit_formatted_text( $perms, $obj, $user );
 }
 
 sub delete_permission_filter {
-    my ( $cb, $app, $formatted_text ) = @_;
-    my $perms = $app->permissions;
-    can_edit_formatted_text( $perms, $formatted_text, $app->user );
+    my ( $cb, $app, $obj ) = @_;
+    my $user  = $app->user;
+    my $perms = $user->permissions( $obj->blog_id );
+    can_edit_formatted_text( $perms, $obj, $user );
 }
 
 sub set_params_for_formatted_text {
@@ -180,7 +191,7 @@ sub filtered_list_param {
 
 sub listing_screens {
     return {
-        object_label       => 'FormattedText',
+        object_label       => 'Formatted Text',
         primary            => 'label',
         default_sort_key   => 'created_on',
         default_sort_order => 'descend',
@@ -188,6 +199,8 @@ sub listing_screens {
             permit_action => 'access_to_formatted_text_list',
             inherit       => 0,
         },
+        condition =>
+            sub { !MT->instance->blog || MT->instance->blog->is_blog },
         template => File::Spec->catfile(
             plugin()->{full_path}, 'tmpl',
             'cms',                 'list_formatted_text.tmpl'
@@ -214,7 +227,7 @@ sub list_actions {
             order                   => 100,
             continue_prompt_handler => sub {
                 translate(
-                    'Are you sure you want to delete the selected FormattedTexts?'
+                    'Are you sure you want to delete the selected Formatted Texts?'
                 );
             },
             mode       => 'delete',
@@ -227,11 +240,12 @@ sub list_actions {
 sub content_actions {
     return {
         create_new => {
-            mode  => 'view',
-            args  => { _type => 'formatted_text', },
-            class => 'icon-create',
-            label => 'Create New',
-            order => 100,
+            mode      => 'view',
+            args      => { _type => 'formatted_text', },
+            class     => 'icon-create',
+            label     => 'Create New',
+            order     => 100,
+            condition => sub { MT->instance->blog },
         },
     };
 }

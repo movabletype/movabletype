@@ -2243,7 +2243,7 @@ sub load_global_tmpl {
 
 sub load_tmpl {
     my $mt = shift;
-    if ( exists( $mt->{component} ) && ( $mt->{component} ne 'Core' ) ) {
+    if ( exists( $mt->{component} ) && ( lc($mt->{component}) ne 'core' ) ) {
         if ( my $c = $mt->component( $mt->{component} ) ) {
             return $c->load_tmpl(@_);
         }

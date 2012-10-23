@@ -12,7 +12,7 @@
   }
 }
 
-@mixin box-sizing($model) {
+@mixin box-sizing($model:border-box) {
   @each $vendor in -moz-, null {
     #{$vendor}box-sizing: $model;
   }
@@ -36,28 +36,31 @@
 @mixin tag-cloud($base: 1em) {
   font-size: $base;
   line-height: 1.2 * $base;
-
   &.rank-1 {
-    font-size: (3 * $base);
+    font-size: ($base * 1.8);
   }
   &.rank-2 {
-    font-size: (2 * $base);
+    font-size: ($base * 1.5);
   }
   &.rank-3 {
-    font-size: ((3 * $base) / 2);
+    font-size: ($base * 1.3);
   }
   &.rank-4 {
-    font-size: ((4 * $base) / 3);
-  }
-  &.rank-5 {
-    font-size: ((3 * $base) / 4);
-  }
-  &.rank-6 {
-    font-size: ((2 * $base) / 3);
-  }
-  &.rank-7 {
     font-size: $base;
   }
+  &.rank-5 {
+    font-size: ($base * 0.9);
+  }
+  &.rank-6 {
+    font-size: ($base * 0.85);
+  }
+  &.rank-7 {
+    font-size: ($base * 0.7);
+  }
+}
+
+%border-box {
+  @include box-sizing(border-box);
 }
 
 %clearfix {

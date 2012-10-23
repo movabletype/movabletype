@@ -221,8 +221,6 @@ sub _v5_migrate_blog {
 
     my $website
         = $class->create_default_website( MT->translate('Generic Website') );
-    $website->site_path('');
-    $website->site_url('');
     $website->save
         or return $self->error(
         $self->translate_escape(
@@ -467,9 +465,10 @@ sub _v5_migrate_default_site {
         ) unless $class;
 
         my $website = $class->create_default_website(
-            MT->translate("New user's website") );
-        $website->site_path($site_path);
-        $website->site_url($site_url);
+            MT->translate("New user's website"),
+            site_url  => $site_url,
+            site_path => $site_path, 
+        );
         $website->save
             or return $self->error(
             $self->translate_escape(
@@ -645,10 +644,6 @@ sub _v5_generate_websites_place_blogs {
         my $website
             = $website_class->load( { site_url => $website_site_url } );
         unless ($website) {
-            $website
-                = $website_class->create_default_website(
-                MT->translate( 'New WebSite [_1]', $website_site_url ),
-                MT->config->DefaultWebsiteTheme );
             require File::Spec;
 
             # lets try to figure out a common directory to all the blogs
@@ -689,8 +684,12 @@ sub _v5_generate_websites_place_blogs {
                 File::Spec->catdir(@built_path) );
             $website_site_url = $website_site_url . '/'
                 if $website_site_url !~ m!/$!;
-            $website->site_path($website_site_path);
-            $website->site_url($website_site_url);
+            $website = $website_class->create_default_website(
+                MT->translate( 'New WebSite [_1]', $website_site_url ),
+                site_theme => MT->config->DefaultWebsiteTheme,
+                site_url   => $website_site_url,
+                site_path  => $website_site_path, 
+            );
             $website->save
                 or return $self->error(
                 $self->translate_escape(

@@ -81,6 +81,7 @@ callbacks:
     api_save_filter.formatted_text: $FormattedText::FormattedText::FormattedText::save_filter
     cms_save_filter.formatted_text: $FormattedText::FormattedText::FormattedText::save_filter
 
+    cms_object_scope_filter.formatted_text: $FormattedText::FormattedText::App::cms_object_scope_filter
     cms_save_permission_filter.formatted_text: $FormattedText::FormattedText::App::save_permission_filter
     cms_view_permission_filter.formatted_text: $FormattedText::FormattedText::App::view_permission_filter
     cms_delete_permission_filter.formatted_text: $FormattedText::FormattedText::App::delete_permission_filter

@@ -47,18 +47,15 @@ abstract class MTDatabase {
 
     // Abstract method
     abstract protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '');
+    abstract public function escape($str);
     abstract public function set_names($mt);
 
     // Utility method
-    public function escape($str) {
-        return substr($this->conn->Quote(stripslashes($str)), 1, -1);
-    }
-
     public function has_distinct_support () {
         return $this->has_distinct;
     }
 
-    public function &db() {
+    public function db() {
         return $this->conn;
     }
 
@@ -124,9 +121,10 @@ abstract class MTDatabase {
                 require_once('class.mt_blog.php');
                 $blog_class = new Blog();
                 $blogs = $blog_class->Find("blog_parent_id = " . ( $blog->is_blog() ? $blog->parent_id : $blog->id) );
-                $ids = array();
-                foreach($blogs as $b) {
-                    array_push($ret, $b->id);
+                if ( !empty( $blogs ) ) {
+                    foreach($blogs as $b) {
+                        array_push($ret, $b->id);
+                    }
                 }
                 if ( $include_with_website ) {
                     $website = ( $blog->is_blog() ? $blog->website() : $blog);
@@ -358,6 +356,7 @@ abstract class MTDatabase {
             }
             if ($found) break;
         }
+
         if (!$found) return null;
         $blog = $record->blog();
         $this->_blog_id_cache[$blog->id] =& $blog;
@@ -704,13 +703,18 @@ abstract class MTDatabase {
     }
 
     function fetch_entry($eid) {
-        $args['class'] = 'entry';
-        $args['entry_id'] = $eid;
-        $entries = $this->fetch_entries($args);
-        if (empty($entries))
+        if ( isset( $this->_entry_id_cache[$eid] ) && !empty( $this->_entry_id_cache[$eid] ) ) {
+            return $this->_entry_id_cache[$eid];
+        }
+        require_once("class.mt_entry.php");
+        $entry = New Entry;
+        $entry->Load( $eid );
+        if ( !empty( $entry ) ) {
+            $this->_entry_id_cache[$eid] = $entry;
+            return $entry;
+        } else {
             return null;
-        else
-            return $entries[0];
+        }
     }
 
     public function fetch_entries($args, &$total_count = NULL) {
@@ -841,9 +845,9 @@ abstract class MTDatabase {
             } else {
                 $not_clause = preg_match('/\bNOT\b/i', $category_arg);
                 if ($blog_ctx_arg)
-                    $cats = $this->fetch_categories(array_merge($blog_ctx_arg, array('show_empty' => 1, 'class' => $cat_class)));
+                    $cats =& $this->fetch_categories(array_merge($blog_ctx_arg, array('show_empty' => 1, 'class' => $cat_class)));
                 else
-                    $cats = $this->fetch_categories(array('blog_id' => $blog_id, 'show_empty' => 1, 'class' => $cat_class));
+                    $cats =& $this->fetch_categories(array('blog_id' => $blog_id, 'show_empty' => 1, 'class' => $cat_class));
             }
 
            if (!empty($cats)) {
@@ -1633,7 +1637,7 @@ abstract class MTDatabase {
         }
     }
 
-    public function fetch_categories($args) {
+    public function &fetch_categories($args) {
         # load categories
         if ($blog_filter = $this->include_exclude_blogs($args)) {
              $blog_filter = 'and category_blog_id '. $blog_filter;
@@ -1844,13 +1848,19 @@ abstract class MTDatabase {
         return $categories;
     }
 
-    public function fetch_page($entry_id) {
-        if (isset($this->_entry_id_cache['entry_id'])) {
-            return $this->_entry_id_cache[$entry_id];
+    public function fetch_page($eid) {
+        if ( isset( $this->_entry_id_cache[$eid] ) && !empty( $this->_entry_id_cache[$eid] ) ) {
+            return $this->_entry_id_cache[$eid];
         }
-        list($entry) = $this->fetch_pages(array('entry_id' => $entry_id));
-        $this->_entry_id_cache[$entry_id] = $entry;
-        return $entry;
+        require_once("class.mt_page.php");
+        $page = New Page;
+        $page->Load( $eid );
+        if ( !empty( $page ) ) {
+            $this->_entry_id_cache[$eid] = $page;
+            return $page;
+        } else {
+            return null;
+        }
     }
 
     public function fetch_author($author_id) {
@@ -2936,9 +2946,9 @@ abstract class MTDatabase {
         if ($sql != '') {
             $blog_filter = 'and comment_blog_id ' . $sql;
             if (isset($args['blog_id']))
-                $blog = $this->fetch_blog($args['blog_id']);
+                $blog =& $this->fetch_blog($args['blog_id']);
         } elseif ($args['blog_id']) {
-            $blog = $this->fetch_blog($args['blog_id']);
+            $blog =& $this->fetch_blog($args['blog_id']);
             $blog_filter = ' and comment_blog_id = ' . $blog->blog_id;
         }
 
@@ -2968,9 +2978,9 @@ abstract class MTDatabase {
         if ($sql != '') {
             $blog_filter = 'and comment_blog_id ' . $sql;
             if (isset($args['blog_id']))
-                $blog = $this->fetch_blog($args['blog_id']);
+                $blog =& $this->fetch_blog($args['blog_id']);
         } elseif ($args['blog_id']) {
-            $blog = $this->fetch_blog($args['blog_id']);
+            $blog =& $this->fetch_blog($args['blog_id']);
             $blog_filter = ' and comment_blog_id = ' . $blog->blog_id;
         }
 

@@ -1847,7 +1847,7 @@ BEGIN {
             'MaxTagAutoCompletionItems' => { default => 1000, }, ## DEPRECATED
             'NewUserAutoProvisioning' =>
                 { handler => \&NewUserAutoProvisioning, },
-            'NewUserBlogTheme'        => { default => 'classic_blog' },
+            'NewUserBlogTheme'        => { default => 'rainier' },
             'NewUserDefaultWebsiteId' => undef,
             'DefaultSiteURL'          => undef,    ## DEPRECATED
             'DefaultSiteRoot'         => undef,                  ## DEPRECATED
@@ -1904,11 +1904,10 @@ BEGIN {
             'SingleCommunity'      => { default => 1 },
             'DefaultTemplateSet'   => { default => 'mt_blog' },
             'DefaultWebsiteTheme'  => { default => 'classic_website' },
-            'DefaultBlogTheme'     => { default => 'classic_blog' },
+            'DefaultBlogTheme'     => { default => 'rainier' },
             'ThemeStaticFileExtensions' => {
                 default => 'html jpg jpeg gif png js css ico flv swf otf ttf'
             },
-
             'AssetFileTypes'            => { type    => 'HASH' },
             'AssetFileExtensions'       => { default => undef },
             'DeniedAssetFileExtensions' => {
