@@ -339,6 +339,16 @@ function init() {
 <mt:setvarblock name="jq_js_include" append="1">
     init();
 
+    jQuery('.blog-subdomain-text').bind('keyup focusin focusout', function($e) {
+        var $orig = jQuery(this).parents('.url-field:first').find('.blog-url-text');
+        var ns = jQuery.data( $orig.get(0), 'mtValidator' );
+        if ( ns ) {
+            $orig.mtValid({ focus: false });
+        }
+        $e.stopPropagation();
+        return false;
+    });
+
     jQuery.mtValidateAddRules({
         // Website paths
         '.website-url-text': function ($e) {
@@ -369,21 +379,28 @@ function init() {
             var value = $e.val();
             var rex = RegExp("site_url_path_([0-9]+)");
             var parent_url = '';
-            if ($e.attr('name').match(rex)) {
-                var b_id = RegExp.$1;
-                if ( jQuery('#use_subdomain_'+b_id+':checked').length ) {
-                    parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
-                    parent_url += jQuery('input#site_url_subdomain_'+b_id).val();
-                    parent_url += '.';
-                    parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
-                } else {
-                    parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
-                    parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
-                }
+            if (! $e.attr('name').match(rex))
+                return false;
+            var b_id = RegExp.$1;
+            if ( jQuery('#use_subdomain_'+b_id+':checked').length ) {
+                parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
+                parent_url += jQuery('input#site_url_subdomain_'+b_id).val();
+                parent_url += '.';
+                parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
+            } else {
+                parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
+                parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
             }
             if (parent_url == '' && value == '')
                 return false;
-            return is_valid_url(parent_url + value);
+            var ret = is_valid_url(parent_url + value);
+            if (ret) {
+                jQuery('input#site_url_subdomain_'+b_id).addClass('valid').removeClass('error');
+            }
+            else {
+                jQuery('input#site_url_subdomain_'+b_id).removeClass('valid').addClass('error');
+            }
+            return ret;
         },
         '.absolute-site_path .blog-path-text': function ($e) {
             var rex = RegExp("site_url_path_([0-9]+)");
@@ -412,21 +429,28 @@ function init() {
         '.archive-url-text': function ($e) {
             var rex = RegExp("archive_url_path_([0-9]+)");
             var parent_url = '';
-            if ($e.attr('name').match(rex)) {
-                var b_id = RegExp.$1;
-                if ( jQuery('#use_archive_subdomain_'+b_id+':checked').length ) {
-                    parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
-                    parent_url += jQuery('input#archive_url_subdomain_'+b_id).val();
-                    parent_url += '.';
-                    parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
-                } else {
-                    parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
-                    parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
-                }
+            if (! $e.attr('name').match(rex))
+                return false;
+            var b_id = RegExp.$1;
+            if ( jQuery('#use_archive_subdomain_'+b_id+':checked').length ) {
+                parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
+                parent_url += jQuery('input#archive_url_subdomain_'+b_id).val();
+                parent_url += '.';
+                parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
+            } else {
+                parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
+                parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
             }
             if (parent_url == '' && $e.val() == '')
                 return false;
-            return is_valid_url(parent_url + $e.val());
+            var ret = is_valid_url(parent_url + $e.val());
+            if (ret) {
+                jQuery('input#archive_url_subdomain_'+b_id).addClass('valid').removeClass('error');
+            }
+            else {
+                jQuery('input#archive_url_subdomain_'+b_id).removeClass('valid').addClass('error');
+            }
+            return ret;
         },
         '.relative-site_path .archive-path': function ($e) {
             var value = $e.val();
