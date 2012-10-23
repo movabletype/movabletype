@@ -620,12 +620,16 @@ MT.util = function () {
    */
   </mt:Ignore>
   function _updateComments() {
-    var comments, jsonUrl;
+    var comments, jsonUrl, cacheKey, offset;
     isLoading = true;
     _setCurrentCommentsContent(loadingIcon);
     _setCommentOffset();
-    
-    jsonUrl = [
+
+    offset   = _getCommentOffset();
+    cacheKey = [direction, entryID, commentsPerPage, offset]
+        .join('-')
+        .replace(/[^a-zA-Z0-9-]/g, '');
+    jsonUrl  = [
         "<$mt:CGIPath$><$mt:CommentScript$>?__mode=comment_listing&direction=",
         direction,
         "&entry_id=",
@@ -633,23 +637,32 @@ MT.util = function () {
         "&limit=",
         commentsPerPage,
         "&offset=",
-        _getCommentOffset()
+        offset,
+        "&cacheKey=",
+        cacheKey,
+        "&jsonp=mtUpdateCommentsCallback",
+        "&ts=",
+        new Date().getTime()
       ].join('');
   	
   	if (!commentAnchor) {
       commentAnchor = "comments-content";
     }
-    
-    if(cache.hasOwnProperty(jsonUrl)) {
-      _refreshComments(cache[jsonUrl]);
+
+    if(cache.hasOwnProperty(cacheKey)) {
+      _refreshComments(cache[cacheKey]);
       isLoading = false;
     } else {
-      M.connect(jsonUrl,c.JSON,function (json) {
-        cache[jsonUrl] = json.comments;
-    	  _refreshComments(json.comments);
-    	  isLoading = false;
-      });
+      var script = document.createElement('script');
+      script.src = jsonUrl;
+      (document.getElementsByTagName('head'))[0].appendChild(script);
     }
+  }
+
+  window['mtUpdateCommentsCallback'] = function(json) {
+    cache[json.cacheKey] = json.comments;
+    _refreshComments(json.comments);
+    isLoading = false;
   }
   
   <mt:Ignore>
