@@ -1712,7 +1712,7 @@ sub comment_listing {
     $ctx->var( 'commentLimit',     $limit );
     $ctx->var( 'commentOffset',    $offset );
     $ctx->var( 'commentDirection', $direction );
-    $app->print( $tmpl->build($ctx) );
+    $app->print_encode( $tmpl->build($ctx) );
     return 1;
 }
 
