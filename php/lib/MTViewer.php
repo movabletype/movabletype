@@ -692,7 +692,8 @@ EOT;
                 $hdlr($args, NULL, $this, $repeat);
                 if ($repeat) {
                     $content = 'true';
-                    $content = $hdlr($args, $content, $this, $repeat = false);
+                    $repeat = false;
+                    $content = $hdlr($args, $content, $this, $repeat);
                     $result = isset($content) && ($content === 'true');
                 } else {
                     $result = false;
