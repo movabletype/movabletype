@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 0;
+        $RELEASE_NUMBER = 1;
     }
 
     $DebugMode = 0;
