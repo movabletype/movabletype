@@ -1,3 +1,11 @@
+/*
+
+name: Rainier (White)
+designer: Six Apart, Ltd.
+designer_url: http://www.sixapart.com/
+layouts: layout-wt
+
+*/
 h1 a,
 h2 a,
 h3 a,
@@ -47,7 +55,7 @@ h6 a {
     margin: 0;
     padding: 1px 0;
     background-color: #2b2b2b;
-    background-image: url("../img/linen-texture.png");
+    background-image: url("img/linen-texture.png");
     background-position: center;
     background-repeat: no-repeat;
     background-size: 100%;

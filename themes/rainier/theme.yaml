@@ -2,7 +2,7 @@ label: 'Rainier'
 id: 'rainier'
 version: 1.0
 author_link: 'http://www.sixapart.com/'
-author_name: 'Six Apart, Ltd'
+author_name: 'Six Apart, Ltd.'
 class: 'blog'
 description: <__trans phrase='"Rainier" is a customizable Responsive Web Design theme, designed for blogs. In addition to multi-device viewing support, provided via Media Query (CSS), Movable Type functions make customizing navigational contents as well as image elements, such as logos, headers, very simple.'>
 protected: 1
@@ -41,6 +41,12 @@ elements:
       base_path: 'templates'
       require: 1
       base_css: 'css/base.css'
+      stylecatcher_libraries:
+        rainier:
+          url: '{{support}}theme_static/rainier/css/rainier.html'
+          label: 'Styles for Rainier'
+          description_label: 'A collection of styles compatible with Rainier themes.'
+          order: 1
       templates:
         index:
           main_index:
