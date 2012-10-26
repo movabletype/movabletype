@@ -5016,6 +5016,11 @@ sub setup_editor_param {
         }
 
         foreach my $editor_key ( keys %{ $param->{editors} } ) {
+            if ( !@{ $param->{editors}{$editor_key}{templates} } ) {
+                delete $param->{editors}{$editor_key};
+                next;
+            }
+
             foreach my $k ( 'templates', 'extensions' ) {
                 $param->{editors}{$editor_key}{$k}
                     = [ sort { $a->{order} <=> $b->{order} }
@@ -5023,14 +5028,20 @@ sub setup_editor_param {
             }
         }
 
-        my $editor = lc( $app->config('Editor') );
-        $param->{wysiwyg_editor}
-            = lc( $app->config('WYSIWYGEditor') || $editor );
-        $param->{source_editor}
-            = lc( $app->config('SourceEditor') || $editor );
-        $param->{editor_strategy} = lc( $app->config('EditorStrategy') );
+        if ( %{ $param->{editors} } ) {
+            my $editor = lc( $app->config('Editor') );
+            $param->{wysiwyg_editor}
+                = lc( $app->config('WYSIWYGEditor') || $editor );
+            $param->{source_editor}
+                = lc( $app->config('SourceEditor') || $editor );
+            $param->{editor_strategy} = lc( $app->config('EditorStrategy') );
+        }
+        else {
+            delete $param->{editors};
+        }
     }
-    else {
+
+    if ( !$param->{editors} ) {
         my $rte;
         if ( $param->{convert_breaks} =~ m/richtext/ ) {
             ## Rich Text editor
