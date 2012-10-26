@@ -1677,8 +1677,15 @@ sub backup_terms_args {
     my $class = shift;
     my ($blog_ids) = @_;
 
+    # Only the filter belonging to specified
+    # websites and blogs are extracted.
+    my $terms = undef;
+    if ( defined($blog_ids) && scalar(@$blog_ids) ) {
+        $terms = { blog_id => $blog_ids };
+    }
+
     return {
-        terms => undef,
+        terms => $terms,
         args  => {
             join => [
                 MT->model('author'), undef,
