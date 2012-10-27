@@ -882,18 +882,26 @@ sub ranges : Tests(9) {
     );
 }
 
-sub alias : Tests(2) {
+sub alias : Tests(3) {
     my $self = shift;
     $self->make_pc_data();
 
     my $vista = Foo->load(3);    # not a search
+
+    my @a_foos = Foo->load(
+        { id => $vista->id, },
+        {   alias => 'main',
+            limit => 1,
+        }
+    );
+    are_objects( \@a_foos, [$vista], 'Simple query with alias and limit' );
 
     # select * from foo, bar bar1, bar bar2
     # where bar1.bar_foo_id = foo_id
     # and bar2.bar_foo_id = bar1.bar_foo_id
     # and bar1.status = 2
     # and bar2.status = 3
-    my @a_foos = Foo->load(
+    @a_foos = Foo->load(
         undef,
         {   join => [
                 'Bar', undef,
