@@ -156,7 +156,14 @@ sub thumbnail_file {
             >= $fmgr->file_mod_time($file_path) )
         )
     {
-        return ( $thumbnail, $n_w, $n_h );
+        require MT::Image;
+        my $img = new MT::Image( Filename => $thumbnail );
+        my ( $t_w, $t_h ) = ( $img->{width}, $img->{height} );
+        if (   ( $param{Square} && $t_h == $t_w )
+            or ( !$param{Square} && $t_h != $t_w ) )
+        {
+            return ( $thumbnail, $n_w, $n_h );
+        }
     }
 
     # stale or non-existent thumbnail. let's create one!
