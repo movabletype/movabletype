@@ -7,7 +7,7 @@
   margin-top: $indent;
 
   @media (min-width: 700px) {
-    margin-top: ($indent * 2);
+    margin-top: $indent;
   }
 
   h2 {

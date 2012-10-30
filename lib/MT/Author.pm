@@ -899,15 +899,17 @@ sub save {
     }
 
     my $privs;
+    my $privs_found;
     if ( exists $auth->permissions(0)->{changed_cols}->{permissions} ) {
         $privs = $auth->permissions(0)->permissions;
+        $privs_found = 1;
     }
 
     # delete new user's privilege from cache
     delete MT::Request->instance->{__stash}->{'__perm_author_'}
         unless $auth->id;
     $auth->SUPER::save(@_) or return $auth->error( $auth->errstr );
-    if ( defined $privs ) {
+    if ( $privs_found ) {
         my $perm = $auth->permissions(0);
         $perm->permissions($privs);
         $perm->save

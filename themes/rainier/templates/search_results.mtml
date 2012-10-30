@@ -1,9 +1,66 @@
 <!DOCTYPE html>
 <html lang="<$mt:BlogLanguage$>">
   <head>
+    <script type="text/javascript">
+      var user = <$mt:UserSessionState$>;
+    </script>
     <meta charset="<$mt:PublishCharset$>">
     <title><$mt:BlogName encode_html="1"$> - <__trans phrase="Search Results"></title>
     <$mt:Include module="<__trans phrase="HTML Head">"$>
+    <script>
+<mt:IfMoreResults>
+      function getResults(page) {
+        page = parseInt(page);
+        if (timer) window.clearTimeout(timer);
+        var xh = mtGetXmlHttp();
+        if (!xh) return false;
+        var res = results[page];
+        if (!res) return;
+        var url = res['next_url'];
+        if (!url) return;
+
+        xh.open('GET', url + '&format=js', true);
+        xh.onreadystatechange = function() {
+          if ( xh.readyState == 4 ) {
+            if ( xh.status && ( xh.status != 200 ) ) {
+              // error - ignore
+            } else {
+              try {
+                var page_results = eval("(" + xh.responseText + ")");
+                if ( page_results['error'] == null )
+                  results[page + 1] = page_results['result'];
+              } catch (e) {
+              }
+            }
+          }
+      };
+      xh.send(null);
+    }
+
+    function swapContent(direction) {
+      if ( direction == undefined ) direction = 1;
+      var page_span = document.getElementById('current-page');
+      if (!page_span) return true;
+      var next_page = direction + parseInt(page_span.innerHTML);
+      var res = results[next_page];
+      if (!res) return true;
+      var content = res['content'];
+      if (!content) return true;
+      var div = document.getElementById('search-results');
+      if (!div) return true;
+      div.innerHTML = content;
+      timer = window.setTimeout("getResults(" + next_page + ")", 1*1000);
+      window.scroll(0, 0);
+      return false;
+    }
+<mt:Else>
+  <mt:IfPreviousResults>
+    function swapContent(direction) {
+      return true;
+    }
+  </mt:IfPreviousResults>
+</mt:IfMoreResults>
+    </script>
   </head>
   <body>
     <div id="container">
@@ -20,7 +77,7 @@
 <mt:SetVarTemplate id="search_results" name="search_results">
   <mt:SearchResults>
     <mt:SearchResultsHeader>
-              <section>
+              <section id="search-results">
                 <h1 class="title">
       <mt:IfStraightSearch>
                   <__trans phrase="Results matching &ldquo;[_1]&rdquo;" params="<$mt:SearchString$>">
@@ -88,70 +145,6 @@
         </footer>
       </div>
     </div>
-    <script>
-      var user = <$mt:UserSessionState$>;
-<mt:IfMoreResults>
-      var div = document.getElementById('search-results');
-      var results = {
-        '<$mt:CurrentPage encode_js="1"$>': {
-          'content': div.innerHTML,
-          'next_url': '<$mt:NextLink encode_js="1"$>'
-        }
-      };
-      var timer = window.setTimeout("getResults(" + <$mt:CurrentPage encode_js="1"$> + ")", 1*1000);
-
-      function getResults(page) {
-        page = parseInt(page);
-        if (timer) window.clearTimeout(timer);
-        var xh = mtGetXmlHttp();
-        if (!xh) return false;
-        var res = results[page];
-        if (!res) return;
-        var url = res['next_url'];
-        if (!url) return;
-
-        xh.open('GET', url + '&format=js', true);
-        xh.onreadystatechange = function() {
-          if ( xh.readyState == 4 ) {
-            if ( xh.status && ( xh.status != 200 ) ) {
-                // error - ignore
-            } else {
-              try {
-                var page_results = eval("(" + xh.responseText + ")");
-                if ( page_results['error'] == null )
-                  results[page + 1] = page_results['result'];
-              } catch (e) {
-              }
-            }
-          }
-        };
-        xh.send(null);
-      }
-
-      function swapContent(direction) {
-        if ( direction == undefined ) direction = 1;
-        var page_span = document.getElementById('current-page');
-        if (!page_span) return true;
-        var next_page = direction + parseInt(page_span.innerHTML);
-        var res = results[next_page];
-        if (!res) return true;
-        var content = res['content'];
-        if (!content) return true;
-        var div = document.getElementById('search-results');
-        if (!div) return true;
-        div.innerHTML = content;
-        timer = window.setTimeout("getResults(" + next_page + ")", 1*1000);
-        window.scroll(0, 0);
-        return false;
-      }
-<mt:Else>
-    <mt:IfPreviousResults>
-      function swapContent(direction) {
-        return true;
-      }
-    </mt:IfPreviousResults>
-</mt:IfMoreResults>
-    </script>
     <script src="<$mt:StaticWebPath encode_html="1"$>jquery/jquery.min.js"></script>
     <script src="<$mt:Link template="javascript_theme" encode_html="1">"></script>
   </body>
