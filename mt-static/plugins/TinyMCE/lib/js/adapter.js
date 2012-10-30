@@ -68,6 +68,26 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
                         .attr('onfocus', '')
                         .attr('href', 'javascript:;');
                 }
+            },
+            'template/template.htm': {
+                onload: function(context) {
+                    var window = context['iframe'].contentWindow;
+                    var dialog = window.TemplateDialog;
+                    if (! dialog) {
+                        return;
+                    }
+                    var resize = dialog.resize;
+                    dialog.resize = function() {
+                        resize();
+
+                        var e = window.document.getElementById('templatesrc');
+                        if (e) {
+                            e.style.height =
+                                (parseInt(e.style.height, 10) - 30) + 'px';
+                        }
+                    };
+                    dialog.resize();
+                }
             }
         },
 

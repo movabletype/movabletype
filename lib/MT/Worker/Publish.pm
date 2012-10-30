@@ -100,6 +100,14 @@ sub work {
             else {
                 $job->completed();
             }
+            $mt->log({
+                ($fi->blog_id ? ( blog_id => $fi->blog_id ) : () ),
+                message => $mt->translate('Background Publishing Done'),
+                metadata => log_time() . ' '
+                    . $mt->translate('Published: [_1]', $fi->file_path),
+                category => "publish",
+                level => MT::Log::INFO(),
+            });
             $rebuilt++;
         }
         else {

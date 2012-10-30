@@ -653,7 +653,14 @@ sub first_blog_id {
     my $q   = $app->param;
 
     my $blog_id;
-    if ( $q->param('IncludeBlogs') ) {
+    if (   !$q->param('IncludeBlogs')
+        && exists( $app->{searchparam}{IncludeBlogs} )
+        && @{ $app->{searchparam}{IncludeBlogs} } )
+    {
+        my @blog_ids = $app->{searchparam}{IncludeBlogs};
+        $blog_id = $blog_ids[0] if @blog_ids;
+    }
+    else {
 
         # if IncludeBlogs is empty or all, get the first blog id available
         if (   $q->param('IncludeBlogs') eq ''
@@ -668,12 +675,6 @@ sub first_blog_id {
             my @ids = split ',', $q->param('IncludeBlogs');
             $blog_id = $ids[0];
         }
-    }
-    elsif ( exists( $app->{searchparam}{IncludeBlogs} )
-        && @{ $app->{searchparam}{IncludeBlogs} } )
-    {
-        my @blog_ids = $app->{searchparam}{IncludeBlogs};
-        $blog_id = $blog_ids[0] if @blog_ids;
     }
     $blog_id;
 }
@@ -1207,10 +1208,13 @@ sub _default_throttle {
     return $$result if defined $$result;
 
     ## Get login information if user is logged in (via cookie).
-    ( $app->{user} ) = $app->login;
-    ## If session ID saved on cookie has been expired, this fails with error.
-    ## Should clear error.
-    $app->error(undef);
+    {
+        ## If session ID saved on cookie has been expired, this fails with error.
+        ## Should ignore login error in this context.
+        my $save_errstr = $app->errstr;
+        ( $app->{user} ) = $app->login;
+        $app->error($save_errstr);
+    }
 
     ## Don't throttle MT registered users
     if ( $app->{user} && $app->{user}->type == MT::Author::AUTHOR() ) {

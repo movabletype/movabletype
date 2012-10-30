@@ -39,7 +39,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '5.2',                '__PRODUCT_VERSION_ID__',
+        '5.2.1',                '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 0;
+        $RELEASE_NUMBER = 1;
     }
 
     $DebugMode = 0;
@@ -2243,7 +2243,7 @@ sub load_global_tmpl {
 
 sub load_tmpl {
     my $mt = shift;
-    if ( exists( $mt->{component} ) && ( $mt->{component} ne 'Core' ) ) {
+    if ( exists( $mt->{component} ) && ( lc($mt->{component}) ne 'core' ) ) {
         if ( my $c = $mt->component( $mt->{component} ) ) {
             return $c->load_tmpl(@_);
         }
@@ -2752,8 +2752,12 @@ sub _commenter_auth_params {
 }
 
 sub _openid_commenter_condition {
+    my ( $blog, $reason ) = @_;
     eval { require Digest::SHA1; };
-    return $@ ? 0 : 1;
+    return 1 unless $@;
+    $$reason = MT->translate(
+        'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.');
+    return 0;
 }
 
 sub core_commenter_authenticators {
@@ -2794,9 +2798,18 @@ sub core_commenter_authenticators {
             class      => 'MT::Auth::GoogleOpenId',
             login_form => 'comment/auth_googleopenid.tmpl',
             condition  => sub {
-                eval { require Digest::SHA1; require Crypt::SSLeay; };
-                return 0 if $@;
-                return 1;
+                my ( $blog, $reason ) = @_;
+                my @missing;
+                eval { require Digest::SHA1; };
+                push @missing, 'Digest::SHA1' if $@;
+                eval { require Crypt::SSLeay; };
+                push @missing, 'Crypt::SSLeay' if $@;
+                return 1 unless @missing;
+                $$reason = MT->translate(
+                    'missing required Perl modules: [_1]',
+                    join(',', @missing)
+                    );
+                return 0;
             },
             login_form_params => \&_commenter_auth_params,
             logo              => 'images/comment/google.png',

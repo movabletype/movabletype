@@ -527,6 +527,8 @@ sub save {
 
     $app->add_return_arg( 'id' => $obj->id ) if !$original->id;
     $app->add_return_arg( 'saved' => 1 );
+    $app->add_return_arg(
+        ( $original->id ? 'saved_changes' : 'saved_added' ) => 1 );
     $app->call_return;
 }
 
@@ -621,6 +623,9 @@ sub edit {
             return $class->load($id) || undef;
         }
     );
+
+    $app->run_callbacks( 'cms_object_scope_filter.' . $type, $app, $id )
+        || return $app->return_to_dashboard( redirect => 1 );
 
     if ( !$author->is_superuser ) {
         $app->run_callbacks( 'cms_view_permission_filter.' . $type,
@@ -739,7 +744,8 @@ sub edit {
         $param{'master_revision_switch'} = $app->config->TrackRevisions;
         my $limit = File::Spec->catdir($cfg->BaseSitePath, 'PATH');
         $limit =~ s/PATH$//;
-        $param{'sitepath_limited'} = $limit;
+        $param{'sitepath_limited_trail'} = $limit;
+        $param{'sitepath_limited'} = $cfg->BaseSitePath;
     }
 
     my $res = $app->run_callbacks( 'cms_edit.' . $type, $app, $id, $obj,

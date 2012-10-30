@@ -1,0 +1,14 @@
+<mt:Tags top="20" sort_by="name">
+  <mt:If name="__first__">
+<div class="widget-tag-cloud widget">
+  <h3 class="widget-header"><__trans phrase="Tag Cloud"></h3>
+  <div class="widget-content">
+    <ul class="widget-list">
+  </mt:If>
+      <li class="widget-list-item tag rank-<$mt:TagRank max="7"$>"><a href="<$mt:TagSearchLink encode_html="1"$>"><$mt:TagName$></a></li>
+  <mt:If name="__last__">
+    </ul>
+  </div>
+</div>
+  </mt:If>
+</mt:Tags>

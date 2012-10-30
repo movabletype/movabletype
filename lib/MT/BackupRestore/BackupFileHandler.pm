@@ -9,6 +9,8 @@ package MT::BackupRestore::BackupFileHandler;
 use strict;
 use XML::SAX::Base;
 use MIME::Base64;
+use File::Basename;
+use File::Spec;
 
 @MT::BackupRestore::BackupFileHandler::ISA = qw(XML::SAX::Base);
 
@@ -253,6 +255,62 @@ sub start_element {
                         }
                     }
                 }
+                elsif ( 'image' eq $name ) {
+                    if ( !$column_data{blog_id} ) {
+                        $obj = $class->load(
+                            {   file_path => $column_data{file_path},
+                                blog_id   => 0,
+                            }
+                        );
+                        if ($obj) {
+                            if ($obj->created_on == $column_data{created_on} )
+                            {
+
+                                # The same file is already registered
+
+                                my $old_id = $column_data{id};
+
+                                my %realcolumns = map {
+                                    $_ =>
+                                        _decode( delete( $column_data{$_} ) )
+                                } @{ $obj->column_names };
+                                $obj->set_values( \%realcolumns );
+                                $obj->$_( $column_data{$_} )
+                                    foreach keys(%column_data);
+
+                                $objects->{ "$class#" . $old_id } = $obj;
+                                $self->{current}                  = $obj;
+                                $self->{loaded}                   = 1;
+                            }
+                            else {
+
+                                # The different file that has the same name is
+                                # registered
+
+                                $obj = undef;
+
+                                my $middle_path = $column_data{created_on};
+
+                                {
+                                    my ( $name, $path )
+                                        = fileparse(
+                                        $column_data{file_path} );
+                                    $column_data{file_path}
+                                        = File::Spec->catfile( $path,
+                                        $middle_path, $name );
+                                }
+
+                                {
+                                    my ( $path, $name )
+                                        = (
+                                        $column_data{url} =~ m{(.*/)(.*)}s );
+                                    $column_data{url}
+                                        = $path . $middle_path . '/' . $name;
+                                }
+                            }
+                        }
+                    }
+                }
 
                 unless ($obj) {
                     $obj = $class->new;
@@ -376,6 +434,7 @@ sub end_element {
                 (      ( 'author' eq $name )
                     || ( 'template'   eq $name )
                     || ( 'filter'     eq $name )
+                    || ( 'image'      eq $name )
                     || ( 'plugindata' eq $name )
                 )
                 && ( exists $self->{loaded} )
@@ -384,9 +443,8 @@ sub end_element {
                 delete $obj->{column_values}->{id};
                 delete $obj->{changed_cols}->{id};
             }
-            else {
-                delete $self->{loaded};
-            }
+            delete $self->{loaded};
+
             my $exists = 0;
             if ( 'tag' eq $name ) {
                 if (my $tag = MT::Tag->load(

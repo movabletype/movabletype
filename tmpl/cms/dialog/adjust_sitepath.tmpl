@@ -327,11 +327,8 @@ function init() {
     <mt:if name="sitepath_limited">
     function is_path_limit_clear( path_ ) {
         var limit = '<mt:var name="sitepath_limited" escape="js">';
-        var last = limit.charAt(limit.length-1);
-        if (path_.charAt(path_.length-1) != last) {
-          path_ += last;
-        }
-        if (0 != path_.indexOf(limit)) {
+        re = new RegExp("^"+limit, "i");
+        if ( !path_.match( re ) ) {
             return false;
         }
         return true;
@@ -398,12 +395,12 @@ function init() {
                     <mt:if name="sitepath_limited">
                     var limit = '<mt:var name="sitepath_limited" escape="js">';
                     var path_ = $e.val();
-                    var last = limit.charAt(limit.length-1);
-                    if (path_.charAt(path_.length-1) != last) {
-                      path_ += last;
-                    }
-                    if (0 != path_.indexOf(limit)) {
-                        return false;
+                    re = new RegExp("^<mt:var name="sitepath_limited" escape="js" escape="js">$", "i");
+                    if ( !path_.match( re ) ) {
+                        re = new RegExp("^<mt:var name="sitepath_limited_trail" escape="js" escape="js">", "i");
+                            if ( !path_.match( re ) ) {
+                                return false;
+                            }
                     }
                     </mt:if>
                     return is_valid_absolute_path($e.val());

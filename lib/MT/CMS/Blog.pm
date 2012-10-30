@@ -724,6 +724,7 @@ sub rebuild_pages {
         $app->rebuild_entry(
             Entry             => $entry,
             BuildDependencies => 1,
+            OldCategories     => $q->param('old_categories'),
             OldPrevious       => $q->param('old_previous'),
             OldNext           => $q->param('old_next')
         ) or return $app->publish_error();
@@ -1139,7 +1140,7 @@ sub start_rebuild_pages {
             MT::Util::encode_html( $entry->title ) );
         $param{is_entry} = 1;
         $param{entry_id} = $entry_id;
-        for my $col (qw( is_new old_status old_next old_previous )) {
+        for my $col (qw( is_new old_status old_next old_previous old_categories )) {
             $param{$col} = $q->param($col);
         }
     }
@@ -2624,7 +2625,7 @@ sub prepare_dynamic_publishing {
 
 ## %%%%%%% Movable Type generated this part; don't remove this line! %%%%%%%
 # Disable fancy indexes, so mtview.php gets a chance...
-Options -Indexes +SymLinksIfOwnerMatch
+Options -Indexes
   <IfModule mod_rewrite.c>
   # The mod_rewrite solution is the preferred way to invoke
   # dynamic pages, because of its flexibility.
@@ -2898,9 +2899,10 @@ sub clone {
         }
     }
     if (my $limit = $app->config->BaseSitePath) {
+        $param->{'sitepath_limited'} = $limit;
         $limit = File::Spec->catdir($limit, "PATH");
         $limit =~ s/PATH$//;
-        $param->{'sitepath_limited'} = $limit;
+        $param->{'sitepath_limited_trail'} = $limit;
         $param->{'use_absolute'}         = 0;
         $param->{'use_absolute_archive'} = 0;
     }

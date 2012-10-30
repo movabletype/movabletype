@@ -588,6 +588,17 @@ sub rebuild_entry {
     }
     return 1 if $blog->is_dynamic;
 
+    my $categories_for_rebuild = $entry->categories;
+    if ( my $ids = $param{OldCategories} ) {
+        my %new_ids = map { $_->id => 1 } @$categories_for_rebuild;
+        my @old_ids = grep { !$new_ids{$_} } split( ',', $ids );
+
+        if (@old_ids) {
+            push( @$categories_for_rebuild,
+                MT::Category->load( { id => \@old_ids } ) );
+        }
+    }
+
     my $at
         = $param{PreferredArchiveOnly} ? $blog->archive_type_preferred
         : $entry->is_entry             ? $blog->archive_type
@@ -599,8 +610,7 @@ sub rebuild_entry {
             next unless $archiver;    # invalid archive type
             next if $entry->class ne $archiver->entry_class;
             if ( $archiver->category_based ) {
-                my $cats = $entry->categories;    # (ancestors => 1)
-                for my $cat (@$cats) {
+                for my $cat (@$categories_for_rebuild) {
                     $mt->_rebuild_entry_archive_type(
                         Entry       => $entry,
                         Blog        => $blog,
@@ -696,8 +706,7 @@ sub rebuild_entry {
             if ( $at{$at} ) {
                 my $archiver = $mt->archiver($at);
                 if ( $archiver->category_based ) {
-                    my $cats = $entry->categories;
-                    for my $cat (@$cats) {
+                    for my $cat (@$categories_for_rebuild) {
                         if (my $prev_arch = $archiver->previous_archive_entry(
                                 {   entry    => $entry,
                                     category => $cat,
@@ -1243,6 +1252,27 @@ sub rebuild_file {
                 || die "Couldn't create FileInfo because "
                 . MT::FileInfo->errstr();
         }
+    }
+
+    if (!$archiver->does_publish_file(
+            {   Blog        => $blog,
+                ArchiveType => $at,
+                Entry       => $entry,
+                Category    => $category,
+            }
+        )
+        )
+    {
+        $finfo->remove();
+        if ( MT->config->DeleteFilesAtRebuild ) {
+            $mt->_delete_archive_file(
+                Blog        => $blog,
+                File        => $finfo->file_path,
+                ArchiveType => $at
+            );
+        }
+
+        return 1;
     }
 
     # If you rebuild when you've just switched to dynamic pages,
@@ -1984,7 +2014,6 @@ sub remove_entry_archive_file {
     );
     return 1 unless @map;
 
-    my $fmgr = $blog->file_mgr;
     my $arch_root
         = ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
 
@@ -1999,15 +2028,28 @@ sub remove_entry_archive_file {
             return $mt->error( MT->translate( $blog->errstr() ) );
         }
 
-        # Run callbacks
-        MT->run_callbacks( 'pre_delete_archive_file', $file, $at, $entry );
-
-        $fmgr->delete($file);
-
-        # Run callbacks
-        MT->run_callbacks( 'post_delete_archive_file', $file, $at, $entry );
+        $mt->_delete_archive_file(
+            Blog        => $blog,
+            File        => $file,
+            ArchiveType => $at,
+            Entry       => $entry,
+        );
     }
     1;
+}
+
+sub _delete_archive_file {
+    my $mt    = shift;
+    my %param = @_;
+    my ( $blog, $file, $at, $entry )
+        = map { $param{$_} } qw(Blog File ArchiveType Entry);
+    my $fmgr = $blog->file_mgr;
+
+    MT->run_callbacks( 'pre_delete_archive_file', $file, $at, $entry );
+
+    $fmgr->delete($file);
+
+    MT->run_callbacks( 'post_delete_archive_file', $file, $at, $entry );
 }
 
 ##

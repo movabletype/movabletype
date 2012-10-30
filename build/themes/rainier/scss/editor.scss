@@ -1,0 +1,13 @@
+@import 'function';
+
+@import 'variable';
+@import 'basics';
+
+body {
+  max-width: 640px;
+  margin: 0 auto;
+//  border-width: 0 1px;
+//  border-style: dotted;
+//  border-color: #f3f3f3;
+//  padding: 0 $gap;
+}

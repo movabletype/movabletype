@@ -121,9 +121,10 @@ abstract class MTDatabase {
                 require_once('class.mt_blog.php');
                 $blog_class = new Blog();
                 $blogs = $blog_class->Find("blog_parent_id = " . ( $blog->is_blog() ? $blog->parent_id : $blog->id) );
-                $ids = array();
-                foreach($blogs as $b) {
-                    array_push($ret, $b->id);
+                if ( !empty( $blogs ) ) {
+                    foreach($blogs as $b) {
+                        array_push($ret, $b->id);
+                    }
                 }
                 if ( $include_with_website ) {
                     $website = ( $blog->is_blog() ? $blog->website() : $blog);
@@ -355,6 +356,7 @@ abstract class MTDatabase {
             }
             if ($found) break;
         }
+
         if (!$found) return null;
         $blog = $record->blog();
         $this->_blog_id_cache[$blog->id] =& $blog;
@@ -701,13 +703,18 @@ abstract class MTDatabase {
     }
 
     function fetch_entry($eid) {
-        $args['class'] = 'entry';
-        $args['entry_id'] = $eid;
-        $entries = $this->fetch_entries($args);
-        if (empty($entries))
+        if ( isset( $this->_entry_id_cache[$eid] ) && !empty( $this->_entry_id_cache[$eid] ) ) {
+            return $this->_entry_id_cache[$eid];
+        }
+        require_once("class.mt_entry.php");
+        $entry = New Entry;
+        $entry->Load( $eid );
+        if ( !empty( $entry ) ) {
+            $this->_entry_id_cache[$eid] = $entry;
+            return $entry;
+        } else {
             return null;
-        else
-            return $entries[0];
+        }
     }
 
     public function fetch_entries($args, &$total_count = NULL) {
@@ -717,8 +724,10 @@ abstract class MTDatabase {
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and entry_blog_id ' . $sql;
             $mt = MT::get_instance();
-            $blog = $this->fetch_blog($mt->blog_id());
-            $blog_id = $blog->blog_id;
+            $ctx = $mt->context();
+            $blog = $ctx->stash('blog');
+            if ( !empty( $blog ) )
+                $blog_id = $blog->blog_id;
         } elseif (isset($args['blog_id'])) {
             $blog_id = intval($args['blog_id']);
             $blog_filter = 'and entry_blog_id = ' . $blog_id;
@@ -1356,6 +1365,21 @@ abstract class MTDatabase {
                         $limit--;
                     }
                     $entries = $entries_sorted;
+                } elseif ($sort_field == 'entry_authored_on') {
+                    $sort_fn = "
+                        \$ret = strcmp(\$a->entry_authored_on, \$b->entry_authored_on); 
+                        if (\$ret==0) { 
+                            \$ret = \$a->entry_id - \$b->entry_id; 
+                        } 
+                        return \$ret;";
+                    $sorter = create_function(
+                        $order == 'asc' ? '$a,$b' : '$b,$a',
+                        $sort_fn);
+                    usort($entries, $sorter);
+
+                    if (isset($post_sort_offset)) {
+                        $entries = array_slice($entries, $post_sort_offset, $post_sort_limit);
+                    }
                 } else {
                     if (($sort_field == 'entry_status') || ($sort_field == 'entry_author_id') || ($sort_field == 'entry_id')
                           || ($sort_field == 'entry_comment_count') || ($sort_field == 'entry_ping_count')) {
@@ -1824,13 +1848,19 @@ abstract class MTDatabase {
         return $categories;
     }
 
-    public function fetch_page($entry_id) {
-        if (isset($this->_entry_id_cache['entry_id'])) {
-            return $this->_entry_id_cache[$entry_id];
+    public function fetch_page($eid) {
+        if ( isset( $this->_entry_id_cache[$eid] ) && !empty( $this->_entry_id_cache[$eid] ) ) {
+            return $this->_entry_id_cache[$eid];
         }
-        list($entry) = $this->fetch_pages(array('entry_id' => $entry_id));
-        $this->_entry_id_cache[$entry_id] = $entry;
-        return $entry;
+        require_once("class.mt_page.php");
+        $page = New Page;
+        $page->Load( $eid );
+        if ( !empty( $page ) ) {
+            $this->_entry_id_cache[$eid] = $page;
+            return $page;
+        } else {
+            return null;
+        }
     }
 
     public function fetch_author($author_id) {

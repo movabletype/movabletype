@@ -610,7 +610,7 @@ sub cfg_system_users {
         = $app->config->is_readonly('NewUserAutoProvisioning');
     $param{personal_weblog} = $app->config->NewUserAutoProvisioning ? 1 : 0;
     if ( my $id = $param{new_user_theme_id} = $app->config('NewUserBlogTheme')
-        || 'classic_blog' )
+        || 'rainier' )
     {
         require MT::Theme;
         my $theme = MT::Theme->load($id);

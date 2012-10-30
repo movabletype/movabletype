@@ -2650,20 +2650,23 @@ sub init_core_callbacks {
                     push @{ $args->{joins} },
                         MT->model('permission')->join_on(
                         undef,
-                        [   {   blog_id   => $opts->{blog_id},
-                                author_id => { not => 0 },
-                            },
-                            'and',
-                            { author_id => \'= author_id', },
-                        ],
-                        { unique => 1, },
+                        {   blog_id   => $opts->{blog_id},
+                            author_id => { not => 0 },
+                        },
+                        {   unique    => 1,
+                            condition => { author_id => \'= author_id', },
+                            type      => 'inner'
+                        },
                         );
                     push @{ $args->{joins} },
                         MT->model('association')->join_on(
                         undef,
-                        [   { blog_id => $opts->{blog_id}, },
-                            '-or',
-                            { blog_id => \' is null', },
+                        [
+                            [
+                                { blog_id => $opts->{blog_id}, },
+                                '-or',
+                                { blog_id => \' is null', },
+                            ],
                         ],
                         {   type      => 'left',
                             condition => { author_id => \'= author_id', },
@@ -3980,11 +3983,11 @@ sub load_default_entry_prefs {
 
     if ( $perm && $perm->entry_prefs ) {
         $prefs = $perm->entry_prefs;
-        if ($prefs !~ m/\b(?:default|basic|custom|advanced)\b/i) {
-            if ($prefs !~ m/\btitle\b/) {
-                $prefs = 'title,'.$prefs;
+        if ( $prefs !~ m/\b(?:default|basic|custom|advanced)\b/i ) {
+            if ( $prefs !~ m/\btitle\b/ ) {
+                $prefs = 'title,' . $prefs;
             }
-            if ($prefs !~ m/\btext\b/) {
+            if ( $prefs !~ m/\btext\b/ ) {
                 $prefs =~ s/\btitle\b/title,text/;
             }
         }
@@ -4032,11 +4035,11 @@ sub load_default_page_prefs {
 
     if ( $perm && $perm->page_prefs ) {
         $prefs = $perm->page_prefs;
-        if ($prefs !~ m/\b(?:default|basic|custom|advanced)\b/i) {
-            if ($prefs !~ m/\btitle\b/) {
-                $prefs = 'title,'.$prefs;
+        if ( $prefs !~ m/\b(?:default|basic|custom|advanced)\b/i ) {
+            if ( $prefs !~ m/\btitle\b/ ) {
+                $prefs = 'title,' . $prefs;
             }
-            if ($prefs !~ m/\btext\b/) {
+            if ( $prefs !~ m/\btext\b/ ) {
                 $prefs =~ s/\btitle\b/title,text/;
             }
         }
@@ -4096,20 +4099,21 @@ sub _parse_entry_prefs {
     my ( $prefix, $prefs, $param, $fields ) = @_;
     my @p = split /,/, $prefs;
     for my $p (@p) {
-        my ($name, $ext) = $p =~ m/^(.+?):(.+)$/;
-        $p = $name if (defined $ext);
+        my ( $name, $ext ) = $p =~ m/^(.+?):(.+)$/;
+        $p = $name if ( defined $ext );
 
-        if ( $ext and ( $ext =~ m/^(\d+)$/ )  ) {
+        if ( $ext and ( $ext =~ m/^(\d+)$/ ) ) {
             $param->{ 'disp_prefs_height_' . $p } = $ext;
         }
         if ( grep { lc($p) eq $_ } qw{advanced default basic} ) {
             $p = 'Default' if lc($p) eq 'basic';
             $param->{ $prefix . 'disp_prefs_' . $p } = 1;
-            my @fields = qw( title body category tags feedback publishing assets );
+            my @fields
+                = qw( title body category tags feedback publishing assets );
             if ( lc($p) eq 'advanced' ) {
                 push @fields, qw(excerpt feedback keywords);
             }
-            foreach my $def ( @fields ) {
+            foreach my $def (@fields) {
                 $param->{ $prefix . 'disp_prefs_show_' . $def } = 1;
                 push @$fields, { name => $def };
             }
@@ -4479,7 +4483,7 @@ sub _entry_prefs_from_params {
     if ( lc $disp eq 'custom' ) {
         @fields = split /,/, $q->param( $prefix . 'custom_prefs' );
     }
-    elsif ( $disp ) {
+    elsif ($disp) {
         push @fields, $disp;
     }
     else {
@@ -4487,9 +4491,9 @@ sub _entry_prefs_from_params {
     }
 
     if ( my $body_height = $q->param('text_height') ) {
-        push @fields, 'body:'.$body_height;
+        push @fields, 'body:' . $body_height;
     }
-    return join(',', @fields) . '|' . $q->param('bar_position');
+    return join( ',', @fields ) . '|' . $q->param('bar_position');
 }
 
 # rebuild_set is a hash whose keys are entry IDs

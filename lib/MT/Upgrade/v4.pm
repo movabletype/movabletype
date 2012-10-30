@@ -522,6 +522,9 @@ sub _process_masks {
                 push @perms, 'manage_themes', 'edit_templates',
                     unless grep '/^manage_themes/', @perms;
             }
+            elsif ( 256 eq $key ) {    #send_notifications
+                push @perms, 'create_post', 'send_notifications';
+            }
             elsif ( 4096 eq $key ) {                 #adminsiter_blog
                 push @perms, 'administer_blog';
             }

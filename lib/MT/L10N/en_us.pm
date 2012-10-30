@@ -189,6 +189,8 @@ the address you provided is correct and belongs to you.',
     '__WEBSITE_BLOG_NAME' => 'Website/Blog Name',
     '__SSL_CERT_UPDATE' => 'update',
     '__SSL_CERT_INSTALL' => 'install',
+    '_ABOUT_PAGE_BODY' => '<p>This is an example "about" page. (Typically, an "about" page features information on the individual or corporation.)</p><p>If the <code>@ABOUT_PAGE</code> tag is used on a web page, the “about” page will be added to the navigation list in both the header and footer.</p>',
+    '_SAMPLE_PAGE_BODY' => '<p>This is an example web page.</p><p>If the <code>@ADD_TO_SITE_NAV</code> tag is used on a web page, that page will be added to the navigation list in both the header and footer.</p>',
 );
 
 1;

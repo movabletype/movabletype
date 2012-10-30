@@ -1,0 +1,22 @@
+<article id="entry-<$mt:EntryID$>" class="entry-asset entry asset hentry" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="asset-header">
+    <h2 class="asset-name entry-title" itemprop="name"><a href="<$mt:EntryPermalink encode_html="1"$>"><$mt:EntryTitle$></a></h2>
+    <footer class="asset-meta">
+      <ul class="asset-meta-list">
+        <li class="asset-meta-list-item"><__trans phrase="Posted on [_1]" params="<time datetime="<$mt:EntryDate format_name="iso8601"$>" itemprop="datePublished"><$mt:EntryDate format="%x"$></time>"></li>
+        <li class="asset-meta-list-item"><__trans phrase="by [_1]" params="<span class="author entry-author vcard"><$mt:EntryAuthorLink show_hcard="1"$></span>"></li>
+<mt:IfArchiveTypeEnabled archive_type="Category">
+  <mt:If tag="EntryPrimaryCategory">
+        <li class="asset-meta-list-item"><__trans phrase="in [_1]" params="<mt:EntryPrimaryCategory><a itemprop="articleSection" rel="tag" href="<$mt:CategoryArchiveLink$>"><$mt:CategoryLabel$></a></mt:EntryPrimaryCategory>"></li>
+  </mt:If>
+</mt:IfArchiveTypeEnabled>
+      </ul>
+    </footer>
+  </div>
+  <div class="asset-content entry-content" itemprop="articleBody">
+    <$mt:EntryBody$>
+  </div>
+  <div class="entry-more-link">
+    <a href="<$mt:EntryPermalink encode_html="1"$>" itemprop="url"><__trans phrase="Continue reading"></a>
+  </div>
+</article>

@@ -379,10 +379,11 @@ sub init_website {
     $param{'theme_loop'}      = \@theme_loop;
     $param{'theme_index'}     = scalar @theme_loop;
     if (my $b_path = $app->config->BaseSitePath) {
+        $param{'sitepath_limited'} = $b_path;
         # making sure that we have a '/' in the end of the path
         $b_path = File::Spec->catdir($b_path, "PATH");
         $b_path =~ s/PATH$//;
-        $param{'sitepath_limited'} = $b_path;
+        $param{'sitepath_limited_trail'} = $b_path;
     }
 
     if ( $app->param('back') ) {

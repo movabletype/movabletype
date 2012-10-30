@@ -521,6 +521,18 @@ sub list_props {
             label      => 'Publish Date',
             use_future => 1,
             order      => 600,
+            sort       => 
+                sub {
+                    my $prop = shift;
+                    my ( $terms, $args ) = @_;
+                    my $dir = delete $args->{direction};
+                    $dir = ('descend' eq $dir) ? "DESC" : "ASC";
+                    $args->{sort} = [ 
+                        { column => $prop->col, desc => $dir }, 
+                        { column => "id", desc => $dir }, 
+                    ];
+                    return;
+                },
         },
         modified_on => {
             base  => '__virtual.modified_on',

@@ -1,0 +1,214 @@
+@import 'function';
+@import 'variable';
+@import 'grid';
+
+// Grid
+.span {
+    float: left;
+}
+.span1 { width: $colspan01 }
+.span2 { width: $colspan02 }
+.span3 { width: $colspan03 }
+.span4 { width: $colspan04 }
+.span5 { width: $colspan05 }
+.span6 { width: $colspan06 }
+.span7 { width: $colspan07 }
+.span8 { width: $colspan08 }
+.span9 { width: $colspan09 }
+.span10 { width: $colspan10 }
+.span11 { width: $colspan11 }
+.span12 { width: $colspan12 }
+// .span13 { width: $colspan13 }
+// .span14 { width: $colspan14 }
+// .span15 { width: $colspan15 }
+// .span16 { width: $colspan16 }
+
+
+// Layout
+#container {
+  #container-inner,
+  #header-inner,
+  #content-inner,
+  #footer-inner {
+    width: 940px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+// Pagination
+.pagination {
+  margin: $indent 0;
+
+  ul {
+    display: block;
+  }
+}
+
+
+// Breadcrumb
+.breadcrumb {
+  margin-right: $gap;
+  margin-left: $gap;
+
+  li {
+    display: inline-block;
+  }
+}
+
+
+// Header
+[role="banner"] {
+  margin: 0 auto;
+
+  #header-content {
+    margin: $indent $gap;
+  }
+
+  h1 {
+    margin: 0;
+  }
+
+  [role="navigation"] {
+    width: 100%;
+    padding: 0;
+
+    ul {
+      display: block;
+      margin: 0 $gap;
+
+      li {
+        float: left;
+        padding: 0;
+      }
+    }
+
+    a {
+      display: block;
+      padding: 0 1em 0 0;
+      text-decoration: none;
+    }
+
+    select {
+      display: none;
+    }
+  }
+}
+
+// Content
+#content {
+  margin-right: auto;
+  margin-left: auto;
+
+  [role="main"],
+  .related {
+    float: left;
+  }
+
+  [role="main"] {
+    width: 640px;
+    padding-left: 15px;
+  }
+
+  .related {
+    width: 235px;
+    padding-left: 50px;
+    margin-top: 0;
+  }
+}
+
+// Widget
+.widget {
+  margin-right: 15px;
+}
+
+// Entries List
+#posts {
+  div,
+  time {
+    float: left;
+    margin-left: $gap;
+    margin-right: $gap;
+  }
+
+  div {
+    width: 73.0%;
+  }
+
+  time {
+    width: 23.0%;
+  }
+}
+
+
+// Entry Summary
+.entry-summary {
+  figure {
+    display: inline-block;
+    float: right;
+
+    img {
+      margin: $harf-indent 0 0 $harf-indent;
+    }
+  }
+}
+
+// Footer
+[role="contentinfo"] {
+  [role="navigation"],
+  .license,
+  .poweredby {
+    margin: $harf-indent 0;
+    padding-right: $gap;
+    padding-left: $gap;
+  }
+
+  [role="navigation"],
+  .license {
+    float: left;
+  }
+
+  [role="navigation"] {
+    width: $colspan08;
+
+    li {
+      display: inline-block;;
+    }
+  }
+
+  .license {
+    width: $colspan04;
+    text-align: right;
+  }
+}
+
+// Search
+#search {
+  div {
+    display: block;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    height: auto;
+    padding: 0.5em ($indent * 1.5) 0.5em 0.5em;
+  }
+}
+
+
+// Feedback
+#comments-open-data {
+  input[type="text"] {
+    width: 75%;
+  }
+}
+
+#comments-open-footer {
+  text-align: left;
+
+  input[type="submit"],
+  input[type="button"] {
+    width: auto;
+    margin-right: $harf-indent;
+  }
+}

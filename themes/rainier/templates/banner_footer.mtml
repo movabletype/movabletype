@@ -1,0 +1,6 @@
+<mt:SetVarBlock name="copyright_text">&copy; Copyright <$mt:Date format="%Y"$>.</mt:SetVarBlock>
+<div id="footer-content">
+  <$mt:Include module="<__trans phrase="Navigation">"$>
+  <p class="license"><mt:BlogIfCCLicense><__trans phrase="This blog is licensed under a <a rel="license" href="[_1]">Creative Commons License</a>." params="<$mt:BlogCCLicenseURL$>"><mt:Else><$mt:Var name="copyright_text"$></mt:BlogIfCCLicense></p>
+  <p class="poweredby"><__trans phrase="_POWERED_BY"></p>
+</div>
