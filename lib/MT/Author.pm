@@ -384,9 +384,9 @@ sub commenter_list_props {
                     push @{ $db_args->{joins} },
                         MT->model('permission')->join_on(
                         undef,
-                        {   permissions  => \'IS NULL',       # baka editors',
-                            restrictions => \'IS NULL',       # baka editors',
-                            author_id    => \'= author_id',   # baka editors',
+                        {   permissions  => \'IS NULL',       # FOR-EDITOR',
+                            restrictions => \'IS NULL',       # FOR-EDITOR',
+                            author_id    => \'= author_id',   # FOR-EDITOR',
                             blog_id      => $blog_id,
                         }
                         );
@@ -486,7 +486,7 @@ sub member_list_props {
                 my $terms = {};
                 $terms->{blog_id} = MT->app->param('blog_id');
                 $terms->{role_id} = $args->{value} if $args->{value};
-                $terms->{author_id} = \"= author_id";    # baka editors";
+                $terms->{author_id} = \"= author_id";    # FOR-EDITOR";
                 $db_args->{joins} ||= [];
                 push @{ $db_args->{joins} },
                     MT->model('association')
