@@ -68,7 +68,7 @@ sub list_props {
                         join      => MT->model('tag')->join_on(
                             undef,
                             {   name => '@userpic',
-                                id => \'= objecttag_tag_id', # FOR-EDITOR ',
+                                id   => \'= objecttag_tag_id', # FOR-EDITOR ',
                             }
                         ),
                     }
@@ -341,7 +341,7 @@ sub list_props {
                         },
                         {   type      => 'left',
                             condition => {
-                                id => \'= asset_created_by'  # FOR-EDITOR ',
+                                id => \'= asset_created_by'    # FOR-EDITOR ',
                             },
                         },
                         );
@@ -357,7 +357,7 @@ sub list_props {
                     push @{ $base_args->{joins} },
                         MT->model('author')->join_on(
                         undef,
-                        {   id     => \'= asset_created_by', # FOR-EDITORS ',
+                        {   id     => \'= asset_created_by',  # FOR-EDITORS ',
                             status => $status,
                         },
                         );

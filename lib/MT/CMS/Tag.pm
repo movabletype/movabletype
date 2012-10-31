@@ -353,9 +353,9 @@ sub add_tags_to_assets {
             if ( not $approved_blogs{ $asset->blog_id } ) {
                 next
                     unless $app->user->can_do(
-                            'add_tags_to_assets',
-                            blog_id      => $asset->blog_id,
-                            at_least_one => 1
+                    'add_tags_to_assets',
+                    blog_id      => $asset->blog_id,
+                    at_least_one => 1
                     );
                 $approved_blogs{ $asset->blog_id } = 1;
             }
@@ -400,9 +400,9 @@ sub remove_tags_from_assets {
             if ( not $approved_blogs{ $asset->blog_id } ) {
                 next
                     unless $app->user->can_do(
-                            'remove_tags_from_assets',
-                            blog_id      => $asset->blog_id,
-                            at_least_one => 1
+                    'remove_tags_from_assets',
+                    blog_id      => $asset->blog_id,
+                    at_least_one => 1
                     );
                 $approved_blogs{ $asset->blog_id } = 1;
             }

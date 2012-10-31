@@ -373,8 +373,7 @@ sub apply {
 sub install_static_files {
     my $pkg = shift;
     my ( $src, $dst ) = @_;
-    my %allowed
-        = map { ( lc $_ ) => 1 }
+    my %allowed = map { ( lc $_ ) => 1 }
         grep { defined $_ and $_ ne '' }
         split /[\s,]+/,
         MT->config->ThemeStaticFileExtensions;

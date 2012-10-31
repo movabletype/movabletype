@@ -384,9 +384,9 @@ sub commenter_list_props {
                     push @{ $db_args->{joins} },
                         MT->model('permission')->join_on(
                         undef,
-                        {   permissions  => \'IS NULL',       # FOR-EDITOR',
-                            restrictions => \'IS NULL',       # FOR-EDITOR',
-                            author_id    => \'= author_id',   # FOR-EDITOR',
+                        {   permissions  => \'IS NULL',        # FOR-EDITOR',
+                            restrictions => \'IS NULL',        # FOR-EDITOR',
+                            author_id    => \'= author_id',    # FOR-EDITOR',
                             blog_id      => $blog_id,
                         }
                         );

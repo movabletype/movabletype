@@ -466,7 +466,7 @@ sub do_export {
             }
             else {
                 return $app->errtrans(
-                    'All themes directories are not writable.' );
+                    'All themes directories are not writable.');
             }
         }
         $output_path = File::Spec->catdir( $theme_dir, $theme_id );
