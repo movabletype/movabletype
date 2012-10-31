@@ -195,16 +195,17 @@ sub _send_mt_smtp {
     my $pass      = $mgr->SMTPPassword;
     my $localhost = hostname() || 'localhost';
     my $port
-        = $mgr->SMTPPort          ? $mgr->SMTPPort
+        = $mgr->SMTPPort ? $mgr->SMTPPort
         : $mgr->SMTPAuth eq 'ssl' ? 465
         :                           25;
     my ( $auth, $tls, $ssl );
     if ( $mgr->SMTPAuth ) {
+
         if ( 'starttls' eq $mgr->SMTPAuth ) {
             $tls = 1;
         }
         elsif ( 'ssl' eq $mgr->SMTPAuth ) {
-            $ssl = 1;
+            $ssl  = 1;
             $auth = 1;
         }
         else {
@@ -304,12 +305,12 @@ sub _send_mt_smtp {
     # Sending mail
     $smtp->mail( $hdrs->{From} );
 
-    foreach my $h ( qw( To Bcc Cc ) ) {
+    foreach my $h (qw( To Bcc Cc )) {
         if ( defined $hdrs->{$h} ) {
             my $addr = $hdrs->{$h};
-            $addr = [ $addr ] unless 'ARRAY' eq ref $addr;
-            foreach my $a ( @$addr ) {
-                $smtp->recipient( $a );
+            $addr = [$addr] unless 'ARRAY' eq ref $addr;
+            foreach my $a (@$addr) {
+                $smtp->recipient($a);
             }
         }
     }

@@ -1245,7 +1245,8 @@ sub publishPost {
         if !$author->is_superuser
             && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
     $mt->rebuild_entry( Entry => $entry, BuildDependencies => 1 )
-        or die _fault( MT->translate( "Publishing failed: [_1]", $mt->errstr ) );
+        or
+        die _fault( MT->translate( "Publishing failed: [_1]", $mt->errstr ) );
     SOAP::Data->type( boolean => 1 );
 }
 

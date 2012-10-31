@@ -309,13 +309,15 @@ sub backup {
     $printer->($header);
 
     my $files = {};
-    my $backuped_objs = _loop_through_objects( $printer, $splitter, $finisher, $progress, $size,
-        $obj_to_backup, $files, $header );
+    my $backuped_objs
+        = _loop_through_objects( $printer, $splitter, $finisher, $progress,
+        $size, $obj_to_backup, $files, $header );
 
     my $else_xml = MT->run_callbacks( 'Backup', $blog_ids, $progress );
     $printer->($else_xml) if $else_xml ne '1';
     my @else_xml;
-    MT->run_callbacks( 'backup.plugin_objects', $blog_ids, $progress, \@else_xml, $backuped_objs );
+    MT->run_callbacks( 'backup.plugin_objects', $blog_ids, $progress,
+        \@else_xml, $backuped_objs );
     $printer->($_) foreach @else_xml;
 
     $printer->('</movabletype>');
@@ -344,7 +346,7 @@ sub _loop_through_objects {
             my $ref = Filesys::DfPortable::dfportable(
                 MT->instance->config('TempDir') );
             if ( $ref->{per} == 100 ) {
-                die MT->translate( "\nCannot write file. Disk full." );
+                die MT->translate("\nCannot write file. Disk full.");
             }
         }
 
@@ -397,23 +399,29 @@ sub _loop_through_objects {
                     last;
                 }
                 $count++;
-                if ( exists $object_seen{  $class->datasource.'/'.$object->id } ) {
+                if (exists $object_seen{ $class->datasource . '/'
+                            . $object->id } )
+                {
                     next;
                 }
-                if ($class->datasource eq 'author') {
-                    # Authors may be duplicated because of how terms and args are created.
-                    $object_seen{  'author/'.$object->id } = 1;
+                if ( $class->datasource eq 'author' ) {
+
+        # Authors may be duplicated because of how terms and args are created.
+                    $object_seen{ 'author/' . $object->id } = 1;
                 }
-                elsif ($class->datasource eq 'asset') {
-                    $object_seen{ 'asset/'.$object->id } = 1;
+                elsif ( $class->datasource eq 'asset' ) {
+                    $object_seen{ 'asset/' . $object->id } = 1;
                     $files->{ $object->id } = [
                         $object->url, $object->file_path,
                         $object->file_name
                     ];
-                    if ( $object->parent and not $object_seen{ 'asset/'.$object->parent } ) {
-                        my $parent = MT->model('asset')->load( $object->parent );
+                    if ( $object->parent
+                        and not $object_seen{ 'asset/' . $object->parent } )
+                    {
+                        my $parent
+                            = MT->model('asset')->load( $object->parent );
                         next unless $parent;
-                        $object_seen{ 'asset/'.$parent->id } = 1;
+                        $object_seen{ 'asset/' . $parent->id } = 1;
                         $bytes += $printer->(
                             $parent->to_xml( undef, \@metacolumns ) . "\n" );
                         $files->{ $parent->id } = [
@@ -423,11 +431,14 @@ sub _loop_through_objects {
                         $records++;
                     }
                 }
-                elsif ($class->datasource eq 'category') {
-                    $object_seen{ 'category/'.$object->id } = 1;
-                    foreach my $parent (reverse $object->parent_categories) {
-                        next if exists $object_seen{ 'category/'.$parent->id };
-                        $object_seen{ 'category/'.$parent->id } = 1;
+                elsif ( $class->datasource eq 'category' ) {
+                    $object_seen{ 'category/' . $object->id } = 1;
+                    foreach my $parent ( reverse $object->parent_categories )
+                    {
+                        next
+                            if
+                            exists $object_seen{ 'category/' . $parent->id };
+                        $object_seen{ 'category/' . $parent->id } = 1;
                         $bytes += $printer->(
                             $parent->to_xml( undef, \@metacolumns ) . "\n" );
                         $records++;
@@ -501,7 +512,7 @@ sub restore_process_single_file {
     my $parser = MT::Util::sax_parser();
 
     require MT::BackupRestore::BackupFileScanner;
-    if (my $pass_scan = MT::BackupRestore::BackupFileScanner->new()) {
+    if ( my $pass_scan = MT::BackupRestore::BackupFileScanner->new() ) {
         my $pos = tell($fh);
         $parser->{Handler} = $pass_scan;
         eval { $parser->parse_file($fh); };
@@ -510,7 +521,7 @@ sub restore_process_single_file {
             $callback->($e);
             die $e;
         }
-        seek($fh, $pos, 0);
+        seek( $fh, $pos, 0 );
     }
 
     my %restored_blogs = map { $objects->{$_}->id => 1; }
@@ -754,13 +765,21 @@ sub cb_restore_objects {
         my $obj = $all_objects->{$key};
         if ( $obj->properties->{audit} ) {
             my $author_class = MT->model('author');
-            if ( $obj->created_by && $all_objects->{"$author_class#" . $obj->created_by} ) {
-                my $new_id = $all_objects->{"$author_class#" . $obj->created_by}->id;
-                $obj->created_by( $new_id );
+            if (   $obj->created_by
+                && $all_objects->{ "$author_class#" . $obj->created_by } )
+            {
+                my $new_id
+                    = $all_objects->{ "$author_class#" . $obj->created_by }
+                    ->id;
+                $obj->created_by($new_id);
             }
-            if ( $obj->modified_by && $all_objects->{"$author_class#" . $obj->modified_by}) {
-                my $new_id = $all_objects->{"$author_class#" . $obj->modified_by}->id;
-                $obj->modified_by( $new_id );
+            if (   $obj->modified_by
+                && $all_objects->{ "$author_class#" . $obj->modified_by } )
+            {
+                my $new_id
+                    = $all_objects->{ "$author_class#" . $obj->modified_by }
+                    ->id;
+                $obj->modified_by($new_id);
             }
             $obj->save;
         }
@@ -821,14 +840,14 @@ sub cb_restore_objects {
         }
         elsif ( $key =~ /^MT::(?:Blog|Website)#(\d+)$/ ) {
             my $blog = $all_objects->{$key};
-            if (my $cat_order = $blog->category_order) {
+            if ( my $cat_order = $blog->category_order ) {
                 my @cats = split ',', $cat_order;
-                my @new_cats = 
-                    map $_->id, 
-                    grep defined $_, 
-                    map $all_objects->{'MT::Category#'.$_},
+                my @new_cats
+                    = map $_->id,
+                    grep defined $_,
+                    map $all_objects->{ 'MT::Category#' . $_ },
                     @cats;
-                $blog->category_order(join ',', @new_cats);
+                $blog->category_order( join ',', @new_cats );
                 $blog->save;
             }
         }

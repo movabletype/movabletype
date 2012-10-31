@@ -173,7 +173,7 @@ sub edit {
                 $app->user ? $app->user->preferred_language : undef );
         }
         if ( my $id = $obj->author_id ) {
-            $author = MT::Author->load( $id );
+            $author = MT::Author->load($id);
             $param->{authored_by} = $author->name;
         }
 
@@ -537,7 +537,7 @@ sub edit {
             @ordered = sort { $order{$a} <=> $order{$b} } @ordered;
         }
     }
-    
+
     $param->{field_loop} ||= [
         map {
             {   field_name => $_,
@@ -1098,7 +1098,7 @@ sub _build_entry_preview {
         foreach my $tag_name (@tag_names) {
             my $tag = MT::Tag->new;
             $tag->name($tag_name);
-            $tag->is_private($tag_name =~ m/^@/ ? 1 : 0);
+            $tag->is_private( $tag_name =~ m/^@/ ? 1 : 0 );
             push @tags, $tag;
         }
         $entry->{__tags}        = \@tag_names;
@@ -1823,13 +1823,15 @@ sub save {
                         (   $obj->is_entry
                             ? ( OldPrevious => ($previous_old)
                                 ? $previous_old->id
-                                : undef )
+                                : undef
+                                )
                             : ()
                         ),
                         (   $obj->is_entry
                             ? ( OldNext => ($next_old)
                                 ? $next_old->id
-                                : undef )
+                                : undef
+                                )
                             : ()
                         ),
                     ) or return $app->publish_error();
@@ -1941,7 +1943,8 @@ PERMCHECK: {
         if ( $perms->can_edit_entry( $entry, $this_author ) ) {
             my $author_id = $q->param( 'author_id_' . $id );
             $entry->author_id( $author_id ? $author_id : 0 );
-            $entry->title( scalar $q->param( 'title_' . $id ) || scalar $q->param( 'no_title_' . $id ) );
+            $entry->title( scalar $q->param( 'title_' . $id )
+                    || scalar $q->param( 'no_title_' . $id ) );
         }
         else {
             return $app->permission_denied();
@@ -2188,9 +2191,9 @@ sub save_entry_prefs {
         my $current = $perms->$prefs_type;
         $prefs =~ s/\|.*$//;
         my $pos;
-        ($current, $pos) = split '\\|', $current;
+        ( $current, $pos ) = split '\\|', $current;
         my %current = map { $_ => 1 } split ',', $current;
-        my @new     = split ',', $prefs;
+        my @new = split ',', $prefs;
         $prefs = '';
         foreach my $p (@new) {
             $prefs .= ',' if $prefs;
@@ -2228,7 +2231,7 @@ sub open_batch_editor {
     my @ids = $app->param('id')
         or return "Invalid request.";
     my %dupe;
-    @ids = grep {!$dupe{$_}++} @ids;
+    @ids = grep { !$dupe{$_}++ } @ids;
 
     require MT::Entry;
     my $type = $app->param('_type') || MT::Entry->class_type;
@@ -2707,8 +2710,9 @@ sub update_entry_status {
     my @objects;
     foreach my $id (@ids) {
         my $entry = MT::Entry->load($id)
-            or return $app->errtrans(
-            "One of the entries ([_1]) did not exist", $id );
+            or
+            return $app->errtrans( "One of the entries ([_1]) did not exist",
+            $id );
 
         return $app->permission_denied()
             unless $app_author->is_superuser

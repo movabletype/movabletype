@@ -257,7 +257,7 @@ sub dialog_list_asset {
             type     => 'asset',
             code     => $hasher,
             template => 'dialog/asset_list.tmpl',
-            params => {
+            params   => {
                 (   $blog
                     ? ( blog_id      => $blog_id,
                         blog_name    => $blog->name || '',
@@ -1439,7 +1439,8 @@ sub _upload_file {
         if ( $ret[2] ) {
             return $app->error(
                 $app->translate(
-                    'The file ([_1]) that you uploaded is not allowed.', $basename
+                    'The file ([_1]) that you uploaded is not allowed.',
+                    $basename
                 )
             );
         }
@@ -1455,7 +1456,8 @@ sub _upload_file {
         unless ( $ret[2] ) {
             return $app->error(
                 $app->translate(
-                    'The file ([_1]) that you uploaded is not allowed.', $basename
+                    'The file ([_1]) that you uploaded is not allowed.',
+                    $basename
                 )
             );
         }
@@ -1538,7 +1540,7 @@ sub _upload_file {
         if !$is_image
             && exists( $upload_param{require_type} )
             && $upload_param{require_type} eq 'image';
-    my ($asset, $original);
+    my ( $asset, $original );
     if (!(  $asset = $asset_pkg->load(
                 {   class     => '*',
                     file_path => $asset_file,
@@ -1549,7 +1551,7 @@ sub _upload_file {
         )
         )
     {
-        $asset = $asset_pkg->new();
+        $asset    = $asset_pkg->new();
         $original = $asset->clone;
         $asset->file_path($asset_file);
         $asset->file_name($local_basename);

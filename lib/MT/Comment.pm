@@ -232,8 +232,10 @@ sub list_props {
                     $status_img      = '';
                     $status_class    = 'Deleted';
                     $lc_status_class = lc $status_class;
-                    my $link_title = MT->translate(
-                        'Search for other comments from this deleted commenter');
+                    my $link_title
+                        = MT->translate(
+                        'Search for other comments from this deleted commenter'
+                        );
                     my $optional_status = MT->translate('(Deleted)');
                     return qq{
                         <span class="commenter">
@@ -313,7 +315,7 @@ sub list_props {
                     </span>
                     <span class="commenter">
                     };
-                if ($app->can_do('view_commenter')) {
+                if ( $app->can_do('view_commenter') ) {
                     $out .= qq{<a href="$link" title="$link_title">$name</a>};
                 }
                 else {

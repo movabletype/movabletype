@@ -134,8 +134,9 @@ sub save {
         )
         )
     {
-        if ($values{site_path} and 
-            $values{site_path} =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)!)
+        if (    $values{site_path}
+            and $values{site_path}
+            =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)! )
         {
             return $app->errtrans("Invalid request.");
         }
@@ -149,7 +150,7 @@ sub save {
             $values{site_url} = "$subdomain/::/$path";
 
             $values{site_path} = $app->param('site_path_absolute')
-                if ! $app->config->BaseSitePath
+                if !$app->config->BaseSitePath
                     && $app->param('use_absolute')
                     && $app->param('site_path_absolute');
         }
@@ -191,21 +192,24 @@ sub save {
                     @$names;
             }
         }
-        if ($values{site_path} and $app->config->BaseSitePath) {
+        if ( $values{site_path} and $app->config->BaseSitePath ) {
             my $l_path = $app->config->BaseSitePath;
             my $s_path = $values{site_path};
+
             # making sure that we have a '/' in the end of the paths
-            $l_path = File::Spec->catdir($l_path, "PATH");
+            $l_path = File::Spec->catdir( $l_path, "PATH" );
             $l_path =~ s/PATH$//;
-            $s_path = File::Spec->catdir($s_path, "PATH");
+            $s_path = File::Spec->catdir( $s_path, "PATH" );
             $s_path =~ s/PATH$//;
 
             if ( 0 != index( $s_path, $l_path ) ) {
-                return $app->errtrans("The website root directory must be within [_1]", $l_path);
+                return $app->errtrans(
+                    "The website root directory must be within [_1]",
+                    $l_path );
             }
         }
-        if ($values{site_path} 
-            and not File::Spec->file_name_is_absolute($values{site_path}) )
+        if ( $values{site_path}
+            and not File::Spec->file_name_is_absolute( $values{site_path} ) )
         {
             return $app->errtrans("Invalid request.");
         }
@@ -409,8 +413,8 @@ sub save {
         if ($id) {
             my $cache_key = $original->get_cache_key();
             require MT::Cache::Negotiate;
-            MT::Cache::Negotiate->new()->delete( $cache_key );
-         }
+            MT::Cache::Negotiate->new()->delete($cache_key);
+        }
     }
 
     # TODO: convert this to use $app->call_return();
@@ -742,10 +746,10 @@ sub edit {
                 } values %$themes
         ];
         $param{'master_revision_switch'} = $app->config->TrackRevisions;
-        my $limit = File::Spec->catdir($cfg->BaseSitePath, 'PATH');
+        my $limit = File::Spec->catdir( $cfg->BaseSitePath, 'PATH' );
         $limit =~ s/PATH$//;
         $param{'sitepath_limited_trail'} = $limit;
-        $param{'sitepath_limited'} = $cfg->BaseSitePath;
+        $param{'sitepath_limited'}       = $cfg->BaseSitePath;
     }
 
     my $res = $app->run_callbacks( 'cms_edit.' . $type, $app, $id, $obj,
@@ -1814,10 +1818,12 @@ sub delete {
         elsif ( $type eq 'template' ) {
             my $cache_key = $obj->get_cache_key();
             require MT::Cache::Negotiate;
-            MT::Cache::Negotiate->new()->delete( $cache_key );
+            MT::Cache::Negotiate->new()->delete($cache_key);
+
             # FIXME: enumeration of types
-            if ($obj->type
-                !~ /(custom|index|archive|page|individual|category|widget|backup)/)
+            if ( $obj->type
+                !~ /(custom|index|archive|page|individual|category|widget|backup)/
+                )
             {
                 $required_items++;
                 next;

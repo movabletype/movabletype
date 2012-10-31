@@ -1109,7 +1109,7 @@ sub build_date {
                 unless $blog;
         }
     }
-    my $lang
+    my $lang 
         = $args->{language}
         || $ctx->var('local_lang_id')
         || ( $blog && $blog->language );
@@ -3971,7 +3971,7 @@ L<IncludeBlock> tag. If unassigned, the "contents" variable is used.
             return $ctx->error( $builder->errstr ) unless defined $html;
             return $html;
         };
-        return _hdlr_include( $ctx,  $args, $cond );
+        return _hdlr_include( $ctx, $args, $cond );
     }
 
 ###########################################################################
@@ -4223,7 +4223,7 @@ B<Example:> Passing Parameters to a Template Module
         my $blog = $ctx->stash('blog') || MT->model('blog')->load($blog_id);
 
         my %include_recipe;
-        my $use_ssi
+        my $use_ssi 
             = $blog
             && $blog->include_system
             && ( $arg->{ssi} || $tmpl->include_with_ssi ) ? 1 : 0;
@@ -4242,9 +4242,9 @@ B<Example:> Passing Parameters to a Template Module
                     : $tmpl->cache_path ? $tmpl->cache_path
                     :                     '';
                 %include_recipe = (
-                    name    => $tmpl_name,
-                    id      => $tmpl->id,
-                    path    => $extra_path,
+                    name => $tmpl_name,
+                    id   => $tmpl->id,
+                    path => $extra_path,
                 );
             }
         }
@@ -4252,7 +4252,7 @@ B<Example:> Passing Parameters to a Template Module
         # Try to read from cache
         my $enc               = MT->config->PublishCharset;
         my $cache_expire_type = 0;
-        my $cache_enabled
+        my $cache_enabled 
             = $blog
             && $blog->include_cache
             && (
@@ -4263,15 +4263,18 @@ B<Example:> Passing Parameters to a Template Module
             || ( ( $cache_expire_type = ( $tmpl->cache_expire_type || 0 ) )
                 != 0 )
             ) ? 1 : 0;
-        my $cache_key = 
-            $arg->{cache_key} || $arg->{key} || $tmpl->get_cache_key();
-        # Delete a cached data if $ttl_for_get seconds have passed since saving.
+        my $cache_key 
+            = $arg->{cache_key}
+            || $arg->{key}
+            || $tmpl->get_cache_key();
+
+      # Delete a cached data if $ttl_for_get seconds have passed since saving.
         my $ttl_for_get
             = exists $arg->{ttl}          ? $arg->{ttl}
             : ( $cache_expire_type == 1 ) ? $tmpl->cache_expire_interval
             : ( $cache_expire_type == 2 ) ? 0
             :                               60 * 60;    # default 60 min.
-        # Allow the cache driver to expire data after $ttl_for_set passed.
+            # Allow the cache driver to expire data after $ttl_for_set passed.
         my $ttl_for_set = $ttl_for_get;
 
         if ( $cache_expire_type == 2 ) {
@@ -4288,9 +4291,10 @@ B<Example:> Passing Parameters to a Template Module
                             = $blog->include_path( \%include_recipe );
                         my $fmgr  = $blog->file_mgr;
                         my $mtime = $fmgr->file_mod_time($include_file);
-                        if ( $mtime
+                        if ($mtime
                             && ( MT::Util::ts2epoch( undef, $latest, 1 )
-                                > $mtime ) )
+                                > $mtime )
+                            )
                         {
                             $ttl_for_get = 1;    # bound to force an update
                         }
@@ -4436,7 +4440,9 @@ B<Example:> Passing Parameters to a Template Module
             if ( $blog && $blog->id != $blog_id ) {
                 $blog = MT::Blog->load($blog_id)
                     or return $ctx->error(
-                    MT->translate( "Cannot find blog for id '[_1]", $blog_id )
+                    MT->translate(
+                        "Cannot find blog for id '[_1]", $blog_id
+                    )
                     );
             }
             my @paths = ($file);

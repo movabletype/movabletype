@@ -69,11 +69,12 @@ my $mt_app = sub {
             $app->{cgi_headers}{-location} = $app->{redirect};
         }
         else {
-            $app->{cgi_headers}{-status}
-                = ( $app->response_code || 200 )
-                . ( $app->{response_message}
+            $app->{cgi_headers}{-status} = ( $app->response_code || 200 )
+                . (
+                $app->{response_message}
                 ? ' ' . $app->{response_message}
-                : '' );
+                : ''
+                );
         }
 
         $app->{cgi_headers}{-type} = $type;
@@ -132,7 +133,7 @@ sub run_cgi_without_buffering {
         my $header = '';
         my $header_sent;
         my $writer;
-        while( 1 ) {
+        while (1) {
             while ( my @ready = $s->can_read ) {
                 for my $fh (@ready) {
                     if ( my $len = sysread( $fh, my $buf, 4096 ) > 0 ) {
@@ -143,7 +144,8 @@ sub run_cgi_without_buffering {
                             else {
                                 $header .= $buf;
                                 if ( $header =~ /\r\n\r\n/ ) {
-                                    my $res = CGI::Parse::PSGI::parse_cgi_output(
+                                    my $res
+                                        = CGI::Parse::PSGI::parse_cgi_output(
                                         \$header );
                                     my %header = @{ $res->[1] };
                                     delete $header{'Content-Length'};
@@ -168,7 +170,7 @@ sub run_cgi_without_buffering {
                 }
             }
 
-            last if waitpid($pid, 1) > 0
+            last if waitpid( $pid, 1 ) > 0;
         }
         $writer->close if $writer;
     };
@@ -273,7 +275,8 @@ sub mount_applications {
     my $static = $staticpath;
     $static .= '/' unless $static =~ m!/$!;
     my $favicon = $static . 'images/favicon.ico';
-    $urlmap->map( '/favicon.ico' => Plack::App::File->new( { file => $favicon } ));
+    $urlmap->map(
+        '/favicon.ico' => Plack::App::File->new( { file => $favicon } ) );
 
     $self->_app( $urlmap->to_app );
 }

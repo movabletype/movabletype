@@ -887,11 +887,11 @@ sub effective_remote_auth_token {
 }
 
 sub flush_has_archive_type_cache {
-    my $blog   = shift;
+    my $blog = shift;
     my ($type) = @_;
 
     my $cache_key = 'has_archive_type::blog:' . $blog->id;
-    my $cache = MT->request( $cache_key ) or return;
+    my $cache = MT->request($cache_key) or return;
     delete $cache->{$type}
         if exists $cache->{$type};
     1;
@@ -905,19 +905,20 @@ sub has_archive_type {
 
     my $cache_key = 'has_archive_type::blog:' . $blog->id;
 
-    my $r  = MT->request;
-    my $cache = $r->cache( $cache_key );
+    my $r     = MT->request;
+    my $cache = $r->cache($cache_key);
     if ( !$cache || ( $cache && !$cache->{$type} ) ) {
         require MT::PublishOption;
         require MT::TemplateMap;
-        my $count = MT::TemplateMap->count({
-            blog_id => $blog->id,
-            archive_type => $type,
-            build_type => { not => MT::PublishOption::DISABLED() },
-        });
+        my $count = MT::TemplateMap->count(
+            {   blog_id      => $blog->id,
+                archive_type => $type,
+                build_type   => { not => MT::PublishOption::DISABLED() },
+            }
+        );
         $cache->{$type} = $count;
         $r->cache( $cache_key, $cache );
-    };
+    }
     return $cache->{$type};
 }
 
@@ -1650,7 +1651,7 @@ sub use_revision {
 
 sub raw_template_set {
     my $blog = shift;
-    $blog->theme_id || $blog->SUPER::template_set  || '';
+    $blog->theme_id || $blog->SUPER::template_set || '';
 }
 
 sub template_set {

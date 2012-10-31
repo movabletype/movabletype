@@ -155,7 +155,7 @@ sub _load_from_themes_directory {
     my @dir_list   = MT->config('ThemesDirectory');
 
     require File::Spec;
-    my ($dir, $path);
+    my ( $dir, $path );
     foreach my $base_dir (@dir_list) {
         $dir = File::Spec->catdir( $base_dir, $theme_id );
         $path = File::Spec->catfile( $dir, 'theme.yaml' );
@@ -373,10 +373,10 @@ sub apply {
 sub install_static_files {
     my $pkg = shift;
     my ( $src, $dst ) = @_;
-    my %allowed = 
-        map { ( lc $_ ) => 1 }
-        grep { defined $_ and $_ ne ''}
-        split /[\s,]+/, 
+    my %allowed
+        = map { ( lc $_ ) => 1 }
+        grep { defined $_ and $_ ne '' }
+        split /[\s,]+/,
         MT->config->ThemeStaticFileExtensions;
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');

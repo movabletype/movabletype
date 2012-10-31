@@ -28,8 +28,10 @@ sub start_element {
     return unless MT::BackupRestore::NS_MOVABLETYPE() eq $ns;
     return unless $name eq 'author';
     my $pass = $attrs->{"{}password"}->{Value};
-    if ($pass =~ m/^\$6\$/) {
-        die MT->translate("Can not restore this file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.");
+    if ( $pass =~ m/^\$6\$/ ) {
+        die MT->translate(
+            "Can not restore this file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator."
+        );
     }
     1;
 }

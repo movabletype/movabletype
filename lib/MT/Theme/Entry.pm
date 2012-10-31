@@ -27,16 +27,17 @@ sub _add_entries {
         }
     }
     unless ( defined $author_id ) {
+
         # Fallback 1: created_by from this blog.
         $author_id = $blog->created_by if defined $blog->created_by;
     }
     unless ( defined $author_id ) {
+
         # Fallback 2: One of this blog's administrator
         my $search_string
             = $blog->is_blog
             ? '%\'administer_blog\'%'
-            : '%\'administer_website\'%'
-            ;
+            : '%\'administer_website\'%';
         my $perm = MT->model('permission')->load(
             {   blog_id     => $blog->id,
                 permissions => { like => $search_string },
@@ -45,11 +46,13 @@ sub _add_entries {
         $author_id = $perm->author_id if $perm;
     }
     unless ( defined $author_id ) {
+
         # Fallback 3: One of system administrator
-        my $perm = MT->model('permission')->load({
-            blog_id     => 0,
-            permissions => { like => '%administer%' },
-        });
+        my $perm = MT->model('permission')->load(
+            {   blog_id     => 0,
+                permissions => { like => '%administer%' },
+            }
+        );
         $author_id = $perm->author_id if $perm;
     }
     die "Failed to create theme default pages"
@@ -85,7 +88,7 @@ sub _add_entries {
 
         $obj->basename($basename);
         $obj->blog_id( $blog->id );
-        $obj->author_id( $author_id );
+        $obj->author_id($author_id);
         $obj->status(
             exists $entry->{status}
             ? $entry->{status}

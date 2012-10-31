@@ -541,9 +541,10 @@ sub on_upload {
         my $thumbnail_url   = $asset_thumb->url;
         my $thumb_file_size = $fmgr->file_size($thumbnail);
 
-        $app->run_callbacks( 'cms_pre_save.asset', $app, $asset_thumb, $original )
-            || return $app->errtrans( "Saving [_1] failed: [_2]", 'asset',
-            $app->errstr );
+        $app->run_callbacks( 'cms_pre_save.asset', $app, $asset_thumb,
+            $original )
+            || return $app->errtrans( "Saving [_1] failed: [_2]",
+            'asset', $app->errstr );
 
         $asset_thumb->save unless $asset_thumb->id;
 
@@ -671,9 +672,10 @@ sub on_upload {
             # Select back the real URL for callbacks
             $url = $asset_html->url;
 
-            $app->run_callbacks( 'cms_pre_save.asset', $app, $asset_html, $original )
-                || return $app->errtrans( "Saving [_1] failed: [_2]", 'asset',
-                $app->errstr );
+            $app->run_callbacks( 'cms_pre_save.asset', $app, $asset_html,
+                $original )
+                || return $app->errtrans( "Saving [_1] failed: [_2]",
+                'asset', $app->errstr );
 
             $asset_html->save unless $asset_html->id;
 

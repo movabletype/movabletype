@@ -665,7 +665,7 @@ sub first_blog_id {
         if (   $q->param('IncludeBlogs') eq ''
             || $q->param('IncludeBlogs') eq 'all' )
         {
-            my @blogs = $app->model('blog')->load({}, {limit => 1});
+            my @blogs = $app->model('blog')->load( {}, { limit => 1 } );
             $blog_id = @blogs ? $blogs[0]->id : undef;
         }
 
@@ -810,9 +810,11 @@ sub load_search_tmpl {
             $tmpl = $app->model('template')->lookup($tmpl_id);
             return $app->errtrans('No such template')
                 unless ($tmpl);
-            return $app->errtrans('template_id cannot refer to a global template')
+            return $app->errtrans(
+                'template_id cannot refer to a global template')
                 if ( $tmpl->blog_id == 0 );
-            return $app->errtrans('Output file cannot be of the type asp or php')
+            return $app->errtrans(
+                'Output file cannot be of the type asp or php')
                 if (
                    $tmpl->outfile
                 && !$app->config->SearchAlwaysAllowTemplateID
@@ -925,8 +927,8 @@ sub renderfeed {
     my $app  = shift;
     my $tmpl = $app->render(@_)
         or return;
-    my $out  = $app->build_page($tmpl);
-    my $ctx  = $tmpl->context;
+    my $out = $app->build_page($tmpl);
+    my $ctx = $tmpl->context;
     if ( my $content_type = $ctx->stash('content_type') ) {
         $app->{response_content_type} = $content_type;
     }

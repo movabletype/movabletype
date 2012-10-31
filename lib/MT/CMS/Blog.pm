@@ -1966,7 +1966,7 @@ sub save_filter {
             )
             unless 0 < sprintf( '%d', $app->param('max_revisions_template') );
         return $eh->error(
-            MT->translate( "Please choose a preferred archive type." ) )
+            MT->translate("Please choose a preferred archive type.") )
             unless !$app->blog->is_blog
                 || $app->param('preferred_archive_type');
     }
@@ -2747,8 +2747,11 @@ sub prepare_dynamic_publishing {
                 = { 'rewrite' => { 'rules' => { 'rule' => $rule, }, }, };
         }
 
-        my $out = $parser->XMLout( $web_config, RootName => undef,
-            keyattr => [] );
+        my $out = $parser->XMLout(
+            $web_config,
+            RootName => undef,
+            keyattr  => []
+        );
         $out
             = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
             . "<configuration>\n"
@@ -3047,13 +3050,13 @@ sub clone {
             }
         }
     }
-    if (my $limit = $app->config->BaseSitePath) {
+    if ( my $limit = $app->config->BaseSitePath ) {
         $param->{'sitepath_limited'} = $limit;
-        $limit = File::Spec->catdir($limit, "PATH");
+        $limit = File::Spec->catdir( $limit, "PATH" );
         $limit =~ s/PATH$//;
         $param->{'sitepath_limited_trail'} = $limit;
-        $param->{'use_absolute'}         = 0;
-        $param->{'use_absolute_archive'} = 0;
+        $param->{'use_absolute'}           = 0;
+        $param->{'use_absolute_archive'}   = 0;
     }
     $param = _has_valid_form( $app, $blog, $param );
 

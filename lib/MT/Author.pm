@@ -755,12 +755,20 @@ sub set_password {
     my $crypt_sha;
 
     if ( eval { require Digest::SHA } ) {
+
         # Can use SHA512
-        $crypt_sha = '$6$' . $salt . '$' . Digest::SHA::sha512_base64( $salt . $pass );
+        $crypt_sha
+            = '$6$' 
+            . $salt . '$'
+            . Digest::SHA::sha512_base64( $salt . $pass );
     }
     else {
+
         # Use SHA-1 algorism
-        $crypt_sha = '{SHA}' . $salt . '$' . MT::Util::perl_sha1_digest_hex( $salt . $pass );
+        $crypt_sha
+            = '{SHA}' 
+            . $salt . '$'
+            . MT::Util::perl_sha1_digest_hex( $salt . $pass );
     }
 
     $auth->column( 'password', $crypt_sha );
@@ -901,7 +909,7 @@ sub save {
     my $privs;
     my $privs_found;
     if ( exists $auth->permissions(0)->{changed_cols}->{permissions} ) {
-        $privs = $auth->permissions(0)->permissions;
+        $privs       = $auth->permissions(0)->permissions;
         $privs_found = 1;
     }
 
@@ -909,7 +917,7 @@ sub save {
     delete MT::Request->instance->{__stash}->{'__perm_author_'}
         unless $auth->id;
     $auth->SUPER::save(@_) or return $auth->error( $auth->errstr );
-    if ( $privs_found ) {
+    if ($privs_found) {
         my $perm = $auth->permissions(0);
         $perm->permissions($privs);
         $perm->save

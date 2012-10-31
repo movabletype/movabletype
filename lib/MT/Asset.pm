@@ -68,7 +68,7 @@ sub list_props {
                         join      => MT->model('tag')->join_on(
                             undef,
                             {   name => '@userpic',
-                                id   => \'= objecttag_tag_id', # baka editors ',
+                                id => \'= objecttag_tag_id', # baka editors ',
                             }
                         ),
                     }
@@ -265,7 +265,7 @@ sub list_props {
                     MT->model('asset')->meta_pkg->join_on(
                     undef,
                     {   type     => $prop->meta_type,
-                        asset_id => \"= asset_id", # baka editor ",
+                        asset_id => \"= asset_id",      # baka editor ",
                         %$super_terms,
                     },
                     );
@@ -304,15 +304,16 @@ sub list_props {
                         undef,
                         [   [   { tag_id => { not => $tag->id }, },
                                 '-or',
-                                { tag_id => \'IS NULL', # baka editors ',
-                                }, 
+                                {   tag_id => \'IS NULL',    # baka editors ',
+                                },
                             ],
                             '-and',
                             [   {   object_datasource => MT::Asset->datasource
                                 },
                                 '-or',
-                                { object_datasource => \'IS NULL' # baka editors ',
-                                }, 
+                                {   object_datasource => \
+                                        'IS NULL'            # baka editors ',
+                                },
                             ],
                         ],
                         {   unique    => 1,
@@ -336,10 +337,11 @@ sub list_props {
                     push @{ $base_args->{joins} },
                         MT->model('author')->join_on(
                         undef,
-                        { id => \'is null', # baka editors ',
+                        {   id => \'is null',    # baka editors ',
                         },
                         {   type      => 'left',
-                            condition => { id => \'= asset_created_by' # baka editors ',
+                            condition => {
+                                id => \'= asset_created_by'  # baka editors ',
                             },
                         },
                         );
@@ -747,7 +749,7 @@ sub display_name {
 }
 
 sub as_html {
-    my $asset   = shift;
+    my $asset = shift;
     my ($param) = @_;
     require MT::Util;
     my $text = sprintf '<a href="%s">%s</a>',
@@ -861,7 +863,7 @@ sub tagged_count {
     my ( $tag_id, $terms ) = @_;
     $terms ||= {};
     $terms->{class} = '*';
-    return $obj->SUPER::tagged_count($tag_id, $terms);
+    return $obj->SUPER::tagged_count( $tag_id, $terms );
 }
 
 1;

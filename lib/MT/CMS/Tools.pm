@@ -92,7 +92,7 @@ sub start_recover {
     my $cfg     = $app->config;
     $param ||= {};
     $param->{'email'} = $app->param('email');
-    $param->{'return_to'}
+    $param->{'return_to'} 
         = $app->param('return_to')
         || $cfg->ReturnToURL
         || '';
@@ -1332,7 +1332,7 @@ sub backup_download {
         $newfilename = $app->param('name');
         return
             if $newfilename
-            !~ /Movable_Type-\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-Backup(?:-\d+)?\.\w+/;
+                !~ /Movable_Type-\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-Backup(?:-\d+)?\.\w+/;
         $filename = $newfilename;
     }
 
@@ -1608,7 +1608,7 @@ sub restore_premature_cancel {
             = $app->translate(
             'Some objects were not restored because their parent objects were not restored.'
             );
-        $param->{error}
+        $param->{error} 
             = $message . '  '
             . $app->translate(
             "Detailed information is in the <a href='javascript:void(0)' onclick='closeDialog(\"[_1]\")'>activity log</a>.",
@@ -1849,7 +1849,7 @@ sub adjust_sitepath {
     if (%error_assets) {
         my $data;
         while ( my ( $key, $value ) = each %error_assets ) {
-            $data .= $app->translate( 'MT::Asset#[_1]: ', $key )
+            $data .= $app->translate( 'MT::Asset#[_1]: ', $key ) 
                 . $value . "\n";
         }
         my $message = $app->translate(
@@ -2182,8 +2182,9 @@ sub dialog_adjust_sitepath {
                 $blog->column('site_path') );
             $params->{archive_path_absolute} = 1
                 if exists( $params->{old_archive_path} )
-                && $blog_class->is_site_path_absolute(
-                $blog->column('archive_path') );
+                    && $blog_class->is_site_path_absolute(
+                        $blog->column('archive_path')
+                    );
             $params->{old_site_url} = $blog->site_url;
             my @raw_site_url = $blog->raw_site_url;
             if ( 2 == @raw_site_url ) {
@@ -2203,9 +2204,9 @@ sub dialog_adjust_sitepath {
             }
             $param->{enabled_archives} = 1
                 if $params->{old_archive_url}
-                || $params->{old_archive_url_subdomain}
-                || $params->{old_archive_url_path}
-                || $params->{old_archive_path};
+                    || $params->{old_archive_url_subdomain}
+                    || $params->{old_archive_url_path}
+                    || $params->{old_archive_path};
             push @blogs_loop, $params;
         }
         else {
@@ -2339,8 +2340,7 @@ sub reset_password {
 
     $app->log(
         {   message => $app->translate(
-                "Invalid user name '[_1]' in password recovery attempt",
-                $name
+                "Invalid user name '[_1]' in password recovery attempt", $name
             ),
             level    => MT::Log::SECURITY(),
             class    => 'system',
@@ -2532,7 +2532,7 @@ sub restore_directory {
     if ( scalar( keys %error_assets ) ) {
         my $data;
         while ( my ( $key, $value ) = each %error_assets ) {
-            $data .= $app->translate( 'MT::Asset#[_1]: ', $key )
+            $data .= $app->translate( 'MT::Asset#[_1]: ', $key ) 
                 . $value . "\n";
         }
         my $message = $app->translate('Some of files could not be restored.');

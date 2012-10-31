@@ -17,8 +17,8 @@ __PACKAGE__->install_properties(
             error_time => 'integer not null',      # integer unsigned not null
         },
         primary_key => [ 'jobid', 'funcid' ],
-        datasource => 'ts_error',
-        indexes    => {
+        datasource  => 'ts_error',
+        indexes     => {
             jobid       => 1,
             error_time  => 1,
             funcid_time => { columns => [ 'funcid', 'error_time' ], },

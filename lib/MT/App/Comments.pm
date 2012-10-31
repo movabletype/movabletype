@@ -1982,8 +1982,8 @@ sub save_commenter_profile {
     if ( 'MT' eq $cmntr->auth_type ) {
         my $nickname = $param{nickname};
         unless ( $nickname && $param{email} ) {
-            $param{error} = $app->translate(
-                'All required fields must be populated.');
+            $param{error}
+                = $app->translate('All required fields must be populated.');
             return $app->build_page( 'profile.tmpl', \%param );
         }
         if ( $nickname =~ m/([<>])/ ) {

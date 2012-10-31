@@ -39,7 +39,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '5.2.1',                '__PRODUCT_VERSION_ID__',
+        '5.2.1',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -2175,7 +2175,7 @@ sub template_paths {
         }
     }
     my @alt_paths = $mt->config('AltTemplatePath');
-    foreach my $alt_path (@alt_paths ) {
+    foreach my $alt_path (@alt_paths) {
         if ( -d $alt_path ) {    # AltTemplatePath is absolute
             push @paths, File::Spec->catdir( $alt_path, $mt->{template_dir} )
                 if $mt->{template_dir};
@@ -2243,7 +2243,8 @@ sub load_global_tmpl {
 
 sub load_tmpl {
     my $mt = shift;
-    if ( exists( $mt->{component} ) && ( lc($mt->{component}) ne 'core' ) ) {
+    if ( exists( $mt->{component} ) && ( lc( $mt->{component} ) ne 'core' ) )
+    {
         if ( my $c = $mt->component( $mt->{component} ) ) {
             return $c->load_tmpl(@_);
         }
@@ -2467,9 +2468,9 @@ sub build_page {
                 next if $label eq $c->{plugin_sig};
 
                 my $pack_link
-                    = $c->pack_link ? $c->pack_link
-                    : $c->author_link       ? $c->author_link
-                    :                         '';
+                    = $c->pack_link   ? $c->pack_link
+                    : $c->author_link ? $c->author_link
+                    :                   '';
 
                 push @packs_installed,
                     {
@@ -2755,8 +2756,10 @@ sub _openid_commenter_condition {
     my ( $blog, $reason ) = @_;
     eval { require Digest::SHA1; };
     return 1 unless $@;
-    $$reason = MT->translate(
-        'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.');
+    $$reason
+        = MT->translate(
+        'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.'
+        );
     return 0;
 }
 
@@ -2805,10 +2808,9 @@ sub core_commenter_authenticators {
                 eval { require Crypt::SSLeay; };
                 push @missing, 'Crypt::SSLeay' if $@;
                 return 1 unless @missing;
-                $$reason = MT->translate(
-                    'missing required Perl modules: [_1]',
-                    join(',', @missing)
-                    );
+                $$reason
+                    = MT->translate( 'missing required Perl modules: [_1]',
+                    join( ',', @missing ) );
                 return 0;
             },
             login_form_params => \&_commenter_auth_params,

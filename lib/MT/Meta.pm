@@ -130,7 +130,7 @@ sub install {
         $params->{blob_zip_cfg}{ $_->{name} } = $_->{zip} if $_->{zip};
     }
 
-    if (MT->config->DisableMetaObjectCache) {
+    if ( MT->config->DisableMetaObjectCache ) {
         $params->{cacheable} = 0;
     }
 

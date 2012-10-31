@@ -38,7 +38,10 @@ sub init {
     my $type = $image->{type} = _translate_filetype( lc $param{Type} );
     if ( !$type ) {
         return $image->error(
-            MT->translate( "Unsupported image file type: [_1]", $param{Type} ) );
+            MT->translate(
+                "Unsupported image file type: [_1]", $param{Type}
+            )
+        );
     }
     my ( $out, $err );
     my $pbm = $image->_find_pbm or return;

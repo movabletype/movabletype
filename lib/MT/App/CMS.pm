@@ -2661,9 +2661,7 @@ sub init_core_callbacks {
                     push @{ $args->{joins} },
                         MT->model('association')->join_on(
                         undef,
-                        [
-                            [
-                                { blog_id => $opts->{blog_id}, },
+                        [   [   { blog_id => $opts->{blog_id}, },
                                 '-or',
                                 { blog_id => \' is null', },
                             ],
