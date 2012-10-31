@@ -657,8 +657,7 @@ sub first_blog_id {
         && exists( $app->{searchparam}{IncludeBlogs} )
         && @{ $app->{searchparam}{IncludeBlogs} } )
     {
-        my @blog_ids = $app->{searchparam}{IncludeBlogs};
-        $blog_id = $blog_ids[0] if @blog_ids;
+        $blog_id = $app->{searchparam}{IncludeBlogs}[0];
     }
     else {
 

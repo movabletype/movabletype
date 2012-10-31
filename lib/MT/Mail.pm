@@ -12,7 +12,6 @@ use MT;
 use base qw( MT::ErrorHandler );
 use Encode;
 use Sys::Hostname;
-
 our $MAX_LINE_OCTET = 998;
 
 my %SMTPModules = (

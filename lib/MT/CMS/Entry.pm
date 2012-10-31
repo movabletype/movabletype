@@ -172,6 +172,10 @@ sub edit {
                 $ts, $blog,
                 $app->user ? $app->user->preferred_language : undef );
         }
+        if ( my $id = $obj->author_id ) {
+            $author = MT::Author->load( $id );
+            $param->{authored_by} = $author->name;
+        }
 
         $app->load_list_actions( $type, $param );
     }

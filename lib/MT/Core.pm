@@ -1579,20 +1579,21 @@ BEGIN {
                     comments => 'MT::AtomServer::Comments',
                 },
             },
-            'SchemaVersion'         => undef,
-            'MTVersion'             => undef,
-            'MTReleaseNumber'       => undef,
-            'RequiredCompatibility' => { default => 0 },
-            'NotifyUpgrade'         => { default => 1 },
-            'Database'              => undef,
-            'DBHost'                => undef,
-            'DBSocket'              => undef,
-            'DBPort'                => undef,
-            'DBUser'                => undef,
-            'DBPassword'            => undef,
-            'PIDFilePath'           => undef,
-            'DefaultLanguage'       => { default => 'en_US', },
-            'LocalPreviews'         => { default => 0 },
+            'SchemaVersion'          => undef,
+            'MTVersion'              => undef,
+            'MTReleaseNumber'        => undef,
+            'RequiredCompatibility'  => { default => 0 },
+            'NotifyUpgrade'          => { default => 1 },
+            'Database'               => undef,
+            'DBHost'                 => undef,
+            'DBSocket'               => undef,
+            'DBPort'                 => undef,
+            'DBUser'                 => undef,
+            'DBPassword'             => undef,
+            'PIDFilePath'            => undef,
+            'DefaultLanguage'        => { default => 'en_US', },
+            'LocalPreviews'          => { default => 0 },
+            'EnableAutoRewriteOnIIS' => { default => 1 },
             'DefaultCommenterAuth' =>
                 { default => 'MovableType,LiveJournal' },
             'TemplatePath' => {
@@ -1649,20 +1650,22 @@ BEGIN {
             'StaticWebPath'        => { default => '', },
             'StaticFilePath'       => undef,
             'CGIPath'              => { default => '/cgi-bin/', },
-            'AdminCGIPath'         => { default => sub { $_[0]->CGIPath } },
-            'BaseSitePath'         => undef,
-            'HideBaseSitePath'     => { default => 0, },
+            'AdminCGIPath'         => {
+                default => sub { $_[0]->CGIPath }
+            },
+            'BaseSitePath'                  => undef,
+            'HideBaseSitePath'              => { default => 0, },
             'HidePaformanceLoggingSettings' => { default => 0, },
-            'CookieDomain'         => undef,
-            'CookiePath'           => undef,
-            'MailEncoding'         => { default => 'ISO-8859-1', },
-            'MailTransfer'         => { default => 'sendmail' },
-            'SMTPServer'           => { default => 'localhost', },
-            'SMTPAuth'             => { default => 0, },
-            'SMTPUser'             => undef,
-            'SMTPPassword'         => undef,
-            'SMTPPort'             => undef,
-            'DebugEmailAddress'    => undef,
+            'CookieDomain'                  => undef,
+            'CookiePath'                    => undef,
+            'MailEncoding'                  => { default => 'ISO-8859-1', },
+            'MailTransfer'                  => { default => 'sendmail' },
+            'SMTPServer'                    => { default => 'localhost', },
+            'SMTPAuth'                      => { default => 0, },
+            'SMTPUser'                      => undef,
+            'SMTPPassword'                  => undef,
+            'SMTPPort'                      => undef,
+            'DebugEmailAddress'             => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>
                 { default => 'http://www.movabletype.org/update/', },
@@ -1745,11 +1748,11 @@ BEGIN {
             'SearchSortBy'             => undef,
             'SearchSortOrder'          => { default => 'ascend', },
             'SearchNoOverride'         => { default => 'SearchMaxResults', },
-            'SearchResultDisplay'      => { alias   => 'ResultDisplay', },
-            'SearchExcerptWords'       => { alias   => 'ExcerptWords', },
-            'SearchDefaultTemplate'    => { alias   => 'DefaultTemplate', },
-            'SearchMaxResults'         => { alias   => 'MaxResults', },
-            'SearchAltTemplate'        => { alias   => 'AltTemplate' },
+            'SearchResultDisplay'      => { alias => 'ResultDisplay', },
+            'SearchExcerptWords'       => { alias => 'ExcerptWords', },
+            'SearchDefaultTemplate'    => { alias => 'DefaultTemplate', },
+            'SearchMaxResults'         => { alias => 'MaxResults', },
+            'SearchAltTemplate'        => { alias => 'AltTemplate' },
             'SearchPrivateTags'        => { default => 0 },
             'DeepCopyRecursiveLimit'   => { default => 2 },
             'BulkLoadMetaObjectsLimit' => { default => 100 },
@@ -1780,10 +1783,8 @@ BEGIN {
                 default =>
                     'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
             },
-            'FeedbackURL' => {
-                default =>
-                    'http://www.movabletype.org/feedback.html',
-            },
+            'FeedbackURL' =>
+                { default => 'http://www.movabletype.org/feedback.html', },
 
 # 'MTNewsURL' => {
 #     default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
@@ -1843,13 +1844,13 @@ BEGIN {
             },
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
-            'MaxTagAutoCompletionItems' => { default => 1000, },    ## DEPRECATED
+            'MaxTagAutoCompletionItems' => { default => 1000, }, ## DEPRECATED
             'NewUserAutoProvisioning' =>
                 { handler => \&NewUserAutoProvisioning, },
             'NewUserBlogTheme'        => { default => 'rainier' },
             'NewUserDefaultWebsiteId' => undef,
             'DefaultSiteURL'          => undef,    ## DEPRECATED
-            'DefaultSiteRoot'         => undef,    ## DEPRECATED
+            'DefaultSiteRoot'         => undef,                  ## DEPRECATED
             'DefaultUserLanguage'     => undef,
             'DefaultUserTagDelimiter' => {
                 handler => \&DefaultUserTagDelimiter,
@@ -1904,9 +1905,9 @@ BEGIN {
             'DefaultTemplateSet'   => { default => 'mt_blog' },
             'DefaultWebsiteTheme'  => { default => 'classic_website' },
             'DefaultBlogTheme'     => { default => 'rainier' },
-            'ThemeStaticFileExtensions' => 
-                { default => 'html jpg jpeg gif png js css ico flv swf otf ttf' },
-
+            'ThemeStaticFileExtensions' => {
+                default => 'html jpg jpeg gif png js css ico flv swf otf ttf'
+            },
             'AssetFileTypes'            => { type    => 'HASH' },
             'AssetFileExtensions'       => { default => undef },
             'DeniedAssetFileExtensions' => {
@@ -1938,7 +1939,7 @@ BEGIN {
             'LockoutNotifyTo'                => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
-        applications => {
+        applications      => {
             'xmlrpc' => {
                 handler => 'MT::XMLRPCServer',
                 script  => sub { MT->config->XMLRPCScript },
@@ -1966,7 +1967,7 @@ BEGIN {
             },
             'wizard' => {
                 handler => 'MT::App::Wizard',
-                script  => sub { 'mt-wizard.cgi' },
+                script  => sub {'mt-wizard.cgi'},
                 type    => 'run_once',
             },
             'check' => {
@@ -2264,7 +2265,7 @@ sub load_core_tasks {
         },
         'CleanFileInfoRecords' => {
             label     => 'Purge Unused FileInfo Records',
-            frequency => 60 * 60 * 24,   # once a day
+            frequency => 60 * 60 * 24,                      # once a day
             code      => sub {
                 my $app = MT->instance;
                 $app->model('fileinfo')->cleanup;
@@ -2291,18 +2292,27 @@ sub remove_temporary_files {
     return '';
 }
 
+sub purge_user_session_records {
+    my $iter = MT::Session->load_iter(
+        {   kind  => 'US',
+            start => [ undef, time - MT->config->UserSessionTimeout ],
+        },
+        { range => { start => 1 } }
+    );
+
+    my @ids = ();
+    while ( my $s = $iter->() ) {
+        push @ids, $s->id unless $s->get('remember');
+    }
+
+    MT::Session->remove( { id => \@ids } );
+}
+
 sub purge_session_records {
     require MT::Session;
 
     # remove expired user sessions
-    my $expired = MT->config->UserSessionTimeout;
-    MT::Session->remove(
-        {   kind  => 'US',
-            start => [ undef, time - $expired ],
-            data  => { not_like => '%remember-%' }
-        },
-        { range => { start => 1 } }
-    );
+    purge_user_session_records();
 
     # remove stale search cache
     MT::Session->remove( { kind => 'CS', start => [ undef, time - 60 * 60 ] },
@@ -2962,8 +2972,9 @@ sub PerformanceLoggingPath {
     return $cfg->set_internal( 'PerformanceLoggingPath', @_ ) if @_;
 
     unless ( $path = $cfg->get_internal('PerformanceLoggingPath') ) {
-        $path = $default = File::Spec->catdir( 
-            MT->instance->support_directory_path, 'logs' );
+        $path = $default
+            = File::Spec->catdir( MT->instance->support_directory_path,
+            'logs' );
     }
 
     # If the $path is not a writeable directory, we need to
@@ -3033,7 +3044,7 @@ sub PerformanceLoggingPath {
 
 sub ProcessMemoryCommand {
     my $cfg = shift;
-    my $os = $^O;
+    my $os  = $^O;
     my $cmd;
     if ( $os eq 'darwin' ) {
         $cmd = 'ps $$ -o rss=';
@@ -3051,8 +3062,8 @@ sub ProcessMemoryCommand {
 }
 
 sub SecretToken {
-    my $cfg = shift;
-    my @alpha = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
+    my $cfg    = shift;
+    my @alpha  = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
     my $secret = join '', map $alpha[ rand @alpha ], 1 .. 40;
     $secret = $cfg->set_internal( 'SecretToken', $secret, 1 );
     $cfg->save_config();

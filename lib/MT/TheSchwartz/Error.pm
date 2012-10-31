@@ -16,6 +16,7 @@ __PACKAGE__->install_properties(
             message    => 'string(255) not null',  # varchar(255) not null
             error_time => 'integer not null',      # integer unsigned not null
         },
+        primary_key => [ 'jobid', 'funcid' ],
         datasource => 'ts_error',
         indexes    => {
             jobid       => 1,

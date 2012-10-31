@@ -22,6 +22,8 @@ sub fetch_themes {
     $url ||= $self->url;
     $url =~ s/{{static}}/$static_webpath/i;
     $url =~ s/{{support}}/$support_url/i;
+    $url
+        =~ s/{{theme_static}}/MT::Theme::static_file_url_from_id($self->key)/ie;
     if ( $url =~ m!^/! ) {
         $url = MT->app->base . $url;
     }

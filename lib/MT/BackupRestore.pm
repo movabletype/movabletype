@@ -1663,6 +1663,13 @@ sub restore_parent_ids {
         $obj->blog_id( $data->{blog_id} );
     }
 
+    # Old author_id is changed to new author_id.
+    my $old_author_id  = $data->{'author_id'};
+    my $new_author_obj = $objects->{"MT::Author#$old_author_id"};
+    if ( defined($new_author_obj) && $new_author_obj ) {
+        $data->{'author_id'} = $new_author_obj->id;
+    }
+
     return 1;
 }
 
@@ -1677,8 +1684,15 @@ sub backup_terms_args {
     my $class = shift;
     my ($blog_ids) = @_;
 
+    # Only the filter belonging to specified
+    # websites and blogs are extracted.
+    my $terms = undef;
+    if ( defined($blog_ids) && scalar(@$blog_ids) ) {
+        $terms = { blog_id => $blog_ids };
+    }
+
     return {
-        terms => undef,
+        terms => $terms,
         args  => {
             join => [
                 MT->model('author'), undef,

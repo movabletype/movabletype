@@ -12,7 +12,7 @@ class MTDatabasemysql extends MTDatabase {
     protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '') {
         if (extension_loaded('pdo') && extension_loaded('pdo_mysql')) {
             $this->pdo_enabled = true;
-            $this->conn = &ADONewConnection('pdo');
+            $this->conn = ADONewConnection('pdo');
             if ( !empty($sock) ) {
                 // Connection by unix socket
                 $dsn = "unix_socket=$sock";
@@ -24,7 +24,7 @@ class MTDatabasemysql extends MTDatabase {
             $dsn = "mysql:$dsn";
             $this->conn->Connect($dsn, $user, $password, $dbname);
         } else {
-            $this->conn = &ADONewConnection('mysql');
+            $this->conn = ADONewConnection('mysql');
             if ( !empty($sock) ) {
                 // Connection by unix socket
                 $dsn = ":$sock";
@@ -37,10 +37,6 @@ class MTDatabasemysql extends MTDatabase {
         }
 
         return true;
-    }
-
-    function escape($str) {
-        return mysql_escape_string(stripslashes($str));				
     }
 
     function limit_by_day_sql($column, $days) {

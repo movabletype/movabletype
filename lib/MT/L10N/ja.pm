@@ -3058,6 +3058,8 @@ use vars qw( @ISA %Lexicon );
 	'Rainier' => 'Rainier',
 	'Stylesheet for IE (8 or lower)' => 'スタイルシート (IE8 以下用)',
 	'JavaScript - Theme' => 'JavaScript - テーマ',
+	'Styles for Rainier' => 'Rainier スタイル ライブラリ',
+	'A collection of styles compatible with Rainier themes.' => 'Rainier のデフォルトテンプレートと互換性のあるスタイルです。',
 
 ## search_templates/comments.tmpl
 	'Search for new comments from:' => 'コメントを検索:',

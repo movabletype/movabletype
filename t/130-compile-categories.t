@@ -19,6 +19,8 @@ add_category(25, 'bbb', 0, 1);
 add_category(26, 'aaa', 25, 1);
 add_category(27, 'foo', 26, 1);
 add_category(28, 'buz buz', 0, 1);
+add_category(29, 'a(b)', 0, 1);
+add_category(30, 'a/b', 0, 1);
 # foreach my $c (values %cats_hash) {
 # 	print STDERR "id: ", $c->id, " parent: ", $c->parent, " name: ", $c->label, "\n";
 # }
@@ -148,6 +150,30 @@ ok( $expr->( { 28 => 1 } ), "$cat_filter: expr true for 28" );
 ok( $expr->( { 2 => 1, 28 => 1 } ), "$cat_filter: expr true for 2 AND 28" );
 
 
+$cat_filter = "a(b)";
+@cats = ( @cats_hash{29} );
+$expr = $ctx->compile_category_filter($cat_filter, \@cats);
+is_deeply([map $_->id, @cats], [29], "$cat_filter: nothing else was added");
+ok( $expr->( { 29 => 1 } ), "$cat_filter: expr true for 29" );
+
+
+$cat_filter = "a/b";
+@cats = ( @cats_hash{30} );
+$expr = $ctx->compile_category_filter($cat_filter, \@cats);
+is_deeply([map $_->id, @cats], [30], "$cat_filter: nothing else was added");
+ok( $expr->( { 30 => 1 } ), "$cat_filter: expr true for 30" );
+
+
+$cat_filter = "a(b) OR a/b";
+@cats = ( @cats_hash{29, 30} );
+$expr = $ctx->compile_category_filter($cat_filter, \@cats);
+@cats = sort { $a->id <=> $b->id } @cats;
+is_deeply([map $_->id, @cats], [29, 30], "$cat_filter: nothing else was added");
+ok( $expr->( { 29 => 1 } ), "$cat_filter: expr true for 29" );
+ok( $expr->( { 30 => 1 } ), "$cat_filter: expr true for 30" );
+ok( $expr->( { 29 => 1, 30 => 1 } ), "$cat_filter: expr true for 29 AND 30" );
+
+
 done_testing();
 
 sub add_category {
@@ -173,3 +199,5 @@ bar(2)
 aaa(23)
 bbb(25)->aaa(26)->foo(27)
 buz buz(28)
+a(b)(29)
+a/b(30)

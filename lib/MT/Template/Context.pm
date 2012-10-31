@@ -529,7 +529,14 @@ sub compile_category_filter {
         }
         my $new_expr = '';
         my %cats_used;
-        my @split_expr = split /(\bOR\b|\bAND\b|\bNOT\b|\(|\))/i, $cat_expr;
+        my $label_token
+            = %cats_dir
+            ? join( '|', map { quotemeta($_) . '(?!/)' } keys %cats_dir )
+            . '|'
+            : '';
+        my @split_expr = split /($label_token\bOR\b|\bAND\b|\bNOT\b|\(|\))/i,
+            $cat_expr;
+
         foreach my $token (@split_expr) {
             if (grep {lc $token eq $_} qw{OR AND NOT ( )}) {
                 $new_expr .= $token;
