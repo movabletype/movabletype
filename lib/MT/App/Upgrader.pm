@@ -419,7 +419,10 @@ sub init_website {
         # making sure that we have a '/' or '\' in the end of the path
         my $s_path = File::Spec->catdir( $site_path, "PATH" );
         $s_path =~ s/PATH$//;
-        if ( 0 != index( $s_path, $param{'sitepath_limited'} ) ) {
+        my $l_path = File::Spec->catdir( $param{'sitepath_limited'}, "PATH" );
+        $l_path =~ s/PATH$//;
+        $l_path = quotemeta($l_path);
+        if ( $s_path !~ m/^$l_path/i ) {
             $param{error} = $app->translate(
                 "The 'Website Root' provided below is not allowed");
             return $app->build_page( 'setup_initial_website.tmpl', \%param );

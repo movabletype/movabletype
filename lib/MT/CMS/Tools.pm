@@ -1671,7 +1671,10 @@ sub adjust_sitepath {
     my %error_assets;
     my %blogs_meta;
     my $path_limit = $app->config->BaseSitePath;
-    my @p          = $q->param;
+    $path_limit = File::Spec->catdir( $path_limit, "PATH" );
+    $path_limit =~ s/PATH$//;
+    $path_limit = quotemeta($path_limit);
+    my @p = $q->param;
     foreach my $p (@p) {
         next unless $p =~ /^site_path_(\d+)/;
         my $id   = $1;
@@ -1694,13 +1697,13 @@ sub adjust_sitepath {
 
         if ($use_absolute) {
             $site_path = scalar $q->param("site_path_absolute_$id") || q();
-            if ( $path_limit and ( 0 != index( $site_path, $path_limit ) ) ) {
+            if ( $path_limit and ( $site_path !~ m/^$path_limit/i ) ) {
                 $site_path = $path_limit;
             }
         }
         elsif ( $path_limit
             and !$blog->is_blog
-            and ( 0 != index( $site_path, $path_limit ) ) )
+            and ( $site_path !~ m/^$path_limit/i ) )
         {
             $site_path = $path_limit;
         }
@@ -1749,7 +1752,7 @@ sub adjust_sitepath {
         if ($use_absolute_archive) {
             $archive_path = $archive_path_absolute;
             if ( $path_limit
-                and ( 0 != index( $archive_path, $path_limit ) ) )
+                and ( $archive_path !~ m/^$path_limit/i ) )
             {
                 $archive_path = $path_limit;
             }
@@ -2212,7 +2215,9 @@ sub dialog_adjust_sitepath {
         else {
             my $sitepath = $blog->column('site_path');
             my $limited  = $app->config->BaseSitePath;
-            if ( $limited and ( 0 != index( $sitepath, $limited ) ) ) {
+            $limited =~ s/PATH$//;
+            $limited = quotemeta($limited);
+            if ( $limited and ( $sitepath !~ m/^$limited/i ) ) {
                 $sitepath = $limited;
             }
             push @website_loop,

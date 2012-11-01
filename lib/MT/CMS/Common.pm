@@ -199,10 +199,11 @@ sub save {
             # making sure that we have a '/' in the end of the paths
             $l_path = File::Spec->catdir( $l_path, "PATH" );
             $l_path =~ s/PATH$//;
+            $l_path = quotemeta($l_path);
             $s_path = File::Spec->catdir( $s_path, "PATH" );
             $s_path =~ s/PATH$//;
 
-            if ( 0 != index( $s_path, $l_path ) ) {
+            if ( $s_path !~ m/^$l_path/i ) {
                 return $app->errtrans(
                     "The website root directory must be within [_1]",
                     $l_path );
