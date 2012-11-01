@@ -228,7 +228,7 @@ sub save_filter {
     my ( $cb, $app ) = @_;
 
     my %values = ();
-    $values{$_} = $app->param($_) for ( 'id', @{ required_fields() } );
+    $values{$_} = $app->param($_) for ( 'id', 'label', @{ required_fields() } );
     if ( my $user = $app->user ) {
         $values{created_by} = $user->id;
     }
@@ -242,6 +242,20 @@ sub validate {
         if ( !trim( $values->{$f} ) ) {
             return $cb->error( translate( ucfirst($f) . ' is required.' ) );
         }
+    }
+
+    my $already_exists = FormattedText::FormattedText->load(
+        {   ( $values->{id} ? ( id => { not => $values->{id} } ) : () ),
+            label => $values->{label},
+        }
+    );
+    if ($already_exists) {
+        return $cb->error(
+            translate(
+                'The formatted text \'[_1]\' is already in use in this blog.',
+                $values->{label}
+            )
+        );
     }
 
     return 1;

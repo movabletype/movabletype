@@ -38,7 +38,7 @@
   <input type="hidden" id="blog-id" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
   <input type="hidden" name="__mode" value="save" />
   <input type="hidden" name="_type" value="<mt:var name="object_type">" />
-  <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+  <input type="hidden" name="id" value="<mt:var name="id" escape="html">" id="id" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
@@ -82,6 +82,32 @@
 
 <mt:setvarblock name="jq_js_include" append="1">
 (function($) {
+
+var formatted_texts = [
+<mt:loop name="blog_formatted_texts" glue=",">
+    {
+        id: "<mt:var name="id" encode_js="1" />",
+        label: "<mt:var name="label" encode_js="1" />",
+    }
+</mt:loop>
+];
+
+Lexicon["The formatted text '[_1]' is already in use in this blog."] = '<__trans phrase="The formatted text '[_1]' is already in use in this blog." params="[_1]" escape="singlequotes" />';
+jQuery.mtValidateAddRules({
+    '#label': function ($e) {
+        var validator  = this;
+        var id         = $('#id').val();
+        var new_label  = $e.val();
+
+        jQuery.each(formatted_texts, function() {
+            if (this.label == new_label && this.id != id) {
+                validator.raise(trans("The formatted text '[_1]' is already in use in this blog.", new_label));
+                return false;
+            }
+        });
+    }
+});
+
 
 var editor_manager = new MT.EditorManager('text');
 

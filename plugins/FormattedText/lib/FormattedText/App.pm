@@ -25,10 +25,8 @@ sub is_enabled {
     $status;
 }
 
-sub param_edit_entry {
-    my ( $cb, $app, $param, $tmpl ) = @_;
-
-    return if $param->{object_type} ne 'entry';
+sub _load_formatted_text_to_param {
+    my ( $key, $cb, $app, $param, $tmpl ) = @_;
 
     my $perms = $app->permissions;
     my $user  = $app->user;
@@ -36,9 +34,22 @@ sub param_edit_entry {
     my @formatted_texts
         = $app->model('formatted_text')->load( { blog_id => $app->blog->id },
         { sort => 'id', direction => 'descend' } );
-    $param->{formatted_texts}
-        = [ grep { can_view_formatted_text( $perms, $_, $user ) }
+    $param->{$key} = [ grep { can_view_formatted_text( $perms, $_, $user ) }
             @formatted_texts ];
+}
+
+sub param_edit_entry {
+    my ( $cb, $app, $param, $tmpl ) = @_;
+
+    return if $param->{object_type} ne 'entry';
+
+    _load_formatted_text_to_param( 'formatted_texts', @_ );
+}
+
+sub param_edit_formatted_text {
+    my ( $cb, $app, $param, $tmpl ) = @_;
+
+    _load_formatted_text_to_param( 'blog_formatted_texts', @_ );
 }
 
 sub can_edit_formatted_text {

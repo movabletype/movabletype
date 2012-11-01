@@ -24,6 +24,7 @@ use vars qw( %Lexicon );
 
 ## plugins/FormattedText/lib/FormattedText/FormattedText.pm
 	'Formatted Texts' => '定型文',
+	'The formatted text \'[_1]\' is already in use in this blog.' => '[_1]という定型文は既にこのブログに存在しています。',
 
 ## plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl
 	'Edit Formatted Text' => '定型文の編集',
