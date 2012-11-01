@@ -17,7 +17,7 @@ sub is_enabled {
     my $current_editor
         = lc( $app->config('WYSIWYGEditor') || $app->config('Editor') );
     my $settings = $app->registry( 'editors', $current_editor );
-    $status = $settings->{templates}
+    $status = $settings->{template}
         && $settings->{formatted_text}{enabled} ? 1 : 0;
 
     $app->request( $key, $status );
