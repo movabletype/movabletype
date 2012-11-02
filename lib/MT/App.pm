@@ -363,6 +363,8 @@ sub search_apis {
     my $apis = $app->registry("search_apis") or return;
     my @apis;
     foreach my $a ( keys %$apis ) {
+        $apis->{$a} = $app->registry( "search_apis", $a )
+            unless ref $apis->{$a};
         next if $apis->{$a}->{view} && $apis->{$a}->{view} ne $view;
         $apis->{$a}{key}  = $a;
         $apis->{$a}{core} = 1

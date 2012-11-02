@@ -658,8 +658,6 @@ sub do_search_replace {
     my $blog_id = $q->param('blog_id');
     my $author  = $app->user;
 
-    my $search_api = $app->registry("search_apis");
-
     my ($search,        $replace,     $do_replace,     $case,
         $is_regex,      $is_limited,  $type,           $is_junk,
         $is_dateranged, $ids,         $datefrom_year,  $datefrom_month,
@@ -698,8 +696,9 @@ sub do_search_replace {
     $replace && ( $app->validate_magic() or return );
     $search = $orig_search if $do_replace;    # for safety's sake
     my $list_pref = $app->list_pref($type);
+    my $search_api = $app->registry( "search_apis", $type );
 
-    $app->assert( $search_api->{$type}, "Invalid request." ) or return;
+    $app->assert( $search_api, "Invalid request." ) or return;
 
     # force action bars to top and bottom
     $list_pref->{"bar"}                     = 'both';
@@ -709,8 +708,8 @@ sub do_search_replace {
     $list_pref->{"view"}                    = 'compact';
     $list_pref->{"view_compact"}            = 1;
     my ( @cols, $datefrom, $dateto, $date_col );
-    $do_replace    = 0 unless $search_api->{$type}{can_replace};
-    $is_dateranged = 0 unless $search_api->{$type}{can_search_by_date};
+    $do_replace    = 0 unless $search_api->{can_replace};
+    $is_dateranged = 0 unless $search_api->{can_search_by_date};
     my @ids;
 
     if ($ids) {
@@ -719,7 +718,7 @@ sub do_search_replace {
     if ($is_limited) {
         @cols = $q->param('search_cols');
         my %search_api_cols
-            = map { $_ => 1 } keys %{ $search_api->{$type}{search_cols} };
+            = map { $_ => 1 } keys %{ $search_api->{search_cols} };
         if ( @cols && ( $cols[0] =~ /,/ ) ) {
             @cols = split /,/, $cols[0];
         }
@@ -728,7 +727,7 @@ sub do_search_replace {
     }
     if ( !$is_limited ) {
         @cols = grep { $_ ne 'plugin' }
-            keys %{ $search_api->{$type}->{search_cols} };
+            keys %{ $search_api->{search_cols} };
     }
     my $quicksearch_id;
     if ( $quicksearch && ( $search || '' ) ne '' && $search !~ m{ \D }xms ) {
@@ -777,7 +776,7 @@ sub do_search_replace {
         $search = '(?i)' . $search   unless $case;
     }
     my ( @to_save, @data );
-    my $api   = $search_api->{$type};
+    my $api   = $search_api;
     my $class = $app->model( $api->{object_type} || $type );
     my %param = %$list_pref;
     my $limit;
@@ -1146,7 +1145,7 @@ sub do_search_replace {
             }
         }
 
-        if ( my $meth = $search_api->{$type}{handler} ) {
+        if ( my $meth = $search_api->{handler} ) {
             $meth = $app->handler_to_coderef($meth);
             $meth->( $app, items => \@data, param => \%param, type => $type );
         }
@@ -1247,8 +1246,8 @@ sub do_search_replace {
         is_dateranged      => $is_dateranged,
         is_junk            => $is_junk,
         can_search_junk    => ( $type eq 'comment' || $type eq 'ping' ),
-        can_replace        => $search_api->{$type}{can_replace},
-        can_search_by_date => $search_api->{$type}{can_search_by_date},
+        can_replace        => $search_api->{can_replace},
+        can_search_by_date => $search_api->{can_search_by_date},
         quick_search       => 0,
         "tab_$tab"         => 1,
         filter             => $filter,
@@ -1257,7 +1256,7 @@ sub do_search_replace {
     );
     $res{'tab_junk'} = 1 if $is_junk;
 
-    my $search_cols = $search_api->{$type}{search_cols};
+    my $search_cols = $search_api->{search_cols};
     my %cols = map { $_ => 1 } @cols;
     my @search_cols;
     for my $field ( keys %$search_cols ) {
@@ -1268,8 +1267,8 @@ sub do_search_replace {
         $search_field{label}
             = 'CODE' eq ref( $search_cols->{$field} )
             ? $search_cols->{$field}->()
-            : exists( $search_api->{$type}{plugin} )
-            ? $search_api->{$type}{plugin}
+            : exists( $search_api->{plugin} )
+            ? $search_api->{plugin}
             ->translate( $search_cols->{$field} )
             : $app->translate( $search_cols->{$field} );
         push @search_cols, \%search_field;
