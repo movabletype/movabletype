@@ -52,6 +52,17 @@ sub class_label_plural {
     translate('Formatted Texts');
 }
 
+sub search_apis {
+    +{  label       => 'Formatted Texts',
+        order       => 1100,
+        search_cols => {
+            label       => sub { translate('Name') },
+            text        => sub { translate('Text') },
+            description => sub { translate('Description') },
+        }
+    };
+}
+
 sub list_props {
     return {
         id => {

@@ -104,3 +104,6 @@ list_actions:
 
 content_actions:
     formatted_text: $FormattedText::FormattedText::App::content_actions
+
+search_apis:
+    formatted_text: $FormattedText::FormattedText::FormattedText::search_apis
