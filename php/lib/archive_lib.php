@@ -883,7 +883,7 @@ class AuthorBasedArchiver implements ArchiveType {
         return empty($results) ? null : $results->GetArray();
     }
 
-    public function template_params() {
+    public static function set_template_params() {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -893,6 +893,10 @@ class AuthorBasedArchiver implements ArchiveType {
         $vars['archive_class']                  = 'author-archive';
         $vars['module_author-monthly_archives'] = 1;
         $vars['archive_listing']                = 1;
+    }
+
+    public function template_params() {
+        set_template_params();
     }
 
     public function is_date_based() {
@@ -999,7 +1003,7 @@ abstract class DateBasedAuthorArchiver extends DateBasedArchiver {
     }
 
     public function template_params() {
-        AuthorBasedArchiver::template_params();
+        AuthorBasedArchiver::set_template_params();
         parent::template_params();
     }
 
