@@ -126,6 +126,94 @@ sub crop {
     wantarray ? ( $out, $size, $size ) : $out;
 }
 
+sub flipHorizontal {
+    my $image = shift;
+    my $type  = $image->{type};
+    my ( $out, $err );
+    my $pbm = $image->_find_pbm or return;
+    my @in = (
+        "$pbm${type}topnm",
+        ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
+    );
+    my @scale = ( "${pbm}pnmflip", '-lr' );
+    my @out;
+
+    for my $try (qw( ppm pnm )) {
+        my $prog = "${pbm}${try}to$type";
+        @out = ($prog), last if -x $prog;
+    }
+    my (@quant);
+    if ( $type eq 'gif' ) {
+        push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
+    }
+    IPC::Run::run( \@in, '<', ( $image->{data} ? \$image->{data} : \undef ),
+        '|', \@scale, '|', @quant, \@out, \$out, \$err )
+        or return $image->error(
+        MT->translate( "Flip horizontal failed: [_1]", $err ) );
+    $image->{data} = $out;
+    wantarray ? ( $out, @$image{qw(width height)} ) : $out;
+}
+
+sub flipVertical {
+    my $image = shift;
+    my $type  = $image->{type};
+    my ( $out, $err );
+    my $pbm = $image->_find_pbm or return;
+    my @in = (
+        "$pbm${type}topnm",
+        ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
+    );
+    my @scale = ( "${pbm}pnmflip", '-tb' );
+    my @out;
+
+    for my $try (qw( ppm pnm )) {
+        my $prog = "${pbm}${try}to$type";
+        @out = ($prog), last if -x $prog;
+    }
+    my (@quant);
+    if ( $type eq 'gif' ) {
+        push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
+    }
+    IPC::Run::run( \@in, '<', ( $image->{data} ? \$image->{data} : \undef ),
+        '|', \@scale, '|', @quant, \@out, \$out, \$err )
+        or return $image->error(
+        MT->translate( "Flip vertical failed: [_1]", $err ) );
+    $image->{data} = $out;
+    wantarray ? ( $out, @$image{qw(width height)} ) : $out;
+}
+
+sub rotate {
+    my $image = shift;
+    my ( $degrees, $w, $h ) = $image->get_degrees(@_);
+    my $type = $image->{type};
+    my ( $out, $err );
+    my $pbm = $image->_find_pbm or return;
+    my @in = (
+        "$pbm${type}topnm",
+        ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
+    );
+    my @scale = ( "${pbm}pnmflip", '-r' . ( 360 - $degrees ) );
+    my @out;
+
+    for my $try (qw( ppm pnm )) {
+        my $prog = "${pbm}${try}to$type";
+        @out = ($prog), last if -x $prog;
+    }
+    my (@quant);
+    if ( $type eq 'gif' ) {
+        push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
+    }
+    IPC::Run::run( \@in, '<', ( $image->{data} ? \$image->{data} : \undef ),
+        '|', \@scale, '|', @quant, \@out, \$out, \$err )
+        or return $image->error(
+        MT->translate(
+            "Rotate (degrees: [_1]) failed: [_2]", $degrees, $err
+        )
+        );
+    ( $image->{width}, $image->{height}, $image->{data} ) = ( $w, $h, $out );
+    wantarray ? ( $out, $w, $h ) : $out;
+}
+
 sub convert {
     my $image = shift;
     my %param = @_;

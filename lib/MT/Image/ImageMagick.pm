@@ -116,6 +116,51 @@ sub crop {
     wantarray ? ( $blob, $size, $size ) : $blob;
 }
 
+sub flipHorizontal {
+    my $image  = shift;
+    my $magick = $image->{magick};
+    my $blob;
+
+    eval {
+        $magick->Flop();
+        $blob = $magick->ImageToBlob;
+    };
+    return $image->error(
+        MT->translate( "Flip horizontal failed: [_1]", $@ ) )
+        if $@;
+    wantarray ? ( $blob, @$image{qw(width height)} ) : $blob;
+}
+
+sub flipVertical {
+    my $image  = shift;
+    my $magick = $image->{magick};
+    my $blob;
+
+    eval {
+        $magick->Flip();
+        $blob = $magick->ImageToBlob;
+    };
+    return $image->error( MT->translate( "Flip vertical failed: [_1]", $@ ) )
+        if $@;
+    wantarray ? ( $blob, @$image{qw(width height)} ) : $blob;
+}
+
+sub rotate {
+    my $image = shift;
+    my ( $degrees, $w, $h ) = $image->get_degrees(@_);
+    my $magick = $image->{magick};
+    my $blob;
+
+    eval {
+        $magick->Rotate( degrees => $degrees );
+        $blob = $magick->ImageToBlob;
+    };
+    return $image->error(
+        MT->translate( "Rotate (degrees: [_1]) failed: [_2]", $degrees, $@ ) )
+        if $@;
+    wantarray ? ( $blob, $w, $h ) : $blob;
+}
+
 sub convert {
     my $image  = shift;
     my %param  = @_;

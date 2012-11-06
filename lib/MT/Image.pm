@@ -51,6 +51,19 @@ sub get_dimensions {
     ( $w, $h );
 }
 
+sub get_degrees {
+    my $image = shift;
+    my %param = @_;
+    my ( $w, $h ) = ( $image->{width}, $image->{height} );
+    my $degrees = $param{Degrees};
+
+    if ( int( $degrees / 90 ) % 2 == 1 ) {
+        ( $w, $h ) = ( $h, $w );
+    }
+
+    ( $degrees, $w, $h );
+}
+
 sub inscribe_square {
     my $class  = shift;
     my %params = @_;
@@ -347,6 +360,21 @@ If 'Width' is given, a proportionate height will be calculated. If a
 'Height' is given, the width will be calculated. If 'Scale' is given
 the height and width will be calculated based on that scale (a value
 between 1 to 100).
+
+=head2 $img->get_degrees(%arg)
+
+This utility method returns a degrees and width and height values after
+applying the given arguments.
+
+I<%arg> can contain:
+
+=over 4
+
+=item * Degrees
+
+The degrees of the final rotated image.
+
+=back
 
 =head2 MT::Image->check_upload( %arg )
 
