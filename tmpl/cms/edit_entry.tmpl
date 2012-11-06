@@ -468,7 +468,7 @@
      help_page="entries"
      help_section="date">
     <div class="date-time-fields">
-      <input type="text" id="created-on" class="text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" /> @ <input type="text" class="text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>" />
+      <input type="text" id="created-on" class="text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" /><span class="separator"> <__trans phrase="@"></span> <input type="text" class="text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>" />
     </div>
   </mtapp:setting>
 
