@@ -2688,7 +2688,7 @@ sub prepare_dynamic_publishing {
 
     # On the IIS environment, will make/modify the web.config with URL Rewrite
         my $rule;
-        $rule->{'stopProcessing'} = 'true';
+        $rule->{'stopProcessing'} = 'false';
         $rule->{'action'}         = {
             'url'               => $mtview_server_url . '{R:2}',
             'appendQueryString' => 'true',
@@ -2698,7 +2698,7 @@ sub prepare_dynamic_publishing {
             'ignoreCase' => 'false',
             'url'        => '^(.*)(\\?.*)?$',
         };
-        $rule->{'name'}       = 'Rewrite rule for Dynamic Publishing';
+        $rule->{'name'}       = "Rewrite rule for '$site_url'";
         $rule->{'conditions'} = {
             'add' => [
                 {   'input'      => '{REQUEST_FILENAME}',
