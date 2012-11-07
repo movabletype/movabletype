@@ -105,11 +105,10 @@ sub is_valid_image {
     return 1;
 }
 
-sub check_upload {
+sub get_image_info {
     my $class  = shift;
     my %params = @_;
-
-    my $fh = $params{Fh};
+    my $fh     = $params{Fh};
 
     ## Use Image::Size to check if the uploaded file is an image, and if so,
     ## record additional image info (width, height). We first rewind the
@@ -122,7 +121,26 @@ sub check_upload {
                 . "the width and height of uploaded images."
         )
     ) if $@;
-    my ( $w, $h, $id ) = Image::Size::imgsize($fh);
+
+    Image::Size::imgsize($fh);
+}
+
+sub get_image_type {
+    my $class = shift;
+    my @image_size = $class->get_image_info( Fh => @_ );
+
+    ( $image_size[0] && $image_size[1] && $image_size[2] )
+        ? $image_size[2]
+        : ();
+}
+
+sub check_upload {
+    my $class  = shift;
+    my %params = @_;
+
+    my $fh = $params{Fh};
+
+    my ( $w, $h, $id ) = $class->get_image_info(@_);
 
     my $write_file = sub {
         $params{Fmgr}->put( $fh, $params{Local}, 'upload' );
