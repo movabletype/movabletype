@@ -47,6 +47,7 @@ elements:
           label: 'Styles for Rainier'
           description_label: 'A collection of styles compatible with Rainier themes.'
           order: 1
+          class: Local
       templates:
         index:
           main_index:
