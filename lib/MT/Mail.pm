@@ -299,6 +299,7 @@ sub _send_mt_smtp {
     # Setup headers
     my $hdr;
     foreach my $k ( keys %$hdrs ) {
+        next if ($k =~ /^(To|Bcc|Cc)$/);
         $hdr .= "$k: " . $hdrs->{$k} . "\r\n";
     }
 
@@ -312,6 +313,7 @@ sub _send_mt_smtp {
             foreach my $a (@$addr) {
                 $smtp->recipient($a);
             }
+            $hdr .= "$h: " . join(",\r\n ", @$addr) . "\r\n";
         }
     }
 
