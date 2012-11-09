@@ -81,6 +81,12 @@ sub remove {
         }
     }
 
+    # Cache of the children folder which parents have is cleared.
+    if ( my $id = $folder->parent ) {
+        my $parent = MT::Folder->load($id);
+        $parent->{__children} = undef;
+    }
+
     $folder->SUPER::remove(@_)
         or return $folder->errstr;
 
