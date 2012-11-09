@@ -523,9 +523,14 @@ sub _create_asset {
         $asset_values->{'file_path'} = $asset_values->{'url'};
         $asset_values->{'file_path'} =~ s!^https?://[^/]*/!!;
     }
-    my $path    = $asset_values->{'file_path'};
+    my $path = $asset_values->{'file_path'};
     if ( $wp_path && $mt_path ) {
-        $path =~ s/^.*$wp_path(.+)$/$mt_path$1/i;
+        if ( $path =~ /$wp_path/ ) {
+            $path =~ s/^.*$wp_path(.+)$/$mt_path$1/i;
+        }
+        else {
+            $path = File::Spec->catdir( $mt_path, $path );
+        }
         $path = File::Spec->canonpath($path);
     }
     $asset_values->{'file_path'} = $path;
