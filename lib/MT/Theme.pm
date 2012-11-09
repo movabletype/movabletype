@@ -570,8 +570,12 @@ sub _mk_thumbnail {
     my $thumbnail_file_path
         = File::Spec->catfile( $thumbnail_dir, $target_file );
 
-    $fmgr->exists($thumbnail_file_path)
-        and return $thumbnail_file_path;
+    if (   $fmgr->exists($thumbnail_file_path)
+        && $fmgr->file_size($original_file_path)
+        == $fmgr->file_size($thumbnail_file_path) )
+    {
+        return $thumbnail_file_path;
+    }
 
     # non-existent thumbnail. let's create one!
     $fmgr->exists($thumbnail_dir)
