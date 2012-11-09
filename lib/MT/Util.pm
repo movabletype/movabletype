@@ -1342,6 +1342,10 @@ sub is_valid_date {
 sub is_valid_email {
     my ($addr) = @_;
     return 0 if $addr =~ /[\n\r]/;
+
+    # The case containing full-width character is error.
+    return 0 if $addr =~ /[^\x01-\x7E]/;
+
     my $specials = '\(\)<>\@,;:\[\]';
     if ( $addr
         =~ /^\s*([^\" \t\n\r$specials]+@[^ \t\n\r$specials]+\.[^ \t\n\r$specials][^ \t\n\r$specials]+)\s*$/
