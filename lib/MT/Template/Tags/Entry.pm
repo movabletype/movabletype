@@ -382,6 +382,11 @@ sub _hdlr_entries {
             # class types do not match; we can't use stashed entries
             undef $entries;
         }
+        elsif ( $blog_id != $entry->blog_id ) {
+
+            # Blog ID do not match; we can't use stashed entries
+            undef $entries;
+        }
     }
     $entries = undef unless defined $entries && scalar @$entries;
 
