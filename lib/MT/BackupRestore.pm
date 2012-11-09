@@ -512,17 +512,16 @@ sub restore_process_single_file {
     my $parser = MT::Util::sax_parser();
 
     require MT::BackupRestore::BackupFileScanner;
-    if ( my $pass_scan = MT::BackupRestore::BackupFileScanner->new() ) {
-        my $pos = tell($fh);
-        $parser->{Handler} = $pass_scan;
-        eval { $parser->parse_file($fh); };
-        if ( my $e = $@ ) {
-            push @$errors, $e;
-            $callback->($e);
-            die $e;
-        }
-        seek( $fh, $pos, 0 );
+    my $scanner = MT::BackupRestore::BackupFileScanner->new();
+    my $pos = tell($fh);
+    $parser->{Handler} = $scanner;
+    eval { $parser->parse_file($fh); };
+    if ( my $e = $@ ) {
+        push @$errors, $e;
+        $callback->($e);
+        die $e;
     }
+    seek( $fh, $pos, 0 );
 
     my %restored_blogs = map { $objects->{$_}->id => 1; }
         grep { 'blog' eq $objects->{$_}->datasource } keys %$objects;
