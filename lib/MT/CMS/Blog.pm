@@ -2394,10 +2394,9 @@ sub update_publishing_profile {
                                 ->{'rewrite'}->{'rules'}->{'rule'};
                             $rules = [$rules] unless ref $rules eq 'ARRAY';
                             foreach my $rule (@$rules) {
-                                if ( $rule->{name} ne
-                                    'Rewrite rule for Dynamic Publishing' )
+                                if ( $rule->{name} !~ /^Rewrite rule for / )
                                 {
-                                    push @$new_rules, $rule;
+                                    unshift @$new_rules, $rule;
                                 }
                             }
                         }
@@ -2704,11 +2703,6 @@ sub prepare_dynamic_publishing {
                 {   'input'      => '{REQUEST_FILENAME}',
                     'ignoreCase' => 'false',
                     'negate'     => 'true',
-                    'matchType'  => 'IsDirectory'
-                },
-                {   'input'      => '{REQUEST_FILENAME}',
-                    'ignoreCase' => 'false',
-                    'negate'     => 'true',
                     'matchType'  => 'IsFile'
                 }
             ],
@@ -2737,10 +2731,12 @@ sub prepare_dynamic_publishing {
                 }
             }
             if ($ins) {
-                push @$rules, $rule;
+                $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}->{'clear'} = {};
+                unshift @$rules, $rule;
             }
-            $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}
-                ->{'rule'} = $rules;
+            $web_config->{'system.webServer'} = { 'rewrite' => { 'rules' => undef } };
+            $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}->{'clear'} = {};
+            $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}->{'rule'} = $rule;
         }
         else {
             $web_config->{'system.webServer'}
