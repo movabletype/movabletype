@@ -2387,14 +2387,16 @@ sub update_publishing_profile {
 
                         my $rules;
                         my $new_rules;
-                        if (exists $web_config->{'system.webServer'}
+                        if (defined $web_config->{'system.webServer'}
                             ->{'rewrite'} )
                         {
                             $rules = $web_config->{'system.webServer'}
                                 ->{'rewrite'}->{'rules'}->{'rule'};
                             $rules = [$rules] unless ref $rules eq 'ARRAY';
                             foreach my $rule (@$rules) {
-                                if ( $rule->{name} !~ /^Rewrite rule for / )
+                                if ( defined $rule->{name}
+                                    && $rule->{name}
+                                    !~ m/^Rewrite rule for '/ )
                                 {
                                     unshift @$new_rules, $rule;
                                 }
@@ -2404,9 +2406,12 @@ sub update_publishing_profile {
                             $web_config->{'system.webServer'}->{'rewrite'}
                                 ->{'rules'}->{'rule'} = $new_rules;
                         }
-                        else {
-                            $web_config->{'system.webServer'}->{'rewrite'}
-                                = undef;
+                        elsif (
+                            defined $web_config->{'system.webServer'}
+                            ->{'rewrite'} )
+                        {
+                            delete $web_config->{'system.webServer'}
+                                ->{'rewrite'};
                         }
 
                         my $out = $parser->XMLout(
@@ -2715,7 +2720,6 @@ sub prepare_dynamic_publishing {
         my $parser = XML::Simple->new;
         if ( -f $web_config_path ) {
             $web_config = $parser->XMLin( $web_config_path, keyattr => [] );
-
             my $ins = 1;
             my $rules;
             if ( exists $web_config->{'system.webServer'}->{'rewrite'} ) {
@@ -2731,16 +2735,20 @@ sub prepare_dynamic_publishing {
                 }
             }
             if ($ins) {
-                $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}->{'clear'} = {};
+                $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}
+                    ->{'clear'} = {};
                 unshift @$rules, $rule;
             }
-            $web_config->{'system.webServer'} = { 'rewrite' => { 'rules' => undef } };
-            $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}->{'clear'} = {};
-            $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}->{'rule'} = $rule;
+            $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}
+                ->{'rule'} = $rules;
         }
         else {
             $web_config->{'system.webServer'}
-                = { 'rewrite' => { 'rules' => { 'rule' => $rule, }, }, };
+                = { 'rewrite' => { 'rules' => undef } };
+            $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}
+                ->{'clear'} = {};
+            $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}
+                ->{'rule'} = $rule;
         }
 
         my $out = $parser->XMLout(
