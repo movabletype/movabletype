@@ -374,7 +374,10 @@ sub _hdlr_comments {
 
         # else look for most recent comments in the entire blog
         else {
-            $args{'sort'} = lc $args->{sort_by} || 'created_on';
+            $args{'sort'}
+                = defined $args->{sort_by} && $args->{sort_by}
+                ? lc $args->{sort_by}
+                : 'created_on';
             if ( $args->{lastn} || $args->{offset} ) {
                 $args{'direction'} = 'descend';
             }
