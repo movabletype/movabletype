@@ -54,6 +54,7 @@ sub class_label_plural {
 
 sub search_apis {
     +{  label       => 'Formatted Texts',
+        view        => 'none',
         order       => 1100,
         search_cols => {
             label       => sub { translate('Name') },
