@@ -896,7 +896,7 @@ class AuthorBasedArchiver implements ArchiveType {
     }
 
     public function template_params() {
-        set_template_params();
+        $this->set_template_params();
     }
 
     public function is_date_based() {
