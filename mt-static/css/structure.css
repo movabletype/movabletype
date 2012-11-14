@@ -494,12 +494,12 @@ ul.tabs li a {
 /* - App Header */
 #header {
     position: relative;
-    height: 68px;
+    height: 60px;
 }
 
 /* -- Brand */
 #brand {
-    height: 38px;
+    height: 32px;
     background-color: #2b2b2b;
 }
 #brand img {
@@ -509,11 +509,11 @@ ul.tabs li a {
 .preview-screen #brand {
     display: block;
     position: absolute;
-    top: 4px;
+    top: 0;
     left: 15px;
     z-index: 10;
-    width: 173px;
-    height: 30px;
+    width: 175px;
+    height: 32px;
     text-decoration: none;
     background: #2b2b2b url(../images/logo/movable-type-brand-logo.png) center 3px no-repeat;
     outline: 0;
@@ -528,12 +528,11 @@ ul.tabs li a {
 }
 #brand a:hover {
     background-color: #383c3c;
-    border-radius: 2px;
 }
 #brand span.tips {
     display: block;
     position: absolute;
-    top: 11px;
+    top: 8px;
     left: 195px;
     color: #7b7c7d;
     text-transform: uppercase;
@@ -543,17 +542,20 @@ ul.tabs li a {
 #utility-nav {
     position: absolute;
     color: #9ea1a3;
-    top: 10px;
+    top: 0;
     right: 0;
+    height: 100%;
     font-size: 95%;
 }
 #utility-nav-list {
     margin-right: 15px;
 }
 #utility-nav li {
-    display: inline;
+    display: inline-block;
+    height: 32px;
     margin: 0;
     padding: 0;
+    line-height: 32px;
 }
 #utility-nav a {
     padding: 0 0 0 0.5em;
@@ -575,8 +577,9 @@ ul.tabs li a {
     text-decoration: underline;
 }
 #utility-nav #user .userpic {
+    margin-top: -1px;
     border: 1px solid #c0c6c9;
-    vertical-align: top;
+    vertical-align: middle;
 }
 #utility-nav #help {
     margin-right: 0.5em;
@@ -585,7 +588,7 @@ ul.tabs li a {
 /* - Menu bar */
 #menu-bar {
     position: relative;
-    height: 30px;
+    height: 28px;
     width: 100%;
     background-color: #7b7c7d;
 }
@@ -600,7 +603,7 @@ ul.tabs li a {
 #selector-nav {
     position: relative;
     z-index: 500;
-    height: 30px;
+    height: 28px;
 }
 #selector-nav .toggle-button {
     position: absolute;
@@ -615,7 +618,7 @@ ul.tabs li a {
 .scope {
     display: inline-block;
     max-width: 100%;
-    height: 30px;
+    height: 28px;
     margin: 0;
     padding: 0 10px 0 15px;
     overflow: hidden;
@@ -651,8 +654,8 @@ ul.tabs li a {
 }
 .scope-label {
     display: inline-block;
-    line-height: 30px;
-    height: 30px;
+    line-height: 28px;
+    height: 28px;
     width: 100%;
     overflow: hidden;
     color: #f3f3f3;
@@ -667,7 +670,7 @@ ul.tabs li a {
 .scope-selector {
     display: none;
     position: absolute;
-    top: 30px;
+    top: 28px;
     left: 10px;
     min-width: 320px;
     max-width: 100%;
@@ -734,9 +737,10 @@ ul.tabs li a {
 /* --- Menu Bar list */
 #menu-bar-nav {
     position: absolute;
-    top: 3px;
+    top: 0;
     right: 0;
     z-index: 500;
+    height: 28px;
 }
 #menu-bar-nav a {
     outline: 0;
@@ -745,7 +749,7 @@ ul.tabs li a {
 /* ---- Favorite Action */
 .fav-actions-nav {
     position: relative;
-    top: 1px;
+    top: 3px;
     z-index: 600;
     float: right;
 }
@@ -802,17 +806,17 @@ ul.tabs li a {
 /* ---- Nav Icons */
 #menu-bar-icons {
     float: right;
-    height: 24px;
+    height: 100%;
     margin: 0 15px 0 8px;
 }
 #menu-bar-icons li {
-    display: inline-block;
-    margin: 0 0 0 3px;
+    float: left;
+    margin: 0;
 }
 #menu-bar-icons li a {
-    display: inline-block;
-    width: 24px;
-    height: 24px;
+    display: block;
+    width: 30px;
+    height: 28px;
     color: #f3f3f3;
     background-position: center;
     background-repeat: no-repeat;
@@ -831,7 +835,6 @@ ul.tabs li a {
 #menu-bar-icons li.active a,
 #menu-bar-icons li a:hover {
     background-color: #9ea1a3;
-    border-radius: 2px;
 }
 #rebuild-site a span,
 #view-site a span,
@@ -843,21 +846,15 @@ ul.tabs li a {
 /* --- Menu bar Search */
 #basic-search {
     position: absolute;
-    top: 27px;
+    top: 28px;
     right: 15px;
     z-index: 500;
     padding: 8px;
-    border-top: 1px solid #dcdddd;
-    background-color: #7b7c7d;
+    border-top: 1px solid #c0c6c9;
+    background-color: #9ea1a3;
     text-align: right;
     border-radius: 0 0 3px 3px;
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
-}
-.website #basic-search {
-    background-color: #839b5c;
-}
-.blog #basic-search {
-    background-color: #5c909b;
 }
 #basic-search .text,
 #basic-search .button {
