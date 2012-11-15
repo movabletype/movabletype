@@ -240,7 +240,8 @@ sub save_filter {
     my ( $cb, $app ) = @_;
 
     my %values = ();
-    $values{$_} = $app->param($_) for ( 'id', 'label', @{ required_fields() } );
+    $values{$_} = $app->param($_)
+        for ( 'blog_id', 'id', 'label', @{ required_fields() } );
     if ( my $user = $app->user ) {
         $values{created_by} = $user->id;
     }
@@ -257,7 +258,8 @@ sub validate {
     }
 
     my $already_exists = FormattedText::FormattedText->load(
-        {   ( $values->{id} ? ( id => { not => $values->{id} } ) : () ),
+        {   blog_id => $values->{blog_id},
+            ( $values->{id} ? ( id => { not => $values->{id} } ) : () ),
             label => $values->{label},
         }
     );
