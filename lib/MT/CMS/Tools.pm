@@ -1673,7 +1673,7 @@ sub adjust_sitepath {
     my $path_limit = $app->config->BaseSitePath;
     $path_limit = File::Spec->catdir( $path_limit, "PATH" );
     $path_limit =~ s/PATH$//;
-    $path_limit = quotemeta($path_limit);
+    my $path_limit_quote = quotemeta($path_limit);
     my @p = $q->param;
     foreach my $p (@p) {
         next unless $p =~ /^site_path_(\d+)/;
@@ -1697,13 +1697,13 @@ sub adjust_sitepath {
 
         if ($use_absolute) {
             $site_path = scalar $q->param("site_path_absolute_$id") || q();
-            if ( $path_limit and ( $site_path !~ m/^$path_limit/i ) ) {
+            if ( $path_limit and ( $site_path !~ m/^$path_limit_quote/i ) ) {
                 $site_path = $path_limit;
             }
         }
         elsif ( $path_limit
             and !$blog->is_blog
-            and ( $site_path !~ m/^$path_limit/i ) )
+            and ( $site_path !~ m/^$path_limit_quote/i ) )
         {
             $site_path = $path_limit;
         }
@@ -1752,7 +1752,7 @@ sub adjust_sitepath {
         if ($use_absolute_archive) {
             $archive_path = $archive_path_absolute;
             if ( $path_limit
-                and ( $archive_path !~ m/^$path_limit/i ) )
+                and ( $archive_path !~ m/^$path_limit_quote/i ) )
             {
                 $archive_path = $path_limit;
             }
@@ -2214,11 +2214,13 @@ sub dialog_adjust_sitepath {
         }
         else {
             my $sitepath = $blog->column('site_path');
-            my $limited  = $app->config->BaseSitePath;
-            $limited =~ s/PATH$//;
-            $limited = quotemeta($limited);
-            if ( $limited and ( $sitepath !~ m/^$limited/i ) ) {
-                $sitepath = $limited;
+            if ( my $limited  = $app->config->BaseSitePath ) {
+                $limited = File::Spec->catdir( $limit, "PATH" );
+                $limited =~ s/PATH$//;
+                my $limited_quote = quotemeta($limited);
+                if ( $limited and ( $sitepath !~ m/^$limited/i ) ) {
+                    $sitepath = $limited;
+                }
             }
             push @website_loop,
                 {
