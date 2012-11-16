@@ -80,6 +80,9 @@ it's not that bad.
 
 sub _fltr_mteval {
     my ( $str, $arg, $ctx ) = @_;
+
+    return $str unless $arg;
+
     my $builder = $ctx->stash('builder');
     my $tokens = $builder->compile( $ctx, $str );
     return $ctx->error( $builder->errstr ) unless defined $tokens;
