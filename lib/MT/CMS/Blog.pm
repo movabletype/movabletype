@@ -260,6 +260,7 @@ sub edit {
                 = ( $cfg->OutboundTrackbackLimit eq 'local' )
                 || ( $cfg->OutboundTrackbackLimit eq 'any' );
             my $threshold = $obj->junk_score_threshold || 0;
+            $threshold = $threshold + 0;
             $threshold = '+' . $threshold if $threshold > 0;
             $param->{junk_score_threshold} = $threshold;
             $param->{junk_folder_expiry}   = $obj->junk_folder_expiry || 60;
