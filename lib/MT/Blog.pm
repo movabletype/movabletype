@@ -644,7 +644,7 @@ sub site_path {
 
 sub raw_archive_url {
     my $blog        = shift;
-    my $archive_url = $blog->SUPER::archive_url;
+    my $archive_url = $blog->SUPER::archive_url || '';
     if ( my ( $subdomain, $path ) = split( '/::/', $archive_url ) ) {
         return ( $subdomain, $path );
         if ( $subdomain ne $archive_url ) {
