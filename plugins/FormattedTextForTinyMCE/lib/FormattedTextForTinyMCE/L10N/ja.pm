@@ -13,7 +13,7 @@ use vars qw( %Lexicon );
 
 ## mt-static/plugins/FormattedTextForTinyMCE/langs/template.js
 	'Formatted Text' => '定型文',
-	'Select a Formatted Text' => '定型文を選択...',
+	'Select Formatted Text' => '定型文を選択...',
 
 );
 

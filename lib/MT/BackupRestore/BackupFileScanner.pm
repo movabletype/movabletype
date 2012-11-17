@@ -38,7 +38,7 @@ sub start_element {
         my $pass = $attrs->{"{}password"}->{Value};
         if ( $pass =~ m/^\$6\$/ ) {
             die MT->translate(
-                "Can not restore this file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator."
+                "Cannot restore requested file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator."
             );
         }
     }
@@ -67,7 +67,7 @@ sub end_document {
 
         unless ($count) {
             die MT->translate(
-                "Can not restore this file because website is not found in both system and backuped data. You must create a website first."
+                "Cannot restore requested file because a website was not found in either the system or backup data. A website must be created first."
             );
         }
     }

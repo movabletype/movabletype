@@ -1593,7 +1593,7 @@ use vars qw( @ISA %Lexicon );
         => '[_1]のシステムのプラグイン設定はすでに存在しています。このレコードはスキップします。',
 
 ## lib/MT/BackupRestore/BackupFileScanner.pm
-    'Can not restore this file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.'
+    'Cannot restore requested file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.'
         => 'Digest::SHAがインストールされていないため、このファイルを復元することが出来ません。システム管理者問い合わせてください。',
 
 ## lib/MT/BackupRestore/ManifestFileHandler.pm
@@ -4161,7 +4161,7 @@ use vars qw( @ISA %Lexicon );
         '<a href="[_1]">[_2]</a> - [_3]</a>',
 
 ## themes/rainier/templates/zenback.mtml
-    'Please paste the Zenback script code here.' =>
+    'Please paste Zenback script code here.' =>
         'ここに Zenback の Script コードは貼り付けてください。',
 
 ## themes/rainier/theme.yaml

@@ -1567,7 +1567,7 @@ use vars qw( @ISA %Lexicon );
         => 'Einstellungen auf Systemebene für Plugin &#8222;[_1]&#8220; bereits vorhanden; überspringe Eintrag.',
 
 ## lib/MT/BackupRestore/BackupFileScanner.pm
-    'Can not restore this file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.'
+    'Cannot restore requested file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.'
         => 'Diese Datei konnte nicht eingespielt werden, da dazu das Digest::SHA-Perl-Modul erforderlich ist. Wenden Sie sich bitte an Ihren Movable-Type-Administrator.',
 
 ## lib/MT/BackupRestore/ManifestFileHandler.pm

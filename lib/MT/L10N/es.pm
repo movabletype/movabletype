@@ -1568,7 +1568,7 @@ No se pudo escribir el fichero. Disco lleno.",
         => 'Ya existe una configuración a nivel del sistema para la extensión \'[_1]\'. Se ignora este registro.',
 
 ## lib/MT/BackupRestore/BackupFileScanner.pm
-    'Can not restore this file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.'
+    'Cannot restore requested file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.'
         => 'No se pudo restaurar este fichero porque se necesita el módulo de Perl Digest::SHA. Por favor, contacto con el administrador de sistemas de Movable Type.',
 
 ## lib/MT/BackupRestore/ManifestFileHandler.pm

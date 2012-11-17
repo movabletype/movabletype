@@ -1556,7 +1556,7 @@ Kan bestand niet schrijven.  Schijf vol.",
         => 'De instellingen op systeemniveau voor plugin \'[_1]\' bestaan al.  Record wordt overgeslagen.',
 
 ## lib/MT/BackupRestore/BackupFileScanner.pm
-    'Can not restore this file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.'
+    'Cannot restore requested file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.'
         => 'Kan dit bestand niet terugzetten omdat hiervoor de Digest::SHA Perl module vereist is.  Neem contact op met uw Movable Type systeembeheerder.',
 
 ## lib/MT/BackupRestore/ManifestFileHandler.pm

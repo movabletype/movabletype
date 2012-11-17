@@ -3,6 +3,6 @@ tinyMCE.addI18n(tinyMCE.settings.language + '.template_dlg', {
     label: trans('Name'),
     'desc_label': trans('Description'),
     desc: trans('Insert Formatted Text'),
-    select: trans('Select a Formatted Text'),
+    select: trans('Select Formatted Text'),
     preview: trans('Preview'),
 });

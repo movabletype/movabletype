@@ -1587,7 +1587,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	Le paramètre au niveau du système pour le plugin \'[_1]\' existe déjà. Enregistrement ignoré.',
 
 ## lib/MT/BackupRestore/BackupFileScanner.pm
-    'Can not restore this file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.'
+    'Cannot restore requested file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.'
         => 'Ce fichier ne peut être restauré car le module Perl Digest::SHA est manquant. Veuillez contacter votre administrateur Movable Type',
 
 ## lib/MT/BackupRestore/ManifestFileHandler.pm
