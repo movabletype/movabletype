@@ -736,7 +736,6 @@ ul.tabs li a {
 
 /* --- Menu Bar list */
 #menu-bar-nav {
-    position: absolute;
     top: 0;
     right: 0;
     z-index: 500;
@@ -844,7 +843,7 @@ ul.tabs li a {
 }
 
 /* --- Menu bar Search */
-#basic-search {
+#quick-search-form {
     position: absolute;
     top: 28px;
     right: 15px;
