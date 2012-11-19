@@ -2441,6 +2441,7 @@ sub build_page {
     my ( $file, $param ) = @_;
     my $tmpl;
     my $mode = $mt->mode;
+    $param->{'app_page_template'} = 1;
     $param->{"mode_$mode"} ||= 1;
     $param->{breadcrumbs} = $mt->{breadcrumbs};
     if ( $param->{breadcrumbs}[-1] ) {
