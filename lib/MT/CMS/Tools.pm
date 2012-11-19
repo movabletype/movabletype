@@ -2215,7 +2215,7 @@ sub dialog_adjust_sitepath {
         else {
             my $sitepath = $blog->column('site_path');
             if ( my $limited  = $app->config->BaseSitePath ) {
-                $limited = File::Spec->catdir( $limit, "PATH" );
+                $limited = File::Spec->catdir( $limited, "PATH" );
                 $limited =~ s/PATH$//;
                 my $limited_quote = quotemeta($limited);
                 if ( $limited and ( $sitepath !~ m/^$limited/i ) ) {
