@@ -2218,7 +2218,7 @@ sub dialog_adjust_sitepath {
                 $limited = File::Spec->catdir( $limited, "PATH" );
                 $limited =~ s/PATH$//;
                 my $limited_quote = quotemeta($limited);
-                if ( $limited and ( $sitepath !~ m/^$limited/i ) ) {
+                if ( $sitepath !~ m/^$limited_quote/i ) {
                     $sitepath = $limited;
                 }
             }
