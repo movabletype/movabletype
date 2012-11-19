@@ -3256,12 +3256,27 @@ sub _hdlr_app_statusmsg {
     my $class   = $args->{class} || 'info';
     my $msg     = $ctx->slurp;
     my $rebuild = $args->{rebuild} || '';
+    my $no_link = $args->{no_link} || '';
     my $blog_id = $ctx->var('blog_id');
     my $blog    = $ctx->stash('blog');
     if ( !$blog && $blog_id ) {
         $blog = MT->model('blog')->load($blog_id);
     }
-    if ($blog && $app->user
+    if ( $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/ ) {
+        my $link_l
+            = $no_link
+            ? ''
+            : '<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">';
+        my $link_r = $no_link ? '' : '</a>';
+        my $obj_type
+            = $rebuild eq 'blog'
+            ? MT->translate('blog(s)')
+            : MT->translate('website(s)');
+        $rebuild
+            = qq{<__trans phrase="[_1]Publish[_2] your [_3] to see these changes take effect." params="$link_l%%$link_r%%$obj_type">};
+    }
+    elsif (
+        $blog && $app->user
         and $app->user->can_do(
             'rebuild',
             at_least_one => 1,
