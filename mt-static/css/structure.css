@@ -616,31 +616,40 @@ ul.tabs li a {
     border-radius: 2px;
 }
 .scope {
-    display: inline-block;
+    float: left;
     max-width: 100%;
     height: 28px;
     margin: 0;
-    padding: 0 10px 0 15px;
+    padding: 0 3px 0 0;
+    color: #f3f3f3;
+    font-size: 115%;
     overflow: hidden;
+    font-weight: bold;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
 }
 .blog .scope {
-    max-width: 60%;
+    max-width: 70%;
 }
 .scope.website {
     background-color: #839b5c;
 }
 .blog .scope.website {
-    max-width: 25%;
+    max-width: 30%;
 }
 .scope.user,
 .scope.system,
 .scope.website {
     padding-left: 40px;
 }
-.scope.blog {
-    margin-left: -5px;
-    padding-left: 25px;
-    background-color: #5c909b;
+.scope.blog:before {
+    content: '\00a0';
+    float: left;
+    width: 20px;
+    height: 28px;
     background: transparent url(../images/selector-nav-separator_blog.gif) left center no-repeat;
 }
 .scope a {
@@ -653,17 +662,8 @@ ul.tabs li a {
     text-decoration: underline;
 }
 .scope-label {
-    display: inline-block;
     line-height: 28px;
-    height: 28px;
-    width: 100%;
-    overflow: hidden;
-    color: #f3f3f3;
-    font-size: 115%;
     font-style: normal;
-    font-weight: bold;
-    white-space: nowrap;
-    text-overflow: ellipsis;
 }
 
 /* --- Scope Selector */
@@ -2701,13 +2701,13 @@ div.template-group-content.active {
     display: block;
     height: 0;
     visibility: hidden;
-    content: "\0020";
+    content: "\00a0";
 }
 #container:after,
 #content:after,
 .line:after,
 .top-menu:after,
-.display-options:after, 
+.display-options:after,
 .user .you-widget:after,
 .favorite-blogs-widget .blog-content:after,
 #list-themes .theme:after,
