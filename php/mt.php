@@ -11,7 +11,7 @@
 require_once('lib/class.exception.php');
 
 define('VERSION', '5.2');
-define('PRODUCT_VERSION', '5.2.1');
+define('PRODUCT_VERSION', '5.2.2');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
