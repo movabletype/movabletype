@@ -646,10 +646,26 @@ sub _create_post {
         }
         elsif ( '_category' eq $key ) {
             if ( $hash->{_a} ) {
-                if ( $hash->{_a}->{domain} eq 'tag' ) {
+                if (   $hash->{_a}->{domain} eq 'tag'
+                    || $hash->{_a}->{domain} eq 'post_tag' )
+                {
                     $value = MT::Util::decode_url( $hash->{_a}->{nicename} )
                         if !$value;
                     push @tags, $value if $value;
+                }
+                elsif ( $hash->{_a}->{domain} eq 'category' ) {
+                    my $cat_class = MT->model('category');
+                    $value = MT::Util::decode_url( $hash->{_a}->{nicename} )
+                        if !$value;
+                    my $cat = $cat_class->load(
+                        {   label   => $value,
+                            blog_id => $self->{blog}->id
+                        }
+                    );
+                    if ( defined $cat ) {
+                        $cat_ids{ $cat->id } = 1;
+                        $primary_cat_id = $cat->id unless $primary_cat_id;
+                    }
                 }
             }
             else {
