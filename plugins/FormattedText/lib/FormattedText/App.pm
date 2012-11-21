@@ -239,7 +239,7 @@ sub list_actions {
             order                   => 100,
             continue_prompt_handler => sub {
                 translate(
-                    'Are you sure you want to delete the selected Boilerplates?'
+                    'Are you sure you want to delete the selected boilerplates?'
                 );
             },
             mode       => 'delete',
