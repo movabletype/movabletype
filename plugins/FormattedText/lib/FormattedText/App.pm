@@ -67,7 +67,7 @@ sub can_edit_formatted_text {
     return 1 if $perms->can_do('edit_all_formatted_texts');
     return 0 if !$perms->can_do('edit_own_formatted_texts');
 
-    # This $author can only edit own formatted text.
+    # This $author can only edit own boilerplate.
     if ( !ref $formatted_text ) {
         $formatted_text = MT->model('formatted_text')->load($formatted_text)
             or return 0;
@@ -203,7 +203,7 @@ sub filtered_list_param {
 
 sub listing_screens {
     return {
-        object_label       => 'Formatted Text',
+        object_label       => 'Boilerplate',
         primary            => 'label',
         default_sort_key   => 'created_on',
         default_sort_order => 'descend',
@@ -223,7 +223,7 @@ sub listing_screens {
 sub system_filters {
     return {
         my_formatted_text => {
-            label => 'My Formatted Text',
+            label => 'My Boilerplate',
             items => sub {
                 [ { type => 'current_user' } ],;
             },
@@ -239,7 +239,7 @@ sub list_actions {
             order                   => 100,
             continue_prompt_handler => sub {
                 translate(
-                    'Are you sure you want to delete the selected Formatted Texts?'
+                    'Are you sure you want to delete the selected Boilerplates?'
                 );
             },
             mode       => 'delete',

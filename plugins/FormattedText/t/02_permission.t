@@ -165,39 +165,39 @@ use FormattedText::App;
 
 note('FormattedText::App::can_edit_formatted_text (for new object)');
 
-ok(FormattedText::App::can_edit_formatted_text($ichikawa->permissions($blog), undef, $ichikawa), 'Permission: Create Post: Can create formatted text');
+ok(FormattedText::App::can_edit_formatted_text($ichikawa->permissions($blog), undef, $ichikawa), 'Permission: Create Post: Can create boilerplate');
 
-ok(FormattedText::App::can_edit_formatted_text($ukawa->permissions($blog), undef, $ukawa), 'Permission: Edit All Posts: Can create formatted text');
+ok(FormattedText::App::can_edit_formatted_text($ukawa->permissions($blog), undef, $ukawa), 'Permission: Edit All Posts: Can create boilerplate');
 
-ok(! FormattedText::App::can_edit_formatted_text($egawa->permissions($blog), undef, $aikawa), 'Permission: Manage Pages: Cannot create formatted text');
+ok(! FormattedText::App::can_edit_formatted_text($egawa->permissions($blog), undef, $aikawa), 'Permission: Manage Pages: Cannot create boilerplate');
 
-ok(! FormattedText::App::can_edit_formatted_text($aikawa->permissions($blog), undef, $aikawa), 'Permission: Edit Config: Cannot create formatted text');
+ok(! FormattedText::App::can_edit_formatted_text($aikawa->permissions($blog), undef, $aikawa), 'Permission: Edit Config: Cannot create boilerplate');
 
 
 note('FormattedText::App::can_edit_formatted_text (for existing object)');
 
-ok(FormattedText::App::can_edit_formatted_text($ichikawa->permissions($blog), $ichikawa_template, $ichikawa), 'Permission: Create Post: Can edit formatted text created by oneself');
-ok(! FormattedText::App::can_edit_formatted_text($ichikawa->permissions($blog), $ukawa_template, $ichikawa), 'Permission: Create Post: Cannot edit formatted text created by others');
+ok(FormattedText::App::can_edit_formatted_text($ichikawa->permissions($blog), $ichikawa_template, $ichikawa), 'Permission: Create Post: Can edit boilerplate created by oneself');
+ok(! FormattedText::App::can_edit_formatted_text($ichikawa->permissions($blog), $ukawa_template, $ichikawa), 'Permission: Create Post: Cannot edit boilerplate created by others');
 
-ok(FormattedText::App::can_edit_formatted_text($ukawa->permissions($blog), $ukawa_template, $ukawa), 'Permission: Edit All Posts: Can edit formatted text created by oneself');
-ok(FormattedText::App::can_edit_formatted_text($ukawa->permissions($blog), $ichikawa_template, $ukawa), 'Permission: Edit All Posts: Can edit formatted text created by others');
+ok(FormattedText::App::can_edit_formatted_text($ukawa->permissions($blog), $ukawa_template, $ukawa), 'Permission: Edit All Posts: Can edit boilerplate created by oneself');
+ok(FormattedText::App::can_edit_formatted_text($ukawa->permissions($blog), $ichikawa_template, $ukawa), 'Permission: Edit All Posts: Can edit boilerplate created by others');
 
-ok(! FormattedText::App::can_edit_formatted_text($egawa->permissions($blog), $ichikawa_template, $egawa), 'Permission: Manage Pages: Cannot edit formatted text');
+ok(! FormattedText::App::can_edit_formatted_text($egawa->permissions($blog), $ichikawa_template, $egawa), 'Permission: Manage Pages: Cannot edit boilerplate');
 
-ok(! FormattedText::App::can_edit_formatted_text($aikawa->permissions($blog), $ichikawa_template, $aikawa), 'Permission: Edit Config: Cannot edit formatted text');
+ok(! FormattedText::App::can_edit_formatted_text($aikawa->permissions($blog), $ichikawa_template, $aikawa), 'Permission: Edit Config: Cannot edit boilerplate');
 
 
 note('FormattedText::App::can_view_formatted_text');
 
-ok(FormattedText::App::can_view_formatted_text($ichikawa->permissions($blog), $ichikawa_template, $ichikawa), 'Permission: Create Post: Can view formatted text created by oneself');
-ok(FormattedText::App::can_view_formatted_text($ichikawa->permissions($blog), $ukawa_template, $ichikawa), 'Permission: Create Post: Cannot view formatted text created by others');
+ok(FormattedText::App::can_view_formatted_text($ichikawa->permissions($blog), $ichikawa_template, $ichikawa), 'Permission: Create Post: Can view boilerplate created by oneself');
+ok(FormattedText::App::can_view_formatted_text($ichikawa->permissions($blog), $ukawa_template, $ichikawa), 'Permission: Create Post: Cannot view boilerplate created by others');
 
-ok(FormattedText::App::can_view_formatted_text($ukawa->permissions($blog), $ukawa_template, $ukawa), 'Permission: Edit All Posts: Can view formatted text created by oneself');
-ok(FormattedText::App::can_view_formatted_text($ukawa->permissions($blog), $ichikawa_template, $ukawa), 'Permission: Edit All Posts: Can view formatted text created by others');
+ok(FormattedText::App::can_view_formatted_text($ukawa->permissions($blog), $ukawa_template, $ukawa), 'Permission: Edit All Posts: Can view boilerplate created by oneself');
+ok(FormattedText::App::can_view_formatted_text($ukawa->permissions($blog), $ichikawa_template, $ukawa), 'Permission: Edit All Posts: Can view boilerplate created by others');
 
-ok(! FormattedText::App::can_view_formatted_text($egawa->permissions($blog), $ichikawa_template, $egawa), 'Permission: Manage Pages: Cannot view formatted text');
+ok(! FormattedText::App::can_view_formatted_text($egawa->permissions($blog), $ichikawa_template, $egawa), 'Permission: Manage Pages: Cannot view boilerplate');
 
-ok(! FormattedText::App::can_view_formatted_text($aikawa->permissions($blog), $ichikawa_template, $aikawa), 'Permission: Edit Config: Cannot view formatted text');
+ok(! FormattedText::App::can_view_formatted_text($aikawa->permissions($blog), $ichikawa_template, $aikawa), 'Permission: Edit Config: Cannot view boilerplate');
 
 
 done_testing;

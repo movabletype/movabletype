@@ -45,15 +45,15 @@ sub class_type {
 }
 
 sub class_label {
-    translate('Formatted Text');
+    translate('Boilerplate');
 }
 
 sub class_label_plural {
-    translate('Formatted Texts');
+    translate('Boilerplates');
 }
 
 sub search_apis {
-    +{  label       => 'Formatted Texts',
+    +{  label       => 'Boilerplates',
         view        => 'none',
         order       => 1100,
         search_cols => {
@@ -266,7 +266,7 @@ sub validate {
     if ($already_exists) {
         return $cb->error(
             translate(
-                'The formatted text \'[_1]\' is already in use in this blog.',
+                'The boilerplate \'[_1]\' is already in use in this blog.',
                 $values->{label}
             )
         );

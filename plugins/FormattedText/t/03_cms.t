@@ -26,7 +26,7 @@ subtest 'search_replace' => sub {
             );
             my $out = delete $app->{__test_output};
             unlike( $out, qr/#formatted_text/,
-                'The "Formatted Text" tab is not displayed' );
+                'The "boilerplate" tab is not displayed' );
 
             done_testing();
         };

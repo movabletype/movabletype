@@ -1,7 +1,7 @@
 <mt:if name="id">
-    <mt:setvar name="page_title" value="<__trans phrase="Edit Formatted Text">">
+    <mt:setvar name="page_title" value="<__trans phrase="Edit Boilerplate">">
 <mt:else>
-    <mt:setvar name="page_title" value="<__trans phrase="Create Formatted Text">">
+    <mt:setvar name="page_title" value="<__trans phrase="Create Boilerplate">">
 </mt:if>
 
 <$mt:setvar name="position_actions_bottom" value="1"$>
@@ -19,7 +19,7 @@
   <mtapp:statusmsg
      id="saved-added"
      class="success">
-    <__trans phrase="This formatted text has been saved.">
+    <__trans phrase="This boilerplate has been saved.">
   </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved_changes">
@@ -72,7 +72,7 @@
     <button
        type="submit"
        accesskey="s"
-       title="<__trans phrase="Save changes to this formatted text (s)">"
+       title="<__trans phrase="Save changes to this boilerplate (s)">"
        class="save action button primary"
        ><__trans phrase="Save Changes"></button>
   </mt:setvarblock>
@@ -93,7 +93,7 @@ var formatted_texts = [
 </mt:loop>
 ];
 
-Lexicon["The formatted text '[_1]' is already in use in this blog."] = '<__trans phrase="The formatted text '[_1]' is already in use in this blog." params="[_1]" escape="singlequotes" />';
+Lexicon["The boilerplate '[_1]' is already in use in this blog."] = '<__trans phrase="boilerplate '[_1]' is already in use in this blog." params="[_1]" escape="singlequotes" />';
 jQuery.mtValidateAddRules({
     '#label': function ($e) {
         var validator  = this;
@@ -102,7 +102,7 @@ jQuery.mtValidateAddRules({
 
         jQuery.each(formatted_texts, function() {
             if (this.label == new_label && this.id != id) {
-                validator.raise(trans("The formatted text '[_1]' is already in use in this blog.", new_label));
+                validator.raise(trans("The boilerplate '[_1]' is already in use in this blog.", new_label));
                 return false;
             }
         });

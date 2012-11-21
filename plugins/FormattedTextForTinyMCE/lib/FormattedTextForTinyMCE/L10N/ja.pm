@@ -9,11 +9,11 @@ use vars qw( %Lexicon );
 %Lexicon = (
 
 ## mt-static/plugins/FormattedTextForTinyMCE/extension.js
-	'Insert Formatted Text' => '定型文の挿入',
+	'Insert Boilerplate' => '定型文の挿入',
 
 ## mt-static/plugins/FormattedTextForTinyMCE/langs/template.js
-	'Formatted Text' => '定型文',
-	'Select Formatted Text' => '定型文を選択...',
+	'Boilerplate' => '定型文',
+	'Select Boilerplate' => '定型文を選択...',
 
 );
 

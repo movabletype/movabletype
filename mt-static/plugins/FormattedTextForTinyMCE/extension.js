@@ -58,7 +58,7 @@ tinymce.create('tinymce.plugins.MTFormattedText', {
 
         // Overwrite description for the template button.
         tinyMCE.addI18n(tinyMCE.settings.language + '.template', {
-            desc: trans('Insert Formatted Text')
+            desc: trans('Insert Boilerplate')
         });
     }
 }); 

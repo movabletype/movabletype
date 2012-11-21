@@ -3,7 +3,7 @@ name: FormattedText
 version: 1.01
 author_link: http://www.movabletype.org/
 author_name: Six Apart, Ltd.
-description: <MT_TRANS phrase="Manage formatted text.">
+description: <MT_TRANS phrase="Manage boilerplate.">
 l10n_class: FormattedText::L10N
 
 schema_version: 1.00
@@ -14,7 +14,7 @@ applications:
     cms:
         menus:
             entry:manage_formatted_text:
-                label: Formatted Text
+                label: Boilerplate
                 order: 250
                 mode: list
                 args:

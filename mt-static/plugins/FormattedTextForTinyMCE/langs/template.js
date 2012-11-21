@@ -1,8 +1,8 @@
 tinyMCE.addI18n(tinyMCE.settings.language + '.template_dlg', {
-    title: trans('Formatted Text'),
+    title: trans('Boilerplate'),
     label: trans('Name'),
     'desc_label': trans('Description'),
-    desc: trans('Insert Formatted Text'),
-    select: trans('Select Formatted Text'),
+    desc: trans('Insert Boilerplate'),
+    select: trans('Select Boilerplate'),
     preview: trans('Preview'),
 });
