@@ -744,7 +744,10 @@ sub edit {
             $param->{cache_expire_type}     = 0;
             $param->{cache_expire_period}   = '';
             $param->{cache_expire_interval} = 0;
-            $param->{ssi_type}              = uc $blog->include_system;
+            $param->{ssi_type}
+                = defined $blog->include_system
+                ? uc $blog->include_system
+                : '';
         }
         if ($obj) {
             $param->{include_with_ssi} = $obj->include_with_ssi
@@ -2868,7 +2871,8 @@ sub edit_widget {
         $param->{cache_expire_type}     = 0;
         $param->{cache_expire_period}   = '';
         $param->{cache_expire_interval} = 0;
-        $param->{ssi_type}              = uc $blog->include_system;
+        $param->{ssi_type}
+            = defined $blog->include_system ? uc $blog->include_system : '';
     }
 
     my $iter
