@@ -1652,6 +1652,7 @@ sub bake_commenter_cookie {
         die $ctx->error( $builder->errstr ) unless defined $tokens;
         $tag = $builder->build( $ctx, $tokens );
         die $ctx->error( $builder->errstr ) unless defined $tag;
+        return $tag;
     };
 
     my $cookie_path = MT->config->UserSessionCookiePath;
@@ -1760,6 +1761,7 @@ sub _invalidate_commenter_session {
         die $ctx->error( $builder->errstr ) unless defined $tokens;
         $tag = $builder->build( $ctx, $tokens );
         die $ctx->error( $builder->errstr ) unless defined $tag;
+        return $tag;
     };
 
     my $cookie_path = MT->config->UserSessionCookiePath;
