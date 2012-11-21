@@ -638,5 +638,7 @@
 { "r" : "1", "t" : "<MTSetVar name=\"foo\" value=\"Foo\"><MTSetVar name=\"bar\" value=\"<MTGetVar name='foo'>\"><MTGetVar name=\"bar\" mteval=\"\">", "e" : "<MTGetVar name='foo'>"}, #622
 { "r" : "1", "t" : "<mt:Unless sanitize='1'><a onclick='alert(1)'>foo</a></mt:Unless>", "e" : "<a>foo</a>"}, #623
 { "r" : "1", "t" : "<mt:Unless sanitize='0'><a onclick='alert(1)'>foo</a></mt:Unless>", "e" : "<a onclick='alert(1)'>foo</a>"}, #624
-{ "r" : "1", "t" : "<mt:Unless sanitize=''><a onclick='alert(1)'>foo</a></mt:Unless>", "e" : "<a onclick='alert(1)'>foo</a>"} #625
+{ "r" : "1", "t" : "<mt:Unless sanitize=''><a onclick='alert(1)'>foo</a></mt:Unless>", "e" : "<a onclick='alert(1)'>foo</a>"}, #625
+{ "r" : "1", "t" : "<mt:Unless numify=''>-1234567</mt:Unless>", "e" : "-1234567"}, #626
+{ "r" : "1", "t" : "<mt:Unless numify='0'>-1234567</mt:Unless>", "e" : "-102340567"} #627
 ]
