@@ -289,7 +289,9 @@ sub _create_category {
             # skip
         }
         elsif ( 'wp_cat_name' eq $key ) {
-            return if ( MT::Category->load( { label => $value } ) );
+            my $exist = MT::Category->load(
+                { label => $value, blog_id => $self->{blog}->id } );
+            return if $exist;
             $cat->label($value);
         }
         elsif ( 'wp_category_description' eq $key ) {
