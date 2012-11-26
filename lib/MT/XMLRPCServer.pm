@@ -1425,6 +1425,8 @@ sub newMediaObject {
     my ( $vol, $path, $name ) = File::Spec->splitpath($local_file);
     $path =~ s!/$!!
         unless $path eq '/';    ## OS X doesn't like / at the end in mkdir().
+    $path = File::Spec->catpath( $vol, $path )
+        if $vol;
     unless ( $fmgr->exists($path) ) {
         $fmgr->mkpath($path)
             or die _fault(
