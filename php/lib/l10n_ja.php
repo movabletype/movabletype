@@ -119,9 +119,6 @@ $Lexicon_ja = array(
 	'\'[_1]\' is not a valid function for a hash.' => '[_1]はハッシュで利用できる関数ではありません。',
 	'\'[_1]\' is not a valid function for an array.' => '[_1]は配列で利用できる関数ではありません。',
 
-## php/lib/function.mtwidgetmanager.php
-	'Error compiling widget set [_1]' => 'ウィジェットセット[_1]をコンパイルできませんでした。',
-
 ## php/lib/mtdb.base.php
 	'When the exclude_blogs and include_blogs attributes are used together, the same blog IDs should not be listed as parameters to both of them.' => 'include_blogs属性で指定されたブログがexclude_blogs属性で全て除外されています。',
 

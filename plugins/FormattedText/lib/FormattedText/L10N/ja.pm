@@ -8,13 +8,6 @@ use vars qw( %Lexicon );
 
 %Lexicon = (
 
-## mt-static/plugins/FormattedTextForTinyMCE/extension.js
-	'Insert Boilerplate' => '定型文の挿入',
-
-## mt-static/plugins/FormattedTextForTinyMCE/langs/template.js
-	'Boilerplate' => '定型文',
-	'Select a Boilerplate' => '定型文を選択...',
-
 ## plugins/FormattedText/config.yaml
 	'Manage boilerplate.' => '定型文を管理します。',
 
@@ -31,17 +24,10 @@ use vars qw( %Lexicon );
 	'Create Boilerplate' => '定型文の作成',
 	'This boilerplate has been saved.' => '定型文を保存しました。',
 	'Save changes to this boilerplate (s)' => '定型文への変更を保存 (s)',
+	q{The boilerplate '[_1]' is already in use in this blog.} => q{[_1]という定型文は既にこのブログに存在しています。},
 
 ## plugins/FormattedText/tmpl/cms/list_formatted_text.tmpl
 	'The boilerplate has been deleted from the database.' => '定型文を削除しました',
-
-## plugins/FormattedTextForTinyMCE/config.yaml
-	'Add the "Insert Boilerplate" button to the TinyMCE.' => 'TinyMCE に「定型文の挿入」ボタンを追加します。',
-
-## plugins/FormattedTextForTinyMCE/lib/FormattedTextForTinyMCE/App.pm
-	'Cannot load boilerplate.' => '定型文をロードできませんでした。',
-
-## plugins/FormattedTextForTinyMCE/tmpl/extension.tmpl
 
 );
 
