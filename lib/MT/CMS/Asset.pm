@@ -171,8 +171,17 @@ sub dialog_list_asset {
     my $blog_class = $app->model('blog');
     my $blog;
     $blog = $blog_class->load($blog_id) if $blog_id;
-    return $app->permission_denied()
-        if $blog_id && !$app->can_do('access_to_insert_asset_list');
+
+    if (   $app->param('edit_field')
+        && $app->param('edit_field') =~ m/^customfield_.*$/ )
+    {
+        return $app->permission_denied()
+            unless $app->permissions;
+    }
+    else {
+        return $app->permission_denied()
+            if $blog_id && !$app->can_do('access_to_insert_asset_list');
+    }
 
     my $asset_class = $app->model('asset') or return;
     my %terms;
@@ -294,8 +303,16 @@ sub insert {
 
     $app->validate_magic() or return;
 
-    return $app->permission_denied()
-        unless $app->can_do('insert_asset');
+    if (   $app->param('edit_field')
+        && $app->param('edit_field') =~ m/^customfield_.*$/ )
+    {
+        return $app->permission_denied()
+            unless $app->permissions;
+    }
+    else {
+        return $app->permission_denied()
+            unless $app->can_do('insert_asset');
+    }
 
     my $text = $app->param('no_insert') ? "" : _process_post_upload($app);
     return unless defined $text;
