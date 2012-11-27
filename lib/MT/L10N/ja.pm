@@ -466,7 +466,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/openid.mtml
 	'[_1] accepted here' => '[_1]対応しています',
-	'http://www.sixapart.com/labs/openid/' => 'http://www.movabletype.jp/openid/',
+	'http://www.sixapart.com/labs/openid/' => 'https://www.sixapart.jp/about/openid.html',
 	'Learn more about OpenID' => 'OpenIDについて',
 
 ## default_templates/page.mtml
@@ -5068,7 +5068,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/comment/auth_openid.tmpl
 	'OpenID URL' => 'あなたのOpenID URL',
 	'Sign in with one of your existing third party OpenID accounts.' => 'すでに登録済みの、OpenIDに対応した別サービスのアカウントでサインインします。',
-	'http://www.openid.net/' => 'http://www.sixapart.jp/about/openid.html/',
+	'http://www.openid.net/' => 'http://www.sixapart.jp/about/openid.html',
 	'Learn more about OpenID.' => 'OpenIDについて詳しくはこちら',
 
 ## tmpl/comment/auth_typepad.tmpl
