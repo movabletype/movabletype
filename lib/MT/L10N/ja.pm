@@ -3107,7 +3107,7 @@ use vars qw( @ISA %Lexicon );
 	q{If you use an RSS reader, you can subscribe to a feed of all future entries matching '[_1]'.} => q{RSSリーダーを使うと、'[_1]'を含むすべてのブログ記事のフィードを購読することができます。},
 	'SEARCH/TAG FEED SUBSCRIPTION INFORMATION' => '検索/タグのフィード購読情報',
 	'Feed Subscription' => '購読',
-	'http://www.sixapart.com/about/feeds' => 'http://www.sixapart.jp/about/feeds',
+	'http://www.sixapart.com/about/feeds' => 'http://www.sixapart.jp/about/feeds.html',
 	'What is this?' => 'フィードとは',
 	'TAG LISTING FOR TAG SEARCH ONLY' => 'タグ一覧はタグ検索でのみ表示',
 	'Other Tags' => 'その他のタグ',
@@ -5068,7 +5068,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/comment/auth_openid.tmpl
 	'OpenID URL' => 'あなたのOpenID URL',
 	'Sign in with one of your existing third party OpenID accounts.' => 'すでに登録済みの、OpenIDに対応した別サービスのアカウントでサインインします。',
-	'http://www.openid.net/' => 'http://www.sixapart.jp/about/openid/',
+	'http://www.openid.net/' => 'http://www.sixapart.jp/about/openid.html/',
 	'Learn more about OpenID.' => 'OpenIDについて詳しくはこちら',
 
 ## tmpl/comment/auth_typepad.tmpl
