@@ -863,6 +863,9 @@ sub remove {
     my $blog_id = $blog->id
         if ref($blog);
 
+    # Load all the models explicitly.
+    MT->all_models;
+
     $blog->remove_children( { key => 'blog_id' } );
     my $res = $blog->SUPER::remove(@_);
     if ( $blog_id && $res ) {

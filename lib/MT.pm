@@ -399,6 +399,11 @@ sub construct {
     }
 }
 
+sub all_models {
+    my $pkg = shift;
+    map { $pkg->model($_) } keys %{ $pkg->registry('object_types') };
+}
+
 sub registry {
     my $pkg = shift;
 
@@ -3775,6 +3780,14 @@ implementation package name, instead of hardcoding Perl package names.
 
 A list of names to be used with this function can be found in the 
 MT::Core module, but also plugins can add more names.
+
+=head2 MT->all_models( $id )
+
+Returns a list of package names for all the database-backed MT object
+type. For example:
+
+    my @models = MT->all_models;
+    # @models now contains ('MT::Blog', 'MT::Entry', 'MT::Asset', etc.)
 
 =head2 MT->models( $id )
 
