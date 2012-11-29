@@ -342,9 +342,18 @@ sub core_search_apis {
             'handler'    => '$Core::MT::CMS::Asset::build_asset_table',
             'perm_check' => sub {
                 my ($obj)  = @_;
-                my $author = MT->app->user;
+                my $app    = MT->instance;
+                my $author = $app->user;
                 my $perm   = $author->permissions( $obj->blog_id );
-                return $perm->can_do('search_assets');
+
+                if (   $app->param('edit_field')
+                    && $app->param('edit_field') =~ m/^customfield_.*$/ )
+                {
+                    !$perm->is_empty;
+                }
+                else {
+                    $perm->can_do('search_assets');
+                }
             },
             'search_cols' => {
                 'file_name'   => sub { $app->translate('Filename') },
