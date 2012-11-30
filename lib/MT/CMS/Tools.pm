@@ -80,7 +80,10 @@ sub get_syscheck_content {
         # allowed html
         my $spec
             = '* style class id,ul,li,div,span,br,h2,h3,strong,code,blockquote,p,textarea';
-        $result = Encode::decode_utf8($result) if !Encode::is_utf8($result);
+        $result = Encode::decode_utf8($result)
+            if !Encode::is_utf8($result)
+        ;    # mt-check.cgi always returns by utf-8
+
         $result = MT::Sanitize->sanitize( $result, $spec );
     }
     return $result;
@@ -1674,7 +1677,7 @@ sub adjust_sitepath {
     $path_limit = File::Spec->catdir( $path_limit, "PATH" );
     $path_limit =~ s/PATH$//;
     my $path_limit_quote = quotemeta($path_limit);
-    my @p = $q->param;
+    my @p                = $q->param;
     foreach my $p (@p) {
         next unless $p =~ /^site_path_(\d+)/;
         my $id   = $1;
@@ -2214,7 +2217,7 @@ sub dialog_adjust_sitepath {
         }
         else {
             my $sitepath = $blog->column('site_path');
-            if ( my $limited  = $app->config->BaseSitePath ) {
+            if ( my $limited = $app->config->BaseSitePath ) {
                 $limited = File::Spec->catdir( $limited, "PATH" );
                 $limited =~ s/PATH$//;
                 my $limited_quote = quotemeta($limited);
