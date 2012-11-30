@@ -291,12 +291,17 @@ class Thumbnail {
 
         # Generate
         $dest_file = $this->dest_file();
-        list ($tmp_w, $tmp_h) = getimagesize($dest_file);
-        $ds = $this->dest_square;
-        $compulsive_resize = (
-            file_exists($dest_file) && (($ds && $tmp_w != $tmp_h) || (!$ds && $tmp_w == $tmp_h))
-        ) ? 1 : 0 ;
-        if (!file_exists($dest_file) || $compulsive_resize) {
+        if (file_exists($dest_file)) {
+            list ($tmp_w, $tmp_h) = getimagesize($dest_file);
+            $ds = $this->dest_square;
+            $compulsive_resize =
+                (($ds && $tmp_w != $tmp_h) || (!$ds && $tmp_w == $tmp_h))
+                ? 1 : 0 ;
+        }
+        else {
+            $compulsive_resize = 1;
+        }
+        if ($compulsive_resize) {
             $dir_name = dirname($dest_file);
             if (!file_exists($dir_name))
                 mkpath($dir_name, 0777);
