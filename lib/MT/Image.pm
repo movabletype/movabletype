@@ -121,12 +121,9 @@ sub is_valid_image {
 sub get_image_info {
     my $class  = shift;
     my %params = @_;
-    my $fh     = $params{Fh};
 
     ## Use Image::Size to check if the uploaded file is an image, and if so,
-    ## record additional image info (width, height). We first rewind the
-    ## filehandle $fh, then pass it in to imgsize.
-    seek $fh, 0, 0;
+    ## record additional image info (width, height).
     eval { require Image::Size; };
     return $class->error(
         MT->translate(
@@ -135,7 +132,14 @@ sub get_image_info {
         )
     ) if $@;
 
-    Image::Size::imgsize($fh);
+    if ( my $fh = $params{Fh} ) {
+        seek $fh, 0, 0;
+        Image::Size::imgsize($fh);
+    }
+    elsif ( my $filename = $params{Filename} ) {
+        local $Image::Size::NO_CACHE = 1;
+        Image::Size::imgsize($filename);
+    }
 }
 
 sub get_image_type {

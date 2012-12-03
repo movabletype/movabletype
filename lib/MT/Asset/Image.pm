@@ -157,8 +157,8 @@ sub thumbnail_file {
         )
     {
         require MT::Image;
-        my $img = new MT::Image( Filename => $thumbnail );
-        my ( $t_w, $t_h ) = ( $img->{width}, $img->{height} );
+        my ( $t_w, $t_h )
+            = MT::Image->get_image_info( Filename => $thumbnail );
         if (   ( $param{Square} && $t_h == $t_w )
             or ( !$param{Square} && $t_h != $t_w ) )
         {
