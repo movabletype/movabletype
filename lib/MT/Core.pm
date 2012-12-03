@@ -2305,6 +2305,7 @@ sub purge_user_session_records {
         push @ids, $s->id unless $s->get('remember');
     }
 
+    return unless @ids;
     MT::Session->remove( { id => \@ids } );
 }
 
