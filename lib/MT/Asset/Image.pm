@@ -156,14 +156,18 @@ sub thumbnail_file {
             >= $fmgr->file_mod_time($file_path) )
         )
     {
-        require MT::Image;
-        my ( $t_w, $t_h )
-            = MT::Image->get_image_info( Filename => $thumbnail );
-        if (   ( $param{Square} && $t_h == $t_w )
-            or ( !$param{Square} && $t_h != $t_w ) )
-        {
-            return ( $thumbnail, $n_w, $n_h );
+        my $already_exists = 1;
+        if ( $asset->image_width != $asset->image_height ) {
+            require MT::Image;
+            my ( $t_w, $t_h )
+                = MT::Image->get_image_info( Filename => $thumbnail );
+            if (   ( $param{Square} && $t_h != $t_w )
+                || ( !$param{Square} && $t_h == $t_w ) )
+            {
+                $already_exists = 0;
+            }
         }
+        return ( $thumbnail, $n_w, $n_h ) if $already_exists;
     }
 
     # stale or non-existent thumbnail. let's create one!

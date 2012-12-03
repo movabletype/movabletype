@@ -292,11 +292,16 @@ class Thumbnail {
         # Generate
         $dest_file = $this->dest_file();
         if (file_exists($dest_file)) {
-            list ($tmp_w, $tmp_h) = getimagesize($dest_file);
-            $ds = $this->dest_square;
-            $compulsive_resize =
-                (($ds && $tmp_w != $tmp_h) || (!$ds && $tmp_w == $tmp_h))
-                ? 1 : 0 ;
+            if ($this->src_w == $this->src_h) {
+                $compulsive_resize = 0;
+            }
+            else {
+                list ($tmp_w, $tmp_h) = getimagesize($dest_file);
+                $ds = $this->dest_square;
+                $compulsive_resize =
+                    (($ds && $tmp_w != $tmp_h) || (!$ds && $tmp_w == $tmp_h))
+                    ? 1 : 0 ;
+            }
         }
         else {
             $compulsive_resize = 1;
